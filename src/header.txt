@@ -1,0 +1,13 @@
+/*!
+ * \file
+ * This file contains ...
+ *
+ * \brief Brief description ...
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * \date Last modified: $Date$
+ * \author The REvBayes core team
+ * \license GPL version 3
+ *
+ * $Id$
+ */
