@@ -26,6 +26,7 @@ public:
 
 	RbBool* copy(void) const;       //!< Copy
 	void    print(void) const;      //!< Print the value
+	void    print(ostream &c) const;    //!< Print the value to ostream c
 
 	bool    store(void) const { return true; }  //!< What does this do?
 	bool    restore(void) { return true; }      //!< What does this do?

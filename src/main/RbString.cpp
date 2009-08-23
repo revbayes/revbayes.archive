@@ -36,3 +36,8 @@ void RbString::print(void) const {
 
 	cout << value << endl;
 }
+
+void RbString::print(ostream &c) const {
+
+	c << value << endl;
+}

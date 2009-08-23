@@ -38,3 +38,7 @@ void RbInt::print(void) const {
 	cout << value << endl;
 }
 
+void RbInt::print(ostream &c) const {
+
+	c << value << endl;
+}

@@ -26,8 +26,9 @@ public:
 	    RbString(const string& v);      //!< Constructor from string
 	    RbString(const RbString& s);    //!< Copy constructor
 
-	RbString*   copy(void) const;       //!< Copy
-	void        print(void) const;      //!< Print the value
+	RbString*   copy(void) const;           //!< Copy
+	void        print(void) const;          //!< Print the value to cout
+	void        print(ostream &c) const;    //!< Print the value to c
 
 	bool        store(void) const { return true; }  //!< What does this do?
 	bool        restore(void) { return true; }      //!< What does this do?

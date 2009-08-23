@@ -30,6 +30,7 @@ public:
 	virtual RbDataType*     copy(void) const = 0;               //!< Copy
 	string                  getType(void) { return typeName; }  //!< Get type name
     virtual void            print(void) const = 0;              //!< Print to cout
+    virtual void            print(ostream &c) const {}          //!< Print to specified ostream
 
 protected:
 	const string    typeName;                                   //!< Name of the data type (for type checking or debugging)

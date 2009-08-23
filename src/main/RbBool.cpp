@@ -36,3 +36,8 @@ void RbBool::print(void) const {
 
 	cout << value << endl;
 }
+
+void RbBool::print(ostream &c) const {
+
+	c << value << endl;
+}
