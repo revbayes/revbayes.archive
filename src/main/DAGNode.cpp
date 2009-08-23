@@ -1,11 +1,27 @@
+/*!
+ * \file
+ * This file contains the implementation of DAGNode, which is the base
+ * class for nodes in the model DAG as well as for the nodes in a
+ * syntax tree.
+ *
+ * \brief Implementation of DAGNode
+ *
+ * (c) Copyright 2009-
+ * \date Last modified: $Date$
+ * \author The REvBayes development core team
+ * \license GPL version 3
+ *
+ * $Id$
+ */
+
 #include "DAGNode.h"
 #include "RbDataType.h"
 #include <iostream>
 
+using namespace std;
 
-
-
-DAGNode::DAGNode(RbDataType *dt) {
+DAGNode::DAGNode(RbDataType *dt)
+    : touched(true) {
 
 	value = dt;
 	storedValue = dt->copy();
@@ -25,7 +41,16 @@ DAGNode::~DAGNode(void) {
 		delete storedValue;
 }
 
-void DAGNode::printChildren(void) {
+void DAGNode::keepRecursive() {
+
+    if (touched) {
+        for (set<DAGNode*>::iterator c=children.begin(); c!=children.end(); c++)
+            (*c)->keepRecursive();
+        keep();
+    }
+}
+
+void DAGNode::printChildren(void) const {
 
 	if ( children.empty() )	
 		{
@@ -37,7 +62,7 @@ void DAGNode::printChildren(void) {
 	std::cout << std::endl;
 }
 
-void DAGNode::printParents(void) {
+void DAGNode::printParents(void) const {
 
 	if ( parents.empty() )
 		{
@@ -47,4 +72,31 @@ void DAGNode::printParents(void) {
 	for (std::set<DAGNode*>::iterator p=parents.begin(); p != parents.end(); p++)
 		std::cout << (*p) << " ";
 	std::cout << std::endl;
+}
+
+void DAGNode::restore() {
+
+    RbDataType* temp;
+    
+    temp        = value;
+    value       = storedValue;
+    storedValue = temp;
+
+    keep();     // Sets touched to false
+}
+
+void DAGNode::restoreRecursive() {
+
+    if (touched) {
+        for (set<DAGNode*>::iterator c=children.begin(); c!=children.end(); c++)
+            (*c)->restoreRecursive();
+        restore();
+    }
+}
+
+void DAGNode::touchDeep() {
+
+    touch();
+    for (set<DAGNode*>::iterator p=parents.begin(); p!=parents.end(); p++)
+        (*p)->touchDeep();
 }
