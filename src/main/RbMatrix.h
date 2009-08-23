@@ -11,7 +11,7 @@
  *
  * (c) Copyright 2005.
  * \version 4.0 Beta
- * \date Last modified: $Date: 2006/08/25 14:52:04 $
+ * \date Last modified: $Date$
  * \author John Huelsenbeck (1)
  * \author Bret Larget (2)
  * \author Paul van der Mark (3)
@@ -30,7 +30,7 @@
  * distribution or http: *www.gnu.org/licenses/gpl.txt) for more
  * details.
  *
- * $Id: RbMatrix.h,v 1.9 2006/08/25 14:52:04 paulvdm Exp $
+ * $Id$
  */
 
 #ifndef RbMatrix_H 

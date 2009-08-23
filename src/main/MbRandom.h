@@ -12,7 +12,7 @@
  *
  * (c) Copyright 2005.
  * \version 4.0 beta
- * \date Last modified: $Date: 2006/09/11 17:29:51 $
+ * \date Last modified: $Date$
  * \author John Huelsenbeck (1)
  * \author Bret Larget (2)
  * \author Paul van der Mark (3)
@@ -31,7 +31,7 @@
  * distribution or http://www.gnu.org/licenses/gpl.txt for more
  * details.
  *
- * $Id: MbRandom.h,v 1.3 2006/09/11 17:29:51 paulvdm Exp $
+ * $Id$
  */
 
 #ifndef MB_RANDOM_H
