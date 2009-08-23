@@ -3,18 +3,14 @@
 
 #include "Distribution.h"
 
+class RbDataType;
 class Vector;
 class DistDirichlet : Distribution {
 
 public:
-	double drawRandomValue();
-	/*DistDirichlet(Vector* a);
-	RbDataType expectedValue(void);
-	RbDataType drawRandomValue(void);
-	double pdf(RbDataType& value);
-	double logpdf(RbDataType& value);
-	double cdf(RbDataType& value);
-	double quantile(RbDataType& value);*/
+	RbDataType* rv(void);
+	double pdf(void);
+	double lnPdf(void);
 
 private:
 	Vector *value;

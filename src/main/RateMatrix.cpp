@@ -5,9 +5,8 @@
 
 
 
-RateMatrix::RateMatrix(int n) {
+RateMatrix::RateMatrix(int n) : RbDataType("RateMatrix") {
 
-	typeName = "RateMatrix";
 	dim = n;
 	value = RbHelper::newTwoDArray<double>(dim, dim);
 	for (int i=0; i<dim; i++)
@@ -15,10 +14,9 @@ RateMatrix::RateMatrix(int n) {
 			value[i][j] = 0.0;
 }
 
-RateMatrix::RateMatrix(RateMatrix &r) {
+RateMatrix::RateMatrix(const RateMatrix& r) : RbDataType("RateMatrix") {
 
-	typeName = r.typeName;
-	dim = r.size();
+	dim = r.dim;
 	value = RbHelper::newTwoDArray<double>(dim, dim);
 	for (int i=0; i<dim; i++)
 		for (int j=0; j<dim; j++)
@@ -30,13 +28,13 @@ RateMatrix::~RateMatrix(void) {
 	RbHelper::deleteTwoDArray( value );
 }
 
-RateMatrix* RateMatrix::copy(void) {
+RateMatrix* RateMatrix::copy(void) const {
 
 	RateMatrix *x = new RateMatrix( *this );
 	return x;
 }
 
-void RateMatrix::print(void) {
+void RateMatrix::print(void) const {
 
 	for (int i=0; i<dim; i++)
 		{

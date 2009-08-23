@@ -24,18 +24,15 @@ using namespace std;
 class RbDataType {
 
 public:
-        RbDataType(const char* name) : typeName(name) {}    //!< Constructor from type name (C style)
-        RbDataType(const string& name) : typeName(name) {}  //!< Constructor from type name (string)
+	RbDataType(const char* name) : typeName(name) {}            //!< Constructor from type name (C style)
+	RbDataType(const string& name) : typeName(name) {}          //!< Constructor from type name (string)
 
-	virtual RbDataType*     copy(void) const = 0;   //!< Copy
-	string                  getType() { return typeName; }  //!< Get type name
-    virtual void            print(void) const = 0;  //!< Print to cout
-
-	virtual bool            store(void) const = 0;  //!< What does this do?
-	virtual bool            restore(void) = 0;      //!< What does this do?
+	virtual RbDataType*     copy(void) const = 0;               //!< Copy
+	string                  getType(void) { return typeName; }  //!< Get type name
+    virtual void            print(void) const = 0;              //!< Print to cout
 
 protected:
-	const string    typeName;   //!< Name of the data type (for type checking or debugging)
+	const string    typeName;                                   //!< Name of the data type (for type checking or debugging)
 };
 
 #endif

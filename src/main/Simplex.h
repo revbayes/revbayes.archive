@@ -8,11 +8,11 @@ class Simplex : public RbDataType {
 
 public:
 	Simplex(int n);
-	Simplex(Simplex &s);
+	Simplex(const Simplex &s);
 	Simplex(std::vector<double> &s);
-	Simplex* copy(void);
+	Simplex* copy(void) const;
 	double operator[](int i) { return value[i]; } 
-	void print(void);
+	void print(void) const;
 	int size(void) { return value.size(); }
 	bool store(void) { return true; }
 	bool restore(void) { return true; }

@@ -3,42 +3,39 @@
 
 
 
-Vector::Vector(int n) {
+Vector::Vector(int n) : RbDataType("Vector") {
 
 	value.resize(n);
 }
 
-Vector::Vector(int n, double v) {
+Vector::Vector(int n, double v) : RbDataType("Vector") {
 
-	typeName = "Vector";
 	value.resize(n);
 	for (int i=0; i<n; i++)
 		value[i] = v;
 }
 
-Vector::Vector(Vector &v) {
+Vector::Vector(const Vector& v) : RbDataType("Vector") {
 
-	typeName = v.typeName;
+	value.resize( v.value.size() );
+	for (int i=0; i<value.size(); i++)
+		value[i] = v.value[i];
+}
+
+Vector::Vector(std::vector<double> &v) : RbDataType("Vector") {
+
 	value.resize( v.size() );
 	for (int i=0; i<value.size(); i++)
 		value[i] = v[i];
 }
 
-Vector::Vector(std::vector<double> &v) {
-
-	typeName = "Vector";
-	value.resize( v.size() );
-	for (int i=0; i<value.size(); i++)
-		value[i] = v[i];
-}
-
-Vector* Vector::copy(void) {
+Vector* Vector::copy(void) const {
 
 	Vector *x = new Vector( *this );
 	return x;
 }
 
-void Vector::print(void) {
+void Vector::print(void) const {
 
 	std::cout << "(";
 	for (int i=0; i<value.size(); i++)

@@ -3,15 +3,15 @@
 #include "Topology.h"
 
 
-Topology::Topology(void) {
+Topology::Topology(void) : RbDataType("Topology") {
 
 }
 
-Topology::Topology(int n) {
+Topology::Topology(int n) : RbDataType("Topology"){
 
 }
 
-Topology::Topology(Topology &t) {
+Topology::Topology(Topology &t) : RbDataType("Topology") {
 
 }
 

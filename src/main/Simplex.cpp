@@ -3,38 +3,35 @@
 
 
 
-Simplex::Simplex(int n) {
+Simplex::Simplex(int n) : RbDataType("Simplex") {
 
-	typeName = "Simplex";
 	value.resize(n);
 	double temp = 1.0 / value.size();
 	for (int i=0; i<value.size(); i++)
 		value[i] = temp;
 }
 
-Simplex::Simplex(Simplex &s) {
+Simplex::Simplex(const Simplex &s) : RbDataType(s.typeName) {
 
-	typeName = s.typeName;
+	value.resize( s.value.size() );
+	for (int i=0; i<value.size(); i++)
+		value[i] = s.value[i];
+}
+
+Simplex::Simplex(std::vector<double> &s) : RbDataType("Simplex") {
+
 	value.resize( s.size() );
 	for (int i=0; i<value.size(); i++)
 		value[i] = s[i];
 }
 
-Simplex::Simplex(std::vector<double> &s) {
-
-	typeName = "Simplex";
-	value.resize( s.size() );
-	for (int i=0; i<value.size(); i++)
-		value[i] = s[i];
-}
-
-Simplex* Simplex::copy(void) {
+Simplex* Simplex::copy(void) const {
 
 	Simplex *x = new Simplex( *this );
 	return x;
 }
 
-void Simplex::print(void) {
+void Simplex::print(void) const {
 
 	std::cout << "(";
 	for (int i=0; i<value.size(); i++)

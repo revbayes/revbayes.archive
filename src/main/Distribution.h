@@ -6,14 +6,14 @@
 
 class Argument;
 class ArgumentRule;
+class RbDataType;
 class Distribution : public RbObject {
 
 public:
-	virtual RbDataType rv(void)=0;
+	virtual RbDataType* rv(void)=0;
 	virtual double pdf(void)=0;
 	virtual double lnPdf(void)=0;
 private:
-	RbDataType *
 	std::vector<Argument*> argument;
 	std::vector<ArgumentRule*> argumentRule;
 };
