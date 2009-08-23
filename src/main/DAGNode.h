@@ -17,10 +17,10 @@
 #ifndef DAGNode_H
 #define DAGNode_H
 
-#include <string>
-#include <set>
 #include "RbDataType.h"
 #include "RbObject.h"
+#include <string>
+#include <set>
 
 using namespace std;
 
@@ -39,44 +39,42 @@ using namespace std;
  *  the touched flag to false.
  *
  *  To facilitate operation on sections of DAGs, this class also implements a
- *  touchDeep function, which touches all affected children nodes until it reaches
+ *  touchAffected function, which touches all affected children nodes until it reaches
  *  a node that says no additional children will be affected; this would typically
  *  be a stochastic node.
  *
- *  Similarly, keep and restore have recursive versions that affect touched
- *  subtrees in the graph. They pass from the root node of the affected subtree
- *  through their parents until they reach nodes that have not been touched.
+ *  Similarly, keep and restore have recursive versions that deal with all affected
+ *  nodes in the graph (as determined by their touched flags).
  */
 class DAGNode : public RbObject {
 
 public:
-        DAGNode() : value(NULL), storedValue(NULL), touched(false) {}   //!< Default constructor, sets pointers to NULL
+        DAGNode() : value(NULL), storedValue(NULL), changed(false), touched(false) {}   //!< Default constructor
 	    DAGNode(RbDataType *dt);
 	    //DAGNode(RbDataType *dt, std::set<DAGNode*> &p, std::set<DAGNode*> &c);
 	    DAGNode(DAGNode &d);
 	    ~DAGNode(void);
 
 	void                addChildNode(DAGNode* c) { children.insert(c); }    //!< Add child node
-	void                addParentNode(DAGNode* p) { parents.insert(p); }    //!< Do we really need this? The DAGNode can manage its parents on its own - Fredrik
-	//void              addParentNode(std::set<DAGNode*> p); REMEMBER TO OVERLOAD THESE ADD/REMOVEs WITH SETS
 	set<DAGNode*>&      getChildrenNodes(void) { return children; } //!< Get children nodes
 	set<DAGNode*>&      getParentNodes(void) { return parents; }    //!< Get parent nodes
-    virtual RbDataType* getValue() { return value; }    //!< Get value; base class just returns value
-	virtual bool        isChanged(void) = 0;            //!< What does this do ? -- Fredrik
-    bool                isTouched() { return touched; } //!< Is the node marked for recalculation?
-    void                keep() { touched = false; }     //!< Keep the current value; do not recalculate
-    void                keepRecursive();                //!< Keep the current value recursively
-	virtual void        print(void) const = 0;          //!< Print this node
-	void                printChildren(void) const;      //!< Print children nodes
-	void                printParents(void) const;       //!< Print parent nodes
-	void                removeChildNode(DAGNode* c) { children.erase(c); }
-	void                removeParentNode(DAGNode* p) { parents.erase(p); }  //!< I think this can go - DAGNodes should be able to manage parentnodes themselves? -- Fredrik
-    void                restore();                      //!< Restore node to previous value
-    void                restoreRecursive();             //!< Restore nodes recursively to previous value
-    void                touch() { touched = true; }     //!< Mark node for recalculation
-    void                touchDeep();                    //!< Mark path to root of DAG / syntax tree
+    virtual RbDataType* getValue() { return value; }            //!< Get value; base class just returns value
+	virtual bool        isChanged(void) { return changed; }     //!< Has the node recalculated its value?
+    bool                isTouched() { return touched; }         //!< Is the node marked for recalculation?
+    void                keep() { touched = changed = false; }   //!< Keep the current value; do not recalculate
+    void                keepAffected();                         //!< Keep the current value of affected nodes recursively
+	virtual void        print(void) const = 0;                  //!< Print this node
+	void                printChildren(void) const;              //!< Print children nodes
+	void                printParents(void) const;               //!< Print parent nodes
+	void                removeChildNode(DAGNode* c) { children.erase(c); }  //!< Remove a child node
+    void                restore();                              //!< Restore node to previous value
+    void                restoreAffected();                      //!< Restore affected nodes recursively to previous value
+    void                touch() { touched = true; }             //!< Mark node for recalculation
+    void                touchAffected();                        //!< Mark path to root of DAG / syntax tree
 	
+
 protected:
+	bool                changed;        //!< True if value has been recalculated
 	RbDataType*         storedValue;    //!< Holds the previous value
 	bool                touched;        //!< Marks node for recalculation
     RbDataType*         value;          //!< Holds the current value

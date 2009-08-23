@@ -28,13 +28,14 @@ public:
         RbDataType(const string& name) : typeName(name) {}  //!< Constructor from type name (string)
 
 	virtual RbDataType*     copy(void) const = 0;   //!< Copy
-	virtual void            print(void) const = 0;  //!< Print
+	string                  getType() { return typeName; }  //!< Get type name
+    virtual void            print(void) const = 0;  //!< Print to cout
 
 	virtual bool            store(void) const = 0;  //!< What does this do?
 	virtual bool            restore(void) = 0;      //!< What does this do?
 
 protected:
-	string  typeName;   //!< Name of the data type (for type checking or debugging)
+	const string    typeName;   //!< Name of the data type (for type checking or debugging)
 };
 
 #endif

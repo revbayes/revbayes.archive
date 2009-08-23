@@ -41,11 +41,11 @@ DAGNode::~DAGNode(void) {
 		delete storedValue;
 }
 
-void DAGNode::keepRecursive() {
+void DAGNode::keepAffected() {
 
-    if (touched) {
+    if (changed) {
         for (set<DAGNode*>::iterator c=children.begin(); c!=children.end(); c++)
-            (*c)->keepRecursive();
+            (*c)->keepAffected();
         keep();
     }
 }
@@ -78,25 +78,29 @@ void DAGNode::restore() {
 
     RbDataType* temp;
     
-    temp        = value;
-    value       = storedValue;
-    storedValue = temp;
+    if (changed) {
+        temp        = value;
+        value       = storedValue;
+        storedValue = temp;
+    }
 
-    keep();     // Sets touched to false
+    keep();     // Sets touched and changed to false
 }
 
-void DAGNode::restoreRecursive() {
+void DAGNode::restoreAffected() {
 
-    if (touched) {
+    if (changed) {
         for (set<DAGNode*>::iterator c=children.begin(); c!=children.end(); c++)
-            (*c)->restoreRecursive();
+            (*c)->restoreAffected();
         restore();
     }
 }
 
-void DAGNode::touchDeep() {
+void DAGNode::touchAffected() {
 
-    touch();
-    for (set<DAGNode*>::iterator p=parents.begin(); p!=parents.end(); p++)
-        (*p)->touchDeep();
+    if (!touched) {
+        touch();
+        for (set<DAGNode*>::iterator c=children.begin(); c!=children.end(); c++)
+            (*c)->touchAffected();
+    }
 }
