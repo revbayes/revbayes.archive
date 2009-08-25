@@ -25,7 +25,6 @@ extern "C" {
 #endif
 
 /* include objects needed to understand grammar.tab.h */
-#include "RbObject.h"
 #include "SyntaxElement.h"
 
 #include "grammar.tab.h"

@@ -16,39 +16,48 @@
 #ifndef SyntaxElement_H
 #define SyntaxElement_H
 
+#include "DAGNode.h"
+
 using namespace std;
 
-/*! This is the abstract base class for nodes in the syntax tree.
+/*! This is the abstract base class for nodes in the syntax tree. It is derived
+ *  from DAGNode, which contains essential functionality like a value member
+ *  and a getValue method.
  *
- *  The syntax tree is built up by syntax elements. The syntax elements either
- *  have one or more operands, which are themselves syntax elements, or they
- *  have no operands and simply a predefined result vector of type RbObject. In
+ *  The syntax tree is built up by syntax element nodes. The syntax elements either
+ *  have one or more operands, which are themselves syntax elements, or they have
+ *  no operands and simply a predefined result of type (pointer to) RbDataType. In
  *  the former case, the elements correspond to interior nodes in the syntax tree
  *  and in the latter case, they correspond to terminal nodes.
  *
- *  If you call getResult on an interior element and the result has not been filled in,
- *  the syntax element will be executed (causing recursive execution of the subtree
- *  rooted on that element) before the result is returned.
+ *  If you call getValue on an interior node and the result has not been filled in,
+ *  or the node is marked for recalculation, the syntax element should evaluate its
+ *  semantic value, causing recursive execution of the syntax subtree rooted on that
+ *  element, after which the semantic value is returned.
  *
- *  If you call getResult on a terminal element, the predefined result is simply returned.
- *  A syntax element also has the ability to restore itself to a previous state, to speed
- *  up accept and reject steps for deterministic nodes in a model DAG.
+ *  If you call getValue on a terminal element, the predefined result is simply returned.
+ *
+ *  A syntax element has the ability to restore itself to a previous state, to speed
+ *  up accept and reject steps for deterministic nodes in a model DAG. A touched flag is
+ *  used to mark an element for later recalculation. The new value can be kept with keep
+ *  or discarded with restore. This functionality is implemented in the DAGNode base
+ *  class.
+ *
+ *  Each syntax element needs to implement the function isSyntaxCorrect, which checks that
+ *  the syntax tree rooted on the element is correct and returns true or false depending
+ *  on the outcome.
  */
-class SyntaxElement {
+class SyntaxElement : public DAGNode {
 
     public:
-            SyntaxElement() : result(NULL), storedResult(NULL) {}                   //!< Constructor
-	        virtual ~SyntaxElement() { delete (result); delete (storedResult); }    //!< Destructor; delete result
+            SyntaxElement() : DAGNode(), result(NULL) {}      //!< Default constructor calls base class
+	        virtual ~SyntaxElement() {}         //!< Destructor; base class deletes values
 
-        virtual bool        check() const = 0;              //!< Check syntax
-        virtual RbObject*   getResult() = 0;                //!< Return result
-        virtual void        print(ostream &c) const = 0;    //!< Print content
-        virtual void        restore() { swap(); }           //!< Restore stored value (children not called in default implementation)
+        RbObject*   getResult(void) = 0;            //!< Get semantic value of syntax element
+        RbObject    getResultTemplate(void) = 0;    //!< Get template object typical of result
 
     protected:
-        RbObject           *result;         //!< The result of executing the element; preset for terminal elements
-        RbObject           *storedResult;   //!< Stored result from previous execution of the element
-        void                swap() { RbObject *temp = result; result = storedResult; storedResult = temp; }  //!< Restore stored value
+        RbObject*   result;     //!< Result of executing the syntax element
 };
 
 #endif

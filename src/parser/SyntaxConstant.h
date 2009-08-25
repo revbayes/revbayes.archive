@@ -16,30 +16,30 @@
 #ifndef SyntaxConstant_H
 #define SyntaxConstant_H
 
-#include "RbObject.h"
+#include "SyntaxElement.h"
 
 using namespace std;
 
 /*! This is the class used to hold constants in the syntax tree.
  *
- *  The result is never going to change so we can set the result
+ *  The result is never going to change so we can set the value
  *  already in the constructor.
  */
 class SyntaxConstant : public SyntaxElement {
 
     public:
-            SyntaxElement();         //!< Default constructor
-	        ~SyntaxElement();        //!< Destructor; delete operands and result
+        enum operatorT { BOOL, INT, REAL };
 
-        virtual bool        check() const = 0;              //!< Check syntax
-        virtual RbObject*   getResult() = 0;                //!< Return result
-        virtual void        print(ostream &c) const = 0;    //!< Print content
-        virtual void        restore() { swap(); }           //!< Restore stored value (children not called in default implementation)
+            SyntaxConstant(const bool v);       //!< Constructor from RbBool
+            SyntaxConstant(const int v);        //!< Constructor from RbBool
+            SyntaxConstant(const double v);     //!< Constructor from RbBool
+	        virtual ~SyntaxConstant() {}        //!< Destructor
 
-    protected:
-        
-        RbObject*           result;         //!< The result of executing the element; preset for terminal elements
-        RbObject*           storedResult;   //!< Stored result from previous execution of the element
+        virtual bool        isSyntaxCorrect() const { return true; }    //!< Syntax errors not possible
+        virtual void        print(ostream &c) const;    //!< Print content
+
+    private:
+        operatorT   op;    
 };
 
 #endif

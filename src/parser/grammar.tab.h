@@ -120,18 +120,17 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 77 "grammar.y"
+#line 76 "grammar.y"
 {
-    char                  *string;
+    char*                  string;
     double                 realValue;
     int                    intValue;
     bool                   boolValue;
-    RbObject              *object;
-    SyntaxElement         *syntaxElement;
-    list<SyntaxElement *> *syntaxElementList;
+    SyntaxElement*         syntaxElement;
+    list<SyntaxElement *>* syntaxElementList;
 }
 /* Line 1529 of yacc.c.  */
-#line 135 "grammar.tab.h"
+#line 134 "grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

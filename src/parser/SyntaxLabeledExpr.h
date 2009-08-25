@@ -1,56 +1,49 @@
 /*!
  * \file
- * This file contains the declaration of SyntaxElement, which is
- * the base class used to hold elements (nodes) in the syntax tree.
+ * This file contains the declaration of SyntaxLabeledExpr, which is
+ * used to hold labeled expressions in the syntax tree. Labeled
+ * expressions are used in function calls for arguments and in
+ * function definitions for argument labels and default values.
  *
- * \brief Declaration of SyntaxElement
+ * \brief Declaration of SyntaxLabeledExpr
  *
- * (c) Copyright 2009-
+ * (c) Copyright 2009- under GPL version 3
  * \date Last modified: $Date$
  * \author Fredrik Ronquist and the REvBayes core team
- * \license GPL version 3.0
+ * \license GPL version 3
  *
  * $Id$
  */
 
-#ifndef SyntaxElement_H
-#define SyntaxElement_H
+#ifndef SyntaxLabeledExpr_H
+#define SyntaxLabeledExpr_H
 
-#include "MbObject.h"
+#include "RbString.h"
+#include "SyntaxElement.h"
 
 using namespace std;
 
-/*! This is the abstract base class for nodes in the syntax tree.
+/*! This is the class used to hold labeled expressions in the syntax
+ *  tree. These are used as arguments to functions and as templates
+ *  for arguments in function definitions.
  *
- *  The syntax tree is built up by syntax elements. The syntax elements either
- *  have one or more operands, which are themselves syntax elements, or they
- *  have no operands and simply a predefined result vector of type RbObject. In
- *  the former case, the elements correspond to interior nodes in the syntax tree
- *  and in the latter case, they correspond to terminal nodes.
- *
- *  If you call getResult on an interior element and the result has not been filled in,
- *  the syntax element will be executed (causing recursive execution of the subtree
- *  rooted on that element) before the result is returned.
- *
- *  If you call getResult on a terminal element, the predefined result is simply returned.
- *  A syntax element also has the ability to restore itself to a previous state, to speed
- *  up accept and reject steps for deterministic nodes in a model DAG.
+ *  The result is never going to change so we can set the value
+ *  already in the constructor.
  */
-class SyntaxElement {
+class SyntaxLabeledExpr : public SyntaxElement {
 
     public:
-            SyntaxElement();         //!< Default constructor
-	        ~SyntaxElement();        //!< Destructor; delete operands and result
+            SyntaxLabeledExpr(const RbString *id, SyntaxElement *expr);   //!< Constructor
+	        virtual ~SyntaxLabeledExpr();          //!< Destructor; delete syntax tree
 
-        virtual bool        check() const = 0;              //!< Check syntax
-        virtual RbObject*   getResult() = 0;                //!< Return result
-        virtual void        print(ostream &c) const = 0;    //!< Print content
-        virtual void        restore() { swap(); }           //!< Restore stored value (children not called in default implementation)
-
+        virtual RbDataType* getValue();                 //!< Get semantic value
+        virtual bool        isSyntaxCorrect() const { return true; }    //!< Syntax errors not possible
+        virtual void        print(ostream &c) const;    //!< Print content
+    
     protected:
-        RbObject           *result;         //!< The result of executing the element; preset for terminal elements
-        RbObject           *storedResult;   //!< Stored result from previous execution of the element
-        void                swap() { RbObject *temp = result; result = storedResult; storedResult = temp; }  //!< Restore stored value
+        SyntaxElement*  expression;     //!< The expression (argument value or default value)
+        RbDataType*     name;           //!< The label of the expression
 };
 
 #endif
+

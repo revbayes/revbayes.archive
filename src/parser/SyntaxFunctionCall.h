@@ -1,56 +1,39 @@
 /*!
  * \file
- * This file contains the declaration of SyntaxElement, which is
- * the base class used to hold elements (nodes) in the syntax tree.
+ * This file contains the declaration of FunctionCall, which is
+ * used to hold function calls in the syntax tree.
  *
- * \brief Declaration of SyntaxElement
+ * \brief Declaration of FunctionCall
  *
- * (c) Copyright 2009-
+ * (c) Copyright 2009- under GPL version 3
  * \date Last modified: $Date$
  * \author Fredrik Ronquist and the REvBayes core team
- * \license GPL version 3.0
+ * \license GPL version 3
  *
  * $Id$
  */
 
-#ifndef SyntaxElement_H
-#define SyntaxElement_H
+#ifndef FunctionCall_H
+#define FunctionCall_H
 
-#include "MbObject.h"
+#include "RbString.h"
+#include "SyntaxElement.h"
 
 using namespace std;
 
-/*! This is the abstract base class for nodes in the syntax tree.
- *
- *  The syntax tree is built up by syntax elements. The syntax elements either
- *  have one or more operands, which are themselves syntax elements, or they
- *  have no operands and simply a predefined result vector of type RbObject. In
- *  the former case, the elements correspond to interior nodes in the syntax tree
- *  and in the latter case, they correspond to terminal nodes.
- *
- *  If you call getResult on an interior element and the result has not been filled in,
- *  the syntax element will be executed (causing recursive execution of the subtree
- *  rooted on that element) before the result is returned.
- *
- *  If you call getResult on a terminal element, the predefined result is simply returned.
- *  A syntax element also has the ability to restore itself to a previous state, to speed
- *  up accept and reject steps for deterministic nodes in a model DAG.
+/*! This is the class used to hold function calls in the syntax tree.
  */
-class SyntaxElement {
+class FunctionCall : public SyntaxElement {
 
     public:
-            SyntaxElement();         //!< Default constructor
-	        ~SyntaxElement();        //!< Destructor; delete operands and result
+            FunctionCall(const string id, list<SyntaxElement*> elemList);   //!< Constructor
+	        virtual ~FunctionCall();          //!< Destructor; delete syntax tree
 
-        virtual bool        check() const = 0;              //!< Check syntax
-        virtual RbObject*   getResult() = 0;                //!< Return result
-        virtual void        print(ostream &c) const = 0;    //!< Print content
-        virtual void        restore() { swap(); }           //!< Restore stored value (children not called in default implementation)
-
+        virtual RbDataType* getValue();                 //!< Get semantic value
+        virtual void        print(ostream &c) const;    //!< Print content
+    
     protected:
-        RbObject           *result;         //!< The result of executing the element; preset for terminal elements
-        RbObject           *storedResult;   //!< Stored result from previous execution of the element
-        void                swap() { RbObject *temp = result; result = storedResult; storedResult = temp; }  //!< Restore stored value
+        list<SyntaxElement*>  arguments;    //!< The arguments of the function
 };
 
 #endif
