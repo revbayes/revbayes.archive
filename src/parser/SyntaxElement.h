@@ -17,6 +17,7 @@
 #define SyntaxElement_H
 
 #include "DAGNode.h"
+#include "RbDataType.h"
 
 using namespace std;
 
@@ -53,11 +54,8 @@ class SyntaxElement : public DAGNode {
             SyntaxElement() : DAGNode(), result(NULL) {}      //!< Default constructor calls base class
 	        virtual ~SyntaxElement() {}         //!< Destructor; base class deletes values
 
-        RbObject*   getResult(void) = 0;            //!< Get semantic value of syntax element
-        RbObject    getResultTemplate(void) = 0;    //!< Get template object typical of result
-
-    protected:
-        RbObject*   result;     //!< Result of executing the syntax element
+        virtual RbDataType  getDataType(void) = 0;      //!< Return the data type of the semantic value
+        virtual bool        isConstExpr(void) = 0;      //!< Is the syntax tree rooted here a constant expression?
 };
 
 #endif

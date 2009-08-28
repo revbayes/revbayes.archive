@@ -61,23 +61,24 @@ public:
     virtual RbDataType* getValue() { return value; }            //!< Get value; base class just returns value
 	virtual bool        isChanged(void) { return changed; }     //!< Has the node recalculated its value?
     bool                isTouched() { return touched; }         //!< Is the node marked for recalculation?
-    void                keep() { touched = changed = false; }   //!< Keep the current value; do not recalculate
-    void                keepAffected();                         //!< Keep the current value of affected nodes recursively
+    void                keep() { touched = changed = false; }   //!< Keep current value of node
+    void                keepAffected();                         //!< Keep value of affected nodes recursively
 	virtual void        print(void) const = 0;                  //!< Print this node
 	void                printChildren(void) const;              //!< Print children nodes
 	void                printParents(void) const;               //!< Print parent nodes
 	void                removeChildNode(DAGNode* c) { children.erase(c); }  //!< Remove a child node
     void                restore();                              //!< Restore node to previous value
-    void                restoreAffected();                      //!< Restore affected nodes recursively to previous value
+    void                restoreAffected();                      //!< Restore value of affected nodes recursively
     void                touch() { touched = true; }             //!< Mark node for recalculation
-    void                touchAffected();                        //!< Mark path to root of DAG / syntax tree
+    void                touchAffected();                        //!< Mark affected nodes recursively
 	
 
 protected:
-	bool                changed;        //!< True if value has been recalculated
 	RbDataType*         storedValue;    //!< Holds the previous value
-	bool                touched;        //!< Marks node for recalculation
     RbDataType*         value;          //!< Holds the current value
+
+	bool                changed;        //!< True if value has been recalculated
+	bool                touched;        //!< Marks node for recalculation
 
 	set<DAGNode*>       children;       //!< Set of children nodes
 	set<DAGNode*>       parents;        //!< Set of parent nodes

@@ -1,9 +1,9 @@
 /*!
  * \file
- * This file contains the declaration of FunctionCall, which is
+ * This file contains the declaration of SytnaxFunctionCall, which is
  * used to hold function calls in the syntax tree.
  *
- * \brief Declaration of FunctionCall
+ * \brief Declaration of SyntaxFunctionCall
  *
  * (c) Copyright 2009- under GPL version 3
  * \date Last modified: $Date$
@@ -13,27 +13,29 @@
  * $Id$
  */
 
-#ifndef FunctionCall_H
-#define FunctionCall_H
+#ifndef SyntaxFunctionCall_H
+#define SyntaxFunctionCall_H
 
 #include "RbString.h"
 #include "SyntaxElement.h"
 
 using namespace std;
 
-/*! This is the class used to hold function calls in the syntax tree.
- */
-class FunctionCall : public SyntaxElement {
+//! This is the class used to hold function calls in the syntax tree.
+class SyntaxFunctionCall : public SyntaxElement {
 
     public:
-            FunctionCall(const string id, list<SyntaxElement*> elemList);   //!< Constructor
-	        virtual ~FunctionCall();          //!< Destructor; delete syntax tree
+        enum operatorT = { ACCESSOR, DISTRIBUTION, FUNCTION };
+
+            SyntaxFunctionCall(const string functionName, list<SyntaxElement*> arguments);   //!< Constructor
+	        virtual ~SytnaxFunctionCall();          //!< Destructor; delete local copy of function
 
         virtual RbDataType* getValue();                 //!< Get semantic value
         virtual void        print(ostream &c) const;    //!< Print content
     
     protected:
-        list<SyntaxElement*>  arguments;    //!< The arguments of the function
+        RbFunction *function;    //!< Local copy of the function
+        operatorT   operator;    //!< Type of function call
 };
 
 #endif
