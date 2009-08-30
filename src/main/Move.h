@@ -11,7 +11,7 @@ public:
 	double performMove(void);
 	bool accept(void);				// for statistic purposes
 	bool reject(void);
-	double getAcceptanceProbn(void) { return nAcceptances/(double)nTries; }
+	double getAcceptanceProb(void) { return nAcceptances/(double)nTries; }
 
 private:
 	int nAcceptances;
