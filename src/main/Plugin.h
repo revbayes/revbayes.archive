@@ -36,7 +36,7 @@ class Plugin {
     /// Initialize and load plugin
 	PLUGIN_API Plugin(const std::string &sFilename);
     /// Copy existing plugin instance
-	PLUGIN_API Plugin(const Plugin &Other);
+	PLUGIN_API Plugin(const Plugin &other);
     /// Unload a plugin
 	PLUGIN_API ~Plugin();
 

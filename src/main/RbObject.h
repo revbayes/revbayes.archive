@@ -9,6 +9,7 @@ class RbObject{
 public:
 	std::string getName(void) { return name; }
 	void setName(std::string n) { name = n; }
+	virtual bool equals(RbObject o)=0;
 //	virtual void dump(void)=0;
 //	virtual void restore(RbDumpState state)=0;
 

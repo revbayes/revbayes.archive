@@ -16,15 +16,30 @@ testFactory::~testFactory() {
 	// TODO Auto-generated destructor stub
 }
 
+/// Test which tries to open a zip archive
+void tryCreateDistribution(DistributionContainer &distContainer) {
+  try {
+	  distContainer.getDistribution("MyDistribution");
+
+    cout << "\tDistribution successfully created" << endl;
+  }
+  catch(const exception &Ex) {
+    cout << "\tError creating distribution: " << Ex.what() << endl;
+  }
+
+  cout << endl;
+}
+
 int main(int argc, char **argv) {
-	// load DistNormal
-	std::string filename = "Distribution";
+	// load MyDistribution
+	std::string filename = "MyDistribution";
 
-	TheKernel.loadPlugin(filename);
+	Factory fact;
 
-	tryOpenArchive(TheKernel.getStorageServer());
+    // Now load the plugins
+    cout << "Loading plugins..." << endl;
+	fact.loadPlugin(filename);
+    cout << endl;
 
-	listGraphicsDrivers(TheKernel.getGraphicsServer());
-
-	// create Distribution object from DistNormal
+	tryCreateDistribution(fact.getDistributionContainer());
 }
