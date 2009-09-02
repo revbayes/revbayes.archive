@@ -50,8 +50,8 @@ class Plugin {
     }
 
     /// Register the plugin to a kernel
-	PLUGIN_API void registerPlugin(Kernel &K) {
-      m_pfnRegisterPlugin(K);
+	PLUGIN_API void registerPlugin(Facory &fact) {
+      m_pfnRegisterPlugin(fact);
     }
 
   private:
@@ -61,7 +61,7 @@ class Plugin {
     /// Signature for the version query function
     typedef int  fnGetEngineVersion();
     /// Signature for the plugin's registration function
-    typedef void fnRegisterPlugin(Kernel &);
+    typedef void fnRegisterPlugin(Factory &);
 
     HMODULE             m_hDLL;                ///< Win32 DLL handle
     size_t             *m_pDLLRefCount;        ///< Number of references to the DLL

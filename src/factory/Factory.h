@@ -9,13 +9,13 @@
 #define FACTORY_H_
 
 
-#include "plugin.h"
+#include "Plugin.h"
 
 /// The engine's system core
 class Factory {
   public:
-    /// Access the distribution container
-	PLUGIN_API DistributionContainer &getDistributionContainer() { return m_DistributionContainer; }
+    /// Access the distribution factory
+	PLUGIN_API DistributionFactory &getDistributionFactory() { return m_DistributionFactory; }
 
     /// Loads a plugin
 	PLUGIN_API void loadPlugin(const std::string &sFilename) {
@@ -31,7 +31,7 @@ class Factory {
     typedef std::map<std::string, Plugin> PluginMap;
 
     PluginMap              m_LoadedPlugins;          ///< All plugins currently loaded
-    DistributionContainer  m_DistributionContainer;  ///< The distribution container
+    DistributionFactory    m_DistributionFactory;    ///< The distribution factory
 };
 
 

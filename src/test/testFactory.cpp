@@ -5,7 +5,9 @@
  *      Author: Sebastian
  */
 
-#include "testFactory.h"
+#include "../main/Distribution.h"
+#include "../factory/Factory.h"
+#include "../factory/DistributionFactory.h"
 
 testFactory::testFactory() {
 	// TODO Auto-generated constructor stub
@@ -17,9 +19,9 @@ testFactory::~testFactory() {
 }
 
 /// Test which tries to open a zip archive
-void tryCreateDistribution(DistributionContainer &distContainer) {
+void tryCreateDistribution(DistributionFactory &distFactory) {
   try {
-	  distContainer.getDistribution("MyDistribution");
+	  distFactory.getDistribution("MyDistribution");
 
     cout << "\tDistribution successfully created" << endl;
   }
@@ -41,5 +43,5 @@ int main(int argc, char **argv) {
 	fact.loadPlugin(filename);
     cout << endl;
 
-	tryCreateDistribution(fact.getDistributionContainer());
+	tryCreateDistribution(fact.getDistributionFactory());
 }
