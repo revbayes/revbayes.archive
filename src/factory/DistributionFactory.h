@@ -8,14 +8,17 @@
 #ifndef DISTRIBUTIONCONTAINER_H_
 #define DISTRIBUTIONCONTAINER_H_
 
-#include "plugin.h"
+#include <list>
+
+#include "../main/Plugin.h"
+#include "../main/Distribution.h"
 
 /// Manages the distributions
 class DistributionContainer {
   public:
 
     /// Destructor
-    PLUGIN_API ~DistributionContainer() {
+    ~DistributionContainer() {
       for(DistributionList::reverse_iterator It = m_Distribution.rbegin();
           It != m_Distribution.rend();
           ++It)
@@ -23,12 +26,12 @@ class DistributionContainer {
     }
 
     /// Allows plugins to add new distributions
-    PLUGIN_API void addDistributions(Distribution* dist) {
+    void addDistributions(Distribution* dist) {
       m_Distribution.push_back(dist.release());
     }
 
     /// finds a distribution matching the specified name
-    PLUGIN_API Distribution* getDistribution(const std::string &sName) {
+    Distribution* getDistribution(const std::string &sName) {
       for(DistributionList::iterator It = m_Distribution.begin();
           It != m_Distribution.end();
           ++It)
