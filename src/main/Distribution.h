@@ -2,12 +2,15 @@
 #define Distribution_H
 
 #include <vector>
+#include <list>
 #include "RbObject.h"
 #include "Plugin.h"
 
 class Argument;
 class ArgumentRule;
 class RbDataType;
+class SyntaxLabeledExpr;
+
 class Distribution: public RbObject {
 
 public:
@@ -23,12 +26,12 @@ public:
 
 	virtual RbDataType* execute(); //!< Call appropriate function based on functionType
 	virtual RbDataType getDataType() = 0; //!< Get data type for type checking
-	virtual RbVector* lnPdf() = 0; //!< Ln probability density
-	virtual RbVector* pdf() = 0; //!< Probability density
+	virtual RbDataType* lnPdf() = 0; //!< Ln probability density
+	virtual RbDataType* pdf() = 0; //!< Probability density
 	virtual RbDataType* rv() = 0; //!< Draw random variables
 
 
-	bool setArguments(list<SyntaxLabeledExpr*> args); //!< Set arguments based on function type
+	bool setArguments(std::list<SyntaxLabeledExpr*> args); //!< Set arguments based on function type
 	void setType(functionT type) {
 		functionType = type;
 	} //!< Set function type
@@ -41,4 +44,4 @@ private:
 	std::vector<ArgumentRule*> argumentRule;
 };
 
-#endif;
+#endif

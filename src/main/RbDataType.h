@@ -27,9 +27,9 @@ public:
 	RbDataType(const char* name) : typeName(name) {}            //!< Constructor from type name (C style)
 	RbDataType(const string& name) : typeName(name) {}          //!< Constructor from type name (string)
 
-	virtual RbDataType*     copy(void) const = 0;               //!< Copy
+	virtual RbDataType*     copy(void) {};               //!< Copy
 	string                  getType(void) { return typeName; }  //!< Get type name
-    virtual void            print(void) const = 0;              //!< Print to cout
+    virtual void            print(void) {};              //!< Print to cout
     virtual void            print(ostream &c) const {}          //!< Print to specified ostream
 
 protected:

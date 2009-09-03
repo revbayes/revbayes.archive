@@ -20,6 +20,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#include "../factory/Factory.h"
+
 //TODO assuming we defined PLUGIN_EXPORTS
 // exporting the dll functions
 #ifdef PLUGIN_EXPORTS
@@ -27,8 +29,6 @@
 #else
 #define PLUGIN_API __declspec(dllimport)
 #endif
-
-class Kernel;
 
 /// Representation of a plugin
 class Plugin {
@@ -50,7 +50,7 @@ class Plugin {
     }
 
     /// Register the plugin to a kernel
-	PLUGIN_API void registerPlugin(Facory &fact) {
+	PLUGIN_API void registerPlugin(Factory &fact) {
       m_pfnRegisterPlugin(fact);
     }
 

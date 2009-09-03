@@ -2,6 +2,7 @@
 #define RbObject_H
 
 #include <string>
+#include <ostream>
 #include "RbDumpState.h"
 
 class RbObject{
@@ -9,9 +10,9 @@ class RbObject{
 public:
 	std::string getName(void) { return name; }
 	void setName(std::string n) { name = n; }
-	virtual bool equals(RbObject o)=0;
+//	virtual bool equals(RbObject o)=0;
 	virtual std::string toString(void){ return name; }
-	virtual void print(ostream &c)=0; //!< Print this object
+	virtual void print(std::ostream &c) { c<<getName(); } //!< Print this object
 //	virtual void dump(void)=0;
 //	virtual void restore(RbDumpState state)=0;
 
