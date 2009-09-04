@@ -4,12 +4,11 @@
 #include <vector>
 #include <list>
 #include "RbObject.h"
-#include "Plugin.h"
-
-class Argument;
-class ArgumentRule;
-class RbDataType;
-class SyntaxLabeledExpr;
+#include "RbDataType.h"
+//#include "Argument.h"
+//#include "ArgumentRule.h"
+#include "../parser/SyntaxLabeledExpr.h"
+//#include "Plugin.h"
 
 class Distribution: public RbObject {
 
@@ -22,7 +21,7 @@ public:
 	virtual ~Distribution() {
 	} //!< Destructor does nothing
 
-	PLUGIN_API virtual Distribution* createInstance(void)=0;
+//	PLUGIN_API virtual Distribution* createInstance(void)=0;
 
 	virtual RbDataType* execute(); //!< Call appropriate function based on functionType
 	virtual RbDataType getDataType() = 0; //!< Get data type for type checking
@@ -32,16 +31,17 @@ public:
 
 
 	bool setArguments(std::list<SyntaxLabeledExpr*> args); //!< Set arguments based on function type
-	void setType(functionT type) {
+	void setFunctionType(functionT type) {
 		functionType = type;
 	} //!< Set function type
+	std::string getDistributionName(void) { return getName(); } //!< Returns the name of the distribution
 
 protected:
 	functionT functionType; //!< Holds function type
 	//bool lnValue; //!< Calculate ln prob instead of prob
 private:
-	std::vector<Argument*> argument;
-	std::vector<ArgumentRule*> argumentRule;
+//	std::vector<Argument*> argument;
+//	std::vector<ArgumentRule*> argumentRule;
 };
 
 #endif

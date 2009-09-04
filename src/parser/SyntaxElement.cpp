@@ -32,15 +32,15 @@
 
 #include <sstream>
 
-#include "Distribution.h"
-#include "MbAttribute.h"
-#include "MbBasicTypes.h"
-#include "MbException.h"
-#include "MbObject.h"
-#include "Parameter.h"
-#include "SymbolTable.h"
+#include "../main/Distribution.h"
+#include "../main/MbAttribute.h"
+#include "../main/MbBasicTypes.h"
+#include "../main/MbException.h"
+#include "../main/RbObject.h"
+#include "../main/Parameter.h"
+#include "../main/SymbolTable.h"
 #include "SyntaxElement.h"
-#include "UserInterface.h"
+#include "../main/UserInterface.h"
 
 extern SymbolTable    *symbolTable;
 

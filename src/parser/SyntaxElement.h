@@ -16,8 +16,8 @@
 #ifndef SyntaxElement_H
 #define SyntaxElement_H
 
-#include "DAGNode.h"
-#include "RbDataType.h"
+#include "../main/DAGNode.h"
+#include "../main/RbDataType.h"
 
 using namespace std;
 
@@ -51,8 +51,9 @@ using namespace std;
 class SyntaxElement : public DAGNode {
 
     public:
-            SyntaxElement() : DAGNode(), result(NULL) {}      //!< Default constructor calls base class
-	        virtual ~SyntaxElement() {}         //!< Destructor; base class deletes values
+            //SyntaxElement() : DAGNode(), result(NULL) {}      //!< Default constructor calls base class
+            SyntaxElement() : DAGNode() {}      //!< Default constructor calls base class
+            virtual ~SyntaxElement() {}         //!< Destructor; base class deletes values
 
         virtual RbDataType  getDataType(void) = 0;      //!< Return the data type of the semantic value
         virtual bool        isConstExpr(void) = 0;      //!< Is the syntax tree rooted here a constant expression?

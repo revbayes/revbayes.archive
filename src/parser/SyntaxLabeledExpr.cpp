@@ -13,7 +13,8 @@
  * $Id$
  */
 
-#include "RbString.h"
+#include "../main/RbString.h"
+#include "../main/RbDataType.h"
 #include "SyntaxLabeledExpr.h"
 #include <sstream>
 

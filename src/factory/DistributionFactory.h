@@ -5,20 +5,21 @@
  *      Author: Sebastian
  */
 
-#ifndef DISTRIBUTIONCONTAINER_H_
-#define DISTRIBUTIONCONTAINER_H_
+#ifndef DistributionFactory_H
+#define DistributionFactory_H
 
 #include <list>
+#include <stdexcept>
 
 #include "../main/Plugin.h"
 #include "../main/Distribution.h"
 
 /// Manages the distributions
-class DistributionContainer {
+class DistributionFactory {
   public:
 
     /// Destructor
-    ~DistributionContainer() {
+    ~DistributionFactory() {
       for(DistributionList::reverse_iterator It = m_Distribution.rbegin();
           It != m_Distribution.rend();
           ++It)
@@ -27,7 +28,7 @@ class DistributionContainer {
 
     /// Allows plugins to add new distributions
     void addDistributions(Distribution* dist) {
-      m_Distribution.push_back(dist.release());
+      m_Distribution.push_back(dist);
     }
 
     /// finds a distribution matching the specified name
@@ -35,11 +36,12 @@ class DistributionContainer {
       for(DistributionList::iterator It = m_Distribution.begin();
           It != m_Distribution.end();
           ++It)
-        if((*It)->getType()->equals(sName)){
+        if((*It)->getDistributionName().compare(sName) == 0){
         	// found the distribution with the given name
         	// create an instance
         	// TODO need to add the parameters
-          return (*It)->createInstance();
+          //return (*It)->createInstance();
+          return NULL;
         }
 
       throw std::runtime_error("Invalid or unsupported distribution type");
@@ -52,4 +54,4 @@ class DistributionContainer {
     DistributionList m_Distribution; ///< All available distributions
 };
 
-#endif /* DISTRIBUTIONCONTAINER_H_ */
+#endif /* DistributionFactory_H */

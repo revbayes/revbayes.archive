@@ -3,6 +3,8 @@
 
 #include "../../main/Distribution.h"
 #include "../../main/Plugin.h"
+#include "../../main/RbDataType.h"
+
 
 class MyDistribution : Distribution {
 
