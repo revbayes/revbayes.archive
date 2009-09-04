@@ -5,7 +5,7 @@
 #include <vector>
 #include "RbDataType.h"
 
-class Node {
+class Node : RbObject{
 
 public:
 	Node(void);

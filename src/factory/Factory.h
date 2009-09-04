@@ -11,15 +11,23 @@
 #include <string>
 #include <map>
 
-#include "../main/Plugin.h"
+//#include "../main/Plugin.h"
 #include "../main/RbObject.h"
 #include "DistributionFactory.h"
+#include "MoveFactory.h"
+#include "LikelihoodFactory.h"
 
 /// The engine's system core
 class Factory {
   public:
     /// Access the distribution factory
 	DistributionFactory& getDistributionFactory(void) { return m_DistributionFactory; }
+
+    /// Access the distribution factory
+	MoveFactory& getMoveFactory(void) { return m_MoveFactory; }
+
+    /// Access the distribution factory
+	LikelihoodFactory& getLikelihoodFactory(void) { return m_LikelihoodFactory; }
 
     /// Loads a plugin
 	//void loadPlugin(const std::string &sFilename) {
@@ -33,10 +41,12 @@ class Factory {
   private:
     /// Map of plugins by their associated file names
     //typedef std::map<std::string, Plugin> PluginMap;
-    typedef std::map<std::string, RbObject> PluginMap;
 
     //PluginMap              m_LoadedPlugins;          ///< All plugins currently loaded
-    DistributionFactory    m_DistributionFactory;    ///< The distribution factory
+
+    DistributionFactory    m_DistributionFactory;    //!< The distribution factory
+    MoveFactory            m_MoveFactory;            //!< The move factory
+    LikelihoodFactory      m_LikelihoodFactory;      //!< The likelihood factory
 };
 
 
