@@ -3,11 +3,11 @@
 
 #include <vector>
 #include <list>
-#include "RbObject.h"
-#include "RbDataType.h"
+#include "../main/RbObject.h"
+#include "../datatypes/RbDataType.h"
 //#include "Argument.h"
 //#include "ArgumentRule.h"
-#include "../parser/SyntaxLabeledExpr.h"
+#include "../modelLanguage/parser/SyntaxLabeledExpr.h"
 //#include "Plugin.h"
 
 class Distribution: public RbObject {
@@ -25,9 +25,11 @@ public:
 
 	virtual RbDataType* execute(); //!< Call appropriate function based on functionType
 	virtual RbDataType getDataType() = 0; //!< Get data type for type checking
-	virtual RbDataType* lnPdf() = 0; //!< Ln probability density
-	virtual RbDataType* pdf() = 0; //!< Probability density
+	virtual double lnPdf(RbDataType* value, std::vector<RbDataType*> arguments) = 0; //!< Ln probability density
+	virtual double pdf(RbDataType* value, std::vector<RbDataType*> arguments) = 0; //!< Probability density
 	virtual RbDataType* rv() = 0; //!< Draw random variables
+	virtual double cdf(std::vector<RbDataType*> arguments) = 0;
+	virtual double quantile(std::vector<RbDataType*> arguments) = 0;
 
 
 	bool setArguments(std::list<SyntaxLabeledExpr*> args); //!< Set arguments based on function type

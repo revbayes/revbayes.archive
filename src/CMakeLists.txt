@@ -16,4 +16,4 @@ add_subdirectory (parser)
 add_subdirectory (test)
 
 #enable the testing framework
-enable_testing()
+ENABLE_TESTING()

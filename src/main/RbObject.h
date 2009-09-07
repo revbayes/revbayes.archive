@@ -3,7 +3,7 @@
 
 #include <string>
 #include <ostream>
-#include "RbDumpState.h"
+#include "../utils/RbDumpState.h"
 
 class RbObject{
 

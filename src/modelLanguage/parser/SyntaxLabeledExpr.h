@@ -18,7 +18,7 @@
 #ifndef SyntaxLabeledExpr_H
 #define SyntaxLabeledExpr_H
 
-#include "../main/RbString.h"
+#include "../../datatypes/primary/RbString.h"
 #include "SyntaxElement.h"
 
 using namespace std;

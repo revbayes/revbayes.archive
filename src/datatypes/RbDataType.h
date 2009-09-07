@@ -17,7 +17,7 @@
 #define RbDataType_H
 
 #include <string>
-#include "RbObject.h"
+#include "../main/RbObject.h"
 
 using namespace std;
 

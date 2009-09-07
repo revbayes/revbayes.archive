@@ -17,8 +17,8 @@
 #ifndef DAGNode_H
 #define DAGNode_H
 
-#include "RbDataType.h"
-#include "RbObject.h"
+#include "../datatypes/RbDataType.h"
+#include "../main/RbObject.h"
 #include <string>
 #include <set>
 

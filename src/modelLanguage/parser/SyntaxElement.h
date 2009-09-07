@@ -16,8 +16,8 @@
 #ifndef SyntaxElement_H
 #define SyntaxElement_H
 
-#include "../main/DAGNode.h"
-#include "../main/RbDataType.h"
+#include "../../dag/DAGNode.h"
+#include "../../datatypes/RbDataType.h"
 
 using namespace std;
 
