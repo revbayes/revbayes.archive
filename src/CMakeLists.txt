@@ -8,12 +8,18 @@ project (REVBAYES)
 # cause another cmake executable to run. The same process will walk through
 # the project's entire directory structure.
 add_subdirectory (main)
+add_subdirectory (dag)
+add_subdirectory (datatypes)
 add_subdirectory (distributions)
 add_subdirectory (factory)
 add_subdirectory (functions)
+add_subdirectory (inference)
+add_subdirectory (modelLanguage)
 add_subdirectory (moves)
-add_subdirectory (parser)
+#add_subdirectory (probabilityCalculators)
 add_subdirectory (test)
+add_subdirectory (ui)
+add_subdirectory (utils)
 
 #enable the testing framework
 ENABLE_TESTING()

@@ -10,18 +10,19 @@
 
 #include "Distribution.h"
 #include "../datatypes/RbDataType.h"
+#include "../datatypes/primary/RbDouble.h"
 
 class DistNormal : Distribution{
 public:
 	DistNormal();
 	virtual ~DistNormal();
 
-	RbDataType* execute(); //!< Call appropriate function based on functionType
+//	RbDataType* execute(); //!< Call appropriate function based on functionType
 	RbDataType getDataType(); //!< Get data type for type checking
-	double lnPdf(RbDataType* value, std::vector<RbDataType*> arguments) { return 0.0; }; //!< Ln probability density
+	double lnPdf(RbDataType* value, std::vector<RbDataType*> arguments); //!< Ln probability density
 	double pdf(RbDataType* value, std::vector<RbDataType*> arguments); //!< Probability density
 	RbDataType* rv(); //!< Draw random variables
-	double cdf(std::vector<RbDataType*> arguments);
+	double cdf(RbDataType* variable, std::vector<RbDataType*> arguments);
 	double quantile(std::vector<RbDataType*> arguments);
 	double quantile(double p);
 	double quantile(double mu, double sigma, double p);

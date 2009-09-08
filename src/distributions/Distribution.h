@@ -28,11 +28,11 @@ public:
 	virtual double lnPdf(RbDataType* value, std::vector<RbDataType*> arguments) = 0; //!< Ln probability density
 	virtual double pdf(RbDataType* value, std::vector<RbDataType*> arguments) = 0; //!< Probability density
 	virtual RbDataType* rv() = 0; //!< Draw random variables
-	virtual double cdf(std::vector<RbDataType*> arguments) = 0;
+	virtual double cdf(RbDataType* variable, std::vector<RbDataType*> arguments) = 0;
 	virtual double quantile(std::vector<RbDataType*> arguments) = 0;
 
 
-	bool setArguments(std::list<SyntaxLabeledExpr*> args); //!< Set arguments based on function type
+	//bool setArguments(std::list<SyntaxLabeledExpr*> args); //!< Set arguments based on function type
 	void setFunctionType(functionT type) {
 		functionType = type;
 	} //!< Set function type

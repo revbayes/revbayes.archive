@@ -5,9 +5,12 @@
  *      Author: Sebastian
  */
 
+#include <cmath>
+
 #include "DistNormal.h"
 #include "../datatypes/RbDataType.h"
 #include "../datatypes/primary/RbDouble.h"
+#include "../utils/RbMath.h"
 
 DistNormal::DistNormal() {
 	// TODO Auto-generated constructor stub
@@ -29,18 +32,18 @@ DistNormal::~DistNormal() {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double DistNormal::pdf(RbDataType* variable, std::vector<RbDataDyte*> arguments) {
+double DistNormal::pdf(RbDataType* variable, std::vector<RbDataType*> arguments) {
 	// first some argument checking
-	assert(typeid(variable) == typeid(RbDouble));
+	assert(typeid(*variable) == typeid(RbDouble));
 	double x = ((RbDouble*)variable)->getValue();
 
 	assert(arguments.size()==2);
 	RbDataType* first = arguments[0];
-	assert(typeid(first) == typeid(RbDouble));
+	assert(typeid(*first) == typeid(RbDouble));
 	double mu = ((RbDouble*)first)->getValue();
 
 	RbDataType* second = arguments[1];
-	assert(typeid(second) == typeid(RbDouble));
+	assert(typeid(*second) == typeid(RbDouble));
 	double sigma = ((RbDouble*)second)->getValue();
 
 	double y = ( x - mu ) / sigma;
@@ -58,18 +61,18 @@ double DistNormal::pdf(RbDataType* variable, std::vector<RbDataDyte*> arguments)
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double DistNormal::lnPdf(RbDataType* variable, std::vector<RbDataDyte*> arguments) {
+double DistNormal::lnPdf(RbDataType* variable, std::vector<RbDataType*> arguments) {
 	// first some argument checking
-	assert(typeid(variable) == typeid(RbDouble));
+	assert(typeid(*variable) == typeid(RbDouble));
 	double x = ((RbDouble*)variable)->getValue();
 
 	assert(arguments.size()==2);
 	RbDataType* first = arguments[0];
-	assert(typeid(first) == typeid(RbDouble));
+	assert(typeid(*first) == typeid(RbDouble));
 	double mu = ((RbDouble*)first)->getValue();
 
 	RbDataType* second = arguments[1];
-	assert(typeid(second) == typeid(RbDouble));
+	assert(typeid(*second) == typeid(RbDouble));
 	double sigma = ((RbDouble*)second)->getValue();
 
 	return -0.5 * std::log(2.0 * PI * sigma) - 0.5 * (x - mu) * (x - mu) / (sigma * sigma);
@@ -87,18 +90,18 @@ double DistNormal::lnPdf(RbDataType* variable, std::vector<RbDataDyte*> argument
  * \see Adams, A. G. 1969. Areas under the normal curve. Cojputer J. 12:197-198.
  * \throws Does not throw an error.
  */
-double DistNormal::cdf(RbDataType* variable, std::vector<RbDataDyte*> arguments) {
+double DistNormal::cdf(RbDataType* variable, std::vector<RbDataType*> arguments) {
 	// first some argument checking
-	assert(typeid(variable) == typeid(RbDouble));
+	assert(typeid(*variable) == typeid(RbDouble));
 	double x = ((RbDouble*)variable)->getValue();
 
 	assert(arguments.size()==2);
 	RbDataType* first = arguments[0];
-	assert(typeid(first) == typeid(RbDouble));
+	assert(typeid(*first) == typeid(RbDouble));
 	double mu = ((RbDouble*)first)->getValue();
 
 	RbDataType* second = arguments[1];
-	assert(typeid(second) == typeid(RbDouble));
+	assert(typeid(*second) == typeid(RbDouble));
 	double sigma = ((RbDouble*)second)->getValue();
 
 	double cdf;
@@ -170,28 +173,28 @@ double DistNormal::cdf(RbDataType* variable, std::vector<RbDataDyte*> arguments)
 double DistNormal::quantile(std::vector<RbDataType*> arguments) {
 	if (arguments.size()==1){
 		RbDataType* first = arguments[0];
-		assert(typeid(first) == typeid(RbDouble));
+		assert(typeid(*first) == typeid(RbDouble));
 		double p = ((RbDouble*)first)->getValue();
 		return quantile(p);
 	}
 	else if (arguments.size()==3){
-		assert(arguments.size()==2);
 		RbDataType* first = arguments[0];
-		assert(typeid(first) == typeid(RbDouble));
+		assert(typeid(*first) == typeid(RbDouble));
 		double mu = ((RbDouble*)first)->getValue();
 
 		RbDataType* second = arguments[1];
-		assert(typeid(second) == typeid(RbDouble));
+		assert(typeid(*second) == typeid(RbDouble));
 		double sigma = ((RbDouble*)second)->getValue();
 
-		RbDataType* first = arguments[2];
-		assert(typeid(first) == typeid(RbDouble));
-		double p = ((RbDouble*)first)->getValue();
+		RbDataType* third = arguments[2];
+		assert(typeid(*third) == typeid(RbDouble));
+		double p = ((RbDouble*)third)->getValue();
 		return quantile(mu, sigma, p);
 	}
 	else {
 		// wrong number of arguments
 		// TODO throw an error message
+		std::cerr << "Wrong number of argument for DistNormal::quantile with " << arguments.size() << " number of arguments." << '\n';
 		return 0;
 	}
 }
@@ -244,7 +247,30 @@ double DistNormal::quantile(double p) {
  */
 double DistNormal::quantile(double mu, double sigma, double p) {
 
-	double z = Normal::quantile(p);
+	double z = quantile(p);
 	double x = z * sigma + mu;
 	return x;
+}
+
+/*!
+ * This function returns the quantile of a normal probability
+ * distribution.
+ *
+ * \brief Natural quantile.
+ * \param mu is the mean parameter of the normal.
+ * \param sigma is the variance parameter of the normal.
+ * \param p is the probability up to the quantile.
+ * \return Returns the quantile.
+ * \throws Does not throw an error.
+ */
+RbDataType* DistNormal::rv(void) {
+	//TODO implement this
+
+	return NULL;
+}
+
+
+RbDataType DistNormal::getDataType() {
+	//TODO implement this
+	return RbDouble(0);
 }

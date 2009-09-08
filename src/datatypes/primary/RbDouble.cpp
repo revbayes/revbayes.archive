@@ -6,7 +6,7 @@
  */
 
 #include "RbDouble.h"
-#include "../RbDataType"
+#include "../RbDataType.h"
 #include <iostream>
 
 

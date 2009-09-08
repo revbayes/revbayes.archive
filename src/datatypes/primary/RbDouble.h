@@ -14,7 +14,7 @@ class RbDouble: public RbDataType {
 public:
     RbDouble(const double v);       //!< Constructor from double
     RbDouble(const RbDouble& s);    //!< Copy constructor
-	virtual ~RbDouble();
+	//virtual ~RbDouble();
 	RbDouble*  copy(void) const;     //!< Copy
 	void    print(void) const;    //!< Print the value to cout
 	void    print(ostream &c) const;    //!< Print the value to ostream c
