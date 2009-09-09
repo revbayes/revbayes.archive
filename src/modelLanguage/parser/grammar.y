@@ -213,10 +213,10 @@ arrowAssign     :   variable ARROW_ASSIGN expression
                     }
                 ;
 
-tildeAssign     :   variable TILDE_ASSIGN functionCall
+tildeAssign     :   variable TILDE_ASSIGN identifier '(' argumentList ')'
                     {
                         PRINTF("Parser inserting tilde assignment (TILDE_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TILDE_ASSIGN, $1, $3); 
+                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TILDE_ASSIGN, $1, $3, $5);
                     }
                 ;
 

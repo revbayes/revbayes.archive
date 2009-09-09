@@ -29,12 +29,14 @@ using namespace std;
 class SyntaxHelpExpr : public SyntaxElement {
 
     public:
-            SyntaxHelpExpr(const RbString *);   //!< Constructor
-	        virtual ~SyntaxHelpExpr();          //!< Destructor
+            SyntaxHelpExpr(const string &id);       //!< Constructor
+	        virtual ~SyntaxHelpExpr();              //!< Destructor
 
-        virtual bool        isSyntaxCorrect() const { return true; }    //!< Syntax errors not possible
-        virtual void        print(ostream &c) const;    //!< Print content
+        virtual void    print(ostream &c) const;    //!< Print content
+        virtual void    printConsole(ostream &c) const;    //!< Print content to console
+
+    private:
+        const string    topic;      //! The help topic
 };
 
 #endif
-

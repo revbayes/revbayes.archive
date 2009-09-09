@@ -18,8 +18,9 @@
 #ifndef SyntaxLabeledExpr_H
 #define SyntaxLabeledExpr_H
 
-#include "../../datatypes/primary/RbString.h"
 #include "SyntaxElement.h"
+#include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -33,17 +34,16 @@ using namespace std;
 class SyntaxLabeledExpr : public SyntaxElement {
 
     public:
-            SyntaxLabeledExpr(const RbString *id, SyntaxElement *expr);   //!< Constructor
+            SyntaxLabeledExpr(const string &id, SyntaxElement *expr);   //!< Constructor
 	        virtual ~SyntaxLabeledExpr();          //!< Destructor; delete syntax tree
 
-        virtual RbDataType* getValue();                 //!< Get semantic value
-        virtual bool        isSyntaxCorrect() const { return true; }    //!< Syntax errors not possible
-        virtual void        print(ostream &c) const;    //!< Print content
+        const string&           getLabel() const { return label; }   //!< Get label
+        SyntaxElement*          getExpression() const { return expression; }  //!< Get expression
+        void                    print(ostream& c) const;    //!< Print info about syntax element
     
     protected:
-        SyntaxElement*  expression;     //!< The expression (argument value or default value)
-        RbDataType*     name;           //!< The label of the expression
+        SyntaxElement* expression;  //!< The expression (argument value or default value)
+        const string&  label;        //!< The label of the expression
 };
 
 #endif
-

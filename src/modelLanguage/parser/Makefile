@@ -9,8 +9,8 @@ LIBS        = -lreadline -lm
 INSTALL     = @INSTALL@
 BISON       = bison
 FLEX        = flex
-SRCS        = grammar.y lex.l
-OBJECTS     = grammar.tab.o lex.yy.o
+SRCS        = grammar.y lex.l SyntaxElement.cpp SyntaxHelpExpr.cpp SyntaxConstant.cpp SyntaxLabeledExpr.cpp
+OBJECTS     = grammar.tab.o lex.yy.o SyntaxElement.o SyntaxHelpExpr.o SyntaxConstant.o SyntaxLabeledExpr.o
 BISONFLAGS  = -y -v
 
 CFLAGS = $(CXXFLAGS)
@@ -23,7 +23,19 @@ grammar.tab.c grammar.tab.h: grammar.y
 lex.yy.cpp: lex.l
 	$(FLEX) -olex.yy.cpp lex.l
 
+SyntaxElement.o: SyntaxElement.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxElement.cpp
+
+SyntaxHelpExpr.o: SyntaxHelpExpr.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxHelpExpr.cpp
+
+SyntaxConstant.o: SyntaxConstant.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxConstant.cpp
+
+SyntaxLabeledExpr.o: SyntaxLabeledExpr.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxLabeledExpr.cpp
+
 clean: 
-	rm -f *.o lex.yy.cpp grammar.tab.c grammar.tab.h
+	rm -f *.o lex.yy.cpp grammar.tab.c grammar.tab.h grammar.output
 
 

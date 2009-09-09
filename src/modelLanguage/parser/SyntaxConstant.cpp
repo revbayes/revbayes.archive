@@ -21,26 +21,35 @@
 
 using namespace std;
 
+/** Construct from bool */
 SyntaxConstant::SyntaxConstant(const bool v) :
-    SyntaxElement(), op(SyntaxConstant::BOOL) {
+    SyntaxElement() {
 
     value = new RbBool(v);    
 }
 
+/** Construct from int */
 SyntaxConstant::SyntaxConstant(const int v) :
-    SyntaxElement(), op(SyntaxConstant::INT) {
+    SyntaxElement() {
 
     value = new RbInt(v);    
 }
 
+/** Construct from double */
 SyntaxConstant::SyntaxConstant(const double v) :
-    SyntaxElement(), op(SyntaxConstant::REAL) {
+    SyntaxElement() {
 
     value = new Scalar(v);    
 }
 
+/** Print info about the syntax element */
 void SyntaxConstant::print (ostream &c) const {
 
     c << "SyntaxConstant: type=" << value->getType() << " value=" << value << endl;
 }
 
+/** Print content to console */
+void SyntaxConstant::printConsole (ostream &c) const {
+
+    c << value << endl;
+}

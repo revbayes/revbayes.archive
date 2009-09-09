@@ -13,37 +13,22 @@
  * $Id$
  */
 
-#include "../main/RbString.h"
-#include "../main/RbDataType.h"
+#include "RbString.h"
 #include "SyntaxLabeledExpr.h"
 #include <sstream>
 
 using namespace std;
 
-SyntaxLabeledExpr::SyntaxLabeledExpr(const RbString* id, SyntaxElement* expr) :
-    SyntaxElement(), name(id->copy()), expression(expr) {
+SyntaxLabeledExpr::SyntaxLabeledExpr(const string& id, SyntaxElement* expr) :
+    SyntaxElement(), label(id), expression(expr) {
+
+    parents.insert(expression);
 }
 
-RbDataType* SyntaxLabeledExpr::getValue(void) {
-
-    if (!value) 
-        value = expression->getValue();
-    else if (touched) {
-        changed = true;
-        storedValue = value;
-        value = expression->getValue();
-    }
-    return value;
-}
-
+/** Print some info about the labeled expression */
 void SyntaxLabeledExpr::print (ostream& c) const {
 
-    if (!value)
-        c << "SyntaxLabeledExpr: NULL" << endl;
-    else {
-        c << "SyntaxLabeledExpr: type = " << value->getType() << " --  value = ";
-        value->print(c);
-        c << endl;
-    }
+    c << "SyntaxLabeledExpr: label = " << label << " --  value = ";
+    expression->print(c);
+    c << endl;
 }
-

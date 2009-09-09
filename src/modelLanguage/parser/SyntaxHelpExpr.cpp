@@ -13,25 +13,27 @@
  * $Id$
  */
 
-#include "RbString.h"
 #include "SyntaxHelpExpr.h"
-#include <sstream>
+#include <ostream>
 
 using namespace std;
 
-SyntaxHelpExpr::SyntaxHelpExpr(const RbString* id) :
-    SyntaxElement() {
+SyntaxHelpExpr::SyntaxHelpExpr(const string &topic) :
+    SyntaxElement(), helpTopic(topic) {
 
-    //! \todo Get help info from the xml help files instead
-    ostringstream   msg;
-    msg << "You requested help for topic '" << id << "'." << endl;
-    msg << "REvBayes doesn't know anything about that topic. Sorry!" << endl;
-    value = new RbString(msg.str());
+    //! \todo Get help info from the xml help files
 }
 
+/** Print some info about the element */
 void SyntaxHelpExpr::print (ostream& c) const {
 
-    c << "SyntaxHelpExpr: type=" << value->getType() << " value:" << endl;
-    value->print(c);
+    c << "SyntaxHelpExpr: topic=" << helpTopic << endl;
 }
 
+/** Print content to console */
+void SyntaxHelpExpr::printConsole (ostream& c) const {
+
+    //! \todo Print help info from the xml help files instead
+    c << "You requested help for topic '" << helpTopic << "'." << endl;
+    c << "REvBayes doesn't know anything about that topic. Sorry!" << endl;
+}

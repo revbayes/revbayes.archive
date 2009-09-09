@@ -17,6 +17,7 @@
 #define SyntaxConstant_H
 
 #include "SyntaxElement.h"
+#include <iostream>
 
 using namespace std;
 
@@ -28,18 +29,16 @@ using namespace std;
 class SyntaxConstant : public SyntaxElement {
 
     public:
-        enum operatorT { BOOL, INT, REAL };
+            SyntaxConstant(const bool v);       //!< Constructor from bool
+            SyntaxConstant(const int v);        //!< Constructor from int
+            SyntaxConstant(const double v);     //!< Constructor from double
+	        virtual ~SyntaxConstant() {}        //!< Destructor (value is deleted in base class)
 
-            SyntaxConstant(const bool v);       //!< Constructor from RbBool
-            SyntaxConstant(const int v);        //!< Constructor from RbBool
-            SyntaxConstant(const double v);     //!< Constructor from RbBool
-	        virtual ~SyntaxConstant() {}        //!< Destructor
-
-        virtual bool        isSyntaxCorrect() const { return true; }    //!< Syntax errors not possible
-        virtual void        print(ostream &c) const;    //!< Print content
-
-    private:
-        operatorT   op;    
+        SyntaxConstant* copy(SymbolTable* symbols=NULL) const;  //!< Return fast copy
+        const string&   getDataType() const { return value->getType(); }    //!< Return data type
+        bool            isConstExpr() const { return true; }    //!< Is this a constant expression?
+        void            print(ostream &c) const;                //!< Print content
+        void            printConsole(ostream &c) const;         //!< Print content to console
 };
 
 #endif
