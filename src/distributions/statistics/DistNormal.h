@@ -14,20 +14,20 @@
 
 class DistNormal : Distribution{
 public:
-	DistNormal();
+	DistNormal(double* s, double* m);
 	virtual ~DistNormal();
 
 //	RbDataType* execute(); //!< Call appropriate function based on functionType
 	RbDataType getDataType(); //!< Get data type for type checking
-	double lnPdf(RbDataType* value, std::vector<RbDataType*> arguments); //!< Ln probability density
-	double pdf(RbDataType* value, std::vector<RbDataType*> arguments); //!< Probability density
+	double lnPdf(RbDataType* value); //!< Ln probability density
+	double pdf(RbDataType* value); //!< Probability density
 	RbDataType* rv(); //!< Draw random variables
-	double cdf(RbDataType* variable, std::vector<RbDataType*> arguments);
-	double quantile(std::vector<RbDataType*> arguments);
-	double quantile(double p);
-	double quantile(double mu, double sigma, double p);
+	double cdf(RbDataType* variable);
+	double quantile(RbDataType* variable);
 
 private:
+	double* sigma;
+	double* mu;
 };
 
 #endif /* DISTNORMAL_H_ */

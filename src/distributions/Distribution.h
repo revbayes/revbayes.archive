@@ -15,9 +15,6 @@ class Distribution: public RbObject {
 public:
 	enum functionT {D, P, Q, R, TILDE};
 
-	Distribution() :
-		RbObject(), functionType(Distribution::D) {
-	} //!< Constructor sets type to "d"
 	virtual ~Distribution() {
 	} //!< Destructor does nothing
 
@@ -25,11 +22,11 @@ public:
 
 	virtual RbDataType* execute(); //!< Call appropriate function based on functionType
 	virtual RbDataType getDataType() = 0; //!< Get data type for type checking
-	virtual double lnPdf(RbDataType* value, std::vector<RbDataType*> arguments) = 0; //!< Ln probability density
-	virtual double pdf(RbDataType* value, std::vector<RbDataType*> arguments) = 0; //!< Probability density
+	virtual double lnPdf(RbDataType* value) = 0; //!< Ln probability density
+	virtual double pdf(RbDataType* value) = 0; //!< Probability density
 	virtual RbDataType* rv() = 0; //!< Draw random variables
-	virtual double cdf(RbDataType* variable, std::vector<RbDataType*> arguments) = 0;
-	virtual double quantile(std::vector<RbDataType*> arguments) = 0;
+	virtual double cdf(RbDataType* variable) = 0;
+	virtual double quantile(RbDataType* variable) = 0;
 
 
 	//bool setArguments(std::list<SyntaxLabeledExpr*> args); //!< Set arguments based on function type
@@ -39,6 +36,9 @@ public:
 	std::string getDistributionName(void) { return getName(); } //!< Returns the name of the distribution
 
 protected:
+	Distribution() :
+		RbObject(), functionType(Distribution::D) {
+	} //!< Constructor sets type to "d"
 	functionT functionType; //!< Holds function type
 	//bool lnValue; //!< Calculate ln prob instead of prob
 private:
