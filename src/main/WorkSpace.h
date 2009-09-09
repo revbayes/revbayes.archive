@@ -5,7 +5,10 @@
 #include <set>
 #include <string>
 
-class DAGNode;
+#include "../dag/DAGNode.h"
+#include "../moves/Move.h"
+#include "../main/Monitor.h"
+
 class WorkSpace {
 
 public:
@@ -25,6 +28,8 @@ private:
 	WorkSpace& operator=(const WorkSpace&);
 	std::set<DAGNode*> dagNodes;
 	std::map<std::string,DAGNode*> symbolTable;
+	std::map<Move*,DAGNode*> movesTable;
+	std::map<Monitor*,DAGNode*> monitorTable;
 };
 
 #endif

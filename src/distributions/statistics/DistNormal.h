@@ -8,9 +8,9 @@
 #ifndef DISTNORMAL_H
 #define DISTNORMAL_H
 
-#include "Distribution.h"
-#include "../datatypes/RbDataType.h"
-#include "../datatypes/primary/RbDouble.h"
+#include "../Distribution.h"
+#include "../../datatypes/RbDataType.h"
+#include "../../datatypes/primary/RbDouble.h"
 
 class DistNormal : Distribution{
 public:

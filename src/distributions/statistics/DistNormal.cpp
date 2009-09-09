@@ -8,9 +8,10 @@
 #include <cmath>
 
 #include "DistNormal.h"
-#include "../datatypes/RbDataType.h"
-#include "../datatypes/primary/RbDouble.h"
-#include "../utils/RbMath.h"
+#include "../../datatypes/RbDataType.h"
+#include "../../datatypes/primary/RbDouble.h"
+#include "../../utils/RbMath.h"
+#include "../../utils/RbStatistics.h"
 
 DistNormal::DistNormal(double* s, double* m) {
 	sigma = s;
@@ -38,7 +39,9 @@ double DistNormal::pdf(RbDataType* variable) {
 	assert(typeid(*variable) == typeid(RbDouble));
 	double x = ((RbDouble*)variable)->getValue();
 
-	return RbStatistics::Normal::pdf(*mu,*sigma,x);
+	double pdf = RbStatistics::Normal::pdf(*mu,*sigma,x);
+
+	return pdf;
 }
 
 /*!
@@ -96,24 +99,23 @@ double DistNormal::cdf(RbDataType* variable) {
  *      points of the normal distribution. 26:118-121.
  */
 double DistNormal::quantile(RbDataType* variable) {
-	RbDataType* first = arguments[0];
-	assert(typeid(*first) == typeid(RbDouble));
-	double p = ((RbDouble*)first)->getValue();
-	return RbStatistics::Normal::quantile(mu,sigma,ma);
+	assert(typeid(*variable) == typeid(RbDouble));
+	double p = ((RbDouble*)variable)->getValue();
+	return RbStatistics::Normal::quantile(*mu,*sigma,p);
 }
 
 
 /*!
- * This function generates a normal(0,1) random variable.
+ * This function generates a normal random variable.
  *
  * \brief Standard normal random variable.
  * \return Returns a standard normal random variable.
  * \throws Does not throw an error.
  */
-double DistNormal::normalRv(void) {
+RbDataType* DistNormal::rv(void) {
 	// call the random number generator
 
-	return 0.0;
+	return NULL;
 }
 
 
