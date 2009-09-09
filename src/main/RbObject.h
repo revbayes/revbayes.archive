@@ -8,6 +8,8 @@
 class RbObject{
 
 public:
+     virtual ~RbObject() {}  //! Virtual destructor because of virtual functions
+
 	std::string getName(void) { return name; }
 	void setName(std::string n) { name = n; }
 //	virtual bool equals(RbObject o)=0;
