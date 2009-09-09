@@ -18,86 +18,130 @@
  * $Id$
  */
 
-#include "RbDataType.h"
 #include "RbFunction_gtrQ.h"
-#include "RbNan.h"
-#include "SyntaxLabeledExpr.h"
+#include "RbSimplex.h"
 #include "SymbolTable.h"
-#include <list>
 
-using namespace std;
 
-/** Define argument rules */
-RbFuncion_gtrQ::argRules = {
-    ArgumentRule("pi", RbSimplex()),
+/** Define the argument rules */
+const ArgumentRule RbFunction_gtrQ::argRules[] = {
+
+    ArgumentRule("pi",      RbSimplex()),
     ArgumentRule("revrate", RbSimplex()),
     ArgumentRule()
 };
 
 /** Add to symbol table */
-symbolTable.addFunction("gtrQ", RbFunction_gtrQ(RbFunction_gtrQ::argRules));
+static bool fxn_gtrQ = SymbolTable::globalTable().add("gtrQ", new RbFunction_gtrQ());
+
+
+/** Default constructor, allocate workspace */
+RbFunction_gtrQ::RbFunction_gtrQ()
+    : RbStandardFxn(), qmatVec(new RbRateMatrix()) {
+}
+
+/** Copy constructor */
+RbFunction_gtrQ::RbFunction_gtrQ(const RbFunction_gtrQ& s)
+    : RbStandardFxn(s), qmatVec(new RbRateMatrix()) {
+}
+
+/** Destructor, delete workspace */
+RbFunction_gtrQ::~RbFunction_gtrQ() {
+
+    delete qmatVec;
+}
+
+/** Return copy */
+RbFunction_gtrQ* RbFunction_gtrQ::copy() const {
+
+    return new RbFunction_gtrQ(*this);
+}
+
+/** Get argument rules */
+const ArgumentRule* RbFunction_gtrQ::getArgRules() const {
+
+    return argRules;
+}
+
+/** Get data type of result */
+const std::string& RbFunction_gtrQ::getDataType() const {
+
+    return qmatVec->getType();
+}
 
 /** Execute function */
 RbDataType* RbFunction_gtrQ::execute(void) {
 
-    if ( !result )
-        return RbNull;
-
-    RbSimplex *pi = (RbSimplex *) arguments[0]->getValue();
-    RbSimplex *r  = (RbSimplex *) arguments[1]->getValue();
+    RbSimplex *piVec = (RbSimplex *) arguments[0]->getValue();
+    RbSimplex *rVec  = (RbSimplex *) arguments[1]->getValue();
     
-    /* We rely on pi and r to be of constant dimension */
-    int dim = qmat->dim();
+    /* Get dimensions */
+    int dim1 = (int) piVec->size();
+    int dim2 = (int) rVec->size();
+    int dim0 = dim1 > dim2 ? dim1 : dim2;
+    qmatVec->resize(dim0);
 
-    /* Set values */
-    for (int i=0; i<dim; i++)
-        (*qmat)[i][i] = 0.0;
-    for (int i=0; i<dim; i++) {
-        for (int j=i+1; j<dim; j++) {
-            (*qmat)[i][i] -= (qmat[i][j] = pi[j] * r[index(i,j)]);
-            (*qmat)[j][j] -= (qmat[j][i] = pi[i] * r[index(i,j)]);
+    /* Loop over vectors */
+    for (int i=0; i<dim0; i++) {
+        RateMatrix& qmat = (*qmatVec)[i];
+        Simplex&    pi   = (*piVec)  [i%dim1];
+        Simplex&    r    = (*rVec)   [i%dim2];
+
+        int         rDim    = r.size();
+        int         piDim   = pi.size();
+
+        if (rDim != (piDim*piDim - piDim)/2) {
+            (*qmatVec)[i] = RateMatrix();
+            continue;
+        }
+        else if (qmat.size() != piDim)
+            (*qmatVec)[i] = RateMatrix(piDim);
+
+        /* Calculate raw rate matrix */
+        for (int i=0; i<piDim; i++)
+            qmat[i][i] = 0.0;
+        for (int i=0; i<piDim; i++) {
+            for (int j=i+1; j<piDim; j++) {
+                qmat[i][i] -= (qmat[i][j] = pi[j] * r[upper(i,j)]);
+                qmat[j][j] -= (qmat[j][i] = pi[i] * r[upper(i,j)]);
+            }
+        }   
+
+        /* Scale values and correct calculating errors */
+        double scaler = 0.0;
+        for (int i=0; i<piDim; i++) {
+            scaler += pi[i]*qmat[i][i];
+        }
+        scaler = -scaler;
+        for (int i=0; i<piDim; i++) {
+            for (int j=0; j<piDim; j++) {
+                qmat[i][j] /= scaler;
+                if (qmat[i][j] < 0.0)
+                    qmat[i][j] = 0.0;
+            }
         }
     }
 
-    /* Scale values */
-    double scaler = 0.0;
-    for (int i=0; i<dim; i++) {
-        scaler += (*qmat)[i][i];
-    }
-    scaler = -scaler;
-    for (int i=0; i<dim; i++) {
-        for (int j=0; j<dim; j++) {
-            (*qmat)[i][j] /= scaler;
-        }
-    }
-
-    return(qmat);
+    /* Return rate matrix vector */
+    return(qmatVec);
 }
 
-/** Get data type for type checking */
-RbDataType RbFunction_gtrQ::getDataType() {
+/** Print some info */
+void RbFunction_gtrQ::print(std::ostream& c) const {
 
-    if ( !argsSet )
-        return RbNull();
-    
-    return RbQMatrix(dim);
+    c << "RbFunction_gtrQ: pi=";
+    arguments[0]->print(c);
+    c << " -- rates=";
+    arguments[1]->print(c);
+    c << " -- result=";
+    qmatVec->print(c);
+    c << std::endl;
 }
 
-/** Set and check arguments */
-bool RbFunction_gtrQ::setArguments(list<SyntaxLabeledExpr*> args) {
+/** Calculate rate index */
+int RbFunction_gtrQ::upper(int i, int j) const {
 
-    if ( !RbFunction::setArguments(args) )
-        return false;
+    int diff = i < j ? j - i - 1 : i - j - 1;
 
-    /* Check that dimensions are compatible */
-    int dim  = arguments[0]->getDim();
-    int dimR = arguments[1]->getDim();
-    if ( dimR != (dim*dim - dim) / 2 ) {
-        ; // errmsg << "The arguments 'pi' and 'revmat' do not match in dimensions."
-    }
-
-    /* Create matrix to hold result */
-    result = qmat = new RbQMatrix(dim);
-
-    return true;
+    return (((2 + i) * (1 + i)) / 2) + diff;
 }

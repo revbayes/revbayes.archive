@@ -10,7 +10,7 @@
  * @author Fredrik Ronquist and the REvBayes core team
  * @license GPL version 3
  * @version 1.0
- * @since 2009-08-26, version 1.0
+ * @since Version 1.0, 2009-08-26
  *
  * $Id$
  */
@@ -19,11 +19,10 @@
 #define RbFunction_c_H
 
 #include "RbDataType.h"
-#include "RbFunction.h"
+#include "RbStandardFxn.h"
+#include "SymbolTable.h"
 #include "SyntaxLabeledExpr.h"
-#include <list>
-
-using namespace std;
+#include <vector>
 
 /** This is the class for the c() function, which takes any number
  *  of arguments, extracts their elements and puts them in a vector.
@@ -32,19 +31,24 @@ using namespace std;
  *  version of the data type.
  *
  *  @package    functions
- *  @implements RbFunction
+ *  @implements RbFunction, RbStandardFxn
  */
-class RbFunction_c :  public RbFunction {
+class RbFunction_c :  public RbStandardFxn {
 
     public:
-            RbFunction_c() : RbFunction() {}    //!< Constructor
-	        virtual ~RbFunction_c() {}          //!< Destructor, does nothing
+            RbFunction_c();                             //!< Default constructor, allocate workspace
+            RbFunction_c(const RbFunction_c& s);        //!< Copy constructor
+	        ~RbFunction_c();                            //!< Destructor, delete workspace
 
-#pragma mark Public functions
-        RbDataType* execute();                  //!< Get result
-        RbDataType  getDataType();              //!< Get data type for type checking
-        void        print(ostream &c) const;    //!< Print this object
-        bool        setArguments(list<SyntaxLabeledExpr *> args);      //!< Set and check arguments
+#pragma mark Parser help functions
+        RbFunction_c*       copy() const;                                   //!< Return copy
+        RbDataType*         execute();                                      //!< Get result
+        const std::string&  getDataType() const;                            //!< Get data type of result
+        void                print(std::ostream &c) const;                   //!< Print this object
+        bool                setArguments(std::vector<SyntaxLabeledExpr *> args);    //!< Set and check arguments
+
+    protected:
+        RbDataType*     resultVec;      //!< Workspace for result
 };
 
 #endif

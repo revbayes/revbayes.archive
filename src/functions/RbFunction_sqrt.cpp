@@ -10,71 +10,87 @@
  * @author Fredrik Ronquist and the REvBayes core team
  * @license GPL version 3
  * @version 1.0
- * @since 2009-08-26, version 1.0
+ * @since Version 1.0, 2009-08-26
  *
  * $Id$
  */
 
-#include "RbDataType.h"
 #include "RbFunction_sqrt.h"
-#include "RbNan.h"
-#include "SyntaxLabeledExpr.h"
 #include "SymbolTable.h"
-#include <list>
+#include <cmath>
 
-using namespace std;
 
-/** Define argument rules */
-RbFuncion_sqrt::argumentRules = {
-    ArgumentRule(NULL, RbVector()),
+/** Define the argument rules */
+const ArgumentRule RbFunction_sqrt::argRules[] = {
+
+    ArgumentRule(NULL, RbReal()),
     ArgumentRule()
 };
 
 /** Add to symbol table */
-symbolTable.addFunction(RbFunction_sqrt());
+static bool fxn_sqrt = SymbolTable::globalTable().add("sqrt", new RbFunction_sqrt());
+
+
+/** Default constructor, allocate workspace */
+RbFunction_sqrt::RbFunction_sqrt()
+    : RbStandardFxn(), resultVec(new RbReal()) {
+} 
+
+/** Copy constructor */
+RbFunction_sqrt::RbFunction_sqrt(const RbFunction_sqrt& s)
+    : RbStandardFxn(s), resultVec(new RbReal()) {
+}
+
+/** Destructor, delete workspace */
+RbFunction_sqrt::~RbFunction_sqrt() {
+
+    delete resultVec;
+}
+
+/** Return copy */
+RbFunction_sqrt* RbFunction_sqrt::copy() const {
+
+    return new RbFunction_sqrt(*this);
+}
+    
+/** Get argument rules */
+const ArgumentRule* RbFunction_sqrt::getArgRules() const {
+
+    return argRules;
+}
+
+/** Get data type of result */
+const std::string& RbFunction_sqrt::getDataType() const {
+
+    return resultVec->getType();
+}
 
 /** Execute function */
 RbDataType* RbFunction_sqrt::execute(void) {
 
-    if ( !result )
-        return RbNull;
-
-    /* Get actual arguments */
-    RbVector *arg = (RbVector*) arguments[0]->getValue();
+    /* Get actual argument */
+    RbReal *arg = (RbReal*) arguments[0]->getValue();
 
     /* Resize result container */
-    if ( vec->size() != arg->size() )
-        vec->resize(arg->size());
+    if ( resultVec->size() != arg->size() )
+        resultVec->resize(arg->size());
 
     /* Compute result */
-    for (int i=0; i<arg->dim(); i++) {
-        if ( arg[i] < 0.0 )
-            (*vec)[i] =  RbNan;
+    for (int i=0; i<arg->size(); i++) {
+        if ( (*arg)[i] < 0.0 )
+            (*resultVec)[i] =  1E-100;
         else
-            (*vec)[i] = sqrt(arg[i]);
+            (*resultVec)[i] = std::sqrt((*arg)[i]);
     }
-    return(vec);
+    return(resultVec);
 }
 
-/** Get data type for type checking */
-RbDataType RbFunction_sqrt::getDataType() {
+/** Print some info */
+void RbFunction_sqrt::print(std::ostream& c) const {
 
-    if ( !result ) {
-        return RbNull();
-    }
-    
-    int dim = arguments[0]->getDim();
-    if ( dim == 1)
-        return RbScalar();
-    else
-        return RbVector(dim);
-}
-
-/** Set and check arguments; set result container */
-bool RbFunction_sqrt::setArguments(list<SyntaxLabeledExpr*> args) {
-
-    if ( !RbFunction::setArguments(args) )
-        return false;
-
-    result = vec = new RbVector();
+    c << "RbFunction_sqrt: arg=";
+    arguments[0]->print(c);
+    c << " -- result=";
+    resultVec->print(c);
+    c << std::endl;
 }

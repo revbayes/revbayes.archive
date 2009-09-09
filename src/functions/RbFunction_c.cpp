@@ -15,74 +15,103 @@
  * $Id$
  */
 
-#include "RbDataType.h"
-#include "RbFunction.h"
-#include "RbNull.h"
-#include "SyntaxLabeledExpr.h"
-#include <list>
+#include "RbFunction_c.h"
+#include "RbTypeConverter.h"
+#include "SymbolTable.h"
+#include "SyntaxElement.h"
 
-using namespace std;
 
 /* No argument rules needed */
 
 /** Add to symbol table */
-symbolTable.add("c",RbFunction_c());
+static bool fxn_c = SymbolTable::globalTable().add("c", new RbFunction_c());
 
+/** Default constructor, allocate workspace (NULL because data type is not known) */
+RbFunction_c::RbFunction_c()
+    : RbStandardFxn(), resultVec(NULL) {
+}
+
+/** Copy constructor (set result vector to NULL because data type not necessarily known) */
+RbFunction_c::RbFunction_c(const RbFunction_c& s)
+    : RbStandardFxn(s), resultVec(NULL) {
+}
+
+/** Destructor, delete workspace */
+RbFunction_c::~RbFunction_c() {
+
+    delete resultVec;
+}
+
+/** Return copy */
+RbFunction_c* RbFunction_c::copy() const {
+
+    return new RbFunction_c(*this);
+}
 
 /** Execute function */
 RbDataType* RbFunction_c::execute(void) {
 
-    if ( !result )
-        return result;
+    if (!resultVec)
+        resultVec = RbTypeConverter::makeCommonType(arguments);
+    else if (resultVec->getType() != RbTypeConverter::getCommonType(arguments))
+        resultVec = RbTypeConverter::makeCommonType(arguments);
 
-    result->clear();
-    for (list<SyntaxLabeledExpr*>::iterator i=args.begin(), i!=args.end(); i++) {
-        RbDataType* val = i->getValue();
-        if (val->isType(result->getType()))
-            result->addElements(val->getElements());
-        else
-            result->addElements((*val).as(result->getType()).getElements());
+    resultVec->erase();
+    for (vector<SyntaxElement*>::iterator i=arguments.begin(); i!=arguments.end(); i++) {
+        resultVec->addElements(*((*i)->getValue()));
     }
-    return(result);
+    return resultVec;
 }
 
 /** Get data type for type checking */
-RbDataType RbFunction_c::getDataType() {
+const std::string& RbFunction_c::getDataType() const {
 
-    if ( arguments.size() == 0) {
-        return RbNull();
-    }
-    
-    return arguments[0]->getDataType().getVectorType();
+    if ( arguments.empty() )
+        return RbAbstractDataType::dataType;
+    else
+        return resultVec->getType();
 }
 
 /** Set and check arguments */
-bool RbFunction_c::setArguments(list<SyntaxLabeledExpr*> args) {
+bool RbFunction_c::setArguments(vector<SyntaxLabeledExpr*> args) {
 
     /* check that all arguments lack a label */
-    for (list<SyntaxLabeledExpr*>::iterator i=args.begin(); i!= args.end(); i++) {
-        if ( i->getLabel() != NULL ) {
-            // errmsg << "Not expecting labeled arguments." << endl;
+    for (std::vector<SyntaxLabeledExpr*>::iterator i=args.begin(); i!= args.end(); i++) {
+        if ( (*i)->getLabel() != "" ) {
+            std::cerr << "Not expecting labeled arguments." << std::endl;
+            return false;
         }
         if ( args.size() == 0 ) {
-            // errmsg << "Expecting at least one argument." << endl;
+            std::cerr <<  "Expecting at least one argument." << std::endl;
+            return false;
         }
     }
 
-    /* check that all arguments are of compatible type */
-    RbDataType dataType;
-    for (list<SyntaxLabeledExpr*>::iterator i=args.begin(); i!= args.end(); i++, count++) {
-        SyntaxElement *expr = i->getExpression();
-        if ( i == args.begin() )
-            dataType = expr->getDataType().getVectorType();
-        else {
-            if ( (expr->getDataType()).as(dataType->getType()) == RbNull() ) {
-                // errmsg << "Element " << count << " is of type '" << expr->getDataType.getType() << "' which cannot be coerced to type "' << dataType.getType() << "'";
-            }
-        }
+    /* set arguments */
+    for (std::vector<SyntaxLabeledExpr*>::iterator i=args.begin(); i!=args.end(); i++) {
+        SyntaxElement *expr = (*i)->getExpression();
         arguments.push_back(expr);
     }
 
     /* set vector of correct data type to hold results */
-    result = arguments[0]->getDataType().getVectorType().copy();
+    resultVec = RbTypeConverter::makeCommonType(arguments);
+    if (!resultVec) {
+        arguments.clear();
+        std::cerr << "Arguments cannot be coerced to the same type" << std::endl;
+        return false;
+    }
+
+    /* Success */
+    return true;
+}
+
+/** Print some info */
+void RbFunction_c::print(std::ostream& c) const {
+
+    c << "RbFunction_c: args=";
+    for (std::vector<SyntaxElement*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++)
+        (*i)->print(c);
+    c << " -- result=";
+    resultVec->print(c);
+    c << std::endl;
 }

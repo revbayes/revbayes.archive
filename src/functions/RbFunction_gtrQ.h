@@ -27,12 +27,12 @@
 #ifndef RbFunction_gtrQ_H
 #define RbFunction_gtrQ_H
 
+#include "ArgumentRule.h"
 #include "RbDataType.h"
-#include "RbFunction.h"
-#include "SyntaxLabeledExpr.h"
-#include <list>
-
-using namespace std;
+#include "RbRateMatrix.h"
+#include "RbStandardFxn.h"
+#include <iostream>
+#include <string>
 
 /** This is the class for the gtrQ() function, which constructs a scaled
  *  instantaneous rate matrix from two simplex parameters, one describing
@@ -40,26 +40,30 @@ using namespace std;
  *  exchangeability rates.
  *
  *  @package    functions
- *  @implements RbFunction
+ *  @implements RbFunction, RbStandardFxn
  */
-class RbFunction_gtrQ :  public RbFunction {
+class RbFunction_gtrQ :  public RbStandardFxn {
 
     public:
-            RbFunction_gtrQ() : RbFunction(), qmat(NULL) {} //!< Constructor checking argument rules
-	        virtual ~RbFunction_gtrQ() {}          //!< Destructor, does nothing
+            RbFunction_gtrQ();                              //!< Default constructor, allocate workspace
+            RbFunction_gtrQ(const RbFunction_gtrQ& s);      //!< Copy constructor
+	        ~RbFunction_gtrQ();                             //!< Destructor, delete workspace
 
-#pragma mark Parser info
-        static ArgumentRule*    argumentRules;                  //!< The argument rules
-        ArgumentRule*           getArgumentRules() { return argumentRules; }    //!< Get argument rules
+#pragma mark Parser help functions
+        static const ArgumentRule   argRules[];             //!< The argument rules
+        RbFunction_gtrQ*            copy() const;           //!< Return copy
+        const ArgumentRule*         getArgRules() const;    //!< Get argument rules
+        const std::string&          getDataType() const;    //!< Get data type of result
 
-#pragma mark Public functions
-        RbDataType* execute();                  //!< Get result
-        RbDataType  getDataType();              //!< Get data type for type checking
-        void        print(ostream &c) const;    //!< Print this object
-        bool        setArguments(list<SyntaxElement *> args);      //!< Set and check arguments
+#pragma mark Regular functions
+        RbDataType*                 execute();              //!< Get result
+        void                        print(std::ostream& c=std::cout) const;     //!< Print this object
 
     protected:
-        RbQMatrix*  qmat;   //!< Convenient holder of the Q matrix result
+        RbRateMatrix*               qmatVec;                //!< Workspace for the result vector
+
+    private:
+        int                         upper(int i, int j) const; //!< Return index in upper trianguar mat
 };
 
 #endif
