@@ -1,15 +1,19 @@
-/*!
- * \file
+/**
+ * @file
  * This file contains the implementation of DAGNode, which is the base
  * class for nodes in the model DAG as well as for the nodes in a
  * syntax tree.
  *
- * \brief Implementation of DAGNode
+ * @brief Implementation of DAGNode
  *
- * (c) Copyright 2009-
- * \date Last modified: $Date$
- * \author The REvBayes development core team
- * \license GPL version 3
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The REvBayes development core team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-08-16, version 1.0
+ * @interface Distribution
+ * @extends RbObject
  *
  * $Id$
  */
@@ -20,6 +24,13 @@
 
 using namespace std;
 
+/**
+ * @brief DAGNode constructor
+ *
+ * This constructor creates a DAGNode with a variable attached to the node.
+ *
+ * @param dt      the variable of the dag node
+ */
 DAGNode::DAGNode(RbDataType *dt)
     : touched(true) {
 
@@ -27,12 +38,25 @@ DAGNode::DAGNode(RbDataType *dt)
 	storedValue = dt->copy();
 }
 
+/**
+ * @brief DAGNode copy constructor
+ *
+ * This constructor creates a DAGNode as a clone of another DAGNode.
+ *
+ * @param d      the dag node to clone.
+ */
 DAGNode::DAGNode(DAGNode &d) {
 
 	delete value;
 	delete storedValue;
 }
 
+/**
+ * @brief DAGNode desctructor
+ *
+ * This is the standard destructor for any dag node.
+ *
+ */
 DAGNode::~DAGNode(void) {
 
 	if ( value != NULL )
@@ -41,6 +65,7 @@ DAGNode::~DAGNode(void) {
 		delete storedValue;
 }
 
+//TODO not sure what this does
 void DAGNode::keepAffected() {
 
     if (changed) {
@@ -50,6 +75,8 @@ void DAGNode::keepAffected() {
     }
 }
 
+//TODO either this should be only private (e.g. for debugging purposes) or should get a print stream as the parameter
+//we do not always want to print to the std::out but maybe to some specific stream, i.e. to the user interface
 void DAGNode::printChildren(void) const {
 
 	if ( children.empty() )	
@@ -62,6 +89,7 @@ void DAGNode::printChildren(void) const {
 	std::cout << std::endl;
 }
 
+//TODO either this should be only private (e.g. for debugging purposes) or should get a print stream as the parameter
 void DAGNode::printParents(void) const {
 
 	if ( parents.empty() )
@@ -74,6 +102,12 @@ void DAGNode::printParents(void) const {
 	std::cout << std::endl;
 }
 
+/**
+ * @brief Restore the old value
+ *
+ * This function restores the old value of the dag node. This might be wanted during the MCMC if a value was proposed but rejected.
+ *
+ */
 void DAGNode::restore() {
 
     RbDataType* temp;
@@ -87,6 +121,12 @@ void DAGNode::restore() {
     keep();     // Sets touched and changed to false
 }
 
+/**
+ * @brief Restore affected nodes.
+ *
+ * This function calls all nodes which are affected by this dag node and restores them.
+ *
+ */
 void DAGNode::restoreAffected() {
 
     if (changed) {
@@ -96,6 +136,12 @@ void DAGNode::restoreAffected() {
     }
 }
 
+/**
+ * @brief Thouch affected nodes.
+ *
+ * This function touches all affected nodes, i.e. marks them as changed.
+ *
+ */
 void DAGNode::touchAffected() {
 
     if (!touched) {

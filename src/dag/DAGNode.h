@@ -1,15 +1,18 @@
-/*!
- * \file
+/**
+ * @file
  * This file contains the declaration of DAGNode, which is the base
- * class for nodes in a model DAG as well as for the nodes in a
- * syntax tree.
+ * class for nodes in a model DAG.
  *
- * \brief Declaration of DAGNode
+ * @brief Declaration of DAGNode
  *
- * (c) Copyright 2009-
- * \date Last modified: $Date$
- * \author The REvBayes development core team
- * \license GPL version 3
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The REvBayes development core team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-08-16, version 1.0
+ * @interface DAGNode
+ * @extends RbObject
  *
  * $Id$
  */
