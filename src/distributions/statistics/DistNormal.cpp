@@ -16,11 +16,27 @@
 DistNormal::DistNormal(double* s, double* m) {
 	sigma = s;
 	mu = m;
+}
 
+DistNormal::DistNormal(DistNormal& d) {
+	sigma = d.sigma;
+	mu = d.mu;
 }
 
 DistNormal::~DistNormal() {
 	// TODO Auto-generated destructor stub
+}
+
+/**
+ * @brief Copy this object
+ *
+ * This is a call of the copy constructor used from the base class
+ *
+ * @return     return a deep copy of the object
+ *
+ */
+RbObject* DistNormal::clone(void) {
+	return new DistNormal(*this);
 }
 
 /*!
@@ -119,7 +135,7 @@ RbDataType* DistNormal::rv(void) {
 }
 
 
-RbDataType DistNormal::getDataType() {
+RbDataType* DistNormal::getDataType() {
 	//TODO implement this
-	return RbDouble(0);
+	return new RbDouble(0);
 }

@@ -52,11 +52,7 @@ using namespace std;
 class DAGNode : public RbObject {
 
 public:
-        DAGNode() : value(NULL), storedValue(NULL), changed(false), touched(false) {}   //!< Default constructor
-	    DAGNode(RbDataType *dt);
-	    //DAGNode(RbDataType *dt, std::set<DAGNode*> &p, std::set<DAGNode*> &c);
-	    DAGNode(DAGNode &d);
-	    ~DAGNode(void);
+	virtual ~DAGNode(void);
 
 	void                addChildNode(DAGNode* c) { children.insert(c); }    //!< Add child node
 	set<DAGNode*>&      getChildrenNodes(void) { return children; } //!< Get children nodes
@@ -77,6 +73,12 @@ public:
 	
 
 protected:
+    // The constructors are protected because this is a abstract class. Only instances from derived classes are allowed!
+    DAGNode() : value(NULL), storedValue(NULL), changed(false), touched(false) {}   //!< Default constructor
+    DAGNode(RbDataType *dt);
+    //DAGNode(RbDataType *dt, std::set<DAGNode*> &p, std::set<DAGNode*> &c);
+    DAGNode(DAGNode &d);
+
 	RbDataType*         storedValue;    //!< Holds the previous value
     RbDataType*         value;          //!< Holds the current value
 

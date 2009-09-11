@@ -4,7 +4,7 @@
  *
  * This function does foo. 
  *
- * @param param      intput param
+ * @param param      input param
  * @pre              the precondition of an entity
  * @see function     another similar function, e.g. overloaded one, called one, ...
  * @returns return value

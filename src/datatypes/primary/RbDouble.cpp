@@ -19,9 +19,9 @@ RbDouble::RbDouble(const RbDouble& s)
     : RbDataType(s.typeName), value(s.value) {
 }
 
-RbDouble* RbDouble::copy(void) const {
+RbObject* RbDouble::clone(void) {
 
-	RbDouble *x = new RbDouble( *this );
+	RbObject *x = new RbDouble( *this );
 	return x;
 }
 

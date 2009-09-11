@@ -40,7 +40,7 @@ public:
 //	PLUGIN_API virtual Distribution* createInstance(void)=0;
 
 	virtual RbDataType* execute(RbDataType* value);    //!< Call appropriate function based on functionType
-	virtual RbDataType getDataType() = 0;              //!< Get data type for type checking
+	virtual RbDataType* getDataType() = 0;              //!< Get data type for type checking
 	virtual double lnPdf(RbDataType* value) = 0;       //!< Ln probability density function
 	virtual double pdf(RbDataType* value) = 0;         //!< Probability density function
 	virtual RbDataType* rv() = 0;                      //!< Draw random variables

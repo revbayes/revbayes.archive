@@ -15,10 +15,13 @@
 class DistNormal : Distribution{
 public:
 	DistNormal(double* s, double* m);
+	DistNormal(DistNormal& d);
 	virtual ~DistNormal();
 
+	RbObject* clone(void);                                         //!< call of the copy constructor from the base class
+
 //	RbDataType* execute(); //!< Call appropriate function based on functionType
-	RbDataType getDataType(); //!< Get data type for type checking
+	RbDataType* getDataType(); //!< Get data type for type checking
 	double lnPdf(RbDataType* value); //!< Ln probability density
 	double pdf(RbDataType* value); //!< Probability density
 	RbDataType* rv(); //!< Draw random variables

@@ -47,6 +47,7 @@ DAGNode::DAGNode(RbDataType *dt)
  */
 DAGNode::DAGNode(DAGNode &d) {
 
+	//TODO implement this
 	delete value;
 	delete storedValue;
 }

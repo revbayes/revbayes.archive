@@ -1,29 +1,69 @@
+/**
+ * @file
+ * This file contains the declaration of the node data type.
+ * The node corresponds to the object representing a node in the phylogenetic tree.
+ * Every node can have a parent node and a set of children nodes. The nodes are the structural elements building the tree.
+ * The root not wont have any parent, whereas the leaves wont have any children.
+ * Every noe also contains a vector of parameters belonging to this node, with parameters being e.g. the history, ...
+ *
+ * @brief Declaration of the data type Node
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The REvBayes development core team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-08-21, version 1.0
+ * @implements RbDataType
+ *
+ * $Id$
+ */
+
 #ifndef Node_H
 #define Node_H
 
 #include <string>
 #include <vector>
-#include "RbDataType.h"
+#include "../RbDataType.h"
+#include "../../main/RbObject.h"
 
-class Node : RbObject{
+class Node : public RbDataType{
 
 public:
 	Node(void);
+	Node(Node& n);
+	Node(Node* p, std::vector<Node*> c);
+	Node(Node* p, std::vector<Node*> c, std::vector<RbDataType*> param);
+
+	RbObject* clone();
+
 	Node* getChild(int i) { return children[i]; }
 	std::vector<Node*> &getChildren(void) { return children; }
-	Node* getParent(void) { return parent; }
-	void setName(std::string s) { name = s; }
-	std::string getName(void) { return name; }
 	int getNumChildren(void) { return children.size(); }
 	void clearChildren(void) { children.clear(); }
+
 	void clean(void);
 	int getIndex(void) { return index; }
 	void setIndex(int i) { index = i; }
+	RbDataType* getParameter(int index);                      //!< retrieves the parameter at index i
+	RbDataType* getParameter(std::string& name);              //!< retrieves the parameter with given name
+	Node* getParent();                                        //!< retrieves the parent node
+//	Node* getChild();                                         //!< retrieves the child node
+	int addParameter(RbDataType* p);                          //!< adds the parameter p at the end and return the index of the position
+	int addParameter(RbDataType* p, int index);               //!< adds the parameter p at index and return the index of the position
+//	void setChild(Node* c);                                   //!< sets the child node to c
+	void setParent(Node* p);                                  //!< sets the parent node to p
+	RbDataType* removeParameter(int index);                   //!< removes the parameter at position index and returns the removed parameter
+	RbDataType* removeParameter(std::string& name);           //!< removes the parameter with the name and returns the removed parameter
+	RbDataType* removeParameter(RbDataType* p);               //!< removes the parameter p from the vector and returns the removes parameter
+
 
 private:
 	std::vector<Node*> children;
 	Node* parent;
-	std::string name;
+	std::vector<RbDataType*> parameters;      //!< node parameters as history
+	int partialIndex;                        //!< index used to address the memory for the partial likelihood
+	int storedPartialIndex;                  //!< stored index for the stored partial likelihood
 	int index;
 };
 

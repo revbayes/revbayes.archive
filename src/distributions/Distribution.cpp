@@ -18,6 +18,7 @@
 
 #include "Distribution.h"
 #include "../datatypes/RbDataType.h"
+#include "../datatypes/primary/RbDouble.h"
 
 
 /**
@@ -30,22 +31,23 @@
  * @returns The return value of the corresponding function of the distribution
  */
 RbDataType* Distribution::execute(RbDataType* value) {
-	RbDataType* rv;
+	RbDataType* dt;
 
 	switch (functionType) {
 		case Distribution::D:
 		case Distribution::P:
-			rv = new RbDouble(pdf(value));
+			dt = new RbDouble(pdf(value));
 			break;
 		case Distribution::Q:
-			rv = new RbDouble(quantile(value));
+			dt = new RbDouble(quantile(value));
 			break;
 		case Distribution::R:
-			rv = rv();
+			dt = rv();
 			break;
 		default:
+			;
 			// TODO throw some error, but actually should never even be possible
 	}
 
-	return rv;
+	return dt;
 }

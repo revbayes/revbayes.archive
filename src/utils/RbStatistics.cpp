@@ -164,7 +164,7 @@ double RbStatistics::ChiSquare::pdf(double v, double x) {
 	else
 		{
 		double b = v / 2.0;
-		pdf = exp( -0.5 * x ) * pow( x, ( b - 1.0 ) ) / ( pow( 2.0, b ) * gamma( b ) );
+		pdf = exp( -0.5 * x ) * pow( x, ( b - 1.0 ) ) / ( pow( 2.0, b ) * RbMath::gamma( b ) );
 		}
 	return pdf;
 }
@@ -305,9 +305,9 @@ double RbStatistics::Dirichlet::pdf(const std::vector<double> &a, const std::vec
 
 	double aProd = 1.0;
 	for (int i=0; i<n; i++)
-		aProd *= gamma(a[i]);
+		aProd *= RbMath::gamma(a[i]);
 
-	double pdf = gamma(aSum) / aProd;
+	double pdf = RbMath::gamma(aSum) / aProd;
 
 	for (int i=0; i<n; i++)
 		pdf = pdf * pow( z[i], a[i] - 1.0 );
@@ -417,7 +417,7 @@ inline double RbStatistics::Exponential::quantile(double lambda, double p) {
  */
 double RbStatistics::Gamma::pdf(double a, double b, double x) {
 
-	return (pow(b, a) / gamma(a)) * pow(x, a - 1.0) * exp(-x * b);
+	return (pow(b, a) / RbMath::gamma(a)) * pow(x, a - 1.0) * exp(-x * b);
 }
 
 /*!
@@ -662,7 +662,7 @@ inline double RbStatistics::Poisson::quantile(double lambda, double p) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Normal::pdf(double mu, double sigma, double x) {
+double RbStatistics::Normal::pdf(double mu, double sigma, double x) {
 
 	double y = ( x - mu ) / sigma;
 	return exp( -0.5 * y * y )  / ( sigma * sqrt ( 2.0 * PI ) );
@@ -679,7 +679,7 @@ inline double RbStatistics::Normal::pdf(double mu, double sigma, double x) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Normal::lnPdf(double mu, double sigma, double x) {
+double RbStatistics::Normal::lnPdf(double mu, double sigma, double x) {
 
 	return -0.5 * std::log(2.0 * PI * sigma) - 0.5 * (x - mu) * (x - mu) / (sigma * sigma);
 }

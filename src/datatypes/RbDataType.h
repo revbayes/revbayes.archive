@@ -21,16 +21,15 @@
 
 using namespace std;
 
-class RbDataType {
+class RbDataType : public RbObject{
 
 public:
+	//TODO should be protected so that no instance of this abstract class can be instantiated
 	RbDataType(const char* name) : typeName(name) {}            //!< Constructor from type name (C style)
 	RbDataType(const string& name) : typeName(name) {}          //!< Constructor from type name (string)
 
-	virtual RbDataType*     copy(void) {};               //!< Copy
 	string                  getType(void) { return typeName; }  //!< Get type name
-    virtual void            print(void) {};              //!< Print to cout
-    virtual void            print(ostream &c) const {}          //!< Print to specified ostream
+	virtual std::string toString() { return typeName; }
 
 protected:
 	const string    typeName;                                   //!< Name of the data type (for type checking or debugging)

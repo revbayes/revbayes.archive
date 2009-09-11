@@ -18,12 +18,12 @@
 #ifndef SyntaxElement_H
 #define SyntaxElement_H
 
-#include "RbObject.h"
+#include "../../main/RbObject.h"
+#include "../../dag/DAGNode.h"
 #include <iostream>
 #include <set>
 
 /* Forward declarations */
-class DAGNode;
 class SymbolTable;
 
 /** This is the abstract base class for nodes in the syntax tree. It is derived
