@@ -12,13 +12,13 @@ public:
 
     virtual RbObject* clone(void) = 0;    //!< create a cope of this object. Used to call the copy constructor of the derived class
 
-    std::string getName(void);
-    void setName(std::string n);
-//	virtual bool equals(RbObject o)=0;
-    virtual std::string toString(void);
-    virtual void print(std::ostream &c); //!< Print this object
-//	virtual void dump(void)=0;
-//	virtual void restore(RbDumpState state)=0;
+    std::string         getName(void);              //!< Get name of object
+    void                setName(std::string n);     //!< Set name of object
+	virtual bool        operator==(RbObject o)=0;   //!< Comparison
+    virtual std::string toString(void);             //!< Information about object for debugging, printing etc
+    virtual void        print(std::ostream& c);     //!< Print this object for debugging, printing etc
+	virtual void        dump(std::ostream& c)=0;    //!< Dump to ostream c
+	virtual void        resurrect(const RbDumpState& x)=0;  //!< Resurrect from dumped state
 
 protected:
 
