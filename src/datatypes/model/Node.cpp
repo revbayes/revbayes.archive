@@ -243,3 +243,15 @@ RbDataType* Node::removeParameter(RbDataType* p){
 
 	return dt;
 }
+
+/**
+ * @brief check whether this node is a leaf node or not.
+ *
+ * This function checks the size of the children of this node. If this node has any children, then it is an internal node. Otherwise it is leaf node.
+ *
+ * @returns         true if there are no child nodes attached
+ *
+ */
+bool Node::isLeaf(){
+	return (children == NULL || children.size() == 0);
+}

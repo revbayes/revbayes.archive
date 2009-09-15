@@ -56,6 +56,7 @@ public:
 	RbDataType* removeParameter(int index);                   //!< removes the parameter at position index and returns the removed parameter
 	RbDataType* removeParameter(std::string& name);           //!< removes the parameter with the name and returns the removed parameter
 	RbDataType* removeParameter(RbDataType* p);               //!< removes the parameter p from the vector and returns the removes parameter
+	bool isLeaf(void);                                        //!< checks if this node is a leaf node
 
 
 private:
