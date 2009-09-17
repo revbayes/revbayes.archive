@@ -16,7 +16,7 @@
 #ifndef RbString_H
 #define RbString_H
 
-#include "../RbDataType.h"
+#include "RbDataType.h"
 
 using namespace std;
 
