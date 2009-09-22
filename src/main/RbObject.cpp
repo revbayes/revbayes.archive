@@ -18,9 +18,22 @@
 #include "RbObject.h"
 #include <string>
 #include <ostream>
+#include <iostream>
 
 
-const std::string& RbObject::getName() const {
+RbObject::RbObject(const char* n){
+	name = n;
+}
+
+RbObject::RbObject(const std::string& n){
+	name = n;
+}
+
+RbObject::~RbObject(){
+//	delete &name;
+}
+
+std::string RbObject::getName() const {
 
 	return name;
 }
@@ -32,6 +45,10 @@ void RbObject::print(std::ostream &c) const {
 
 void RbObject::setName(std::string& n) {
 
+	name = n;
+}
+
+void RbObject::setName(const char* n){
 	name = n;
 }
 
