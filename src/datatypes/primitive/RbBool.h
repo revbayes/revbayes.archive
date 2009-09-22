@@ -16,23 +16,35 @@
 #ifndef RbBool_H
 #define RbBool_H
 
-#include "RbDataType.h"
+#include "../RbDataType.h"
+#include "../RbAbstractDataType.h"
 
-class RbBool : public RbDataType {
+class RbBool : public RbAbstractDataType {
 
 public:
-	    RbBool(const bool v);       //!< Constructor from bool
-	    RbBool(const RbBool& s);    //!< Copy constructor
+	static const std::string         dataType;                     //!< the name/description of the data type
 
-	RbBool* copy(void) const;       //!< Copy
-	void    print(void) const;      //!< Print the value
-	void    print(ostream &c) const;    //!< Print the value to ostream c
+	RbBool(const bool v);                                            //!< Constructor from double
+	RbBool(const bool v, std::string& name);                         //!< Constructor from double
+	RbBool(const RbBool& s);                                         //!< Copy constructor
+	virtual ~RbBool();
 
-	bool    store(void) const { return true; }  //!< What does this do?
-	bool    restore(void) { return true; }      //!< What does this do?
+    // implemented abstract/virtual functions from base classes
+	RbObject*  clone(void);                                        //!< clone this object
+	void       print(ostream &c) const;                            //!< Print the value to ostream c
+	void       dump(std::ostream& c);                              //!< Dump to ostream c
+	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+	const std::string&  getType(void) const;                       //!< Get type name
+
+	//overloaded operators
+	bool       operator==(RbObject& o) const;                      //!< Comparison
+
+	// memeber functions
+	void       setValue(bool v);
+	bool        getValue(void) const;
 
 private:
-	bool    value;      //!< value member
+	bool        value;      //!< value member
 };
 
 #endif

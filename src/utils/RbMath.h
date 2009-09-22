@@ -5,7 +5,7 @@
 #	define PI 3.141592653589793
 #endif
 
-#include "../datatypes/primary/RbMatrix.h"
+#include "../datatypes/complex/RbMatrix.h"
 #include <vector>
 
 namespace RbMath {

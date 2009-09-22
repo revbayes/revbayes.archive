@@ -5,7 +5,7 @@
 
 
 
-RateMatrix::RateMatrix(int n) : RbDataType("RateMatrix") {
+RateMatrix::RateMatrix(int n) : RbAtomicType() {
 
 	dim = n;
 	value = RbHelper::newTwoDArray<double>(dim, dim);
@@ -14,7 +14,7 @@ RateMatrix::RateMatrix(int n) : RbDataType("RateMatrix") {
 			value[i][j] = 0.0;
 }
 
-RateMatrix::RateMatrix(const RateMatrix& r) : RbDataType("RateMatrix") {
+RateMatrix::RateMatrix(const RateMatrix& r) : RbAtomicType() {
 
 	dim = r.dim;
 	value = RbHelper::newTwoDArray<double>(dim, dim);
@@ -34,12 +34,12 @@ RateMatrix* RateMatrix::copy(void) const {
 	return x;
 }
 
-void RateMatrix::print(void) const {
+void RateMatrix::print(std::ostream& c) const {
 
 	for (int i=0; i<dim; i++)
 		{
 		for (int j=0; j<dim; j++)
-			std::cout << std::fixed << std::setprecision(5) << value[i][j] << " ";
-		std::cout << std::endl;
+			c << std::fixed << std::setprecision(5) << value[i][j] << " ";
+		c << std::endl;
 		}
 }

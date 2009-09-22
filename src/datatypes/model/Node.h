@@ -3,6 +3,7 @@
  * This file contains the declaration of the node data type.
  * The node corresponds to the object representing a node in the phylogenetic tree.
  * Every node can have a parent node and a set of children nodes. The nodes are the structural elements building the tree.
+ * Moreover, a node is a container of other nodes. These other nodes are the children of this node.
  * The root not wont have any parent, whereas the leaves wont have any children.
  * Every noe also contains a vector of parameters belonging to this node, with parameters being e.g. the history, ...
  *
@@ -24,23 +25,38 @@
 
 #include <string>
 #include <vector>
+#include "../RbAbstractDataType.h"
 #include "../RbDataType.h"
 #include "../../main/RbObject.h"
 
-class Node : public RbDataType{
+class Node : public RbAbstractDataType{
 
 public:
+	static const std::string         dataType;                     //!< the name/description of the data type
+
 	Node(void);
 	Node(Node& n);
 	Node(Node* p, std::vector<Node*> c);
 	Node(Node* p, std::vector<Node*> c, std::vector<RbDataType*> param);
 
+    // implemented abstract/virtual functions from base classes
 	RbObject* clone();
+	void       print(ostream &c) const;                            //!< Print the value to ostream c
+	void       dump(std::ostream& c);                              //!< Dump to ostream c
+	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+	const std::string&  getType(void) const;                       //!< Get type name
 
+	// overloaded operators
+	bool       operator==(RbObject& o) const;                      //!< Comparison
+	bool       operator==(Node& n) const;                          //!< Comparison
+
+	// member functions
 	Node* getChild(int i) { return children[i]; }
 	std::vector<Node*> &getChildren(void) { return children; }
-	int getNumChildren(void) { return children.size(); }
+	int getNumberChildren(void) { return children.size(); }
 	void clearChildren(void) { children.clear(); }
+	std::vector<RbDataType*> &getParameter(void) { return parameters; }
+	int getNumberParameter(void) { return parameters.size(); }
 
 	void clean(void);
 	int getIndex(void) { return index; }

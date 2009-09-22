@@ -16,14 +16,17 @@
  */
 
 #include "RbFunction_sqrt.h"
-#include "SymbolTable.h"
+#include "../../modelLanguage/parser/SymbolTable.h"
+#include "../../datatypes/RbDataType.h"
+#include "../../datatypes/primitive/RbDouble.h"
+#include "../../main/RbObject.h"
 #include <cmath>
 
 
 /** Define the argument rules */
 const ArgumentRule RbFunction_sqrt::argRules[] = {
 
-    ArgumentRule(NULL, RbReal()),
+    ArgumentRule("x", RbReal()),
     ArgumentRule()
 };
 
@@ -33,56 +36,45 @@ static bool fxn_sqrt = SymbolTable::globalTable().add("sqrt", new RbFunction_sqr
 
 /** Default constructor, allocate workspace */
 RbFunction_sqrt::RbFunction_sqrt()
-    : RbStandardFxn(), resultVec(new RbReal()) {
+    : AbstractFunction(), value(new RbDouble()) {
 } 
 
 /** Copy constructor */
 RbFunction_sqrt::RbFunction_sqrt(const RbFunction_sqrt& s)
-    : RbStandardFxn(s), resultVec(new RbReal()) {
+    : AbstractFunction(s), value(new RbDouble()) {
 }
 
 /** Destructor, delete workspace */
 RbFunction_sqrt::~RbFunction_sqrt() {
 
-    delete resultVec;
+    delete value;
 }
 
 /** Return copy */
-RbFunction_sqrt* RbFunction_sqrt::copy() const {
+RbObject* RbFunction_sqrt::clone() const {
 
     return new RbFunction_sqrt(*this);
 }
     
 /** Get argument rules */
-const ArgumentRule* RbFunction_sqrt::getArgRules() const {
+const ArgumentRule* RbFunction_sqrt::getArgumentRules() const {
 
     return argRules;
-}
-
-/** Get data type of result */
-const std::string& RbFunction_sqrt::getDataType() const {
-
-    return resultVec->getType();
 }
 
 /** Execute function */
 RbDataType* RbFunction_sqrt::execute(void) {
 
     /* Get actual argument */
-    RbReal *arg = (RbReal*) arguments[0]->getValue();
-
-    /* Resize result container */
-    if ( resultVec->size() != arg->size() )
-        resultVec->resize(arg->size());
+    RbDouble *arg = (RbDouble*) arguments[0]->getValue();
 
     /* Compute result */
-    for (int i=0; i<arg->size(); i++) {
-        if ( (*arg)[i] < 0.0 )
-            (*resultVec)[i] =  1E-100;
-        else
-            (*resultVec)[i] = std::sqrt((*arg)[i]);
+    if ( (*arg)[i] < 0.0 )
+        (*value) =  1E-100;
+    else
+        (*value) = std::sqrt((*arg)[i]);
     }
-    return(resultVec);
+    return value;
 }
 
 /** Print some info */
@@ -91,6 +83,6 @@ void RbFunction_sqrt::print(std::ostream& c) const {
     c << "RbFunction_sqrt: arg=";
     arguments[0]->print(c);
     c << " -- result=";
-    resultVec->print(c);
+    value->print(c);
     c << std::endl;
 }

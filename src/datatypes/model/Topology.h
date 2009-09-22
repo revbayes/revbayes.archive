@@ -1,8 +1,9 @@
 /**
  * @file
  * This file contains the declaration of a topology object.
- * The topology is the structure of nodes building the tree.
- * In this case we are considering only rooted topologies.
+ * The topology itself is only a container of nodes. The structure of the tree is given by the nodes.
+ * In this case we are considering only rooted topologies. Unrooted topologies must define a root, which might be any internal node.
+ * Note, the root should not have any parent and is therefore treated different than other notes.
  *
  * @brief Declaration of the class Topology
  *

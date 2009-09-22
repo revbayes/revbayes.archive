@@ -8,21 +8,32 @@
 #ifndef RBDOUBLE_H_
 #define RBDOUBLE_H_
 
-#include "../RbDataType.h"
+#include "../RbAbstractDataType.h"
 #include "../../main/RbObject.h"
+#include "../../utils/RbDumpState.h"
 
-class RbDouble: public RbDataType {
+class RbDouble: public RbAbstractDataType {
 public:
-    RbDouble(const double v);       //!< Constructor from double
-    RbDouble(const RbDouble& s);    //!< Copy constructor
-	//virtual ~RbDouble();
-	RbObject*  clone(void);     //!< clone this object
-	void    print(void) const;    //!< Print the value to cout
-	void    print(ostream &c) const;    //!< Print the value to ostream c
-	double   getValue(void) {return value;}
+	static const std::string         dataType;                     //!< the name/description of the data type
 
-	bool    store(void) const { return true; }  //!< What does this do?
-	bool    restore(void) { return true; }      //!< What does this do?
+    RbDouble(const double v);                                      //!< Constructor from double
+    RbDouble(const double v, std::string& name);                   //!< Constructor from double
+    RbDouble(const RbDouble& s);                                   //!< Copy constructor
+	virtual ~RbDouble();
+
+    // implemented abstract/virtual functions from base classes
+	RbObject*  clone(void);                                        //!< clone this object
+	void       print(ostream &c) const;                            //!< Print the value to ostream c
+	void       dump(std::ostream& c);                              //!< Dump to ostream c
+	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+	const std::string&  getType(void) const;                       //!< Get type name
+
+	//overloaded operators
+	bool       operator==(RbObject& o) const;                      //!< Comparison
+
+	// memeber functions
+	void       setValue(double d);
+	double     getValue(void) const;
 
 private:
 	double     value;      //!< value member

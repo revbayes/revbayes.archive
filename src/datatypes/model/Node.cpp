@@ -1,12 +1,26 @@
 #include "Node.h"
+#include "../RbDataType.h"
+#include "../RbAbstractDataType.h"
+#include "../../main/RbObject.h"
 
+#include <string>
+
+
+/**
+ * @brief the name of this data type
+ *
+ * The name of this data type which is used for association or referencing.
+ * Data types in REvBayes can be checked from which type they are by asking for its dataType.
+ *
+ */
+const std::string Node::dataType="Node";
 
 /**
  * @brief default constructor
  *
  * This is the default constructor
  */
-Node::Node(void) : RbDataType("Node") {
+Node::Node(void) : RbAbstractDataType("Node") {
 	parent = NULL;
 }
 
@@ -17,7 +31,7 @@ Node::Node(void) : RbDataType("Node") {
  *
  * @param n      the node to copy
  */
-Node::Node(Node &n) : RbDataType("Node") {
+Node::Node(Node &n) : RbAbstractDataType("Node") {
 	// initialize with default values
 	parent = NULL;
 
@@ -44,7 +58,7 @@ Node::Node(Node &n) : RbDataType("Node") {
  *
  * @param n      the node to copy
  */
-Node::Node(Node* p, std::vector<Node*> c) : RbDataType("Node") {
+Node::Node(Node* p, std::vector<Node*> c) : RbAbstractDataType("Node") {
 	parent = p;
 	children = c;
 }
@@ -56,7 +70,7 @@ Node::Node(Node* p, std::vector<Node*> c) : RbDataType("Node") {
  *
  * @param n      the node to copy
  */
-Node::Node(Node* p, std::vector<Node*> c, std::vector<RbDataType*> param) : RbDataType("Node") {
+Node::Node(Node* p, std::vector<Node*> c, std::vector<RbDataType*> param) : RbAbstractDataType("Node") {
 	parent = p;
 	children = c;
 	parameters = param;
@@ -67,7 +81,8 @@ void Node::clean(void) {
 	parent = NULL;
 	children.clear();
 	parameters.clear();
-	setName("");
+	std::string s = "";
+	setName(s);
 }
 
 /**
@@ -80,6 +95,146 @@ void Node::clean(void) {
  */
 RbObject* Node::clone(){
 	return new Node(*this);
+}
+
+/**
+ * @brief print function
+ *
+ * This function prints this object.
+ *
+ * @see RbObject.print()
+ * @param c           the stream where to print to
+ *
+ */
+void Node::print(ostream &c) const {
+
+	c << name << "(";
+
+	// deep print for all children
+
+	for (int i=0 ; i < children.size(); i++ ){
+		children[i]->print(c);
+	}
+
+	c << "):";
+	// deep print for all parameters
+	for (int i=0 ; i < parameters.size(); i++ ){
+		parameters[i]->print(c);
+		if (i < parameters.size()-1)
+			c << ",";
+	}
+	c << endl;
+}
+
+/**
+ * @brief dump function
+ *
+ * This function dumps this object.
+ *
+ * @see RbObject.dump()
+ * @param c           the stream where to dump to
+ *
+ */
+void Node::dump(std::ostream& c){
+
+}
+
+/**
+ * @brief resurrect function
+ *
+ * This function resurrects this object.
+ *
+ * @see RbObject.resurrect()
+ * @param x           the object from which to resurrect
+ *
+ */
+void Node::resurrect(const RbDumpState& x){
+
+}
+
+/**
+ * @brief get name for this data type
+ *
+ * This function get name for this data type.
+ * It is basically only a convinience function to access the static member dataType from a base class reference.
+ *
+ * @see RbDataType.getType()
+ *
+ */
+const std::string&  Node::getType(void) const{
+	return dataType;
+}
+
+/**
+ * @brief overloaded == operators
+ *
+ * This function compares this object
+ *
+ * @param o           the object to compare to
+ *
+ */
+bool Node::operator ==(RbObject& o) const {
+
+	if (typeid(Node) == typeid(o)){
+		// we are from the same type, which is perfect :)
+		Node& tmp = ((Node&)o);
+		return (*this) == tmp;
+	}
+	else {
+		RbDataType& dt = dynamic_cast<RbDataType&>(o);
+		if ((&dt) != 0) {
+			if (isConvertible(dt)){
+				//can I convert myself into the type of o
+				RbDataType* newType = convertTo(dt);
+				return ((*newType) == dt);
+			}
+			else if (dt.isConvertible(dataType)){
+				//try to convert o into my data type
+				RbDataType* newType = dt.convertTo(dataType);
+				Node& tmp = ((Node&)*newType);
+				return (*this) == tmp;
+			}
+		}
+	}
+
+	return false;
+}
+
+/**
+ * @brief overloaded == operators
+ *
+ * This function compares this object
+ *
+ * @param o           the object to compare to
+ *
+ */
+bool Node::operator ==(Node& n) const {
+	// check the parents
+	if (!((*parent) == (*n.getParent()))){
+		return false;
+	}
+
+	// check the number of children and parameters
+	if (parameters.size() != n.getNumberParameter() || children.size() != n.getNumberChildren()){
+		return false;
+	}
+
+	for (int i=0; i < children.size(); i++ ){
+		Node& my_i = *children[i];
+		if (!(my_i == (*n.getChild(i)))){
+			return false;
+		}
+	}
+
+	// deep print for all parameters
+	for (int i=0 ; i < parameters.size(); i++ ){
+		RbDataType& my_i = *parameters[i];
+		if (!(my_i == (*n.getParameter(i)))){
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /**
@@ -253,5 +408,6 @@ RbDataType* Node::removeParameter(RbDataType* p){
  *
  */
 bool Node::isLeaf(){
-	return (children == NULL || children.size() == 0);
+//	return (children == NULL || children.size() == 0);
+	return (children.size() == 0);
 }

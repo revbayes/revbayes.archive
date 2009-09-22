@@ -16,24 +16,43 @@
 #ifndef RbInt_H
 #define RbInt_H
 
-#include "RbDataType.h"
+#include "../RbAbstractDataType.h"
 
-class RbInt : public RbDataType {
+class RbInt : public RbAbstractDataType {
 
 public:
-	    RbInt(const int v);       //!< Constructor from int
-	    RbInt(const RbInt& s);    //!< Copy constructor
+	static const std::string         dataType;                     //!< the name/description of the data type
 
-	RbInt*  copy(void) const;     //!< Copy
-	void    print(void) const;    //!< Print the value to cout
-	void    print(ostream &c) const;    //!< Print the value to ostream c
-	int     getValue() {return value;} //!< gets the actual value
+    RbInt(const int v);                                            //!< Constructor from double
+    RbInt(const int v, std::string& name);                         //!< Constructor from double
+    RbInt(const RbInt& s);                                         //!< Copy constructor
+	virtual ~RbInt();
 
-	bool    store(void) const { return true; }  //!< What does this do?
-	bool    restore(void) { return true; }      //!< What does this do?
+    // implemented abstract/virtual functions from base classes
+	RbObject*           clone(void);                                        //!< clone this object
+	void                print(std::ostream &c) const;                            //!< Print the value to ostream c
+	void                dump(std::ostream& c);                              //!< Dump to ostream c
+	void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+	const std::string&  getType(void) const;                                //!< Get type name
+	bool                isConvertible(const RbDataType& dt) const;          //!< is this data type convertible into the data type dt
+   	bool                isConvertible(const std::string& dt) const;         //!< is this data type convertible into the data type dt
+   	RbDataType*         convertTo(const RbDataType& dt) const;              //!< convert this data type into the datat type dt
+   	RbDataType*         convertTo(const std::string& dt) const;             //!< convert this data type into the datat type dt
+
+	//overloaded operators
+	bool                operator==(RbObject& o) const;                      //!< Comparison
+	bool                operator==(RbInt& o) const;                         //!< Comparison
+	RbDataType&         operator+(RbDataType& o) const;                     //!< Addition
+	RbInt&              operator+(RbInt& o) const;                          //!< Addition
+
+
+	// memeber functions
+	void       setValue(int v);
+	int        getValue(void) const;
 
 private:
-	int     value;      //!< value member
+	int        value;      //!< value member
 };
+
 
 #endif

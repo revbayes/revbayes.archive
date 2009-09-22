@@ -24,11 +24,14 @@
 #include <vector>
 
 #include "../RbDataType.h"
+#include "../RbAbstractDataType.h"
 #include "Node.h"
 
-class Branch : public RbDataType{
+class Branch : public RbAbstractDataType {
 
 public:
+	static const std::string         dataType;                     //!< the name/description of the data type
+
 	// TODO not sure if I want to allow branch to be instantiated without the two nodes attached to it
 	Branch(void);                                             //!< default constructor
 	Branch(Branch &b);                                        //!< copy constructor
@@ -37,13 +40,23 @@ public:
 	Branch(Node* p, Node* c, std::vector<RbDataType*> param); //!< constructor with the two nodes and the set of parameters attached to this branch
 	~Branch(void);                                            //!< Destructor
 
-	RbObject* clone(void);                                    //!< call of the copy constructor from the base class
+	// implemented abstract/virtual functions from base classes
+	RbObject*  clone(void);                                        //!< clone this object
+	void       print(ostream &c) const;                            //!< Print the value to ostream c
+	void       dump(std::ostream& c);                              //!< Dump to ostream c
+	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+	const std::string&  getType(void) const;                       //!< Get type name
 	virtual std::string toString();
+
+	//overloaded operators
+	bool       operator==(RbObject& o) const;                      //!< Comparison
+	bool       operator==(Branch& o) const;                        //!< Comparison
 
 	// assignment operator
 	// += operator
 	RbDataType* getParameter(int index);                      //!< retrieves the parameter at index i
 	RbDataType* getParameter(std::string& name);              //!< retrieves the parameter with given name
+	int getNumberOfParameter();                               //!< get the number of parameters
 	Node* getParent();                                        //!< retrieves the parent node
 	Node* getChild();                                         //!< retrieves the child node
 	int addParameter(RbDataType* p);                          //!< adds the parameter p at the end and return the index of the position

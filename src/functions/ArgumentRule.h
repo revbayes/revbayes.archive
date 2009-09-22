@@ -17,15 +17,16 @@
 #ifndef ArgumentRule_H
 #define ArgumentRule_H
 
-#include "RbDataType.h"
 #include <string>
+#include "../datatypes/RbDataType.h"
+#include "../main/RbObject.h"
 
 using namespace std;
 
 /*! This is the class used to describe labels and permissible types for arguments
  *  of functions and distributions, the latter being derived functions.
  */
-class ArgumentRule {
+class ArgumentRule : public RbObject {
 
     public:
             ArgumentRule() : dataType(""), defaultValue(NULL), label("") {} //!< Default constructor
@@ -37,13 +38,13 @@ class ArgumentRule {
             */
             virtual ~ArgumentRule() { delete defaultValue; }    //!< Delete default value
 
-        const string&   getDataType() const { return dataType; }        //!< Get data type
-        RbDataType*     getDefault() const { return defaultValue->copy(); }   //!< Get a default data type object
+//has a argument rule a datatype?!?        const string&   getDataType() const { return dataType; }        //!< Get data type
+        RbDataType*     getDefaultValue() const { return defaultValue->copy(); }   //!< Get a default data type object
         const string&   getLabel() const { return label; }              //!< Get label
         bool            isValid(const string& x) const { return x == dataType; }  //!< Is type valid?
 
     protected:
-        const string        dataType;       //!< Data type of argument
+//has a argument rule a datatype?!?        const string        dataType;       //!< Data type of argument
         const RbDataType*   defaultValue;   //!< Default value
         const string        label;          //!< Label of argument
 

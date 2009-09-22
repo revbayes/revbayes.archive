@@ -16,22 +16,21 @@
 #ifndef RbString_H
 #define RbString_H
 
-#include "RbDataType.h"
+#include "../RbDataType.h"
 
 using namespace std;
 
-class RbString : public RbDataType {
+class RbString : public RbDataType, public std::string {
 
 public:
 	    RbString(const string& v);      //!< Constructor from string
 	    RbString(const RbString& s);    //!< Copy constructor
 
-	RbString*   copy(void) const;           //!< Copy
-	void        print(void) const;          //!< Print the value to cout
+	RbObject*   clone(void);           //!< Copy
 	void        print(ostream &c) const;    //!< Print the value to c
 
-	bool        store(void) const { return true; }  //!< What does this do?
-	bool        restore(void) { return true; }      //!< What does this do?
+	void    dump(std::ostream& c);              //!< Dump to ostream c
+	void    resurrect(const RbDumpState& x);  //!< Resurrect from dumped state
 
 private:
 	string  value;      //!< Value member

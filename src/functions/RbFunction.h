@@ -21,11 +21,10 @@
 #define RbFunction_H
 
 #include "ArgumentRule.h"
-#include "DAGNode.h"
-#include "RbDataType.h"
-#include "RbObject.h"
-#include "SyntaxElement.h"
-#include "SyntaxLabeledExpr.h"
+#include "../dag/DAGNode.h"
+#include "../datatypes/RbDataType.h"
+#include "../main/RbParameter.h"
+#include "../main/RbObject.h"
 #include <set>
 #include <string>
 #include <vector>
@@ -74,19 +73,20 @@ class RbFunction :  public RbObject {
     public:
 
 #pragma mark Parser help
-        virtual RbFunction*         copy() const = 0;   //!< Return copy
-        virtual const ArgumentRule* getArgRules() const = 0; //!< Get argument rules for the function
-        virtual std::set<DAGNode*>  getDAGNodes() const = 0; //!< Get DAGNode terminals in arguments
-        virtual const string&       getDataType() const = 0; //!< Get data type of result
-        virtual bool                isAccessorFxn() const = 0;  //! Is this a distribution function?
-        virtual bool                isDistributionFxn() const = 0;  //! Is this a distributin function?
-        virtual bool                setArguments(std::vector<SyntaxLabeledExpr*> labeledArgs) = 0;  //! Set arguments
-        virtual void                setWorkspace() = 0;      //!< Set workspace
+        virtual const ArgumentRule* getArgumentRules() const = 0; //!< Get argument rules for the function
+//        virtual std::set<DAGNode*>  getDAGNodes() const = 0; //!< Get DAGNode terminals in arguments
+        virtual bool                isAccessorFunction() const = 0;  //! Is this a distribution function?
+        virtual bool                isDistributionFunction() const = 0;  //! Is this a distributin function?
+        virtual bool                setArguments(std::vector<Parameter*> labeledArgs) = 0;  //! Set arguments
+//        virtual void                setWorkspace() = 0;      //!< Set workspace
 
 #pragma mark Regular functions
         virtual RbDataType*         execute() = 0;           //!< Execute function to get result
-        virtual void                print(std::ostream& c=std::cout) const = 0;     //!< Print some info
         virtual bool                setAttribute(RbDataType* newValue) const = 0;   //!< Set attribute
+
+    protected:
+
+        std::vector<RbParameter*> arguments;  //!< Processed arguments
 };
 
 #endif

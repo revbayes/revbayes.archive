@@ -16,14 +16,25 @@
  */
 
 #include "Branch.h"
+#include "Node.h"
 #include "../RbDataType.h"
+#include "../RbAbstractDataType.h"
+
+/**
+ * @brief the name of this data type
+ *
+ * The name of this data type which is used for association or referencing.
+ * Data types in REvBayes can be checked from which type they are by asking for its dataType.
+ *
+ */
+const std::string Branch::dataType="Branch";
 
 /**
  * @brief default constructor
  *
  * This is the default constructor
  */
-Branch::Branch(void) : RbDataType("Branch") {
+Branch::Branch(void) : RbAbstractDataType("Branch") {
 
 }
 
@@ -34,7 +45,7 @@ Branch::Branch(void) : RbDataType("Branch") {
  *
  * @param b      the branch to copy
  */
-Branch::Branch(Branch &b) : RbDataType("Branch") {
+Branch::Branch(Branch &b) : RbAbstractDataType("Branch") {
 	// initialize with default values
 	child = NULL;
 	parent = NULL;
@@ -61,7 +72,7 @@ Branch::Branch(Branch &b) : RbDataType("Branch") {
  *
  * @param p      the vector containing the parameters
  */
-Branch::Branch(std::vector<RbDataType*> p) : RbDataType("Branch") {
+Branch::Branch(std::vector<RbDataType*> p) : RbAbstractDataType("Branch") {
 	// initialize with default values
 	child = NULL;
 	parent = NULL;
@@ -77,7 +88,7 @@ Branch::Branch(std::vector<RbDataType*> p) : RbDataType("Branch") {
  * @param p      the parent node of the branch
  * @param c      the child node of the branch
  */
-Branch::Branch(Node* p, Node* c) : RbDataType("Branch") {
+Branch::Branch(Node* p, Node* c) : RbAbstractDataType("Branch") {
 	// initialize with default values
 	child = c;
 	parent = p;
@@ -92,7 +103,7 @@ Branch::Branch(Node* p, Node* c) : RbDataType("Branch") {
  * @param c          the child node of the branch
  * @param param      the vector of parameters
  */
-Branch::Branch(Node* p, Node* c, std::vector<RbDataType*> param) : RbDataType("Branch") {
+Branch::Branch(Node* p, Node* c, std::vector<RbDataType*> param) : RbAbstractDataType("Branch") {
 	// initialize with default values
 	child = c;
 	parent = p;
@@ -126,6 +137,133 @@ std::string Branch::toString(){
 		s += (*it)->toString() + " ";
 	}
 	return s;
+}
+
+/**
+ * @brief print function
+ *
+ * This function prints this object.
+ *
+ * @see RbObject.print()
+ * @param c           the stream where to print to
+ *
+ */
+void Branch::print(ostream &c) const {
+	std::string s = getName() + '\n' + "Parameter: ";
+	for (int i=0 ; i < parameters.size(); i++ ){
+		s += parameters[i]->toString() + " ";
+	}
+
+	c << s << endl;
+}
+
+/**
+ * @brief dump function
+ *
+ * This function dumps this object.
+ *
+ * @see RbObject.dump()
+ * @param c           the stream where to dump to
+ *
+ */
+void Branch::dump(std::ostream& c){
+
+}
+
+/**
+ * @brief resurrect function
+ *
+ * This function resurrects this object.
+ *
+ * @see RbObject.resurrect()
+ * @param x           the object from which to resurrect
+ *
+ */
+void Branch::resurrect(const RbDumpState& x){
+
+}
+
+/**
+ * @brief get name for this data type
+ *
+ * This function get name for this data type.
+ * It is basically only a convinience function to access the static member dataType from a base class reference.
+ *
+ * @see RbDataType.getType()
+ *
+ */
+const std::string&  Branch::getType(void) const{
+	return dataType;
+}
+
+/**
+ * @brief overloaded == operators
+ *
+ * This function compares this object
+ *
+ * @param o           the object to compare to
+ *
+ */
+bool Branch::operator ==(RbObject& o) const {
+
+	if (typeid(Branch) == typeid(o)){
+		// we are from the same type, which is perfect :)
+		Branch& tmp = ((Branch&)o);
+		return (*this) == tmp;
+	}
+	else {
+		RbDataType& dt = dynamic_cast<RbDataType&>(o);
+		if ((&dt) != 0) {
+			if (isConvertible(dt)){
+				//can I convert myself into the type of o
+				RbDataType* newType = convertTo(dt);
+				return ((*newType) == dt);
+			}
+			else if (dt.isConvertible(dataType)){
+				//try to convert o into my data type
+				RbDataType* newType = dt.convertTo(dataType);
+				Branch& tmp = ((Branch&)*newType);
+				return (*this) == tmp;
+			}
+		}
+	}
+
+	return false;
+}
+
+/**
+ * @brief overloaded == operators
+ *
+ * This function compares this object
+ *
+ * @param o           the object to compare to
+ *
+ */
+bool Branch::operator ==(Branch& n) const {
+	// check the parents
+	if (!((*parent) == (*n.getParent()))){
+		return false;
+	}
+
+	// check the children
+		if (!((*child) == (*n.getChild()))){
+			return false;
+		}
+
+	// check the number of children and parameters
+	if (parameters.size() != n.getNumberOfParameter()){
+		return false;
+	}
+
+	// deep print for all parameters
+	for (int i=0 ; i < parameters.size(); i++ ){
+		RbDataType& my_i = *parameters[i];
+		if (!(my_i == (*n.getParameter(i)))){
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /**
@@ -165,6 +303,18 @@ RbDataType* Branch::getParameter(std::string& name){
 	}
 
 	return dt;
+}
+
+/**
+ * @brief Get the number of parameters
+ *
+ * This function returns the number of parameters.
+ *
+ * @returns          the number of parameter
+ *
+ */
+int Branch::getNumberOfParameter(){
+	return parameters.size();
 }
 
 /**
