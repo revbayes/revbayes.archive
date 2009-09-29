@@ -28,15 +28,6 @@
 #include <iostream>
 
 /**
- * @brief the name of this data type
- *
- * The name of this data type which is used for association or referencing.
- * Data types in REvBayes can be checked from which type they are by asking for its dataType.
- *
- */
-const std::string RbInt::dataType="RbInt";
-
-/**
  * @brief constructor
  *
  * This is the constructor creating a new RbDouble instance with the given initial value.
@@ -81,7 +72,7 @@ RbInt::RbInt(const RbInt& d)
  *
  */
 RbInt::~RbInt(void) {
-	// forced crashed in testInt
+	// forced a crash in testInt
 	//delete &value;
 }
 
@@ -109,9 +100,9 @@ RbObject* RbInt::clone(void) {
  * @param c           the stream where to print to
  *
  */
-void RbInt::print(ostream &c) const {
+void RbInt::print(std::ostream &c) const {
 
-	c << value << endl;
+	c << value << std::endl;
 }
 
 /**
@@ -138,19 +129,6 @@ void RbInt::dump(std::ostream& c){
  */
 void RbInt::resurrect(const RbDumpState& x){
 
-}
-
-/**
- * @brief get name for this data type
- *
- * This function get name for this data type.
- * It is basically only a convinience function to access the static member dataType from a base class reference.
- *
- * @see RbDataType.getType()
- *
- */
-const std::string&  RbInt::getType(void) const{
-	return dataType;
 }
 
 /**
@@ -182,11 +160,11 @@ bool RbInt::isConvertible(const RbDataType& dt) const {
  * @returns          true, if it can be converted
  *
  */
-bool RbInt::isConvertible(const std::string& dt) const {
-	if (dataType == dt){
+bool RbInt::isConvertible(const RbTypeInfo& dt) const {
+	if (typeid(*this) == dt.getTypeid()){
 		return true;
 	}
-	else if (RbDouble::dataType == dt){
+	else if (typeid(RbDouble) == dt.getTypeid()){
 		return true;
 	}
 
@@ -202,11 +180,11 @@ bool RbInt::isConvertible(const std::string& dt) const {
  * @returns          a new instance of the given data type with the same value as before, NULL if we cannot convert
  *
  */
-RbDataType* RbInt::convertTo(const std::string& dt) const {
-	if (dataType == dt){
+RbDataType* RbInt::convertTo(const RbTypeInfo& dt) const {
+	if (typeid(*this) == dt.getTypeid()){
 		return new RbInt(value);
 	}
-	else if (RbDouble::dataType == dt){
+	else if (typeid(RbDouble) == dt.getTypeid()){
 		return new RbDouble(value);
 	}
 
@@ -256,9 +234,9 @@ bool RbInt::operator==(RbObject& o) const {
 				RbDataType* newType = convertTo(dt);
 				return ((*newType) == dt);
 			}
-			else if (dt.isConvertible(dataType)){
+			else if (dt.isConvertible(*this)){
 				//try to convert o into my data type
-				RbDataType* newType = dt.convertTo(dataType);
+				RbDataType* newType = dt.convertTo(*this);
 				RbInt& tmp = ((RbInt&)*newType);
 				return value == tmp.getValue();
 			}

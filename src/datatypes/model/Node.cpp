@@ -7,15 +7,6 @@
 
 
 /**
- * @brief the name of this data type
- *
- * The name of this data type which is used for association or referencing.
- * Data types in REvBayes can be checked from which type they are by asking for its dataType.
- *
- */
-const std::string Node::dataType="Node";
-
-/**
  * @brief default constructor
  *
  * This is the default constructor
@@ -106,7 +97,7 @@ RbObject* Node::clone(){
  * @param c           the stream where to print to
  *
  */
-void Node::print(ostream &c) const {
+void Node::print(std::ostream &c) const {
 
 	c << name << "(";
 
@@ -123,7 +114,7 @@ void Node::print(ostream &c) const {
 		if (i < parameters.size()-1)
 			c << ",";
 	}
-	c << endl;
+	c << std::endl;
 }
 
 /**
@@ -153,19 +144,6 @@ void Node::resurrect(const RbDumpState& x){
 }
 
 /**
- * @brief get name for this data type
- *
- * This function get name for this data type.
- * It is basically only a convinience function to access the static member dataType from a base class reference.
- *
- * @see RbDataType.getType()
- *
- */
-const std::string&  Node::getType(void) const{
-	return dataType;
-}
-
-/**
  * @brief overloaded == operators
  *
  * This function compares this object
@@ -188,9 +166,9 @@ bool Node::operator ==(RbObject& o) const {
 				RbDataType* newType = convertTo(dt);
 				return ((*newType) == dt);
 			}
-			else if (dt.isConvertible(dataType)){
+			else if (dt.isConvertible(*this)){
 				//try to convert o into my data type
-				RbDataType* newType = dt.convertTo(dataType);
+				RbDataType* newType = dt.convertTo(*this);
 				Node& tmp = ((Node&)*newType);
 				return (*this) == tmp;
 			}
@@ -315,7 +293,7 @@ int Node::addParameter(RbDataType* p){
 int Node::addParameter(RbDataType* p, int index){
 	//TODO need to check if enough elements are in the vector before this position
 	// otherwise could add at the end or create empty elements in between
-	vector<RbDataType*>::iterator it = parameters.begin();
+	std::vector<RbDataType*>::iterator it = parameters.begin();
 	parameters.insert(it+index, p);
 	return index;
 }
@@ -347,7 +325,7 @@ RbDataType* Node::removeParameter(int index){
 	}
 
 	RbDataType* dt = parameters[index];
-	vector<RbDataType*>::iterator it = parameters.begin();
+	std::vector<RbDataType*>::iterator it = parameters.begin();
 	parameters.erase(it+index);
 
 	return dt;

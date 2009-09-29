@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 	i.setName("testInt");
 
 	//print
-	cout << "print int" << '\n';
+	std::cout << "print int" << '\n';
 	i.print(std::cout);
 
 	//set a new value
@@ -20,9 +20,9 @@ int main(int argc, char **argv) {
 	assert (i.getValue() == 25);
 
 	RbObject* cp = i.clone();
-	cout << '\n' << "print i" << '\n';
+	std::cout << '\n' << "print i" << '\n';
 	i.print(std::cout);
-	cout << '\n' << "print cp" << '\n';
+	std::cout << '\n' << "print cp" << '\n';
 	cp->print(std::cout);
 	// check the return type
 	assert (typeid(*cp) == typeid(RbInt));
@@ -57,9 +57,9 @@ int main(int argc, char **argv) {
 		RbDataType& err = ra + d;
 
 	} catch(RbException& e){
-		cout << '\n' << "caught exception" << '\n';
-		e.print(cout);
+		std::cout << '\n' << "caught exception" << '\n';
+		e.print(std::cout);
 	}
 
-	cout << '\n' << "done" << '\n';
+	std::cout << '\n' << "done" << '\n';
 }

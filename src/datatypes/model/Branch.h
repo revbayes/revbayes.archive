@@ -30,8 +30,6 @@
 class Branch : public RbAbstractDataType {
 
 public:
-	static const std::string         dataType;                     //!< the name/description of the data type
-
 	// TODO not sure if I want to allow branch to be instantiated without the two nodes attached to it
 	Branch(void);                                             //!< default constructor
 	Branch(Branch &b);                                        //!< copy constructor
@@ -42,10 +40,9 @@ public:
 
 	// implemented abstract/virtual functions from base classes
 	RbObject*  clone(void);                                        //!< clone this object
-	void       print(ostream &c) const;                            //!< Print the value to ostream c
+	void       print(std::ostream &c) const;                            //!< Print the value to ostream c
 	void       dump(std::ostream& c);                              //!< Dump to ostream c
 	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-	const std::string&  getType(void) const;                       //!< Get type name
 	virtual std::string toString();
 
 	//overloaded operators

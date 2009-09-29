@@ -16,13 +16,13 @@
 #ifndef RbBool_H
 #define RbBool_H
 
+#include <iostream>
 #include "../RbDataType.h"
 #include "../RbAbstractDataType.h"
 
 class RbBool : public RbAbstractDataType {
 
 public:
-	static const std::string         dataType;                     //!< the name/description of the data type
 
 	RbBool(const bool v);                                            //!< Constructor from double
 	RbBool(const bool v, std::string& name);                         //!< Constructor from double
@@ -31,7 +31,7 @@ public:
 
     // implemented abstract/virtual functions from base classes
 	RbObject*  clone(void);                                        //!< clone this object
-	void       print(ostream &c) const;                            //!< Print the value to ostream c
+	void       print(std::ostream &c) const;                            //!< Print the value to ostream c
 	void       dump(std::ostream& c);                              //!< Dump to ostream c
 	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
 	const std::string&  getType(void) const;                       //!< Get type name

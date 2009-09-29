@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
 	b.setName("testBool");
 
 	//print
-	cout << "print bool" << '\n';
+	std::cout << "print bool" << '\n';
 	b.print(std::cout);
 
 	//set a new value
@@ -18,9 +18,9 @@ int main(int argc, char **argv) {
 	assert (b.getValue() == false);
 
 	RbObject* cp = b.clone();
-	cout << '\n' << "print b" << '\n';
+	std::cout << '\n' << "print b" << '\n';
 	b.print(std::cout);
-	cout << '\n' << "print cp" << '\n';
+	std::cout << '\n' << "print cp" << '\n';
 	cp->print(std::cout);
 	// check the return type
 	assert (typeid(*cp) == typeid(RbBool));

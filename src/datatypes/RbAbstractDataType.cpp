@@ -58,7 +58,7 @@ bool RbAbstractDataType::isConvertible(const RbDataType& dt) const {
  *
  */
 bool RbAbstractDataType::isConvertible(const RbTypeInfo& t) const {
-	return typeid(this) == t.getTypeid();
+	return typeid(*this) == t.getTypeid();
 }
 
 /**
@@ -70,7 +70,7 @@ bool RbAbstractDataType::isConvertible(const RbTypeInfo& t) const {
  * @returns          a new instance of the given data type with the same value as before, NULL if we cannot convert
  *
  */
-RbDataType* RbAbstractDataType::convertTo(const std::string& dt) const {
+RbDataType* RbAbstractDataType::convertTo(const RbTypeInfo& dt) const {
 	return NULL;
 }
 

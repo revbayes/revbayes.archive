@@ -32,7 +32,6 @@
 class Node : public RbAbstractDataType{
 
 public:
-	static const std::string         dataType;                     //!< the name/description of the data type
 
 	Node(void);
 	Node(Node& n);
@@ -41,10 +40,9 @@ public:
 
     // implemented abstract/virtual functions from base classes
 	RbObject* clone();
-	void       print(ostream &c) const;                            //!< Print the value to ostream c
+	void       print(std::ostream &c) const;                            //!< Print the value to ostream c
 	void       dump(std::ostream& c);                              //!< Dump to ostream c
 	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-	const std::string&  getType(void) const;                       //!< Get type name
 
 	// overloaded operators
 	bool       operator==(RbObject& o) const;                      //!< Comparison

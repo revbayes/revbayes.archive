@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
 	b.setName(s);
 
 	//print branch
-	cout << "print branch" << '\n';
+	std::cout << "print branch" << '\n';
 	b.print(std::cout);
 
 	//create a length parameter for the branch
@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
 	assert(b.getNumberOfParameter()==1);
 
 	//print branch
-	cout << "print branch with branch length parameter" << '\n';
+	std::cout << "print branch with branch length parameter" << '\n';
 	b.print(std::cout);
 
 	//remove the branch length parameter
@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 	assert(b.getNumberOfParameter()==0);
 
 	//print branch
-	cout << "print branch with removed branch length parameter" << '\n';
+	std::cout << "print branch with removed branch length parameter" << '\n';
 	b.print(std::cout);
 
 }

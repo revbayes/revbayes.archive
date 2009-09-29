@@ -17,11 +17,12 @@
 #define RbInt_H
 
 #include "../RbAbstractDataType.h"
+#include "RbDataType.h"
+#include "RbTypeInfo.h"
 
 class RbInt : public RbAbstractDataType {
 
 public:
-	static const std::string         dataType;                     //!< the name/description of the data type
 
     RbInt(const int v);                                            //!< Constructor from double
     RbInt(const int v, std::string& name);                         //!< Constructor from double
@@ -33,11 +34,10 @@ public:
 	void                print(std::ostream &c) const;                            //!< Print the value to ostream c
 	void                dump(std::ostream& c);                              //!< Dump to ostream c
 	void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-	const std::string&  getType(void) const;                                //!< Get type name
 	bool                isConvertible(const RbDataType& dt) const;          //!< is this data type convertible into the data type dt
-   	bool                isConvertible(const std::string& dt) const;         //!< is this data type convertible into the data type dt
+   	bool                isConvertible(const RbTypeInfo& dt) const;         //!< is this data type convertible into the data type dt
    	RbDataType*         convertTo(const RbDataType& dt) const;              //!< convert this data type into the datat type dt
-   	RbDataType*         convertTo(const std::string& dt) const;             //!< convert this data type into the datat type dt
+   	RbDataType*         convertTo(const RbTypeInfo& dt) const;             //!< convert this data type into the datat type dt
 
 	//overloaded operators
 	bool                operator==(RbObject& o) const;                      //!< Comparison

@@ -29,14 +29,15 @@ class RbAbstractDataType : public RbDataType {
            virtual ~RbAbstractDataType();                       //!< Destructor; delete attributes
        	virtual bool isConvertible(const RbDataType& dt) const;       //!< is this data type convertible into the data type dt
        	virtual bool isConvertible(const RbTypeInfo& dt) const;      //!< is this data type convertible into the data type dt
-//       	virtual RbDataType* convertTo(const RbDataType& dt) const;    //!< convert this data type into the datat type dt
-//       	virtual RbDataType* convertTo(const std::string& dt) const;   //!< convert this data type into the datat type dt
+       	virtual RbDataType* convertTo(const RbDataType& dt) const;    //!< convert this data type into the datat type dt
+       	virtual RbDataType* convertTo(const RbTypeInfo& dt) const;   //!< convert this data type into the datat type dt
 
 //    	int* getDimension();                                    //!< get the dimensions
 //    	std::string* getLabels();                               //!< get the labels for the different attributes of this data type
 
+        virtual bool                 isComparable() const;            //!< can we compare instances of this type?
         // Overloaded comparison functions
-        virtual RbDataType&          operator<(RbDataType& o) const;  //!< Less than operator
+        virtual bool                 operator<(RbDataType& o) const;  //!< Less than operator
 
         // Overloaded arithmetic functions
         virtual RbDataType&          operator+(RbDataType& o) const;  //!< Addition

@@ -26,15 +26,6 @@
 #include <iostream>
 
 /**
- * @brief the name of this data type
- *
- * The name of this data type which is used for association or referencing.
- * Data types in REvBayes can be checked from which type they are by asking for its dataType.
- *
- */
-const std::string RbBool::dataType="RbBool";
-
-/**
  * @brief constructor
  *
  * This is the constructor creating a new RbDouble instance with the given initial value.
@@ -106,9 +97,9 @@ RbObject* RbBool::clone(void) {
  * @param c           the stream where to print to
  *
  */
-void RbBool::print(ostream &c) const {
+void RbBool::print(std::ostream &c) const {
 
-	c << value << endl;
+	c << value << std::endl;
 }
 
 /**
@@ -138,19 +129,6 @@ void RbBool::resurrect(const RbDumpState& x){
 }
 
 /**
- * @brief get name for this data type
- *
- * This function get name for this data type.
- * It is basically only a convinience function to access the static member dataType from a base class reference.
- *
- * @see RbDataType.getType()
- *
- */
-const std::string&  RbBool::getType(void) const{
-	return dataType;
-}
-
-/**
  * @brief overloaded == operators
  *
  * This function compares this object
@@ -173,9 +151,9 @@ bool RbBool::operator ==(RbObject& o) const {
 				RbDataType* newType = convertTo(dt);
 				return ((*newType) == dt);
 			}
-			else if (dt.isConvertible(dataType)){
+			else if (dt.isConvertible(*this)){
 				//try to convert o into my data type
-				RbDataType* newType = dt.convertTo(dataType);
+				RbDataType* newType = dt.convertTo(*this);
 				RbBool& tmp = ((RbBool&)*newType);
 				return value == tmp.getValue();
 			}

@@ -26,16 +26,18 @@ class RbDataType : public RbObject{
 public:
     virtual bool                isConvertible(const RbDataType& dt) const = 0;              //!< is this data type convertible into the data type dt
 	virtual bool                isConvertible(const RbTypeInfo& t) const = 0;               //!< is this data type convertible into the data type t
-//	virtual RbDataType*         convertTo(const RbDataType& dt) const = 0;                  //!< convert this data type into the datat type dt
-//	virtual RbDataType*         convertTo(const std::string& dt) const = 0;                 //!< convert this data type into the datat type dt
+	virtual RbDataType*         convertTo(const RbDataType& dt) const = 0;                  //!< convert this data type into the datat type dt
+	virtual RbDataType*         convertTo(const RbTypeInfo& dt) const = 0;                 //!< convert this data type into the datat type dt
 
 //	virtual int                 getDimension() = 0;                            //!< get the dimensions
 //	virtual std::string*        getNames() = 0;                                //!< get the labels for the different attributes of this data type
 //    virtual void                setDim(const int* newDim) = 0;                 //!< Get dim attribute
 //    virtual void                setNames(const int* newNames) = 0;             //!< Get names attribute
 
-    // Overloaded comparison functions
-    virtual RbDataType&          operator<(RbDataType& o) const =0;            //!< Less than operator
+
+	virtual bool                 isComparable() const =0;                      //!< can we compare instances of this type?
+	// Overloaded comparison functions
+    virtual bool                 operator<(RbDataType& o) const =0;            //!< Less than operator
 
     // Overloaded arithmetic functions
     virtual RbDataType&          operator+(RbDataType& o) const =0;            //!< Addition
@@ -53,7 +55,7 @@ public:
 
 protected:
 	RbDataType(const char* name) : RbObject(name) {}                           //!< Constructor from type name (C style)
-	RbDataType(const string& name) : RbObject(name) {}                         //!< Constructor from type name (string)
+	RbDataType(const std::string& name) : RbObject(name) {}                         //!< Constructor from type name (string)
 
 private:
 };
