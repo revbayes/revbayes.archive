@@ -1,8 +1,8 @@
 
 #include <iostream>
 
-#include "../../datatypes/model/Branch.h"
-#include "../../datatypes/primitive/RbDouble.h"
+#include "Branch.h"
+#include "RbDouble.h"
 
 int main(int argc, char **argv) {
 	// create a Branch object

@@ -22,9 +22,9 @@
 
 #include "RbInt.h"
 #include "RbDouble.h"
-#include "../RbDataType.h"
-#include "../../utils/RbDumpState.h"
-#include "../../utils/RbException.h"
+#include "RbDataType.h"
+#include "RbDumpState.h"
+#include "RbException.h"
 #include <iostream>
 
 /**

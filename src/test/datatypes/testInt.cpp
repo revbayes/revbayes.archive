@@ -1,10 +1,10 @@
 
 #include <iostream>
 
-#include "../../datatypes/primitive/RbInt.h"
-#include "../../datatypes/primitive/RbDouble.h"
-#include "../../main/RbObject.h"
-#include "../../utils/RbException.h"
+#include "RbInt.h"
+#include "RbDouble.h"
+#include "RbObject.h"
+#include "RbException.h"
 
 int main(int argc, char **argv) {
 	// create a RbDouble object

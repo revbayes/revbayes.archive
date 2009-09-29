@@ -8,9 +8,9 @@
 #ifndef RBDOUBLE_H_
 #define RBDOUBLE_H_
 
-#include "../RbAbstractDataType.h"
-#include "../../main/RbObject.h"
-#include "../../utils/RbDumpState.h"
+#include "RbAbstractDataType.h"
+#include "RbObject.h"
+#include "RbDumpState.h"
 
 class RbDouble: public RbAbstractDataType {
 public:

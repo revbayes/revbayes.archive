@@ -17,8 +17,8 @@
 #define RbBool_H
 
 #include <iostream>
-#include "../RbDataType.h"
-#include "../RbAbstractDataType.h"
+#include "RbDataType.h"
+#include "RbAbstractDataType.h"
 
 class RbBool : public RbAbstractDataType {
 

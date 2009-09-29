@@ -23,8 +23,8 @@
 
 #include <vector>
 
-#include "../RbDataType.h"
-#include "../RbAbstractDataType.h"
+#include "RbDataType.h"
+#include "RbAbstractDataType.h"
 #include "Node.h"
 
 class Branch : public RbAbstractDataType {

@@ -16,7 +16,7 @@
 #ifndef RbInt_H
 #define RbInt_H
 
-#include "../RbAbstractDataType.h"
+#include "RbAbstractDataType.h"
 #include "RbDataType.h"
 #include "RbTypeInfo.h"
 

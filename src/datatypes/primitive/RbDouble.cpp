@@ -21,8 +21,8 @@
  */
 
 #include "RbDouble.h"
-#include "../RbDataType.h"
-#include "../../utils/RbDumpState.h"
+#include "RbDataType.h"
+#include "RbDumpState.h"
 #include <iostream>
 
 /**

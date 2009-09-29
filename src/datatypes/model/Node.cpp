@@ -1,7 +1,7 @@
 #include "Node.h"
-#include "../RbDataType.h"
-#include "../RbAbstractDataType.h"
-#include "../../main/RbObject.h"
+#include "RbDataType.h"
+#include "RbAbstractDataType.h"
+#include "RbObject.h"
 
 #include <string>
 

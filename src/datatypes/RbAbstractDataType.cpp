@@ -15,7 +15,7 @@
 
 #include "RbAbstractDataType.h"
 #include "RbDataType.h"
-#include "../utils/RbException.h"
+#include "RbException.h"
 #include <iostream>
 #include <string>
 

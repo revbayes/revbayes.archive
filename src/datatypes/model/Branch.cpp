@@ -17,8 +17,8 @@
 
 #include "Branch.h"
 #include "Node.h"
-#include "../RbDataType.h"
-#include "../RbAbstractDataType.h"
+#include "RbDataType.h"
+#include "RbAbstractDataType.h"
 
 /**
  * @brief default constructor

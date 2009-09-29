@@ -25,9 +25,9 @@
 
 #include <string>
 #include <vector>
-#include "../RbAbstractDataType.h"
-#include "../RbDataType.h"
-#include "../../main/RbObject.h"
+#include "RbAbstractDataType.h"
+#include "RbDataType.h"
+#include "RbObject.h"
 
 class Node : public RbAbstractDataType{
 

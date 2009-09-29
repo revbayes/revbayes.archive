@@ -1,8 +1,8 @@
 
 #include <iostream>
 
-#include "../../datatypes/primitive/RbBool.h"
-#include "../../main/RbObject.h"
+#include "RbBool.h"
+#include "RbObject.h"
 
 int main(int argc, char **argv) {
 	// create a RbBool object

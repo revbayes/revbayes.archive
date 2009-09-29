@@ -1,8 +1,8 @@
 
 #include <iostream>
 
-#include "../../datatypes/primitive/RbDouble.h"
-#include "../../main/RbObject.h"
+#include "RbDouble.h"
+#include "RbObject.h"
 
 int main(int argc, char **argv) {
 	// create a RbDouble object
