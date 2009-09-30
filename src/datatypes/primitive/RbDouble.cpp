@@ -70,7 +70,7 @@ RbDouble::RbDouble(const RbDouble& d)
  *
  */
 RbDouble::~RbDouble(void) {
-	delete &value;
+//	delete &value;
 }
 
 /**

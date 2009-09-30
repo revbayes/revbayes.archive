@@ -70,7 +70,7 @@ RbBool::RbBool(const RbBool& d)
  *
  */
 RbBool::~RbBool(void) {
-	delete &value;
+//	delete &value;
 }
 
 /**
