@@ -18,10 +18,10 @@
 #ifndef RbFunction_sqrt_H
 #define RbFunction_sqrt_H
 
-#include "../ArgumentRule.h"
-#include "../../datatypes/RbDataType.h"
-#include "../../datatypes/primitive/RbDouble.h"
-#include "../AbstractFunction.h"
+#include "ArgumentRule.h"
+#include "RbDataType.h"
+#include "RbDouble.h"
+#include "AbstractFunction.h"
 #include <iostream>
 #include <string>
 

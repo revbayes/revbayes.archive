@@ -17,16 +17,17 @@
 
 #include "RbFunction_sqrt.h"
 #include "../../modelLanguage/parser/SymbolTable.h"
-#include "../../datatypes/RbDataType.h"
-#include "../../datatypes/primitive/RbDouble.h"
-#include "../../main/RbObject.h"
+#include "RbDataType.h"
+#include "RbDouble.h"
+#include "RbObject.h"
+#include "DAGNode.h"
 #include <cmath>
 
 
 /** Define the argument rules */
 const ArgumentRule RbFunction_sqrt::argRules[] = {
 
-    ArgumentRule("x", RbReal()),
+    ArgumentRule("x", RbDouble()),
     ArgumentRule()
 };
 
@@ -69,7 +70,7 @@ RbDataType* RbFunction_sqrt::execute(void) {
     RbDouble *arg = (RbDouble*) arguments[0]->getValue();
 
     /* Compute result */
-    if ( (*arg)[i] < 0.0 )
+    if ( (*arg) < 0.0 )
         (*value) =  1E-100;
     else
         (*value) = std::sqrt((*arg)[i]);

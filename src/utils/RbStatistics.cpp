@@ -211,7 +211,7 @@ double RbStatistics::ChiSquare::cdf(double v, double x) {
  * \throws Does not throw an error.
  */
 double RbStatistics::ChiSquare::quantile(double v, double prob) {
-
+// @TODO remove all goto statements!!!
 	double 		e = 0.5e-6, aa = 0.6931471805, p = prob,
 					a = 0.0, q = 0.0, p1 = 0.0, p2 = 0.0, t = 0.0, 
 					x = 0.0, b = 0.0;
@@ -221,9 +221,10 @@ double RbStatistics::ChiSquare::quantile(double v, double prob) {
 	double g = RbMath::lnGamma(v/2.0);
 	double xx = v/2.0;   
 	double c = xx - 1.0;
+	double ch;
 	if (v >= -1.24*log(p)) 
 		goto l1;
-	double ch = std::pow((p*xx*exp(g+xx*aa)), 1.0/xx);
+	ch = std::pow((p*xx*exp(g+xx*aa)), 1.0/xx);
 	if (ch-e < 0) 
 		return (ch);
 	goto l4;
@@ -253,6 +254,7 @@ double RbStatistics::ChiSquare::quantile(double v, double prob) {
 		p1 = 0.5*ch;
 		if ( (t = RbMath::incompleteGamma(p1, xx, g)) < 0.0 ) 
 			{
+		    // @TODO throw an actual error
 			std::cerr << "Error in function \"IncompleteGamma" << std::endl;
 			return (-1.0);
 			}

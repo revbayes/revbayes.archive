@@ -21,10 +21,10 @@
 #define RbFunction_H
 
 #include "ArgumentRule.h"
-#include "../dag/DAGNode.h"
-#include "../datatypes/RbDataType.h"
-#include "../main/RbParameter.h"
-#include "../main/RbObject.h"
+#include "DAGNode.h"
+#include "RbDataType.h"
+#include "RbParameter.h"
+#include "RbObject.h"
 #include <set>
 #include <string>
 #include <vector>
@@ -77,7 +77,7 @@ class RbFunction :  public RbObject {
 //        virtual std::set<DAGNode*>  getDAGNodes() const = 0; //!< Get DAGNode terminals in arguments
         virtual bool                isAccessorFunction() const = 0;  //! Is this a distribution function?
         virtual bool                isDistributionFunction() const = 0;  //! Is this a distributin function?
-        virtual bool                setArguments(std::vector<Parameter*> labeledArgs) = 0;  //! Set arguments
+        virtual bool                setArguments(std::vector<DAGNode*> labeledArgs) = 0;  //! Set arguments
 //        virtual void                setWorkspace() = 0;      //!< Set workspace
 
 #pragma mark Regular functions

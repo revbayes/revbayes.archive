@@ -1,9 +1,9 @@
 
 #include <iostream>
 
-#include "../../datatypes/primitive/RbDouble.h"
-#include "../../functions/math/RbFunction_sqrt.h"
-#include "../../main/RbObject.h"
+#include "RbDouble.h"
+#include "RbFunction_sqrt.h"
+#include "RbObject.h"
 
 int main(int argc, char **argv) {
 	// create a RbFunction_swrt object

@@ -23,8 +23,9 @@
 
 #include <list>
 
-#include "../datatypes/RbDataType.h"
-#include "../main/RbParameter.h"
+#include "RbDataType.h"
+#include "DAGNode.h"
+#include "DeterministicNode.h"
 #include "AbstractFunction.h"
 
 AbstractFunction::AbstractFunction() : RbFunction() {
@@ -34,7 +35,7 @@ AbstractFunction::AbstractFunction() : RbFunction() {
 /** Copy constructor */
 AbstractFunction::AbstractFunction(const RbStandardFxn &s) {
 
-    for (std::vector<Parameter*>::const_iterator i=s.arguments.begin(); i!=s.arguments.end(); i++) {
+    for (std::vector<DAGNode*>::const_iterator i=s.arguments.begin(); i!=s.arguments.end(); i++) {
         arguments.push_back((*i)->copy());
     }
 }
@@ -42,7 +43,7 @@ AbstractFunction::AbstractFunction(const RbStandardFxn &s) {
 /** Destructor deletes arguments */
 AbstractFunction::~AbstractFunction() {
 
-    for (std::vector<Parameter*>::iterator i=arguments.begin(); i!=arguments.end(); i++) {
+    for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++) {
         delete (*i);
     }
 }
@@ -73,7 +74,7 @@ AbstractFunction::~AbstractFunction() {
  *  6. Call setWorkspace() to allow instances to
  *     allocate and set workspace if they are interested.
  */
-bool RbAbstractFunction::setArguments(std::vector<Parameter*> args) {
+bool RbAbstractFunction::setArguments(std::vector<DAGNode*> args) {
 
     /* Get the argument rules */
     const ArgumentRule* theRules = getArgumentRules();
@@ -111,7 +112,7 @@ bool RbAbstractFunction::setArguments(std::vector<Parameter*> args) {
     /* Match arguments */
     arguments.resize(numRules);
     // reset the values of the current arguments
-    for(std::vector<Parameter*>::iterator i=arguments.begin(); i!=arguments.end(); i++)
+    for(std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++)
         (*i) = NULL;
 
     int index=0;
@@ -143,9 +144,9 @@ bool RbAbstractFunction::setArguments(std::vector<Parameter*> args) {
 
     /* Fill in default values */
     index = 0;
-    for (std::vector<RbParameter*>::iterator i=arguments.begin(); i!=arguments.end(); i++, index++) {
+    for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++, index++) {
         if ( (*i) == NULL ) {
-            (*i) = new RbParameter(theRules[index].getDefault());
+            (*i) = new DeterministicNode(theRules[index].getDefault());
             if ( (*i) == NULL ) {
             	//TODO throw error
                 cerr  << "No default value for argument label '" << theRules[index].getLabel() << "'";

@@ -36,7 +36,7 @@ public:
 #pragma mark Parser help functions
 //        static const ArgumentRule   argRules[];                 //!< Default argument rules (no args)
 //        virtual const ArgumentRule*  getArgumentRules() const;    //!< Get argument rules
-        virtual bool                setArguments(std::vector<Parameter*> labeledArgs);  //! Set arguments
+        virtual bool                setArguments(std::vector<DAGNode*> labeledArgs);  //! Set arguments
         virtual bool                isAccessorFunction() const;    //!< Is this an accessor fxn?
         virtual bool                isDistributionFunction() const; //!< Is this a distribution fxn?
 //        virtual void                setWorkspace() {}           //!< Do not use workspace by default

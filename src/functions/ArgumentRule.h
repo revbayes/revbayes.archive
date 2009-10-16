@@ -18,8 +18,9 @@
 #define ArgumentRule_H
 
 #include <string>
-#include "../datatypes/RbDataType.h"
-#include "../main/RbObject.h"
+#include "RbDataType.h"
+#include "RbTypeInfo.h"
+#include "RbObject.h"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ using namespace std;
 class ArgumentRule : public RbObject {
 
     public:
-            ArgumentRule() : dataType(""), defaultValue(NULL), label("") {} //!< Default constructor
+            ArgumentRule() : returnType(), defaultValue(NULL), label("") {} //!< Default constructor
             ArgumentRule (const string& key, const RbDataType& type, const RbDataType* defVal = NULL);  //!< Constructor for keyword=value arguments
             ArgumentRule (const string& key, const string& type, const RbDataType* defVal = NULL);  //!< Constructor for keyword=value arguments
             /*
@@ -38,13 +39,13 @@ class ArgumentRule : public RbObject {
             */
             virtual ~ArgumentRule() { delete defaultValue; }    //!< Delete default value
 
-//has a argument rule a datatype?!?        const string&   getDataType() const { return dataType; }        //!< Get data type
-        RbDataType*     getDefaultValue() const { return defaultValue->copy(); }   //!< Get a default data type object
-        const string&   getLabel() const { return label; }              //!< Get label
-        bool            isValid(const string& x) const { return x == dataType; }  //!< Is type valid?
+        const RbTypeInfo&   getReturnType() const { return returnType; }        //!< Get data type
+        RbDataType*         getDefaultValue() const { return defaultValue->copy(); }   //!< Get a default data type object
+        const string&       getLabel() const { return label; }              //!< Get label
+        bool                isValid(const TypeInfo& x) const { return x == returnType; }  //!< Is type valid?
 
     protected:
-//has a argument rule a datatype?!?        const string        dataType;       //!< Data type of argument
+        const TypeInfo      returnType;     //!< Data type of argument
         const RbDataType*   defaultValue;   //!< Default value
         const string        label;          //!< Label of argument
 
