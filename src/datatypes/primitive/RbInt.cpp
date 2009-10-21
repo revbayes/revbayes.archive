@@ -161,10 +161,10 @@ bool RbInt::isConvertible(const RbDataType& dt) const {
  *
  */
 bool RbInt::isConvertible(const RbTypeInfo& dt) const {
-	if (typeid(*this) == dt.getTypeid()){
+	if (typeid(*this) == dt.getObjectType()){
 		return true;
 	}
-	else if (typeid(RbDouble) == dt.getTypeid()){
+	else if (typeid(RbDouble) == dt.getObjectType()){
 		return true;
 	}
 
@@ -181,10 +181,10 @@ bool RbInt::isConvertible(const RbTypeInfo& dt) const {
  *
  */
 RbDataType* RbInt::convertTo(const RbTypeInfo& dt) const {
-	if (typeid(*this) == dt.getTypeid()){
+	if (typeid(*this) == dt.getObjectType()){
 		return new RbInt(value);
 	}
-	else if (typeid(RbDouble) == dt.getTypeid()){
+	else if (typeid(RbDouble) == dt.getObjectType()){
 		return new RbDouble(value);
 	}
 

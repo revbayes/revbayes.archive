@@ -58,7 +58,8 @@ bool RbAbstractDataType::isConvertible(const RbDataType& dt) const {
  *
  */
 bool RbAbstractDataType::isConvertible(const RbTypeInfo& t) const {
-	return typeid(*this) == t.getTypeid();
+    // TODO might need to check for element types of the vectors too
+	return typeid(*this) == t.getObjectType();
 }
 
 /**
@@ -222,7 +223,7 @@ RbDataType& RbAbstractDataType::operator^(RbDataType& o) const {
  */
 RbTypeInfo& RbAbstractDataType::operator+(RbTypeInfo& t) const {
 	std::string myName = typeid(*this).name();
-	std::string oName = t.getTypeid().name();
+	std::string oName = t.getObjectType().name();
 	std::string message = "Addition of " + myName + " and " + oName + " is not supported.";
 	RbException e;
 	e.setMessage(message);
@@ -242,7 +243,7 @@ RbTypeInfo& RbAbstractDataType::operator+(RbTypeInfo& t) const {
  */
 RbTypeInfo& RbAbstractDataType::operator-(RbTypeInfo& t) const {
 	std::string myName = typeid(*this).name();
-	std::string oName = t.getTypeid().name();
+	std::string oName = t.getObjectType().name();
 	std::string message = "Subtraction of " + myName + " and " + oName + " is not supported.";
 	RbException e;
 	e.setMessage(message);
@@ -262,7 +263,7 @@ RbTypeInfo& RbAbstractDataType::operator-(RbTypeInfo& t) const {
  */
 RbTypeInfo& RbAbstractDataType::operator*(RbTypeInfo& t) const {
 	std::string myName = typeid(*this).name();
-	std::string oName = t.getTypeid().name();
+	std::string oName = t.getObjectType().name();
 	std::string message = "Multiplication of " + myName + " and " + oName + " is not supported.";
 	RbException e;
 	e.setMessage(message);
@@ -282,7 +283,7 @@ RbTypeInfo& RbAbstractDataType::operator*(RbTypeInfo& t) const {
  */
 RbTypeInfo& RbAbstractDataType::operator/(RbTypeInfo& t) const {
 	std::string myName = typeid(*this).name();
-	std::string oName = t.getTypeid().name();
+	std::string oName = t.getObjectType().name();
 	std::string message = "Division of " + myName + " and " + oName + " is not supported.";
 	RbException e;
 	e.setMessage(message);
@@ -302,7 +303,7 @@ RbTypeInfo& RbAbstractDataType::operator/(RbTypeInfo& t) const {
  */
 RbTypeInfo& RbAbstractDataType::operator^(RbTypeInfo& t) const {
 	std::string myName = typeid(*this).name();
-	std::string oName = t.getTypeid().name();
+	std::string oName = t.getObjectType().name();
 	std::string message = "Raising " + myName + " to the power of " + oName + " is not supported.";
 	RbException e;
 	e.setMessage(message);
