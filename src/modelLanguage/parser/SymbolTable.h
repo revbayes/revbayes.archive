@@ -42,7 +42,7 @@
  *  If we wish to support scoping in the future (for loops and user-defined functions), this is
  *  probably the right place to keep track of the scope.
  */
-class SymbolTable : public RbObject {
+class SymbolTable {
 
     public:
             SymbolTable() {}   //!< Default constructor does not need to do anything
@@ -60,16 +60,16 @@ class SymbolTable : public RbObject {
         DAGNode*    getVariable(string &name);                  //!< Get variable
         void        print(ostream &c) const;                    //!< print table
 
-        /** Create/get global symbol table */
+        /** get global symbol table */
         static SymbolTable& globalTable() {
-            static SymbolTable theSymbolTable;
             return theSymbolTable;
         }
 
     private:
-            SymbolTable(const SymbolTable &s) {}            //! Prevent copy construction
+        SymbolTable(const SymbolTable &s) {}                //! Prevent copy construction
         SymbolTable&    operator=(const SymbolTable&);      //! Prevent assignment
 
+        static SymbolTable theSymbolTable;                  //! the only instance
         map<const string, RbFunction*>  functionTable;      //!< table holding functions
         map<const string, DAGNode*>     varTable;           //!< table holding variables
 };

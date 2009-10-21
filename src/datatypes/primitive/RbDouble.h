@@ -21,13 +21,15 @@ public:
 	virtual ~RbDouble();
 
     // implemented abstract/virtual functions from base classes
-	RbObject*  clone(void);                                        //!< clone this object
-	void       print(std::ostream &c) const;                            //!< Print the value to ostream c
+	RbObject*  clone(void) const;                                  //!< clone this object
+	void       print(std::ostream &c) const;                       //!< Print the value to ostream c
 	void       dump(std::ostream& c);                              //!< Dump to ostream c
 	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
 
 	//overloaded operators
-	bool       operator==(RbObject& o) const;                      //!< Comparison
+	bool       operator==(const RbObject& o) const;                //!< Comparison
+    bool       operator==(const RbDataType& o) const;              //!< Comparison
+    bool       operator==(const RbDouble& o) const;                //!< Comparison
 
 	// memeber functions
 	void       setValue(double d);

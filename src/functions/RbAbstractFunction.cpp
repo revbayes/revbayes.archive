@@ -1,5 +1,5 @@
 /*
- * AbstractFunction.cpp
+ * RbAbstractFunction.cpp
  *
  *  Created on: 17 sep 2009
  *      Author: Sebastian
@@ -26,22 +26,24 @@
 #include "RbDataType.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
-#include "AbstractFunction.h"
+#include "RbAbstractFunction.h"
+#include "RbException.h"
+#include "Argument.h"
 
-AbstractFunction::AbstractFunction() : RbFunction() {
+RbAbstractFunction::RbAbstractFunction() : RbFunction() {
 
 }
 
 /** Copy constructor */
-AbstractFunction::AbstractFunction(const RbStandardFxn &s) {
+RbAbstractFunction::RbAbstractFunction(const RbAbstractFunction &s) {
 
     for (std::vector<DAGNode*>::const_iterator i=s.arguments.begin(); i!=s.arguments.end(); i++) {
-        arguments.push_back((*i)->copy());
+        arguments.push_back((DAGNode*)(*i)->clone());
     }
 }
 
 /** Destructor deletes arguments */
-AbstractFunction::~AbstractFunction() {
+RbAbstractFunction::~RbAbstractFunction() {
 
     for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++) {
         delete (*i);
@@ -74,22 +76,25 @@ AbstractFunction::~AbstractFunction() {
  *  6. Call setWorkspace() to allow instances to
  *     allocate and set workspace if they are interested.
  */
-bool RbAbstractFunction::setArguments(std::vector<DAGNode*> args) {
+bool RbAbstractFunction::setArguments(std::vector<Argument*> args) {
 
     /* Get the argument rules */
     const ArgumentRule* theRules = getArgumentRules();
 
     /* Get the number of rules */
-    int numRules;
-    for (numRules=0; theRules[numRules]!=ArgumentRule(); numRules++)
-        ;
+    //int numRules = sizeof(theRules)/sizeof(theRules[0]); not good because could have zero rules
+    int numRules = getNumberOfRules();
+    //for (numRules=0; theRules[numRules]!=ArgumentRule(); numRules++)
+    //    ;
 
     /* Check for duplicate labels */
     for (int i=0; i<numRules; i++) {
         for (int j=i+1; j<numRules; j++) {
             if ( theRules[i].getLabel() == theRules[j].getLabel() ) {
-            	//TODO throw error
-                cerr << "Label '" << theRules[i].getLabel() << "' is duplicated among argument rules";
+                std::string message = "Label '" + theRules[i].getLabel() + "' is duplicated among argument rules";
+                RbException e;
+                e.setMessage(message);
+                throw e;
                 return false;
             }
         }
@@ -98,13 +103,17 @@ bool RbAbstractFunction::setArguments(std::vector<DAGNode*> args) {
     /* Check that the number of provided arguments is adequate */
     if ( numRules < args.size() ) {
         if ( numRules == 0 ) {
-        	//TODO throw error
-            cerr << "Not expecting any arguments";
+            std::string message = "Not expecting any arguments";
+            RbException e;
+            e.setMessage(message);
+            throw e;
             return false;
         }
         else {
-        	//TODO throw error
-            cerr << "Too many arguments";
+            std::string message = "Too many arguments";
+            RbException e;
+            e.setMessage(message);
+            throw e;
             return false;
         }
     }
@@ -127,30 +136,36 @@ bool RbAbstractFunction::setArguments(std::vector<DAGNode*> args) {
                     break;
             }
             if ( theArg == numRules ) {
-            	//TODO throw error
-                cerr << "Did not expect an argument with label '" << (*i)->getLabel() << "'.";
+                std::string message = "Did not expect an argument with label '" + (*i)->getLabel() + "'.";
+                RbException e;
+                e.setMessage(message);
                 arguments.clear();
+                throw e;
                 return false;
             }
         }
         if ( arguments[theArg] != NULL ) {
-        	//TODO throw error
-            cerr << "Multiple arguments fit argument rule " << index+1;
+            std::string message = "Multiple arguments fit argument rule " + index+1;
+            RbException e;
+            e.setMessage(message);
             arguments.clear();
+            throw e;
             return false;
         }
-        arguments[theArg] = (*i)->getExpression();
+        arguments[theArg] = (*i)->getDAGNode();
     }
 
     /* Fill in default values */
     index = 0;
     for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++, index++) {
         if ( (*i) == NULL ) {
-            (*i) = new DeterministicNode(theRules[index].getDefault());
+            (*i) = new DeterministicNode(&(theRules[index].getDefaultValue()));
             if ( (*i) == NULL ) {
-            	//TODO throw error
-                cerr  << "No default value for argument label '" << theRules[index].getLabel() << "'";
+                std::string message = "No default value for argument label '" + theRules[index].getLabel() + "'";
+                RbException e;
+                e.setMessage(message);
                 arguments.clear();
+                throw e;
                 return false;
             }
         }
@@ -163,11 +178,11 @@ bool RbAbstractFunction::setArguments(std::vector<DAGNode*> args) {
     return true;
 }
 
-bool AbstractFunction::isAccessorFunction() const {
+bool RbAbstractFunction::isAccessorFunction() const {
 	return false;
 }     //!< Is this an accessor fxn?
 
-bool isDistributionFunction() const {
+bool RbAbstractFunction::isDistributionFunction() const {
 	return false;
 } //!< Is this a distribution fxn?
 

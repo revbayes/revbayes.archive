@@ -62,9 +62,8 @@ public:
     bool                isTouched() { return touched; }         //!< Is the node marked for recalculation?
     void                keep() { touched = changed = false; }   //!< Keep current value of node
     void                keepAffected();                         //!< Keep value of affected nodes recursively
-	virtual void        print(void) const = 0;                  //!< Print this node
-	void                printChildren(void) const;              //!< Print children nodes
-	void                printParents(void) const;               //!< Print parent nodes
+	void                printChildren(std::ostream& c) const;   //!< Print children nodes
+	void                printParents(std::ostream& c) const;    //!< Print parent nodes
 	void                removeChildNode(DAGNode* c) { children.erase(c); }  //!< Remove a child node
     void                restore();                              //!< Restore node to previous value
     void                restoreAffected();                      //!< Restore value of affected nodes recursively

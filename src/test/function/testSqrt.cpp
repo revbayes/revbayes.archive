@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
 	RbDataType* result = f.execute();
 
 	// check the result
-	assert (result == RbDouble(5));
+	assert (*result == RbDouble(5));
 
 	return 0;
 

@@ -48,8 +48,6 @@ DAGNode::DAGNode(RbDataType *dt)
 DAGNode::DAGNode(DAGNode &d) {
 
 	//TODO implement this
-	delete value;
-	delete storedValue;
 }
 
 /**
@@ -76,31 +74,30 @@ void DAGNode::keepAffected() {
     }
 }
 
-//TODO either this should be only private (e.g. for debugging purposes) or should get a print stream as the parameter
-//we do not always want to print to the std::out but maybe to some specific stream, i.e. to the user interface
-void DAGNode::printChildren(void) const {
+void DAGNode::printChildren(std::ostream& o) const {
 
 	if ( children.empty() )	
 		{
-		std::cout << std::endl;
+		o << std::endl;
 		return;
 		}
 	for (std::set<DAGNode*>::iterator c=children.begin(); c != children.end(); c++)
-		std::cout << (*c) << " ";
-	std::cout << std::endl;
+		o << (*c) << " ";
+
+	o << std::endl;
 }
 
-//TODO either this should be only private (e.g. for debugging purposes) or should get a print stream as the parameter
-void DAGNode::printParents(void) const {
+void DAGNode::printParents(std::ostream& o) const {
 
 	if ( parents.empty() )
 		{
-		std::cout << std::endl;
+		o << std::endl;
 		return;
 		}
 	for (std::set<DAGNode*>::iterator p=parents.begin(); p != parents.end(); p++)
-		std::cout << (*p) << " ";
-	std::cout << std::endl;
+		o << (*p) << " ";
+
+	o << std::endl;
 }
 
 /**

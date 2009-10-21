@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of RbStandardFxn, which
+ * This file contains the declaration of RbStandardFunction, which
  * is the abstract base class for REvBayes functions.
  *
- * @brief Declaration of RbStandardFxn
+ * @brief Declaration of RbStandardFunction
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -17,10 +17,11 @@
  * $Id$
  */
 
-#ifndef RbStandardFxn_H
-#define RbStandardFxn_H
+#ifndef RbStandardFunction_H
+#define RbStandardFunction_H
 
 #include "RbFunction.h"
+#include "ArgumentRule.h"
 
 /** This is the abstract base class used to hold regular
  *  functions in the symbol table. The base class deals with
@@ -28,21 +29,21 @@
  *  need to override setArguments if they allow a variable
  *  number of arguments.
  */
-class RbStandardFxn :  public RbFunction {
+class RbStandardFunction :  public RbFunction {
 
     public:
-            RbStandardFxn() : RbFunction() {}           //!< Default constructor; set arguments later
-            RbStandardFxn(const RbStandardFxn& s);      //!< Copy constructor
-	        virtual ~RbStandardFxn();                   //!< Destructor deletes arguments
+            RbStandardFunction() : RbFunction() {}           //!< Default constructor; set arguments later
+            RbStandardFunction(const RbStandardFunction& s);      //!< Copy constructor
+	        virtual ~RbStandardFunction();                   //!< Destructor deletes arguments
 
 #pragma mark Parser help functions
         static const ArgumentRule   argRules[];                 //!< Default argument rules (no args)
-        virtual RbStandardFxn*      copy() const = 0;           //!< Return copy
+        virtual RbStandardFunction* clone() const = 0;           //!< Return copy
         virtual const ArgumentRule* getArgRules() const { return argRules; }    //!< Get argument rules
         std::set<DAGNode*>          getDAGNodes() const;        //!< Get DAGNode terminals in arguments
         virtual const string&       getDataType() const = 0;    //!< Get data type of result
-        virtual bool                isAccessorFxn() const { return false; }     //!< Is this an accessor fxn?
-        virtual bool                isDistributionFxn() const { return false; } //!< Is this a distribution fxn?
+        virtual bool                isAccessorFunction() const { return false; }     //!< Is this an accessor Function?
+        virtual bool                isDistributionFunction() const { return false; } //!< Is this a distribution Function?
         virtual bool                setArguments(std::vector<SyntaxLabeledExpr*> labeledArgs);    //! Set arguments
         virtual void                setWorkspace() {}           //!< Do not use workspace by default
 

@@ -30,20 +30,20 @@ public:
 	virtual ~RbInt();
 
     // implemented abstract/virtual functions from base classes
-	RbObject*           clone(void);                                        //!< clone this object
-	void                print(std::ostream &c) const;                            //!< Print the value to ostream c
+	RbObject*           clone(void) const ;                                 //!< clone this object
+	void                print(std::ostream &c) const;                       //!< Print the value to ostream c
 	void                dump(std::ostream& c);                              //!< Dump to ostream c
 	void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
 	bool                isConvertible(const RbDataType& dt) const;          //!< is this data type convertible into the data type dt
-   	bool                isConvertible(const RbTypeInfo& dt) const;         //!< is this data type convertible into the data type dt
+   	bool                isConvertible(const RbTypeInfo& dt) const;          //!< is this data type convertible into the data type dt
    	RbDataType*         convertTo(const RbDataType& dt) const;              //!< convert this data type into the datat type dt
-   	RbDataType*         convertTo(const RbTypeInfo& dt) const;             //!< convert this data type into the datat type dt
+   	RbDataType*         convertTo(const RbTypeInfo& dt) const;              //!< convert this data type into the datat type dt
 
 	//overloaded operators
-	bool                operator==(RbObject& o) const;                      //!< Comparison
-	bool                operator==(RbInt& o) const;                         //!< Comparison
-	RbDataType&         operator+(RbDataType& o) const;                     //!< Addition
-	RbInt&              operator+(RbInt& o) const;                          //!< Addition
+	bool                operator==(const RbObject& o) const;                //!< Comparison
+	bool                operator==(const RbInt& o) const;                   //!< Comparison
+	RbDataType&         operator+(const RbDataType& o) const;               //!< Addition
+	RbInt&              operator+(const RbInt& o) const;                    //!< Addition
 
 
 	// memeber functions

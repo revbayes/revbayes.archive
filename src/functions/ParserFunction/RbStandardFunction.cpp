@@ -18,11 +18,11 @@
  * $Id$
  */
 
-#include "RbStandardFxn.h"
+#include "RbStandardFunction.h"
 #include "SyntaxConstant.h"
 
 /** Copy constructor */
-RbStandardFxn::RbStandardFxn(const RbStandardFxn &s) {
+RbStandardFunction::RbStandardFunction(const RbStandardFunction &s) {
 
     for (std::vector<SyntaxElement*>::const_iterator i=s.arguments.begin(); i!=s.arguments.end(); i++) {
         arguments.push_back((*i)->copy());
@@ -30,7 +30,7 @@ RbStandardFxn::RbStandardFxn(const RbStandardFxn &s) {
 }
 
 /** Destructor deletes arguments */
-RbStandardFxn::~RbStandardFxn() {
+RbStandardFunction::~RbStandardFunction() {
 
     for (std::vector<SyntaxElement*>::iterator i=arguments.begin(); i!=arguments.end(); i++) {
         delete (*i);
@@ -38,13 +38,13 @@ RbStandardFxn::~RbStandardFxn() {
 }
 
 /** Default argument rules (assume function takes no arguments) */
-const ArgumentRule RbStandardFxn::argRules[] = {
+const ArgumentRule RbStandardFunction::argRules[] = {
 
     ArgumentRule()
 };
 
 /** Get DAG nodes in argument expressions */
-std::set<DAGNode*> RbStandardFxn::getDAGNodes() const {
+std::set<DAGNode*> RbStandardFunction::getDAGNodes() const {
 
     std::set<DAGNode*> theDAGNodes;
     for (std::vector<SyntaxElement*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
@@ -80,7 +80,7 @@ std::set<DAGNode*> RbStandardFxn::getDAGNodes() const {
  *  6. Call setWorkspace() to allow instances to
  *     allocate and set workspace if they are interested.
  */
-bool RbStandardFxn::setArguments(std::vector<SyntaxLabeledExpr*> args) {
+bool RbStandardFunction::setArguments(std::vector<SyntaxLabeledExpr*> args) {
 
     /* Get the argument rules */
     const ArgumentRule* theRules = getArgRules();

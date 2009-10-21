@@ -82,7 +82,7 @@ RbDouble::~RbDouble(void) {
  * @returns           return a copy of this object
  *
  */
-RbObject* RbDouble::clone(void) {
+RbObject* RbDouble::clone(void) const {
 
 	RbObject *x = new RbDouble( *this );
 	return x;
@@ -136,7 +136,7 @@ void RbDouble::resurrect(const RbDumpState& x){
  * @param o           the object to compare to
  *
  */
-bool RbDouble::operator ==(RbObject& o) const {
+bool RbDouble::operator ==(const RbObject& o) const {
 
 	if (typeid(RbDouble) == typeid(o)){
 		// we are from the same type, which is perfect :)
@@ -144,7 +144,8 @@ bool RbDouble::operator ==(RbObject& o) const {
 		return value == tmp.getValue();
 	}
 	else {
-		RbDataType& dt = dynamic_cast<RbDataType&>(o);
+		RbObject& casted = const_cast<RbObject&>(o);
+		const RbDataType& dt = dynamic_cast<RbDataType&>(casted);
 		if ((&dt) != 0) {
 			if (isConvertible(dt)){
 				//can I convert myself into the type of o
@@ -161,6 +162,50 @@ bool RbDouble::operator ==(RbObject& o) const {
 	}
 
 	return false;
+}
+
+/**
+ * @brief overloaded == operators
+ *
+ * This function compares this object
+ *
+ * @param o           the object to compare to
+ *
+ */
+bool RbDouble::operator ==(const RbDouble& o) const {
+
+    if (typeid(RbDouble) == typeid(o)){
+        // we are from the same type, which is perfect :)
+        RbDouble& tmp = ((RbDouble&)o);
+        return value == tmp.getValue();
+    }
+
+    return false;
+}
+
+/**
+ * @brief overloaded == operators
+ *
+ * This function compares this object
+ *
+ * @param o           the object to compare to
+ *
+ */
+bool RbDouble::operator ==(const RbDataType& dt) const {
+
+    if (isConvertible(dt)){
+        //can I convert myself into the type of o
+        RbDataType* newType = convertTo(dt);
+        return ((*newType) == dt);
+    }
+    else if (dt.isConvertible(*this)){
+        //try to convert o into my data type
+        RbDataType* newType = dt.convertTo(*this);
+        RbDouble& tmp = ((RbDouble&)*newType);
+        return value == tmp.getValue();
+    }
+
+    return false;
 }
 
 /**

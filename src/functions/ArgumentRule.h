@@ -22,32 +22,38 @@
 #include "RbTypeInfo.h"
 #include "RbObject.h"
 
-using namespace std;
-
 /*! This is the class used to describe labels and permissible types for arguments
  *  of functions and distributions, the latter being derived functions.
  */
 class ArgumentRule : public RbObject {
 
     public:
-            ArgumentRule() : returnType(), defaultValue(NULL), label("") {} //!< Default constructor
-            ArgumentRule (const string& key, const RbDataType& type, const RbDataType* defVal = NULL);  //!< Constructor for keyword=value arguments
-            ArgumentRule (const string& key, const string& type, const RbDataType* defVal = NULL);  //!< Constructor for keyword=value arguments
-            /*
-            ArgumentRule (const string label, vector<string> options);  //!< Constructor for keyword=options argument
-            ArgumentRule (const string label, const string datatype, const RbDataType *min, const RbDatatype *max, const int dim=1);    //!< constructor for argument with bounds
-            */
-            virtual ~ArgumentRule() { delete defaultValue; }    //!< Delete default value
+        ArgumentRule(const std::string& key, const RbTypeInfo& type, const RbDataType& defVal = NULL);  //!< Constructor for keyword=value arguments
+        ArgumentRule(const ArgumentRule& ar);
+//        ArgumentRule (const std::string& key, const std::string& type, const RbDataType* defVal = NULL);  //!< Constructor for keyword=value arguments
+        /*
+        ArgumentRule (const string label, vector<string> options);  //!< Constructor for keyword=options argument
+        ArgumentRule (const string label, const string datatype, const RbDataType *min, const RbDatatype *max, const int dim=1);    //!< constructor for argument with bounds
+        */
+        virtual ~ArgumentRule();                //!< Delete default value
 
-        const RbTypeInfo&   getReturnType() const { return returnType; }        //!< Get data type
-        RbDataType*         getDefaultValue() const { return defaultValue->copy(); }   //!< Get a default data type object
-        const string&       getLabel() const { return label; }              //!< Get label
-        bool                isValid(const TypeInfo& x) const { return x == returnType; }  //!< Is type valid?
+        // implemented abstract/virtual functions from base classes
+        RbObject*           clone(void) const ;                                 //!< clone this object
+        void                print(std::ostream &c) const;                       //!< Print the value to ostream c
+        void                dump(std::ostream& c);                              //!< Dump to ostream c
+        void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+        bool                operator==(const RbObject& o) const;                //!< Comparison
+        bool                operator==(const ArgumentRule& o) const;            //!< Comparison
+
+        const RbTypeInfo&   getReturnType() const ;                             //!< Get data type
+        RbDataType&         getDefaultValue() const ;                           //!< Get a default data type object
+        const std::string&  getLabel() const ;                                  //!< Get label
+        bool                isTypeValid(const RbTypeInfo& x) const ;            //!< Is type valid?
 
     protected:
-        const TypeInfo      returnType;     //!< Data type of argument
-        const RbDataType*   defaultValue;   //!< Default value
-        const string        label;          //!< Label of argument
+        const RbTypeInfo&   returnType;     //!< Data type of argument
+        const RbDataType&   defaultValue;   //!< Default value
+        const std::string   label;          //!< Label of argument
 
         /*
         RbDataType*     minValue;       //!< Minimum value

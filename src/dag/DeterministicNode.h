@@ -28,10 +28,18 @@ class SyntaxElement;
 class DeterministicNode : public DAGNode {
 
 public:
-	DeterministicNode();                                        //!< Default constructor TODO maybe we should not have a default constructor
-	DeterministicNode(RbDataType* dt, SyntaxElement* e);        //!< Constructor with variable and root of syntax tree
-	DeterministicNode(DeterministicNode &d);                    //!< Copy constructor
-    ~DeterministicNode(void);                                   //!<
+	DeterministicNode(RbDataType* dt);                         //!< Constructor with variable
+	DeterministicNode(RbDataType* dt, SyntaxElement* e);       //!< Constructor with variable and root of syntax tree
+	DeterministicNode(DeterministicNode &dn);                  //!< Copy constructor
+    ~DeterministicNode(void);                                  //!<
+
+    // implemented abstract/virtual functions from base classes
+    RbObject*           clone(void) const ;                                 //!< clone this object
+    void                print(std::ostream& c) const;                       //!< Print the value to ostream c
+    void                dump(std::ostream& c);                              //!< Dump to ostream c
+    void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+    bool                operator==(const RbObject& o) const;                //!< Comparison
+    bool                operator==(const DeterministicNode& o) const;       //!< Comparison
 
     bool isChanged(void) { return true; }     //TODO not sure if that is meaningful
 	void print(void);                         //TODO same as for print in DAGNode

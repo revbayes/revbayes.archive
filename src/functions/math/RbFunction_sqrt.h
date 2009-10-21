@@ -21,7 +21,7 @@
 #include "ArgumentRule.h"
 #include "RbDataType.h"
 #include "RbDouble.h"
-#include "AbstractFunction.h"
+#include "RbAbstractFunction.h"
 #include <iostream>
 #include <string>
 
@@ -32,7 +32,7 @@
  *  @package    functions
  *  @implements RbFunction, RbStandardFunction
  */
-class RbFunction_sqrt :  public AbstractFunction {
+class RbFunction_sqrt :  public RbAbstractFunction {
 
     public:
             RbFunction_sqrt();                              //!< Default constructor, allocate workspace
@@ -42,12 +42,19 @@ class RbFunction_sqrt :  public AbstractFunction {
 #pragma mark Parser help functions
         static const ArgumentRule   argRules[];             //!< The argument rules
 
-        RbObject*                   clone() const;           //!< Return copy
-        const ArgumentRule*         getArgumentRules() const;    //!< Get argument rules
+        // implemented abstract/virtual functions from base classes
+        RbObject*           clone(void) const ;                                 //!< clone this object
+        void                print(std::ostream &c) const;                       //!< Print the value to ostream c
+        void                dump(std::ostream& c);                              //!< Dump to ostream c
+        void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+        bool                operator==(const RbObject& o) const;                //!< Comparison
+        bool                operator==(const RbFunction_sqrt& o) const;         //!< Comparison
+
+        const ArgumentRule*         getArgumentRules() const;                   //!< Get argument rules
+        virtual const int           getNumberOfRules() const;                   //!< Get number of argument rules for the function
 
 #pragma mark Regular functions
         RbDataType*                 execute();              //!< Get result
-        void                        print(std::ostream& c) const;     //!< Print this object
 
     protected:
         RbDouble*                     value;              //!< Workspace for result

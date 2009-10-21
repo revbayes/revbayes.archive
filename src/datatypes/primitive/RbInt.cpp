@@ -115,6 +115,7 @@ void RbInt::print(std::ostream &c) const {
  *
  */
 void RbInt::dump(std::ostream& c){
+    //TODO implement
 
 }
 
@@ -128,6 +129,7 @@ void RbInt::dump(std::ostream& c){
  *
  */
 void RbInt::resurrect(const RbDumpState& x){
+    //TODO implement
 
 }
 

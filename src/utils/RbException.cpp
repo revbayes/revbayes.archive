@@ -51,7 +51,7 @@ RbException::~RbException(void) {
  * @returns           return a copy of this object
  *
  */
-RbObject* RbException::clone(void) {
+RbObject* RbException::clone(void) const {
 
 	RbObject *x = new RbException( *this );
 	return x;
@@ -105,7 +105,7 @@ void RbException::resurrect(const RbDumpState& x){
  * @param o           the object to compare to
  *
  */
-bool RbException::operator==(RbObject& o) const {
+bool RbException::operator==(const RbObject& o) const {
 
 	if (typeid(RbException) == typeid(o)){
 		// we are from the same type, which is perfect :)
