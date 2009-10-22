@@ -29,29 +29,34 @@ public:
 	virtual RbDataType*         convertTo(const RbDataType& dt) const = 0;                  //!< convert this data type into the datat type dt
 	virtual RbDataType*         convertTo(const RbTypeInfo& dt) const = 0;                 //!< convert this data type into the datat type dt
 
-//	virtual int                 getDimension() = 0;                            //!< get the dimensions
-//	virtual std::string*        getNames() = 0;                                //!< get the labels for the different attributes of this data type
+    virtual int                     getDimensions() const = 0;                          //!< get the dimensions
+    virtual int*                    getLength() const = 0;                              //!< get number of elements per dimension
+    virtual const std::type_info&   getObjectType() const = 0;                          //!< get the type of object
+    virtual const std::type_info&   getElementType() const = 0;                         //!< get the type of elements
+//    virtual std::string*         getLabels() const = 0;                              //!< get the labels for the different attributes of this data type
+
 //    virtual void                setDim(const int* newDim) = 0;                 //!< Get dim attribute
 //    virtual void                setNames(const int* newNames) = 0;             //!< Get names attribute
 
 
-	virtual bool                 isComparable() const =0;                      //!< can we compare instances of this type?
+	virtual bool                 isComparable() const =0;                           //!< can we compare instances of this type?
 	// Overloaded comparison functions
-    virtual bool                 operator<(RbDataType& o) const =0;            //!< Less than operator
+	virtual bool               operator==(const RbDataType& dt) const = 0;          //!< equal comparison
+    virtual bool               operator<(const RbDataType& o) const = 0;            //!< Less than operator
 
     // Overloaded arithmetic functions
-    virtual RbDataType&          operator+(RbDataType& o) const =0;            //!< Addition
-    virtual RbDataType&          operator-(RbDataType& o) const =0;            //!< Subtraction
-    virtual RbDataType&          operator*(RbDataType& o) const =0;            //!< Multiplication
-    virtual RbDataType&          operator/(RbDataType& o) const =0;            //!< Division
-    virtual RbDataType&          operator^(RbDataType& o) const =0;            //!< Power
+    virtual RbDataType&        operator+(const RbDataType& o) const = 0;            //!< Addition
+    virtual RbDataType&        operator-(const RbDataType& o) const = 0;            //!< Subtraction
+    virtual RbDataType&        operator*(const RbDataType& o) const = 0;            //!< Multiplication
+    virtual RbDataType&        operator/(const RbDataType& o) const = 0;            //!< Division
+    virtual RbDataType&        operator^(const RbDataType& o) const = 0;            //!< Power
 
     // Return types of arithmetic functions
-    virtual RbTypeInfo&          operator+(RbTypeInfo& t) const =0;            //!< Addition
-    virtual RbTypeInfo&          operator-(RbTypeInfo& t) const =0;            //!< Subtraction
-    virtual RbTypeInfo&          operator*(RbTypeInfo& t) const =0;            //!< Multiplication
-    virtual RbTypeInfo&          operator/(RbTypeInfo& t) const =0;            //!< Division
-    virtual RbTypeInfo&          operator^(RbTypeInfo& t) const =0;            //!< Power
+    virtual RbTypeInfo&          operator+(const RbTypeInfo& t) const = 0;          //!< Addition
+    virtual RbTypeInfo&          operator-(const RbTypeInfo& t) const = 0;          //!< Subtraction
+    virtual RbTypeInfo&          operator*(const RbTypeInfo& t) const = 0;          //!< Multiplication
+    virtual RbTypeInfo&          operator/(const RbTypeInfo& t) const = 0;          //!< Division
+    virtual RbTypeInfo&          operator^(const RbTypeInfo& t) const = 0;          //!< Power
 
 protected:
 	RbDataType(const char* name) : RbObject(name) {}                           //!< Constructor from type name (C style)

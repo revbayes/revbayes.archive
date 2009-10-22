@@ -22,12 +22,16 @@
 
 /** Constructor from name (C style) */
 RbAbstractDataType::RbAbstractDataType(const char* name)
-    : RbDataType(name) {
+    : RbDataType(name), elementType(typeid(*this)) {
+    dimensions = 0;
+    length = new int[0];
 }
 
 /** Constructor from name (C++ stye) */
 RbAbstractDataType::RbAbstractDataType(const std::string& name)
-    : RbDataType(name) {
+    : RbDataType(name), elementType(typeid(*this)) {
+    dimensions = 0;
+    length = new int[0];
 }
 
 /** Destructor frees names and dim attributes */
@@ -88,6 +92,70 @@ RbDataType* RbAbstractDataType::convertTo(const RbDataType& dt) const {
 	return NULL;
 }
 
+/**
+ * @brief get the dimensions
+ *
+ * This function is the getter function for the dimensions. The dimensions are the level of nested objects,
+ * e.g. a integer has dimension 0, a vector dimension 1 and a matrix dimension two.
+ *
+ * @returns          the number of dimensions
+ *
+ */
+int RbAbstractDataType::getDimensions() const {
+    return dimensions;
+}
+
+/**
+ * @brief get number of elements per dimension
+ *
+ * This function is the getter function for the vector of length.
+ *
+ *
+ * @returns          the length for each dimension, -1 means a flexible length
+ *
+ */
+ int* RbAbstractDataType::getLength() const {
+     return length;
+ }
+
+ /**
+ * @brief get the type of object
+ *
+ * This function is the getter function for the object type.
+ *
+ * @returns          the object type
+ *
+ */
+ const std::type_info& RbAbstractDataType::getObjectType() const {
+     return typeid(*this);
+ }
+
+ /**
+ * @brief get the type of elements
+ *
+ * This function is the getter function for the element type.
+ * The element type is per default the same as the object type. This can only be changed for
+ * container objects as e.g. vectors
+ *
+ * @returns          the element type
+ *
+ */
+ const std::type_info& RbAbstractDataType::getElementType() const {
+     return elementType;
+ }
+
+/**
+* @brief get the labels for the different attributes of this data type
+*
+* This function
+*
+* @returns          ?
+*
+*/
+//std::string*        getLabels(){
+ //!< get the labels for the different attributes of this data type
+// }
+
 ///** Set names attribute */
 //void RbAbstractDataType::setNames(const RbString &newNames) {
 //
@@ -121,7 +189,7 @@ RbDataType* RbAbstractDataType::convertTo(const RbDataType& dt) const {
  * @throws           RbException for not supported operations
  *
  */
-RbDataType& RbAbstractDataType::operator+(RbDataType& o) const {
+RbDataType& RbAbstractDataType::operator+(const RbDataType& o) const {
 	std::string myName = typeid(*this).name();
 	std::string oName = typeid(o).name();
 	std::string message = "Addition of " + myName + " and " + oName + " is not supported.";
@@ -141,7 +209,7 @@ RbDataType& RbAbstractDataType::operator+(RbDataType& o) const {
  * @throws           RbException for not supported operations
  *
  */
-RbDataType& RbAbstractDataType::operator-(RbDataType& o) const {
+RbDataType& RbAbstractDataType::operator-(const RbDataType& o) const {
 	std::string myName = typeid(*this).name();
 	std::string oName = typeid(o).name();
 	std::string message = "Subtraction of " + myName + " and " + oName + " is not supported.";
@@ -161,7 +229,7 @@ RbDataType& RbAbstractDataType::operator-(RbDataType& o) const {
  * @throws           RbException for not supported operations
  *
  */
-RbDataType& RbAbstractDataType::operator*(RbDataType& o) const {
+RbDataType& RbAbstractDataType::operator*(const RbDataType& o) const {
 	std::string myName = typeid(*this).name();
 	std::string oName = typeid(o).name();
 	std::string message = "Multiplication of " + myName + " and " + oName + " is not supported.";
@@ -181,7 +249,7 @@ RbDataType& RbAbstractDataType::operator*(RbDataType& o) const {
  * @throws           RbException for not supported operations
  *
  */
-RbDataType& RbAbstractDataType::operator/(RbDataType& o) const {
+RbDataType& RbAbstractDataType::operator/(const RbDataType& o) const {
 	std::string myName = typeid(*this).name();
 	std::string oName = typeid(o).name();
 	std::string message = "Division of " + myName + " and " + oName + " is not supported.";
@@ -201,7 +269,7 @@ RbDataType& RbAbstractDataType::operator/(RbDataType& o) const {
  * @throws           RbException for not supported operations
  *
  */
-RbDataType& RbAbstractDataType::operator^(RbDataType& o) const {
+RbDataType& RbAbstractDataType::operator^(const RbDataType& o) const {
 	std::string myName = typeid(*this).name();
 	std::string oName = typeid(o).name();
 	std::string message = "Exponentiation of " + myName + " and " + oName + " is not supported.";
@@ -221,7 +289,7 @@ RbDataType& RbAbstractDataType::operator^(RbDataType& o) const {
  * @throws           RbException for not supported operations
  *
  */
-RbTypeInfo& RbAbstractDataType::operator+(RbTypeInfo& t) const {
+RbTypeInfo& RbAbstractDataType::operator+(const RbTypeInfo& t) const {
 	std::string myName = typeid(*this).name();
 	std::string oName = t.getObjectType().name();
 	std::string message = "Addition of " + myName + " and " + oName + " is not supported.";
@@ -241,7 +309,7 @@ RbTypeInfo& RbAbstractDataType::operator+(RbTypeInfo& t) const {
  * @throws           RbException for not supported operations
  *
  */
-RbTypeInfo& RbAbstractDataType::operator-(RbTypeInfo& t) const {
+RbTypeInfo& RbAbstractDataType::operator-(const RbTypeInfo& t) const {
 	std::string myName = typeid(*this).name();
 	std::string oName = t.getObjectType().name();
 	std::string message = "Subtraction of " + myName + " and " + oName + " is not supported.";
@@ -261,7 +329,7 @@ RbTypeInfo& RbAbstractDataType::operator-(RbTypeInfo& t) const {
  * @throws           RbException for not supported operations
  *
  */
-RbTypeInfo& RbAbstractDataType::operator*(RbTypeInfo& t) const {
+RbTypeInfo& RbAbstractDataType::operator*(const RbTypeInfo& t) const {
 	std::string myName = typeid(*this).name();
 	std::string oName = t.getObjectType().name();
 	std::string message = "Multiplication of " + myName + " and " + oName + " is not supported.";
@@ -281,7 +349,7 @@ RbTypeInfo& RbAbstractDataType::operator*(RbTypeInfo& t) const {
  * @throws           RbException for not supported operations
  *
  */
-RbTypeInfo& RbAbstractDataType::operator/(RbTypeInfo& t) const {
+RbTypeInfo& RbAbstractDataType::operator/(const RbTypeInfo& t) const {
 	std::string myName = typeid(*this).name();
 	std::string oName = t.getObjectType().name();
 	std::string message = "Division of " + myName + " and " + oName + " is not supported.";
@@ -301,7 +369,7 @@ RbTypeInfo& RbAbstractDataType::operator/(RbTypeInfo& t) const {
  * @throws           RbException for not supported operations
  *
  */
-RbTypeInfo& RbAbstractDataType::operator^(RbTypeInfo& t) const {
+RbTypeInfo& RbAbstractDataType::operator^(const RbTypeInfo& t) const {
 	std::string myName = typeid(*this).name();
 	std::string oName = t.getObjectType().name();
 	std::string message = "Raising " + myName + " to the power of " + oName + " is not supported.";
@@ -321,7 +389,7 @@ RbTypeInfo& RbAbstractDataType::operator^(RbTypeInfo& t) const {
  * @throws           RbException for not supported operations
  *
  */
-bool RbAbstractDataType::operator<(RbDataType& o) const {
+bool RbAbstractDataType::operator<(const RbDataType& o) const {
 	std::string myName = typeid(*this).name();
 	std::string oName = typeid(o).name();
 	std::string message = "Comparison of " + myName + " and " + oName + " is not supported.";

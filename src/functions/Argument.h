@@ -15,11 +15,11 @@
 class Argument : public RbObject{
     public:
         Argument(std::string& l, DAGNode* n);
-        Argument(Argument& a);                                                  //!< copy constructor
+        Argument(const Argument& a);                                                  //!< copy constructor
         virtual ~Argument();
 
         // implemented abstract/virtual functions from base classes
-        RbObject*           clone(void);                                        //!< clone this object
+        RbObject*           clone(void) const;                                  //!< clone this object
         void                print(std::ostream &c) const;                       //!< Print the value to ostream c
         void                dump(std::ostream& c);                              //!< Dump to ostream c
         void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
@@ -28,9 +28,9 @@ class Argument : public RbObject{
 
 
         // getter and setter
-        std::string         getLabel() const ;
-        void                setLable();
-        DAGNode*            getDAGNode();                                       //!< whatever that is?!?
+        std::string&        getLabel() const;
+        void                setLabel(std::string& l);
+        DAGNode*            getDAGNode() const;                                       //!< whatever that is?!?
 
     private:
         std::string&    label;

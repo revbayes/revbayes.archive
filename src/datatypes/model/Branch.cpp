@@ -36,7 +36,7 @@ Branch::Branch(void) : RbAbstractDataType("Branch") {
  *
  * @param b      the branch to copy
  */
-Branch::Branch(Branch &b) : RbAbstractDataType("Branch") {
+Branch::Branch(const Branch &b) : RbAbstractDataType("Branch") {
 	// initialize with default values
 	child = NULL;
 	parent = NULL;
@@ -51,8 +51,9 @@ Branch::Branch(Branch &b) : RbAbstractDataType("Branch") {
 	}
 
 	// deep copy for all
-	for (std::vector<RbDataType*>::iterator it=b.parameters.begin() ; it < b.parameters.end(); it++ ){
-		parameters.push_back((RbDataType*)(*it)->clone());
+	for (int i=0; i<b.getNumberOfParameter(); i++ ){
+		RbDataType* p = b.getParameter(i);
+	    parameters.push_back((RbDataType*)p->clone());
 	}
 }
 
@@ -118,7 +119,7 @@ Branch::~Branch(void) {
  * @return     return a deep copy of the object
  *
  */
-RbObject* Branch::clone(void) {
+RbObject* Branch::clone(void) const {
 	return new Branch(*this);
 }
 
@@ -182,7 +183,7 @@ void Branch::resurrect(const RbDumpState& x){
  * @param o           the object to compare to
  *
  */
-bool Branch::operator ==(RbObject& o) const {
+bool Branch::operator ==(const RbObject& o) const {
 
 	if (typeid(Branch) == typeid(o)){
 		// we are from the same type, which is perfect :)
@@ -190,20 +191,9 @@ bool Branch::operator ==(RbObject& o) const {
 		return (*this) == tmp;
 	}
 	else {
-		RbDataType& dt = dynamic_cast<RbDataType&>(o);
-		if ((&dt) != 0) {
-			if (isConvertible(dt)){
-				//can I convert myself into the type of o
-				RbDataType* newType = convertTo(dt);
-				return ((*newType) == dt);
-			}
-			else if (dt.isConvertible(*this)){
-				//try to convert o into my data type
-				RbDataType* newType = dt.convertTo(*this);
-				Branch& tmp = ((Branch&)*newType);
-				return (*this) == tmp;
-			}
-		}
+	    RbObject& clone = const_cast<RbObject&>(o);
+		RbDataType& dt = dynamic_cast<RbDataType&>(clone);
+		return (*this) == dt;
 	}
 
 	return false;
@@ -217,7 +207,31 @@ bool Branch::operator ==(RbObject& o) const {
  * @param o           the object to compare to
  *
  */
-bool Branch::operator ==(Branch& n) const {
+bool Branch::operator ==(const RbDataType& dt) const {
+    if (isConvertible(dt)){
+        //can I convert myself into the type of o
+        RbDataType* newType = convertTo(dt);
+        return ((*newType) == dt);
+    }
+    else if (dt.isConvertible(*this)){
+        //try to convert o into my data type
+        RbDataType* newType = dt.convertTo(*this);
+        Branch& tmp = ((Branch&)*newType);
+        return (*this) == tmp;
+    }
+
+    return false;
+}
+
+/**
+ * @brief overloaded == operators
+ *
+ * This function compares this object
+ *
+ * @param o           the object to compare to
+ *
+ */
+bool Branch::operator ==(const Branch& n) const {
 	// check the parents
 	if (!((*parent) == (*n.getParent()))){
 		return false;
@@ -253,7 +267,7 @@ bool Branch::operator ==(Branch& n) const {
  * @returns          the parameter at the position index. If no such index exists, it return NULL.
  *
  */
-RbDataType* Branch::getParameter(int index){
+RbDataType* Branch::getParameter(int index) const {
 	if (parameters.size() <= index){
 		return NULL;
 	}
@@ -270,12 +284,13 @@ RbDataType* Branch::getParameter(int index){
  * @returns          the first parameter matching name. If no parameter is found, it return NULL.
  *
  */
-RbDataType* Branch::getParameter(std::string& name){
+RbDataType* Branch::getParameter(std::string& name) const {
 	RbDataType* dt = NULL;
 
-	for (std::vector<RbDataType*>::iterator it=parameters.begin() ; it < parameters.end(); it++ ){
-		if ((*it)->getName().compare(name) == 0){
-			dt = *it;
+	for (int i=0; i<getNumberOfParameter(); i++){
+		RbDataType* p = getParameter(i);
+	    if (p->getName().compare(name) == 0){
+			dt = p;
 			break;
 		}
 	}
@@ -291,7 +306,7 @@ RbDataType* Branch::getParameter(std::string& name){
  * @returns          the number of parameter
  *
  */
-int Branch::getNumberOfParameter(){
+int Branch::getNumberOfParameter() const {
 	return parameters.size();
 }
 
@@ -303,7 +318,7 @@ int Branch::getNumberOfParameter(){
  * @returns      the parent node of the branch
  *
  */
-Node* Branch::getParent(){
+Node* Branch::getParent() const {
 	return parent;
 }
 
@@ -315,7 +330,7 @@ Node* Branch::getParent(){
  * @returns      the child node
  *
  */
-Node* Branch::getChild(){
+Node* Branch::getChild() const {
 	return child;
 }
 

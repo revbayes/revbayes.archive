@@ -41,6 +41,7 @@ public:
 
 	//overloaded operators
 	bool                operator==(const RbObject& o) const;                //!< Comparison
+	bool                operator==(const RbDataType& o) const;              //!< Comparison
 	bool                operator==(const RbInt& o) const;                   //!< Comparison
 	RbDataType&         operator+(const RbDataType& o) const;               //!< Addition
 	RbInt&              operator+(const RbInt& o) const;                    //!< Addition

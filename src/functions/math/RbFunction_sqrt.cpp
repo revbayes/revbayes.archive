@@ -176,9 +176,9 @@ RbDataType* RbFunction_sqrt::execute(void) {
 
     /* Compute result */
     if ( arg->getValue() < 0.0 )
-        (*value) =  1E-100;
+        value->setValue(1E-100);
     else
-        (*value) = std::sqrt(arg->getValue());
+        value->setValue(std::sqrt(arg->getValue()));
 
     return value;
 }

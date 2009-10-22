@@ -82,7 +82,7 @@ RbBool::~RbBool(void) {
  * @returns           return a copy of this object
  *
  */
-RbObject* RbBool::clone(void) {
+RbObject* RbBool::clone(void) const {
 
 	RbObject *x = new RbBool( *this );
 	return x;
@@ -136,7 +136,7 @@ void RbBool::resurrect(const RbDumpState& x){
  * @param o           the object to compare to
  *
  */
-bool RbBool::operator ==(RbObject& o) const {
+bool RbBool::operator ==(const RbObject& o) const {
 
 	if (typeid(RbBool) == typeid(o)){
 		// we are from the same type, which is perfect :)
@@ -144,7 +144,8 @@ bool RbBool::operator ==(RbObject& o) const {
 		return value == tmp.getValue();
 	}
 	else {
-		RbDataType& dt = dynamic_cast<RbDataType&>(o);
+	    RbObject& clone = const_cast<RbObject&>(o);
+		RbDataType& dt = dynamic_cast<RbDataType&>(clone);
 		if ((&dt) != 0) {
 			if (isConvertible(dt)){
 				//can I convert myself into the type of o
@@ -163,6 +164,42 @@ bool RbBool::operator ==(RbObject& o) const {
 	return false;
 }
 
+/**
+ * @brief overloaded == operators
+ *
+ * This function compares this object
+ *
+ * @param o           the object to compare to
+ *
+ */
+bool RbBool::operator ==(const RbDataType& dt) const {
+
+    if (isConvertible(dt)){
+        //can I convert myself into the type of o
+        RbDataType* newType = convertTo(dt);
+        return ((*newType) == dt);
+    }
+    else if (dt.isConvertible(*this)){
+        //try to convert o into my data type
+        RbDataType* newType = dt.convertTo(*this);
+        RbBool& tmp = ((RbBool&)*newType);
+        return value == tmp.getValue();
+    }
+
+    return false;
+}
+
+/**
+ * @brief overloaded == operators
+ *
+ * This function compares this object
+ *
+ * @param o           the object to compare to
+ *
+ */
+bool RbBool::operator ==(const RbBool& o) const {
+    return value == o.getValue();
+}
 /**
  * @brief setter for value
  *

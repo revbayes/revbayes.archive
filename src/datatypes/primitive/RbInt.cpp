@@ -85,7 +85,7 @@ RbInt::~RbInt(void) {
  * @returns           return a copy of this object
  *
  */
-RbObject* RbInt::clone(void) {
+RbObject* RbInt::clone(void) const {
 
 	RbObject *x = new RbInt( *this );
 	return x;
@@ -221,7 +221,7 @@ RbDataType* RbInt::convertTo(const RbDataType& dt) const {
  * @param o           the object to compare to
  *
  */
-bool RbInt::operator==(RbObject& o) const {
+bool RbInt::operator==(const RbObject& o) const {
 
 	if (typeid(RbInt) == typeid(o)){
 		// we are from the same type, which is perfect :)
@@ -229,20 +229,9 @@ bool RbInt::operator==(RbObject& o) const {
 		return value == tmp.getValue();
 	}
 	else {
-		RbDataType& dt = dynamic_cast<RbDataType&>(o);
-		if ((&dt) != 0) {
-			if (isConvertible(dt)){
-				//can I convert myself into the type of o
-				RbDataType* newType = convertTo(dt);
-				return ((*newType) == dt);
-			}
-			else if (dt.isConvertible(*this)){
-				//try to convert o into my data type
-				RbDataType* newType = dt.convertTo(*this);
-				RbInt& tmp = ((RbInt&)*newType);
-				return value == tmp.getValue();
-			}
-		}
+        RbObject& clone = const_cast<RbObject&>(o);
+        RbDataType& dt = dynamic_cast<RbDataType&>(clone);
+        return (*this) == dt;
 	}
 
 	return false;
@@ -256,7 +245,32 @@ bool RbInt::operator==(RbObject& o) const {
  * @param o           the object to compare to
  *
  */
-bool RbInt::operator==(RbInt& o) const {
+bool RbInt::operator==(const RbDataType& dt) const {
+
+    if (isConvertible(dt)){
+        //can I convert myself into the type of o
+        RbDataType* newType = convertTo(dt);
+        return ((*newType) == dt);
+    }
+    else if (dt.isConvertible(*this)){
+        //try to convert o into my data type
+        RbDataType* newType = dt.convertTo(*this);
+        RbInt& tmp = ((RbInt&)*newType);
+        return value == tmp.getValue();
+    }
+
+    return false;
+}
+
+/**
+ * @brief overloaded == operators
+ *
+ * This function compares this object
+ *
+ * @param o           the object to compare to
+ *
+ */
+bool RbInt::operator==(const RbInt& o) const {
 	return value == o.getValue();
 }
 
@@ -268,7 +282,7 @@ bool RbInt::operator==(RbInt& o) const {
  * @param o           the object to add to this instance
  *
  */
-RbDataType& RbInt::operator+(RbDataType& o) const {
+RbDataType& RbInt::operator+(const RbDataType& o) const {
 
 	if (typeid(RbInt) == typeid(o)){
 		// we are from the same type, which is perfect :)
@@ -296,7 +310,7 @@ RbDataType& RbInt::operator+(RbDataType& o) const {
  * @param o           the object to add to this instance
  *
  */
-RbInt& RbInt::operator+(RbInt& o) const {
+RbInt& RbInt::operator+(const RbInt& o) const {
 	return *(new RbInt(value + o.getValue()));
 }
 

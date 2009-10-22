@@ -24,20 +24,22 @@ class RbBool : public RbAbstractDataType {
 
 public:
 
-	RbBool(const bool v);                                            //!< Constructor from double
-	RbBool(const bool v, std::string& name);                         //!< Constructor from double
-	RbBool(const RbBool& s);                                         //!< Copy constructor
+	RbBool(const bool v);                                              //!< Constructor from double
+	RbBool(const bool v, std::string& name);                           //!< Constructor from double
+	RbBool(const RbBool& s);                                           //!< Copy constructor
 	virtual ~RbBool();
 
     // implemented abstract/virtual functions from base classes
-	RbObject*  clone(void);                                        //!< clone this object
-	void       print(std::ostream &c) const;                            //!< Print the value to ostream c
-	void       dump(std::ostream& c);                              //!< Dump to ostream c
-	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-	const std::string&  getType(void) const;                       //!< Get type name
+	RbObject*  clone(void) const;                                      //!< clone this object
+	void       print(std::ostream &c) const;                           //!< Print the value to ostream c
+	void       dump(std::ostream& c);                                  //!< Dump to ostream c
+	void       resurrect(const RbDumpState& x);                        //!< Resurrect from dumped state
+	const std::string&  getType(void) const;                           //!< Get type name
 
 	//overloaded operators
-	bool       operator==(RbObject& o) const;                      //!< Comparison
+	bool       operator==(const RbObject& o) const;                    //!< Comparison
+    bool       operator==(const RbDataType& o) const;                  //!< Comparison
+    bool       operator==(const RbBool& o) const;                      //!< Comparison
 
 	// memeber functions
 	void       setValue(bool v);

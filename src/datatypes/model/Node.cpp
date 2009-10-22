@@ -22,7 +22,7 @@ Node::Node(void) : RbAbstractDataType("Node") {
  *
  * @param n      the node to copy
  */
-Node::Node(Node &n) : RbAbstractDataType("Node") {
+Node::Node(const Node &n) : RbAbstractDataType("Node") {
 	// initialize with default values
 	parent = NULL;
 
@@ -32,13 +32,15 @@ Node::Node(Node &n) : RbAbstractDataType("Node") {
 	}
 
 	// deep copy for all children
-	for (std::vector<Node*>::iterator it=n.children.begin() ; it < n.children.end(); it++ ){
-		parameters.push_back((Node*)(*it)->clone());
+	for (int i=0; i<n.getNumberChildren(); i++){
+	    Node* c = n.getChild(i);
+		parameters.push_back((Node*) c->clone());
 	}
 
 	// deep copy for all parameters
-	for (std::vector<RbDataType*>::iterator it=n.parameters.begin() ; it < n.parameters.end(); it++ ){
-		parameters.push_back((RbDataType*)(*it)->clone());
+	for (int i=0; i<n.getNumberParameter(); i++){
+        RbDataType* dt = n.getParameter(i);
+		parameters.push_back((RbDataType*) dt->clone());
 	}
 }
 
@@ -84,7 +86,7 @@ void Node::clean(void) {
  * @return     return a deep copy of the object
  *
  */
-RbObject* Node::clone(){
+RbObject* Node::clone() const {
 	return new Node(*this);
 }
 
@@ -151,7 +153,7 @@ void Node::resurrect(const RbDumpState& x){
  * @param o           the object to compare to
  *
  */
-bool Node::operator ==(RbObject& o) const {
+bool Node::operator ==(const RbObject& o) const {
 
 	if (typeid(Node) == typeid(o)){
 		// we are from the same type, which is perfect :)
@@ -159,20 +161,9 @@ bool Node::operator ==(RbObject& o) const {
 		return (*this) == tmp;
 	}
 	else {
-		RbDataType& dt = dynamic_cast<RbDataType&>(o);
-		if ((&dt) != 0) {
-			if (isConvertible(dt)){
-				//can I convert myself into the type of o
-				RbDataType* newType = convertTo(dt);
-				return ((*newType) == dt);
-			}
-			else if (dt.isConvertible(*this)){
-				//try to convert o into my data type
-				RbDataType* newType = dt.convertTo(*this);
-				Node& tmp = ((Node&)*newType);
-				return (*this) == tmp;
-			}
-		}
+	    RbObject& clone = const_cast<RbObject&>(o);
+		RbDataType& dt = dynamic_cast<RbDataType&>(clone);
+	    return (*this) == dt;
 	}
 
 	return false;
@@ -186,7 +177,31 @@ bool Node::operator ==(RbObject& o) const {
  * @param o           the object to compare to
  *
  */
-bool Node::operator ==(Node& n) const {
+bool Node::operator ==(const RbDataType& dt) const {
+    if (isConvertible(dt)){
+        //can I convert myself into the type of o
+        RbDataType* newType = convertTo(dt);
+        return ((*newType) == dt);
+    }
+    else if (dt.isConvertible(*this)){
+        //try to convert o into my data type
+        RbDataType* newType = dt.convertTo(*this);
+        Node& tmp = ((Node&)*newType);
+        return (*this) == tmp;
+    }
+
+    return false;
+}
+
+/**
+ * @brief overloaded == operators
+ *
+ * This function compares this object
+ *
+ * @param o           the object to compare to
+ *
+ */
+bool Node::operator ==(const Node& n) const {
 	// check the parents
 	if (!((*parent) == (*n.getParent()))){
 		return false;
@@ -224,7 +239,7 @@ bool Node::operator ==(Node& n) const {
  * @returns          the parameter at the position index. If no such index exists, it return NULL.
  *
  */
-RbDataType* Node::getParameter(int index){
+RbDataType* Node::getParameter(int index) const {
 	if (parameters.size() <= index){
 		return NULL;
 	}
@@ -241,12 +256,13 @@ RbDataType* Node::getParameter(int index){
  * @returns          the first parameter matching name. If no parameter is found, it return NULL.
  *
  */
-RbDataType* Node::getParameter(std::string& name){
+RbDataType* Node::getParameter(std::string& name) const {
 	RbDataType* dt = NULL;
 
-	for (std::vector<RbDataType*>::iterator it=parameters.begin() ; it < parameters.end(); it++ ){
-		if ((*it)->getName().compare(name) == 0){
-			dt = *it;
+	for (int i=0; i<getNumberParameter(); i++) {
+	    RbDataType* p = getParameter(i);
+	    if (p->getName().compare(name) == 0){
+			dt = p;
 			break;
 		}
 	}
@@ -262,7 +278,7 @@ RbDataType* Node::getParameter(std::string& name){
  * @returns      the parent node
  *
  */
-Node* Node::getParent(){
+Node* Node::getParent() const {
 	return parent;
 }
 
@@ -385,7 +401,7 @@ RbDataType* Node::removeParameter(RbDataType* p){
  * @returns         true if there are no child nodes attached
  *
  */
-bool Node::isLeaf(){
+bool Node::isLeaf() const {
 //	return (children == NULL || children.size() == 0);
 	return (children.size() == 0);
 }

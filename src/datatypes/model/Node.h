@@ -34,34 +34,35 @@ class Node : public RbAbstractDataType{
 public:
 
 	Node(void);
-	Node(Node& n);
+	Node(const Node& n);
 	Node(Node* p, std::vector<Node*> c);
 	Node(Node* p, std::vector<Node*> c, std::vector<RbDataType*> param);
 
     // implemented abstract/virtual functions from base classes
-	RbObject* clone();
+	RbObject*  clone() const;
 	void       print(std::ostream &c) const;                            //!< Print the value to ostream c
 	void       dump(std::ostream& c);                              //!< Dump to ostream c
 	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
 
 	// overloaded operators
-	bool       operator==(RbObject& o) const;                      //!< Comparison
-	bool       operator==(Node& n) const;                          //!< Comparison
+	bool       operator==(const RbObject& o) const;                      //!< Comparison
+	bool       operator==(const RbDataType& n) const;                    //!< Comparison
+	bool       operator==(const Node& n) const;                          //!< Comparison
 
 	// member functions
-	Node* getChild(int i) { return children[i]; }
+	Node* getChild(int i) const { return children[i]; }
 	std::vector<Node*> &getChildren(void) { return children; }
-	int getNumberChildren(void) { return children.size(); }
+	int getNumberChildren(void) const { return children.size(); }
 	void clearChildren(void) { children.clear(); }
 	std::vector<RbDataType*> &getParameter(void) { return parameters; }
-	int getNumberParameter(void) { return parameters.size(); }
+	int getNumberParameter(void) const { return parameters.size(); }
 
 	void clean(void);
-	int getIndex(void) { return index; }
+	int getIndex(void) const { return index; }
 	void setIndex(int i) { index = i; }
-	RbDataType* getParameter(int index);                      //!< retrieves the parameter at index i
-	RbDataType* getParameter(std::string& name);              //!< retrieves the parameter with given name
-	Node* getParent();                                        //!< retrieves the parent node
+	RbDataType* getParameter(int index) const;                //!< retrieves the parameter at index i
+	RbDataType* getParameter(std::string& name) const;        //!< retrieves the parameter with given name
+	Node* getParent() const;                                  //!< retrieves the parent node
 //	Node* getChild();                                         //!< retrieves the child node
 	int addParameter(RbDataType* p);                          //!< adds the parameter p at the end and return the index of the position
 	int addParameter(RbDataType* p, int index);               //!< adds the parameter p at index and return the index of the position
@@ -70,7 +71,7 @@ public:
 	RbDataType* removeParameter(int index);                   //!< removes the parameter at position index and returns the removed parameter
 	RbDataType* removeParameter(std::string& name);           //!< removes the parameter with the name and returns the removed parameter
 	RbDataType* removeParameter(RbDataType* p);               //!< removes the parameter p from the vector and returns the removes parameter
-	bool isLeaf(void);                                        //!< checks if this node is a leaf node
+	bool isLeaf(void) const;                                  //!< checks if this node is a leaf node
 
 
 private:

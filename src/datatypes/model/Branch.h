@@ -32,30 +32,31 @@ class Branch : public RbAbstractDataType {
 public:
 	// TODO not sure if I want to allow branch to be instantiated without the two nodes attached to it
 	Branch(void);                                             //!< default constructor
-	Branch(Branch &b);                                        //!< copy constructor
+	Branch(const Branch &b);                                        //!< copy constructor
 	Branch(std::vector<RbDataType*> p);                       //!< constructor with the set of parameters attached to this branch
 	Branch(Node* p, Node* c);                                 //!< constructor with the two nodes attached to this branch
 	Branch(Node* p, Node* c, std::vector<RbDataType*> param); //!< constructor with the two nodes and the set of parameters attached to this branch
 	~Branch(void);                                            //!< Destructor
 
 	// implemented abstract/virtual functions from base classes
-	RbObject*  clone(void);                                        //!< clone this object
+	RbObject*  clone(void) const;                                        //!< clone this object
 	void       print(std::ostream &c) const;                            //!< Print the value to ostream c
 	void       dump(std::ostream& c);                              //!< Dump to ostream c
 	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
 	virtual std::string toString();
 
 	//overloaded operators
-	bool       operator==(RbObject& o) const;                      //!< Comparison
-	bool       operator==(Branch& o) const;                        //!< Comparison
+	bool       operator==(const RbObject& o) const;                      //!< Comparison
+    bool       operator==(const RbDataType& o) const;                    //!< Comparison
+	bool       operator==(const Branch& o) const;                        //!< Comparison
 
 	// assignment operator
 	// += operator
-	RbDataType* getParameter(int index);                      //!< retrieves the parameter at index i
-	RbDataType* getParameter(std::string& name);              //!< retrieves the parameter with given name
-	int getNumberOfParameter();                               //!< get the number of parameters
-	Node* getParent();                                        //!< retrieves the parent node
-	Node* getChild();                                         //!< retrieves the child node
+	RbDataType* getParameter(int index) const;                //!< retrieves the parameter at index i
+	RbDataType* getParameter(std::string& name) const;        //!< retrieves the parameter with given name
+	int getNumberOfParameter() const;                         //!< get the number of parameters
+	Node* getParent() const;                                  //!< retrieves the parent node
+	Node* getChild() const;                                   //!< retrieves the child node
 	int addParameter(RbDataType* p);                          //!< adds the parameter p at the end and return the index of the position
 	int addParameter(RbDataType* p, int index);               //!< adds the parameter p at index and return the index of the position
 	void setChild(Node* c);                                   //!< sets the child node to c
