@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
- * @author Fredrik Ronquist and the REvBayes core team
+ * @author REvBayes core team
  * @license GPL version 3.0
  * @interface SyntaxElement
  * @since Version 1.0, 2009-09-02
@@ -26,30 +26,29 @@
 /* Forward declarations */
 class SymbolTable;
 
-/** This is the abstract base class for nodes in the syntax tree. It is derived
- *  from DAGNode, which contains essential functionality like a value member
- *  and a getValue method.
+/**
+ *  \brief Interface for syntax elements
  *
- *  The syntax tree is built up by syntax element nodes. The syntax elements either
+ *  SyntaxElement is the base class for nodes in the syntax tree. The nodes either
  *  have one or more operands, which are themselves syntax elements, or they have
- *  no operands and simply a predefined result of type (pointer to) RbDataType. In
+ *  no operands and simply a predefined result of type (pointer to) RbObject. In
  *  the former case, the elements correspond to interior nodes in the syntax tree
  *  and in the latter case, they correspond to terminal nodes.
  *
- *  If you call getValue on an interior node and the result has not been filled in,
- *  or the node is marked for recalculation, the syntax element should evaluate its
+ *  If you call getValue on a syntax element, the syntax element will calculate its
  *  semantic value, causing recursive execution of the syntax subtree rooted on that
- *  element, after which the semantic value is returned.
+ *  element. Unless part of a user-defined function, a syntax tree should be evaluated
+ *  only once.
  *
  *  If you call getValue on a terminal element, the predefined result is simply returned.
  *  Some syntax elements operate only through their side effects, for instance labeled
  *  expressions, and their semantic value is NULL.
  *
- *  A syntax element has the ability to restore itself to a previous state, to speed
- *  up accept and reject steps for deterministic nodes in a model DAG. A touched flag is
- *  used to mark an element for later recalculation. The new value can be kept with keep
- *  or discarded with restore. This functionality is implemented in the DAGNode base
- *  class.
+ *  If syntax elements are part of equation expressions or expressions that are passed
+ *  as arguments to a distribution function in a tilde statement, they are converted
+ *  to DAG nodes to allow repeated evaluation during an MCMC run. All syntax elements
+ *  that can be part of expressions need to be able to convert themselves to appropriate
+ *  DAG nodes by implementing the getDAGNode() function.
  *
  *  Syntax elements implement a dynamic copy method that makes a copy of part of the
  *  syntax tree for repeated fast evaluation of an expression. The variables in the
@@ -70,29 +69,18 @@ class SymbolTable;
 class SyntaxElement : public RbObject {
 
     public:
-            SyntaxElement() : RbObject(), value(NULL), storedValue(NULL), changed(false), touched(false) {}     //!< Default constructor calls base class
-	        virtual ~SyntaxElement();           //!< Destructor; delete syntax subtree
+            SyntaxElement() : RbObject() {}     //!< Default constructor calls base class
+            virtual ~SyntaxElement();           //!< Destructor; delete syntax subtree
 
-        virtual SyntaxElement*      copy(SymbolTable* symbols=NULL) const = 0; //!< Get fast copy of syntax subtree
-        virtual std::set<DAGNode*>  getDAGNodes() { return std::set<DAGNode*>(); }  //!< Get DAG Nodes
-        virtual const string&       getDataType(void) const = 0;    //!< Get data type of semantic value
-        RbDataType*                 getValue();                     //!< Get semantic value
-        virtual bool                isConstExpr(void) const = 0;    //!< Is syntax subtree a constant expression?
-        bool                        keep();                         //!< Keep current value
-        virtual void                print(std::ostream& c) const = 0;       //!< Print some info
-        virtual void                printConsole(std::ostream& c) const {}  //!< Print content to console
-        bool                        restore();                      //!< Restore previous value
-        bool                        touch();                        //!< Mark for recalculation
+        virtual SyntaxElement*  copy(SymbolTable* symbols=NULL) const = 0; //!< Get fast copy of syntax subtree
+        virtual DAGNode*        getDAGNode() const = 0;         //!< Convert the element to a DAG node
+        virtual const string&   getValueClass(void) const = 0;  //!< Get class (data type) of semantic value
+        virtual RbObject*       getValue() = 0;                 //!< Get semantic value
+        virtual bool            isConstExpr(void) const = 0;    //!< Is syntax subtree a constant expression?
+        virtual void            print(std::ostream& c) const = 0;       //!< Print some info
+        virtual void            printConsole(std::ostream& c) const {}  //!< Print content to console
 
     protected:
-        RbDataType*         storedValue;    //!< Holds the previous value
-        RbDataType*         value;          //!< Holds the current value
-
-        bool                changed;        //!< True if value has been recalculated
-        bool                touched;        //!< Marks node for recalculation
-        
-        class SyntaxElement*        parent;             //!< Pointer to the parent syntax element
-        class DeterministicNode*    affectedDAGNode;    //!< Pointer to affected deterministic node, if any
 };
 
 #endif
