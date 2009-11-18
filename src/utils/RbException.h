@@ -11,9 +11,10 @@ class RbException : public RbObject {
 
 public:
 	// constructors
-	RbException(void);                                    // default contructor
-	RbException(const RbException& e);                    // copy contructor
-	virtual ~RbException(void);                           // destructor
+	RbException(void);                                      // default contructor
+    RbException(const std::string& msg) : message(msg) {}   //!< Default message constructor
+	RbException(const RbException& e);                      // copy contructor
+	virtual ~RbException(void);                             // destructor
 
 	// implemented abstract/virtual functions from base classes
 	RbObject*           clone(void) const;                                  //!< clone this object

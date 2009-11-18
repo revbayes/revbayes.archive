@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the partial implementation of RbObject,
- * which is the REvBayes abstract base class for all objects.
+ * which is the RevBayes abstract base class for all objects.
  *
  * @brief Partial implementation of RbObject
  *
@@ -15,32 +15,63 @@
  */
 
 
+#include "RbList.h"
 #include "RbObject.h"
+
 #include <string>
 #include <ostream>
 #include <iostream>
 
+/** Initialize static class attribute */
+static RbList::rbClass(std::vector<string>(1,"object"));
 
-RbObject::RbObject(const char* n){
-	name = n;
+
+/**
+ * @brief Get class attribute
+ *
+ * Get the class attribute of the object. Implemented
+ * here only as an indication of how it should be
+ * implemented in derived classes.
+ *
+ */
+const RbList* RbObject::getClass() const {
+
+	return rbClass;
 }
 
-RbObject::RbObject(const std::string& n){
-	name = n;
+
+/**
+ * @brief Print object to ostream
+ *
+ * Print object to ostream. The current implementation
+ * makes sure the name of the object is printed if
+ * this function is not overridden, which works for now.
+ *
+ * @param o The ostream for printing
+ *
+ */
+void RbObject::print(std::ostream& o) const {
+
+	c << toString();
 }
 
-RbObject::~RbObject(){
-//	delete &name;
+
+/** Constructors, destructors and functions I do not use -- Fredrik **********/
+RbObject::RbObject(const char* n)
+    : name(n) {
+}
+
+RbObject::RbObject(const std::string& n)
+    : name(n) {
+}
+
+/** Destructor is not needed -- Fredrik */
+RbObject::~RbObject() {
 }
 
 std::string RbObject::getName() const {
 
 	return name;
-}
-
-void RbObject::print(std::ostream &c) const {
-
-	c<<toString();
 }
 
 void RbObject::setName(std::string& n) {
@@ -49,6 +80,7 @@ void RbObject::setName(std::string& n) {
 }
 
 void RbObject::setName(const char* n){
+
 	name = n;
 }
 
