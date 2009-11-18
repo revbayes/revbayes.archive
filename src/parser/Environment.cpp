@@ -18,35 +18,46 @@
 
 #include "Environment.h"
 
-/** Constructor initializes parentEnvironment */
+/**
+ * @brief Constructor from parent environment
+ *
+ * The constructor initializes parentEnvironment
+ * to the supplied pointer.
+ *
+ * @param parentEnv     Pointer to the parent environment
+ *
+ */
 Environment::Environment(Environment* parentEnv) :
     parentEnvironment(parentEnv), variableTable() {
 }
 
 
 /**
- * Destructor. All variables are managed by the environment so
- * they should be destroyed here.
+ * @brief Destructor
+ *
+ * All variables are managed by the environment so they
+ * should be destroyed here.
  */
 Environment::~Environment() {
 
-    for (std::map::iterator i=variableTable.begin(); i!=variableTable.end(); i++)
-        delete (*i->second());
+    for (std::map<std::string, DAGNode*>::iterator i=variableTable.begin(); i!=variableTable.end(); i++)
+        delete i->second;
 }
 
 
 /**
  * Add a variable to the variable table.
  *
- * @param  name     Name of variable
- * @param  variable Pointer to DAGNode wrapping the object
- * @return Returns true on success, false on failure
+ * @param name      Name of variable
+ * @param variable  Pointer to DAGNode wrapping the object
+ * @return          Returns true on success, false on failure
+ *
  */
-bool Environment::addVariable(std::string name, DAGNode* variable) {
+bool Environment::addVariable(const std::string& name, DAGNode* variable) {
 
-    pair<iterator, bool> retVal;
+    std::pair<std::map<std::string, DAGNode*>::iterator, bool> retVal;
 
-    retVal = variableTable.insert(std::pair<name, variable>);
+    retVal = variableTable.insert(std::pair<std::string, DAGNode*>(name, variable));
     
     return retVal.second;
 }
@@ -55,10 +66,11 @@ bool Environment::addVariable(std::string name, DAGNode* variable) {
 /**
  * Get a variable in the variable table.
  *
- * @param  name Name of variable
- * @return Returns pointer to object on success, 
+ * @param name  Name of variable
+ * @return      Returns pointer to object on success, 
+ *
  */
-DAGNode* Environment::getVariable(std::string &name) {
+DAGNode* Environment::getVariable(const std::string& name) {
 
     if (variableTable.find(name) == variableTable.end()) {
         if (parentEnvironment != NULL)

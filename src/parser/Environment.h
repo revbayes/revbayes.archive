@@ -30,17 +30,17 @@
 #include <map>
 #include <string>
 
-#include "../dag/DAGNode.h"
+#include "DAGNode.h"
 
-/** Environment, class sed to hold local variable table */
+/** Environment: class used to hold local variable table */
 class Environment {
 
     public:
             Environment(Environment* parentEnv);    //!< Constructor from parent environment
 	        ~Environment();                         //!< Destructor deletes local objects
 
-	    bool        addVariable(std::string &name, DAGNode *variable);  //!< Add a variable
-	    DAGNode*    getVariable(std::string &name);                     //!< Get a variable
+	    bool        addVariable(const std::string& name, DAGNode* variable);  //!< Add a variable
+	    DAGNode*    getVariable(const std::string& name);                     //!< Get a variable
 	
     protected:
         Environment*                    parentEnvironment;  //!< Pointer to enclosing environment
@@ -48,3 +48,4 @@ class Environment {
 };
 
 #endif
+
