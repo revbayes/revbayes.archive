@@ -64,10 +64,10 @@ class DAGNode : public RbObject {
 	        virtual ~DAGNode(void);     //!< Destructor
 
 	    void                addChildNode(DAGNode* c) { children.insert(c); }    //!< Add child node
-        DAGNode*            clone(const DAGNode& d) const;                      //!< Clone this node
+        DAGNode*            clone() const;                                      //!< Clone this node
 	    std::set<DAGNode*>& getChildrenNodes(void) { return children; }         //!< Get children nodes
 	    std::set<DAGNode*>& getParentNodes(void) { return parents; }            //!< Get parent nodes
-        virtual RbObject*   getValue() = 0;                             //!< Get value
+        virtual RbObject*   getValue() { return value; }                        //!< Get value
 	    virtual bool        isChanged(void) const { return changed; }   //!< Has the node recalculated its value?
         bool                isTouched() const { return touched; }       //!< Is the node marked for recalculation?
         void                keep() { touched = changed = false; }   //!< Keep current value of node
@@ -79,6 +79,7 @@ class DAGNode : public RbObject {
 	    void                removeChildNode(DAGNode* c) { children.erase(c); }  //!< Remove a child node
         void                restore();                              //!< Restore node to previous value
         void                restoreAffected();                      //!< Restore affected nodes recursively
+        void                setValue(RbObject* val);                //!< Set the value of the node
         void                touch() { touched = true; }             //!< Mark node for recalculation
         void                touchAffected();                        //!< Mark affected nodes recursively
 	

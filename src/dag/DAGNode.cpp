@@ -48,6 +48,7 @@ DAGNode::DAGNode(RbObject *val)
       children(), parents() {
 }
 
+
 /**
  * @brief DAGNode copy constructor
  *
@@ -58,14 +59,14 @@ DAGNode::DAGNode(RbObject *val)
  *
  */
 DAGNode::DAGNode(const DAGNode &d)
-    :   storedValue(d.storedValue.clone()), value(value.clone()),
+    :   storedValue(d.storedValue->clone()), value(d.value->clone()),
         changed(d.changed), touched(d.touched),
         children(), parents() {
 
-    for (set<DAGNode*>::iterator i=d.children.begin(); i!=d.children.end(); i++)
+    for (std::set<DAGNode*>::iterator i=d.children.begin(); i!=d.children.end(); i++)
             children.insert((*i)->clone());
 
-    for (set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
             parents.insert((*i)->clone());
 }
 
@@ -108,7 +109,7 @@ DAGNode* DAGNode::clone(void) const {
 void DAGNode::keepAffected() {
 
     if (changed) {
-        for (set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++)
+        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++)
             (*i)->keepAffected();
         keep();
     }
@@ -134,11 +135,11 @@ bool DAGNode::operator==(const DAGNode& d) const {
     if (children.size() != d.children.size() || parents.size() != d.parents.size())
         return false;
 
-    for (set<DAGNode*>::iterator i=d.children.begin(); i!=d.children.end(); i++)
+    for (std::set<DAGNode*>::iterator i=d.children.begin(); i!=d.children.end(); i++)
         if (children.find(*i) == children.end())
             return false;
 
-    for (set<DAGNode*>::iterator i=d.parents.begin(); i!=d.parents.end(); i++)
+    for (std::set<DAGNode*>::iterator i=d.parents.begin(); i!=d.parents.end(); i++)
         if (parents.find(*i) == parents.end())
             return false;
 
@@ -157,7 +158,7 @@ bool DAGNode::operator==(const DAGNode& d) const {
 void DAGNode::print(std::ostream& o) const {
 
 	o << "DAGNode: ";
-    //   o << getClass()->printValueVector(o);
+    //   o << getClass()->print(o);
     o << std::endl;
 
     o << "value:" << std::endl;
@@ -194,7 +195,8 @@ void DAGNode::printChildren(std::ostream& o) const {
 		return;
 		}
 
-	for (int count=1, std::set<DAGNode*>::iterator i=children.begin(); i != children.end(); i++, count++) {
+    int count = 1;
+	for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++, count++) {
 		o << "children[" << count << "]:" << std::endl;
         o << (*i) << std::endl;
     }
@@ -220,7 +222,8 @@ void DAGNode::printParents(std::ostream& o) const {
 		return;
 		}
 
-	for (int count=1, std::set<DAGNode*>::iterator i=parents.begin(); i != parents.end(); i++, count++) {
+    int count = 1;
+	for (std::set<DAGNode*>::iterator i=parents.begin(); i != parents.end(); i++, count++) {
 		o << "parents[" << count << "]:" << std::endl;
         o << (*i) << std::endl;
     }
@@ -251,7 +254,7 @@ void DAGNode::restore() {
 
 
 /**
- * @brief Restore affected nodes.
+ * @brief Restore affected nodes
  *
  * This function calls all nodes that are affected by this DAG node and restores
  * them.
@@ -260,7 +263,7 @@ void DAGNode::restore() {
 void DAGNode::restoreAffected() {
 
     if (changed) {
-        for (set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++)
+        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++)
             (*i)->restoreAffected();
         restore();
     }
@@ -268,7 +271,22 @@ void DAGNode::restoreAffected() {
 
 
 /**
- * @brief Thouch affected nodes.
+ * @brief Set value
+ *
+ * This function sets the value of the node.
+ *
+ */
+void DAGNode::setValue(RbObject* val) {
+
+    if (value != NULL)
+        delete value;
+
+    value = val;
+}
+
+
+/**
+ * @brief Thouch affected nodes
  *
  * This function touches all affected DAG nodes, i.e. marks them as changed.
  *
@@ -277,7 +295,7 @@ void DAGNode::touchAffected() {
 
     if (!touched) {
         touch();
-        for (set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++)
+        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++)
             (*i)->touchAffected();
     }
 }
