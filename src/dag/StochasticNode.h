@@ -1,13 +1,14 @@
 /**
  * @file
- * This file contains the declaration of StochasticNode, which is a derived
- * class from DAGNode. StochasticNodes are DAG nodes with an distribution assigned to its value.
+ * This file contains the declaration of StochasticNode, which is derived
+ * from DAGNode. StochasticNode is used for DAG nodes holding stochastic
+ * variables with an associated probability density function.
  *
  * @brief Declaration of StochasticNode
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The REvBayes development core team
+ * @author The RevBayes development core team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
@@ -19,26 +20,31 @@
 #ifndef StochasticNode_H
 #define StochasticNode_H
 
-#include <string>
-#include <vector>
 #include "DAGNode.h"
 
 class Distribution;
-class RbDataType;
+
 class StochasticNode : public DAGNode {
 
-public:
-	StochasticNode(void);                                       //!< Default constructor TODO maybe we should not have a default constructor
-	StochasticNode(RbDataType* dat, Distribution *dist);        //!< Constructor with variable and the distribution
-	StochasticNode(StochasticNode &d);                          //!< Copy constructor
-	~StochasticNode(void);                                      //!<
+    public:
+	                StochasticNode(Distribution* dist);     //!< Constructor from distribution
+	                StochasticNode(StochasticNode &d);      //!< Copy constructor
+	        virtual ~StochasticNode();                      //!< Destructor
 
-	Distribution* getDistribution(void) { return distribution; }
-    bool isChanged(void) { return true; }     //TODO not sure if that is meaningful
-	void print(void);                         //TODO same as for print in DAGNode
+        void            clamp(RbObject* observedVal);       //!< Clamp the node with an observed value
+        StochasticNode* clone(StochasticNode& s);           //!< Clone the stochastic node
+        double          lnProb() const;                     //!< Return ln probability
+        double          lnProbRatio() const;                //!< Return ln prob ratio of value to stored value
+        double          lnProbRatioAffected() const;        //!< Return ln prob ratio of affected DAG subgraph
+        void            print(std::ostream& o) const;       //!< Print object
+        void            proposeValue(RbObject* val);        //!< Propose a new value for the variable
+        void            setValue(RbObject* val);            //!< Unconditionally set value
+        void            unclamp() { clamped = false; }      //!< Unclamp the node
 
-private:
-	Distribution* distribution;
+    private:
+        bool            clamped;                    //!< Is the stochastic node clamped, ie, does it have data?
+        Distribution*   distribution;               //!< Distribution (density functions, random draw function)
 };
 
 #endif
+

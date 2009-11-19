@@ -20,7 +20,8 @@
 #ifndef DAGNode_H
 #define DAGNode_H
 
-#include "../main/RbObject.h"
+#include "RbObject.h"
+
 #include <string>
 #include <set>
 
@@ -64,8 +65,8 @@ class DAGNode : public RbObject {
 
 	    void                addChildNode(DAGNode* c) { children.insert(c); }    //!< Add child node
         DAGNode*            clone(const DAGNode& d) const;                      //!< Clone this node
-	    set<DAGNode*>&      getChildrenNodes(void) { return children; }         //!< Get children nodes
-	    set<DAGNode*>&      getParentNodes(void) { return parents; }            //!< Get parent nodes
+	    std::set<DAGNode*>& getChildrenNodes(void) { return children; }         //!< Get children nodes
+	    std::set<DAGNode*>& getParentNodes(void) { return parents; }            //!< Get parent nodes
         virtual RbObject*   getValue() = 0;                             //!< Get value
 	    virtual bool        isChanged(void) const { return changed; }   //!< Has the node recalculated its value?
         bool                isTouched() const { return touched; }       //!< Is the node marked for recalculation?
@@ -86,16 +87,16 @@ class DAGNode : public RbObject {
             // Only instances from derived classes are allowed.
             DAGNode();                  //!< Default constructor
             DAGNode(RbObject* val);     //!< Constructor from value
-            DAGNode(const DAGnode& d);  //!< Copy constructor
+            DAGNode(const DAGNode& d);  //!< Copy constructor
 
-	    RbObject*       storedValue;    //!< Holds the previous value
-        RbObject*       value;          //!< Holds the current value
+	    RbObject*           storedValue;    //!< Holds the previous value
+        RbObject*           value;          //!< Holds the current value
 
-	    bool            changed;        //!< True if value has been recalculated
-	    bool            touched;        //!< Marks node for recalculation
+	    bool                changed;        //!< True if value has been recalculated
+	    bool                touched;        //!< Marks node for recalculation
 
-	    set<DAGNode*>   children;       //!< Set of children nodes
-	    set<DAGNode*>   parents;        //!< Set of parent nodes
+	    std::set<DAGNode*>  children;       //!< Set of children nodes
+	    std::set<DAGNode*>  parents;        //!< Set of parent nodes
 };
 
 #endif
