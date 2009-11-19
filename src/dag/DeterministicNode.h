@@ -1,13 +1,14 @@
 /**
  * @file
- * This file contains the declaration of DeterministicNode, which is a derived
- * class from DAGNode. DeterministicNode are DAG nodes with an expression assigned to its value.
+ * This file contains the declaration of DeterministicNode, which is derived
+ * from DAGNode. DeterministicNode is used for DAG nodes associated with
+ * an expression (equation) that determines their value.
  *
  * @brief Declaration of DeterministicNode
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The REvBayes development core team
+ * @author The RevBayes development core team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
@@ -25,27 +26,25 @@
 
 class RbDataType;
 class SyntaxElement;
+
+
 class DeterministicNode : public DAGNode {
 
-public:
-	DeterministicNode(RbDataType* dt);                         //!< Constructor with variable
-	DeterministicNode(RbDataType* dt, SyntaxElement* e);       //!< Constructor with variable and root of syntax tree
-	DeterministicNode(DeterministicNode &dn);                  //!< Copy constructor
-    ~DeterministicNode(void);                                  //!<
+    public:
+	                DeterministicNode(RbFunction* func);                //!< Constructor from function
+	                DeterministicNode(const DeterministicNode& d);      //!< Copy constructor
+            virtual ~DeterministicNode();                               //!< Destructor (delete function)
 
-    // implemented abstract/virtual functions from base classes
-    RbObject*           clone(void) const ;                                 //!< clone this object
-    void                print(std::ostream& c) const;                       //!< Print the value to ostream c
-    void                dump(std::ostream& c);                              //!< Dump to ostream c
-    void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-    bool                operator==(const RbObject& o) const;                //!< Comparison
-    bool                operator==(const DeterministicNode& o) const;       //!< Comparison
+        // Standard utility functions
+        RbObject*   clone() const;                                      //!< Clone this object
+        bool        equals(const DeterministicNode& d) const;           //!< Compare
+        void        print(std::ostream& c) const;                       //!< Print object
 
-    bool isChanged(void) { return true; }     //TODO not sure if that is meaningful
-	void print(void);                         //TODO same as for print in DAGNode
-
-private:
-	SyntaxElement* rootSyntaxTree;
+        // Regular member functions
+        RbObject*   getValue();                                         //!< Get current value
+        
+    private:
+	    RbFunction* function;           //!< Function calculating value
 };
 
 #endif

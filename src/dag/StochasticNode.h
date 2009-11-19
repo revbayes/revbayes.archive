@@ -27,12 +27,12 @@ class Distribution;
 class StochasticNode : public DAGNode {
 
     public:
-	                StochasticNode(Distribution* dist);     //!< Constructor from distribution
-	                StochasticNode(StochasticNode &d);      //!< Copy constructor
-	        virtual ~StochasticNode();                      //!< Destructor
+	                StochasticNode(Distribution* dist);         //!< Constructor from distribution
+	                StochasticNode(const StochasticNode& s);    //!< Copy constructor
+	        virtual ~StochasticNode();                          //!< Destructor
 
         void            clamp(RbObject* observedVal);       //!< Clamp the node with an observed value
-        StochasticNode* clone(StochasticNode& s);           //!< Clone the stochastic node
+        StochasticNode* clone() const;                      //!< Clone the stochastic node
         double          lnProb() const;                     //!< Return ln probability
         double          lnProbRatio() const;                //!< Return ln prob ratio of value to stored value
         double          lnProbRatioAffected() const;        //!< Return ln prob ratio of affected DAG subgraph

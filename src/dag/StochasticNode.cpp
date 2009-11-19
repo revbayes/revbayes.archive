@@ -2,7 +2,7 @@
  * @file
  * This file contains the implementation of StochasticNode, which is derived
  * from DAGNode. StochasticNode is used for DAG nodes holding stochastic
- * variables.
+ * variables with an associated probability density function.
  *
  * @brief Implementation of StochasticNode
  *
@@ -18,6 +18,7 @@
  */
 
 
+#include "Distribution.h"
 #include "StochasticNode.h"
 
 
@@ -38,6 +39,19 @@ StochasticNode::StochasticNode(Distribution* dist)
 
 
 /**
+ * @brief Copy constructor
+ *
+ * Copy constructor for stochastic nodes.
+ *
+ * @param s     The stochastic node to be copied
+ *
+ */
+StochasticNode::StochasticNode(const StochasticNode& s)
+    : DAGNode(s), distribution(s.distribution) {
+}
+
+
+/**
  * @brief Destructor
  *
  * The stochastic node manages the distribution; the object is
@@ -52,12 +66,43 @@ StochasticNode::~StochasticNode() {
 
 
 /**
+ * @brief Clamp the node to a value
+ *
+ * This function sets the value of the stochastic node to some
+ * observed value (data). Then the clamped flag is set to make
+ * sure that the node is marked as clamped and no change is made
+ * to the observed value.
+ *
+ * @param observedVal   The observed value
+ */
+void StochasticNode::clamp(RbObject* observedVal) {
+
+	if (value != NULL)
+		delete value;
+
+    value = observedVal;
+}
+
+
+/**
+ * @brief Clone the stochastic node
+ *
+ * This function clones the stochastic node.
+ *
+ */
+StochasticNode* StochasticNode::clone() const {
+
+	return new StochasticNode(*this);
+}
+
+
+/**
  * @brief Calculate probability of node
  *
  * This function calculates the probability of the current value given
- * the current values of any parent nodes in the DAG, that is, the probability
- * density of the value of the node given the current values of the parameters
- * of the probability distribution associated with the node.
+ * the values of any parent nodes in the DAG, that is, the probability
+ * density of the value of the node given the current values of the
+ * parameters of the probability distribution associated with the node.
  *
  * @returns         Ln probability
  *
