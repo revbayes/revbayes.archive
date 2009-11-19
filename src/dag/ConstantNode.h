@@ -25,13 +25,12 @@
 class ConstantNode : public DAGNode {
 
     public:
-	                ConstantNode(RbObject* val);        //!< Constructor from value
-	                ConstantNode(ConstantNode& c);      //!< Copy constructor
-	        virtual ~ConstantNode();                    //!< Destructor deletes object
+	                ConstantNode(RbObject* val);            //!< Constructor from value
+	                ConstantNode(const ConstantNode& c);    //!< Copy constructor
 
-        ConstantNode*   clone(ConstantNode& c);         //!< Clone the stochastic node
-        bool            equals(RbObject* obj);          //!< Object comparison
-        void            print(std::ostream& o) const;   //!< Print object
+        ConstantNode*   clone() const;                      //!< Clone this object
+        bool            equals(const RbObject* obj) const;  //!< Object comparison
+        void            print(std::ostream& o) const;       //!< Print object
 };
 
 #endif

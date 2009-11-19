@@ -22,7 +22,6 @@
 
 #include "RbObject.h"
 
-#include <string>
 #include <set>
 
 
@@ -64,16 +63,17 @@ class DAGNode : public RbObject {
 	        virtual ~DAGNode(void);     //!< Destructor
 
 	    void                addChildNode(DAGNode* c) { children.insert(c); }    //!< Add child node
-        DAGNode*            clone() const;                                      //!< Clone this node
+        virtual DAGNode*    clone() const;                                      //!< Clone this node
+        virtual bool        equals(const RbObject *obj) const;                  //!< Compare DAG nodes
 	    std::set<DAGNode*>& getChildrenNodes(void) { return children; }         //!< Get children nodes
 	    std::set<DAGNode*>& getParentNodes(void) { return parents; }            //!< Get parent nodes
-        virtual RbObject*   getValue() { return value; }                        //!< Get value
-	    virtual bool        isChanged(void) const { return changed; }   //!< Has the node recalculated its value?
+        RbObject*           getStoredValue() { return storedValue; }            //!< Get stored value
+        RbObject*           getValue() { return value; }                        //!< Get value
+	    bool                isChanged(void) const { return changed; }   //!< Has the node recalculated its value?
         bool                isTouched() const { return touched; }       //!< Is the node marked for recalculation?
         void                keep() { touched = changed = false; }   //!< Keep current value of node
         void                keepAffected();                         //!< Keep value of affected nodes recursively
-        bool                operator==(const DAGNode& d) const;     //!< Compare two DAG nodes
-        void                print(std::ostream& o) const;           //!< Print this DAG node
+        virtual void        print(std::ostream& o) const;           //!< Print this DAG node
 	    void                printChildren(std::ostream& o) const;   //!< Print children DAG nodes
 	    void                printParents(std::ostream& o) const;    //!< Print parent DAG nodes
 	    void                removeChildNode(DAGNode* c) { children.erase(c); }  //!< Remove a child node
@@ -82,7 +82,7 @@ class DAGNode : public RbObject {
         void                setValue(RbObject* val);                //!< Set the value of the node
         void                touch() { touched = true; }             //!< Mark node for recalculation
         void                touchAffected();                        //!< Mark affected nodes recursively
-	
+
     protected:
             // The constructors are protected because this is an abstract class.
             // Only instances from derived classes are allowed.

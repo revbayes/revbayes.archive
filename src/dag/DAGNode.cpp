@@ -124,22 +124,27 @@ void DAGNode::keepAffected() {
  * objects we need to compare, not their current values.
  *
  */
-bool DAGNode::operator==(const DAGNode& d) const {
+bool DAGNode::equals(const RbObject* obj) const {
 
-	if (value != d.value || storedValue != d.storedValue)
+    const DAGNode* d = dynamic_cast<const DAGNode*>(obj);
+
+    if (d == NULL)
         return false;
 
-    if (changed != d.changed || touched != d.touched)
+	if (value != d->value || storedValue != d->storedValue)
         return false;
 
-    if (children.size() != d.children.size() || parents.size() != d.parents.size())
+    if (changed != d->changed || touched != d->touched)
         return false;
 
-    for (std::set<DAGNode*>::iterator i=d.children.begin(); i!=d.children.end(); i++)
+    if (children.size() != d->children.size() || parents.size() != d->parents.size())
+        return false;
+
+    for (std::set<DAGNode*>::iterator i=d->children.begin(); i!=d->children.end(); i++)
         if (children.find(*i) == children.end())
             return false;
 
-    for (std::set<DAGNode*>::iterator i=d.parents.begin(); i!=d.parents.end(); i++)
+    for (std::set<DAGNode*>::iterator i=d->parents.begin(); i!=d->parents.end(); i++)
         if (parents.find(*i) == parents.end())
             return false;
 
