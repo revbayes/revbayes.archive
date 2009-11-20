@@ -1,14 +1,17 @@
-/*!
- * \file
+/**
+ * @file
  * This file contains the declaration of RbInt, which is
- * a REvBayes wrapper around a regular int.
+ * a RevBayes wrapper around a regular int.
  *
- * \brief Declaration of RbInt
+ * @brief Declaration of RbInt
  *
  * (c) Copyright 2009-
- * \date Last modified: $Date$
- * \author The REvBayes development core team
- * \license GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes development core team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-11-20, version 1.0
+ * @extends RbObject
  *
  * $Id$
  */
@@ -16,44 +19,37 @@
 #ifndef RbInt_H
 #define RbInt_H
 
-#include "RbAbstractDataType.h"
-#include "RbDataType.h"
-#include "RbTypeInfo.h"
+#include <iostream>
 
-class RbInt : public RbAbstractDataType {
+#include "RbObject.h"
 
-public:
+class RbInt : public RbObject {
 
-    RbInt(const int v);                                            //!< Constructor from double
-    RbInt(const int v, std::string& name);                         //!< Constructor from double
-    RbInt(const RbInt& s);                                         //!< Copy constructor
-	virtual ~RbInt();
+    public:
 
-    // implemented abstract/virtual functions from base classes
-	RbObject*           clone(void) const ;                                 //!< clone this object
-	void                print(std::ostream &c) const;                       //!< Print the value to ostream c
-	void                dump(std::ostream& c);                              //!< Dump to ostream c
-	void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-	bool                isConvertible(const RbDataType& dt) const;          //!< is this data type convertible into the data type dt
-   	bool                isConvertible(const RbTypeInfo& dt) const;          //!< is this data type convertible into the data type dt
-   	RbDataType*         convertTo(const RbDataType& dt) const;              //!< convert this data type into the datat type dt
-   	RbDataType*         convertTo(const RbTypeInfo& dt) const;              //!< convert this data type into the datat type dt
+            RbInt(const int v);                         //!< Constructor from int
 
-	//overloaded operators
-	bool                operator==(const RbObject& o) const;                //!< Comparison
-	bool                operator==(const RbDataType& o) const;              //!< Comparison
-	bool                operator==(const RbInt& o) const;                   //!< Comparison
-	RbDataType&         operator+(const RbDataType& o) const;               //!< Addition
-	RbInt&              operator+(const RbInt& o) const;                    //!< Addition
+        static const StringVector   rbClass;            //!< Static class attribute
 
+        // Basic utility functions
+        virtual RbInt*              clone() const { return new RbInt(*this); }  //!< Clone object
+        virtual bool                equals(const RbObject* obj) const;          //!< Equals comparison
+        virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
+        virtual void                print(std::ostream& o) const;               //!< Print complete object info
+        virtual void                printValue(std::ostream& o) const;          //!< Print value (for user)
 
-	// memeber functions
-	void       setValue(int v);
-	int        getValue(void) const;
+        // Type conversion
+        virtual RbObject*           convertTo(const std::string& type) const;       //!< Convert to type
+                                    operator int() { return value; }               //!< Type conversion to int
 
-private:
-	int        value;      //!< value member
+        // Dump and resurrect
+        // TODO I am commenting these out for now, they need to be implemented later -- Fredrik
+     // virtual void                dump(std::ostream& o) = 0;              //!< Dump to ostream c
+     // virtual void                resurrect(const RbDumpState& x) = 0;    //!< Resurrect from dumped state
+
+    private:
+	    int     value;              //!< Value member
 };
 
-
 #endif
+
