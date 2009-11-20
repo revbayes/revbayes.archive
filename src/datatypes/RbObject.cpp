@@ -15,78 +15,41 @@
  */
 
 
-//#include "RbList.h"
+//#include "StringVector.h"
 #include "RbObject.h"
 
 #include <string>
 #include <ostream>
 #include <iostream>
 
-class RbList;
 
 /** Initialize static class attribute */
-//static RbList::rbClass(std::vector<string>(1,"object"));
+//static StringVector RbObject::rbClass = StringVector(std::vector<std::string>(1,"object"));
 
 
 /**
  * @brief Get class attribute
  *
- * Get the class attribute of the object. Implemented
- * here only as an indication of how it should be
- * implemented in derived classes.
+ * Get the class attribute of the object.
  *
  */
-const RbList* RbObject::getClass() const {
+const StringVector& RbObject::getClass() const {
 
-	return &rbClass;
+	return rbClass;
 }
 
 
 /**
- * @brief Print object to ostream
+ * @brief Print object info
  *
- * Print object to ostream. The current implementation
- * makes sure the name of the object is printed if
- * this function is not overridden, which works for now.
+ * Print object info to ostream. The implementation here
+ * just prints the class attribute.
  *
  * @param o The ostream for printing
  *
  */
 void RbObject::print(std::ostream& o) const {
 
-	o << name;
+	o << "Object of class: " << /* getClass() << */ std::endl;
 }
 
-
-/** Constructors, destructors and functions I do not use -- Fredrik **********/
-RbObject::RbObject(const char* n)
-    : name(n) {
-}
-
-RbObject::RbObject(const std::string& n)
-    : name(n) {
-}
-
-/** Destructor is not needed -- Fredrik */
-RbObject::~RbObject() {
-}
-
-std::string RbObject::getName() const {
-
-	return name;
-}
-
-void RbObject::setName(std::string& n) {
-
-	name = n;
-}
-
-void RbObject::setName(const char* n){
-
-	name = n;
-}
-
-std::string RbObject::toString() const {
-
-	return name;
-}
