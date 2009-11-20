@@ -10,10 +10,13 @@ INSTALL     = @INSTALL@
 
 CFLAGS = $(CXXFLAGS)
 
-all: ObjectSlot.o
+all: ObjectSlot.o ArgRule.o
 
 ObjectSlot.o: ObjectSlot.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c ObjectSlot.cpp
+
+ArgRule.o: ArgRule.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c ArgRule.cpp
 
 clean: 
 	rm -f *.o

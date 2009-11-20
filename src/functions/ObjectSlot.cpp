@@ -1,9 +1,10 @@
 /**
  * @file
  * This file contains the implementation of ObjectSlot, which is
- * a RevBayes wrapper around a regular bool.
+ * used to describe and initialize a slot for a function
+ * argument or a class member variable.
  *
- * @brief Implementation of the class RbInt
+ * @brief Implementation of the class ObjectSlot
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
