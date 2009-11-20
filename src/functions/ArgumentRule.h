@@ -1,6 +1,6 @@
-/*!
- * \file
- * This file contains the declaration of ArgumentRule, which is
+/**
+ * @file
+ * This file contains the declaration of ArgRule, which is
  * used to describe rules for arguments passed to functions (and
  * distributions).
  *
