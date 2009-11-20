@@ -45,7 +45,7 @@ class RbObject {
 
         // Type conversion
         virtual bool                isConvertibleTo(const std::string& type) const; //! Is convertible to type?
-        virtual RbObject*           convertTo(const std::string& type) const;       //! Convert to type
+        virtual RbObject*           convertTo(const std::string& type) const { return NULL; } //! Convert to type
 
         // Pointer-based comparison -- throw not supported error by default
         virtual bool                lessThan(const RbObject* o) const;  //!< Less than

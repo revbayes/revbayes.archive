@@ -32,10 +32,35 @@
  *
  * Get the class attribute of the object.
  *
+ * @returns     A string vector of class names, from
+ *              the most derived class to the base class
+ *
  */
 const StringVector& RbObject::getClass() const {
 
 	return rbClass;
+}
+
+
+/**
+ * @brief Type conversion info
+ *
+ * Is the object convertible to the specified type?
+ *
+ * @param type  Type of requested object
+ * @returns     Returns "true" if the object is convertible
+ *              to the specified type
+ *
+ */
+bool RbObject::isConvertibleTo(const std::string& type) const {
+
+	RbObject* x = convertTo(type);
+    
+    if (x == NULL)
+        return false;
+
+    delete x;
+    return true;
 }
 
 
@@ -50,6 +75,6 @@ const StringVector& RbObject::getClass() const {
  */
 void RbObject::print(std::ostream& o) const {
 
-	o << "Object of class: " << /* getClass() << */ std::endl;
+	o << "Class =  " << /* getClass() << */ std::endl;
 }
 
