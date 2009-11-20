@@ -1,233 +1,120 @@
 /**
  * @file
- * This file contains the class implementing a RbDataType for double.
- * This is the class for the REvBayes software handling simple floating point numbers.
- * All functionality of normal floating point numbers is provided in this class,
- * but it also is used as a data type for this program. Therefore, it can be used as return values
- * for functions, distributions, etc and it can be used as parameters as well.
+ * This file contains the implementation of RbDouble, which is
+ * a RevBayes wrapper around a regular double.
  *
  * @brief Implementation of the class RbDouble
  *
- * (c) Copyright 2009- under GPL version 3
+ * (c) Copyright 2009-
  * @date Last modified: $Date$
- * @author The REvBayes development core team
+ * @author The RevBayes development core team
  * @license GPL version 3
  * @version 1.0
- * @since 2009-09-07, version 1.0
- * @interface RbDataType
- * @extends RbAbstractDataType
+ * @since 2009-11-20, version 1.0
+ * @extends RbObject
  *
  * $Id$
  */
 
-#include "RbDouble.h"
-#include "RbDataType.h"
-#include "RbDumpState.h"
+
 #include <iostream>
 
+#include "RbBool.h"
+#include "RbDouble.h"
+#include "RbInt.h"
+
+
+//static StringVector RbDouble::rbClass = StringVector("double") + RbObject::rbClass;
+
+
 /**
- * @brief constructor
+ * @brief Constructor
  *
- * This is the constructor creating a new RbDouble instance with the given initial value.
+ * Creates an instance from a double.
  *
- * @param v          initial value of the data type
+ * @param v     Value of the object
  *
  */
 RbDouble::RbDouble(const double v)
-    : RbAbstractDataType("RbDouble"), value(v) {
+    : RbObject(), value(v) {
 }
 
-/**
- * @brief constructor
- *
- * This is the constructor creating a new RbDouble instance with the given initial value and name/id of this instance.
- *
- * @param v          initial value of the data type
- * @param name       name of this instance
- *
- */
-RbDouble::RbDouble(const double v, std::string& name)
-    : RbAbstractDataType(name), value(v) {
-}
 
 /**
- * @brief copy constructor
+ * @brief Conversion
  *
- * This is the copy constructor
+ * Converts object to another class. Returns NULL
+ * on failure.
  *
- * @param d          object to copy
- *
- */
-RbDouble::RbDouble(const RbDouble& d)
-    : RbAbstractDataType(d.name), value(d.value) {
-}
-
-/**
- * @brief destructor
- *
- * This is the standard deconstructor
- *
+ * @param type      The desired type
+ * @returns         Pointer to a new object of the desired 
+ *                  type or NULL if the conversion fails
  *
  */
-RbDouble::~RbDouble(void) {
-//	delete &value;
-}
+RbObject* RbDouble::convertTo(const std::string& type) const {
 
-/**
- * @brief clone function
- *
- * This function creates a deep copy of this object.
- *
- * @see RbObject.clone()
- * @returns           return a copy of this object
- *
- */
-RbObject* RbDouble::clone(void) const {
-
-	RbObject *x = new RbDouble( *this );
-	return x;
-}
-
-/**
- * @brief print function
- *
- * This function prints this object.
- *
- * @see RbObject.print()
- * @param c           the stream where to print to
- *
- */
-void RbDouble::print(std::ostream &c) const {
-
-	c << value << std::endl;
-}
-
-/**
- * @brief dump function
- *
- * This function dumps this object.
- *
- * @see RbObject.dump()
- * @param c           the stream where to dump to
- *
- */
-void RbDouble::dump(std::ostream& c){
-
-}
-
-/**
- * @brief resurrect function
- *
- * This function resurrects this object.
- *
- * @see RbObject.resurrect()
- * @param x           the object from which to resurrect
- *
- */
-void RbDouble::resurrect(const RbDumpState& x){
-
-}
-
-/**
- * @brief overloaded == operators
- *
- * This function compares this object
- *
- * @param o           the object to compare to
- *
- */
-bool RbDouble::operator ==(const RbObject& o) const {
-
-	if (typeid(RbDouble) == typeid(o)){
-		// we are from the same type, which is perfect :)
-		RbDouble& tmp = ((RbDouble&)o);
-		return value == tmp.getValue();
-	}
-	else {
-		RbObject& casted = const_cast<RbObject&>(o);
-		const RbDataType& dt = dynamic_cast<RbDataType&>(casted);
-		if ((&dt) != 0) {
-			if (isConvertible(dt)){
-				//can I convert myself into the type of o
-				RbDataType* newType = convertTo(dt);
-				return ((*newType) == dt);
-			}
-			else if (dt.isConvertible(*this)){
-				//try to convert o into my data type
-				RbDataType* newType = dt.convertTo(*this);
-				RbDouble& tmp = ((RbDouble&)*newType);
-				return value == tmp.getValue();
-			}
-		}
-	}
-
-	return false;
-}
-
-/**
- * @brief overloaded == operators
- *
- * This function compares this object
- *
- * @param o           the object to compare to
- *
- */
-bool RbDouble::operator ==(const RbDouble& o) const {
-
-    if (typeid(RbDouble) == typeid(o)){
-        // we are from the same type, which is perfect :)
-        RbDouble& tmp = ((RbDouble&)o);
-        return value == tmp.getValue();
+    if (type == "bool") {
+        return new RbBool(value==0.0);
+    }
+    else if (type == "int") {
+        return new RbInt(int(value));   //TODO Do we want int truncation of doubles?
     }
 
-    return false;
+    return NULL;
+}
+
+
+/**
+ * @brief Pointer-based equal comparison
+ *
+ * Compares equality of this object to another RbObject.
+ *
+ * @param obj   The object of the comparison
+ * @returns     Result of comparison
+ *
+ */
+bool RbDouble::equals(const RbObject* obj) const {
+
+    // Use built-in fast down-casting first
+	const RbDouble* x = dynamic_cast<const RbDouble*>(obj);
+    if (x != NULL)
+        return value == x->value;
+
+    // Try converting the value to a double
+    x = dynamic_cast<const RbDouble*>(obj->convertTo("double"));
+    if (x == NULL)
+        return false;
+
+    bool result = (value == x->value);
+    delete x;
+    return result;
 }
 
 /**
- * @brief overloaded == operators
+ * @brief Prdouble complete info
  *
- * This function compares this object
+ * Prints complete object info.
  *
- * @param o           the object to compare to
+ * @param o     The stream for printing
  *
  */
-bool RbDouble::operator ==(const RbDataType& dt) const {
+void RbDouble::print(std::ostream &o) const {
 
-    if (isConvertible(dt)){
-        //can I convert myself into the type of o
-        RbDataType* newType = convertTo(dt);
-        return ((*newType) == dt);
-    }
-    else if (dt.isConvertible(*this)){
-        //try to convert o into my data type
-        RbDataType* newType = dt.convertTo(*this);
-        RbDouble& tmp = ((RbDouble&)*newType);
-        return value == tmp.getValue();
-    }
-
-    return false;
+	RbObject::print(o);
+    o << "Value = " << value << std::endl;
 }
+
 
 /**
- * @brief setter for value
+ * @brief Prdouble value
  *
- * This function set the value to d
+ * Prints value for user.
  *
- * @param d           the new value
+ * @param o     The stream for printing
  *
  */
-void RbDouble::setValue(double d) {
-	value = d;
+void RbDouble::printValue(std::ostream &o) const {
+
+    o << value << std::endl;
 }
 
-/**
- * @brief getter for value
- *
- * This function get the value of this object
- *
- * @return           the value
- *
- */
-double RbDouble::getValue(void) const {
-	return value;
-}
