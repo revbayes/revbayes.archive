@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the implementation of ArgRule, which is
+ * This file contains the implementation of ArgumentRule, which is
  * a RevBayes wrapper around a regular bool.
  *
  * @brief Implementation of the class RbInt
@@ -19,10 +19,10 @@
 
 #include <iostream>
 
-#include "ArgRule.h"
+#include "ArgumentRule.h"
 #include "RbException.h"
 
-//static StringVector ArgRule::rbClass = StringVector("argRule") + RbObject::rbClass;
+//static StringVector ArgumentRule::rbClass = StringVector("argumentRule") + RbObject::rbClass;
 
 
 /**
@@ -34,7 +34,7 @@
  * @param v     Value of the object
  *
  */
-ArgRule::ArgRule(const std::string& lab, ObjectSlot* slot)
+ArgumentRule::ArgumentRule(const std::string& lab, ObjectSlot* slot)
     : RbObject(), label(lab), objectSlot(slot) {
 }
 
@@ -47,7 +47,7 @@ ArgRule::ArgRule(const std::string& lab, ObjectSlot* slot)
  * @returns     Short string describing object
  *
  */
-std::string ArgRule::briefInfo() const {
+std::string ArgumentRule::briefInfo() const {
 
 	std::ostringstream o;
     printValue(o);
@@ -66,15 +66,15 @@ std::string ArgRule::briefInfo() const {
  * @returns     Result of comparison
  *
  */
-bool ArgRule::equals(const RbObject* obj) const {
+bool ArgumentRule::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
-	const ArgRule* x = dynamic_cast<const ArgRule*>(obj);
+	const ArgumentRule* x = dynamic_cast<const ArgumentRule*>(obj);
     if (x != NULL)
         return (label == x->label && getValue() == x->getValue() && getType() == x->getType());
 
-    // Try converting the value to an argRule
-    x = dynamic_cast<const ArgRule*>(obj->convertTo("argRule"));
+    // Try converting the value to an argumentRule
+    x = dynamic_cast<const ArgumentRule*>(obj->convertTo("argumentRule"));
     if (x == NULL)
         return false;
 
@@ -93,7 +93,7 @@ bool ArgRule::equals(const RbObject* obj) const {
  * @returns     Result of comparison
  *
  */
-bool ArgRule::isArgValid(const RbObject* obj) const {
+bool ArgumentRule::isArgValid(const RbObject* obj) const {
 
     return obj->isType(getType());
 }
@@ -107,7 +107,7 @@ bool ArgRule::isArgValid(const RbObject* obj) const {
  * @param o     The stream for printing
  *
  */
-void ArgRule::print(std::ostream &o) const {
+void ArgumentRule::print(std::ostream &o) const {
 
 	RbObject::print(o);
     o << "Label = " << label << std::endl;
@@ -129,9 +129,9 @@ void ArgRule::print(std::ostream &o) const {
  * @param o     The stream for printing
  *
  */
-void ArgRule::printValue(std::ostream &o) const {
+void ArgumentRule::printValue(std::ostream &o) const {
 
-    o << "argRule (" << label << ", ";
+    o << "argumentRule (" << label << ", ";
     o << objectSlot->briefInfo() << ")" << std::endl;
 }
 

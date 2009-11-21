@@ -1,10 +1,10 @@
 /**
  * @file
- * This file contains the declaration of ArgRule, which is
+ * This file contains the declaration of ArgumentRule, which is
  * used to describe rules for arguments passed to functions (and
  * distributions).
  *
- * @brief Declaration of ArgRule
+ * @brief Declaration of ArgumentRule
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -16,26 +16,26 @@
  * $Id$
  */
 
-#ifndef ArgRule_H
-#define ArgRule_H
+#ifndef ArgumentRule_H
+#define ArgumentRule_H
 
 #include <string>
 
 #include "ObjectSlot.h"
 #include "RbObject.h"
 
-class ArgRule : public RbObject {
+class ArgumentRule : public RbObject {
 
     public:
 
-                    ArgRule(const std::string& label, ObjectSlot* slot);    //!< Constructor 
-            virtual ~ArgRule() { delete objectSlot; }                       //!< Destructor 
+                    ArgumentRule(const std::string& label, ObjectSlot* slot);    //!< Constructor 
+            virtual ~ArgumentRule() { delete objectSlot; }                       //!< Destructor 
 
         static const StringVector   rbClass;            //!< Static class attribute
 
         // Basic utility functions
         virtual std::string         briefInfo() const;                          //!< Brief info about object
-        virtual ArgRule*            clone() const { return new ArgRule(*this); }//!< Clone object
+        virtual ArgumentRule*       clone() const { return new ArgumentRule(*this); }//!< Clone object
         virtual bool                equals(const RbObject* obj) const;          //!< Equals comparison
         virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
         virtual void                print(std::ostream& o) const;               //!< Print complete object info
