@@ -22,29 +22,31 @@
 
 #include <string>
 #include <vector>
+
 #include "DAGNode.h"
-
-class RbDataType;
-class SyntaxElement;
-
+#include "RbFunction.h"
 
 class DeterministicNode : public DAGNode {
 
     public:
-	                DeterministicNode(RbFunction* func);                //!< Constructor from function
-	                DeterministicNode(const DeterministicNode& d);      //!< Copy constructor
-            virtual ~DeterministicNode();                               //!< Destructor (delete function)
+            DeterministicNode(RbFunction* func, const std::vector<Argument>& args);         //!< Constructor
+	        DeterministicNode(const DeterministicNode& d);                                  //!< Copy constructor
+
+            //TODO: Destructor is not needed if we just use a pointer here and not a full copy.
+            virtual ~DeterministicNode() {}                         //!< Destructor (delete function?)
 
         // Standard utility functions
-        RbObject*   clone() const;                                      //!< Clone this object
-        bool        equals(const DeterministicNode& d) const;           //!< Compare
-        void        print(std::ostream& c) const;                       //!< Print object
+        DeterministicNode*  clone() const { return new DeterministicNode(*this); }  //!< Clone this object
+        bool                equals(const DeterministicNode& d) const;           //!< Compare
+        void                print(std::ostream& c) const;                       //!< Print object
 
         // Regular member functions
-        RbObject*   getValue();                                         //!< Get current value
+        RbObject*           getValue();         //!< Get current value
         
     private:
-	    RbFunction* function;           //!< Function calculating value
+        std::vector<DAGNode*>   arguments;      //!< Processed arguments
+	    RbFunction*             function;       //!< Function calculating value
 };
 
 #endif
+

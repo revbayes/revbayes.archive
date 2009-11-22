@@ -2,7 +2,7 @@ srcdir      = .
 RM          = rm
 CXX         = g++
 CC          = g++
-INCLUDES    = -I../datatypes
+INCLUDES    = -I. -I../datatypes -I../functions -I../distributions
 CXXFLAGS    = -O3 -ffast-math -Wall
 LDFLAGS     =  -lreadline -lm -lxml2 -lpthread
 LIBS        = -lreadline -lm 
@@ -15,13 +15,19 @@ BISONFLAGS  = -y -v
 
 CFLAGS = $(CXXFLAGS)
 
-all: DAGNode.o ConstantNode.o
+all: DAGNode.o ConstantNode.o DeterministicNode.o StochasticNode.o
 
 DAGNode.o: DAGNode.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c DAGNode.cpp
 
 ConstantNode.o: ConstantNode.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c ConstantNode.cpp
+
+DeterministicNode.o: DeterministicNode.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c DeterministicNode.cpp
+
+StochasticNode.o: StochasticNode.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c StochasticNode.cpp
 
 clean: 
 	rm -f *.o

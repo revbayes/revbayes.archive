@@ -18,7 +18,7 @@
  */
 
 
-#include "Distribution.h"
+#include "FunctionDistribution.h"
 #include "StochasticNode.h"
 
 
@@ -32,7 +32,13 @@
  *
  */
 StochasticNode::StochasticNode(Distribution* dist)
-    : DAGNode(), distribution(dist) {
+    : DAGNode(), clamped(false), distribution(dist) {
+
+    std::vector<DAGNode*> arguments = distribution->getArguments();
+    for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++) {
+        parents.insert(*i);
+        (*i)->addChildNode(this);
+    }   
 
     value = distribution->rv();
 }
@@ -47,14 +53,14 @@ StochasticNode::StochasticNode(Distribution* dist)
  *
  */
 StochasticNode::StochasticNode(const StochasticNode& s)
-    : DAGNode(s), distribution(s.distribution) {
+    : DAGNode(s), clamped(s.clamped), distribution(s.distribution) {
 }
 
 
 /**
  * @brief Destructor
  *
- * The stochastic node manages the distribution; the object is
+ * The stochastic node manages the distribution; the value is
  * managed and destroyed by the DAGNode base class.
  *
  */
@@ -77,22 +83,11 @@ StochasticNode::~StochasticNode() {
  */
 void StochasticNode::clamp(RbObject* observedVal) {
 
-	if (value != NULL)
-		delete value;
+	if (storedValue != NULL)
+        delete storedValue;
+    storedValue = value;
 
     value = observedVal;
-}
-
-
-/**
- * @brief Clone the stochastic node
- *
- * This function clones the stochastic node.
- *
- */
-StochasticNode* StochasticNode::clone() const {
-
-	return new StochasticNode(*this);
 }
 
 
@@ -107,9 +102,27 @@ StochasticNode* StochasticNode::clone() const {
  * @returns         Ln probability
  *
  */
-void StochasticNode::lnProb() {
+double StochasticNode::lnProb() const {
 
-	value->print();
-	storedValue->print();
+	return distribution->lnPdf(value);
 }
 
+
+/**
+ * @brief Thouch affected nodes
+ *
+ * This function touches all affected DAG nodes, i.e. marks them as changed.
+ * Unlike deterministc nodes, stochastic nodes do not need to 
+ *
+ */
+void StochasticNode::touchAffected() {
+
+    // TODO: This is not quite right; we need to go from current stochasticNode and down
+    //       to next stochasticNode but this requires slight modification of this method
+    //       in the DAGNode base class as well as here.
+    if (!touched) {
+        touch();
+        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++)
+            (*i)->touchAffected();
+    }
+}

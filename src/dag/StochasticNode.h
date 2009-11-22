@@ -31,14 +31,18 @@ class StochasticNode : public DAGNode {
 	                StochasticNode(const StochasticNode& s);    //!< Copy constructor
 	        virtual ~StochasticNode();                          //!< Destructor
 
+        // Basic utility functions
+        StochasticNode* clone() const { return new StochasticNode(*this); } //!< Clone the stochastic node
+        void            print(std::ostream& o) const;       //!< Print object
+
+        // Regular functions
         void            clamp(RbObject* observedVal);       //!< Clamp the node with an observed value
-        StochasticNode* clone() const;                      //!< Clone the stochastic node
         double          lnProb() const;                     //!< Return ln probability
         double          lnProbRatio() const;                //!< Return ln prob ratio of value to stored value
         double          lnProbRatioAffected() const;        //!< Return ln prob ratio of affected DAG subgraph
-        void            print(std::ostream& o) const;       //!< Print object
         void            proposeValue(RbObject* val);        //!< Propose a new value for the variable
         void            setValue(RbObject* val);            //!< Unconditionally set value
+        void            touchAffected();                    //!< Touch affected nodes
         void            unclamp() { clamped = false; }      //!< Unclamp the node
 
     private:

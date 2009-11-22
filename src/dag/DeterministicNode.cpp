@@ -1,13 +1,14 @@
 /**
  * @file
- * This file contains the implementation of DeterministicNode, which is a derived
- * class from DAGNode. DeterministicNode are DAG nodes with an expression assigned to its value.
+ * This file contains the implementation of DeterministicNode, which is derived
+ * from DAGNode. DeterministicNode is used for DAG nodes associated with an
+ * expression (equation) that determines their value.
  *
  * @brief Implementation of DeterministicNode
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The REvBayes development core team
+ * @author The RevBayes development core team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
@@ -17,95 +18,53 @@
  */
 
 #include "DeterministicNode.h"
-#include "../datatypes/RbDataType.h"
-#include "../modelLanguage/parser/SyntaxElement.h"
 
+/** Basic constructor */
+DeterministicNode::DeterministicNode(RbFunction* func, const std::vector<Argument>& args)
+    : DAGNode(), function(func) {
 
-DeterministicNode::DeterministicNode(RbDataType* dt) : DAGNode(dt) {
-    rootSyntaxTree = NULL;
+    arguments = function->processArguments(args);
+    for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++)
+        parents.insert(*i);
+
+    value = function->execute(arguments);
 }
 
-DeterministicNode::DeterministicNode(RbDataType* dt, SyntaxElement* e) : DAGNode(dt) {
-	rootSyntaxTree = e;
+/** Copy constructor */
+DeterministicNode::DeterministicNode(const DeterministicNode& d)
+    : DAGNode(d), arguments(d.arguments), function(d.function) {
 }
 
-DeterministicNode::DeterministicNode(DeterministicNode& dn) : DAGNode(dn.getValue()->clone()) {
-    //TODO implement
-//    rootSyntaxTree = dn.;
 
-    //TODO implement
-    // copy references to parents
-    // copy references to children
+/** Get value intelligently */
+RbObject* DeterministicNode::getValue() {
 
-    std::string message = "Copy constructor of DeterministicNode not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
+    if (isTouched() && !isChanged()) {
+        if (storedValue != NULL)
+            delete storedValue;
+        storedValue = value;
+        value = function->execute(arguments);
+        changed = true;
+    }
+
+    return value;
 }
 
-DeterministicNode::~DeterministicNode() {
-    //TODO add missing objects to delete
-}
 
 /**
- * @brief clone function
+ * @brief Print function
  *
- * This function creates a deep copy of this object.
+ * This function prints complete info about the  object.
  *
- * @see RbObject.clone()
- * @returns           return a copy of this object
- *
- */
-RbObject* DeterministicNode::clone(void) {
-
-    RbObject *x = new DeterministicNode( *this );
-    return x;
-}
-
-/**
- * @brief print function
- *
- * This function prints this object.
- *
- * @see RbObject.print()
- * @param c           the stream where to print to
+ * @param o           The ostream for printing
  *
  */
-void DeterministicNode::print(std::ostream &c) const {
-    //TODO this is not really meaningful implemented
-    value->print();
-    storedValue->print();
+void DeterministicNode::print(std::ostream &o) const {
 
-    std::string message = "Print function of DeterministicNode not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
+    RbObject::print(o);     // Prints class
+    DAGNode::print(o);      // Prints general info
+
+    o << "Function = " << function->briefInfo() << std::endl;
 }
 
-/**
- * @brief dump function
- *
- * This function dumps this object.
- *
- * @see RbObject.dump()
- * @param c           the stream where to dump to
- *
- */
-void DeterministicNode::dump(std::ostream& c){
-    //TODO implement
 
-}
-
-/**
- * @brief resurrect function
- *
- * This function resurrects this object.
- *
- * @see RbObject.resurrect()
- * @param x           the object from which to resurrect
- *
- */
-void DeterministicNode::resurrect(const RbDumpState& x){
-    //TODO implement
-
-}
