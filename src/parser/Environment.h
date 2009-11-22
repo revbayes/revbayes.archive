@@ -31,20 +31,34 @@
 #include <string>
 
 #include "DAGNode.h"
+#include "RbObject.h"
 
 /** Environment: class used to hold local variable table */
-class Environment {
+class Environment : public RbObject {
 
     public:
             Environment(Environment* parentEnv);    //!< Constructor from parent environment
 	        ~Environment();                         //!< Destructor deletes local objects
 
-	    bool        addVariable(const std::string& name, DAGNode* variable);  //!< Add a variable
-	    DAGNode*    getVariable(const std::string& name);                     //!< Get a variable
+        static const StringVector   rbClass;                //!< Static class attribute
+
+        // Basic utility functions
+        virtual Environment*        clone() const { return new Environment(*this); }    //!< Clone object
+        virtual bool                equals(const RbObject* o) const;        //!< Equals comparison
+        virtual const StringVector& getClass() const { return rbClass; }    //!< Get class
+        virtual void                print(std::ostream& o) const;           //!< Print complete object info
+        virtual void                printValue(std::ostream& o) const;      //!< Print value (for user)
+
+        // Regular functions
+	    bool        addVariable(const std::string& name, RbObject* variable);   //!< Add a variable
+        bool        eraseVariable(const std::string& name);                     //!< Erase a variable
+        bool        existsVariable(const std::string& name);                    //!< Does variable exist?
+        RbObject*   getVariable(const std::string& name);                       //!< Get a variable
+        
 	
     protected:
-        Environment*                    parentEnvironment;  //!< Pointer to enclosing environment
-	    std::map<std::string,DAGNode*>  variableTable;      //!< Local variable table
+        Environment*                            parentEnvironment;  //!< Pointer to enclosing environment
+	    std::map<const std::string, DAGNode*>   variableTable;      //!< Local variable table
 };
 
 #endif

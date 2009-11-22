@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
- * @author REvBayes core team
+ * @author RevBayes development core team
  * @license GPL version 3.0
  * @interface SyntaxElement
  * @since Version 1.0, 2009-09-02
@@ -18,16 +18,18 @@
 #ifndef SyntaxElement_H
 #define SyntaxElement_H
 
-#include "../../main/RbObject.h"
-#include "../../dag/DAGNode.h"
+#include "DAGNode.h"
+#include "Environment.h"
+#include "RbObject.h"
+
 #include <iostream>
-#include <set>
+#include <string>
 
 /* Forward declarations */
-class SymbolTable;
+class Environment;
 
 /**
- *  \brief Interface for syntax elements
+ *  @brief Interface for syntax elements
  *
  *  SyntaxElement is the base class for nodes in the syntax tree. The nodes either
  *  have one or more operands, which are themselves syntax elements, or they have
@@ -50,14 +52,7 @@ class SymbolTable;
  *  that can be part of expressions need to be able to convert themselves to appropriate
  *  DAG nodes by implementing the getDAGNode() function.
  *
- *  Syntax elements implement a dynamic copy method that makes a copy of part of the
- *  syntax tree for repeated fast evaluation of an expression. The variables in the
- *  expression are kept in a local symbol table if one is provided; otherwise they are
- *  in the global namespace. This functionality is used both in the creation of
- *  stochastic and deterministic DAG nodes, in the former case for distribution functions
- *  and in the latter for deterministic expressions.
- *
- *  Syntax elements also need to implement a function getDataType(), which returns the
+ *  Syntax elements also need to implement a function getReturnType(), which returns
  *  a string giving the type of the semantic value without executing the syntax element
  *  to get its semantic value.
  *
@@ -69,18 +64,19 @@ class SymbolTable;
 class SyntaxElement : public RbObject {
 
     public:
-            SyntaxElement() : RbObject() {}     //!< Default constructor calls base class
-            virtual ~SyntaxElement();           //!< Destructor; delete syntax subtree
+            virtual ~SyntaxElement() {}         //!< Destructor; delete syntax subtree
 
-        virtual SyntaxElement*  copy(SymbolTable* symbols=NULL) const = 0; //!< Get fast copy of syntax subtree
-        virtual DAGNode*        getDAGNode() const = 0;         //!< Convert the element to a DAG node
-        virtual const string&   getValueClass(void) const = 0;  //!< Get class (data type) of semantic value
-        virtual RbObject*       getValue() = 0;                 //!< Get semantic value
-        virtual bool            isConstExpr(void) const = 0;    //!< Is syntax subtree a constant expression?
-        virtual void            print(std::ostream& c) const = 0;       //!< Print some info
-        virtual void            printConsole(std::ostream& c) const {}  //!< Print content to console
+        virtual SyntaxElement*      clone() const = 0;                      //!< Clone element
+        virtual DAGNode*            getDAGNode() const = 0;                 //!< Convert the element to a DAG node
+        virtual const std::string&  getReturnType() const = 0;              //!< Get type of semantic value
+        virtual RbObject*           getValue() = 0;                         //!< Get semantic value
+        virtual bool                isConstExpr(void) const = 0;            //!< Is syntax subtree constant expr?
+        virtual void                print(std::ostream& c) const = 0;       //!< Print complete object info
+        virtual void                printValue(std::ostream& c) const {}    //!< Print content to console
 
     protected:
+            SyntaxElement() : RbObject() {}     //!< Default constructor calls base class
+
 };
 
 #endif

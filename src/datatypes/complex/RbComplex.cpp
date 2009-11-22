@@ -36,9 +36,9 @@ const ArgumentRule RbComplex::memberTemplate[] = {
 
 
 /** Initialize static function array */
-const RbFunctionDef RbComplex::methodDefs[] = {
+const FunctionDef RbComplex::methodDefs[] = {
 
-    RbFunctionDef()
+    FunctionDef()
 };
 
 

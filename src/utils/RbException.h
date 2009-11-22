@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../main/RbObject.h"
+#include "RbObject.h"
 #include "RbDumpState.h"
 #include <iostream>
 
@@ -18,6 +18,7 @@ public:
 
 	// implemented abstract/virtual functions from base classes
 	RbObject*           clone(void) const;                                  //!< clone this object
+    bool                equals(const RbObject* obj) const;                  //!< Equals comparison
 	void                print(std::ostream &c) const;                       //!< Print the value to ostream c
 	void                dump(std::ostream& c);                              //!< Dump to ostream c
 	void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state

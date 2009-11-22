@@ -33,10 +33,12 @@ class RbObject {
         static const StringVector   rbClass;                //!< Static class attribute
 
         // Basic utility functions
-        virtual const StringVector& getClass() const;                   //!< Get class
+        virtual std::string         briefInfo() const { return "unknown object"; }  //!< Brief info about object
         virtual RbObject*           clone() const = 0;                  //!< Clone object
         virtual RbObject*           clone(Environment& env) const { return clone(); }   //!< Clone to environment
         virtual bool                equals(const RbObject* o) const = 0;//!< Equals comparison
+        virtual const StringVector& getClass() const;                   //!< Get class
+        bool                        isType(const std::string t) const;  //!< Is the object of type t?
         virtual void                print(std::ostream& o) const;       //!< Print complete object info
         virtual void                printValue(std::ostream& o) const {}//!< Print value (for user)
 

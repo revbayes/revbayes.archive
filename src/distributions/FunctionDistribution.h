@@ -1,3 +1,4 @@
+/** 
  * @file
  * This file contains the declaration of Distribution, which is
  * used to hold distribution functions in the symbol table. It
@@ -8,7 +9,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The REvBayes core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-27, version 1.0
@@ -19,11 +20,13 @@
 #ifndef Distribution_H
 #define Distribution_H
 
-#include "ArgumentRule.h"
-#include "RbObject.h"
-#include "SyntaxElement.h"
+#include <ostream>
 
-using namespace std;
+#include "ArgumentRule.h"
+#include "DAGNode.h"
+#include "RbFunction.h"
+#include "RbObject.h"
+
 
 /** This is the base class used to hold distribution functions in
  *  the symbol table. All distribution functions should come in two
@@ -42,18 +45,21 @@ using namespace std;
 class Distribution :  public RbFunction {
 
     public:
-        enum functionT = { d, p, q, r, tilde_d };
+            typedef enum { d, p, q, r, tilde_d } functionT;
 
-            Distribution() : RbFunction(), functionType(Distribution::d) {}  //!< Constructor sets type to "d"
-	        virtual ~Distribution() {}    //!< Destructor does nothing
+            Distribution(const ArgumentRule** rules, const std::string& valueType)
+                 : RbFunction(rules, valueType), functionType(Distribution::d) {}  //!< Constructor, type to "d"
 
-        virtual RbDataType* execute();                  //!< Call appropriate function based on functionType
-        virtual RbDataType  getDataType() = 0;          //!< Get data type for type checking
-        virtual RbVector*   lnPdf() = 0;                //!< Ln probability density
-        virtual RbVector*   pdf() = 0;                  //!< Probability density
-        virtual void        print(ostream &c) const;    //!< Print this object
-        virtual RbDataType* rv() = 0;                   //!< Draw random variables
-        bool                setArguments(list<SyntaxLabeledExpr*> args);    //!< Set arguments based on function type
+        // Basic utility functions
+        virtual void        print(std::ostream &c) const;       //!< Print this object
+
+        // Regular functions
+        virtual RbObject*   execute(std::vector<DAGNode*> arguments);   //!< Call appropriate function
+        std::vector<DAGNode*>   getArguments() const;                   //!< Get arguments to function
+        virtual double      lnPdf(RbObject* value) = 0;                 //!< Ln probability density
+        virtual double      pdf(RbObject* value) = 0;                   //!< Probability density
+        virtual RbObject*   rv() = 0;                                   //!< Draw random value
+        bool                setArguments(std::vector<DAGNode*> args);   //!< Set arguments based on function type
         void                setType(functionT type) { functionType=type; }  //!< Set function type
 
     protected:
@@ -63,32 +69,3 @@ class Distribution :  public RbFunction {
 
 #endif
 
-/** Get result depending on distribution type */
-RbDataType* Distribution::execute() {
-
-    if ( functionType == d ) {
-        if ( !lnValue )
-            return pdf();
-        else
-            return lnPdf();
-    }
-    else if ( functionType == r )
-        return rv();
-
-    return NULL;
-}
-
-/** Set arguments depending on distribution type */
-bool Distribution::setArguments(list<SyntaxLabeledExpr*> args) {
-
-    ArgumentRule*   argRules = getArgumentRules();
-
-    if ( functionType == d ) {
-        if ( args.begin()->getExpression()
-    }
-    else if ( functionType == tilde_d {
-    }
-    else if ( functionType == r ) {
-    
-    }
-}

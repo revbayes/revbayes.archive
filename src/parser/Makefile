@@ -2,8 +2,8 @@ srcdir      = .
 RM          = rm
 CXX         = g++
 CC          = g++
-INCLUDES    = -Incl -I../libxml2/include -I../main
-CXXFLAGS    = -O3 -ffast-math -Wall $(INCLUDES)
+INCLUDES    = -I../main -I../dag -I../datatypes
+CXXFLAGS    = -O3 -ffast-math -Wall
 LDFLAGS     =  -lreadline -lm -lxml2 -lpthread
 LIBS        = -lreadline -lm 
 INSTALL     = @INSTALL@
@@ -15,13 +15,16 @@ BISONFLAGS  = -y -v
 
 CFLAGS = $(CXXFLAGS)
 
-all: grammar.tab.c lex.yy.cpp
+all: grammar.tab.c lex.yy.cpp Environment.o
 
 grammar.tab.c grammar.tab.h: grammar.y
 	$(BISON) -o grammar.tab.c --defines $(BISONFLAGS) grammar.y
 
 lex.yy.cpp: lex.l
 	$(FLEX) -olex.yy.cpp lex.l
+
+Environment.o: Environment.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Environment.cpp
 
 SyntaxElement.o: SyntaxElement.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxElement.cpp

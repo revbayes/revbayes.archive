@@ -43,12 +43,14 @@ class RbComplex : public RbObject {
         // Basic utility functions
         virtual RbComplex*          clone() const { return new RbComplex(*this); }  //!< Clone object
         virtual const StringVector& getClass() const;                       //!< Get class
-        virtual const RbObject*     getMember(const std::string& name) const; //!< Return member variable
-        virtual const RbFunction*   getMethod(const std::string& name) const; //!< Return method (member function)
-        const ObjectSlot*           getSlot(const std::string& name);       //!< Return member variable slot
         virtual bool                equals(const RbComplex* o) const;       //!< Equals comparison
         virtual void                print(std::ostream& o) const;           //!< Print complete object info
         virtual void                printValue(std::ostream& o) const;      //!< Print value (for user)
+
+        // Regular functions
+        virtual const RbObject*     getMember(const std::string& name) const; //!< Return member variable
+        virtual const RbFunction*   getMethod(const std::string& name) const; //!< Return method (member function)
+        const ObjectSlot*           getSlot(const std::string& name);       //!< Return member variable slot
         virtual bool                setMember(const std::string& name, RbObject* val);   //!< Set member variable
 
     protected:

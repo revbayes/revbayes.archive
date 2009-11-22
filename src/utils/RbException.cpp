@@ -11,7 +11,6 @@
 #include <iostream>
 
 #include "RbException.h"
-#include "../main/RbObject.h"
 
 
 	// constructors
