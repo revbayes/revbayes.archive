@@ -1,40 +1,55 @@
-/*
- * Argument.h
+/**
+ * @file
+ * This file contains the declaration of Argument, which is
+ * used to hold a potentially labeled argument passed to a
+ * function.
  *
- *  Created on: 21 okt 2009
- *      Author: Sebastian
+ * @brief Declaration of Argument
+ *
+ * (c) Copyright 2009-
+ * @date Last modified: $Date$
+ * @author The RevBayes core team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-11-20, version 1.0
+ *
+ * $Id$
  */
 
-#ifndef ARGUMENT_H_
-#define ARGUMENT_H_
+#ifndef Argument_H
+#define Argument_H
 
 #include <string>
-#include "RbObject.h"
+#include <ostream>
+
 #include "DAGNode.h"
+#include "RbObject.h"
 
-class Argument : public RbObject{
+class Argument : public RbObject {
+
     public:
-        Argument(std::string& l, DAGNode* n);
-        Argument(const Argument& a);                                                  //!< copy constructor
-        virtual ~Argument();
+                    Argument(const std::string& lbl, DAGNode* n);       //!< Constructor 
+                    Argument(const Argument& a);                        //!< Copy constructor 
+            virtual ~Argument() { delete node; }                        //!< Destructor 
 
-        // implemented abstract/virtual functions from base classes
-        RbObject*           clone(void) const;                                  //!< clone this object
-        void                print(std::ostream &c) const;                       //!< Print the value to ostream c
-        void                dump(std::ostream& c);                              //!< Dump to ostream c
-        void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-        bool                operator==(const RbObject& o) const;                //!< Comparison
-        bool                operator==(const Argument& o) const;                //!< Comparison
+        static const StringVector   rbClass;            //!< Static class attribute
 
+        // Basic utility functions
+        virtual std::string         briefInfo() const;                          //!< Brief info about object
+        virtual Argument*           clone() const { return new Argument(*this); }   //!< Clone object
+        virtual bool                equals(const RbObject* obj) const;          //!< Equals comparison
+        virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
+        virtual void                print(std::ostream& o) const;               //!< Print complete object info
+        virtual void                printValue(std::ostream& o) const;          //!< Print value (for user)
 
-        // getter and setter
-        std::string&        getLabel() const;
-        void                setLabel(std::string& l);
-        DAGNode*            getDAGNode() const;                                       //!< whatever that is?!?
+        // Regular functions
+        std::string         getLabel() const { return label; }          //!< Get label of argument
+        DAGNode*            getDAGNode() const { return node; }         //!< Get DAG node
 
-    private:
-        std::string&    label;
-        DAGNode*        value;
+    protected:
+        const std::string   label;          //!< Label of argument
+        DAGNode*            node;           //!< The node passed in as the argument
 };
 
-#endif /* ARGUMENT_H_ */
+#endif
+

@@ -1,161 +1,125 @@
-/*
- * Argument.cpp
+/**
+ * @file
+ * This file contains the implementation of Argument, which is
+ * used to hold a potentially labeled argument passed to a
+ * function.
  *
- *  Created on: 21 okt 2009
- *      Author: Sebastian
+ * @brief Implementation of Argument
+ *
+ * (c) Copyright 2009-
+ * @date Last modified: $Date$
+ * @author The RevBayes core team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-11-20, version 1.0
+ *
+ * $Id$
  */
 
-#include <string>
+#include <sstream>
 
 #include "Argument.h"
-#include "RbObject.h"
-#include "DAGNode.h"
-#include "RbException.h"
 
-Argument::Argument(std::string& l, DAGNode* n) : RbObject(), label(l) {
-    value = n;
-}
 
-Argument::~Argument() {
-    // TODO Auto-generated destructor stub
-}
+/** Initialize static class attribute */
+//const StringVector Argument::rbClass = StringVector("argument") + RbObject::rbClass;
+
 
 /**
- * @brief clone function
+ * @brief Constructor
  *
- * This function creates a deep copy of this object.
- *
- * @see RbObject.clone()
- * @returns           return a copy of this object
+ * Standard constructor.
  *
  */
-RbObject* Argument::clone(void) const {
-
-    RbObject *x = new Argument( *this );
-    return x;
+Argument::Argument(const std::string& lbl, DAGNode* n)
+    : RbObject(), label(lbl), node(n) {
 }
+
 
 /**
- * @brief print function
+ * @brief Copy constructor
  *
- * This function prints this object.
- *
- * @see RbObject.print()
- * @param c           the stream where to print to
+ * Standard copy constructor.
  *
  */
-void Argument::print(std::ostream &c) const {
-    //TODO implement
-
-    std::string message = "print function of Argument not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
+Argument::Argument(const Argument& a)
+    : RbObject(), label(a.label), node(a.node) {
 }
+
 
 /**
- * @brief dump function
+ * @brief Brief info about the object
  *
- * This function dumps this object.
+ * One-liner on the object
  *
- * @see RbObject.dump()
- * @param c           the stream where to dump to
+ * @returns     The one-liner
  *
  */
-void Argument::dump(std::ostream& c){
-    //TODO implement
+std::string Argument::briefInfo() const {
 
-    std::string message = "dump function of Argument not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
+    std::ostringstream info;
+    printValue(info);
+    return info.str();
 }
+
 
 /**
- * @brief resurrect function
+ * @brief Pointer-based equal comparison
  *
- * This function resurrects this object.
+ * Compares equality of this object to another RbObject. It
+ * returns equal only if the labels are identical and the
+ * nodes are the same.
  *
- * @see RbObject.resurrect()
- * @param x           the object from which to resurrect
+ * @param obj   The object of the comparison
+ * @returns     Result of comparison
  *
  */
-void Argument::resurrect(const RbDumpState& x){
-    //TODO implement
+bool Argument::equals(const RbObject* obj) const {
 
-    std::string message = "resurrect function of Argument not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
+    // Use built-in fast down-casting first
+	const Argument* x = dynamic_cast<const Argument*>(obj);
+    if (x != NULL)
+        return (label == x->label && node == x->node);
+
+    // Try converting the value to an argument
+    x = dynamic_cast<const Argument*>(obj->convertTo("argument"));
+    if (x == NULL)
+        return false;
+
+    bool result = (label == x->label && node == x->node);
+    delete x;
+    return result;
 }
+
 
 /**
- * @brief brief description
+ * @brief Print function
  *
- * Overload operator== for Argument to allow static C-style arrays terminated by ArgumentRule()
+ * This function prints complete info about this object.
  *
- * @param B     second argument rule for comparison
- * @returns     true if both argument rules are the same
+ * @param o     The stream for printing
+ *
  */
-bool Argument::operator==(const RbObject& o) const {
-    if (typeid(Argument) == typeid(o)){
-        // we are from the same type, which is perfect :)
-        Argument& tmp = ((Argument&)o);
-        return (*this) == tmp;
-    }
+void Argument::print(std::ostream &o) const {
 
-    return false;
+    RbObject::print(o);
+    
+    o << "Label = " << label << std::endl;
+    o << "Node = " << node->briefInfo() << std::endl;
 }
+
 
 /**
- * @brief brief description
+ * @brief Print value
  *
- * Overload operator== for Argument to allow static C-style arrays terminated by ArgumentRule()
+ * This function prints the value of the object for
+ * the user (implemented here just in case).
  *
- * @param B     second argument rule for comparison
- * @returns     true if both argument rules are the same
+ * @param o     The stream for printing
+ *
  */
-bool Argument::operator==(const Argument& B) const {
+void Argument::printValue(std::ostream &o) const {
 
-    std::string message = "Operator== function of Argument not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
-    return true;
+    o << "argument(" << label << ", " << node->briefInfo() << ")" << std::endl;
 }
 
-/**
- * @brief brief description
- *
- * Overload operator== for Argument to allow static C-style arrays terminated by ArgumentRule()
- *
- * @param B     second argument rule for comparison
- * @returns     true if both argument rules are the same
- */
-std::string& Argument::getLabel() const {
-    return label;
-}
-
-/**
- * @brief brief description
- *
- * Overload operator== for Argument to allow static C-style arrays terminated by ArgumentRule()
- *
- * @param B     second argument rule for comparison
- * @returns     true if both argument rules are the same
- */
-void Argument::setLabel(std::string& l) {
-    label = l;
-}
-
-/**
- * @brief brief description
- *
- * Overload operator== for Argument to allow static C-style arrays terminated by ArgumentRule()
- *
- * @param B     second argument rule for comparison
- * @returns     true if both argument rules are the same
- */
-DAGNode* Argument::getDAGNode() const {
-    return value;
-}

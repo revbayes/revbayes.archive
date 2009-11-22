@@ -27,8 +27,8 @@
 class ArgumentRule : public RbObject {
 
     public:
-
-                    ArgumentRule(const std::string& label, ObjectSlot* slot);    //!< Constructor 
+                    ArgumentRule(const std::string& lbl, ObjectSlot* slot);      //!< Constructor 
+                    ArgumentRule(const ArgumentRule& a);                         //!< Copy constructor 
             virtual ~ArgumentRule() { delete objectSlot; }                       //!< Destructor 
 
         static const StringVector   rbClass;            //!< Static class attribute
@@ -48,7 +48,7 @@ class ArgumentRule : public RbObject {
         virtual bool        isArgValid(const RbObject* val) const;              //!< Is val a valid argument?
 
     protected:
-        const std::string   label;          //!< Label of argument
+        std::string         label;          //!< Label of argument
         ObjectSlot*         objectSlot;     //!< Object slot of argument (type, value)
 };
 

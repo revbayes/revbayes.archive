@@ -1,13 +1,13 @@
 /**
  * @file
  * This file contains the declaration of RbFunction, which is
- * the interface for REvBayes functions.
+ * the interface and abstract base class for RevBayes functions.
  *
  * @brief Declaration of RbFunction
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The REvBayes development core team
+ * @author The RevBayes development core team
  * @license GPL version 3
  * @version 1.0
  * @interface RbFunction
@@ -20,73 +20,54 @@
 #ifndef RbFunction_H
 #define RbFunction_H
 
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
 
-#include "ArgRule.h"
+#include "Argument.h"
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "RbObject.h"
 
 
-/* Forward declaration (contains reference to RbFunction) */
-class SymbolTable;
-
-
-/** This is the interface for functions in REvBayes. 'Bare' function
- *  objects are put in the global symbol table where they act as
- *  templates for the parser. The parser uses the template to create
- *  specific function instances that are matched to the relevant
- *  arguments and then inserted into the syntax tree during construc-
- *  tion of the latter.
+/**
+ * This is the interface and abstract base class for functions in
+ * RevBayes. Function instances are put in the function table in the
+ * relevant frame (user workspace or base environment) if they are
+ * global. If they are member functions, they are instead associated
+ * with the function table of the approprioate class in the class
+ * table of the user workspace.
+ * 
+ * A function instance knows its argument rules and can process a
+ * vector of labeled argument values according to these rules to pro-
+ * duce a ready-to-use list of arguments. The processing involves label
+ * matching as well as filling of missing values with default values.
+ * The processing of labeled argument values is done in the function
+ * processArguments, which will throw an error if the provided
+ * arguments do not match.
  *
- *  A derived function class needs to be able to return an array of
- *  argument rules when the getArgRules() method is called. These
- *  rules are used when labeled expressions returned by the parser
- *  are matched to actual function arguments.
+ * It is the responsibility of the caller to send the execute function
+ * the processed arguments in the right order.
  *
- *  Argument matching happens in the setArguments() function, which
- *  returns true if the argument matching is successful, otherwise
- *  false. When the arguments have been set, the setArguments()
- *  function will call the setWorkspace() function so that the func-
- *  tion can set up a workspace for rapid and convenient multiple
- *  evaluation of the function, if it wishes to do so.
- *
- *  The getDAGNodes() function is used to construct a model DAG and
- *  the copy() function is used to create a copy for fast multiple
- *  execution.
- *
- *  Function objects come in three different flavors. They can be
- *  accessor functions, which accesses an object attribute for
- *  examination or setting. They can also be regular functions.
- *  Finally, they can be distribution functions, which are used as
- *  templates to generate functions that perform probability cal-
- *  culations on a given distribution. An accessor or distribution
- *  function can also be used as a regular function. The methods
- *  isAccessorFxn() and isDistributionFxn() return flags signalling
- *  what type of function object it is. An accessor function needs
- *  to be able to set an attribute of an RbDataType object when
- *  setAttribute() is called.
  */
 class RbFunction :  public RbObject {
 
     public:
 
-#pragma mark Parser help
-        virtual const ArgRule*      getArgumentRules() const = 0; //!< Get argument rules for the function
-        virtual const int           getNumberOfRules() const = 0; //!< Get number of argument rules for the function
-//        virtual std::set<DAGNode*>  getDAGNodes() const = 0; //!< Get DAGNode terminals in arguments
-        virtual bool                isDistributionFunction() const = 0;  //! Is this a distributin function?
-        virtual bool                setArguments(std::vector<int> labeledArgs) = 0;  //! Set arguments
-//        virtual void                setWorkspace() = 0;      //!< Set workspace
-
-#pragma mark Regular functions
-        virtual RbObject*           execute() = 0;           //!< Execute function to get result
-//        virtual bool                setAttribute(RbDataType* newValue) const = 0;   //!< Set attribute
+        // Regular functions
+        std::vector<ArgumentRule>   getArgumentRules() const { return argRules; }   //!< Get argument rules
+        std::string                 getReturnType() const { return returnType; }    //!< Get return type
+        std::vector<DAGNode*>       processArguments(const std::vector<Argument>& args);    //!< Process args
+        virtual RbObject*           execute(std::vector<DAGNode*> arguments) = 0;   //!< Execute function
 
     protected:
+            RbFunction(const ArgumentRule** rules, const std::string& retType); //!< Basic constructor
+            RbFunction(const RbFunction& fn);                                   //!< Copy constructor
 
-        std::vector<DAGNode*> arguments;  //!< Processed arguments
+        std::vector<ArgumentRule>   argRules;               //!< Argument rules
+        std::string                 returnType;             //!< Return type
 };
 
 #endif
+

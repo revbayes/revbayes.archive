@@ -34,8 +34,21 @@
  * @param v     Value of the object
  *
  */
-ArgumentRule::ArgumentRule(const std::string& lab, ObjectSlot* slot)
-    : RbObject(), label(lab), objectSlot(slot) {
+ArgumentRule::ArgumentRule(const std::string& lbl, ObjectSlot* slot)
+    : RbObject(), label(lbl), objectSlot(slot) {
+}
+
+
+/**
+ * @brief Copy constructor
+ *
+ * Create independent copy of the slot
+ *
+ * @param a     Argument rule to be copied
+ *
+ */
+ArgumentRule::ArgumentRule(const ArgumentRule& a)
+    : RbObject(), label(a.label), objectSlot(a.objectSlot) {
 }
 
 
