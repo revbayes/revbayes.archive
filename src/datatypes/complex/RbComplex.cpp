@@ -21,29 +21,6 @@
 
 #include "Environment.h"
 #include "RbComplex.h"
-//#include "StringVector.h"
-
-
-/** Initialize static class attribute */
-//const StringVector RbComplex::rbClass = StringVector("complex") + RbObject::rbClass;
-
-
-/** Initialize static member template */
-const ArgumentRule RbComplex::memberTemplate[] = {
-
-    ArgumentRule()
-};
-
-
-/** Initialize static function array */
-const FunctionDef RbComplex::methodDefs[] = {
-
-    FunctionDef()
-};
-
-
-/** Add to base environment */
-static bool type_complex = Workspace::globalWorkspace().addType("complex", "object", memberTemplate, methodDefs);
 
 
 /**
@@ -56,8 +33,6 @@ static bool type_complex = Workspace::globalWorkspace().addType("complex", "obje
  */
 RbComplex::RbComplex() {
 
-	members = Workspace::globalWorkspace().getMembers("complex");
-    methods = Workspace::globalWorkspace().getMethodsRef("complex");
 }
 
 
@@ -71,37 +46,7 @@ RbComplex::RbComplex() {
 RbComplex::~RbComplex() {
 
     members.erase();
-}
-
-
-/**
- * @brief Get class attribute
- *
- * Get the class attribute of the object.
- *
- * @returns     A string vector of class names, from
- *              the most derived class to the base class
- *
- */
-const StringVector& RbComplex::getClass() const {
-
-	return rbClass;
-}
-
-
-/**
- * @brief Get member variable
- *
- * This function gets the value of a member variable.
- *
- * @param name  The name of the variable
- * @returns     The current value of the variable
- *
- */
-const RbObject* RbComplex::getMember(const std::string& name) const {
-
-	ObjectSlot* theSlot = getSlot(name);
-    return theSlot->getValue();
+    methods.erase();
 }
 
 
@@ -117,47 +62,11 @@ const RbObject* RbComplex::getMember(const std::string& name) const {
  */
 const RbFunction* RbComplex::getMethod(const std::string& name) const {
 
-    return Workspace::globalWorkSpace.getMethod("complex", name);
+	std::map<const std::string, RbFunction*>::iterator it = methods.find( name );
+	if ( it != methods.end() )
+		return it->second;
+	return NULL;
 }
-
-
-/**
- * @brief Get methods
- *
- * This function gets all methods of the class, including the inherited
- * ones. The function simply asks the global workspace for the methods.
- *
- * @returns     A map of names to methods
- *
- */
-std::map<const std::string, RbFunction*>  RbComplex::getMethods() const {
-
-    return Workspace::globalWorkSpace.getMethods("complex", name);
-}
-
-
-/**
- * @brief Get slot
- *
- * This function gets the slot for the specifed member variable. An error
- * is thrown if the member variable cannot be found.
- *
- * @param name  The name of the member variable
- * @returns     The slot of the variable
- * @throws      Throws an exception if the variable is not found
- *
- */
-const ObjectSlot*  RbComplex::getSlot(const std::string& name) const {
-
-    if (members.find(name) != members.end())
-        return members[name];
-
-    istringstream msg << "The class 'complex' does not have a member called '" << name << "'" << std:.endl;
-    throw (RbException(msg));
-
-    return NULL; // In case the compiler complains about missing return statement
-}
-
 
 /**
  * @brief Print object info
@@ -172,7 +81,7 @@ void RbComplex::print(std::ostream& o) const {
 
 	RbObject::print(o);
 
-    for (std::map<const std::string, ObjectSlot>::iterator i=members.begin(); i!=members.end(); i++) {
+    for (std::map<const std::string, RbObject*>::iterator i=members.begin(); i!=members.end(); i++) {
         o << "." << i->first << " = ";
         getMember(i->first).printBrief(o);
     }
@@ -198,9 +107,9 @@ void RbComplex::print(std::ostream& o) const {
  */
 void RbComplex::printValue(std::ostream& o) const {
 
-	o << "Complex object of type " << rbClass[0] << std::endl;
+	o << "Complex object of type " << getClass()[0] << std::endl;
 
-    for (std::map<const std::string, ObjectSlot>::iterator i=members.begin(); i!=members.end(); i++) {
+    for (std::map<const std::string, RbObject*>::iterator i=members.begin(); i!=members.end(); i++) {
         o << "." << i->first << " = ";
         getMember(i->first).printBrief(o);
         o << std::endl;
@@ -220,24 +129,43 @@ void RbComplex::printValue(std::ostream& o) const {
  */
 void RbComplex::setMember(const std::string& name, RbObject* val) const {
 
-	ObjectSlot* theSlot = getSlot(name);
-
-    if (theSlot == NULL) {
-        istream msg << "No member variable named " << name;
-        throw RbException(msg);
-    }
-
-    if (!val->isType(theSlot->getType())) {
-        istream msg << "The slot for member variable " << name << " is of type "
-             << theSlot->getType()[0] << std::endl;
-        msg << "It cannot be set with a value of type " << theSlot->getType[0];
-        throw RbException(msg);
-    }
-
-    if (theSlot->getValue() != NULL)
-        theSlot->deleteValue();
-
-    theSlot->setValue(val);
+	std::map<const std::string, RbObject*>::iterator it = members.find( name );
+	if ( it != members.end() )
+		{
+		members.insert( std::make_pair(name,val) );
+		}
+	else 
+		{
+		RbObject* temp = it->second;
+		delete temp;
+		it->second = val;
+		}
 }
 
+bool RbComplex::addMember(const std::string& name, RbObject* v) {
+
+	std::map<const std::string, RbObject*>::iterator it = members.find( name );
+	if ( it != members.end() )
+		{
+		members.insert( std::make_pair(name,v) );
+		}
+	else 
+		{
+		RbException e("Error in adding member. Member \"" + name + "\" already exists.");
+		throw(e);
+		}
+}
+
+void RbComplex::deleteMember(const std::string& name) {
+
+	members.erase(name);
+}
+
+const RbObject* RbComplex::getMember(const std::string& name) const {
+
+	std::map<const std::string, RbObject*>::iterator it = members.find( name );
+	if ( it != members.end() )
+		return it->second;
+	return NULL;
+}
 

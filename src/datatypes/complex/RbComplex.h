@@ -25,39 +25,30 @@
 #include "RbObject.h"
 
 /* Forward declarations */
-// class RbDumpState;
-class ArgumentRule;
-class Environment;
-class FunctionDef;
-class ObjectSlot;
-class StringVector;
+class RbFunction;
 
 class RbComplex : public RbObject {
 
     public:
 
-        static const StringVector   rbClass;                //!< Static class attribute
-        static const ArgumentRule   memberTemplate[];       //!< Static member template
-        static const FunctionDef    methodDefs[];           //!< Static method definitions
-
         // Basic utility functions
-        virtual RbComplex*          clone() const { return new RbComplex(*this); }  //!< Clone object
-        virtual const StringVector& getClass() const;                       //!< Get class
         virtual bool                equals(const RbComplex* o) const;       //!< Equals comparison
-        virtual void                print(std::ostream& o) const;           //!< Print complete object info
-        virtual void                printValue(std::ostream& o) const;      //!< Print value (for user)
+		virtual void                print(std::ostream& o) const;
+		virtual void                printValue(std::ostream& o) const;
 
         // Regular functions
+        virtual bool                addMember(const std::string& name, RbObject* v);
+        virtual void                deleteMember(const std::string& name); 
         virtual const RbObject*     getMember(const std::string& name) const; //!< Return member variable
         virtual const RbFunction*   getMethod(const std::string& name) const; //!< Return method (member function)
-        const ObjectSlot*           getSlot(const std::string& name);       //!< Return member variable slot
         virtual bool                setMember(const std::string& name, RbObject* val);   //!< Set member variable
 
     protected:
                     RbComplex();        //!< Make it impossible to create objects of this class
             virtual ~RbComplex();       //!< Delete member variables 
 
-        std::map<const std::string, ObjectSlot>     members;    //!< Member variables
+        std::map<const std::string, RbObject*>       members;    //!< Member variables
+        std::map<const std::string, RbFunction*>     methods;    //!< Member variables
 };
 
 #endif

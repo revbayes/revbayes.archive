@@ -3,6 +3,7 @@
 
 #include "RbDouble.h"
 #include "RbObject.h"
+#include <assert.h>
 
 int main(int argc, char **argv) {
 	// create a RbDouble object
@@ -25,14 +26,14 @@ int main(int argc, char **argv) {
 	// check the return type
 	assert (typeid(*cp) == typeid(RbDouble));
 	// check if they are actually equal
-	assert (d == (*cp));
+	assert (d.equals(cp));
 	// check that they are different instances
 	assert (&d != cp);
 
 	// change the value
 	d.setValue(4.5);
 	// check if they are still equal
-	assert (!(d == *cp));
+	assert (!(d.equals(cp)));
 
 	return 0;
 

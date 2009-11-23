@@ -24,7 +24,7 @@
 #include "RbInt.h"
 
 
-//static StringVector RbDouble::rbClass = StringVector("double") + RbObject::rbClass;
+static StringVector RbDouble::rbClass = StringVector("double") + RbObject::rbClass;
 
 
 /**
@@ -116,5 +116,31 @@ void RbDouble::print(std::ostream &o) const {
 void RbDouble::printValue(std::ostream &o) const {
 
     o << value << std::endl;
+}
+
+
+bool RbDouble::lessThan(const RbObject* o) const {
+
+	
+}
+
+RbObject* RbDouble::add(const RbObject* o) const {
+
+}
+
+RbObject* RbDouble::subtract(const RbObject* o) const {
+
+}
+
+RbObject* RbDouble::multiply(const RbObject* o) const {
+
+}
+
+RbObject* RbDouble::divide(const RbObject* o) const {
+
+}
+
+RbObject* RbDouble::raiseTo(const RbObject* o) const {
+
 }
 

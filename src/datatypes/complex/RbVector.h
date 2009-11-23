@@ -2,9 +2,9 @@
 #define Vector_H
 
 #include <vector>
-#include "RbDataType.h"
+#include "RbComplex.h"
 
-class Vector : public RbDataType {
+class Vector : public RbComplex {
 
 public:
 	Vector(int n);

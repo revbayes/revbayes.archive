@@ -14,7 +14,7 @@
 
 
 	// constructors
-RbException::RbException(void) : message("message"), RbObject("RbException"){
+RbException::RbException(void) : message("message"), RbObject(){
 	// default constructor; does nothing
 }
 
@@ -27,7 +27,7 @@ RbException::RbException(void) : message("message"), RbObject("RbException"){
  *
  */
 RbException::RbException(const RbException& e)
-    : RbObject(e.name), message(e.message) {
+    : RbObject(), message(e.message) {
 }
 
 /**

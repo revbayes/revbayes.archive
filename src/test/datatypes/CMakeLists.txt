@@ -1,7 +1,7 @@
 ### add test for data types
 
 ### double
-add_executable(testDouble ../../utils/RbException.cpp ../../datatypes/primitive/RbDouble.cpp testDouble.cpp)
+add_executable(testDouble ../../utils/RbException.cpp  ../../datatypes/RbObject.cpp ../../datatypes/primitive/RbDouble.cpp testDouble.cpp)
 
 ### int
 #add_executable(testInt ../../main/RbObject.cpp ../../utils/RbException.cpp ../../datatypes/RbAbstractDataType.cpp ../../datatypes/RbTypeInfo.cpp ../../datatypes/primitive/RbInt.cpp ../../datatypes/primitive/RbDouble.cpp testInt.cpp)

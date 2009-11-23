@@ -34,8 +34,8 @@
  * @param v     Value of the object
  *
  */
-ArgumentRule::ArgumentRule(const std::string& lbl, ObjectSlot* slot)
-    : RbObject(), label(lbl), objectSlot(slot) {
+ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t)
+    : RbObject(), label(lbl), type(t) {
 }
 
 
@@ -48,7 +48,7 @@ ArgumentRule::ArgumentRule(const std::string& lbl, ObjectSlot* slot)
  *
  */
 ArgumentRule::ArgumentRule(const ArgumentRule& a)
-    : RbObject(), label(a.label), objectSlot(a.objectSlot) {
+    : RbObject(), label(a.label), type(a.type) {
 }
 
 
@@ -108,7 +108,7 @@ bool ArgumentRule::equals(const RbObject* obj) const {
  */
 bool ArgumentRule::isArgValid(const RbObject* obj) const {
 
-    return obj->isType(getType());
+    return obj->isConvertibleTo( getType() );
 }
 
 
@@ -124,12 +124,7 @@ void ArgumentRule::print(std::ostream &o) const {
 
 	RbObject::print(o);
     o << "Label = " << label << std::endl;
-    o << "Type = " << objectSlot->getType() << std::endl;
-    o << "Value = ";
-    if (objectSlot->getValue() == NULL)
-        o << "null" << std::endl;
-    else
-        o << objectSlot->getValue()->briefInfo() << std::endl;
+    o << "Type = " << type << std::endl;
 }
 
 
@@ -145,7 +140,7 @@ void ArgumentRule::print(std::ostream &o) const {
 void ArgumentRule::printValue(std::ostream &o) const {
 
     o << "argumentRule (" << label << ", ";
-    o << objectSlot->briefInfo() << ")" << std::endl;
+    o << type << ")" << std::endl;
 }
 
 

@@ -29,7 +29,7 @@ class RbDouble : public RbObject {
 
             RbDouble(const double v);                         //!< Constructor from double
 
-        static const StringVector   rbClass;            //!< Static class attribute
+       // static const StringVector   rbClass;            //!< Static class attribute
 
         // Basic utility functions
         virtual RbDouble*           clone() const { return new RbDouble(*this); }   //!< Clone object
@@ -41,6 +41,17 @@ class RbDouble : public RbObject {
         // Type conversion
         virtual RbObject*           convertTo(const std::string& type) const;       //!< Convert to type
                                     operator double() { return value; }             //!< Type conversion to duble
+        double                      getValue() { return value; }
+        void                        setValue(double x) { value = x; }
+
+        bool                       lessThan(const RbObject* o) const;  //!< Less than
+
+        // Pointer-based arithmetic -- throw not supported error by default
+        RbObject*                  add(const RbObject* o) const;       //!< Addition
+        RbObject*                  subtract(const RbObject* o) const;  //!< Subtraction
+        RbObject*                  multiply(const RbObject* o) const;  //!< Multiplication
+        RbObject*                  divide(const RbObject* o) const;    //!< Division
+        RbObject*                  raiseTo(const RbObject* o) const;   //!< Power
 
         // Dump and resurrect
         // TODO I am commenting these out for now, they need to be implemented later -- Fredrik

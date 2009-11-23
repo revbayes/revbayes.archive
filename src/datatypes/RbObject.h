@@ -20,52 +20,36 @@
 #include <string>
 #include <ostream>
 
-/* Forward declarations */
-// class RbDumpState;
+//class Environment;
+//class RbDumpState;
 class StringVector;
-class Environment;
 
 class RbObject {
 
     public:
-            virtual ~RbObject() {}          //! Virtual destructor because of virtual functions
-
-        static const StringVector   rbClass;                //!< Static class attribute
+        virtual ~RbObject(void) { }                                                           //! Virtual destructor because of virtual functions
 
         // Basic utility functions
-        virtual std::string         briefInfo() const { return "unknown object"; }  //!< Brief info about object
-        virtual RbObject*           clone() const = 0;                  //!< Clone object
-        virtual RbObject*           clone(Environment& env) const { return clone(); }   //!< Clone to environment
-        virtual bool                equals(const RbObject* o) const = 0;//!< Equals comparison
-        virtual const StringVector& getClass() const;                   //!< Get class
-        bool                        isType(const std::string t) const;  //!< Is the object of type t?
-        virtual void                print(std::ostream& o) const;       //!< Print complete object info
-        virtual void                printValue(std::ostream& o) const {}//!< Print value (for user)
-
-        //TODO I do not use this at the moment but keep it if others want to use it -- Fredrik
-        virtual std::string         toString(void) const { return std::string(); }  //!< General info on object
+        virtual std::string         briefInfo(void) const { return "unknown object"; }        //!< Brief info about object
+        virtual RbObject*           clone(void) const = 0;                                    //!< Clone object
+        virtual bool                equals(const RbObject* o) const = 0;                      //!< Equals comparison
+        virtual const StringVector& getClass(void) const=0;                                   //!< Get class
+        virtual bool                isType(const std::string t) const = 0;                    //!< Is the object of type t?
+        virtual void                print(std::ostream& o) const = 0;                         //!< Print complete object info
+        virtual void                printValue(std::ostream& o) const = 0;                    //!< Print value (for user)
+        virtual std::string         toString(void) const = 0;                                 //!< General info on object
 
         // Type conversion
-        virtual bool                isConvertibleTo(const std::string& type) const; //! Is convertible to type?
-        virtual RbObject*           convertTo(const std::string& type) const { return NULL; } //! Convert to type
-
-        // Pointer-based comparison -- throw not supported error by default
-        virtual bool                lessThan(const RbObject* o) const;  //!< Less than
-
-        // Pointer-based arithmetic -- throw not supported error by default
-        virtual RbObject*           add(const RbObject* o) const;       //!< Addition
-        virtual RbObject*           subtract(const RbObject* o) const;  //!< Subtraction
-        virtual RbObject*           multiply(const RbObject* o) const;  //!< Multiplication
-        virtual RbObject*           divide(const RbObject* o) const;    //!< Division
-        virtual RbObject*           raiseTo(const RbObject* o) const;   //!< Power
+        virtual RbObject*           convertTo(const std::string& type) const { return NULL; }        //! Convert to type
+        virtual bool                isConvertibleTo(const std::string& type) const { return false; } //! Is convertible to type?
 
         // Dump and resurrect
         // TODO I am commenting these out for now, they need to be implemented later -- Fredrik
-     // virtual void                dump(std::ostream& o) = 0;              //!< Dump to ostream c
-     // virtual void                resurrect(const RbDumpState& x) = 0;    //!< Resurrect from dumped state
+        // virtual void                dump(std::ostream& o) = 0;                             //!< Dump to ostream c
+        // virtual void                resurrect(const RbDumpState& x) = 0;                   //!< Resurrect from dumped state
 
     protected:
-            RbObject() {}                   //!< Make it impossible to create objects
+        RbObject(void) { }                                                                    //!< Make it impossible to create objects
 };
 
 #endif
