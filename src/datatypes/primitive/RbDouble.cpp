@@ -91,6 +91,19 @@ bool RbDouble::equals(const RbObject* obj) const {
 }
 
 /**
+ * @brief complete info
+ *
+ * return complete object info.
+ *
+ * @return o     The string describing this object
+ *
+ */
+std::string RbDouble::toString(void) const {
+
+    return "Value = " + value;
+}
+
+/**
  * @brief Prdouble complete info
  *
  * Prints complete object info.

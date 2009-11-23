@@ -19,12 +19,13 @@ public:
 	// implemented abstract/virtual functions from base classes
 	RbObject*           clone(void) const;                                  //!< clone this object
     bool                equals(const RbObject* obj) const;                  //!< Equals comparison
-	void                print(std::ostream &c) const;                       //!< Print the value to ostream c
-	void                dump(std::ostream& c);                              //!< Dump to ostream c
+    const StringVector& getClass() const { return rbClass; }            //!< Get class
+    void                print(std::ostream &c) const;                       //!< Print the value to ostream c
+    void                printValue(std::ostream& o) const;              //!< Print value (for user)
+    std::string         toString(void) const;                           //!< General info on object
+    bool                isType(std::string t) const { return rbClass[0] == t; }
+    void                dump(std::ostream& c);                              //!< Dump to ostream c
 	void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-
-	//overloaded operators
-	bool                operator==(const RbObject& o) const;                //!< Comparison
 
 
 	// member functions

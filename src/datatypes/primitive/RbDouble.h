@@ -29,20 +29,23 @@ class RbDouble : public RbObject {
 
             RbDouble(const double v);                         //!< Constructor from double
 
-       // static const StringVector   rbClass;            //!< Static class attribute
+        static const StringVector   rbClass;            //!< Static class attribute
 
         // Basic utility functions
-        virtual RbDouble*           clone() const { return new RbDouble(*this); }   //!< Clone object
-        virtual bool                equals(const RbObject* obj) const;              //!< Equals comparison
-        virtual const StringVector& getClass() const { return rbClass; }            //!< Get class
-        virtual void                print(std::ostream& o) const;                   //!< Print complete object info
-        virtual void                printValue(std::ostream& o) const;              //!< Print value (for user)
+        RbObject*                  clone() const { return new RbDouble(*this); }   //!< Clone object
+        bool                       equals(const RbObject* obj) const;              //!< Equals comparison
+        const StringVector&        getClass() const { return rbClass; }            //!< Get class
+        void                       print(std::ostream& o) const;                   //!< Print complete object info
+        void                       printValue(std::ostream& o) const;              //!< Print value (for user)
+        std::string                toString(void) const;                           //!< General info on object
 
         // Type conversion
-        virtual RbObject*           convertTo(const std::string& type) const;       //!< Convert to type
-                                    operator double() { return value; }             //!< Type conversion to duble
-        double                      getValue() { return value; }
-        void                        setValue(double x) { value = x; }
+        bool                       isType(std::string t) const { return rbClass[0] == t; }
+        RbObject*                  convertTo(const std::string& type) const;       //!< Convert to type
+        bool                       isConvertibleTo(const std::string& type) const; //! Is convertible to type?
+                                   operator double() { return value; }             //!< Type conversion to duble
+        double                     getValue() { return value; }
+        void                       setValue(double x) { value = x; }
 
         bool                       lessThan(const RbObject* o) const;  //!< Less than
 

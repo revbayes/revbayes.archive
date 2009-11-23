@@ -21,9 +21,9 @@
 
 #include <iostream>
 
-#include "RbObject.h"
+#include "RbPrimitive.h"
 
-class RbInt : public RbObject {
+class RbInt : public RbPrimitive {
 
     public:
 
@@ -32,15 +32,25 @@ class RbInt : public RbObject {
         static const StringVector   rbClass;            //!< Static class attribute
 
         // Basic utility functions
-        virtual RbInt*              clone() const { return new RbInt(*this); }  //!< Clone object
-        virtual bool                equals(const RbObject* obj) const;          //!< Equals comparison
-        virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
-        virtual void                print(std::ostream& o) const;               //!< Print complete object info
-        virtual void                printValue(std::ostream& o) const;          //!< Print value (for user)
+        RbObject*           clone() const;                              //!< Clone object
+        bool                equals(const RbObject* obj) const;          //!< Equals comparison
+        const StringVector& getClass() const { return rbClass; }        //!< Get class
+        void                print(std::ostream& o) const;               //!< Print complete object info
+        void                printValue(std::ostream& o) const;          //!< Print value (for user)
 
         // Type conversion
-        virtual RbObject*           convertTo(const std::string& type) const;       //!< Convert to type
-                                    operator int() { return value; }               //!< Type conversion to int
+        RbObject*           convertTo(const std::string& type) const;       //!< Convert to type
+                                    operator int() const { return value; }               //!< Type conversion to int
+
+        // Pointer-based comparison -- throw not supported error by default
+        bool                lessThan(const RbObject* o) const;                        //!< Less than
+
+        // Pointer-based arithmetic -- throw not supported error by default
+        RbObject*           add(const RbObject* o) const;                             //!< Addition
+        RbObject*           subtract(const RbObject* o) const;                        //!< Subtraction
+        RbObject*           multiply(const RbObject* o) const;                        //!< Multiplication
+        RbObject*           divide(const RbObject* o) const;                          //!< Division
+        RbObject*           raiseTo(const RbObject* o) const;
 
         // Dump and resurrect
         // TODO I am commenting these out for now, they need to be implemented later -- Fredrik

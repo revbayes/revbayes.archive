@@ -26,7 +26,7 @@
 #include "RbObject.h"
 
 // Forward declaration
-class StringVector;
+#include "StringVector.h"
 
 
 class ObjectSlot : public RbObject {

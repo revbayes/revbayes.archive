@@ -30,8 +30,7 @@
 #include "RbFunction.h"
 #include "RbObject.h"
 #include "SyntaxElement.h"
-
-class StringVector;
+#include "StringVector.h"
 
 
 class UserFunction :  public RbFunction {
