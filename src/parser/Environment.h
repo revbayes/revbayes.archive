@@ -50,10 +50,10 @@ class Environment : public RbObject {
         virtual void                printValue(std::ostream& o) const;      //!< Print value (for user)
 
         // Regular functions
-	    bool        addVariable(const std::string& name, RbObject* variable);   //!< Add a variable
+	    bool        addVariable(const std::string& name, DAGNode* variable);   //!< Add a variable
         bool        eraseVariable(const std::string& name);                     //!< Erase a variable
         bool        existsVariable(const std::string& name);                    //!< Does variable exist?
-        RbObject*   getVariable(const std::string& name);                       //!< Get a variable
+        DAGNode*    getVariable(const std::string& name);                       //!< Get a variable
         
 	
     protected:

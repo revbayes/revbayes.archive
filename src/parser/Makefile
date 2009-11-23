@@ -26,9 +26,6 @@ lex.yy.cpp: lex.l
 Environment.o: Environment.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Environment.cpp
 
-SyntaxElement.o: SyntaxElement.cpp
-	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxElement.cpp
-
 SyntaxHelpExpr.o: SyntaxHelpExpr.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxHelpExpr.cpp
 

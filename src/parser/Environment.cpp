@@ -40,7 +40,7 @@ Environment::Environment(Environment* parentEnv) :
  */
 Environment::~Environment() {
 
-    for (std::map<std::string, RbObject*>::iterator i=variableTable.begin(); i!=variableTable.end(); i++)
+    for (std::map<std::string, DAGNode*>::iterator i=variableTable.begin(); i!=variableTable.end(); i++)
         delete i->second;
 }
 
@@ -53,11 +53,11 @@ Environment::~Environment() {
  * @return          Returns true on success, false on failure
  *
  */
-bool Environment::addVariable(const std::string& name, RbObject* variable) {
+bool Environment::addVariable(const std::string& name, DAGNode* variable) {
 
-    std::pair<std::map<std::string, RbObject*>::iterator, bool> retVal;
+    std::pair<std::map<std::string, DAGNode*>::iterator, bool> retVal;
 
-    retVal = variableTable.insert(std::pair<std::string, RbObject*>(name, variable));
+    retVal = variableTable.insert(std::pair<std::string, DAGNode*>(name, variable));
     
     return retVal.second;
 }
@@ -70,7 +70,7 @@ bool Environment::addVariable(const std::string& name, RbObject* variable) {
  * @return      Returns pointer to object on success, 
  *
  */
-RbObject* Environment::getVariable(const std::string& name) {
+DAGNode* Environment::getVariable(const std::string& name) {
 
     if (variableTable.find(name) == variableTable.end()) {
         if (parentEnvironment != NULL)
