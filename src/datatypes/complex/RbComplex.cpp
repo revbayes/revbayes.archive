@@ -14,13 +14,18 @@
  * $Id: RbDataType.h 9 2009-08-23 13:04:35Z ronquist $
  */
 
-
+#include <map>
 #include <string>
 #include <ostream>
 #include <iostream>
+#include <vector>
 
-#include "Environment.h"
 #include "RbComplex.h"
+#include "RbException.h"
+#include "RbFunction.h"
+#include "RbObject.h"
+#include "StringVector.h"
+
 
 
 /**
@@ -45,8 +50,8 @@ RbComplex::RbComplex() {
  */
 RbComplex::~RbComplex() {
 
-    members.erase();
-    methods.erase();
+    members.clear();
+    methods.clear();
 }
 
 
@@ -62,7 +67,7 @@ RbComplex::~RbComplex() {
  */
 const RbFunction* RbComplex::getMethod(const std::string& name) const {
 
-	std::map<const std::string, RbFunction*>::iterator it = methods.find( name );
+	std::map<std::string, RbFunction*>::const_iterator it = methods.find( name );
 	if ( it != methods.end() )
 		return it->second;
 	return NULL;
@@ -79,19 +84,15 @@ const RbFunction* RbComplex::getMethod(const std::string& name) const {
  */
 void RbComplex::print(std::ostream& o) const {
 
-	RbObject::print(o);
-
-    for (std::map<const std::string, RbObject*>::iterator i=members.begin(); i!=members.end(); i++) {
+    for (std::map<std::string, RbObject*>::const_iterator i=members.begin(); i!=members.end(); i++) {
         o << "." << i->first << " = ";
-        getMember(i->first).printBrief(o);
+        o << getMember(i->first)->briefInfo();
     }
 
-    std::map<const std::string, RbFunction*> methods = getMethods();
+    std::map<std::string, RbFunction*> methods = getMethods();
 
-    for (std::map<const std::string, RbFunction*>::iterator i=methods.begin(); i!=methods.end(); i++) {
-        vector<string> usages = i->second->getUsage();
-        for (vector<string>::iterator i=usages.begin(); i!=usages.end(); i++)
-            o << "." << (*i) << std::endl;
+    for (std::map<std::string, RbFunction*>::iterator i=methods.begin(); i!=methods.end(); i++) {
+    	i->second->print(o);
     }
 }
 
@@ -109,9 +110,9 @@ void RbComplex::printValue(std::ostream& o) const {
 
 	o << "Complex object of type " << getClass()[0] << std::endl;
 
-    for (std::map<const std::string, RbObject*>::iterator i=members.begin(); i!=members.end(); i++) {
+    for (std::map<std::string, RbObject*>::const_iterator i=members.begin(); i!=members.end(); i++) {
         o << "." << i->first << " = ";
-        getMember(i->first).printBrief(o);
+        o << getMember(i->first)->briefInfo();
         o << std::endl;
     }
 }
@@ -127,9 +128,9 @@ void RbComplex::printValue(std::ostream& o) const {
  * @throws      Throws exception if member variable not found
  *
  */
-void RbComplex::setMember(const std::string& name, RbObject* val) const {
+void RbComplex::setMember(const std::string& name, RbObject* val) {
 
-	std::map<const std::string, RbObject*>::iterator it = members.find( name );
+	std::map<std::string, RbObject*>::iterator it = members.find( name );
 	if ( it != members.end() )
 		{
 		members.insert( std::make_pair(name,val) );
@@ -144,7 +145,7 @@ void RbComplex::setMember(const std::string& name, RbObject* val) const {
 
 bool RbComplex::addMember(const std::string& name, RbObject* v) {
 
-	std::map<const std::string, RbObject*>::iterator it = members.find( name );
+	std::map<std::string, RbObject*>::iterator it = members.find( name );
 	if ( it != members.end() )
 		{
 		members.insert( std::make_pair(name,v) );
@@ -163,7 +164,7 @@ void RbComplex::deleteMember(const std::string& name) {
 
 const RbObject* RbComplex::getMember(const std::string& name) const {
 
-	std::map<const std::string, RbObject*>::iterator it = members.find( name );
+	std::map<std::string, RbObject*>::const_iterator it = members.find( name );
 	if ( it != members.end() )
 		return it->second;
 	return NULL;

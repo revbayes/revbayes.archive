@@ -16,6 +16,7 @@ public:
 	StringVector(int n, std::string v);
 	StringVector(const StringVector& v);
 	StringVector(std::vector<std::string> &v);
+	virtual ~StringVector(void) { }
 
     static const StringVector   rbClass;            //!< Static class attribute
 
@@ -27,10 +28,11 @@ public:
     void                       printValue(std::ostream& o) const;              //!< Print value (for user)
     std::string                toString(void) const;                           //!< General info on object
     bool                       isType(std::string t) const { return rbClass[0] == t; }
+    StringVector&              operator+(const StringVector& sv) const; 
 
 	std::string operator[](int i) const { return value[i]; }
 	int size(void) { return value.size(); }
-	std::string                get(int i) { return value[i]; }
+	std::string                get(int i) const { return value[i]; }
 
 private:
 	std::vector<std::string> value;

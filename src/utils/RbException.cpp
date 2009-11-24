@@ -11,7 +11,9 @@
 #include <iostream>
 
 #include "RbException.h"
+#include "StringVector.h"
 
+const StringVector RbException::rbClass = StringVector("exception") + RbObject::rbClass;
 
 	// constructors
 RbException::RbException(void) : message("message"), RbObject(){
@@ -104,13 +106,7 @@ void RbException::resurrect(const RbDumpState& x){
  * @param o           the object to compare to
  *
  */
-bool RbException::operator==(const RbObject& o) const {
-
-	if (typeid(RbException) == typeid(o)){
-		// we are from the same type, which is perfect :)
-		RbException& tmp = ((RbException&)o);
-		return message == tmp.getMessage();
-	}
+bool RbException::equals(const RbObject* o) const {
 
 	return false;
 }
@@ -118,10 +114,21 @@ bool RbException::operator==(const RbObject& o) const {
 
 	// member functions
 void RbException::setMessage(std::string m){
+
 	message = m;
 }
 
 std::string RbException::getMessage(void){
+
 	return message;
 }
 
+void RbException::printValue(std::ostream& o) const {
+
+	o << message << std::endl;
+}
+
+std::string RbException::toString(void) const {
+
+	return message;
+}

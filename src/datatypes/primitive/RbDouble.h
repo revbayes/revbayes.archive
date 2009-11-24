@@ -21,13 +21,14 @@
 
 #include <iostream>
 
-#include "RbObject.h"
+#include "RbPrimitive.h"
 
-class RbDouble : public RbObject {
+class RbDouble : public RbPrimitive {
 
     public:
 
             RbDouble(const double v);                         //!< Constructor from double
+            RbDouble(const RbDouble& v);
 
         static const StringVector   rbClass;            //!< Static class attribute
 
@@ -40,7 +41,6 @@ class RbDouble : public RbObject {
         std::string                toString(void) const;                           //!< General info on object
 
         // Type conversion
-        bool                       isType(std::string t) const { return rbClass[0] == t; }
         RbObject*                  convertTo(const std::string& type) const;       //!< Convert to type
         bool                       isConvertibleTo(const std::string& type) const; //! Is convertible to type?
                                    operator double() { return value; }             //!< Type conversion to duble

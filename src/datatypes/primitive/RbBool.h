@@ -21,34 +21,56 @@
 
 #include <iostream>
 
-#include "RbObject.h"
+#include "RbPrimitive.h"
+#include "StringVector.h"
 
-class RbBool : public RbObject {
+class RbDumpState;
+class RbObject;
 
-    public:
+class RbBool : public RbPrimitive {
 
-            RbBool(const bool v);                      //!< Constructor from bool
+public:
 
-        static const StringVector   rbClass;           //!< Static class attribute
+        static const StringVector   rbClass;            //!< Static class attribute
+
+	RbBool(const bool v);                                            //!< Constructor from double
+	RbBool(const RbBool& s);                                         //!< Copy constructor
+	virtual ~RbBool();
 
         // Basic utility functions
-        virtual RbBool*             clone() const { return new RbBool(*this); } //!< Clone object
-        virtual bool                equals(const RbObject* obj) const;          //!< Equals comparison
-        virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
-        virtual void                print(std::ostream& o) const;               //!< Print complete object info
-        virtual void                printValue(std::ostream& o) const;          //!< Print value (for user)
+        RbObject*           clone() const;                              //!< Clone object
+        bool                equals(const RbObject* obj) const;          //!< Equals comparison
+        const StringVector& getClass() const { return rbClass; }        //!< Get class
+        void                print(std::ostream& o) const;               //!< Print complete object info
+        void                printValue(std::ostream& o) const;          //!< Print value (for user)
+        std::string         toString(void) const;                       //!< General info on object
 
         // Type conversion
-        virtual RbObject*           convertTo(const std::string& type) const;       //!< Convert to type
-                                    operator bool() { return value; }               //!< Type conversion to bool
+        bool                isConvertible(const std::string& type) const;
+        RbObject*           convertTo(const std::string& type) const;       //!< Convert to type
+                                    operator int() const { return value; }               //!< Type conversion to int
 
-        // Dump and resurrect
-        // TODO I am commenting these out for now, they need to be implemented later -- Fredrik
-     // virtual void                dump(std::ostream& o) = 0;              //!< Dump to ostream c
-     // virtual void                resurrect(const RbDumpState& x) = 0;    //!< Resurrect from dumped state
+        // Pointer-based comparison -- throw not supported error by default
+        bool                lessThan(const RbObject* o) const;                        //!< Less than
 
-    private:
-	    bool    value;              //!< Value member
+        // Pointer-based arithmetic -- throw not supported error by default
+        RbObject*           add(const RbObject* o) const;                             //!< Addition
+        RbObject*           subtract(const RbObject* o) const;                        //!< Subtraction
+        RbObject*           multiply(const RbObject* o) const;                        //!< Multiplication
+        RbObject*           divide(const RbObject* o) const;                          //!< Division
+        RbObject*           raiseTo(const RbObject* o) const;
+        
+
+    // implemented abstract/virtual functions from base classes
+	void       dump(std::ostream& c);                              //!< Dump to ostream c
+	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+
+	// memeber functions
+	void       setValue(bool v);
+	bool        getValue(void) const;
+
+private:
+	bool        value;      //!< value member
 };
 
 #endif

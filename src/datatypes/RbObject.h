@@ -27,6 +27,8 @@ class StringVector;
 class RbObject {
 
     public:
+        static const StringVector   rbClass;            //!< Static class attribute
+
         virtual ~RbObject(void) { }                                                           //! Virtual destructor because of virtual functions
 
         // Basic utility functions
@@ -34,7 +36,7 @@ class RbObject {
         virtual RbObject*           clone(void) const = 0;                                    //!< Clone object
         virtual bool                equals(const RbObject* o) const = 0;                      //!< Equals comparison
         virtual const StringVector& getClass(void) const=0;                                   //!< Get class
-        virtual bool                isType(const std::string t) const = 0;                    //!< Is the object of type t?
+        bool                        isType(const std::string t) const;                        //!< Is the object of type t?
         virtual void                print(std::ostream& o) const = 0;                         //!< Print complete object info
         virtual void                printValue(std::ostream& o) const = 0;                    //!< Print value (for user)
         virtual std::string         toString(void) const = 0;                                 //!< General info on object

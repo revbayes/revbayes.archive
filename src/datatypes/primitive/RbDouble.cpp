@@ -18,13 +18,15 @@
 
 
 #include <iostream>
+#include <string>
 
 #include "RbBool.h"
 #include "RbDouble.h"
 #include "RbInt.h"
+#include "StringVector.h"
 
 
-static StringVector RbDouble::rbClass = StringVector("double") + RbObject::rbClass;
+const StringVector RbDouble::rbClass = StringVector("double") + RbObject::rbClass;
 
 
 /**
@@ -36,9 +38,12 @@ static StringVector RbDouble::rbClass = StringVector("double") + RbObject::rbCla
  *
  */
 RbDouble::RbDouble(const double v)
-    : RbObject(), value(v) {
+    : RbPrimitive(), value(v) {
 }
 
+RbDouble::RbDouble(const RbDouble& v) : RbPrimitive(), value(v.value) {
+
+}
 
 /**
  * @brief Conversion
@@ -63,6 +68,27 @@ RbObject* RbDouble::convertTo(const std::string& type) const {
     return NULL;
 }
 
+/**
+ * @brief is convertible to
+ *
+ * This function checks if this data type can be converted into the given data type.
+ *
+ * @param dt         the data type we want to convert to
+ * @returns          true, if it can be converted
+ *
+ */
+bool RbDouble::isConvertibleTo(const std::string& type) const {
+
+    if (type == "bool") {
+        return true;
+    } else if (type == "int") {
+        return true;
+    } else if (type == "char") {
+        return true;
+    }
+
+    return false;
+}
 
 /**
  * @brief Pointer-based equal comparison
@@ -100,7 +126,10 @@ bool RbDouble::equals(const RbObject* obj) const {
  */
 std::string RbDouble::toString(void) const {
 
-    return "Value = " + value;
+	char temp[30];
+	sprintf(temp, "%1.6lf", value);
+	std::string tempStr = temp;
+    return "Value = " + tempStr;
 }
 
 /**
@@ -113,10 +142,8 @@ std::string RbDouble::toString(void) const {
  */
 void RbDouble::print(std::ostream &o) const {
 
-	RbObject::print(o);
     o << "Value = " << value << std::endl;
 }
-
 
 /**
  * @brief Prdouble value

@@ -5,11 +5,11 @@
 #include "RbDouble.h"
 #include "RbObject.h"
 #include "RbException.h"
+#include <assert.h>
 
 int main(int argc, char **argv) {
 	// create a RbDouble object
 	RbInt i(0);
-	i.setName("testInt");
 
 	//print
 	std::cout << "print int" << '\n';
@@ -27,21 +27,20 @@ int main(int argc, char **argv) {
 	// check the return type
 	assert (typeid(*cp) == typeid(RbInt));
 	// check if they are actually equal
-	assert (i == (*cp));
+	assert (i.equals(cp));
 	// check that they are different instances
 	assert (&i != cp);
 
 	// change the value
 	i.setValue(42);
 	// check if they are still equal
-	assert (!(i == *cp));
+	assert (!(i.equals(cp)));
 
 
 	RbDouble d(42);
-	d.setName("testDouble");
 	//should be possible to compare these two
 	assert (!(typeid(d) == typeid(RbInt)));
-	assert (i == d);
+	assert (i.equals(&d));
 	d.print(std::cout);
 
 	RbInt a(2);
@@ -49,17 +48,6 @@ int main(int argc, char **argv) {
 	RbInt c(5);
 	RbInt r = a + b;
 	assert(c == r);
-	try {
-		RbDataType& ra = a;
-		RbDataType& rb = b;
-		RbDataType& rc = ra + rb;
-
-		RbDataType& err = ra + d;
-
-	} catch(RbException& e){
-		std::cout << '\n' << "caught exception" << '\n';
-		e.print(std::cout);
-	}
 
 	std::cout << '\n' << "done" << '\n';
 }

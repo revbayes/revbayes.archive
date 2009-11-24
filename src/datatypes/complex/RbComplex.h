@@ -22,17 +22,17 @@
 #include <ostream>
 #include <map>
 
+#include "RbFunction.h"
 #include "RbObject.h"
 
-/* Forward declarations */
-class RbFunction;
 
 class RbComplex : public RbObject {
 
     public:
+            virtual ~RbComplex();       //!< Delete member variables 
 
         // Basic utility functions
-        virtual bool                equals(const RbComplex* o) const;       //!< Equals comparison
+        //virtual bool                equals(const RbComplex* o) const;       //!< Equals comparison
 		virtual void                print(std::ostream& o) const;
 		virtual void                printValue(std::ostream& o) const;
 
@@ -41,14 +41,14 @@ class RbComplex : public RbObject {
         virtual void                deleteMember(const std::string& name); 
         virtual const RbObject*     getMember(const std::string& name) const; //!< Return member variable
         virtual const RbFunction*   getMethod(const std::string& name) const; //!< Return method (member function)
-        virtual bool                setMember(const std::string& name, RbObject* val);   //!< Set member variable
+        virtual void                setMember(const std::string& name, RbObject* val);   //!< Set member variable
+        virtual const std::map<std::string, RbFunction*>&  getMethods(void) const { return methods; }
 
     protected:
                     RbComplex();        //!< Make it impossible to create objects of this class
-            virtual ~RbComplex();       //!< Delete member variables 
 
-        std::map<const std::string, RbObject*>       members;    //!< Member variables
-        std::map<const std::string, RbFunction*>     methods;    //!< Member variables
+        std::map<std::string, RbObject*>       members;    //!< Member variables
+        std::map<std::string, RbFunction*>     methods;    //!< Member variables
 };
 
 #endif

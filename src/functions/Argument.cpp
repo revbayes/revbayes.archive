@@ -63,6 +63,13 @@ std::string Argument::briefInfo() const {
 }
 
 
+RbObject* Argument::clone() const { 
+
+	Argument* arg = new Argument(*this); 
+	return (RbObject*)arg;
+} 
+
+
 /**
  * @brief Pointer-based equal comparison
  *

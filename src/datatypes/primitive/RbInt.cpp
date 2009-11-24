@@ -22,12 +22,16 @@
 
 #include <math.h>
 
+#include "RbBool.h"
 #include "RbInt.h"
 #include "RbDouble.h"
 #include "RbPrimitive.h"
 #include "RbDumpState.h"
 #include "RbException.h"
+#include "StringVector.h"
 #include <iostream>
+
+const StringVector RbInt::rbClass = StringVector("int") + RbPrimitive::rbClass;
 
 /**
  * @brief constructor
@@ -37,8 +41,8 @@
  * @param v          initial value of the data type
  *
  */
-RbInt::RbInt(const int v) :
-    RbPrimitive(), value(v) {
+RbInt::RbInt(const int v) : RbPrimitive(), value(v) {
+    
 }
 
 /**
@@ -49,8 +53,8 @@ RbInt::RbInt(const int v) :
  * @param d          object to copy
  *
  */
-RbInt::RbInt(const RbInt& d) :
-    RbPrimitive(), value(d.value) {
+RbInt::RbInt(const RbInt& d) :  RbPrimitive(), value(d.value) {
+
 }
 
 /**
@@ -131,7 +135,8 @@ void RbInt::resurrect(const RbDumpState& x) {
  * @returns          true, if it can be converted
  *
  */
-bool RbInt::isConvertible(const std::string& dt) const {
+bool RbInt::isConvertibleTo(const std::string& type) const {
+
     if (type == "bool") {
         return true;
     } else if (type == "double") {
@@ -152,15 +157,20 @@ bool RbInt::isConvertible(const std::string& dt) const {
  * @returns          a new instance of the given data type with the same value as before, NULL if we cannot convert
  *
  */
-RbObject* RbInt::convertTo(const std::string& dt) const {
-    if (type == "bool") {
-        return new RbBool(value == 0);
-    } else if (type == "double") {
-        return new RbDouble(value);
-    }
+RbObject* RbInt::convertTo(const std::string& type) const {
 
-    return NULL;
-
+	RbObject* retObj = NULL;
+    if (type == "bool") 
+    	{
+        RbBool* temp = new RbBool(value == 0);
+        retObj = (RbObject*)temp;
+    	} 
+    else if (type == "double") 
+    	{
+        RbDouble* temp = new RbDouble(value);
+        retObj = (RbObject*)temp;
+   	 	}
+    return retObj;
 }
 
 /**
@@ -171,7 +181,7 @@ RbObject* RbInt::convertTo(const std::string& dt) const {
  * @param o           the object to compare to
  *
  */
-bool RbInt::equals(const RbObject* o) const {
+bool RbInt::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
     const RbInt* x = dynamic_cast<const RbInt*>(obj);
@@ -199,7 +209,7 @@ bool RbInt::equals(const RbObject* o) const {
  *
  */
 bool RbInt::equals(const RbInt* o) const {
-    return value == o.getValue();
+    return value == o->getValue();
 }
 
 /**
@@ -214,8 +224,13 @@ RbObject* RbInt::add(const RbObject* o) const {
 
     if (o->getClass()[0] == "int") {
         // we are from the same type, which is perfect :)
-        return new RbInt(value + (int)o);
-    } else {
+        return new RbInt(value + ((RbInt*)(o))->getValue());
+  	  } 
+    else if (o->getClass()[0] == "double") 
+    	{
+        return new RbDouble(value + ((RbDouble*)(o))->getValue());
+    	}
+    else {
         std::string message = "Addition of " + getClass()[0] + " and " + o->getClass()[0]
                 + " is not supported.";
         RbException e;
@@ -239,8 +254,13 @@ RbObject* RbInt::subtract(const RbObject* o) const {
 
     if (o->getClass()[0] == "int") {
         // we are from the same type, which is perfect :)
-        return new RbInt(value - (int)o);
-    } else {
+        return new RbInt(value - ((RbInt*)(o))->getValue());
+    } 
+    else if (o->getClass()[0] == "double") 
+    	{
+        return new RbDouble(value - ((RbDouble*)(o))->getValue());
+    	}
+    else {
         std::string message = "Subtraction of " + getClass()[0] + " and " + o->getClass()[0]
                 + " is not supported.";
         RbException e;
@@ -264,8 +284,13 @@ RbObject* RbInt::multiply(const RbObject* o) const {
 
     if (o->getClass()[0] == "int") {
         // we are from the same type, which is perfect :)
-        return new RbInt(value * (int)o);
-    } else {
+        return new RbInt(value * ((RbInt*)(o))->getValue());
+    } 
+    else if (o->getClass()[0] == "double") 
+    	{
+        return new RbDouble(value * ((RbDouble*)(o))->getValue());
+    	}
+    else {
         std::string message = "Multiplication of " + getClass()[0] + " and " + o->getClass()[0]
                 + " is not supported.";
         RbException e;
@@ -287,19 +312,48 @@ RbObject* RbInt::multiply(const RbObject* o) const {
  */
 RbObject* RbInt::divide(const RbObject* o) const {
 
-    if (o->getClass()[0] == "int") {
-        // we are from the same type, which is perfect :)
-        return new RbInt(value / (int)o);
-    } else {
-        std::string message = "Division of " + getClass()[0] + " and " + o->getClass()[0]
-                + " is not supported.";
-        RbException e;
-        e.setMessage(message);
-        throw e;
-    }
+	if (o->getClass()[0] == "int") 
+		{
+		// we are from the same type, which is perfect :)
+		if ( ((RbInt*)(o))->getValue() == 0 )
+			{
+			throw RbException("Divide by zero");
+			}
+		return new RbInt(value / ((RbInt*)(o))->getValue());
+		} 
+	else if (o->getClass()[0] == "double") 
+		{
+		if ( ((RbDouble*)(o))->getValue() == 0.0 )
+			{
+			throw RbException("Divide by zero");
+			}
+		return new RbDouble(value / ((RbDouble*)(o))->getValue());
+		}
+	else 
+		{
+		std::string message = "Division of " + getClass()[0] + " and " + o->getClass()[0] + " is not supported.";
+		RbException e;
+		e.setMessage(message);
+		throw e;
+		}
+	// fake return
+	return new RbInt(0);
+}
 
-    // fake return
-    return new RbInt(0);
+bool RbInt::lessThan(const RbObject* o) const {
+
+	if (o->getClass()[0] == "int") 
+		{
+		// we are from the same type, which is perfect :)
+		if ( ((RbInt*)(o))->getValue() < value )
+			return true;
+		} 
+	else if (o->getClass()[0] == "double") 
+		{
+		if ( ((RbDouble*)(o))->getValue() < (double)value )
+			return true;
+		}
+	return false;
 }
 
 /**
@@ -312,10 +366,17 @@ RbObject* RbInt::divide(const RbObject* o) const {
  */
 RbObject* RbInt::raiseTo(const RbObject* o) const {
 
-    if (o->getClass()[0] == "int") {
+    if (o->getClass()[0] == "int") 
+    	{
         // we are from the same type, which is perfect :)
-        return new RbInt(pow(value, (int)o));
-    } else {
+        return new RbDouble(pow( (double)value, (double)((RbInt*)(o))->getValue() ));
+    	} 
+    else if (o->getClass()[0] == "double") 
+    	{
+        return new RbDouble(pow( (double)value, (double)((RbDouble*)(o))->getValue() ));
+    	}
+    else 
+    	{
         std::string message = "Raise to of " + getClass()[0] + " and " + o->getClass()[0]
                 + " is not supported.";
         RbException e;
@@ -328,18 +389,6 @@ RbObject* RbInt::raiseTo(const RbObject* o) const {
 }
 
 /**
- * @brief setter for value
- *
- * This function set the value to d
- *
- * @param d           the new value
- *
- */
-void RbInt::setValue(int v) {
-    value = v;
-}
-
-/**
  * @brief getter for value
  *
  * This function get the value of this object
@@ -347,6 +396,28 @@ void RbInt::setValue(int v) {
  * @return           the value
  *
  */
-int RbInt::operator int() const {
+RbInt::operator int() const {
+
     return value;
+}
+
+/**
+ * @brief Prdouble value
+ *
+ * Prints value for user.
+ *
+ * @param o     The stream for printing
+ *
+ */
+void RbInt::printValue(std::ostream &o) const {
+
+    o << value << std::endl;
+}
+
+std::string RbInt::toString(void) const {
+
+	char temp[50];
+	sprintf(temp, "%d", value);
+	std::string tempStr = temp;
+	return temp;
 }

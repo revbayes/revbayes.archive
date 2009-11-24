@@ -36,7 +36,7 @@ class Argument : public RbObject {
 
         // Basic utility functions
         virtual std::string         briefInfo() const;                          //!< Brief info about object
-        virtual Argument*           clone() const { return new Argument(*this); }   //!< Clone object
+                RbObject*           clone() const;                              //!< Clone object
         virtual bool                equals(const RbObject* obj) const;          //!< Equals comparison
         virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
         virtual void                print(std::ostream& o) const;               //!< Print complete object info

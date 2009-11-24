@@ -27,8 +27,9 @@
 
 #include "Argument.h"
 #include "ArgumentRule.h"
-#include "DAGNode.h"
 #include "RbObject.h"
+
+class DAGNode;
 
 
 /**
@@ -56,6 +57,7 @@ class RbFunction :  public RbObject {
     public:
 
         // Regular functions
+        virtual                     ~RbFunction(void) {}
         std::vector<ArgumentRule>   getArgumentRules() const { return argRules; }   //!< Get argument rules
         std::string                 getReturnType() const { return returnType; }    //!< Get return type
         std::vector<DAGNode*>       processArguments(const std::vector<Argument>& args);    //!< Process args
