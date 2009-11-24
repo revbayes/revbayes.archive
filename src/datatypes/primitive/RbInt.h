@@ -32,7 +32,7 @@ class RbInt : public RbPrimitive {
 
             RbInt(const int v);                         //!< Constructor from int
             RbInt(const RbInt& d);
-            virtual ~RbInt(void);
+            ~RbInt(void);
 
         static const StringVector   rbClass;            //!< Static class attribute
 

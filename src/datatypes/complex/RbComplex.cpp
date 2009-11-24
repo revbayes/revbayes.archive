@@ -28,6 +28,8 @@
 
 
 
+const StringVector RbComplex::rbClass = StringVector("Complex") + RbObject::rbClass;
+
 /**
  * @brief Constructor
  *
@@ -36,7 +38,7 @@
  * function table.
  *
  */
-RbComplex::RbComplex() {
+RbComplex::RbComplex() : RbObject() {
 
 }
 

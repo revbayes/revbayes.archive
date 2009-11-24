@@ -29,6 +29,8 @@
 class RbComplex : public RbObject {
 
     public:
+        static const StringVector   rbClass;            //!< Static class attribute
+
             virtual ~RbComplex();       //!< Delete member variables 
 
         // Basic utility functions
