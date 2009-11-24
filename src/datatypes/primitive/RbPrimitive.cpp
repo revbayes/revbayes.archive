@@ -1,0 +1,1 @@
+#include "RbPrimitive.h"#include "StringVector.h"const StringVector RbPrimitive::rbClass = StringVector("Primitive") + RbObject::rbClass;
