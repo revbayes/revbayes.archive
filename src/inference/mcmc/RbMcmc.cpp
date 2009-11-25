@@ -134,5 +134,4 @@ void RbMcmc::reject(DAGNode* d) {
 	d->reject();
 }
 
-xxx
 

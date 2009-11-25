@@ -51,7 +51,7 @@ class RbComplex : public RbObject {
                     RbComplex();        //!< Make it impossible to create objects of this class
 
         std::map<std::string, RbObject*>       members;    //!< Member variables
-        std::map<std::string, RbFunction*>     methods;    //!< Member variables
+        std::map<std::string, RbFunction*>     methods;    //!< Member functions
 };
 
 #endif

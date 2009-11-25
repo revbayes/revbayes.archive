@@ -28,6 +28,9 @@ public:
     void                dump(std::ostream& c);                              //!< Dump to ostream c
 	void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
 
+    // overloaded operators
+    RbObject&           operator=(const RbObject& o);
+    RbException&        operator=(const RbException& ar);
 
 	// member functions
 	void setMessage(std::string m);                       // setter for message of the exception

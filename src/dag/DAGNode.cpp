@@ -158,6 +158,9 @@ bool DAGNode::equals(const RbObject* obj) const {
     return true;
 }
 
+RbMove* DAGNode::getNextMove(void) {
+    return moves->getNext();
+}
 
 /**
  * @brief Print DAG node
@@ -245,10 +248,11 @@ void DAGNode::printParents(std::ostream& o) const {
 
 
 void DAGNode::reject() {
-	*storedValue = *value;
+    // restore old state
+    restore();
 	
 	// call accept for the move
-	lastMove->accept();
+	lastMove->reject();
 }
 
 /**
@@ -303,6 +307,9 @@ void DAGNode::setValue(RbObject* val) {
     value = val;
 }
 
+void DAGNode::store(void) {
+    *storedValue = *value;
+}
 
 /**
  * @brief Thouch affected nodes

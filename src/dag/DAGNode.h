@@ -61,7 +61,7 @@ class RbMove;
  * DAGNode objects. Syntax elements produced by the parser are also converted to
  * unnamed DAGNode objects when representing dynamically evaluated expressions.
  */
-class DAGNode : public RbObject {
+class DAGNode : public RbComplex {
 
     public:
         static const StringVector   rbClass;            //!< Static class attribute
@@ -74,9 +74,9 @@ class DAGNode : public RbObject {
         virtual RbObject*    		clone() const;                                      //!< Clone this node
         virtual bool        		equals(const RbObject *obj) const;                  //!< Compare DAG nodes
 	    std::set<DAGNode*>& 		getChildrenNodes(void) { return children; }         //!< Get children nodes
-	    double						getLikelihoodRatio();
+	    virtual double				getLikelihoodRatio() = 0;
 	    std::set<DAGNode*>& 		getParentNodes(void) { return parents; }            //!< Get parent nodes
-	    double						getPriorRatio();
+	    virtual double				getPriorRatio() = 0;
         RbObject*           		getStoredValue() { return storedValue; }            //!< Get stored value
         RbObject*           		getValue() { return value; }                        //!< Get value
 	    bool                		isChanged(void) const { return changed; }   //!< Has the node recalculated its value?
@@ -92,6 +92,7 @@ class DAGNode : public RbObject {
         void                		restore();                              //!< Restore node to previous value
         void                		restoreAffected();                      //!< Restore affected nodes recursively
         void                		setValue(RbObject* val);                //!< Set the value of the node
+        void                        store();
         void                		touch() { touched = true; }             //!< Mark node for recalculation
         void                		touchAffected();                        //!< Mark affected nodes recursively
         void                       	printValue(std::ostream& o) const;              //!< Print value (for user)
@@ -104,6 +105,8 @@ class DAGNode : public RbObject {
             						DAGNode(RbObject* val);     //!< Constructor from value
             						DAGNode(const DAGNode& d);  //!< Copy constructor
 
+        RbMove*                     getNextMove();
+
 	    RbObject*           		storedValue;    //!< Holds the previous value
         RbObject*           		value;          //!< Holds the current value
 	
@@ -112,7 +115,7 @@ class DAGNode : public RbObject {
 
 	    std::set<DAGNode*>  		children;       //!< Set of children nodes
 	    std::set<DAGNode*>  		parents;        //!< Set of parent nodes
-	    std::set<RbMove*>   		moves;
+	    RbMoveSchedule*       		moves;
 	    std::set<RbMonitor*> 		monitors;
 	    
 	    RbMove*						lastMove;

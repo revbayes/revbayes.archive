@@ -32,6 +32,37 @@ StringVector::StringVector(std::vector<std::string> &v) {
     value = v;
 }
 
+RbObject& StringVector::operator=(const RbObject& o) {
+
+    // Use built-in fast down-casting first
+    const StringVector x = dynamic_cast<const StringVector> (obj);
+    if (x != NULL) {
+        StringVector& sv = x;
+        return sv;
+    }
+
+    // Try converting the value to an argumentRule
+    x = dynamic_cast<const StringVector> (obj->convertTo("StringVector"));
+    if (x != NULL) {
+        StringVector& sv = x;
+        delete x;
+
+        return sv;
+    }
+
+    RbException e("Not supported assignment of " + o.getClass()[0]
+            + " to StringVector");
+    throw e;
+
+    return (*this);
+}
+
+StringVector& StringVector::operator=(const StringVector& sv) {
+
+    value = v;
+    return (*this);
+}
+
 StringVector& StringVector::operator+(const StringVector& sv) const {
 
 	std::vector<std::string> tempVec;

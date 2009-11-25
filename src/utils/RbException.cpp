@@ -123,6 +123,37 @@ std::string RbException::getMessage(void){
 	return message;
 }
 
+RbObject& RbException::operator=(const RbObject& o) {
+
+    // Use built-in fast down-casting first
+    const RbException x = dynamic_cast<const RbException> (obj);
+    if (x != NULL) {
+        RbException& ar = x;
+        return ar;
+    }
+
+    // Try converting the value to an argumentRule
+    x = dynamic_cast<const RbException> (obj->convertTo("exception"));
+    if (x != NULL) {
+        RbException& ar = x;
+        delete x;
+
+        return ar;
+    }
+
+    RbException e("Not supported assignment of " + o.getClass()[0]
+            + " to Exception");
+    throw e;
+
+    return (*this);
+}
+
+RbException& RbException::operator=(const RbException& e) {
+
+    message = e.message;
+    return (*this);
+}
+
 void RbException::printValue(std::ostream& o) const {
 
 	o << message << std::endl;

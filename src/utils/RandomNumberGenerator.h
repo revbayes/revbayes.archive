@@ -1,6 +1,7 @@
 #ifndef RandomNumberGenerator_H
 #define RandomNumberGenerator_H
 
+#include <string>
 #include "RbObject.h"
 
 class RandomNumberGenerator : public RbComplex {
@@ -9,7 +10,7 @@ class RandomNumberGenerator : public RbComplex {
         static const StringVector   rbClass;            //!< Static class attribute
 
         RandomNumberGenerator(int s);
-        RandomNumberGenerator(std::string n, int s)
+        RandomNumberGenerator(std::string n, int s);
         RandomNumberGenerator(const RandomNumberGenerator& m);
         virtual ~RandomNumberGenerator();
 

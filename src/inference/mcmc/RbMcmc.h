@@ -27,14 +27,14 @@ class RbMcmc : public RbComplex {
         std::string                toString(void) const;                           //!< General info on object
         
     private:
-        DAGNode* getDagToChange();
-        double getPriorRatio(DAGNode* d);
-        double update(DAGNode* d);
-        double getLikelihoodRatio(DAGNode* d);
-        void accept(DAGNode* d);
-        void reject(DAGNode* d);
-   	    RbModel* modelPtr;
-   	    xxx
+        DAGNode*                    getDagToChange();
+        double                      getPriorRatio(DAGNode* d);
+        double                      update(DAGNode* d);
+        double                      getLikelihoodRatio(DAGNode* d);
+        void                        accept(DAGNode* d);
+        void                        reject(DAGNode* d);
+
+   	    RbModel*                    modelPtr;
    	 
 };
 

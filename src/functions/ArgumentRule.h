@@ -44,6 +44,10 @@ class ArgumentRule : public RbObject {
         const RbObject*             getMinValue(void) { return minValue; }
         const RbObject*             getMaxValue(void) { return maxValue; }
 
+        // overloaded operators
+        RbObject&           operator=(const RbObject& o);
+        ArgumentRule&       operator=(const ArgumentRule& ar);
+
         // Regular functions
         std::string         getLabel() const { return label; }                  //!< Get label of argument
         std::string         getType() const { return type; }                    //!< Get type of argument

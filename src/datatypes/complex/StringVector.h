@@ -29,6 +29,10 @@ public:
     void                       printValue(std::ostream& o) const;              //!< Print value (for user)
     std::string                toString(void) const;                           //!< General info on object
     bool                       isType(std::string t) const { return rbClass[0] == t; }
+
+    // overloaded operators
+    RbObject&                  operator=(const RbObject& o);
+    StringVector&              operator=(const StringVector& o);
     StringVector&              operator+(const StringVector& sv) const; 
 
 	std::string operator[](int i) const { return value[i]; }

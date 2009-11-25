@@ -1,17 +1,17 @@
 /*
- * MCMC.cpp
+ * RbMoveSchedule.cpp
  *
  *  Created on: 25 nov 2009
  *      Author: Sebastian
  */
 
-#include "MCMC.h"
+#include "RbMoveSchedule.h"
 
-MCMC::MCMC() {
+RbMoveSchedule::RbMoveSchedule() {
     // TODO Auto-generated constructor stub
 
 }
 
-MCMC::~MCMC() {
+RbMoveSchedule::~RbMoveSchedule() {
     // TODO Auto-generated destructor stub
 }
