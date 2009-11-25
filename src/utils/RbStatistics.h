@@ -52,10 +52,10 @@ namespace RbStatistics {
 #pragma mark Exponential Distribution
 
 	namespace Exponential {
-	inline double pdf(double lambda, double x);                                       /*!< Exponential(lambda) probability density */
-	inline double lnPdf(double lambda, double x);                                     /*!< Exponential(lambda) log_e probability density */
-	inline double cdf(double lambda, double x);                                       /*!< Exponential(lambda) cumulative probability */
-	inline double quantile(double lambda, double p);                                  /*!< Exponential(lambda) quantile */
+	double pdf(double lambda, double x);                                             /*!< Exponential(lambda) probability density */
+	double lnPdf(double lambda, double x);                                           /*!< Exponential(lambda) log_e probability density */
+	double cdf(double lambda, double x);                                             /*!< Exponential(lambda) cumulative probability */
+	double quantile(double lambda, double p);                                        /*!< Exponential(lambda) quantile */
 	}
 
 #pragma mark Gamma Distribution
@@ -64,25 +64,25 @@ namespace RbStatistics {
 	double        pdf(double a, double b, double x);                                  /*!< Gamma(a,b) probability density */
 	double        lnPdf(double a, double b, double x);                                /*!< Log of the Gamma(a,b) probability density */  
 	double        cdf(double a, double b, double x);                                  /*!< Gamma(a,b) cumulative probability */
-	inline double quantile(double a, double b, double p);                             /*!< Gamma(a,b) quantile */
+	double quantile(double a, double b, double p);                             /*!< Gamma(a,b) quantile */
 	}
 
 #pragma mark LogNormal Distribution
 
 	namespace LogNormal {
-	inline double pdf(double mu, double sigma, double x);                             /*!< LogNormal(mu,sigma) probability density */
-	inline double lnPdf(double mu, double sigma, double x);                           /*!< Log of the LogNormal(mu,sigma) probability density */
-	inline double cdf(double mu, double sigma, double x);                             /*!< LogNormal(mu,sigma) cumulative probability */
+	double pdf(double mu, double sigma, double x);                             /*!< LogNormal(mu,sigma) probability density */
+	double lnPdf(double mu, double sigma, double x);                           /*!< Log of the LogNormal(mu,sigma) probability density */
+	double cdf(double mu, double sigma, double x);                             /*!< LogNormal(mu,sigma) cumulative probability */
 	double        quantile(double mu, double sigma, double p);                        /*!< LogNormal(mu,sigma) quantile */
 	}
 
 #pragma mark Poisson Distribution
 
 	namespace Poisson {
-	inline double pdf(double lambda, int x);                                          /*!< Poisson(lambda) probability */
-	inline double lnPdf(double lambda, int x);                                        /*!< Log of the Poisson(lambda) probability */
+	double pdf(double lambda, int x);                                          /*!< Poisson(lambda) probability */
+	double lnPdf(double lambda, int x);                                        /*!< Log of the Poisson(lambda) probability */
 	double        cdf(double lambda, int x);                                          /*!< Poisson(lambda) cumulative probability */
-	inline double quantile(double lambda, double p);                                  /*!< Poisson(lambda) quantile */
+	double quantile(double lambda, double p);                                  /*!< Poisson(lambda) quantile */
 	}
 
 #pragma mark Normal Distribution
@@ -98,17 +98,17 @@ namespace RbStatistics {
 #pragma mark Uniform(0,1) Distribution
 
 	namespace Uniform01 {
-	inline double pdf(void);                                                          /*!< Uniform(0,1) probability density */
-	inline double lnPdf(void);                                                        /*!< Log of the Uniform(0,1) probability density */
+	double pdf(void);                                                          /*!< Uniform(0,1) probability density */
+	double lnPdf(void);                                                        /*!< Log of the Uniform(0,1) probability density */
 	double        cdf(double x);                                                      /*!< Uniform(0,1) cumulative probability */
 	inline double quantile(double p);                                                 /*!< Uniform(0,1) quantile */
 	}
 	
 	namespace Uniform {
-	inline double pdf(double a, double b);                                            /*!< Uniform(a,b) probability density */
-	inline double lnPdf(double a, double b);                                          /*!< Log of the Uniform(a,b) probability density */
-	inline double cdf(double a, double b, double x);                                  /*!< Uniform(a,b) cumulative probability */
-	inline double quantile(double a, double b, double p);                             /*!< Uniform(a,b) quantile */
+	double pdf(double a, double b);                                            /*!< Uniform(a,b) probability density */
+	double lnPdf(double a, double b);                                          /*!< Log of the Uniform(a,b) probability density */
+	double cdf(double a, double b, double x);                                  /*!< Uniform(a,b) cumulative probability */
+	double quantile(double a, double b, double p);                             /*!< Uniform(a,b) quantile */
 	}
 }
 

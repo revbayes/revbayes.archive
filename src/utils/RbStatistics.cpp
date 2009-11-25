@@ -354,7 +354,7 @@ double RbStatistics::Dirichlet::lnPdf(const std::vector<double> &a, const std::v
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Exponential::pdf(double lambda, double x) {
+double RbStatistics::Exponential::pdf(double lambda, double x) {
 
 	return lambda * exp(-lambda * x);
 }
@@ -369,7 +369,7 @@ inline double RbStatistics::Exponential::pdf(double lambda, double x) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Exponential::lnPdf(double lambda, double x) {
+double RbStatistics::Exponential::lnPdf(double lambda, double x) {
 
 	return (std::log(lambda) - lambda * x);
 }
@@ -384,7 +384,7 @@ inline double RbStatistics::Exponential::lnPdf(double lambda, double x) {
  * \return Returns the cumulative probability.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Exponential::cdf(double lambda, double x) {
+double RbStatistics::Exponential::cdf(double lambda, double x) {
 
 	return 1.0 - exp(-lambda * x);
 }
@@ -399,7 +399,7 @@ inline double RbStatistics::Exponential::cdf(double lambda, double x) {
  * \return Returns the quantile.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Exponential::quantile(double lambda, double p) {
+double RbStatistics::Exponential::quantile(double lambda, double p) {
 
 	return -(1.0 / lambda) * std::log(1.0 - p);
 }
@@ -465,7 +465,7 @@ double RbStatistics::Gamma::cdf(double a, double b, double x) {
  * \return Returns the quantile.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Gamma::quantile(double a, double b, double p) {
+double RbStatistics::Gamma::quantile(double a, double b, double p) {
 
 	return ChiSquare::quantile(p, 2.0 * a) / (2.0*b);
 }
@@ -493,7 +493,7 @@ inline double RbStatistics::Gamma::quantile(double a, double b, double p) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::LogNormal::pdf(double mu, double sigma, double x) {
+double RbStatistics::LogNormal::pdf(double mu, double sigma, double x) {
 
 	double pdf;
 	if ( x <= 0.0 )
@@ -519,7 +519,7 @@ inline double RbStatistics::LogNormal::pdf(double mu, double sigma, double x) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::LogNormal::lnPdf(double mu, double sigma, double x) {
+double RbStatistics::LogNormal::lnPdf(double mu, double sigma, double x) {
 
 	return ( - 0.5 * ( (std::log(x) - mu) / sigma ) * ( (std::log(x) - mu) / sigma ) ) - std::log( sigma * x * sqrt( 2.0 * PI ) );
 }
@@ -535,7 +535,7 @@ inline double RbStatistics::LogNormal::lnPdf(double mu, double sigma, double x) 
  * \return Returns the cumulative probability.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::LogNormal::cdf(double mu, double sigma, double x) {
+double RbStatistics::LogNormal::cdf(double mu, double sigma, double x) {
 
 	double cdf;
 	if ( x <= 0.0 )
@@ -568,7 +568,7 @@ double RbStatistics::LogNormal::quantile(double mu, double sigma, double p) {
 
 #pragma mark Poisson Distribution
 
-inline double RbStatistics::Poisson::pdf(double lambda, int x) {
+double RbStatistics::Poisson::pdf(double lambda, int x) {
 
 	return exp(x * std::log(lambda) - lambda - RbMath::lnFactorial(x));
 }
@@ -583,7 +583,7 @@ inline double RbStatistics::Poisson::pdf(double lambda, int x) {
  * \return Returns the natural log of the probability. 
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Poisson::lnPdf(double lambda, int x) {
+double RbStatistics::Poisson::lnPdf(double lambda, int x) {
 
 	return ( x * std::log(lambda) - lambda - RbMath::lnFactorial(x) );
 }
@@ -623,7 +623,7 @@ double RbStatistics::Poisson::cdf(double lambda, int x) {
  * \return Returns the quantile.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Poisson::quantile(double lambda, double p) {
+double RbStatistics::Poisson::quantile(double lambda, double p) {
 
 	/* Starting with x = 0, find the first value for which
 	   CDF(X-1) <= CDF <= CDF(X). */
@@ -813,7 +813,7 @@ double RbStatistics::Normal::quantile(double mu, double sigma, double p) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Uniform01::pdf(void) {
+double RbStatistics::Uniform01::pdf(void) {
 
 	return 1.0;
 }
@@ -826,7 +826,7 @@ inline double RbStatistics::Uniform01::pdf(void) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Uniform01::lnPdf(void) {
+double RbStatistics::Uniform01::lnPdf(void) {
 
 	return 0.0;
 }
@@ -859,7 +859,7 @@ double RbStatistics::Uniform01::cdf(double x) {
  * \return Returns the quantile.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Uniform01::quantile(double p) {
+double RbStatistics::Uniform01::quantile(double p) {
 
 	return p;
 }
@@ -876,7 +876,7 @@ inline double RbStatistics::Uniform01::quantile(double p) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Uniform::pdf(double a, double b) {
+double RbStatistics::Uniform::pdf(double a, double b) {
 
 	return 1.0 / (b-a);
 }
@@ -891,7 +891,7 @@ inline double RbStatistics::Uniform::pdf(double a, double b) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Uniform::lnPdf(double a, double b) {
+double RbStatistics::Uniform::lnPdf(double a, double b) {
 
 	return ( -std::log(b-a) );
 }
@@ -907,7 +907,7 @@ inline double RbStatistics::Uniform::lnPdf(double a, double b) {
  * \return Returns the cumulative probability.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Uniform::cdf(double a, double b, double x) {
+double RbStatistics::Uniform::cdf(double a, double b, double x) {
 
 	if ( x < a )
 		return 0.0;
@@ -928,7 +928,7 @@ inline double RbStatistics::Uniform::cdf(double a, double b, double x) {
  * \return Returns the quantile.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::Uniform::quantile(double a, double b, double p) {
+double RbStatistics::Uniform::quantile(double a, double b, double p) {
 
 	return a + (b - a) * p;
 }

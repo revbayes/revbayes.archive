@@ -19,9 +19,9 @@
 
 
 #include "ConstantNode.h"
-
 #include <iostream>
 
+const StringVector ConstantNode::rbClass = StringVector("const_node") + DAGNode::rbClass;
 
 /**
  * @brief ConstantNode constructor from value
@@ -109,3 +109,12 @@ void ConstantNode::print(std::ostream& o) const {
     DAGNode::print(o);
 }
 
+void ConstantNode::printValue(std::ostream &o) const {
+
+    o << value->toString() << std::endl;
+}
+
+std::string ConstantNode::toString(void) const {
+
+    return value->toString();
+}

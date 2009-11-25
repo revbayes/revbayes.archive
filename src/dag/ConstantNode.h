@@ -21,12 +21,18 @@
 #define ConstantNode_H
 
 #include "DAGNode.h"
+#include "StringVector.h"
 
 class ConstantNode : public DAGNode {
 
     public:
+        static const StringVector   rbClass;            //!< Static class attribute
+
 	                ConstantNode(RbObject* val);            //!< Constructor from value
 	                ConstantNode(const ConstantNode& c);    //!< Copy constructor
+              const StringVector& getClass() const { return rbClass; }        //!< Get class
+         void                printValue(std::ostream& o) const;                    //!< Print value (for user)
+         std::string         toString(void) const;                                 //!< General info on object
 
         ConstantNode*   clone() const;                      //!< Clone this object
         bool            equals(const RbObject* obj) const;  //!< Object comparison

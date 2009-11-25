@@ -22,6 +22,7 @@
 
 #include <iostream>
 
+const StringVector DAGNode::rbClass = StringVector("dag_node") + RbObject::rbClass;
 
 /**
  * @brief DAGNode default constructor
@@ -64,10 +65,10 @@ DAGNode::DAGNode(const DAGNode &d)
         children(), parents() {
 
     for (std::set<DAGNode*>::iterator i=d.children.begin(); i!=d.children.end(); i++)
-            children.insert((*i)->clone());
+            children.insert((DAGNode*)(*i)->clone());
 
     for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
-            parents.insert((*i)->clone());
+            parents.insert((DAGNode*)(*i)->clone());
 }
 
 
@@ -92,9 +93,9 @@ DAGNode::~DAGNode(void) {
  * This is the clone function for DAGNode objects.
  *
  */
-DAGNode* DAGNode::clone(void) const {
+RbObject* DAGNode::clone(void) const {
 
-	return (new DAGNode(*this));
+	return (RbObject*)(new DAGNode(*this));
 }
 
 
@@ -304,3 +305,21 @@ void DAGNode::touchAffected() {
             (*i)->touchAffected();
     }
 }
+
+std::string DAGNode::toString(void) const {
+
+    return "Value = " + value->toString();
+}
+/**
+ * @brief Prdouble value
+ *
+ * Prints value for user.
+ *
+ * @param o     The stream for printing
+ *
+ */
+void DAGNode::printValue(std::ostream &o) const {
+
+    o << value->toString() << std::endl;
+}
+

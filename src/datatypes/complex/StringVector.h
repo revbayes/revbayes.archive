@@ -1,6 +1,7 @@
 #ifndef StringVector_H
 #define StringVector_H
 
+#include <iostream>
 #include <string>
 #include <vector>
 

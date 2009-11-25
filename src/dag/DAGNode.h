@@ -21,6 +21,7 @@
 #define DAGNode_H
 
 #include "RbObject.h"
+#include "StringVector.h"
 
 #include <set>
 
@@ -60,10 +61,13 @@
 class DAGNode : public RbObject {
 
     public:
+        static const StringVector   rbClass;            //!< Static class attribute
+
 	        virtual ~DAGNode(void);     //!< Destructor
 
+        virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
 	    void                addChildNode(DAGNode* c) { children.insert(c); }    //!< Add child node
-        virtual DAGNode*    clone() const;                                      //!< Clone this node
+        virtual RbObject*    clone() const;                                      //!< Clone this node
         virtual bool        equals(const RbObject *obj) const;                  //!< Compare DAG nodes
 	    std::set<DAGNode*>& getChildrenNodes(void) { return children; }         //!< Get children nodes
 	    std::set<DAGNode*>& getParentNodes(void) { return parents; }            //!< Get parent nodes
@@ -82,6 +86,8 @@ class DAGNode : public RbObject {
         void                setValue(RbObject* val);                //!< Set the value of the node
         void                touch() { touched = true; }             //!< Mark node for recalculation
         void                touchAffected();                        //!< Mark affected nodes recursively
+        void                       printValue(std::ostream& o) const;              //!< Print value (for user)
+        std::string                toString(void) const;                           //!< General info on object
 
     protected:
             // The constructors are protected because this is an abstract class.
