@@ -16,12 +16,12 @@
 
 class DAGNode;
 
-class RbModel : public RbComplex{
+class RbModel : public RbComplex {
     public:
 
         static const StringVector   rbClass;            //!< Static class attribute
 
-        RbModel(DAGNode* s);
+        RbModel(std::vector<DAGNode*>& s);
         RbModel(const RbModel& m);
         virtual ~RbModel();
 
@@ -36,7 +36,7 @@ class RbModel : public RbComplex{
         StringVector&              operator+(const StringVector& sv) const;
 
     protected:
-        DAGNode*                   sink;
+        std::vector<DAGNode*>      sinkDags;
 };
 
 #endif /* RBMODEL_H_ */

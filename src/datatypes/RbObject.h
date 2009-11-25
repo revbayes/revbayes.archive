@@ -44,6 +44,9 @@ class RbObject {
         // Type conversion
         virtual RbObject*           convertTo(const std::string& type) const { return NULL; }        //! Convert to type
         virtual bool                isConvertibleTo(const std::string& type) const { return false; } //! Is convertible to type?
+        
+        // overloaded operators
+        virtual RbObject&			operator=(RbObject& o) = 0;
 
         // Dump and resurrect
         // TODO I am commenting these out for now, they need to be implemented later -- Fredrik

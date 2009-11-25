@@ -31,15 +31,10 @@ protected:
         virtual void                accept(void) = 0;                // for statistic purposes
         virtual void                reject(void) = 0;
 
-        //
-        std::vector<DAGNode*>       processArguments(const std::vector<Argument*>& args);    //!< Process args
-
 
         int nAcceptances;
         int nTries;
         DAGNode* node;
-        std::vector<ArgumentRule>   argRules;               //!< Argument rules
-
 };
 
 #endif

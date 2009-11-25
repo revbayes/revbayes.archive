@@ -16,12 +16,12 @@
 
 class RbObject;
 
-class MoveScale : public RbMove{
+class MoveScale : public RbMove {
     public:
 
         static const StringVector   rbClass;            //!< Static class attribute
 
-        MoveScale(RbObject* s);
+        MoveScale(void);
         MoveScale(const MoveScale& m);
         virtual ~MoveScale();
 
@@ -37,7 +37,7 @@ class MoveScale : public RbMove{
 
 
     protected:
-        double         perform(void);
+        double         perform(RbObject* obj);
         void           accept(void);                // for statistic purposes
         void           reject(void);
 };

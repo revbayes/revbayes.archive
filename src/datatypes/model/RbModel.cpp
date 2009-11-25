@@ -11,14 +11,14 @@
 
 const StringVector RbModel::rbClass = StringVector("model") + RbComplex::rbClass;
 
-RbModel::RbModel(DAGNode* s) {
+RbModel::RbModel(std::vector<DAGNode*>& s) {
 
-    sink = s;
+    sinkDags = s;
 }
 
 RbModel::RbModel(const RbModel& m) {
 
-    sink = m.sink;
+    sinkDags = m.sinkDags;
 }
 
 RbModel::~RbModel() {
@@ -60,7 +60,8 @@ bool RbModel::equals(const RbObject* obj) const {
 void RbModel::print(std::ostream& o) const {
 
     o << "Model:" << std::endl;
-    sink->print(o);
+    for (int i=0; i<sinkDags.size(); i++)
+    	sink[i]->print(o);
 }
 
 RbObject* RbModel::clone(void) const {
@@ -77,6 +78,6 @@ void RbModel::printValue(std::ostream& o) const {
 std::string RbModel::toString(void) const {
 
     std::string tempStr = "Model\n";
-    tmpStr += sink->toString();
+	//tmpStr += sink->toString();
     return tempStr;
 }

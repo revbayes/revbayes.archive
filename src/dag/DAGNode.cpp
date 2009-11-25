@@ -86,6 +86,12 @@ DAGNode::~DAGNode(void) {
 		delete storedValue;
 }
 
+void DAGNode::accept() {
+	*storedValue = *value;
+	
+	// call accept for the move
+	lastMove->accept();
+}
 
 /**
  * @brief Clone a DAGNode
@@ -237,6 +243,13 @@ void DAGNode::printParents(std::ostream& o) const {
 	o << std::endl;
 }
 
+
+void DAGNode::reject() {
+	*storedValue = *value;
+	
+	// call accept for the move
+	lastMove->accept();
+}
 
 /**
  * @brief Restore the old value
