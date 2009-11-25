@@ -55,18 +55,19 @@ class DAGNode;
 class RbFunction :  public RbObject {
 
     public:
+        static const StringVector   rbClass;            //!< Static class attribute
 
         // Regular functions
         virtual                     ~RbFunction(void) {}
         std::vector<ArgumentRule>   getArgumentRules() const { return argRules; }   //!< Get argument rules
         std::string                 getReturnType() const { return returnType; }    //!< Get return type
-        std::vector<DAGNode*>       processArguments(const std::vector<Argument>& args);    //!< Process args
-        virtual RbObject*           execute(std::vector<DAGNode*> arguments) = 0;   //!< Execute function
+        RbObject*           execute(const std::vector<Argument*>& args);   //!< Execute function
 
     protected:
-            RbFunction(const ArgumentRule** rules, const std::string& retType); //!< Basic constructor
+            RbFunction(void); //!< Basic constructor
             RbFunction(const RbFunction& fn);                                   //!< Copy constructor
-
+        std::vector<DAGNode*>       processArguments(const std::vector<Argument*>& args);    //!< Process args
+		virtual RbObject*           executeOperation(const std::vector<DAGNode*>& args)=0;
         std::vector<ArgumentRule>   argRules;               //!< Argument rules
         std::string                 returnType;             //!< Return type
 };

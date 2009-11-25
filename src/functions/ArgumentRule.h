@@ -20,29 +20,42 @@
 #define ArgumentRule_H
 
 #include <string>
+#include "RbObject.h"
 
-class ArgumentRule {
+class ArgumentRule : public RbObject {
 
     public:
+        static const StringVector   rbClass;            //!< Static class attribute
+
                     ArgumentRule(const std::string& lbl, const std::string& t);      //!< Constructor 
+                    ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv);
+                    ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv, RbObject* mnv, RbObject* mxv);
                     ArgumentRule(const ArgumentRule& a);                         //!< Copy constructor 
             virtual ~ArgumentRule() { }                                          //!< Destructor 
 
         // Basic utility functions
-        virtual std::string         briefInfo() const;                          //!< Brief info about object
-        virtual ArgumentRule*       clone() const { return new ArgumentRule(*this); } //!< Clone object
-        virtual bool                equals(const RbObject* obj) const;          //!< Equals comparison
-        virtual void                print(std::ostream& o) const;               //!< Print complete object info
-        virtual void                printValue(std::ostream& o) const;          //!< Print value (for user)
+         std::string         briefInfo() const;                          //!< Brief info about object
+         ArgumentRule*       clone() const { return new ArgumentRule(*this); } //!< Clone object
+         bool                equals(const RbObject* obj) const;          //!< Equals comparison
+         void                print(std::ostream& o) const;               //!< Print complete object info
+         void                printValue(std::ostream& o) const;          //!< Print value (for user)
+         const StringVector& getClass() const { return rbClass; }        //!< Get class
+        const RbObject*             getDefaultValue(void) { return defaultValue; }
+        const RbObject*             getMinValue(void) { return minValue; }
+        const RbObject*             getMaxValue(void) { return maxValue; }
 
         // Regular functions
         std::string         getLabel() const { return label; }                  //!< Get label of argument
         std::string         getType() const { return type; }                    //!< Get type of argument
         virtual bool        isArgValid(const RbObject* val) const;              //!< Is val a valid argument?
+        virtual std::string         toString(void) const;                                 //!< General info on object
 
     protected:
         std::string         label;          //!< Label of argument
         std::string         type;           //!< Type of argument
+        RbObject*           defaultValue; 
+        RbObject*           minValue;
+        RbObject*           maxValue;
 };
 
 #endif

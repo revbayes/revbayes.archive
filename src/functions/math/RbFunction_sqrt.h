@@ -19,12 +19,14 @@
 #define RbFunction_sqrt_H
 
 #include "ArgumentRule.h"
-#include "RbDataType.h"
 #include "RbDouble.h"
-#include "RbAbstractFunction.h"
+#include "RbFunction.h"
+#include "RbObject.h"
 #include <iostream>
 #include <string>
+#include <vector>
 
+class RbDumpState;
 
 /** This is the class for the sqrt() function, which takes a single
  *  scalar real or int.
@@ -32,29 +34,33 @@
  *  @package    functions
  *  @implements RbFunction, RbStandardFunction
  */
-class RbFunction_sqrt :  public RbAbstractFunction {
+class RbFunction_sqrt :  public RbFunction {
 
     public:
-            RbFunction_sqrt();                              //!< Default constructor, allocate workspace
+        static const StringVector   rbClass;            //!< Static class attribute
+
+            RbFunction_sqrt(void);                              //!< Default constructor, allocate workspace
             RbFunction_sqrt(const RbFunction_sqrt& s);      //!< Copy constructor
 	        ~RbFunction_sqrt();                             //!< Destructor, delete workspace
-
-#pragma mark Parser help functions
-        static const ArgumentRule   argRules[];             //!< The argument rules
 
         // implemented abstract/virtual functions from base classes
         RbObject*           clone(void) const ;                                 //!< clone this object
         void                print(std::ostream &c) const;                       //!< Print the value to ostream c
         void                dump(std::ostream& c);                              //!< Dump to ostream c
         void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-        bool                operator==(const RbObject& o) const;                //!< Comparison
-        bool                operator==(const RbFunction_sqrt& o) const;         //!< Comparison
+        bool                equals(const RbObject* o) const;                    //!< Comparison
 
-        const ArgumentRule*         getArgumentRules() const;                   //!< Get argument rules
+        const StringVector& getClass() const { return rbClass; }        //!< Get class
+        void                printValue(std::ostream& o) const;          //!< Print value (for user)
+        std::string         toString(void) const;                       //!< General info on object
+
+        // Type conversion
+        bool                isConvertibleTo(const std::string& type) const;
+        RbObject*           convertTo(const std::string& type) const;
         virtual const int           getNumberOfRules() const;                   //!< Get number of argument rules for the function
 
 #pragma mark Regular functions
-        RbDataType*                 execute();              //!< Get result
+        RbObject*                 executeOperation(const std::vector<DAGNode*>& arguments);              //!< Get result
 
     protected:
         RbDouble*                     value;              //!< Workspace for result

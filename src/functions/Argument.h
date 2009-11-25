@@ -22,25 +22,27 @@
 #include <string>
 #include <ostream>
 
-#include "DAGNode.h"
 #include "RbObject.h"
+
+class DAGNode;
 
 class Argument : public RbObject {
 
     public:
                     Argument(const std::string& lbl, DAGNode* n);       //!< Constructor 
                     Argument(const Argument& a);                        //!< Copy constructor 
-            virtual ~Argument() { delete node; }                        //!< Destructor 
+            virtual ~Argument();                        //!< Destructor 
 
         static const StringVector   rbClass;            //!< Static class attribute
 
         // Basic utility functions
-        virtual std::string         briefInfo() const;                          //!< Brief info about object
+         std::string         briefInfo() const;                          //!< Brief info about object
                 RbObject*           clone() const;                              //!< Clone object
-        virtual bool                equals(const RbObject* obj) const;          //!< Equals comparison
-        virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
-        virtual void                print(std::ostream& o) const;               //!< Print complete object info
-        virtual void                printValue(std::ostream& o) const;          //!< Print value (for user)
+         bool                equals(const RbObject* obj) const;          //!< Equals comparison
+         const StringVector& getClass() const { return rbClass; }        //!< Get class
+         void                print(std::ostream& o) const;               //!< Print complete object info
+         void                printValue(std::ostream& o) const;          //!< Print value (for user)
+         std::string         toString(void) const;                                 //!< General info on object
 
         // Regular functions
         std::string         getLabel() const { return label; }          //!< Get label of argument

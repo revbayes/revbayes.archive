@@ -18,11 +18,15 @@
 
 
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include "ArgumentRule.h"
 #include "RbException.h"
+#include "RbObject.h"
+#include "StringVector.h"
 
-//static StringVector ArgumentRule::rbClass = StringVector("argumentRule") + RbObject::rbClass;
+const StringVector ArgumentRule::rbClass = StringVector("argumentRule") + RbObject::rbClass;
 
 
 /**
@@ -34,8 +38,13 @@
  * @param v     Value of the object
  *
  */
-ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t)
-    : RbObject(), label(lbl), type(t) {
+ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t) : RbObject() {
+    
+    label        = lbl;
+    type         = t;
+    defaultValue = NULL;
+    minValue     = NULL;
+    maxValue     = NULL;
 }
 
 
@@ -47,10 +56,32 @@ ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t)
  * @param a     Argument rule to be copied
  *
  */
-ArgumentRule::ArgumentRule(const ArgumentRule& a)
-    : RbObject(), label(a.label), type(a.type) {
+ArgumentRule::ArgumentRule(const ArgumentRule& a) : RbObject() {
+    
+    label        = a.label;
+    type         = a.type;
+    defaultValue = a.defaultValue;
+    minValue     = a.minValue;
+    maxValue     = a.maxValue;
 }
 
+ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv) : RbObject() {
+
+    label        = lbl;
+    type         = t;
+    defaultValue = dv;
+    minValue     = NULL;
+    maxValue     = NULL;
+}
+
+ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv, RbObject* mnv, RbObject* mxv) : RbObject() {
+
+    label        = lbl;
+    type         = t;
+    defaultValue = dv;
+    minValue     = mnv;
+    maxValue     = mxv;
+}
 
 /**
  * @brief Brief info about the object
@@ -62,9 +93,7 @@ ArgumentRule::ArgumentRule(const ArgumentRule& a)
  */
 std::string ArgumentRule::briefInfo() const {
 
-	std::ostringstream o;
-    printValue(o);
-    return o.str();
+    return toString();
 }
 
 
@@ -84,14 +113,14 @@ bool ArgumentRule::equals(const RbObject* obj) const {
     // Use built-in fast down-casting first
 	const ArgumentRule* x = dynamic_cast<const ArgumentRule*>(obj);
     if (x != NULL)
-        return (label == x->label && getValue() == x->getValue() && getType() == x->getType());
+        return (label == x->label && getType() == x->getType());
 
     // Try converting the value to an argumentRule
     x = dynamic_cast<const ArgumentRule*>(obj->convertTo("argumentRule"));
     if (x == NULL)
         return false;
 
-    bool result = (label == x->label && getValue() == x->getValue() && getType() == x->getType());
+    bool result = (label == x->label && getType() == x->getType());
     delete x;
     return result;
 }
@@ -122,7 +151,7 @@ bool ArgumentRule::isArgValid(const RbObject* obj) const {
  */
 void ArgumentRule::print(std::ostream &o) const {
 
-	RbObject::print(o);
+	//RbObject::print(o);
     o << "Label = " << label << std::endl;
     o << "Type = " << type << std::endl;
 }
@@ -143,4 +172,8 @@ void ArgumentRule::printValue(std::ostream &o) const {
     o << type << ")" << std::endl;
 }
 
+std::string ArgumentRule::toString(void) const {
+
+    return "(" + label + "," + type + ")";
+}
 

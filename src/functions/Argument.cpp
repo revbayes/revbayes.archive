@@ -19,10 +19,12 @@
 #include <sstream>
 
 #include "Argument.h"
+#include "DAGNode.h"
+#include "StringVector.h"
 
 
 /** Initialize static class attribute */
-//const StringVector Argument::rbClass = StringVector("argument") + RbObject::rbClass;
+const StringVector Argument::rbClass = StringVector("argument") + RbObject::rbClass;
 
 
 /**
@@ -45,6 +47,11 @@ Argument::Argument(const std::string& lbl, DAGNode* n)
 Argument::Argument(const Argument& a)
     : RbObject(), label(a.label), node(a.node) {
 }
+
+Argument::~Argument() { 
+
+	delete node; 
+} 
 
 
 /**
@@ -109,7 +116,7 @@ bool Argument::equals(const RbObject* obj) const {
  */
 void Argument::print(std::ostream &o) const {
 
-    RbObject::print(o);
+    //RbObject::print(o);
     
     o << "Label = " << label << std::endl;
     o << "Node = " << node->briefInfo() << std::endl;
@@ -130,3 +137,8 @@ void Argument::printValue(std::ostream &o) const {
     o << "argument(" << label << ", " << node->briefInfo() << ")" << std::endl;
 }
 
+std::string Argument::toString(void) const {
+
+	std::string tempStr = label;
+    return tempStr;
+}

@@ -21,34 +21,28 @@
 #include "ConstantNode.h"
 #include "RbException.h"
 #include "RbFunction.h"
+#include "StringVector.h"
 
+const StringVector RbFunction::rbClass = StringVector("function") + RbObject::rbClass;
 
 /** Basic constructor */
-RbFunction::RbFunction(const ArgumentRule** rules, const std::string& retType)
-    : argRules(), returnType(retType) {
+RbFunction::RbFunction(void) {
 
-    for (int i=0; rules[0] != NULL; i++) {
-        argRules.push_back(*(rules[i]));
-    }
-
-    /* Check for duplicate labels */
-    for (std::vector<ArgumentRule>::iterator i=argRules.begin(); i!=argRules.end(); i++) {
-        for (std::vector<ArgumentRule>::iterator j=i+1; j!=argRules.end(); j++) {
-            if (i->getLabel() == j->getLabel()) {
-                std::ostringstream msg;
-                msg << "Label '" << i->getLabel() <<  "' is duplicated among argument rules";
-                throw RbException(msg.str());
-            }
-        }
-    }
 }
 
 
 /** Copy constructor */
 RbFunction::RbFunction(const RbFunction &fn)
     : argRules(fn.argRules), returnType(fn.returnType) {
+    
 }
 
+RbObject* RbFunction::execute(const std::vector<Argument*>& args) {
+
+	std::vector<DAGNode*> dags = processArguments(args);
+	RbObject* result = executeOperation(dags);
+	return result;
+}
 
 /**
  * @brief Process arguments
@@ -76,7 +70,7 @@ RbFunction::RbFunction(const RbFunction &fn)
  *     a default value, it is an error.
  *
  */
-std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>& args) {
+std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument*>& args) {
 
     /* Check that the number of provided arguments is adequate */
     if (argRules.size() < args.size()) {
@@ -93,41 +87,42 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
 
     /* Match arguments */
     int index=0;
-    for (std::vector<Argument>::const_iterator i=args.begin(); i!=args.end(); i++, index++) {
+    for (std::vector<Argument*>::const_iterator i=args.begin(); i!=args.end(); i++, index++) {
         int theArg = -1;
-        if (i->getLabel() == "") {
+        if ((*i)->getLabel() == "") {
             theArg = index;
         }
         else {
             for (theArg=0; theArg<(int)argRules.size(); theArg++) {
-                if (i->getLabel() == argRules[theArg].getLabel())
+                if ((*i)->getLabel() == argRules[theArg].getLabel())
                     break;
             }
             if (theArg == (int)argRules.size()) {
-                std::string msg = "Did not expect an argument with label '" + i->getLabel() + "'";
+                std::string msg = "Did not expect an argument with label '" + (*i)->getLabel() + "'";
                 arguments.clear();
                 throw RbException(msg);
             }
         }
         if (arguments[theArg] != NULL) {
-            std::ostringstream msg;
-            msg << "Multiple arguments fit argument rule " << index+1;
+        	char temp[100];
+        	sprintf(temp, "Multiple arguments fit argument rule %d", index+1);
+        	std::string msg = temp;
             arguments.clear();
-            throw RbException(msg.str());
+            throw RbException(msg);
         }
-        arguments[theArg] = i->getDAGNode();
+        arguments[theArg] = (*i)->getDAGNode();
     }
 
     /* Fill in default values */
     index = 0;
     for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++, index++) {
         if ((*i) == NULL) {
-            if (argRules[index].getValue() == NULL) {
+            if (argRules[index].getDefaultValue() == NULL) {
                 std::string msg = "No default value for argument label '" + argRules[index].getLabel() + "'";
                 arguments.clear();
                 throw RbException(msg);
             }
-            (*i) = new ConstantNode(argRules[index].getValue()->clone());
+            (*i) = new ConstantNode(argRules[index].getDefaultValue()->clone());
         }
     }
 

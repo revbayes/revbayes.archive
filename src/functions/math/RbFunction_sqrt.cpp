@@ -16,34 +16,34 @@
  */
 
 #include "RbFunction_sqrt.h"
-#include "SymbolTable.h"
-#include "RbDataType.h"
 #include "RbDouble.h"
 #include "RbObject.h"
 #include "DAGNode.h"
-#include "RbTypeInfo.h"
 #include "RbException.h"
 #include <cmath>
-#include <typeinfo>
 
+const StringVector RbFunction_sqrt::rbClass = StringVector("sqrt") + RbFunction::rbClass;
 
 /** Define the argument rules */
-const ArgumentRule RbFunction_sqrt::argRules[] = {
-    ArgumentRule("x", RbTypeInfo(typeid(RbDouble)), RbDouble(-1))
-};
 
 /** Add to symbol table */
-static bool fxn_sqrt = SymbolTable::globalTable().add("sqrt", new RbFunction_sqrt());
+//static bool fxn_sqrt = SymbolTable::globalTable().add("sqrt", new RbFunction_sqrt());
 
 
 /** Default constructor, allocate workspace */
-RbFunction_sqrt::RbFunction_sqrt()
-    : RbAbstractFunction(), value(new RbDouble(0)) {
+RbFunction_sqrt::RbFunction_sqrt(void)
+    : RbFunction(), value(new RbDouble(0)) {
+
+	argRules.push_back( ArgumentRule("x", "double") );
+	returnType = "double";
 } 
 
 /** Copy constructor */
 RbFunction_sqrt::RbFunction_sqrt(const RbFunction_sqrt& s)
-    : RbAbstractFunction(s), value(new RbDouble(0)) {
+    : RbFunction(s), value(new RbDouble(0)) {
+    
+	argRules.push_back( ArgumentRule("x", "double") );
+	returnType = "double";
 }
 
 /** Destructor, delete workspace */
@@ -77,11 +77,13 @@ RbObject* RbFunction_sqrt::clone(void) const {
  *
  */
 void RbFunction_sqrt::print(std::ostream &c) const {
-    c << "RbFunction_sqrt: arg=";
-    arguments[0]->print(c);
-    c << " -- result=";
-    value->print(c);
-    c << std::endl;
+
+    c << "RbFunction_sqrt" << std::endl;
+}
+
+void RbFunction_sqrt::printValue(std::ostream &o) const {
+
+    o << value << std::endl;
 }
 
 /**
@@ -119,6 +121,15 @@ void RbFunction_sqrt::resurrect(const RbDumpState& x){
     throw e;
 }
 
+std::string RbFunction_sqrt::toString(void) const {
+
+	char temp[30];
+	sprintf(temp, "%1.6lf", value->getValue());
+	std::string tempStr = temp;
+    return "Value = " + tempStr;
+}
+
+
 /**
  * @brief overloaded == operators
  *
@@ -127,41 +138,11 @@ void RbFunction_sqrt::resurrect(const RbDumpState& x){
  * @param o           the object to compare to
  *
  */
-bool RbFunction_sqrt::operator==(const RbObject& o) const {
-
-    if (typeid(RbFunction_sqrt) == typeid(o)){
-        // we are from the same type, which is perfect :)
-        RbFunction_sqrt& tmp = ((RbFunction_sqrt&)o);
-        return (*this) == tmp;
-    }
+bool RbFunction_sqrt::equals(const RbObject* o) const {
 
     return false;
 }
 
-/**
- * @brief overloaded == operators
- *
- * This function compares this object
- *
- * @param o           the object to compare to
- *
- */
-bool RbFunction_sqrt::operator==(const RbFunction_sqrt& o) const {
-    //TODO might check the arguments as well
-
-    //TODO might check the values?!?
-//    RbDataType* dt = o.execute();
-//    if ((*value) == *dt)
-//        return false;
-
-    return true;
-}
-    
-/** Get argument rules */
-const ArgumentRule* RbFunction_sqrt::getArgumentRules() const {
-
-    return argRules;
-}
 
 /** Get number of argument rules */
 const int RbFunction_sqrt::getNumberOfRules(void) const {
@@ -169,7 +150,7 @@ const int RbFunction_sqrt::getNumberOfRules(void) const {
 }
 
 /** Execute function */
-RbDataType* RbFunction_sqrt::execute(void) {
+RbObject* RbFunction_sqrt::executeOperation(const std::vector<DAGNode*>& arguments) {
 
     /* Get actual argument */
     RbDouble *arg = (RbDouble*) arguments[0]->getValue();
@@ -181,4 +162,23 @@ RbDataType* RbFunction_sqrt::execute(void) {
         value->setValue(std::sqrt(arg->getValue()));
 
     return value;
+}
+
+RbObject* RbFunction_sqrt::convertTo(const std::string& type) const {
+
+    return NULL;
+}
+
+/**
+ * @brief is convertible to
+ *
+ * This function checks if this data type can be converted into the given data type.
+ *
+ * @param dt         the data type we want to convert to
+ * @returns          true, if it can be converted
+ *
+ */
+bool RbFunction_sqrt::isConvertibleTo(const std::string& type) const {
+
+    return false;
 }
