@@ -18,6 +18,8 @@
  */
 
 #include "DAGNode.h"
+#include "RbMove.h"
+#include "RbMoveSchedule.h"
 #include "RbObject.h"
 
 #include <iostream>
@@ -90,18 +92,7 @@ void DAGNode::accept() {
 	*storedValue = *value;
 	
 	// call accept for the move
-	lastMove->accept();
-}
-
-/**
- * @brief Clone a DAGNode
- *
- * This is the clone function for DAGNode objects.
- *
- */
-RbObject* DAGNode::clone(void) const {
-
-	return (RbObject*)(new DAGNode(*this));
+	lastMove->acceptMove();
 }
 
 
@@ -156,6 +147,18 @@ bool DAGNode::equals(const RbObject* obj) const {
             return false;
 
     return true;
+}
+
+double DAGNode::getLnLikelihoodRatio(void) {
+    double lnLikelihood = 0.0;
+    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+        lnLikelihood += (*i)->getLnProbabilityRatio();
+    }
+    return lnLikelihood;
+}
+
+double DAGNode::getLnPriorRatio(void) {
+    return getLnProbabilityRatio();
 }
 
 RbMove* DAGNode::getNextMove(void) {
@@ -252,7 +255,7 @@ void DAGNode::reject() {
     restore();
 	
 	// call accept for the move
-	lastMove->reject();
+	lastMove->rejectMove();
 }
 
 /**

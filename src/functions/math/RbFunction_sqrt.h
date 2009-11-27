@@ -59,8 +59,11 @@ class RbFunction_sqrt :  public RbFunction {
         RbObject*           convertTo(const std::string& type) const;
         virtual const int           getNumberOfRules() const;                   //!< Get number of argument rules for the function
 
-#pragma mark Regular functions
         RbObject*                 executeOperation(const std::vector<DAGNode*>& arguments);              //!< Get result
+
+        // overloaded operators
+        RbObject&           operator=(const RbObject& obj);
+        RbFunction_sqrt&    operator=(const RbFunction_sqrt& obj);
 
     protected:
         RbDouble*                     value;              //!< Workspace for result

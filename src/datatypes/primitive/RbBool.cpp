@@ -21,6 +21,7 @@
 
 #include "RbBool.h"
 #include "RbDouble.h"
+#include "RbException.h"
 #include "RbInt.h"
 #include "RbPrimitive.h"
 #include "StringVector.h"
@@ -170,6 +171,39 @@ void RbBool::setValue(bool v) {
 bool RbBool::getValue(void) const {
 
 	return value;
+}
+
+RbObject& RbBool::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const RbBool& x = dynamic_cast<const RbBool&> (obj);
+
+        RbBool& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const RbBool& x = dynamic_cast<const RbBool&> (*(obj.convertTo("bool")));
+
+            RbBool& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to bool");
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+RbBool& RbBool::operator=(const RbBool& obj) {
+
+    value = obj.value;
+    return (*this);
 }
 
 /**

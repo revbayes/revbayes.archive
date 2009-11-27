@@ -40,6 +40,11 @@ class RbDouble : public RbPrimitive {
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object
 
+
+        // overloaded operators
+        RbObject&                  operator=(const RbObject& o);
+        RbDouble&                  operator=(const RbDouble& o);
+
         // Type conversion
         RbObject*                  convertTo(const std::string& type) const;       //!< Convert to type
         bool                       isConvertibleTo(const std::string& type) const; //! Is convertible to type?

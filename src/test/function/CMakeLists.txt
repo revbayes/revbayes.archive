@@ -5,6 +5,7 @@ add_executable(testSqrt ../../datatypes/RbObject.cpp ../../datatypes/complex/Str
 ../../utils/RbException.cpp ../../dag/ConstantNode.cpp ../../dag/DAGNode.cpp ../../datatypes/primitive/RbPrimitive.cpp \\
 ../../datatypes/primitive/RbDouble.cpp ../../datatypes/primitive/RbInt.cpp ../../datatypes/primitive/RbBool.cpp \\
 ../../functions/Argument.cpp ../../functions/ArgumentRule.cpp ../../functions/RbFunction.cpp \\
+../../moves/objects/RbMove.cpp ../../moves/RbMoveSchedule.cpp ../../utils/RandomNumberGenerator.cpp \\
 ../../functions/math/RbFunction_sqrt.cpp testSqrt.cpp)
 
 ### functions

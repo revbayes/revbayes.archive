@@ -20,6 +20,12 @@
 
 #include "ConstantNode.h"
 #include <iostream>
+#include "DAGNode.h"
+#include <string>
+#include <set>
+#include "RbException.h"
+#include "RbMove.h"
+#include "RbMoveSchedule.h"
 
 const StringVector ConstantNode::rbClass = StringVector("const_node") + DAGNode::rbClass;
 
@@ -54,9 +60,9 @@ ConstantNode::ConstantNode(const ConstantNode &d)
  * This is the clone function for ConstantNode objects.
  *
  */
-ConstantNode* ConstantNode::clone(void) const {
-
-	return (new ConstantNode(*this));
+RbObject* ConstantNode::clone(void) const {
+    ConstantNode* x = new ConstantNode(*this);
+	return (RbObject*) x;
 }
 
 
@@ -91,6 +97,53 @@ bool ConstantNode::equals(const RbObject* obj) const {
     return true;
 }
 
+double ConstantNode::getLnProbabilityRatio() {
+    return 0.0;
+}
+
+RbObject& ConstantNode::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const ConstantNode& x = dynamic_cast<const ConstantNode&> (obj);
+
+        ConstantNode& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const ConstantNode& x = dynamic_cast<const ConstantNode&> (*(obj.convertTo("const_node")));
+
+            ConstantNode& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to const_node");
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+ConstantNode& ConstantNode::operator=(const ConstantNode& obj) {
+
+    changed = obj.changed;
+    children = obj.children;
+    (*lastMove) = (*obj.lastMove);
+    members = obj.members;
+    methods = obj.methods;
+    monitors = obj.monitors;
+    (*moves) = (*obj.moves);
+    parents = obj.parents;
+    (*storedValue) = (*obj.storedValue);
+    touched = obj.touched;
+    (*value) = (*obj.value);
+
+    return (*this);
+}
 
 /**
  * @brief Print constant node

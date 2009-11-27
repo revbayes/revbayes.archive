@@ -20,6 +20,7 @@
 #ifndef ConstantNode_H
 #define ConstantNode_H
 
+#include "RbObject.h"
 #include "DAGNode.h"
 #include "StringVector.h"
 
@@ -28,15 +29,25 @@ class ConstantNode : public DAGNode {
     public:
         static const StringVector   rbClass;            //!< Static class attribute
 
-	                ConstantNode(RbObject* val);            //!< Constructor from value
-	                ConstantNode(const ConstantNode& c);    //!< Copy constructor
-              const StringVector& getClass() const { return rbClass; }        //!< Get class
-         void                printValue(std::ostream& o) const;                    //!< Print value (for user)
-         std::string         toString(void) const;                                 //!< General info on object
+	     ConstantNode(RbObject* val);            //!< Constructor from value
+	     ConstantNode(const ConstantNode& c);    //!< Copy constructor
 
-        ConstantNode*   clone() const;                      //!< Clone this object
-        bool            equals(const RbObject* obj) const;  //!< Object comparison
-        void            print(std::ostream& o) const;       //!< Print object
+	     RbObject*               clone() const;                      //!< Clone this object
+	     bool                    equals(const RbObject* obj) const;  //!< Object comparison
+	     const StringVector&    getClass() const { return rbClass; }        //!< Get class
+	     void                    print(std::ostream& o) const;       //!< Print object
+	     void                   printValue(std::ostream& o) const;                    //!< Print value (for user)
+         std::string            toString(void) const;                                 //!< General info on object
+
+
+        // overloaded functions from DAGNode
+        double                  getLnProbabilityRatio();
+
+        // overloaded operators
+        RbObject&               operator=(const RbObject& o);
+        ConstantNode&           operator=(const ConstantNode& o);
+
+    protected:
 };
 
 #endif

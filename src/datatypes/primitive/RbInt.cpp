@@ -401,6 +401,39 @@ RbInt::operator int() const {
     return value;
 }
 
+RbObject& RbInt::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const RbInt& x = dynamic_cast<const RbInt&> (obj);
+
+        RbInt& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const RbInt& x = dynamic_cast<const RbInt&> (*(obj.convertTo("int")));
+
+            RbInt& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to int");
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+RbInt& RbInt::operator=(const RbInt& o) {
+
+    value = o.value;
+    return (*this);
+}
+
 /**
  * @brief Prdouble value
  *

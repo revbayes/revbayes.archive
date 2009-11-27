@@ -20,6 +20,7 @@
 
 #include "Argument.h"
 #include "DAGNode.h"
+#include "RbException.h"
 #include "StringVector.h"
 
 
@@ -105,6 +106,38 @@ bool Argument::equals(const RbObject* obj) const {
     return result;
 }
 
+RbObject& Argument::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const Argument& x = dynamic_cast<const Argument&> (obj);
+
+        Argument& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const Argument& x = dynamic_cast<const Argument&> (*(obj.convertTo("argument")));
+
+            Argument& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to argument");
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+Argument& Argument::operator=(const Argument& obj) {
+
+    Argument* a = new Argument(obj);
+    return (*a);
+}
 
 /**
  * @brief Print function

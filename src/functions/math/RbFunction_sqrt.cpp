@@ -67,6 +67,40 @@ RbObject* RbFunction_sqrt::clone(void) const {
     return x;
 }
 
+RbObject& RbFunction_sqrt::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const RbFunction_sqrt& x = dynamic_cast<const RbFunction_sqrt&> (obj);
+
+        RbFunction_sqrt& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const RbFunction_sqrt& x = dynamic_cast<const RbFunction_sqrt&> (*(obj.convertTo("sqrt")));
+
+            RbFunction_sqrt& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to sqrt");
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+RbFunction_sqrt& RbFunction_sqrt::operator=(const RbFunction_sqrt& obj) {
+    argRules = obj.argRules;
+    returnType = obj.returnType;
+    (*value) = (*obj.value);
+    return (*this);
+}
+
 /**
  * @brief print function
  *

@@ -50,6 +50,10 @@ public:
         RbObject*           convertTo(const std::string& type) const;       //!< Convert to type
                                     operator int() const { return value; }               //!< Type conversion to int
 
+        // overloaded operators
+        RbObject&           operator=(const RbObject& obj);
+        RbBool&             operator=(const RbBool& obj);
+
         // Pointer-based comparison -- throw not supported error by default
         bool                lessThan(const RbObject* o) const;                        //!< Less than
 

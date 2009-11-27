@@ -2,15 +2,18 @@
 #define RandomNumberGenerator_H
 
 #include <string>
+#include <vector>
 #include "RbObject.h"
+#include "RbComplex.h"
+#include "StringVector.h"
 
 class RandomNumberGenerator : public RbComplex {
     public:
 
         static const StringVector   rbClass;            //!< Static class attribute
 
-        RandomNumberGenerator(int s);
-        RandomNumberGenerator(std::string n, int s);
+        RandomNumberGenerator(std::vector<unsigned int> s);
+        RandomNumberGenerator(std::string n, std::vector<unsigned int> s);
         RandomNumberGenerator(const RandomNumberGenerator& m);
         virtual ~RandomNumberGenerator();
 
@@ -21,17 +24,21 @@ class RandomNumberGenerator : public RbComplex {
         void                       print(std::ostream& o) const;                   //!< Print complete object info
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object
-        bool                       isType(std::string t) const { return rbClass[0] == t; }
-        StringVector&              operator+(const StringVector& sv) const;
 
-		int nextInt(int max);
-		unsigned int nextUnsignedInt(unsigned int max);
-		double nextDouble(void);
-		double nextDouble(double max);
+        RbObject&                  operator=(const RbObject& obj);
+        RandomNumberGenerator&     operator=(const RandomNumberGenerator& obj);
+
+
+        void                        setSeed(std::vector<unsigned int> s);
+		int                         nextInt(int max);
+		unsigned int                nextUnsignedInt(unsigned int max);
+		double                      nextDouble(void);
+		double                      nextDouble(double max);
 
 	private:
 		double uniform01(void);
-		int seed;
+		std::string                       name;                       // name of selected random number generator
+		std::vector<unsigned int>         seed;                       // list of seed values
 };
 
 #endif

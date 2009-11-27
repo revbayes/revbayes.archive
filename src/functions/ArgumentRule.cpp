@@ -128,28 +128,30 @@ bool ArgumentRule::equals(const RbObject* obj) const {
     return result;
 }
 
-RbObject& ArgumentRule::operator=(const RbObject& o) {
+RbObject& ArgumentRule::operator=(const RbObject& obj) {
 
-    // Use built-in fast down-casting first
-    const ArgumentRule x = dynamic_cast<const ArgumentRule> (obj);
-    if (x != NULL) {
-        ArgumentRule& ar = x;
-        return ar;
+    try {
+        // Use built-in fast down-casting first
+        const ArgumentRule& x = dynamic_cast<const ArgumentRule&> (obj);
+
+        ArgumentRule& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const ArgumentRule& x = dynamic_cast<const ArgumentRule&> (*(obj.convertTo("argumentRule")));
+
+            ArgumentRule& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to argumentRule");
+            throw e;
+        }
     }
 
-    // Try converting the value to an argumentRule
-    x = dynamic_cast<const ArgumentRule> (obj->convertTo("argumentRule"));
-    if (x != NULL) {
-        ArgumentRule& ar = x;
-        delete x;
-
-        return ar;
-    }
-
-    RbException e("Not supported assignment of " + o.getClass()[0]
-            + " to ArgumentRule");
-    throw e;
-
+    // dummy return
     return (*this);
 }
 

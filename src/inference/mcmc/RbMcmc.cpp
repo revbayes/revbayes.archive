@@ -51,10 +51,10 @@ void RbMcmc::runChain(void) {
 		double lnHastingsRatio = update(node);
 		
 		// get prior
-		double lnPriorRatio = getPriorRatio(node);
+		double lnPriorRatio = getLnPriorRatio(node);
 		
 		// get likelihood
-		double lnLikelihoodRatio = getLikelihoodRatio(node);
+		double lnLikelihoodRatio = getLnLikelihoodRatio(node);
 		
 		// calc acceptance
 		double r = calculateAcceptanceProb( lnLikelihoodRatio + lnPriorRatio + lnHastingsRatio );
@@ -114,16 +114,16 @@ DAGNode* RbMcmc::getDagToUpdate() {
 	modelPtr->getDagToUpdate();
 }
 
-double RbMcmc::getPriorRatio(DAGNode* d) {
-	return d->getPriorRatio();
+double RbMcmc::getLnPriorRatio(DAGNode* d) {
+	return d->getLnPriorRatio();
 }
 
 double RbMcmc::update(DAGNode* d) {
 	return d->performMove();
 }
 
-double RbMcmc::getLikelihoodRatio(DAGNode* d) {
-	return d->getLikelihoodRatio();
+double RbMcmc::getLnLikelihoodRatio(DAGNode* d) {
+	return d->getLnLikelihoodRatio();
 }
 
 void RbMcmc::accept(DAGNode* d) {

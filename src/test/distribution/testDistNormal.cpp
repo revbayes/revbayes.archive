@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 		double expectedPDF = 0.3520653; //taken from R
 		std::cout << "The pdf is " << pdf << '\n';
 		std::cout << "The expected pdf is " << expectedPDF << '\n';
-		assert(abs(pdf-expectedPDF) <= 0.0000001);
+		assert(fabs(pdf-expectedPDF) <= 0.0000001);
 
 	// calculate the lnpdf for some known parameters
 //	double lnpdf = (double) dnorm.execute(args);
@@ -62,14 +62,14 @@ int main(int argc, char **argv) {
 		double expectedCDF = 0.6914625; //taken from R
 		std::cout << "The cdf is " << cdf << '\n';
 		std::cout << "The expected cdf is " << expectedCDF << '\n';
-		assert(abs(cdf-expectedCDF) <= 0.0000001);
+		assert(fabs(cdf-expectedCDF) <= 0.0000001);
 
 		// calculate the quantile for some known parameters
 		double q = ((RbDouble*) qnorm.execute(args))->getValue();
 		double expectedQ = 0.0; //taken from R
 		std::cout << "The quantile is " << q << '\n';
 		std::cout << "The expected quantile is " << expectedQ << '\n';
-		assert(abs(q-expectedQ) <= 0.0000001);
+		assert(fabs(q-expectedQ) <= 0.0000001);
 	}
 	catch (RbException e)
 	{

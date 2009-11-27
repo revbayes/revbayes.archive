@@ -22,6 +22,7 @@
 
 #include "RbBool.h"
 #include "RbDouble.h"
+#include "RbException.h"
 #include "RbInt.h"
 #include "StringVector.h"
 
@@ -130,6 +131,39 @@ std::string RbDouble::toString(void) const {
 	sprintf(temp, "%1.6lf", value);
 	std::string tempStr = temp;
     return "Value = " + tempStr;
+}
+
+RbObject& RbDouble::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const RbDouble& x = dynamic_cast<const RbDouble&> (obj);
+
+        RbDouble& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const RbDouble& x = dynamic_cast<const RbDouble&> (*(obj.convertTo("double")));
+
+            RbDouble& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to double");
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+RbDouble& RbDouble::operator=(const RbDouble& ar) {
+
+    value = ar.value;
+    return (*this);
 }
 
 /**

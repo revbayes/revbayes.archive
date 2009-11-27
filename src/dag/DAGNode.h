@@ -22,9 +22,11 @@
 
 #include "RbObject.h"
 #include "StringVector.h"
+#include "RbComplex.h"
 
 class RbMonitor;
 class RbMove;
+class RbMoveSchedule;
 
 #include <set>
 
@@ -71,13 +73,14 @@ class DAGNode : public RbComplex {
         virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
         void						accept();
 	    void                		addChildNode(DAGNode* c) { children.insert(c); }    //!< Add child node
-        virtual RbObject*    		clone() const;                                      //!< Clone this node
-        virtual bool        		equals(const RbObject *obj) const;                  //!< Compare DAG nodes
-	    std::set<DAGNode*>& 		getChildrenNodes(void) { return children; }         //!< Get children nodes
-	    virtual double				getLikelihoodRatio() = 0;
+        virtual RbObject*    		clone() const = 0;                                  //!< Clone this node
+        virtual bool        		 equals(const RbObject *obj) const;                  //!< Compare DAG nodes
+	    std::set<DAGNode*>& 		 getChildrenNodes(void) { return children; }         //!< Get children nodes
+	    virtual double				 getLnLikelihoodRatio(void);
+	    double                       getLnPriorRatio(void);
+	    virtual double               getLnProbabilityRatio(void) = 0;
 	    std::set<DAGNode*>& 		getParentNodes(void) { return parents; }            //!< Get parent nodes
-	    virtual double				getPriorRatio() = 0;
-        RbObject*           		getStoredValue() { return storedValue; }            //!< Get stored value
+	    RbObject*           		getStoredValue() { return storedValue; }            //!< Get stored value
         RbObject*           		getValue() { return value; }                        //!< Get value
 	    bool                		isChanged(void) const { return changed; }   //!< Has the node recalculated its value?
         bool                		isTouched() const { return touched; }       //!< Is the node marked for recalculation?
@@ -97,6 +100,9 @@ class DAGNode : public RbComplex {
         void                		touchAffected();                        //!< Mark affected nodes recursively
         void                       	printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                	toString(void) const;                           //!< General info on object
+
+        // overloaded operators
+        virtual RbObject&           operator=(const RbObject& o) = 0;
 
     protected:
             // The constructors are protected because this is an abstract class.

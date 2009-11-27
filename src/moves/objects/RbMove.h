@@ -19,9 +19,12 @@ public:
 
         void                        acceptMove(void);				// for statistic purposes
         double                      getAcceptanceProbability(void);
-        std::vector<ArgumentRule>   getArgumentRules() const { return argRules; }   //!< Get argument rules
         double                      performMove(void);
         void                        rejectMove(void);
+
+
+        // overloaded operators
+        virtual RbMove&             operator=(const RbMove& o) = 0;
 
 protected:
         RbMove(DAGNode* n);

@@ -28,9 +28,9 @@ class RbMcmc : public RbComplex {
         
     private:
         DAGNode*                    getDagToChange();
-        double                      getPriorRatio(DAGNode* d);
+        double                      getLnPriorRatio(DAGNode* d);
         double                      update(DAGNode* d);
-        double                      getLikelihoodRatio(DAGNode* d);
+        double                      getLnLikelihoodRatio(DAGNode* d);
         void                        accept(DAGNode* d);
         void                        reject(DAGNode* d);
 

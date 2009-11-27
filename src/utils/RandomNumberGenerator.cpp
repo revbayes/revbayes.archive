@@ -1,18 +1,50 @@
 #include "RandomNumberGenerator.h"
+#include "RbComplex.h"
+#include "RbException.h"
+#include "RbObject.h"
 #include <ctime>
 
 
+const StringVector RandomNumberGenerator::rbClass = StringVector("rng") + RbComplex::rbClass;
 
-RandomNumberGenerator::RandomNumberGenerator(unsigned int x) {
-
-	setSeed(x, 0);
+RandomNumberGenerator::RandomNumberGenerator(std::string n, std::vector<unsigned int> s) {
+    name = n;
+    seed = s;
 }
 
-RandomNumberGenerator::RandomNumberGenerator(unsigned int x, unsigned int y) {
-
-	I1 = x;
-	I2 = y;
+RandomNumberGenerator::RandomNumberGenerator(std::vector<unsigned int> s) {
+	seed = s;
 }
+
+RandomNumberGenerator::RandomNumberGenerator(const RandomNumberGenerator& rng) {
+    seed = rng.seed;
+    name = rng.name;
+}
+
+RandomNumberGenerator::~RandomNumberGenerator() {
+
+}
+
+RbObject* RandomNumberGenerator::clone() const {
+    RandomNumberGenerator* x = new RandomNumberGenerator(*this);
+    return (RbObject*) x;
+}
+
+bool RandomNumberGenerator::equals(const RbObject* obj) const {
+    return false;
+}
+
+void RandomNumberGenerator::print(std::ostream& o) const {
+    o << "Random Number Generator (" << name << ")" << std::endl;
+}
+
+void RandomNumberGenerator::printValue(std::ostream& o) const {
+    o << name << std::endl;
+}
+std::string RandomNumberGenerator::toString(void) const {
+    return "Random Number Generator (" + name + ")";
+}
+
 
 int RandomNumberGenerator::nextInt(int max) {
 
@@ -34,24 +66,42 @@ double RandomNumberGenerator::nextDouble(double max) {
 	return ( uniform01()*max );
 }
 
-void RandomNumberGenerator::getSeed(unsigned int &seed1, unsigned int &seed2) {
+RbObject& RandomNumberGenerator::operator=(const RbObject& obj) {
 
-	seed1 = I1;
-	seed2 = I2;
+    try {
+        // Use built-in fast down-casting first
+        const RandomNumberGenerator& x = dynamic_cast<const RandomNumberGenerator&> (obj);
+
+        RandomNumberGenerator& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const RandomNumberGenerator& x = dynamic_cast<const RandomNumberGenerator&> (*(obj.convertTo("rng")));
+
+            RandomNumberGenerator& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to rng");
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
 }
 
-void RandomNumberGenerator::setSeed(unsigned int seed1, unsigned int seed2) {
+RandomNumberGenerator& RandomNumberGenerator::operator=(const RandomNumberGenerator& obj) {
 
-    if(seed2 == 0) 
-		{
-        I1 = seed1 & 0xFFFF;
-        I2 = seed1 >> 16;
-		}
-	else 
-		{
-        I1 = seed1;
-        I2 = seed2;
-		}
+    seed = obj.seed;
+    name = obj.name;
+    return (*this);
+}
+
+void RandomNumberGenerator::setSeed(std::vector<unsigned int> s) {
+    seed = s;
 }
 
 /*!
@@ -73,7 +123,7 @@ void RandomNumberGenerator::setSeed(unsigned int seed1, unsigned int seed2) {
 double RandomNumberGenerator::uniform01(void) {
 
 	// Returns a pseudo-random number between 0 and 1.
-	I1 = 36969 * (I1 & 0177777) + (I1 >> 16);
-	I2 = 18000 * (I2 & 0177777) + (I2 >> 16);
-	return ((I1 << 16)^(I2 & 0177777)) * 2.328306437080797e-10; 	/*!< in [0,1) */
+	seed[0] = 36969 * (seed[0] & 0177777) + (seed[0] >> 16);
+	seed[1]= 18000 * (seed[1] & 0177777) + (seed[1] >> 16);
+	return ((seed[0] << 16)^(seed[1] & 0177777)) * 2.328306437080797e-10; 	/*!< in [0,1) */
 }

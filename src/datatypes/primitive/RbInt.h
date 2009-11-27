@@ -50,6 +50,11 @@ class RbInt : public RbPrimitive {
         RbObject*           convertTo(const std::string& type) const;       //!< Convert to type
                             operator int() const;                          //!< Type conversion to int
 
+
+                            // overloaded operators
+        RbObject&           operator=(const RbObject& o);
+        RbInt&              operator=(const RbInt& o);
+
         // Pointer-based comparison -- throw not supported error by default
         bool                lessThan(const RbObject* o) const;                        //!< Less than
 

@@ -20,7 +20,9 @@ RbMove::RbMove(DAGNode* n) {
     node = n;
 }
 
-RbMove::~RbMove(void);
+RbMove::~RbMove(void){
+
+}
 
 
 double RbMove::performMove(void) {

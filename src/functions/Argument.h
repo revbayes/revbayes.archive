@@ -48,6 +48,11 @@ class Argument : public RbObject {
         std::string         getLabel() const { return label; }          //!< Get label of argument
         DAGNode*            getDAGNode() const { return node; }         //!< Get DAG node
 
+
+        // overloaded operators
+        RbObject&           operator=(const RbObject& o);
+        Argument&           operator=(const Argument& o);
+
     protected:
         const std::string   label;          //!< Label of argument
         DAGNode*            node;           //!< The node passed in as the argument
