@@ -7,24 +7,25 @@
 
 #include <cmath>
 
+#include "DAGNode.h"
 #include "DistExponential.h"
-#include "datatypes/RbDataType.h"
-#include "datatypes/primary/RbDouble.h"
+#include "RbDouble.h"
+#include "RbException.h"
 #include "RbMath.h"
 #include "RbStatistics.h"
 #include "RbNames.h"
 
-DistExponential::DistExponential(DAGNode* l, DAGNode* x) {
+const StringVector DistExponential::rbClass = StringVector(RbNames::Exponential::name) + Distribution::rbClass;
+
+DistExponential::DistExponential(DAGNode* l) {
 
 	lambda = l;
-	obs    = x;
 	returnType = RbNames::Double::name;
 }
 
-DistExponential::DistExponential(DistExponential& d) {
+DistExponential::DistExponential(const DistExponential& d) {
 
 	lambda = d.lambda;
-	obs   = d.obs;
 	returnType = d.returnType;
 }
 
@@ -40,8 +41,9 @@ DistExponential::~DistExponential() {
  * @return     return a deep copy of the object
  *
  */
-RbObject* DistExponential::clone(void) {
-	return new DistExponential(*this);
+RbObject* DistExponential::clone(void) const {
+    DistExponential* x = new DistExponential(*this);
+	return (RbObject*) x;
 }
 
 /*!
@@ -55,9 +57,13 @@ RbObject* DistExponential::clone(void) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double DistExponential::pdf(void) {
+double DistExponential::pdf(RbObject* obs) {
+    // first some argument checking
+    assert(typeid(*obs) == typeid(RbDouble));
 
-	double pdf = RbStatistics::Exponential::pdf(*lambda,*obs);
+    double x = ((RbDouble*) obs)->getValue();
+    double l = ((RbDouble*) lambda->getValue())->getValue();
+	double pdf = RbStatistics::Exponential::pdf(l,x);
 
 	return pdf;
 }
@@ -73,15 +79,13 @@ double DistExponential::pdf(void) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double DistExponential::lnPdf() {
+double DistExponential::lnPdf(RbObject* obs) {
+    // first some argument checking
+    assert(typeid(*obs) == typeid(RbDouble));
 
-	return RbStatistics::Exponential::lnPdf(*lambda, *obs);
-}
-
-RbObject* DistExponential::clone(void) const {
-
-	RbObject* x = (RbObject*)(new DistExponential(*this));
-	return x;
+    double x = ((RbDouble*) obs)->getValue();
+    double l = ((RbDouble*) lambda->getValue())->getValue();
+	return RbStatistics::Exponential::lnPdf(l, x);
 }
 
 bool DistExponential::equals(const RbObject* o) const {
@@ -90,11 +94,7 @@ bool DistExponential::equals(const RbObject* o) const {
 }
 
 const StringVector& DistExponential::getClass(void) const {
-
-}
-
-bool DistExponential::isType(const std::string t) const {
-
+    rbClass[0];
 }
 
 void DistExponential::print(std::ostream& o) const {
@@ -109,10 +109,10 @@ void DistExponential::printValue(std::ostream& o) const {
 
 std::string DistExponential::toString(void) const {
 
-	return "Exponential Distribution(" + obs->toString() + "|" + lambda->toString() + ")";
+	return "Exponential Distribution(rate = " + lambda->toString() + ")";
 }
 
-RbObject& DistExponential::operator=(const RbObject& o) {
+RbObject& DistExponential::operator=(const RbObject& obj) {
 
 
     try {
@@ -143,7 +143,6 @@ RbObject& DistExponential::operator=(const RbObject& o) {
 DistExponential& DistExponential::operator=(const DistExponential& obj) {
 
     *lambda = *(obj.lambda);
-    *obs = *(obj.obs);
     
     return (*this);
 }

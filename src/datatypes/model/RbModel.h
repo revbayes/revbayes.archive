@@ -34,6 +34,10 @@ class RbModel : public RbComplex {
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object
 
+
+        // overloaded operators
+        RbObject&           operator=(const RbObject& o);
+        RbModel&            operator=(const RbModel& o);
     protected:
         std::vector<DAGNode*>      sinkDags;
         RandomNumberGenerator* 		rng; 

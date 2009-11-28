@@ -25,7 +25,10 @@ class RbMcmc : public RbComplex {
         void                       print(std::ostream& o) const;                   //!< Print complete object info
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object
-        
+
+        // overloaded operators
+        RbObject&                   operator=(const RbObject& o);
+        RbMcmc&                     operator=(const RbMcmc& o);
     private:
         DAGNode*                    getDagToChange();
         double                      getLnPriorRatio(DAGNode* d);

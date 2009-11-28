@@ -17,37 +17,9 @@
  */
 
 #include "Distribution.h"
-#include "../datatypes/RbDataType.h"
-#include "../datatypes/primary/RbDouble.h"
+#include "RbDouble.h"
+#include "RbNames.h"
 
 
-/**
- * @brief Executes the in functionType specified function to the distribution
- *
- * This function checks the functionType and then calls the corresponding function, e.g the pdf, cdf, quantile or rv
- *
- * @param value      the value used as a parameter for the corresponding function of the distribution
- *
- * @returns The return value of the corresponding function of the distribution
- */
-RbDataType* Distribution::execute(RbDataType* value) {
-	RbDataType* dt;
 
-	switch (functionType) {
-		case Distribution::D:
-		case Distribution::P:
-			dt = new RbDouble(pdf(value));
-			break;
-		case Distribution::Q:
-			dt = new RbDouble(quantile(value));
-			break;
-		case Distribution::R:
-			dt = rv();
-			break;
-		default:
-			;
-			// TODO throw some error, but actually should never even be possible
-	}
-
-	return dt;
-}
+const StringVector Distribution::rbClass = StringVector(RbNames::Distribution::name) + RbObject::rbClass;

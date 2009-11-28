@@ -97,6 +97,39 @@ const StringVector& RbMcmc::getClass() const {
 	return rbClass; 
 }            //!< Get class
 
+RbObject& RbMcmc::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const RbMcmc& x = dynamic_cast<const RbMcmc&> (obj);
+
+        RbMcmc& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const RbMcmc& x = dynamic_cast<const RbMcmc&> (*(obj.convertTo(RbNames::MCMC::name)));
+
+            RbMcmc& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::MCMC::name);
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+RbMcmc& RbMcmc::operator=(const RbMcmc& obj) {
+
+    (*modelPtr) = (*obj.modelPtr);
+    return (*this);
+}
+
 void RbMcmc::print(std::ostream& o) const {
 	o << "MCMC on model: " << modelPtr->toString() << std::endl;
 }

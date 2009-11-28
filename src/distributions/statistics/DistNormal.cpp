@@ -7,26 +7,28 @@
 
 #include <cmath>
 
+#include "DAGNode.h"
 #include "DistNormal.h"
-#include "datatypes/RbDataType.h"
-#include "datatypes/primary/RbDouble.h"
+#include "RbDouble.h"
+#include "RbException.h"
 #include "RbMath.h"
 #include "RbStatistics.h"
 #include "RbNames.h"
 
-DistNormal::DistNormal(DAGNode* s, DAGNode* m, DAGNode* x) {
+
+const StringVector DistNormal::rbClass = StringVector(RbNames::Normal::name) + Distribution::rbClass;
+
+DistNormal::DistNormal(DAGNode* s, DAGNode* m) {
 
 	sigma = s;
 	mu    = m;
-	obs   = x;
 	returnType = RbNames::Double::name;
 }
 
-DistNormal::DistNormal(DistNormal& d) {
+DistNormal::DistNormal(const DistNormal& d) {
 
 	sigma = d.sigma;
 	mu    = d.mu;
-	obs   = d.obs;
 	returnType = d.returnType;
 }
 
@@ -42,7 +44,7 @@ DistNormal::~DistNormal() {
  * @return     return a deep copy of the object
  *
  */
-RbObject* DistNormal::clone(void) {
+RbObject* DistNormal::clone(void) const {
 	return new DistNormal(*this);
 }
 
@@ -57,10 +59,10 @@ RbObject* DistNormal::clone(void) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double DistNormal::pdf(void) {
+double DistNormal::pdf(RbObject* obs) {
 	double m = ((RbDouble*) mu->getValue())->getValue();
 	double s = ((RbDouble*) sigma->getValue())->getValue();
-	double o = ((RbDouble*) obs->getValue())->getValue();
+	double o = ((RbDouble*) obs)->getValue();
 
 	double pdf = RbStatistics::Normal::pdf(m,s,o);
 
@@ -78,21 +80,15 @@ double DistNormal::pdf(void) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double DistNormal::lnPdf() {
+double DistNormal::lnPdf(RbObject* obs) {
 
 	double m = ((RbDouble*) mu->getValue())->getValue();
 	double s = ((RbDouble*) sigma->getValue())->getValue();
-	double o = ((RbDouble*) obs->getValue())->getValue();
+	double o = ((RbDouble*) obs)->getValue();
 
 	double lnpdf = RbStatistics::Normal::lnPdf(m,s,o);
 
 	return lnpdf;
-}
-
-RbObject* DistNormal::clone(void) const {
-
-	RbObject* x = (RbObject*)(new DistNormal(*this));
-	return x;
 }
 
 bool DistNormal::equals(const RbObject* o) const {
@@ -101,16 +97,12 @@ bool DistNormal::equals(const RbObject* o) const {
 }
 
 const StringVector& DistNormal::getClass(void) const {
-
-}
-
-bool DistNormal::isType(const std::string t) const {
-
+    rbClass[0];
 }
 
 void DistNormal::print(std::ostream& o) const {
 
-	o << "Normal Distrbibution" << std::endl;
+	o << "Normal Distribution" << std::endl;
 }
 
 void DistNormal::printValue(std::ostream& o) const {
@@ -120,10 +112,10 @@ void DistNormal::printValue(std::ostream& o) const {
 
 std::string DistNormal::toString(void) const {
 
-	return "Normal Distribution(" + obs->toString() + "|" + mu->toString() + "," + sigma->toString() + ")";
+	return "Normal Distribution( mean = " + mu->toString() + ", std = " + sigma->toString() + ")";
 }
 
-RbObject& DistNormal::operator=(const RbObject& o) {
+RbObject& DistNormal::operator=(const RbObject& obj) {
 
 
     try {
@@ -155,7 +147,6 @@ DistNormal& DistNormal::operator=(const DistNormal& obj) {
 
     *mu = *(obj.mu);
     *sigma = *(obj.sigma);
-    *obs = *(obj.obs);
     
     return (*this);
 }

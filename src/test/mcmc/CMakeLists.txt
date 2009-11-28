@@ -1,11 +1,14 @@
 ### add test for distributions
 
 ### normal distribution
-add_executable(testMCMC ../../datatypes/RbObject.cpp ../../datatypes/complex/StringVector.cpp ../../datatypes/complex/RbComplex.cpp \\
-../../utils/RbException.cpp ../../datatypes/primitive/RbPrimitive.cpp \\
+add_executable(testMCMC \\
+../../datatypes/RbObject.cpp ../../datatypes/primitive/RbPrimitive.cpp ../../datatypes/complex/RbComplex.cpp \\
+../../datatypes/complex/StringVector.cpp ../../utils/RbException.cpp  \\
+../../datatypes/primitive/RbDouble.cpp ../../datatypes/primitive/RbInt.cpp ../../datatypes/primitive/RbBool.cpp \\
 ../../dag/ConstantNode.cpp ../../dag/DAGNode.cpp  ../../dag/StochasticNode.cpp ../../dag/DeterministicNode.cpp \\
 ../../moves/objects/RbMove.cpp ../../moves/RbMoveSchedule.cpp ../../utils/RandomNumberGenerator.cpp \\
-../../datatypes/primitive/RbDouble.cpp ../../datatypes/primitive/RbInt.cpp ../../datatypes/primitive/RbBool.cpp \\
+../../moves/objects/MoveSlidingWindow.cpp ../../moves/objects/MoveScale.cpp \\
+../../distributions/Distribution.cpp ../../distributions/statistics/DistExponential.cpp ../../distributions/statistics/DistNormal.cpp \\
+../../distributions/statistics/DistUniform.cpp \\
 ../../functions/Argument.cpp ../../functions/ArgumentRule.cpp ../../functions/RbFunction.cpp \\
-../../functions/distribution/RbFunction_dnorm.cpp ../../functions/distribution/RbFunction_pnorm.cpp ../../functions/distribution/RbFunction_qnorm.cpp \\
-../../functions/distribution/RbFunction_rnorm.cpp ../../utils/RbStatistics.cpp ../../utils/RbMath.cpp testMCMC.cpp)
+../../utils/RbStatistics.cpp ../../utils/RbMath.cpp testMCMC.cpp)

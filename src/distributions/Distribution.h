@@ -26,10 +26,12 @@
 #include <string>
 #include <list>
 #include "RbObject.h"
+#include "StringVector.h"
 
 class Distribution: public RbObject {
 
 public:
+    static const StringVector   rbClass;            //!< Static class attribute
 
 	virtual ~Distribution() { }                        //!< Destructor does nothing
 
@@ -41,7 +43,6 @@ protected:
 		RbObject() {
 	} //!< Constructor sets type to "d"
 
-private:
 	std::string returnType;
 //	std::vector<Argument*> argument;
 //	std::vector<ArgumentRule*> argumentRule;

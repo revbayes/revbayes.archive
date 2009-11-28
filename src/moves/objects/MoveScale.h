@@ -14,6 +14,7 @@
 
 #include "RbMove.h"
 
+class RbDouble;
 class RbObject;
 
 class MoveScale : public RbMove {
@@ -39,7 +40,7 @@ class MoveScale : public RbMove {
 
 
     protected:
-        double         perform(RbObject* obj);
+        double         perform(void);
         void           accept(void);                // for statistic purposes
         void           reject(void);
         

@@ -15,7 +15,7 @@
 
 class RbMove;
 
-class RbMoveSchedule : RbComplex {
+class RbMoveSchedule : public RbComplex {
     public:
 
         static const StringVector   rbClass;            //!< Static class attribute

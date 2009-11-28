@@ -11,7 +11,7 @@
 #include "Distribution.h"
 #include "RbDataType.h"
 
-class DistBeta : Distribution{
+class DistBeta : public Distribution{
 public:
 	DistBeta();
 	virtual ~DistBeta();

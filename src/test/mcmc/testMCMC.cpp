@@ -20,6 +20,8 @@
 #include "MoveSlidingWindow.h"
 #include "MoveScale.h"
 #include "RbDouble.h"
+#include "RbMcmc.h"
+#include "RbModel.h"
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
 #include "RbObject.h"
@@ -49,7 +51,7 @@ int main(int argc, char **argv) {
     cnMuPriorLower->addChildNode( snMu );
     cnMuPriorUpper->addChildNode( snMu );
 
-	std::vector<StochasticNode*> sn;
+	std::vector<DAGNode*> sn;
 	for (int i=0; i<10; i++)
 		{
 		StochasticNode* s = new StochasticNode();
@@ -60,34 +62,34 @@ int main(int argc, char **argv) {
     std::vector<Distribution*> dists;
     for (int i=0; i<10; i++)
     	{
-    	DistNormal* d = new DistNormal(snMu, snSigma, sn[i]);
+    	DistNormal* d = new DistNormal(snMu, snSigma);
     	dists.push_back( d );
-    	sn[i]->assignDistribution(d);
+    	((StochasticNode*)sn[i])->assignDistribution(d);
     	sn[i]->addParentNode(snMu);
     	sn[i]->addParentNode(snSigma);
     	snMu->addChildNode(sn[i]);
     	snSigma->addChildNode(sn[i]);
     	}
-    DistUniform* uniDist = new DistUniform( cnMuPriorLower, cnMuPriorUpper, snMu );
-    DistExponential* expDist = new DistExponential( cnSigmaPrior, snSigma );
+    DistUniform* uniDist = new DistUniform( cnMuPriorLower, cnMuPriorUpper );
+    DistExponential* expDist = new DistExponential( cnSigmaPrior );
 	snMu->assignDistribution(uniDist);
 	snSigma->assignDistribution(expDist);
 	
 	std::vector<unsigned int> seed1;
-	seed1.insert(1);
-	seed1.insert(2);
+	seed1.push_back(1);
+	seed1.push_back(2);
 	RandomNumberGenerator* rng = new RandomNumberGenerator(seed1);
 	RbMoveSchedule* msSigma = new RbMoveSchedule( rng );
-	msSigma.addMove( new MoveScale( snSigma, new RbDouble(1.5), rng ), 1.0 );
+	msSigma->addMove( new MoveScale( snSigma, new RbDouble(1.5), rng ), 1.0 );
 	snSigma->assignMoveSchedule( msSigma );
 	
 	std::vector<unsigned int> seed2;
-	seed2.insert(7);
-	seed2.insert(5);
+	seed2.push_back(7);
+	seed2.push_back(5);
 	RandomNumberGenerator* rng2 = new RandomNumberGenerator(seed2);
 	RbMoveSchedule* msMu = new RbMoveSchedule( rng2 );
-	msMu.addMove( new MoveSlidingWindow( snMu, new RbDouble(0.1), muPriorLower, muPriorUpper, rng2 ), 1.0 );
-	snMu->assignMoveSchedule( msSigma );
+	msMu->addMove( new MoveSlidingWindow( snMu, new RbDouble(0.1), muPriorLower, muPriorUpper, rng2 ), 1.0 );
+	snMu->assignMoveSchedule( msMu );
 
     // create model
     RbModel* model = new RbModel(sn);
@@ -103,32 +105,7 @@ int main(int argc, char **argv) {
     try
     {
 
-        double pdf = ((RbDouble*) dnorm.execute(args))->getValue();
-        double expectedPDF = 0.3520653; //taken from R
-        std::cout << "The pdf is " << pdf << '\n';
-        std::cout << "The expected pdf is " << expectedPDF << '\n';
-        assert(abs(pdf-expectedPDF) <= 0.0000001);
 
-    // calculate the lnpdf for some known parameters
-//  double lnpdf = (double) dnorm.execute(args);
-//  double expectedLnPDF = -1.043939; //taken from R
-//  std::cout << "The lnpdf is " << lnpdf << '\n';
-//  std::cout << "The expected lnpdf is " << expectedLnPDF << '\n';
-//  assert(abs(lnpdf-expectedLnPDF) <= 0.000001);
-
-        // calculate the cdf for some known parameters
-        double cdf = ((RbDouble*) pnorm.execute(args))->getValue();
-        double expectedCDF = 0.6914625; //taken from R
-        std::cout << "The cdf is " << cdf << '\n';
-        std::cout << "The expected cdf is " << expectedCDF << '\n';
-        assert(abs(cdf-expectedCDF) <= 0.0000001);
-
-        // calculate the quantile for some known parameters
-        double q = ((RbDouble*) qnorm.execute(args))->getValue();
-        double expectedQ = 0.0; //taken from R
-        std::cout << "The quantile is " << q << '\n';
-        std::cout << "The expected quantile is " << expectedQ << '\n';
-        assert(abs(q-expectedQ) <= 0.0000001);
     }
     catch (RbException e)
     {

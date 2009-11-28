@@ -6,8 +6,17 @@
  */
 
 #include "DAGNode.h"
+#include "MoveScale.h"
+#include "RandomNumberGenerator.h"
+#include "RbDouble.h"
+#include "RbException.h"
 #include "RbModel.h"
+#include "RbMove.h"
+#include "RbNames.h"
+#include "RbObject.h"
 #include "StringVector.h"
+#include <string>
+#include <cmath>
 
 const StringVector MoveScale::rbClass = StringVector("scale") + RbMove::rbClass;
 
@@ -16,7 +25,7 @@ MoveScale::MoveScale(DAGNode* n, RbDouble* tn, RandomNumberGenerator* r) : RbMov
 	tuningParm = tn;
 }
 
-MoveScale::MoveScale(const MoveScale& m) : RbMove(m.node) {
+MoveScale::MoveScale(const MoveScale& m) : RbMove(m.node,m.rng) {
 
 }
 
@@ -59,7 +68,7 @@ bool MoveScale::equals(const RbObject* obj) const {
 void MoveScale::print(std::ostream& o) const {
 
     o << "Scaling Move on:" << std::endl;
-    sink->print(o);
+    node->print(o);
 }
 
 RbObject* MoveScale::clone(void) const {
@@ -76,7 +85,7 @@ void MoveScale::printValue(std::ostream& o) const {
 std::string MoveScale::toString(void) const {
 
     std::string tempStr = "Scaling move on:\n";
-    tmpStr += sink->toString();
+    tempStr += node->toString();
     return tempStr;
 }
 
@@ -102,7 +111,7 @@ void MoveScale::reject(void) {
 
 }
 
-RbObject& MoveScale::operator=(const RbObject& o) {
+RbObject& MoveScale::operator=(const RbObject& obj) {
 
 
     try {
@@ -130,11 +139,13 @@ RbObject& MoveScale::operator=(const RbObject& o) {
     return (*this);
 }
 
-DistNormal& MoveScale::operator=(const MoveScale& obj) {
+MoveScale& MoveScale::operator=(const MoveScale& obj) {
 
-    *mu = *(obj.mu);
-    *sigma = *(obj.sigma);
-    *obs = *(obj.obs);
+    *rng        = *(obj.rng);
+    *tuningParm = *obj.tuningParm;
+    nAcceptances = obj.nAcceptances;
+    nTries      = obj.nTries;
+    *node       = *obj.node;
     
     return (*this);
 }

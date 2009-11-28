@@ -57,6 +57,44 @@ bool RbModel::equals(const RbObject* obj) const {
     return result;
 }
 
+RbObject& RbModel::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const RbModel& x = dynamic_cast<const RbModel&> (obj);
+
+        RbModel& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const RbModel& x = dynamic_cast<const RbModel&> (*(obj.convertTo(RbNames::Model::name)));
+
+            RbModel& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::Model::name);
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+RbModel& RbModel::operator=(const RbModel& obj) {
+
+    sinkDags.clear();
+    for (std::vector<DAGNode*>::iterator i=obj.sinkDags.begin(); i!=obj.sinkDags.end(); i++){
+        sinkDags.push_back((*i)->clone());
+    }
+    (*rng) = (*obj.rng);
+    return (*this);
+}
+
+
 void RbModel::print(std::ostream& o) const {
 
     o << "Model:" << std::endl;
