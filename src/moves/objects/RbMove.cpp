@@ -16,8 +16,9 @@
 
 const StringVector RbMove::rbClass = StringVector("move") + RbComplex::rbClass;
 
-RbMove::RbMove(DAGNode* n) {
+RbMove::RbMove(DAGNode* n, RandomNumberGenerator* r) {
     node = n;
+    rng = r;
 }
 
 RbMove::~RbMove(void){

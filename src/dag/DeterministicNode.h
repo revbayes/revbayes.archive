@@ -35,13 +35,20 @@ class DeterministicNode : public DAGNode {
             //TODO: Destructor is not needed if we just use a pointer here and not a full copy.
             virtual ~DeterministicNode() {}                         //!< Destructor (delete function?)
 
+        RbObject&           operator=(const RbObject& o);
+        DeterministicNode&  operator=(const DeterministicNode& o);
+
         // Standard utility functions
-        DeterministicNode*  clone() const { return new DeterministicNode(*this); }  //!< Clone this object
-        bool                equals(const DeterministicNode& d) const;           //!< Compare
+        RbObject*  			clone() const;									    //!< Clone this object
+        bool                equals(const RbObject* d) const;           //!< Compare
         void                print(std::ostream& c) const;                       //!< Print object
+	     const StringVector&    getClass() const { return rbClass; }        //!< Get class
+	     void                   printValue(std::ostream& o) const;                    //!< Print value (for user)
+         std::string            toString(void) const;     
 
         // Regular member functions
         RbObject*           getValue();         //!< Get current value
+	    double               getLnProbabilityRatio(void);
         
     private:
         std::vector<DAGNode*>   arguments;      //!< Processed arguments

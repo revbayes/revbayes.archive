@@ -15,6 +15,7 @@
 #include "RbComplex.h"
 
 class DAGNode;
+class RandomNumberGenerator;
 
 class RbModel : public RbComplex {
     public:
@@ -32,11 +33,10 @@ class RbModel : public RbComplex {
         void                       print(std::ostream& o) const;                   //!< Print complete object info
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object
-        bool                       isType(std::string t) const { return rbClass[0] == t; }
-        StringVector&              operator+(const StringVector& sv) const;
 
     protected:
         std::vector<DAGNode*>      sinkDags;
+        RandomNumberGenerator* 		rng; 
 };
 
 #endif /* RBMODEL_H_ */

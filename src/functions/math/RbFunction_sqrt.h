@@ -37,7 +37,12 @@ class RbDumpState;
 class RbFunction_sqrt :  public RbFunction {
 
     public:
-        static const StringVector   rbClass;            //!< Static class attribute
+	static RbFunction_sqrt& getSqrtInstance(void) 
+		{
+		static RbFunction_sqrt sqrtInstance;
+		return sqrtInstance;
+		}
+		static const StringVector   rbClass;            //!< Static class attribute
 
             RbFunction_sqrt(void);                              //!< Default constructor, allocate workspace
             RbFunction_sqrt(const RbFunction_sqrt& s);      //!< Copy constructor

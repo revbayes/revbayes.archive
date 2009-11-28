@@ -98,17 +98,19 @@ namespace RbStatistics {
 #pragma mark Uniform(0,1) Distribution
 
 	namespace Uniform01 {
-	double pdf(void);                                                          /*!< Uniform(0,1) probability density */
-	double lnPdf(void);                                                        /*!< Log of the Uniform(0,1) probability density */
-	double        cdf(double x);                                                      /*!< Uniform(0,1) cumulative probability */
-	inline double quantile(double p);                                                 /*!< Uniform(0,1) quantile */
+	double pdf(double x);                                                          /*!< Uniform(0,1) probability density */
+	double lnPdf(double x);                                                        /*!< Log of the Uniform(0,1) probability density */
+	double        cdf(double x);                                                   /*!< Uniform(0,1) cumulative probability */
+	inline double quantile(double p);                                              /*!< Uniform(0,1) quantile */
+	//double rv(RandomNumberGenerator* rng);
 	}
 	
 	namespace Uniform {
-	double pdf(double a, double b);                                            /*!< Uniform(a,b) probability density */
-	double lnPdf(double a, double b);                                          /*!< Log of the Uniform(a,b) probability density */
+	double pdf(double a, double b, double x);                                  /*!< Uniform(a,b) probability density */
+	double lnPdf(double a, double b, double x);                                /*!< Log of the Uniform(a,b) probability density */
 	double cdf(double a, double b, double x);                                  /*!< Uniform(a,b) cumulative probability */
 	double quantile(double a, double b, double p);                             /*!< Uniform(a,b) quantile */
+	//double rv(RandomNumberGenerator* rng, double a, double b);
 	}
 }
 

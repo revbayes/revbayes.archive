@@ -27,15 +27,21 @@ class Distribution;
 class StochasticNode : public DAGNode {
 
     public:
-	                StochasticNode(Distribution* dist);         //!< Constructor from distribution
+	                StochasticNode(void);         //!< Constructor from distribution
 	                StochasticNode(const StochasticNode& s);    //!< Copy constructor
 	        virtual ~StochasticNode();                          //!< Destructor
 
-        // Basic utility functions
+        RbObject&           operator=(const RbObject& o);
+        StochasticNode&     operator=(const StochasticNode& o);
+
+       // Basic utility functions
         StochasticNode* clone() const { return new StochasticNode(*this); } //!< Clone the stochastic node
         void            print(std::ostream& o) const;       //!< Print object
 
         // Regular functions
+        void            assignDistribution(Distribution* d);
+        void            initializeValue(RbObject* v);
+	    double          getLnProbabilityRatio(void);
         void            clamp(RbObject* observedVal);       //!< Clamp the node with an observed value
         double          lnProb() const;                     //!< Return ln probability
         double          lnProbRatio() const;                //!< Return ln prob ratio of value to stored value

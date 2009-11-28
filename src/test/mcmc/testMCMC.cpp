@@ -8,82 +8,94 @@
 #include <iostream>
 #include <cmath>
 #include <assert.h>
+#include <vector>
 
 #include "Argument.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
+#include "Distribution.h"
+#include "DistExponential.h"
+#include "DistNormal.h"
+#include "DistUniform.h"
+#include "MoveSlidingWindow.h"
+#include "MoveScale.h"
 #include "RbDouble.h"
-#include "RbFunction_dnorm.h"
-#include "RbFunction_pnorm.h"
-#include "RbFunction_rnorm.h"
-#include "RbFunction_qnorm.h"
+#include "RbMove.h"
+#include "RbMoveSchedule.h"
 #include "RbObject.h"
 #include "RbException.h"
+#include "StochasticNode.h"
 
 int main(int argc, char **argv) {
     // create a DistNormal object
-    RbDouble* sigma_prior = new RbDouble(1.0);
-    RbDouble* mu_prior = new RbDouble(0.0);
-    RbDouble* x_1 = new RbDouble(0.5);
-    RbDouble* x_2 = new RbDouble(0.5);
-    RbDouble* x_3 = new RbDouble(0.5);
-    RbDouble* x_4 = new RbDouble(0.5);
-    RbDouble* x_5 = new RbDouble(0.5);
-    RbDouble* x_6 = new RbDouble(0.5);
-    RbDouble* x_7 = new RbDouble(0.5);
-    RbDouble* x_8 = new RbDouble(0.5);
-    RbDouble* x_9 = new RbDouble(0.5);
-    RbDouble* x_10 = new RbDouble(0.5);
+    RbDouble* sigmaPrior = new RbDouble(1.0);
+    RbDouble* muPriorLower = new RbDouble(-1.0);
+    RbDouble* muPriorUpper = new RbDouble(1.0);
+    
+    std::vector<RbDouble*> x;
+    for (int i=0; i<10; i++)
+    	x.push_back( new RbDouble(0.5) );
 
-    RbFunction_dnorm   dnorm;
-    RbFunction_pnorm   pnorm;
-    RbFunction_qnorm   qnorm;
-    RbFunction_rnorm   rnorm;
-
-    ConstantNode* cnSigmaPrior = new ConstantNode(sigma_prior);
-    ConstantNode* cnMuPrior = new ConstantNode(mu_prior);
+    ConstantNode* cnSigmaPrior = new ConstantNode(sigmaPrior);
+    ConstantNode* cnMuPriorLower = new ConstantNode(muPriorLower);
+    ConstantNode* cnMuPriorUpper = new ConstantNode(muPriorUpper);
 
     StochasticNode* snSigma = new StochasticNode();
     StochasticNode* snMu = new StochasticNode();
+    snSigma->addParentNode(cnSigmaPrior);
+    snMu->addParentNode(cnMuPriorLower);
+    snMu->addParentNode(cnMuPriorUpper);
+    cnSigmaPrior->addChildNode(snSigma);
+    cnMuPriorLower->addChildNode( snMu );
+    cnMuPriorUpper->addChildNode( snMu );
 
-    StochasticNode* snX1 = new StochasticNode();
-    StochasticNode* snX2 = new StochasticNode();
-    StochasticNode* snX3 = new StochasticNode();
-    StochasticNode* snX4 = new StochasticNode();
-    StochasticNode* snX5 = new StochasticNode();
-    StochasticNode* snX6 = new StochasticNode();
-    StochasticNode* snX7 = new StochasticNode();
-    StochasticNode* snX8 = new StochasticNode();
-    StochasticNode* snX9 = new StochasticNode();
-    StochasticNode* snX10 = new StochasticNode();
-
-    std::vector<DAGNode*> observations;
-    observations.push_back(snX1);
-    observations.push_back(snX2);
-    observations.push_back(snX3);
-    observations.push_back(snX4);
-    observations.push_back(snX5);
-    observations.push_back(snX6);
-    observations.push_back(snX7);
-    observations.push_back(snX8);
-    observations.push_back(snX9);
-    observations.push_back(snX10);
-
-    // clamp data
+	std::vector<StochasticNode*> sn;
+	for (int i=0; i<10; i++)
+		{
+		StochasticNode* s = new StochasticNode();
+		sn.push_back( s );
+		s->clamp( x[i] );
+		}
+    
+    std::vector<Distribution*> dists;
+    for (int i=0; i<10; i++)
+    	{
+    	DistNormal* d = new DistNormal(snMu, snSigma, sn[i]);
+    	dists.push_back( d );
+    	sn[i]->assignDistribution(d);
+    	sn[i]->addParentNode(snMu);
+    	sn[i]->addParentNode(snSigma);
+    	snMu->addChildNode(sn[i]);
+    	snSigma->addChildNode(sn[i]);
+    	}
+    DistUniform* uniDist = new DistUniform( cnMuPriorLower, cnMuPriorUpper, snMu );
+    DistExponential* expDist = new DistExponential( cnSigmaPrior, snSigma );
+	snMu->assignDistribution(uniDist);
+	snSigma->assignDistribution(expDist);
+	
+	std::vector<unsigned int> seed1;
+	seed1.insert(1);
+	seed1.insert(2);
+	RandomNumberGenerator* rng = new RandomNumberGenerator(seed1);
+	RbMoveSchedule* msSigma = new RbMoveSchedule( rng );
+	msSigma.addMove( new MoveScale( snSigma, new RbDouble(1.5), rng ), 1.0 );
+	snSigma->assignMoveSchedule( msSigma );
+	
+	std::vector<unsigned int> seed2;
+	seed2.insert(7);
+	seed2.insert(5);
+	RandomNumberGenerator* rng2 = new RandomNumberGenerator(seed2);
+	RbMoveSchedule* msMu = new RbMoveSchedule( rng2 );
+	msMu.addMove( new MoveSlidingWindow( snMu, new RbDouble(0.1), muPriorLower, muPriorUpper, rng2 ), 1.0 );
+	snMu->assignMoveSchedule( msSigma );
 
     // create model
+    RbModel* model = new RbModel(sn);
 
     // run MCMC
-
-    Argument* aMu    = new Argument("mu", cnMu);
-    Argument* aSigma = new Argument("sigma", cnSigma);
-    Argument* aX     = new Argument("", cnX);
-
-    std::vector<Argument*> args;
-    args.push_back( aX );
-    args.push_back( aSigma );
-    args.push_back( aMu );
-
+    RbMcmc* mcmc = new RbMcmc(model);
+    mcmc->runChain();
+    
     // TODO some more meaningful test
 
     // calculate the pdf for some known parameters

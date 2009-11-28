@@ -17,8 +17,10 @@
  * $Id$
  */
 
-
-#include "FunctionDistribution.h"
+#include "Distribution.h"
+#include "RbException.h"
+#include "RbMove.h"
+#include "RbMoveSchedule.h"
 #include "StochasticNode.h"
 
 
@@ -31,17 +33,10 @@
  * @param dist      The distribution
  *
  */
-StochasticNode::StochasticNode(Distribution* dist)
-    : DAGNode(), clamped(false), distribution(dist) {
+StochasticNode::StochasticNode(void)
+    : DAGNode(), clamped(false) {
 
-    std::vector<DAGNode*> arguments = distribution->getArguments();
-    for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++) {
-        parents.insert(*i);
-        (*i)->addChildNode(this);
-    }   
-
-    value = distribution->rv();
-}
+}   
 
 
 /**
@@ -70,6 +65,49 @@ StochasticNode::~StochasticNode() {
 		delete distribution;
 }
 
+RbObject& StochasticNode::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const StochasticNode& x = dynamic_cast<const StochasticNode&> (obj);
+
+        StochasticNode& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const StochasticNode& x = dynamic_cast<const StochasticNode&> (*(obj.convertTo("const_node")));
+
+            StochasticNode& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to const_node");
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+StochasticNode& StochasticNode::operator=(const StochasticNode& obj) {
+
+    changed = obj.changed;
+    children = obj.children;
+    (*lastMove) = (*obj.lastMove);
+    members = obj.members;
+    methods = obj.methods;
+    monitors = obj.monitors;
+    (*moves) = (*obj.moves);
+    parents = obj.parents;
+    (*storedValue) = (*obj.storedValue);
+    touched = obj.touched;
+    (*value) = (*obj.value);
+
+    return (*this);
+}
 
 /**
  * @brief Clamp the node to a value
@@ -85,11 +123,29 @@ void StochasticNode::clamp(RbObject* observedVal) {
 
 	if (storedValue != NULL)
         delete storedValue;
-    storedValue = value;
-
+	if (value != NULL)
+        delete value;
+    storedValue = NULL;
     value = observedVal;
+    clamped = true;
 }
 
+double StochasticNode::getLnProbabilityRatio(void) {
+
+	double lnNumerator = distribution->lnPdf(this->value);
+	double lnDenominator = distribution->lnPdf(this->storedValue);
+	return lnNumerator - lnDenominator;
+}
+
+void StochasticNode::assignDistribution(Distribution* d) {
+
+	distribution = d;
+}
+
+void StochasticNode::initializeValue(RbObject* v) {
+
+	value = v;
+}
 
 /**
  * @brief Calculate probability of node

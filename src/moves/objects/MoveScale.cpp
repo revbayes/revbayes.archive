@@ -11,8 +11,9 @@
 
 const StringVector MoveScale::rbClass = StringVector("scale") + RbMove::rbClass;
 
-MoveScale::MoveScale(DAGNode* n) : RbMove(n) {
+MoveScale::MoveScale(DAGNode* n, RbDouble* tn, RandomNumberGenerator* r) : RbMove(n,r) {
 
+	tuningParm = tn;
 }
 
 MoveScale::MoveScale(const MoveScale& m) : RbMove(m.node) {
@@ -82,6 +83,14 @@ std::string MoveScale::toString(void) const {
 
 double MoveScale::perform(void) {
 
+	RbObject* tmp = node->getValue();
+	double curVal = ((RbDouble*) tmp)->getValue();
+	double tuning = tuningParm->getValue();
+	double u = rng->nextDouble();
+	double newVal = curVal * exp(tuning*(u-0.5));
+	((RbDouble*) tmp)->setValue(newVal);
+	
+	return log(newVal/curVal);
 }
 
 void  MoveScale::accept(void) {
@@ -91,4 +100,41 @@ void  MoveScale::accept(void) {
 
 void MoveScale::reject(void) {
 
+}
+
+RbObject& MoveScale::operator=(const RbObject& o) {
+
+
+    try {
+        // Use built-in fast down-casting first
+        const MoveScale& x = dynamic_cast<const MoveScale&> (obj);
+
+        MoveScale& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const MoveScale& x = dynamic_cast<const MoveScale&> (*(obj.convertTo(RbNames::MoveScale::name)));
+
+            MoveScale& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::MoveScale::name);
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+DistNormal& MoveScale::operator=(const MoveScale& obj) {
+
+    *mu = *(obj.mu);
+    *sigma = *(obj.sigma);
+    *obs = *(obj.obs);
+    
+    return (*this);
 }

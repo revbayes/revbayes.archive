@@ -1,4 +1,5 @@
 #include "RbMath.h"
+#include "RbConstants.h"
 #include "RbStatistics.h"
 #include <cmath>
 #include <iostream>
@@ -813,8 +814,10 @@ double RbStatistics::Normal::quantile(double mu, double sigma, double p) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Uniform01::pdf(void) {
+double RbStatistics::Uniform01::pdf(double x) {
 
+	if ( x < 0.0 || x > 1.0)
+		return 0.0;
 	return 1.0;
 }
 
@@ -826,8 +829,10 @@ double RbStatistics::Uniform01::pdf(void) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Uniform01::lnPdf(void) {
+double RbStatistics::Uniform01::lnPdf(double x) {
 
+	if ( x < 0.0 || x > 1.0)
+		return RbConstants::Double::neginf;
 	return 0.0;
 }
 
@@ -876,8 +881,10 @@ double RbStatistics::Uniform01::quantile(double p) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Uniform::pdf(double a, double b) {
+double RbStatistics::Uniform::pdf(double a, double b, double x) {
 
+	if ( x < a || x > b)
+		return 0.0;
 	return 1.0 / (b-a);
 }
 
@@ -891,8 +898,10 @@ double RbStatistics::Uniform::pdf(double a, double b) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Uniform::lnPdf(double a, double b) {
+double RbStatistics::Uniform::lnPdf(double a, double b, double x) {
 
+	if ( x < a || x > b)
+		return RbConstants::Double::neginf;
 	return ( -std::log(b-a) );
 }
 

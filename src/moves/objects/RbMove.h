@@ -8,6 +8,7 @@
 #include "StringVector.h"
 
 class DAGNode;
+class RandomNumberGenerator;
 
 class RbMove : public RbComplex {
 
@@ -27,14 +28,14 @@ public:
         virtual RbMove&             operator=(const RbMove& o) = 0;
 
 protected:
-        RbMove(DAGNode* n);
+        RbMove(DAGNode* n, RandomNumberGenerator* r);
 
         // virtual functions
         virtual double              perform(void) = 0;
         virtual void                accept(void) = 0;                // for statistic purposes
         virtual void                reject(void) = 0;
 
-
+		RandomNumberGenerator*		rng;
         int nAcceptances;
         int nTries;
         DAGNode* node;

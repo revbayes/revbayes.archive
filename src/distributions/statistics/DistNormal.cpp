@@ -8,19 +8,26 @@
 #include <cmath>
 
 #include "DistNormal.h"
-#include "../../datatypes/RbDataType.h"
-#include "../../datatypes/primary/RbDouble.h"
-#include "../../utils/RbMath.h"
-#include "../../utils/RbStatistics.h"
+#include "datatypes/RbDataType.h"
+#include "datatypes/primary/RbDouble.h"
+#include "RbMath.h"
+#include "RbStatistics.h"
+#include "RbNames.h"
 
-DistNormal::DistNormal(double* s, double* m) {
+DistNormal::DistNormal(DAGNode* s, DAGNode* m, DAGNode* x) {
+
 	sigma = s;
-	mu = m;
+	mu    = m;
+	obs   = x;
+	returnType = RbNames::Double::name;
 }
 
 DistNormal::DistNormal(DistNormal& d) {
+
 	sigma = d.sigma;
-	mu = d.mu;
+	mu    = d.mu;
+	obs   = d.obs;
+	returnType = d.returnType;
 }
 
 DistNormal::~DistNormal() {
@@ -50,12 +57,12 @@ RbObject* DistNormal::clone(void) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double DistNormal::pdf(RbDataType* variable) {
-	// first some argument checking
-	assert(typeid(*variable) == typeid(RbDouble));
-	double x = ((RbDouble*)variable)->getValue();
+double DistNormal::pdf(void) {
+	double m = ((RbDouble*) mu->getValue())->getValue();
+	double s = ((RbDouble*) sigma->getValue())->getValue();
+	double o = ((RbDouble*) obs->getValue())->getValue();
 
-	double pdf = RbStatistics::Normal::pdf(*mu,*sigma,x);
+	double pdf = RbStatistics::Normal::pdf(m,s,o);
 
 	return pdf;
 }
@@ -71,71 +78,85 @@ double DistNormal::pdf(RbDataType* variable) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double DistNormal::lnPdf(RbDataType* variable) {
-	// first some argument checking
-	assert(typeid(*variable) == typeid(RbDouble));
-	double x = ((RbDouble*)variable)->getValue();
+double DistNormal::lnPdf() {
 
-	return RbStatistics::Normal::lnPdf(*mu,*sigma,x);
+	double m = ((RbDouble*) mu->getValue())->getValue();
+	double s = ((RbDouble*) sigma->getValue())->getValue();
+	double o = ((RbDouble*) obs->getValue())->getValue();
+
+	double lnpdf = RbStatistics::Normal::lnPdf(m,s,o);
+
+	return lnpdf;
 }
 
-/*!
- * This function calculates the cumulative probability
- * for a normally-distributed random variable.
- *
- * \brief Normal cumulative probability.
- * \param mu is the mean parameter of the normal.
- * \param sigma is the variance parameter of the normal.
- * \param x is the normal random variable.
- * \return Returns the cumulative probability.
- * \see Adams, A. G. 1969. Areas under the normal curve. Cojputer J. 12:197-198.
- * \throws Does not throw an error.
- */
-double DistNormal::cdf(RbDataType* variable) {
-	// first some argument checking
-	assert(typeid(*variable) == typeid(RbDouble));
-	double x = ((RbDouble*)variable)->getValue();
+RbObject* DistNormal::clone(void) const {
 
-	return RbStatistics::Normal::cdf(*mu,*sigma,x);
+	RbObject* x = (RbObject*)(new DistNormal(*this));
+	return x;
 }
 
+bool DistNormal::equals(const RbObject* o) const {
 
-/*!
- * This function calculates the quantiles of a normal distribution.
- *
- * \brief Quantile of a standard normal distribution.
- * \param the arguments of the distribution.
- * \return Returns quantile value.
- * \throws Does not throw an error.
- * \see Odeh, R. E. and J. O. Evans. 1974. The percentage points of the normal
- *      distribution. Applied Statistics, 22:96-97.
- * \see Wichura, M. J.  1988. Algorithm AS 241: The percentage points of the
- *      normal distribution. 37:477-484.
- * \see Beasley, JD & S. G. Springer. 1977. Algorithm AS 111: The percentage
- *      points of the normal distribution. 26:118-121.
- */
-double DistNormal::quantile(RbDataType* variable) {
-	assert(typeid(*variable) == typeid(RbDouble));
-	double p = ((RbDouble*)variable)->getValue();
-	return RbStatistics::Normal::quantile(*mu,*sigma,p);
+	return false;
 }
 
+const StringVector& DistNormal::getClass(void) const {
 
-/*!
- * This function generates a normal random variable.
- *
- * \brief Standard normal random variable.
- * \return Returns a standard normal random variable.
- * \throws Does not throw an error.
- */
-RbDataType* DistNormal::rv(void) {
-	// call the random number generator
-
-	return NULL;
 }
 
+bool DistNormal::isType(const std::string t) const {
 
-RbDataType* DistNormal::getDataType() {
-	//TODO implement this
-	return new RbDouble(0);
 }
+
+void DistNormal::print(std::ostream& o) const {
+
+	o << "Normal Distrbibution" << std::endl;
+}
+
+void DistNormal::printValue(std::ostream& o) const {
+
+	o << "Normal Distribution with some value that we won't give" << std::endl;
+}
+
+std::string DistNormal::toString(void) const {
+
+	return "Normal Distribution(" + obs->toString() + "|" + mu->toString() + "," + sigma->toString() + ")";
+}
+
+RbObject& DistNormal::operator=(const RbObject& o) {
+
+
+    try {
+        // Use built-in fast down-casting first
+        const DistNormal& x = dynamic_cast<const DistNormal&> (obj);
+
+        DistNormal& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const DistNormal& x = dynamic_cast<const DistNormal&> (*(obj.convertTo(RbNames::Normal::name)));
+
+            DistNormal& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::Normal::name);
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+DistNormal& DistNormal::operator=(const DistNormal& obj) {
+
+    *mu = *(obj.mu);
+    *sigma = *(obj.sigma);
+    *obs = *(obj.obs);
+    
+    return (*this);
+}
+

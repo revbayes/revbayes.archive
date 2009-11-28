@@ -21,7 +21,7 @@ class MoveScale : public RbMove {
 
         static const StringVector   rbClass;            //!< Static class attribute
 
-        MoveScale(void);
+        MoveScale(DAGNode* n, RbDouble* tn, RandomNumberGenerator* r);
         MoveScale(const MoveScale& m);
         virtual ~MoveScale();
 
@@ -32,14 +32,18 @@ class MoveScale : public RbMove {
         void                       print(std::ostream& o) const;                   //!< Print complete object info
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object
-        bool                       isType(std::string t) const { return rbClass[0] == t; }
-        StringVector&              operator+(const StringVector& sv) const;
+        RbMove&                    operator=(const RbMove& o);
+        RbObject&                  operator=(const RbObject& o);
+        MoveScale&                 operator=(const MoveScale& o);
+
 
 
     protected:
         double         perform(RbObject* obj);
         void           accept(void);                // for statistic purposes
         void           reject(void);
+        
+        RbDouble*				tuningParm;
 };
 
 #endif /* MOVESCALE_H_ */

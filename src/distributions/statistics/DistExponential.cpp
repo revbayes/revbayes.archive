@@ -1,83 +1,150 @@
 /*
- *  DistExponential.cpp
- *  REvBayes
+ * DistNormal.cpp
  *
- *  Created by John Huelsenbeck on 8/18/09.
- *  Copyright 2009 University of California, Berkeley. All rights reserved.
- *
+ *  Created on: 25 aug 2009
+ *      Author: Sebastian
  */
 
+#include <cmath>
+
 #include "DistExponential.h"
-#include "../datatypes/RbDataType.h"
-#include "../datatypes/primary/RbDouble.h"
-#include "../utils/RbMath.h"
+#include "datatypes/RbDataType.h"
+#include "datatypes/primary/RbDouble.h"
+#include "RbMath.h"
+#include "RbStatistics.h"
+#include "RbNames.h"
 
-DistExponential::DistExponential() {
-	// TODO Auto-generated constructor stub
+DistExponential::DistExponential(DAGNode* l, DAGNode* x) {
 
+	lambda = l;
+	obs    = x;
+	returnType = RbNames::Double::name;
+}
+
+DistExponential::DistExponential(DistExponential& d) {
+
+	lambda = d.lambda;
+	obs   = d.obs;
+	returnType = d.returnType;
 }
 
 DistExponential::~DistExponential() {
 	// TODO Auto-generated destructor stub
 }
 
+/**
+ * @brief Copy this object
+ *
+ * This is a call of the copy constructor used from the base class
+ *
+ * @return     return a deep copy of the object
+ *
+ */
+RbObject* DistExponential::clone(void) {
+	return new DistExponential(*this);
+}
+
 /*!
  * This function calculates the probability density
- * for an exponentially-distributed random variable.
+ * for a normally-distributed random variable.
  *
- * \brief Exponential probability density.
- * \param lambda is the rate parameter of the exponential.
- * \param x is the exponential random variable.
+ * \brief Normal probability density.
+ * \param mu is the mean parameter of the normal.
+ * \param sigma is the variance parameter of the normal.
+ * \param x is the normal random variable.
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double DistExponential::pdf(double lambda, double x) {
+double DistExponential::pdf(void) {
 
-	return lambda * exp(-lambda * x);
+	double pdf = RbStatistics::Exponential::pdf(*lambda,*obs);
+
+	return pdf;
 }
 
 /*!
  * This function calculates the natural log of the probability density
- * for an exponentially-distributed random variable.
+ * for a normally-distributed random variable.
  *
- * \brief Natural log of exponential probability density.
- * \param lambda is the rate parameter of the exponential.
- * \param x is the exponential random variable.
+ * \brief Natural log of normal probability density.
+ * \param mu is the mean parameter of the normal.
+ * \param sigma is the variance parameter of the normal.
+ * \param x is the normal random variable.
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double DistExponential::lnPdf(double lambda, double x) {
+double DistExponential::lnPdf() {
 
-	return (std::log(lambda) - lambda * x);
+	return RbStatistics::Exponential::lnPdf(*lambda, *obs);
 }
 
-/*!
- * This function calculates the cumulative probability
- * for an exponentially-distributed random variable.
- *
- * \brief Exponential cumulative probability.
- * \param lambda is the rate parameter of the exponential.
- * \param x is the exponential random variable.
- * \return Returns the cumulative probability.
- * \throws Does not throw an error.
- */
-double DistExponential::cdf(double lambda, double x) {
+RbObject* DistExponential::clone(void) const {
 
-	return 1.0 - exp(-lambda * x);
+	RbObject* x = (RbObject*)(new DistExponential(*this));
+	return x;
 }
 
-/*!
- * This function returns the quantile of a exponential probability
- * distribution.
- *
- * \brief Exponential quantile.
- * \param lambda is the rate parameter.
- * \param p is the probability up to the quantile.
- * \return Returns the quantile.
- * \throws Does not throw an error.
- */
-double DistExponential::quantile(double lambda, double p) {
+bool DistExponential::equals(const RbObject* o) const {
 
-	return -(1.0 / lambda) * std::log(1.0 - p);
+	return false;
+}
+
+const StringVector& DistExponential::getClass(void) const {
+
+}
+
+bool DistExponential::isType(const std::string t) const {
+
+}
+
+void DistExponential::print(std::ostream& o) const {
+
+	o << "Exponential Distrbibution" << std::endl;
+}
+
+void DistExponential::printValue(std::ostream& o) const {
+
+	o << "Exponential Distribution with some value that we won't give" << std::endl;
+}
+
+std::string DistExponential::toString(void) const {
+
+	return "Exponential Distribution(" + obs->toString() + "|" + lambda->toString() + ")";
+}
+
+RbObject& DistExponential::operator=(const RbObject& o) {
+
+
+    try {
+        // Use built-in fast down-casting first
+        const DistExponential& x = dynamic_cast<const DistExponential&> (obj);
+
+        DistExponential& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const DistExponential& x = dynamic_cast<const DistExponential&> (*(obj.convertTo(RbNames::Exponential::name)));
+
+            DistExponential& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::Exponential::name);
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+DistExponential& DistExponential::operator=(const DistExponential& obj) {
+
+    *lambda = *(obj.lambda);
+    *obs = *(obj.obs);
+    
+    return (*this);
 }
 

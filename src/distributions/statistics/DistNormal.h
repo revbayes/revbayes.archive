@@ -8,29 +8,34 @@
 #ifndef DISTNORMAL_H
 #define DISTNORMAL_H
 
-#include "../Distribution.h"
-#include "../../datatypes/RbDataType.h"
-#include "../../datatypes/primary/RbDouble.h"
+#include "Distribution.h"
+#include "RbDouble.h"
 
-class DistNormal : Distribution{
+class DAGNode;
+
+class DistNormal : Distribution {
 public:
-	DistNormal(double* s, double* m);
+	DistNormal(DAGNode* s, DAGNode* m, DAGNode* x);
 	DistNormal(DistNormal& d);
 	virtual ~DistNormal();
+        RbObject*           clone(void) const;                                    //!< Clone object
+        bool                equals(const RbObject* o) const;                      //!< Equals comparison
+        const StringVector& getClass(void) const;                                   //!< Get class
+        bool                        isType(const std::string t) const;                        //!< Is the object of type t?
+       void                print(std::ostream& o) const;                         //!< Print complete object info
+       void                printValue(std::ostream& o) const;                    //!< Print value (for user)
+       std::string         toString(void) const;                                 //!< General info on object
 
-	RbObject* clone(void);                                         //!< call of the copy constructor from the base class
+        // overloaded operators
+        RbObject&			operator=(const RbObject& o);
 
-//	RbDataType* execute(); //!< Call appropriate function based on functionType
-	RbDataType* getDataType(); //!< Get data type for type checking
-	double lnPdf(RbDataType* value); //!< Ln probability density
-	double pdf(RbDataType* value); //!< Probability density
-	RbDataType* rv(); //!< Draw random variables
-	double cdf(RbDataType* variable);
-	double quantile(RbDataType* variable);
+	double lnPdf(RbObject* o); //!< Ln probability density
+	double pdf(RbObject* o); //!< Probability density
 
 private:
-	double* sigma;
-	double* mu;
+	DAGNode* sigma;
+	DAGNode* mu;
+	DAGNode* obs;
 };
 
 #endif /* DISTNORMAL_H_ */

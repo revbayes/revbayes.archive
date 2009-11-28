@@ -73,10 +73,12 @@ class DAGNode : public RbComplex {
         virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
         void						accept();
 	    void                		addChildNode(DAGNode* c) { children.insert(c); }    //!< Add child node
-        virtual RbObject*    		clone() const = 0;                                  //!< Clone this node
+	    void                        addParentNode(DAGNode* p) { parents.insert(p); }
+	    void						assignMoveSchedule(RbMoveSchedule* ms) { moves = ms; }
+	    virtual RbObject*    		clone() const = 0;                                  //!< Clone this node
         virtual bool        		 equals(const RbObject *obj) const;                  //!< Compare DAG nodes
 	    std::set<DAGNode*>& 		 getChildrenNodes(void) { return children; }         //!< Get children nodes
-	    virtual double				 getLnLikelihoodRatio(void);
+	    double						 getLnLikelihoodRatio(void);
 	    double                       getLnPriorRatio(void);
 	    virtual double               getLnProbabilityRatio(void) = 0;
 	    std::set<DAGNode*>& 		getParentNodes(void) { return parents; }            //!< Get parent nodes

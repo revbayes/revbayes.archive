@@ -23,44 +23,26 @@
 #define Distribution_H
 
 #include <vector>
+#include <string>
 #include <list>
-#include "../main/RbObject.h"
-#include "../datatypes/RbDataType.h"
-//#include "Argument.h"
-//#include "ArgumentRule.h"
-#include "../modelLanguage/parser/SyntaxLabeledExpr.h"
+#include "RbObject.h"
 
 class Distribution: public RbObject {
 
 public:
-	enum functionT {D, P, Q, R, TILDE};
 
 	virtual ~Distribution() { }                        //!< Destructor does nothing
 
-//	PLUGIN_API virtual Distribution* createInstance(void)=0;
-
-	virtual RbDataType* execute(RbDataType* value);    //!< Call appropriate function based on functionType
-	virtual RbDataType* getDataType() = 0;              //!< Get data type for type checking
-	virtual double lnPdf(RbDataType* value) = 0;       //!< Ln probability density function
-	virtual double pdf(RbDataType* value) = 0;         //!< Probability density function
-	virtual RbDataType* rv() = 0;                      //!< Draw random variables
-	virtual double cdf(RbDataType* variable) = 0;      //!< The cummulative density function until variable
-	virtual double quantile(RbDataType* variable) = 0; //!< The quantile function
-
-
-	//bool setArguments(std::list<SyntaxLabeledExpr*> args); //!< Set arguments based on function type
-	void setFunctionType(functionT type) {
-		functionType = type;
-	} //!< Set function type
-	std::string getDistributionName(void) { return getName(); } //!< Returns the name of the distribution
-
+    std::string getReturnType() const { return returnType; }    //!< Get return type
+	virtual double lnPdf(RbObject* o) = 0;       //!< Ln probability density function
+	virtual double pdf(RbObject* o) = 0;         //!< Probability density function
 protected:
 	Distribution() :
-		RbObject(), functionType(Distribution::D) {
+		RbObject() {
 	} //!< Constructor sets type to "d"
-	functionT functionType; //!< Holds function type
-	//bool lnValue; //!< Calculate ln prob instead of prob
+
 private:
+	std::string returnType;
 //	std::vector<Argument*> argument;
 //	std::vector<ArgumentRule*> argumentRule;
 };
