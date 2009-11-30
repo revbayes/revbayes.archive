@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
     RbModel* model = new RbModel(sn);
 
     // run MCMC
-    RbMcmc* mcmc = new RbMcmc(model);
+    RbMcmc* mcmc = new RbMcmc(model, rng);
     mcmc->runChain();
     
     // TODO some more meaningful test

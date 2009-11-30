@@ -97,7 +97,7 @@ bool DistNormal::equals(const RbObject* o) const {
 }
 
 const StringVector& DistNormal::getClass(void) const {
-    rbClass[0];
+    rbClass;
 }
 
 void DistNormal::print(std::ostream& o) const {

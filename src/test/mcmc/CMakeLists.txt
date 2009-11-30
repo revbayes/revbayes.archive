@@ -11,4 +11,5 @@ add_executable(testMCMC \\
 ../../distributions/Distribution.cpp ../../distributions/statistics/DistExponential.cpp ../../distributions/statistics/DistNormal.cpp \\
 ../../distributions/statistics/DistUniform.cpp \\
 ../../functions/Argument.cpp ../../functions/ArgumentRule.cpp ../../functions/RbFunction.cpp \\
-../../utils/RbStatistics.cpp ../../utils/RbMath.cpp testMCMC.cpp)
+../../utils/RbStatistics.cpp ../../utils/RbNames.h ../../utils/RbMath.cpp \\
+../../inference/mcmc/RbMcmc.cpp testMCMC.cpp)

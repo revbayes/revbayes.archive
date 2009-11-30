@@ -5,23 +5,34 @@
  *      Author: Sebastian
  */
 
+#include <cmath>
+#include "DAGNode.h"
+#include "RandomNumberGenerator.h"
+#include "RbException.h"
+#include "RbInt.h"
 #include "RbMcmc.h"
+#include "RbModel.h"
+#include "RbNames.h"
+#include "RbObject.h"
+#include "StringVector.h"
 
-RbMcmc::RbMcmc(RbModel* mp) {
+RbMcmc::RbMcmc(RbModel* mp, RandomNumberGenerator* r) {
 
 	modelPtr = mp;
 	members.insert(std::make_pair("burnin", new RbInt(10000)));
 	members.insert(std::make_pair("chainLength", new RbInt(1000000)));
+	rng = r;
 }
 
-RbMcmc::RbMcmc(RbModel* mp, RbInt* b, RbInt* cl) {
+RbMcmc::RbMcmc(RbModel* mp, RbInt* b, RbInt* cl, RandomNumberGenerator* r) {
 
 	modelPtr = mp;
 	members.insert(std::make_pair("burnin",b));
 	members.insert(std::make_pair("chainLength",cl));
+	rng = r;
 }
 
-RbMcmc::RbMcmc(RbMcmc& m) {
+RbMcmc::RbMcmc(const RbMcmc& m) {
 
 	// TODO: Deep copy of model needs to be performed
 }
@@ -45,7 +56,7 @@ void RbMcmc::runChain(void) {
 	for (int i=0; i<(burnIn+chainLength); i++) 
 		{
 		// get the DAG-Node
-		DAGNode* node = getDagToChange();
+		DAGNode* node = getDagToUpdate();
 		
 		// update the dag-node
 		double lnHastingsRatio = update(node);
@@ -60,7 +71,8 @@ void RbMcmc::runChain(void) {
 		double r = calculateAcceptanceProb( lnLikelihoodRatio + lnPriorRatio + lnHastingsRatio );
 		
 		// accept/reject the move
-		if ( uniformRVfromSomewhere < r )
+		double u = rng->nextDouble();
+		if ( u < r )
 			accept(node);
 		else 
 			reject(node);
@@ -92,10 +104,6 @@ RbObject* RbMcmc::clone() const {
 bool RbMcmc::equals(const RbObject* obj) const {
 	return (this == obj);
 }
-
-const StringVector& RbMcmc::getClass() const { 
-	return rbClass; 
-}            //!< Get class
 
 RbObject& RbMcmc::operator=(const RbObject& obj) {
 

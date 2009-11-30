@@ -10,14 +10,19 @@
 
 #include "Distribution.h"
 #include "RbDouble.h"
+#include "RbObject.h"
+#include "StringVector.h"
 
 class DAGNode;
 
 class DistUniform : public Distribution {
 public:
-	DistUniform(DAGNode* l, DAGNode* u);
-	DistUniform(DistNormal& d);
-	virtual ~DistUniform();
+        static const StringVector   rbClass;            //!< Static class attribute
+
+        DistUniform(DAGNode* l, DAGNode* u);
+        DistUniform(const DistUniform& d);
+        virtual ~DistUniform();
+
         RbObject*           clone(void) const;                                    //!< Clone object
         bool                equals(const RbObject* o) const;                      //!< Equals comparison
         const StringVector& getClass(void) const;                                   //!< Get class

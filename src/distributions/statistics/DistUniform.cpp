@@ -7,11 +7,15 @@
 
 #include <cmath>
 
+#include "DAGNode.h"
 #include "DistUniform.h"
 #include "RbDouble.h"
+#include "RbException.h"
 #include "RbMath.h"
 #include "RbStatistics.h"
 #include "RbNames.h"
+
+const StringVector DistUniform::rbClass = StringVector(RbNames::Uniform::name) + Distribution::rbClass;
 
 DistUniform::DistUniform(DAGNode* l, DAGNode* u) {
 
@@ -20,7 +24,7 @@ DistUniform::DistUniform(DAGNode* l, DAGNode* u) {
 	returnType = RbNames::Double::name;
 }
 
-DistUniform::DistUniform(DistUniform& d) {
+DistUniform::DistUniform(const DistUniform& d) {
 
 	lower = d.lower;
 	upper = d.upper;
@@ -39,7 +43,7 @@ DistUniform::~DistUniform() {
  * @return     return a deep copy of the object
  *
  */
-RbObject* DistUniform::clone(void) {
+RbObject* DistUniform::clone(void) const {
 	return new DistUniform(*this);
 }
 
@@ -59,7 +63,9 @@ double DistUniform::pdf(RbObject* obs) {
 	assert(typeid(*obs) == typeid(RbDouble));
 
 	double x = ((RbDouble*) obs)->getValue();
-	double pdf = RbStatistics::Uniform::pdf(*lower, *upper, x);
+    double l = ((RbDouble*) lower->getValue())->getValue();
+    double u = ((RbDouble*) upper->getValue())->getValue();
+	double pdf = RbStatistics::Uniform::pdf(l, u, x);
 
 	return pdf;
 }
@@ -80,13 +86,9 @@ double DistUniform::lnPdf(RbObject* obs) {
 	assert(typeid(*obs) == typeid(RbDouble));
 
     double x = ((RbDouble*) obs)->getValue();
-	return RbStatistics::Normal::lnPdf(*lower,*upper,x);
-}
-
-RbObject* DistUniform::clone(void) const {
-
-	RbObject* x = (RbObject*)(new DistUniform(*this));
-	return x;
+    double l = ((RbDouble*) lower->getValue())->getValue();
+    double u = ((RbDouble*) upper->getValue())->getValue();
+	return RbStatistics::Normal::lnPdf(l,u,x);
 }
 
 bool DistUniform::equals(const RbObject* o) const {
@@ -95,11 +97,7 @@ bool DistUniform::equals(const RbObject* o) const {
 }
 
 const StringVector& DistUniform::getClass(void) const {
-
-}
-
-bool DistUniform::isType(const std::string t) const {
-
+    return rbClass;
 }
 
 void DistUniform::print(std::ostream& o) const {
@@ -114,10 +112,10 @@ void DistUniform::printValue(std::ostream& o) const {
 
 std::string DistUniform::toString(void) const {
 
-	return "Uniform Distribution(" + obs->toString() + "|" + lower->toString() + "," + upper->toString() + ")";
+	return "Uniform Distribution(" + lower->toString() + "," + upper->toString() + ")";
 }
 
-RbObject& DistUniform::operator=(const RbObject& o) {
+RbObject& DistUniform::operator=(const RbObject& obj) {
 
 
     try {

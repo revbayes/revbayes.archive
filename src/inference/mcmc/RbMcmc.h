@@ -6,18 +6,22 @@
 #include <string>
 #include <ostream>
 
+class RbInt;
 class RbModel;
 class RbObject;
 class DAGNode;
+class RandomNumberGenerator;
 
 class RbMcmc : public RbComplex {
 
     public:
         static const StringVector   rbClass;            //!< Static class attribute
         
-        RbMcmc(RbModel* mp);
-        RbMcmc(RbMcmc& m);
+        RbMcmc(RbModel* mp, RandomNumberGenerator* r);
+        RbMcmc(RbModel* mp, RbInt* b, RbInt* cl, RandomNumberGenerator* r);
+        RbMcmc(const RbMcmc& m);
         virtual ~RbMcmc(void);
+
         void runChain(void);
         RbObject*                  clone() const;                                  //!< Clone object
         bool                       equals(const RbObject* obj) const;              //!< Equals comparison
@@ -30,7 +34,8 @@ class RbMcmc : public RbComplex {
         RbObject&                   operator=(const RbObject& o);
         RbMcmc&                     operator=(const RbMcmc& o);
     private:
-        DAGNode*                    getDagToChange();
+        double                      calculateAcceptanceProb(double lnR);
+        DAGNode*                    getDagToUpdate();
         double                      getLnPriorRatio(DAGNode* d);
         double                      update(DAGNode* d);
         double                      getLnLikelihoodRatio(DAGNode* d);
@@ -38,6 +43,7 @@ class RbMcmc : public RbComplex {
         void                        reject(DAGNode* d);
 
    	    RbModel*                    modelPtr;
+   	    RandomNumberGenerator*      rng;
    	 
 };
 

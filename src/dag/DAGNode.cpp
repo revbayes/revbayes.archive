@@ -165,6 +165,12 @@ RbMove* DAGNode::getNextMove(void) {
     return moves->getNext();
 }
 
+void DAGNode::monitor(int i) {
+    for (std::set<RbMonitor*>::iterator it=monitors.begin(); it!= monitors.end(); it++){
+        (*it)->monitor(i);
+    }
+}
+
 /**
  * @brief Print DAG node
  *

@@ -57,6 +57,17 @@ bool RbModel::equals(const RbObject* obj) const {
     return result;
 }
 
+DAGNode* RbModel::getDagToUpdate(void) {
+    int index = rng->nextInt(dagNodes.size());
+    return dagNodes[index];
+}
+
+void RbModel::monitor(int i) {
+    for (std::vector<DAGNode*>::iterator it=dagNodes.begin(); it!= dagNodes.end(); it++){
+        (*it)->monitor(i);
+    }
+}
+
 RbObject& RbModel::operator=(const RbObject& obj) {
 
     try {

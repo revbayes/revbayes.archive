@@ -94,7 +94,7 @@ bool DistExponential::equals(const RbObject* o) const {
 }
 
 const StringVector& DistExponential::getClass(void) const {
-    rbClass[0];
+    rbClass;
 }
 
 void DistExponential::print(std::ostream& o) const {

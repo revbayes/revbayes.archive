@@ -88,6 +88,7 @@ class DAGNode : public RbComplex {
         bool                		isTouched() const { return touched; }       //!< Is the node marked for recalculation?
         void                		keep() { touched = changed = false; }   //!< Keep current value of node
         void                		keepAffected();                         //!< Keep value of affected nodes recursively
+        void                        monitor(int i);
         double						performMove();
         virtual void        		print(std::ostream& o) const;           //!< Print this DAG node
 	    void                		printChildren(std::ostream& o) const;   //!< Print children DAG nodes
