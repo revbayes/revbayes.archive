@@ -31,14 +31,13 @@
 #include <string>
 
 #include "DAGNode.h"
-#include "RbObject.h"
 
 /** Environment: class used to hold local variable table */
-class Environment : public RbObject {
+class Environment {
 
     public:
             Environment(Environment* parentEnv);    //!< Constructor from parent environment
-	        ~Environment();                         //!< Destructor deletes local objects
+	        virtual ~Environment();                 //!< Destructor deletes local objects
 
         static const StringVector   rbClass;                //!< Static class attribute
 

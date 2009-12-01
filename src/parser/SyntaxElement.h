@@ -20,13 +20,13 @@
 
 #include "DAGNode.h"
 #include "Environment.h"
-#include "RbObject.h"
 
 #include <iostream>
 #include <string>
 
 /* Forward declarations */
 class Environment;
+class StringVector;
 
 /**
  *  @brief Interface for syntax elements
@@ -61,22 +61,27 @@ class Environment;
  *  of the base class. Derived syntax elements simply need to store their parents in the
  *  vector of parent nodes.
  */
-class SyntaxElement : public RbObject {
+class SyntaxElement {
 
     public:
             virtual ~SyntaxElement() {}         //!< Destructor; delete syntax subtree
 
-        virtual SyntaxElement*      clone() const = 0;                      //!< Clone element
-        virtual DAGNode*            getDAGNode() const = 0;                 //!< Convert the element to a DAG node
-        virtual const std::string&  getReturnType() const = 0;              //!< Get type of semantic value
-        virtual RbObject*           getValue() = 0;                         //!< Get semantic value
-        virtual bool                isConstExpr(void) const = 0;            //!< Is syntax subtree constant expr?
-        virtual void                print(std::ostream& c) const = 0;       //!< Print complete object info
-        virtual void                printValue(std::ostream& c) const {}    //!< Print content to console
+        // Basic utility functions
+        virtual std::string         briefInfo() const = 0;                      //!< Brief info about object
+        virtual SyntaxElement*      clone() const = 0;                          //!< Clone object
+        virtual bool                equals(const RbObject* obj) const = 0;      //!< Equals comparison
+        virtual void                print(std::ostream& o) const = 0;           //!< Print info about object
+
+        // Regular functions
+        virtual DAGNode*            getDAGNode(Environment* env=NULL) const = 0;//!< Convert to DAG node
+        virtual StringVector&       getReturnType() const = 0;                  //!< Get type of semantic value
+        virtual RbObject*           getValue(Environment* env=NULL) = 0;        //!< Get semantic value
+        virtual bool                isConstExpr() const = 0;                    //!< Is subtree constant expr?
 
     protected:
-            SyntaxElement() : RbObject() {}     //!< Default constructor calls base class
+            SyntaxElement() {}      //!< Protected constructor, no elements of this class
 
 };
 
 #endif
+

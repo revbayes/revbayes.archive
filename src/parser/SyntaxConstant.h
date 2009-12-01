@@ -1,14 +1,14 @@
-/*!
- * \file
+/**
+ * @file
  * This file contains the declaration of SyntaxConstant, which is
  * used to hold constants in the syntax tree.
  *
- * \brief Declaration of SyntaxConstant
+ * @brief Declaration of SyntaxConstant
  *
  * (c) Copyright 2009- under GPL version 3
- * \date Last modified: $Date$
- * \author Fredrik Ronquist and the REvBayes core team
- * \license GPL version 3
+ * @date Last modified: $Date$
+ * @author Fredrik Ronquist and the REvBayes core team
+ * @license GPL version 3
  *
  * $Id$
  */
@@ -17,28 +17,41 @@
 #define SyntaxConstant_H
 
 #include "SyntaxElement.h"
+
 #include <iostream>
 
-using namespace std;
+class StringVector;
 
-/*! This is the class used to hold constants in the syntax tree.
+
+/**
+ * This is the class used to hold constants in the syntax tree.
  *
- *  The result is never going to change so we can set the value
- *  already in the constructor.
+ * The result is never going to change so we can set the value
+ * already in the constructor.
+ *
  */
 class SyntaxConstant : public SyntaxElement {
 
     public:
-            SyntaxConstant(const bool v);       //!< Constructor from bool
-            SyntaxConstant(const int v);        //!< Constructor from int
-            SyntaxConstant(const double v);     //!< Constructor from double
-	        virtual ~SyntaxConstant() {}        //!< Destructor (value is deleted in base class)
+            SyntaxConstant(RbObject* val);              //!< Constructor from value
+            SyntaxConstant(const SyntaxConstant& sc);   //!< Copy constructor
+	        virtual ~SyntaxConstant();                  //!< Destructor deletes value
 
-        SyntaxConstant* copy(SymbolTable* symbols=NULL) const;  //!< Return fast copy
-        const string&   getDataType() const { return value->getType(); }    //!< Return data type
-        bool            isConstExpr() const { return true; }    //!< Is this a constant expression?
-        void            print(ostream &c) const;                //!< Print content
-        void            printConsole(ostream &c) const;         //!< Print content to console
+        // Basic utility functions
+        std::string     briefInfo() const;                  //!< Brief info about object
+        SyntaxConstant* clone() const;                      //!< Clone object
+        bool            equals(const RbObject* obj) const;  //!< Equals comparison
+        void            print(std::ostream& o) const;       //!< Print info about object
+
+        // Regular functions
+        DAGNode*        getDAGNode(Environment* env=NULL) const;    //!< Convert to DAG node
+        StringVector&   getReturnType() const;                      //!< Get type of semantic value
+        RbObject*       getValue(Environment* env=NULL);            //!< Get semantic value
+        bool            isConstExpr() const;                        //!< Is subtree constant expr?
+
+    protected:
+        RbObject*   value;      //!< The constant value
 };
 
 #endif
+

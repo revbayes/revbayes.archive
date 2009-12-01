@@ -1,12 +1,12 @@
 %{
-/*
- * \file
- * Lexicographical analysis for the REvBayes parser.
+/**
+ * @file
+ * Lexicographical analysis for the RevBayes language.
  *
- * \brief Lexicographical analysis using flex
+ * @brief Lexicographical analysis using flex
  *
- * \author Fredrik Ronquist
- * \date Last modified: $Date$
+ * @author Fredrik Ronquist
+ * @date Last modified: $Date$
  *
  * $Id$
  */
@@ -169,6 +169,10 @@ TRUE                                    {
 "="                                     {
                                             PRINTF("Found '='\n");
                                             return EQUAL;
+                                        }
+"->"                                    {
+                                            PRINTF("Found '->'\n");
+                                            return RIGHT_ARROW;
                                         }
 "&"                                     {
                                             PRINTF("Found '&'\n");

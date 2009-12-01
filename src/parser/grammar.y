@@ -1,23 +1,22 @@
 %{
-/*
- * \file
+/**
+ * @file
  * Grammar specification in bison format for RevBayes, a computing environment 
  * for evolutionary analysis using Bayesian inference. RevBayes uses EvoMoDeL,
- * Evolutionary Model Description Language, to describe evolutionary models
- * used in Bayesian MCMC inference, so the EvoMoDeL grammar is a subset of the
- * RevBayes grammar.
+ * Evolutionary Model Description Language, to describe evolutionary models,
+ * so the EvoMoDeL grammar is a subset of the RevBayes grammar.
  *
  * The grammar borrows heavily from the R grammar specification in the gram.y 
  * file of the R source code but deviates significantly in many respects, being
  * more similar to object-oriented languages like C++ or Java. EvoMoDeL itself
  * is inspired by the language used by BUGS to describe models. Unlike BUGS,
  * and similar programs such as JAGS, REvBayes allows models to be built in an
- * interpreted environment.
+ * interpreted (interactive) environment.
  *
- * \brief Grammar specification in bison format
+ * @brief Grammar specification in bison format
  *
- * \author Fredrik Ronquist
- * \date Last modified: $Date$
+ * @author Fredrik Ronquist
+ * @date Last modified: $Date$
  *
  * $Id$
  */
@@ -93,20 +92,20 @@ typedef struct yyltype
 %type <syntaxElement> constant
 %type <syntaxElement> statement expression
 %type <syntaxElement> arrowAssign tildeAssign equationAssign
-%type <syntaxElement> variable optElement functionCall
+%type <syntaxElement> variable functionCall
 %type <syntaxElement> declaration classDef memberDef
 %type <syntaxElement> functionDef argument formal
 %type <syntaxElement> forStatement ifStatement whileStatement
 %type <syntaxElement> forCond cond returnStatement
 %type <syntaxElement> nextStatement breakStatement
-%type <syntaxElementList> argumentList optArguments
+%type <syntaxElementList> optElement argumentList optArguments
 %type <syntaxElementList> stmts stmtList optStatements
 %type <syntaxElementList> formalList optFormals memberDefs
 
 /* Tokens returned by the lexer and handled by the parser */
 %token REAL INT NAME STRING NULL FALSE TRUE COMMENT
 %token FUNCTION CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
-%token LEFT_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN EQUAL
+%token LEFT_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN EQUAL RIGHT_ARROW
 %token AND OR AND2 OR2 GT GE LT LE EQ NE
 %token END_OF_INPUT
 
@@ -131,7 +130,7 @@ typedef struct yyltype
 %left       ':'
 %left       UMINUS UPLUS
 %right      '^'
-%left       '.'
+%left       '.' RIGHT_ARROW
 %nonassoc   '(' '['
 %%
 
@@ -247,6 +246,11 @@ variable    :   identifier optElement
                     $$ = new SyntaxVariable($1, $2);
                 }
             |   variable '.' identifier optElement
+                {
+                    PRINTF("Parser inserting member variable (MEMBER) in syntax tree\n");
+                    $$ = new SyntaxVariable($1, $3, $4);
+                }
+            |   variable RIGHT_ARROW identifier optElement
                 {
                     PRINTF("Parser inserting member variable (MEMBER) in syntax tree\n");
                     $$ = new SyntaxVariable($1, $3, $4);
@@ -403,11 +407,11 @@ returnStatement :   RETURN              { $$ = new SyntaxStatement(SyntaxStateme
 identifier  :   NAME    { $$ = new RbString($1); }
             ;
 
-constant    :   FALSE   { $$ = new SyntaxConstant(false); }
-            |   TRUE    { $$ = new SyntaxConstant(true); }
-            |   NULL    { $$ = new SyntaxConstant(0); }
-            |   INT     { $$ = new SyntaxConstant($1); }
-            |   STRING  { $$ = new SyntaxConstant($1)); }
+constant    :   FALSE   { $$ = new SyntaxConstant(new RbBool(false)); }
+            |   TRUE    { $$ = new SyntaxConstant(new RbBool(true)); }
+            |   NULL    { $$ = new SyntaxConstant(NULL); }
+            |   INT     { $$ = new SyntaxConstant(new RbInt($1)); }
+            |   STRING  { $$ = new SyntaxConstant(new RbString($1)); }
             |   REAL
                 {
                     /* This code records and preserves input format of the real */
@@ -438,10 +442,10 @@ constant    :   FALSE   { $$ = new SyntaxConstant(false); }
                         }
                         prec = strlen(yytext) - 1 - i;
                     }
-                    Scalar *real = new Scalar($1);
+                    RbDouble *real = new RbDouble($1);
                     //real->setPrecision(prec);
                     //real->setScientific(sci);
-                    $$ = new SyntaxConstat(real);
+                    $$ = new SyntaxConstant(real);
                 }
             ;
 
