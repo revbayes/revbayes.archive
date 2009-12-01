@@ -67,7 +67,6 @@ std::cerr << " start chain " << std::endl;
 		double lnHastingsRatio = update(node);
 //std::cerr << "Hastings ratio = " << lnHastingsRatio << std::endl;
 		
-	//	modelPtr->printTouchedDAGs();
 		
 		// get prior
 		double lnPriorRatio = getLnPriorRatio(node);

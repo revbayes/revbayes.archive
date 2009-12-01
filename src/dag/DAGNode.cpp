@@ -34,9 +34,11 @@ const StringVector DAGNode::rbClass = StringVector("dag_node") + RbObject::rbCla
  *
  */
 DAGNode::DAGNode()
-    : storedValue(NULL), value(NULL), changed(false), touched(false),
+    : storedValue(NULL), value(NULL), changed(false), 
       children(), parents() {
       moves = NULL;
+      touchedProbability = true;
+      touchedLikelihood = true;
 }
 
 
@@ -49,9 +51,11 @@ DAGNode::DAGNode()
  *
  */
 DAGNode::DAGNode(RbObject *val)
-    : storedValue(NULL), value(val), changed(false), touched(false),
+    : storedValue(NULL), value(val), changed(false), 
       children(), parents() {
       moves = NULL;
+      touchedProbability = true;
+      touchedLikelihood = true;
 }
 
 
@@ -66,8 +70,11 @@ DAGNode::DAGNode(RbObject *val)
  */
 DAGNode::DAGNode(const DAGNode &d)
     :   storedValue(d.storedValue->clone()), value(d.value->clone()),
-        changed(d.changed), touched(d.touched),
+        changed(d.changed), 
         children(), parents() {
+        
+      touchedProbability = d.touchedProbability;
+      touchedLikelihood = d.touchedLikelihood;
 
     for (std::set<DAGNode*>::iterator i=d.children.begin(); i!=d.children.end(); i++)
             children.insert((DAGNode*)(*i)->clone());
@@ -116,6 +123,12 @@ void DAGNode::addMonitor(RbMonitor* m) {
 	monitors.insert(m);
 }
 
+void DAGNode::addMove(RbMove* m, double w) {
+	if (moves != NULL) {
+		moves->addMove(m,w);
+	}
+}
+
 
 /**
  * @brief Compare DAG nodes
@@ -135,7 +148,7 @@ bool DAGNode::equals(const RbObject* obj) const {
 	if (value != d->value || storedValue != d->storedValue)
         return false;
 
-    if (changed != d->changed || touched != d->touched)
+    if (changed != d->changed || touchedProbability != d->touchedProbability || touchedLikelihood != d->touchedLikelihood)
         return false;
 
     if (children.size() != d->children.size() || parents.size() != d->parents.size())
@@ -153,13 +166,14 @@ bool DAGNode::equals(const RbObject* obj) const {
 }
 
 double DAGNode::getLnLikelihood(void) {
-//	if (touched == true) {
+	if (touchedLikelihood == true) {
 	    double lnLikelihood = 0.0;
 	    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
 	        lnLikelihood += (*i)->getLnProbability();
 	    }
 	    currentLikelihood = lnLikelihood;
-//	}
+	    touchedLikelihood = false;
+	}
     return currentLikelihood;
 }
 
@@ -198,7 +212,6 @@ double DAGNode::performMove(void) {
 	
 	// mark this node as changed for recalculations
 	changed = true;
-	touched = true;
 	touch();
 	
 	// propagate the change to the children
@@ -206,13 +219,11 @@ double DAGNode::performMove(void) {
     for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
     	(*i)->touchAffectedParents();
     	(*i)->touch();
-//std::cerr << "touched parent" << std::endl;
     }
     // touch the affected children
     for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
     	(*i)->touchAffectedChildren();
     	(*i)->touch();
-//std::cerr << "touched child" << std::endl;
     }
 	
 	return hr;
@@ -348,10 +359,10 @@ void DAGNode::restore() {
         value       = storedValue;
         storedValue = temp;
     }
-    if (touched) {
+//    if (touched) {
         currentLikelihood = storedLikelihood;
         currentProbability = storedProbability;    
-    }
+//    }
 
     
     keep();     // Sets touched and changed to false

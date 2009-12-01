@@ -42,8 +42,6 @@ class RbModel : public RbComplex {
         DAGNode*                    getDagToUpdate(void);
         void                        monitor(int i);
         
-        void printTouchedDAGs();
-        
     protected:
 		void						extractNodes(std::vector<DAGNode*>& dn); 
 		void						extractNodes(DAGNode* dn);

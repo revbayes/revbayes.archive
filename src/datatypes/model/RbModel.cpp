@@ -75,15 +75,6 @@ void RbModel::initializeDAGs(void) {
 		}
 }
 
-void RbModel::printTouchedDAGs(){
-	for (std::set<DAGNode*>::iterator it=dagNodes.begin(); it!= dagNodes.end(); it++)
-		{
-		if ((*it)->isTouched() || (*it)->isChanged()){
-			(*it)->print(std::cerr);
-		}
-	}
-}
-
 DAGNode* RbModel::getDagToUpdate(void) {
 
     double u = rng->nextDouble();

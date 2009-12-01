@@ -85,7 +85,7 @@ void DeterministicNode::touchAffectedParents() {
  */
 void DeterministicNode::keepAffectedChildren() {
 
-    if (changed || touched) {
+    if (changed) {
         for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
             (*i)->keepAffectedChildren();
         	(*i)->keep();
@@ -103,7 +103,7 @@ void DeterministicNode::keepAffectedChildren() {
  */
 void DeterministicNode::keepAffectedParents() {
 
-    if (changed || touched) {
+    if (changed) {
         for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
             (*i)->keepAffectedParents();
         	(*i)->keep();
@@ -120,11 +120,9 @@ void DeterministicNode::keepAffectedParents() {
  */
 void DeterministicNode::restoreAffectedChildren() {
 
-    if (changed || touched) {
-        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-            (*i)->restoreAffectedChildren();
-        	(*i)->restore();
-        }
+    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+        (*i)->restoreAffectedChildren();
+     	(*i)->restore();
     }
 }
 
@@ -137,11 +135,9 @@ void DeterministicNode::restoreAffectedChildren() {
  */
 void DeterministicNode::restoreAffectedParents() {
 
-    if (changed || touched) {
-        for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-            (*i)->restoreAffectedParents();
-        	(*i)->restore();
-        }
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
+        (*i)->restoreAffectedParents();
+       	(*i)->restore();
     }
 }
 
@@ -159,12 +155,13 @@ double DeterministicNode::getLnProbabilityRatio() {
 }
 
 double DeterministicNode::getLnProbability() {
-	if (touched == true) { 
+	if (touchedProbability == true) { 
 		double lnProb = 0.0;
 		for (std::set<DAGNode*>::iterator i = children.begin(); i != children.end(); i++) {
 			lnProb += (*i)->getLnProbability();
 		}
 		currentProbability = lnProb;
+		touchedProbability = false;
 	}
 	return currentProbability;
 }
@@ -249,7 +246,8 @@ DeterministicNode& DeterministicNode::operator=(const DeterministicNode& obj) {
     (*moves) = (*obj.moves);
     parents = obj.parents;
     (*storedValue) = (*obj.storedValue);
-    touched = obj.touched;
+    touchedProbability = obj.touchedProbability;
+    touchedLikelihood = obj.touchedLikelihood;
     (*value) = (*obj.value);
 
     return (*this);

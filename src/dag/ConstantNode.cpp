@@ -149,7 +149,7 @@ bool ConstantNode::equals(const RbObject* obj) const {
     if (value != c->value || storedValue != c->storedValue)
         return false;
 
-    if (changed != c->changed || touched != c->touched)
+    if (changed != c->changed || touchedProbability != c->touchedProbability || touchedLikelihood != c->touchedLikelihood)
         return false;
 
     if (children.size() != c->children.size() || parents.size() != c->parents.size())
@@ -235,7 +235,8 @@ ConstantNode& ConstantNode::operator=(const ConstantNode& obj) {
     (*moves) = (*obj.moves);
     parents = obj.parents;
     (*storedValue) = (*obj.storedValue);
-    touched = obj.touched;
+    touchedProbability = obj.touchedProbability;
+    touchedLikelihood = obj.touchedLikelihood;
     (*value) = (*obj.value);
 
     return (*this);

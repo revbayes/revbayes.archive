@@ -133,7 +133,8 @@ StochasticNode& StochasticNode::operator=(const StochasticNode& obj) {
     (*moves) = (*obj.moves);
     parents = obj.parents;
     (*storedValue) = (*obj.storedValue);
-    touched = obj.touched;
+    touchedProbability = obj.touchedProbability;
+    touchedLikelihood = obj.touchedLikelihood;
     (*value) = (*obj.value);
 
     return (*this);
@@ -235,11 +236,11 @@ double StochasticNode::getLnProbabilityRatio(void) {
 
 double StochasticNode::getLnProbability(void) {
 
-//	if (touched || changed) {
+	if (touchedProbability) {
 		double lnProb = distribution->lnPdf(value);
 		currentProbability = lnProb;
-//	}
-//std::cerr << "Probability of " << value->toString() << " is " << lnNumerator << " using distribution " << distribution->toString() << std::endl;
+		touchedProbability = false;
+	}
 	return currentProbability;
 }
 
