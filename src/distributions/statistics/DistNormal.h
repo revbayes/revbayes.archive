@@ -18,7 +18,7 @@ class DistNormal : public Distribution {
 public:
         static const StringVector   rbClass;            //!< Static class attribute
 
-	DistNormal(DAGNode* s, DAGNode* m);
+	DistNormal(DAGNode* m, DAGNode* s);
 	DistNormal(const DistNormal& d);
 	virtual ~DistNormal();
         RbObject*           clone(void) const;                                    //!< Clone object
@@ -34,6 +34,7 @@ public:
 
 	double lnPdf(RbObject* obs); //!< Ln probability density
 	double pdf(RbObject* obs); //!< Probability density
+	RbObject* rv(RandomNumberGenerator* r);
 
 private:
 	DAGNode* sigma;

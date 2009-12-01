@@ -6,19 +6,29 @@
  */
 
 #include "DAGNode.h"
+#include "RandomNumberGenerator.h"
+#include "RbException.h"
 #include "RbModel.h"
+#include "RbNames.h"
 #include "StringVector.h"
 
 const StringVector RbModel::rbClass = StringVector("model") + RbComplex::rbClass;
 
-RbModel::RbModel(std::vector<DAGNode*>& s) {
+RbModel::RbModel(std::vector<DAGNode*>& s, RandomNumberGenerator* r) {
 
+	rng = r;
     sinkDags = s;
+    extractNodes(sinkDags);
+    initializeUpdateInfo();
+    initializeDAGs();
 }
 
 RbModel::RbModel(const RbModel& m) {
 
     sinkDags = m.sinkDags;
+    dagNodes = m.dagNodes;
+    changeableDagUpdateProbs = m.changeableDagUpdateProbs;
+    changeableDags = m.changeableDags;
 }
 
 RbModel::~RbModel() {
@@ -36,36 +46,82 @@ RbModel::~RbModel() {
  */
 bool RbModel::equals(const RbObject* obj) const {
 
-    // Use built-in fast down-casting first
-    const RbModel* x = dynamic_cast<const RbModel*>(obj);
-    if (x != NULL)
-        return value == x->value;
+    return false;
+}
 
-    // Try converting the value to a double
-    x = dynamic_cast<const RbModel*>(obj->convertTo("model"));
-    if (x == NULL)
-        return false;
+void RbModel::initializeUpdateInfo(void) {
 
-    bool result = true;
-    if (sink == x->sink)
-        {
-        result = true;
-        }
-    else
-        result = false;
-    delete x;
-    return result;
+	double sumWeights = 0.0;
+    for (std::set<DAGNode*>::iterator it=dagNodes.begin(); it!= dagNodes.end(); it++)
+		{
+		if ( (*it)->hasAttachedMove() == true )
+			{
+			double x = (*it)->getUpdateWeight();
+			sumWeights += x;
+			changeableDags.push_back( *it );
+			changeableDagUpdateProbs.push_back( x );
+			}
+		}
+	for (int i=0; i<changeableDagUpdateProbs.size(); i++)
+		changeableDagUpdateProbs[i] /= sumWeights;
+}
+
+void RbModel::initializeDAGs(void) {
+
+    for (std::set<DAGNode*>::iterator it=dagNodes.begin(); it!= dagNodes.end(); it++)
+		{
+		(*it)->getLnLikelihood();
+		(*it)->getLnProbability();
+		}
+}
+
+void RbModel::printTouchedDAGs(){
+	for (std::set<DAGNode*>::iterator it=dagNodes.begin(); it!= dagNodes.end(); it++)
+		{
+		if ((*it)->isTouched() || (*it)->isChanged()){
+			(*it)->print(std::cerr);
+		}
+	}
 }
 
 DAGNode* RbModel::getDagToUpdate(void) {
-    int index = rng->nextInt(dagNodes.size());
-    return dagNodes[index];
+
+    double u = rng->nextDouble();
+    double sum = 0.0;
+    for (int i=0; i<changeableDagUpdateProbs.size(); i++)
+		{
+		sum += changeableDagUpdateProbs[i];
+		if ( u < sum )
+			return changeableDags[i];
+		}
+    return NULL;
 }
 
 void RbModel::monitor(int i) {
-    for (std::vector<DAGNode*>::iterator it=dagNodes.begin(); it!= dagNodes.end(); it++){
+    for (std::set<DAGNode*>::iterator it=dagNodes.begin(); it!= dagNodes.end(); it++){
         (*it)->monitor(i);
     }
+}
+
+void	RbModel::extractNodes(std::vector<DAGNode*>& dn) {
+
+	dagNodes.clear();
+    for (std::vector<DAGNode*>::iterator it=dn.begin(); it!= dn.end(); it++) 
+    	{
+    	extractNodes(*it);
+    	}
+    	
+}
+
+void	RbModel::extractNodes(DAGNode* dn) {
+
+    std::set<DAGNode*>& p = dn->getParentNodes(); 
+    for (std::set<DAGNode*>::iterator itP=p.begin(); itP!= p.end(); itP++) 
+    	{
+    	extractNodes(*itP);
+    	}
+    	
+    dagNodes.insert(dn);
 }
 
 RbObject& RbModel::operator=(const RbObject& obj) {
@@ -98,8 +154,8 @@ RbObject& RbModel::operator=(const RbObject& obj) {
 RbModel& RbModel::operator=(const RbModel& obj) {
 
     sinkDags.clear();
-    for (std::vector<DAGNode*>::iterator i=obj.sinkDags.begin(); i!=obj.sinkDags.end(); i++){
-        sinkDags.push_back((*i)->clone());
+    for (std::vector<DAGNode*>::const_iterator i=obj.sinkDags.begin(); i!=obj.sinkDags.end(); i++){
+        sinkDags.push_back((DAGNode*)(*i)->clone());
     }
     (*rng) = (*obj.rng);
     return (*this);
@@ -110,7 +166,7 @@ void RbModel::print(std::ostream& o) const {
 
     o << "Model:" << std::endl;
     for (int i=0; i<sinkDags.size(); i++)
-    	sink[i]->print(o);
+    	sinkDags[i]->print(o);
 }
 
 RbObject* RbModel::clone(void) const {
@@ -121,7 +177,8 @@ RbObject* RbModel::clone(void) const {
 
 void RbModel::printValue(std::ostream& o) const {
 
-    sink->printValue(o);
+    for (int i=0; i<sinkDags.size(); i++)
+    	sinkDags[i]->print(o);
 }
 
 std::string RbModel::toString(void) const {
@@ -130,3 +187,4 @@ std::string RbModel::toString(void) const {
 	//tmpStr += sink->toString();
     return tempStr;
 }
+

@@ -33,9 +33,12 @@
  * @param dist      The distribution
  *
  */
-StochasticNode::StochasticNode(void)
+StochasticNode::StochasticNode(Distribution* d, RandomNumberGenerator* r)
     : DAGNode(), clamped(false) {
-
+    distribution = d;
+    rng = r;
+    value = distribution->rv(rng);
+    storedValue = value->clone();
 }   
 
 
@@ -92,6 +95,33 @@ RbObject& StochasticNode::operator=(const RbObject& obj) {
     return (*this);
 }
 
+DAGNode& StochasticNode::operator=(const DAGNode& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const StochasticNode& x = dynamic_cast<const StochasticNode&> (obj);
+
+        StochasticNode& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const StochasticNode& x = dynamic_cast<const StochasticNode&> (*(obj.convertTo("const_node")));
+
+            StochasticNode& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to const_node");
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
 StochasticNode& StochasticNode::operator=(const StochasticNode& obj) {
 
     changed = obj.changed;
@@ -107,6 +137,72 @@ StochasticNode& StochasticNode::operator=(const StochasticNode& obj) {
     (*value) = (*obj.value);
 
     return (*this);
+}
+
+/**
+ * @brief Thouch affected nodes
+ *
+ * This function touches all affected DAG nodes, i.e. marks them as changed.
+ *
+ */
+void StochasticNode::touchAffectedChildren() {
+
+}
+
+/**
+ * @brief Thouch affected nodes
+ *
+ * This function touches all affected DAG nodes, i.e. marks them as changed.
+ *
+ */
+void StochasticNode::touchAffectedParents() {
+
+}
+
+/**
+ * @brief Tell affected DAG nodes to keep current value
+ *
+ * This function calls all affected DAG nodes so that they
+ * have a chance to keep the current value and discard the
+ * previous value.
+ *
+ */
+void StochasticNode::keepAffectedChildren() {
+
+}
+
+/**
+ * @brief Tell affected DAG nodes to keep current value
+ *
+ * This function calls all affected DAG nodes so that they
+ * have a chance to keep the current value and discard the
+ * previous value.
+ *
+ */
+void StochasticNode::keepAffectedParents() {
+
+}
+
+/**
+ * @brief Restore affected nodes
+ *
+ * This function calls all nodes that are affected by this DAG node and restores
+ * them.
+ *
+ */
+void StochasticNode::restoreAffectedChildren() {
+
+}
+
+/**
+ * @brief Restore affected nodes
+ *
+ * This function calls all nodes that are affected by this DAG node and restores
+ * them.
+ *
+ */
+void StochasticNode::restoreAffectedParents() {
+
 }
 
 /**
@@ -137,48 +233,24 @@ double StochasticNode::getLnProbabilityRatio(void) {
 	return lnNumerator - lnDenominator;
 }
 
-void StochasticNode::assignDistribution(Distribution* d) {
+double StochasticNode::getLnProbability(void) {
 
-	distribution = d;
+//	if (touched || changed) {
+		double lnProb = distribution->lnPdf(value);
+		currentProbability = lnProb;
+//	}
+//std::cerr << "Probability of " << value->toString() << " is " << lnNumerator << " using distribution " << distribution->toString() << std::endl;
+	return currentProbability;
 }
+
 
 void StochasticNode::initializeValue(RbObject* v) {
 
 	value = v;
 }
 
-/**
- * @brief Calculate probability of node
- *
- * This function calculates the probability of the current value given
- * the values of any parent nodes in the DAG, that is, the probability
- * density of the value of the node given the current values of the
- * parameters of the probability distribution associated with the node.
- *
- * @returns         Ln probability
- *
- */
-double StochasticNode::lnProb() const {
+void StochasticNode::print(std::ostream& o) const {
 
-	return distribution->lnPdf(value);
+    o << "Distribution = " << distribution->toString() << std::endl;
 }
 
-
-/**
- * @brief Thouch affected nodes
- *
- * This function touches all affected DAG nodes, i.e. marks them as changed.
- * Unlike deterministc nodes, stochastic nodes do not need to 
- *
- */
-void StochasticNode::touchAffected() {
-
-    // TODO: This is not quite right; we need to go from current stochasticNode and down
-    //       to next stochasticNode but this requires slight modification of this method
-    //       in the DAGNode base class as well as here.
-    if (!touched) {
-        touch();
-        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++)
-            (*i)->touchAffected();
-    }
-}

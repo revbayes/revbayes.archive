@@ -103,7 +103,7 @@ double MoveSlidingWindow::perform(void) {
 	do
 		{
 		if (newVal < low)
-			newVal = -newVal;
+			newVal = 2*low - newVal;
 		else if (newVal > up)
 			newVal = 2.0 * up - newVal;
 		} while ( newVal < low || newVal > up );
@@ -122,6 +122,34 @@ void MoveSlidingWindow::reject(void) {
 }
 
 RbObject& MoveSlidingWindow::operator=(const RbObject& obj) {
+
+
+    try {
+        // Use built-in fast down-casting first
+        const MoveSlidingWindow& x = dynamic_cast<const MoveSlidingWindow&> (obj);
+
+        MoveSlidingWindow& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const MoveSlidingWindow& x = dynamic_cast<const MoveSlidingWindow&> (*(obj.convertTo(RbNames::MoveSlidingWindow::name)));
+
+            MoveSlidingWindow& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::MoveSlidingWindow::name);
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+RbMove& MoveSlidingWindow::operator=(const RbMove& obj) {
 
 
     try {

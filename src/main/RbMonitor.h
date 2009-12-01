@@ -3,7 +3,12 @@
 
 #include <string>
 #include <vector>
+#include <ostream>
 #include "RbComplex.h"
+
+class DAGNode;
+class RbObject;
+class RbInt;
 
 class RbMonitor : public RbComplex {
 
@@ -27,9 +32,9 @@ public:
         void                        monitor(int i);
 
 private:
+	int sampleFrequency;
+	std::ostream* outStrm;
 	DAGNode* node;
-
-	std::vector<RbDataType*> value;
 };
 
 #endif

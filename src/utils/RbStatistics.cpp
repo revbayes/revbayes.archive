@@ -1,6 +1,7 @@
 #include "RbMath.h"
 #include "RbConstants.h"
 #include "RbStatistics.h"
+#include "RandomNumberGenerator.h"
 #include <cmath>
 #include <iostream>
 #include <vector>
@@ -405,6 +406,12 @@ double RbStatistics::Exponential::quantile(double lambda, double p) {
 	return -(1.0 / lambda) * std::log(1.0 - p);
 }
 
+double RbStatistics::Exponential::rv(RandomNumberGenerator* rng, double lambda) {
+
+	double u = rng->nextDouble();
+	return -(1.0/lambda) * log(u);
+}
+
 #pragma mark Gamma Distribution
 
 /*!
@@ -804,6 +811,24 @@ double RbStatistics::Normal::quantile(double mu, double sigma, double p) {
 	return x;
 }
 
+double RbStatistics::Normal::rv(RandomNumberGenerator* rng, double mu, double sigma) {
+
+	double v1 = 0.0;
+	double v2 = 0.0; // NOTE: We should eventually implement this so you generate and
+	                 // return the extra normal random variable that is generated
+	double rsq = 0.0;
+	do
+		{
+		v1 = 2.0 * rng->nextDouble() - 1.0;
+		v2 = 2.0 * rng->nextDouble() - 1.0;
+		rsq = v1 * v1 + v2 * v2;
+		} while ( rsq >= 1.0 || rsq == 0.0 );
+	double fac = sqrt(-2.0 * log(rsq)/rsq);
+	//extraNormalRv = v1 * fac;
+	//availableNormalRv = true;
+	return ( mu + sigma * (v2 * fac) );
+}
+
 #pragma mark Uniform(0,1)
 
 /*!
@@ -940,6 +965,12 @@ double RbStatistics::Uniform::cdf(double a, double b, double x) {
 double RbStatistics::Uniform::quantile(double a, double b, double p) {
 
 	return a + (b - a) * p;
+}
+
+double RbStatistics::Uniform::rv(RandomNumberGenerator* rng, double a, double b) {
+
+	double u = rng->nextDouble();
+	return (a + (b-a)*u);
 }
 
 #undef MAXK

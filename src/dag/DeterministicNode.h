@@ -36,6 +36,7 @@ class DeterministicNode : public DAGNode {
             virtual ~DeterministicNode() {}                         //!< Destructor (delete function?)
 
         RbObject&           operator=(const RbObject& o);
+        DAGNode&            operator=(const DAGNode& o);
         DeterministicNode&  operator=(const DeterministicNode& o);
 
         // Standard utility functions
@@ -49,10 +50,19 @@ class DeterministicNode : public DAGNode {
         // Regular member functions
         RbObject*           getValue();         //!< Get current value
 	    double               getLnProbabilityRatio(void);
+	    double               getLnProbability(void);
+	    
+        void    	            keepAffectedChildren();                         //!< Keep value of affected nodes recursively
+        void	                keepAffectedParents();                         //!< Keep value of affected nodes recursively
+        void         	  		restoreAffectedChildren();                      //!< Restore affected nodes recursively
+        void         	  		restoreAffectedParents();                      //!< Restore affected nodes recursively
+        void    	       		touchAffectedChildren();                        //!< Mark affected nodes recursively
+        void	           		touchAffectedParents();                        //!< Mark affected nodes recursively
         
     private:
         std::vector<DAGNode*>   arguments;      //!< Processed arguments
 	    RbFunction*             function;       //!< Function calculating value
+	    
 };
 
 #endif

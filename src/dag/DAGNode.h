@@ -73,21 +73,25 @@ class DAGNode : public RbComplex {
         virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
         void						accept();
 	    void                		addChildNode(DAGNode* c) { children.insert(c); }    //!< Add child node
+	    void						addMonitor(RbMonitor* m);
 	    void                        addParentNode(DAGNode* p) { parents.insert(p); }
 	    void						assignMoveSchedule(RbMoveSchedule* ms) { moves = ms; }
 	    virtual RbObject*    		clone() const = 0;                                  //!< Clone this node
         virtual bool        		 equals(const RbObject *obj) const;                  //!< Compare DAG nodes
 	    std::set<DAGNode*>& 		 getChildrenNodes(void) { return children; }         //!< Get children nodes
 	    double						 getLnLikelihoodRatio(void);
+	    double						 getLnLikelihood(void);
 	    double                       getLnPriorRatio(void);
 	    virtual double               getLnProbabilityRatio(void) = 0;
+	    virtual double               getLnProbability(void) = 0;
 	    std::set<DAGNode*>& 		getParentNodes(void) { return parents; }            //!< Get parent nodes
 	    RbObject*           		getStoredValue() { return storedValue; }            //!< Get stored value
+	    double						getUpdateWeight(void);
         RbObject*           		getValue() { return value; }                        //!< Get value
-	    bool                		isChanged(void) const { return changed; }   //!< Has the node recalculated its value?
-        bool                		isTouched() const { return touched; }       //!< Is the node marked for recalculation?
+        bool						hasAttachedMove(void) { return moves != NULL; }
         void                		keep() { touched = changed = false; }   //!< Keep current value of node
-        void                		keepAffected();                         //!< Keep value of affected nodes recursively
+        virtual void                keepAffectedChildren() = 0;                         //!< Keep value of affected nodes recursively
+        virtual void                keepAffectedParents() = 0;                         //!< Keep value of affected nodes recursively
         void                        monitor(int i);
         double						performMove();
         virtual void        		print(std::ostream& o) const;           //!< Print this DAG node
@@ -96,16 +100,22 @@ class DAGNode : public RbComplex {
 	    void                		reject();
 	    void						removeChildNode(DAGNode* c) { children.erase(c); }  //!< Remove a child node
         void                		restore();                              //!< Restore node to previous value
-        void                		restoreAffected();                      //!< Restore affected nodes recursively
+        virtual void           		restoreAffectedChildren() = 0;                      //!< Restore affected nodes recursively
+        virtual void           		restoreAffectedParents() = 0;                      //!< Restore affected nodes recursively
         void                		setValue(RbObject* val);                //!< Set the value of the node
-        void                        store();
-        void                		touch() { touched = true; }             //!< Mark node for recalculation
-        void                		touchAffected();                        //!< Mark affected nodes recursively
         void                       	printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                	toString(void) const;                           //!< General info on object
+        void                		touch() { touched = true; }             //!< Mark node for recalculation
+        virtual void           		touchAffectedChildren() = 0;                        //!< Mark affected nodes recursively
+        virtual void           		touchAffectedParents() = 0;                        //!< Mark affected nodes recursively
 
         // overloaded operators
         virtual RbObject&           operator=(const RbObject& o) = 0;
+        virtual DAGNode&            operator=(const DAGNode& o) = 0;
+        
+        
+	    bool                		isChanged(void) const { return changed; }   //!< Has the node recalculated its value?
+        bool                		isTouched() const { return touched; }       //!< Is the node marked for recalculation?
 
     protected:
             // The constructors are protected because this is an abstract class.
@@ -115,9 +125,15 @@ class DAGNode : public RbComplex {
             						DAGNode(const DAGNode& d);  //!< Copy constructor
 
         RbMove*                     getNextMove();
+        void                        store();
 
 	    RbObject*           		storedValue;    //!< Holds the previous value
         RbObject*           		value;          //!< Holds the current value
+        
+        double						storedLikelihood;
+        double						currentLikelihood;
+        double						storedProbability;
+        double						currentProbability;
 	
 	    bool                		changed;        //!< True if value has been recalculated
 	    bool                		touched;        //!< Marks node for recalculation

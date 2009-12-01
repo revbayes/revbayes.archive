@@ -16,11 +16,13 @@
 #include "RbObject.h"
 #include "StringVector.h"
 
+const StringVector RbMcmc::rbClass = StringVector((RbNames::MCMC::name)) + RbComplex::rbClass;
+
 RbMcmc::RbMcmc(RbModel* mp, RandomNumberGenerator* r) {
 
 	modelPtr = mp;
 	members.insert(std::make_pair("burnin", new RbInt(10000)));
-	members.insert(std::make_pair("chainLength", new RbInt(1000000)));
+	members.insert(std::make_pair("chainLength", new RbInt(10000)));
 	rng = r;
 }
 
@@ -43,6 +45,7 @@ RbMcmc::~RbMcmc(void) {
 
 void RbMcmc::runChain(void) {
 
+std::cerr << " start chain " << std::endl;
 	int chainLength = 0;
 	int burnIn = 0;
 	for (std::map<std::string,RbObject*>::iterator m=members.begin(); m != members.end(); m++)
@@ -58,14 +61,21 @@ void RbMcmc::runChain(void) {
 		// get the DAG-Node
 		DAGNode* node = getDagToUpdate();
 		
+
+		
 		// update the dag-node
 		double lnHastingsRatio = update(node);
+//std::cerr << "Hastings ratio = " << lnHastingsRatio << std::endl;
+		
+	//	modelPtr->printTouchedDAGs();
 		
 		// get prior
 		double lnPriorRatio = getLnPriorRatio(node);
+//std::cerr << "Prior ratio = " << lnPriorRatio << std::endl;
 		
 		// get likelihood
 		double lnLikelihoodRatio = getLnLikelihoodRatio(node);
+//std::cerr << "Likelihood ratio = " << lnLikelihoodRatio << std::endl;
 		
 		// calc acceptance
 		double r = calculateAcceptanceProb( lnLikelihoodRatio + lnPriorRatio + lnHastingsRatio );
@@ -83,6 +93,7 @@ void RbMcmc::runChain(void) {
 			modelPtr->monitor(i-burnIn);
 			}
 		}
+std::cerr << " finished chain " << std::endl;
 			
 }
 
@@ -152,7 +163,7 @@ std::string RbMcmc::toString(void) const {
 }
 
 DAGNode* RbMcmc::getDagToUpdate() {
-	modelPtr->getDagToUpdate();
+	return modelPtr->getDagToUpdate();
 }
 
 double RbMcmc::getLnPriorRatio(DAGNode* d) {

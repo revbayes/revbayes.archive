@@ -43,6 +43,108 @@ RbObject* DeterministicNode::clone() const {
 	return (RbObject*) x;
 }
 
+/**
+ * @brief Thouch affected nodes
+ *
+ * This function touches all affected DAG nodes, i.e. marks them as changed.
+ *
+ */
+void DeterministicNode::touchAffectedChildren() {
+
+//    if (!touched) {
+        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+            (*i)->touchAffectedChildren();
+        	(*i)->touch();
+        }
+//    }
+}
+
+/**
+ * @brief Thouch affected nodes
+ *
+ * This function touches all affected DAG nodes, i.e. marks them as changed.
+ *
+ */
+void DeterministicNode::touchAffectedParents() {
+
+//    if (!touched) {
+        for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
+            (*i)->touchAffectedParents();
+        	(*i)->touch();
+        }
+//    }
+}
+
+/**
+ * @brief Tell affected DAG nodes to keep current value
+ *
+ * This function calls all affected DAG nodes so that they
+ * have a chance to keep the current value and discard the
+ * previous value.
+ *
+ */
+void DeterministicNode::keepAffectedChildren() {
+
+    if (changed || touched) {
+        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+            (*i)->keepAffectedChildren();
+        	(*i)->keep();
+        }
+    }
+}
+
+/**
+ * @brief Tell affected DAG nodes to keep current value
+ *
+ * This function calls all affected DAG nodes so that they
+ * have a chance to keep the current value and discard the
+ * previous value.
+ *
+ */
+void DeterministicNode::keepAffectedParents() {
+
+    if (changed || touched) {
+        for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
+            (*i)->keepAffectedParents();
+        	(*i)->keep();
+        }
+    }
+}
+
+/**
+ * @brief Restore affected nodes
+ *
+ * This function calls all nodes that are affected by this DAG node and restores
+ * them.
+ *
+ */
+void DeterministicNode::restoreAffectedChildren() {
+
+    if (changed || touched) {
+        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+            (*i)->restoreAffectedChildren();
+        	(*i)->restore();
+        }
+    }
+}
+
+/**
+ * @brief Restore affected nodes
+ *
+ * This function calls all nodes that are affected by this DAG node and restores
+ * them.
+ *
+ */
+void DeterministicNode::restoreAffectedParents() {
+
+    if (changed || touched) {
+        for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
+            (*i)->restoreAffectedParents();
+        	(*i)->restore();
+        }
+    }
+}
+
 
 bool DeterministicNode::equals(const RbObject* obj) const {
 	return false;
@@ -56,22 +158,60 @@ double DeterministicNode::getLnProbabilityRatio() {
 	return lnProb;
 }
 
+double DeterministicNode::getLnProbability() {
+	if (touched == true) { 
+		double lnProb = 0.0;
+		for (std::set<DAGNode*>::iterator i = children.begin(); i != children.end(); i++) {
+			lnProb += (*i)->getLnProbability();
+		}
+		currentProbability = lnProb;
+	}
+	return currentProbability;
+}
+
 
 /** Get value intelligently */
 RbObject* DeterministicNode::getValue() {
 
-    //if (isTouched() && !isChanged()) {
-    //    if (storedValue != NULL)
-    //        delete storedValue;
-    //    storedValue = value;
-    //    value = function->execute(arguments);
-    //    changed = true;
-    //}
+    if (isTouched() && !isChanged()) {
+        if (storedValue != NULL)
+            delete storedValue;
+        storedValue = value;
+        //value = function->execute(arguments);
+        changed = true;
+    }
 
     return value;
 }
 
 RbObject& DeterministicNode::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const DeterministicNode& x = dynamic_cast<const DeterministicNode&> (obj);
+
+        DeterministicNode& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const DeterministicNode& x = dynamic_cast<const DeterministicNode&> (*(obj.convertTo("const_node")));
+
+            DeterministicNode& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to const_node");
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+DAGNode& DeterministicNode::operator=(const DAGNode& obj) {
 
     try {
         // Use built-in fast down-casting first
@@ -125,8 +265,8 @@ DeterministicNode& DeterministicNode::operator=(const DeterministicNode& obj) {
  */
 void DeterministicNode::print(std::ostream &o) const {
 
-    RbObject::print(o);     // Prints class
-    DAGNode::print(o);      // Prints general info
+    //RbObject::print(o);     // Prints class
+    //DAGNode::print(o);      // Prints general info
 
     o << "Function = " << function->briefInfo() << std::endl;
 }

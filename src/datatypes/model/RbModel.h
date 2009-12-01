@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <set>
 
 #include "RbComplex.h"
 
@@ -22,7 +23,7 @@ class RbModel : public RbComplex {
 
         static const StringVector   rbClass;            //!< Static class attribute
 
-        RbModel(std::vector<DAGNode*>& s);
+        RbModel(std::vector<DAGNode*>& s, RandomNumberGenerator* r);
         RbModel(const RbModel& m);
         virtual ~RbModel();
 
@@ -40,10 +41,19 @@ class RbModel : public RbComplex {
 
         DAGNode*                    getDagToUpdate(void);
         void                        monitor(int i);
+        
+        void printTouchedDAGs();
+        
     protected:
-        std::vector<DAGNode*>      sinkDags;
-        std::vector<DAGNode*>       dagNodes;
+		void						extractNodes(std::vector<DAGNode*>& dn); 
+		void						extractNodes(DAGNode* dn);
+		void  						initializeUpdateInfo(void);
+		void 						initializeDAGs(void);
+		std::vector<DAGNode*>      sinkDags;
+        std::set<DAGNode*>       dagNodes;
         RandomNumberGenerator* 		rng; 
+        std::vector<DAGNode*>       changeableDags;
+        std::vector<double>         changeableDagUpdateProbs;
 };
 
 #endif /* RBMODEL_H_ */

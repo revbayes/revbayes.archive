@@ -6,6 +6,7 @@
  */
 
 #include <cmath>
+#include <cassert>
 
 #include "DAGNode.h"
 #include "DistExponential.h"
@@ -86,6 +87,15 @@ double DistExponential::lnPdf(RbObject* obs) {
     double x = ((RbDouble*) obs)->getValue();
     double l = ((RbDouble*) lambda->getValue())->getValue();
 	return RbStatistics::Exponential::lnPdf(l, x);
+}
+
+RbObject* DistExponential::rv(RandomNumberGenerator* r) {
+
+    double l = ((RbDouble*) lambda->getValue())->getValue();
+	double u = RbStatistics::Exponential::rv(r,l);
+	RbDouble* x = new RbDouble(u);
+
+	return (RbObject*) x;
 }
 
 bool DistExponential::equals(const RbObject* o) const {

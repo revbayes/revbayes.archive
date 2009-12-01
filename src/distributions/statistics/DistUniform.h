@@ -33,6 +33,7 @@ public:
         // overloaded operators
         RbObject&			operator=(const RbObject& o);
         DistUniform&        operator=(const DistUniform& o);
+		RbObject* rv(RandomNumberGenerator* r);
 
 	double lnPdf(RbObject* obs); //!< Ln probability density
 	double pdf(RbObject* obs); //!< Probability density

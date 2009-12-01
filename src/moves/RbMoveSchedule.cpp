@@ -12,8 +12,10 @@
 
 const StringVector RbMoveSchedule::rbClass = StringVector("moveSchedule") + RbComplex::rbClass;
 
-RbMoveSchedule::RbMoveSchedule(RandomNumberGenerator* r) {
+RbMoveSchedule::RbMoveSchedule(RandomNumberGenerator* r, double w) {
     rng = r;
+    sumWeights = 0.0;
+    dagUpdateWeight = w;
 }
 
 RbMoveSchedule::~RbMoveSchedule() {
@@ -81,7 +83,8 @@ RbMoveSchedule& RbMoveSchedule::operator=(const RbMoveSchedule& obj) {
 }
 
 RbMove* RbMoveSchedule::getNext() {
-    double ran = rng->nextDouble() * sumWeights;
+
+	double ran = rng->nextDouble() * sumWeights;
     std::map<double,RbMove*>::iterator i = schedule.begin();
     ran -= i->first;
     while ((ran-0.00000001) > 0) {

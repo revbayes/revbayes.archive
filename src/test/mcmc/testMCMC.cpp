@@ -20,8 +20,10 @@
 #include "MoveSlidingWindow.h"
 #include "MoveScale.h"
 #include "RbDouble.h"
+#include "RbInt.h"
 #include "RbMcmc.h"
 #include "RbModel.h"
+#include "RbMonitor.h"
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
 #include "RbObject.h"
@@ -29,6 +31,7 @@
 #include "StochasticNode.h"
 
 int main(int argc, char **argv) {
+
     // create a DistNormal object
     RbDouble* sigmaPrior = new RbDouble(1.0);
     RbDouble* muPriorLower = new RbDouble(-1.0);
@@ -42,8 +45,12 @@ int main(int argc, char **argv) {
     ConstantNode* cnMuPriorLower = new ConstantNode(muPriorLower);
     ConstantNode* cnMuPriorUpper = new ConstantNode(muPriorUpper);
 
-    StochasticNode* snSigma = new StochasticNode();
-    StochasticNode* snMu = new StochasticNode();
+	std::vector<unsigned int> seed1;
+	seed1.push_back(1);
+	seed1.push_back(2);
+	RandomNumberGenerator* rng = new RandomNumberGenerator(seed1);
+    StochasticNode* snSigma = new StochasticNode( new DistExponential( cnSigmaPrior ),rng);
+    StochasticNode* snMu = new StochasticNode( new DistUniform( cnMuPriorLower, cnMuPriorUpper ),rng);
     snSigma->addParentNode(cnSigmaPrior);
     snMu->addParentNode(cnMuPriorLower);
     snMu->addParentNode(cnMuPriorUpper);
@@ -54,32 +61,21 @@ int main(int argc, char **argv) {
 	std::vector<DAGNode*> sn;
 	for (int i=0; i<10; i++)
 		{
-		StochasticNode* s = new StochasticNode();
+		StochasticNode* s = new StochasticNode(new DistNormal(snMu, snSigma), rng);
 		sn.push_back( s );
 		s->clamp( x[i] );
 		}
-    
-    std::vector<Distribution*> dists;
+   
     for (int i=0; i<10; i++)
     	{
-    	DistNormal* d = new DistNormal(snMu, snSigma);
-    	dists.push_back( d );
-    	((StochasticNode*)sn[i])->assignDistribution(d);
     	sn[i]->addParentNode(snMu);
     	sn[i]->addParentNode(snSigma);
     	snMu->addChildNode(sn[i]);
     	snSigma->addChildNode(sn[i]);
-    	}
-    DistUniform* uniDist = new DistUniform( cnMuPriorLower, cnMuPriorUpper );
-    DistExponential* expDist = new DistExponential( cnSigmaPrior );
-	snMu->assignDistribution(uniDist);
-	snSigma->assignDistribution(expDist);
+    	};
 	
-	std::vector<unsigned int> seed1;
-	seed1.push_back(1);
-	seed1.push_back(2);
-	RandomNumberGenerator* rng = new RandomNumberGenerator(seed1);
-	RbMoveSchedule* msSigma = new RbMoveSchedule( rng );
+	
+	RbMoveSchedule* msSigma = new RbMoveSchedule( rng, 1.0 );
 	msSigma->addMove( new MoveScale( snSigma, new RbDouble(1.5), rng ), 1.0 );
 	snSigma->assignMoveSchedule( msSigma );
 	
@@ -87,12 +83,19 @@ int main(int argc, char **argv) {
 	seed2.push_back(7);
 	seed2.push_back(5);
 	RandomNumberGenerator* rng2 = new RandomNumberGenerator(seed2);
-	RbMoveSchedule* msMu = new RbMoveSchedule( rng2 );
-	msMu->addMove( new MoveSlidingWindow( snMu, new RbDouble(0.1), muPriorLower, muPriorUpper, rng2 ), 1.0 );
+	RbMoveSchedule* msMu = new RbMoveSchedule( rng2, 2.5 );
+	msMu->addMove( new MoveSlidingWindow( snMu, muPriorLower, muPriorUpper, new RbDouble(0.1), rng2 ), 1.0 );
 	snMu->assignMoveSchedule( msMu );
-
+	
+	// create monitors
+	RbInt freq = RbInt(100);
+	RbMonitor* mSigma = new RbMonitor(std::cout, snSigma, freq);
+	snSigma->addMonitor(mSigma);
+	RbMonitor* mMu = new RbMonitor(std::cout, snMu, freq);
+	snMu->addMonitor(mMu);
+	
     // create model
-    RbModel* model = new RbModel(sn);
+    RbModel* model = new RbModel(sn, rng);
 
     // run MCMC
     RbMcmc* mcmc = new RbMcmc(model, rng);

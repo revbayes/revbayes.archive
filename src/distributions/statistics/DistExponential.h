@@ -33,6 +33,7 @@ public:
 
 	double lnPdf(RbObject* o); //!< Ln probability density
 	double pdf(RbObject* o); //!< Probability density
+	RbObject* rv(RandomNumberGenerator* r);
 
 private:
 	DAGNode* lambda;

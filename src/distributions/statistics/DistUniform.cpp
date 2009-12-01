@@ -6,6 +6,7 @@
  */
 
 #include <cmath>
+#include <cassert>
 
 #include "DAGNode.h"
 #include "DistUniform.h"
@@ -89,6 +90,14 @@ double DistUniform::lnPdf(RbObject* obs) {
     double l = ((RbDouble*) lower->getValue())->getValue();
     double u = ((RbDouble*) upper->getValue())->getValue();
 	return RbStatistics::Normal::lnPdf(l,u,x);
+}
+
+RbObject* DistUniform::rv(RandomNumberGenerator* r) {
+    double lw = ((RbDouble*) lower->getValue())->getValue();
+    double up = ((RbDouble*) upper->getValue())->getValue();
+    double u = RbStatistics::Uniform::rv(r, lw, up);
+	RbDouble* x = new RbDouble(u);
+	return (RbObject*)x;
 }
 
 bool DistUniform::equals(const RbObject* o) const {

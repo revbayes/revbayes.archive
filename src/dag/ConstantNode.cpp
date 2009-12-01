@@ -65,6 +65,71 @@ RbObject* ConstantNode::clone(void) const {
 	return (RbObject*) x;
 }
 
+/**
+ * @brief Thouch affected nodes
+ *
+ * This function touches all affected DAG nodes, i.e. marks them as changed.
+ *
+ */
+void ConstantNode::touchAffectedChildren() {
+
+}
+
+/**
+ * @brief Thouch affected nodes
+ *
+ * This function touches all affected DAG nodes, i.e. marks them as changed.
+ *
+ */
+void ConstantNode::touchAffectedParents() {
+
+}
+
+/**
+ * @brief Tell affected DAG nodes to keep current value
+ *
+ * This function calls all affected DAG nodes so that they
+ * have a chance to keep the current value and discard the
+ * previous value.
+ *
+ */
+void ConstantNode::keepAffectedChildren() {
+
+}
+
+/**
+ * @brief Tell affected DAG nodes to keep current value
+ *
+ * This function calls all affected DAG nodes so that they
+ * have a chance to keep the current value and discard the
+ * previous value.
+ *
+ */
+void ConstantNode::keepAffectedParents() {
+
+}
+
+/**
+ * @brief Restore affected nodes
+ *
+ * This function calls all nodes that are affected by this DAG node and restores
+ * them.
+ *
+ */
+void ConstantNode::restoreAffectedChildren() {
+
+}
+
+/**
+ * @brief Restore affected nodes
+ *
+ * This function calls all nodes that are affected by this DAG node and restores
+ * them.
+ *
+ */
+void ConstantNode::restoreAffectedParents() {
+
+}
 
 /**
  * @brief Compare constant nodes
@@ -101,7 +166,38 @@ double ConstantNode::getLnProbabilityRatio() {
     return 0.0;
 }
 
+double ConstantNode::getLnProbability() {
+    return 0.0;
+}
+
 RbObject& ConstantNode::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const ConstantNode& x = dynamic_cast<const ConstantNode&> (obj);
+
+        ConstantNode& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const ConstantNode& x = dynamic_cast<const ConstantNode&> (*(obj.convertTo("const_node")));
+
+            ConstantNode& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to const_node");
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+DAGNode& ConstantNode::operator=(const DAGNode& obj) {
 
     try {
         // Use built-in fast down-casting first

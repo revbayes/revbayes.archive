@@ -139,6 +139,35 @@ RbObject& MoveScale::operator=(const RbObject& obj) {
     return (*this);
 }
 
+RbMove& MoveScale::operator=(const RbMove& obj) {
+
+
+    try {
+        // Use built-in fast down-casting first
+        const MoveScale& x = dynamic_cast<const MoveScale&> (obj);
+
+        MoveScale& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const MoveScale& x = dynamic_cast<const MoveScale&> (*(obj.convertTo(RbNames::MoveScale::name)));
+
+            MoveScale& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::MoveScale::name);
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+
 MoveScale& MoveScale::operator=(const MoveScale& obj) {
 
     *rng        = *(obj.rng);

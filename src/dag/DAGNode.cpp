@@ -21,6 +21,7 @@
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
 #include "RbObject.h"
+#include "RbMonitor.h"
 
 #include <iostream>
 
@@ -35,6 +36,7 @@ const StringVector DAGNode::rbClass = StringVector("dag_node") + RbObject::rbCla
 DAGNode::DAGNode()
     : storedValue(NULL), value(NULL), changed(false), touched(false),
       children(), parents() {
+      moves = NULL;
 }
 
 
@@ -49,6 +51,7 @@ DAGNode::DAGNode()
 DAGNode::DAGNode(RbObject *val)
     : storedValue(NULL), value(val), changed(false), touched(false),
       children(), parents() {
+      moves = NULL;
 }
 
 
@@ -71,6 +74,8 @@ DAGNode::DAGNode(const DAGNode &d)
 
     for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
             parents.insert((DAGNode*)(*i)->clone());
+            
+    (*moves) = (*d.moves);
 }
 
 
@@ -89,28 +94,26 @@ DAGNode::~DAGNode(void) {
 }
 
 void DAGNode::accept() {
-	*storedValue = *value;
+//std::cerr << "accept" << std::endl;
+    // keep new value
+    keep();
+    // keep the affected parents
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
+    	(*i)->keepAffectedParents();
+    	(*i)->keep();
+    }
+    // keep the affected children
+    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+    	(*i)->keepAffectedChildren();
+    	(*i)->keep();
+    }
 	
 	// call accept for the move
 	lastMove->acceptMove();
 }
 
-
-/**
- * @brief Tell affected DAG nodes to keep current value
- *
- * This function calls all affected DAG nodes so that they
- * have a chance to keep the current value and discard the
- * previous value.
- *
- */
-void DAGNode::keepAffected() {
-
-    if (changed) {
-        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++)
-            (*i)->keepAffected();
-        keep();
-    }
+void DAGNode::addMonitor(RbMonitor* m) {
+	monitors.insert(m);
 }
 
 
@@ -149,12 +152,22 @@ bool DAGNode::equals(const RbObject* obj) const {
     return true;
 }
 
+double DAGNode::getLnLikelihood(void) {
+//	if (touched == true) {
+	    double lnLikelihood = 0.0;
+	    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+	        lnLikelihood += (*i)->getLnProbability();
+	    }
+	    currentLikelihood = lnLikelihood;
+//	}
+    return currentLikelihood;
+}
+
 double DAGNode::getLnLikelihoodRatio(void) {
-    double lnLikelihood = 0.0;
-    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-        lnLikelihood += (*i)->getLnProbabilityRatio();
-    }
-    return lnLikelihood;
+    currentLikelihood = getLnLikelihood();
+//std::cerr << "current likelihood = " << currentLikelihood << std::endl;
+//std::cerr << "stored likelihood = " << storedLikelihood << std::endl;
+    return currentLikelihood - storedLikelihood;
 }
 
 double DAGNode::getLnPriorRatio(void) {
@@ -162,12 +175,54 @@ double DAGNode::getLnPriorRatio(void) {
 }
 
 RbMove* DAGNode::getNextMove(void) {
-    return moves->getNext();
+	if (moves == NULL) {
+		return NULL;
+	}
+	lastMove = moves->getNext();
+    return lastMove;
+}
+
+double DAGNode::getUpdateWeight(void) {
+	if (moves == NULL) 
+		return 0.0;
+	return moves->getUpdateWeight();
+}
+
+double DAGNode::performMove(void) {
+	if (moves == NULL) {
+		return 0.0;
+	}	
+	store();
+	RbMove* m = getNextMove();
+	double hr = m->performMove();
+	
+	// mark this node as changed for recalculations
+	changed = true;
+	touched = true;
+	touch();
+	
+	// propagate the change to the children
+    // touch the affected parents
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
+    	(*i)->touchAffectedParents();
+    	(*i)->touch();
+//std::cerr << "touched parent" << std::endl;
+    }
+    // touch the affected children
+    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+    	(*i)->touchAffectedChildren();
+    	(*i)->touch();
+//std::cerr << "touched child" << std::endl;
+    }
+	
+	return hr;
 }
 
 void DAGNode::monitor(int i) {
-    for (std::set<RbMonitor*>::iterator it=monitors.begin(); it!= monitors.end(); it++){
-        (*it)->monitor(i);
+	if (!monitors.empty()) {
+    	for (std::set<RbMonitor*>::iterator it=monitors.begin(); it!= monitors.end(); it++){
+    	    (*it)->monitor(i);
+    	}
     }
 }
 
@@ -257,8 +312,21 @@ void DAGNode::printParents(std::ostream& o) const {
 
 
 void DAGNode::reject() {
-    // restore old state
+//std::cerr << "reject" << std::endl;
+    // restore new value
     restore();
+    
+    // restore the affected parents
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
+    	(*i)->restoreAffectedParents();
+    	(*i)->restore();
+    }
+    
+    // restore the affected children
+    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+    	(*i)->restoreAffectedChildren();
+    	(*i)->restore();
+    }
 	
 	// call accept for the move
 	lastMove->rejectMove();
@@ -274,31 +342,19 @@ void DAGNode::reject() {
 void DAGNode::restore() {
 
     RbObject* temp;
-    
+
     if (changed) {
         temp        = value;
         value       = storedValue;
         storedValue = temp;
     }
-
-    keep();     // Sets touched and changed to false
-}
-
-
-/**
- * @brief Restore affected nodes
- *
- * This function calls all nodes that are affected by this DAG node and restores
- * them.
- *
- */
-void DAGNode::restoreAffected() {
-
-    if (changed) {
-        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++)
-            (*i)->restoreAffected();
-        restore();
+    if (touched) {
+        currentLikelihood = storedLikelihood;
+        currentProbability = storedProbability;    
     }
+
+    
+    keep();     // Sets touched and changed to false
 }
 
 
@@ -318,21 +374,8 @@ void DAGNode::setValue(RbObject* val) {
 
 void DAGNode::store(void) {
     *storedValue = *value;
-}
-
-/**
- * @brief Thouch affected nodes
- *
- * This function touches all affected DAG nodes, i.e. marks them as changed.
- *
- */
-void DAGNode::touchAffected() {
-
-    if (!touched) {
-        touch();
-        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++)
-            (*i)->touchAffected();
-    }
+    storedLikelihood = currentLikelihood;
+    storedProbability = currentProbability;
 }
 
 std::string DAGNode::toString(void) const {

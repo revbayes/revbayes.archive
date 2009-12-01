@@ -20,7 +20,7 @@ class RbMoveSchedule : public RbComplex {
 
         static const StringVector   rbClass;            //!< Static class attribute
 
-        RbMoveSchedule(RandomNumberGenerator* r);
+        RbMoveSchedule(RandomNumberGenerator* r, double w);
         virtual ~RbMoveSchedule();
 
         RbObject*                  clone() const;                                  //!< Clone object
@@ -29,6 +29,8 @@ class RbMoveSchedule : public RbComplex {
         void                       print(std::ostream& o) const;                   //!< Print complete object info
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object
+        void                       setUpdateWeight(double x) { dagUpdateWeight = x; }
+        double					   getUpdateWeight(void) { return dagUpdateWeight; }
 
 
         // overloaded operators
@@ -43,6 +45,7 @@ class RbMoveSchedule : public RbComplex {
         RandomNumberGenerator*          rng;
         double                          sumWeights;
         std::map<double, RbMove*>       schedule;    //!< Member variables
+        double 							dagUpdateWeight;
 };
 
 #endif /* RBMOVESCHEDULE_H_ */

@@ -42,12 +42,22 @@ class ConstantNode : public DAGNode {
 
         // overloaded functions from DAGNode
         double                  getLnProbabilityRatio();
+        double                  getLnProbability();
 
         // overloaded operators
         RbObject&               operator=(const RbObject& o);
+        DAGNode&            	operator=(const DAGNode& o);
         ConstantNode&           operator=(const ConstantNode& o);
+        
+        void    	            keepAffectedChildren();                         //!< Keep value of affected nodes recursively
+        void	                keepAffectedParents();                         //!< Keep value of affected nodes recursively
+        void         	  		restoreAffectedChildren();                      //!< Restore affected nodes recursively
+        void         	  		restoreAffectedParents();                      //!< Restore affected nodes recursively
+        void    	       		touchAffectedChildren();                        //!< Mark affected nodes recursively
+        void	           		touchAffectedParents();                        //!< Mark affected nodes recursively
 
     protected:
+    	
 };
 
 #endif

@@ -7,7 +7,7 @@ add_executable(testDistNormal ../../datatypes/RbObject.cpp ../../datatypes/compl
 ../../datatypes/primitive/RbDouble.cpp ../../datatypes/primitive/RbInt.cpp ../../datatypes/primitive/RbBool.cpp \\
 ../../functions/Argument.cpp ../../functions/ArgumentRule.cpp ../../functions/RbFunction.cpp \\
 ../../functions/distribution/RbFunction_dnorm.cpp ../../functions/distribution/RbFunction_pnorm.cpp ../../functions/distribution/RbFunction_qnorm.cpp \\
-../../functions/distribution/RbFunction_rnorm.cpp ../../utils/RbStatistics.cpp ../../utils/RbMath.cpp testDistNormal.cpp)
+../../functions/distribution/RbFunction_rnorm.cpp ../../utils/RbStatistics.cpp ../../utils/RbMath.cpp ../../main/RbMonitor.cpp testDistNormal.cpp)
 
 
 add_executable(testDists ../../datatypes/RbObject.cpp ../../datatypes/complex/StringVector.cpp ../../datatypes/complex/RbComplex.cpp \\
@@ -20,4 +20,4 @@ add_executable(testDists ../../datatypes/RbObject.cpp ../../datatypes/complex/St
 ../../functions/distribution/RbFunction_dchisq.cpp ../../functions/distribution/RbFunction_pchisq.cpp ../../functions/distribution/RbFunction_qchisq.cpp ../../functions/distribution/RbFunction_rchisq.cpp \\
 ../../functions/distribution/RbFunction_dexp.cpp ../../functions/distribution/RbFunction_pexp.cpp ../../functions/distribution/RbFunction_qexp.cpp ../../functions/distribution/RbFunction_rexp.cpp \\
 ../../functions/distribution/RbFunction_dnorm.cpp ../../functions/distribution/RbFunction_pnorm.cpp ../../functions/distribution/RbFunction_qnorm.cpp ../../functions/distribution/RbFunction_rnorm.cpp \\
-testDists.cpp)
+../../main/RbMonitor.cpp testDists.cpp)

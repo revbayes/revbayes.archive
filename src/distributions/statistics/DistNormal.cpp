@@ -6,7 +6,7 @@
  */
 
 #include <cmath>
-
+#include <cassert>
 #include "DAGNode.h"
 #include "DistNormal.h"
 #include "RbDouble.h"
@@ -18,7 +18,7 @@
 
 const StringVector DistNormal::rbClass = StringVector(RbNames::Normal::name) + Distribution::rbClass;
 
-DistNormal::DistNormal(DAGNode* s, DAGNode* m) {
+DistNormal::DistNormal(DAGNode* m, DAGNode* s) {
 
 	sigma = s;
 	mu    = m;
@@ -89,6 +89,15 @@ double DistNormal::lnPdf(RbObject* obs) {
 	double lnpdf = RbStatistics::Normal::lnPdf(m,s,o);
 
 	return lnpdf;
+}
+
+RbObject* DistNormal::rv(RandomNumberGenerator* r) {
+	double m = ((RbDouble*) mu->getValue())->getValue();
+	double s = ((RbDouble*) sigma->getValue())->getValue();
+
+	double u = RbStatistics::Normal::rv(r,m,s);
+	RbDouble* x = new RbDouble(u);
+	return (RbObject*)x;
 }
 
 bool DistNormal::equals(const RbObject* o) const {

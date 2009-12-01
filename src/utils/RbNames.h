@@ -26,13 +26,13 @@ namespace RbNames {
 #pragma mark Beta Distribution
 
 	namespace Beta {
-	extern const std::string   	name 	= "distBeta";
-	extern const std::string		alpha 	= "alpha";
-	extern const std::string		beta	= "beta";
+	const std::string   	name 	= "distBeta";
+	const std::string		alpha 	= "alpha";
+	const std::string		beta	= "beta";
 	}
 	
 	namespace Double {
-	extern const std::string   	name 	= "double";
+	const std::string   	name 	= "double";
 	}
 	
 #pragma mark Chi-Square Distribution
@@ -41,7 +41,7 @@ namespace RbNames {
 	}
 
 	namespace Distribution {
-	extern const std::string    name    = "distribution";
+	const std::string    name    = "distribution";
 	}
 
 #pragma mark Dirichlet Distribution
@@ -52,8 +52,8 @@ namespace RbNames {
 #pragma mark Exponential Distribution
 
 	namespace Exponential {
-	extern const std::string   	name 	= "distExponential";
-	extern const std::string		lambda	= "rate";
+	const std::string   	name 	= "distExponential";
+	const std::string		lambda	= "rate";
 	}
 
 #pragma mark Gamma Distribution
@@ -67,11 +67,11 @@ namespace RbNames {
 	}
 
 	namespace MCMC {
-	extern const std::string    name    = "MCMC";
+	const std::string    name    = "MCMC";
 	}
 
 	namespace Model {
-	extern const std::string    name    = "model";
+	const std::string    name    = "model";
 	}
 
 #pragma mark Poisson Distribution
@@ -82,29 +82,33 @@ namespace RbNames {
 #pragma mark Normal Distribution
 
 	namespace Normal {
-	extern const std::string   	name;
-	extern const std::string		mu;
-	extern const std::string		sigma;
+	const std::string   	name;
+	const std::string		mu;
+	const std::string		sigma;
 	}
 
 #pragma mark Uniform(0,1) Distribution
 
 	namespace Uniform01 {
-	extern const std::string   	name 	= "distUniform01";
+	const std::string   	name 	= "distUniform01";
 	}
 	
 	namespace Uniform {
-	extern const std::string   	name 	= "distUniform";
-	extern const std::string		lower	= "lower";
-	extern const std::string		upper	= "upper";
+	const std::string   	name 	= "distUniform";
+	const std::string		lower	= "lower";
+	const std::string		upper	= "upper";
 	}
 
 	namespace MoveScale {
-	extern const std::string   	name 	= "moveScale";
+	const std::string   	name 	= "moveScale";
 	}
 	
 	namespace MoveSlidingWindow {
-	extern const std::string		name	= "moveSlidingWindow";
+	const std::string		name	= "moveSlidingWindow";
+	}
+
+	namespace Monitor {
+	const std::string   	name 	= "monitor";
 	}
 
 }

@@ -10,6 +10,6 @@ add_executable(testMCMC \\
 ../../moves/objects/MoveSlidingWindow.cpp ../../moves/objects/MoveScale.cpp \\
 ../../distributions/Distribution.cpp ../../distributions/statistics/DistExponential.cpp ../../distributions/statistics/DistNormal.cpp \\
 ../../distributions/statistics/DistUniform.cpp \\
-../../functions/Argument.cpp ../../functions/ArgumentRule.cpp ../../functions/RbFunction.cpp \\
-../../utils/RbStatistics.cpp ../../utils/RbNames.h ../../utils/RbMath.cpp \\
+../../functions/Argument.cpp ../../functions/ArgumentRule.cpp ../../functions/RbFunction.cpp ../../main/RbMonitor.cpp \\
+../../utils/RbStatistics.cpp ../../utils/RbNames.h ../../utils/RbMath.cpp ../../datatypes/model/RbModel.cpp \\
 ../../inference/mcmc/RbMcmc.cpp testMCMC.cpp)

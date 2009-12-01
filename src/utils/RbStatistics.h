@@ -21,6 +21,8 @@
 
 #include <vector>
 
+class RandomNumberGenerator;
+
 namespace RbStatistics {
 
 #pragma mark Beta Distribution
@@ -56,6 +58,7 @@ namespace RbStatistics {
 	double lnPdf(double lambda, double x);                                           /*!< Exponential(lambda) log_e probability density */
 	double cdf(double lambda, double x);                                             /*!< Exponential(lambda) cumulative probability */
 	double quantile(double lambda, double p);                                        /*!< Exponential(lambda) quantile */
+	double rv(RandomNumberGenerator* rng, double lambda);
 	}
 
 #pragma mark Gamma Distribution
@@ -93,6 +96,7 @@ namespace RbStatistics {
 	double        cdf(double mu, double sigma, double x);                             /*!< Normal(mu,sigma) cumulative probability */
 	double        quantile(double p);                                                 /*!< Normal(0,1) quantile */
 	double        quantile(double mu, double sigma, double p);                        /*!< Normal(mu,sigma) quantile */
+	double rv(RandomNumberGenerator* rng, double mu, double sigma);
 	}
 
 #pragma mark Uniform(0,1) Distribution
@@ -110,7 +114,7 @@ namespace RbStatistics {
 	double lnPdf(double a, double b, double x);                                /*!< Log of the Uniform(a,b) probability density */
 	double cdf(double a, double b, double x);                                  /*!< Uniform(a,b) cumulative probability */
 	double quantile(double a, double b, double p);                             /*!< Uniform(a,b) quantile */
-	//double rv(RandomNumberGenerator* rng, double a, double b);
+	double rv(RandomNumberGenerator* rng, double a, double b);
 	}
 }
 
