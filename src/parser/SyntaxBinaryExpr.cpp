@@ -17,12 +17,8 @@
 #include <list>
 #include <sstream>
 
-#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
-#include "RbInt.h"
-#include "RbList.h"
-#include "RbNames.h"
 #include "RbException.h"
 #include "SyntaxBinaryExpr.h"
 #include "Workspace.h"
