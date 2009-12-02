@@ -111,6 +111,9 @@ namespace RbNames {
 	const std::string   	name 	= "monitor";
 	}
 
+    namespace DAGNode {
+    const std::string       name    = "DAGNode";
+    }
 }
 
 #endif
