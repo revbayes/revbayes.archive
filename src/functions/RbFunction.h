@@ -48,33 +48,33 @@ class DAGNode;
  * processArguments, which will throw an error if the provided
  * arguments do not match.
  *
- * It is the responsibility of the caller to send the execute function
- * the processed arguments in the right order.
- *
  */
 class RbFunction :  public RbObject {
 
     public:
+            virtual ~RbFunction(void) {}                //!< Virtual destructor because of virtual functions
+
         static const StringVector   rbClass;            //!< Static class attribute
 
         // Regular functions
-        virtual                     ~RbFunction(void) {}
 
-        void                        setArguments(const std::vector<Argument*>& args);
-        std::vector<ArgumentRule>   getArgumentRules() const { return argRules; }   //!< Get argument rules
-        std::string                 getReturnType() const { return returnType; }    //!< Get return type
-        RbObject*                   execute(const std::vector<Argument*>& args);   //!< Execute function
-        RbObject*                   execute();   //!< Execute function
+        std::vector<ArgumentRule>   getArgumentRules() const { return argRules; }       //!< Get argument rules
+        std::string                 getReturnType() const { return returnType; }        //!< Get return type
+        RbObject*                   execute(const std::vector<Argument*>& args);        //!< Execute function
+        RbObject*                   execute();                          //!< Execute using processed args
+        void                        setArguments(const std::vector<Argument*>& args);   //!< Process and set args
 
     protected:
-            RbFunction(void); //!< Basic constructor
+            RbFunction(void);                                                   //!< Basic constructor
             RbFunction(const RbFunction& fn);                                   //!< Copy constructor
-        std::vector<DAGNode*>       processArguments(const std::vector<Argument*>& args);    //!< Process args
-		virtual RbObject*           executeOperation(const std::vector<DAGNode*>& args)=0;
+
+        std::vector<DAGNode*>       processArguments(const std::vector<Argument*>& args);   //!< Process args
+		virtual RbObject*           executeOperation(const std::vector<DAGNode*>& args)=0;  //!< Execute operation
+
         std::vector<ArgumentRule>   argRules;               //!< Argument rules
         std::string                 returnType;             //!< Return type
-        std::vector<DAGNode*>       processedArguments;
-        bool                        argumentsProcessed;
+        std::vector<DAGNode*>       processedArguments;     //!< Processed arguments
+        bool                        argumentsProcessed;     //!< Are arguments processed?
 };
 
 #endif
