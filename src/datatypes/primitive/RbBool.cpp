@@ -96,20 +96,6 @@ RbObject* RbBool::convertTo(const std::string& type) const {
 }
 
 /**
- * @brief print function
- *
- * This function prints this object.
- *
- * @see RbObject.print()
- * @param c           the stream where to print to
- *
- */
-void RbBool::print(std::ostream &c) const {
-
-	c << value << std::endl;
-}
-
-/**
  * @brief dump function
  *
  * This function dumps this object.

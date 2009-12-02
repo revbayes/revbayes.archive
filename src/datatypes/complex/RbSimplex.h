@@ -19,22 +19,16 @@
 #ifndef RbSimplex_H
 #define RbSimplex_H
 
-#include "RbAbstractDataType.h"
-#include "Simplex.h"
+#include "RbNumeric.h"
 #include <vector>
 
 
-class RbSimplex : public RbAbstractDataType, public std::vector<Simplex> {
+class RbSimplex : public RbNumeric {
 
     public:
-        RbSimplex() : RbAbstractDataType("RbSimplex"), vector<Simplex>() {}     //! Default constructor
-	    RbSimplex(const Simplex& v) : RbAbstractDataType("RbSimplex"), vector<Simplex>(1, v) {}      //!< Constructor from Simplex
-	    RbSimplex(const vector<Simplex> &v) : RbAbstractDataType("RbSimplex"), vector<Simplex>(v) {} //!< Constructor from vector<Simplex>
-        RbSimplex(const RbSimplex& s);    //!< Copy constructor
+        RbSimplex();     //! Default constructor
+	    RbSimplex(const RbSimplex& s);    //!< Copy constructor
 
-	RbSimplex*  copy(void) const;                       //!< Copy
-    int         getSize(void) const { return size(); }  //!< Get vector size
-	void        print(ostream &c=cout) const;           //!< Print the value to ostream c
 };
 
 #endif

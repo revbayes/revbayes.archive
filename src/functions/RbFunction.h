@@ -59,9 +59,12 @@ class RbFunction :  public RbObject {
 
         // Regular functions
         virtual                     ~RbFunction(void) {}
+
+        void                        setArguments(const std::vector<Argument*>& args);
         std::vector<ArgumentRule>   getArgumentRules() const { return argRules; }   //!< Get argument rules
         std::string                 getReturnType() const { return returnType; }    //!< Get return type
-        RbObject*           execute(const std::vector<Argument*>& args);   //!< Execute function
+        RbObject*                   execute(const std::vector<Argument*>& args);   //!< Execute function
+        RbObject*                   execute();   //!< Execute function
 
     protected:
             RbFunction(void); //!< Basic constructor
@@ -70,6 +73,8 @@ class RbFunction :  public RbObject {
 		virtual RbObject*           executeOperation(const std::vector<DAGNode*>& args)=0;
         std::vector<ArgumentRule>   argRules;               //!< Argument rules
         std::string                 returnType;             //!< Return type
+        std::vector<DAGNode*>       processedArguments;
+        bool                        argumentsProcessed;
 };
 
 #endif

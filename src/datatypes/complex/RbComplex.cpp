@@ -53,6 +53,7 @@ RbComplex::RbComplex() : RbObject() {
 RbComplex::~RbComplex() {
 
     members.clear();
+    type.clear();
     methods.clear();
 }
 
@@ -130,27 +131,37 @@ void RbComplex::printValue(std::ostream& o) const {
  * @throws      Throws exception if member variable not found
  *
  */
-void RbComplex::setMember(const std::string& name, RbObject* val) {
+void RbComplex::setMember(const std::string& name, const std::string& t, RbObject* val) {
 
 	std::map<std::string, RbObject*>::iterator it = members.find( name );
 	if ( it != members.end() )
 		{
 		members.insert( std::make_pair(name,val) );
+        type.insert( std::make_pair(name,t) );
 		}
 	else 
 		{
-		RbObject* temp = it->second;
-		delete temp;
-		it->second = val;
+	    std::map<std::string, std::string>::iterator t = type.find( name );
+	    if (val->isType(t->second)) {
+	        RbObject* temp = it->second;
+	        delete temp;
+	        it->second = val;
+	    }
+	    else {
+	        RbException e("Cannot set " + name + " because type " + t->second + " was expected but got " + val->getClass().toString());
+	        throw e;
+	    }
+
 		}
 }
 
-bool RbComplex::addMember(const std::string& name, RbObject* v) {
+bool RbComplex::addMember(const std::string& name, const std::string& t, RbObject* v) {
 
 	std::map<std::string, RbObject*>::iterator it = members.find( name );
 	if ( it != members.end() )
 		{
 		members.insert( std::make_pair(name,v) );
+        type.insert( std::make_pair(name,t) );
 		}
 	else 
 		{
@@ -162,6 +173,7 @@ bool RbComplex::addMember(const std::string& name, RbObject* v) {
 void RbComplex::deleteMember(const std::string& name) {
 
 	members.erase(name);
+	type.erase(name);
 }
 
 const RbObject* RbComplex::getMember(const std::string& name) const {

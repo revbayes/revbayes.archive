@@ -24,7 +24,9 @@
 
 #include "RbFunction.h"
 #include "RbObject.h"
-//#include "StringVector.h"
+
+
+class StringVector;
 
 
 class RbComplex : public RbObject {
@@ -40,11 +42,11 @@ class RbComplex : public RbObject {
 		virtual void                printValue(std::ostream& o) const;
 
         // Regular functions
-        virtual bool                addMember(const std::string& name, RbObject* v);
+        virtual bool                addMember(const std::string& name, const std::string& type, RbObject* v);
         virtual void                deleteMember(const std::string& name); 
         virtual const RbObject*     getMember(const std::string& name) const; //!< Return member variable
         virtual const RbFunction*   getMethod(const std::string& name) const; //!< Return method (member function)
-        virtual void                setMember(const std::string& name, RbObject* val);   //!< Set member variable
+        virtual void                setMember(const std::string& name, const std::string& t, RbObject* val);   //!< Set member variable
         virtual const std::map<std::string, RbFunction*>&  getMethods(void) const { return methods; }
 
     protected:
@@ -52,6 +54,7 @@ class RbComplex : public RbObject {
 
         std::map<std::string, RbObject*>       members;    //!< Member variables
         std::map<std::string, RbFunction*>     methods;    //!< Member functions
+        std::map<std::string, std::string>     type;       // the type of a member
 };
 
 #endif

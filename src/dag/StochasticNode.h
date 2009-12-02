@@ -38,7 +38,7 @@ class StochasticNode : public DAGNode {
 
        // Basic utility functions
         StochasticNode* clone() const { return new StochasticNode(*this); } //!< Clone the stochastic node
-        void            print(std::ostream& o) const;       //!< Print object
+        std::string     toString() const;
 
         // Regular functions
         void            initializeValue(RbObject* v);

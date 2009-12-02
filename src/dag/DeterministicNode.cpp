@@ -240,8 +240,6 @@ DeterministicNode& DeterministicNode::operator=(const DeterministicNode& obj) {
     changed = obj.changed;
     children = obj.children;
     (*lastMove) = (*obj.lastMove);
-    members = obj.members;
-    methods = obj.methods;
     monitors = obj.monitors;
     (*moves) = (*obj.moves);
     parents = obj.parents;
@@ -261,14 +259,6 @@ DeterministicNode& DeterministicNode::operator=(const DeterministicNode& obj) {
  * @param o           The ostream for printing
  *
  */
-void DeterministicNode::print(std::ostream &o) const {
-
-    //RbObject::print(o);     // Prints class
-    //DAGNode::print(o);      // Prints general info
-
-    o << "Function = " << function->briefInfo() << std::endl;
-}
-
 void DeterministicNode::printValue(std::ostream &o) const {
 
     o << value->toString() << std::endl;

@@ -127,8 +127,6 @@ StochasticNode& StochasticNode::operator=(const StochasticNode& obj) {
     changed = obj.changed;
     children = obj.children;
     (*lastMove) = (*obj.lastMove);
-    members = obj.members;
-    methods = obj.methods;
     monitors = obj.monitors;
     (*moves) = (*obj.moves);
     parents = obj.parents;
@@ -206,6 +204,10 @@ void StochasticNode::restoreAffectedParents() {
 
 }
 
+std::string StochasticNode::toString() const {
+    return "Stochastic Node: " + value->toString();
+}
+
 /**
  * @brief Clamp the node to a value
  *
@@ -248,10 +250,5 @@ double StochasticNode::getLnProbability(void) {
 void StochasticNode::initializeValue(RbObject* v) {
 
 	value = v;
-}
-
-void StochasticNode::print(std::ostream& o) const {
-
-    o << "Distribution = " << distribution->toString() << std::endl;
 }
 

@@ -229,8 +229,6 @@ ConstantNode& ConstantNode::operator=(const ConstantNode& obj) {
     changed = obj.changed;
     children = obj.children;
     (*lastMove) = (*obj.lastMove);
-    members = obj.members;
-    methods = obj.methods;
     monitors = obj.monitors;
     (*moves) = (*obj.moves);
     parents = obj.parents;
@@ -250,15 +248,6 @@ ConstantNode& ConstantNode::operator=(const ConstantNode& obj) {
  * @param o     The ostream for printing.
  *
  */
-void ConstantNode::print(std::ostream& o) const {
-
-	o << "ConstantNode: ";
-    //   o << getClass()->print(o);
-    o << std::endl;
-
-    DAGNode::print(o);
-}
-
 void ConstantNode::printValue(std::ostream &o) const {
 
     o << value->toString() << std::endl;

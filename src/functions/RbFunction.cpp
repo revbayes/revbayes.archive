@@ -27,7 +27,7 @@ const StringVector RbFunction::rbClass = StringVector("function") + RbObject::rb
 
 /** Basic constructor */
 RbFunction::RbFunction(void) {
-
+    argumentsProcessed = false;
 }
 
 
@@ -42,6 +42,15 @@ RbObject* RbFunction::execute(const std::vector<Argument*>& args) {
 	std::vector<DAGNode*> dags = processArguments(args);
 	RbObject* result = executeOperation(dags);
 	return result;
+}
+
+RbObject* RbFunction::execute() {
+
+    if (!argumentsProcessed) {
+        throw RbException("Arguments were not processed before executing function.");
+    }
+    RbObject* result = executeOperation(processedArguments);
+    return result;
 }
 
 /**
@@ -125,6 +134,9 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument*>
             (*i) = new ConstantNode(argRules[index].getDefaultValue()->clone());
         }
     }
+
+    argumentsProcessed = true;
+    processedArguments = arguments;
 
     /* Success */
     return arguments;

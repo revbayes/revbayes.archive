@@ -108,13 +108,6 @@ bool StringVector::equals(const RbObject* obj) const {
     return result;
 }
 
-void StringVector::print(std::ostream& o) const {
-
-    for (int i = 0; i < value.size(); i++)
-        o << value[i] << " ";
-    o << std::endl;
-}
-
 RbObject* StringVector::clone(void) const {
 
     StringVector* x = new StringVector(*this);

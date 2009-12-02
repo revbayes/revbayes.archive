@@ -16,21 +16,31 @@
 #ifndef RbString_H
 #define RbString_H
 
-#include "../RbDataType.h"
+#include "RbComplex.h"
 
-using namespace std;
-
-class RbString : public RbDataType, public std::string {
+class RbString : public RbComplex{
 
 public:
+
+        static const StringVector   rbClass;            //!< Static class attribute
+
 	    RbString(const string& v);      //!< Constructor from string
 	    RbString(const RbString& s);    //!< Copy constructor
 
-	RbObject*   clone(void);           //!< Copy
-	void        print(ostream &c) const;    //!< Print the value to c
+	    RbObject*                  clone(void);           //!< Copy
+	    bool                       equals(const RbObject* obj) const;              //!< Equals comparison
+	    const StringVector&        getClass() const { return rbClass; }            //!< Get class
+	    void                       printValue(std::ostream& o) const;              //!< Print value (for user)
+	    std::string                toString(void) const;                           //!< General info on object
 
-	void    dump(std::ostream& c);              //!< Dump to ostream c
-	void    resurrect(const RbDumpState& x);  //!< Resurrect from dumped state
+	    // overloaded operators
+	    RbObject&                  operator=(const RbObject& o);
+	    RbString&                  operator=(const RbString& o);
+	    RbString&                  operator+(const RbString& s) const;
+                                   operator(std::string)();
+
+        void                       dump(std::ostream& c);              //!< Dump to ostream c
+        void                       resurrect(const RbDumpState& x);  //!< Resurrect from dumped state
 
 private:
 	string  value;      //!< Value member

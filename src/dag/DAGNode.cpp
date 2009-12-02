@@ -238,37 +238,6 @@ void DAGNode::monitor(int i) {
 }
 
 /**
- * @brief Print DAG node
- *
- * This function prints the content of the DAG node.
- *
- * @param o     The ostream for printing.
- *
- */
-void DAGNode::print(std::ostream& o) const {
-
-	o << "DAGNode: ";
-    //   o << getClass()->print(o);
-    o << std::endl;
-
-    o << "value:" << std::endl;
-    if (!value)
-        o << "null" << std::endl;
-    else
-        value->print(o);
-    
-    o << "storedValue:" << std::endl;
-    if (!storedValue)
-        o << "null" << std::endl;
-    else
-        storedValue->print(o);
-
-    printParents(o);
-    printChildren(o);
-}
-
-
-/**
  * @brief Print children
  *
  * This function prints the children DAG nodes to an ostream with a header
@@ -389,10 +358,6 @@ void DAGNode::store(void) {
     storedProbability = currentProbability;
 }
 
-std::string DAGNode::toString(void) const {
-
-    return "Value = " + value->toString();
-}
 /**
  * @brief Prdouble value
  *

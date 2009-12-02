@@ -44,11 +44,9 @@ public:
 protected:
 	Distribution() :
 		RbObject() {
-	} //!< Constructor sets type to "d"
+	}
 
 	std::string returnType;
-//	std::vector<Argument*> argument;
-//	std::vector<ArgumentRule*> argumentRule;
 };
 
 #endif

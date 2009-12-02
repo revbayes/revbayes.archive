@@ -2,19 +2,17 @@
 #define Vector_H
 
 #include <vector>
-#include "RbComplex.h"
+#include "RbNumeric.h"
 
-class Vector : public RbComplex {
+class RbVector : public RbNumeric {
 
 public:
-	Vector(int n);
-	Vector(int n, double v);
-	Vector(const Vector& v);
-	Vector(std::vector<double> &v);
+        RbVector(int n);
+        RbVector(int n, double v);
+        RbVector(const Vector& v);
+        RbVector(std::vector<double> &v);
+
 	double operator[](int i) { return value[i]; } 
-	void print(void) const;
-	Vector* copy(void) const;
-	int size(void) { return value.size(); }
 	bool store(void) { return true; }
 	bool restore(void) { return true; }
 

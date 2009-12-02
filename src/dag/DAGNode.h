@@ -63,7 +63,7 @@ class RbMoveSchedule;
  * DAGNode objects. Syntax elements produced by the parser are also converted to
  * unnamed DAGNode objects when representing dynamically evaluated expressions.
  */
-class DAGNode : public RbComplex {
+class DAGNode : public RbObject {
 
     public:
         static const StringVector   rbClass;            //!< Static class attribute
@@ -95,8 +95,7 @@ class DAGNode : public RbComplex {
         virtual void                keepAffectedParents() = 0;                         //!< Keep value of affected nodes recursively
         void                        monitor(int i);
         double						performMove();
-        virtual void        		print(std::ostream& o) const;           //!< Print this DAG node
-	    void                		printChildren(std::ostream& o) const;   //!< Print children DAG nodes
+        void                		printChildren(std::ostream& o) const;   //!< Print children DAG nodes
 	    void                		printParents(std::ostream& o) const;    //!< Print parent DAG nodes
 	    void                		reject();
 	    void						removeChildNode(DAGNode* c) { children.erase(c); }  //!< Remove a child node
@@ -105,7 +104,6 @@ class DAGNode : public RbComplex {
         virtual void           		restoreAffectedParents() = 0;                      //!< Restore affected nodes recursively
         void                		setValue(RbObject* val);                //!< Set the value of the node
         void                       	printValue(std::ostream& o) const;              //!< Print value (for user)
-        std::string                	toString(void) const;                           //!< General info on object
         void                		touch() { touchedLikelihood = touchedProbability = true; }             //!< Mark node for recalculation
         virtual void           		touchAffectedChildren() = 0;                        //!< Mark affected nodes recursively
         virtual void           		touchAffectedParents() = 0;                        //!< Mark affected nodes recursively

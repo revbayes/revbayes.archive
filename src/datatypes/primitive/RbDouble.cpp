@@ -167,19 +167,6 @@ RbDouble& RbDouble::operator=(const RbDouble& ar) {
 }
 
 /**
- * @brief Prdouble complete info
- *
- * Prints complete object info.
- *
- * @param o     The stream for printing
- *
- */
-void RbDouble::print(std::ostream &o) const {
-
-    o << "Value = " << value << std::endl;
-}
-
-/**
  * @brief Prdouble value
  *
  * Prints value for user.
