@@ -2,7 +2,7 @@ srcdir      = .
 RM          = rm
 CXX         = g++
 CC          = g++
-INCLUDES    = -I. -I../parser -I../dag -I../datatypes -I../utils
+INCLUDES    = -I. -I../parser -I../dag -I../datatypes -I../datatypes/complex -I../utils
 CXXFLAGS    = -O3 -ffast-math -Wall
 LDFLAGS     =  -lreadline -lm -lxml2 -lpthread
 LIBS        = -lreadline -lm 
@@ -10,7 +10,7 @@ INSTALL     = @INSTALL@
 
 CFLAGS = $(CXXFLAGS)
 
-all: ObjectSlot.o ArgumentRule.o Argument.o FunctionDef.o RbFunction.o UserFunction.o BuiltinFunction.o
+all: RbFunction.o
 
 ObjectSlot.o: ObjectSlot.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c ObjectSlot.cpp

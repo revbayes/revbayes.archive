@@ -60,15 +60,15 @@ class RbFunction :  public RbObject {
 
         std::vector<ArgumentRule>   getArgumentRules() const { return argRules; }       //!< Get argument rules
         std::string                 getReturnType() const { return returnType; }        //!< Get return type
-        RbObject*                   execute(const std::vector<Argument*>& args);        //!< Execute function
+        RbObject*                   execute(const std::vector<Argument>& args);         //!< Execute function
         RbObject*                   execute();                          //!< Execute using processed args
-        void                        setArguments(const std::vector<Argument*>& args);   //!< Process and set args
+        void                        setArguments(const std::vector<Argument>& args);    //!< Process and set args
 
     protected:
             RbFunction(void);                                                   //!< Basic constructor
             RbFunction(const RbFunction& fn);                                   //!< Copy constructor
 
-        std::vector<DAGNode*>       processArguments(const std::vector<Argument*>& args);   //!< Process args
+        std::vector<DAGNode*>       processArguments(const std::vector<Argument>& args);    //!< Process args
 		virtual RbObject*           executeOperation(const std::vector<DAGNode*>& args)=0;  //!< Execute operation
 
         std::vector<ArgumentRule>   argRules;               //!< Argument rules

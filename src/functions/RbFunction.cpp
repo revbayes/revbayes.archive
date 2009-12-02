@@ -37,7 +37,7 @@ RbFunction::RbFunction(const RbFunction &fn)
     
 }
 
-RbObject* RbFunction::execute(const std::vector<Argument*>& args) {
+RbObject* RbFunction::execute(const std::vector<Argument>& args) {
 
 	std::vector<DAGNode*> dags = processArguments(args);
 	RbObject* result = executeOperation(dags);
@@ -79,7 +79,7 @@ RbObject* RbFunction::execute() {
  *     a default value, it is an error.
  *
  */
-std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument*>& args) {
+std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>& args) {
 
     /* Check that the number of provided arguments is adequate */
     if (argRules.size() < args.size()) {
@@ -96,18 +96,18 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument*>
 
     /* Match arguments */
     int index=0;
-    for (std::vector<Argument*>::const_iterator i=args.begin(); i!=args.end(); i++, index++) {
+    for (std::vector<Argument>::const_iterator i=args.begin(); i!=args.end(); i++, index++) {
         int theArg = -1;
-        if ((*i)->getLabel() == "") {
+        if ((*i).getLabel() == "") {
             theArg = index;
         }
         else {
             for (theArg=0; theArg<(int)argRules.size(); theArg++) {
-                if ((*i)->getLabel() == argRules[theArg].getLabel())
+                if ((*i).getLabel() == argRules[theArg].getLabel())
                     break;
             }
             if (theArg == (int)argRules.size()) {
-                std::string msg = "Did not expect an argument with label '" + (*i)->getLabel() + "'";
+                std::string msg = "Did not expect an argument with label '" + (*i).getLabel() + "'";
                 arguments.clear();
                 throw RbException(msg);
             }
@@ -119,7 +119,7 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument*>
             arguments.clear();
             throw RbException(msg);
         }
-        arguments[theArg] = (*i)->getDAGNode();
+        arguments[theArg] = (*i).getDAGNode();
     }
 
     /* Fill in default values */
