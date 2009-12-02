@@ -70,15 +70,6 @@ DAGNode* SyntaxConstant::getDAGNode(Environment* env) const {
 }
 
 
-/** Get return type of element */
-/*
-StringVector& SyntaxConstant::getReturnType() const {
-
-    return ""; //TODO return value->getClass();
-}
-*/
-
-
 /** Get semantic value of element */
 RbObject* SyntaxConstant::getValue(Environment* env) {
 

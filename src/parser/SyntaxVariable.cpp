@@ -127,16 +127,19 @@ DAGNode* SyntaxVariable::getDAGNode(Environment* env) const {
     args.push_back(Argument("variable", variable->getDAGNode()));
     args.push_back(Argument("id", new ConstantNode(identifier)));
 
-    std::vector<DAGNode*> indices;
-    for (std::vector<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++)
-        indices.push_back((*i)->getDAGNode(env));
+    RbFunction *varFunc = Workspace::globalWorkspace().getFunction(".lookup", args);
+    DeterministicNode* root = new DeterministicNode((RbFunction*)(varFunc->clone()), args);
 
-    // TODO: Find the right object type for this
-    //args.push_back(Argument("indices", indices);
+    for (std::vector<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
+        args.clear();
+        args.push_back(Argument("object", root));
+        args.push_back(Argument("index", (*i)->getDAGNode(env)));
 
-    RbFunction *func = Workspace::globalWorkspace().getFunction(".lookup", args);
+        RbFunction* elemFunc = Workspace::globalWorkspace().getFunction(".element", args);
+        root = new DeterministicNode((RbFunction*)(elemFunc->clone()), args);
+    }
 
-    return new DeterministicNode((RbFunction*)(func->clone()), args);
+    return root;
 }
 
 
