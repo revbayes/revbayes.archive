@@ -5,10 +5,10 @@
  *
  * @brief Declaration of SyntaxElement
  *
- * (c) Copyright 2009-
+ * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author RevBayes development core team
- * @license GPL version 3.0
+ * @author The RevBayes core development team
+ * @license GPL version 3
  * @interface SyntaxElement
  * @since Version 1.0, 2009-09-02
  *
@@ -75,7 +75,7 @@ class SyntaxElement {
         // Regular functions
         virtual DAGNode*            getDAGNode(Environment* env=NULL) const = 0;//!< Convert to DAG node
         virtual RbObject*           getValue(Environment* env=NULL) = 0;        //!< Get semantic value
-        virtual bool                isConstExpr() const = 0;                    //!< Is subtree constant expr?
+        virtual bool                isConstExpr() const { return false; }       //!< Is subtree constant expr?
 
     protected:
             SyntaxElement() {}      //!< Protected constructor, no elements of this class

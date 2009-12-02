@@ -105,7 +105,7 @@ typedef struct yyltype
 /* Tokens returned by the lexer and handled by the parser */
 %token REAL INT NAME STRING NULL FALSE TRUE COMMENT
 %token FUNCTION CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
-%token LEFT_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN EQUAL RIGHT_ARROW
+%token LEFT_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN EQUAL 
 %token AND OR AND2 OR2 GT GE LT LE EQ NE
 %token END_OF_INPUT
 
@@ -130,7 +130,7 @@ typedef struct yyltype
 %left       ':'
 %left       UMINUS UPLUS
 %right      '^'
-%left       '.' RIGHT_ARROW
+%left       '.'
 %nonassoc   '(' '['
 %%
 
@@ -246,11 +246,6 @@ variable    :   identifier optElement
                     $$ = new SyntaxVariable($1, $2);
                 }
             |   variable '.' identifier optElement
-                {
-                    PRINTF("Parser inserting member variable (MEMBER) in syntax tree\n");
-                    $$ = new SyntaxVariable($1, $3, $4);
-                }
-            |   variable RIGHT_ARROW identifier optElement
                 {
                     PRINTF("Parser inserting member variable (MEMBER) in syntax tree\n");
                     $$ = new SyntaxVariable($1, $3, $4);

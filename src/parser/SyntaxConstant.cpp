@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author Fredrik Ronquist and the REvBayes core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  *
  * $Id$
@@ -83,7 +83,7 @@ bool SyntaxConstant::isConstExpr() const {
     return true;
 }
 
-  
+ 
 /** Print info about the syntax element */
 void SyntaxConstant::print(std::ostream& o) const {
 

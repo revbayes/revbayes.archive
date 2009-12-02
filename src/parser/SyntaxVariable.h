@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author Fredrik Ronquist and the REvBayes core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  *
  * $Id$
@@ -49,7 +49,6 @@ class SyntaxVariable : public SyntaxElement {
         DAGNode*        getDAGNode(Environment* env=NULL) const;    //!< Convert to DAG node
         const RbString* getIdentifier() const;                      //!< Get identifier
         RbObject*       getValue(Environment* env=NULL);            //!< Get semantic value
-        bool            isConstExpr() const;                        //!< Is subtree constant expr?
 
     protected:
         RbString*                       identifier;     //!< The name of the variable

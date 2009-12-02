@@ -170,10 +170,6 @@ TRUE                                    {
                                             PRINTF("Found '='\n");
                                             return EQUAL;
                                         }
-"->"                                    {
-                                            PRINTF("Found '->'\n");
-                                            return RIGHT_ARROW;
-                                        }
 "&"                                     {
                                             PRINTF("Found '&'\n");
                                             return AND;

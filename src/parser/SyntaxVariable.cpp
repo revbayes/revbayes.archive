@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author Fredrik Ronquist and the REvBayes core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  *
  * $Id$
@@ -34,7 +34,7 @@ SyntaxVariable::SyntaxVariable(RbString* id, std::vector<SyntaxElement*>* indx) 
 }
 
 
-/** Construct wrapping variable, identifier and index */
+/** Construct from wrapping variable, identifier and index */
 SyntaxVariable::SyntaxVariable(SyntaxVariable* var, RbString* id, std::vector<SyntaxElement*>* indx) :
     SyntaxElement(), identifier(id), index(indx), variable(var) {
 }

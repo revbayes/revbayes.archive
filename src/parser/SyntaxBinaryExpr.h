@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author Fredrik Ronquist and the REvBayes core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  *
  * $Id$
@@ -24,20 +24,26 @@
 
 
 /**
- * This is the class used to hold variables in the syntax tree.
+ * This is the class used to hold binary expressions in the syntax tree.
  *
- * We store the identifier, the index vector and the environment
- * here so that we can wrap these things into a DAG node if needed.
+ * We store the operands and a flag signalling the type of operation to
+ * be performed when getValue is called or to be represented when
+ * getDAGNode is called.
  *
  */
 class SyntaxBinaryExpr : public SyntaxElement {
 
     public:
-            SyntaxBinaryExpr(RbString* id, std::vector<SyntaxElement*>* indx);  //!< Constructor from id and index
-            SyntaxBinaryExpr(SyntaxBinaryExpr* var, RbString* id,
-                         std::vector<SyntaxElement*>* indx);  //!< Constructor from wrapping variable, id and index
-            SyntaxBinaryExpr(const SyntaxBinaryExpr& sv);       //!< Copy constructor
-	        virtual ~SyntaxBinaryExpr();                      //!< Destructor deletes variable, identifier and index
+        // Binary operator types
+        enum operatorT { RANGE, ADD, SUB, MUL, DIV, EXP, LT, LE, EQ, NE, GE, GT, AND, OR, AND2, OR2 };
+        static std::string opCode[];                                //!< Operator codes for printing
+
+            // Constructors and destructor
+            SyntaxBinaryExpr(SyntaxBinaryExpr::operatorT op,
+                             SyntaxElement* lhs, SyntaxElement* rhs);   //!< Standard constructor 
+            SyntaxBinaryExpr(const SyntaxBinaryExpr& x);                //!< Copy constructor
+	        virtual ~SyntaxBinaryExpr();                                //!< Destroy operands
+
 
         // Basic utility functions
         std::string     briefInfo() const;                          //!< Brief info about object
@@ -47,13 +53,12 @@ class SyntaxBinaryExpr : public SyntaxElement {
 
         // Regular functions
         DAGNode*        getDAGNode(Environment* env=NULL) const;    //!< Convert to DAG node
-        const RbString* getIdentifier() const;                      //!< Get identifier
         RbObject*       getValue(Environment* env=NULL);            //!< Get semantic value
-        bool            isConstExpr() const;                        //!< Is subtree constant expr?
 
     protected:
         SyntaxElement*  leftOperand;        //!< The name of the variable
         SyntaxElement*  rightOperand;       //!< The name of the variable
+        enum operatorT  operation;          //!< The type of operation
 };
 
 #endif
