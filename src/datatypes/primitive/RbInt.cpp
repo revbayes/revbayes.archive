@@ -421,7 +421,7 @@ RbInt& RbInt::operator=(const RbInt& o) {
 }
 
 /**
- * @brief Prdouble value
+ * @brief Print value
  *
  * Prints value for user.
  *
