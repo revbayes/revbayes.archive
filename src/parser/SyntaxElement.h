@@ -69,12 +69,11 @@ class SyntaxElement {
         // Basic utility functions
         virtual std::string         briefInfo() const = 0;                      //!< Brief info about object
         virtual SyntaxElement*      clone() const = 0;                          //!< Clone object
-        virtual bool                equals(const RbObject* obj) const = 0;      //!< Equals comparison
+        virtual bool                equals(const SyntaxElement* elem) const = 0;//!< Equals comparison
         virtual void                print(std::ostream& o) const = 0;           //!< Print info about object
 
         // Regular functions
         virtual DAGNode*            getDAGNode(Environment* env=NULL) const = 0;//!< Convert to DAG node
-        virtual StringVector&       getReturnType() const = 0;                  //!< Get type of semantic value
         virtual RbObject*           getValue(Environment* env=NULL) = 0;        //!< Get semantic value
         virtual bool                isConstExpr() const = 0;                    //!< Is subtree constant expr?
 

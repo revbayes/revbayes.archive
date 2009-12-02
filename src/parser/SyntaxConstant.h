@@ -38,14 +38,13 @@ class SyntaxConstant : public SyntaxElement {
 	        virtual ~SyntaxConstant();                  //!< Destructor deletes value
 
         // Basic utility functions
-        std::string     briefInfo() const;                  //!< Brief info about object
-        SyntaxConstant* clone() const;                      //!< Clone object
-        bool            equals(const RbObject* obj) const;  //!< Equals comparison
-        void            print(std::ostream& o) const;       //!< Print info about object
+        std::string     briefInfo() const;                          //!< Brief info about object
+        SyntaxElement*  clone() const;                              //!< Clone object
+        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
+        void            print(std::ostream& o) const;               //!< Print info about object
 
         // Regular functions
         DAGNode*        getDAGNode(Environment* env=NULL) const;    //!< Convert to DAG node
-        StringVector&   getReturnType() const;                      //!< Get type of semantic value
         RbObject*       getValue(Environment* env=NULL);            //!< Get semantic value
         bool            isConstExpr() const;                        //!< Is subtree constant expr?
 

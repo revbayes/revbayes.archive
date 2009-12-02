@@ -28,7 +28,9 @@
 #include "Environment.h"
 #include "RbFunction.h"
 #include "RbObject.h"
+
 #include <map>
+#include <ostream>
 #include <string>
 
 
@@ -67,34 +69,33 @@ class Workspace : Environment {
     public:
 
         bool        addFunction(const std::string& name, RbFunction* entry);        //!< Add function
-        bool        addDistribution(const std::string& name, Distribution* entry);  //!< Add distribution
-        bool        addType(const std::string& name, const std::string& base,
-                            ArgRule[] memb, FunctionDef[] meth);                    //!< Add type entry
-        void        eraseDistribution(const std::string& name);                     //!< Erase distribution
         void        eraseFunction(const std::string& name);                         //!< Erase function
-        void        eraseType(const std::string& name);                             //!< Erase type
-        RbFunction* getFunction(const std::string& name);                           //!< Get function
-        std::map<std::string, ObjectSlot*>  getMembers(const std::string& type);    //!< Get class members
-        std::map<std::string, RbFunction*>  getMethods(const std::string& type);    //!< Get class methods
-        std::map<std::string, RbFunction*>  getMethod(const std::string& type, const std::string& );    //!< Get class methods
-        RbFunction* getFunction(const std::string& name);           //!< Get function
-        void        print(ostream &c) const;                        //!< Print table
+        RbFunction* getFunction(const std::string& name,
+                        const std::vector<Argument>& args);                         //!< Get function
+        void        print(std::ostream &c) const;                                   //!< Print table
 
-        static Workspace&   globalWorkSpace() { return globalWorkSpace; }   //!< Get global workspace
-        static Workspace&   userWorkSpace() { return userWorkSpace; }       //!< Get user workspace
+        /** Get global workspace */
+        static Workspace& globalWorkspace() {
+                static Workspace globalSpace;
+                return globalSpace;
+        }
 
+        /** Get user workspace */
+        static Workspace& userWorkspace() {
+                static Workspace userSpace;
+                return userSpace;
+        }
+ 
     private:
             Workspace() {}                      //!< Prevent construction
             Workspace(const Workspace& w) {}    //!< Prevent copy construction
             ~Workspace();                       //!< Destructor, delete objects here
 
-        static Workspace                    globalWorkspace;    //!< The global workspace
-        static Workspace                    userWorkspace;      //!< The user workspace
-
         Workspace&                          operator=(const Workspace& w);  //! Prevent assignment
 
         std::multimap<const std::string, RbFunction*>   functionTable;      //!< Table holding functions
-        std::map<const std::string, ClassDef*>          typeTable;          //!< Table holding variables
 };
 
+
 #endif
+

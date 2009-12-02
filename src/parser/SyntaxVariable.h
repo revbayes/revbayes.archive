@@ -17,10 +17,10 @@
 #define SyntaxVariable_H
 
 #include "SyntaxElement.h"
+#include "RbString.h";
 
 #include <iostream>
-
-class StringVector;
+#include <vector>
 
 
 /**
@@ -33,26 +33,28 @@ class StringVector;
 class SyntaxVariable : public SyntaxElement {
 
     public:
-            SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx);  //!< Constructor from id and index
+            SyntaxVariable(RbString* id, std::vector<SyntaxElement*>* indx);  //!< Constructor from id and index
+            SyntaxVariable(SyntaxVariable* var, RbString* id,
+                         std::vector<SyntaxElement*>* indx);  //!< Constructor from wrapping variable, id and index
             SyntaxVariable(const SyntaxVariable& sv);       //!< Copy constructor
-	        virtual ~SyntaxVariable();                      //!< Destructor deletes identifier and index
+	        virtual ~SyntaxVariable();                      //!< Destructor deletes variable, identifier and index
 
         // Basic utility functions
-        std::string     briefInfo() const;                  //!< Brief info about object
-        SyntaxVariable* clone() const;                      //!< Clone object
-        bool            equals(const RbObject* obj) const;  //!< Equals comparison
-        void            print(std::ostream& o) const;       //!< Print info about object
+        std::string     briefInfo() const;                          //!< Brief info about object
+        SyntaxElement*  clone() const;                              //!< Clone object
+        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
+        void            print(std::ostream& o) const;               //!< Print info about object
 
         // Regular functions
         DAGNode*        getDAGNode(Environment* env=NULL) const;    //!< Convert to DAG node
-        StringVector&   getReturnType() const;                      //!< Get type of semantic value
+        const RbString* getIdentifier() const;                      //!< Get identifier
         RbObject*       getValue(Environment* env=NULL);            //!< Get semantic value
         bool            isConstExpr() const;                        //!< Is subtree constant expr?
 
     protected:
-        RbString*       identifier;     //!< The name of the variable
-        IntVector*      index;          //!< Vector of int indices to members
-        SyntaxVariable* variable;       //!< Wrapping variable
+        RbString*                       identifier;     //!< The name of the variable
+        std::vector<SyntaxElement*>*    index;          //!< Vector of int indices to members
+        SyntaxVariable*                 variable;       //!< Wrapping variable
 };
 
 #endif

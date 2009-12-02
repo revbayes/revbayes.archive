@@ -40,37 +40,43 @@ Environment::Environment(Environment* parentEnv) :
  */
 Environment::~Environment() {
 
-    for (std::map<std::string, DAGNode*>::iterator i=variableTable.begin(); i!=variableTable.end(); i++)
+    for (std::map<std::string, RbObject*>::iterator i=variableTable.begin(); i!=variableTable.end(); i++)
         delete i->second;
 }
 
 
 /**
- * Add a variable to the variable table.
+ * @brief Add variable
+ *
+ * Add a variable to the variable table. The table manages any
+ * objects stored in it so we just store a pointer to the
+ * variable and then delete it in the destructor.
  *
  * @param name      Name of variable
- * @param variable  Pointer to RbObject* wrapping the object
+ * @param variable  Pointer to the object
  * @return          Returns true on success, false on failure
  *
  */
-bool Environment::addVariable(const std::string& name, DAGNode* variable) {
+bool Environment::addVariable(const std::string& name, RbObject* variable) {
 
-    std::pair<std::map<std::string, DAGNode*>::iterator, bool> retVal;
+    std::pair<std::map<std::string, RbObject*>::iterator, bool> retVal;
 
-    retVal = variableTable.insert(std::pair<std::string, DAGNode*>(name, variable));
+    retVal = variableTable.insert(std::pair<std::string, RbObject*>(name, variable));
     
     return retVal.second;
 }
 
 
 /**
+ * @brief Get variable
+ * 
  * Get a variable in the variable table.
  *
  * @param name  Name of variable
  * @return      Returns pointer to object on success, 
  *
  */
-DAGNode* Environment::getVariable(const std::string& name) {
+RbObject* Environment::getVariable(const std::string& name) {
 
     if (variableTable.find(name) == variableTable.end()) {
         if (parentEnvironment != NULL)

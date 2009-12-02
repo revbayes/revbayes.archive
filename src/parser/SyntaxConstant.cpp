@@ -45,16 +45,16 @@ std::string SyntaxConstant::briefInfo () const {
 
 
 /** Clone syntax element */
-SyntaxConstant* SyntaxConstant::clone () const {
+SyntaxElement* SyntaxConstant::clone () const {
 
-    return new SyntaxConstant(*this);
+    return (SyntaxElement*)(new SyntaxConstant(*this));
 }
 
 
 /** Equals comparison */
-bool SyntaxConstant::equals(const RbObject* obj) const {
+bool SyntaxConstant::equals(const SyntaxElement* elem) const {
 
-	const SyntaxConstant* sc = dynamic_cast<const SyntaxConstant*>(obj);
+	const SyntaxConstant* sc = dynamic_cast<const SyntaxConstant*>(elem);
 
     if (sc == NULL)
         return false;

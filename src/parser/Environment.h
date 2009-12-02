@@ -36,28 +36,23 @@
 class Environment {
 
     public:
-            Environment(Environment* parentEnv);    //!< Constructor from parent environment
-	        virtual ~Environment();                 //!< Destructor deletes local objects
+            Environment(Environment* parentEnv=NULL);   //!< Constructor from parent environment
+	        virtual ~Environment();                     //!< Destructor deletes local objects
 
         static const StringVector   rbClass;                //!< Static class attribute
 
         // Basic utility functions
-        virtual Environment*        clone() const { return new Environment(*this); }    //!< Clone object
-        virtual bool                equals(const RbObject* o) const;        //!< Equals comparison
-        virtual const StringVector& getClass() const { return rbClass; }    //!< Get class
-        virtual void                print(std::ostream& o) const;           //!< Print complete object info
-        virtual void                printValue(std::ostream& o) const;      //!< Print value (for user)
+        virtual void                print(std::ostream& o) const;               //!< Print table
 
         // Regular functions
-	    bool        addVariable(const std::string& name, DAGNode* variable);   //!< Add a variable
+	    bool        addVariable(const std::string& name, RbObject* variable);   //!< Add a variable
         bool        eraseVariable(const std::string& name);                     //!< Erase a variable
         bool        existsVariable(const std::string& name);                    //!< Does variable exist?
-        DAGNode*    getVariable(const std::string& name);                       //!< Get a variable
-        
+        RbObject*   getVariable(const std::string& name);                       //!< Get a variable
 	
     protected:
         Environment*                            parentEnvironment;  //!< Pointer to enclosing environment
-	    std::map<const std::string, DAGNode*>   variableTable;      //!< Local variable table
+	    std::map<const std::string, RbObject*>  variableTable;      //!< Local variable table
 };
 
 #endif
