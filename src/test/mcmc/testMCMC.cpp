@@ -51,12 +51,6 @@ int main(int argc, char **argv) {
 	RandomNumberGenerator* rng = new RandomNumberGenerator(seed1);
     StochasticNode* snSigma = new StochasticNode( new DistExponential( cnSigmaPrior ),rng);
     StochasticNode* snMu = new StochasticNode( new DistUniform( cnMuPriorLower, cnMuPriorUpper ),rng);
-    snSigma->addParentNode(cnSigmaPrior);
-    snMu->addParentNode(cnMuPriorLower);
-    snMu->addParentNode(cnMuPriorUpper);
-    cnSigmaPrior->addChildNode(snSigma);
-    cnMuPriorLower->addChildNode( snMu );
-    cnMuPriorUpper->addChildNode( snMu );
 
 	std::vector<DAGNode*> sn;
 	for (int i=0; i<10; i++)
@@ -65,15 +59,6 @@ int main(int argc, char **argv) {
 		sn.push_back( s );
 		s->clamp( x[i] );
 		}
-   
-    for (int i=0; i<10; i++)
-    	{
-    	sn[i]->addParentNode(snMu);
-    	sn[i]->addParentNode(snSigma);
-    	snMu->addChildNode(sn[i]);
-    	snSigma->addChildNode(sn[i]);
-    	};
-	
 	
 	RbMoveSchedule* msSigma = new RbMoveSchedule( rng, 1.0 );
 	msSigma->addMove( new MoveScale( snSigma, new RbDouble(1.5), rng ), 1.0 );

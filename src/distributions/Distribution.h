@@ -37,16 +37,20 @@ public:
 
 	virtual ~Distribution() { }                        //!< Destructor does nothing
 
-    std::string getReturnType() const { return returnType; }    //!< Get return type
-	virtual double lnPdf(RbObject* o) = 0;       //!< Ln probability density function
-	virtual double pdf(RbObject* o) = 0;         //!< Probability density function
-	virtual RbObject* rv(RandomNumberGenerator* r)  = 0;
+	std::set<DAGNode*>&            getParents(void) const;
+    std::string                    getReturnType() const { return returnType; }    //!< Get return type
+	virtual double                 lnPdf(RbObject* o) = 0;       //!< Ln probability density function
+	virtual double                 pdf(RbObject* o) = 0;         //!< Probability density function
+	virtual RbObject*              rv(RandomNumberGenerator* r)  = 0;
+
+
 protected:
 	Distribution() :
 		RbObject() {
 	}
 
-	std::string returnType;
+	std::set<DAGNode*>             parents;
+	std::string                    returnType;
 };
 
 #endif

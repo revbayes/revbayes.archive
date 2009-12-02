@@ -29,7 +29,7 @@ class ArgumentRule : public RbObject {
 
                     ArgumentRule(const std::string& lbl, const std::string& t);      //!< Constructor 
                     ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv);
-                    ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv, RbObject* mnv, RbObject* mxv);
+                    ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv, DAGNode* mnv, DAGNode* mxv);
                     ArgumentRule(const ArgumentRule& a);                         //!< Copy constructor 
             virtual ~ArgumentRule() { }                                          //!< Destructor 
 

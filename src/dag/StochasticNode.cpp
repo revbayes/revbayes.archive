@@ -39,6 +39,13 @@ StochasticNode::StochasticNode(Distribution* d, RandomNumberGenerator* r)
     rng = r;
     value = distribution->rv(rng);
     storedValue = value->clone();
+
+    // set the parent(s) and add myself to my parent(s)
+    std::set<DAGNode*>& p = d->getParents();
+    for (std::set<DAGNode*>::iterator i=p.begin(); i!=p.end(); i++) {
+        parents.insert(*i);
+        (*i)->addChildNode(this);
+    }
 }   
 
 

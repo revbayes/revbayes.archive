@@ -22,12 +22,18 @@ DistExponential::DistExponential(DAGNode* l) {
 
 	lambda = l;
 	returnType = RbNames::Double::name;
+
+	// add lambda to my parents
+	parents.insert(lambda);
 }
 
 DistExponential::DistExponential(const DistExponential& d) {
 
 	lambda = d.lambda;
 	returnType = d.returnType;
+
+    // add lambda to my parents
+    parents.insert(lambda);
 }
 
 DistExponential::~DistExponential() {
@@ -153,6 +159,11 @@ RbObject& DistExponential::operator=(const RbObject& obj) {
 DistExponential& DistExponential::operator=(const DistExponential& obj) {
 
     *lambda = *(obj.lambda);
+    returnType = obj.returnType;
+
+    for (std::set<DAGNode*>::iterator i=obj.parents.begin(); i!=obj.parents.end(); i++) {
+        parents.insert(*i->clone());
+    }
     
     return (*this);
 }
