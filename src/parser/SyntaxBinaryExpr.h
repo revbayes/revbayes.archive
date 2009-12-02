@@ -17,7 +17,6 @@
 #define SyntaxBinaryExpr_H
 
 #include "SyntaxElement.h"
-#include "RbString.h";
 
 #include <iostream>
 #include <vector>
@@ -44,7 +43,6 @@ class SyntaxBinaryExpr : public SyntaxElement {
             SyntaxBinaryExpr(const SyntaxBinaryExpr& x);                //!< Copy constructor
 	        virtual ~SyntaxBinaryExpr();                                //!< Destroy operands
 
-
         // Basic utility functions
         std::string     briefInfo() const;                          //!< Brief info about object
         SyntaxElement*  clone() const;                              //!< Clone object
@@ -56,8 +54,8 @@ class SyntaxBinaryExpr : public SyntaxElement {
         RbObject*       getValue(Environment* env=NULL);            //!< Get semantic value
 
     protected:
-        SyntaxElement*  leftOperand;        //!< The name of the variable
-        SyntaxElement*  rightOperand;       //!< The name of the variable
+        SyntaxElement*  leftOperand;        //!< The left operand
+        SyntaxElement*  rightOperand;       //!< The right operand
         enum operatorT  operation;          //!< The type of operation
 };
 

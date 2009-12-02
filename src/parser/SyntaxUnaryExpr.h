@@ -1,56 +1,61 @@
-/*!
- * \file
- * This file contains the declaration of SyntaxElement, which is
- * the base class used to hold elements (nodes) in the syntax tree.
+/**
+ * @file
+ * This file contains the declaration of SyntaxUnaryExpr, which is
+ * used to hold unary expressions in the syntax tree.
  *
- * \brief Declaration of SyntaxElement
+ * @brief Declaration of SyntaxUnaryExpr
  *
- * (c) Copyright 2009-
- * \date Last modified: $Date$
- * \author Fredrik Ronquist and the REvBayes core team
- * \license GPL version 3.0
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
  *
  * $Id$
  */
 
-#ifndef SyntaxElement_H
-#define SyntaxElement_H
+#ifndef SyntaxUnaryExpr_H
+#define SyntaxUnaryExpr_H
 
-#include "MbObject.h"
+#include "SyntaxElement.h"
 
-using namespace std;
+#include <iostream>
+#include <vector>
 
-/*! This is the abstract base class for nodes in the syntax tree.
+
+/**
+ * This is the class used to hold binary expressions in the syntax tree.
  *
- *  The syntax tree is built up by syntax elements. The syntax elements either
- *  have one or more operands, which are themselves syntax elements, or they
- *  have no operands and simply a predefined result vector of type RbObject. In
- *  the former case, the elements correspond to interior nodes in the syntax tree
- *  and in the latter case, they correspond to terminal nodes.
+ * We store the operands and a flag signalling the type of operation to
+ * be performed when getValue is called or to be represented when
+ * getDAGNode is called.
  *
- *  If you call getResult on an interior element and the result has not been filled in,
- *  the syntax element will be executed (causing recursive execution of the subtree
- *  rooted on that element) before the result is returned.
- *
- *  If you call getResult on a terminal element, the predefined result is simply returned.
- *  A syntax element also has the ability to restore itself to a previous state, to speed
- *  up accept and reject steps for deterministic nodes in a model DAG.
  */
-class SyntaxElement {
+class SyntaxUnaryExpr : public SyntaxElement {
 
     public:
-            SyntaxElement();         //!< Default constructor
-	        ~SyntaxElement();        //!< Destructor; delete operands and result
+        // Unary operator types
+        enum operatorT { UMINUS, UPLUS, UNOT };                     //!< Operator types
+        static std::string opCode[];                                //!< Operator codes for printing
 
-        virtual bool        check() const = 0;              //!< Check syntax
-        virtual RbObject*   getResult() = 0;                //!< Return result
-        virtual void        print(ostream &c) const = 0;    //!< Print content
-        virtual void        restore() { swap(); }           //!< Restore stored value (children not called in default implementation)
+            // Constructors and destructor
+            SyntaxUnaryExpr(SyntaxUnaryExpr::operatorT op, SyntaxElement* expr);   //!< Standard constructor 
+            SyntaxUnaryExpr(const SyntaxUnaryExpr& x);                //!< Copy constructor
+	        virtual ~SyntaxUnaryExpr();                                //!< Destroy operands
+
+        // Basic utility functions
+        std::string     briefInfo() const;                          //!< Brief info about object
+        SyntaxElement*  clone() const;                              //!< Clone object
+        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
+        void            print(std::ostream& o) const;               //!< Print info about object
+
+        // Regular functions
+        DAGNode*        getDAGNode(Environment* env=NULL) const;    //!< Convert to DAG node
+        RbObject*       getValue(Environment* env=NULL);            //!< Get semantic value
 
     protected:
-        RbObject           *result;         //!< The result of executing the element; preset for terminal elements
-        RbObject           *storedResult;   //!< Stored result from previous execution of the element
-        void                swap() { RbObject *temp = result; result = storedResult; storedResult = temp; }  //!< Restore stored value
+        SyntaxElement*  expression;         //!< The expression
+        enum operatorT  operation;          //!< The type of operation
 };
 
 #endif
+

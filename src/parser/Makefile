@@ -15,7 +15,7 @@ BISONFLAGS  = -y -v
 
 CFLAGS = $(CXXFLAGS)
 
-all: grammar.tab.c lex.yy.cpp Environment.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o
+all: grammar.tab.c lex.yy.cpp Environment.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o SyntaxUnaryExpr.o
 
 grammar.tab.c grammar.tab.h: grammar.y
 	$(BISON) -o grammar.tab.c --defines $(BISONFLAGS) grammar.y
@@ -34,6 +34,9 @@ SyntaxVariable.o: SyntaxVariable.cpp
 
 SyntaxBinaryExpr.o: SyntaxBinaryExpr.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxBinaryExpr.cpp
+
+SyntaxUnaryExpr.o: SyntaxUnaryExpr.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxUnaryExpr.cpp
 
 SyntaxHelpExpr.o: SyntaxHelpExpr.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxHelpExpr.cpp
