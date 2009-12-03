@@ -7,7 +7,7 @@ BISON       = bison
 FLEX        = flex
 BISONFLAGS  = -y -v
 
-all: grammar.tab.c lex.yy.cpp Environment.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o SyntaxUnaryExpr.o SyntaxFunctionCall.o
+all: grammar.tab.c lex.yy.cpp Environment.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o SyntaxUnaryExpr.o SyntaxFunctionCall.o SyntaxLabeledExpr.o
 
 grammar.tab.c grammar.tab.h: grammar.y
 	$(BISON) -o grammar.tab.c --defines $(BISONFLAGS) grammar.y
