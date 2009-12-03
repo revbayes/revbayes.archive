@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "ArgumentRule.h"
+#include "DAGNode.h"
 #include "RbException.h"
 #include "RbObject.h"
 #include "StringVector.h"
@@ -60,9 +61,9 @@ ArgumentRule::ArgumentRule(const ArgumentRule& a) :
 
     label = a.label;
     type = a.type;
-    defaultValue = a.defaultValue;
-    minValue = a.minValue;
-    maxValue = a.maxValue;
+    *defaultValue = *a.defaultValue;
+    *minValue = *a.minValue;
+    *maxValue = *a.maxValue;
 }
 
 ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t,
@@ -77,7 +78,7 @@ ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t,
 }
 
 ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t,
-        RbObject* dv, RbObject* mnv, RbObject* mxv) :
+        RbObject* dv, DAGNode* mnv, DAGNode* mxv) :
     RbObject() {
 
     label = lbl;
@@ -159,9 +160,9 @@ ArgumentRule& ArgumentRule::operator=(const ArgumentRule& ar) {
 
     label = ar.label;
     type = ar.type;
-    defaultValue = ar.defaultValue;
-    minValue = ar.minValue;
-    maxValue = ar.maxValue;
+    *defaultValue = *ar.defaultValue;
+    *minValue = *ar.minValue;
+    *maxValue = *ar.maxValue;
     return (*this);
 }
 

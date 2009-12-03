@@ -38,18 +38,42 @@ int main(int argc, char **argv) {
     seed1.push_back(2);
     RandomNumberGenerator* rng = new RandomNumberGenerator(seed1);
 
+    // get the data
+    Aligment aln = new Alignment(fp);
+
     // create the transition matrix
+    StochasticNode treetop = new StochasticNode(new DistUnifUnrootedTree(aln.size()), rng);
 
+    ConstantNode b = new ConstantNode(new RbVector(1,1,1,1));
+    StochasticNode baseFreq = new StochasticNode(new DistDirichlet(), rng);
+    ConstantNode a = new ConstantNode(new RbVector(1,1,1,1,1,1));
+    StochasticNode rates = new StochasticNode(new DistDirichlet(a), rng);
+    DeterministicNode q = new DeterministicNode(new RbFunction_GTR(baseFreq, rates));
 
-    // create tree
+    ConstantNode lambda = new ConstantNode(new RbDouble(10.0));
+    RbContainer branches = new RbContainer();
+    for (int i=0; i<aln.size()*2-2; i++) {
+        RbContainer brParams;
+        brParams.insert(q);
+        StochasticNode brLength = new StochasticNode(new DistExponential(lambda), rng);
+        brParams.insert(brLenght);
+        branches.insert(new DeterministicNode(new RbFunction_Branch(brParams)));
+    }
 
-    // create topology
+    RbContainer nodeParams;
+    RbContainer nodes = new RbContainer();
+    for (int i=0; i<aln.size()*2-2; i++) {
+        nodes.insert(new DeterministicNode(new RbFunction_Node(nodeParams)));
+    }
 
-    // create branches
+    DeterministicNode uTree = new DeterministicNode(new RbFunction_UnrootedTree(treeTop, branches, nodes));
 
-    // create nodes
-
-
+    RbContainer obs = new RbContainer();
+    for (int i=0; i<aln.numberOfSites(); i++) {
+        StochasticNode s = new StochasticNode(new DistPhylogenetic(uTree), rng);
+        s->clamp(aln.getColumn(i));
+        obs.insert(s);
+    }
 
     // add moves
     RbMoveSchedule* msSigma = new RbMoveSchedule( rng, 1.0 );
@@ -62,28 +86,11 @@ int main(int argc, char **argv) {
     snSigma->addMonitor(mSigma);
 
     // create model
-    RbModel* gtr = new RbModel(sn, rng);
+    RbModel* gtr = new RbModel(obs, rng);
 
     // run MCMC
     RbMcmc* mcmc = new RbMcmc(model, rng);
     mcmc->runChain();
-
-    // TODO some more meaningful test
-
-    // calculate the pdf for some known parameters
-
-    try
-    {
-
-
-    }
-    catch (RbException e)
-    {
-        std::cout << e.getMessage() << std::endl;
-    }
-    // draw some random values some known parameters and compare this to the pdf and cdf.
-
-    assert(true);
 
 }
 

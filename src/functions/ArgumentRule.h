@@ -22,6 +22,8 @@
 #include <string>
 #include "RbObject.h"
 
+class DAGNode;
+
 class ArgumentRule : public RbObject {
 
     public:
@@ -41,8 +43,8 @@ class ArgumentRule : public RbObject {
          void                printValue(std::ostream& o) const;          //!< Print value (for user)
          const StringVector& getClass() const { return rbClass; }        //!< Get class
         const RbObject*             getDefaultValue(void) { return defaultValue; }
-        const RbObject*             getMinValue(void) { return minValue; }
-        const RbObject*             getMaxValue(void) { return maxValue; }
+        const DAGNode*             getMinValue(void) { return minValue; }
+        const DAGNode*             getMaxValue(void) { return maxValue; }
 
         // overloaded operators
         RbObject&           operator=(const RbObject& o);
@@ -58,8 +60,8 @@ class ArgumentRule : public RbObject {
         std::string         label;          //!< Label of argument
         std::string         type;           //!< Type of argument
         RbObject*           defaultValue; 
-        RbObject*           minValue;
-        RbObject*           maxValue;
+        DAGNode*           minValue;
+        DAGNode*           maxValue;
 };
 
 #endif

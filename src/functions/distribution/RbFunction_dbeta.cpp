@@ -38,7 +38,7 @@ RbFunction_dbeta::RbFunction_dbeta(void)
 	argRules.push_back( ArgumentRule("x", "double", NULL, new RbDouble(0.0), new RbDouble(1.0)) );
 	argRules.push_back( ArgumentRule("alpha", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
 	argRules.push_back( ArgumentRule("beta", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	returnType = "double";
+	returnType = RbNames::Double::name;
 } 
 
 /** Copy constructor */
@@ -48,7 +48,7 @@ RbFunction_dbeta::RbFunction_dbeta(const RbFunction_dbeta& s)
 	argRules.push_back( ArgumentRule("x", "double", NULL, new RbDouble(0.0), new RbDouble(1.0)) );
 	argRules.push_back( ArgumentRule("alpha", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
 	argRules.push_back( ArgumentRule("beta", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	returnType = "double";
+	returnType = RbNames::Double::name;
 }
 
 /** Destructor, delete workspace */
