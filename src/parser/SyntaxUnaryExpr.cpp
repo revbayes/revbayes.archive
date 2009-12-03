@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the implementation of SyntaxUnaryExpr, which is
- * used to hold variable references in the syntax tree.
+ * used to hold unary expressions in the syntax tree.
  *
  * @brief Implementation of SyntaxUnaryExpr
  *

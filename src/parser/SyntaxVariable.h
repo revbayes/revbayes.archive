@@ -20,7 +20,7 @@
 #include "RbString.h";
 
 #include <iostream>
-#include <vector>
+#include <list>
 
 
 /**
@@ -33,9 +33,8 @@
 class SyntaxVariable : public SyntaxElement {
 
     public:
-            SyntaxVariable(RbString* id, std::vector<SyntaxElement*>* indx);  //!< Constructor from id and index
-            SyntaxVariable(SyntaxVariable* var, RbString* id,
-                         std::vector<SyntaxElement*>* indx);  //!< Constructor from wrapping variable, id and index
+            SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx);  //!< Global variable
+            SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx); //!< Member var. 
             SyntaxVariable(const SyntaxVariable& sv);       //!< Copy constructor
 	        virtual ~SyntaxVariable();                      //!< Destructor deletes variable, identifier and index
 
@@ -52,7 +51,7 @@ class SyntaxVariable : public SyntaxElement {
 
     protected:
         RbString*                       identifier;     //!< The name of the variable
-        std::vector<SyntaxElement*>*    index;          //!< Vector of int indices to members
+        std::list<SyntaxElement*>*      index;          //!< Vector of int indices to members
         SyntaxVariable*                 variable;       //!< Wrapping variable
 };
 

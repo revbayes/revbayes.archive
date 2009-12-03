@@ -1,14 +1,14 @@
-/*!
- * \file
- * This file contains the declaration of SytnaxFunctionCall, which is
+/**
+ * @file
+ * This file contains the declaration of SyntaxFunctionCall, which is
  * used to hold function calls in the syntax tree.
  *
- * \brief Declaration of SyntaxFunctionCall
+ * @brief Declaration of SyntaxFunctionCall
  *
  * (c) Copyright 2009- under GPL version 3
- * \date Last modified: $Date$
- * \author Fredrik Ronquist and the REvBayes core team
- * \license GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
  *
  * $Id$
  */
@@ -16,26 +16,45 @@
 #ifndef SyntaxFunctionCall_H
 #define SyntaxFunctionCall_H
 
-#include "RbString.h"
 #include "SyntaxElement.h"
+#include "SyntaxLabeledExpr.h"
+#include "SyntaxVariable.h"
 
-using namespace std;
+#include <iostream>
+#include <list>
 
-//! This is the class used to hold function calls in the syntax tree.
+
+/**
+ * This is the class used to hold function calls in the syntax tree.
+ *
+ * We store the arguments, function name, and variable of which the
+ * function is a member, if any.
+ *
+ */
 class SyntaxFunctionCall : public SyntaxElement {
 
     public:
-        enum operatorT = { ACCESSOR, DISTRIBUTION, FUNCTION };
+            SyntaxFunctionCall(RbString* id, std::list<SyntaxLabeledExpr*>* args);  //!< Standard function
+            SyntaxFunctionCall(SyntaxVariable* var, RbString* id,
+                               std::list<SyntaxLabeledExpr*>* args);                //!< Member function
+            SyntaxFunctionCall(const SyntaxFunctionCall& x);                        //!< Copy constructor
+	        virtual ~SyntaxFunctionCall();                                          //!< Destructor
 
-            SyntaxFunctionCall(const string functionName, list<SyntaxElement*> arguments);   //!< Constructor
-	        virtual ~SytnaxFunctionCall();          //!< Destructor; delete local copy of function
+        // Basic utility functions
+        std::string     briefInfo() const;                          //!< Brief info about object
+        SyntaxElement*  clone() const;                              //!< Clone object
+        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
+        void            print(std::ostream& o) const;               //!< Print info about object
 
-        virtual RbDataType* getValue();                 //!< Get semantic value
-        virtual void        print(ostream &c) const;    //!< Print content
-    
+        // Regular functions
+        DAGNode*        getDAGNode(Environment* env=NULL) const;    //!< Convert to DAG node
+        RbObject*       getValue(Environment* env=NULL);            //!< Get semantic value
+
     protected:
-        RbFunction *function;    //!< Local copy of the function
-        operatorT   operator;    //!< Type of function call
+        std::list<SyntaxLabeledExpr*>*  arguments;      //!< The arguments passed to the function
+        RbString*                       functionName;   //!< The name of the function
+        SyntaxVariable*                 variable;       //!< The variable holding the function
 };
 
 #endif
+

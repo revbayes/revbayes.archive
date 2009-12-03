@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the implementation of SyntaxBinaryExpr, which is
- * used to hold variable references in the syntax tree.
+ * used to hold binary expressions in the syntax tree.
  *
  * @brief Implementation of SyntaxBinaryExpr
  *

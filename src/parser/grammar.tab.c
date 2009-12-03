@@ -1940,17 +1940,17 @@ yyreduce:
 
   case 43:
 #line 260 "grammar.y"
-    { 
-                        PRINTF("Parser inserting function call (FUNCTION_CALL) in syntax tree\n");
-                        (yyval.syntaxElement) = new SyntaxFunctionCall(string((yyvsp[(1) - (4)].string)), (yyvsp[(3) - (4)].syntaxElementList));
+    {
+                        PRINTF("Parser inserting function call in syntax tree\n");
+                        (yyval.syntaxElement) = new SyntaxFunctionCall((yyvsp[(1) - (4)].string), (yyvsp[(3) - (4)].syntaxElementList));
                     }
     break;
 
   case 44:
 #line 265 "grammar.y"
     {
-                        PRINTF("Parser inserting member function call (MEMBER_FUNCTION_CALL) in syntax tree\n");
-                        (yyval.syntaxElement) = new SyntaxFunctionCall((yyvsp[(1) - (6)].syntaxElement), string((yyvsp[(3) - (6)].string)), (yyvsp[(5) - (6)].syntaxElementList));
+                        PRINTF("Parser inserting member function call in syntax tree\n");
+                        (yyval.syntaxElement) = new SyntaxFunctionCall((yyvsp[(1) - (6)].syntaxElement), (yyvsp[(3) - (6)].string), (yyvsp[(5) - (6)].syntaxElementList));
                     }
     break;
 
@@ -1977,7 +1977,7 @@ yyreduce:
   case 49:
 #line 280 "grammar.y"
     {
-                    PRINTF("Parser inserting unlabeled argument (ARGUMENT) in syntax tree\n");
+                    PRINTF("Parser inserting unlabeled argument in syntax tree\n");
                     (yyval.syntaxElement) = new SyntaxLabeledExpr(NULL, (yyvsp[(1) - (1)].syntaxElement));
                 }
     break;
@@ -1985,7 +1985,7 @@ yyreduce:
   case 50:
 #line 285 "grammar.y"
     { 
-                    PRINTF("Parser inserting labeled argument (ARGUMENT) in syntax tree\n");
+                    PRINTF("Parser inserting labeled argument in syntax tree\n");
                     (yyval.syntaxElement) = new SyntaxLabeledExpr(string((yyvsp[(1) - (3)].string)), (yyvsp[(3) - (3)].syntaxElement));
                 }
     break;

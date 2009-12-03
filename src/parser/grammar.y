@@ -257,14 +257,14 @@ optElement  :   '[' expression ']' optElement   { $$ = $4->push_front($2); }
             ;
 
 functionCall    :   identifier '(' argumentList ')' 
-                    { 
-                        PRINTF("Parser inserting function call (FUNCTION_CALL) in syntax tree\n");
-                        $$ = new SyntaxFunctionCall(string($1), $3);
+                    {
+                        PRINTF("Parser inserting function call in syntax tree\n");
+                        $$ = new SyntaxFunctionCall($1, $3);
                     }
                 |   variable '.' identifier '(' argumentList ')'
                     {
-                        PRINTF("Parser inserting member function call (MEMBER_FUNCTION_CALL) in syntax tree\n");
-                        $$ = new SyntaxFunctionCall($1, string($3), $5);
+                        PRINTF("Parser inserting member function call in syntax tree\n");
+                        $$ = new SyntaxFunctionCall($1, $3, $5);
                     }
                 ;
 
@@ -278,12 +278,12 @@ optArguments    :   ',' argument optArguments   { $3->push_front($2); $$ = $3; }
 
 argument   :   expression
                 {
-                    PRINTF("Parser inserting unlabeled argument (ARGUMENT) in syntax tree\n");
+                    PRINTF("Parser inserting unlabeled argument in syntax tree\n");
                     $$ = new SyntaxLabeledExpr(NULL, $1);
                 }
             |   identifier EQUAL expression
                 { 
-                    PRINTF("Parser inserting labeled argument (ARGUMENT) in syntax tree\n");
+                    PRINTF("Parser inserting labeled argument in syntax tree\n");
                     $$ = new SyntaxLabeledExpr(string($1), $3);
                 }
             ;

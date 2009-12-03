@@ -29,13 +29,13 @@
 
 
 /** Construct from identifier and index */
-SyntaxVariable::SyntaxVariable(RbString* id, std::vector<SyntaxElement*>* indx) :
+SyntaxVariable::SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx) :
     SyntaxElement(), identifier(id), index(indx), variable(NULL) {
 }
 
 
 /** Construct from wrapping variable, identifier and index */
-SyntaxVariable::SyntaxVariable(SyntaxVariable* var, RbString* id, std::vector<SyntaxElement*>* indx) :
+SyntaxVariable::SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx) :
     SyntaxElement(), identifier(id), index(indx), variable(var) {
 }
 
@@ -48,7 +48,7 @@ SyntaxVariable::SyntaxVariable(const SyntaxVariable& sv)
     variable   = new SyntaxVariable(*sv.variable);
 
     // The following loop works because SyntaxElemen is the base class
-    for (std::vector<SyntaxElement*>::iterator i=(*sv.index).begin(); i!=(*sv.index).end(); i++) {
+    for (std::list<SyntaxElement*>::iterator i=(*sv.index).begin(); i!=(*sv.index).end(); i++) {
         index->push_back((*i)->clone());
     }
 }
@@ -58,13 +58,10 @@ SyntaxVariable::SyntaxVariable(const SyntaxVariable& sv)
 SyntaxVariable::~SyntaxVariable() {
     
     delete identifier;
-    
-    for (std::vector<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
-        delete (*i);
-    }
-    delete index;
-
     delete variable;
+    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++)
+        delete (*i);
+    delete index;
 }
 
 
@@ -79,7 +76,7 @@ std::string SyntaxVariable::briefInfo () const {
         o << "SyntaxVariable; <member> id = " << std::string(*identifier) <<  " -- index = ";
 
     o << "[";
-    for (std::vector<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
+    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
         if (i != (*index).begin())
             o << ", ";
         (*i)->getValue()->printValue(o);
@@ -106,14 +103,14 @@ bool SyntaxVariable::equals(const SyntaxElement* elem) const {
         return false;
 
     bool result = true;
-
     result = result && variable->equals(p->variable);
     result = result && identifier->equals(p->identifier);
 
     if (index->size() != p->index->size())
         return false;
-    for (size_t i=0; i<index->size(); i++) {
-        result = result && (*index)[i]->equals((*p->index)[i]);
+    std::list<SyntaxElement*>::iterator i, j;
+    for (i=index->begin(), j=p->index->begin(); i!=index->end(); i++, j++) {
+        result = result && (*i)->equals(*j);
     }
 
     return result;
@@ -130,7 +127,7 @@ DAGNode* SyntaxVariable::getDAGNode(Environment* env) const {
     RbFunction *varFunc = Workspace::globalWorkspace().getFunction(".lookup", args);
     DeterministicNode* root = new DeterministicNode((RbFunction*)(varFunc->clone()), args);
 
-    for (std::vector<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
+    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
         args.clear();
         args.push_back(Argument("object", root));
         args.push_back(Argument("index", (*i)->getDAGNode(env)));
@@ -193,7 +190,7 @@ RbObject* SyntaxVariable::getValue(Environment* env) {
     }
 
     // Get element if we have element index/indices (list of lists model)
-    for (std::vector<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
+    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
 
         // Check that it is a list object with elements
         const RbList* listObj = dynamic_cast<const RbList*>(value);
@@ -229,7 +226,7 @@ void SyntaxVariable::print(std::ostream& o) const {
     o << "identifier = " << identifier->briefInfo() << std::endl;
     o << "variable   = " << variable->briefInfo() << std::endl;
     o << "index      = [";
-    for (std::vector<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
+    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
         if (i != (*index).begin())
             o << ", ";
         (*i)->getValue()->printValue(o);
