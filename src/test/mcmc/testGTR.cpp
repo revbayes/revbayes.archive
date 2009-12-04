@@ -9,6 +9,7 @@
 #include <cmath>
 #include <assert.h>
 #include <vector>
+#include <string>
 
 #include "Argument.h"
 #include "ConstantNode.h"
@@ -27,10 +28,13 @@
 #include "RbMonitor.h"
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
+#include "RbNames.h"
 #include "RbObject.h"
 #include "RbException.h"
+#include "RbString.h"
 #include "RbCharacterMatrix.h"
 #include "StochasticNode.h"
+#include "RandomNumberGenerator.h"
 
 int main(int argc, char **argv) {
 
@@ -41,21 +45,21 @@ int main(int argc, char **argv) {
     RandomNumberGenerator* rng = new RandomNumberGenerator(seed1);
     
     // get the data
-    ConstantNode fname = new ContantNode( new RbString("/Users/johnh/Desktop/hdpp/bglobin.in"));
-    ConstantNode tname = new ContantNode( new RbString(RbNames::CharacterMatrix::phylip));
-    Argument fNameArg = new Argument(RbNames::ReadAlignment::filename, fname);
-    Argument fTypeArg = new Argument(RbNames::ReadAlignment::type, tname);
-    std::vector<Argument*> args;
+    ConstantNode *fname = new ConstantNode( new RbString("/Users/johnh/Desktop/hdpp/bglobin.in"));
+    ConstantNode *tname = new ConstantNode( new RbString(RbNames::AlignmentFileType::phylip));
+    Argument fNameArg = Argument(RbNames::ReadAlignment::fileName, fname);
+    Argument fTypeArg = Argument(RbNames::ReadAlignment::fileType, tname);
+    std::vector<Argument> args;
 	args.push_back( fNameArg );
 	args.push_back( fTypeArg );
     RbFunction_readCharacterMatrix read;
-    RbCharacterMatrix aln* = read.execute(args);
+    RbCharacterMatrix* aln = (RbCharacterMatrix*)read.execute(args);
     ConstantNode* alnNode = new ConstantNode( aln );
  
-
     // create the transition matrix
-    StochasticNode* treetop = new StochasticNode(new DistUnifUnrootedTree(aln.size()), rng);
+    StochasticNode* treetop = new StochasticNode(new DistUnifUnrootedTree(aln->getNumTaxa()), rng);
 
+#	if 0
     ConstantNode* b = new ConstantNode(new RbVector(1,1,1,1));
     StochasticNode* baseFreq = new StochasticNode(new DistDirichlet(), rng);
     ConstantNode* a = new ConstantNode(new RbVector(1,1,1,1,1,1));
@@ -105,6 +109,6 @@ int main(int argc, char **argv) {
     // run MCMC
     RbMcmc* mcmc = new RbMcmc(model, rng);
     mcmc->runChain();
-
+#	endif
 }
 

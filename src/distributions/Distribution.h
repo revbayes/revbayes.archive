@@ -41,14 +41,16 @@ public:
     std::string                    getReturnType() const { return returnType; }    //!< Get return type
 	virtual double                 lnPdf(RbObject* o) = 0;       //!< Ln probability density function
 	virtual double                 pdf(RbObject* o) = 0;         //!< Probability density function
-	virtual RbObject*              rv(RandomNumberGenerator* r)  = 0;
+	virtual RbObject*              rv()  = 0;
 
 
 protected:
-	Distribution() :
+	Distribution(RandomNumberGenerator* r) :
 		RbObject() {
+		rng = r;
 	}
 
+	RandomNumberGenerator* 			rng;
 	std::set<DAGNode*>             parents;
 	std::string                    returnType;
 };

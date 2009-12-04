@@ -23,12 +23,11 @@
 #include "DAGNode.h"
 
 class Distribution;
-class RandomNumberGenerator;
 
 class StochasticNode : public DAGNode {
 
     public:
-	                StochasticNode(Distribution* d, RandomNumberGenerator* r);         //!< Constructor from distribution
+	                StochasticNode(Distribution* d);         //!< Constructor from distribution
 	                StochasticNode(const StochasticNode& s);    //!< Copy constructor
 	        virtual ~StochasticNode();                          //!< Destructor
 
@@ -59,7 +58,6 @@ class StochasticNode : public DAGNode {
     private:
         bool            clamped;                    //!< Is the stochastic node clamped, ie, does it have data?
         Distribution*   distribution;               //!< Distribution (density functions, random draw function)
-        RandomNumberGenerator* rng;
         
 };
 

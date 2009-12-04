@@ -33,11 +33,10 @@
  * @param dist      The distribution
  *
  */
-StochasticNode::StochasticNode(Distribution* d, RandomNumberGenerator* r)
+StochasticNode::StochasticNode(Distribution* d)
     : DAGNode(), clamped(false) {
     distribution = d;
-    rng = r;
-    value = distribution->rv(rng);
+    value = distribution->rv();
     storedValue = value->clone();
 
     // set the parent(s) and add myself to my parent(s)

@@ -12,8 +12,13 @@
  *
  * $Id$
  */
-
+ 
+#include "RbException.h"
+#include "RbNames.h"
 #include "RbString.h"
+#include "StringVector.h"
+
+const StringVector RbString::rbClass = StringVector(RbNames::String::name) + RbComplex::rbClass;
 
 
 /** Constructor from string */
@@ -70,5 +75,38 @@ RbString::operator std::string() const {
 RbString RbString::operator+(const RbString& s) const {
 
     return RbString(value+s.value);
+}
+
+RbObject& RbString::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const RbString& x = dynamic_cast<const RbString&> (obj);
+
+        RbString& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const RbString& x = dynamic_cast<const RbString&> (*(obj.convertTo(RbNames::String::name)));
+
+            RbString& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::String::name);
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+RbString& RbString::operator=(const RbString& ar) {
+
+    value = ar.value;
+    return (*this);
 }
 
