@@ -18,12 +18,14 @@
 #ifndef RbComplex_H
 #define RbComplex_H
 
+//#include "FunctionDescr.h"
+//#include "FunctionTable.h"
+#include "RbFunction.h"
+#include "RbObject.h"
+
 #include <string>
 #include <ostream>
 #include <map>
-
-#include "RbFunction.h"
-#include "RbObject.h"
 
 class StringVector;
 
@@ -40,24 +42,28 @@ class RbComplex : public RbObject {
 		virtual void                print(std::ostream& o) const;
 		virtual void                printValue(std::ostream& o) const;
 
-        // Regular functions
+        // Member variable functions
         virtual bool                addMember(const std::string& name, const std::string& type, RbObject* v);
-        virtual void                deleteMember(const std::string& name); 
-//        virtual RbObject*           executeMethod(const std::string& funcName);
-//        virtual RbObject*           executeMethod(const std::string& funcName, std::vector<Argument>& args);
-//        virtual bool                existsMethod(const std::string& funcName, std::vector<Argument>& args) const;
-        virtual const RbObject*     getMember(const std::string& name) const; //!< Return member variable
-//        virtual std::pair<std::string, std::vector<ArgumentRule> >  getMethodDescr(const std::string& name, std::vector<Argument>& args) const;
-//        virtual std::multimap<std::string, std::pair<std::string, std::vector<ArgumentRule> > > getMethodTable(void) const { return methodTable; }
-//        virtual bool                setArguments(const std::string& funcName, std::vector<Argument>& args) const;
-        virtual void                setMember(const std::string& name, const std::string& t, RbObject* val);   //!< Set member variable
+        virtual void                deleteMember(const std::string& name);          //!< Delete member variable
+        virtual const RbObject*     getMember(const std::string& name) const;       //!< Get member variable
+        virtual std::string         getMemberType(const std::string& name) const;   //!< Get required type of var
+        virtual void                setMember(const std::string& name, RbObject* val);  //!< Set member variable
+
+        // Member method functions
+        //virtual bool                checkArguments(const std::string& funcId, std::vector<Argument>& args) const;
+        //virtual RbObject*           executeMethod(const std::string& funcId);
+        //virtual RbObject*           executeMethod(const std::string& funcId, std::vector<Argument>& args);
+        //bool                        existsMethod(const std::string& funcId, std::vector<Argument>& args) const;
+        //std::vector<FunctionDescr>  getMethodDescr(const std::string& funcId) const;      //!< Get method descr
+        //MethodTable*                getMethodTable(void) const { return methodTable; }  //!< Get method table
+        //virtual void                setArguments(const std::string& funcId, std::vector<Argument>& args) const;
 
     protected:
-                    RbComplex();        //!< Make it impossible to create objects of this class
+            RbComplex();        //!< Make it impossible to create objects of this class
 
-        std::map<std::string, RbObject*>       members;    //!< Member variables
-        std::map<std::string, std::string>     type;       // the type of a member
-//        static std::multimap<std::string, std::pair<std::string, std::vector<ArgumentRule> > >  methodTable;    //!< Description of member functions
+        std::map<std::string, RbObject*>       members;         //!< Member variables
+        std::map<std::string, std::string>     type;            //!< Member types
+        //MethodTable*                         methodTable;     //!< Description of member functions
 };
 
 #endif

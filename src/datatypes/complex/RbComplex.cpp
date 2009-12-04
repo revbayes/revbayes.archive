@@ -131,7 +131,9 @@ void RbComplex::printValue(std::ostream& o) const {
  * @throws      Throws exception if member variable not found
  *
  */
-void RbComplex::setMember(const std::string& name, const std::string& t, RbObject* val) {
+void RbComplex::setMember(const std::string& name, RbObject* val) {
+
+    std::string t = val->getClass()[0];
 
 	std::map<std::string, RbObject*>::iterator it = members.find( name );
 	if ( it != members.end() )
@@ -184,3 +186,11 @@ const RbObject* RbComplex::getMember(const std::string& name) const {
 	return NULL;
 }
 
+/** Get required type of member variable */
+std::string RbComplex::getMemberType(const std::string& name) const {
+
+	std::map<std::string, std::string>::const_iterator it = type.find( name );
+	if ( it != type.end() )
+		return it->second;
+	return std::string("");
+}
