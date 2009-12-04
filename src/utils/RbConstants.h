@@ -28,6 +28,15 @@ namespace RbConstants {
 	double   	neginf 	= DBL_MIN;
 	}
 
+	namespace Object {
+	double      undefined = DBL_MAX;
+	double   	neginf 	= DBL_MIN;
+	}
+
+
+
+
+
 }
 
 #endif

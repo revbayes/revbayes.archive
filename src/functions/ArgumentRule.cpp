@@ -24,10 +24,11 @@
 #include "DAGNode.h"
 #include "RbException.h"
 #include "RbObject.h"
+#include "RbUndefined.h"
 #include "StringVector.h"
 
-const StringVector ArgumentRule::rbClass = StringVector("argumentRule")
-        + RbObject::rbClass;
+
+const StringVector ArgumentRule::rbClass = StringVector("argumentRule") + RbObject::rbClass;
 
 /**
  * @brief Constructor
@@ -38,14 +39,13 @@ const StringVector ArgumentRule::rbClass = StringVector("argumentRule")
  * @param v     Value of the object
  *
  */
-ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t) :
-    RbObject() {
+ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t) : RbObject() {
 
     label = lbl;
     type = t;
-    defaultValue = NULL;
-    minValue = NULL;
-    maxValue = NULL;
+    defaultValue = new RbUndefined;
+    minValue = new RbUndefined;
+    maxValue = new RbUndefined;
 }
 
 /**
@@ -56,36 +56,37 @@ ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t) :
  * @param a     Argument rule to be copied
  *
  */
-ArgumentRule::ArgumentRule(const ArgumentRule& a) :
-    RbObject() {
+ArgumentRule::ArgumentRule(const ArgumentRule& a) : RbObject() {
 
     label = a.label;
     type = a.type;
-    *defaultValue = *a.defaultValue;
-    *minValue = *a.minValue;
-    *maxValue = *a.maxValue;
+    defaultValue = a.defaultValue;
+    minValue = a.minValue;
+    maxValue = a.maxValue;
 }
 
-ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t,
-        RbObject* dv) :
-    RbObject() {
+ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject& dv) : RbObject() {
 
     label = lbl;
     type = t;
-    defaultValue = dv;
-    minValue = NULL;
-    maxValue = NULL;
+    defaultValue = dv.clone();
+    minValue = new RbUndefined;
+    maxValue = new RbUndefined;
 }
 
-ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t,
-        RbObject* dv, DAGNode* mnv, DAGNode* mxv) :
-    RbObject() {
+ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject& dv, RbObject& mnv, RbObject& mxv) : RbObject() {
 
     label = lbl;
     type = t;
-    defaultValue = dv;
-    minValue = mnv;
-    maxValue = mxv;
+    defaultValue = dv.clone();
+    minValue = mnv.clone();
+    maxValue = mxv.clone();
+}
+
+ArgumentRule::~ArgumentRule() {
+	delete defaultValue;
+	delete minValue;
+	delete maxValue;
 }
 
 /**
@@ -160,9 +161,9 @@ ArgumentRule& ArgumentRule::operator=(const ArgumentRule& ar) {
 
     label = ar.label;
     type = ar.type;
-    *defaultValue = *ar.defaultValue;
-    *minValue = *ar.minValue;
-    *maxValue = *ar.maxValue;
+    defaultValue = ar.defaultValue;
+    minValue = ar.minValue;
+    maxValue = ar.maxValue;
     return (*this);
 }
 

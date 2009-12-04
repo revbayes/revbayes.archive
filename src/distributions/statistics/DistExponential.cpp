@@ -161,8 +161,8 @@ DistExponential& DistExponential::operator=(const DistExponential& obj) {
     *lambda = *(obj.lambda);
     returnType = obj.returnType;
 
-    for (std::set<DAGNode*>::iterator i=obj.parents.begin(); i!=obj.parents.end(); i++) {
-        parents.insert(*i->clone());
+    for (std::set<DAGNode*>::const_iterator i=obj.parents.begin(); i!=obj.parents.end(); i++) {
+        parents.insert((DAGNode*)(*i)->clone());
     }
     
     return (*this);

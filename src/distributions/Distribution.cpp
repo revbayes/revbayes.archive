@@ -25,6 +25,7 @@
 const StringVector Distribution::rbClass = StringVector(RbNames::Distribution::name) + RbObject::rbClass;
 
 
-std::set<DAGNode*> Distribution::getParents() const {
+std::set<DAGNode*>& Distribution::getParents() {
+
     return parents;
 }

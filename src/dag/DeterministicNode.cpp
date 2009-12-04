@@ -35,7 +35,7 @@ DeterministicNode::DeterministicNode(RbFunction* func, const std::vector<Argumen
 
 /** Copy constructor */
 DeterministicNode::DeterministicNode(const DeterministicNode& d)
-    : DAGNode(d), arguments(d.arguments), function(d.function) {
+    : DAGNode(d), function(d.function) {
 }
 
 RbObject* DeterministicNode::clone() const {
@@ -174,7 +174,7 @@ RbObject* DeterministicNode::getValue() {
         if (storedValue != NULL)
             delete storedValue;
         storedValue = value;
-        //value = function->execute(arguments);
+        value = function->execute();
         changed = true;
     }
 

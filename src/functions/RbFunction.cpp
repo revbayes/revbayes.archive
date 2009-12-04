@@ -21,6 +21,7 @@
 #include "ConstantNode.h"
 #include "RbException.h"
 #include "RbFunction.h"
+#include "RbUndefined.h"
 #include "StringVector.h"
 
 const StringVector RbFunction::rbClass = StringVector("function") + RbObject::rbClass;
@@ -126,12 +127,13 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
     index = 0;
     for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++, index++) {
         if ((*i) == NULL) {
-            if (argRules[index].getDefaultValue() == NULL) {
+        	RbUndefined ud;
+            if (argRules[index].getDefaultValue().equals(&ud)) {
                 std::string msg = "No default value for argument label '" + argRules[index].getLabel() + "'";
                 arguments.clear();
                 throw RbException(msg);
             }
-            (*i) = new ConstantNode(argRules[index].getDefaultValue()->clone());
+            (*i) = new ConstantNode(argRules[index].getDefaultValue().clone());
         }
     }
 

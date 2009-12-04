@@ -24,7 +24,8 @@ add_executable(testGTR \\
 ../../moves/objects/RbMove.cpp ../../moves/RbMoveSchedule.cpp ../../utils/RandomNumberGenerator.cpp \\
 ../../moves/objects/MoveSlidingWindow.cpp ../../moves/objects/MoveScale.cpp \\
 ../../distributions/Distribution.cpp ../../distributions/statistics/DistExponential.cpp ../../distributions/statistics/DistNormal.cpp \\
-../../distributions/statistics/DistUniform.cpp \\
+../../distributions/statistics/DistUniform.cpp ../../datatypes/model/RbCharacterMatrix.cpp ../../datatypes/model/RbDnaAlignment.cpp \\
+../../datatypes/complex/RbBitset.cpp ../../functions/model/RbFunction_readCharacterMatrix.cpp \\
 ../../functions/Argument.cpp ../../functions/ArgumentRule.cpp ../../functions/RbFunction.cpp ../../main/RbMonitor.cpp \\
-../../utils/RbStatistics.cpp ../../utils/RbNames.h ../../utils/RbMath.cpp ../../datatypes/model/RbModel.cpp \\
+../../utils/RbStatistics.cpp ../../utils/RbNames.h ../../utils/RbMath.cpp ../../datatypes/model/RbModel.cpp ../../datatypes/RbUndefined.cpp \\
 ../../inference/mcmc/RbMcmc.cpp testGTR.cpp)

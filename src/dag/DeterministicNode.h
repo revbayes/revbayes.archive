@@ -59,7 +59,6 @@ class DeterministicNode : public DAGNode {
         void	           		touchAffectedParents();                        //!< Mark affected nodes recursively
         
     private:
-        std::vector<DAGNode*>   arguments;      //!< Processed arguments
 	    RbFunction*             function;       //!< Function calculating value
 	    
 };

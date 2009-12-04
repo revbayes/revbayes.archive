@@ -36,8 +36,8 @@ RbFunction_dnorm::RbFunction_dnorm(void)
     : RbFunction(), value(new RbDouble(0)) {
 
 	argRules.push_back( ArgumentRule("x", "double") );
-	argRules.push_back( ArgumentRule("mu", "double", new RbDouble(0.0)) );
-	argRules.push_back( ArgumentRule("sigma", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
+	argRules.push_back( ArgumentRule("mu", "double", RbDouble(0.0)) );
+	argRules.push_back( ArgumentRule("sigma", "double", RbDouble(1.0), RbDouble(0.0), NULL) );
 	returnType = "double";
 } 
 

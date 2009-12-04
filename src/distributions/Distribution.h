@@ -22,13 +22,13 @@
 #ifndef Distribution_H
 #define Distribution_H
 
-#include <vector>
+#include <set>
 #include <string>
-#include <list>
 #include "RbObject.h"
 #include "StringVector.h"
 
 class RandomNumberGenerator;
+class DAGNode;
 
 class Distribution: public RbObject {
 
@@ -37,7 +37,7 @@ public:
 
 	virtual ~Distribution() { }                        //!< Destructor does nothing
 
-	std::set<DAGNode*>&            getParents(void) const;
+	std::set<DAGNode*>&            getParents(void);
     std::string                    getReturnType() const { return returnType; }    //!< Get return type
 	virtual double                 lnPdf(RbObject* o) = 0;       //!< Ln probability density function
 	virtual double                 pdf(RbObject* o) = 0;         //!< Probability density function

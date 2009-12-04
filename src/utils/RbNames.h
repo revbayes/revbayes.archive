@@ -114,6 +114,48 @@ namespace RbNames {
     namespace DAGNode {
     const std::string       name    = "DAGNode";
     }
+    
+#pragma mark Undefined Data Type
+
+    namespace Undefined {
+    const std::string       name    = "undefined";
+    }
+    
+    namespace ReadAlignment {
+    const std::string       name    = "readAlignment";
+    const std::string       fileType    = "fileType";
+    const std::string       alignmentType    = "alignmentType";
+    const std::string       fileName    = "alignmentFileName";
+    }
+    
+    namespace String {
+    const std::string       name    = "string";
+    }
+
+    namespace CharacterMatrix {
+    const std::string       name    = "characterMatrix";
+    }
+    
+    namespace DnaAlignment {
+    const std::string       name    = "dnaAlignment";
+    }
+    
+    namespace AaAlignment {
+    const std::string       name    = "aaAlignment";
+    }
+
+	namespace AlignmentType {
+    const std::string       dna    = "DNA";
+    const std::string       aa    = "Amino Acid";
+    const std::string       morph    = "Morphology";
+	}
+
+	namespace AlignmentFileType {
+    const std::string       nexus    = "Nexus";
+    const std::string       phylip   = "Phylip";
+    const std::string       fasta    = "Fasta";
+	}
+
 }
 
 #endif
