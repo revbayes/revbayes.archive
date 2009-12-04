@@ -5,22 +5,38 @@
  *      Author: Sebastian
  */
 
-#ifndef DISTBETA_H_
-#define DISTBETA_H_
+#ifndef DISTBETA_H
+#define DISTBETA_H
 
 #include "Distribution.h"
-#include "RbDataType.h"
+#include "RbDouble.h"
 
-class DistBeta : public Distribution{
+class DAGNode;
+
+class DistBeta : public Distribution {
 public:
-	DistBeta();
-	virtual ~DistBeta();
+        static const StringVector   rbClass;            //!< Static class attribute
 
-	RbDataType* execute(); //!< Call appropriate function based on functionType
-	RbDataType getDataType(); //!< Get data type for type checking
-	RbDataType* lnPdf(RbDataType value, std::vector<RbDataDyte> arguments); //!< Ln probability density
-	RbDataType* pdf(RbDataType value, std::vector<RbDataDyte> arguments); //!< Probability density
-	RbDataType* rv(); //!< Draw random variables
+    DistBeta(DAGNode* a, DAGNode* b);
+    DistBeta(const DistBeta& d);
+    virtual ~DistBeta();
+        RbObject*           clone(void) const;                                    //!< Clone object
+        bool                equals(const RbObject* o) const;                      //!< Equals comparison
+        const StringVector& getClass(void) const;                                   //!< Get class
+       void                printValue(std::ostream& o) const;                    //!< Print value (for user)
+       std::string         toString(void) const;                                 //!< General info on object
+
+        // overloaded operators
+        RbObject&           operator=(const RbObject& o);
+        DistBeta&    operator=(const DistBeta& o);
+
+    double lnPdf(RbObject* o); //!< Ln probability density
+    double pdf(RbObject* o); //!< Probability density
+    RbObject* rv(RandomNumberGenerator* r);
+
+private:
+    DAGNode* alpha;
+    DAGNode* beta;
 };
 
 #endif /* DISTBETA_H_ */

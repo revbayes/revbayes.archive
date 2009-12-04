@@ -45,7 +45,6 @@ class RbFunction_dbeta :  public RbFunction {
 
         // implemented abstract/virtual functions from base classes
         RbObject*           clone(void) const ;                                 //!< clone this object
-        void                print(std::ostream &c) const;                       //!< Print the value to ostream c
         void                dump(std::ostream& c);                              //!< Dump to ostream c
         void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
         bool                equals(const RbObject* o) const;                    //!< Comparison
@@ -57,7 +56,6 @@ class RbFunction_dbeta :  public RbFunction {
         // Type conversion
         bool                isConvertibleTo(const std::string& type) const;
         RbObject*           convertTo(const std::string& type) const;
-        virtual const int           getNumberOfRules() const;                   //!< Get number of argument rules for the function
 
         RbObject*                 executeOperation(const std::vector<DAGNode*>& arguments);              //!< Get result
 

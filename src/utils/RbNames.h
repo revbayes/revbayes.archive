@@ -61,6 +61,10 @@ namespace RbNames {
 	namespace Gamma {
 	}
 
+	namespace Int {
+	const std::string      name    = "int";
+	    }
+
 #pragma mark LogNormal Distribution
 
 	namespace LogNormal {

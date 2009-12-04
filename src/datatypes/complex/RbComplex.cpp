@@ -54,7 +54,7 @@ RbComplex::~RbComplex() {
 
     members.clear();
     type.clear();
-    methods.clear();
+//    methodTable.clear();
 }
 
 
@@ -68,13 +68,13 @@ RbComplex::~RbComplex() {
  * @returns     A pointer to the method
  *
  */
-const RbFunction* RbComplex::getMethod(const std::string& name) const {
-
-	std::map<std::string, RbFunction*>::const_iterator it = methods.find( name );
-	if ( it != methods.end() )
-		return it->second;
-	return NULL;
-}
+//const RbFunction* RbComplex::getMethod(const std::string& name) const {
+//
+//	std::map<std::string, RbFunction*>::const_iterator it = methods.find( name );
+//	if ( it != methods.end() )
+//		return it->second;
+//	return NULL;
+//}
 
 /**
  * @brief Print object info
@@ -92,11 +92,11 @@ void RbComplex::print(std::ostream& o) const {
         o << getMember(i->first)->briefInfo();
     }
 
-    std::map<std::string, RbFunction*> methods = getMethods();
-
-    for (std::map<std::string, RbFunction*>::iterator i=methods.begin(); i!=methods.end(); i++) {
-    	i->second->print(o);
-    }
+//    std::map<std::string, RbFunction*> methods = getMethods();
+//
+//    for (std::map<std::string, RbFunction*>::iterator i=methods.begin(); i!=methods.end(); i++) {
+//    	i->second->print(o);
+//    }
 }
 
 

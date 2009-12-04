@@ -20,7 +20,9 @@
 #include "RbObject.h"
 #include "DAGNode.h"
 #include "RbException.h"
+#include "RbNames.h"
 #include "RbStatistics.h"
+#include "RbUndefined.h"
 #include <cmath>
 
 const StringVector RbFunction_dbeta::rbClass = StringVector("dbeta") + RbFunction::rbClass;
@@ -33,22 +35,38 @@ const StringVector RbFunction_dbeta::rbClass = StringVector("dbeta") + RbFunctio
 
 /** Default constructor, allocate workspace */
 RbFunction_dbeta::RbFunction_dbeta(void)
-    : RbFunction(), value(new RbDouble(0)) {
+    : RbFunction() {
 
-	argRules.push_back( ArgumentRule("x", "double", NULL, new RbDouble(0.0), new RbDouble(1.0)) );
-	argRules.push_back( ArgumentRule("alpha", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	argRules.push_back( ArgumentRule("beta", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
+    RbUndefined undef;
+    RbDouble x_min = RbDouble(0.0);
+    RbDouble x_max = RbDouble(1.0);
+    RbDouble a_def = RbDouble(1.0);
+    RbDouble a_min = RbDouble(0.0);
+    RbDouble b_def = RbDouble(1.0);
+    RbDouble b_min = RbDouble(0.0);
+
+	argRules.push_back( ArgumentRule("x", RbNames::Double::name, undef, x_min, x_max) );
+	argRules.push_back( ArgumentRule("alpha", RbNames::Double::name, a_def, a_min, undef) );
+	argRules.push_back( ArgumentRule("beta", RbNames::Double::name, b_def, b_min, undef) );
 	returnType = RbNames::Double::name;
 } 
 
 /** Copy constructor */
 RbFunction_dbeta::RbFunction_dbeta(const RbFunction_dbeta& s)
-    : RbFunction(s), value(new RbDouble(0)) {
-    
-	argRules.push_back( ArgumentRule("x", "double", NULL, new RbDouble(0.0), new RbDouble(1.0)) );
-	argRules.push_back( ArgumentRule("alpha", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	argRules.push_back( ArgumentRule("beta", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	returnType = RbNames::Double::name;
+    : RbFunction(s) {
+
+    RbUndefined undef;
+    RbDouble x_min = RbDouble(0.0);
+    RbDouble x_max = RbDouble(1.0);
+    RbDouble a_def = RbDouble(1.0);
+    RbDouble a_min = RbDouble(0.0);
+    RbDouble b_def = RbDouble(1.0);
+    RbDouble b_min = RbDouble(0.0);
+
+    argRules.push_back( ArgumentRule("x", RbNames::Double::name, undef, x_min, x_max) );
+    argRules.push_back( ArgumentRule("alpha", RbNames::Double::name, a_def, a_min, undef) );
+    argRules.push_back( ArgumentRule("beta", RbNames::Double::name, b_def, b_min, undef) );
+    returnType = RbNames::Double::name;
 }
 
 /** Destructor, delete workspace */
@@ -181,12 +199,6 @@ std::string RbFunction_dbeta::toString(void) const {
 bool RbFunction_dbeta::equals(const RbObject* o) const {
 
     return false;
-}
-
-
-/** Get number of argument rules */
-const int RbFunction_dbeta::getNumberOfRules(void) const {
-    return 1;
 }
 
 /** Execute function */

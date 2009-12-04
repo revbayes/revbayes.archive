@@ -5,8 +5,10 @@
  *      Author: Sebastian
  */
 
-#ifndef RBLIST_H_
-#define RBLIST_H_
+#ifndef RBLIST_H
+#define RBLIST_H
+
+#include "RbComplex.h"
 
 class RbList : public RbComplex{
     public:

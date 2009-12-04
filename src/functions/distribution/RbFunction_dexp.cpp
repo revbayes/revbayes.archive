@@ -15,12 +15,14 @@
  * $Id$
  */
 
+#include "DAGNode.h"
 #include "RbFunction_dexp.h"
 #include "RbDouble.h"
-#include "RbObject.h"
-#include "DAGNode.h"
 #include "RbException.h"
+#include "RbNames.h"
+#include "RbObject.h"
 #include "RbStatistics.h"
+#include "RbUndefined.h"
 #include <cmath>
 
 const StringVector RbFunction_dexp::rbClass = StringVector("dexp") + RbFunction::rbClass;
@@ -34,19 +36,25 @@ const StringVector RbFunction_dexp::rbClass = StringVector("dexp") + RbFunction:
 /** Default constructor, allocate workspace */
 RbFunction_dexp::RbFunction_dexp(void)
     : RbFunction(), value(new RbDouble(0)) {
-
-	argRules.push_back( ArgumentRule("x", "double", NULL, new RbDouble(0.0), NULL ) );
-	argRules.push_back( ArgumentRule("rate", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	returnType = "double";
+    RbUndefined undef;
+    RbDouble x_min = RbDouble(0.0);
+    RbDouble r_def = RbDouble(1.0);
+    RbDouble r_min = RbDouble(0.0);
+	argRules.push_back( ArgumentRule("x", RbNames::Double::name, undef, x_min, undef ) );
+	argRules.push_back( ArgumentRule("rate", RbNames::Double::name, r_def, r_min, undef) );
+	returnType = RbNames::Double::name;
 } 
 
 /** Copy constructor */
 RbFunction_dexp::RbFunction_dexp(const RbFunction_dexp& s)
     : RbFunction(s), value(new RbDouble(0)) {
-    
-	argRules.push_back( ArgumentRule("x", "double", NULL, new RbDouble(0.0), NULL ) );
-	argRules.push_back( ArgumentRule("rate", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	returnType = "double";
+    RbUndefined undef;
+    RbDouble x_min = RbDouble(0.0);
+    RbDouble r_def = RbDouble(1.0);
+    RbDouble r_min = RbDouble(0.0);
+    argRules.push_back( ArgumentRule("x", RbNames::Double::name, undef, x_min, undef ) );
+    argRules.push_back( ArgumentRule("rate", RbNames::Double::name, r_def, r_min, undef) );
+    returnType = RbNames::Double::name;
 }
 
 /** Destructor, delete workspace */
@@ -115,11 +123,6 @@ RbFunction_dexp& RbFunction_dexp::operator=(const RbFunction_dexp& obj) {
  * @param c           the stream where to print to
  *
  */
-void RbFunction_dexp::print(std::ostream &c) const {
-
-    c << "RbFunction_dexp" << std::endl;
-}
-
 void RbFunction_dexp::printValue(std::ostream &o) const {
 
     o << value << std::endl;
@@ -180,12 +183,6 @@ std::string RbFunction_dexp::toString(void) const {
 bool RbFunction_dexp::equals(const RbObject* o) const {
 
     return false;
-}
-
-
-/** Get number of argument rules */
-const int RbFunction_dexp::getNumberOfRules(void) const {
-    return 1;
 }
 
 /** Execute function */

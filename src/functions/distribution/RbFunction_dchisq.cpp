@@ -15,13 +15,15 @@
  * $Id$
  */
 
+#include "DAGNode.h"
 #include "RbFunction_dchisq.h"
 #include "RbDouble.h"
 #include "RbInt.h"
+#include "RbNames.h"
 #include "RbObject.h"
-#include "DAGNode.h"
 #include "RbException.h"
 #include "RbStatistics.h"
+#include "RbUndefined.h"
 #include <cmath>
 
 const StringVector RbFunction_dchisq::rbClass = StringVector("dchisq") + RbFunction::rbClass;
@@ -35,19 +37,29 @@ const StringVector RbFunction_dchisq::rbClass = StringVector("dchisq") + RbFunct
 /** Default constructor, allocate workspace */
 RbFunction_dchisq::RbFunction_dchisq(void)
     : RbFunction(), value(new RbDouble(0)) {
+    RbUndefined undef;
 
-	argRules.push_back( ArgumentRule("x", "double", NULL, new RbDouble(0.0), NULL) );
-	argRules.push_back( ArgumentRule("df", "int", new RbInt(1), new RbInt(1), NULL) );
-	returnType = "double";
+    RbDouble x_min = RbDouble(0.0);
+    RbInt df_def = RbInt(1);
+    RbInt df_min = RbInt(1);
+
+	argRules.push_back( ArgumentRule("x", RbNames::Double::name, undef, x_min, undef) );
+	argRules.push_back( ArgumentRule("df", RbNames::Int::name, df_def, df_min, undef) );
+	returnType = RbNames::Double::name;
 } 
 
 /** Copy constructor */
 RbFunction_dchisq::RbFunction_dchisq(const RbFunction_dchisq& s)
     : RbFunction(s), value(new RbDouble(0)) {
-    
-	argRules.push_back( ArgumentRule("x", "double", NULL, new RbDouble(0.0), NULL) );
-	argRules.push_back( ArgumentRule("df", "int", new RbInt(1), new RbInt(1), NULL) );
-	returnType = "double";
+    RbUndefined undef;
+
+    RbDouble x_min = RbDouble(0.0);
+    RbInt df_def = RbInt(1);
+    RbInt df_min = RbInt(1);
+
+    argRules.push_back( ArgumentRule("x", RbNames::Double::name, undef, x_min, undef) );
+    argRules.push_back( ArgumentRule("df", RbNames::Int::name, df_def, df_min, undef) );
+    returnType = RbNames::Double::name;
 }
 
 /** Destructor, delete workspace */
@@ -116,11 +128,6 @@ RbFunction_dchisq& RbFunction_dchisq::operator=(const RbFunction_dchisq& obj) {
  * @param c           the stream where to print to
  *
  */
-void RbFunction_dchisq::print(std::ostream &c) const {
-
-    c << "RbFunction_dchisq" << std::endl;
-}
-
 void RbFunction_dchisq::printValue(std::ostream &o) const {
 
     o << value << std::endl;
@@ -181,12 +188,6 @@ std::string RbFunction_dchisq::toString(void) const {
 bool RbFunction_dchisq::equals(const RbObject* o) const {
 
     return false;
-}
-
-
-/** Get number of argument rules */
-const int RbFunction_dchisq::getNumberOfRules(void) const {
-    return 1;
 }
 
 /** Execute function */
