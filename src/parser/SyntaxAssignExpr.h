@@ -1,56 +1,120 @@
-/*!
- * \file
- * This file contains the declaration of SyntaxElement, which is
- * the base class used to hold elements (nodes) in the syntax tree.
+/**
+ * @file
+ * This file contains the declaration of SyntaxAssignExpr, which is
+ * used to hold assignment expressions in the syntax tree. These
+ * can be left-arrow, equation or tilde assignments.
  *
- * \brief Declaration of SyntaxElement
+ * @brief Declaration of SyntaxAssignExpr
  *
- * (c) Copyright 2009-
- * \date Last modified: $Date$
- * \author Fredrik Ronquist and the REvBayes core team
- * \license GPL version 3.0
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
  *
  * $Id$
  */
 
-#ifndef SyntaxElement_H
-#define SyntaxElement_H
+#ifndef SyntaxAssignExpr_H
+#define SyntaxAssignExpr_H
 
-#include "MbObject.h"
+#include "SyntaxElement.h"
+#include "RbString.h"
 
-using namespace std;
+#include <iostream>
+#include <list>
 
-/*! This is the abstract base class for nodes in the syntax tree.
- *
- *  The syntax tree is built up by syntax elements. The syntax elements either
- *  have one or more operands, which are themselves syntax elements, or they
- *  have no operands and simply a predefined result vector of type RbObject. In
- *  the former case, the elements correspond to interior nodes in the syntax tree
- *  and in the latter case, they correspond to terminal nodes.
- *
- *  If you call getResult on an interior element and the result has not been filled in,
- *  the syntax element will be executed (causing recursive execution of the subtree
- *  rooted on that element) before the result is returned.
- *
- *  If you call getResult on a terminal element, the predefined result is simply returned.
- *  A syntax element also has the ability to restore itself to a previous state, to speed
- *  up accept and reject steps for deterministic nodes in a model DAG.
+
+/**
+ * This is the class used to hold labeled expressions in the syntax
+ * tree. These are used as arguments to functions and as templates
+ * for arguments (formal arguments) in function definitions.
  */
-class SyntaxElement {
+class SyntaxAssignExpr : public SyntaxElement {
 
     public:
-            SyntaxElement();         //!< Default constructor
-	        ~SyntaxElement();        //!< Destructor; delete operands and result
+        // Static operator types
+        enum operatorT { ARROW_ASSIGN, TILDE_ASSIGN, EQUATION_ASSIGN };     //!< Enum of operator types
+        static std::string opCode[];                                //!< Operator codes for printing
 
-        virtual bool        check() const = 0;              //!< Check syntax
-        virtual RbObject*   getResult() = 0;                //!< Return result
-        virtual void        print(ostream &c) const = 0;    //!< Print content
-        virtual void        restore() { swap(); }           //!< Restore stored value (children not called in default implementation)
+            SyntaxAssignExpr(RbString* id, SyntaxElement *expr);   //!< Constructor
+            SyntaxAssignExpr(const SyntaxAssignExpr& x);           //!< Copy constructor
+	        virtual ~SyntaxAssignExpr();                           //!< Destructor
+
+        // Basic utility functions
+        std::string     briefInfo() const;                          //!< Brief info about object
+        SyntaxElement*  clone() const;                              //!< Clone object
+        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
+        void            print(std::ostream& o) const;               //!< Print info about object
+
+        // Regular functions
+        DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
+        RbObject*       getValue(Frame* frame=NULL);                //!< Get semantic value
 
     protected:
-        RbObject           *result;         //!< The result of executing the element; preset for terminal elements
-        RbObject           *storedResult;   //!< Stored result from previous execution of the element
-        void                swap() { RbObject *temp = result; result = storedResult; storedResult = temp; }  //!< Restore stored value
+        SyntaxVariable*                 lhs;        //!< The left-hand side
+        SyntaxElement*                  rhs;        //!< The right-hand side
 };
 
 #endif
+
+/**
+ * @file
+ * This file contains the declaration of SyntaxBinaryExpr, which is
+ * used to hold binary expressions in the syntax tree.
+ *
+ * @brief Declaration of SyntaxBinaryExpr
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
+ *
+ * $Id$
+ */
+
+#ifndef SyntaxBinaryExpr_H
+#define SyntaxBinaryExpr_H
+
+#include "SyntaxElement.h"
+
+#include <iostream>
+#include <vector>
+
+
+/**
+ * This is the class used to hold binary expressions in the syntax tree.
+ *
+ * We store the operands and a flag signalling the type of operation to
+ * be performed when getValue is called or to be represented when
+ * getDAGNode is called.
+ *
+ */
+class SyntaxBinaryExpr : public SyntaxElement {
+
+    public:
+        // Binary operator types
+
+            // Constructors and destructor
+            SyntaxBinaryExpr(SyntaxBinaryExpr::operatorT op,
+                             SyntaxElement* lhs, SyntaxElement* rhs);   //!< Standard constructor 
+            SyntaxBinaryExpr(const SyntaxBinaryExpr& x);                //!< Copy constructor
+	        virtual ~SyntaxBinaryExpr();                                //!< Destroy operands
+
+        // Basic utility functions
+        std::string     briefInfo() const;                          //!< Brief info about object
+        SyntaxElement*  clone() const;                              //!< Clone object
+        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
+        void            print(std::ostream& o) const;               //!< Print info about object
+
+        // Regular functions
+        DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
+        RbObject*       getValue(Frame* frame=NULL);                //!< Get semantic value
+
+    protected:
+        SyntaxElement*  leftOperand;        //!< The left operand
+        SyntaxElement*  rightOperand;       //!< The right operand
+        enum operatorT  operation;          //!< The type of operation
+};
+
+#endif
+

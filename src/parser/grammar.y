@@ -178,6 +178,8 @@ prog    :       END_OF_INPUT            { return 0; }
         |       statement '\n'          { return parser.execute($1); }
         |       declaration '\n'        { return parser.execute($1); }
         |       expression '\n'         { return parser.execute($1); }
+        |       '?' identifier '\n'     { return parser.help($2); }
+        |       '?' functionCall '\n'   { return parser.help($2); }
         |       error                   { YYABORT; }
         ;
 
@@ -188,7 +190,6 @@ expression  :   constant                    { $$ = $1; }
             |   '-' expression %prec UMINUS { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UMINUS, $2); }
             |   '+' expression %prec UPLUS  { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UPLUS, $2); }
             |   '!' expression %prec UNOT   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UNOT, $2); }
-            |   '?' identifier              { $$ = new SyntaxHelpExpr($2); }
 
             |   expression ':' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::RANGE, $1, $3); }
 
@@ -310,23 +311,23 @@ optFormals  :   ',' formal optFormals   { $$ = ($3->push_front($2)); }
 
 formal      :   identifier
                 {
-                    PRINTF("Parser inserting unlabeled formal argument (FORMAL) in syntax tree\n");
-                    $$ = new SyntaxLabeledExpr(NULL, $1, NULL);
+                    PRINTF("Inserting untyped labeled formal argument without default in syntax tree\n");
+                    $$ = new SyntaxFormal($1, NULL);
                 }
             |   identifier EQUAL expression
                 { 
-                    PRINTF("Parser inserting labeled formal argument (FORMAL) in syntax tree\n");
-                    $$ = new SyntaxLabeledExpr(NULL, $1, $3);
+                    PRINTF("Inserting untyped labeled formal argument with default in syntax tree\n");
+                    $$ = new SyntaxFormal($1, $3);
                 }
             |   identifier identifier
                 {
-                    PRINTF("Parser inserting unlabeled typed formal argument (FORMAL) in syntax tree\n");
-                    $$ = new SyntaxLabeledExpr($1, $2, NULL);
+                    PRINTF("Inserting untyped labeled formal argument without default in syntax tree\n");
+                    $$ = new SyntaxFormal($1, $2, NULL);
                 }
             |   identifier identifier EQUAL expression
                 {
-                    PRINTF("Parser inserting labeled typed formal argument (FORMAL) in syntax tree\n");
-                    $$ = new SyntaxLabeledExpr($1, $2, $4);
+                    PRINTF("Inserting typed labeled formal argument with default in syntax tree\n");
+                    $$ = new SyntaxFormal($1, $2, $4);
                 }
             ;
 
@@ -377,13 +378,13 @@ classDef    :   CLASS identifier ':' identifier '{' memberDefs '}'
 ifStatement :   IF cond stmts               { $$ = new SyntaxStatement(SyntaxStatement::IF, $2, $3); }
             |   IF cond stmts ELSE stmts    { $$ = new SyntaxStatement(SyntaxStatement::IF_ELSE, $2, $3, $5); }
 
-cond    :   '(' expression ')'    { $$ = new SyntaxCondition($2); }
+cond    :   '(' expression ')'    { $$ = $2; }
         ;
 
 forStatement    :   FOR forCond stmts   { $$ = new SyntaxStatement(SyntaxStatement::FOR, $2, $3); }
                 ;
 
-forCond     :   '(' identifier IN expression ')'    { $$ = new SyntaxForCondition(string($2), $4); }
+forCond     :   '(' identifier IN expression ')'    { $$ = new SyntaxForCondition($2, $4); }
             ;
 
 whileStatement  :   WHILE cond stmts    { $$ = new SyntaxStatement(SyntaxStatement::WHILE, $2, $3); }

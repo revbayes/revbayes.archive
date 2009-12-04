@@ -98,7 +98,7 @@ bool SyntaxFunctionCall::equals(const SyntaxElement* elem) const {
 
 
 /** Convert element to DAG node */
-DAGNode* SyntaxFunctionCall::getDAGNode(Environment* env) const {
+DAGNode* SyntaxFunctionCall::getDAGNode(Frame* formal) const {
 
     std::vector<Argument> args;
     if (variable != NULL) {
@@ -106,7 +106,7 @@ DAGNode* SyntaxFunctionCall::getDAGNode(Environment* env) const {
         args.push_back(Argument("function", new ConstantNode(functionName)));
     }
     for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        args.push_back(Argument(*(*i)->getLabel(), (*i)->getDAGNode(env)));    
+        args.push_back(Argument(*(*i)->getLabel(), (*i)->getDAGNode(formal)));    
 
     RbFunction* func;
     if (variable == NULL) {
@@ -128,12 +128,12 @@ DAGNode* SyntaxFunctionCall::getDAGNode(Environment* env) const {
  * We look up the function or member function and calculate the value.
  *
  */
-RbObject* SyntaxFunctionCall::getValue(Environment* env) {
+RbObject* SyntaxFunctionCall::getValue(Frame* formal) {
 
     // Package arguments
     std::vector<Argument> args;
     for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        args.push_back(Argument(*(*i)->getLabel(), (*i)->getDAGNode(env)));    
+        args.push_back(Argument(*(*i)->getLabel(), (*i)->getDAGNode(formal)));    
 
     // Get function pointer and execute function
     RbObject* result;

@@ -118,7 +118,7 @@ bool SyntaxVariable::equals(const SyntaxElement* elem) const {
 
 
 /** Convert element to DAG node */
-DAGNode* SyntaxVariable::getDAGNode(Environment* env) const {
+DAGNode* SyntaxVariable::getDAGNode(Frame* frame) const {
 
     std::vector<Argument> args;
     args.push_back(Argument("variable", variable->getDAGNode()));
@@ -130,7 +130,7 @@ DAGNode* SyntaxVariable::getDAGNode(Environment* env) const {
     for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
         args.clear();
         args.push_back(Argument("object", root));
-        args.push_back(Argument("index", (*i)->getDAGNode(env)));
+        args.push_back(Argument("index", (*i)->getDAGNode(frame)));
 
         RbFunction* elemFunc = Workspace::globalWorkspace().getFunction(".element", args);
         root = new DeterministicNode((RbFunction*)(elemFunc->clone()), args);
@@ -152,25 +152,25 @@ const RbString* SyntaxVariable::getIdentifier() const {
  *
  * The variable can either be a member or a base variable. In the latter
  * case, its "variable" member is NULL. If the element is a base variable,
- * we get the semantic value of the element by looking it up in the environ-
+ * we get the semantic value of the element by looking it up in the frameiron-
  * ment. If it is a base variable name, we try to find it as a member of the
  * "variable" found by another SyntaxVariable element.
  *
  */
-RbObject* SyntaxVariable::getValue(Environment* env) {
+RbObject* SyntaxVariable::getValue(Frame* frame) {
 
     // Value pointer
     const RbObject* value = NULL;
 
     // Get variable; call getValue to pass through DAGNode
     if (variable == NULL) {
-        value = env->getVariable(*identifier);
+        value = frame->getVariable(*identifier);
         if (value->isType(RbNames::DAGNode::name))
             value = ((DAGNode*)(value))->getValue();
     }
     else {
         // Get object of which we are a member
-        RbObject*   obj = variable->getValue(env);
+        RbObject*   obj = variable->getValue(frame);
 
         // Get member
         RbComplex*  complexObj = dynamic_cast<RbComplex*>(obj);
@@ -199,7 +199,7 @@ RbObject* SyntaxVariable::getValue(Environment* env) {
         }
             
         // Get index
-        RbObject* indexObj = (*i)->getValue(env);
+        RbObject* indexObj = (*i)->getValue(frame);
         if (indexObj == NULL) {
             throw (RbException("Erroneous index expression of variable " + std::string(*identifier)));
         }

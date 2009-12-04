@@ -2,9 +2,9 @@
  * @file
  * This file contains the declaration of Workspace, which is
  * used to hold the global workspace, which is the mother of
- * all environments, the ultimate base environment. It is also
+ * all frames, the ultimate base frame. It is also
  * used for the user workspace, which is the next descendant
- * environment, containing all variables, types and functions
+ * frame, containing all variables, types and functions
  * defined by the user.
  *
  * @brief Declaration of Workspace
@@ -13,7 +13,7 @@
  * @date Last modified: $Date$
  * @author The RevBayes development core team
  * @license GPL version 3
- * @extends Environment
+ * @extends Frame
  * @package parser
  * @version 1.0
  * @since version 1.0 2009-09-02
@@ -25,7 +25,7 @@
 #define Workspace_H
 
 #include "DAGNode.h"
-#include "Environment.h"
+#include "Frame.h"
 #include "RbFunction.h"
 #include "RbObject.h"
 
@@ -40,13 +40,13 @@
  * The Workspace class is used for two singleton instances, the global workspace and the user
  * workspace.
  *
- * The global workspace is the base environment for all other environments. It contains all
+ * The global workspace is the base frame for all other frames. It contains all
  * builtin functions and types, as well as any builtin (system) variables. The user workspace
  * is enclosed within the global workspace, and contains all functions, types and global
  * variables defined by the user. Local variables defined by the user are kept in local
- * environments.
+ * frames.
  *
- * The workspace has a variable table, which it inherits from Environment. In addition, it
+ * The workspace has a variable table, which it inherits from Frame. In addition, it
  * keeps a function table and type table. It provides various types of functionality for
  * storing and retrieving functions, types and member variables and their initializers.
  *
@@ -64,7 +64,7 @@
  * the function table.
  *
  */
-class Workspace : Environment {
+class Workspace : Frame {
 
     public:
 

@@ -26,7 +26,7 @@
 /**
  * This is the class used to hold variables in the syntax tree.
  *
- * We store the identifier, the index vector and the environment
+ * We store the identifier, the index vector and the frameironment
  * here so that we can wrap these things into a DAG node if needed.
  *
  */
@@ -45,9 +45,9 @@ class SyntaxVariable : public SyntaxElement {
         void            print(std::ostream& o) const;               //!< Print info about object
 
         // Regular functions
-        DAGNode*        getDAGNode(Environment* env=NULL) const;    //!< Convert to DAG node
+        DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
         const RbString* getIdentifier() const;                      //!< Get identifier
-        RbObject*       getValue(Environment* env=NULL);            //!< Get semantic value
+        RbObject*       getValue(Frame* frame=NULL);                //!< Get semantic value
 
     protected:
         RbString*                       identifier;     //!< The name of the variable

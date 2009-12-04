@@ -1,10 +1,10 @@
 /**
  * @file
- * This file contains the implementation of Environment, which
- * is used to hold information about an evaluation or exe-
- * cution environment.
+ * This file contains the implementation of Frame, which
+ * is used to hold information about an evaluation or
+ * execution frame.
  *
- * @brief Implementation of Environment
+ * @brief Implementation of Frame
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -16,29 +16,29 @@
  * $Id$
  */
 
-#include "Environment.h"
+#include "Frame.h"
 
 /**
- * @brief Constructor from parent environment
+ * @brief Constructor from parent frame
  *
- * The constructor initializes parentEnvironment
+ * The constructor initializes parentFrame
  * to the supplied pointer.
  *
- * @param parentEnv     Pointer to the parent environment
+ * @param parentEnv     Pointer to the parent frame
  *
  */
-Environment::Environment(Environment* parentEnv) :
-    parentEnvironment(parentEnv), variableTable() {
+Frame::Frame(Frame* parentFr) :
+    parentFrame(parentFr), variableTable() {
 }
 
 
 /**
  * @brief Destructor
  *
- * All variables are managed by the environment so they
+ * All variables are managed by the frame so they
  * should be destroyed here.
  */
-Environment::~Environment() {
+Frame::~Frame() {
 
     for (std::map<std::string, RbObject*>::iterator i=variableTable.begin(); i!=variableTable.end(); i++)
         delete i->second;
@@ -57,7 +57,7 @@ Environment::~Environment() {
  * @return          Returns true on success, false on failure
  *
  */
-bool Environment::addVariable(const std::string& name, RbObject* variable) {
+bool Frame::addVariable(const std::string& name, RbObject* variable) {
 
     std::pair<std::map<std::string, RbObject*>::iterator, bool> retVal;
 
@@ -76,11 +76,11 @@ bool Environment::addVariable(const std::string& name, RbObject* variable) {
  * @return      Returns pointer to object on success, 
  *
  */
-RbObject* Environment::getVariable(const std::string& name) {
+RbObject* Frame::getVariable(const std::string& name) {
 
     if (variableTable.find(name) == variableTable.end()) {
-        if (parentEnvironment != NULL)
-            return parentEnvironment->getVariable(name);
+        if (parentFrame != NULL)
+            return parentFrame->getVariable(name);
         else
             return NULL;
     }

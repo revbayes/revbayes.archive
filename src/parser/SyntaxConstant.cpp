@@ -64,14 +64,14 @@ bool SyntaxConstant::equals(const SyntaxElement* elem) const {
 
 
 /** Convert element to DAG node */
-DAGNode* SyntaxConstant::getDAGNode(Environment* env) const {
+DAGNode* SyntaxConstant::getDAGNode(Frame* frame) const {
 
     return new ConstantNode(value->clone());
 }
 
 
 /** Get semantic value of element */
-RbObject* SyntaxConstant::getValue(Environment* env) {
+RbObject* SyntaxConstant::getValue(Frame* frame) {
 
     return value;
 }

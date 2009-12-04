@@ -1,9 +1,8 @@
 /**
  * @file
  * This file contains the implementation of SyntaxLabeledExpr, which is
- * used to hold labeled expressions in the syntax tree. Labeled exp-
- * ressions are used in functions calls for arguments and in functon
- * definitions for argument labels and default values (formal arguments).
+ * used to hold labeled expressions that represent arguments to
+ * functions in the syntax tree.
  *
  * @brief Implementation of SyntaxLabeledExpr
  *
@@ -90,14 +89,14 @@ bool SyntaxLabeledExpr::equals(const SyntaxElement* elem) const {
 
 
 /** Convert element to DAG node (not applicable so return NULL) */
-DAGNode* SyntaxLabeledExpr::getDAGNode(Environment* env) const {
+DAGNode* SyntaxLabeledExpr::getDAGNode(Frame* frame) const {
 
     return NULL;
 }
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbObject* SyntaxLabeledExpr::getValue(Environment* env) {
+RbObject* SyntaxLabeledExpr::getValue(Frame* frame) {
 
     return NULL;
 }

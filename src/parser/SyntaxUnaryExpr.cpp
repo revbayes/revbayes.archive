@@ -83,10 +83,10 @@ bool SyntaxUnaryExpr::equals(const SyntaxElement* elem) const {
 
 
 /** Convert element to DAG node */
-DAGNode* SyntaxUnaryExpr::getDAGNode(Environment* env) const {
+DAGNode* SyntaxUnaryExpr::getDAGNode(Frame* frame) const {
 
     std::vector<Argument> arg;
-    arg.push_back(Argument("x", expression->getDAGNode(env)));
+    arg.push_back(Argument("x", expression->getDAGNode(frame)));
 
     std::string funcName = "." + opCode[operation];
     RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, arg);
@@ -101,11 +101,11 @@ DAGNode* SyntaxUnaryExpr::getDAGNode(Environment* env) const {
  * We simply look up the function and calculate the value.
  *
  */
-RbObject* SyntaxUnaryExpr::getValue(Environment* env) {
+RbObject* SyntaxUnaryExpr::getValue(Frame* frame) {
 
     // Package the argument
     std::vector<Argument> arg;
-    arg.push_back(Argument("x", expression->getDAGNode(env)));
+    arg.push_back(Argument("x", expression->getDAGNode(frame)));
 
     // Get a function pointer
     std::string funcName = "." + opCode[operation];

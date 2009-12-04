@@ -49,8 +49,8 @@ class SyntaxUnaryExpr : public SyntaxElement {
         void            print(std::ostream& o) const;               //!< Print info about object
 
         // Regular functions
-        DAGNode*        getDAGNode(Environment* env=NULL) const;    //!< Convert to DAG node
-        RbObject*       getValue(Environment* env=NULL);            //!< Get semantic value
+        DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
+        RbObject*       getValue(Frame* frame=NULL);                //!< Get semantic value
 
     protected:
         SyntaxElement*  expression;         //!< The expression

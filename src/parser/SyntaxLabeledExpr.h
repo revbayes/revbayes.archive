@@ -1,9 +1,8 @@
 /**
  * @file
  * This file contains the declaration of SyntaxLabeledExpr, which is
- * used to hold labeled expressions in the syntax tree. Labeled
- * expressions are used in function calls for arguments and in
- * function definitions for argument labels and default values.
+ * used to hold labeled expressions that represent arguments to
+ * functions in the syntax tree.
  *
  * @brief Declaration of SyntaxLabeledExpr
  *
@@ -25,11 +24,6 @@
 #include <list>
 
 
-/**
- * This is the class used to hold labeled expressions in the syntax
- * tree. These are used as arguments to functions and as templates
- * for arguments (formal arguments) in function definitions.
- */
 class SyntaxLabeledExpr : public SyntaxElement {
 
     public:
@@ -45,12 +39,12 @@ class SyntaxLabeledExpr : public SyntaxElement {
 
         // Regular functions
         const RbString* getLabel() const { return label; }          //!< Return label    
-        DAGNode*        getDAGNode(Environment* env=NULL) const;    //!< Convert to DAG node
-        RbObject*       getValue(Environment* env=NULL);            //!< Get semantic value
+        DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
+        RbObject*       getValue(Frame* frame=NULL);                //!< Get semantic value
 
     protected:
-        RbString*                       label;          //!< The label of the argument
-        SyntaxElement*                  expression;     //!< The expression for argument value or default value
+        RbString*       label;          //!< The label of the argument
+        SyntaxElement*  expression;     //!< The expression for the argument value
 };
 
 #endif

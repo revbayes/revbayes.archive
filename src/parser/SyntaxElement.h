@@ -19,13 +19,13 @@
 #define SyntaxElement_H
 
 #include "DAGNode.h"
-#include "Environment.h"
+#include "Frame.h"
 
 #include <iostream>
 #include <string>
 
 /* Forward declarations */
-class Environment;
+class Frame;
 class StringVector;
 
 /**
@@ -73,8 +73,8 @@ class SyntaxElement {
         virtual void                print(std::ostream& o) const = 0;           //!< Print info about object
 
         // Regular functions
-        virtual DAGNode*            getDAGNode(Environment* env=NULL) const = 0;//!< Convert to DAG node
-        virtual RbObject*           getValue(Environment* env=NULL) = 0;        //!< Get semantic value
+        virtual DAGNode*            getDAGNode(Frame* frame=NULL) const = 0;    //!< Convert to DAG node
+        virtual RbObject*           getValue(Frame* frame=NULL) = 0;            //!< Get semantic value
         virtual bool                isConstExpr() const { return false; }       //!< Is subtree constant expr?
 
     protected:

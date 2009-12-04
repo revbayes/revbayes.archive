@@ -87,11 +87,11 @@ bool SyntaxBinaryExpr::equals(const SyntaxElement* elem) const {
 
 
 /** Convert element to DAG node */
-DAGNode* SyntaxBinaryExpr::getDAGNode(Environment* env) const {
+DAGNode* SyntaxBinaryExpr::getDAGNode(Frame* frame) const {
 
     std::vector<Argument> args;
-    args.push_back(Argument("x", leftOperand->getDAGNode(env)));
-    args.push_back(Argument("y", rightOperand->getDAGNode(env)));
+    args.push_back(Argument("x", leftOperand->getDAGNode(frame)));
+    args.push_back(Argument("y", rightOperand->getDAGNode(frame)));
 
     std::string funcName = "." + opCode[operation];
     RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, args);
@@ -106,12 +106,12 @@ DAGNode* SyntaxBinaryExpr::getDAGNode(Environment* env) const {
  * We simply look up the function and calculate the value.
  *
  */
-RbObject* SyntaxBinaryExpr::getValue(Environment* env) {
+RbObject* SyntaxBinaryExpr::getValue(Frame* frame) {
 
     // Package the arguments
     std::vector<Argument> args;
-    args.push_back(Argument("x", leftOperand->getDAGNode(env)));
-    args.push_back(Argument("y", rightOperand->getDAGNode(env)));
+    args.push_back(Argument("x", leftOperand->getDAGNode(frame)));
+    args.push_back(Argument("y", rightOperand->getDAGNode(frame)));
 
     // Get a function pointer
     std::string funcName = "." + opCode[operation];
