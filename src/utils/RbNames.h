@@ -146,6 +146,10 @@ namespace RbNames {
     namespace DAGNode {
     const std::string       name    = "DAGNode";
     }
+
+    namespace RbObject {
+    const std::string       name    = "object";
+    }
     
 #pragma mark Undefined Data Type
 
@@ -166,6 +170,14 @@ namespace RbNames {
     
     namespace String {
     const std::string       name    = "string";
+    }
+
+    namespace StringVector {
+    const std::string       name    = "stringVector";
+    }
+
+    namespace IntVector {
+    const std::string       name    = "intVector";
     }
 
 }
