@@ -58,7 +58,7 @@ class StringVector : public RbComplex {
 	    int                     size(void) { return value.size(); }             //!< Get size
 
     private:
-	    std::vector<std::string> value;     //!< String of values
+	    std::vector<std::string> value;     //!< Vector of values
 };
 
 #endif

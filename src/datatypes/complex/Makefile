@@ -7,7 +7,10 @@ CXXFLAGS    = -O3 -ffast-math -Wall
 
 CFLAGS = $(CXXFLAGS)
 
-all: RbString.o StringVector.o RbComplex.o
+all: RbComplex.o RbString.o StringVector.o IntVector.o
+
+RbComplex.o: RbComplex.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbComplex.cpp
 
 RbString.o: RbString.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbString.cpp
@@ -15,8 +18,8 @@ RbString.o: RbString.cpp
 StringVector.o: StringVector.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c StringVector.cpp
 
-RbComplex.o: RbComplex.cpp
-	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbComplex.cpp
+IntVector.o: IntVector.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c IntVector.cpp
 
 clean: 
 	rm -f *.o

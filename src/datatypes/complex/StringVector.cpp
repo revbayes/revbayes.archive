@@ -117,8 +117,17 @@ bool StringVector::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
     const StringVector* x = dynamic_cast<const StringVector*> (obj);
-    if (x != NULL)
-        return value == x->value;
+    if (x != NULL) {
+        if (value.size() == x->value.size()) {
+            for (size_t i = 0; i < value.size(); i++) {
+                if (value[i] != x->value[i])
+                    return false;
+            }
+            return true;
+        }
+        else
+            return false;
+    }
 
     // Try converting the value to a string vector
     x = dynamic_cast<const StringVector*> (obj->convertTo(getType()));
@@ -129,8 +138,10 @@ bool StringVector::equals(const RbObject* obj) const {
     if (value.size() == x->value.size()) {
         for (size_t i = 0; i < value.size(); i++)
             result = result && (value[i] == x->value[i]);
-    } else
+    }
+    else
         result = false;
+
     delete x;
     return result;
 }
