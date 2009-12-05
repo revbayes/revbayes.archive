@@ -3,18 +3,34 @@
 
 #include "Distribution.h"
 
-class RbDataType;
-class Vector;
-class DistDirichlet : Distribution {
+class DAGNode;
+class RbVector;
+class DistDirichlet : public Distribution {
 
 public:
-	RbDataType* rv(void);
-	double pdf(void);
-	double lnPdf(void);
+        static const StringVector   rbClass;            //!< Static class attribute
+
+        DistDirichlet(DAGNode* a, RandomNumberGenerator* r);
+        DistDirichlet(const DistDirichlet& d);
+    virtual ~DistDirichlet();
+        RbObject*           clone(void) const;                                    //!< Clone object
+        bool                equals(const RbObject* o) const;                      //!< Equals comparison
+        const StringVector& getClass(void) const;                                   //!< Get class
+       void                print(std::ostream& o) const;                         //!< Print complete object info
+       void                printValue(std::ostream& o) const;                    //!< Print value (for user)
+       std::string         toString(void) const;                                 //!< General info on object
+
+        // overloaded operators
+        RbObject&           operator=(const RbObject& o);
+        DistDirichlet&         operator=(const DistDirichlet& o);
+
+    double lnPdf(RbObject* obs); //!< Ln probability density
+    double pdf(RbObject* obs); //!< Probability density
+    RbObject* rv();
 
 private:
-	Vector *value;
-	Vector *alpha;
+	RbVector *value;
+	DAGNode *alpha;
 };
 
-#endif;
+#endif

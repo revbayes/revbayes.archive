@@ -1,5 +1,7 @@
 #include "RbMath.h"
 #include "RbConstants.h"
+#include "RbException.h"
+#include "RbNode.h"
 #include "RbStatistics.h"
 #include "RbUnrootedTopology.h"
 #include "RandomNumberGenerator.h"
@@ -1007,7 +1009,7 @@ double RbStatistics::UniformUnrootedTopology::lnPdf(int n, RbUnrootedTopology* x
 }
 
 
-RbUnrootedTopology RbStatistics::UniformUnrootedTopology::rv(RandomNumberGenerator* rng, int n) {
+RbUnrootedTopology* RbStatistics::UniformUnrootedTopology::rv(RandomNumberGenerator* rng, int n) {
 
 		if (n <= 1)
 			{
@@ -1049,7 +1051,7 @@ RbUnrootedTopology RbStatistics::UniformUnrootedTopology::rv(RandomNumberGenerat
 		}
 
 		// construct the topology object
-	RbUnrootedTopology t = RbUnrootedTopology(rn);
+	RbUnrootedTopology* t = new RbUnrootedTopology(rn);
 			
 	return t;
 }

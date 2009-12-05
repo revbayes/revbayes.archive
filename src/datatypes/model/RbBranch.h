@@ -23,52 +23,45 @@
 
 #include <vector>
 
-#include "RbDataType.h"
-#include "RbAbstractDataType.h"
-#include "Node.h"
+#include "RbComplex.h"
+#include "RbNode.h"
 
-class Branch : public RbAbstractDataType {
+class RbBranch : public RbComplex {
 
 public:
+        static const StringVector   rbClass;            //!< Static class attribute
+
 	// TODO not sure if I want to allow branch to be instantiated without the two nodes attached to it
-	Branch(void);                                             //!< default constructor
-	Branch(const Branch &b);                                        //!< copy constructor
-	Branch(std::vector<RbDataType*> p);                       //!< constructor with the set of parameters attached to this branch
-	Branch(Node* p, Node* c);                                 //!< constructor with the two nodes attached to this branch
-	Branch(Node* p, Node* c, std::vector<RbDataType*> param); //!< constructor with the two nodes and the set of parameters attached to this branch
-	~Branch(void);                                            //!< Destructor
+        RbBranch(void);                                             //!< default constructor
+        RbBranch(const RbBranch &b);                                        //!< copy constructor
+        RbBranch(RbNode* p, RbNode* c);                                 //!< constructor with the two nodes attached to this branch
+        ~RbBranch(void);                                            //!< Destructor
 
 	// implemented abstract/virtual functions from base classes
 	RbObject*  clone(void) const;                                        //!< clone this object
+	const StringVector&        getClass() const { return rbClass; }            //!< Get class
 	void       print(std::ostream &c) const;                            //!< Print the value to ostream c
 	void       dump(std::ostream& c);                              //!< Dump to ostream c
 	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-	virtual std::string toString();
+	std::string toString() const ;
 
 	//overloaded operators
-	bool       operator==(const RbObject& o) const;                      //!< Comparison
-    bool       operator==(const RbDataType& o) const;                    //!< Comparison
-	bool       operator==(const Branch& o) const;                        //!< Comparison
+	bool       equals(const RbObject* o) const;                      //!< Comparison
+    bool       equals(const RbBranch* o) const;                        //!< Comparison
 
 	// assignment operator
 	// += operator
-	RbDataType* getParameter(int index) const;                //!< retrieves the parameter at index i
-	RbDataType* getParameter(std::string& name) const;        //!< retrieves the parameter with given name
-	int getNumberOfParameter() const;                         //!< get the number of parameters
-	Node* getParent() const;                                  //!< retrieves the parent node
-	Node* getChild() const;                                   //!< retrieves the child node
-	int addParameter(RbDataType* p);                          //!< adds the parameter p at the end and return the index of the position
-	int addParameter(RbDataType* p, int index);               //!< adds the parameter p at index and return the index of the position
-	void setChild(Node* c);                                   //!< sets the child node to c
-	void setParent(Node* p);                                  //!< sets the parent node to p
-	RbDataType* removeParameter(int index);                   //!< removes the parameter at position index and returns the removed parameter
-	RbDataType* removeParameter(std::string& name);           //!< removes the parameter with the name and returns the removed parameter
-	RbDataType* removeParameter(RbDataType* p);               //!< removes the parameter p from the vector and returns the removes parameter
+	RbNode* getParent() const;                                  //!< retrieves the parent node
+	RbNode* getChild() const;                                   //!< retrieves the child node
+	void setChild(RbNode* c);                                   //!< sets the child node to c
+	void setParent(RbNode* p);                                  //!< sets the parent node to p
 
+    // overloaded operators
+    RbObject&         operator=(const RbObject& o);
+    RbBranch&         operator=(const RbBranch& o);
 private:
-	std::vector<RbDataType*> parameters;
-	Node* parent;
-	Node* child;
+	RbNode* parent;
+	RbNode* child;
 };
 
 #endif

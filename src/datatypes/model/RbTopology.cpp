@@ -17,9 +17,14 @@
  * $Id: Topology.cpp 36 2009-09-15 15:28:53Z Hoehna $
  */
 
+#include "RbException.h"
+#include "RbNames.h"
 #include "RbNode.h"
-#include "RbNodeFactory.h"
 #include "RbTopology.h"
+#include "StringVector.h"
+
+const StringVector RbTopology::rbClass = StringVector(RbNames::Topology::name) + RbComplex::rbClass;
+
 
 /**
  * @brief default constructor
@@ -43,6 +48,12 @@ RbTopology::RbTopology(RbNode* bn) : RbComplex() {
 }
 
 
+RbTopology::RbTopology(const RbTopology& t) : RbComplex() {
+
+    *base = *(t.base);
+    fillNodeSets(base);
+}
+
 /**
  * @brief Destructor
  *
@@ -51,9 +62,8 @@ RbTopology::RbTopology(RbNode* bn) : RbComplex() {
  */
 RbTopology::~RbTopology(void) {
 
-	RbNodeFactory &f = RbNodeFactory::RbNodeFactoryInstance();
-	for (std::vector<RbNode*>::iterator p=RbNodes.begin(); p != RbNodes.end(); p++)
-		f.returnRbNodeToPool( *p );
+	for (std::set<RbNode*>::iterator p=nodes.begin(); p != nodes.end(); p++)
+		delete (*p);
 }
 
 /**
@@ -65,11 +75,52 @@ RbTopology::~RbTopology(void) {
  * @returns      clone of the RbTopology
  *
  */
-RbObject* RbTopology::clone(void) {
-	return new RbTopology(this);
+RbObject* RbTopology::clone(void) const {
+	return new RbTopology(*this);
 }
 
-void RbTopology::fillNodeSets() {
+void RbTopology::fillNodeSets(RbNode* n) {
+
+    const std::set<RbNode*>& children = n->getChildren();
+    for (std::set<RbNode*>::iterator it=children.begin(); it!=children.end(); it++) {
+        fillNodeSets(*it);
+    }
+
+    if (n->isLeaf()) {
+        leafNodes.insert(n);
+    }
+    else {
+        internalNodes.insert(n);
+    }
+    nodes.insert(n);
+    postOrderSequence.push_back(n);
+
+}
+
+void RbTopology::getDownpassSequence() {
+
+    postOrderSequence.clear();
+    getDownpassSequence(base);
+
+}
+
+void RbTopology::getDownpassSequence(RbNode* n) {
+
+    const std::set<RbNode*>& children = n->getChildren();
+    for (std::set<RbNode*>::iterator it=children.begin(); it!=children.end(); it++) {
+        fillNodeSets(*it);
+    }
+    postOrderSequence.push_back(n);
+
+}
+
+void RbTopology::getDownpassSequence(RbNode* n, std::vector<RbNode*>& seq) {
+
+    const std::set<RbNode*>& children = n->getChildren();
+    for (std::set<RbNode*>::iterator it=children.begin(); it!=children.end(); it++) {
+        fillNodeSets(*it);
+    }
+    seq.push_back(n);
 
 }
 
@@ -81,8 +132,8 @@ void RbTopology::fillNodeSets() {
  * @returns      the number of RbNodes in the tree
  *
  */
-int RbTopology::getNumberOfRbNodes(void) {
-	return RbNodes.size();
+int RbTopology::getNumberOfNodes(void) {
+	return nodes.size();
 }
 
 /**
@@ -94,138 +145,146 @@ int RbTopology::getNumberOfRbNodes(void) {
  *
  */
 int RbTopology::getNumberOfLeaves(void) {
-	return leafRbNodes.size();
+	return leafNodes.size();
 }
 
 /**
- * @brief get number of internal RbNodes
+ * @brief get number of internal nodes
  *
- * This function returns the number of internal RbNodes of the tree.
+ * This function returns the number of internal nodes of the tree.
  *
- * @returns      the number of internal RbNodes
+ * @returns      the number of internal nodes
  *
  */
-int RbTopology::getNumberOfInternalRbNodes(void) {
-	return internalRbNodes.size();
+int RbTopology::getNumberOfInternalNodes(void) {
+	return internalNodes.size();
 }
 
 /**
- * @brief get RbNode at position i in post-order traversal
+ * @brief get node at position i in post-order traversal
  *
- * This function returns the RbNode at position i in post-order traversal of the tree.
+ * This function returns the node at position i in post-order traversal of the tree.
  *
- * @param i          the position of the RbNode
+ * @param i          the position of the node
  * @returns          RbNode at position i of the post-order traversal
  *
  */
-RbNode* RbTopology::getPostOrderRbNode(int i) {
+RbNode* RbTopology::getPostOrderNode(int i) {
 	return postOrderSequence[i];
 }
 
 /**
- * @brief get root RbNode
+ * @brief get root node
  *
- * This function returns the root RbNode.
+ * This function returns the root node.
  *
- * @returns      the root RbNode of the tree
+ * @returns      the root node of the tree
  *
  */
-RbNode* RbTopology::getRoot(void) {
-	return root;
+RbNode* RbTopology::getBaseNode(void) {
+	return base;
 }
 
 /**
- * @brief get RbNode at position i
+ * @brief get node at position i
  *
- * This function returns the RbNode at position i. The ordering can be arbitrary but remains constant as long as the RbNodes are not changed.
+ * This function returns the node at position i. The ordering can be arbitrary but remains constant as long as the nodes are not changed.
  *
- * @param i          the position of the RbNode
- * @returns          the RbNode at position i
+ * @param i          the position of the node
+ * @returns          the node at position i
  *
  */
-RbNode* RbTopology::getRbNode(int i) {
-	return RbNodes[i];
+RbNode* RbTopology::getNode(int i) {
+    int idx = 0;
+    for (std::set<RbNode*>::iterator it=nodes.begin(); it!=nodes.begin(); it++) {
+        if (idx == i) {
+            return *it;
+        }
+        idx++;
+    }
+
+    return NULL;
 }
 
 /**
- * @brief get set of RbNodes
+ * @brief get set of nodes
  *
- * This function returns the set of RbNodes.
+ * This function returns the set of nodes.
  *
- * @returns      the set of RbNodes
+ * @returns      the set of nodes
  */
-std::vector<RbNode*>& RbTopology::getRbNodeSet(void) {
-	return RbNodes;
+std::set<RbNode*>& RbTopology::getNodeSet(void) {
+	return nodes;
 }
 
 /**
- * @brief get set of leaf RbNodes
+ * @brief get set of leaf nodes
  *
- * This function the set of leaf RbNodes.
+ * This function the set of leaf nodes.
  *
- * @returns      the set of leaf RbNodes
+ * @returns      the set of leaf nodes
  *
  */
-std::vector<RbNode*>& RbTopology::getLeafSet(void) {
-	return leafRbNodes;
+std::set<RbNode*>& RbTopology::getLeafSet(void) {
+	return leafNodes;
 }
 
 /**
- * @brief get set of internal RbNodes
+ * @brief get set of internal nodes
  *
- * This function returns the set of internal RbNodes.
+ * This function returns the set of internal nodes.
  *
- * @returns      the set of internal RbNodes
+ * @returns      the set of internal nodes
  */
-std::vector<RbNode*>& RbTopology::getInternalRbNodesSet(void) {
-	return internalRbNodes;
+std::set<RbNode*>& RbTopology::getInternalNodesSet(void) {
+	return internalNodes;
 }
 
 /**
- * @brief add a new RbNode to the RbTopology
+ * @brief add a new node to the RbTopology
  *
- * This function adds a new RbNode to the set.
+ * This function adds a new node to the set.
  *
- * @param        the RbNode to add to the sets
+ * @param        the node to add to the sets
  */
-void RbTopology::addRbNode(RbNode* n){
+void RbTopology::addNode(RbNode* n){
 	//check if it is a leaf RbNode
 	if (n->isLeaf()){
-		leafRbNodes.push_back(n);
+		leafNodes.insert(n);
 	}
 	else {
-		internalRbNodes.push_back(n);
+		internalNodes.insert(n);
 	}
 
 	//add the RbNode to the set of all RbNodes
-	RbNodes.push_back(n);
+	nodes.insert(n);
 
 	//recreate the post-order indexing
 	//TODO
 }
 
 /**
- * @brief add a new RbNode to the RbTopology
+ * @brief add a new node to the RbTopology
  *
- * This function adds a new RbNode to the set.
+ * This function adds a new node to the set.
  *
- * @param        the RbNode to add to the sets
+ * @param        the node to add to the sets
  */
 void RbTopology::addSubtree(RbNode* n){
-	//check if it is a leaf RbNode
+	//check if it is a leaf node
 	if (n->isLeaf()){
-		leafRbNodes.push_back(n);
+		leafNodes.insert(n);
 	}
 	else {
-		internalRbNodes.push_back(n);
+		internalNodes.insert(n);
 		//add each child recursively
-		for (std::vector<RbNode*>::iterator it=n->getChildren().begin() ; it < n->getChildren().end(); it++ ){
+		for (std::set<RbNode*>::iterator it=n->getChildren().begin() ; it != n->getChildren().end(); it++ ){
 			addSubtree(*it);
 		}
 	}
 
 	//add the RbNode to the set of all RbNodes
-	RbNodes.push_back(n);
+	nodes.insert(n);
 
 	//recreate the post-order indexing
 	//TODO
@@ -238,44 +297,40 @@ void RbTopology::addSubtree(RbNode* n){
  *
  * @param        the RbNode to add to the sets
  */
-void RbTopology::setRoot(RbNode* n){
-	root = n;
+void RbTopology::setBaseNode(RbNode* n){
+	base = n;
 
 	//TODO need to consider if we want to recreate here the whole tree automatically
 }
 
+bool RbTopology::isBaseNode(RbNode* n){
+    base == n;
+
+}
+
 /**
- * @brief add a new RbNode to the RbTopology
+ * @brief add a new node to the RbTopology
  *
- * This function adds a new RbNode to the set.
+ * This function adds a new node to the set.
  *
- * @param        the RbNode to add to the sets
+ * @param        the node to add to the sets
  */
-void RbTopology::removeRbNode(RbNode* n){
-	//check if it is a leaf RbNode
+void RbTopology::removeNode(RbNode* n){
+	//check if it is a leaf node
 		if (n->isLeaf()){
 			// remove n
-			for (std::vector<RbNode*>::iterator it=leafRbNodes.begin() ; it < leafRbNodes.end(); it++ ){
-				if (*it == n){
-					leafRbNodes.erase(it);
-					break;
-				}
-			}
+			nodes.erase(n);
 		}
 		else {
 			//remove each child recursively
-			for (std::vector<RbNode*>::iterator it=n->getChildren().begin() ; it < n->getChildren().end(); it++ ){
+			for (std::set<RbNode*>::iterator it=n->getChildren().begin() ; it != n->getChildren().end(); it++ ){
 				removeSubtree(*it);
 			}
+			leafNodes.erase(n);
 		}
 
-		//remove the RbNode to the set of all RbNodes
-		for (std::vector<RbNode*>::iterator it=RbNodes.begin() ; it < RbNodes.end(); it++ ){
-			if (*it == n){
-				RbNodes.erase(it);
-				break;
-			}
-		}
+		//remove the node from the set of all nodes
+		nodes.erase(n);
 
 		//recreate the post-order indexing
 		//TODO
@@ -292,36 +347,81 @@ void RbTopology::removeSubtree(RbNode* n){
 	//check if it is a leaf RbNode
 	if (n->isLeaf()){
 		// remove n
-		for (std::vector<RbNode*>::iterator it=leafRbNodes.begin() ; it < leafRbNodes.end(); it++ ){
-			if (*it == n){
-				leafRbNodes.erase(it);
-				break;
-			}
-		}
+	    leafNodes.erase(n);
 	}
 	else {
 		//remove each child recursively
-		for (std::vector<RbNode*>::iterator it=n->getChildren().begin() ; it < n->getChildren().end(); it++ ){
+		for (std::set<RbNode*>::iterator it=n->getChildren().begin() ; it != n->getChildren().end(); it++ ){
 			removeSubtree(*it);
 		}
 
 		// remove n
-		for (std::vector<RbNode*>::iterator it=internalRbNodes.begin() ; it < internalRbNodes.end(); it++ ){
-			if (*it == n){
-				internalRbNodes.erase(it);
-				break;
-			}
-		}
+		internalNodes.erase(n);
 	}
 
-	//remove the RbNode to the set of all RbNodes
-	for (std::vector<RbNode*>::iterator it=RbNodes.begin() ; it < RbNodes.end(); it++ ){
-		if (*it == n){
-			RbNodes.erase(it);
-			break;
-		}
-	}
+	nodes.erase(n);
 
 	//recreate the post-order indexing
 	//TODO
+}
+
+bool RbTopology::equals(const RbObject* obj) const {
+    return (this == obj);
+}
+
+const StringVector& RbTopology::getClass(void) const {
+    rbClass;
+}
+
+void RbTopology::print(std::ostream& o) const {
+    o << "Tree Topology" << std::endl;
+}
+
+void RbTopology::printValue(std::ostream& o) const {
+//  o << "Unrooted Tree" << std::endl;
+}
+
+std::string RbTopology::toString(void) const {
+    std::string tmp = "Tree Topology";
+    return tmp;
+}
+
+RbObject& RbTopology::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const RbTopology& x = dynamic_cast<const RbTopology&> (obj);
+
+        RbTopology& y = (*this);
+        y = x;
+        return y;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const RbTopology& x = dynamic_cast<const RbTopology&> (*(obj.convertTo(RbNames::Topology::name)));
+
+            RbTopology& y = (*this);
+            y = x;
+            return y;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::Topology::name);
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+RbTopology& RbTopology::operator=(const RbTopology& obj) {
+
+    nodes.clear();
+    internalNodes.clear();
+    leafNodes.clear();
+    postOrderSequence.clear();
+
+    *base = *(obj.base);
+    fillNodeSets(base);
+
+    return (*this);
 }

@@ -1,9 +1,12 @@
-#include "RbNode.h"
+
+#include "RbBitset.h"
 #include "RbComplex.h"
-#include "RbObject.h"
+#include "RbException.h"
+#include "RbNames.h"
+#include "RbNode.h"
+#include "StringVector.h"
 
-#include <string>
-
+const StringVector RbNode::rbClass = StringVector(RbNames::Node::name) + RbComplex::rbClass;
 
 /**
  * @brief default constructor
@@ -33,7 +36,7 @@ RbNode::RbNode(const RbNode &n) : RbComplex() {
 	// deep copy for all children
 	for (int i=0; i<n.getNumberChildren(); i++){
 	    RbNode* c = n.getChild(i);
-		children.push_back((RbNode*) c->clone());
+		children.insert((RbNode*) c->clone());
 	}
 
 }
@@ -53,7 +56,7 @@ RbNode::RbNode(int idx) : RbComplex() {
  *
  * @param n      the RbNode to copy
  */
-RbNode::RbNode(RbNode* p, std::vector<RbNode*> c) : RbComplex() {
+RbNode::RbNode(RbNode* p, std::set<RbNode*>& c) : RbComplex() {
 	parent = p;
 	children = c;
 }
@@ -85,17 +88,39 @@ RbObject* RbNode::clone() const {
  * @param c           the stream where to print to
  *
  */
-void RbNode::print(std::ostream &c) const {
+std::string RbNode::toString(void) const {
 
-	c << name << "(";
+	std::string tmp = RbNames::Node::name + "(";
 
 	// deep print for all children
 
-	for (int i=0 ; i < children.size(); i++ ){
-		children[i]->print(c);
+	for (std::set<RbNode*>::iterator it=children.begin(); it!=children.end(); it++ ){
+	    tmp += (*it)->toString();
 	}
 
-	c << std::endl;
+	return tmp + ")";
+}
+
+/**
+ * @brief print function
+ *
+ * This function prints this object.
+ *
+ * @see RbObject.print()
+ * @param c           the stream where to print to
+ *
+ */
+void RbNode::print(std::ostream &c) const {
+
+    c << RbNames::Node::name << "(";
+
+    // deep print for all children
+
+    for (std::set<RbNode*>::iterator it=children.begin(); it!=children.end(); it++ ){
+        (*it)->print(c);
+    }
+
+    c << std::endl;
 }
 
 /**
@@ -132,15 +157,9 @@ void RbNode::resurrect(const RbDumpState& x){
  * @param o           the object to compare to
  *
  */
-bool RbNode::operator ==(const RbObject& o) const {
+bool RbNode::equals(const RbObject* o) const {
 
-	if (typeid(RbNode) == typeid(o)){
-		// we are from the same type, which is perfect :)
-		RbNode& tmp = ((RbNode&)o);
-		return (*this) == tmp;
-	}
-
-	return false;
+	return this == o;
 }
 
 /**
@@ -151,50 +170,9 @@ bool RbNode::operator ==(const RbObject& o) const {
  * @param o           the object to compare to
  *
  */
-bool RbNode::operator ==(const RbNode& n) const {
-	// check the parents
-	if (!((*parent) == (*n.getParent()))){
-		return false;
-	}
+bool RbNode::equals(const RbNode* n) const {
 
-	// check the number of children and parameters
-	if (parameters.size() != n.getNumberParameter() || children.size() != n.getNumberChildren()){
-		return false;
-	}
-
-	for (int i=0; i < children.size(); i++ ){
-		RbNode& my_i = *children[i];
-		if (!(my_i == (*n.getChild(i)))){
-			return false;
-		}
-	}
-
-	// deep print for all parameters
-	for (int i=0 ; i < parameters.size(); i++ ){
-		RbDataType& my_i = *parameters[i];
-		if (!(my_i == (*n.getParameter(i)))){
-			return false;
-		}
-	}
-
-	return true;
-}
-
-/**
- * @brief Get parameters at position index
- *
- * This function searches the vector of parameters of the RbNode and returns the element at position index.
- *
- * @param index      the position of the parameter to return
- * @returns          the parameter at the position index. If no such index exists, it return NULL.
- *
- */
-RbDataType* RbNode::getParameter(int index) const {
-	if (parameters.size() <= index){
-		return NULL;
-	}
-
-	return parameters[index];
+	return n == this;
 }
 
 /**
@@ -207,6 +185,17 @@ RbDataType* RbNode::getParameter(int index) const {
  */
 RbNode* RbNode::getParent() const {
 	return parent;
+}
+
+RbNode* RbNode::getChild(int i) const {
+    int idx = 0;
+    for (std::set<RbNode*>::iterator it=children.begin(); it!=children.end(); it++) {
+        if (idx == i) {
+            return (*it);
+        }
+        idx++;
+    }
+    return NULL;
 }
 
 /**
@@ -224,7 +213,7 @@ void RbNode::setParent(RbNode* p){
 
 void RbNode::removeChild(RbNode* c) {
 
-	children.remove(c);
+	children.erase(c);
 }
 
 void RbNode::removeParent(RbNode* p) {
@@ -242,4 +231,47 @@ void RbNode::removeParent(RbNode* p) {
 bool RbNode::isLeaf() const {
 //	return (children == NULL || children.size() == 0);
 	return (children.size() == 0);
+}
+
+RbObject& RbNode::operator=(const RbObject& obj) {
+
+    try {
+        // Use built-in fast down-casting first
+        const RbNode& x = dynamic_cast<const RbNode&> (obj);
+
+        RbNode& sv = (*this);
+        sv = x;
+        return sv;
+    } catch (std::bad_cast & bce) {
+        try {
+            // Try converting the value to an argumentRule
+            const RbNode& x = dynamic_cast<const RbNode&> (*(obj.convertTo(RbNames::Node::name)));
+
+            RbNode& sv = (*this);
+            sv = x;
+            return sv;
+        } catch (std::bad_cast & bce) {
+            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::Node::name);
+            throw e;
+        }
+    }
+
+    // dummy return
+    return (*this);
+}
+
+RbNode& RbNode::operator=(const RbNode& o) {
+
+    *parent = *(o.parent);
+
+    // assign all children
+    children.clear();
+    const std::set<RbNode*>& cs = o.getChildren();
+    for (std::set<RbNode*>::iterator it=cs.begin(); it!=cs.end(); it++){
+        children.insert((RbNode*)(*it)->clone());
+    }
+
+    index = o.index;
+    *taxonBipartition = *(o.taxonBipartition);
+    return (*this);
 }

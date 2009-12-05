@@ -51,8 +51,8 @@ class ArgumentRule : public RbObject {
         // Regular functions
         std::string         getLabel() const { return label; }                  //!< Get label of argument
         std::string         getType() const { return type; }                    //!< Get type of argument
-        virtual bool        isArgValid(const RbObject* val) const;              //!< Is val a valid argument?
-        virtual std::string         toString(void) const;                                 //!< General info on object
+        bool        isArgValid(const RbObject* val) const;              //!< Is val a valid argument?
+        std::string         toString(void) const;                                 //!< General info on object
 
     protected:
         std::string         label;          //!< Label of argument

@@ -29,27 +29,32 @@
 #include "RbDumpState.h"
 #include "RbObject.h"
 
+class RbBitset;
+
 class RbNode : public RbComplex{
 
 public:
+        static const StringVector   rbClass;            //!< Static class attribute
 
 	RbNode(void);
 	RbNode(const RbNode& n);
 	RbNode(int idx);
-	RbNode(RbNode* p, std::vector<RbNode*> c);
+	RbNode(RbNode* p, std::set<RbNode*>& c);
 
     // implemented abstract/virtual functions from base classes
 	RbObject*  clone() const;
 	void       print(std::ostream &c) const;                            //!< Print the value to ostream c
 	void       dump(std::ostream& c);                              //!< Dump to ostream c
 	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+	const StringVector& getClass() const { return rbClass; }        //!< Get class
+	std::string         toString(void) const;                                 //!< General info on object
 
 	// overloaded operators
-	bool       operator==(const RbObject& o) const;                      //!< Comparison
-	bool       operator==(const RbNode& n) const;                          //!< Comparison
+	bool       equals(const RbObject* o) const;                      //!< Comparison
+	bool       equals(const RbNode* n) const;                          //!< Comparison
 
 	// member functions
-	std::vector<RbNode*> &getChildren(void) { return children; }
+	const std::set<RbNode*>& getChildren(void) const { return children; }
 	int getNumberChildren(void) const { return children.size(); }
 	void clearChildren(void) { children.clear(); }
 
@@ -58,7 +63,7 @@ public:
 	void setIndex(int i) { index = i; }
 	void	addChild(RbNode* c) { children.insert(c); }
 	void	addParent(RbNode* p) { parent = p; }
-	RbNode* getChild(int i) const { return children[i]; }
+	RbNode* getChild(int i) const;
 	RbNode* getParent() const;                                  //!< retrieves the parent RbNode
 //	RbNode* getChild();                                         //!< retrieves the child RbNode
 	void 	removeChild(RbNode* c);
@@ -67,6 +72,10 @@ public:
 	void setParent(RbNode* p);                                  //!< sets the parent RbNode to p
 	bool isLeaf(void) const;                                  //!< checks if this RbNode is a leaf RbNode
 
+
+    // overloaded operators
+    RbObject&       operator=(const RbObject& o);
+    RbNode&         operator=(const RbNode& ar);
 
 private:
 	std::set<RbNode*> children;

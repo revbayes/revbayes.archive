@@ -49,13 +49,13 @@ int main(int argc, char **argv) {
 	seed1.push_back(1);
 	seed1.push_back(2);
 	RandomNumberGenerator* rng = new RandomNumberGenerator(seed1);
-    StochasticNode* snSigma = new StochasticNode( new DistExponential( cnSigmaPrior ),rng);
-    StochasticNode* snMu = new StochasticNode( new DistUniform( cnMuPriorLower, cnMuPriorUpper ),rng);
+    StochasticNode* snSigma = new StochasticNode( new DistExponential( cnSigmaPrior, rng) );
+    StochasticNode* snMu = new StochasticNode( new DistUniform( cnMuPriorLower, cnMuPriorUpper, rng) );
 
 	std::vector<DAGNode*> sn;
 	for (int i=0; i<10; i++)
 		{
-		StochasticNode* s = new StochasticNode(new DistNormal(snMu, snSigma), rng);
+		StochasticNode* s = new StochasticNode(new DistNormal(snMu, snSigma, rng) );
 		sn.push_back( s );
 		s->clamp( x[i] );
 		}

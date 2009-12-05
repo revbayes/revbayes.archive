@@ -15,11 +15,14 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Distribution.h"
+#include "DistDirichlet.h"
 #include "DistExponential.h"
 #include "DistNormal.h"
 #include "DistUniform.h"
+#include "DistUnifUnrootedTopology.h"
 #include "MoveSlidingWindow.h"
 #include "MoveScale.h"
+#include "RbCharacterMatrix.h"
 #include "RbDouble.h"
 #include "RbInt.h"
 #include "RbFunction_readCharacterMatrix.h"
@@ -32,7 +35,7 @@
 #include "RbObject.h"
 #include "RbException.h"
 #include "RbString.h"
-#include "RbCharacterMatrix.h"
+#include "RbVector.h"
 #include "StochasticNode.h"
 #include "RandomNumberGenerator.h"
 
@@ -57,15 +60,16 @@ int main(int argc, char **argv) {
     ConstantNode* alnNode = new ConstantNode( aln );
  
     // create the transition matrix
-    StochasticNode* treetop = new StochasticNode(new DistUnifUnrootedTree(aln->getNumTaxa()), rng);
+    ConstantNode* nTaxa = new ConstantNode(new RbInt(aln->getNumTaxa()));
+    StochasticNode* treetop = new StochasticNode(new DistUnifUnrootedTopology(nTaxa, rng));
 
-#	if 0
     ConstantNode* b = new ConstantNode(new RbVector(1,1,1,1));
     StochasticNode* baseFreq = new StochasticNode(new DistDirichlet(), rng);
     ConstantNode* a = new ConstantNode(new RbVector(1,1,1,1,1,1));
     StochasticNode* rates = new StochasticNode(new DistDirichlet(a), rng);
     DeterministicNode* q = new DeterministicNode(new RbFunction_GTR(baseFreq, rates));
 
+#   if 0
     ConstantNode* lambda = new ConstantNode(new RbDouble(10.0));
     RbContainer* branches = new RbContainer();
     for (int i=0; i<aln.size()*2-2; i++) {

@@ -29,33 +29,44 @@
 class RbTopology : public RbComplex {
 
 public:
+    static const StringVector   rbClass;            //!< Static class attribute
 
 	virtual ~RbTopology(void);                                                             //!< return RbNodes to RbNode factory?
-//	RbObject* clone();                                                           //!< deep copy of this topology
+	RbObject* clone() const;                                                           //!< deep copy of this topology
+
+	bool                equals(const RbObject* o) const;                      //!< Equals comparison
+	const StringVector& getClass(void) const;                                   //!< Get class
+	void                print(std::ostream& o) const;                    //!< Print value (for user)
+	void                printValue(std::ostream& o) const;                    //!< Print value (for user)
+	std::string         toString(void) const;                                 //!< General info on object
+
 
 	int getNumberOfNodes(void);                                                  //!< get number of nodes in the tree
 	int getNumberOfLeaves(void);                                                 //!< get number of leaf nodes
-	int getNumberOFInternalNodes(void);                                          //!< get number of internal nodes
+	int getNumberOfInternalNodes(void);                                          //!< get number of internal nodes
 	RbNode* getPostOrderNode(int i);                                               //!< get node at position i in post-order traversal
 	RbNode* getBaseNode(void);                                                         //!< get root node
 	RbNode* getNode(int i);                                                        //!< get node at position i
 	RbNode* getInternalNode(int i);                                                //!< get internal node at position i
 	RbNode* getLeafNode(int i);                                                    //!< get leaf node at position i
-	std::vector<RbNode*>& getNodeSet(void);                                        //!< get set of nodes
-	std::vector<RbNode*>& getLeafSet(void);                                        //!< get set of leaf node
-	std::vector<RbNode*>& getInternalNodesSet(void);                               //!< get set of internal nodes
+	std::set<RbNode*>& getNodeSet(void);                                        //!< get set of nodes
+	std::set<RbNode*>& getLeafSet(void);                                        //!< get set of leaf node
+	std::set<RbNode*>& getInternalNodesSet(void);                               //!< get set of internal nodes
 	bool isBaseNode(RbNode* n);
 	void addNode(RbNode* n);                                                       //!< add a node to the topology
 	void addSubtree(RbNode* n);                                                    //!< add a whole subtree rooted at node n to the topology
 	void setBaseNode(RbNode* n);                                                       //!< set the root of the tree
 	void removeNode(RbNode* n);                                                    //!< remove a node to the topology
 	void removeSubtree(RbNode* n);                                                 //!< remove a whole subtree rooted at node n to the topology
-	
+
+    // overloaded operators
+    RbObject&                   operator=(const RbObject& o);
+    RbTopology&                 operator=(const RbTopology& o);
 protected:
 	RbTopology(void);                                                              //!< default constructor
 	RbTopology(RbNode* bn);
 //	RbTopology(int n);                                                             //!< not sure anymore what this was for
-//	RbTopology(RbTopology &t);                                                       //!< copy constructor
+	RbTopology(const RbTopology &t);                                                       //!< copy constructor
 //	RbTopology(RbNode* r);                                                           //!< constructor with root as parameter
 
 	std::set<RbNode*> nodes;                                                    //!< vector of pointers to all nodes of tree
@@ -65,7 +76,10 @@ protected:
 	RbNode* base;                                                                  //!< the root node of the tree
 	
 	private:
-	void fillNodeSets(void);
+	void fillNodeSets(RbNode* n);
+	void getDownpassSequence();
+    void getDownpassSequence(RbNode* n);
+    void getDownpassSequence(RbNode* n, std::vector<RbNode*>& seq);
 };
 
 #endif

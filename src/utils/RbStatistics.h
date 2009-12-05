@@ -121,7 +121,7 @@ namespace RbStatistics {
 	namespace UniformUnrootedTopology {
 	double pdf(int n, RbUnrootedTopology* x);                                  /*!< Uniform(a,b) probability density */
 	double lnPdf(int n, RbUnrootedTopology* x);                                /*!< Log of the Uniform(a,b) probability density */
-	RbUnrootedTopology rv(RandomNumberGenerator* rng, int n);
+	RbUnrootedTopology* rv(RandomNumberGenerator* rng, int n);
 	}
 }
 

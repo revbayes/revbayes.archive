@@ -47,6 +47,11 @@ namespace RbNames {
 	const std::string		beta	= "beta";
 	}
 	
+
+    namespace Branch {
+        const std::string       name    = "branch";
+        }
+
     namespace CharacterMatrix {
     const std::string       name    = "characterMatrix";
     }
@@ -106,6 +111,10 @@ namespace RbNames {
 	const std::string    name    = "model";
 	}
 
+	namespace Node {
+	    const std::string    name    = "node";
+	    }
+
 #pragma mark Poisson Distribution
 
 	namespace Poisson {
@@ -151,6 +160,10 @@ namespace RbNames {
     const std::string       name    = "object";
     }
     
+    namespace Topology {
+        const std::string       name    = "topology";
+        }
+
 #pragma mark Undefined Data Type
 
     namespace Undefined {
