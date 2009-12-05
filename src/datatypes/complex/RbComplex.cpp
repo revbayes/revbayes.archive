@@ -58,23 +58,35 @@ RbComplex::~RbComplex() {
 }
 
 
-/**
- * @brief Get method
- *
- * This function gets the named method. It simply asks the global
- * workspace for the method.
- *
- * @param name  The name of the method
- * @returns     A pointer to the method
- *
- */
-//const RbFunction* RbComplex::getMethod(const std::string& name) const {
-//
-//	std::map<std::string, RbFunction*>::const_iterator it = methods.find( name );
-//	if ( it != methods.end() )
-//		return it->second;
-//	return NULL;
-//}
+/** Execute method with preset args: map to builtin or to function object if class has the method */
+RbObject* RbComplex::executeMethod(const std::string& funcId) {
+
+    throw (RbException("No member method '" + funcId + "'"));
+	return NULL;
+}
+
+
+/** Execute method: map to builtin or to function object if class has the method */
+RbObject* RbComplex::executeMethod(const std::string& funcId, std::vector<Argument>& args) {
+
+    throw (RbException("No member method '" + funcId + "'"));
+	return NULL;
+}
+
+
+/** Does the named method exist? */
+bool RbComplex::existsMethod(const std::string& funcId, std::vector<Argument>& args) const {
+
+	return false;
+}
+
+
+/** Set arguments of method */
+void RbComplex::setArguments(const std::string& funcId, std::vector<Argument>& args) {
+
+    throw (RbException("No member method '" + funcId + "'"));
+}
+
 
 /**
  * @brief Print object info
@@ -170,6 +182,7 @@ bool RbComplex::addMember(const std::string& name, const std::string& t, RbObjec
 		RbException e("Error in adding member. Member \"" + name + "\" already exists.");
 		throw(e);
 		}
+    return true;
 }
 
 void RbComplex::deleteMember(const std::string& name) {

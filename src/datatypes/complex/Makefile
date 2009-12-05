@@ -7,13 +7,13 @@ CXXFLAGS    = -O3 -ffast-math -Wall
 
 CFLAGS = $(CXXFLAGS)
 
-all: RbString.o MethodDescr.o
+all: RbString.o RbComplex.o
 
 RbString.o: RbString.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbString.cpp
 
-MethodDescr.o: MethodDescr.cpp
-	$(CXX) $(INCLUDES) $(CXXFLAGS) -c MethodDescr.cpp
+RbComplex.o: RbComplex.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbComplex.cpp
 
 clean: 
 	rm -f *.o

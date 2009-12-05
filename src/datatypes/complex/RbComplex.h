@@ -50,20 +50,19 @@ class RbComplex : public RbObject {
         virtual void                setMember(const std::string& name, RbObject* val);  //!< Set member variable
 
         // Member method functions
-        //virtual bool                checkArguments(const std::string& funcId, std::vector<Argument>& args) const;
-        //virtual RbObject*           executeMethod(const std::string& funcId);
-        //virtual RbObject*           executeMethod(const std::string& funcId, std::vector<Argument>& args);
-        //bool                        existsMethod(const std::string& funcId, std::vector<Argument>& args) const;
+        virtual RbObject*             executeMethod(const std::string& funcId);
+        virtual RbObject*             executeMethod(const std::string& funcId, std::vector<Argument>& args);
+        bool                          existsMethod(const std::string& funcId, std::vector<Argument>& args) const;
         //std::vector<FunctionDescr>  getMethodDescr(const std::string& funcId) const;      //!< Get method descr
-        //MethodTable*                getMethodTable(void) const { return methodTable; }  //!< Get method table
-        //virtual void                setArguments(const std::string& funcId, std::vector<Argument>& args) const;
+        //FunctionTable*              getMethodTable(void) const { return methodTable; }  //!< Get method table
+        virtual void                  setArguments(const std::string& funcId, std::vector<Argument>& args);
 
     protected:
             RbComplex();        //!< Make it impossible to create objects of this class
 
         std::map<std::string, RbObject*>       members;         //!< Member variables
         std::map<std::string, std::string>     type;            //!< Member types
-        //MethodTable*                         methodTable;     //!< Description of member functions
+        //FunctionTable*                       methodTable;     //!< Table of member functions
 };
 
 #endif
