@@ -74,7 +74,7 @@ class SyntaxElement {
 
         // Regular functions
         virtual DAGNode*            getDAGNode(Frame* frame=NULL) const = 0;    //!< Convert to DAG node
-        virtual RbObject*           getValue(Frame* frame=NULL) = 0;            //!< Get semantic value
+        virtual RbObject*           getValue(Frame* frame=NULL) const = 0;      //!< Get semantic value
         virtual bool                isConstExpr() const { return false; }       //!< Is subtree constant expr?
 
     protected:

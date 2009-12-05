@@ -1,38 +1,64 @@
+/**
+ * @file
+ * This file contains the implementation of StringVector, a complex type
+ * used to hold string vectors.
+ *
+ * @brief Implementation of StringVector
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-09-08, version 1.0
+ * @extends RbComplex
+ *
+ * $Id$
+ */
+
 #include "StringVector.h"
-#include "RbObject.h"
-#include "RbComplex.h"
-#include "RbDouble.h"
 #include "RbException.h"
+#include "RbNames.h"
+
 #include <iostream>
 
-const StringVector StringVector::rbClass = StringVector("StringVector");
 
+/** Vector of class names */
+const StringVector StringVector::rbClass = StringVector(RbNames::StringVector::name) + RbComplex::rbClass;
+
+
+/** Construct empty vector of length n */
 StringVector::StringVector(int n) {
 
     value.resize(n);
 }
 
-StringVector::StringVector(std::string s) {
+/** Construct vector with one string x */
+StringVector::StringVector(std::string x) {
 
-    value.push_back(s);
+    value.push_back(x);
 }
 
-StringVector::StringVector(int n, std::string v) {
+/** Construct vector with n strings x */
+StringVector::StringVector(int n, std::string x) {
 
     for (int i = 0; i < n; i++)
-        value.push_back(v);
+        value.push_back(x);
 }
 
-StringVector::StringVector(const StringVector& v) {
+/** Copy constructor */
+StringVector::StringVector(const StringVector& x) {
 
-    value = v.value;
+    value = x.value;
 }
 
-StringVector::StringVector(std::vector<std::string> &v) {
+/** Constructor from std::string vector */
+StringVector::StringVector(std::vector<std::string>& x) {
 
-    value = v;
+    value = x;
 }
 
+/** Base class assignment; this probably slices content */
 RbObject& StringVector::operator=(const RbObject& obj) {
 
     try {
@@ -60,32 +86,33 @@ RbObject& StringVector::operator=(const RbObject& obj) {
     return (*this);
 }
 
-StringVector& StringVector::operator=(const StringVector& sv) {
 
-    value = sv.value;
+/** Regular assignment */
+StringVector& StringVector::operator=(const StringVector& x) {
+
+    if (this != &x)
+        value = x.value;
+
     return (*this);
 }
 
-StringVector& StringVector::operator+(const StringVector& sv) const {
+/** Concatenation with operator+ */
+StringVector StringVector::operator+(const StringVector& x) const {
 
-    std::vector<std::string> tempVec;
-    for (int i = 0; i < value.size(); i++)
-        tempVec.push_back(value[i]);
-    for (int i = 0; i < sv.value.size(); i++)
-        tempVec.push_back(sv.value[i]);
-    StringVector* newSv = new StringVector(tempVec);
-    return *newSv;
+    StringVector tempVec = *this;
+    for (size_t i = 0; i < x.value.size(); i++)
+        tempVec.push_back(x.value[i]);
+
+    return tempVec;
 }
 
-/**
- * @brief Pointer-based equal comparison
- *
- * Compares equality of this object to another RbObject.
- *
- * @param obj   The object of the comparison
- * @returns     Result of comparison
- *
- */
+/** Clone function */
+RbObject* StringVector::clone() const {
+
+    return (RbObject*)(new StringVector(*this));
+}
+
+/** Pointer-based equals comparison */
 bool StringVector::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
@@ -93,14 +120,14 @@ bool StringVector::equals(const RbObject* obj) const {
     if (x != NULL)
         return value == x->value;
 
-    // Try converting the value to a double
-    x = dynamic_cast<const StringVector*> (obj->convertTo("StringVector"));
+    // Try converting the value to a string vector
+    x = dynamic_cast<const StringVector*> (obj->convertTo(getType()));
     if (x == NULL)
         return false;
 
     bool result = true;
     if (value.size() == x->value.size()) {
-        for (int i = 0; i < value.size(); i++)
+        for (size_t i = 0; i < value.size(); i++)
             result = result && (value[i] == x->value[i]);
     } else
         result = false;
@@ -108,34 +135,29 @@ bool StringVector::equals(const RbObject* obj) const {
     return result;
 }
 
-RbObject* StringVector::clone(void) const {
-
-    StringVector* x = new StringVector(*this);
-    return (RbObject*) x;
-}
-
+/** Print value for user */
 void StringVector::printValue(std::ostream& o) const {
 
-    o << "Complex object of type " << getClass()[0] << std::endl;
-
-    for (std::map<std::string, RbObject*>::const_iterator i = members.begin(); i
-            != members.end(); i++) {
-        o << "." << i->first << " = ";
-        o << getMember(i->first)->briefInfo();
-        o << std::endl;
+    o << "[";
+    for (std::vector<std::string>::const_iterator i = value.begin(); i!= value.end(); i++) {
+        if (i != value.begin())
+            o << ", ";
+        o << "\"" << (*i) << "\"";
     }
-    o << toString() << std::endl;
+    o <<  "]";
 }
 
+/** Complete info about object */
 std::string StringVector::toString(void) const {
 
-    std::string tempStr = "";
-    for (std::vector<std::string>::const_iterator i = value.begin(); i
-            != value.end(); i++) {
-        tempStr += (*i);
-        if (i + 1 != value.end())
-            tempStr += ":";
+    std::string tempStr = "StringVector; value = [";
+    for (std::vector<std::string>::const_iterator i = value.begin(); i!= value.end(); i++) {
+        if (i != value.begin())
+            tempStr += ", ";
+        tempStr += ("\"" + (*i) + "\"");
     }
+    tempStr += "]";
+
     return tempStr;
 }
 

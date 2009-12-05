@@ -45,7 +45,7 @@ class SyntaxConstant : public SyntaxElement {
 
         // Regular functions
         DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
-        RbObject*       getValue(Frame* frame=NULL);                //!< Get semantic value
+        RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
         bool            isConstExpr() const;                        //!< Is subtree constant expr?
 
     protected:

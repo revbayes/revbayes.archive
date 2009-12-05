@@ -20,7 +20,6 @@
 #include <string>
 #include <ostream>
 
-//class Environment;
 //class RbDumpState;
 class StringVector;
 
@@ -35,9 +34,10 @@ class RbObject {
         virtual std::string         briefInfo(void) const { return "unknown object"; }        //!< Brief info about object
         virtual RbObject*           clone(void) const = 0;                                    //!< Clone object
         virtual bool                equals(const RbObject* o) const = 0;                      //!< Equals comparison
-        virtual const StringVector& getClass(void) const=0;                                   //!< Get class
+        virtual const StringVector& getClass(void) const=0;                                   //!< Get class vector
+        std::string                 getType(void) const;                                      //!< Get type
         bool                        isType(const std::string t) const;                        //!< Is the object of type t?
-        void                        print(std::ostream& o) const;                         //!< Print complete object info
+        void                        print(std::ostream& o) const;                             //!< Print complete object info
         virtual void                printValue(std::ostream& o) const = 0;                    //!< Print value (for user)
         virtual std::string         toString(void) const = 0;                                 //!< General info on object
 

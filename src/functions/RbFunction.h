@@ -57,11 +57,10 @@ class RbFunction :  public RbObject {
         static const StringVector   rbClass;            //!< Static class attribute
 
         // Regular functions
-
         std::vector<ArgumentRule>   getArgumentRules() const { return argRules; }       //!< Get argument rules
         std::string                 getReturnType() const { return returnType; }        //!< Get return type
-        RbObject*                   execute(const std::vector<Argument>& args);         //!< Execute function
         RbObject*                   execute();                          //!< Execute using processed args
+        RbObject*                   execute(const std::vector<Argument>& args);         //!< Execute function
         void                        setArguments(const std::vector<Argument>& args);    //!< Process and set args
 
     protected:

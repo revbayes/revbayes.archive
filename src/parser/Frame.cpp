@@ -60,10 +60,49 @@ Frame::~Frame() {
 bool Frame::addVariable(const std::string& name, RbObject* variable) {
 
     std::pair<std::map<std::string, RbObject*>::iterator, bool> retVal;
-
     retVal = variableTable.insert(std::pair<std::string, RbObject*>(name, variable));
     
     return retVal.second;
+}
+
+
+/**
+ * @brief Erase variable
+ *
+ * Erase a variable from the variable table. The table manages any
+ * objects stored in it so we need to delete the value here.
+ *
+ * @param name      Name of variable
+ * @return          Returns true on success, false on failure
+ *
+ */
+bool Frame::eraseVariable(const std::string& name) {
+
+    int numErased = variableTable.erase(name);
+
+    return numErased != 0;
+}
+
+
+/**
+ * @brief Exists variable
+ *
+ * Check if a variable exists.
+ *
+ * @param name      Name of variable
+ * @return          Returns true if the variable exists
+ *
+ */
+bool Frame::existsVariable(const std::string& name) const {
+
+    if (variableTable.find(name) == variableTable.end()) {
+        if (parentFrame != NULL)
+            return parentFrame->existsVariable(name);
+        else
+            return false;
+    }
+
+    return true;
 }
 
 

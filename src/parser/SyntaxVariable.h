@@ -47,7 +47,7 @@ class SyntaxVariable : public SyntaxElement {
         // Regular functions
         DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
         const RbString* getIdentifier() const;                      //!< Get identifier
-        RbObject*       getValue(Frame* frame=NULL);                //!< Get semantic value
+        RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
 
     protected:
         RbString*                       identifier;     //!< The name of the variable

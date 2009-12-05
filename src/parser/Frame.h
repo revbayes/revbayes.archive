@@ -44,7 +44,7 @@ class Frame {
         // Regular functions
 	    bool        addVariable(const std::string& name, RbObject* variable);   //!< Add a variable
         bool        eraseVariable(const std::string& name);                     //!< Erase a variable
-        bool        existsVariable(const std::string& name);                    //!< Does variable exist?
+        bool        existsVariable(const std::string& name) const;              //!< Does variable exist?
         RbObject*   getVariable(const std::string& name);                       //!< Get a variable
 	
     protected:

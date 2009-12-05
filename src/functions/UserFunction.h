@@ -26,7 +26,7 @@
 
 #include "ArgumentRule.h"
 #include "DAGNode.h"
-#include "Environment.h"
+#include "Frame.h"
 #include "RbFunction.h"
 #include "RbObject.h"
 #include "SyntaxElement.h"
@@ -55,8 +55,8 @@ class UserFunction :  public RbFunction {
         virtual RbObject*           execute(std::vector<DAGNode*> arguments);       //!< Execute function
 
     protected:
-        std::vector<SyntaxElement*> code;                   //!< The code
-        Environment*                environment;            //!< The evaluation environment
+        std::vector<SyntaxElement*> code;             //!< The code
+        Frame*                      frame;            //!< The innermost frame of the evaluation environment
 };
 
 #endif
