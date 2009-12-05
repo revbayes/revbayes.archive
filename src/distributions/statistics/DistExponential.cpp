@@ -18,7 +18,7 @@
 
 const StringVector DistExponential::rbClass = StringVector(RbNames::Exponential::name) + Distribution::rbClass;
 
-DistExponential::DistExponential(DAGNode* l) {
+DistExponential::DistExponential(DAGNode* l, RandomNumberGenerator* r) : Distribution(r) {
 
 	lambda = l;
 	returnType = RbNames::Double::name;
@@ -27,7 +27,7 @@ DistExponential::DistExponential(DAGNode* l) {
 	parents.insert(lambda);
 }
 
-DistExponential::DistExponential(const DistExponential& d) {
+DistExponential::DistExponential(const DistExponential& d) : Distribution(d) {
 
 	lambda = d.lambda;
 	returnType = d.returnType;
@@ -95,10 +95,10 @@ double DistExponential::lnPdf(RbObject* obs) {
 	return RbStatistics::Exponential::lnPdf(l, x);
 }
 
-RbObject* DistExponential::rv(RandomNumberGenerator* r) {
+RbObject* DistExponential::rv(void) {
 
     double l = ((RbDouble*) lambda->getValue())->getValue();
-	double u = RbStatistics::Exponential::rv(r,l);
+	double u = RbStatistics::Exponential::rv(rng,l);
 	RbDouble* x = new RbDouble(u);
 
 	return (RbObject*) x;

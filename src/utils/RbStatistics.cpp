@@ -1,6 +1,7 @@
 #include "RbMath.h"
 #include "RbConstants.h"
 #include "RbStatistics.h"
+#include "RbUnrootedTopology.h"
 #include "RandomNumberGenerator.h"
 #include <cmath>
 #include <iostream>
@@ -971,6 +972,86 @@ double RbStatistics::Uniform::rv(RandomNumberGenerator* rng, double a, double b)
 
 	double u = rng->nextDouble();
 	return (a + (b-a)*u);
+}
+
+#pragma mark Uniform Unrooted Topology Distribution
+
+/*!
+ * This function calculates the probability density 
+ * for a uniform(a,b) random variable.
+ *
+ * \brief Uniform(a,b) probability density.
+ * \param a is the lower bound on the uniform. 
+ * \param b is the upper bound on the uniform. 
+ * \return Returns the probability density.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::UniformUnrootedTopology::pdf(int n, RbUnrootedTopology* x) {
+
+	return 1.0;
+}
+
+/*!
+ * This function calculates the natural log of the probability density 
+ * for a uniform(a,b) random variable.
+ *
+ * \brief Natural log of uniform(a,b) probability density.
+ * \param a is the lower bound on the uniform. 
+ * \param b is the upper bound on the uniform. 
+ * \return Returns the natural log of the probability density.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::UniformUnrootedTopology::lnPdf(int n, RbUnrootedTopology* x) {
+
+	return 0.0;
+}
+
+
+RbUnrootedTopology RbStatistics::UniformUnrootedTopology::rv(RandomNumberGenerator* rng, int n) {
+
+		if (n <= 1)
+			{
+			throw RbException("The tree is too small to bother to construct");
+			}
+			
+		// construct unrooted tree of three tips
+		int nextIntNode = n;
+		RbNode* rn = new RbNode(nextIntNode++);
+		std::vector<RbNode*> availableNodes;
+		int minNumTaxa = 3;
+		if (n < minNumTaxa)
+			minNumTaxa = n;
+		for (int i=0; i<minNumTaxa; i++)
+			{
+			RbNode *p = new RbNode(i);
+			p->setParent(rn);
+			rn->addChild(p);
+			availableNodes.push_back( p );
+			}
+
+	// add the remaining tips
+	for (int i=4; i<=n; i++)
+		{
+		int u = rng->nextInt( availableNodes.size() );
+		RbNode* p = availableNodes[u];
+		RbNode* r = p->getParent();
+		RbNode* newTip = new RbNode(i);
+		RbNode* newInt = new RbNode(nextIntNode++);
+		r->removeChild( p );
+		r->addChild( newInt );
+		newInt->setParent( r );
+		newInt->addChild( p );
+		newInt->addChild( newTip );
+		p->setParent( newInt );
+		newTip->setParent( newInt );
+		availableNodes.push_back( newInt );
+		availableNodes.push_back( newTip );
+		}
+
+		// construct the topology object
+	RbUnrootedTopology t = RbUnrootedTopology(rn);
+			
+	return t;
 }
 
 #undef MAXK

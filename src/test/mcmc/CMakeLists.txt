@@ -28,5 +28,6 @@ add_executable(testGTR \\
 ../../datatypes/complex/RbBitset.cpp ../../functions/model/RbFunction_readCharacterMatrix.cpp ../../datatypes/complex/RbString.cpp \\
 ../../functions/Argument.cpp ../../functions/ArgumentRule.cpp ../../functions/RbFunction.cpp ../../main/RbMonitor.cpp \\
 ../../utils/RbStatistics.cpp ../../utils/RbNames.h ../../utils/RbMath.cpp ../../datatypes/model/RbModel.cpp ../../datatypes/RbUndefined.cpp \\
-../../datatypes/RbUnrootedTopology.cpp ../../distributions/phylogenetic/DistUnifUnrootedTopology.cpp \\
+../../datatypes/model/RbUnrootedTopology.cpp ../../distributions/phylogenetic/DistUnifUnrootedTopology.cpp \\
+../../datatypes/model/RbTopology.cpp ../../datatypes/model/RbBranch.cpp ../../datatypes/model/RbNode.cpp\\
 ../../inference/mcmc/RbMcmc.cpp testGTR.cpp)

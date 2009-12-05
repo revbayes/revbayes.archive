@@ -18,14 +18,14 @@
 
 const StringVector DistUniform::rbClass = StringVector(RbNames::Uniform::name) + Distribution::rbClass;
 
-DistUniform::DistUniform(DAGNode* l, DAGNode* u) {
+DistUniform::DistUniform(DAGNode* l, DAGNode* u, RandomNumberGenerator* r) : Distribution(r) {
 
 	lower = l;
 	upper = u;
 	returnType = RbNames::Double::name;
 }
 
-DistUniform::DistUniform(const DistUniform& d) {
+DistUniform::DistUniform(const DistUniform& d) : Distribution(d) {
 
 	lower = d.lower;
 	upper = d.upper;
@@ -92,10 +92,10 @@ double DistUniform::lnPdf(RbObject* obs) {
 	return RbStatistics::Normal::lnPdf(l,u,x);
 }
 
-RbObject* DistUniform::rv(RandomNumberGenerator* r) {
+RbObject* DistUniform::rv() {
     double lw = ((RbDouble*) lower->getValue())->getValue();
     double up = ((RbDouble*) upper->getValue())->getValue();
-    double u = RbStatistics::Uniform::rv(r, lw, up);
+    double u = RbStatistics::Uniform::rv(rng, lw, up);
 	RbDouble* x = new RbDouble(u);
 	return (RbObject*)x;
 }

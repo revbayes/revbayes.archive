@@ -17,7 +17,7 @@ class DistExponential : public Distribution {
 public:
         static const StringVector   rbClass;            //!< Static class attribute
 
-	DistExponential(DAGNode* l);
+	DistExponential(DAGNode* l, RandomNumberGenerator* r);
 	DistExponential(const DistExponential& d);
 	virtual ~DistExponential();
         RbObject*           clone(void) const;                                    //!< Clone object
@@ -33,7 +33,7 @@ public:
 
 	double lnPdf(RbObject* o); //!< Ln probability density
 	double pdf(RbObject* o); //!< Probability density
-	RbObject* rv(RandomNumberGenerator* r);
+	RbObject* rv();
 
 private:
 	DAGNode* lambda;

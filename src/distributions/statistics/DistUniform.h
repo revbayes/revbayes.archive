@@ -19,7 +19,7 @@ class DistUniform : public Distribution {
 public:
         static const StringVector   rbClass;            //!< Static class attribute
 
-        DistUniform(DAGNode* l, DAGNode* u);
+        DistUniform(DAGNode* l, DAGNode* u, RandomNumberGenerator* r);
         DistUniform(const DistUniform& d);
         virtual ~DistUniform();
 
@@ -33,7 +33,7 @@ public:
         // overloaded operators
         RbObject&			operator=(const RbObject& o);
         DistUniform&        operator=(const DistUniform& o);
-		RbObject* rv(RandomNumberGenerator* r);
+		RbObject* rv();
 
 	double lnPdf(RbObject* obs); //!< Ln probability density
 	double pdf(RbObject* obs); //!< Probability density

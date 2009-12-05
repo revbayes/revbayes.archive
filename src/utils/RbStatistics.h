@@ -22,6 +22,7 @@
 #include <vector>
 
 class RandomNumberGenerator;
+class RbUnrootedTopology;
 
 namespace RbStatistics {
 
@@ -115,6 +116,12 @@ namespace RbStatistics {
 	double cdf(double a, double b, double x);                                  /*!< Uniform(a,b) cumulative probability */
 	double quantile(double a, double b, double p);                             /*!< Uniform(a,b) quantile */
 	double rv(RandomNumberGenerator* rng, double a, double b);
+	}
+	
+	namespace UniformUnrootedTopology {
+	double pdf(int n, RbUnrootedTopology* x);                                  /*!< Uniform(a,b) probability density */
+	double lnPdf(int n, RbUnrootedTopology* x);                                /*!< Log of the Uniform(a,b) probability density */
+	RbUnrootedTopology rv(RandomNumberGenerator* rng, int n);
 	}
 }
 

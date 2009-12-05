@@ -18,14 +18,14 @@
 
 const StringVector DistNormal::rbClass = StringVector(RbNames::Normal::name) + Distribution::rbClass;
 
-DistNormal::DistNormal(DAGNode* m, DAGNode* s) {
+DistNormal::DistNormal(DAGNode* m, DAGNode* s, RandomNumberGenerator* r) : Distribution(r) {
 
 	sigma = s;
 	mu    = m;
 	returnType = RbNames::Double::name;
 }
 
-DistNormal::DistNormal(const DistNormal& d) {
+DistNormal::DistNormal(const DistNormal& d) : Distribution(d) {
 
 	sigma = d.sigma;
 	mu    = d.mu;
@@ -91,11 +91,11 @@ double DistNormal::lnPdf(RbObject* obs) {
 	return lnpdf;
 }
 
-RbObject* DistNormal::rv(RandomNumberGenerator* r) {
+RbObject* DistNormal::rv(void) {
 	double m = ((RbDouble*) mu->getValue())->getValue();
 	double s = ((RbDouble*) sigma->getValue())->getValue();
 
-	double u = RbStatistics::Normal::rv(r,m,s);
+	double u = RbStatistics::Normal::rv(rng,m,s);
 	RbDouble* x = new RbDouble(u);
 	return (RbObject*)x;
 }
