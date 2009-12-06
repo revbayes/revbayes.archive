@@ -28,10 +28,13 @@
 class IntVector : public RbComplex {
 
     public:
+            // Constructors and destructor
+            IntVector() : RbComplex() {}                //!< Default constructor (empty vector)
             IntVector(int x);                           //!< Construct vector with one int x
 	        IntVector(int n, int x);                    //!< Construct vector with n ints x
 	        IntVector(std::vector<int>& x);             //!< Constructor from int vector
 
+        // Static string vector describing class hierarchy
         static const StringVector   rbClass;            //!< Static class attribute
 
         // Basic utility functions
@@ -39,20 +42,23 @@ class IntVector : public RbComplex {
         bool                equals(const RbObject* obj) const;              //!< Equals comparison
         const StringVector& getClass() const { return rbClass; }            //!< Get class
         void                printValue(std::ostream& o) const;              //!< Print value (for user)
-        std::string         toString(void) const;                           //!< General info on object
+        std::string         toString(void) const;                           //!< Complete info about object
 
-        // Overloaded operators
-        RbObject&           operator=(const RbObject& o) { return (*this); }//!< TODO: remove from all RbObject
-	    int&                operator[](int i) { return value[i]; }          //!< Indexing
-	    const int&          operator[](int i) const { return value[i]; }    //!< Const indexing
-
-        // Regular functions
-	    int                 get(int i) const { return value[i]; }           //!< Get element
+        // Overloaded operators and built-in functions
+	    int&                operator[](int i) { return value[i]; }          //!< Index op allowing change
+	    const int&          operator[](int i) const { return value[i]; }    //!< Const index op
 	    void                push_back(int x) { value.push_back(x); }        //!< Add element
-	    int                 size(void) { return value.size(); }             //!< Get size
+	    size_t              size() const { return value.size(); }           //!< Get size
+
+        // Element access functions for parser
+	    RbObject*               getElement(const IntVector& index) const;       //!< Get element (a copy)
+        int                     getElementDim() const { return 1; }             //!< Get dimensions
+        const std::string&      getElementType() const;                         //!< Get element type
+        void                    setElement(const IntVector& index, RbObject* val);  //!< Set element   
 
     private:
 	    std::vector<int>    value;      //!< Vector of values
 };
 
 #endif
+

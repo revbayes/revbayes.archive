@@ -18,13 +18,14 @@
 
 #include "IntVector.h"
 #include "RbException.h"
+#include "RbInt.h"
 #include "RbNames.h"
 #include "StringVector.h"
 
 #include <iostream>
 #include <sstream>
 
-/** Vector of class names */
+/** Class vector describing type of object */
 const StringVector IntVector::rbClass = StringVector(RbNames::IntVector::name) + RbComplex::rbClass;
 
 
@@ -55,21 +56,20 @@ RbObject* IntVector::clone() const {
     return (RbObject*)(new IntVector(*this));
 }
 
+
 /** Pointer-based equals comparison */
 bool IntVector::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
     const IntVector* x = dynamic_cast<const IntVector*> (obj);
     if (x != NULL) {
-        if (value.size() == x->value.size()) {
-            for (size_t i = 0; i < value.size(); i++) {
-                if (value[i] != x->value[i])
-                    return false;
-            }
-            return true;
-        }
-        else
+        if (value.size() != x->value.size())
             return false;
+        for (size_t i = 0; i < value.size(); i++) {
+            if (value[i] != x->value[i])
+                return false;
+        }
+        return true;
     }
 
     // Try converting the value to an int vector
@@ -89,17 +89,59 @@ bool IntVector::equals(const RbObject* obj) const {
     return result;
 }
 
+
+/** Get element for parser */
+RbObject* IntVector::getElement(const IntVector& index) const {
+
+    if (index.size() != 0)
+        throw (RbException("Index error"));
+    if (index[0] >= (int)value.size() || index[0] < 0)
+        throw (RbException("Index out of bound"));
+
+    return new RbInt(value[index[0]]);
+}
+
+
+/** Get element type for parser */
+const std::string& IntVector::getElementType() const {
+
+    return (RbNames::RbInt::name);
+}
+
+
+/** Set element for parser; we do not allow resize (no appropriate default int) */
+void IntVector::setElement(const IntVector& index, RbObject* val) {
+
+    if (index.size() != 0)
+        throw (RbException("Index error"));
+    if (index[0] < 0 || index[0] >= (int)value.size())
+        throw (RbException("Index out of bound"));
+
+    RbInt* x = dynamic_cast<RbInt*>(val);
+    RbInt* y = NULL;
+    if (x == NULL) {
+        x = y = (RbInt*)(val->convertTo(RbNames::RbInt::name));
+        if (x == NULL)
+            throw (RbException("Incompatible type"));
+    }
+
+    value[index[0]] = *x;
+    delete y;
+}
+
+
 /** Print value for user */
 void IntVector::printValue(std::ostream& o) const {
 
-    o << "[";
+    o << "{ ";
     for (std::vector<int>::const_iterator i = value.begin(); i!= value.end(); i++) {
         if (i != value.begin())
             o << ", ";
-        o << "\"" << (*i) << "\"";
+        o << (*i);
     }
-    o <<  "]";
+    o <<  " }";
 }
+
 
 /** Complete info about object */
 std::string IntVector::toString(void) const {
