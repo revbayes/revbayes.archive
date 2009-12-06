@@ -34,7 +34,7 @@ class RbString : public RbComplex {
         // Basic utility functions
 	    RbObject*               clone() const;                          //!< Copy
 	    bool                    equals(const RbObject* obj) const;      //!< Equals comparison
-	    const StringVector&     getClass() const { return rbClass; }    //!< Get class
+	    const StringVector&     getClass() const;                       //!< Get class
 	    std::string             getString() const { return value; }     //!< Get string
 	    void                    printValue(std::ostream& o) const;      //!< Print value (for user)
 	    std::string             toString(void) const;                   //!< General info on object

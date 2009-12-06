@@ -34,13 +34,10 @@ class IntVector : public RbComplex {
 	        IntVector(int n, int x);                    //!< Construct vector with n ints x
 	        IntVector(std::vector<int>& x);             //!< Constructor from int vector
 
-        // Static string vector describing class hierarchy
-        static const StringVector   rbClass;            //!< Static class attribute
-
         // Basic utility functions
         RbObject*           clone() const;                                  //!< Clone object
         bool                equals(const RbObject* obj) const;              //!< Equals comparison
-        const StringVector& getClass() const { return rbClass; }            //!< Get class
+        const StringVector& getClass() const;                               //!< Get class
         void                printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string         toString(void) const;                           //!< Complete info about object
 

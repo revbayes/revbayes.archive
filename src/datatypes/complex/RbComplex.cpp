@@ -17,18 +17,16 @@
 #include <map>
 #include <string>
 #include <ostream>
-#include <iostream>
+#include <sstream>
 #include <vector>
 
 #include "RbComplex.h"
 #include "RbException.h"
 #include "RbFunction.h"
+#include "RbNames.h"
 #include "RbObject.h"
 #include "StringVector.h"
 
-
-
-const StringVector RbComplex::rbClass = StringVector("Complex") + RbObject::rbClass;
 
 /**
  * @brief Constructor
@@ -55,6 +53,14 @@ RbComplex::~RbComplex() {
     members.clear();
     type.clear();
 //    methodTable.clear();
+}
+
+
+/** Get class vector describing type of object */
+const StringVector& RbObject::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::RbComplex::name) + RbObject::getClass();
+    return rbClass;
 }
 
 
@@ -91,13 +97,15 @@ void RbComplex::setArguments(const std::string& funcId, std::vector<Argument>& a
 /**
  * @brief Print object info
  *
- * Print object info to ostream, including type, member variables
+ * Print object info to string, including type, member variables
  * and their values, and member functions.
  *
  * @param o The ostream for printing
  *
  */
-void RbComplex::print(std::ostream& o) const {
+std::string RbComplex::toString() const {
+
+    std::ostringstream o;
 
     for (std::map<std::string, RbObject*>::const_iterator i=members.begin(); i!=members.end(); i++) {
         o << "." << i->first << " = ";
@@ -109,6 +117,8 @@ void RbComplex::print(std::ostream& o) const {
 //    for (std::map<std::string, RbFunction*>::iterator i=methods.begin(); i!=methods.end(); i++) {
 //    	i->second->print(o);
 //    }
+
+    return o.str();
 }
 
 

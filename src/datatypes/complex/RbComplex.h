@@ -33,14 +33,13 @@ class StringVector;
 class RbComplex : public RbObject {
 
     public:
-        static const StringVector   rbClass;            //!< Static class attribute
-
             virtual ~RbComplex();       //!< Delete member variables 
 
         // Basic utility functions
-        //virtual bool                equals(const RbComplex* o) const;       //!< Equals comparison
-		virtual void                print(std::ostream& o) const;
-		virtual void                printValue(std::ostream& o) const;
+        //virtual bool              equals(const RbComplex* o) const;       //!< Equals comparison
+        virtual const StringVector& getClass() const;                       //!< Get class vector
+		virtual void                printValue(std::ostream& o) const;      //!< Print value (for user)
+        virtual std::string         toString() const = 0;                   //!< Complete info about object
 
         // Member variable functions
         virtual bool                addMember(const std::string& name, const std::string& type, RbObject* v);

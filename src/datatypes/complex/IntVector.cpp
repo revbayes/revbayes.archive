@@ -25,9 +25,6 @@
 #include <iostream>
 #include <sstream>
 
-/** Class vector describing type of object */
-const StringVector IntVector::rbClass = StringVector(RbNames::IntVector::name) + RbComplex::rbClass;
-
 
 /** Construct vector with one int x */
 IntVector::IntVector(int x) {
@@ -54,6 +51,14 @@ IntVector::IntVector(std::vector<int>& x) {
 RbObject* IntVector::clone() const {
 
     return (RbObject*)(new IntVector(*this));
+}
+
+
+/** Get class vector describing type of object */
+const StringVector& IntVector::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::IntVector::name) + RbComplex::getClass();
+    return rbClass;
 }
 
 

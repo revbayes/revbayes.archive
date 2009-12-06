@@ -38,9 +38,6 @@ class StringVector : public RbComplex {
 	        StringVector(std::vector<std::string>& x);      //!< Constructor from string vector
 	        virtual ~StringVector(void) {}                  //!< Virtual destructor, just in case
 
-        // Static string vector describing class hierarchy
-        static const StringVector   rbClass;                //!< Static class attribute
-
         // Basic utility functions
         RbObject*               clone() const;                                  //!< Clone object
         bool                    equals(const RbObject* obj) const;              //!< Equals comparison
