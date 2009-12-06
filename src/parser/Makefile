@@ -1,7 +1,7 @@
 srcdir      = .
 RM          = rm
 CXX         = g++
-INCLUDES    = -I. -I../main -I../dag -I../datatypes -I../datatypes/complex -I../functions -I../utils -I../datatypes/primitive
+INCLUDES    = -I. -I../main -I../dag -I../datatypes -I../datatypes/complex -I../functions -I../utils -I../datatypes/primitive -I../distributions
 CXXFLAGS    = -O3 -ffast-math -Wall
 BISON       = bison
 FLEX        = flex

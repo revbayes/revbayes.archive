@@ -96,7 +96,7 @@ DAGNode* SyntaxLabeledExpr::getDAGNode(Frame* frame) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbObject* SyntaxLabeledExpr::getValue(Frame* frame) {
+RbObject* SyntaxLabeledExpr::getValue(Frame* frame) const {
 
     return NULL;
 }

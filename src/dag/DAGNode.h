@@ -109,7 +109,6 @@ class DAGNode : public RbObject {
         virtual void           		touchAffectedParents() = 0;                        //!< Mark affected nodes recursively
 
         // overloaded operators
-        virtual RbObject&           operator=(const RbObject& o) = 0;
         virtual DAGNode&            operator=(const DAGNode& o) = 0;
         
         

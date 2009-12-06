@@ -26,8 +26,10 @@
 #include "RbException.h"
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
+#include "RbNames.h"
 
-const StringVector ConstantNode::rbClass = StringVector("const_node") + DAGNode::rbClass;
+/** String vector describing class inheritance */
+const StringVector ConstantNode::rbClass = StringVector(RbNames::ConstantNode::name) + DAGNode::rbClass;
 
 /**
  * @brief ConstantNode constructor from value
@@ -61,9 +63,10 @@ ConstantNode::ConstantNode(const ConstantNode &d)
  *
  */
 RbObject* ConstantNode::clone(void) const {
-    ConstantNode* x = new ConstantNode(*this);
-	return (RbObject*) x;
+
+    return (ConstantNode*)(new ConstantNode(*this));
 }
+
 
 /**
  * @brief Thouch affected nodes

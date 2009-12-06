@@ -40,7 +40,7 @@ class SyntaxLabeledExpr : public SyntaxElement {
         // Regular functions
         const RbString* getLabel() const { return label; }          //!< Return label    
         DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
-        RbObject*       getValue(Frame* frame=NULL);                //!< Get semantic value
+        RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
 
     protected:
         RbString*       label;          //!< The label of the argument

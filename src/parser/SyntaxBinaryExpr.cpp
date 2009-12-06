@@ -106,7 +106,7 @@ DAGNode* SyntaxBinaryExpr::getDAGNode(Frame* frame) const {
  * We simply look up the function and calculate the value.
  *
  */
-RbObject* SyntaxBinaryExpr::getValue(Frame* frame) {
+RbObject* SyntaxBinaryExpr::getValue(Frame* frame) const {
 
     // Package the arguments
     std::vector<Argument> args;

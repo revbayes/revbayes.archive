@@ -172,6 +172,10 @@ namespace RbNames {
     const std::string       name    = "object";
     }
     
+    namespace RbFunction {
+    const std::string       name    = "function";
+    }
+
     namespace RbString {
     const std::string       name    = "string";
     }
@@ -209,16 +213,16 @@ namespace RbNames {
     const std::string       fileName    = "alignmentFileName";
     }
     
-    namespace String {
-    const std::string       name    = "string";
-    }
-
     namespace StringVector {
     const std::string       name    = "stringVector";
     }
 
     namespace IntVector {
     const std::string       name    = "intVector";
+    }
+
+    namespace RbComplex {
+    const std::string       name    = "complex";
     }
 
 }

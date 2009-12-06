@@ -101,7 +101,7 @@ DAGNode* SyntaxUnaryExpr::getDAGNode(Frame* frame) const {
  * We simply look up the function and calculate the value.
  *
  */
-RbObject* SyntaxUnaryExpr::getValue(Frame* frame) {
+RbObject* SyntaxUnaryExpr::getValue(Frame* frame) const {
 
     // Package the argument
     std::vector<Argument> arg;

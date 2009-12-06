@@ -48,7 +48,7 @@ class SyntaxFunctionCall : public SyntaxElement {
 
         // Regular functions
         DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
-        RbObject*       getValue(Frame* frame=NULL);                //!< Get semantic value
+        RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
 
     protected:
         std::list<SyntaxLabeledExpr*>*  arguments;      //!< The arguments passed to the function

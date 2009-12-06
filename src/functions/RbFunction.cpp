@@ -21,10 +21,10 @@
 #include "ConstantNode.h"
 #include "RbException.h"
 #include "RbFunction.h"
+#include "RbNames.h"
 #include "RbUndefined.h"
 #include "StringVector.h"
 
-const StringVector RbFunction::rbClass = StringVector("function") + RbObject::rbClass;
 
 /** Basic constructor */
 RbFunction::RbFunction(void) {
@@ -37,6 +37,15 @@ RbFunction::RbFunction(const RbFunction &fn)
     : argRules(fn.argRules), returnType(fn.returnType) {
     
 }
+
+
+/** Get class vector describing type of object */
+const StringVector& RbFunction::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::RbFunction::name) + RbObject::getClass();
+    return rbClass;
+}
+
 
 RbObject* RbFunction::execute(const std::vector<Argument>& args) {
 

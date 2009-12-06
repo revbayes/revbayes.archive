@@ -128,7 +128,7 @@ DAGNode* SyntaxFunctionCall::getDAGNode(Frame* formal) const {
  * We look up the function or member function and calculate the value.
  *
  */
-RbObject* SyntaxFunctionCall::getValue(Frame* formal) {
+RbObject* SyntaxFunctionCall::getValue(Frame* formal) const {
 
     // Package arguments
     std::vector<Argument> args;

@@ -20,6 +20,7 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
+#include "IntVector.h"
 #include "RbInt.h"
 #include "RbList.h"
 #include "RbNames.h"
@@ -147,17 +148,66 @@ const RbString* SyntaxVariable::getIdentifier() const {
 }
 
 
+/** Get index */
+IntVector SyntaxVariable::getIndex(Frame* frame) const {
+
+    IntVector theIndex;
+
+    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
+
+        // Get index
+        RbObject* indexObj = (*i)->getValue(frame);
+        if (indexObj == NULL) {
+            throw (RbException("Erroneous index expression for " + std::string(*identifier)));
+        }
+        RbInt*  intIndex = dynamic_cast<RbInt*>(indexObj);
+        if (indexObj == NULL) {
+            throw (RbException("Index expression for " + std::string(*identifier) + " does not evaluat to int"));
+        }
+        if (*intIndex < 1) {
+            throw (RbException("Index expression for " + std::string(*identifier) + " smaller than 1"));
+        }
+
+        // Get value corresponding to index
+        theIndex.push_back(*intIndex);
+
+        // Discard temporary int
+        delete intIndex;
+    }
+
+    // Return index
+    return theIndex;
+}
+
+
+/** Return nice representation of the syntax element */
+std::string SyntaxVariable::getFullName(Frame* frame) const {
+
+    std::ostringstream theName;
+    if (variable != NULL)
+        theName << variable->getFullName(frame) << ".";
+
+    theName << std::string(*identifier);
+
+    IntVector theIndex = getIndex(frame);
+    for (int i=0; i<theIndex.size(); i++)
+        theName << "[" << theIndex[i] << "]";
+
+    return theName.str();
+}
+
+
 /**
  * @brief Get semantic value
  *
  * The variable can either be a member or a base variable. In the latter
  * case, its "variable" member is NULL. If the element is a base variable,
- * we get the semantic value of the element by looking it up in the frameiron-
- * ment. If it is a base variable name, we try to find it as a member of the
+ * we get the semantic value of the element by looking it up in the frame.
+ * If it is a member variable name, we try to find it as a member of the
  * "variable" found by another SyntaxVariable element.
  *
  */
-RbObject* SyntaxVariable::getValue(Frame* frame) {
+RbObject* SyntaxVariable::getValue(Frame* frame) const {
 
     // Value pointer
     const RbObject* value = NULL;
@@ -189,27 +239,30 @@ RbObject* SyntaxVariable::getValue(Frame* frame) {
         }
     }
 
-    // Get element if we have element index/indices (list of lists model)
-    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
+    // Get element if we have index/indices (handle both list of lists or container model)
+    IntVector theIndex = getIndex(frame);
+    for (int i=0; i<theIndex.size(); i++) {
 
-        // Check that it is a list object with elements
-        const RbList* listObj = dynamic_cast<const RbList*>(value);
-        if (listObj == NULL) {
-            throw (RbException(*identifier + RbString(" does not have elements ")));
+        // Check that it is an object with elements
+        int dim = value->getElementDim();
+        if (dim == 0) {
+            std::ostringstream o;
+            if (variable != NULL)
+                o << variable->getFullName(frame);
+            o << std::string(*identifier);
+            for (int j=0; j<=i; j++)
+                o << "[" << theIndex[j] << "]";
+            o << " does not have elements";
+            throw (RbException(o.str()));
         }
-            
-        // Get index
-        RbObject* indexObj = (*i)->getValue(frame);
-        if (indexObj == NULL) {
-            throw (RbException("Erroneous index expression of variable " + std::string(*identifier)));
-        }
-        RbInt*  intIndex = dynamic_cast<RbInt*>(indexObj);
-        if (indexObj == NULL) {
-            throw (RbException("Index of variable " + std::string(*identifier) + " does not evaluat to an int"));
-        }
+
+        // Get subindex
+        IntVector subIndex;
+        for (int j=0; i<theIndex.size() && j<dim; i++, j++)
+            subIndex.push_back(theIndex[i]);
 
         // Get value corresponding to index; call getValue to pass through DAGNode
-        value = listObj->getElement(*intIndex);
+        value = value->getElement(subIndex);
         if (value->isType(RbNames::DAGNode::name))
             value = ((DAGNode*)(value))->getValue();
     }

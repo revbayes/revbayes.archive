@@ -54,7 +54,8 @@ class RbFunction :  public RbObject {
     public:
             virtual ~RbFunction(void) {}                //!< Virtual destructor because of virtual functions
 
-        static const StringVector   rbClass;            //!< Static class attribute
+        // Basic utility functions
+        virtual const StringVector& getClass() const;                                   //!< Get class vector 
 
         // Regular functions
         std::vector<ArgumentRule>   getArgumentRules() const { return argRules; }       //!< Get argument rules

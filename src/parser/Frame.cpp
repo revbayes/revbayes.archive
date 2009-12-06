@@ -17,82 +17,71 @@
  */
 
 #include "Frame.h"
+#include "RbContainer.h"
 
-/**
- * @brief Constructor from parent frame
- *
- * The constructor initializes parentFrame
- * to the supplied pointer.
- *
- * @param parentEnv     Pointer to the parent frame
- *
- */
+
+/** Constructor from parent frame; default is NULL */
 Frame::Frame(Frame* parentFr) :
     parentFrame(parentFr), variableTable() {
 }
 
 
-/**
- * @brief Destructor
- *
- * All variables are managed by the frame so they
- * should be destroyed here.
- */
-Frame::~Frame() {
+/** Add simple variable object to table */
+void Frame::addVariable(const std::string& name, DAGNode* variable) {
 
-    for (std::map<std::string, RbObject*>::iterator i=variableTable.begin(); i!=variableTable.end(); i++)
-        delete i->second;
+    // Throw an error if the variable exists
+    // Note that we cannot use existsVariable because that function looks in
+    // parent frames recursively, so then we cannot "overload" variable names locally
+    if (variableTable.find(name) != variableTable.end())
+        throw (RbException("Variable " + name + " already exists"));
+
+    ObjectSlot slot = ObjectSlot(variable);
+    variableTable.insert(std::pair<const std::string, ObjectSlot>(name, slot));
 }
 
 
-/**
- * @brief Add variable
- *
- * Add a variable to the variable table. The table manages any
- * objects stored in it so we just store a pointer to the
- * variable and then delete it in the destructor.
- *
- * @param name      Name of variable
- * @param variable  Pointer to the object
- * @return          Returns true on success, false on failure
- *
- */
-bool Frame::addVariable(const std::string& name, RbObject* variable) {
+/** Add container variable object to table */
+void Frame::addVariable(const std::string& name, const IntVector& index, DAGNode* variable) {
 
-    std::pair<std::map<std::string, RbObject*>::iterator, bool> retVal;
-    retVal = variableTable.insert(std::pair<std::string, RbObject*>(name, variable));
-    
-    return retVal.second;
+    // Throw an error if the variable exists
+    // Note that we cannot use existsVariable because that function looks in
+    // parent frames recursively, so then we cannot "overload" variable names locally
+    if (variableTable.find(name) != variableTable.end())
+        throw (RbException("Variable " + name + " already exists"));
+
+    RbContainer* container = new RbContainer(index);
+    container->setElement(index, variable);
+
+    ObjectSlot slot = ObjectSlot(container);
+    variableTable.insert(std::pair<const std::string, ObjectSlot>(name, slot));
 }
 
 
-/**
- * @brief Erase variable
- *
- * Erase a variable from the variable table. The table manages any
- * objects stored in it so we need to delete the value here.
- *
- * @param name      Name of variable
- * @return          Returns true on success, false on failure
- *
- */
-bool Frame::eraseVariable(const std::string& name) {
+/** Add declared but empty slot to table */
+void Frame::addVariable(const std::string& name, const std::string& type, int dim) {
 
-    int numErased = variableTable.erase(name);
+    // Throw an error if the variable exists
+    // Note that we cannot use existsVariable because that function looks in
+    // parent frames recursively, so then we cannot "overload" variable names locally
+    if (variableTable.find(name) != variableTable.end())
+        throw (RbException("Variable " + name + " already exists"));
 
-    return numErased != 0;
+    ObjectSlot slot = ObjectSlot(type, dim);
+    variableTable.insert(std::pair<const std::string, ObjectSlot>(name, slot));
+} 
+
+
+/** Erase variable */
+void Frame::eraseVariable(const std::string& name) {
+
+    if (variableTable.find(name) == variableTable.end())
+        throw (RbException("Variable " + name + " does not exist"));
+
+    variableTable.erase(name);
 }
 
 
-/**
- * @brief Exists variable
- *
- * Check if a variable exists.
- *
- * @param name      Name of variable
- * @return          Returns true if the variable exists
- *
- */
+/** Does variable exist in the environment (current frame and enclosing frames)? */
 bool Frame::existsVariable(const std::string& name) const {
 
     if (variableTable.find(name) == variableTable.end()) {
@@ -106,22 +95,25 @@ bool Frame::existsVariable(const std::string& name) const {
 }
 
 
-/**
- * @brief Get variable
- * 
- * Get a variable in the variable table.
- *
- * @param name  Name of variable
- * @return      Returns pointer to object on success, 
- *
- */
+/** Get declared type of variable */
+std::string Frame::getDeclaredType(const std::string& name) const {
+
+    if (variableTable.find(name) == variableTable.end())
+        throw (RbException("Variable " + name + " does not exist"));
+
+    return variableTable[name].getType();
+}
+
+
+
+/** Get variable */
 RbObject* Frame::getVariable(const std::string& name) {
 
     if (variableTable.find(name) == variableTable.end()) {
         if (parentFrame != NULL)
             return parentFrame->getVariable(name);
         else
-            return NULL;
+            throw (RbException("Variable " + name + " does not exist"));
     }
 
     return variableTable[name];

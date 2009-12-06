@@ -71,9 +71,9 @@ DAGNode* SyntaxConstant::getDAGNode(Frame* frame) const {
 
 
 /** Get semantic value of element */
-RbObject* SyntaxConstant::getValue(Frame* frame) {
+RbObject* SyntaxConstant::getValue(Frame* frame) const {
 
-    return value;
+    return value->clone();
 }
 
 
