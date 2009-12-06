@@ -25,8 +25,18 @@
 #include <sstream>
 
 
+/** Get class vector describing type of object */
+const StringVector& RbObject::getClass() const {
+
+    static StringVector testClass = StringVector(RbNames::RbObject::name) +
+        RbObject::getClass();
+
+    return testClass;
+}
+
+
 /** Class vector describing type of object */
-const StringVector StringVector::rbClass = StringVector(RbNames::StringVector::name) + RbComplex::rbClass;
+const StringVector StringVector::rbClass = StringVector(RbNames::StringVector::name);
 
 
 /** Construct empty vector of length n */

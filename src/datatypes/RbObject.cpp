@@ -24,10 +24,6 @@
 #include <sstream>
 
 
-/** Class vector describing type of object */
-const StringVector RbObject::rbClass = StringVector(RbNames::RbObject::name);
-
-
 /** Brief info about object: use static class attribute */
 std::string RbObject::briefInfo() const {
 
@@ -47,11 +43,26 @@ RbObject* RbObject::convertTo(const std::string& type) const {
 }
 
 
+/** Get class vector describing type of object */
+const StringVector& RbObject::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::RbObject::name);
+    return rbClass;
+}
+
+
 /** Get element */
 RbObject* RbObject::getElement(const IntVector& index) const {
 
     throw (RbException("Object does not have elements"));
     return NULL;    // Dummy return
+}
+
+
+/** Get element length in each dimension */
+const IntVector& RbObject::getElementLength() const {
+
+    throw (RbException("Object does not have elements"));
 }
 
 
