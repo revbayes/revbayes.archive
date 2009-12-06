@@ -153,11 +153,27 @@ namespace RbNames {
 	}
 
     namespace DAGNode {
-    const std::string       name    = "DAGNode";
+    const std::string       name    = "dagNode";
+    }
+
+    namespace ConstantNode {
+    const std::string       name    = "constantNode";
+    }
+
+    namespace StochasticNode {
+    const std::string       name    = "stochasticNode";
+    }
+
+    namespace DeterministicNode {
+    const std::string       name    = "deterministcNode";
     }
 
     namespace RbObject {
     const std::string       name    = "object";
+    }
+    
+    namespace RbString {
+    const std::string       name    = "string";
     }
     
     namespace Topology {
