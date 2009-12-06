@@ -176,6 +176,18 @@ namespace RbNames {
     const std::string       name    = "string";
     }
     
+    namespace RbInt {
+    const std::string       name    = "int";
+    }
+    
+    namespace RbDouble {
+    const std::string       name    = "double";
+    }
+    
+    namespace RbBool {
+    const std::string       name    = "bool";
+    }
+    
     namespace Topology {
         const std::string       name    = "topology";
         }
