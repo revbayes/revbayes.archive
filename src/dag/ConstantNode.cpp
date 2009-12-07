@@ -18,15 +18,16 @@
  */
 
 
-#include "ConstantNode.h"
 #include <iostream>
-#include "DAGNode.h"
 #include <string>
 #include <set>
+#include "ConstantNode.h"
+#include "DAGNode.h"
 #include "RbException.h"
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
 #include "RbNames.h"
+#include "StringVector.h"
 
 
 /**

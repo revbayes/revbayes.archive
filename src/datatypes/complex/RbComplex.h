@@ -35,7 +35,7 @@ class RbComplex : public RbObject {
         //virtual bool                equals(const RbComplex* o) const;             //!< Equals comparison
 		virtual std::string         toString() const;                               //!< Complete info about object
 		virtual void                printValue(std::ostream& o) const;
-		virtual const StringVector& getClass(void) const;                           //!< Get class
+		const StringVector&         getClass(void) const;                           //!< Get class
 
         // Member variable functions
         virtual bool                addMember(const std::string& name, const std::string& type, RbObject* v);

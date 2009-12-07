@@ -28,14 +28,6 @@ RbMove::~RbMove(void){
 }
 
 
-/** Get class vector describing type of object */
-const StringVector& RbMove::getClass() const {
-
-    static StringVector rbClass = StringVector(RbNames::RbMove::name) + RbComplex::getClass();
-    return rbClass;
-}
-
-
 double RbMove::performMove(void) {
 
     nTries++;

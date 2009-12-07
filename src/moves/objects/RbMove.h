@@ -5,10 +5,10 @@
 #include <vector>
 
 #include "RbComplex.h"
-#include "StringVector.h"
 
 class DAGNode;
 class RandomNumberGenerator;
+class StringVector;
 
 class RbMove : public RbComplex {
 
@@ -16,15 +16,13 @@ public:
 
         virtual ~RbMove(void);
 
- 		const StringVector&         getClass(void) const;                                   //!< Get class
-
        void                        acceptMove(void);				// for statistic purposes
         double                      getAcceptanceProbability(void);
         double                      performMove(void);
         void                        rejectMove(void);
 
         // Basic utility functions
-        virtual const StringVector& getClass() const;               //!< Get class vector
+        const StringVector& getClass(void) const;               //!< Get class vector
 
         // overloaded operators
         virtual RbMove&             operator=(const RbMove& o) = 0;

@@ -28,50 +28,57 @@
 
 
 
+/** Default constructor */
 RbFunction_dnorm::RbFunction_dnorm(void) : RbFunction() {
 
 	value = new RbDouble(0.0);
 } 
 
+/** Copy constructor */
 RbFunction_dnorm::RbFunction_dnorm(const RbFunction_dnorm& s) : RbFunction(s) {
     
 	value = new RbDouble(0.0);
 	*value = *s.value;
 }
 
+/** Destructor */
 RbFunction_dnorm::~RbFunction_dnorm(void) {
 
     delete value;
 }
 
+/** Clone */
 RbObject* RbFunction_dnorm::clone(void) const {
 
     RbObject *x = new RbFunction_dnorm( *this );
     return x;
 }
 
+/** Equals: Check equality */
 bool RbFunction_dnorm::equals(const RbObject* o) const {
 
     return false;
 }
 
+/** Get string showing inheritance */
 const StringVector& RbFunction_dnorm::getClass(void) const { 
 
     static StringVector rbClass = StringVector(RbNames::Normal::dname) + RbFunction::getClass();
 	return rbClass;
 }
 
+/** Print value */
 void RbFunction_dnorm::printValue(std::ostream &o) const {
 
     o << value << std::endl;
 }
 
+/** Get string showing inheritance */
 std::string RbFunction_dnorm::toString(void) const {
 
-	char temp[30];
-	sprintf(temp, "%1.6lf", value->getValue());
-	std::string tempStr = temp;
-    return "Value = " + tempStr;
+    std::ostringstream o;
+    o << "Value = " << std::fixed << std::setprecision(6) << value->getValue();
+    return o.str();
 }
 
 void RbFunction_dnorm::dump(std::ostream& c) {

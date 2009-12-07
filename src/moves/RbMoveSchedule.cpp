@@ -45,14 +45,6 @@ bool RbMoveSchedule::equals(const RbObject* obj) const {
 }
 
 
-/** Get class vector describing type of object */
-const StringVector& RbMoveSchedule::getClass() const {
-
-    static StringVector rbClass = StringVector(RbNames::RbMoveSchedule::name) + RbComplex::getClass();
-    return rbClass;
-}
-
-
 void RbMoveSchedule::print(std::ostream& o) const {
     o << "move schedule" << std::endl;
 }
