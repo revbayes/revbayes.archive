@@ -29,6 +29,8 @@ class RbPrimitive : public RbObject {
 
         virtual ~RbPrimitive();                                                          //! Virtual destructor because of virtual functions
 
+        const StringVector& getClass(void) const;        //!< Get class
+
         // Pointer-based comparison -- throw not supported error by default
         virtual bool                lessThan(const RbObject* o) const = 0;                        //!< Less than
 

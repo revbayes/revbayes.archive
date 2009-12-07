@@ -7,10 +7,12 @@
 
 #include "RbException.h"
 #include "RbMoveSchedule.h"
+#include "RbNames.h"
 #include "RandomNumberGenerator.h"
 #include <map>
 
-const StringVector RbMoveSchedule::rbClass = StringVector("moveSchedule") + RbComplex::rbClass;
+
+
 
 RbMoveSchedule::RbMoveSchedule(RandomNumberGenerator* r, double w) {
     rng = r;
@@ -23,6 +25,7 @@ RbMoveSchedule::~RbMoveSchedule() {
 }
 
 void RbMoveSchedule::addMove(RbMove* m, double w) {
+
     sumWeights += w;
     schedule.insert(std::make_pair(w,m));
 }
@@ -30,6 +33,12 @@ void RbMoveSchedule::addMove(RbMove* m, double w) {
 RbObject* RbMoveSchedule::clone() const {
     RbMoveSchedule* x = new RbMoveSchedule(*this);
     return (RbObject*) x;
+}
+
+const StringVector& RbMoveSchedule::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(RbNames::MoveSchedule::name) + RbComplex::getClass();
+	return rbClass;
 }
 
 bool RbMoveSchedule::equals(const RbObject* obj) const {

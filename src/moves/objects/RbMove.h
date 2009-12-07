@@ -14,11 +14,11 @@ class RbMove : public RbComplex {
 
 public:
 
-        static const StringVector   rbClass;            //!< Static class attribute
-
         virtual ~RbMove(void);
 
-        void                        acceptMove(void);				// for statistic purposes
+ 		const StringVector&         getClass(void) const;                                   //!< Get class
+
+       void                        acceptMove(void);				// for statistic purposes
         double                      getAcceptanceProbability(void);
         double                      performMove(void);
         void                        rejectMove(void);

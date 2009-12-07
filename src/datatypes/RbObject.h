@@ -20,47 +20,45 @@
 #include <string>
 #include <ostream>
 
-//class RbDumpState;
 class StringVector;
 class IntVector;
-
 
 class RbObject {
 
     public:
             // Constructors and destructor
-            virtual ~RbObject() {}                      //! Virtual destructor because of virtual functions
+		virtual						~RbObject(void) { }                                 //! Virtual destructor because of virtual functions
 
         // Basic utility functions you HAVE TO override
-        virtual RbObject*           clone() const = 0;                      //!< Clone object
-        virtual bool                equals(const RbObject* x) const = 0;    //!< Equals comparison
-        virtual const StringVector& getClass() const;                       //!< Get class vector
-        virtual void                printValue(std::ostream& o) const = 0;  //!< Print value (for user)
-        virtual std::string         toString() const = 0;                   //!< Complete info about object
+        virtual RbObject*           clone(void) const = 0;                              //!< Clone object
+        virtual bool                equals(const RbObject* x) const = 0;                //!< Equals comparison
+        const StringVector&         getClass(void) const;                               //!< Get class vector
+        virtual void                printValue(std::ostream& o) const = 0;              //!< Print value (for user)
+        virtual std::string         toString(void) const = 0;                           //!< Complete info about object
 
         // Basic utility functions you may want to override
-        virtual std::string         briefInfo() const;                      //!< Brief info about object
-        virtual RbObject*           convertTo(const std::string& type) const;       //! Convert to type
-        virtual bool                isConvertibleTo(const std::string& type) const; //! Is convertible to type?
+        virtual std::string         briefInfo(void) const;                              //!< Brief info about object
+        virtual RbObject*           convertTo(const std::string& type) const;           //! Convert to type
+        virtual bool                isConvertibleTo(const std::string& type) const;     //! Is convertible to type?
         
         // Basic utility functions you do not have to override
-        const std::string&          getType(void) const;                    //!< Get type
-        bool                        isType(const std::string& type) const;  //!< Is the object of class type?
-        void                        print(std::ostream& o) const;           //!< Print complete object info
+        const std::string&          getType(void) const;                                //!< Get type
+        bool                        isType(const std::string& type) const;              //!< Is the object of class type?
+        void                        print(std::ostream& o) const;                       //!< Print complete object info
 
         // Element access functions: override if object contains elements
-        virtual RbObject*           getElement(const IntVector& index) const;   //!< Get element (a copy)
-        virtual int                 getElementDim() const { return 0; }         //!< Get dimensions
-        virtual const IntVector&    getElementLength() const;                   //!< Get length in each dim
-        virtual const std::string&  getElementType() const;                     //!< Get element type
+        virtual RbObject*           getElement(const IntVector& index) const;           //!< Get element (a copy)
+        virtual int                 getElementDim(void) const { return 0; }             //!< Get dimensions
+        virtual const IntVector&    getElementLength(void) const;                       //!< Get length in each dim
+        virtual const std::string&  getElementType(void) const;                         //!< Get element type
         virtual void                setElement(const IntVector& index, RbObject* val);  //!< Set element
 
         // TODO: Implement this functionality
-        //virtual void                dump(std::ostream& o) const {}          //!< Dump to ostream c
-        //virtual void                resurrect(const RbDumpState& x) = 0;    //!< Resurrect from dumped state
+        //virtual void                dump(std::ostream& o) const {}                    //!< Dump to ostream c
+        //virtual void                resurrect(const RbDumpState& x) = 0;              //!< Resurrect from dumped state
 
     protected:
-            RbObject() {}           //!< Protected constructor; make it impossible to create objects
+		RbObject(void) { }                                                              //!< Protected constructor; make it impossible to create objects
 };
 
 #endif

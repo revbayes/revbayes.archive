@@ -2,10 +2,10 @@
 #include "RbComplex.h"
 #include "RbException.h"
 #include "RbObject.h"
+#include "RbNames.h"
 #include <ctime>
 
 
-const StringVector RandomNumberGenerator::rbClass = StringVector("rng") + RbComplex::rbClass;
 
 RandomNumberGenerator::RandomNumberGenerator(std::string n, std::vector<unsigned int> s) {
     name = n;
@@ -34,6 +34,12 @@ bool RandomNumberGenerator::equals(const RbObject* obj) const {
     return false;
 }
 
+const StringVector& RandomNumberGenerator::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(RbNames::RandomNumberGenerator::name) + RbComplex::getClass();
+	return rbClass;
+}
+
 void RandomNumberGenerator::print(std::ostream& o) const {
     o << "Random Number Generator (" << name << ")" << std::endl;
 }
@@ -41,6 +47,7 @@ void RandomNumberGenerator::print(std::ostream& o) const {
 void RandomNumberGenerator::printValue(std::ostream& o) const {
     o << name << std::endl;
 }
+
 std::string RandomNumberGenerator::toString(void) const {
     return "Random Number Generator (" + name + ")";
 }

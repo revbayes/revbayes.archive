@@ -124,6 +124,9 @@ namespace RbNames {
 
 	namespace Normal {
 	const std::string   	name;
+	const std::string       dname = "dnorm";
+	const std::string       pname = "pnorm";
+	const std::string       rname = "rvnorm";
 	const std::string		mu;
 	const std::string		sigma;
 	}
@@ -248,6 +251,28 @@ namespace RbNames {
     namespace RbComplex {
     const std::string       name    = "complex";
     }
+
+    namespace RbException {
+    const std::string       name    = "exception";
+    }
+
+    namespace Primitive {
+    const std::string       name    = "primitive";
+    }
+
+    namespace Move {
+    const std::string       name    = "move";
+    }
+
+    namespace MoveSchedule {
+    const std::string       name    = "moveSchedule";
+    }
+
+    namespace RandomNumberGenerator {
+    const std::string       name    = "randomNumberGenerator";
+    }
+
+	
 
 }
 

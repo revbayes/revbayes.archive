@@ -15,151 +15,55 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "RbDouble.h"
 #include "RbException.h"
 #include "RbFunction_dnorm.h"
 #include "RbObject.h"
+#include "RbNames.h"
 #include "RbStatistics.h"
 #include <cmath>
 #include <string>
 
-/** Define the static class variables */
-const StringVector RbFunction_dnorm::rbClass    = StringVector("dnorm") + RbFunction::rbClass;
-const ArgumentRule** RbFunction_dnorm::argRules = { new ArgumentRule("x", "double"), 
-												    new ArgumentRule("mu", "double", new RbDouble(0.0)),
-													new ArgumentRule("sigma", "double", new RbDouble(1.0), new RbDouble(0.0), NULL),
-													NULL };
-const std::string RbFunction_dnorm::returnType  = "double";
-
-/** Add to symbol table */
-//static bool fxn_dnorm = SymbolTable::globalTable().add("dnorm", new RbFunction_dnorm());
 
 
-/** Default constructor, allocate workspace */
-RbFunction_dnorm::RbFunction_dnorm(void)
-    : RbFunction(), value(new RbDouble(0)) {
+RbFunction_dnorm::RbFunction_dnorm(void) : RbFunction() {
 
+	value = new RbDouble(0.0);
 } 
 
-/** Copy constructor */
-RbFunction_dnorm::RbFunction_dnorm(const RbFunction_dnorm& s)
-    : RbFunction(s), value(new RbDouble(0)) {
+RbFunction_dnorm::RbFunction_dnorm(const RbFunction_dnorm& s) : RbFunction(s) {
     
-	//argRules.push_back( ArgumentRule("x", "double") );
-	//argRules.push_back( ArgumentRule("mu", "double", new RbDouble(0.0)) );
-	//argRules.push_back( ArgumentRule("sigma", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	//returnType = "double";
+	value = new RbDouble(0.0);
+	*value = *s.value;
 }
 
-/** Destructor, delete workspace */
-RbFunction_dnorm::~RbFunction_dnorm() {
+RbFunction_dnorm::~RbFunction_dnorm(void) {
 
     delete value;
 }
 
-/**
- * @brief clone function
- *
- * This function creates a deep copy of this object.
- *
- * @see RbObject.clone()
- * @returns           return a copy of this object
- *
- */
 RbObject* RbFunction_dnorm::clone(void) const {
 
     RbObject *x = new RbFunction_dnorm( *this );
     return x;
 }
 
-RbObject& RbFunction_dnorm::operator=(const RbObject& obj) {
+bool RbFunction_dnorm::equals(const RbObject* o) const {
 
-    try {
-        // Use built-in fast down-casting first
-        const RbFunction_dnorm& x = dynamic_cast<const RbFunction_dnorm&> (obj);
-
-        RbFunction_dnorm& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const RbFunction_dnorm& x = dynamic_cast<const RbFunction_dnorm&> (*(obj.convertTo("dnorm")));
-
-            RbFunction_dnorm& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to dnorm");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
+    return false;
 }
 
-RbFunction_dnorm& RbFunction_dnorm::operator=(const RbFunction_dnorm& obj) {
+const StringVector& RbFunction_dnorm::getClass(void) const { 
 
-    argRules = obj.argRules;
-    returnType = obj.returnType;
-    (*value) = (*obj.value);
-    return (*this);
-}
-
-/**
- * @brief print function
- *
- * This function prints this object.
- *
- * @see RbObject.print()
- * @param c           the stream where to print to
- *
- */
-void RbFunction_dnorm::print(std::ostream &c) const {
-
-    c << "RbFunction_dnorm" << std::endl;
+    static StringVector rbClass = StringVector(RbNames::Normal::dname) + RbFunction::getClass();
+	return rbClass;
 }
 
 void RbFunction_dnorm::printValue(std::ostream &o) const {
 
     o << value << std::endl;
-}
-
-/**
- * @brief dump function
- *
- * This function dumps this object.
- *
- * @see RbObject.dump()
- * @param c           the stream where to dump to
- *
- */
-void RbFunction_dnorm::dump(std::ostream& c){
-    //TODO implement
-
-    std::string message = "Dump function of RbFunction_dnorm not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
-}
-
-/**
- * @brief resurrect function
- *
- * This function resurrects this object.
- *
- * @see RbObject.resurrect()
- * @param x           the object from which to resurrect
- *
- */
-void RbFunction_dnorm::resurrect(const RbDumpState& x){
-    //TODO implement
-    std::string message = "Resurrect function of RbFunction_dnorm not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
 }
 
 std::string RbFunction_dnorm::toString(void) const {
@@ -170,30 +74,26 @@ std::string RbFunction_dnorm::toString(void) const {
     return "Value = " + tempStr;
 }
 
+void RbFunction_dnorm::dump(std::ostream& c) {
 
-/**
- * @brief overloaded == operators
- *
- * This function compares this object
- *
- * @param o           the object to compare to
- *
- */
-bool RbFunction_dnorm::equals(const RbObject* o) const {
-
-    return false;
+    //TODO implement
+    std::string message = "Dump function of RbFunction_dnorm not fully implemented!";
+    RbException e;
+    e.setMessage(message);
+    throw e;
 }
 
+void RbFunction_dnorm::resurrect(const RbDumpState& x) {
 
-/** Get number of argument rules */
-const int RbFunction_dnorm::getNumberOfRules(void) const {
-    return 1;
+    //TODO implement
+    std::string message = "Resurrect function of RbFunction_dnorm not fully implemented!";
+    RbException e;
+    e.setMessage(message);
+    throw e;
 }
 
-/** Execute function */
 RbObject* RbFunction_dnorm::executeOperation(const std::vector<DAGNode*>& arguments) {
 
-    /* Get actual argument */
     RbDouble *x     = (RbDouble*) arguments[0]->getValue();
     RbDouble *mu    = (RbDouble*) arguments[1]->getValue();
     RbDouble *sigma = (RbDouble*) arguments[2]->getValue();
@@ -203,21 +103,26 @@ RbObject* RbFunction_dnorm::executeOperation(const std::vector<DAGNode*>& argume
     return value;
 }
 
-RbObject* RbFunction_dnorm::convertTo(const std::string& type) const {
+const ArgumentRule** RbFunction_dnorm::getArgumentRules(void) const {
 
-    return NULL;
+	const static ArgumentRule* argRules[] = { 
+		new ArgumentRule("x", "double"), 
+		new ArgumentRule("mu", "double", new RbDouble(0.0)),
+		new ArgumentRule("sigma", "double", new RbDouble(1.0), new RbDouble(0.0), NULL),
+		NULL };
+	return argRules;
 }
 
-/**
- * @brief is convertible to
- *
- * This function checks if this data type can be converted into the given data type.
- *
- * @param dt         the data type we want to convert to
- * @returns          true, if it can be converted
- *
- */
-bool RbFunction_dnorm::isConvertibleTo(const std::string& type) const {
-
-    return false;
+const int RbFunction_dnorm::getNumberOfRules(void) const {
+    return 1;
 }
+
+const std::string RbFunction_dnorm::getReturnType(void) const {
+
+	const static std::string returnType  = "double";
+	return returnType;
+}
+
+
+
+

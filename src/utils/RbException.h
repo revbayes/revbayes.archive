@@ -21,7 +21,7 @@ public:
 	// implemented abstract/virtual functions from base classes
 	RbObject*           clone(void) const;                                  //!< clone this object
     bool                equals(const RbObject* obj) const;                  //!< Equals comparison
-    const StringVector& getClass() const { return rbClass; }            //!< Get class
+    const StringVector& getClass() const;                                   //!< Get class
     void                print(std::ostream &c) const;                       //!< Print the value to ostream c
     void                printValue(std::ostream& o) const;              //!< Print value (for user)
     std::string         toString(void) const;                           //!< General info on object

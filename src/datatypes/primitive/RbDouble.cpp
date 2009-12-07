@@ -24,10 +24,9 @@
 #include "RbDouble.h"
 #include "RbException.h"
 #include "RbInt.h"
+#include "RbNames.h"
 #include "StringVector.h"
 
-
-const StringVector RbDouble::rbClass = StringVector("double") + RbObject::rbClass;
 
 
 /**
@@ -115,6 +114,12 @@ bool RbDouble::equals(const RbObject* obj) const {
     bool result = (value == x->value);
     delete x;
     return result;
+}
+
+const StringVector& RbDouble::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(RbNames::Double::name) + RbPrimitive::getClass();
+	return rbClass; 
 }
 
 /**

@@ -17,6 +17,7 @@
  */
 
 #include <list>
+#include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "RbException.h"
@@ -27,14 +28,14 @@
 
 
 /** Basic constructor */
-RbFunction::RbFunction(void) {
+RbFunction::RbFunction(void) : RbObject() {
 
     argumentsProcessed = false;
 }
 
 
 /** Copy constructor */
-RbFunction::RbFunction(const RbFunction &fn) {
+RbFunction::RbFunction(const RbFunction &fn) : RbObject() {
     
 }
 
@@ -91,9 +92,12 @@ RbObject* RbFunction::execute() {
  */
 std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>& args) {
 
+	/* get the argument rules */
+	const ArgumentRule** ar = getArgumentRules();
+	
 	/* get size of argument rule list */
 	int argSize = 0;
-	while ( argRules[argSize++] != NULL )
+	while ( ar[argSize++] != NULL )
 		argSize++;
 		
     /* Check that the number of provided arguments is adequate */
@@ -120,7 +124,7 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
         }
         else {
             for (theArg=0; theArg<argSize; theArg++) {
-                if ( (*i).getLabel() == argRules[theArg]->getLabel() )
+                if ( (*i).getLabel() == ar[theArg]->getLabel() )
                     break;
             }
             if (theArg == argSize) {
@@ -144,12 +148,12 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
     for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++, index++) {
         if ((*i) == NULL) {
         	RbUndefined ud;
-            if ( argRules[index]->getDefaultValue().equals(&ud) ) {
-                std::string msg = "No default value for argument label '" + argRules[index]->getLabel() + "'";
+            if ( ar[index]->getDefaultValue().equals(&ud) ) {
+                std::string msg = "No default value for argument label '" + ar[index]->getLabel() + "'";
                 arguments.clear();
                 throw RbException(msg);
             }
-            (*i) = new ConstantNode(argRules[index]->getDefaultValue().clone());
+            (*i) = new ConstantNode(ar[index]->getDefaultValue().clone());
         }
     }
 

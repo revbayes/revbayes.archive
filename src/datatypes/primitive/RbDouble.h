@@ -30,12 +30,10 @@ class RbDouble : public RbPrimitive {
             RbDouble(const double v);                         //!< Constructor from double
             RbDouble(const RbDouble& v);
 
-        static const StringVector   rbClass;            //!< Static class attribute
-
         // Basic utility functions
         RbObject*                  clone() const { return new RbDouble(*this); }   //!< Clone object
         bool                       equals(const RbObject* obj) const;              //!< Equals comparison
-        const StringVector&        getClass() const { return rbClass; }            //!< Get class
+        const StringVector&        getClass(void) const;                           //!< Get class vector
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object
 

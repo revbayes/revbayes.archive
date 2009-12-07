@@ -52,17 +52,10 @@ class StringVector;
 class RbFunction :  public RbObject {
 
     public:
-		virtual                     ~RbFunction(void) {}                                    //!< Virtual destructor because of virtual functions
-
-		// static variables
-		static const ArgumentRule** argRules;                                               //!< Static argument rules
-		static const std::string    returnType;                                             //!< Return type
-
+		virtual                     ~RbFunction(void) { }                                   //!< Virtual destructor because of virtual functions
+        virtual const ArgumentRule** getArgumentRules(void) const = 0;                      //!< Get argument rules
 		const StringVector&         getClass(void) const;                                   //!< Get class
-
-        // Regular functions
-        const ArgumentRule**        getArgumentRules(void) const { return argRules; }       //!< Get argument rules
-        std::string                 getReturnType(void) const { return returnType; }        //!< Get return type
+        virtual const std::string   getReturnType(void) const = 0;                          //!< Get return type
         RbObject*                   execute(void);                                          //!< Execute using processed args
         RbObject*                   execute(const std::vector<Argument>& args);             //!< Execute function
         void                        setArguments(const std::vector<Argument>& args);        //!< Process and set args

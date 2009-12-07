@@ -1,9 +1,8 @@
+#include "RbNames.h"
 #include "RbPrimitive.h"
 #include "StringVector.h"
 
 
-
-const StringVector RbPrimitive::rbClass = StringVector("Primitive") + RbObject::rbClass;
 
 
 /**
@@ -28,4 +27,11 @@ RbPrimitive::RbPrimitive() : RbObject() {
  */
 RbPrimitive::~RbPrimitive() {
 
+}
+
+/** Get class vector describing type of object */
+const StringVector& RbPrimitive::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::Primitive::name) + RbObject::getClass();
+    return rbClass;
 }

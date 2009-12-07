@@ -11,9 +11,8 @@
 #include <iostream>
 
 #include "RbException.h"
+#include "RbNames.h"
 #include "StringVector.h"
-
-const StringVector RbException::rbClass = StringVector("exception") + RbObject::rbClass;
 
 	// constructors
 RbException::RbException(void) : message("message"), RbObject(){
@@ -56,6 +55,12 @@ RbObject* RbException::clone(void) const {
 
 	RbObject *x = new RbException( *this );
 	return x;
+}
+
+const StringVector& RbException::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(RbNames::RbException::name) + RbObject::getClass();
+	return rbClass;
 }
 
 /**
