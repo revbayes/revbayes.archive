@@ -16,8 +16,9 @@
  * $Id$
  */
 
+#include "DAGNodeContainer.h"
 #include "Frame.h"
-#include "RbContainer.h"
+#include "RbException.h"
 
 
 /** Constructor from parent frame; default is NULL */
@@ -49,7 +50,7 @@ void Frame::addVariable(const std::string& name, const IntVector& index, DAGNode
     if (variableTable.find(name) != variableTable.end())
         throw (RbException("Variable " + name + " already exists"));
 
-    RbContainer* container = new RbContainer(index);
+    DAGNodeContainer* container = new DAGNodeContainer(index, variable->getValue()->getType());
     container->setElement(index, variable);
 
     ObjectSlot slot = ObjectSlot(container);
@@ -96,19 +97,20 @@ bool Frame::existsVariable(const std::string& name) const {
 
 
 /** Get declared type of variable */
-std::string Frame::getDeclaredType(const std::string& name) const {
+const std::string& Frame::getDeclaredType(const std::string& name) const {
 
-    if (variableTable.find(name) == variableTable.end())
+    std::map<const std::string, ObjectSlot>::const_iterator it = variableTable.find(name);
+    if (it == variableTable.end())
         throw (RbException("Variable " + name + " does not exist"));
 
-    return variableTable[name].getType();
+    return (*it).second.getType();
 }
 
 
-
-/** Get variable */
+/** Get variable (a copy) */
 RbObject* Frame::getVariable(const std::string& name) {
 
+    std::map<const std::string, ObjectSlot>::iterator it = variableTable.find(name);
     if (variableTable.find(name) == variableTable.end()) {
         if (parentFrame != NULL)
             return parentFrame->getVariable(name);
@@ -116,6 +118,6 @@ RbObject* Frame::getVariable(const std::string& name) {
             throw (RbException("Variable " + name + " does not exist"));
     }
 
-    return variableTable[name];
+    return (*it).second.getValue()->clone();
 }
 

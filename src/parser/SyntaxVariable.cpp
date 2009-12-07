@@ -190,7 +190,7 @@ std::string SyntaxVariable::getFullName(Frame* frame) const {
     theName << std::string(*identifier);
 
     IntVector theIndex = getIndex(frame);
-    for (int i=0; i<theIndex.size(); i++)
+    for (size_t i=0; i<theIndex.size(); i++)
         theName << "[" << theIndex[i] << "]";
 
     return theName.str();
@@ -241,7 +241,7 @@ RbObject* SyntaxVariable::getValue(Frame* frame) const {
 
     // Get element if we have index/indices (handle both list of lists or container model)
     IntVector theIndex = getIndex(frame);
-    for (int i=0; i<theIndex.size(); i++) {
+    for (size_t i=0; i<theIndex.size(); i++) {
 
         // Check that it is an object with elements
         int dim = value->getElementDim();
@@ -258,7 +258,7 @@ RbObject* SyntaxVariable::getValue(Frame* frame) const {
 
         // Get subindex
         IntVector subIndex;
-        for (int j=0; i<theIndex.size() && j<dim; i++, j++)
+        for (size_t j=0; i<theIndex.size() && j<dim; i++, j++)
             subIndex.push_back(theIndex[i]);
 
         // Get value corresponding to index; call getValue to pass through DAGNode

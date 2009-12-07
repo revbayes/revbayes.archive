@@ -40,18 +40,19 @@ class Frame {
 
     public:
             Frame(Frame* parentFr=NULL);        //!< Constructor from parent frame
+            virtual ~Frame() {}                 //!< Destructor; we do not want to destroy entire environment
 
         // Basic utility function
-        virtual void    print(std::ostream& o) const;   //!< Print table
+        virtual void        print(std::ostream& o) const;   //!< Print table
 
         // Regular functions
-	    bool        addVariable(const std::string& name, DAGNode* variable);   //!< Add a variable
-	    bool        addVariable(const std::string& name, const IntVector& index, DAGNode* variable);   //!< Add a container variable
-	    bool        addVariable(const std::string& name, const std::string& type, int dim);   //!< Add declared but empty slot
-        bool        eraseVariable(const std::string& name);                     //!< Erase a variable
-        bool        existsVariable(const std::string& name) const;              //!< Does variable exist?
-        std::string getDeclaredType(const std::string& name);                   //!< Get declared type of variable
-        RbObject*   getVariable(const std::string& name);                       //!< Get a variable
+	    void                addVariable(const std::string& name, DAGNode* variable);   //!< Add a variable
+	    void                addVariable(const std::string& name, const IntVector& index, DAGNode* variable);   //!< Add a container variable
+	    void                addVariable(const std::string& name, const std::string& type, int dim);   //!< Add declared but empty slot
+        void                eraseVariable(const std::string& name);                     //!< Erase a variable
+        bool                existsVariable(const std::string& name) const;              //!< Does variable exist?
+        const std::string&  getDeclaredType(const std::string& name) const;             //!< Get declared type of variable
+        RbObject*           getVariable(const std::string& name);                       //!< Get a variable
 	
     protected:
         Frame*                                  parentFrame;        //!< Pointer to enclosing frame

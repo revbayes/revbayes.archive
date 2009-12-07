@@ -7,13 +7,16 @@ BISON       = bison
 FLEX        = flex
 BISONFLAGS  = -y -v
 
-all: grammar.tab.c lex.yy.cpp Frame.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o SyntaxUnaryExpr.o SyntaxFunctionCall.o SyntaxLabeledExpr.o SyntaxAssignExpr.o SyntaxFormal.o
+all: grammar.tab.c lex.yy.cpp ObjectSlot.o Frame.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o SyntaxUnaryExpr.o SyntaxFunctionCall.o SyntaxLabeledExpr.o SyntaxAssignExpr.o SyntaxFormal.o
 
 grammar.tab.c grammar.tab.h: grammar.y
 	$(BISON) -o grammar.tab.c --defines $(BISONFLAGS) grammar.y
 
 lex.yy.cpp: lex.l
 	$(FLEX) -olex.yy.cpp lex.l
+
+ObjectSlot.o: ObjectSlot.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c ObjectSlot.cpp
 
 Frame.o: Frame.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Frame.cpp
