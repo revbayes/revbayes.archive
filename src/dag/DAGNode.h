@@ -66,11 +66,9 @@ class RbMoveSchedule;
 class DAGNode : public RbObject {
 
     public:
-        static const StringVector   rbClass;            //!< Static class attribute
-
 	        virtual ~DAGNode(void);     //!< Destructor
 
-        virtual const StringVector& getClass() const { return rbClass; }        //!< Get class
+        virtual const StringVector& getClass() const;                                   //!< Get class vector
         void						accept();
 	    void                		addChildNode(DAGNode* c) { children.insert(c); }    //!< Add child node
 	    void						addMonitor(RbMonitor* m);

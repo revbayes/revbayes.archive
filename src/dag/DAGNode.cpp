@@ -18,14 +18,14 @@
  */
 
 #include "DAGNode.h"
+#include "RbMonitor.h"
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
+#include "RbNames.h"
 #include "RbObject.h"
-#include "RbMonitor.h"
 
 #include <iostream>
 
-const StringVector DAGNode::rbClass = StringVector("dag_node") + RbObject::rbClass;
 
 /**
  * @brief DAGNode default constructor
@@ -87,7 +87,7 @@ DAGNode::DAGNode(const DAGNode &d)
 
 
 /**
- * @brief DAGNode desctructor
+ * @brief DAGNode destructor
  *
  * This is the standard destructor for all DAG nodes.
  *
@@ -164,6 +164,15 @@ bool DAGNode::equals(const RbObject* obj) const {
 
     return true;
 }
+
+
+/** Get class vector describing type of object */
+const StringVector& DAGNode::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::DAGNode::name) + RbObject::getClass();
+    return rbClass;
+}
+
 
 double DAGNode::getLnLikelihood(void) {
 	if (touchedLikelihood == true) {

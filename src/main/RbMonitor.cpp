@@ -39,6 +39,15 @@ bool RbMonitor::equals(const RbObject* obj) const
 	return false;
 }
 
+
+/** Get class vector describing type of object */
+const StringVector& RbMonitor::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::RbMonitor::name) + RbComplex::getClass();
+    return rbClass;
+}
+
+
 void RbMonitor::print(std::ostream& o) const {
     //!< Print complete object info
 }

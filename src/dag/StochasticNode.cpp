@@ -21,6 +21,7 @@
 #include "RbException.h"
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
+#include "RbNames.h"
 #include "StochasticNode.h"
 
 
@@ -143,6 +144,15 @@ StochasticNode& StochasticNode::operator=(const StochasticNode& obj) {
 
     return (*this);
 }
+
+
+/** Get class vector describing type of object */
+const StringVector& StochasticNode::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::StochasticNode::name) + DAGNode::getClass();
+    return rbClass;
+}
+
 
 /**
  * @brief Thouch affected nodes

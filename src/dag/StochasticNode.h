@@ -36,7 +36,8 @@ class StochasticNode : public DAGNode {
         StochasticNode&     operator=(const StochasticNode& o);
 
        // Basic utility functions
-        StochasticNode* clone() const { return new StochasticNode(*this); } //!< Clone the stochastic node
+        StochasticNode*     clone() const { return new StochasticNode(*this); } //!< Clone the stochastic node
+        const StringVector& getClass() const;               //!< Get class vector
         std::string     toString() const;
 
         // Regular functions

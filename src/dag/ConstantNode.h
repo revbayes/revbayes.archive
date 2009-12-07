@@ -27,14 +27,12 @@
 class ConstantNode : public DAGNode {
 
     public:
-        static const StringVector   rbClass;            //!< Static class attribute
-
 	     ConstantNode(RbObject* val);            //!< Constructor from value
 	     ConstantNode(const ConstantNode& c);    //!< Copy constructor
 
 	     RbObject*               clone() const;                      //!< Clone this object
 	     bool                    equals(const RbObject* obj) const;  //!< Object comparison
-	     const StringVector&    getClass() const { return rbClass; }        //!< Get class
+	     const StringVector&    getClass() const;                   //!< Get class vector
 	     void                   printValue(std::ostream& o) const;                    //!< Print value (for user)
          std::string            toString(void) const;                                 //!< General info on object
 

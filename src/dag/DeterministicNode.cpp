@@ -21,6 +21,7 @@
 #include "RbException.h"
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
+#include "RbNames.h"
 
 /** Basic constructor */
 DeterministicNode::DeterministicNode(RbFunction* func, const std::vector<Argument>& args)
@@ -42,6 +43,15 @@ RbObject* DeterministicNode::clone() const {
 	DeterministicNode* x = new DeterministicNode(*this);
 	return (RbObject*) x;
 }
+
+
+/** Get class vector describing type of object */
+const StringVector& DeterministicNode::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::DeterministicNode::name) + DAGNode::getClass();
+    return rbClass;
+}
+
 
 /**
  * @brief Thouch affected nodes

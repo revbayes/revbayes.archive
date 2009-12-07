@@ -28,8 +28,6 @@
 #include "RbMoveSchedule.h"
 #include "RbNames.h"
 
-/** String vector describing class inheritance */
-const StringVector ConstantNode::rbClass = StringVector(RbNames::ConstantNode::name) + DAGNode::rbClass;
 
 /**
  * @brief ConstantNode constructor from value
@@ -65,6 +63,14 @@ ConstantNode::ConstantNode(const ConstantNode &d)
 RbObject* ConstantNode::clone(void) const {
 
     return (ConstantNode*)(new ConstantNode(*this));
+}
+
+
+/** Get class vector describing type of object */
+const StringVector& ConstantNode::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::ConstantNode::name) + DAGNode::getClass();
+    return rbClass;
 }
 
 

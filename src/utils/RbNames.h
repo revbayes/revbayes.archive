@@ -176,6 +176,10 @@ namespace RbNames {
     const std::string       name    = "function";
     }
 
+    namespace RbMonitor {
+    const std::string       name    = "monitor";
+    }
+    
     namespace RbString {
     const std::string       name    = "string";
     }
