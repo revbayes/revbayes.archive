@@ -42,10 +42,13 @@ RbObject* RbObject::convertTo(const std::string& type) const {
     return NULL;    // Dummy return
 }
 
+/** Get class vector describing type of object */
 const StringVector& RbObject::getClass(void) const { 
 
+    static StringVector rbClass = StringVector(RbNames::RbObject::name);
 	return rbClass; 
 }
+
 
 /** Get element */
 RbObject* RbObject::getElement(const IntVector& index) const {

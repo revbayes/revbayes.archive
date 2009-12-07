@@ -23,20 +23,19 @@
 #include <map>
 #include "RbFunction.h"
 #include "RbObject.h"
-#include "StringVector.h"
+
+class StringVector;
 
 class RbComplex : public RbObject {
 
     public:
-        static const StringVector   rbClass;                                                //!< Static class attribute
-
 		virtual                     ~RbComplex();                                           //!< Delete member variables 
 
         // Basic utility functions
-        //virtual bool                equals(const RbComplex* o) const;                     //!< Equals comparison
-		virtual void                print(std::ostream& o) const;
+        //virtual bool                equals(const RbComplex* o) const;             //!< Equals comparison
+		virtual std::string         toString() const;                               //!< Complete info about object
 		virtual void                printValue(std::ostream& o) const;
-		const StringVector&         getClass(void) const;                                   //!< Get class
+		virtual const StringVector& getClass(void) const;                           //!< Get class
 
         // Member variable functions
         virtual bool                addMember(const std::string& name, const std::string& type, RbObject* v);

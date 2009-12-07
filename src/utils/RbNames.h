@@ -168,6 +168,10 @@ namespace RbNames {
     const std::string       name    = "deterministcNode";
     }
 
+    namespace DAGNodeContainer {
+    const std::string       name    = "dagNodeContainer";
+    }
+
     namespace RbObject {
     const std::string       name    = "object";
     }
@@ -176,8 +180,24 @@ namespace RbNames {
     const std::string       name    = "function";
     }
 
+    namespace UserFunction {
+    const std::string       name    = "userFunction";
+    }
+
+    namespace Argument {
+    const std::string       name    = "argument";
+    }
+
+    namespace ArgumentRule {
+    const std::string       name    = "argumentRule";
+    }
+
     namespace RbMonitor {
     const std::string       name    = "monitor";
+    }
+    
+    namespace RbMcmc {
+    const std::string       name    = "mcmc";
     }
     
     namespace RbString {

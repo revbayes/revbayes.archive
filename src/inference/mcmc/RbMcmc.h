@@ -15,8 +15,6 @@ class RandomNumberGenerator;
 class RbMcmc : public RbComplex {
 
     public:
-        static const StringVector   rbClass;            //!< Static class attribute
-        
         RbMcmc(RbModel* mp, RandomNumberGenerator* r);
         RbMcmc(RbModel* mp, RbInt* b, RbInt* cl, RandomNumberGenerator* r);
         RbMcmc(const RbMcmc& m);
@@ -25,7 +23,7 @@ class RbMcmc : public RbComplex {
         void runChain(void);
         RbObject*                  clone() const;                                  //!< Clone object
         bool                       equals(const RbObject* obj) const;              //!< Equals comparison
-        const StringVector&        getClass() const { return rbClass; }            //!< Get class
+        const StringVector&        getClass() const;                               //!< Get class
         void                       print(std::ostream& o) const;                   //!< Print complete object info
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object

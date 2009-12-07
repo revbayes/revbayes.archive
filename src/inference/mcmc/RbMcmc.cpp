@@ -16,7 +16,6 @@
 #include "RbObject.h"
 #include "StringVector.h"
 
-const StringVector RbMcmc::rbClass = StringVector((RbNames::MCMC::name)) + RbComplex::rbClass;
 
 RbMcmc::RbMcmc(RbModel* mp, RandomNumberGenerator* r) {
 
@@ -42,6 +41,15 @@ RbMcmc::RbMcmc(const RbMcmc& m) {
 RbMcmc::~RbMcmc(void) {
 
 }
+
+
+/** Get class vector describing type of object */
+const StringVector& RbMcmc::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::RbMcmc::name) + RbComplex::getClass();
+    return rbClass;
+}
+
 
 void RbMcmc::runChain(void) {
 
@@ -147,6 +155,7 @@ RbMcmc& RbMcmc::operator=(const RbMcmc& obj) {
     (*modelPtr) = (*obj.modelPtr);
     return (*this);
 }
+
 
 void RbMcmc::print(std::ostream& o) const {
 	o << "MCMC on model: " << modelPtr->toString() << std::endl;

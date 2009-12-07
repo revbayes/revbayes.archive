@@ -26,8 +26,6 @@ class RbDumpState;
 class RbString : public RbComplex {
 
     public:
-        static const StringVector   rbClass;            //!< Static class attribute
-
 	        RbString(const std::string& v);      //!< Constructor from string
 	        RbString(const RbString& s);    //!< Copy constructor
 

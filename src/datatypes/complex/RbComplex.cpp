@@ -55,9 +55,12 @@ RbComplex::~RbComplex() {
 //    methodTable.clear();
 }
 
+
+/** Get class vector describing type of object */
 const StringVector& RbComplex::getClass(void) const { 
 
-	return rbClass + RbObject::getClass(); 
+    static StringVector rbClass = StringVector(RbNames::RbComplex::name) + RbObject::getClass();
+	return rbClass;
 }
 
 /** Execute method with preset args: map to builtin or to function object if class has the method */

@@ -80,10 +80,6 @@ RbObject* StringVector::clone() const {
     return (RbObject*)(new StringVector(*this));
 }
 
-const StringVector& StringVector::getClass(void) const { 
-
-	return rbClass + (const RbComplex*)this->getClass(); 
-}
 
 /** Pointer-based equals comparison */
 bool StringVector::equals(const RbObject* obj) const {
