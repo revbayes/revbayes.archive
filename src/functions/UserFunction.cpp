@@ -53,6 +53,14 @@ UserFunction::~UserFunction() {
 }
 
 
+/** Get class vector describing type of object */
+const StringVector& UserFunction::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::UserFunction::name) + RbFunction::getClass();
+    return rbClass;
+}
+
+
 /** Execute function */
 RbObject* UserFunction::execute(std::vector<DAGNode*> arguments) {
 

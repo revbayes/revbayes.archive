@@ -18,6 +18,7 @@
 
 #include <list>
 #include "ConstantNode.h"
+#include "DAGNode.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
@@ -37,10 +38,14 @@ RbFunction::RbFunction(const RbFunction &fn) {
     
 }
 
+
+/** Get class vector describing type of object */
 const StringVector& RbFunction::getClass(void) const { 
 
-	return rbClass + RbObject::getClass(); 
+    static StringVector rbClass = StringVector(RbNames::RbFunction::name) + RbObject::getClass();
+	return rbClass; 
 }
+
 
 RbObject* RbFunction::execute(const std::vector<Argument>& args) {
 
@@ -92,7 +97,7 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
 		argSize++;
 		
     /* Check that the number of provided arguments is adequate */
-    if (argSize < args.size()) {
+    if (argSize < (int) args.size()) {
         if (argSize == 0) {
             throw RbException("Not expecting any arguments");
         }
@@ -102,7 +107,9 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
     }
 
     /* Initialize vector of processed arguments */
-    std::vector<DAGNode*>   arguments(argSize, NULL);
+    std::vector<DAGNode*>   arguments(argSize);
+    for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++)
+        (*i) = NULL;
 
     /* Match arguments */
     int index=0;

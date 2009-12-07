@@ -22,12 +22,11 @@
 #include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "RbException.h"
+#include "RbNames.h"
 #include "RbObject.h"
 #include "RbUndefined.h"
 #include "StringVector.h"
 
-
-const StringVector ArgumentRule::rbClass = StringVector("argumentRule");
 
 /**
  * @brief Constructor
@@ -90,10 +89,14 @@ ArgumentRule::~ArgumentRule() {
 	delete maxValue;
 }
 
+
+/** Get class vector describing type of object */
 const StringVector& ArgumentRule::getClass(void) const { 
 
-	return rbClass + RbObject::getClass(); 
+    static StringVector rbClass = StringVector(RbNames::ArgumentRule::name) + RbObject::getClass();
+	return rbClass;
 }
+
 
 /**
  * @brief Brief info about the object
@@ -172,6 +175,7 @@ ArgumentRule& ArgumentRule::operator=(const ArgumentRule& ar) {
     maxValue = ar.maxValue;
     return (*this);
 }
+
 
 /**
  * @brief Test if argument is valid

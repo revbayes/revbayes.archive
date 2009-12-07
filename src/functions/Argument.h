@@ -33,13 +33,11 @@ class Argument : public RbObject {
                     Argument(const Argument& a);                        //!< Copy constructor 
             virtual ~Argument();                        //!< Destructor 
 
-        static const StringVector   rbClass;            //!< Static class attribute
-
         // Basic utility functions
          std::string         briefInfo() const;                          //!< Brief info about object
-                RbObject*           clone() const;                              //!< Clone object
+         RbObject*           clone() const;                              //!< Clone object
          bool                equals(const RbObject* obj) const;          //!< Equals comparison
-         const StringVector& getClass() const { return rbClass; }        //!< Get class
+         const StringVector& getClass() const;                           //!< Get class vector
          void                print(std::ostream& o) const;               //!< Print complete object info
          void                printValue(std::ostream& o) const;          //!< Print value (for user)
          std::string         toString(void) const;                                 //!< General info on object

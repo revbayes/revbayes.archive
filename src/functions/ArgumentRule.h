@@ -19,9 +19,11 @@
 #ifndef ArgumentRule_H
 #define ArgumentRule_H
 
-#include <string>
 #include "RbObject.h"
 #include "StringVector.h"
+
+#include <string>
+
 
 class ArgumentRule : public RbObject {
 

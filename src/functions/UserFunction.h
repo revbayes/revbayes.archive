@@ -41,13 +41,11 @@ class UserFunction :  public RbFunction {
                 UserFunction(const UserFunction& uf);                       //!< Copy constructor
                 virtual ~UserFunction();                                    //!< Delete the code
 
-        static const StringVector   rbClass;                //!< Static class attribute
-
         // Basic utility functions
         virtual std::string         briefInfo() const;                  //!< Brief info about object
         virtual UserFunction*       clone() const { return new UserFunction(*this); }   //!< Clone object
         virtual bool                equals(const RbObject* o) const;    //!< Equals comparison
-        virtual const StringVector& getClass() const { return rbClass; }//!< Get class
+        virtual const StringVector& getClass() const;                   //!< Get class
         virtual void                print(std::ostream& o) const;       //!< Print complete object info
         virtual void                printValue(std::ostream& o) const;  //!< Print value (for user)
 

@@ -26,9 +26,9 @@
 #include <vector>
 
 #include "Argument.h"
-#include "ArgumentRule.h"
 #include "RbObject.h"
 
+class ArgumentRule;
 class DAGNode;
 class StringVector;
 
@@ -55,7 +55,6 @@ class RbFunction :  public RbObject {
 		virtual                     ~RbFunction(void) {}                                    //!< Virtual destructor because of virtual functions
 
 		// static variables
-        static const StringVector   rbClass;                                                //!< Static class attribute
 		static const ArgumentRule** argRules;                                               //!< Static argument rules
 		static const std::string    returnType;                                             //!< Return type
 

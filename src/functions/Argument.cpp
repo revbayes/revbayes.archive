@@ -21,11 +21,8 @@
 #include "Argument.h"
 #include "DAGNode.h"
 #include "RbException.h"
+#include "RbNames.h"
 #include "StringVector.h"
-
-
-/** Initialize static class attribute */
-const StringVector Argument::rbClass = StringVector("argument") + RbObject::rbClass;
 
 
 /**
@@ -124,7 +121,7 @@ RbObject& Argument::operator=(const RbObject& obj) {
             y = x;
             return y;
         } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to argument");
+            RbException e("Not supported assignment of " + obj.getType() + " to argument");
             throw e;
         }
     }
@@ -138,6 +135,15 @@ Argument& Argument::operator=(const Argument& obj) {
     Argument* a = new Argument(obj);
     return (*a);
 }
+
+
+/** Get class vector describing type of object */
+const StringVector& Argument::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::Argument::name) + RbObject::getClass();
+    return rbClass;
+}
+
 
 /**
  * @brief Print function
