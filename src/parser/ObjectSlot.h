@@ -43,8 +43,9 @@ class ObjectSlot {
         int                 getDim() const { return dim; }              //!< Get number of dimensions
         const std::string&  getType() const { return type; }            //!< Get type
         std::string         getTypeDescr() const;                       //!< Get type description with dimensions
-        const RbObject*     getValue() const { return value; }          //!< Get value
+        const RbObject*     getValue() const { return value; }          //!< Get value (const pointer)
         void                setValue(RbObject* val);                    //!< Set value
+        void                setValElement(const IntVector& index, RbObject* val);   //!< Set value element
 
     private:
 	    std::string         type;           //!< Declared type of the object

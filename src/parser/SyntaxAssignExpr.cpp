@@ -104,12 +104,19 @@ DAGNode* SyntaxAssignExpr::getDAGNode(Frame* frame) const {
 RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
 
     // Get variable identifier
-    RbString    varName = *variable->getIdentifier();
+    RbString varName = *variable->getIdentifier();
+
+    // Get member frame
+    const Frame* memberFrame = variable->getFrame();
+    if (variable->isMember())
+        theFrame = variable->getFrame();
+    else
+        theFrame = frame;
 
     // Deal with arrow assignments
     if (opType == ARROW_ASSIGN) {
 
-        // Calculate the value of the rhs expression
+        // Calculate the value of the rhs expression; we assume it is not a variable DAG node
         RbObject* value = expression->getValue();
 
         // Does the variable exist?
@@ -118,9 +125,9 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
             // It does not exist - add it
             IntVector index = variable->getIndex(frame);
             if (index.size() != 0)
-                frame->addVariable(varName, index, new ConstantNode(value));
+                frame->addVariable(varName, index, value);
             else
-                frame->addVariable(varName, new ConstantNode(value));
+                frame->addVariable(varName, value);
         }
         else {
 

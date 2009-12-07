@@ -87,11 +87,19 @@ void ObjectSlot::print(std::ostream& o) const {
  *
  * @param val   The new value of the slot
  * @throws      The new value is of the wrong type
- *
+ * @todo        Use element class instead for type matching
  */
 void ObjectSlot::setValue(RbObject* val) {
 
-    if (dim == 0 && (val->getElementDim() != 0 || !val->isType(type))) {
+    // Get a pointer to the value of interest
+    const RbObject* valPtr;
+    if (val->isType(RbNames::DAGNode::name))
+        valPtr = ((DAGNode*)(val))->getValue();
+    else
+        valPtr = val;
+
+    // Check the value
+    if (dim == 0 && (valPtr->getElementDim() != 0 || !valPtr->isType(type))) {
         std::ostringstream msg;
         msg << "Cannot set " << getTypeDescr() << " slot with value of type ";
         if (val->getElementDim() == 0)
@@ -103,7 +111,7 @@ void ObjectSlot::setValue(RbObject* val) {
         }
         throw RbException(msg.str());
     }
-    else if (val->getElementDim() != dim || val->getElementType() != type) {
+    else if (dim > 0 && (valPtr->getElementDim() != dim || valPtr->getElementType() != type)) {
         std::ostringstream msg;
         msg << "Cannot set " << getTypeDescr() << " slot with value of type ";
         if (val->getElementDim() == 0)
@@ -116,9 +124,26 @@ void ObjectSlot::setValue(RbObject* val) {
         throw RbException(msg.str());
     }
 
+    // Wrap the value if necessary
+    RbObject* theWrapper = val;
+    if (!val->isType(RbNames::DAGNode::name) && val->getElementDim() == 0)
+        theWrapper = new ConstantNode(val);
+    
+    // Delete previous value if it exists
     if (value != NULL)
         delete value;
-    
-    value = val;
+
+    // Set new value
+    value = theWrapper;
+}
+
+
+/** Set element of value */
+void ObjectSlot::setValElement(const IntVector& index, RbObject* val) {
+
+    if (dim == 0)
+        throw (RbException("Slot does not have elements"));
+
+    value->setElement(index, val);
 }
 

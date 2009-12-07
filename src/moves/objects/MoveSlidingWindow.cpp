@@ -17,7 +17,6 @@
 #include "StringVector.h"
 #include <string>
 
-const StringVector MoveSlidingWindow::rbClass = StringVector((RbNames::MoveSlidingWindow::name)) + RbMove::rbClass;
 
 MoveSlidingWindow::MoveSlidingWindow(DAGNode* n, RbDouble* l, RbDouble* u, RbDouble* tn, RandomNumberGenerator* r) : RbMove(n,r) {
 
@@ -65,6 +64,15 @@ bool MoveSlidingWindow::equals(const RbObject* obj) const {
     delete x;
     return result;
 }
+
+
+/** Get class vector describing type of object */
+const StringVector& MoveSlidingWindow::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::MoveSlidingWindow::name) + RbMove::getClass();
+    return rbClass;
+}
+
 
 void MoveSlidingWindow::print(std::ostream& o) const {
 

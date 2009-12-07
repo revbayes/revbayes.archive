@@ -5,13 +5,12 @@
  *      Author: Sebastian
  */
 
+#include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbMoveSchedule.h"
 #include "RbNames.h"
-#include "RandomNumberGenerator.h"
+
 #include <map>
-
-
 
 
 RbMoveSchedule::RbMoveSchedule(RandomNumberGenerator* r, double w) {
@@ -44,6 +43,15 @@ const StringVector& RbMoveSchedule::getClass(void) const {
 bool RbMoveSchedule::equals(const RbObject* obj) const {
     return false;
 }
+
+
+/** Get class vector describing type of object */
+const StringVector& RbMoveSchedule::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::RbMoveSchedule::name) + RbComplex::getClass();
+    return rbClass;
+}
+
 
 void RbMoveSchedule::print(std::ostream& o) const {
     o << "move schedule" << std::endl;

@@ -18,7 +18,6 @@
 #include <string>
 #include <cmath>
 
-const StringVector MoveScale::rbClass = StringVector("scale") + RbMove::rbClass;
 
 MoveScale::MoveScale(DAGNode* n, RbDouble* tn, RandomNumberGenerator* r) : RbMove(n,r) {
 
@@ -64,6 +63,15 @@ bool MoveScale::equals(const RbObject* obj) const {
     delete x;
     return result;
 }
+
+
+/** Get class vector describing type of object */
+const StringVector& MoveScale::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::MoveScale::name) + RbMove::getClass();
+    return rbClass;
+}
+
 
 void MoveScale::print(std::ostream& o) const {
 

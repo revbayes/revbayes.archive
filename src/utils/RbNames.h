@@ -143,18 +143,6 @@ namespace RbNames {
 	const std::string		upper	= "upper";
 	}
 
-	namespace MoveScale {
-	const std::string   	name 	= "moveScale";
-	}
-	
-	namespace MoveSlidingWindow {
-	const std::string		name	= "moveSlidingWindow";
-	}
-
-	namespace Monitor {
-	const std::string   	name 	= "monitor";
-	}
-
     namespace DAGNode {
     const std::string       name    = "dagNode";
     }
@@ -197,6 +185,22 @@ namespace RbNames {
 
     namespace RbMonitor {
     const std::string       name    = "monitor";
+    }
+    
+    namespace RbMove {
+    const std::string       name    = "move";
+    }
+    
+    namespace RbMoveSchedule {
+    const std::string       name    = "moveSchedule";
+    }
+    
+    namespace MoveScale {
+    const std::string       name    = "moveScale";
+    }
+    
+    namespace MoveSlidingWindow {
+    const std::string       name    = "moveSlidingWindow";
     }
     
     namespace RbMcmc {

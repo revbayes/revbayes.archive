@@ -46,13 +46,15 @@ class Frame {
         virtual void        print(std::ostream& o) const;   //!< Print table
 
         // Regular functions
-	    void                addVariable(const std::string& name, DAGNode* variable);   //!< Add a variable
-	    void                addVariable(const std::string& name, const IntVector& index, DAGNode* variable);   //!< Add a container variable
-	    void                addVariable(const std::string& name, const std::string& type, int dim);   //!< Add declared but empty slot
+	    void                addVariable(const std::string& name, RbObject* variable);   //!< Add a variable
+	    void                addVariable(const std::string& name, const IntVector& index, RbObject* variable);   //!< Add a container variable
+	    void                addVariable(const std::string& name, const std::string& type, int dim=0);   //!< Add declared but empty slot
         void                eraseVariable(const std::string& name);                     //!< Erase a variable
         bool                existsVariable(const std::string& name) const;              //!< Does variable exist?
         const std::string&  getDeclaredType(const std::string& name) const;             //!< Get declared type of variable
-        RbObject*           getVariable(const std::string& name);                       //!< Get a variable
+        const RbObject*     getVariable(const std::string& name) const;                 //!< Get a variable
+        void                setVariable(const std::string& name, RbObject* value);      //!< Set a variable
+        void                setVarElement(const std::string& name, const IntVector& index, RbObject* value); //!< Set element of a variable
 	
     protected:
         Frame*                                  parentFrame;        //!< Pointer to enclosing frame

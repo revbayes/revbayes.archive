@@ -5,8 +5,8 @@
  *      Author: Sebastian
  */
 
-#ifndef RBMOVESCHEDULE_H_
-#define RBMOVESCHEDULE_H_
+#ifndef RbMoveSchedule_H
+#define RbMoveSchedule_H
 
 #include "RandomNumberGenerator.h"
 #include "RbComplex.h"
@@ -24,7 +24,7 @@ class RbMoveSchedule : public RbComplex {
 
         RbObject*                  clone() const;                                  //!< Clone object
         bool                       equals(const RbObject* obj) const;              //!< Equals comparison
- 		const StringVector&         getClass(void) const;                                   //!< Get class
+ 		const StringVector&        getClass(void) const;                           //!< Get class
         void                       print(std::ostream& o) const;                   //!< Print complete object info
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object
@@ -47,4 +47,4 @@ class RbMoveSchedule : public RbComplex {
         double 							dagUpdateWeight;
 };
 
-#endif /* RBMOVESCHEDULE_H_ */
+#endif

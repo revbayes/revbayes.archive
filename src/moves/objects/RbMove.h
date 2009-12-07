@@ -23,6 +23,8 @@ public:
         double                      performMove(void);
         void                        rejectMove(void);
 
+        // Basic utility functions
+        virtual const StringVector& getClass() const;               //!< Get class vector
 
         // overloaded operators
         virtual RbMove&             operator=(const RbMove& o) = 0;
