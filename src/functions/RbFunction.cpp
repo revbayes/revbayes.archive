@@ -17,7 +17,6 @@
  */
 
 #include <list>
-
 #include "ConstantNode.h"
 #include "RbException.h"
 #include "RbFunction.h"
@@ -28,24 +27,20 @@
 
 /** Basic constructor */
 RbFunction::RbFunction(void) {
+
     argumentsProcessed = false;
 }
 
 
 /** Copy constructor */
-RbFunction::RbFunction(const RbFunction &fn)
-    : argRules(fn.argRules), returnType(fn.returnType) {
+RbFunction::RbFunction(const RbFunction &fn) {
     
 }
 
+const StringVector& RbFunction::getClass(void) const { 
 
-/** Get class vector describing type of object */
-const StringVector& RbFunction::getClass() const {
-
-    static StringVector rbClass = StringVector(RbNames::RbFunction::name) + RbObject::getClass();
-    return rbClass;
+	return rbClass + RbObject::getClass(); 
 }
-
 
 RbObject* RbFunction::execute(const std::vector<Argument>& args) {
 
@@ -91,9 +86,14 @@ RbObject* RbFunction::execute() {
  */
 std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>& args) {
 
+	/* get size of argument rule list */
+	int argSize = 0;
+	while ( argRules[argSize++] != NULL )
+		argSize++;
+		
     /* Check that the number of provided arguments is adequate */
-    if (argRules.size() < args.size()) {
-        if (argRules.size()==0) {
+    if (argSize < args.size()) {
+        if (argSize == 0) {
             throw RbException("Not expecting any arguments");
         }
         else {
@@ -102,7 +102,7 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
     }
 
     /* Initialize vector of processed arguments */
-    std::vector<DAGNode*>   arguments(argRules.size(),NULL);
+    std::vector<DAGNode*>   arguments(argSize, NULL);
 
     /* Match arguments */
     int index=0;
@@ -112,11 +112,11 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
             theArg = index;
         }
         else {
-            for (theArg=0; theArg<(int)argRules.size(); theArg++) {
-                if ((*i).getLabel() == argRules[theArg].getLabel())
+            for (theArg=0; theArg<argSize; theArg++) {
+                if ( (*i).getLabel() == argRules[theArg]->getLabel() )
                     break;
             }
-            if (theArg == (int)argRules.size()) {
+            if (theArg == argSize) {
                 std::string msg = "Did not expect an argument with label '" + (*i).getLabel() + "'";
                 arguments.clear();
                 throw RbException(msg);
@@ -137,12 +137,12 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
     for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++, index++) {
         if ((*i) == NULL) {
         	RbUndefined ud;
-            if (argRules[index].getDefaultValue().equals(&ud)) {
-                std::string msg = "No default value for argument label '" + argRules[index].getLabel() + "'";
+            if ( argRules[index]->getDefaultValue().equals(&ud) ) {
+                std::string msg = "No default value for argument label '" + argRules[index]->getLabel() + "'";
                 arguments.clear();
                 throw RbException(msg);
             }
-            (*i) = new ConstantNode(argRules[index].getDefaultValue().clone());
+            (*i) = new ConstantNode(argRules[index]->getDefaultValue().clone());
         }
     }
 

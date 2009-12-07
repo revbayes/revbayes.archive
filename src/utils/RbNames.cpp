@@ -35,5 +35,5 @@
 
     const std::string RbNames::MoveScale::name              = "moveScale";
 
-    std::string RbNames::MoveSlidingWindow::name      = "moveSlidingWindow";
+    std::string RbNames::MoveSlidingWindow::name            = "moveSlidingWindow";
 

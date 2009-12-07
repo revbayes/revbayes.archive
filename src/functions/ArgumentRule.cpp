@@ -19,7 +19,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
 #include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "RbException.h"
@@ -28,7 +27,7 @@
 #include "StringVector.h"
 
 
-const StringVector ArgumentRule::rbClass = StringVector("argumentRule") + RbObject::rbClass;
+const StringVector ArgumentRule::rbClass = StringVector("argumentRule");
 
 /**
  * @brief Constructor
@@ -65,28 +64,35 @@ ArgumentRule::ArgumentRule(const ArgumentRule& a) : RbObject() {
     maxValue = a.maxValue;
 }
 
-ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject& dv) : RbObject() {
+ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv) : RbObject() {
 
     label = lbl;
     type = t;
-    defaultValue = dv.clone();
+    //defaultValue = dv.clone();
+	defaultValue = dv;
     minValue = new RbUndefined;
     maxValue = new RbUndefined;
 }
 
-ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject& dv, RbObject& mnv, RbObject& mxv) : RbObject() {
+ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv, RbObject* mnv, RbObject* mxv) : RbObject() {
 
     label = lbl;
     type = t;
-    defaultValue = dv.clone();
-    minValue = mnv.clone();
-    maxValue = mxv.clone();
+    defaultValue = dv;
+    minValue = mnv;
+    maxValue = mxv;
 }
 
 ArgumentRule::~ArgumentRule() {
+
 	delete defaultValue;
 	delete minValue;
 	delete maxValue;
+}
+
+const StringVector& ArgumentRule::getClass(void) const { 
+
+	return rbClass + RbObject::getClass(); 
 }
 
 /**

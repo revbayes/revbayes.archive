@@ -16,42 +16,48 @@
  * $Id$
  */
 
+#include <sstream>
 #include "IntVector.h"
+#include "RbComplex.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "StringVector.h"
 
-#include <sstream>
 
+
+
+StringVector::StringVector(void) : RbComplex() {
+
+}
 
 /** Construct empty vector of length n */
-StringVector::StringVector(int n) {
+StringVector::StringVector(int n) : RbComplex() {
 
     value.resize(n);
 }
 
 /** Construct vector with one string x */
-StringVector::StringVector(std::string x) {
+StringVector::StringVector(std::string x) : RbComplex() {
 
     value.push_back(x);
 }
 
 /** Construct vector with n strings x */
-StringVector::StringVector(int n, std::string x) {
+StringVector::StringVector(int n, std::string x) : RbComplex() {
 
     for (int i = 0; i < n; i++)
         value.push_back(x);
 }
 
 /** Copy constructor */
-StringVector::StringVector(const StringVector& x) {
+StringVector::StringVector(const StringVector& x) : RbComplex() {
 
     value = x.value;
 }
 
 /** Constructor from std::string vector */
-StringVector::StringVector(std::vector<std::string>& x) {
+StringVector::StringVector(std::vector<std::string>& x) : RbComplex() {
 
     value = x;
 }
@@ -74,6 +80,10 @@ RbObject* StringVector::clone() const {
     return (RbObject*)(new StringVector(*this));
 }
 
+const StringVector& StringVector::getClass(void) const { 
+
+	return rbClass + (const RbComplex*)this->getClass(); 
+}
 
 /** Pointer-based equals comparison */
 bool StringVector::equals(const RbObject* obj) const {

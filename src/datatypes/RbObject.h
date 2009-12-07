@@ -44,7 +44,7 @@ class RbObject {
         virtual bool                isConvertibleTo(const std::string& type) const; //! Is convertible to type?
         
         // Basic utility functions you do not have to override
-        const std::string&          getType() const;                        //!< Get type
+        const std::string&          getType(void) const;                    //!< Get type
         bool                        isType(const std::string& type) const;  //!< Is the object of class type?
         void                        print(std::ostream& o) const;           //!< Print complete object info
 

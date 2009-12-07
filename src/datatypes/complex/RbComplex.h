@@ -18,28 +18,25 @@
 #ifndef RbComplex_H
 #define RbComplex_H
 
-//#include "FunctionDescr.h"
-//#include "FunctionTable.h"
-#include "RbFunction.h"
-#include "RbObject.h"
-
 #include <string>
 #include <ostream>
 #include <map>
-
-class StringVector;
-
+#include "RbFunction.h"
+#include "RbObject.h"
+#include "StringVector.h"
 
 class RbComplex : public RbObject {
 
     public:
-            virtual ~RbComplex();       //!< Delete member variables 
+        static const StringVector   rbClass;                                                //!< Static class attribute
+
+		virtual                     ~RbComplex();                                           //!< Delete member variables 
 
         // Basic utility functions
-        //virtual bool              equals(const RbComplex* o) const;       //!< Equals comparison
-        virtual const StringVector& getClass() const;                       //!< Get class vector
-		virtual void                printValue(std::ostream& o) const;      //!< Print value (for user)
-        virtual std::string         toString() const = 0;                   //!< Complete info about object
+        //virtual bool                equals(const RbComplex* o) const;                     //!< Equals comparison
+		virtual void                print(std::ostream& o) const;
+		virtual void                printValue(std::ostream& o) const;
+		const StringVector&         getClass(void) const;                                   //!< Get class
 
         // Member variable functions
         virtual bool                addMember(const std::string& name, const std::string& type, RbObject* v);

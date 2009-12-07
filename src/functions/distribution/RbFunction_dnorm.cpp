@@ -15,17 +15,22 @@
  * $Id$
  */
 
-#include "RbFunction_dnorm.h"
-#include "RbDouble.h"
-#include "RbObject.h"
 #include "DAGNode.h"
+#include "RbDouble.h"
 #include "RbException.h"
+#include "RbFunction_dnorm.h"
+#include "RbObject.h"
 #include "RbStatistics.h"
 #include <cmath>
+#include <string>
 
-const StringVector RbFunction_dnorm::rbClass = StringVector("dnorm") + RbFunction::rbClass;
-
-/** Define the argument rules */
+/** Define the static class variables */
+const StringVector RbFunction_dnorm::rbClass    = StringVector("dnorm") + RbFunction::rbClass;
+const ArgumentRule** RbFunction_dnorm::argRules = { new ArgumentRule("x", "double"), 
+												    new ArgumentRule("mu", "double", new RbDouble(0.0)),
+													new ArgumentRule("sigma", "double", new RbDouble(1.0), new RbDouble(0.0), NULL),
+													NULL };
+const std::string RbFunction_dnorm::returnType  = "double";
 
 /** Add to symbol table */
 //static bool fxn_dnorm = SymbolTable::globalTable().add("dnorm", new RbFunction_dnorm());
@@ -35,20 +40,16 @@ const StringVector RbFunction_dnorm::rbClass = StringVector("dnorm") + RbFunctio
 RbFunction_dnorm::RbFunction_dnorm(void)
     : RbFunction(), value(new RbDouble(0)) {
 
-	argRules.push_back( ArgumentRule("x", "double") );
-	argRules.push_back( ArgumentRule("mu", "double", RbDouble(0.0)) );
-	argRules.push_back( ArgumentRule("sigma", "double", RbDouble(1.0), RbDouble(0.0), NULL) );
-	returnType = "double";
 } 
 
 /** Copy constructor */
 RbFunction_dnorm::RbFunction_dnorm(const RbFunction_dnorm& s)
     : RbFunction(s), value(new RbDouble(0)) {
     
-	argRules.push_back( ArgumentRule("x", "double") );
-	argRules.push_back( ArgumentRule("mu", "double", new RbDouble(0.0)) );
-	argRules.push_back( ArgumentRule("sigma", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	returnType = "double";
+	//argRules.push_back( ArgumentRule("x", "double") );
+	//argRules.push_back( ArgumentRule("mu", "double", new RbDouble(0.0)) );
+	//argRules.push_back( ArgumentRule("sigma", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
+	//returnType = "double";
 }
 
 /** Destructor, delete workspace */

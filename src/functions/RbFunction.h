@@ -30,7 +30,7 @@
 #include "RbObject.h"
 
 class DAGNode;
-
+class StringVector;
 
 /**
  * This is the interface and abstract base class for functions in
@@ -52,29 +52,29 @@ class DAGNode;
 class RbFunction :  public RbObject {
 
     public:
-            virtual ~RbFunction(void) {}                //!< Virtual destructor because of virtual functions
+		virtual                     ~RbFunction(void) {}                                    //!< Virtual destructor because of virtual functions
 
-        // Basic utility functions
-        virtual const StringVector& getClass() const;                                   //!< Get class vector 
+		// static variables
+        static const StringVector   rbClass;                                                //!< Static class attribute
+		static const ArgumentRule** argRules;                                               //!< Static argument rules
+		static const std::string    returnType;                                             //!< Return type
+
+		const StringVector&         getClass(void) const;                                   //!< Get class
 
         // Regular functions
-        std::vector<ArgumentRule>   getArgumentRules() const { return argRules; }       //!< Get argument rules
-        std::string                 getReturnType() const { return returnType; }        //!< Get return type
-        RbObject*                   execute();                          //!< Execute using processed args
-        RbObject*                   execute(const std::vector<Argument>& args);         //!< Execute function
-        void                        setArguments(const std::vector<Argument>& args);    //!< Process and set args
+        const ArgumentRule**        getArgumentRules(void) const { return argRules; }       //!< Get argument rules
+        std::string                 getReturnType(void) const { return returnType; }        //!< Get return type
+        RbObject*                   execute(void);                                          //!< Execute using processed args
+        RbObject*                   execute(const std::vector<Argument>& args);             //!< Execute function
+        void                        setArguments(const std::vector<Argument>& args);        //!< Process and set args
 
     protected:
-            RbFunction(void);                                                   //!< Basic constructor
-            RbFunction(const RbFunction& fn);                                   //!< Copy constructor
-
+                                    RbFunction(void);                                       //!< Basic constructor
+                                    RbFunction(const RbFunction& fn);                       //!< Copy constructor
         std::vector<DAGNode*>       processArguments(const std::vector<Argument>& args);    //!< Process args
 		virtual RbObject*           executeOperation(const std::vector<DAGNode*>& args)=0;  //!< Execute operation
-
-        std::vector<ArgumentRule>   argRules;               //!< Argument rules
-        std::string                 returnType;             //!< Return type
-        std::vector<DAGNode*>       processedArguments;     //!< Processed arguments
-        bool                        argumentsProcessed;     //!< Are arguments processed?
+        std::vector<DAGNode*>       processedArguments;                                     //!< Processed arguments
+        bool                        argumentsProcessed;                                     //!< Are arguments processed?
 };
 
 #endif

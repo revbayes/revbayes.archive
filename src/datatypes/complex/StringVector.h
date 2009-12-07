@@ -19,18 +19,16 @@
 #ifndef StringVector_H
 #define StringVector_H
 
-#include "RbComplex.h"
-
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include "RbComplex.h"
 
 class StringVector : public RbComplex {
 
     public:
             // Constructors and destructor
-	        StringVector() : RbComplex() {}                 //!< Default constructor (empty vector)
+	        StringVector(void);                             //!< Default constructor (empty vector)
 	        StringVector(int n);                            //!< Construct vector of length n of empty strings
             StringVector(std::string x);                    //!< Construct vector with one string x
 	        StringVector(int n, std::string x);             //!< Construct vector with n strings x
@@ -39,9 +37,9 @@ class StringVector : public RbComplex {
 	        virtual ~StringVector(void) {}                  //!< Virtual destructor, just in case
 
         // Basic utility functions
-        RbObject*               clone() const;                                  //!< Clone object
+        RbObject*               clone(void) const;                              //!< Clone object
         bool                    equals(const RbObject* obj) const;              //!< Equals comparison
-        const StringVector&     getClass() const;                               //!< Get class
+        const StringVector&     getClass(void) const;                           //!< Get class
         void                    printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string             toString(void) const;                           //!< Complete info about object
 
