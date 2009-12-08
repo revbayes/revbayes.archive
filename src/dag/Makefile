@@ -7,7 +7,10 @@ CXXFLAGS    = -O3 -ffast-math -Wall
 
 CFLAGS = $(CXXFLAGS)
 
-all: DAGNode.o ConstantNode.o DeterministicNode.o StochasticNode.o DAGNodeContainer.o
+all: RbObjectWrapper.o DAGNode.o ConstantNode.o DeterministicNode.o StochasticNode.o DAGNodeContainer.o
+
+RbObjectWrapper.o: RbObjectWrapper.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbObjectWrapper.cpp
 
 DAGNode.o: DAGNode.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c DAGNode.cpp

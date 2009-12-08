@@ -20,9 +20,11 @@
 #ifndef ConstantNode_H
 #define ConstantNode_H
 
-#include "RbObject.h"
 #include "DAGNode.h"
-#include "StringVector.h"
+
+class RbObject;
+class RbObjectWrapper;
+class StringVector;
 
 class ConstantNode : public DAGNode {
 
@@ -30,9 +32,9 @@ class ConstantNode : public DAGNode {
 	     ConstantNode(RbObject* val);            //!< Constructor from value
 	     ConstantNode(const ConstantNode& c);    //!< Copy constructor
 
-	     RbObject*               clone(void) const;                      //!< Clone this object
-	     bool                    equals(const RbObject* obj) const;  //!< Object comparison
-	     const StringVector&    getClass(void) const;                   //!< Get class vector
+	     ConstantNode*          clone(void) const;                          //!< Clone this object
+	     bool                   equals(const RbObjectWrapper* obj) const;   //!< Object comparison
+	     const StringVector&    getClass(void) const;                       //!< Get class vector
 	     void                   printValue(std::ostream& o) const;                    //!< Print value (for user)
          std::string            toString(void) const;                                 //!< General info on object
 
@@ -40,12 +42,6 @@ class ConstantNode : public DAGNode {
         // overloaded functions from DAGNode
         double                  getLnProbabilityRatio(void);
         double                  getLnProbability(void);
-
-        // overloaded operators
-        RbObject&               operator=(const RbObject& o);
-        DAGNode&            	operator=(const DAGNode& o);
-        ConstantNode&           operator=(const ConstantNode& o);
-        
         void    	            keepAffectedChildren(void);                         //!< Keep value of affected nodes recursively
         void	                keepAffectedParents(void);                         //!< Keep value of affected nodes recursively
         void         	  		restoreAffectedChildren(void);                      //!< Restore affected nodes recursively

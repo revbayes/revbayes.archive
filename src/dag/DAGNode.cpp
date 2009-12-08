@@ -138,9 +138,9 @@ void DAGNode::addMove(RbMove* m, double w) {
  * objects we need to compare, not their current values.
  *
  */
-bool DAGNode::equals(const RbObject* obj) const {
+bool DAGNode::equals(const RbObjectWrapper* x) const {
 
-    const DAGNode* d = dynamic_cast<const DAGNode*>(obj);
+    const DAGNode* d = dynamic_cast<const DAGNode*>(x);
 
     if (d == NULL)
         return false;
@@ -169,7 +169,7 @@ bool DAGNode::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const StringVector& DAGNode::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::DAGNode::name) + RbObject::getClass();
+    static StringVector rbClass = StringVector(RbNames::DAGNode::name) + RbObjectWrapper::getClass();
     return rbClass;
 }
 

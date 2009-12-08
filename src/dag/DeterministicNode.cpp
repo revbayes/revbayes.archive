@@ -39,9 +39,11 @@ DeterministicNode::DeterministicNode(const DeterministicNode& d)
     : DAGNode(d), function(d.function) {
 }
 
-RbObject* DeterministicNode::clone() const {
-	DeterministicNode* x = new DeterministicNode(*this);
-	return (RbObject*) x;
+
+/** Clone this object */
+DeterministicNode* DeterministicNode::clone() const {
+
+	return new DeterministicNode(*this);
 }
 
 
@@ -191,75 +193,6 @@ RbObject* DeterministicNode::getValue() {
     return value;
 }
 
-RbObject& DeterministicNode::operator=(const RbObject& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const DeterministicNode& x = dynamic_cast<const DeterministicNode&> (obj);
-
-        DeterministicNode& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const DeterministicNode& x = dynamic_cast<const DeterministicNode&> (*(obj.convertTo("const_node")));
-
-            DeterministicNode& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to const_node");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-DAGNode& DeterministicNode::operator=(const DAGNode& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const DeterministicNode& x = dynamic_cast<const DeterministicNode&> (obj);
-
-        DeterministicNode& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const DeterministicNode& x = dynamic_cast<const DeterministicNode&> (*(obj.convertTo("const_node")));
-
-            DeterministicNode& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to const_node");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-DeterministicNode& DeterministicNode::operator=(const DeterministicNode& obj) {
-
-    changed = obj.changed;
-    children = obj.children;
-    (*lastMove) = (*obj.lastMove);
-    monitors = obj.monitors;
-    (*moves) = (*obj.moves);
-    parents = obj.parents;
-    (*storedValue) = (*obj.storedValue);
-    touchedProbability = obj.touchedProbability;
-    touchedLikelihood = obj.touchedLikelihood;
-    (*value) = (*obj.value);
-
-    return (*this);
-}
 
 /**
  * @brief Print function

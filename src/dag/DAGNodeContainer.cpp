@@ -20,6 +20,7 @@
 #include "DAGNodeContainer.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "StringVector.h"
 
 #include <iostream>
 #include <sstream>
@@ -32,6 +33,7 @@ DAGNodeContainer::DAGNodeContainer(DAGNode* x) {
 
     valueType = x->getValue()->getType();
     length    = IntVector(1);
+    value     = NULL;
 }
 
 
@@ -44,6 +46,7 @@ DAGNodeContainer::DAGNodeContainer(int n, DAGNode* x) {
 
     valueType = x->getValue()->getType();
     length    = IntVector(n);
+    value     = NULL;       // Fill in if needed
 }
 
 
@@ -55,6 +58,7 @@ DAGNodeContainer::DAGNodeContainer(int n, const std::string& type) {
 
     valueType = type;
     length    = IntVector(n);
+    value     = NULL;       // Fill in if needed
 }
 
 
@@ -77,6 +81,7 @@ DAGNodeContainer::DAGNodeContainer(const IntVector& len, DAGNode* x) {
 
     valueType = x->getValue()->getType();
     length    = len;
+    value     = NULL;       // Fill in if needed
 }
 
 
@@ -98,15 +103,31 @@ DAGNodeContainer::DAGNodeContainer(const IntVector& len, const std::string& type
 
     valueType = type;
     length    = len;
+    value     = NULL;       // Fill in if needed
 }
 
 
-/** Copy constructor needed to make sure nodes have independent values */
+/** Copy constructor needed to make sure nodes elements are independent */
 DAGNodeContainer::DAGNodeContainer(const DAGNodeContainer& x)
-    : RbObject(x) {
+    : RbObjectWrapper(x) {
 
     for (std::vector<DAGNode*>::const_iterator i=x.nodes.begin(); i!=x.nodes.end(); i++)
         nodes.push_back((DAGNode*)(*i)->clone());
+
+    if (x.value == NULL)
+        value = NULL;
+    else
+        value = x.value->clone();       // Fill in if needed
+}
+
+
+/** Destructor needed to destroy elements, and value, if it has been filled in */
+DAGNodeContainer::~DAGNodeContainer() {
+
+    for (std::vector<DAGNode*>::const_iterator i=nodes.begin(); i!=nodes.end(); i++)
+        delete (*i);
+    
+    delete value;
 }
 
 
@@ -114,7 +135,7 @@ DAGNodeContainer::DAGNodeContainer(const DAGNodeContainer& x)
 DAGNodeContainer& DAGNodeContainer::operator=(const DAGNodeContainer& x) {
 
     if (this != &x) {
-        RbObject::operator=(x);
+        RbObjectWrapper::operator=(x);
 
         valueType = x.valueType;
         length = x.length;
@@ -127,99 +148,40 @@ DAGNodeContainer& DAGNodeContainer::operator=(const DAGNodeContainer& x) {
             nodes.push_back((DAGNode*)((*i)->clone()));         
     }
 
+    value     = NULL;       // Fill in if needed
+
     return (*this);
 }
 
 
-/** Brief info about object */
-std::string DAGNodeContainer::briefInfo() const {
-
-    std::ostringstream o;
-    o << "DAGNodeContainer:  type = " << valueType << " length = ";
-    length.printValue(o);
-
-    return o.str();
-}
-
-
 /** Clone function */
-RbObject* DAGNodeContainer::clone() const {
+DAGNodeContainer* DAGNodeContainer::clone() const {
 
-    return (RbObject*)(new DAGNodeContainer(*this));
-}
-
-
-/** Pointer-based equals comparison */
-bool DAGNodeContainer::equals(const RbObject* obj) const {
-
-    // Use built-in fast down-casting first
-    const DAGNodeContainer* p = dynamic_cast<const DAGNodeContainer*> (obj);
-    if (p != NULL) {
-        bool result = true;
-        result = result && valueType == p->valueType;
-        result = result && length.equals(&(p->length));
-        if (result == true) {
-            for (size_t i=0; i<nodes.size(); i++)
-                result = result && nodes[i] == p->nodes[i];
-        }
-        return result;
-    }
-
-    // Try converting the value to a DAGNodeContainer
-    p = dynamic_cast<const DAGNodeContainer*> (obj->convertTo(getType()));
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    result = result && valueType == p->valueType;
-    result = result && length.equals(&(p->length));
-    if (result == true) {
-        for (size_t i=0; i<nodes.size(); i++)
-            result = result && nodes[i] == p->nodes[i];
-    }
-
-    delete p;
-    return result;
+    return new DAGNodeContainer(*this);
 }
 
 
 /** Get class vector describing type of object */
 const StringVector& DAGNodeContainer::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::DAGNodeContainer::name) + RbObject::getClass();
+    static StringVector rbClass = StringVector(RbNames::DAGNodeContainer::name) + RbObjectWrapper::getClass();
     return rbClass;
 }
 
 
 /** Get element */
-RbObject* DAGNodeContainer::getElement(const IntVector& index) const {
+const DAGNode* DAGNodeContainer::getElement(const IntVector& index) const {
+
+    // Check that the index is to an element
+    if (index.size() != length.size())
+        throw (RbException("Not index to element"));
 
     // Get offset; this throws an error if something wrong with index
     int offset = getOffset(index);
 
-    // Check if the parser wants a subcontainer
-    if (index.size() < length.size()) {
-
-        // Create a new vector of the right size
-        IntVector tempLength;
-        for (size_t i=index.size(); i<length.size(); i++)
-            tempLength.push_back(length[i]);
-        DAGNodeContainer *temp = new DAGNodeContainer(tempLength, valueType);
-
-        // Fill it with content
-        int numSubvals = 1;
-        for (size_t i=length.size()-1; i>=index.size(); i--)
-            numSubvals *= length[i];
-        for (int i=0; i<numSubvals; i++)
-            temp->nodes[i] = nodes[i+offset];
-
-        return temp;
-    }
-
-    // The parser wants an element
-    return nodes[offset]->clone();
+    // Return element
+    return nodes[offset];
 }
-
 
 
 /** Get next index so we can iterate through a container */
@@ -259,7 +221,45 @@ int DAGNodeContainer::getOffset(const IntVector& index) const {
 }
 
 
-/** Set element or elements */
+//** Get subcontainer */
+DAGNodeContainer* DAGNodeContainer::getSubContainer(const IntVector& index) const {
+
+    // Get offset; this throws an error if something wrong with index
+    int offset = getOffset(index);
+
+    // Create a new vector of the right size
+    IntVector tempLength;
+    for (size_t i=index.size(); i<length.size(); i++)
+        tempLength.push_back(length[i]);
+    DAGNodeContainer *temp = new DAGNodeContainer(tempLength, valueType);
+
+    // Fill it with content
+    int numSubvals = 1;
+    for (size_t i=length.size()-1; i>=index.size(); i--)
+        numSubvals *= length[i];
+    for (int i=0; i<numSubvals; i++)
+        temp->nodes[i] = nodes[i+offset];
+
+    return temp;
+}
+
+
+/** Get value: convert to object container with the values */
+const RbObject* DAGNodeContainer::getValue(void) const {
+
+    // TODO: Implement
+
+    // Allocate object container if needed
+
+    // Cycle through container and set object container values
+
+    // Return object container
+
+    return NULL;
+}
+
+
+/** Set element or elements from object */
 void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
 
     // Resize if necessary
@@ -285,11 +285,12 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
     if (index.size() < length.size()) {
 
         // Check that the source is a container
-        if (val->getElementDim() == 0)
+        RbComplex* source = dynamic_cast<RbComplex*>(val);
+        if (source->getElementDim() == 0)
             throw (RbException("Source does not have elements"));
     
         // Count number of elements
-        const IntVector& sourceLen = val->getElementLength();
+        const IntVector& sourceLen = source->getElementLength();
         int numSourceElements = 1;
         for (size_t i=0; i<sourceLen.size(); i++)
             numSourceElements *= sourceLen[i];
@@ -305,14 +306,10 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
         for (IntVector i=IntVector(sourceLen.size(), 0); i[0]<sourceLen[0]; getNextIndex(i, sourceLen)) {
 
             // Do the assignment
-            RbObject* elem = val->getElement(i);
+            const RbObject* elem = source->getElement(i);
             if (elem->isType(valueType)) {
                 delete nodes[offset];
-                nodes[offset] = new ConstantNode(elem);
-            }
-            else if (elem->isType(RbNames::DAGNode::name) && ((DAGNode*)(elem))->getValue()->isType(valueType)) {
-                delete nodes[offset];
-                nodes[offset] = (DAGNode*)(elem);
+                nodes[offset] = new ConstantNode(elem->clone());
             }
             else
                 throw (RbException("Incompatible types"));
@@ -320,6 +317,7 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
             // Increase offset for target nodes
             offset++;
         }
+        delete val;     // We are responsible for deleting the useless container
         return;
     }
 
@@ -328,9 +326,80 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
         delete nodes[offset];
         nodes[offset] = new ConstantNode(val);
     }
-    else if (val->isType(RbNames::DAGNode::name) && ((DAGNode*)(val))->getValue()->isType(valueType)) {
+    else
+        throw (RbException("Incompatible types"));
+}
+
+
+/** Set element from DAG node wrapper */
+void DAGNodeContainer::setElement(const IntVector& index, RbObjectWrapper* val) {
+
+    // Resize if necessary
+    if (index.size() == length.size()) {
+        IntVector tempLen  = length;
+        bool      growSize = false;
+        for (size_t i=0; i<index.size(); i++) {
+            if (index[i] > tempLen[i]) {
+                tempLen[i] = index[i];
+                growSize = true;
+            }
+            else if (index[i] < 0)
+                throw (RbException("Nonpositive index"));
+        }
+        if (growSize)
+            resize(tempLen);
+    }
+
+    // Get offset; also checks for errors in index
+    int offset = getOffset(index);
+
+    // Check if parser wants to set multiple elements
+    if (index.size() < length.size()) {
+
+        // Check that the source is a container
+        DAGNodeContainer* source = dynamic_cast<DAGNodeContainer*>(val);
+        if (source->getElementDim() == 0)
+            throw (RbException("Source does not have elements"));
+    
+        // Count number of elements
+        const IntVector& sourceLen = source->getElementLength();
+        int numSourceElements = 1;
+        for (size_t i=0; i<sourceLen.size(); i++)
+            numSourceElements *= sourceLen[i];
+        int numTargetElements = 1;
+        for (size_t i=index.size(); i<length.size(); i++)
+            numTargetElements *= length[i];
+
+        // Throw an error if a mismatch
+        if (numSourceElements != numTargetElements)
+            throw (RbException("Unequal source and target sizes"));
+
+        // Cycle through assignments
+        for (IntVector i=IntVector(sourceLen.size(), 0); i[0]<sourceLen[0]; getNextIndex(i, sourceLen)) {
+
+            // Do the assignment
+            const DAGNode* elem = source->getElement(i);
+            if (elem->getValue()->isType(valueType)) {
+                delete nodes[offset];
+                nodes[offset] = elem->clone();
+            }
+            else
+                throw (RbException("Incompatible types"));
+
+            // Increase offset for target nodes
+            offset++;
+        }
+        delete val;     // We are responsible for deleting the useless container
+        return;
+    }
+
+    // Parser wants to set a single element
+    DAGNode* theNode = dynamic_cast<DAGNode*>(val);
+    if (theNode == NULL)
+        throw (RbException("Unknown wrapper type"));
+    if (theNode->getValue()->isType(valueType)) {
         delete nodes[offset];
-        nodes[offset] = (DAGNode*)(val);
+        nodes[offset] = theNode;
     }
     else
         throw (RbException("Incompatible types"));

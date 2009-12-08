@@ -27,13 +27,13 @@
 
 #include "DAGNode.h"
 #include "IntVector.h"
-#include "RbObject.h"
+#include "RbObjectWrapper.h"
 
 #include <ostream>
 #include <vector>
 
 
-class DAGNodeContainer : public RbObject {
+class DAGNodeContainer : public RbObjectWrapper {
 
     public:
             // Constructors and destructor
@@ -46,37 +46,41 @@ class DAGNodeContainer : public RbObject {
             ~DAGNodeContainer();                                //!< Destructor
 
         // Assignment operator
-        DAGNodeContainer&   operator=(const DAGNodeContainer& x);   //!< Assignment operator
+        DAGNodeContainer&       operator=(const DAGNodeContainer& x);               //!< Assignment operator
 
         // Basic utility functions
-        std::string         briefInfo() const;                          //!< Brief info about object
-        RbObject*           clone() const;                              //!< Clone object
-        bool                equals(const RbObject* obj) const;          //!< Equals comparison
-        const StringVector& getClass() const;                           //!< Get class
-        void                printValue(std::ostream& o) const;          //!< Print value (for user)
-        std::string         toString() const;                           //!< Complete info about object
+        std::string             briefInfo() const;                                  //!< Brief info about object
+        DAGNodeContainer*       clone() const;                                      //!< Clone object
+        bool                    equals(const RbObjectWrapper* x);                   //!< Equals comparison
+        const StringVector&     getClass() const;                                   //!< Get class
+        const RbObject*         getValue() const;                                   //!< Get value
+        void                    printValue(std::ostream& o) const;                  //!< Print value (for user)
+        std::string             toString() const;                                   //!< Complete info about object
 
         // Element access functions
-        RbObject*           getElement(const IntVector& index) const;           //!< Get element
-        int                 getElementDim() const { return length.size(); }     //!< Get dimensions
-        const IntVector&    getElementLength() const { return length; }         //!< Get length of dimensions
-        const std::string&  getElementType() const { return valueType; }        //!< Get element value type
-        void                setElement(const IntVector& index, RbObject* val);  //!< Set element
-        void                setElementLength(const IntVector& len);             //!< Reorganize container
+        const DAGNode*          getElement(const IntVector& index) const;           //!< Get element
+        int                     getElementDim() const { return length.size(); }     //!< Get dimensions
+        const IntVector&        getElementLength() const { return length; }         //!< Get length of dimensions
+        const std::string&      getElementType() const { return valueType; }        //!< Get element value type
+        DAGNodeContainer*       getSubContainer(const IntVector& index) const;      //!< Get subcontainer 
+        void                    setElement(const IntVector& index, RbObjectWrapper* val);   //!< Set element 
+        void                    setElement(const IntVector& index, RbObject* val);  //!< Set element from object
+        void                    setElementLength(const IntVector& len);             //!< Reorganize container
 
         // Regular functions
-        void                resize(int n) { resize (IntVector(n)); }    //!< Resize vector
-        void                resize(const IntVector& len);               //!< Resize container
-        size_t              size() const { return nodes.size(); }       //!< Get number of elements
+        void                    resize(int n) { resize (IntVector(n)); }            //!< Resize vector
+        void                    resize(const IntVector& len);                       //!< Resize container
+        size_t                  size() const { return nodes.size(); }               //!< Get number of elements
 
     protected:
-        void                getNextIndex(IntVector& index, const IntVector& len) const; //!< Iteration 
-        int                 getOffset(const IntVector& index) const;    //!< Get offset in nodes vector
+        void                    getNextIndex(IntVector& index, const IntVector& len) const; //!< Iteration 
+        int                     getOffset(const IntVector& index) const;            //!< Get offset in nodes vector
         
     private:
         std::string             valueType;  //!< Element value type (type of value of DAG nodes)
         IntVector               length;     //!< Length in each dimension
 	    std::vector<DAGNode*>   nodes;      //!< Vector of nodes
+        RbObject*               value;      //!< Holder of value; only fill in if somebody asks
 };
 
 #endif

@@ -20,13 +20,13 @@
 #ifndef DAGNode_H
 #define DAGNode_H
 
-#include "RbObject.h"
-#include "StringVector.h"
-#include "RbComplex.h"
+#include "RbObjectWrapper.h"
 
 class RbMonitor;
 class RbMove;
 class RbMoveSchedule;
+class RbObject;
+class StringVector;
 
 #include <set>
 
@@ -63,7 +63,7 @@ class RbMoveSchedule;
  * DAGNode objects. Syntax elements produced by the parser are also converted to
  * unnamed DAGNode objects when representing dynamically evaluated expressions.
  */
-class DAGNode : public RbObject {
+class DAGNode : public RbObjectWrapper {
 
     public:
 	        virtual ~DAGNode(void);     //!< Destructor
@@ -75,18 +75,18 @@ class DAGNode : public RbObject {
 	    void						addMove(RbMove* m, double w);
 	    void                        addParentNode(DAGNode* p) { parents.insert(p); }
 	    void						assignMoveSchedule(RbMoveSchedule* ms) { moves = ms; }
-	    virtual RbObject*    		clone() const = 0;                                  //!< Clone this node
-        virtual bool        		 equals(const RbObject *obj) const;                  //!< Compare DAG nodes
+	    virtual DAGNode*            clone() const = 0;                                  //!< Clone this node
+        virtual bool        		 equals(const RbObjectWrapper *x) const;            //!< Compare DAG nodes
 	    std::set<DAGNode*>& 		 getChildrenNodes(void) { return children; }         //!< Get children nodes
 	    double						 getLnLikelihoodRatio(void);
 	    double						 getLnLikelihood(void);
 	    double                       getLnPriorRatio(void);
 	    virtual double               getLnProbabilityRatio(void) = 0;
 	    virtual double               getLnProbability(void) = 0;
+        const RbObject*             getValue(void) const { return value; }              //!< Get value
 	    std::set<DAGNode*>& 		getParentNodes(void) { return parents; }            //!< Get parent nodes
-	    RbObject*           		getStoredValue() { return storedValue; }            //!< Get stored value
+	    const RbObject*             getStoredValue() const { return storedValue; }      //!< Get stored value
 	    double						getUpdateWeight(void);
-        RbObject*           		getValue() { return value; }                        //!< Get value
         bool						hasAttachedMove(void) { return moves != NULL; }
         void                		keep() { touchedProbability = touchedLikelihood = changed = false; }   //!< Keep current value of node
         virtual void                keepAffectedChildren() = 0;                         //!< Keep value of affected nodes recursively
@@ -105,10 +105,6 @@ class DAGNode : public RbObject {
         void                		touch() { touchedLikelihood = touchedProbability = true; }             //!< Mark node for recalculation
         virtual void           		touchAffectedChildren() = 0;                        //!< Mark affected nodes recursively
         virtual void           		touchAffectedParents() = 0;                        //!< Mark affected nodes recursively
-
-        // overloaded operators
-        virtual DAGNode&            operator=(const DAGNode& o) = 0;
-        
         
 	    bool                		isChanged(void) const { return changed; }   //!< Has the node recalculated its value?
         bool                		isTouched() const { return touchedLikelihood || touchedProbability; }       //!< Is the node marked for recalculation?
@@ -124,7 +120,7 @@ class DAGNode : public RbObject {
         void                        store();
 
 	    RbObject*           		storedValue;    //!< Holds the previous value
-        RbObject*           		value;          //!< Holds the current value
+	    RbObject*           		value;          //!< Holds the current value
         
         double						storedLikelihood;
         double						currentLikelihood;

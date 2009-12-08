@@ -75,74 +75,11 @@ StochasticNode::~StochasticNode() {
 		delete distribution;
 }
 
-RbObject& StochasticNode::operator=(const RbObject& obj) {
 
-    try {
-        // Use built-in fast down-casting first
-        const StochasticNode& x = dynamic_cast<const StochasticNode&> (obj);
+/** Clone this object */
+StochasticNode* StochasticNode::clone(void) const {
 
-        StochasticNode& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const StochasticNode& x = dynamic_cast<const StochasticNode&> (*(obj.convertTo("const_node")));
-
-            StochasticNode& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to const_node");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-DAGNode& StochasticNode::operator=(const DAGNode& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const StochasticNode& x = dynamic_cast<const StochasticNode&> (obj);
-
-        StochasticNode& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const StochasticNode& x = dynamic_cast<const StochasticNode&> (*(obj.convertTo("const_node")));
-
-            StochasticNode& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to const_node");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-StochasticNode& StochasticNode::operator=(const StochasticNode& obj) {
-
-    changed = obj.changed;
-    children = obj.children;
-    (*lastMove) = (*obj.lastMove);
-    monitors = obj.monitors;
-    (*moves) = (*obj.moves);
-    parents = obj.parents;
-    (*storedValue) = (*obj.storedValue);
-    touchedProbability = obj.touchedProbability;
-    touchedLikelihood = obj.touchedLikelihood;
-    (*value) = (*obj.value);
-
-    return (*this);
+    return new StochasticNode(*this);
 }
 
 

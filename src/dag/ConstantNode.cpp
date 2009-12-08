@@ -61,9 +61,9 @@ ConstantNode::ConstantNode(const ConstantNode &d)
  * This is the clone function for ConstantNode objects.
  *
  */
-RbObject* ConstantNode::clone(void) const {
+ConstantNode* ConstantNode::clone(void) const {
 
-    return (ConstantNode*)(new ConstantNode(*this));
+    return new ConstantNode(*this);
 }
 
 
@@ -149,23 +149,22 @@ void ConstantNode::restoreAffectedParents() {
  * their current values.
  *
  */
-bool ConstantNode::equals(const RbObject* obj) const {
+bool ConstantNode::equals(const RbObjectWrapper* x) const {
 
-	const ConstantNode* c = dynamic_cast<const ConstantNode*>(obj);
-
-    if (c == NULL)
+	const ConstantNode* p = dynamic_cast<const ConstantNode*>(x);
+    if (p == NULL)
         return false;
 
-    if (value != c->value || storedValue != c->storedValue)
+    if (value != p->value || storedValue != p->storedValue)
         return false;
 
-    if (changed != c->changed || touchedProbability != c->touchedProbability || touchedLikelihood != c->touchedLikelihood)
+    if (changed != p->changed || touchedProbability != p->touchedProbability || touchedLikelihood != p->touchedLikelihood)
         return false;
 
-    if (children.size() != c->children.size() || parents.size() != c->parents.size())
+    if (children.size() != p->children.size() || parents.size() != p->parents.size())
         return false;
 
-    for (std::set<DAGNode*>::iterator i=c->children.begin(); i!=c->children.end(); i++)
+    for (std::set<DAGNode*>::iterator i=p->children.begin(); i!=p->children.end(); i++)
         if (children.find(*i) == children.end())
             return false;
 
@@ -180,75 +179,6 @@ double ConstantNode::getLnProbability() {
     return 0.0;
 }
 
-RbObject& ConstantNode::operator=(const RbObject& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const ConstantNode& x = dynamic_cast<const ConstantNode&> (obj);
-
-        ConstantNode& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const ConstantNode& x = dynamic_cast<const ConstantNode&> (*(obj.convertTo("const_node")));
-
-            ConstantNode& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to const_node");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-DAGNode& ConstantNode::operator=(const DAGNode& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const ConstantNode& x = dynamic_cast<const ConstantNode&> (obj);
-
-        ConstantNode& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const ConstantNode& x = dynamic_cast<const ConstantNode&> (*(obj.convertTo("const_node")));
-
-            ConstantNode& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to const_node");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-ConstantNode& ConstantNode::operator=(const ConstantNode& obj) {
-
-    changed = obj.changed;
-    children = obj.children;
-    (*lastMove) = (*obj.lastMove);
-    monitors = obj.monitors;
-    (*moves) = (*obj.moves);
-    parents = obj.parents;
-    (*storedValue) = (*obj.storedValue);
-    touchedProbability = obj.touchedProbability;
-    touchedLikelihood = obj.touchedLikelihood;
-    (*value) = (*obj.value);
-
-    return (*this);
-}
 
 /**
  * @brief Print constant node

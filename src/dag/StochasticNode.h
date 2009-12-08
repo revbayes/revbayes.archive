@@ -28,17 +28,13 @@ class StochasticNode : public DAGNode {
 
     public:
 	                StochasticNode(Distribution* d);         //!< Constructor from distribution
-	                StochasticNode(const StochasticNode& s);    //!< Copy constructor
-	        virtual ~StochasticNode();                          //!< Destructor
-
-        RbObject&           operator=(const RbObject& o);
-        DAGNode&            operator=(const DAGNode& o);
-        StochasticNode&     operator=(const StochasticNode& o);
+	                StochasticNode(const StochasticNode& s); //!< Copy constructor
+	        virtual ~StochasticNode();                       //!< Destructor
 
        // Basic utility functions
-        StochasticNode*     clone() const { return new StochasticNode(*this); } //!< Clone the stochastic node
+        StochasticNode*     clone() const;                  //!< Clone the stochastic node
         const StringVector& getClass() const;               //!< Get class vector
-        std::string     toString() const;
+        std::string         toString() const;               //!< Complete info about object
 
         // Regular functions
         void            initializeValue(RbObject* v);

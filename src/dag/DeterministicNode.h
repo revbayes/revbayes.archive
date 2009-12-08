@@ -40,7 +40,7 @@ class DeterministicNode : public DAGNode {
         DeterministicNode&  operator=(const DeterministicNode& o);
 
         // Standard utility functions
-        RbObject*  			clone() const;									    //!< Clone this object
+        DeterministicNode*  clone() const;									    //!< Clone this object
         bool                equals(const RbObject* d) const;           //!< Compare
          const StringVector&    getClass() const;                               //!< Get class
 	     void                   printValue(std::ostream& o) const;                    //!< Print value (for user)
