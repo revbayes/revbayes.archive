@@ -30,12 +30,10 @@ class RbUndefined : public RbObject {
             RbUndefined(void);                         //!< Constructor from double
             RbUndefined(const RbUndefined& v);
 
-        static const StringVector   rbClass;            //!< Static class attribute
-
         // Basic utility functions
         RbObject*                  clone() const { return new RbUndefined(*this); }   //!< Clone object
         bool                       equals(const RbObject* obj) const;              //!< Equals comparison
-        const StringVector&        getClass() const { return rbClass; }            //!< Get class
+        const StringVector&        getClass() const;                               //!< Get class
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object
 

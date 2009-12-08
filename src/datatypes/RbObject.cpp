@@ -42,33 +42,12 @@ RbObject* RbObject::convertTo(const std::string& type) const {
     return NULL;    // Dummy return
 }
 
+
 /** Get class vector describing type of object */
 const StringVector& RbObject::getClass(void) const { 
 
     static StringVector rbClass = StringVector(RbNames::RbObject::name);
 	return rbClass; 
-}
-
-
-/** Get element */
-RbObject* RbObject::getElement(const IntVector& index) const {
-
-    throw (RbException("Object does not have elements"));
-    return NULL;    // Dummy return
-}
-
-
-/** Get element length in each dimension */
-const IntVector& RbObject::getElementLength() const {
-
-    throw (RbException("Object does not have elements"));
-}
-
-
-/** Get element type */
-const std::string& RbObject::getElementType() const {
-
-    throw (RbException("Object does not have elements"));
 }
 
 
@@ -97,13 +76,6 @@ bool RbObject::isType(const std::string& type) const {
     }
 
 	return false;
-}
-
-
-/** Set element */
-void RbObject::setElement(const IntVector& index, RbObject* val) {
-
-    throw (RbException("Object does not have elements"));
 }
 
 

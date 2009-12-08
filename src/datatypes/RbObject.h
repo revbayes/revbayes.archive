@@ -26,14 +26,13 @@ class IntVector;
 class RbObject {
 
     public:
-            // Constructors and destructor
-		virtual						~RbObject(void) { }                                 //! Virtual destructor because of virtual functions
+		virtual						~RbObject(void) { }                                 //! Virtual destructor
 
         // Basic utility functions you HAVE TO override
         virtual RbObject*           clone(void) const = 0;                              //!< Clone object
         virtual bool                equals(const RbObject* x) const = 0;                //!< Equals comparison
-        const StringVector&         getClass(void) const;                               //!< Get class vector
-        virtual void                printValue(std::ostream& o) const = 0;              //!< Print value (for user)
+        virtual const StringVector& getClass(void) const;                               //!< Get class vector
+        virtual void                printValue(std::ostream& o) const = 0;              //!< Print value for user
         virtual std::string         toString(void) const = 0;                           //!< Complete info about object
 
         // Basic utility functions you may want to override
@@ -46,19 +45,8 @@ class RbObject {
         bool                        isType(const std::string& type) const;              //!< Is the object of class type?
         void                        print(std::ostream& o) const;                       //!< Print complete object info
 
-        // Element access functions: override if object contains elements
-        virtual RbObject*           getElement(const IntVector& index) const;           //!< Get element (a copy)
-        virtual int                 getElementDim(void) const { return 0; }             //!< Get dimensions
-        virtual const IntVector&    getElementLength(void) const;                       //!< Get length in each dim
-        virtual const std::string&  getElementType(void) const;                         //!< Get element type
-        virtual void                setElement(const IntVector& index, RbObject* val);  //!< Set element
-
-        // TODO: Implement this functionality
-        //virtual void                dump(std::ostream& o) const {}                    //!< Dump to ostream c
-        //virtual void                resurrect(const RbDumpState& x) = 0;              //!< Resurrect from dumped state
-
-    protected:
-		RbObject(void) { }                                                              //!< Protected constructor; make it impossible to create objects
+   protected:
+		                            RbObject(void) {}                   //!< Make it impossible to create objects
 };
 
 #endif

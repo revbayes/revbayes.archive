@@ -5,7 +5,6 @@
 
 
 
-const StringVector RbUndefined::rbClass = StringVector(RbNames::Undefined::name) + RbObject::rbClass;
 
 RbUndefined::RbUndefined(void) {
 
@@ -18,6 +17,15 @@ RbUndefined::RbUndefined(const RbUndefined& v) {
 bool RbUndefined::equals(const RbObject* obj) const {
 	return  obj->isType(RbNames::Undefined::name);
 }
+
+
+/** Get class vector describing type of object */
+const StringVector& RbUndefined::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::RbUndefined::name) + RbObject::getClass();
+    return rbClass;
+}
+
 
 void RbUndefined::printValue(std::ostream& o) const {
 
