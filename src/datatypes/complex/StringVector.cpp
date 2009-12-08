@@ -64,6 +64,20 @@ StringVector::StringVector(std::vector<std::string>& x) : RbComplex() {
 
 
 /** Concatenation with operator+ */
+bool StringVector::operator==(const StringVector& sv) const {
+
+	if ( size() != sv.size() )
+		return false;
+	for (size_t i=0; i<size(); i++)
+		{
+		if (value[i] != sv.value[i])
+			return false;
+		}
+	return true;
+}
+
+
+/** Concatenation with operator+ */
 StringVector StringVector::operator+(const StringVector& x) const {
 
     StringVector tempVec = *this;

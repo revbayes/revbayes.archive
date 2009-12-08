@@ -43,10 +43,16 @@ RbFunction::RbFunction(const RbFunction &fn) : RbObject() {
 /** Get class vector describing type of object */
 const StringVector& RbFunction::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RbNames::RbFunction::name) + RbObject::getClass();
+    static StringVector rbClass = StringVector(RbFunction_name) + RbObject::getClass();
 	return rbClass; 
 }
 
+bool RbFunction::equals(const RbObject* obj) const {
+
+	std::StringVector& a = obj->getClass();
+	std::StringVector& b = getClass();
+	return (a == b);
+}
 
 RbObject* RbFunction::execute(const std::vector<Argument>& args) {
 
@@ -62,6 +68,10 @@ RbObject* RbFunction::execute() {
     }
     RbObject* result = executeOperation(processedArguments);
     return result;
+}
+
+void RbFunction::printValue(std::ostream& o) const {
+
 }
 
 /**
@@ -111,7 +121,7 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
     }
 
     /* Initialize vector of processed arguments */
-    std::vector<DAGNode*>   arguments(argSize);
+    std::vector<DAGNode*> arguments(argSize);
     for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++)
         (*i) = NULL;
 

@@ -52,21 +52,23 @@ class StringVector;
 class RbFunction :  public RbObject {
 
     public:
-		virtual                     ~RbFunction(void) { }                                   //!< Virtual destructor because of virtual functions
-        virtual const ArgumentRule** getArgumentRules(void) const = 0;                      //!< Get argument rules
-		const StringVector&         getClass(void) const;                                   //!< Get class
-        virtual const std::string   getReturnType(void) const = 0;                          //!< Get return type
-        RbObject*                   execute(void);                                          //!< Execute using processed args
-        RbObject*                   execute(const std::vector<Argument>& args);             //!< Execute function
-        void                        setArguments(const std::vector<Argument>& args);        //!< Process and set args
+		virtual                     ~RbFunction(void) { }                                           //!< Virtual destructor because of virtual functions
+        virtual const ArgumentRule** getArgumentRules(void) const = 0;                              //!< Get argument rules
+		const StringVector&         getClass(void) const;                                           //!< Get class
+        virtual const std::string   getReturnType(void) const = 0;                                  //!< Get return type
+		bool                        equals(const RbObject* obj) const;                              //!< Check that the functions are the same
+        RbObject*                   execute(void);                                                  //!< Execute using processed args
+        RbObject*                   execute(const std::vector<Argument>& args);                     //!< Execute function
+        void                        setArguments(const std::vector<Argument>& args);                //!< Process and set args
+		void                        printValue(std::ostream& o) const;                              //!< Print the general information on the function
 
     protected:
-                                    RbFunction(void);                                       //!< Basic constructor
-                                    RbFunction(const RbFunction& fn);                       //!< Copy constructor
-        std::vector<DAGNode*>       processArguments(const std::vector<Argument>& args);    //!< Process args
-		virtual RbObject*           executeOperation(const std::vector<DAGNode*>& args)=0;  //!< Execute operation
-        std::vector<DAGNode*>       processedArguments;                                     //!< Processed arguments
-        bool                        argumentsProcessed;                                     //!< Are arguments processed?
+                                    RbFunction(void);                                               //!< Basic constructor
+                                    RbFunction(const RbFunction& fn);                               //!< Copy constructor
+        std::vector<DAGNode*>       processArguments(const std::vector<Argument>& args);            //!< Process args
+		virtual const RbObject*     executeOperation(const std::vector<DAGNode*>& args) const = 0;  //!< Execute operation
+        std::vector<DAGNode*>       processedArguments;                                             //!< Processed arguments
+        bool                        argumentsProcessed;                                             //!< Are arguments processed?
 };
 
 #endif

@@ -44,6 +44,7 @@ class StringVector : public RbComplex {
         std::string             toString(void) const;                           //!< Complete info about object
 
         // Overloaded operators and built-in functions
+        bool                    operator==(const StringVector& sv) const;       //!< Equality
         StringVector            operator+(const StringVector& sv) const;        //!< Concatenate
 	    std::string&            operator[](int i) { return value[i]; }          //!< Index op allowing change
 	    const std::string&      operator[](int i) const { return value[i]; }    //!< Const index op

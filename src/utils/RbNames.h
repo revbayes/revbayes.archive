@@ -19,6 +19,52 @@
 #ifndef RbNames_H
 #define RbNames_H
 
+#define AlignmentFileType_nexus                       "nexus"
+#define AlignmentFileType_phylip                      "phylip"
+#define AlignmentFileType_fasta                       "fasta"
+#define AlignmentType_dna                             "dna"
+#define AlignmentType_aa                              "amino acid"
+#define AlignmentType_morph                           "morphology"
+#define Argument_name                                 "argument"
+#define ArgumentRule_name                             "argument rule"
+#define ConstantNode_name                             "constant node"
+#define DAGNode_name                                  "dag node"
+#define DAGNodeContainer_name                         "dag node container"
+#define DeterministicNode_name                        "deterministic node"
+#define IntVector_name                                "int vector"
+#define MoveScale_name                                "move(scale)"
+#define MoveSlidingWindow_name                        "move(sliding window)"
+#define RbBool_name                                   "bool"
+#define RbComplex_name                                "complex"
+#define RbDouble_name                                 "double"
+#define RbException_name                              "exception"
+#define RbFunction_name                               "function"
+#define RbFunction_dchisq_name                        "chi-square density"
+#define RbFunction_dbeta_name                         "beta density"
+#define RbFunction_dexp_name                          "exponential density"
+#define RbFunction_dgamma_name                        "gamma density"
+#define RbFunction_dnorm_name                         "normal density"
+#define RbFunction_readCharacterMatrix_name           "read alignment"
+#define RbFunction_readCharacterMatrix_fileType       "file type"
+#define RbFunction_readCharacterMatrix_alignmentType  "alignment type"
+#define RbFunction_readCharacterMatrix_fileName       "file name"
+#define RbInt_name                                    "int"
+#define RbMcmc_name                                   "mcmc"
+#define RbMove_name                                   "move"
+#define RbMoveSchedule_name                           "move(schedule)"
+#define RbObject_name                                 "object"
+#define RbPrimitive_name                              "primitive"
+#define RbString_name                                 "string"
+#define RbTopology_name                               "topology"
+#define RbUndefined_name                              "undefined"
+#define RbUnrootedTopology_name                       "unrooted topology"
+#define StochasticNode_name                           "stochastic node"
+#define StringVector_name                             "string vector"
+#define RandomNumberGenerator_name                    "random number generator"
+#define UserFunction_name                             "user function"
+
+
+
 #include <string>
 
 namespace RbNames {

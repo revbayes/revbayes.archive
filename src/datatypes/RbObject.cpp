@@ -25,12 +25,11 @@
 
 
 /** Brief info about object: use static class attribute */
-std::string RbObject::briefInfo() const {
+std::string RbObject::briefInfo(void) const {
 
     std::ostringstream o;
     o << "Object of type ";
     getClass().printValue(o);
-
     return o.str();
 }
 

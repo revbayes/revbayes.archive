@@ -14,6 +14,7 @@
 #include "RbException.h"
 
 int main(int argc, char **argv) {
+
 	// create a DistNormal object
 	RbDouble* sigma = new RbDouble(1.0);
 	RbDouble* mu = new RbDouble(0.0);
