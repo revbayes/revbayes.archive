@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2009-11-18 01:05:57 +0100 (Ons, 18 Nov 2009) $
- * @author The REvBayes development core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  * @since Version 1.0, 2009-09-09
  *
@@ -17,16 +17,15 @@
 #ifndef RbObject_H
 #define RbObject_H
 
-#include <string>
 #include <ostream>
+#include <string>
 
 class StringVector;
-class IntVector;
 
 class RbObject {
 
     public:
-		virtual						~RbObject(void) { }                                 //! Virtual destructor
+        virtual                     ~RbObject(void) {}                                  //! Virtual destructor
 
         // Basic utility functions you HAVE TO override
         virtual RbObject*           clone(void) const = 0;                              //!< Clone object
@@ -46,7 +45,7 @@ class RbObject {
         void                        print(std::ostream& o) const;                       //!< Print complete object info
 
    protected:
-		                            RbObject(void) {}                   //!< Make it impossible to create objects
+		                            RbObject(void) {}                   //!< No objects of this class
 };
 
 #endif
