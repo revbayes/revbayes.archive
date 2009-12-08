@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
- * @author The RevBayes development core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-11-20, version 1.0
@@ -19,61 +19,37 @@
 #ifndef RbBool_H
 #define RbBool_H
 
-#include <iostream>
-
 #include "RbPrimitive.h"
-#include "StringVector.h"
 
-class RbDumpState;
+#include <ostream>
+#include <string>
+
 class RbObject;
+class StringVector;
+
 
 class RbBool : public RbPrimitive {
 
-public:
-
-        static const StringVector   rbClass;            //!< Static class attribute
-
-	RbBool(const bool v);                                            //!< Constructor from double
-	RbBool(const RbBool& s);                                         //!< Copy constructor
-	virtual ~RbBool();
+    public:
+	                        RbBool(const bool v);                       //!< Construct from bool
 
         // Basic utility functions
-        RbObject*           clone() const;                              //!< Clone object
+        RbObject*           clone(void) const;                          //!< Clone object
         bool                equals(const RbObject* obj) const;          //!< Equals comparison
-        const StringVector& getClass() const { return rbClass; }        //!< Get class
+        const StringVector& getClass(void) const;                       //!< Get class vector
         void                printValue(std::ostream& o) const;          //!< Print value (for user)
-        std::string         toString(void) const;                       //!< General info on object
+        std::string         toString(void) const;                       //!< Complete info about object
 
         // Type conversion
-        bool                isConvertible(const std::string& type) const;
-        RbObject*           convertTo(const std::string& type) const;       //!< Convert to type
-                                    operator int() const { return value; }               //!< Type conversion to int
+        RbObject*           convertTo(const std::string& type) const;   //!< Convert to type
+                            operator bool(void) const { return value; } //!< Type conversion to bool
 
-        // overloaded operators
-        RbObject&           operator=(const RbObject& obj);
-        RbBool&             operator=(const RbBool& obj);
+        // Getters and setters
+        void                setValue(bool x) { value = x; }             //!< Set value
+	    bool                getValue(void) const { return value; }      //!< Get value
 
-        // Pointer-based comparison -- throw not supported error by default
-        bool                lessThan(const RbObject* o) const;                        //!< Less than
-
-        // Pointer-based arithmetic -- throw not supported error by default
-        RbObject*           add(const RbObject* o) const;                             //!< Addition
-        RbObject*           subtract(const RbObject* o) const;                        //!< Subtraction
-        RbObject*           multiply(const RbObject* o) const;                        //!< Multiplication
-        RbObject*           divide(const RbObject* o) const;                          //!< Division
-        RbObject*           raiseTo(const RbObject* o) const;
-        
-
-    // implemented abstract/virtual functions from base classes
-	void       dump(std::ostream& c);                              //!< Dump to ostream c
-	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-
-	// memeber functions
-	void       setValue(bool v);
-	bool        getValue(void) const;
-
-private:
-	bool        value;      //!< value member
+    private:
+	    bool                value;                                      //!< Value member
 };
 
 #endif

@@ -1,37 +1,32 @@
+/**
+ * @file
+ * This file contains the implementation of RbPrimitive, which is
+ * a collective holder for primitive types in the RevBayes language.
+ *
+ * @brief Implementation of RbPrimitive
+ *
+ * (c) Copyright 2009-
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-11-20, version 1.0
+ * @extends RbObject
+ *
+ * $Id$
+ */
+
+
 #include "RbNames.h"
 #include "RbPrimitive.h"
 #include "StringVector.h"
 
 
-
-
-/**
- * @brief Constructor
- *
- * The constructor uses the global workspace (the base environment)
- * to initialize the member variables and retrieve a reference to the
- * function table.
- *
- */
-RbPrimitive::RbPrimitive() : RbObject() {
-
-}
-
-
-/**
- * @brief Destructor
- *
- * The destructor deletes the objects that may be stored
- * in the object slots of the members map.
- *
- */
-RbPrimitive::~RbPrimitive() {
-
-}
-
 /** Get class vector describing type of object */
 const StringVector& RbPrimitive::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::Primitive::name) + RbObject::getClass();
+    static StringVector rbClass = StringVector(RbNames::RbPrimitive::name) + RbObject::getClass();
     return rbClass;
 }
+
+
