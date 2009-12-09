@@ -17,6 +17,7 @@ public:
 	void deleteRandomNumberGenerator(RandomNumberGenerator* r);
 	RandomNumberGenerator* getRandomNumberGenerator(void);
 	RandomNumberGenerator* getRandomNumberGenerator(unsigned int s);
+	RandomNumberGenerator* getGlobalRandomNumberGenerator(void) { return seedGenerator; }
 	void setFactorySeed(unsigned int &seed1, unsigned int &seed2) { I1 = seed1; I2 = seed2; }
 	
 private:

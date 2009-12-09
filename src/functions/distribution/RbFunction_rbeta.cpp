@@ -1,13 +1,13 @@
 /**
  * @file
  * This file contains the implementation of RbFunction_rbeta, the
- * rbeta() function.
+ * dnorm() function.
  *
  * @brief Implementation of RbFunction_rbeta
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author Fredrik Ronquist and the REvBayes core team
+ * @author RevBayes core team
  * @license GPL version 3
  * @version 1.0
  * @since Version 1.0, 2009-08-26
@@ -15,209 +15,98 @@
  * $Id$
  */
 
-#include "RbFunction_rbeta.h"
-#include "RbDouble.h"
-#include "RbInt.h"
-#include "RbObject.h"
+#include "ArgumentRule.h"
 #include "DAGNode.h"
-#include "RbException.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
+#include "RbDouble.h"
+#include "RbFunction_rbeta.h"
+#include "RbObject.h"
+#include "RbNames.h"
 #include "RbStatistics.h"
-
-const StringVector RbFunction_rbeta::rbClass = StringVector("rbeta") + RbFunction::rbClass;
-
-/** Define the argument rules */
-
-/** Add to symbol table */
-//static bool fxn_rbeta = SymbolTable::globalTable().add("rbeta", new RbFunction_rbeta());
+#include <iomanip>
+#include <sstream>
+#include <string>
 
 
-/** Default constructor, allocate workspace */
-RbFunction_rbeta::RbFunction_rbeta(void)
-    : RbFunction(), value(new RbDouble(0)) {
 
-	argRules.push_back( ArgumentRule("n", "int", new RbInt(1), new RbInt(0), NULL) );
-	argRules.push_back( ArgumentRule("alpha", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	argRules.push_back( ArgumentRule("beta", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	returnType = "double";
+/** Default constructor */
+RbFunction_rbeta::RbFunction_rbeta(void) : RbFunction() {
+
+	value = new RbDouble(0.5);
 } 
 
+
 /** Copy constructor */
-RbFunction_rbeta::RbFunction_rbeta(const RbFunction_rbeta& s)
-    : RbFunction(s), value(new RbDouble(0)) {
+RbFunction_rbeta::RbFunction_rbeta(const RbFunction_rbeta& s) : RbFunction(s) {
     
-	argRules.push_back( ArgumentRule("n", "int", new RbInt(1), new RbInt(0), NULL) );
-	argRules.push_back( ArgumentRule("alpha", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	argRules.push_back( ArgumentRule("beta", "double", new RbDouble(1.0), new RbDouble(0.0), NULL) );
-	returnType = "double";
+	value = new RbDouble(0.5);
+	*value = *s.value;
 }
 
-/** Destructor, delete workspace */
-RbFunction_rbeta::~RbFunction_rbeta() {
+
+/** Destructor */
+RbFunction_rbeta::~RbFunction_rbeta(void) {
 
     delete value;
 }
 
-/**
- * @brief clone function
- *
- * This function creates a deep copy of this object.
- *
- * @see RbObject.clone()
- * @returns           return a copy of this object
- *
- */
+
+/** Clone */
 RbObject* RbFunction_rbeta::clone(void) const {
 
     RbObject *x = new RbFunction_rbeta( *this );
     return x;
 }
 
-RbObject& RbFunction_rbeta::operator=(const RbObject& obj) {
 
-    try {
-        // Use built-in fast down-casting first
-        const RbFunction_rbeta& x = dynamic_cast<const RbFunction_rbeta&> (obj);
+/** Execute the function */
+const RbObject* RbFunction_rbeta::executeOperation(const std::vector<DAGNode*>& arguments) const {
 
-        RbFunction_rbeta& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const RbFunction_rbeta& x = dynamic_cast<const RbFunction_rbeta&> (*(obj.convertTo("rbeta")));
-
-            RbFunction_rbeta& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to rbeta");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-RbFunction_rbeta& RbFunction_rbeta::operator=(const RbFunction_rbeta& obj) {
-
-    argRules = obj.argRules;
-    returnType = obj.returnType;
-    (*value) = (*obj.value);
-    return (*this);
-}
-
-/**
- * @brief print function
- *
- * This function prints this object.
- *
- * @see RbObject.print()
- * @param c           the stream where to print to
- *
- */
-void RbFunction_rbeta::print(std::ostream &c) const {
-
-    c << "RbFunction_rbeta" << std::endl;
-}
-
-void RbFunction_rbeta::printValue(std::ostream &o) const {
-
-    o << value << std::endl;
-}
-
-/**
- * @brief dump function
- *
- * This function dumps this object.
- *
- * @see RbObject.dump()
- * @param c           the stream where to dump to
- *
- */
-void RbFunction_rbeta::dump(std::ostream& c){
-    //TODO implement
-
-    std::string message = "Dump function of RbFunction_rbeta not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
-}
-
-/**
- * @brief resurrect function
- *
- * This function resurrects this object.
- *
- * @see RbObject.resurrect()
- * @param x           the object from which to resurrect
- *
- */
-void RbFunction_rbeta::resurrect(const RbDumpState& x){
-    //TODO implement
-    std::string message = "Resurrect function of RbFunction_rbeta not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
-}
-
-std::string RbFunction_rbeta::toString(void) const {
-
-	char temp[30];
-	sprintf(temp, "%1.6lf", value->getValue());
-	std::string tempStr = temp;
-    return "Value = " + tempStr;
-}
-
-
-/**
- * @brief overloaded == operators
- *
- * This function compares this object
- *
- * @param o           the object to compare to
- *
- */
-bool RbFunction_rbeta::equals(const RbObject* o) const {
-
-    return false;
-}
-
-
-/** Get number of argument rules */
-const int RbFunction_rbeta::getNumberOfRules(void) const {
-    return 1;
-}
-
-/** Execute function */
-RbObject* RbFunction_rbeta::executeOperation(const std::vector<DAGNode*>& arguments) {
-
-    /* Get actual argument */
-    RbDouble *n     = (RbDouble*) arguments[0]->getValue();
-    RbDouble *mu    = (RbDouble*) arguments[1]->getValue();
-    RbDouble *sigma = (RbDouble*) arguments[2]->getValue();
-
-// TODO need to implement
-//    value->setValue(RbStatistics::beta::rbeta(*mu,*sigma,*x));
-
+    RbDouble *alpha = (RbDouble*) arguments[0]->getValue();
+    RbDouble *beta  = (RbDouble*) arguments[1]->getValue();
+	RandomNumberFactory& rnf = RandomNumberFactory::randomNumberFactoryInstance();
+	RandomNumberGenerator* rng = rnf.getGlobalRandomNumberGenerator();
+    value->setValue( RbStatistics::Beta::rv(*alpha, *beta, rng) );
     return value;
 }
 
-RbObject* RbFunction_rbeta::convertTo(const std::string& type) const {
 
-    return NULL;
+/** Get the argument rules */
+const ArgumentRule** RbFunction_rbeta::getArgumentRules(void) const {
+
+	const static ArgumentRule* argRules[] = { 
+		new ArgumentRule( "alpha", RbDouble_name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined   ),
+		new ArgumentRule( "beta" , RbDouble_name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined   ),
+		NULL };
+	return argRules;
 }
 
-/**
- * @brief is convertible to
- *
- * This function checks if this data type can be converted into the given data type.
- *
- * @param dt         the data type we want to convert to
- * @returns          true, if it can be converted
- *
- */
-bool RbFunction_rbeta::isConvertibleTo(const std::string& type) const {
 
-    return false;
+/** Get string showing inheritance */
+const StringVector& RbFunction_rbeta::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(RbFunction_rbeta_name) + RbFunction::getClass();
+	return rbClass;
 }
+
+
+/** Get the return type */
+const std::string RbFunction_rbeta::getReturnType(void) const {
+
+	const static std::string returnType = RbDouble_name;
+	return returnType;
+}
+
+
+/** Get string showing value */
+std::string RbFunction_rbeta::toString(void) const {
+
+    RbDouble *alpha = (RbDouble*) arguments[0]->getValue();
+    RbDouble *beta  = (RbDouble*) arguments[1]->getValue();
+    std::ostringstream o;
+	o << std::fixed << std::setprecision(6);
+	o << value->getValue() << " ~ Beta( " << alpha->getValue() << ", " << beta->getValue() << " )";
+    return o.str();
+}
+

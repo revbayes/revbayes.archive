@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author Fredrik Ronquist and the REvBayes core team
+ * @author RevBayes core team
  * @license GPL version 3
  * @version 1.0
  * @since Version 1.0, 2009-08-26
@@ -18,108 +18,94 @@
 #include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "RbDouble.h"
-#include "RbException.h"
 #include "RbFunction_pnorm.h"
 #include "RbObject.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
-#include <cmath>
+#include <iomanip>
+#include <sstream>
 #include <string>
 
 
 
+/** Default constructor */
 RbFunction_pnorm::RbFunction_pnorm(void) : RbFunction() {
 
 	value = new RbDouble(0.0);
 } 
 
+
+/** Copy constructor */
 RbFunction_pnorm::RbFunction_pnorm(const RbFunction_pnorm& s) : RbFunction(s) {
     
 	value = new RbDouble(0.0);
 	*value = *s.value;
 }
 
-RbFunction_pnorm::~RbFunction_pnorm(void) {
+
+/** Destructor */
+RbFunction_pnorm::~RbFunction_dnorm(void) {
 
     delete value;
 }
 
+
+/** Clone */
 RbObject* RbFunction_pnorm::clone(void) const {
 
     RbObject *x = new RbFunction_pnorm( *this );
     return x;
 }
 
-bool RbFunction_pnorm::equals(const RbObject* o) const {
 
-    return false;
-}
-
-const StringVector& RbFunction_pnorm::getClass(void) const { 
-
-    static StringVector rbClass = StringVector(RbNames::Normal::pname) + RbFunction::getClass();
-	return rbClass;
-}
-
-void RbFunction_pnorm::printValue(std::ostream &o) const {
-
-    o << value << std::endl;
-}
-
-std::string RbFunction_pnorm::toString(void) const {
-
-	char temp[30];
-	sprintf(temp, "%1.6lf", value->getValue());
-	std::string tempStr = temp;
-    return "Value = " + tempStr;
-}
-
-void RbFunction_pnorm::dump(std::ostream& c) {
-
-    //TODO implement
-    std::string message = "Dump function of RbFunction_pnorm not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
-}
-
-void RbFunction_pnorm::resurrect(const RbDumpState& x) {
-
-    //TODO implement
-    std::string message = "Resurrect function of RbFunction_pnorm not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
-}
-
-RbObject* RbFunction_pnorm::executeOperation(const std::vector<DAGNode*>& arguments) {
+/** Execute the function */
+const RbObject* RbFunction_pnorm::executeOperation(const std::vector<DAGNode*>& arguments) const {
 
     RbDouble *x     = (RbDouble*) arguments[0]->getValue();
     RbDouble *mu    = (RbDouble*) arguments[1]->getValue();
     RbDouble *sigma = (RbDouble*) arguments[2]->getValue();
-
-    value->setValue(RbStatistics::Normal::pdf(*mu, *sigma, *x));
-
+    value->setValue( RbStatistics::Normal::cdf(*mu, *sigma, *x) );
     return value;
 }
 
+
+/** Get the argument rules */
 const ArgumentRule** RbFunction_pnorm::getArgumentRules(void) const {
 
 	const static ArgumentRule* argRules[] = { 
-		new ArgumentRule("q", "double"), 
-		new ArgumentRule("mu", "double", new RbDouble(0.0)),
-		new ArgumentRule("sigma", "double", new RbDouble(1.0), new RbDouble(0.0), NULL),
+		new ArgumentRule( "x"    , RbDouble_name                                                        ), 
+		new ArgumentRule( "mu"   , RbDouble_name, new RbDouble(0.0)                                     ),
+		new ArgumentRule( "sigma", RbDouble_name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined ),
 		NULL };
 	return argRules;
 }
 
-const int RbFunction_pnorm::getNumberOfRules(void) const {
-    return 1;
+
+/** Get string showing inheritance */
+const StringVector& RbFunction_pnorm::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(RbFunction_pnorm_name) + RbFunction::getClass();
+	return rbClass;
 }
 
+
+/** Get the return type */
 const std::string RbFunction_pnorm::getReturnType(void) const {
 
-	const static std::string returnType  = "double";
+	const static std::string returnType = RbDouble_name;
 	return returnType;
+}
+
+
+/** Get string showing value */
+std::string RbFunction_pnorm::toString(void) const {
+
+    RbDouble *x     = (RbDouble*) arguments[0]->getValue();
+    RbDouble *mu    = (RbDouble*) arguments[1]->getValue();
+    RbDouble *sigma = (RbDouble*) arguments[2]->getValue();
+    std::ostringstream o;
+	o << std::fixed << std::setprecision(6);
+	o << "Normal: F( " << x->getValue() << " | " << mu->getValue() << ", " << sigma->getValue() << " ) = " << value->getValue();
+    return o.str();
 }
 

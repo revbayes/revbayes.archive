@@ -57,8 +57,8 @@ class RbFunction :  public RbObject {
 		const StringVector&         getClass(void) const;                                           //!< Get class
         virtual const std::string   getReturnType(void) const = 0;                                  //!< Get return type
 		bool                        equals(const RbObject* obj) const;                              //!< Check that the functions are the same
-        RbObject*                   execute(void);                                                  //!< Execute using processed args
-        RbObject*                   execute(const std::vector<Argument>& args);                     //!< Execute function
+        const RbObject*             execute(void);                                                  //!< Execute using processed args
+        const RbObject*             execute(const std::vector<Argument>& args);                     //!< Execute function
         void                        setArguments(const std::vector<Argument>& args);                //!< Process and set args
 		void                        printValue(std::ostream& o) const;                              //!< Print the general information on the function
 

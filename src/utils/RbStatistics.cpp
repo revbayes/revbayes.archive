@@ -147,6 +147,24 @@ double RbStatistics::Beta::quantile(double a, double b, double p) {
 	return x;
 }
 
+/*!
+ * This function generates a Beta-distributed random variable.
+ *
+ * \brief Beta random variable.
+ * \param a parameter of the Beta. 
+ * \param b parameter of the Beta. 
+ * \return Returns the random variable.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Beta::rv(double a, double b, RandomNumberGenerator* rng) {
+
+	double z0 = RbStatistics::Helper::rndGamma( a, *rng );
+	double z1 = RbStatistics::Helper::rndGamma( b, *rng );
+	double sum = z0 + z1;
+	double x = z0 / sum;
+	return x;
+}
+
 #pragma mark Chi-Square Distribution
 
 /*!
@@ -279,6 +297,36 @@ double RbStatistics::ChiSquare::quantile(double v, double prob) {
 	return (ch);
 }
 
+double RbStatistics::ChiSquare::rv(double v, RandomNumberGenerator* rng) {
+
+	/* Cast the degrees of freedom parameter as an integer. We will see
+       if there is a decimal remainder later. */
+	int n = (int)(v);
+	
+	double x2;
+	if ( (double)(n) == v && n <= 100 )
+		{
+		/* If the degrees of freedom is an integer and less than 100, we
+		   generate our chi-square random variable by generating v
+		   standard normal random variables, squaring each, and taking the
+		   sum of the squared random variables. */
+		x2 = 0.0;
+		for (int i=0; i<n; i++)
+			{
+			double x = RbStatistics::Normal::rv(0.0, 1.0, rng);
+			x2 += x * x;
+			}
+		}
+	else
+		{
+		/* Otherwise, we use the relationship of the chi-square to a gamma
+		   (it is a special case of the gamma) to generate the chi-square
+		   random variable. */
+		x2 = RbStatistics::Gamma::rv(v/2.0, 0.5, *rng);
+		}
+	return x2;
+}
+
 #pragma mark Dirichlet Distribution
 
 /*!
@@ -347,6 +395,29 @@ double RbStatistics::Dirichlet::lnPdf(const std::vector<double> &a, const std::v
 	return lnP;
 }
 
+/*!
+ * This function generates a Dirichlet-distributed random variable.
+ *
+ * \brief Dirichlet random variable.
+ * \param *a is a pointer to a vector of doubles containing the parameters of the Dirichlet. 
+ * \param n is an integer with the number of Dirichlet prameters. 
+ * \param *z is a pointer to a vector of doubles containing the Dirichlet random variable. 
+ * \return Does not return a value (the random variable is initialized in the parameter z).
+ * \throws Does not throw an error.
+ */
+void RbStatistics::Dirichlet::rv(const std::vector<double> &a, std::vector<double> &z, RandomNumberGenerator* rng) {
+
+	int n = a.size();
+	double sum = 0.0;
+	for(int i=0; i<n; i++)
+		{
+		z[i] = RbStatistics::Helper::rndGamma(a[i], *rng);
+		sum += z[i];
+		}
+	for(int i=0; i<n; i++)
+		z[i] /= sum;
+}
+
 #pragma mark Exponential Distribution
 
 /*!
@@ -409,10 +480,10 @@ double RbStatistics::Exponential::quantile(double lambda, double p) {
 	return -(1.0 / lambda) * std::log(1.0 - p);
 }
 
-double RbStatistics::Exponential::rv(RandomNumberGenerator* rng, double lambda) {
+double RbStatistics::Exponential::rv(double lambda, RandomNumberGenerator* rng) {
 
 	double u = rng->nextDouble();
-	return -(1.0/lambda) * log(u);
+	return -(1.0/lambda) * std::log(u);
 }
 
 #pragma mark Gamma Distribution
@@ -479,6 +550,11 @@ double RbStatistics::Gamma::cdf(double a, double b, double x) {
 double RbStatistics::Gamma::quantile(double a, double b, double p) {
 
 	return ChiSquare::quantile(p, 2.0 * a) / (2.0*b);
+}
+
+double RbStatistics::Gamma::rv(double a, double b, RandomNumberGenerator* rng) {
+
+	return (rndGamma(a, *rng) / b);
 }
 
 #pragma mark Log Normal Distribution
@@ -577,6 +653,20 @@ double RbStatistics::LogNormal::quantile(double mu, double sigma, double p) {
   return exp( RbStatistics::Normal::quantile(mu, sigma, p) );
 }
 
+/*!
+ * This function generates a log normally distributed random variable.
+ *
+ * \brief Log normal random variable.
+ * \param mu is the mean parameter of the log normal. 
+ * \param sigma is the variance parameter of the log normal. 
+ * \return Returns a log normally distributed random variable.
+ * \throws Does not throw an error.
+ */
+inline double RbStatistics::LogNormal::rv(double mu, double sigma, RandomNumberGenerator* rng) {
+
+	return exp( normalRv(mu, sigma, *rng) );
+}
+
 #pragma mark Poisson Distribution
 
 double RbStatistics::Poisson::pdf(double lambda, int x) {
@@ -660,6 +750,52 @@ double RbStatistics::Poisson::quantile(double lambda, double p) {
 		}
 	//cout << "Poisson quantile warning" << endl;
 	return xmax;
+}
+
+/*!
+ * This function generates a Poisson-distributed random 
+ * variable with parameter lambda.
+ *
+ * \brief Poisson(lambda) random variable.
+ * \param lambda the rate parameter of the Poisson. 
+ * \return This function returns a Poisson-distributed integer.
+ * \throws Does not throw an error.
+ */
+int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator* rng) {
+
+	if (lambda < 17.0)
+		{
+		if (lambda < 1.0e-6)
+			{
+			if (lambda == 0.0) 
+				return 0;
+			if (lambda < 0.0)
+				{
+				/* there should be an error here */
+				std::cout << "Parameter negative in poisson function" << std::endl;
+				}
+
+			/* For extremely small lambda we calculate the probabilities of x = 1
+			   and x = 2 (ignoring higher x). The reason for using this 
+			   method is to prevent numerical inaccuracies in other methods. */
+			return RbStatistics::Helper::poissonLow(lambda);
+			}
+		else 
+			{
+			/* use the inversion method */
+			return RbStatistics::Helper::poissonInver(lambda);
+			}
+		}
+	else 
+		{
+		if (lambda > 2.0e9) 
+			{
+			/* there should be an error here */
+			std::cout << "Parameter too big in poisson function" << std::endl;
+			}
+		/* use the ratio-of-uniforms method */
+		return RbStatistics::Helper::poissonRatioUniforms(lambda);
+		}
 }
 
 #pragma mark Normal Distribution
@@ -814,7 +950,7 @@ double RbStatistics::Normal::quantile(double mu, double sigma, double p) {
 	return x;
 }
 
-double RbStatistics::Normal::rv(RandomNumberGenerator* rng, double mu, double sigma) {
+double RbStatistics::Normal::rv(double mu, double sigma, RandomNumberGenerator* rng) {
 
 	double v1 = 0.0;
 	double v2 = 0.0; // NOTE: We should eventually implement this so you generate and
@@ -897,6 +1033,11 @@ double RbStatistics::Uniform01::quantile(double p) {
 	return p;
 }
 
+double RbStatistics::Uniform01::rv(double p, RandomNumberGenerator* rng) {
+
+	return rng->nextDouble();
+}
+
 #pragma mark Uniform Distribution
 
 /*!
@@ -970,7 +1111,7 @@ double RbStatistics::Uniform::quantile(double a, double b, double p) {
 	return a + (b - a) * p;
 }
 
-double RbStatistics::Uniform::rv(RandomNumberGenerator* rng, double a, double b) {
+double RbStatistics::Uniform::rv(double a, double b, RandomNumberGenerator* rng) {
 
 	double u = rng->nextDouble();
 	return (a + (b-a)*u);
@@ -1009,7 +1150,7 @@ double RbStatistics::UniformUnrootedTopology::lnPdf(int n, RbUnrootedTopology* x
 }
 
 
-RbUnrootedTopology* RbStatistics::UniformUnrootedTopology::rv(RandomNumberGenerator* rng, int n) {
+RbUnrootedTopology* RbStatistics::UniformUnrootedTopology::rv(int n, RandomNumberGenerator* rng) {
 
 		if (n <= 1)
 			{
@@ -1057,6 +1198,225 @@ RbUnrootedTopology* RbStatistics::UniformUnrootedTopology::rv(RandomNumberGenera
 }
 
 #undef MAXK
+
+#pragma mark Helper Functions
+
+/*!
+ * This function is used when generating gamma-distributed random variables.
+ *
+ * \brief Subfunction for gamma random variables.
+ * \param s is the shape parameter of the gamma. 
+ * \return Returns a gamma-distributed random variable. 
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Helper::rndGamma(double s, RandomNumberGenerator& rng) {
+
+	double r = 0.0;
+	if (s <= 0.0)      
+		std::cout << "Gamma parameter less than zero" << std::endl;
+	else if (s < 1.0)  
+		r = rndGamma1(s, rng);
+	else if (s > 1.0)  
+		r = rndGamma2(s, rng);
+	else           
+		r =- log(rng.nextDouble());
+	return (r);
+}
+
+/*!
+ * This function is used when generating gamma-distributed random variables.
+ *
+ * \brief Subfunction for gamma random variables.
+ * \param s is the shape parameter of the gamma. 
+ * \return Returns a gamma-distributed random variable. 
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Helper::rndGamma1(double s, RandomNumberGenerator& rng) {
+
+	double			r, x = 0.0, small = 1e-37, w;
+	static double   a, p, uf, ss = 10.0, d;
+	
+	if (s != ss) 
+		{
+		a  = 1.0 - s;
+		p  = a / (a + s * exp(-a));
+		uf = p * pow(small / a, s);
+		d  = a * log(a);
+		ss = s;
+		}
+	for (;;) 
+		{
+		r = rng.nextDouble();
+		if (r > p)        
+			x = a - log((1.0 - r) / (1.0 - p)), w = a * log(x) - d;
+		else if (r>uf)  
+			x = a * pow(r / p, 1.0 / s), w = x;
+		else            
+			return (0.0);
+		r = rng.nextDouble();
+		if (1.0 - r <= w && r > 0.0)
+		if (r*(w + 1.0) >= 1.0 || -log(r) <= w)  
+			continue;
+		break;
+		}
+		
+	return (x);
+}
+
+/*!
+ * This function is used when generating gamma-distributed random variables.
+ *
+ * \brief Subfunction for gamma random variables.
+ * \param s is the shape parameter of the gamma. 
+ * \return Returns a gamma-distributed random variable. 
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Helper::rndGamma2(double s, RandomNumberGenerator& rng) {
+
+	double			r, d, f, g, x;
+	static double	b, h, ss = 0.0;
+	
+	if (s != ss) 
+		{
+		b  = s - 1.0;
+		h  = sqrt(3.0 * s - 0.75);
+		ss = s;
+		}
+	for (;;) 
+		{
+		r = rng.nextDouble();
+		g = r - r * r;
+		f = (r - 0.5) * h / sqrt(g);
+		x = b + f;
+		if (x <= 0.0) 
+			continue;
+		r = uniformRv();
+		d = 64.0 * r * r * g * g * g;
+		if (d * x < x - 2.0 * f * f || log(d) < 2.0 * (b * log(x / b) - f))  
+			break;
+		}
+		
+	return (x);
+}
+
+/*!
+ * This function generates a Poisson-distributed random variable for
+ * small values of lambda. The method is a simple calculation of the 
+ * probabilities of x = 1 and x = 2. Larger values are ignored.
+ *
+ * \brief Poisson random variables for small lambda.
+ * \param lambda is the rate parameter of the Poisson. 
+ * \return Returns a Poisson-distributed random variable. 
+ * \throws Does not throw an error.
+ */
+int RbStatistics::Helper::poissonLow(double lambda, RandomNumberGenerator& rng) {
+
+	double d = sqrt(lambda);
+	if (rng.nextDouble() >= d) 
+		return 0;
+	double r = rng.nextDouble() * d;
+	if (r > lambda * (1.0 - lambda)) 
+		return 0;
+	if (r > 0.5 * lambda * lambda * (1.0 - lambda)) 
+		return 1;
+	return 2;
+}
+
+/*!
+ * This function generates a Poisson-distributed random variable using
+ * inversion by the chop down method. 
+ *
+ * \brief Poisson random variables using the chop down method.
+ * \param lambda is the rate parameter of the Poisson. 
+ * \return Returns a Poisson-distributed random variable. 
+ * \throws Does not throw an error.
+ */
+int RbStatistics::Helper::poissonInver(double lambda, RandomNumberGenerator& rng) {
+
+	const int bound = 130;
+	static double p_L_last = -1.0;
+	static double p_f0;
+	int x;
+
+	if (lambda != p_L_last) 
+		{
+		p_L_last = lambda;
+		p_f0 = exp(-lambda);
+		} 
+
+	while (1) 
+		{  
+		double r = rng.nextDouble();  
+		x = 0;  
+		double f = p_f0;
+		do 
+			{
+			r -= f;
+			if (r <= 0.0) 
+				return x;
+			x++;
+			f *= lambda;
+			r *= x;
+			} while (x <= bound);
+		}
+}
+
+/*!
+ * This function generates a Poisson-distributed random variable using
+ * the ratio-of-uniforms rejectin method. 
+ *
+ * \brief Poisson random variables using the ratio-of-uniforms method.
+ * \param lambda is the rate parameter of the Poisson. 
+ * \return Returns a Poisson-distributed random variable. 
+ * \throws Does not throw an error.
+ * \see Stadlober, E. 1990. The ratio of uniforms approach for generating
+ *      discrete random variates. Journal of Computational and Applied 
+ *      Mathematics 31:181-189.
+ */
+int RbStatistics::Helper::poissonRatioUniforms(double lambda, RandomNumberGenerator& rng) {
+
+	static double p_L_last = -1.0;  /* previous L */
+	static double p_a;              /* hat center */
+	static double p_h;              /* hat width */
+	static double p_g;              /* ln(L) */
+	static double p_q;              /* value at mode */
+	static int p_bound;             /* upper bound */
+	int mode;                       /* mode */
+	double u;                       /* uniform random */
+	double lf;                      /* ln(f(x)) */
+	double x;                       /* real sample */
+	int k;                          /* integer sample */
+
+	if (p_L_last != lambda) 
+		{
+		p_L_last = lambda;
+		p_a = lambda + 0.5;
+		mode = (int)lambda;
+		p_g  = log(lambda);
+		p_q = mode * p_g - lnFactorial(mode);
+		p_h = sqrt(2.943035529371538573 * (lambda + 0.5)) + 0.8989161620588987408;
+		p_bound = (int)(p_a + 6.0 * p_h);
+		}
+
+	while(1) 
+		{
+		u = rng.nextDouble();
+		if (u == 0.0) 
+			continue;
+		x = p_a + p_h * (rng.nextDouble() - 0.5) / u;
+		if (x < 0 || x >= p_bound) 
+			continue;
+		k = (int)(x);
+		lf = k * p_g - lnFactorial(k) - p_q;
+		if (lf >= u * (4.0 - u) - 3.0) 
+			break;
+		if (u * (u - lf) > 1.0) 
+			continue;
+		if (2.0 * log(u) <= lf) 
+			break;
+		}
+	return(k);
+}
 
 
 
