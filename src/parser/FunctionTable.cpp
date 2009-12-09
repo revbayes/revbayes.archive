@@ -94,7 +94,7 @@ bool FunctionTable::existsFunction(const std::string& name, std::vector<Argument
 
 
 /** Do argument rules match any of the existing argument rules for method with given name? */
-bool FunctionTable::isDistinctFormal(const std::vector<ArgumentRule>& x, const std::vector<ArgumentRule>& y) const {
+bool FunctionTable::isDistinctFormal(const ArgumentRule** x, const ArgumentRule** y) const {
 
     std::vector<ArgumentRule>::iterator i, j;
 

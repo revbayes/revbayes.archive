@@ -20,12 +20,12 @@
 #include <sstream>
 #include <vector>
 
-#include "Frame.h"
 #include "MethodTable.h"
 #include "RbComplex.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "RbObjectWrapper.h"
 #include "StringVector.h"
 
 #include <sstream>
@@ -76,11 +76,18 @@ const std::string& RbComplex::getElementType() const {
 }
 
 
-/** Get member table; return an empty frame by default */
-const Frame& RbComplex::getMemberTable(void) const {
+/** Get names of member variables */
+const std::vector<std::string>& RbComplex::getMembers(void) const {
 
-    static Frame memberTable;
-    return memberTable;
+    static std::vector<std::string> members;
+    return members;
+}
+
+
+/** Get type: return type of member variable, with an empty '[]' for each element dimension, if any */
+const std::string& RbComplex::getMemberType(const std::string& name) const {
+
+    throw (RbException("Object does not have elements"));
 }
 
 

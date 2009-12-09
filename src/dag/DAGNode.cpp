@@ -330,7 +330,7 @@ void DAGNode::reject() {
  */
 void DAGNode::restore() {
 
-    RbObject* temp;
+    const RbObject* temp;
 
     if (changed) {
         temp        = value;
@@ -362,21 +362,15 @@ void DAGNode::setValue(RbObject* val) {
 }
 
 void DAGNode::store(void) {
-    *storedValue = *value;
+    storedValue = value->clone();
     storedLikelihood = currentLikelihood;
     storedProbability = currentProbability;
 }
 
-/**
- * @brief Prdouble value
- *
- * Prints value for user.
- *
- * @param o     The stream for printing
- *
- */
+
+/** Print value for user */
 void DAGNode::printValue(std::ostream &o) const {
 
-    o << value->toString() << std::endl;
+    value->printValue(o);
 }
 

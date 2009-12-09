@@ -10,8 +10,6 @@
 class RbException : public RbObject {
 
 public:
-    static const StringVector   rbClass;            //!< Static class attribute
-
 	// constructors
 	RbException(void);                                      // default contructor
     RbException(const std::string& msg) : message(msg) {}   //!< Default message constructor

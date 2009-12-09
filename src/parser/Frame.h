@@ -39,24 +39,24 @@
 class Frame {
 
     public:
-            Frame(Frame* parentFr=NULL);        //!< Constructor from parent frame
-            virtual ~Frame() {}                 //!< Destructor; we do not want to destroy entire environment
+                                Frame(Frame* parentFr=NULL);    //!< Constructor from parent frame
+        virtual                 ~Frame() {}                     //!< Destructor; do not destroy entire environment
 
         // Basic utility function
-        virtual void        print(std::ostream& o) const;   //!< Print table
+        virtual void            print(std::ostream& o) const;   //!< Print table
 
         // Regular functions
-	    void                addVariable(const std::string& name, RbObject* variable);   //!< Add a variable
-	    void                addVariable(const std::string& name, const IntVector& index, RbObject* variable);   //!< Add a container variable
-	    void                addVariable(const std::string& name, const std::string& type, int dim=0);   //!< Add declared but empty slot
-        void                eraseVariable(const std::string& name);                     //!< Erase a variable
-        bool                existsVariable(const std::string& name) const;              //!< Does variable exist?
-        const std::string&  getDeclaredType(const std::string& name) const;             //!< Get declared type of variable
-        const RbObject*     getVariable(const std::string& name) const;                 //!< Get a variable
-        void                setVariable(const std::string& name, RbObject* value);      //!< Set a variable
-        void                setVarElement(const std::string& name, const IntVector& index, RbObject* value); //!< Set element of a variable
+	    void                    addVariable(const std::string& name, RbObjectWrapper* val); //!< Add a variable
+	    void                    addVariable(const std::string& name, const std::string& type, int dim=0);   //!< Add declared but empty slot
+        void                    eraseVariable(const std::string& name);                     //!< Erase a variable
+        bool                    existsVariable(const std::string& name) const;              //!< Does variable exist?
+        const std::string&      getDeclaredType(const std::string& name) const;             //!< Get declared type of variable
+        const RbObject*         getValue(const std::string& name) const;                    //!< Get value
+        const RbObjectWrapper*  getVariable(const std::string& name) const;                 //!< Get a variable
+        void                    setVariable(const std::string& name, RbObject* val);        //!< Set a variable
+        void                    setVarElement(const std::string& name, const IntVector& index, RbObject* value); //!< Set element of a variable
 	
-    protected:
+    private:
         Frame*                                  parentFrame;        //!< Pointer to enclosing frame
 	    std::map<const std::string, ObjectSlot> variableTable;      //!< Variable table
 };

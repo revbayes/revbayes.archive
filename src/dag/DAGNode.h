@@ -119,8 +119,8 @@ class DAGNode : public RbObjectWrapper {
         RbMove*                     getNextMove();
         void                        store();
 
-	    RbObject*           		storedValue;    //!< Holds the previous value
-	    RbObject*           		value;          //!< Holds the current value
+	    const RbObject*             storedValue;    //!< Holds the previous value
+	    const RbObject*       	    value;          //!< Holds the current value
         
         double						storedLikelihood;
         double						currentLikelihood;

@@ -180,7 +180,7 @@ double DeterministicNode::getLnProbability() {
 
 
 /** Get value intelligently */
-RbObject* DeterministicNode::getValue() {
+const RbObject* DeterministicNode::getValue() {
 
     if (isTouched() && !isChanged()) {
         if (storedValue != NULL)

@@ -25,7 +25,6 @@
 #include <vector>
 
 class Argument;
-class Frame;
 class IntVector;
 class MethodTable;
 class RbObjectWrapper;
@@ -44,7 +43,8 @@ class RbComplex : public RbObject {
 		virtual std::string             toString() const = 0;                           //!< Complete info 
 
         // Member variable functions: override if object contains member variables
-        virtual const Frame&            getMemberTable(void) const;                     //!< Get member table
+        virtual const std::vector<std::string>& getMembers(void) const;                 //!< Get member names
+        virtual const std::string&      getMemberType(const std::string& name) const;   //!< Get member type
         virtual const RbObject*         getValue(const std::string& name) const;        //!< Get member value
         virtual const RbObjectWrapper*  getVariable(const std::string& name) const;     //!< Get member variable
         virtual void                    setValue(const std::string& name, RbObject* val);   //!< Set member value

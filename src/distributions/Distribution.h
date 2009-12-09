@@ -39,8 +39,8 @@ public:
 
 	std::set<DAGNode*>&            getParents(void);
     std::string                    getReturnType() const { return returnType; }    //!< Get return type
-	virtual double                 lnPdf(RbObject* o) = 0;       //!< Ln probability density function
-	virtual double                 pdf(RbObject* o) = 0;         //!< Probability density function
+	virtual double                 lnPdf(const RbObject* o) = 0;       //!< Ln probability density function
+	virtual double                 pdf(const RbObject* o) = 0;         //!< Probability density function
 	virtual RbObject*              rv()  = 0;
 
 

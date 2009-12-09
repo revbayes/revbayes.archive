@@ -15,6 +15,8 @@
 
 class RbMove;
 
+#include <map>
+
 class RbMoveSchedule : public RbComplex {
     public:
 

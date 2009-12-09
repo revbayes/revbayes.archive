@@ -47,7 +47,7 @@ class DeterministicNode : public DAGNode {
          std::string            toString(void) const;     
 
         // Regular member functions
-        RbObject*           getValue();         //!< Get current value
+        const RbObject*      getValue();         //!< Get current value
 	    double               getLnProbabilityRatio(void);
 	    double               getLnProbability(void);
 	    

@@ -217,8 +217,16 @@ namespace RbNames {
     const std::string       name    = "dagNodeContainer";
     }
 
+    namespace RbObjectWrapper {
+    const std::string       name    = "wrapper";
+    }
+    
     namespace RbObject {
     const std::string       name    = "object";
+    }
+    
+    namespace RbUndefined {
+    const std::string       name    = "undefined";
     }
     
     namespace RbFunction {
@@ -314,7 +322,7 @@ namespace RbNames {
     const std::string       name    = "exception";
     }
 
-    namespace Primitive {
+    namespace RbPrimitive {
     const std::string       name    = "primitive";
     }
 

@@ -19,36 +19,37 @@
 #ifndef FunctionTable_H
 #define FunctionTable_H
 
-#include "ArgumentRule.h"
+#include "RbInternal.h"
 
-#include <string>
-#include <ostream>
 #include <map>
+#include <ostream>
+#include <string>
+#include <vector>
 
+class Argument;
+class ArgumentRule;
+class RbFunction;
+class RbObject;
 
-class FunctionTable {
+class FunctionTable : RbInternal {
 
     public:
-            FunctionTable(const FunctionTable& x);      //!< Copy constructor
-            ~FunctionTable();                           //!< Delete functions
+                        FunctionTable(const FunctionTable& x);      //!< Copy constructor
+                        ~FunctionTable();                           //!< Delete functions
 
-        // Static functions for use by this and other objects
-        static bool     isDistinctFormal(std::vector<ArgumentRule>& x, std::vector<ArgumentRule> y) const;
-        static bool     isMatch(std::vector<ArgumentRule>& x, std::vector<Argument>& y) const;
+        // Static help function that can be used by other objects, like MethodTable
+        static bool     isDistinctFormal(const ArgumentRule** x, const ArgumentRule** y); //!< Are formals unique?
 
         // Basic utility functions
-        std::string     briefInfo() const = 0;                          //!< Brief info about table
-        void            print(std::ostream& o) const = 0;               //!< Print table
+        void            printValue(std::ostream& o) const;          //!< Print table
 
         // Regular functions
-        bool        addFunction(const std::string name, RbFunction* func);                      //!< Add function
-        bool        existsFunction(const std::string& name, std::vector<Argument>& args) const; //!< Exists?
-        bool        existsFunction(const std::string& name,
-                        std::vector<ArgumentRule>& argRules) const;                             //!< Exists?
-        RbFunction* getFunction(const std::string& name, std::vector<Argument>& args) const;    //!< Get function
+        bool            addFunction(const std::string name, RbFunction* func);            //!< Add function
+        const RbObject* executeFunction(const std::string& name, const std::vector<Argument>& args) const;                            //!< Execute function
+        RbFunction*     getFunction(const std::string& name, const std::vector<Argument>& args) const;                                //!< Get function (a copy)
 
     protected:
-        std::multimap<std::string, RbFunction*> table;      //!< Table of functions
+        std::multimap<std::string, RbFunction*>     table;          //!< Table of functions
 };
 
 #endif
