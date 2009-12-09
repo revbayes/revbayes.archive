@@ -16,7 +16,6 @@
  * $Id$
  */
 
-#include <list>
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "RbException.h"
@@ -26,6 +25,7 @@
 #include "RbUndefined.h"
 #include "StringVector.h"
 
+#include <sstream>
 
 /** Basic constructor */
 RbFunction::RbFunction(void) : RbObject() {
@@ -47,32 +47,47 @@ const StringVector& RbFunction::getClass(void) const {
 	return rbClass; 
 }
 
+
+/** Pointer-based equals comparison */
 bool RbFunction::equals(const RbObject* obj) const {
 
-	std::StringVector& a = obj->getClass();
-	std::StringVector& b = getClass();
+	const StringVector& a = obj->getClass();
+	const StringVector& b = getClass();
 	return (a == b);
 }
 
-RbObject* RbFunction::execute(const std::vector<Argument>& args) {
+
+/** Simple execute function with arguments simply passed in as they are given */
+const RbObject* RbFunction::execute(const std::vector<Argument>& args) {
 
 	std::vector<RbObjectWrapper*> wrappers = processArguments(args);
-	RbObject* result = executeOperation(wrappers);
+	const RbObject* result = executeOperation(wrappers);
 	return result;
 }
 
-RbObject* RbFunction::execute() {
+
+/** Execute function for repeated evaluation after arguments have been set */
+const RbObject* RbFunction::execute() {
 
     if (!argumentsProcessed) {
         throw RbException("Arguments were not processed before executing function.");
     }
-    RbObject* result = executeOperation(processedArguments);
+    const RbObject* result = executeOperation(processedArguments);
     return result;
 }
 
+
+/** Print value for user */
 void RbFunction::printValue(std::ostream& o) const {
 
+    const ArgumentRule** argRules = getArgumentRules();
+
+    o << getReturnType() << " function (";
+    for (int i=0; argRules[i]!=NULL; i++)
+        argRules[i]->printValue(o);
+    o << ")";    
 }
+
 
 /**
  * @brief Process arguments
@@ -174,4 +189,27 @@ std::vector<RbObjectWrapper*>  RbFunction::processArguments(const std::vector<Ar
     return arguments;
 }
 
+
+/** Complete info about object */
+std::string RbFunction::toString(void) const {
+
+    std::ostringstream o;
+    o << "RbFunction: ";
+    printValue(o);
+    o << std::endl;
+    
+    if (argumentsProcessed)
+        o << "Arguments processed; there are " << processedArguments.size() << " values." << std::endl;
+    else
+        o << "Arguments not processed; there are " << processedArguments.size() << " values." << std::endl;
+    
+    int index=1;
+    for (std::vector<RbObjectWrapper*>::const_iterator i=processedArguments.begin(); i!=processedArguments.end(); i++, index++) {
+        o << " processedArguments[" << index << "] = ";
+        (*i)->getValue()->printValue(o);
+        o << std::endl;
+    }
+
+    return o.str();
+}
 

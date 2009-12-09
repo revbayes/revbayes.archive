@@ -61,6 +61,7 @@ class RbFunction :  public RbObject {
         const RbObject*                 execute(const std::vector<Argument>& args);                     //!< Execute function
         void                            setArguments(const std::vector<Argument>& args);                //!< Process and set args
 		void                            printValue(std::ostream& o) const;                              //!< Print the general information on the function
+        std::string                     toString(void) const = 0;                                       //!< Complete info about object
 
     protected:
                                         RbFunction(void);                                               //!< Basic constructor
