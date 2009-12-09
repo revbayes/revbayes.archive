@@ -1,87 +1,97 @@
 /**
  * @file
  * This file contains the implementation of ArgumentRule, which is
- * a RevBayes wrapper around a regular bool.
+ * used to describe rules for arguments passed to functions.
  *
- * @brief Implementation of the class RbInt
+ * @brief Implementation of ArgumentRule 
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
- * @author The RevBayes development core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-11-20, version 1.0
- * @extends RbObject
  *
  * $Id$
  */
 
-#include <iostream>
-#include <string>
-#include <vector>
 #include "ArgumentRule.h"
-#include "DAGNode.h"
-#include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
 #include "RbUndefined.h"
-#include "StringVector.h"
 
+#include <sstream>
 
-/**
- * @brief Constructor
- *
- * Creates an instance from a type and an (optional) default
- * value.
- *
- * @param v     Value of the object
- *
- */
-ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t) : RbObject() {
+/** Construct rule without default value; use "" for no label */
+ArgumentRule::ArgumentRule(const std::string& argName, const std::string& type, int dim) {
 
-    label = lbl;
-    type = t;
+    label        = argName;
+    requiredType = type;
+    numDim       = dim;
     defaultValue = new RbUndefined;
-    minValue = new RbUndefined;
-    maxValue = new RbUndefined;
+    minValue     = new RbUndefined;
+    maxValue     = new RbUndefined;
 }
 
-/**
- * @brief Copy constructor
- *
- * Create independent copy of the slot
- *
- * @param a     Argument rule to be copied
- *
- */
-ArgumentRule::ArgumentRule(const ArgumentRule& a) : RbObject() {
 
-    label = a.label;
-    type = a.type;
-    defaultValue = a.defaultValue;
-    minValue = a.minValue;
-    maxValue = a.maxValue;
+/** Construct rule with default value; use "" for no label. We use info from default value to set type and dim */
+ArgumentRule::ArgumentRule(const std::string& argName, RbObject* defVal) : RbInternal() {
+
+    label        = argName;
+    requiredType = defVal->getType();
+    if (defVal->isType(RbNames::RbComplex::name))
+        numDim = ((RbComplex*)(defVal))->getElementDim();
+    else
+        numDim = 0;
+    defaultValue = defVal;
+    minValue     = new RbUndefined;
+    maxValue     = new RbUndefined;
 }
 
-ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv) : RbObject() {
 
-    label = lbl;
-    type = t;
-    //defaultValue = dv.clone();
-	defaultValue = dv;
-    minValue = new RbUndefined;
-    maxValue = new RbUndefined;
-}
+/** Construct rule with required type, which could be a base class of the class of the default value */
+ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv) : RbInternal() {
 
-ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv, RbObject* mnv, RbObject* mxv) : RbObject() {
-
-    label = lbl;
-    type = t;
+    label        = lbl;
+    requiredType = t;
+    if (dv->isType(RbNames::RbComplex::name))
+        numDim = ((RbComplex*)(dv))->getElementDim();
+    else
+        numDim = 0;
     defaultValue = dv;
-    minValue = mnv;
-    maxValue = mxv;
+    minValue     = new RbUndefined;
+    maxValue     = new RbUndefined;
 }
 
+
+/** Construct rule with required type, default value, min and max */
+ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObject* dv, RbObject* mnv, RbObject* mxv) : RbInternal() {
+
+    label        = lbl;
+    requiredType = t;
+    if (dv->isType(RbNames::RbComplex::name))
+        numDim = ((RbComplex*)(dv))->getElementDim();
+    else
+        numDim = 0;
+    defaultValue = dv;
+    minValue     = mnv;
+    maxValue     = mxv;
+}
+
+
+/** Copy constructor */
+ArgumentRule::ArgumentRule(const ArgumentRule& a) : RbInternal() {
+
+    label        = a.label;
+    requiredType = a.requiredType;
+    numDim       = a.numDim;
+    defaultValue = a.defaultValue->clone();
+    minValue     = a.minValue->clone();
+    maxValue     = a.maxValue->clone();
+}
+
+
+/** Destructor deletes relevant values */
 ArgumentRule::~ArgumentRule() {
 
 	delete defaultValue;
@@ -90,89 +100,18 @@ ArgumentRule::~ArgumentRule() {
 }
 
 
-/** Get class vector describing type of object */
-const StringVector& ArgumentRule::getClass(void) const { 
+/** Assignment operator */
+ArgumentRule& ArgumentRule::operator=(const ArgumentRule& a) {
 
-    static StringVector rbClass = StringVector(RbNames::ArgumentRule::name) + RbObject::getClass();
-	return rbClass;
-}
-
-
-/**
- * @brief Brief info about the object
- *
- * Provides brief info about the object in a string.
- *
- * @returns     Short string describing object
- *
- */
-std::string ArgumentRule::briefInfo() const {
-
-    return toString();
-}
-
-/**
- * @brief Pointer-based equal comparison
- *
- * Compares equality of this object to another RbObject. It
- * returns equal only if the type and label are identical, and
- * the slots contain the same object, which should never happen.
- *
- * @param obj   The object of the comparison
- * @returns     Result of comparison
- *
- */
-bool ArgumentRule::equals(const RbObject* obj) const {
-
-    // Use built-in fast down-casting first
-    const ArgumentRule* x = dynamic_cast<const ArgumentRule*> (obj);
-    if (x != NULL)
-        return (label == x->label && getType() == x->getType());
-
-    // Try converting the value to an argumentRule
-    x = dynamic_cast<const ArgumentRule*> (obj->convertTo("argumentRule"));
-    if (x == NULL)
-        return false;
-
-    bool result = (label == x->label && getType() == x->getType());
-    delete x;
-    return result;
-}
-
-RbObject& ArgumentRule::operator=(const RbObject& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const ArgumentRule& x = dynamic_cast<const ArgumentRule&> (obj);
-
-        ArgumentRule& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const ArgumentRule& x = dynamic_cast<const ArgumentRule&> (*(obj.convertTo("argumentRule")));
-
-            ArgumentRule& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to argumentRule");
-            throw e;
-        }
+    if (this != &a) {
+        label        = a.label;
+        requiredType = a.requiredType;
+        numDim       = a.numDim;
+        defaultValue = a.defaultValue->clone();
+        minValue     = a.minValue->clone();
+        maxValue     = a.maxValue->clone();
     }
 
-    // dummy return
-    return (*this);
-}
-
-ArgumentRule& ArgumentRule::operator=(const ArgumentRule& ar) {
-
-    label = ar.label;
-    type = ar.type;
-    defaultValue = ar.defaultValue;
-    minValue = ar.minValue;
-    maxValue = ar.maxValue;
     return (*this);
 }
 
@@ -185,44 +124,58 @@ ArgumentRule& ArgumentRule::operator=(const ArgumentRule& ar) {
  * @param val   The object to be tested
  * @returns     Result of comparison
  *
- */
-bool ArgumentRule::isArgValid(const RbObject* obj) const {
 
-    return obj->isConvertibleTo(getType());
+ */
+/** Test if argument is valid */
+bool ArgumentRule::isArgValid(const RbObject* val) const {
+
+    if (!val->isType(requiredType) && !val->isConvertibleTo(requiredType))
+        return false;
+
+    int dim;
+    if (val->isType(RbNames::RbComplex::name))
+        dim = ((RbComplex*)(val))->getElementDim();
+    else
+        dim = 0;
+    if (numDim != dim)
+        return false;
+
+    // TODO: Test against min and max -- Why not in a derived class?
+    return true;
 }
 
-/**
- * @brief Print complete info
- *
- * Prints complete object info.
- *
- * @param o     The stream for printing
- *
- */
-void ArgumentRule::print(std::ostream &o) const {
-
-    //RbObject::print(o);
-    o << "Label = " << label << std::endl;
-    o << "Type = " << type << std::endl;
-}
-
-/**
- * @brief Print value
- *
- * Prints value for user (just in case we later make
- * objects of this kind available to the parser).
- *
- * @param o     The stream for printing
- *
- */
-void ArgumentRule::printValue(std::ostream &o) const {
-
-    o << "argumentRule (" << label << ", ";
-    o << type << ")" << std::endl;
-}
-
+/** Provide complete information about object */
 std::string ArgumentRule::toString(void) const {
 
-    return "(" + label + "," + type + ")";
+    std::ostringstream o;
+
+    o << "ArgumentRule" << std::endl;
+    o << "Label = " << label << std::endl;
+    o << "Type = "  << requiredType << std::endl;
+    o << "Dim  = "  << numDim << std::endl;
+    o << "Value = ";
+    defaultValue->printValue(o);
+    o << std::endl;
+    o << "Min = ";
+    minValue->printValue(o);
+    o << std::endl;
+    o << "Max = ";
+    maxValue->printValue(o);
+
+    return o.str();
 }
+
+/** Print value for user (in descriptions of functions, for instance */
+void ArgumentRule::printValue(std::ostream &o) const {
+
+    o << requiredType;
+    for (int i=0; i<numDim; i++)
+        o << "[]";
+    o << " \"" << label << "\"";
+    if (!defaultValue->isType(RbNames::RbUndefined::name)) {
+        o << " = ";
+        defaultValue->printValue(o);
+    }
+}
+
 

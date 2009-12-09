@@ -2,13 +2,13 @@
  * @file
  * This file contains the declaration of Argument, which is
  * used to hold a potentially labeled argument passed to a
- * function.
+ * function. The Argument class manages the argument wrapper.
  *
  * @brief Declaration of Argument
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
- * @author The RevBayes core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-11-20, version 1.0
@@ -19,41 +19,34 @@
 #ifndef Argument_H
 #define Argument_H
 
-#include <string>
+#include "RbInternal.h"
+
 #include <ostream>
+#include <string>
 
-#include "RbObject.h"
+class RbObjectWrapper;
 
-class DAGNode;
-
-class Argument : public RbObject {
+class Argument : public RbInternal {
 
     public:
-                    Argument(const std::string& lbl, DAGNode* n);       //!< Constructor 
-                    Argument(const Argument& a);                        //!< Copy constructor 
-            virtual ~Argument();                        //!< Destructor 
+                    Argument(const std::string& argLabel, RbObjectWrapper* arg);    //!< Constructor 
+                    Argument(const Argument& a);                                    //!< Copy constructor 
+            virtual ~Argument();                                                    //!< Destructor 
+
+        // Assignment operator
+        Argument&               operator=(const Argument& x);                       //!< Assignment operator
 
         // Basic utility functions
-         std::string         briefInfo() const;                          //!< Brief info about object
-         RbObject*           clone() const;                              //!< Clone object
-         bool                equals(const RbObject* obj) const;          //!< Equals comparison
-         const StringVector& getClass() const;                           //!< Get class vector
-         void                print(std::ostream& o) const;               //!< Print complete object info
-         void                printValue(std::ostream& o) const;          //!< Print value (for user)
-         std::string         toString(void) const;                                 //!< General info on object
+         Argument*              clone(void) const { return new Argument (*this); }  //!< Clone object
+         std::string            toString(void) const;                               //!< Complete info about object
 
         // Regular functions
-        std::string         getLabel() const { return label; }          //!< Get label of argument
-        DAGNode*            getDAGNode() const { return node; }         //!< Get DAG node
-
-
-        // overloaded operators
-        RbObject&           operator=(const RbObject& o);
-        Argument&           operator=(const Argument& o);
+        std::string             getLabel(void) const { return label; }              //!< Get label of argument
+        const RbObjectWrapper*  getWrapper(void) const { return wrapper; }          //!< Get argument wrapper
 
     protected:
-        const std::string   label;          //!< Label of argument
-        DAGNode*            node;           //!< The node passed in as the argument
+        std::string             label;          //!< Label of argument
+        RbObjectWrapper*        wrapper;        //!< The wraper of the value passed in as argument
 };
 
 #endif

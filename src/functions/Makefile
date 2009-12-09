@@ -10,7 +10,7 @@ INSTALL     = @INSTALL@
 
 CFLAGS = $(CXXFLAGS)
 
-all: RbFunction.o ArgumentRule.o Argument.o
+all: Argument.o ArgumentRule.o RbFunction.o
 
 ArgumentRule.o: ArgumentRule.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c ArgumentRule.cpp

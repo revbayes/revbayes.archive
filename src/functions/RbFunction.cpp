@@ -19,10 +19,10 @@
 #include <list>
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "DAGNode.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
+#include "RbObjectWrapper.h"
 #include "RbUndefined.h"
 #include "StringVector.h"
 
@@ -56,8 +56,8 @@ bool RbFunction::equals(const RbObject* obj) const {
 
 RbObject* RbFunction::execute(const std::vector<Argument>& args) {
 
-	std::vector<DAGNode*> dags = processArguments(args);
-	RbObject* result = executeOperation(dags);
+	std::vector<RbObjectWrapper*> wrappers = processArguments(args);
+	RbObject* result = executeOperation(wrappers);
 	return result;
 }
 
@@ -100,7 +100,7 @@ void RbFunction::printValue(std::ostream& o) const {
  *     a default value, it is an error.
  *
  */
-std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>& args) {
+std::vector<RbObjectWrapper*>  RbFunction::processArguments(const std::vector<Argument>& args) {
 
 	/* get the argument rules */
 	const ArgumentRule** ar = getArgumentRules();
@@ -121,8 +121,8 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
     }
 
     /* Initialize vector of processed arguments */
-    std::vector<DAGNode*> arguments(argSize);
-    for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++)
+    std::vector<RbObjectWrapper*> arguments(argSize);
+    for (std::vector<RbObjectWrapper*>::iterator i=arguments.begin(); i!=arguments.end(); i++)
         (*i) = NULL;
 
     /* Match arguments */
@@ -150,12 +150,12 @@ std::vector<DAGNode*>  RbFunction::processArguments(const std::vector<Argument>&
             arguments.clear();
             throw RbException(msg);
         }
-        arguments[theArg] = (*i).getDAGNode();
+        arguments[theArg] = (*i).getWrapper()->clone();
     }
 
     /* Fill in default values */
     index = 0;
-    for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++, index++) {
+    for (std::vector<RbObjectWrapper*>::iterator i=arguments.begin(); i!=arguments.end(); i++, index++) {
         if ((*i) == NULL) {
         	RbUndefined ud;
             if ( ar[index]->getDefaultValue().equals(&ud) ) {

@@ -8,7 +8,7 @@
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
- * @author The RevBayes core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-11-20, version 1.0
@@ -19,165 +19,55 @@
 #include <sstream>
 
 #include "Argument.h"
-#include "DAGNode.h"
-#include "RbException.h"
-#include "RbNames.h"
-#include "StringVector.h"
+#include "RbObjectWrapper.h"
 
 
-/**
- * @brief Constructor
- *
- * Standard constructor.
- *
- */
-Argument::Argument(const std::string& lbl, DAGNode* n)
-    : RbObject(), label(lbl), node(n) {
+/** Construct from argument label and argument wrapper */
+Argument::Argument(const std::string& argLabel, RbObjectWrapper* arg)
+    : RbInternal() {
+
+    label   = argLabel;
+    wrapper = arg;
 }
 
 
-/**
- * @brief Copy constructor
- *
- * Standard copy constructor.
- *
- */
-Argument::Argument(const Argument& a)
-    : RbObject(), label(a.label), node(a.node) {
+/** Copy constructor: Make independent copy of wrapper */
+Argument::Argument(const Argument& x)
+    : RbInternal() {
+
+    label   = x.label;
+    wrapper = x.wrapper->clone();
 }
 
+
+/** Destructor: Delete wrapper */
 Argument::~Argument() { 
 
-	delete node; 
+	delete wrapper; 
 } 
 
 
-/**
- * @brief Brief info about the object
- *
- * One-liner on the object
- *
- * @returns     The one-liner
- *
- */
-std::string Argument::briefInfo() const {
+/** Assignment operator: Make independent copy of wrapper */
+Argument& Argument::operator=(const Argument& x) {
 
-    std::ostringstream info;
-    printValue(info);
-    return info.str();
-}
-
-
-RbObject* Argument::clone() const { 
-
-	Argument* arg = new Argument(*this); 
-	return (RbObject*)arg;
-} 
-
-
-/**
- * @brief Pointer-based equal comparison
- *
- * Compares equality of this object to another RbObject. It
- * returns equal only if the labels are identical and the
- * nodes are the same.
- *
- * @param obj   The object of the comparison
- * @returns     Result of comparison
- *
- */
-bool Argument::equals(const RbObject* obj) const {
-
-    // Use built-in fast down-casting first
-	const Argument* x = dynamic_cast<const Argument*>(obj);
-    if (x != NULL)
-        return (label == x->label && node == x->node);
-
-    // Try converting the value to an argument
-    x = dynamic_cast<const Argument*>(obj->convertTo("argument"));
-    if (x == NULL)
-        return false;
-
-    bool result = (label == x->label && node == x->node);
-    delete x;
-    return result;
-}
-
-RbObject& Argument::operator=(const RbObject& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const Argument& x = dynamic_cast<const Argument&> (obj);
-
-        Argument& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const Argument& x = dynamic_cast<const Argument&> (*(obj.convertTo("argument")));
-
-            Argument& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getType() + " to argument");
-            throw e;
-        }
+    if (this != &x) {
+        delete wrapper;
+        wrapper = x.wrapper->clone();
+        label = x.label;
     }
 
-    // dummy return
     return (*this);
 }
 
-Argument& Argument::operator=(const Argument& obj) {
 
-    Argument* a = new Argument(obj);
-    return (*a);
-}
-
-
-/** Get class vector describing type of object */
-const StringVector& Argument::getClass() const {
-
-    static StringVector rbClass = StringVector(RbNames::Argument::name) + RbObject::getClass();
-    return rbClass;
-}
-
-
-/**
- * @brief Print function
- *
- * This function prints complete info about this object.
- *
- * @param o     The stream for printing
- *
- */
-void Argument::print(std::ostream &o) const {
-
-    //RbObject::print(o);
-    
-    o << "Label = " << label << std::endl;
-    o << "Node = " << node->briefInfo() << std::endl;
-}
-
-
-/**
- * @brief Print value
- *
- * This function prints the value of the object for
- * the user (implemented here just in case).
- *
- * @param o     The stream for printing
- *
- */
-void Argument::printValue(std::ostream &o) const {
-
-    o << "argument(" << label << ", " << node->briefInfo() << ")" << std::endl;
-}
-
+/** Complete info about object */
 std::string Argument::toString(void) const {
 
-	std::string tempStr = label;
-    return tempStr;
+    std::ostringstream o;
+    o << "Argument: label = \"" << label << "\", value = ";
+    wrapper->printValue(o);
+
+    return o.str();
 }
+
+
