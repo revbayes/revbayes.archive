@@ -10,7 +10,10 @@ INSTALL     = @INSTALL@
 
 CFLAGS = $(CXXFLAGS)
 
-all: RbObject.o RbUndefined.o
+all: RbObject.o RbInternal.o RbUndefined.o
+
+RbInternal.o: RbInternal.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbInternal.cpp
 
 RbObject.o: RbObject.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbObject.cpp

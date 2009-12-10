@@ -36,6 +36,7 @@ class MethodTable : RbInternal {
     public:
         void            addMethodDescr(const std::string name, const std::string& retType, const ArgumentRule** argRules);     //!< Add description 
         MethodTable*    clone() const { return new MethodTable(*this); }                //!< Clone table
+        virtual const StringVector& getClass(void) const;                               //!< Get class vector
         void            printValue(std::ostream& o) const;                              //!< Print description of member functions
         void            printValue(std::ostream& o, const std::string& name) const;     //!< Print description of named member function(s)
         std::string     toString(void) const;                                           //!< Print complete info
@@ -45,5 +46,4 @@ class MethodTable : RbInternal {
 };
 
 #endif
-
 

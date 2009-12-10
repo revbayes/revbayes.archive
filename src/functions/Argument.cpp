@@ -19,7 +19,9 @@
 #include <sstream>
 
 #include "Argument.h"
+#include "RbNames.h"
 #include "RbObjectWrapper.h"
+#include "StringVector.h"
 
 
 /** Construct from argument label and argument wrapper */
@@ -57,6 +59,14 @@ Argument& Argument::operator=(const Argument& x) {
     }
 
     return (*this);
+}
+
+
+/** Get class vector describing type of object */
+const StringVector& Argument::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(Argument_name) + RbInternal::getClass();
+	return rbClass; 
 }
 
 

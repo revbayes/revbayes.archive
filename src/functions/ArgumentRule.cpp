@@ -18,6 +18,7 @@
 #include "ArgumentRule.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "RbObjectWrapper.h"
 #include "RbUndefined.h"
 
 #include <sstream>
@@ -39,10 +40,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, RbObject* defVal) : RbInt
 
     label        = argName;
     requiredType = defVal->getType();
-    if (defVal->isType(RbNames::RbComplex::name))
-        numDim = ((RbComplex*)(defVal))->getElementDim();
-    else
-        numDim = 0;
+    numDim       = defVal->getDim();
     defaultValue = defVal;
     minValue     = new RbUndefined;
     maxValue     = new RbUndefined;
@@ -54,10 +52,7 @@ ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObjec
 
     label        = lbl;
     requiredType = t;
-    if (dv->isType(RbNames::RbComplex::name))
-        numDim = ((RbComplex*)(dv))->getElementDim();
-    else
-        numDim = 0;
+    numDim       = dv->getDim();
     defaultValue = dv;
     minValue     = new RbUndefined;
     maxValue     = new RbUndefined;
@@ -69,10 +64,7 @@ ArgumentRule::ArgumentRule(const std::string& lbl, const std::string& t, RbObjec
 
     label        = lbl;
     requiredType = t;
-    if (dv->isType(RbNames::RbComplex::name))
-        numDim = ((RbComplex*)(dv))->getElementDim();
-    else
-        numDim = 0;
+    numDim       = dv->getDim();
     defaultValue = dv;
     minValue     = mnv;
     maxValue     = mxv;
@@ -116,6 +108,14 @@ ArgumentRule& ArgumentRule::operator=(const ArgumentRule& a) {
 }
 
 
+/** Get class vector describing type of object */
+const StringVector& ArgumentRule::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(ArgumentRule_name) + RbInternal::getClass();
+	return rbClass; 
+}
+
+
 /**
  * @brief Test if argument is valid
  *
@@ -124,25 +124,23 @@ ArgumentRule& ArgumentRule::operator=(const ArgumentRule& a) {
  * @param val   The object to be tested
  * @returns     Result of comparison
  *
-
+ * @todo        Type conversion is not implemented elsewhere for args
  */
 /** Test if argument is valid */
-bool ArgumentRule::isArgValid(const RbObject* val) const {
+bool ArgumentRule::isArgValid(const RbObjectWrapper* var) const {
+
+    const RbObject* val = var->getValue();
 
     if (!val->isType(requiredType) && !val->isConvertibleTo(requiredType))
         return false;
 
-    int dim;
-    if (val->isType(RbNames::RbComplex::name))
-        dim = ((RbComplex*)(val))->getElementDim();
-    else
-        dim = 0;
-    if (numDim != dim)
+    if (numDim != var->getDim())
         return false;
 
     // TODO: Test against min and max -- Why not in a derived class?
     return true;
 }
+
 
 /** Provide complete information about object */
 std::string ArgumentRule::toString(void) const {

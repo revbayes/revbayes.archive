@@ -42,8 +42,7 @@ class FunctionTable : RbInternal {
         FunctionTable&  operator=(const FunctionTable& x);          //!< Assignment operator 
 
         // Static help function that can be used by other objects, like MethodTable
-        static bool     isDistinctFormal(const ArgumentRule** x, const ArgumentRule** y) const; //!< Are formals unique?
-        static bool     isMatch(const ArgumentRule** x, const ArgumentRule** y) const;          //!< Do args match  formals unique?
+        static bool     isDistinctFormal(const ArgumentRule** x, const ArgumentRule** y); //!< Are formals unique?
 
         // Basic utility functions
         std::string     briefInfo(void) const;                                  //!< Brief info to string

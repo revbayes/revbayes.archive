@@ -10,13 +10,16 @@ INSTALL     = @INSTALL@
 
 CFLAGS = $(CXXFLAGS)
 
-all: Argument.o ArgumentRule.o RbFunction.o
+all: Argument.o ArgumentRule.o Ellipsis.o RbFunction.o
+
+Argument.o: Argument.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Argument.cpp
 
 ArgumentRule.o: ArgumentRule.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c ArgumentRule.cpp
 
-Argument.o: Argument.cpp
-	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Argument.cpp
+Ellipsis.o: Ellipsis.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Ellipsis.cpp
 
 RbFunction.o: RbFunction.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbFunction.cpp

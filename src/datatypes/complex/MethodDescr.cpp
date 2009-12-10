@@ -19,6 +19,7 @@
 
 #include "ArgumentRule.h"
 #include "MethodDescr.h"
+#include "RbNames.h"
 
 #include <sstream>
 
@@ -26,6 +27,14 @@
 /** Constructor */
 MethodDescr::MethodDescr(const std::string& retType, const ArgumentRule** argRules)
     : returnType(retType), argRules(argRules) {
+}
+
+
+/** Get class vector describing type of object */
+const StringVector& MethodDescr::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(MethodDescr_name) + RbInternal::getClass();
+	return rbClass; 
 }
 
 

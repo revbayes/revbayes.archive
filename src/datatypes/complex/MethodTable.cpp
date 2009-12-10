@@ -23,6 +23,8 @@
 #include "MethodDescr.h"
 #include "MethodTable.h"
 #include "RbException.h"
+#include "RbNames.h"
+#include "StringVector.h"
 
 #include <sstream>
 
@@ -47,6 +49,14 @@ void MethodTable::addMethodDescr(const std::string name, const std::string& retT
     }
 
     methodTable.insert(std::pair<const std::string, const MethodDescr>(name, theDescr));
+}
+
+
+/** Get class vector describing type of object */
+const StringVector& MethodTable::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(MethodTable_name) + RbInternal::getClass();
+	return rbClass; 
 }
 
 

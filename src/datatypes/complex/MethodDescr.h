@@ -30,18 +30,18 @@ class ArgumentRule;
 class MethodDescr : RbInternal {
 
     public:
-                                MethodDescr(const std::string& retType, const ArgumentRule** argRules);         //!< Constructor
+                                    MethodDescr(const std::string& retType, const ArgumentRule** argRules);         //!< Constructor
     
-        MethodDescr*            clone() const { return new MethodDescr(*this); }    //!< Clone object
-        const ArgumentRule**    getArgRules() const { return argRules; }            //!< Get arg rules
-        void                    printValue(std::ostream& o) const;                  //!< Print function description
-        std::string             toString(void) const;                               //!< Print complete info
+        MethodDescr*                clone() const { return new MethodDescr(*this); }    //!< Clone object
+        const ArgumentRule**        getArgRules() const { return argRules; }            //!< Get arg rules
+        virtual const StringVector& getClass(void) const;                   //!< Get class vector
+        void                        printValue(std::ostream& o) const;                  //!< Print function description
+        std::string                 toString(void) const;                               //!< Print complete info
 
     private:
-        const std::string&      returnType;                                         //!< The return type
-        const ArgumentRule**    argRules;                                           //!< The argument rules
+        const std::string&          returnType;                                         //!< The return type
+        const ArgumentRule**        argRules;                                           //!< The argument rules
 };
 
 #endif
-
 

@@ -20,24 +20,28 @@
 #include <ostream>
 #include <string>
 
+class StringVector;
 
 class RbInternal {
 
     public:
-		virtual                 ~RbInternal(void) {}                    //! Virtual destructor
+		virtual                     ~RbInternal(void) {}                    //! Virtual destructor
 
         // Basic utility functions you have to override
-        virtual RbInternal*     clone(void) const = 0;                  //!< Clone object
-        virtual std::string     toString(void) const = 0;               //!< Print object to string
+        virtual RbInternal*         clone(void) const = 0;                  //!< Clone object
+        virtual const StringVector& getClass(void) const;                   //!< Get class vector
+        virtual std::string         toString(void) const = 0;               //!< Print object to string
 
         // Basic utility functions you may want to override
-        virtual void            printValue(std::ostream& o) const {}    //!< Print value for user
+        virtual void                printValue(std::ostream& o) const {}    //!< Print value for user
 
         // Basic utility functions you do not have to override
-        void                    print(std::ostream& o) const { o << toString() << std::endl; }  //!< Print object
+        const std::string&          getType(void) const;                    //!< Get type
+        bool                        isType(const std::string& type) const;  //!< Is the object of type?
+        void                        print(std::ostream& o) const;           //!< Print object
 
    protected:
-		                        RbInternal(void) {}                     //!< No objects of this class
+		                            RbInternal(void) {}                     //!< No objects of this class
 };
 
 #endif
