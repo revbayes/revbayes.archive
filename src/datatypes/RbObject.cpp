@@ -50,6 +50,13 @@ const StringVector& RbObject::getClass(void) const {
 }
 
 
+/** Get atomic type (first entry in atomic class vector, describing type beyond which subscripts do not work) */
+const std::string& RbObject::getAtomicType(void) const {
+
+    return getAtomicClass()[0];
+}
+
+
 /** Get type (first entry in class vector) */
 const std::string& RbObject::getType(void) const {
 

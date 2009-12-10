@@ -57,11 +57,11 @@ class RbComplex : public RbObject {
         virtual int                     setArguments(const std::string& name, std::vector<Argument>& args); //!< Set arguments and get funcId back 
 
          // Element access functions: override if object contains elements
-        virtual const RbObject*         getElement(const IntVector& index) const;           //!< Get element (a copy)
-        virtual int                     getElementDim(void) const { return 0; }             //!< Get dimensions
-        virtual const IntVector&        getElementLength(void) const;                       //!< Get length in each dim
-        virtual const std::string&      getElementType(void) const;                         //!< Get element type
-        virtual void                    resize(const IntVector& len);                       //!< Resize
+        virtual const StringVector&     getAtomicClass(void) const;                     //!< Get atomic (element) type
+        virtual int                     getDim(void) const { return 0; }                //!< Get element dimensions
+        virtual const RbObject*         getElement(const IntVector& index) const;       //!< Get element (a copy)
+        virtual const IntVector&        getElementLength(void) const;                   //!< Get length in each dim
+        virtual void                    resize(const IntVector& len);                   //!< Resize
         virtual void                    setElement(const IntVector& index, RbObject* val);  //!< Set element
         virtual void                    setElementLength(const IntVector& len);             //!< Get length in each dim
 

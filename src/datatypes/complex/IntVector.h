@@ -24,6 +24,7 @@
 #include <iostream>
 #include <vector>
 
+class ContainerIterator;
 
 class IntVector : public RbComplex {
 
@@ -33,6 +34,7 @@ class IntVector : public RbComplex {
             IntVector(int x);                           //!< Construct vector with one int x
 	        IntVector(int n, int x);                    //!< Construct vector with n ints x
 	        IntVector(std::vector<int>& x);             //!< Constructor from int vector
+	        IntVector(const ContainerIterator& x);            //!< Constructor from container iterator
 
         // Basic utility functions
         RbObject*           clone() const;                                  //!< Clone object
@@ -44,8 +46,10 @@ class IntVector : public RbComplex {
         // Overloaded operators and built-in functions
 	    int&                operator[](int i) { return value[i]; }          //!< Index op allowing change
 	    const int&          operator[](int i) const { return value[i]; }    //!< Const index op
+	    void                pop_back(void) { value.pop_back(); }            //!< Drop element
 	    void                push_back(int x) { value.push_back(x); }        //!< Add element
 	    size_t              size() const { return value.size(); }           //!< Get size
+	    void                resize(int n) { value.resize(n); }              //!< Get size
 
         // Element access functions for parser
 	    RbObject*               getElement(const IntVector& index) const;       //!< Get element (a copy)

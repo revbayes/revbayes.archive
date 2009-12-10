@@ -17,6 +17,7 @@
  * $Id$
  */
 
+#include "RbException.h"
 #include "RbNames.h"
 #include "RbObjectWrapper.h"
 #include "StringVector.h"
@@ -29,6 +30,13 @@ const StringVector& RbObjectWrapper::getClass(void) const {
 
     static StringVector rbClass = StringVector(RbNames::RbObjectWrapper::name);
 	return rbClass; 
+}
+
+
+/** Get element variable; default throws error, override if wrapper has variable elements */
+const RbObjectWrapper* RbObjectWrapper::getVarElement(const IntVector& index) const {
+
+    throw (RbException("No variable elements"));
 }
 
 
@@ -52,6 +60,13 @@ void RbObjectWrapper::printStruct(std::ostream& o) const {
     o << "$wrapperClass = ";
     getClass().printValue(o);
     o << std::endl;
+}
+
+
+/** Set element variable; default throws error, override if wrapper has variable elements */
+void RbObjectWrapper::setElement(const IntVector& index, RbObjectWrapper* var) {
+
+    throw (RbException("No variable elements"));
 }
 
 

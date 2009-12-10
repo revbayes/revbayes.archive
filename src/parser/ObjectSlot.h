@@ -20,37 +20,51 @@
 #ifndef ObjectSlot_H
 #define ObjectSlot_H
 
+#include "RbInternal.h"
+
 #include <ostream>
+#include <string>
 
-#include "RbObject.h"
-
-
-// Forward declaration
+class RbObject;
+class RbObjectWrapper;
 class StringVector;
-
 
 class ObjectSlot {
 
     public:
-            ObjectSlot(const std::string valType, int elementDim);  //!< Constructor with NULL init
-            ObjectSlot(RbObject* initVal);                          //!< Constructor with object init
-            ~ObjectSlot() { delete value; }                         //!< Destructor should delete value
+            ObjectSlot(const std::string valType, int elemDim);     //!< Constructor with NULL init
+            ObjectSlot(RbObjectWrapper* initVariable);              //!< Constructor with variable init
+            ObjectSlot(RbObject* initValue);                        //!< Constructor with value init
+            ObjectSlot(const ObjectSlot& x);                        //!< Copy constructor 
+            ~ObjectSlot() { delete variable; }                      //!< Destructor should delete variable
 
-        // Basic utility function
-        void                print(std::ostream& o) const;               //!< Print complete object info
+        // Assignment operator
+        ObjectSlot&             operator=(const ObjectSlot& x);             //!< Assignment operator
+
+        // Basic utility functions
+        ObjectSlot*             clone() const { return new ObjectSlot(*this); } //!< Clone object
+        std::string             toString() const;                           //!< Complete object info
 
         // Regular functions
-        int                 getDim() const { return dim; }              //!< Get number of dimensions
-        const std::string&  getType() const { return type; }            //!< Get type
-        std::string         getTypeDescr() const;                       //!< Get type description with dimensions
-        const RbObject*     getValue() const { return value; }          //!< Get value (const pointer)
-        void                setValue(RbObject* val);                    //!< Set value
-        void                setValElement(const IntVector& index, RbObject* val);   //!< Set value element
+        int                     getDim() const { return dim; }              //!< Get number of dimensions
+        const std::string&      getAtomicType() const { return atomicType; }//!< Get atomic type
+        std::string             getTypeDescr() const;                       //!< Get atomic type + "[][]..."
+        const RbObject*         getValue() const;                           //!< Get value (const pointer)
+        const RbObjectWrapper*  getVariable() const { return variable; }    //!< Get variable (const pointer)
+        const RbObject*         getValElement(const IntVector& index);      //!< Get value element
+        const RbObjectWrapper*  getVarElement(const IntVector& index);      //!< Get variable element
+        void                    setValue(RbObjec* value);                   //!< Set value
+        void                    setVariable(RbObjectWrapper* var);          //!< Set variable
+        void                    setValElement(const IntVector& index, RbObject* val);       //!< Set value element
+        void                    setVarElement(const IntVector& index, RbObjectWrapper* var);//!< Set variable elem
+
+    protected:
+        bool                    isMatchingType(const StringVector& class) const;            //!< Test type
 
     private:
-	    std::string         type;           //!< Declared type of the object
-        int                 dim;            //!< Declared dimension of the object
-        RbObject*           value;          //!< Current value held by the slot
+	    std::string         atomicType;     //!< Declared atomic type of the variable
+        int                 dim;            //!< Declared dimension of the variable
+        RbObjectWrapper*    variable;       //!< Current variable held by the slot
 };
 
 #endif

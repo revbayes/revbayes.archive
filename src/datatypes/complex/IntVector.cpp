@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "ContainerIterator.h"
 #include "IntVector.h"
 #include "RbException.h"
 #include "RbInt.h"
@@ -44,6 +45,14 @@ IntVector::IntVector(int n, int x) {
 IntVector::IntVector(std::vector<int>& x) {
 
     value = x;
+}
+
+
+/** Constructor from container iterator */
+IntVector::IntVector(const ContainerIterator& x) {
+
+    for (size_t i=0; i<x.size(); i++)
+        value.push_back(x[i]);
 }
 
 

@@ -30,14 +30,23 @@ class RbObjectWrapper {
     public:
 		virtual						    ~RbObjectWrapper(void) {}                       //! Virtual destructor
 
-        // Basic utility functions you HAVE TO override
+        // Functions you have to override
         virtual RbObjectWrapper*        clone(void) const = 0;                          //!< Clone object
+        virtual const StringVector&     getAtomicClass(void) const = 0;                 //!< Get atomic class vector
         virtual const StringVector&     getClass(void) const;                           //!< Get class vector
+        virtual int                     getDim(void) const = 0;                         //!< Get dim (value + wrap)
         virtual const RbObject*         getValue(void) const = 0;                       //!< Get value
+        virtual const RbObject*         getValElement(const IntVector& index) const = 0;//!< Get value element
         virtual void                    printStruct(std::ostream& o) const;             //!< Print struct for user
         virtual void                    printValue(std::ostream& o) const = 0;          //!< Print value for user
+        virtual void                    setElement(const IntVector& index, RbObject* val);  //!< Set element value
 
-        // Basic utility functions you should not overrride
+        // Functions you may want to overrride
+        virtual const RbObjectWrapper*  getVarElement(const IntVector& index) const;    //!< Get variable element
+        virtual int                     getWrapperDim(void) { return 0; }               //!< Get wrapper dim
+        virtual void                    setElement(const IntVector& index, RbObjectWrapper* var);   //!< Set variable element
+
+        // Functions you should not overrride
         bool                            isType(const std::string& type) const;          //!< Is wrapper of type?
 
     protected:

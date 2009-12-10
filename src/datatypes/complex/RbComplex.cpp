@@ -47,6 +47,13 @@ const RbObject* RbComplex::executeMethod(const std::string& funcName, std::vecto
 }
 
 
+/** Get element (atomic) class vector; same as class vector if no elements */
+const StringVector& RbComplex::getAtomicClass() const {
+
+    return getClass();
+}
+
+
 /** Get class vector describing type of object */
 const StringVector& RbComplex::getClass(void) const { 
 
@@ -64,13 +71,6 @@ const RbObject* RbComplex::getElement(const IntVector& index) const {
 
 /** Get element length in each dimension */
 const IntVector& RbComplex::getElementLength() const {
-
-    throw (RbException("Object does not have elements"));
-}
-
-
-/** Get element type */
-const std::string& RbComplex::getElementType() const {
 
     throw (RbException("Object does not have elements"));
 }

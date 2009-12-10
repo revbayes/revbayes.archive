@@ -20,12 +20,12 @@
 #ifndef DAGNode_H
 #define DAGNode_H
 
+#include "RbObject.h"
 #include "RbObjectWrapper.h"
 
 class RbMonitor;
 class RbMove;
 class RbMoveSchedule;
-class RbObject;
 class StringVector;
 
 #include <set>
@@ -68,14 +68,25 @@ class DAGNode : public RbObjectWrapper {
     public:
 	        virtual ~DAGNode(void);     //!< Destructor
 
-        virtual const StringVector& getClass() const;                                   //!< Get class vector
+        // Basic utility functions
+	    virtual DAGNode*                clone() const = 0;                                  //!< Clone this node
+        virtual const StringVector&     getAtomicClass(void) const { return value->getClass(); } //!< Get atomic class vector
+        virtual const StringVector&     getClass(void) const;                               //!< Get class vector
+        virtual int                     getDim(void) const { return value->getDim(); }      //!< Get value dimension
+        const RbObject*                 getValue(void) const { return value; }              //!< Get value
+        virtual const RbObject*         getValElement(const IntVector& index) const;        //!< Get value element
+        virtual void                    printStruct(std::ostream& o) const;                 //!< Print struct for user
+        virtual void                    printValue(std::ostream& o) const;                  //!< Print value for user
+        virtual void                    setElement(const IntVector& index, RbObject* val);  //!< Set value element
+
+
+        // Unclassified functions
         void						accept();
 	    void                		addChildNode(DAGNode* c) { children.insert(c); }    //!< Add child node
 	    void						addMonitor(RbMonitor* m);
 	    void						addMove(RbMove* m, double w);
 	    void                        addParentNode(DAGNode* p) { parents.insert(p); }
 	    void						assignMoveSchedule(RbMoveSchedule* ms) { moves = ms; }
-	    virtual DAGNode*            clone() const = 0;                                  //!< Clone this node
         virtual bool        		 equals(const RbObjectWrapper *x) const;            //!< Compare DAG nodes
 	    std::set<DAGNode*>& 		 getChildrenNodes(void) { return children; }         //!< Get children nodes
 	    double						 getLnLikelihoodRatio(void);
@@ -83,7 +94,6 @@ class DAGNode : public RbObjectWrapper {
 	    double                       getLnPriorRatio(void);
 	    virtual double               getLnProbabilityRatio(void) = 0;
 	    virtual double               getLnProbability(void) = 0;
-        const RbObject*             getValue(void) const { return value; }              //!< Get value
 	    std::set<DAGNode*>& 		getParentNodes(void) { return parents; }            //!< Get parent nodes
 	    const RbObject*             getStoredValue() const { return storedValue; }      //!< Get stored value
 	    double						getUpdateWeight(void);
@@ -101,7 +111,6 @@ class DAGNode : public RbObjectWrapper {
         virtual void           		restoreAffectedChildren() = 0;                      //!< Restore affected nodes recursively
         virtual void           		restoreAffectedParents() = 0;                      //!< Restore affected nodes recursively
         void                		setValue(RbObject* val);                //!< Set the value of the node
-        void                       	printValue(std::ostream& o) const;              //!< Print value (for user)
         void                		touch() { touchedLikelihood = touchedProbability = true; }             //!< Mark node for recalculation
         virtual void           		touchAffectedChildren() = 0;                        //!< Mark affected nodes recursively
         virtual void           		touchAffectedParents() = 0;                        //!< Mark affected nodes recursively

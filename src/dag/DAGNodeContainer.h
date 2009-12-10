@@ -25,9 +25,11 @@
 #ifndef DAGNodeContainer_H
 #define DAGNodeContainer_H
 
+#include "ContainerIterator.h"
 #include "DAGNode.h"
 #include "IntVector.h"
 #include "RbObjectWrapper.h"
+#include "StringVector.h"
 
 #include <ostream>
 #include <vector>
@@ -39,9 +41,9 @@ class DAGNodeContainer : public RbObjectWrapper {
             // Constructors and destructor
             DAGNodeContainer(DAGNode* x);                       //!< Vector with one node x
 	        DAGNodeContainer(int n, DAGNode* x);                //!< Vector with n copies of x
-	        DAGNodeContainer(int n, const std::string& type);    //!< Empty vector of length n
-	        DAGNodeContainer(const IntVector& len, DAGNode* x); //!< Array of given dimensions with copies of x
-	        DAGNodeContainer(const IntVector& len, const std::string& type);  //!< Empty array of given dimensions
+	        DAGNodeContainer(int n, const StringVector& atomicClassVec, int valDim=0);   //!< Empty vector of length n
+	        DAGNodeContainer(const IntVector& len, DAGNode* x);   //!< Array of given dimensions with copies of x
+	        DAGNodeContainer(const IntVector& len, const StringVector& atomicClassVec, int valDim=0);    //!< Empty array of given dimensions
             DAGNodeContainer(const DAGNodeContainer& x);        //!< Copy constructor
             ~DAGNodeContainer();                                //!< Destructor
 
@@ -49,23 +51,29 @@ class DAGNodeContainer : public RbObjectWrapper {
         DAGNodeContainer&       operator=(const DAGNodeContainer& x);               //!< Assignment operator
 
         // Basic utility functions
-        std::string             briefInfo() const;                                  //!< Brief info about object
         DAGNodeContainer*       clone() const;                                      //!< Clone object
-        bool                    equals(const RbObjectWrapper* x);                   //!< Equals comparison
         const StringVector&     getClass() const;                                   //!< Get class
         const RbObject*         getValue() const;                                   //!< Get value
         void                    printValue(std::ostream& o) const;                  //!< Print value (for user)
         std::string             toString() const;                                   //!< Complete info about object
 
         // Element access functions
-        const DAGNode*          getElement(const IntVector& index) const;           //!< Get element
-        int                     getElementDim() const { return length.size(); }     //!< Get dimensions
+        const StringVector&     getAtomicClass() const { return atomicClass; }      //!< Get atomic class
+        int                     getDim() const { return length.size() + valueDim; } //!< Get dimensions
         const IntVector&        getElementLength() const { return length; }         //!< Get length of dimensions
-        const std::string&      getElementType() const { return valueType; }        //!< Get element value type
         DAGNodeContainer*       getSubContainer(const IntVector& index) const;      //!< Get subcontainer 
-        void                    setElement(const IntVector& index, RbObjectWrapper* val);   //!< Set element 
-        void                    setElement(const IntVector& index, RbObject* val);  //!< Set element from object
+        const RbObject*         getValElement(const IntVector& index) const;        //!< Get value element
+        const DAGNode*          getVarElement(const IntVector& index) const;        //!< Get variable element
+        int                     getWrapperDim() const { return length.size(); }     //!< Get dimensions
+        void                    setElement(const IntVector& index, RbObject* val);  //!< Set value element
+        void                    setElement(const IntVector& index, RbObjectWrapper* var);//!< Set var element 
         void                    setElementLength(const IntVector& len);             //!< Reorganize container
+
+        // Iteration and access functions for multidimensional indices
+        ContainerIterator       begin() const { return ContainerIterator(length); } //!< First index
+        ContainerIterator       end() const;                                        //!< Last index + 1
+        DAGNode*                operator[](const ContainerIterator& i);             //!< Element access
+        const DAGNode* const    operator[](const ContainerIterator& i) const;       //!< Element const access
 
         // Regular functions
         void                    resize(int n) { resize (IntVector(n)); }            //!< Resize vector
@@ -73,14 +81,15 @@ class DAGNodeContainer : public RbObjectWrapper {
         size_t                  size() const { return nodes.size(); }               //!< Get number of elements
 
     protected:
-        void                    getNextIndex(IntVector& index, const IntVector& len) const; //!< Iteration 
         int                     getOffset(const IntVector& index) const;            //!< Get offset in nodes vector
+        int                     getOffset(const ContainerIterator& index) const;    //!< Get offset in nodes vector
         
     private:
-        std::string             valueType;  //!< Element value type (type of value of DAG nodes)
-        IntVector               length;     //!< Length in each dimension
-	    std::vector<DAGNode*>   nodes;      //!< Vector of nodes
-        RbObject*               value;      //!< Holder of value; only fill in if somebody asks
+        StringVector            atomicClass;    //!< Value element atomic class (from value of DAG nodes)
+        int                     valueDim;       //!< Value element dim (from value of DAG nodes)
+        IntVector               length;         //!< Length in each dimension
+	    std::vector<DAGNode*>   nodes;          //!< Vector of nodes
+        RbObject*               value;          //!< Holder of value; fill in if somebody asks
 };
 
 #endif

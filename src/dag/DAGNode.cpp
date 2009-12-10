@@ -18,6 +18,8 @@
  */
 
 #include "DAGNode.h"
+#include "IntVector.h"
+#include "RbException.h"
 #include "RbMonitor.h"
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
@@ -211,6 +213,32 @@ double DAGNode::getUpdateWeight(void) {
 	return moves->getUpdateWeight();
 }
 
+
+/** Get value element */
+const RbObject* DAGNode::getValElement(const IntVector& index) const {
+
+    if (index.size() == 0 || int(index.size()) != value->getDim())
+        throw (RbException("Subscript error"));
+
+    return ((const RbComplex*)(value))->getElement(index);
+}
+
+
+/** Print struct for user */
+void DAGNode::printStruct(std::ostream& o) const {
+
+    RbObjectWrapper::printStruct(o);
+
+    o << ".valueClass = ";
+    value->getClass().printValue(o);
+
+    o << ".value = ";
+    if (value->isType(RbComplex_name))
+        o << std::endl;
+    value->printValue(o);
+}
+
+
 double DAGNode::performMove(void) {
 	if (moves == NULL) {
 		return 0.0;
@@ -373,4 +401,15 @@ void DAGNode::printValue(std::ostream &o) const {
 
     value->printValue(o);
 }
+
+
+/** Set element value */
+void DAGNode::setElement(const IntVector& index, RbObject* val) {
+
+    if (index.size() == 0 || int(index.size()) != value->getDim())
+        throw (RbException("Subscript error"));
+
+    ((RbComplex*)(value))->setElement(index, val);
+}
+
 
