@@ -14,6 +14,11 @@
  * @version 1.0
  * @since 2009-11-20, version 1.0
  *
+ * @todo I think this class can eventuallly go but I leave it in for now
+ *       because deleting it means a lot of changes to Frame and some
+ *       changes to the object wrappers. Most importantly, the object
+ *       wrappers always need to keep track of their declared type and dim. -- Fredrik
+ *
  * $Id$
  */
 
@@ -51,15 +56,15 @@ class ObjectSlot {
         std::string             getTypeDescr() const;                       //!< Get atomic type + "[][]..."
         const RbObject*         getValue() const;                           //!< Get value (const pointer)
         const RbObjectWrapper*  getVariable() const { return variable; }    //!< Get variable (const pointer)
-        const RbObject*         getValElement(const IntVector& index);      //!< Get value element
-        const RbObjectWrapper*  getVarElement(const IntVector& index);      //!< Get variable element
-        void                    setValue(RbObjec* value);                   //!< Set value
+        const RbObject*         getValElement(const IntVector& index) const;//!< Get value element
+        const RbObjectWrapper*  getVarElement(const IntVector& index) const;//!< Get variable element
+        void                    setValue(RbObject* value);                  //!< Set value
         void                    setVariable(RbObjectWrapper* var);          //!< Set variable
         void                    setValElement(const IntVector& index, RbObject* val);       //!< Set value element
         void                    setVarElement(const IntVector& index, RbObjectWrapper* var);//!< Set variable elem
 
     protected:
-        bool                    isMatchingType(const StringVector& class) const;            //!< Test type
+        bool                    isMatchingType(const StringVector& classVec) const;         //!< Test type
 
     private:
 	    std::string         atomicType;     //!< Declared atomic type of the variable

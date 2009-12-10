@@ -163,7 +163,7 @@ DAGNodeContainer& DAGNodeContainer::operator=(const DAGNodeContainer& x) {
 
 
 /** Subscript operator */
-DAGNode* DAGNodeContainer::operator[](const ContainerIterator& i) {
+DAGNode*& DAGNodeContainer::operator[](const ContainerIterator& i) {
 
     int offset = getOffset(i);
     return nodes[offset];
@@ -171,7 +171,7 @@ DAGNode* DAGNodeContainer::operator[](const ContainerIterator& i) {
 
 
 /** Subscript const operator */
-const DAGNode* const DAGNodeContainer::operator[](const ContainerIterator& i) const {
+DAGNode* const& DAGNodeContainer::operator[](const ContainerIterator& i) const {
 
     int offset = getOffset(i);
     return nodes[offset];
@@ -362,6 +362,9 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
     // Check if parser wants to set multiple elements
     if (index.size() < length.size()) {
 
+        /** @todo Do we want to allow this? See code below if we do */
+        throw(RbException("Invalid assignment"));
+
         // Check that the source is a container
         RbComplex* source = dynamic_cast<RbComplex*>(val);
         if (source->getDim() == 0)
@@ -449,6 +452,9 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObjectWrapper* var) 
 
     // Check if parser wants to set multiple elements
     if (index.size() < length.size()) {
+
+        /** @todo Do we want to allow this? See code below if we do */
+        throw(RbException("Invalid assignment"));
 
         // Check that the source is a container
         if (var->getDim() == 0)

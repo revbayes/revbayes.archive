@@ -47,8 +47,14 @@ class DAGNodeContainer : public RbObjectWrapper {
             DAGNodeContainer(const DAGNodeContainer& x);        //!< Copy constructor
             ~DAGNodeContainer();                                //!< Destructor
 
-        // Assignment operator
+        // Overloaded operators
         DAGNodeContainer&       operator=(const DAGNodeContainer& x);               //!< Assignment operator
+        DAGNode*&               operator[](const ContainerIterator& i);             //!< Element access
+        DAGNode* const&         operator[](const ContainerIterator& i) const;       //!< Element const access
+
+        // Iteration functions for multidimensional indices
+        ContainerIterator       begin() const { return ContainerIterator(length); } //!< First index
+        ContainerIterator       end() const;                                        //!< Last index + 1
 
         // Basic utility functions
         DAGNodeContainer*       clone() const;                                      //!< Clone object
@@ -68,12 +74,6 @@ class DAGNodeContainer : public RbObjectWrapper {
         void                    setElement(const IntVector& index, RbObject* val);  //!< Set value element
         void                    setElement(const IntVector& index, RbObjectWrapper* var);//!< Set var element 
         void                    setElementLength(const IntVector& len);             //!< Reorganize container
-
-        // Iteration and access functions for multidimensional indices
-        ContainerIterator       begin() const { return ContainerIterator(length); } //!< First index
-        ContainerIterator       end() const;                                        //!< Last index + 1
-        DAGNode*                operator[](const ContainerIterator& i);             //!< Element access
-        const DAGNode* const    operator[](const ContainerIterator& i) const;       //!< Element const access
 
         // Regular functions
         void                    resize(int n) { resize (IntVector(n)); }            //!< Resize vector
