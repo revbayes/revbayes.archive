@@ -27,7 +27,7 @@ class RbObject {
     public:
         virtual                     ~RbObject(void) {}                                  //! Virtual destructor
 
-        // Basic utility functions you HAVE TO override
+        // Basic utility functions you have to override (also getClass()!)
         virtual RbObject*           clone(void) const = 0;                              //!< Clone object
         virtual bool                equals(const RbObject* x) const = 0;                //!< Equals comparison
         virtual const StringVector& getClass(void) const;                               //!< Get class vector

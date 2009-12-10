@@ -35,7 +35,7 @@ class RbComplex : public RbObject {
     public:
 		virtual                         ~RbComplex() {}                                 //!< Virtual destructor 
 
-        // Basic utility functions you HAVE TO override
+        // Basic utility functions you have to override
         virtual RbObject*               clone(void) const = 0;                          //!< Clone object
         virtual bool                    equals(const RbObject* obj) const = 0;          //!< Equals comparison
 		virtual const StringVector&     getClass(void) const;                           //!< Get class vector

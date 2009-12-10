@@ -23,7 +23,7 @@
 FunctionTable::FunctionTable(const FunctionTable& x) {
 
     for (std::multimap<std::string, RbFunction*>::iterator i=x.table.begin(); i!=x.table.end(); i++)
-        table.insert(*i);
+        table.insert(std::pair<std::string, RbFunction*>((*i).first, (*i).second->clone()));
 }
 
 
@@ -34,20 +34,32 @@ FunctionTable::FunctionTable(const FunctionTable& x) {
         delete (*i).second;
 }
 
+/** Assignment operator */
+FunctionTable& FunctionTablei::operator=(const FunctionTable& x) {
+
+    if (this != &x) {
+        table.clear();
+        for (std::multimap<std::string, RbFunction*>::iterator i=x.table.begin(); i!=x.table.end(); i++)
+            table.insert(std::pair<std::string, RbFunction*>((*i).first, (*i).second->clone()));
+    }
+
+    return (*this);
+}
+
 
 /** Add function to table */
-bool FunctionTable::addFunction(const std::string name, RbFunction* func) {
+void FunctionTable::addFunction(const std::string name, RbFunction* func) {
 
     std::pair<std::multimap<std::string, RbFunction*>::iterator,
               std::multimap<std::string, RbFunction*>::iterator> retVal;
 
     retVal = table.equal_range(name);
     for (std::multimap<std::string, RbFunction*>::iterator i=retVal.first; i!=retVal.second; i++) {
-        if (!FunctionTable::isDistinctFormal(i->second->getArgRules(), func->getArgRules()));
-            throw (RbException(i->second->briefInfo() + " cannot overload " + func->briefInfo()));
+        if (!FunctionTable::isDistinctFormal(i->second->getArgRules(), func->getArgRules()))
+            throw (RbException(i->second->printValue() + " cannot overload " + func->printValue()));
         }
 
-    return true;
+    table.insert(std::pair<std::string, RbFunction*>(name, func));
 }
 
 
@@ -58,38 +70,6 @@ std::string FunctionTable::briefInfo () const {
     o << "FunctionTable with " << table.size() << " functions";
 
     return o.str();
-}
-
-
-/** Do arguments match any of the existing argument rules for method with given name? */
-bool FunctionTable::existsFunction(const std::string& name, std::vector<Argument>& args) const {
-
-    std::pair<std::multimap<std::string, RbFunction*>::iterator,
-              std::multimap<std::string, RbFunction*>::iterator> retVal;
-
-    retVal = table.equal_range(name);
-    for (std::multimap<std::string, RbFunction*>::iterator i=retVal.first; i!=retVal.second; i++) {
-        if (FunctionTable::isMatch(i->second->getArgRules(), args)) {
-            return true;
-        }
-
-    return false;
-}
-
-
-/** Do argument rules match any of the existing argument rules for method with given name? */
-bool FunctionTable::existsFunction(const std::string& name, std::vector<ArgumentRule>& argRules) const {
-
-    std::pair<std::multimap<std::string, RbFunction*>::iterator,
-              std::multimap<std::string, RbFunction*>::iterator> retVal;
-
-    retVal = table.equal_range(name);
-    for (std::multimap<std::string, RbFunction*>::iterator i=retVal.first; i!=retVal.second; i++) {
-        if (!FunctionTable::isDistinctFormal(i->second->getArgRules(), argRules)) {
-            return true;
-        }
-
-    return false;
 }
 
 
@@ -135,7 +115,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRule** x, const ArgumentRule*
 
 
 /** Do the arguments match the argument rules? */
-bool FunctionTable::isMatch(const std::vector<ArgumentRule>& x, const std::vector<Argument>& y) const {
+bool FunctionTable::isMatch(const std::vector<ArgumentRule>& theRules, const std::vector<Argument>& theArgs) const {
 
     // TODO: Accomodate for ellipsis
 
@@ -213,6 +193,7 @@ bool FunctionTable::isMatch(const std::vector<ArgumentRule>& x, const std::vecto
 /** Get function */
 MethodDescr* FunctionTable::getFunction(const std::string& name, std::vector<Argument>& args) const {
 
+    // TODO: Find best match and not first match
     std::pair<std::multimap<std::string, MethodDescr*>::iterator,
               std::multimap<std::string, MethodDescr*>::iterator> retVal;
 

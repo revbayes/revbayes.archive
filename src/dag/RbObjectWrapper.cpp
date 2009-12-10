@@ -54,10 +54,10 @@ bool RbObjectWrapper::isType(const std::string& type) const {
 }
 
 
-/** Print struct for user; only wrapperClass here, add more in derived classes */
+/** Print struct for user; only wrapper class here, add more in derived classes */
 void RbObjectWrapper::printStruct(std::ostream& o) const {
 
-    o << "$wrapperClass = ";
+    o << "_wrapperClass = ";
     getClass().printValue(o);
     o << std::endl;
 }

@@ -34,17 +34,25 @@ class RbObject;
 class FunctionTable : RbInternal {
 
     public:
+                        FunctionTable() : RbInternal() {}           //!< Empty table
                         FunctionTable(const FunctionTable& x);      //!< Copy constructor
                         ~FunctionTable();                           //!< Delete functions
 
+        // Assignment operator
+        FunctionTable&  operator=(const FunctionTable& x);          //!< Assignment operator 
+
         // Static help function that can be used by other objects, like MethodTable
-        static bool     isDistinctFormal(const ArgumentRule** x, const ArgumentRule** y); //!< Are formals unique?
+        static bool     isDistinctFormal(const ArgumentRule** x, const ArgumentRule** y) const; //!< Are formals unique?
+        static bool     isMatch(const ArgumentRule** x, const ArgumentRule** y) const;          //!< Do args match  formals unique?
 
         // Basic utility functions
-        void            printValue(std::ostream& o) const;          //!< Print table
+        std::string     briefInfo(void) const;                                  //!< Brief info to string
+        FunctionTable*  clone(void) const { return new FunctionTable(*this); }  //!< Clone object
+        std::string     toString(void) const;                                   //!< Complete info to string
+        void            printValue(std::ostream& o) const;                      //!< Print table for user
 
         // Regular functions
-        bool            addFunction(const std::string name, RbFunction* func);            //!< Add function
+        void            addFunction(const std::string name, RbFunction* func);            //!< Add function
         const RbObject* executeFunction(const std::string& name, const std::vector<Argument>& args) const;                            //!< Execute function
         RbFunction*     getFunction(const std::string& name, const std::vector<Argument>& args) const;                                //!< Get function (a copy)
 

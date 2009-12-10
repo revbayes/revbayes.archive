@@ -7,7 +7,7 @@ BISON       = bison
 FLEX        = flex
 BISONFLAGS  = -y -v
 
-all: grammar.tab.c lex.yy.cpp ObjectSlot.o Frame.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o SyntaxUnaryExpr.o SyntaxFunctionCall.o SyntaxLabeledExpr.o SyntaxAssignExpr.o SyntaxFormal.o
+all: grammar.tab.c lex.yy.cpp ObjectSlot.o Frame.o FunctionTable.o Workspace.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o SyntaxUnaryExpr.o SyntaxFunctionCall.o SyntaxLabeledExpr.o SyntaxAssignExpr.o SyntaxFormal.o SyntaxFunctionDef.o SyntaxClassDef.o SyntaxStatement.o SyntaxHelpExpr.o
 
 grammar.tab.c grammar.tab.h: grammar.y
 	$(BISON) -o grammar.tab.c --defines $(BISONFLAGS) grammar.y
@@ -20,6 +20,12 @@ ObjectSlot.o: ObjectSlot.cpp
 
 Frame.o: Frame.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Frame.cpp
+
+FunctionTable.o: FunctionTable.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c FunctionTable.cpp
+
+Workspace.o: Workspace.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Workspace.cpp
 
 SyntaxConstant.o: SyntaxConstant.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxConstant.cpp
@@ -42,20 +48,23 @@ SyntaxLabeledExpr.o: SyntaxLabeledExpr.cpp
 SyntaxAssignExpr.o: SyntaxAssignExpr.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxAssignExpr.cpp
 
-SyntaxFunctionDef.o: SyntaxFunctionDef.cpp
-	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxFunctionDef.cpp
-
 SyntaxFormal.o: SyntaxFormal.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxFormal.cpp
+
+SyntaxFunctionDef.o: SyntaxFunctionDef.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxFunctionDef.cpp
 
 SyntaxClassDef.o: SyntaxClassDef.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxClassDef.cpp
 
+SyntaxForCondition.o: SyntaxForCondition.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxForCondition.cpp
+
 SyntaxStatement.o: SyntaxStatement.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxStatement.cpp
 
-SyntaxForCondition.o: SyntaxForCondition.cpp
-	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxForCondition.cpp
+SyntaxHelpExpr.o: SyntaxHelpExpr.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c SyntaxHelpExpr.cpp
 
 clean:
 	rm -f *.o lex.yy.cpp grammar.tab.c grammar.tab.h grammar.output

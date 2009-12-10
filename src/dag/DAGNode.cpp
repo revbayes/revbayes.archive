@@ -229,7 +229,7 @@ void DAGNode::printStruct(std::ostream& o) const {
 
     RbObjectWrapper::printStruct(o);
 
-    o << ".valueClass = ";
+    o << "_valueClass = ";
     value->getClass().printValue(o);
 
     o << ".value = ";
