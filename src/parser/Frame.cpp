@@ -45,7 +45,7 @@ void Frame::addVariable(const std::string& name, RbObject* value) {
 
 
 /** Add simple variable object to table */
-void Frame::addVariable(const std::string& name, DAGNode* variable) {
+void Frame::addVariable(const std::string& name, RbObjectWrapper* variable) {
 
     /* Throw an error if the variable exists. Note that we cannot use the function
        existsVariable because that function looks recursively in parent frames. This
@@ -120,12 +120,12 @@ const std::string& Frame::getDeclaredType(const std::string& name) const {
     if (it == variableTable.end())
         throw (RbException("Variable " + name + " does not exist"));
 
-    return (*it).second.getType();
+    return (*it).second.getAtomicType();
 }
 
 
 /** Get dimension of variable */
-const std::string& Frame::getDim(const std::string& name) const {
+int Frame::getDim(const std::string& name) const {
 
     std::map<const std::string, ObjectSlot>::const_iterator it = variableTable.find(name);
     if (it == variableTable.end())
@@ -154,10 +154,10 @@ const RbObjectWrapper* Frame::getVariable(const std::string& name) const {
 const RbObject* Frame::getValElement(const std::string& name, const IntVector& index) const {
 
     // Find the variable
-    std::map<const std::string, ObjectSlot>::iterator it = variableTable.find(name);
+    std::map<std::string, ObjectSlot>::const_iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
         if (parentFrame != NULL)
-            return parentFrame->setVariable(name, value);
+            return parentFrame->getValElement(name, index);
         else
             throw (RbException("Variable " + name + " does not exist"));
     }
@@ -168,13 +168,13 @@ const RbObject* Frame::getValElement(const std::string& name, const IntVector& i
 
 
 /** Get variable element */
-const RbObjectWrapper* Frame::setValElement(const std::string& name, const IntVector& index) {
+const RbObjectWrapper* Frame::getVarElement(const std::string& name, const IntVector& index) const {
 
     // Find the variable
-    std::map<const std::string, ObjectSlot>::iterator it = variableTable.find(name);
+    std::map<std::string, ObjectSlot>::const_iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
         if (parentFrame != NULL)
-            return parentFrame->setVariable(name, value);
+            return parentFrame->getVarElement(name, index);
         else
             throw (RbException("Variable " + name + " does not exist"));
     }
@@ -191,7 +191,7 @@ void Frame::setVariable(const std::string& name, RbObjectWrapper* variable) {
     std::map<const std::string, ObjectSlot>::iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
         if (parentFrame != NULL)
-            return parentFrame->setVariable(name, value);
+            return parentFrame->setVariable(name, variable);
         else
             throw (RbException("Variable " + name + " does not exist"));
     }
@@ -208,7 +208,7 @@ void Frame::setValElement(const std::string& name, const IntVector& index, RbObj
     std::map<const std::string, ObjectSlot>::iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
         if (parentFrame != NULL)
-            return parentFrame->setVariable(name, value);
+            return parentFrame->setValElement(name, index, value);
         else
             throw (RbException("Variable " + name + " does not exist"));
     }
@@ -225,7 +225,7 @@ void Frame::setVarElement(const std::string& name, const IntVector& index, DAGNo
     std::map<const std::string, ObjectSlot>::iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
         if (parentFrame != NULL)
-            return parentFrame->setVariable(name, value);
+            return parentFrame->setVarElement(name, index, variable);
         else
             throw (RbException("Variable " + name + " does not exist"));
     }
