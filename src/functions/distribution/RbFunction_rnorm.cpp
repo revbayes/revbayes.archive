@@ -24,6 +24,7 @@
 #include "RbObject.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
+#include "RbUndefined.h"
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -61,7 +62,7 @@ RbObject* RbFunction_rnorm::clone(void) const {
 
 
 /** Execute the function */
-const RbObject* RbFunction_rnorm::executeOperation(const std::vector<DAGNode*>& arguments) const {
+const RbObject* RbFunction_rnorm::executeOperation(const std::vector<RbObjectWrapper*>& arguments) const {
 
     RbDouble *mu    = (RbDouble*) arguments[0]->getValue();
     RbDouble *sigma = (RbDouble*) arguments[1]->getValue();
@@ -76,8 +77,8 @@ const RbObject* RbFunction_rnorm::executeOperation(const std::vector<DAGNode*>& 
 const ArgumentRule** RbFunction_rnorm::getArgumentRules(void) const {
 
 	const static ArgumentRule* argRules[] = { 
-		new ArgumentRule( "mu"   , RbDouble_name, new RbDouble(0.0)                                     ),
-		new ArgumentRule( "sigma", RbDouble_name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined ),
+		new ArgumentRule( "mu"   , RbDouble_name                                                      ),
+		new ArgumentRule( "sigma", RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbUndefined ),
 		NULL };
 	return argRules;
 }
@@ -102,8 +103,10 @@ const std::string RbFunction_rnorm::getReturnType(void) const {
 /** Get string showing value */
 std::string RbFunction_rnorm::toString(void) const {
 
-    RbDouble *mu    = (RbDouble*) arguments[0]->getValue();
-    RbDouble *sigma = (RbDouble*) arguments[1]->getValue();
+	const std::vector<RbObjectWrapper*>& args = getProcessedArguments();
+    RbDouble *mu    = (RbDouble*) args[0]->getValue();
+	RbDouble *sigma = (RbDouble*) args[1]->getValue();
+
     std::ostringstream o;
 	o << std::fixed << std::setprecision(6);
 	o << value->getValue() << " ~ Normal( " << mu->getValue() << ", " << sigma->getValue() << " )";

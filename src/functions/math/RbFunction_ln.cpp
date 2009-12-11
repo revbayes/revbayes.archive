@@ -15,204 +15,82 @@
  * $Id$
  */
 
-#include "RbFunction_ln.h"
-#include "RbDouble.h"
-#include "RbObject.h"
 #include "DAGNode.h"
-#include "RbException.h"
+#include "RbDouble.h"
+#include "RbFunction_ln.h"
+#include "RbObject.h"
 #include <cmath>
 
-const StringVector RbFunction_ln::rbClass = StringVector("ln") + RbFunction::rbClass;
-
-/** Define the argument rules */
-
-/** Add to symbol table */
-//static bool fxn_ln = SymbolTable::globalTable().add("ln", new RbFunction_ln());
 
 
-/** Default constructor, allocate workspace */
-RbFunction_ln::RbFunction_ln(void)
-    : RbFunction(), value(new RbDouble(0)) {
+/** Default constructor */
+RbFunction_ln::RbFunction_ln(void) : RbFunction() {
 
-	argRules.push_back( ArgumentRule("x", "double") );
-	returnType = "double";
+	value = new RbDouble(0.0);
 } 
 
 /** Copy constructor */
-RbFunction_ln::RbFunction_ln(const RbFunction_ln& s)
-    : RbFunction(s), value(new RbDouble(0)) {
+RbFunction_ln::RbFunction_ln(const RbFunction_ln& s) : RbFunction(s) {
     
-	argRules.push_back( ArgumentRule("x", "double") );
-	returnType = "double";
+	value = new RbDouble(0.0);
+	*value = *s.value;
 }
 
-/** Destructor, delete workspace */
-RbFunction_ln::~RbFunction_ln() {
+/** Destructor */
+RbFunction_ln::~RbFunction_ln(void) {
 
     delete value;
 }
 
-/**
- * @brief clone function
- *
- * This function creates a deep copy of this object.
- *
- * @see RbObject.clone()
- * @returns           return a copy of this object
- *
- */
+/** Clone */
 RbObject* RbFunction_ln::clone(void) const {
 
     RbObject *x = new RbFunction_ln( *this );
     return x;
 }
 
-RbObject& RbFunction_ln::operator=(const RbObject& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const RbFunction_ln& x = dynamic_cast<const RbFunction_ln&> (obj);
-
-        RbFunction_ln& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const RbFunction_ln& x = dynamic_cast<const RbFunction_ln&> (*(obj.convertTo("ln")));
-
-            RbFunction_ln& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to ln");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-RbFunction_ln& RbFunction_ln::operator=(const RbFunction_ln& obj) {
-    argRules = obj.argRules;
-    returnType = obj.returnType;
-    (*value) = (*obj.value);
-    return (*this);
-}
-
-/**
- * @brief print function
- *
- * This function prints this object.
- *
- * @see RbObject.print()
- * @param c           the stream where to print to
- *
- */
-void RbFunction_ln::print(std::ostream &c) const {
-
-    c << "RbFunction_ln" << std::endl;
-}
-
-void RbFunction_ln::printValue(std::ostream &o) const {
-
-    o << value << std::endl;
-}
-
-/**
- * @brief dump function
- *
- * This function dumps this object.
- *
- * @see RbObject.dump()
- * @param c           the stream where to dump to
- *
- */
-void RbFunction_ln::dump(std::ostream& c){
-    //TODO implement
-
-    std::string message = "Dump function of RbFunction_ln not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
-}
-
-/**
- * @brief resurrect function
- *
- * This function resurrects this object.
- *
- * @see RbObject.resurrect()
- * @param x           the object from which to resurrect
- *
- */
-void RbFunction_ln::resurrect(const RbDumpState& x){
-    //TODO implement
-    std::string message = "Resurrect function of RbFunction_ln not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
-}
-
-std::string RbFunction_ln::toString(void) const {
-
-	char temp[30];
-	sprintf(temp, "%1.6lf", value->getValue());
-	std::string tempStr = temp;
-    return "Value = " + tempStr;
-}
-
-
-/**
- * @brief overloaded == operators
- *
- * This function compares this object
- *
- * @param o           the object to compare to
- *
- */
-bool RbFunction_ln::equals(const RbObject* o) const {
-
-    return false;
-}
-
-
-/** Get number of argument rules */
-const int RbFunction_ln::getNumberOfRules(void) const {
-    return 1;
-}
-
-/** Execute function */
+/** Execute the function */
 RbObject* RbFunction_ln::executeOperation(const std::vector<DAGNode*>& arguments) {
 
-    /* Get actual argument */
     RbDouble *arg = (RbDouble*) arguments[0]->getValue();
-
-    /* Compute result */
     if ( arg->getValue() < 0.0 )
         value->setValue(1E-100);
     else
-        value->setValue(std::log(arg->getValue()));
-
+        value->setValue( std::log(arg->getValue()) );
     return value;
 }
 
-RbObject* RbFunction_ln::convertTo(const std::string& type) const {
+/** Get the argument rules */
+const ArgumentRule** RbFunction_ln::getArgumentRules(void) const {
 
-    return NULL;
+	const static ArgumentRule* argRules[] = { 
+		new ArgumentRule( "x", RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbUndefined ),
+		NULL };
+	return argRules;
 }
 
-/**
- * @brief is convertible to
- *
- * This function checks if this data type can be converted into the given data type.
- *
- * @param dt         the data type we want to convert to
- * @returns          true, if it can be converted
- *
- */
-bool RbFunction_ln::isConvertibleTo(const std::string& type) const {
+/** Get string showing inheritance */
+const StringVector& RbFunction_ln::getClass(void) const { 
 
-    return false;
+    static StringVector rbClass = StringVector(RbFunction_ln_name) + RbFunction::getClass();
+	return rbClass;
 }
+
+/** Get the return type */
+const std::string RbFunction_ln::getReturnType(void) const {
+
+	const static std::string returnType = RbDouble_name;
+	return returnType;
+}
+
+/** Get string showing value */
+std::string RbFunction_ln::toString(void) const {
+
+    RbDouble *x = (RbDouble*) arguments[0]->getValue();
+    std::ostringstream o;
+	o << std::fixed << std::setprecision(6);
+	o << value->getValue() << "Log_e( " << x->getValue() << " ) = " << value->getValue();
+    return o.str();
+}
+
+

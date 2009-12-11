@@ -26,6 +26,8 @@
 class ArgumentRule;
 class RbDouble;
 class RbObject;
+class RbObjectWrapper;
+class StringVector;
 
 /** This is the class for the dnorm() function, which takes a single
  *  scalar real or int.
@@ -33,20 +35,20 @@ class RbObject;
 class RbFunction_dnorm :  public RbFunction {
 
     public:
-									RbFunction_dnorm(void);                                         //!< Default constructor, allocate workspace
-                                    RbFunction_dnorm(const RbFunction_dnorm& s);                    //!< Copy constructor
-								   ~RbFunction_dnorm(void);                                         //!< Destructor, delete workspace
+									RbFunction_dnorm(void);                                            //!< Default constructor, allocate workspace
+                                    RbFunction_dnorm(const RbFunction_dnorm& s);                       //!< Copy constructor
+								   ~RbFunction_dnorm(void);                                            //!< Destructor, delete workspace
 
-        RbObject*                   clone(void) const ;                                             //!< clone this object
-        const StringVector&         getClass(void) const;                                           //!< Get class
-        std::string                 toString(void) const;                                           //!< General info on object
+        RbObject*                   clone(void) const ;                                                //!< clone this object
+        const StringVector&         getClass(void) const;                                              //!< Get class
+        std::string                 toString(void) const;                                              //!< General info on object
 
-        const RbObject*             executeOperation(const std::vector<DAGNode*>& arguments) const; //!< Get result
-		const ArgumentRule**        getArgumentRules(void) const;                                   //!< Get the number of argument rules
-        const std::string           getReturnType(void) const;                                      //!< Get return type
+        const RbObject*             executeOperation(const std::vector<RbObjectWrapper*>& args) const; //!< Get result
+		const ArgumentRule**        getArgumentRules(void) const;                                      //!< Get the number of argument rules
+        const std::string           getReturnType(void) const;                                         //!< Get return type
 
     protected:
-        RbDouble*                   value;                                                          //!< Workspace for result
+        RbDouble*                   value;                                                             //!< Workspace for result
 };
 
 #endif

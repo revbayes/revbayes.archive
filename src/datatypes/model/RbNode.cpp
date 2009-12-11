@@ -1,4 +1,3 @@
-
 #include "RbBitset.h"
 #include "RbComplex.h"
 #include "RbException.h"
@@ -6,26 +5,17 @@
 #include "RbNode.h"
 #include "StringVector.h"
 
-const StringVector RbNode::rbClass = StringVector(RbNames::Node::name) + RbComplex::rbClass;
 
-/**
- * @brief default constructor
- *
- * This is the default constructor
- */
+
+/** default constructor */
 RbNode::RbNode(void) : RbComplex() {
+
 	parent = NULL;
 }
 
-/**
- * @brief copy constructor
- *
- * This is the copy constructor
- *
- * @param n      the RbNode to copy
- */
+/** copy constructor  */
 RbNode::RbNode(const RbNode &n) : RbComplex() {
-	// initialize with default values
+
 	parent = NULL;
 
 	// make a deep copy of set values
@@ -42,9 +32,8 @@ RbNode::RbNode(const RbNode &n) : RbComplex() {
 }
 
 RbNode::RbNode(int idx) : RbComplex() {
-	// initialize with default values
-	parent = NULL;
 
+	parent = NULL;
 	index = idx;
 }
 
@@ -76,7 +65,15 @@ void RbNode::clean(void) {
  *
  */
 RbObject* RbNode::clone() const {
+
 	return new RbNode(*this);
+}
+
+/** Get string showing inheritance */
+const StringVector& RbNode::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(RbNode_name) + RbComplex::getClass();
+	return rbClass;
 }
 
 /**
@@ -90,9 +87,9 @@ RbObject* RbNode::clone() const {
  */
 std::string RbNode::toString(void) const {
 
-	std::string tmp = RbNames::Node::name + "(";
+	std::string tmp = RbNode_name + "(";
 
-	// deep print for all children
+	// print for all children
 
 	for (std::set<RbNode*>::iterator it=children.begin(); it!=children.end(); it++ ){
 	    tmp += (*it)->toString();
@@ -121,32 +118,6 @@ void RbNode::print(std::ostream &c) const {
     }
 
     c << std::endl;
-}
-
-/**
- * @brief dump function
- *
- * This function dumps this object.
- *
- * @see RbObject.dump()
- * @param c           the stream where to dump to
- *
- */
-void RbNode::dump(std::ostream& c){
-
-}
-
-/**
- * @brief resurrect function
- *
- * This function resurrects this object.
- *
- * @see RbObject.resurrect()
- * @param x           the object from which to resurrect
- *
- */
-void RbNode::resurrect(const RbDumpState& x){
-
 }
 
 /**

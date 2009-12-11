@@ -24,7 +24,7 @@
 #include <sstream>
 
 /** Construct rule without default value; use "" for no label */
-ArgumentRule::ArgumentRule(const std::string& argName, const std::string& type, int dim) {
+ArgumentRule::ArgumentRule(const std::string& argName, const std::string& type, int dim) : RbInternal() {
 
     label        = argName;
     requiredType = type;
@@ -84,7 +84,7 @@ ArgumentRule::ArgumentRule(const ArgumentRule& a) : RbInternal() {
 
 
 /** Destructor deletes relevant values */
-ArgumentRule::~ArgumentRule() {
+ArgumentRule::~ArgumentRule(void) {
 
 	delete defaultValue;
 	delete minValue;

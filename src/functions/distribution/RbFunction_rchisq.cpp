@@ -76,7 +76,7 @@ const RbObject* RbFunction_rchisq::executeOperation(const std::vector<DAGNode*>&
 const ArgumentRule** RbFunction_rchisq::getArgumentRules(void) const {
 
 	const static ArgumentRule* argRules[] = { 
-		new ArgumentRule( "df", RbInt_name   , new RbInt(1)   , new RbInt(1)     , new RbUndefined ),
+		new ArgumentRule( "df", RbInt_name, new RbUndefined, new RbInt(1), new RbUndefined ),
 		NULL };
 	return argRules;
 }

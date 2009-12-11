@@ -23,10 +23,10 @@
 #ifndef RbNode_H
 #define RbNode_H
 
+#include <set>
 #include <string>
 #include <vector>
 #include "RbComplex.h"
-#include "RbDumpState.h"
 #include "RbObject.h"
 
 class RbBitset;
@@ -34,20 +34,16 @@ class RbBitset;
 class RbNode : public RbComplex{
 
 public:
-        static const StringVector   rbClass;            //!< Static class attribute
+	                            RbNode(void);
+	                            RbNode(const RbNode& n);
+	                            RbNode(int idx);
+	                            RbNode(RbNode* p, std::set<RbNode*>& c);
 
-	RbNode(void);
-	RbNode(const RbNode& n);
-	RbNode(int idx);
-	RbNode(RbNode* p, std::set<RbNode*>& c);
-
-    // implemented abstract/virtual functions from base classes
-	RbObject*  clone() const;
-	void       print(std::ostream &c) const;                            //!< Print the value to ostream c
-	void       dump(std::ostream& c);                              //!< Dump to ostream c
-	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-	const StringVector& getClass() const { return rbClass; }        //!< Get class
-	std::string         toString(void) const;                                 //!< General info on object
+        RbObject*               clone(void) const;                                                  //!< Clone object
+        bool                    equals(const RbObject* obj) const;                                  //!< Equals comparison
+		const StringVector&     getClass(void) const;                                               //!< Get class vector
+		void                    printValue(std::ostream& o) const;                                  //!< Print value for user
+		std::string             toString(void) const;                                               //!< Complete info 
 
 	// overloaded operators
 	bool       equals(const RbObject* o) const;                      //!< Comparison

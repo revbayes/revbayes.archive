@@ -76,8 +76,8 @@ const RbObject* RbFunction_rbeta::executeOperation(const std::vector<DAGNode*>& 
 const ArgumentRule** RbFunction_rbeta::getArgumentRules(void) const {
 
 	const static ArgumentRule* argRules[] = { 
-		new ArgumentRule( "alpha", RbDouble_name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined   ),
-		new ArgumentRule( "beta" , RbDouble_name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined   ),
+		new ArgumentRule( "alpha", RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbUndefined   ),
+		new ArgumentRule( "beta" , RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbUndefined   ),
 		NULL };
 	return argRules;
 }

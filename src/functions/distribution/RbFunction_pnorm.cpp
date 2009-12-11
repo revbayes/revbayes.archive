@@ -22,6 +22,7 @@
 #include "RbObject.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
+#include "RbUndefined.h"
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -44,7 +45,7 @@ RbFunction_pnorm::RbFunction_pnorm(const RbFunction_pnorm& s) : RbFunction(s) {
 
 
 /** Destructor */
-RbFunction_pnorm::~RbFunction_dnorm(void) {
+RbFunction_pnorm::~RbFunction_pnorm(void) {
 
     delete value;
 }
@@ -53,17 +54,17 @@ RbFunction_pnorm::~RbFunction_dnorm(void) {
 /** Clone */
 RbObject* RbFunction_pnorm::clone(void) const {
 
-    RbObject *x = new RbFunction_pnorm( *this );
-    return x;
+    RbFunction_pnorm *x = new RbFunction_pnorm( *this );
+    return (RbObject*)x;
 }
 
 
 /** Execute the function */
-const RbObject* RbFunction_pnorm::executeOperation(const std::vector<DAGNode*>& arguments) const {
+const RbObject* RbFunction_pnorm::executeOperation(const std::vector<RbObjectWrapper*>& args) const {
 
-    RbDouble *x     = (RbDouble*) arguments[0]->getValue();
-    RbDouble *mu    = (RbDouble*) arguments[1]->getValue();
-    RbDouble *sigma = (RbDouble*) arguments[2]->getValue();
+    RbDouble *x     = (RbDouble*) args[0]->getValue();
+    RbDouble *mu    = (RbDouble*) args[1]->getValue();
+    RbDouble *sigma = (RbDouble*) args[2]->getValue();
     value->setValue( RbStatistics::Normal::cdf(*mu, *sigma, *x) );
     return value;
 }
@@ -73,9 +74,9 @@ const RbObject* RbFunction_pnorm::executeOperation(const std::vector<DAGNode*>& 
 const ArgumentRule** RbFunction_pnorm::getArgumentRules(void) const {
 
 	const static ArgumentRule* argRules[] = { 
-		new ArgumentRule( "x"    , RbDouble_name                                                        ), 
-		new ArgumentRule( "mu"   , RbDouble_name, new RbDouble(0.0)                                     ),
-		new ArgumentRule( "sigma", RbDouble_name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined ),
+		new ArgumentRule( "x"    , RbDouble_name                                                      ), 
+		new ArgumentRule( "mu"   , RbDouble_name                                                      ),
+		new ArgumentRule( "sigma", RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbUndefined ),
 		NULL };
 	return argRules;
 }
@@ -100,9 +101,11 @@ const std::string RbFunction_pnorm::getReturnType(void) const {
 /** Get string showing value */
 std::string RbFunction_pnorm::toString(void) const {
 
-    RbDouble *x     = (RbDouble*) arguments[0]->getValue();
-    RbDouble *mu    = (RbDouble*) arguments[1]->getValue();
-    RbDouble *sigma = (RbDouble*) arguments[2]->getValue();
+	const std::vector<RbObjectWrapper*>& args = getProcessedArguments();
+    RbDouble *x     = (RbDouble*) args[0]->getValue();
+    RbDouble *mu    = (RbDouble*) args[1]->getValue();
+	RbDouble *sigma = (RbDouble*) args[2]->getValue();
+
     std::ostringstream o;
 	o << std::fixed << std::setprecision(6);
 	o << "Normal: F( " << x->getValue() << " | " << mu->getValue() << ", " << sigma->getValue() << " ) = " << value->getValue();

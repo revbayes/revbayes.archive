@@ -322,7 +322,7 @@ double RbStatistics::ChiSquare::rv(double v, RandomNumberGenerator* rng) {
 		/* Otherwise, we use the relationship of the chi-square to a gamma
 		   (it is a special case of the gamma) to generate the chi-square
 		   random variable. */
-		x2 = RbStatistics::Gamma::rv(v/2.0, 0.5, *rng);
+		x2 = RbStatistics::Gamma::rv(v/2.0, 0.5, rng);
 		}
 	return x2;
 }
@@ -554,7 +554,7 @@ double RbStatistics::Gamma::quantile(double a, double b, double p) {
 
 double RbStatistics::Gamma::rv(double a, double b, RandomNumberGenerator* rng) {
 
-	return (rndGamma(a, *rng) / b);
+	return (RbStatistics::Helper::rndGamma(a, *rng) / b);
 }
 
 #pragma mark Log Normal Distribution
@@ -662,9 +662,9 @@ double RbStatistics::LogNormal::quantile(double mu, double sigma, double p) {
  * \return Returns a log normally distributed random variable.
  * \throws Does not throw an error.
  */
-inline double RbStatistics::LogNormal::rv(double mu, double sigma, RandomNumberGenerator* rng) {
+double RbStatistics::LogNormal::rv(double mu, double sigma, RandomNumberGenerator* rng) {
 
-	return exp( normalRv(mu, sigma, *rng) );
+	return exp( RbStatistics::Normal::rv(mu, sigma, rng) );
 }
 
 #pragma mark Poisson Distribution
@@ -778,12 +778,12 @@ int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator* rng) {
 			/* For extremely small lambda we calculate the probabilities of x = 1
 			   and x = 2 (ignoring higher x). The reason for using this 
 			   method is to prevent numerical inaccuracies in other methods. */
-			return RbStatistics::Helper::poissonLow(lambda);
+			return RbStatistics::Helper::poissonLow(lambda, *rng);
 			}
 		else 
 			{
 			/* use the inversion method */
-			return RbStatistics::Helper::poissonInver(lambda);
+			return RbStatistics::Helper::poissonInver(lambda, *rng);
 			}
 		}
 	else 
@@ -794,7 +794,7 @@ int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator* rng) {
 			std::cout << "Parameter too big in poisson function" << std::endl;
 			}
 		/* use the ratio-of-uniforms method */
-		return RbStatistics::Helper::poissonRatioUniforms(lambda);
+		return RbStatistics::Helper::poissonRatioUniforms(lambda, *rng);
 		}
 }
 
@@ -968,76 +968,6 @@ double RbStatistics::Normal::rv(double mu, double sigma, RandomNumberGenerator* 
 	return ( mu + sigma * (v2 * fac) );
 }
 
-#pragma mark Uniform(0,1)
-
-/*!
- * This function calculates the probability density 
- * for a uniform(0,1) random variable.
- *
- * \brief Uniform(0,1) probability density.
- * \return Returns the probability density.
- * \throws Does not throw an error.
- */
-double RbStatistics::Uniform01::pdf(double x) {
-
-	if ( x < 0.0 || x > 1.0)
-		return 0.0;
-	return 1.0;
-}
-
-/*!
- * This function calculates the natural log of the probability density 
- * for a uniform(0,1) random variable.
- *
- * \brief Natural log of uniform(0,1) probability density.
- * \return Returns the natural log of the probability density.
- * \throws Does not throw an error.
- */
-double RbStatistics::Uniform01::lnPdf(double x) {
-
-	if ( x < 0.0 || x > 1.0)
-		return RbConstants::Double::neginf;
-	return 0.0;
-}
-
-/*!
- * This function calculates the cumulative probability  
- * for a uniform(0,1) random variable.
- *
- * \brief Uniform(0,1) cumulative probability.
- * \param x is the uniform random variable. 
- * \return Returns the cumulative probability.
- * \throws Does not throw an error.
- */
-double RbStatistics::Uniform01::cdf(double x) {
-
-	if ( x < 0.0 )
-		return 0.0;
-	else if ( x > 1.0 )
-		return 1.0;
-	else
-		return x;
-}
-
-/*!
- * This function returns the quantile of a uniform(0,1) probability 
- * distribution.
- *
- * \brief Uniform(0,1) quantile.
- * \param p is the probability up to the quantile. 
- * \return Returns the quantile.
- * \throws Does not throw an error.
- */
-double RbStatistics::Uniform01::quantile(double p) {
-
-	return p;
-}
-
-double RbStatistics::Uniform01::rv(double p, RandomNumberGenerator* rng) {
-
-	return rng->nextDouble();
-}
-
 #pragma mark Uniform Distribution
 
 /*!
@@ -1116,6 +1046,75 @@ double RbStatistics::Uniform::rv(double a, double b, RandomNumberGenerator* rng)
 	double u = rng->nextDouble();
 	return (a + (b-a)*u);
 }
+
+/*!
+ * This function calculates the probability density 
+ * for a uniform(0,1) random variable.
+ *
+ * \brief Uniform(0,1) probability density.
+ * \return Returns the probability density.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Uniform::pdf(double x) {
+
+	if ( x < 0.0 || x > 1.0)
+		return 0.0;
+	return 1.0;
+}
+
+/*!
+ * This function calculates the natural log of the probability density 
+ * for a uniform(0,1) random variable.
+ *
+ * \brief Natural log of uniform(0,1) probability density.
+ * \return Returns the natural log of the probability density.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Uniform::lnPdf(double x) {
+
+	if ( x < 0.0 || x > 1.0)
+		return RbConstants::Double::neginf;
+	return 0.0;
+}
+
+/*!
+ * This function calculates the cumulative probability  
+ * for a uniform(0,1) random variable.
+ *
+ * \brief Uniform(0,1) cumulative probability.
+ * \param x is the uniform random variable. 
+ * \return Returns the cumulative probability.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Uniform::cdf(double x) {
+
+	if ( x < 0.0 )
+		return 0.0;
+	else if ( x > 1.0 )
+		return 1.0;
+	else
+		return x;
+}
+
+/*!
+ * This function returns the quantile of a uniform(0,1) probability 
+ * distribution.
+ *
+ * \brief Uniform(0,1) quantile.
+ * \param p is the probability up to the quantile. 
+ * \return Returns the quantile.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Uniform::quantile(double p) {
+
+	return p;
+}
+
+double RbStatistics::Uniform::rv(RandomNumberGenerator* rng) {
+
+	return rng->nextDouble();
+}
+
 
 #pragma mark Uniform Unrooted Topology Distribution
 
@@ -1290,7 +1289,7 @@ double RbStatistics::Helper::rndGamma2(double s, RandomNumberGenerator& rng) {
 		x = b + f;
 		if (x <= 0.0) 
 			continue;
-		r = uniformRv();
+		r = rng.nextDouble();
 		d = 64.0 * r * r * g * g * g;
 		if (d * x < x - 2.0 * f * f || log(d) < 2.0 * (b * log(x / b) - f))  
 			break;
@@ -1393,7 +1392,7 @@ int RbStatistics::Helper::poissonRatioUniforms(double lambda, RandomNumberGenera
 		p_a = lambda + 0.5;
 		mode = (int)lambda;
 		p_g  = log(lambda);
-		p_q = mode * p_g - lnFactorial(mode);
+		p_q = mode * p_g - RbMath::lnFactorial(mode);
 		p_h = sqrt(2.943035529371538573 * (lambda + 0.5)) + 0.8989161620588987408;
 		p_bound = (int)(p_a + 6.0 * p_h);
 		}
@@ -1407,7 +1406,7 @@ int RbStatistics::Helper::poissonRatioUniforms(double lambda, RandomNumberGenera
 		if (x < 0 || x >= p_bound) 
 			continue;
 		k = (int)(x);
-		lf = k * p_g - lnFactorial(k) - p_q;
+		lf = k * p_g - RbMath::lnFactorial(k) - p_q;
 		if (lf >= u * (4.0 - u) - 3.0) 
 			break;
 		if (u * (u - lf) > 1.0) 

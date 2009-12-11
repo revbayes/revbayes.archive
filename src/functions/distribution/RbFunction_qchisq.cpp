@@ -73,7 +73,7 @@ const ArgumentRule** RbFunction_qchisq::getArgumentRules(void) const {
 
 	const static ArgumentRule* argRules[] = { 
 		new ArgumentRule( "x" , RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbUndefined ), 
-		new ArgumentRule( "df", RbInt_name   , new RbInt(1)   , new RbInt(1)     , new RbUndefined ),
+		new ArgumentRule( "df", RbInt_name   , new RbUndefined, new RbInt(1)     , new RbUndefined ),
 		NULL };
 	return argRules;
 }

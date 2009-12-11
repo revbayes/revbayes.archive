@@ -53,7 +53,7 @@ namespace RbStatistics {
 	namespace Dirichlet {
 	double pdf(const std::vector<double>& a, const std::vector<double>& z);    /*!< Dirichlet(a[]) probability density */
 	double lnPdf(const std::vector<double>& a, const std::vector<double>& z);  /*!< Dirichlet(a[]) log_e probability density */
-	double rv(const std::vector<double>& a, const std::vector<double>& z, 
+	void   rv(const std::vector<double>& a, std::vector<double>& z, 
 	          RandomNumberGenerator* rng);                                     /*!< Dirichlet(a[]) log_e random variable */
 	}
 
@@ -98,7 +98,7 @@ namespace RbStatistics {
 	double lnPdf(double lambda, int x);                                        /*!< Log of the Poisson(lambda) probability */
 	double cdf(double lambda, int x);                                          /*!< Poisson(lambda) cumulative probability */
 	double quantile(double lambda, double p);                                  /*!< Poisson(lambda) quantile */
-	double rv(double lambda, RandomNumberGenerator* rng);                      /*!< Poisson(lambda) random variable */
+	int    rv(double lambda, RandomNumberGenerator* rng);                      /*!< Poisson(lambda) random variable */
 	}
 
 #pragma mark Normal Distribution
@@ -113,18 +113,7 @@ namespace RbStatistics {
 	double rv(double mu, double sigma, RandomNumberGenerator* rng);            /*!< Normal(mu,sigma) random variable */
 	}
 
-#pragma mark Uniform(0,1) Distribution
-
-	namespace Uniform01 {
-	
-	double pdf(double x);                                                      /*!< Uniform(0,1) probability density */
-	double lnPdf(double x);                                                    /*!< Log of the Uniform(0,1) probability density */
-	double cdf(double x);                                                      /*!< Uniform(0,1) cumulative probability */
-	inline double quantile(double p);                                          /*!< Uniform(0,1) quantile */
-	double rv(RandomNumberGenerator* rng);                                     /*!< Uniform(0,1) random variable */
-	}
-	
-#pragma mark Uniform(a,b) Distribution
+#pragma mark Uniform Distribution
 
 	namespace Uniform {
 	
@@ -133,6 +122,12 @@ namespace RbStatistics {
 	double cdf(double a, double b, double x);                                  /*!< Uniform(a,b) cumulative probability */
 	double quantile(double a, double b, double p);                             /*!< Uniform(a,b) quantile */
 	double rv(double a, double b, RandomNumberGenerator* rng);                 /*!< Uniform(a,b) random variable */
+
+	double pdf(double x);                                                      /*!< Uniform(0,1) probability density */
+	double lnPdf(double x);                                                    /*!< Log of the Uniform(0,1) probability density */
+	double cdf(double x);                                                      /*!< Uniform(0,1) cumulative probability */
+	inline double quantile(double p);                                          /*!< Uniform(0,1) quantile */
+	double rv(RandomNumberGenerator* rng);                                     /*!< Uniform(0,1) random variable */
 	}
 	
 #pragma mark UniformUnrootedTopology

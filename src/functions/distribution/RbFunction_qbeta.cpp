@@ -73,9 +73,9 @@ const RbObject* RbFunction_qbeta::executeOperation(const std::vector<DAGNode*>& 
 const ArgumentRule** RbFunction_qbeta::getArgumentRules(void) const {
 
 	const static ArgumentRule* argRules[] = { 
-		new ArgumentRule( "x"    , RbDouble_name, new RbUndefined  , new RbDouble(0.0), new RbDouble(1.0) ),
-		new ArgumentRule( "alpha", RbDouble_name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined   ),
-		new ArgumentRule( "beta" , RbDouble_name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined   ),
+		new ArgumentRule( "x"    , RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbDouble(1.0) ),
+		new ArgumentRule( "alpha", RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbUndefined   ),
+		new ArgumentRule( "beta" , RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbUndefined   ),
 		NULL };
 	return argRules;
 }

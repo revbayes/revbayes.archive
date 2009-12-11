@@ -22,6 +22,7 @@
 #include "RbObject.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
+#include "RbUndefined.h"
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -59,11 +60,11 @@ RbObject* RbFunction_qnorm::clone(void) const {
 
 
 /** Execute the function */
-const RbObject* RbFunction_qnorm::executeOperation(const std::vector<DAGNode*>& arguments) const {
+const RbObject* RbFunction_qnorm::executeOperation(const std::vector<RbObjectWrapper*>& args) const {
 
-    RbDouble *x     = (RbDouble*) arguments[0]->getValue();
-    RbDouble *mu    = (RbDouble*) arguments[1]->getValue();
-    RbDouble *sigma = (RbDouble*) arguments[2]->getValue();
+    RbDouble *x     = (RbDouble*) args[0]->getValue();
+    RbDouble *mu    = (RbDouble*) args[1]->getValue();
+    RbDouble *sigma = (RbDouble*) args[2]->getValue();
     value->setValue( RbStatistics::Normal::quantile(*mu, *sigma, *x) );
     return value;
 }
@@ -73,9 +74,9 @@ const RbObject* RbFunction_qnorm::executeOperation(const std::vector<DAGNode*>& 
 const ArgumentRule** RbFunction_qnorm::getArgumentRules(void) const {
 
 	const static ArgumentRule* argRules[] = { 
-		new ArgumentRule( "x"    , RbDouble_name                                                        ), 
-		new ArgumentRule( "mu"   , RbDouble_name, new RbDouble(0.0)                                     ),
-		new ArgumentRule( "sigma", RbDouble_name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined ),
+		new ArgumentRule( "x"    , RbDouble_name                                                      ), 
+		new ArgumentRule( "mu"   , RbDouble_name                                                      ),
+		new ArgumentRule( "sigma", RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbUndefined ),
 		NULL };
 	return argRules;
 }
@@ -100,9 +101,11 @@ const std::string RbFunction_qnorm::getReturnType(void) const {
 /** Get string showing value */
 std::string RbFunction_qnorm::toString(void) const {
 
-    RbDouble *x     = (RbDouble*) arguments[0]->getValue();
-    RbDouble *mu    = (RbDouble*) arguments[1]->getValue();
-    RbDouble *sigma = (RbDouble*) arguments[2]->getValue();
+	const std::vector<RbObjectWrapper*>& args = getProcessedArguments();
+    RbDouble *x     = (RbDouble*) args[0]->getValue();
+    RbDouble *mu    = (RbDouble*) args[1]->getValue();
+	RbDouble *sigma = (RbDouble*) args[2]->getValue();
+
     std::ostringstream o;
 	o << std::fixed << std::setprecision(6);
 	o << "Normal: q( " << x->getValue() << " | " << mu->getValue() << ", " << sigma->getValue() << " ) = " << value->getValue();

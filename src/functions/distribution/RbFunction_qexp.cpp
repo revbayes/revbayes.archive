@@ -72,8 +72,8 @@ const RbObject* RbFunction_qexp::executeOperation(const std::vector<DAGNode*>& a
 const ArgumentRule** RbFunction_qexp::getArgumentRules(void) const {
 
 	const static ArgumentRule* argRules[] = { 
-		new ArgumentRule( "x"   , RbDouble_name, new RbUndefined  , new RbDouble(0.0), new RbUndefined ),
-		new ArgumentRule( "rate", RbDouble_name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined ),
+		new ArgumentRule( "x"   , RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbUndefined ),
+		new ArgumentRule( "rate", RbDouble_name, new RbUndefined, new RbDouble(0.0), new RbUndefined ),
 		NULL };
 	return argRules;
 }
