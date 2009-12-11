@@ -101,10 +101,9 @@ const std::string RbFunction_qnorm::getReturnType(void) const {
 /** Get string showing value */
 std::string RbFunction_qnorm::toString(void) const {
 
-	const std::vector<RbObjectWrapper*>& args = getProcessedArguments();
-    RbDouble *x     = (RbDouble*) args[0]->getValue();
-    RbDouble *mu    = (RbDouble*) args[1]->getValue();
-	RbDouble *sigma = (RbDouble*) args[2]->getValue();
+    RbDouble *x     = (RbDouble*) processedArguments[0]->getValue();
+    RbDouble *mu    = (RbDouble*) processedArguments[1]->getValue();
+	RbDouble *sigma = (RbDouble*) processedArguments[2]->getValue();
 
     std::ostringstream o;
 	o << std::fixed << std::setprecision(6);

@@ -61,7 +61,7 @@ class RbFunction :  public RbObject {
 		bool                                    equals(const RbObject* obj) const;                                                  //!< Check that the functions are the same
         const RbObject*                         execute(void);                                                                      //!< Execute using processed args
         const RbObject*                         execute(const std::vector<Argument>& args);                                         //!< Execute function
-        std::vector<RbObjectWrapper*> const &   getProcessedArguments(void) const { return processedArguments; }                          //!< Get processed arguments
+        std::vector<RbObjectWrapper*> const &   getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
         bool                                    processArguments(const std::vector<Argument>& args, IntVector* matchScore=NULL);    //!< Process args, return a match score if pointer is not null
 		void                                    printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
         std::string                             toString(void) const = 0;                                                           //!< Complete info about object
