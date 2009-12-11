@@ -82,6 +82,14 @@ ObjectSlot& ObjectSlot::operator=(const ObjectSlot& x) {
 }
 
 
+/** Get class vector describing type of object */
+const StringVector& ObjectSlot::getClass() const {
+
+    static StringVector rbClass = StringVector(ObjectSlot_name) + RbInternal::getClass();
+    return rbClass;
+}
+
+
 /** Get description of atomic type with indication of dimensions with empty square brackets */
 std::string ObjectSlot::getTypeDescr() const {
 
@@ -140,6 +148,16 @@ bool ObjectSlot::isMatchingType(const StringVector& classVec) const {
             return true;
     }
     return false;
+}
+
+
+/** Print value for user */
+void ObjectSlot::printValue(std::ostream& o) const {
+
+    if (variable == NULL)
+        o << "NULL";
+    else
+        variable->printValue(o);
 }
 
 

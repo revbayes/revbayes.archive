@@ -107,12 +107,12 @@ RbObject* SyntaxUnaryExpr::getValue(Frame* frame) const {
     std::vector<Argument> arg;
     arg.push_back(Argument("x", expression->getDAGNode(frame)));
 
-    // Get a function pointer
+    // Execute function
     std::string funcName = "." + opCode[operation];
-    RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, arg);
+    const RbObject *retVal = Workspace::globalWorkspace().executeFunction(funcName, arg);
 
     // Return value (we pass on management responsibility to caller)
-    return func->execute(arg);
+    return retVal->clone();
 }
 
 

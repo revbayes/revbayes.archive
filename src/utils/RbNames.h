@@ -37,6 +37,7 @@
 #define MethodTable_name                              "method table"
 #define MoveScale_name                                "move(scale)"
 #define MoveSlidingWindow_name                        "move(sliding window)"
+#define ObjectSlot_name                               "object slot"
 #define RbBool_name                                   "bool"
 #define RbComplex_name                                "complex"
 #define RbDouble_name                                 "double"

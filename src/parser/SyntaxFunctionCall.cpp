@@ -118,7 +118,7 @@ DAGNode* SyntaxFunctionCall::getDAGNode(Frame* formal) const {
     else
         func = Workspace::globalWorkspace().getFunction(".memberCall", args);
 
-    return new DeterministicNode((RbFunction*)(func->clone()), args);
+    return new DeterministicNode((RbFunction*)(func));
 }
 
 
@@ -128,33 +128,25 @@ DAGNode* SyntaxFunctionCall::getDAGNode(Frame* formal) const {
  * We look up the function or member function and calculate the value.
  *
  */
-RbObject* SyntaxFunctionCall::getValue(Frame* formal) const {
+RbObject* SyntaxFunctionCall::getValue(Frame* frame) const {
 
     // Package arguments
     std::vector<Argument> args;
     for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        args.push_back(Argument(*(*i)->getLabel(), (*i)->getDAGNode(formal)));    
+        args.push_back(Argument(*(*i)->getLabel(), (*i)->getDAGNode(frame)));    
 
     // Get function pointer and execute function
-    RbObject* result;
     if (variable == NULL) {
-        RbFunction* func = Workspace::userWorkspace().getFunction(*functionName, args);
-        if (func == NULL)
-            throw(RbException("No function '" + functionName->getString() + "' taking specified arguments"));
-        result = func->execute(args);
+        const RbObject* retVal =  Workspace::userWorkspace().executeFunction(*functionName, args);
+        return retVal->clone();
     }
     else {
         RbComplex* theObject = dynamic_cast<RbComplex*>(variable->getValue());
         if (theObject == NULL)
             throw(RbException("Object does not have member functions"));
-        if (theObject->existsMethod(*functionName, args) == false)
-            throw(RbException("No member function '" + functionName->getString() +
-                 "' taking specified arguments"));
-        result = theObject->executeMethod(*functionName, args);    
+        const RbObject* retVal = theObject->executeMethod(*functionName, args);    
+        return retVal->clone();    
     }
-
-    // Return value (we pass on management responsibility to caller)
-    return result;
 }
 
 

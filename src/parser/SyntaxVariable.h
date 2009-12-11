@@ -27,7 +27,7 @@
 /**
  * This is the class used to hold variables in the syntax tree.
  *
- * We store the identifier, the index vector and the frameironment
+ * We store the identifier, the index vector and the base variable
  * here so that we can wrap these things into a DAG node if needed.
  *
  */
@@ -50,6 +50,7 @@ class SyntaxVariable : public SyntaxElement {
         const RbString* getIdentifier() const;                      //!< Get identifier
         IntVector       getIndex(Frame* frame) const;               //!< Get index
         std::string     getFullName(Frame* frame) const;            //!< Get full name, with indices and base obj
+        RbObject*       getReference(Frame* frame=NULL) const;      //!< Get value reference
         RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
         bool            isMember() const { return variable==NULL; } //!< Is member variable?
 

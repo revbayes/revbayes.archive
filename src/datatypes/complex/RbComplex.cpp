@@ -120,6 +120,14 @@ int RbComplex::setArguments(const std::string& funcName, std::vector<Argument>& 
 }
 
 
+/** Set member value element */
+void RbComplex::setValElement(const std::string& name, const IntVector& index, RbObject* val) {
+
+    delete val;
+    throw (RbException("No member '" + name + "'"));
+}
+
+
 /** Set member value */
 void RbComplex::setValue(const std::string& name, RbObject* val) {
 
@@ -128,10 +136,18 @@ void RbComplex::setValue(const std::string& name, RbObject* val) {
 }
 
 
-/** Set member variable */
-void RbComplex::setVariable(const std::string& name, RbObjectWrapper* val) {
+/** Set member variable element */
+void RbComplex::setVarElement(const std::string& name, const IntVector& index, RbObjectWrapper* var) {
 
-    delete val;
+    delete var;
+    throw (RbException("No member '" + name + "'"));
+}
+
+
+/** Set member variable */
+void RbComplex::setVariable(const std::string& name, RbObjectWrapper* var) {
+
+    delete var;
     throw (RbException("No member '" + name + "'"));
 }
 

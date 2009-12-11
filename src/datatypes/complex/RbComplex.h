@@ -47,7 +47,9 @@ class RbComplex : public RbObject {
         virtual const std::string&      getMemberType(const std::string& name) const;                           //!< Get member type
         virtual const RbObject*         getValue(const std::string& name) const;                                //!< Get member value
         virtual const RbObjectWrapper*  getVariable(const std::string& name) const;                             //!< Get member variable
+        virtual void                    setValElement(const std::string& name, const IntVector& index, RbObject* val);                       //!< Set member value
         virtual void                    setValue(const std::string& name, RbObject* val);                       //!< Set member value
+        virtual void                    setVarElement(const std::string& name, const IntVector& index, RbObjectWrapper* val);                       //!< Set member value
         virtual void                    setVariable(const std::string& name, RbObjectWrapper* var);             //!< Set member variable
 
         // Member method functions: override if object contains member functions

@@ -59,10 +59,11 @@ class Frame {
         int                     getDim(const std::string& name) const;                      //!< Get dim of variable
         Frame*                  getParentFrame(void) const { return parentFrame; }          //!< Get parent frame 
         const RbObject*         getValue(const std::string& name) const;                    //!< Get value
-        const RbObjectWrapper*  getVariable(const std::string& name) const;                 //!< Get a variable
+        const RbObjectWrapper*  getVariable(const std::string& name) const;                 //!< Get variable
         const RbObjectWrapper*  getVarElement(const std::string& name, const IntVector& index) const;//!< Get var elem
         const RbObject*         getValElement(const std::string& name, const IntVector& index) const;//!< Get val elem
-        void                    setVariable(const std::string& name, RbObjectWrapper* var); //!< Set a variable
+        void                    setVariable(const std::string& name, RbObjectWrapper* var); //!< Set variable
+        void                    setValue(const std::string& name, RbObject* val);           //!< Set variable value
         void                    setValElement(const std::string& name, const IntVector& index, RbObject* value); //!< Set element of an object
         void                    setVarElement(const std::string& name, const IntVector& index, DAGNode* variable); //!< Set element of a DAG node container
 	

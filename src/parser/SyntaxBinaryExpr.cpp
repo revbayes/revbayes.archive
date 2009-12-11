@@ -113,12 +113,12 @@ RbObject* SyntaxBinaryExpr::getValue(Frame* frame) const {
     args.push_back(Argument("x", leftOperand->getDAGNode(frame)));
     args.push_back(Argument("y", rightOperand->getDAGNode(frame)));
 
-    // Get a function pointer
+    // Execute function
     std::string funcName = "." + opCode[operation];
-    RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, args);
+    const RbObject* retVal = Workspace::globalWorkspace().executeFunction(funcName, args);
 
     // Return value (we pass on management responsibility to caller)
-    return func->execute(args);
+    return retVal->clone();
 }
 
 

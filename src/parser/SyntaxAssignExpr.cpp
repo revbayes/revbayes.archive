@@ -106,54 +106,44 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
     // Get variable identifier
     RbString varName = *variable->getIdentifier();
 
-    // Get member frame
-    const Frame* memberFrame = variable->getFrame();
-    if (variable->isMember())
-        theFrame = variable->getFrame();
-    else
-        theFrame = frame;
+    // Get index
+    IntVector index = variable->getIndex(frame);
 
     // Deal with arrow assignments
     if (opType == ARROW_ASSIGN) {
 
-        // Calculate the value of the rhs expression; we assume it is not a variable DAG node
-        RbObject* value = expression->getValue();
+        // Calculate the value of the rhs expression
+        RbObject* exprValue = expression->getValue();
 
-        // Does the variable exist?
+        // Does the variable exist? If not, add it - but only to workspace, not to complex objects
         if (!variable->isMember() && !frame->existsVariable(varName)) {
 
             // It does not exist - add it
-            IntVector index = variable->getIndex(frame);
             if (index.size() != 0)
-                frame->addVariable(varName, index, value);
+                frame->addVariable(varName, index, new ConstantNode(exprValue));
             else
-                frame->addVariable(varName, value);
+                frame->addVariable(varName, new ConstantNode(exprValue));
         }
         else {
 
-            // It exists - get a handle to it
-            RbObject** handle = variable->getHandle(frame);
-
-            // Get declared element type
-            std::string declaredType = frame->getDeclaredType(varName);
-
-            // Assign a new value depending on type of handle
-            if ((*handle)->isType(RbNames::StochasticNode::name))
-                ((StochasticNode*)(*handle))->clamp(value);
-            else if ((*handle)->isType(RbNames::DAGNode::name)) {
-                if (!value->isType(declaredType)) {
-                    delete value;
-                    throw (RbException("Incompatible types"));
-                }
-                delete (*handle);
-                (*handle) = new ConstantNode(value);
-            }
-            else if ((*handle)->getElementDim() != 0) {
-                (*handle)->setElement(variable->getHandleIndex(frame), value);
+            // It exists - use the frame or a complex object to assign to it 
+            if (!variable->isMember()) {
+                if (index.size() != 0)
+                    frame->setValElement(varName, index, exprValue);
+                else
+                    frame->setValue(varName, exprValue);
             }
             else {
-                delete value;
-                throw (RbException("Cannot assign dag node to " + variable->getFullName(frame)));
+                RbObject* theObjRef = variable->getReference(frame);
+                RbComplex* containerRef = dynamic_cast<RbComplex*>(theObjRef);
+                if (containerRef == NULL) {
+                    delete exprValue;
+                    throw RbException("Variable " + variable->getFullName(frame) + " does not have members");
+                }
+                if (index.size() != 0)
+                    containerRef->setValElement(varName, index, exprValue);
+                else
+                    containerRef->setValue(varName, exprValue);
             }
         }
     }
@@ -162,15 +152,17 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
     else if (opType == EQUATION_ASSIGN) {
 
         // Get DAG node representation of expression
-        DeterministicNode* node = dynamic_cast<DeterministicNode*>(expression->getDAGNode());
-        if (node == NULL)
+        DAGNode* dag = expression->getDAGNode();
+        DeterministicNode* node = dynamic_cast<DeterministicNode*>(dag);
+        if (node == NULL) {
+            delete dag;
             throw (RbException("Righ-hand side is not a variable expression"));
+        }
 
         // Does the variable exist?
         if (!variable->isMember() && !frame->existsVariable(varName)) {
  
             // It does not exist - add it
-            IntVector index = variable->getIndex(frame);
             if (index.size() != 0)
                 frame->addVariable(varName, index, node);
             else
@@ -178,24 +170,24 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
         }
         else {
 
-            // The variable exists - get a handle to it
-            RbObject** handle = variable->getHandle(frame);
-
-            // Get declared element type
-            std::string declaredType = frame->getDeclaredType(varName);
-
-            // Assign a new value to the handle
-            if ((*handle)->isType(RbNames::DAGNode::name)) {
-                if (!node->getValue()->isType(declaredType)) {
-                    delete node;
-                    throw (RbException("Incompatible types"));
-                }
-                delete (*handle);
-                (*handle) = node;
+            // It exists - use the frame or a complex object to assign to it
+            if (!variable->isMember()) {
+                if (index.size() != 0)
+                    frame->setVarElement(varName, index, node);
+                else
+                    frame->setVariable(varName, node);
             }
             else {
-                delete node;
-                throw (RbException("Cannot assign dag node to " + variable->getFullName(frame)));
+                RbObject* theObjRef = variable->getReference(frame);
+                RbComplex* containerRef = dynamic_cast<RbComplex*>(theObjRef);
+                if (containerRef == NULL) {
+                    delete node;
+                    throw RbException("Variable " + variable->getFullName(frame) + " does not have members");
+                }
+                if (index.size() != 0)
+                    containerRef->setVarElement(varName, index, node);
+                else
+                    containerRef->setVariable(varName, node);
             }
         }
     }
@@ -204,46 +196,45 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
     else if (opType == TILDE_ASSIGN) {
 
         // Get distribution
-        Distribution* dist = dynamic_cast<Distribution*>(expression->getValue());
-        if (dist == NULL)
+        RbObject* exprValue = expression->getValue();
+        Distribution* dist = dynamic_cast<Distribution*>(exprValue);
+        if (dist == NULL) {
+            delete exprValue;
             throw (RbException("Function does not return a distribution"));
+        }
  
         // Create new stochastic node
         StochasticNode* node = new StochasticNode(dist);
 
-        // Does variable exist?
+        // Does the variable exist?
         if (!variable->isMember() && !frame->existsVariable(varName)) {
  
             // It does not exist - add it
-            IntVector index = variable->getIndex(frame);
             if (index.size() != 0)
                 frame->addVariable(varName, index, node);
             else
                 frame->addVariable(varName, node);
         }
-
         else {
 
-            // The variable exists - get a handle to it
-            RbObject** handle = variable->getHandle(frame);
-
-            // Get declared element type
-            std::string declaredType = frame->getDeclaredType(varName);
-
-            // Assign a new value to the handle
-            if ((*handle)->isType("DAGNode")) {
-                if (!node->getValue()->isType(declaredType)) {
-                    delete node;
-                    throw (RbException("Incompatible types"));
-                }
-                else {
-                    delete (*handle);
-                    (*handle) = node;
-                }
+            // It exists - use the frame or a complex object to assign to it
+            if (!variable->isMember()) {
+                if (index.size() != 0)
+                    frame->setVarElement(varName, index, node);
+                else
+                    frame->setVariable(varName, node);
             }
             else {
-                delete node;
-                throw (RbException("Cannot assign dag node to " + variable->getFullName(frame)));
+                RbObject* theObjRef = variable->getReference(frame);
+                RbComplex* containerRef = dynamic_cast<RbComplex*>(theObjRef);
+                if (containerRef == NULL) {
+                    delete exprValue;
+                    throw RbException("Variable " + variable->getFullName(frame) + " does not have members");
+                }
+                if (index.size() != 0)
+                    containerRef->setVarElement(varName, index, node);
+                else
+                    containerRef->setVariable(varName, node);
             }
         }
     }

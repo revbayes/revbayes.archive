@@ -132,8 +132,10 @@ DAGNode* SyntaxVariable::getDAGNode(Frame* frame) const {
 
     if (index->size() > 0) {
         DAGNodeContainer* indexArgs = new DAGNodeContainer(index->size(), (DAGNode*)(NULL));
-        for (ContainerIterator i=indexArgs->begin(); i!=indexArgs->end(); i++)
-            (*indexArgs)[i] = (*index)[i]->getDAGNode(frame);
+        std::list<SyntaxElement*>::iterator j = index->begin();
+        for (ContainerIterator i=indexArgs->begin(); i!=indexArgs->end(); i++, j++) {
+            (*indexArgs)[i] = (*j)->getDAGNode(frame);
+        }
         args.push_back(Argument("index", indexArgs));
     }
     else
@@ -193,8 +195,8 @@ IntVector SyntaxVariable::getIndex(Frame* frame) const {
         // Get zero-based value corresponding to index
         theIndex.push_back((*intIndex)-1);
 
-        // Discard temporary int
-        delete intIndex;
+        // Delete the index object
+        delete indexObj;
     }
 
     // Return index
@@ -209,7 +211,7 @@ IntVector SyntaxVariable::getIndex(Frame* frame) const {
  * case, its "variable" member is NULL. If the element is a base variable,
  * we get the semantic value of the element by looking it up in the frame.
  * If it is a member variable name, we try to find it as a member of the
- * "variable" found by another SyntaxVariable element.
+ * complex language object found by another SyntaxVariable element.
  *
  */
 RbObject* SyntaxVariable::getValue(Frame* frame) const {
@@ -220,19 +222,20 @@ RbObject* SyntaxVariable::getValue(Frame* frame) const {
     /* Get value */
     if (variable == NULL) {
         if (theIndex.size() == 0)
-            return frame->getValue(theIndex)->clone();
+            return frame->getValue(*identifier)->clone();
         else
-            return frame->getValElement(, index)->clone();
+            return frame->getValElement(*identifier, theIndex)->clone();
     }
     else {
         RbComplex* complexObj = (RbComplex*)(variable->getValue());
         if (complexObj == NULL) {
             throw RbException("Variable " + variable->getFullName(frame) + " does not have members");
         }
+        const RbObjectWrapper* theVar = complexObj->getVariable(*identifier);
         if (theIndex.size() == 0)
-            return complexObj->getValue(*identifier)->clone();
+            return theVar->getValue()->clone();
         else
-            return complexObj->getValElement(*identifier, index)->clone();
+            return theVar->getValElement(theIndex)->clone();
    }
 }
 

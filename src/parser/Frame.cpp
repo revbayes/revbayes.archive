@@ -137,7 +137,7 @@ int Frame::getDim(const std::string& name) const {
 }
 
 
-/** Get variable (a pointer to a const; caller makes a clone if needed) */
+/** Get variable (a regular pointer so that caller can ask the variable to set its value, for instance) */
 const RbObjectWrapper* Frame::getVariable(const std::string& name) const {
 
     std::map<const std::string, ObjectSlot>::const_iterator it = variableTable.find(name);
@@ -189,6 +189,28 @@ const RbObjectWrapper* Frame::getVarElement(const std::string& name, const IntVe
 /** Print value for user */
 void Frame::printValue(std::ostream& o) const {
 
+    for (std::map<std::string, ObjectSlot>::const_iterator i=variableTable.begin(); i!=variableTable.end(); i++) {
+        o << i->first << " = ";
+        i->second.printValue(o);
+        o << std::endl;
+    }
+}
+
+
+/** Set value */
+void Frame::setValue(const std::string& name, RbObject* value) {
+
+    // Find the variable
+    std::map<const std::string, ObjectSlot>::iterator it = variableTable.find(name);
+    if (it == variableTable.end()) {
+        if (parentFrame != NULL)
+            parentFrame->setValue(name, value);
+        else
+            throw (RbException("Variable " + name + " does not exist"));
+    }
+
+    // We are responsible for setting it
+    (*it).second.setValue(value);
 }
 
 

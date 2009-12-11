@@ -34,7 +34,7 @@ class RbObject;
 class RbObjectWrapper;
 class StringVector;
 
-class ObjectSlot {
+class ObjectSlot : RbInternal {
 
     public:
             ObjectSlot(const std::string valType, int elemDim);     //!< Constructor with NULL init
@@ -48,7 +48,9 @@ class ObjectSlot {
 
         // Basic utility functions
         ObjectSlot*             clone() const { return new ObjectSlot(*this); } //!< Clone object
-        std::string             toString() const;                           //!< Complete object info
+        const StringVector&     getClass() const;                               //!< Get class vector
+        void                    printValue(std::ostream& o) const;              //!< Print value for user
+        std::string             toString() const;                               //!< Complete object info
 
         // Regular functions
         int                     getDim() const { return dim; }              //!< Get number of dimensions
