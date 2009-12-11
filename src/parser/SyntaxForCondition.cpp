@@ -104,7 +104,7 @@ RbObject* SyntaxForCondition::getValue(Frame* frame) const {
 void SyntaxForCondition::print(std::ostream& o) const {
 
     o << "SyntaxForCondition:" << std::endl;
-    o << "varName      = " << std::string(varName) << std::endl;
+    o << "varName      = " << std::string(*varName) << std::endl;
     o << "inExpression = ";
     RbObject* temp = inExpression->getValue();
     temp->printValue(o);
