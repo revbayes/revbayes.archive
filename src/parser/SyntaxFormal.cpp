@@ -13,8 +13,10 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "RbString.h"
 #include "SyntaxFormal.h"
 
 #include <sstream>
@@ -95,6 +97,16 @@ bool SyntaxFormal::equals(const SyntaxElement* elem) const {
     result = result && defaultExpr->equals(p->defaultExpr);
 
     return result;
+}
+
+
+/** Make argument rule from element */
+ArgumentRule* SyntaxFormal::getArgumentRule(Frame* frame) const {
+
+    if (defaultExpr == NULL)
+        return new ArgumentRule(*label, *type);
+    else
+        return new ArgumentRule(*label, *type, defaultExpr->getValue(frame));
 }
 
 

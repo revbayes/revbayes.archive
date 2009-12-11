@@ -15,60 +15,117 @@
  * $Id$
  */
 
-#include <list>
-
-#include "ConstantNode.h"
-#include "RbException.h"
+#include "ArgumentRule.h"
+#include "Frame.h"
+#include "RbNames.h"
+#include "RbString.h"
+#include "SyntaxElement.h"
 #include "UserFunction.h"
+#include "Workspace.h"
 
+#include <list>
+#include <sstream>
 
 /** Basic constructor */
-UserFunction::UserFunction(const ArgumentRule** rules, const std::string& retType,
-                            std::vector<SyntaxElement*> stmts)
-    : RbFunction(rules, retType) {
-
-    for (std::vector<SyntaxElement*>::iterator i=stmts.begin(); i!=stmts.end(); i++)
-        code.push_back((*i)->clone());
-
-    //TODO: Store environment
+UserFunction::UserFunction( const ArgumentRule**        argRules,
+                            const RbString*             retType,
+                            std::list<SyntaxElement*>*  stmts,
+                            Frame*                      defineEnv) : RbFunction() {
+    
+    argumentRules       = argRules;
+    returnType          = retType;
+    code                = stmts;
+    defineEnvironment   = defineEnv;
 }
 
 
 /** Copy constructor */
-UserFunction::UserFunction(const UserFunction &uf)
-    : RbFunction(uf), code(uf.code) {
+UserFunction::UserFunction(const UserFunction &x) : RbFunction(x) {
 
-    for (std::vector<SyntaxElement*>::const_iterator i=uf.code.begin(); i!=uf.code.end(); i++)
-        code.push_back((*i)->clone());
+    returnType          = new RbString(*(x.returnType));
+    defineEnvironment   = x.defineEnvironment->clone();
+
+    int numRules=0;
+    while (x.argumentRules[numRules++] != NULL)
+        ;
+    argumentRules = (const ArgumentRule**) calloc (numRules, sizeof(ArgumentRule*));
+    for (int i=0; x.argumentRules[i] != NULL; i++)
+        argumentRules[i] = x.argumentRules[i]->clone();
+
+    for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
+        code->push_back((*i)->clone());
 }
 
 
 /** Destructor */
 UserFunction::~UserFunction() {
 
-    for (std::vector<SyntaxElement*>::iterator i=code.begin(); i!=code.end(); i++)
-        delete (*i);
+    for (int i=0; argumentRules[i] != NULL; i++)
+        delete argumentRules[i];
+    free (argumentRules);
 
-    delete environment;
+    delete returnType;
+
+    for (std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++)
+        delete (*i);
+    delete code;
+
+    // defineEnvironment->destroyEnclosure();   //TODO: or something like that
+    delete defineEnvironment;
+}
+
+
+/** Execute function */
+const RbObject* UserFunction::executeOperation(const std::vector<RbObjectWrapper*>& args) const {
+
+    std::cerr << "I am a user-defined function." << std::endl;
+    std::cerr << "I know who I am but I do not know how to execute myself." << std::endl;
+
+    //TODO: Execute code: call getvalue, maintain a call stack and a frame stack, watch for return signal
+
+    return NULL;
+}
+
+
+/** Get argument rules */
+const ArgumentRule** UserFunction::getArgumentRules() const {
+
+    return argumentRules;
 }
 
 
 /** Get class vector describing type of object */
 const StringVector& UserFunction::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::UserFunction::name) + RbFunction::getClass();
+    static StringVector rbClass = StringVector(UserFunction_name) + RbFunction::getClass();
     return rbClass;
 }
 
 
-/** Execute function */
-RbObject* UserFunction::execute(std::vector<DAGNode*> arguments) {
+/** Get return type */
+const std::string UserFunction::getReturnType() const {
 
-    //TODO: Create and add to local environment
-
-    //TODO: Execute code: call getvalue, watch for return signal
-
-    return NULL;
+    return *returnType;
 }
 
+
+/** Complete info about object */
+std::string UserFunction::toString() const {
+
+    int numRules;
+    for (numRules = 0; argumentRules[numRules] != NULL; numRules++)
+        ;
+
+    std::ostringstream o;
+    o << "User-defined function:" << std::endl;
+    o << "formals     = " << numRules << " formal arguments" << std::endl;
+    o << "return type = ";
+    returnType->printValue(o);
+    o << std::endl;
+    o << "code        = " << code->size() << " lines of code" << std::endl;
+    o << "definition environment:" << std::endl;
+    defineEnvironment->printValue(o);
+
+    return o.str();
+}
 

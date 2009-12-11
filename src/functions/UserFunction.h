@@ -22,39 +22,46 @@
 
 #include <ostream>
 #include <string>
-#include <vector>
+#include <list>
 
-#include "ArgumentRule.h"
-#include "DAGNode.h"
-#include "Frame.h"
 #include "RbFunction.h"
-#include "RbObject.h"
-#include "SyntaxElement.h"
-#include "StringVector.h"
 
+class ArgumentRule;
+class Frame;
+class RbObject;
+class RbObjectWrapper;
+class RbString;
+class StringVector;
+class SyntaxElement;
 
 class UserFunction :  public RbFunction {
 
     public:
-                UserFunction(const ArgumentRule** rules, const std::string& retType,
-                            std::vector<SyntaxElement*> code);              //!< Constructor
-                UserFunction(const UserFunction& uf);                       //!< Copy constructor
+                UserFunction(   const ArgumentRule**        argRules,
+                                const RbString*             retType,
+                                std::list<SyntaxElement*>*  stmts,
+                                Frame*                      defineEnv);     //!< Constructor
+                UserFunction(const UserFunction& x);                        //!< Copy constructor
                 virtual ~UserFunction();                                    //!< Delete the code
 
         // Basic utility functions
-        virtual std::string         briefInfo() const;                  //!< Brief info about object
-        virtual UserFunction*       clone() const { return new UserFunction(*this); }   //!< Clone object
-        virtual bool                equals(const RbObject* o) const;    //!< Equals comparison
-        virtual const StringVector& getClass() const;                   //!< Get class
-        virtual void                print(std::ostream& o) const;       //!< Print complete object info
-        virtual void                printValue(std::ostream& o) const;  //!< Print value (for user)
+        std::string                 briefInfo() const;                  //!< Brief info about object
+        RbObject*                   clone() const;                      //!< Clone object
+        bool                        equals(const RbObject* x) const;    //!< Equals comparison
+        const StringVector&         getClass() const;                   //!< Get class vector
+        std::string                 toString() const;                   //!< Complete info about object
 
         // Regular functions
-        virtual RbObject*           execute(std::vector<DAGNode*> arguments);       //!< Execute function
+        const ArgumentRule**        getArgumentRules(void) const;       //!< Get arg rules
+        const std::string           getReturnType(void) const;          //!< Get return type
 
     protected:
-        std::vector<SyntaxElement*> code;             //!< The code
-        Frame*                      frame;            //!< The innermost frame of the evaluation environment
+        const ArgumentRule**        argumentRules;      //!< The argument rules
+        const RbString*             returnType;         //!< The return type
+        std::list<SyntaxElement*>*  code;               //!< The code
+        Frame*                      defineEnvironment;  //!< The definition environment
+
+		const RbObject*             executeOperation(const std::vector<RbObjectWrapper*>& args) const;  //!< Execute operation
 };
 
 #endif

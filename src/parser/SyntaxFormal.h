@@ -17,12 +17,13 @@
 #ifndef SyntaxFormal_H
 #define SyntaxFormal_H
 
-#include "RbString.h"
 #include "SyntaxElement.h"
 
 #include <iostream>
 #include <list>
 
+class ArgumentRule;
+class RbString;
 
 class SyntaxFormal : public SyntaxElement {
 
@@ -39,14 +40,14 @@ class SyntaxFormal : public SyntaxElement {
         void            print(std::ostream& o) const;               //!< Print info about object
 
         // Regular functions
-        const RbString* getLabel() const { return label; }          //!< Return label    
+        ArgumentRule*   getArgumentRule(Frame* frame) const;        //!< Make an argument rule
         DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
         RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
 
     protected:
-        RbString*                       type;           //!< The type of the argument
-        RbString*                       label;          //!< The label of the argument
-        SyntaxElement*                  defaultExpr;    //!< The default value of the argument (a const expr)
+        RbString*       type;           //!< The type of the argument
+        RbString*       label;          //!< The label of the argument
+        SyntaxElement*  defaultExpr;    //!< The default value of the argument (a const expr)
 };
 
 #endif

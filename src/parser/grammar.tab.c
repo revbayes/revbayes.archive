@@ -1988,7 +1988,7 @@ yyreduce:
   case 52:
 #line 293 "grammar.y"
     {
-                PRINTF("Parser inserting function definition (FUNCTION_DEF) in syntax tree\n");
+                PRINTF("Parser inserting function definition in syntax tree\n");
                 (yyval.syntaxElement) = new SyntaxFunctionDef(NULL, (yyvsp[(2) - (6)].string), (yyvsp[(4) - (6)].syntaxElementList), (yyvsp[(6) - (6)].syntaxElementList));
                 }
     break;
@@ -1996,7 +1996,7 @@ yyreduce:
   case 53:
 #line 298 "grammar.y"
     {
-                PRINTF("Parser inserting typed function definition (FUNCTION_DEF) in syntax tree\n");
+                PRINTF("Parser inserting typed function definition in syntax tree\n");
                 (yyval.syntaxElement) = new SyntaxFunctionDef((yyvsp[(2) - (7)].string), (yyvsp[(3) - (7)].string), (yyvsp[(5) - (7)].syntaxElementList), (yyvsp[(7) - (7)].syntaxElementList));
                 }
     break;

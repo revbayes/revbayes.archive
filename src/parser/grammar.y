@@ -153,7 +153,7 @@ typedef struct yyltype
  * As a subset of the grammar, RevBayes supports EvoMoDeL,
  * which allows a natural description of graphical represen-
  * tations of complex probability models. The most essential
- * components in EvoMoDeL are tilde assignment ('~')for creating
+ * components in EvoMoDeL are tilde assignment ('~') for creating
  * stochastic nodes and equation assignment (':=') for creating
  * deterministic nodes in model DAGs. Constant nodes are created
  * using arrow assignment ('<-') as in R.
@@ -291,12 +291,12 @@ argument   :   expression
 
 functionDef :   FUNCTION identifier '(' formalList ')' stmts
                 {
-                PRINTF("Parser inserting function definition (FUNCTION_DEF) in syntax tree\n");
+                PRINTF("Parser inserting function definition in syntax tree\n");
                 $$ = new SyntaxFunctionDef(NULL, $2, $4, $6);
                 }
             |   FUNCTION identifier identifier '(' formalList ')' stmts
                 {
-                PRINTF("Parser inserting typed function definition (FUNCTION_DEF) in syntax tree\n");
+                PRINTF("Parser inserting typed function definition in syntax tree\n");
                 $$ = new SyntaxFunctionDef($2, $3, $5, $7);
                 }
             ;

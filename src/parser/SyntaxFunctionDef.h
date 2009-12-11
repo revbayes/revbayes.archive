@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of SyntaxFunctionCall, which is
- * used to hold function calls in the syntax tree.
+ * This file contains the declaration of SyntaxFunctionDef, which is
+ * used to hold definitions of functions (user-defined functions).
  *
- * @brief Declaration of SyntaxFunctionCall
+ * @brief Declaration of SyntaxFunctionDef
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -13,32 +13,28 @@
  * $Id$
  */
 
-#ifndef SyntaxFunctionCall_H
-#define SyntaxFunctionCall_H
+#ifndef SyntaxFunctionDef_H
+#define SyntaxFunctionDef_H
 
+#include "RbString.h"
 #include "SyntaxElement.h"
-#include "SyntaxLabeledExpr.h"
+#include "SyntaxFormal.h"
 #include "SyntaxVariable.h"
 
-#include <iostream>
+#include <ostream>
 #include <list>
+#include <string>
 
 
-/**
- * This is the class used to hold function calls in the syntax tree.
- *
- * We store the arguments, function name, and variable of which the
- * function is a member, if any.
- *
- */
-class SyntaxFunctionCall : public SyntaxElement {
+class SyntaxFunctionDef : public SyntaxElement {
 
     public:
-            SyntaxFunctionCall(RbString* id, std::list<SyntaxLabeledExpr*>* args);  //!< Standard function
-            SyntaxFunctionCall(SyntaxVariable* var, RbString* id,
-                               std::list<SyntaxLabeledExpr*>* args);                //!< Member function
-            SyntaxFunctionCall(const SyntaxFunctionCall& x);                        //!< Copy constructor
-	        virtual ~SyntaxFunctionCall();                                          //!< Destructor
+            SyntaxFunctionDef(  RbString* type,
+                                RbString* name,
+                                std::list<SyntaxFormal*>* formals,
+                                std::list<SyntaxElement*>* stmts);  //!< Standard constructor
+            SyntaxFunctionDef(const SyntaxFunctionDef& x);          //!< Copy constructor
+	        virtual ~SyntaxFunctionDef();                           //!< Destructor
 
         // Basic utility functions
         std::string     briefInfo() const;                          //!< Brief info about object
@@ -51,9 +47,10 @@ class SyntaxFunctionCall : public SyntaxElement {
         RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
 
     protected:
-        std::list<SyntaxLabeledExpr*>*  arguments;      //!< The arguments passed to the function
+        RbString*                       returnType;     //!< The return type of the function
         RbString*                       functionName;   //!< The name of the function
-        SyntaxVariable*                 variable;       //!< The variable holding the function
+        std::list<SyntaxFormal*>*       formalArgs;     //!< The formal arguments
+        std::list<SyntaxElement*>*      code;           //!< The list of statements
 };
 
 #endif
