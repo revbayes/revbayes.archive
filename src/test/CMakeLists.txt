@@ -1,4 +1,5 @@
 ### add sub-directories
+add_subdirectory (parser)
 add_subdirectory (datatypes)
 add_subdirectory (distribution)
 add_subdirectory (function)
