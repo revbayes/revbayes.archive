@@ -23,6 +23,20 @@
 #include "RbMoveSchedule.h"
 #include "RbNames.h"
 
+/** Constructor from function; get arguments from the function object */
+DeterministicNode::DeterministicNode(RbFunction* func)
+    : DAGNode(), function(func) {
+
+    std::vector<RbObjectWrapper*>& arguments = func->getProcessedArguments();
+    for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++)
+        parents.insert(*i);
+
+    //arguments = function->processArguments(args);
+//
+//    value = function->execute(arguments);
+}
+
+
 /** Basic constructor */
 DeterministicNode::DeterministicNode(RbFunction* func, const std::vector<Argument>& args)
     : DAGNode(), function(func) {

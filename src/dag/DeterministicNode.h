@@ -29,6 +29,7 @@
 class DeterministicNode : public DAGNode {
 
     public:
+            DeterministicNode(RbFunction* func);                        //!< Constructor, get args from func
             DeterministicNode(RbFunction* func, const std::vector<Argument>& args);         //!< Constructor
 	        DeterministicNode(const DeterministicNode& d);                                  //!< Copy constructor
 

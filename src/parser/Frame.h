@@ -44,7 +44,9 @@ class Frame {
         virtual                 ~Frame() {}                     //!< Destructor; do not destroy entire environment
 
         // Basic utility function
-        virtual void            print(std::ostream& o) const;   //!< Print table
+        virtual Frame*          clone(void) const { return new Frame(*this); }  //!< Clone object
+        virtual void            printValue(std::ostream& o) const;              //!< Print table for user
+        virtual std::string     toString(void) const;                           //!< Complete info to string
 
         // Regular functions
 	    void                    addVariable(const std::string& name, RbObject* value);      //!< Add a const variable
@@ -55,6 +57,7 @@ class Frame {
         bool                    existsVariable(const std::string& name) const;              //!< Does variable exist?
         const std::string&      getDeclaredType(const std::string& name) const;             //!< Get declared type of variable
         int                     getDim(const std::string& name) const;                      //!< Get dim of variable
+        Frame*                  getParentFrame(void) const { return parentFrame; }          //!< Get parent frame 
         const RbObject*         getValue(const std::string& name) const;                    //!< Get value
         const RbObjectWrapper*  getVariable(const std::string& name) const;                 //!< Get a variable
         const RbObjectWrapper*  getVarElement(const std::string& name, const IntVector& index) const;//!< Get var elem

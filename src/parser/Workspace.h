@@ -1,11 +1,10 @@
 /**
  * @file
  * This file contains the declaration of Workspace, which is
- * used to hold the global workspace, which is the mother of
- * all frames, the ultimate base frame. It is also
- * used for the user workspace, which is the next descendant
- * frame, containing all variables, types and functions
- * defined by the user.
+ * used to hold the global workspace, the mother of all frames.
+ * It is also used for the user workspace, which is the next
+ * descendant frame, containing all variables, types and
+ * functions defined by the user.
  *
  * @brief Declaration of Workspace
  *
@@ -26,6 +25,7 @@
 
 #include "DAGNode.h"
 #include "Frame.h"
+#include "FunctionTable.h"
 #include "RbFunction.h"
 #include "RbObject.h"
 
@@ -68,34 +68,36 @@ class Workspace : Frame {
 
     public:
 
-        bool        addFunction(const std::string& name, RbFunction* entry);        //!< Add function
-        void        eraseFunction(const std::string& name);                         //!< Erase function
-        RbFunction* getFunction(const std::string& name,
-                        const std::vector<Argument>& args);                         //!< Get function
-        void        print(std::ostream &c) const;                                   //!< Print table
+        void            addFunction(const std::string& name, RbFunction* func);     //!< Add function
+        const RbObject* executeFunction(const std::string& name,
+                            const std::vector<Argument>& args) const;               //!< Execute function
+        void            eraseFunction(const std::string& name);                     //!< Erase function
+        FunctionTable*  getFunctionTable() { return functionTable; }                //!< Get function table
+        RbFunction*     getFunction(const std::string& name,
+                            const std::vector<Argument>& args);                     //!< Get function
+        void            printValue(std::ostream &c) const;                          //!< Print workspace
 
         /** Get global workspace */
         static Workspace& globalWorkspace() {
-                static Workspace globalSpace;
+                static Workspace globalSpace = Workspace(NULL);
                 return globalSpace;
         }
 
         /** Get user workspace */
         static Workspace& userWorkspace() {
-                static Workspace userSpace;
+                static Workspace userSpace = Workspace(&globalWorkspace());
                 return userSpace;
         }
  
     private:
-            Workspace() {}                      //!< Prevent construction
-            Workspace(const Workspace& w) {}    //!< Prevent copy construction
+            Workspace(Workspace* parentSpace = NULL);                   //!< Prevent construction
+            Workspace(const Workspace& w) {}                            //!< Prevent copy construction
             ~Workspace();                       //!< Destructor, delete objects here
 
-        Workspace&                          operator=(const Workspace& w);  //! Prevent assignment
+        Workspace&          operator=(const Workspace& w);  //! Prevent assignment
 
-        std::multimap<const std::string, RbFunction*>   functionTable;      //!< Table holding functions
+        FunctionTable*      functionTable;      //!< Table holding functions
 };
-
 
 #endif
 

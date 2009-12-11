@@ -34,7 +34,7 @@ class RbObject;
 class FunctionTable : RbInternal {
 
     public:
-                        FunctionTable() : RbInternal() {}           //!< Empty table
+                        FunctionTable(FunctionTable* parent=NULL);  //!< Empty table
                         FunctionTable(const FunctionTable& x);      //!< Copy constructor
                         ~FunctionTable();                           //!< Delete functions
 
@@ -51,12 +51,14 @@ class FunctionTable : RbInternal {
         void            printValue(std::ostream& o) const;                      //!< Print table for user
 
         // Regular functions
-        void            addFunction(const std::string name, RbFunction* func);            //!< Add function
-        const RbObject* executeFunction(const std::string& name, const std::vector<Argument>& args) const;                            //!< Execute function
-        RbFunction*     getFunction(const std::string& name, const std::vector<Argument>& args) const;                                //!< Get function (a copy)
+        void            addFunction(const std::string name, RbFunction* func);  //!< Add function
+        void            eraseFunction(const std::string& name);                 //!< Erase function
+        const RbObject* executeFunction(const std::string& name, const std::vector<Argument>& args) const;  //!< Execute function
+        RbFunction*     getFunction(const std::string& name, const std::vector<Argument>& args) const;      //!< Get function (a copy)
 
     protected:
         std::multimap<std::string, RbFunction*>     table;          //!< Table of functions
+        FunctionTable*                              parentTable;    //!< Enclosing table
 };
 
 #endif

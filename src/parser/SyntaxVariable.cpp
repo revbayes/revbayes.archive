@@ -19,6 +19,7 @@
 
 #include "ConstantNode.h"
 #include "DAGNode.h"
+#include "DAGNodeContainer.h"
 #include "DeterministicNode.h"
 #include "IntVector.h"
 #include "RbInt.h"
@@ -48,7 +49,7 @@ SyntaxVariable::SyntaxVariable(const SyntaxVariable& sv)
     identifier = new RbString(*sv.identifier);
     variable   = new SyntaxVariable(*sv.variable);
 
-    // The following loop works because SyntaxElemen is the base class
+    // The following loop works because SyntaxElement is the base class
     for (std::list<SyntaxElement*>::iterator i=(*sv.index).begin(); i!=(*sv.index).end(); i++) {
         index->push_back((*i)->clone());
     }
@@ -122,20 +123,24 @@ bool SyntaxVariable::equals(const SyntaxElement* elem) const {
 DAGNode* SyntaxVariable::getDAGNode(Frame* frame) const {
 
     std::vector<Argument> args;
-    args.push_back(Argument("variable", variable->getDAGNode()));
+    if (variable == NULL)
+        args.push_back(Argument("variable", NULL));
+    else
+        args.push_back(Argument("variable", variable->getDAGNode()));
+
     args.push_back(Argument("id", new ConstantNode(identifier)));
 
-    RbFunction *varFunc = Workspace::globalWorkspace().getFunction(".lookup", args);
-    DeterministicNode* root = new DeterministicNode((RbFunction*)(varFunc->clone()), args);
-
-    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
-        args.clear();
-        args.push_back(Argument("object", root));
-        args.push_back(Argument("index", (*i)->getDAGNode(frame)));
-
-        RbFunction* elemFunc = Workspace::globalWorkspace().getFunction(".element", args);
-        root = new DeterministicNode((RbFunction*)(elemFunc->clone()), args);
+    if (index->size() > 0) {
+        DAGNodeContainer* indexArgs = new DAGNodeContainer(index->size(), (DAGNode*)(NULL));
+        for (ContainerIterator i=indexArgs->begin(); i!=indexArgs->end(); i++)
+            (*indexArgs)[i] = (*index)[i]->getDAGNode(frame);
+        args.push_back(Argument("index", indexArgs));
     }
+    else
+        args.push_back(Argument("index", (RbObjectWrapper*)(NULL)));
+
+    RbFunction *varFunc     = Workspace::globalWorkspace().getFunction(".lookup", args);
+    DeterministicNode* root = new DeterministicNode(varFunc);
 
     return root;
 }
@@ -145,6 +150,23 @@ DAGNode* SyntaxVariable::getDAGNode(Frame* frame) const {
 const RbString* SyntaxVariable::getIdentifier() const {
 
     return identifier;
+}
+
+
+/** Return nice representation of the syntax element */
+std::string SyntaxVariable::getFullName(Frame* frame) const {
+
+    std::ostringstream theName;
+    if (variable != NULL)
+        theName << variable->getFullName(frame) << ".";
+
+    theName << std::string(*identifier);
+
+    IntVector theIndex = getIndex(frame);
+    for (size_t i=0; i<theIndex.size(); i++)
+        theName << "[" << theIndex[i] << "]";
+
+    return theName.str();
 }
 
 
@@ -168,8 +190,8 @@ IntVector SyntaxVariable::getIndex(Frame* frame) const {
             throw (RbException("Index expression for " + std::string(*identifier) + " smaller than 1"));
         }
 
-        // Get value corresponding to index
-        theIndex.push_back(*intIndex);
+        // Get zero-based value corresponding to index
+        theIndex.push_back((*intIndex)-1);
 
         // Discard temporary int
         delete intIndex;
@@ -177,23 +199,6 @@ IntVector SyntaxVariable::getIndex(Frame* frame) const {
 
     // Return index
     return theIndex;
-}
-
-
-/** Return nice representation of the syntax element */
-std::string SyntaxVariable::getFullName(Frame* frame) const {
-
-    std::ostringstream theName;
-    if (variable != NULL)
-        theName << variable->getFullName(frame) << ".";
-
-    theName << std::string(*identifier);
-
-    IntVector theIndex = getIndex(frame);
-    for (size_t i=0; i<theIndex.size(); i++)
-        theName << "[" << theIndex[i] << "]";
-
-    return theName.str();
 }
 
 
@@ -209,66 +214,26 @@ std::string SyntaxVariable::getFullName(Frame* frame) const {
  */
 RbObject* SyntaxVariable::getValue(Frame* frame) const {
 
-    // Value pointer
-    const RbObject* value = NULL;
+    /* Get subscript */
+    IntVector theIndex = getIndex(frame);
 
-    // Get variable; call getValue to pass through DAGNode
+    /* Get value */
     if (variable == NULL) {
-        value = frame->getVariable(*identifier);
-        if (value->isType(RbNames::DAGNode::name))
-            value = ((DAGNode*)(value))->getValue();
+        if (theIndex.size() == 0)
+            return frame->getValue(theIndex)->clone();
+        else
+            return frame->getValElement(, index)->clone();
     }
     else {
-        // Get object of which we are a member
-        RbObject*   obj = variable->getValue(frame);
-
-        // Get member
-        RbComplex*  complexObj = dynamic_cast<RbComplex*>(obj);
+        RbComplex* complexObj = (RbComplex*)(variable->getValue());
         if (complexObj == NULL) {
-            throw (RbException("Variable " + std::string(*(variable->getIdentifier())) +
-                                " does not have members"));
+            throw RbException("Variable " + variable->getFullName(frame) + " does not have members");
         }
-    
-        // Get value; call getValue to pass through DAGNode
-        value = complexObj->getMember(*identifier);
-        if (value->isType(RbNames::DAGNode::name))
-            value = ((DAGNode*)(value))->getValue();
-        if (value == NULL) {
-            throw (RbException("Variable " + std::string(*(variable->getIdentifier())) +
-                                " does not have a member called " + std::string(*identifier)));
-        }
-    }
-
-    // Get element if we have index/indices (handle both list of lists or container model)
-    IntVector theIndex = getIndex(frame);
-    for (size_t i=0; i<theIndex.size(); i++) {
-
-        // Check that it is an object with elements
-        int dim = value->getElementDim();
-        if (dim == 0) {
-            std::ostringstream o;
-            if (variable != NULL)
-                o << variable->getFullName(frame);
-            o << std::string(*identifier);
-            for (int j=0; j<=i; j++)
-                o << "[" << theIndex[j] << "]";
-            o << " does not have elements";
-            throw (RbException(o.str()));
-        }
-
-        // Get subindex
-        IntVector subIndex;
-        for (size_t j=0; i<theIndex.size() && j<dim; i++, j++)
-            subIndex.push_back(theIndex[i]);
-
-        // Get value corresponding to index; call getValue to pass through DAGNode
-        value = value->getElement(subIndex);
-        if (value->isType(RbNames::DAGNode::name))
-            value = ((DAGNode*)(value))->getValue();
-    }
-
-    // Return value (we pass on management responsibility to caller)
-    return value->clone();
+        if (theIndex.size() == 0)
+            return complexObj->getValue(*identifier)->clone();
+        else
+            return complexObj->getValElement(*identifier, index)->clone();
+   }
 }
 
 

@@ -22,6 +22,8 @@
 #include "RbException.h"
 #include "RbNames.h"
 
+#include <sstream>
+
 
 /** Constructor from parent frame; default is NULL */
 Frame::Frame(Frame* parentFr) :
@@ -184,6 +186,12 @@ const RbObjectWrapper* Frame::getVarElement(const std::string& name, const IntVe
 }
 
 
+/** Print value for user */
+void Frame::printValue(std::ostream& o) const {
+
+}
+
+
 /** Set variable */
 void Frame::setVariable(const std::string& name, RbObjectWrapper* variable) {
 
@@ -235,3 +243,10 @@ void Frame::setVarElement(const std::string& name, const IntVector& index, DAGNo
 }
 
 
+/** Complete info abot object to string */
+std::string Frame::toString(void) const {
+
+    std::ostringstream o;
+
+    return o.str();
+}
