@@ -76,7 +76,7 @@ const StringVector& MoveScale::getClass() const {
 void MoveScale::print(std::ostream& o) const {
 
     o << "Scaling Move on:" << std::endl;
-    node->print(o);
+    node->printValue(o);
 }
 
 RbObject* MoveScale::clone(void) const {
@@ -93,14 +93,14 @@ void MoveScale::printValue(std::ostream& o) const {
 std::string MoveScale::toString(void) const {
 
     std::string tempStr = "Scaling move on:\n";
-    tempStr += node->toString();
+    //tempStr += node->toString();
     return tempStr;
 }
 
 
 double MoveScale::perform(void) {
 
-	RbObject* tmp = node->getValue();
+	RbObject* tmp = (RbObject*)node->getValue();
 	double curVal = ((RbDouble*) tmp)->getValue();
 	double tuning = tuningParm->getValue();
 	double u = rng->nextDouble();

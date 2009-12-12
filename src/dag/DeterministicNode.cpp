@@ -17,45 +17,38 @@
  * $Id$
  */
 
+#include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
+#include "RbFunction.h"
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
 #include "RbNames.h"
+#include "RbObjectWrapper.h"
 
 /** Constructor from function; get arguments from the function object */
-DeterministicNode::DeterministicNode(RbFunction* func)
-    : DAGNode(), function(func) {
+DeterministicNode::DeterministicNode(RbFunction* func) : DAGNode(), function(func) {
 
-    std::vector<RbObjectWrapper*>& arguments = func->getProcessedArguments();
-    for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++)
-        parents.insert(*i);
-
-    //arguments = function->processArguments(args);
-//
-//    value = function->execute(arguments);
+	function = func;
+	
+    const std::vector<RbObjectWrapper*>& arguments = func->getProcessedArguments();
+    for (std::vector<RbObjectWrapper*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++)
+		{
+		if ( (*i)->isType(DAGNode_name) == true )
+			parents.insert( (DAGNode*)(*i) );
+		}
 }
 
-
-/** Basic constructor */
-DeterministicNode::DeterministicNode(RbFunction* func, const std::vector<Argument>& args)
-    : DAGNode(), function(func) {
-
-    //arguments = function->processArguments(args);
-    //for (std::vector<DAGNode*>::iterator i=arguments.begin(); i!=arguments.end(); i++)
-    //    parents.insert(*i);
-//
-//    value = function->execute(arguments);
-}
 
 /** Copy constructor */
-DeterministicNode::DeterministicNode(const DeterministicNode& d)
-    : DAGNode(d), function(d.function) {
+DeterministicNode::DeterministicNode(const DeterministicNode& d) : DAGNode(d) {
+
+	function = (RbFunction*)d.function->clone();
 }
 
 
 /** Clone this object */
-DeterministicNode* DeterministicNode::clone() const {
+DeterministicNode* DeterministicNode::clone(void) const {
 
 	return new DeterministicNode(*this);
 }
@@ -75,7 +68,7 @@ const StringVector& DeterministicNode::getClass() const {
  * This function touches all affected DAG nodes, i.e. marks them as changed.
  *
  */
-void DeterministicNode::touchAffectedChildren() {
+void DeterministicNode::touchAffectedChildren(void) {
 
 //    if (!touched) {
         for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
@@ -91,7 +84,7 @@ void DeterministicNode::touchAffectedChildren() {
  * This function touches all affected DAG nodes, i.e. marks them as changed.
  *
  */
-void DeterministicNode::touchAffectedParents() {
+void DeterministicNode::touchAffectedParents(void) {
 
 //    if (!touched) {
         for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {

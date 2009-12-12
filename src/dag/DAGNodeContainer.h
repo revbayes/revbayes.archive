@@ -59,6 +59,7 @@ class DAGNodeContainer : public RbObjectWrapper {
         // Basic utility functions
         DAGNodeContainer*       clone() const;                                      //!< Clone object
         const StringVector&     getClass() const;                                   //!< Get class
+		const std::vector<DAGNode*>& getDagNodes(void) { return nodes; }            //!< Get DAG nodes
         const RbObject*         getValue() const;                                   //!< Get value
         void                    printValue(std::ostream& o) const;                  //!< Print value (for user)
         std::string             toString() const;                                   //!< Complete info about object

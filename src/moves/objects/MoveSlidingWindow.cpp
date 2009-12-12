@@ -76,8 +76,8 @@ const StringVector& MoveSlidingWindow::getClass() const {
 
 void MoveSlidingWindow::print(std::ostream& o) const {
 
-    o << "Sliding Move on:" << std::endl;
-    node->print(o);
+    o << "Sliding Move on:";
+	node->printValue(o);
 }
 
 RbObject* MoveSlidingWindow::clone(void) const {
@@ -88,20 +88,20 @@ RbObject* MoveSlidingWindow::clone(void) const {
 
 void MoveSlidingWindow::printValue(std::ostream& o) const {
 
-    node->printValue(o);
+	node->printValue(o);
 }
 
 std::string MoveSlidingWindow::toString(void) const {
 
     std::string tempStr = "Sliding move on:\n";
-    tempStr += node->toString();
+    //tempStr += node->toString();
     return tempStr;
 }
 
 
 double MoveSlidingWindow::perform(void) {
 
-	RbObject* tmp = node->getValue();
+	RbObject* tmp = (RbObject*)node->getValue();
 	double curVal = ((RbDouble*) tmp)->getValue();
 	double window = tuningParm->getValue();
 	double low = lower->getValue();

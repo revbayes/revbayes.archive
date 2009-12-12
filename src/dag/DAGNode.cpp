@@ -38,6 +38,7 @@
 DAGNode::DAGNode()
     : storedValue(NULL), value(NULL), changed(false), 
       children(), parents() {
+	  
       moves = NULL;
       touchedProbability = true;
       touchedLikelihood = true;
@@ -55,6 +56,7 @@ DAGNode::DAGNode()
 DAGNode::DAGNode(RbObject *val)
     : storedValue(NULL), value(val), changed(false), 
       children(), parents() {
+	  
       moves = NULL;
       touchedProbability = true;
       touchedLikelihood = true;

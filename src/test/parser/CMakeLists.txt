@@ -3,7 +3,7 @@
 ### normal parser
 add_executable(testParser \\
 ../../datatypes/RbObject.cpp ../../datatypes/primitive/RbPrimitive.cpp ../../datatypes/complex/RbComplex.cpp \\
-../../datatypes/complex/StringVector.cpp ../../utils/RbException.cpp ../../datatypes/model/RbTopology.cpp \\
+../../datatypes/complex/StringVector.cpp ../../utils/RbException.cpp \\
 ../../datatypes/primitive/RbDouble.cpp ../../datatypes/primitive/RbInt.cpp ../../datatypes/primitive/RbBool.cpp \\
 ../../dag/ConstantNode.cpp ../../dag/DAGNode.cpp  ../../dag/StochasticNode.cpp ../../dag/DeterministicNode.cpp \\
 ../../moves/objects/RbMove.cpp ../../moves/RbMoveSchedule.cpp ../../utils/RandomNumberGenerator.cpp ../../datatypes/complex/RbBitset.cpp \\

@@ -30,7 +30,6 @@ class DeterministicNode : public DAGNode {
 
     public:
             DeterministicNode(RbFunction* func);                        //!< Constructor, get args from func
-            DeterministicNode(RbFunction* func, const std::vector<Argument>& args);         //!< Constructor
 	        DeterministicNode(const DeterministicNode& d);                                  //!< Copy constructor
 
             //TODO: Destructor is not needed if we just use a pointer here and not a full copy.
