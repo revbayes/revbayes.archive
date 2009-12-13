@@ -34,7 +34,7 @@ class SyntaxUnaryExpr : public SyntaxElement {
 
     public:
         // Unary operator types
-        enum operatorT { UMINUS, UPLUS, UNOT };                     //!< Operator types
+        enum operatorT { UMinus, UPlus, UNot };                     //!< Operator types
         static std::string opCode[];                                //!< Operator codes for printing
 
             // Constructors and destructor

@@ -7,10 +7,7 @@ CXXFLAGS    = -O3 -ffast-math -Wall
 
 CFLAGS = $(CXXFLAGS)
 
-all: RbPrimitive.o RbBool.o RbInt.o RbDouble.o
-
-RbPrimitive.o: RbPrimitive.cpp
-	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbPrimitive.cpp
+all: RbBool.o RbInt.o RbDouble.o
 
 RbBool.o: RbBool.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbBool.cpp

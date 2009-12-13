@@ -19,16 +19,15 @@
 #ifndef RbBool_H
 #define RbBool_H
 
-#include "RbPrimitive.h"
+#include "RbObject.h"
 
 #include <ostream>
 #include <string>
 
-class RbObject;
 class StringVector;
 
 
-class RbBool : public RbPrimitive {
+class RbBool : public RbObject {
 
     public:
 	                        RbBool(const bool v);                       //!< Construct from bool

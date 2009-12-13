@@ -23,7 +23,6 @@
 #include "DeterministicNode.h"
 #include "IntVector.h"
 #include "RbInt.h"
-#include "RbList.h"
 #include "RbNames.h"
 #include "RbException.h"
 #include "SyntaxVariable.h"
@@ -116,6 +115,14 @@ bool SyntaxVariable::equals(const SyntaxElement* elem) const {
     }
 
     return result;
+}
+
+
+/** Get class vector describing type of object */
+const StringVector& SyntaxVariable::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(SyntaxVariable_name) + SyntaxElement::getClass();
+	return rbClass; 
 }
 
 

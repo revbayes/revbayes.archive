@@ -27,13 +27,13 @@
 
 /** Construct from int */
 RbInt::RbInt(const int v)
-    : RbPrimitive(), value(v) {
+    : RbObject(), value(v) {
 }
 
 
 /** Construct from bool */
 RbInt::RbInt(const bool v)
-    : RbPrimitive() {
+    : RbObject() {
 
     if (v) value = 1;
     else value = 0;
@@ -84,7 +84,7 @@ bool RbInt::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const StringVector& RbInt::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::RbInt::name) + RbPrimitive::getClass();
+    static StringVector rbClass = StringVector(RbNames::RbInt::name) + RbObject::getClass();
     return rbClass;
 }
 

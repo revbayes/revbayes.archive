@@ -17,7 +17,9 @@
  * $Id$
  */
 
+#include "ContainerIterator.h"
 #include "DAGNode.h"
+#include "DAGNodeContainer.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
 #include "RbFunction.h"
@@ -26,17 +28,33 @@
 #include "RbNames.h"
 #include "RbObjectWrapper.h"
 
-/** Constructor from function; get arguments from the function object */
-DeterministicNode::DeterministicNode(RbFunction* func) : DAGNode(), function(func) {
 
+/** Constructor from function; get arguments from the function object */
+DeterministicNode::DeterministicNode(RbFunction* func) : DAGNode()  {
+
+    // Set the function
 	function = func;
 	
+    // Extract the parent nodes and connect the graph
+    // TODO: Check for cycles!! For instance theNode->isPresentInDAG(this);
     const std::vector<RbObjectWrapper*>& arguments = func->getProcessedArguments();
-    for (std::vector<RbObjectWrapper*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++)
-		{
-		if ( (*i)->isType(DAGNode_name) == true )
-			parents.insert( (DAGNode*)(*i) );
-		}
+    for (std::vector<RbObjectWrapper*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
+        if ( (*i)->isType(DAGNode_name) == true ) {
+            DAGNode* theNode = (DAGNode*)(*i);
+            parents.insert( theNode );
+            theNode->addChildNode( this );
+        }
+        else {
+            DAGNodeContainer* container = (DAGNodeContainer*)(*i);
+            for (ContainerIterator j=container->begin(); j!=container->end(); j++) {
+                parents.insert((*container)[j]);
+                (*container)[j]->addChildNode( this );
+            }
+       }
+    }
+
+    // Set value; DAG nodes should have a value at all times
+    value = function->execute();
 }
 
 
@@ -130,6 +148,7 @@ void DeterministicNode::keepAffectedParents() {
     }
 }
 
+
 /**
  * @brief Restore affected nodes
  *
@@ -191,8 +210,8 @@ const RbObject* DeterministicNode::getValue() {
 
     if (isTouched() && !isChanged()) {
         if (storedValue != NULL)
-            delete storedValue;
-        storedValue = value;
+            delete storedValue;     // Stored value is always managed by us
+        storedValue = value->clone();
         value = function->execute();
         changed = true;
     }

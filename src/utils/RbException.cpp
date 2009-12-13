@@ -1,172 +1,83 @@
-/*
- *  RbException.cpp
- *  REvBayes
+/**
+ * @file
+ * This file contains the implementation of RbException, which
+ * is used to handle eceptions in RevBayes.
  *
- *  Created by John Huelsenbeck on 8/21/09.
- *  Copyright 2009 University of California, Berkeley. All rights reserved.
+ * @brief Implementation of RbException
  *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
+ *
+ * $Id$
  */
-
-#include <string>
-#include <iostream>
 
 #include "RbException.h"
 #include "RbNames.h"
 #include "StringVector.h"
 
-	// constructors
-RbException::RbException(void) : message("message"), RbObject(){
-	// default constructor; does nothing
+#include <string>
+#include <iostream>
+
+
+/** Static string with names of exception types for printing */
+std::string RbException::exceptionName[] = { "DEFAULT", "QUIT" };
+
+
+/** Default constructor */
+RbException::RbException(void)
+    : RbInternal(), exceptionType(DEFAULT), message() {
 }
 
-/**
- * @brief copy constructor
- *
- * This is the copy constructor
- *
- * @param d          object to copy
- *
- */
-RbException::RbException(const RbException& e)
-    : RbObject(), message(e.message) {
+
+/** Message constructor */
+RbException::RbException(const std::string& msg)
+    : RbInternal(), exceptionType(DEFAULT), message(msg) {
 }
 
-/**
- * @brief destructor
- *
- * This is the standard destructor
- *
- *
- */
-RbException::~RbException(void) {
-	//delete &message;
+
+/** Message constructor from stringstream */
+RbException::RbException(const std::ostringstream& msg)
+    : RbInternal(), exceptionType(DEFAULT), message(msg.str()) {
 }
 
-/**
- * @brief clone function
- *
- * This function creates a deep copy of this object.
- *
- * @see RbObject.clone()
- * @returns           return a copy of this object
- *
- */
-RbObject* RbException::clone(void) const {
 
-	RbObject *x = new RbException( *this );
-	return x;
+/** General constructor */
+RbException::RbException(exceptionT type, const std::string& msg)
+    : RbInternal(), exceptionType(type), message(msg) {
 }
 
+
+/** Clone function */
+RbException* RbException::clone(void) const {
+
+	return new RbException( *this );
+}
+
+
+/** Get class vector describing type of object */
 const StringVector& RbException::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RbNames::RbException::name) + RbObject::getClass();
+    static StringVector rbClass = StringVector(RbException_name) + RbInternal::getClass();
 	return rbClass;
 }
 
-/**
- * @brief print function
- *
- * This function prints this object.
- *
- * @see RbObject.print()
- * @param c           the stream where to print to
- *
- */
-void RbException::print(std::ostream &c) const {
 
-	c << message << std::endl;
-}
-
-/**
- * @brief dump function
- *
- * This function dumps this object.
- *
- * @see RbObject.dump()
- * @param c           the stream where to dump to
- *
- */
-void RbException::dump(std::ostream& c){
-
-}
-
-/**
- * @brief resurrect function
- *
- * This function resurrects this object.
- *
- * @see RbObject.resurrect()
- * @param x           the object from which to resurrect
- *
- */
-void RbException::resurrect(const RbDumpState& x){
-
-}
-
-/**
- * @brief overloaded == operators
- *
- * This function compares with this object
- *
- * @param o           the object to compare to
- *
- */
-bool RbException::equals(const RbObject* o) const {
-
-	return false;
-}
-
-
-	// member functions
-void RbException::setMessage(std::string m){
-
-	message = m;
-}
-
-std::string RbException::getMessage(void){
-
-	return message;
-}
-
-RbObject& RbException::operator=(const RbObject& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const RbException& x = dynamic_cast<const RbException&> (obj);
-
-        RbException& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const RbException& x = dynamic_cast<const RbException&> (*(obj.convertTo("exception")));
-
-            RbException& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to exception");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-RbException& RbException::operator=(const RbException& e) {
-
-    message = e.message;
-    return (*this);
-}
-
+/** Print value for user */
 void RbException::printValue(std::ostream& o) const {
 
-	o << message << std::endl;
+	o << message;
 }
 
 std::string RbException::toString(void) const {
 
-	return message;
+	std::ostringstream o;
+
+    o << "RbExeption: type = " << exceptionName[exceptionType] << ", message = ";
+    printValue(o);
+
+    return o.str();
 }
+
+

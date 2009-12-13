@@ -1,41 +1,53 @@
+/**
+ * @file
+ * This file contains the declaration of RbException, which
+ * is used to handle exceptions in RevBayes.
+ *
+ * @brief Declaration of RbException
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
+ *
+ * $Id$
+ */
+
 #ifndef RbException_H
 #define RbException_H
 
-#include <string>
+#include "RbInternal.h"
 
-#include "RbObject.h"
-#include "RbDumpState.h"
 #include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
-class RbException : public RbObject {
+class RbException : public RbInternal {
 
-public:
-	// constructors
-	RbException(void);                                      // default contructor
-    RbException(const std::string& msg) : message(msg) {}   //!< Default message constructor
-	RbException(const RbException& e);                      // copy contructor
-	virtual ~RbException(void);                             // destructor
+    public:
+        // Exception types
+        enum                exceptionT { DEFAULT, QUIT };                           //!< Exception types
+        static std::string  exceptionName[];                                        //!< Exception type names
 
-	// implemented abstract/virtual functions from base classes
-	RbObject*           clone(void) const;                                  //!< clone this object
-    bool                equals(const RbObject* obj) const;                  //!< Equals comparison
-    const StringVector& getClass() const;                                   //!< Get class
-    void                print(std::ostream &c) const;                       //!< Print the value to ostream c
-    void                printValue(std::ostream& o) const;              //!< Print value (for user)
-    std::string         toString(void) const;                           //!< General info on object
-    void                dump(std::ostream& c);                              //!< Dump to ostream c
-	void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+	                        RbException(void);                                      //!< Default contructor
+                            RbException(const std::string& msg);                    //!< Default with message 
+                            RbException(const std::ostringstream& msg);             //!< Default with message
+                            RbException(exceptionT type, const std::string& msg="");//!< General constructor
 
-    // overloaded operators
-    RbObject&           operator=(const RbObject& o);
-    RbException&        operator=(const RbException& ar);
+        // Implemented abstract/virtual functions from base classes
+        RbException*        clone(void) const;                                      //!< Clone this object
+        const StringVector& getClass() const;                                       //!< Get class vector
+        void                printValue(std::ostream& o) const;                      //!< Print value (for user)
+        std::string         toString(void) const;                                   //!< General info on object
 
-	// member functions
-	void setMessage(std::string m);                       // setter for message of the exception
-	std::string getMessage(void);                         // getter for message of the exception
-
-private:
-	std::string message;
+        // Regular functions
+        exceptionT          getExceptionType(void) { return exceptionType; }        //!< Get exception type 
+     
+    private:
+	    exceptionT          exceptionType;                                          //!< Exception type
+	    std::string         message;                                                //!< Error message
 };
 
 #endif
+

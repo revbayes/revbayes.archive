@@ -22,15 +22,29 @@
  */
 
 /* The following statements go into the resulting C code */
+
+#include "Parser.h"
+#include "RbBool.h"
+#include "RbDouble.h"
+#include "RbInt.h"
+#include "RbString.h"
+#include "SyntaxElement.h"
+#include "SyntaxAssignExpr.h"
+#include "SyntaxBinaryExpr.h"
+#include "SyntaxClassDef.h"
+#include "SyntaxConstant.h"
+#include "SyntaxForCondition.h"
+#include "SyntaxFormal.h"
+#include "SyntaxFunctionCall.h"
+#include "SyntaxFunctionDef.h"
+#include "SyntaxLabeledExpr.h"
+#include "SyntaxStatement.h"
+#include "SyntaxUnaryExpr.h"
+#include "SyntaxVariable.h"
+
 #include <iostream>
 #include <list>
 #include <string>
-
-#include "config.h"
-
-#include "Scalar.h"
-#include "Parser.h"
-#include "SyntaxElement.h"
 
 extern int yyerror(char *);
 extern int yylex(void);
@@ -50,12 +64,12 @@ extern Parser parser;
 
 #define YY_NEVER_INTERACTIVE
 
-/*!
- * \todo Add functionality for locality determination
+/**
+ * @todo Add functionality for locality determination
  *       in parser. The code below is just a stub.
-*/
+ */
 
-#if def 0
+#if 0
 /* struct holding source location for accurate error reports */
 typedef struct yyltype
 {
@@ -75,35 +89,45 @@ typedef struct yyltype
 
 /* Bison needs a union of the types handled by the parser */
 %union {
-    char*                  string;
-    double                 realValue;
-    int                    intValue;
-    bool                   boolValue;
-    SyntaxElement*         syntaxElement;
-    list<SyntaxElement *>* syntaxElementList;
+    RbString*                       string;
+    double                          realValue;
+    int                             intValue;
+    bool                            boolValue;
+    SyntaxElement*                  syntaxElement;
+    SyntaxVariable*                 syntaxVariable;
+    SyntaxFunctionCall*             syntaxFunctionCall;
+    SyntaxLabeledExpr*              syntaxLabeledExpr;
+    SyntaxFormal*                   syntaxFormal;
+    std::list<SyntaxElement *>*     syntaxElementList;
+    std::list<SyntaxLabeledExpr *>* argumentList;
+    std::list<SyntaxFormal *>*      formalList;
 };
 
 /* Return types of the elements handled by the parser */
 %type <string> NAME STRING
 %type <realValue> REAL
-%type <intValue> INT NULL
+%type <intValue> INT RBNULL
 %type <boolValue> FALSE TRUE
 %type <string> identifier
+%type <syntaxVariable> variable
+%type <syntaxFunctionCall> functionCall
+%type <syntaxLabeledExpr> argument
+%type <syntaxFormal> formal
 %type <syntaxElement> constant
 %type <syntaxElement> statement expression
 %type <syntaxElement> arrowAssign tildeAssign equationAssign
-%type <syntaxElement> variable functionCall
 %type <syntaxElement> declaration classDef memberDef
-%type <syntaxElement> functionDef argument formal
+%type <syntaxElement> functionDef
 %type <syntaxElement> forStatement ifStatement whileStatement
 %type <syntaxElement> forCond cond returnStatement
 %type <syntaxElement> nextStatement breakStatement
-%type <syntaxElementList> optElement argumentList optArguments
+%type <syntaxElementList> optElement memberDefs optMemberDefs
+%type <argumentList> argumentList optArguments
 %type <syntaxElementList> stmts stmtList optStatements
-%type <syntaxElementList> formalList optFormals memberDefs
+%type <formalList> formalList optFormals
 
 /* Tokens returned by the lexer and handled by the parser */
-%token REAL INT NAME STRING NULL FALSE TRUE COMMENT
+%token REAL INT NAME STRING RBNULL FALSE TRUE COMMENT
 %token FUNCTION CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
 %token LEFT_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN EQUAL 
 %token AND OR AND2 OR2 GT GE LT LE EQ NE
@@ -178,8 +202,8 @@ prog    :       END_OF_INPUT            { return 0; }
         |       statement '\n'          { return parser.execute($1); }
         |       declaration '\n'        { return parser.execute($1); }
         |       expression '\n'         { return parser.execute($1); }
-        |       '?' identifier '\n'     { return parser.help($2); }
-        |       '?' functionCall '\n'   { return parser.help($2); }
+        |       '?' identifier '\n'     { return parser.info(new SyntaxConstant($2)); }
+        |       '?' functionCall '\n'   { return parser.info($2); }
         |       error                   { YYABORT; }
         ;
 
@@ -187,29 +211,29 @@ expression  :   constant                    { $$ = $1; }
 
             |   '(' expression ')'          { $$ = $2; }
 
-            |   '-' expression %prec UMINUS { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UMINUS, $2); }
-            |   '+' expression %prec UPLUS  { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UPLUS, $2); }
-            |   '!' expression %prec UNOT   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UNOT, $2); }
+            |   '-' expression %prec UMINUS { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UMinus, $2); }
+            |   '+' expression %prec UPLUS  { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UPlus, $2); }
+            |   '!' expression %prec UNOT   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UNot, $2); }
 
-            |   expression ':' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::RANGE, $1, $3); }
+            |   expression ':' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Range, $1, $3); }
 
-            |   expression '+' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::ADD, $1, $3); }
-            |   expression '-' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::SUB, $1, $3); }
-            |   expression '*' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::MUL, $1, $3); }
-            |   expression '/' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::DIV, $1, $3); }
-            |   expression '^' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::EXP, $1, $3); }
+            |   expression '+' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Add, $1, $3); }
+            |   expression '-' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Sub, $1, $3); }
+            |   expression '*' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Mul, $1, $3); }
+            |   expression '/' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Div, $1, $3); }
+            |   expression '^' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Exp, $1, $3); }
 
-            |   expression LT expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::LT, $1, $3); }
-            |   expression LE expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::LE, $1, $3); }
-            |   expression EQ expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::EQ, $1, $3); }
-            |   expression NE expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::NE, $1, $3); }
-            |   expression GE expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::GE, $1, $3); }
-            |   expression GT expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::GT, $1, $3); }
+            |   expression LT expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Lt, $1, $3); }
+            |   expression LE expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Le, $1, $3); }
+            |   expression EQ expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Eq, $1, $3); }
+            |   expression NE expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Ne, $1, $3); }
+            |   expression GE expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Ge, $1, $3); }
+            |   expression GT expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Gt, $1, $3); }
 
-            |   expression AND expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::AND, $1, $3); }
-            |   expression OR expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::OR, $1, $3); }
-            |   expression AND2 expression  { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::AND, $1, $3); }
-            |   expression OR2 expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::OR, $1, $3); }
+            |   expression AND expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::And, $1, $3); }
+            |   expression OR expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Or, $1, $3); }
+            |   expression AND2 expression  { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::And2, $1, $3); }
+            |   expression OR2 expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Or2, $1, $3); }
 
             |   arrowAssign                 { $$ = $1; }
             |   equationAssign              { $$ = $1; }
@@ -223,21 +247,21 @@ expression  :   constant                    { $$ = $1; }
 arrowAssign     :   variable ARROW_ASSIGN expression
                     { 
                         PRINTF("Parser inserting arrow assignment (ARROW_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::ARROW_ASSIGN, $1, $3);
+                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::ArrowAssign, $1, $3);
                     }
                 ;
 
 tildeAssign     :   variable TILDE_ASSIGN functionCall
                     {
                         PRINTF("Parser inserting tilde assignment (TILDE_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TILDE_ASSIGN, $1, $3);
+                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TildeAssign, $1, $3);
                     }
                 ;
 
 equationAssign     :   variable EQUATION_ASSIGN expression
                     {
                         PRINTF("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::EQUATION_ASSIGN, $1, $3); 
+                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::EquationAssign, $1, $3); 
                     }
                 ;
 
@@ -253,8 +277,8 @@ variable    :   identifier optElement
                 }
             ;
 
-optElement  :   '[' expression ']' optElement   { $$ = $4->push_front($2); }
-            |   /* empty */                     { $$ = new list<SyntaxElement*>(); }
+optElement  :   '[' expression ']' optElement   { $4->push_front($2); $$ = $4; }
+            |   /* empty */                     { $$ = new std::list<SyntaxElement*>(); }
             ;
 
 functionCall    :   identifier '(' argumentList ')' 
@@ -270,11 +294,11 @@ functionCall    :   identifier '(' argumentList ')'
                 ;
 
 argumentList    :   argument optArguments   { $2->push_front($1); $$ = $2; }
-                |   /* empty */             { $$ = new list<SyntaxElement *>(); }
+                |   /* empty */             { $$ = new std::list<SyntaxLabeledExpr *>(); }
                 ;
 
 optArguments    :   ',' argument optArguments   { $3->push_front($2); $$ = $3; }
-                |   /* empty */                 { $$ = new list<SyntaxElement *>(); }
+                |   /* empty */                 { $$ = new std::list<SyntaxLabeledExpr *>(); }
                 ;
 
 argument   :   expression
@@ -285,14 +309,14 @@ argument   :   expression
             |   identifier EQUAL expression
                 { 
                     PRINTF("Parser inserting labeled argument in syntax tree\n");
-                    $$ = new SyntaxLabeledExpr(string($1), $3);
+                    $$ = new SyntaxLabeledExpr($1, $3);
                 }
             ;
 
 functionDef :   FUNCTION identifier '(' formalList ')' stmts
                 {
                 PRINTF("Parser inserting function definition in syntax tree\n");
-                $$ = new SyntaxFunctionDef(NULL, $2, $4, $6);
+                $$ = new SyntaxFunctionDef((RbString*)(NULL), $2, $4, $6);
                 }
             |   FUNCTION identifier identifier '(' formalList ')' stmts
                 {
@@ -301,12 +325,12 @@ functionDef :   FUNCTION identifier '(' formalList ')' stmts
                 }
             ;
 
-formalList  :   formal optFormals   { $$ = ($2->push_front($1)); }
-            |   /* empty */         { $$ = new list<SyntaxElement *>(); }
+formalList  :   formal optFormals   { $2->push_front($1); $$ = $2; }
+            |   /* empty */         { $$ = new std::list<SyntaxFormal *>(); }
             ;
 
-optFormals  :   ',' formal optFormals   { $$ = ($3->push_front($2)); }
-            |   /* empty */             { $$ = new list<SyntaxElement *>(); }
+optFormals  :   ',' formal optFormals   { $3->push_front($2); $$ = $3; }
+            |   /* empty */             { $$ = new std::list<SyntaxFormal *>(); }
             ;
 
 formal      :   identifier
@@ -332,16 +356,16 @@ formal      :   identifier
             ;
 
 stmts       :   '{' stmtList '}'                { $$ = $2; }
-            |   statement                       { $$ = $1; }
+            |   stmtList                        { $$ = $1; }
             ;
 
-stmtList        :   statement optStatements     { $$ = ($2->push_front($1)); }
-                |   /* empty */                 { $$ = new list<SyntaxElement *>(); }   
+stmtList        :   statement optStatements     { $2->push_front($1); $$ = $2; }
+                |   /* empty */                 { $$ = new std::list<SyntaxElement *>(); }   
                 ;
 
-optStatements   :   ';' statement optStatements     { $$ = ($3->push_front($2)); }
-                |   '\n' statement optStatements    { $$ = ($3->push_front($2)); }
-                |   /* empty */                     { $$ = new list<SyntaxElement *>(); }
+optStatements   :   ';' statement optStatements     { $3->push_front($2); $$ = $3; }
+                |   '\n' statement optStatements    { $3->push_front($2); $$ = $3; }
+                |   /* empty */                     { $$ = new std::list<SyntaxElement *>(); }
                 ;
 
 statement   :   ifStatement             { $$ = $1; }
@@ -359,9 +383,13 @@ declaration     :   classDef        { $$ = $1; }
                 |   functionDef     { $$ = $1; }
                 ;
 
-memberDefs      :   memberDef                   { $$ = new list<SyntaxElement*>($1); }
-                |   memberDefs ';' memberDef    { $$ = $1->push_back($3); }
-                |   memberDefs '\n' memberDef   { $$ = $1->push_back($3); }
+memberDefs      :   memberDef optMemberDefs     { $2->push_front($1); $$ = $2; }
+                |   /* empty */                 { $$ = new std::list<SyntaxElement*>(); }
+                ;
+
+optMemberDefs   :   ';' memberDef optMemberDefs     { $3->push_back($2); $$ = $3; }
+                |   '\n' memberDef optMemberDefs    { $3->push_back($2); $$ = $3; }
+                |   /* empty */                     { $$ = new std::list<SyntaxElement*>(); }
                 ;
 
 memberDef   :   formal      { $$ = $1; }
@@ -375,39 +403,39 @@ classDef    :   CLASS identifier ':' identifier '{' memberDefs '}'
                 }
             ;
 
-ifStatement :   IF cond stmts               { $$ = new SyntaxStatement(SyntaxStatement::IF, $2, $3); }
-            |   IF cond stmts ELSE stmts    { $$ = new SyntaxStatement(SyntaxStatement::IF_ELSE, $2, $3, $5); }
+ifStatement :   IF cond stmts               { $$ = new SyntaxStatement(SyntaxStatement::If, $2, $3); }
+            |   IF cond stmts ELSE stmts    { $$ = new SyntaxStatement(SyntaxStatement::IfElse, $2, $3, $5); }
 
 cond    :   '(' expression ')'    { $$ = $2; }
         ;
 
-forStatement    :   FOR forCond stmts   { $$ = new SyntaxStatement(SyntaxStatement::FOR, $2, $3); }
+forStatement    :   FOR forCond stmts   { $$ = new SyntaxStatement(SyntaxStatement::For, $2, $3); }
                 ;
 
 forCond     :   '(' identifier IN expression ')'    { $$ = new SyntaxForCondition($2, $4); }
             ;
 
-whileStatement  :   WHILE cond stmts    { $$ = new SyntaxStatement(SyntaxStatement::WHILE, $2, $3); }
+whileStatement  :   WHILE cond stmts    { $$ = new SyntaxStatement(SyntaxStatement::While, $2, $3); }
                 ;
 
-nextStatement   :   NEXT    { $$ = new SyntaxStatement(SyntaxStatement::NEXT); }
+nextStatement   :   NEXT    { $$ = new SyntaxStatement(SyntaxStatement::Next); }
                 ;
 
-breakStatement  :   BREAK   { $$ = new SyntaxStatement(SyntaxStatement::BREAK); }
+breakStatement  :   BREAK   { $$ = new SyntaxStatement(SyntaxStatement::Break); }
                 ;
 
-returnStatement :   RETURN              { $$ = new SyntaxStatement(SyntaxStatement::RETURN); }
-                |   RETURN expression   { $$ = new SyntaxStatement(SyntaxStatement::RETURN, $2); }
+returnStatement :   RETURN              { $$ = new SyntaxStatement(SyntaxStatement::Return); }
+                |   RETURN expression   { $$ = new SyntaxStatement(SyntaxStatement::Return, $2); }
                 ;
 
-identifier  :   NAME    { $$ = new RbString($1); }
+identifier  :   NAME    { $$ = $1; }
             ;
 
 constant    :   FALSE   { $$ = new SyntaxConstant(new RbBool(false)); }
             |   TRUE    { $$ = new SyntaxConstant(new RbBool(true)); }
-            |   NULL    { $$ = new SyntaxConstant(NULL); }
+            |   RBNULL  { $$ = new SyntaxConstant(NULL); }
             |   INT     { $$ = new SyntaxConstant(new RbInt($1)); }
-            |   STRING  { $$ = new SyntaxConstant(new RbString($1)); }
+            |   STRING  { $$ = new SyntaxConstant($1); }
             |   REAL
                 {
                     /* This code records and preserves input format of the real */

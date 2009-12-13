@@ -44,12 +44,9 @@ class RbComplex : public RbObject {
 
         // Member variable functions: override if object contains member variables
         virtual const std::vector<std::string>& getMembers(void) const;                                         //!< Get member names
-        virtual const std::string&      getMemberType(const std::string& name) const;                           //!< Get member type
         virtual const RbObject*         getValue(const std::string& name) const;                                //!< Get member value
         virtual const RbObjectWrapper*  getVariable(const std::string& name) const;                             //!< Get member variable
-        virtual void                    setValElement(const std::string& name, const IntVector& index, RbObject* val);                       //!< Set member value
         virtual void                    setValue(const std::string& name, RbObject* val);                       //!< Set member value
-        virtual void                    setVarElement(const std::string& name, const IntVector& index, RbObjectWrapper* val);                       //!< Set member value
         virtual void                    setVariable(const std::string& name, RbObjectWrapper* var);             //!< Set member variable
 
         // Member method functions: override if object contains member functions
@@ -59,9 +56,9 @@ class RbComplex : public RbObject {
         virtual int                     setArguments(const std::string& name, std::vector<Argument>& args);     //!< Set arguments and get funcId back 
 
 		// Element access functions: override if object contains elements
-        virtual const StringVector&     getAtomicClass(void) const;                                             //!< Get atomic (element) type
-        virtual int                     getDim(void) const { return 0; }                                        //!< Get element dimensions
-        virtual const RbObject*         getElement(const IntVector& index) const;                               //!< Get element (a copy)
+        virtual int                     getDim(void) { return 0; }                                              //!< Get subscript dimensions
+        virtual const StringVector&     getAtomicClass(void) { return getClass() ; }                            //!< Get atomic (element) class
+        virtual const RbObject*         getElement(const IntVector& index) const;                               //!< Get element (read-only)
         virtual const IntVector&        getElementLength(void) const;                                           //!< Get length in each dim
         virtual void                    resize(const IntVector& len);                                           //!< Resize
         virtual void                    setElement(const IntVector& index, RbObject* val);                      //!< Set element
@@ -69,6 +66,13 @@ class RbComplex : public RbObject {
 
     protected:
                                         RbComplex(void) : RbObject() {}                                         //!< No objects of this class
+
+        // Override these functions to provide friend classes with modify access to members or elements
+        virtual RbObject*               getMemberRef(const std::string& name);                                  //!< Allow modify access to member
+        virtual RbObject*               getElementRef(const IntVector& index);                                  //!< Allow modify access to element 
+
+        // These are friends that can try to modify members or elements
+        friend class                    SyntaxVariable;                                                         //!< The parser class dealing with variables 
 };
 
 #endif

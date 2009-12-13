@@ -27,19 +27,19 @@
 
 /** Construct from double */
 RbDouble::RbDouble(const double v)
-    : RbPrimitive(), value(v) {
+    : RbObject(), value(v) {
 }
 
 
 /** Construct from int */
 RbDouble::RbDouble(const int v)
-    : RbPrimitive(), value(v) {
+    : RbObject(), value(v) {
 }
 
 
 /** Construct from bool */
 RbDouble::RbDouble(const bool v)
-    : RbPrimitive() {
+    : RbObject() {
 
     if (v) value = 1.0;
     else value = 0.0;
@@ -87,7 +87,7 @@ bool RbDouble::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const StringVector& RbDouble::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::RbDouble::name) + RbPrimitive::getClass();
+    static StringVector rbClass = StringVector(RbNames::RbDouble::name) + RbObject::getClass();
     return rbClass;
 }
 

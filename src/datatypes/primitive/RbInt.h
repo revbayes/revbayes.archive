@@ -19,16 +19,15 @@
 #ifndef RbInt_H
 #define RbInt_H
 
-#include "RbPrimitive.h"
+#include "RbObject.h"
 
 #include <ostream>
 #include <string>
 
-class RbObject;
 class StringVector;
 
 
-class RbInt : public RbPrimitive {
+class RbInt : public RbObject {
 
     public:
 	                        RbInt(const int v);                         //!< Constructor from int

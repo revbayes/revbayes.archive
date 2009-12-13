@@ -19,46 +19,51 @@
 #ifndef StringVector_H
 #define StringVector_H
 
+#include "RbComplex.h"
+
 #include <iostream>
 #include <string>
 #include <vector>
-#include "RbComplex.h"
 
 class StringVector : public RbComplex {
 
     public:
             // Constructors and destructor
-	        StringVector(void);                             //!< Default constructor (empty vector)
-	        StringVector(int n);                            //!< Construct vector of length n of empty strings
-            StringVector(std::string x);                    //!< Construct vector with one string x
-	        StringVector(int n, std::string x);             //!< Construct vector with n strings x
-	        StringVector(const StringVector& x);            //!< Copy constructor
-	        StringVector(std::vector<std::string>& x);      //!< Constructor from string vector
-	        virtual ~StringVector(void) {}                  //!< Virtual destructor, just in case
+	        StringVector(void) : RbComplex() {}                 //!< Default constructor (empty vector)
+	        StringVector(int n);                                //!< Construct vector of length n of empty strings
+            StringVector(const std::string& x);                 //!< Construct vector with one string x
+	        StringVector(int n, const std::string& x);          //!< Construct vector with n strings x
+	        StringVector(const std::vector<std::string>& x);    //!< Constructor from string vector
 
         // Basic utility functions
-        RbObject*               clone(void) const;                              //!< Clone object
+        StringVector*           clone(void) const;                              //!< Clone object
         bool                    equals(const RbObject* obj) const;              //!< Equals comparison
         const StringVector&     getClass(void) const;                           //!< Get class
         void                    printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string             toString(void) const;                           //!< Complete info about object
 
         // Overloaded operators and built-in functions
-        bool                    operator==(const StringVector& sv) const;       //!< Equality
-        StringVector            operator+(const StringVector& sv) const;        //!< Concatenate
 	    std::string&            operator[](int i) { return value[i]; }          //!< Index op allowing change
 	    const std::string&      operator[](int i) const { return value[i]; }    //!< Const index op
+        bool                    operator==(const StringVector& sv) const;       //!< Equality
+        StringVector            operator+(const StringVector& sv) const;        //!< Concatenate
 	    void                    push_back(std::string x) { value.push_back(x); }//!< Add element
 	    size_t                  size() const { return value.size(); }           //!< Get size
 
         // Element access functions for parser
-	    RbObject*               getElement(const IntVector& index) const;       //!< Get element (a copy)
-        int                     getElementDim() const { return 1; }             //!< Get dimensions
-        const std::string&      getElementType() const;                         //!< Get element type
-        void                    setElement(const IntVector& index, RbObject* val);  //!< Set element   
+        int                     getDim(void) const { return 1; }                //!< Get subscript dimension
+        const StringVector&     getAtomicClass(void) const;                     //!< Get atomic (element) class
+        const RbObject*         getElement(const IntVector& index) const;       //!< Get element (a copy)
+        const IntVector&        getElementLength(void) const;                   //!< Get length in each dimension
+        void                    resize(const IntVector& len);                   //!< Resize
+        void                    setElement(const IntVector& index, RbObject* val);  //!< Set element
+        void                    setElementLength(const IntVector& len);         //!< Set length in each dimension
+
+    protected:
+        RbObject*               getElementRef(const IntVector& index);          //!< Access to elements (none)
 
     private:
-	    std::vector<std::string> value;     //!< Vector of values
+	    std::vector<std::string>    value;                                      //!< Vector of values
 };
 
 #endif

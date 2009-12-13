@@ -14,12 +14,6 @@
  * $Id: RbDataType.h 9 2009-08-23 13:04:35Z ronquist $
  */
 
-#include <map>
-#include <string>
-#include <ostream>
-#include <sstream>
-#include <vector>
-
 #include "MethodTable.h"
 #include "RbComplex.h"
 #include "RbException.h"
@@ -28,7 +22,11 @@
 #include "RbObjectWrapper.h"
 #include "StringVector.h"
 
+#include <map>
+#include <string>
+#include <ostream>
 #include <sstream>
+#include <vector>
 
 
 /** Execute method with preset args: map to builtin or to function object if class has the method */
@@ -47,13 +45,6 @@ const RbObject* RbComplex::executeMethod(const std::string& funcName, std::vecto
 }
 
 
-/** Get element (atomic) class vector; same as class vector if no elements */
-const StringVector& RbComplex::getAtomicClass() const {
-
-    return getClass();
-}
-
-
 /** Get class vector describing type of object */
 const StringVector& RbComplex::getClass(void) const { 
 
@@ -64,6 +55,13 @@ const StringVector& RbComplex::getClass(void) const {
 
 /** Get element */
 const RbObject* RbComplex::getElement(const IntVector& index) const {
+
+    throw (RbException("Object does not have elements"));
+}
+
+
+/** Return non-const pointer giving caller modify access to element */
+RbObject* RbComplex::getElementRef(const IntVector& index) {
 
     throw (RbException("Object does not have elements"));
 }
@@ -84,10 +82,10 @@ const std::vector<std::string>& RbComplex::getMembers(void) const {
 }
 
 
-/** Get type: return type of member variable, with an empty '[]' for each element dimension, if any */
-const std::string& RbComplex::getMemberType(const std::string& name) const {
+/** Return non-const pointer giving caller modify access to member variable */
+RbObject* RbComplex::getMemberRef(const std::string& name) {
 
-    throw (RbException("Object does not have elements"));
+    throw (RbException("Object does not have members"));
 }
 
 
@@ -120,26 +118,10 @@ int RbComplex::setArguments(const std::string& funcName, std::vector<Argument>& 
 }
 
 
-/** Set member value element */
-void RbComplex::setValElement(const std::string& name, const IntVector& index, RbObject* val) {
-
-    delete val;
-    throw (RbException("No member '" + name + "'"));
-}
-
-
 /** Set member value */
 void RbComplex::setValue(const std::string& name, RbObject* val) {
 
     delete val;
-    throw (RbException("No member '" + name + "'"));
-}
-
-
-/** Set member variable element */
-void RbComplex::setVarElement(const std::string& name, const IntVector& index, RbObjectWrapper* var) {
-
-    delete var;
     throw (RbException("No member '" + name + "'"));
 }
 

@@ -91,7 +91,7 @@ DAGNode* SyntaxUnaryExpr::getDAGNode(Frame* frame) const {
     std::string funcName = "." + opCode[operation];
     RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, arg);
 
-    return new DeterministicNode((RbFunction*)(func->clone()), arg);
+    return new DeterministicNode(func);
 }
 
 

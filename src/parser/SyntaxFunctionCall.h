@@ -41,14 +41,16 @@ class SyntaxFunctionCall : public SyntaxElement {
 	        virtual ~SyntaxFunctionCall();                                          //!< Destructor
 
         // Basic utility functions
-        std::string     briefInfo() const;                          //!< Brief info about object
-        SyntaxElement*  clone() const;                              //!< Clone object
-        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
-        void            print(std::ostream& o) const;               //!< Print info about object
+        std::string         briefInfo() const;                          //!< Brief info about object
+        SyntaxElement*      clone() const;                              //!< Clone object
+        bool                equals(const SyntaxElement* elem) const;    //!< Equals comparison
+        const StringVector& getClass(void) const;                       //!< Get class vector 
+        void                print(std::ostream& o) const;               //!< Print info about object
 
         // Regular functions
-        DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
-        RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
+        const RbString*     getFunctionName(void) const { return functionName; }    //!< Get function name
+        DAGNode*            getDAGNode(Frame* frame=NULL) const;                    //!< Convert to DAG node
+        RbObject*           getValue(Frame* frame=NULL) const;                      //!< Get semantic value
 
     protected:
         std::list<SyntaxLabeledExpr*>*  arguments;      //!< The arguments passed to the function

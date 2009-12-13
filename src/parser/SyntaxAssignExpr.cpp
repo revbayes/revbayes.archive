@@ -89,6 +89,14 @@ bool SyntaxAssignExpr::equals(const SyntaxElement* elem) const {
 }
 
 
+/** Get class vector describing type of object */
+const StringVector& SyntaxAssignExpr::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(SyntaxAssignExpr_name) + SyntaxElement::getClass();
+	return rbClass; 
+}
+
+
 /** Convert element to DAG node: insert symbol and return reference to it */
 DAGNode* SyntaxAssignExpr::getDAGNode(Frame* frame) const {
 
@@ -110,7 +118,7 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
     IntVector index = variable->getIndex(frame);
 
     // Deal with arrow assignments
-    if (opType == ARROW_ASSIGN) {
+    if (opType == ArrowAssign) {
 
         // Calculate the value of the rhs expression
         RbObject* exprValue = expression->getValue();
@@ -134,6 +142,7 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                     frame->setValue(varName, exprValue);
             }
             else {
+                /* TODO: Do this properly
                 RbObject* theObjRef = variable->getReference(frame);
                 RbComplex* containerRef = dynamic_cast<RbComplex*>(theObjRef);
                 if (containerRef == NULL) {
@@ -141,15 +150,16 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                     throw RbException("Variable " + variable->getFullName(frame) + " does not have members");
                 }
                 if (index.size() != 0)
-                    containerRef->setValElement(varName, index, exprValue);
+                    containerRef->setElement(varName, index, exprValue);
                 else
                     containerRef->setValue(varName, exprValue);
+                */
             }
         }
     }
 
     // Deal with equation assignments
-    else if (opType == EQUATION_ASSIGN) {
+    else if (opType == EquationAssign) {
 
         // Get DAG node representation of expression
         DAGNode* dag = expression->getDAGNode();
@@ -178,6 +188,7 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                     frame->setVariable(varName, node);
             }
             else {
+                /* TODO: Do this properly
                 RbObject* theObjRef = variable->getReference(frame);
                 RbComplex* containerRef = dynamic_cast<RbComplex*>(theObjRef);
                 if (containerRef == NULL) {
@@ -188,12 +199,13 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                     containerRef->setVarElement(varName, index, node);
                 else
                     containerRef->setVariable(varName, node);
+                */
             }
         }
     }
 
     // Deal with tilde assignments
-    else if (opType == TILDE_ASSIGN) {
+    else if (opType == TildeAssign) {
 
         // Get distribution
         RbObject* exprValue = expression->getValue();
@@ -225,6 +237,7 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                     frame->setVariable(varName, node);
             }
             else {
+                /* TODO: Do this properly
                 RbObject* theObjRef = variable->getReference(frame);
                 RbComplex* containerRef = dynamic_cast<RbComplex*>(theObjRef);
                 if (containerRef == NULL) {
@@ -235,6 +248,7 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                     containerRef->setVarElement(varName, index, node);
                 else
                     containerRef->setVariable(varName, node);
+                */
             }
         }
     }

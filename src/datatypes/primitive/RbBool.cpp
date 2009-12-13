@@ -28,7 +28,7 @@
 
 /** Construct from bool */
 RbBool::RbBool(const bool v)
-    : RbPrimitive(), value(v) {
+    : RbObject(), value(v) {
 }
 
 
@@ -78,7 +78,7 @@ bool RbBool::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const StringVector& RbBool::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::RbBool::name) + RbPrimitive::getClass();
+    static StringVector rbClass = StringVector(RbNames::RbBool::name) + RbObject::getClass();
     return rbClass;
 }
 

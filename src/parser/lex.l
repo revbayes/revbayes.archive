@@ -25,7 +25,11 @@ extern "C" {
 #endif
 
 /* include objects needed to understand grammar.tab.h */
+#include "RbString.h"
 #include "SyntaxElement.h"
+#include "SyntaxFormal.h"
+#include "SyntaxFunctionCall.h"
+#include "SyntaxLabeledExpr.h"
 
 #include "grammar.tab.h"
 
@@ -140,13 +144,13 @@ TRUE                                    {
                                         }
 {ID}                                    {
                                             PRINTF("Found id (name) %s\n", yytext);
-                                            yylval.string = strdup(yytext);
+                                            yylval.string = new RbString(yytext);
                                             PRINTF("string value = %s\n", yylval.string);
                                             return NAME;
                                         }
 {STRING}                                {
                                             PRINTF("Found string %s\n", yytext); 
-                                            yylval.string = strdup(yytext);
+                                            yylval.string = new RbString(yytext);
                                             PRINTF("string value = %s\n", yylval.string);
                                             return STRING;
                                         }

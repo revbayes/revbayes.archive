@@ -34,10 +34,10 @@ class IntVector : public RbComplex {
             IntVector(int x);                           //!< Construct vector with one int x
 	        IntVector(int n, int x);                    //!< Construct vector with n ints x
 	        IntVector(std::vector<int>& x);             //!< Constructor from int vector
-	        IntVector(const ContainerIterator& x);            //!< Constructor from container iterator
+	        IntVector(const ContainerIterator& x);      //!< Constructor from container iterator
 
         // Basic utility functions
-        RbObject*           clone() const;                                  //!< Clone object
+        IntVector*          clone() const;                                  //!< Clone object
         bool                equals(const RbObject* obj) const;              //!< Equals comparison
         const StringVector& getClass() const;                               //!< Get class
         void                printValue(std::ostream& o) const;              //!< Print value (for user)
@@ -48,19 +48,27 @@ class IntVector : public RbComplex {
 	    const int&          operator[](int i) const { return value[i]; }    //!< Const index op
 	    void                clear(void) { value.clear(); }                  //!< Clear
 	    void                pop_back(void) { value.pop_back(); }            //!< Drop element
-	    void                push_back(int x) { value.push_back(x); }        //!< Add element
+	    void                push_back(int x) { value.push_back(x); }        //!< Append element to end
+	    void                push_front(int x) { value.insert(value.begin(), x); }   //!< Add element in front
 	    void                resize(int n) { value.resize(n); }              //!< Resize
 	    size_t              size() const { return value.size(); }           //!< Get size
 
         // Element access functions for parser
-	    RbObject*               getElement(const IntVector& index) const;       //!< Get element (a copy)
-        int                     getElementDim() const { return 1; }             //!< Get dimensions
-        const std::string&      getElementType() const;                         //!< Get element type
-        void                    setElement(const IntVector& index, RbObject* val);  //!< Set element   
+	    int                 getDim(void) const { return 1; }                //!< Get subscript dimensions
+        const StringVector& getAtomicClass(void) const;                     //!< Get atomic (element) class
+        const RbObject*     getElement(const IntVector& index) const;       //!< Get element (read-only)
+        const IntVector&    getElementLength(void) const;                   //!< Get length in each dim
+        void                resize(const IntVector& len);                   //!< Resize
+        void                setElement(const IntVector& index, RbObject* val);  //!< Set element
+        void                setElementLength(const IntVector& len);         //!< Set length in each dim
+
+    protected:
+        RbObject*           getElementRef(const IntVector& index);          //!< Access to elements (none)
 
     private:
 	    std::vector<int>    value;      //!< Vector of values
 };
 
 #endif
+
 

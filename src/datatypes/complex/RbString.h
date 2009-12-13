@@ -26,8 +26,8 @@ class RbDumpState;
 class RbString : public RbComplex {
 
     public:
-	        RbString(const std::string& v);      //!< Constructor from string
-	        RbString(const RbString& s);    //!< Copy constructor
+	                            RbString(void) : RbComplex(), value() {}//!< Default: empty string
+	                            RbString(const std::string& v);         //!< Constructor from string
 
         // Basic utility functions
 	    RbObject*               clone() const;                          //!< Copy
@@ -37,14 +37,13 @@ class RbString : public RbComplex {
 	    void                    printValue(std::ostream& o) const;      //!< Print value (for user)
 	    std::string             toString(void) const;                   //!< General info on object
 
-	    // overloaded operators
-	    RbObject&               operator=(const RbObject& o);
-	    RbString&               operator=(const RbString& o);
-	    RbString                operator+(const RbString& s) const;
-                                operator std::string() const;
+	    // Overloaded operators
+	    RbString                operator+(const RbString& s) const;     //!< String concatenation
+                                operator std::string() const;           //!< Type conversion
 
-        void                    dump(std::ostream& c);                   //!< Dump to ostream c
-        void                    resurrect(const RbDumpState& x);         //!< Resurrect from dumped state
+        // Regular functions
+        std::string             getValue(void) const { return value; }  //!< Get value
+        void                    setValue(const std::string& x) { value = x; }   //!< Set value
 
     private:
 	    std::string             value;      //!< Value member

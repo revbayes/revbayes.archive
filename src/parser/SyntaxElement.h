@@ -66,11 +66,16 @@ class SyntaxElement {
     public:
             virtual ~SyntaxElement() {}         //!< Destructor; delete syntax subtree
 
-        // Basic utility functions
+        // Basic utility functions you have to override
         virtual std::string         briefInfo() const = 0;                      //!< Brief info about object
         virtual SyntaxElement*      clone() const = 0;                          //!< Clone object
         virtual bool                equals(const SyntaxElement* elem) const = 0;//!< Equals comparison
+        virtual const StringVector& getClass(void) const;                       //!< Get class vector 
         virtual void                print(std::ostream& o) const = 0;           //!< Print info about object
+
+        // Basic utility functions you should not override
+        const std::string&          getType(void) const;                        //!< Get type
+        bool                        isType(const std::string& type) const;      //!< Is the element of type?
 
         // Regular functions
         virtual DAGNode*            getDAGNode(Frame* frame=NULL) const = 0;    //!< Convert to DAG node

@@ -40,19 +40,20 @@ class SyntaxVariable : public SyntaxElement {
 	        virtual ~SyntaxVariable();                      //!< Destructor deletes variable, identifier and index
 
         // Basic utility functions
-        std::string     briefInfo() const;                          //!< Brief info about object
-        SyntaxElement*  clone() const;                              //!< Clone object
-        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
-        void            print(std::ostream& o) const;               //!< Print info about object
+        std::string         briefInfo() const;                          //!< Brief info about object
+        SyntaxElement*      clone() const;                              //!< Clone object
+        bool                equals(const SyntaxElement* elem) const;    //!< Equals comparison
+        const StringVector& getClass(void) const;                       //!< Get class vector 
+        void                print(std::ostream& o) const;               //!< Print info about object
 
         // Regular functions
-        DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
-        const RbString* getIdentifier() const;                      //!< Get identifier
-        IntVector       getIndex(Frame* frame) const;               //!< Get index
-        std::string     getFullName(Frame* frame) const;            //!< Get full name, with indices and base obj
-        RbObject*       getReference(Frame* frame=NULL) const;      //!< Get value reference TODO: implement!!
-        RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
-        bool            isMember() const { return variable==NULL; } //!< Is member variable?
+        DAGNode*            getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
+        const RbString*     getIdentifier() const;                      //!< Get identifier
+        IntVector           getIndex(Frame* frame) const;               //!< Get index
+        std::string         getFullName(Frame* frame) const;            //!< Get full name, with indices and base obj
+        RbObject*           getReference(Frame* frame=NULL) const;      //!< Get value reference TODO: implement!!
+        RbObject*           getValue(Frame* frame=NULL) const;          //!< Get semantic value
+        bool                isMember() const { return variable==NULL; } //!< Is member variable?
 
     protected:
         RbString*                       identifier;     //!< The name of the variable

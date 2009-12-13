@@ -94,6 +94,9 @@ DAGNode::DAGNode(const DAGNode &d)
  * @brief DAGNode destructor
  *
  * This is the standard destructor for all DAG nodes.
+ * TODO: If value is just a pointer to somebody else's value in DeterministicNode
+ *       then DO NOT DELETE value here! However, in constant node, value does need
+ *       to be deleted, so value and storedValue really should not be in this class.
  *
  */
 DAGNode::~DAGNode(void) {
@@ -363,6 +366,7 @@ void DAGNode::restore() {
     const RbObject* temp;
 
     if (changed) {
+        // TODO: If value is just a pointer to somebody else's value, then don't swap, just do: "value = storedValue;"
         temp        = value;
         value       = storedValue;
         storedValue = temp;

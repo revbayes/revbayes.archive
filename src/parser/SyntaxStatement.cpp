@@ -142,7 +142,7 @@ DAGNode* SyntaxStatement::getDAGNode(Frame* frame) const {
 /** Get semantic value: it is here that we execute the statement */
 RbObject* SyntaxStatement::getValue(Frame* frame) const {
 
-    if (statementType == FOR) {
+    if (statementType == For) {
 
         // Execute expression and hope to find one or more values in a vector
 

@@ -25,9 +25,17 @@ RbString::RbString(const std::string& v)
 }
 
 
-/** Copy constructor */
-RbString::RbString(const RbString& s) :
-    RbComplex(), value(s.value) {
+/** Type conversion to string */
+RbString::operator std::string() const {
+
+    return value;
+}
+
+
+/** String concatenation with operator+  */
+RbString RbString::operator+(const RbString& s) const {
+
+    return RbString(value+s.value);
 }
 
 
@@ -68,20 +76,6 @@ void RbString::printValue(std::ostream& o) const {
 std::string RbString::toString() const {
 
 	return "RbString; value = '" + value + "'";
-}
-
-
-/** Type conversion to string */
-RbString::operator std::string() const {
-
-    return value;
-}
-
-
-/** String concatenation with operator+  */
-RbString RbString::operator+(const RbString& s) const {
-
-    return RbString(value+s.value);
 }
 
 

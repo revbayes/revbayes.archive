@@ -19,16 +19,15 @@
 #ifndef RbDouble_H
 #define RbDouble_H
 
-#include "RbPrimitive.h"
+#include "RbObject.h"
 
 #include <ostream>
 #include <string>
 
-class RbObject;
 class StringVector;
 
 
-class RbDouble : public RbPrimitive {
+class RbDouble : public RbObject {
 
     public:
 	                        RbDouble(const double v);                   //!< Construct from double

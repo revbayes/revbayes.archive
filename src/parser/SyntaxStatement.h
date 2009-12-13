@@ -26,17 +26,17 @@ class SyntaxStatement : public SyntaxElement {
 
     public:
         // Statement types
-        enum statementT { IF, IF_ELSE, FOR, WHILE, NEXT, BREAK, RETURN };   //!< Statement type codes
+        enum statementT { If, IfElse, For, While, Next, Break, Return };   //!< Statement type codes
         static std::string stmtName[];                                      //!< Statement names for printing
 
             // Constructors and destructor
-            SyntaxStatement(SyntaxStatement::statementT type);      //!< NEXT, BREAK, RETURN
+            SyntaxStatement(statementT type);      //!< NEXT, BREAK, RETURN
             SyntaxStatement(SyntaxStatement::statementT type,
                             SyntaxElement*              expr);      //!< RETURN expr
-            SyntaxStatement(SyntaxStatement::statementT type,
+            SyntaxStatement(statementT                  type,
                             SyntaxElement*              cond,
                             std::list<SyntaxElement*>*  stmts);     //!< IF, FOR, WHILE cond stmts
-            SyntaxStatement(SyntaxStatement::statementT type,
+            SyntaxStatement(statementT                  type,
                             SyntaxElement*              expr,
                             std::list<SyntaxElement*>*  stmts,
                             std::list<SyntaxElement*>*  stmts);     //!< IF_ELSE

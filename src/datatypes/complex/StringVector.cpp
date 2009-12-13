@@ -16,7 +16,6 @@
  * $Id$
  */
 
-#include <sstream>
 #include "IntVector.h"
 #include "RbComplex.h"
 #include "RbException.h"
@@ -24,12 +23,8 @@
 #include "RbString.h"
 #include "StringVector.h"
 
+#include <sstream>
 
-
-
-StringVector::StringVector(void) : RbComplex() {
-
-}
 
 /** Construct empty vector of length n */
 StringVector::StringVector(int n) : RbComplex() {
@@ -37,33 +32,30 @@ StringVector::StringVector(int n) : RbComplex() {
     value.resize(n);
 }
 
+
 /** Construct vector with one string x */
-StringVector::StringVector(std::string x) : RbComplex() {
+StringVector::StringVector(const std::string& x) : RbComplex() {
 
     value.push_back(x);
 }
 
+
 /** Construct vector with n strings x */
-StringVector::StringVector(int n, std::string x) : RbComplex() {
+StringVector::StringVector(int n, const std::string& x) : RbComplex() {
 
     for (int i = 0; i < n; i++)
         value.push_back(x);
 }
 
-/** Copy constructor */
-StringVector::StringVector(const StringVector& x) : RbComplex() {
-
-    value = x.value;
-}
 
 /** Constructor from std::string vector */
-StringVector::StringVector(std::vector<std::string>& x) : RbComplex() {
+StringVector::StringVector(const std::vector<std::string>& x) : RbComplex() {
 
     value = x;
 }
 
 
-/** Concatenation with operator+ */
+/** Comparison  with operator== */
 bool StringVector::operator==(const StringVector& sv) const {
 
 	if ( size() != sv.size() )
@@ -89,9 +81,9 @@ StringVector StringVector::operator+(const StringVector& x) const {
 
 
 /** Clone function */
-RbObject* StringVector::clone() const {
+StringVector* StringVector::clone() const {
 
-    return (RbObject*)(new StringVector(*this));
+    return new StringVector(*this);
 }
 
 
@@ -99,31 +91,31 @@ RbObject* StringVector::clone() const {
 bool StringVector::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
-    const StringVector* x = dynamic_cast<const StringVector*> (obj);
-    if (x != NULL) {
-        if (value.size() != x->value.size())
+    const StringVector* p = dynamic_cast<const StringVector*> (obj);
+    if (p != NULL) {
+        if (value.size() != p->value.size())
             return false;
         for (size_t i=0; i<value.size(); i++) {
-            if (value[i] != x->value[i])
+            if (value[i] != p->value[i])
                 return false;
         }
         return true;
     }
 
     // Try converting the value to a string vector
-    x = dynamic_cast<const StringVector*> (obj->convertTo(getType()));
-    if (x == NULL)
+    p = dynamic_cast<const StringVector*> (obj->convertTo(getType()));
+    if (p == NULL)
         return false;
 
     bool result = true;
-    if (value.size() != x->value.size())
+    if (value.size() != p->value.size())
         result = false;
     else {
         for (size_t i=0; i<value.size(); i++)
-            result = result && (value[i] == x->value[i]);
+            result = result && (value[i] == p->value[i]);
     }
 
-    delete x;
+    delete p;
     return result;
 }
 
@@ -136,46 +128,71 @@ const StringVector& StringVector::getClass() const {
 }
 
 
-/** Get element for parser */
-RbObject* StringVector::getElement(const IntVector& index) const {
+/** Get atomic class */
+const StringVector& StringVector::getAtomicClass(void) const {
+
+    static RbString x;
+    return x.getClass();
+}
+
+
+/** Get element for parser (read-only) */
+const RbObject* StringVector::getElement(const IntVector& index) const {
+
+    static RbString x;
 
     if (index.size() != 0)
         throw (RbException("Index error"));
     if (index[0] >= (int)value.size() || index[0] < 0)
         throw (RbException("Index out of bound"));
 
-    return new RbString(value[index[0]]);
+    x.setValue(value[index[0]]);
+    return &x;
 }
 
 
-/** Get element type for parser */
-const std::string& StringVector::getElementType() const {
+/** Get element length for parser */
+const IntVector& StringVector::getElementLength() const {
 
-    return (RbNames::RbString::name);
+    static IntVector length = IntVector(0);
+
+    length[0] = int(value.size());
+    return length;
 }
 
 
-/** Set element for parser; we allow resize and use "" as default value */
+/** Tell the parser it cannot modify the elements */
+RbObject* StringVector::getElementRef(const IntVector& index) { 
+
+    throw (RbException("Elements are not modifiable"));
+}
+
+
+/** Allow parser to set an element (any type conversion is done by the parser) */
 void StringVector::setElement(const IntVector& index, RbObject* val) {
 
-    if (index.size() != 0)
-        throw (RbException("Index error"));
-    if (index[0] < 0)
-        throw (RbException("Index out of bound"));
+    if ( !val->isType(RbString_name) )
+        throw (RbException("Type mismatch"));
 
-    RbString* x = dynamic_cast<RbString*>(val);
-    RbString* y = NULL;
-    if (x == NULL) {
-        x = y = (RbString*)(val->convertTo(RbNames::RbString::name));
-        if (x == NULL)
-            throw (RbException("Incompatible type"));
+    if (index.size() != 1 || index[0] < 1 )
+        throw (RbException("Index error"));
+
+    if ( index[0] >= int(value.size()) ) {
+        int oldLen = int(value.size());
+        resize(index[0]);
+        for (int i=oldLen; i<index[0]; i++)
+            value[i] = "";
     }
 
-    if (index[0] >= (int)value.size())
-        value.resize(index[0]);
+    value[index[0]] = ((RbString*)(val))->getValue();
+}
 
-    value[index[0]] = *x;
-    delete y;
+
+/** Allow parser to rearrange the container (actually do not allow it) */
+void StringVector::setElementLength(const IntVector& len) {
+
+    if ( len.size() != 1 && len[0] != int(value.size()) )
+        throw (RbException("Length specification error"));
 }
 
 
@@ -190,6 +207,7 @@ void StringVector::printValue(std::ostream& o) const {
     }
     o <<  " }";
 }
+
 
 /** Complete info about object */
 std::string StringVector::toString(void) const {

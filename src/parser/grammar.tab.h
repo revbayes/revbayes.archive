@@ -43,7 +43,7 @@
      INT = 259,
      NAME = 260,
      STRING = 261,
-     NULL = 262,
+     RBNULL = 262,
      FALSE = 263,
      TRUE = 264,
      COMMENT = 265,
@@ -84,7 +84,7 @@
 #define INT 259
 #define NAME 260
 #define STRING 261
-#define NULL 262
+#define RBNULL 262
 #define FALSE 263
 #define TRUE 264
 #define COMMENT 265
@@ -124,17 +124,23 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 77 "grammar.y"
+#line 91 "grammar.y"
 {
-    char*                  string;
-    double                 realValue;
-    int                    intValue;
-    bool                   boolValue;
-    SyntaxElement*         syntaxElement;
-    list<SyntaxElement *>* syntaxElementList;
+    RbString*                       string;
+    double                          realValue;
+    int                             intValue;
+    bool                            boolValue;
+    SyntaxElement*                  syntaxElement;
+    SyntaxVariable*                 syntaxVariable;
+    SyntaxFunctionCall*             syntaxFunctionCall;
+    SyntaxLabeledExpr*              syntaxLabeledExpr;
+    SyntaxFormal*                   syntaxFormal;
+    std::list<SyntaxElement *>*     syntaxElementList;
+    std::list<SyntaxLabeledExpr *>* argumentList;
+    std::list<SyntaxFormal *>*      formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 138 "grammar.tab.h"
+#line 144 "grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

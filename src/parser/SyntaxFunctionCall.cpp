@@ -17,7 +17,9 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
+#include "RbNames.h"
 #include "RbObject.h"
+#include "StringVector.h"
 #include "SyntaxFunctionCall.h"
 #include "Workspace.h"
 
@@ -94,6 +96,14 @@ bool SyntaxFunctionCall::equals(const SyntaxElement* elem) const {
         result = result && (*i)->equals(*j);
     
     return result;
+}
+
+
+/** Get class vector describing type of object */
+const StringVector& SyntaxFunctionCall::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(SyntaxFunctionCall_name) + SyntaxElement::getClass();
+	return rbClass; 
 }
 
 

@@ -38,6 +38,7 @@
 #define MoveScale_name                                "move(scale)"
 #define MoveSlidingWindow_name                        "move(sliding window)"
 #define ObjectSlot_name                               "object slot"
+#define RandomNumberGenerator_name                    "random number generator"
 #define RbBool_name                                   "bool"
 #define RbComplex_name                                "complex"
 #define RbDouble_name                                 "double"
@@ -73,10 +74,15 @@
 #define RbTopology_name                               "topology"
 #define RbUndefined_name                              "undefined"
 #define RbUnrootedTopology_name                       "unrooted topology"
+#define Simplex_name                                  "Simplex"
+#define SyntaxAssignExpr_name                         "assignment"
+#define SyntaxElement_name                            "syntax element"
+#define SyntaxFunctionCall_name                       "function call"
+#define SyntaxVariable_name                           "variable"
 #define StochasticNode_name                           "stochastic node"
 #define StringVector_name                             "string vector"
-#define RandomNumberGenerator_name                    "random number generator"
 #define UserFunction_name                             "user function"
+#define Vector_name                                   "vector"
 
 
 

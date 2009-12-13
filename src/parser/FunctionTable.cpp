@@ -135,7 +135,7 @@ const RbObject* FunctionTable::executeFunction(const std::string& name, const st
         RbFunction* bestMatch = NULL;
 
         for (std::multimap<std::string, RbFunction*>::const_iterator i=retVal.first; i!=retVal.second; i++) {
-            if ( i->second->processArguments(args, &matchScore) ) {
+            if ( (*i).second->processArguments(args, &matchScore) == true ) {
                 if ( bestMatch == NULL ) {
                     bestScore = matchScore;
                     bestMatch = i->second;

@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of IntVector, a complex type
- * used to hold int vectors.
+ * This file contains the implementation of Vector, a complex type
+ * used to hold double vectors.
  *
- * @brief Implementation of IntVector
+ * @brief Implementation of Vector
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -18,55 +18,49 @@
 
 #include "ContainerIterator.h"
 #include "IntVector.h"
+#include "RbDouble.h"
 #include "RbException.h"
-#include "RbInt.h"
 #include "RbNames.h"
 #include "StringVector.h"
+#include "Vector.h"
 
 #include <sstream>
 
 
-/** Construct vector with one int x */
-IntVector::IntVector(int x) {
+/** Construct vector with one double x */
+Vector::Vector(double x) {
 
     value.push_back(x);
 }
 
-/** Construct vector with n ints x */
-IntVector::IntVector(int n, int x) {
 
-    for (int i = 0; i < n; i++)
+/** Construct vector with n doubles x */
+Vector::Vector(int n, double x) {
+
+    for (double i = 0; i < n; i++)
         value.push_back(x);
 }
 
 
-/** Constructor from int vector */
-IntVector::IntVector(std::vector<int>& x) {
+/** Constructor from double vector */
+Vector::Vector(std::vector<double>& x) {
 
     value = x;
 }
 
 
-/** Constructor from container iterator */
-IntVector::IntVector(const ContainerIterator& x) {
-
-    for (size_t i=0; i<x.size(); i++)
-        value.push_back(x[i]);
-}
-
-
 /** Clone function */
-IntVector* IntVector::clone() const {
+Vector* Vector::clone() const {
 
-    return new IntVector(*this);
+    return new Vector(*this);
 }
 
 
 /** Pointer-based equals comparison */
-bool IntVector::equals(const RbObject* obj) const {
+bool Vector::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
-    const IntVector* p = dynamic_cast<const IntVector*> (obj);
+    const Vector* p = dynamic_cast<const Vector*> (obj);
     if (p != NULL) {
         if (value.size() != p->value.size())
             return false;
@@ -77,8 +71,8 @@ bool IntVector::equals(const RbObject* obj) const {
         return true;
     }
 
-    // Try converting the value to an int vector
-    p = dynamic_cast<const IntVector*> (obj->convertTo(getType()));
+    // Try converting the value to a double vector
+    p = dynamic_cast<const Vector*> (obj->convertTo(getType()));
     if (p == NULL)
         return false;
 
@@ -96,29 +90,29 @@ bool IntVector::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& IntVector::getClass() const {
+const StringVector& Vector::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::IntVector::name) + RbComplex::getClass();
+    static StringVector rbClass = StringVector(Vector_name) + RbComplex::getClass();
     return rbClass;
 }
 
 
 /** Get atomic class */
-const StringVector& IntVector::getAtomicClass(void) const {
+const StringVector& Vector::getAtomicClass(void) const {
 
-    static RbInt x = RbInt(0);
+    static RbDouble x = RbDouble(0.0);
     return x.getClass();
 }
 
 
 /** Get element for parser (read-only) */
-const RbObject* IntVector::getElement(const IntVector& index) const {
+const RbObject* Vector::getElement(const IntVector& index) const {
 
-    static RbInt x = RbInt(0);
+    static RbDouble x = RbDouble(0.0);
 
     if (index.size() != 1)
         throw (RbException("Index error"));
-    if (index[0] >= (int)value.size() || index[0] < 0)
+    if (index[0] >= (double)value.size() || index[0] < 0)
         throw (RbException("Index out of bound"));
 
     x.setValue(value[index[0]]);
@@ -127,7 +121,7 @@ const RbObject* IntVector::getElement(const IntVector& index) const {
 
 
 /** Get element length for parser */
-const IntVector& IntVector::getElementLength(void) const {
+const IntVector& Vector::getElementLength(void) const {
 
     static IntVector length = IntVector(0);
 
@@ -137,14 +131,14 @@ const IntVector& IntVector::getElementLength(void) const {
 
 
 /** Tell the parser it cannot modify the elements */
-RbObject* IntVector::getElementRef(const IntVector& index) {
+RbObject* Vector::getElementRef(const IntVector& index) {
 
     throw (RbException("Elements are not modifiable"));
 }
 
 
 /** Allow the parser to resize the vector */
-void IntVector::resize(const IntVector& len) {
+void Vector::resize(const IntVector& len) {
 
     if (len.size() != 1 || len[0] < 0)
         throw (RbException("Length specification error"));
@@ -154,9 +148,9 @@ void IntVector::resize(const IntVector& len) {
 
 
 /** Allow parser to set an element (any type conversion is done by parser) */
-void IntVector::setElement(const IntVector& index, RbObject* val) {
+void Vector::setElement(const IntVector& index, RbObject* val) {
 
-    if ( !val->isType(RbInt_name) )
+    if ( !val->isType(RbDouble_name) )
         throw (RbException("Type mismatch"));
 
     if ( index.size() != 1 || index[0] < 1 )
@@ -173,22 +167,23 @@ void IntVector::setElement(const IntVector& index, RbObject* val) {
             value[i] = 0;
     }
 
-    value[index[0]] = ((RbInt*)(val))->getValue();
+    value[index[0]] = ((RbDouble*)(val))->getValue();
 }
 
 
 /** Allow parser to rearrange the container (actually do not allow it) */
-void IntVector::setElementLength(const IntVector& len) {
+void Vector::setElementLength(const IntVector& len) {
 
     if ( len.size() != 1 && len[0] != int(value.size()) )
         throw (RbException("Length specification error"));
 }
 
+
 /** Print value for user */
-void IntVector::printValue(std::ostream& o) const {
+void Vector::printValue(std::ostream& o) const {
 
     o << "{ ";
-    for (std::vector<int>::const_iterator i = value.begin(); i!= value.end(); i++) {
+    for (std::vector<double>::const_iterator i = value.begin(); i!= value.end(); i++) {
         if (i != value.begin())
             o << ", ";
         o << (*i);
@@ -198,10 +193,10 @@ void IntVector::printValue(std::ostream& o) const {
 
 
 /** Complete info about object */
-std::string IntVector::toString(void) const {
+std::string Vector::toString(void) const {
 
     std::ostringstream o;
-    o <<  "IntVector: value = ";
+    o <<  "Vector: value = ";
     printValue(o);
 
     return o.str();
