@@ -4,17 +4,6 @@ Terminals which are not used
    LOW
 
 
-State 49 conflicts: 1 shift/reduce
-State 51 conflicts: 1 shift/reduce
-State 52 conflicts: 1 shift/reduce
-State 97 conflicts: 2 shift/reduce
-State 141 conflicts: 1 shift/reduce
-State 149 conflicts: 1 shift/reduce
-State 158 conflicts: 2 shift/reduce
-State 159 conflicts: 2 shift/reduce
-State 169 conflicts: 1 shift/reduce
-
-
 Grammar
 
     0 $accept: prog $end
@@ -95,7 +84,7 @@ Grammar
    60       | identifier identifier EQUAL expression
 
    61 stmts: '{' stmtList '}'
-   62      | stmtList
+   62      | statement
 
    63 stmtList: statement optStatements
    64         | /* empty */
@@ -259,11 +248,11 @@ formal (74)
 stmts (75)
     on left: 61 62, on right: 51 52 87 88 90 92
 stmtList (76)
-    on left: 63 64, on right: 61 62
+    on left: 63 64, on right: 61
 optStatements (77)
     on left: 65 66 67, on right: 63 65 66
 statement (78)
-    on left: 68 69 70 71 72 73 74 75 76, on right: 4 63 65 66
+    on left: 68 69 70 71 72 73 74 75 76, on right: 4 62 63 65 66
 declaration (79)
     on left: 77 78, on right: 5
 memberDefs (80)
@@ -879,9 +868,6 @@ state 49
     '{'     shift, and go to state 93
     ';'     shift, and go to state 25
 
-    ';'       [reduce using rule 64 (stmtList)]
-    $default  reduce using rule 64 (stmtList)
-
     expression       go to state 94
     arrowAssign      go to state 28
     tildeAssign      go to state 29
@@ -889,8 +875,7 @@ state 49
     variable         go to state 31
     functionCall     go to state 32
     stmts            go to state 95
-    stmtList         go to state 96
-    statement        go to state 97
+    statement        go to state 96
     ifStatement      go to state 37
     forStatement     go to state 38
     whileStatement   go to state 39
@@ -917,7 +902,7 @@ state 50
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 98
+    expression      go to state 97
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -952,18 +937,14 @@ state 51
     '{'     shift, and go to state 93
     ';'     shift, and go to state 25
 
-    ';'       [reduce using rule 64 (stmtList)]
-    $default  reduce using rule 64 (stmtList)
-
     expression       go to state 94
     arrowAssign      go to state 28
     tildeAssign      go to state 29
     equationAssign   go to state 30
     variable         go to state 31
     functionCall     go to state 32
-    stmts            go to state 99
-    stmtList         go to state 96
-    statement        go to state 97
+    stmts            go to state 98
+    statement        go to state 96
     ifStatement      go to state 37
     forStatement     go to state 38
     whileStatement   go to state 39
@@ -998,18 +979,14 @@ state 52
     '{'     shift, and go to state 93
     ';'     shift, and go to state 25
 
-    ';'       [reduce using rule 64 (stmtList)]
-    $default  reduce using rule 64 (stmtList)
-
     expression       go to state 94
     arrowAssign      go to state 28
     tildeAssign      go to state 29
     equationAssign   go to state 30
     variable         go to state 31
     functionCall     go to state 32
-    stmts            go to state 100
-    stmtList         go to state 96
-    statement        go to state 97
+    stmts            go to state 99
+    statement        go to state 96
     ifStatement      go to state 37
     forStatement     go to state 38
     whileStatement   go to state 39
@@ -1072,7 +1049,7 @@ state 55
 
     8 prog: '?' functionCall . '\n'
 
-    '\n'  shift, and go to state 101
+    '\n'  shift, and go to state 100
 
 
 state 56
@@ -1083,7 +1060,7 @@ state 56
 
     '('   shift, and go to state 86
     '['   shift, and go to state 87
-    '\n'  shift, and go to state 102
+    '\n'  shift, and go to state 101
 
     $default  reduce using rule 42 (optElement)
 
@@ -1176,7 +1153,7 @@ state 59
     '/'   shift, and go to state 75
     ':'   shift, and go to state 76
     '^'   shift, and go to state 77
-    ')'   shift, and go to state 103
+    ')'   shift, and go to state 102
 
 
 state 60
@@ -1238,7 +1215,7 @@ state 62
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 104
+    expression      go to state 103
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1264,7 +1241,7 @@ state 63
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 105
+    expression      go to state 104
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1290,7 +1267,7 @@ state 64
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 106
+    expression      go to state 105
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1316,7 +1293,7 @@ state 65
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 107
+    expression      go to state 106
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1342,7 +1319,7 @@ state 66
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 108
+    expression      go to state 107
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1368,7 +1345,7 @@ state 67
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 109
+    expression      go to state 108
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1394,7 +1371,7 @@ state 68
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 110
+    expression      go to state 109
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1420,7 +1397,7 @@ state 69
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 111
+    expression      go to state 110
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1446,7 +1423,7 @@ state 70
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 112
+    expression      go to state 111
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1472,7 +1449,7 @@ state 71
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 113
+    expression      go to state 112
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1498,7 +1475,7 @@ state 72
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 114
+    expression      go to state 113
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1524,7 +1501,7 @@ state 73
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 115
+    expression      go to state 114
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1550,7 +1527,7 @@ state 74
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 116
+    expression      go to state 115
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1576,7 +1553,7 @@ state 75
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 117
+    expression      go to state 116
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1602,7 +1579,7 @@ state 76
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 118
+    expression      go to state 117
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1628,7 +1605,7 @@ state 77
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 119
+    expression      go to state 118
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1661,7 +1638,7 @@ state 80
     NAME  shift, and go to state 4
 
     variable      go to state 54
-    functionCall  go to state 120
+    functionCall  go to state 119
     identifier    go to state 43
 
 
@@ -1681,7 +1658,7 @@ state 81
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 121
+    expression      go to state 120
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1707,7 +1684,7 @@ state 82
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 122
+    expression      go to state 121
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1724,7 +1701,7 @@ state 83
 
     NAME  shift, and go to state 4
 
-    identifier  go to state 123
+    identifier  go to state 122
 
 
 state 84
@@ -1759,15 +1736,15 @@ state 86
 
     $default  reduce using rule 46 (argumentList)
 
-    expression      go to state 124
+    expression      go to state 123
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
     variable        go to state 31
     functionCall    go to state 32
-    argumentList    go to state 125
-    argument        go to state 126
-    identifier      go to state 127
+    argumentList    go to state 124
+    argument        go to state 125
+    identifier      go to state 126
     constant        go to state 44
 
 
@@ -1787,7 +1764,7 @@ state 87
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 128
+    expression      go to state 127
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -1812,16 +1789,16 @@ state 89
 
     $default  reduce using rule 54 (formalList)
 
-    formalList  go to state 129
-    formal      go to state 130
-    identifier  go to state 131
+    formalList  go to state 128
+    formal      go to state 129
+    identifier  go to state 130
 
 
 state 90
 
    52 functionDef: FUNCTION identifier identifier . '(' formalList ')' stmts
 
-    '('  shift, and go to state 132
+    '('  shift, and go to state 131
 
 
 state 91
@@ -1830,14 +1807,14 @@ state 91
 
     NAME  shift, and go to state 4
 
-    identifier  go to state 133
+    identifier  go to state 132
 
 
 state 92
 
    91 forCond: '(' identifier . IN expression ')'
 
-    IN  shift, and go to state 134
+    IN  shift, and go to state 133
 
 
 state 93
@@ -1871,8 +1848,8 @@ state 93
     equationAssign   go to state 30
     variable         go to state 31
     functionCall     go to state 32
-    stmtList         go to state 135
-    statement        go to state 97
+    stmtList         go to state 134
+    statement        go to state 135
     ifStatement      go to state 37
     forStatement     go to state 38
     whileStatement   go to state 39
@@ -1933,26 +1910,12 @@ state 95
 
 state 96
 
-   62 stmts: stmtList .
+   62 stmts: statement .
 
     $default  reduce using rule 62 (stmts)
 
 
 state 97
-
-   63 stmtList: statement . optStatements
-
-    '\n'  shift, and go to state 137
-    ';'   shift, and go to state 138
-
-    '\n'      [reduce using rule 67 (optStatements)]
-    ';'       [reduce using rule 67 (optStatements)]
-    $default  reduce using rule 67 (optStatements)
-
-    optStatements  go to state 139
-
-
-state 98
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -1988,48 +1951,48 @@ state 98
     '/'   shift, and go to state 75
     ':'   shift, and go to state 76
     '^'   shift, and go to state 77
-    ')'   shift, and go to state 140
+    ')'   shift, and go to state 137
 
 
-state 99
+state 98
 
    87 ifStatement: IF cond stmts .
    88            | IF cond stmts . ELSE stmts
 
-    ELSE  shift, and go to state 141
+    ELSE  shift, and go to state 138
 
     $default  reduce using rule 87 (ifStatement)
 
 
-state 100
+state 99
 
    92 whileStatement: WHILE cond stmts .
 
     $default  reduce using rule 92 (whileStatement)
 
 
-state 101
+state 100
 
     8 prog: '?' functionCall '\n' .
 
     $default  reduce using rule 8 (prog)
 
 
-state 102
+state 101
 
     7 prog: '?' identifier '\n' .
 
     $default  reduce using rule 7 (prog)
 
 
-state 103
+state 102
 
    11 expression: '(' expression ')' .
 
     $default  reduce using rule 11 (expression)
 
 
-state 104
+state 103
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2065,7 +2028,7 @@ state 104
     $default  reduce using rule 27 (expression)
 
 
-state 105
+state 104
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2103,7 +2066,7 @@ state 105
     $default  reduce using rule 28 (expression)
 
 
-state 106
+state 105
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2139,7 +2102,7 @@ state 106
     $default  reduce using rule 29 (expression)
 
 
-state 107
+state 106
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2177,7 +2140,7 @@ state 107
     $default  reduce using rule 30 (expression)
 
 
-state 108
+state 107
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2214,7 +2177,7 @@ state 108
     $default  reduce using rule 26 (expression)
 
 
-state 109
+state 108
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2251,7 +2214,7 @@ state 109
     $default  reduce using rule 25 (expression)
 
 
-state 110
+state 109
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2288,7 +2251,7 @@ state 110
     $default  reduce using rule 21 (expression)
 
 
-state 111
+state 110
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2325,7 +2288,7 @@ state 111
     $default  reduce using rule 22 (expression)
 
 
-state 112
+state 111
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2362,7 +2325,7 @@ state 112
     $default  reduce using rule 23 (expression)
 
 
-state 113
+state 112
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2399,7 +2362,7 @@ state 113
     $default  reduce using rule 24 (expression)
 
 
-state 114
+state 113
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2427,7 +2390,7 @@ state 114
     $default  reduce using rule 16 (expression)
 
 
-state 115
+state 114
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2455,7 +2418,7 @@ state 115
     $default  reduce using rule 17 (expression)
 
 
-state 116
+state 115
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2481,7 +2444,7 @@ state 116
     $default  reduce using rule 18 (expression)
 
 
-state 117
+state 116
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2507,7 +2470,7 @@ state 117
     $default  reduce using rule 19 (expression)
 
 
-state 118
+state 117
 
    15 expression: expression . ':' expression
    15           | expression ':' expression .
@@ -2532,7 +2495,7 @@ state 118
     $default  reduce using rule 15 (expression)
 
 
-state 119
+state 118
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2557,14 +2520,14 @@ state 119
     $default  reduce using rule 20 (expression)
 
 
-state 120
+state 119
 
    37 tildeAssign: variable TILDE_ASSIGN functionCall .
 
     $default  reduce using rule 37 (tildeAssign)
 
 
-state 121
+state 120
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2604,7 +2567,7 @@ state 121
     $default  reduce using rule 38 (equationAssign)
 
 
-state 122
+state 121
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2644,20 +2607,20 @@ state 122
     $default  reduce using rule 36 (arrowAssign)
 
 
-state 123
+state 122
 
    40 variable: variable '.' identifier . optElement
    44 functionCall: variable '.' identifier . '(' argumentList ')'
 
-    '('  shift, and go to state 142
+    '('  shift, and go to state 139
     '['  shift, and go to state 87
 
     $default  reduce using rule 42 (optElement)
 
-    optElement  go to state 143
+    optElement  go to state 140
 
 
-state 124
+state 123
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2697,31 +2660,31 @@ state 124
     $default  reduce using rule 49 (argument)
 
 
-state 125
+state 124
 
    43 functionCall: identifier '(' argumentList . ')'
 
-    ')'  shift, and go to state 144
+    ')'  shift, and go to state 141
 
 
-state 126
+state 125
 
    45 argumentList: argument . optArguments
 
-    ','  shift, and go to state 145
+    ','  shift, and go to state 142
 
     $default  reduce using rule 48 (optArguments)
 
-    optArguments  go to state 146
+    optArguments  go to state 143
 
 
-state 127
+state 126
 
    39 variable: identifier . optElement
    43 functionCall: identifier . '(' argumentList ')'
    50 argument: identifier . EQUAL expression
 
-    EQUAL  shift, and go to state 147
+    EQUAL  shift, and go to state 144
     '('    shift, and go to state 86
     '['    shift, and go to state 87
 
@@ -2730,7 +2693,7 @@ state 127
     optElement  go to state 88
 
 
-state 128
+state 127
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -2766,28 +2729,28 @@ state 128
     '/'   shift, and go to state 75
     ':'   shift, and go to state 76
     '^'   shift, and go to state 77
-    ']'   shift, and go to state 148
+    ']'   shift, and go to state 145
+
+
+state 128
+
+   51 functionDef: FUNCTION identifier '(' formalList . ')' stmts
+
+    ')'  shift, and go to state 146
 
 
 state 129
 
-   51 functionDef: FUNCTION identifier '(' formalList . ')' stmts
-
-    ')'  shift, and go to state 149
-
-
-state 130
-
    53 formalList: formal . optFormals
 
-    ','  shift, and go to state 150
+    ','  shift, and go to state 147
 
     $default  reduce using rule 56 (optFormals)
 
-    optFormals  go to state 151
+    optFormals  go to state 148
 
 
-state 131
+state 130
 
    57 formal: identifier .
    58       | identifier . EQUAL expression
@@ -2795,14 +2758,14 @@ state 131
    60       | identifier . identifier EQUAL expression
 
     NAME   shift, and go to state 4
-    EQUAL  shift, and go to state 152
+    EQUAL  shift, and go to state 149
 
     $default  reduce using rule 57 (formal)
 
-    identifier  go to state 153
+    identifier  go to state 150
 
 
-state 132
+state 131
 
    52 functionDef: FUNCTION identifier identifier '(' . formalList ')' stmts
 
@@ -2810,19 +2773,19 @@ state 132
 
     $default  reduce using rule 54 (formalList)
 
-    formalList  go to state 154
-    formal      go to state 130
-    identifier  go to state 131
+    formalList  go to state 151
+    formal      go to state 129
+    identifier  go to state 130
 
 
-state 133
+state 132
 
    86 classDef: CLASS identifier ':' identifier . '{' memberDefs '}'
 
-    '{'  shift, and go to state 155
+    '{'  shift, and go to state 152
 
 
-state 134
+state 133
 
    91 forCond: '(' identifier IN . expression ')'
 
@@ -2838,7 +2801,7 @@ state 134
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 156
+    expression      go to state 153
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -2848,11 +2811,23 @@ state 134
     constant        go to state 44
 
 
-state 135
+state 134
 
    61 stmts: '{' stmtList . '}'
 
-    '}'  shift, and go to state 157
+    '}'  shift, and go to state 154
+
+
+state 135
+
+   63 stmtList: statement . optStatements
+
+    '\n'  shift, and go to state 155
+    ';'   shift, and go to state 156
+
+    $default  reduce using rule 67 (optStatements)
+
+    optStatements  go to state 157
 
 
 state 136
@@ -2864,99 +2839,12 @@ state 136
 
 state 137
 
-   66 optStatements: '\n' . statement optStatements
-
-    REAL    shift, and go to state 2
-    INT     shift, and go to state 3
-    NAME    shift, and go to state 4
-    STRING  shift, and go to state 5
-    RBNULL  shift, and go to state 6
-    FALSE   shift, and go to state 7
-    TRUE    shift, and go to state 8
-    FOR     shift, and go to state 12
-    IF      shift, and go to state 13
-    WHILE   shift, and go to state 14
-    NEXT    shift, and go to state 15
-    BREAK   shift, and go to state 16
-    RETURN  shift, and go to state 17
-    '+'     shift, and go to state 20
-    '-'     shift, and go to state 21
-    '('     shift, and go to state 22
-    '!'     shift, and go to state 24
-    ';'     shift, and go to state 25
-
-    expression       go to state 94
-    arrowAssign      go to state 28
-    tildeAssign      go to state 29
-    equationAssign   go to state 30
-    variable         go to state 31
-    functionCall     go to state 32
-    statement        go to state 158
-    ifStatement      go to state 37
-    forStatement     go to state 38
-    whileStatement   go to state 39
-    nextStatement    go to state 40
-    breakStatement   go to state 41
-    returnStatement  go to state 42
-    identifier       go to state 43
-    constant         go to state 44
-
-
-state 138
-
-   65 optStatements: ';' . statement optStatements
-
-    REAL    shift, and go to state 2
-    INT     shift, and go to state 3
-    NAME    shift, and go to state 4
-    STRING  shift, and go to state 5
-    RBNULL  shift, and go to state 6
-    FALSE   shift, and go to state 7
-    TRUE    shift, and go to state 8
-    FOR     shift, and go to state 12
-    IF      shift, and go to state 13
-    WHILE   shift, and go to state 14
-    NEXT    shift, and go to state 15
-    BREAK   shift, and go to state 16
-    RETURN  shift, and go to state 17
-    '+'     shift, and go to state 20
-    '-'     shift, and go to state 21
-    '('     shift, and go to state 22
-    '!'     shift, and go to state 24
-    ';'     shift, and go to state 25
-
-    expression       go to state 94
-    arrowAssign      go to state 28
-    tildeAssign      go to state 29
-    equationAssign   go to state 30
-    variable         go to state 31
-    functionCall     go to state 32
-    statement        go to state 159
-    ifStatement      go to state 37
-    forStatement     go to state 38
-    whileStatement   go to state 39
-    nextStatement    go to state 40
-    breakStatement   go to state 41
-    returnStatement  go to state 42
-    identifier       go to state 43
-    constant         go to state 44
-
-
-state 139
-
-   63 stmtList: statement optStatements .
-
-    $default  reduce using rule 63 (stmtList)
-
-
-state 140
-
    89 cond: '(' expression ')' .
 
     $default  reduce using rule 89 (cond)
 
 
-state 141
+state 138
 
    88 ifStatement: IF cond stmts ELSE . stmts
 
@@ -2980,18 +2868,14 @@ state 141
     '{'     shift, and go to state 93
     ';'     shift, and go to state 25
 
-    ';'       [reduce using rule 64 (stmtList)]
-    $default  reduce using rule 64 (stmtList)
-
     expression       go to state 94
     arrowAssign      go to state 28
     tildeAssign      go to state 29
     equationAssign   go to state 30
     variable         go to state 31
     functionCall     go to state 32
-    stmts            go to state 160
-    stmtList         go to state 96
-    statement        go to state 97
+    stmts            go to state 158
+    statement        go to state 96
     ifStatement      go to state 37
     forStatement     go to state 38
     whileStatement   go to state 39
@@ -3002,7 +2886,7 @@ state 141
     constant         go to state 44
 
 
-state 142
+state 139
 
    44 functionCall: variable '.' identifier '(' . argumentList ')'
 
@@ -3020,33 +2904,33 @@ state 142
 
     $default  reduce using rule 46 (argumentList)
 
-    expression      go to state 124
+    expression      go to state 123
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
     variable        go to state 31
     functionCall    go to state 32
-    argumentList    go to state 161
-    argument        go to state 126
-    identifier      go to state 127
+    argumentList    go to state 159
+    argument        go to state 125
+    identifier      go to state 126
     constant        go to state 44
 
 
-state 143
+state 140
 
    40 variable: variable '.' identifier optElement .
 
     $default  reduce using rule 40 (variable)
 
 
-state 144
+state 141
 
    43 functionCall: identifier '(' argumentList ')' .
 
     $default  reduce using rule 43 (functionCall)
 
 
-state 145
+state 142
 
    47 optArguments: ',' . argument optArguments
 
@@ -3062,25 +2946,25 @@ state 145
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 124
+    expression      go to state 123
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
     variable        go to state 31
     functionCall    go to state 32
-    argument        go to state 162
-    identifier      go to state 127
+    argument        go to state 160
+    identifier      go to state 126
     constant        go to state 44
 
 
-state 146
+state 143
 
    45 argumentList: argument optArguments .
 
     $default  reduce using rule 45 (argumentList)
 
 
-state 147
+state 144
 
    50 argument: identifier EQUAL . expression
 
@@ -3096,7 +2980,7 @@ state 147
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 163
+    expression      go to state 161
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -3106,7 +2990,7 @@ state 147
     constant        go to state 44
 
 
-state 148
+state 145
 
    41 optElement: '[' expression ']' . optElement
 
@@ -3114,10 +2998,10 @@ state 148
 
     $default  reduce using rule 42 (optElement)
 
-    optElement  go to state 164
+    optElement  go to state 162
 
 
-state 149
+state 146
 
    51 functionDef: FUNCTION identifier '(' formalList ')' . stmts
 
@@ -3141,18 +3025,14 @@ state 149
     '{'     shift, and go to state 93
     ';'     shift, and go to state 25
 
-    ';'       [reduce using rule 64 (stmtList)]
-    $default  reduce using rule 64 (stmtList)
-
     expression       go to state 94
     arrowAssign      go to state 28
     tildeAssign      go to state 29
     equationAssign   go to state 30
     variable         go to state 31
     functionCall     go to state 32
-    stmts            go to state 165
-    stmtList         go to state 96
-    statement        go to state 97
+    stmts            go to state 163
+    statement        go to state 96
     ifStatement      go to state 37
     forStatement     go to state 38
     whileStatement   go to state 39
@@ -3163,24 +3043,24 @@ state 149
     constant         go to state 44
 
 
-state 150
+state 147
 
    55 optFormals: ',' . formal optFormals
 
     NAME  shift, and go to state 4
 
-    formal      go to state 166
-    identifier  go to state 131
+    formal      go to state 164
+    identifier  go to state 130
 
 
-state 151
+state 148
 
    53 formalList: formal optFormals .
 
     $default  reduce using rule 53 (formalList)
 
 
-state 152
+state 149
 
    58 formal: identifier EQUAL . expression
 
@@ -3196,7 +3076,7 @@ state 152
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 167
+    expression      go to state 165
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -3206,24 +3086,24 @@ state 152
     constant        go to state 44
 
 
-state 153
+state 150
 
    59 formal: identifier identifier .
    60       | identifier identifier . EQUAL expression
 
-    EQUAL  shift, and go to state 168
+    EQUAL  shift, and go to state 166
 
     $default  reduce using rule 59 (formal)
 
 
-state 154
+state 151
 
    52 functionDef: FUNCTION identifier identifier '(' formalList . ')' stmts
 
-    ')'  shift, and go to state 169
+    ')'  shift, and go to state 167
 
 
-state 155
+state 152
 
    86 classDef: CLASS identifier ':' identifier '{' . memberDefs '}'
 
@@ -3232,14 +3112,14 @@ state 155
 
     $default  reduce using rule 80 (memberDefs)
 
-    functionDef  go to state 170
-    formal       go to state 171
-    memberDefs   go to state 172
-    memberDef    go to state 173
-    identifier   go to state 131
+    functionDef  go to state 168
+    formal       go to state 169
+    memberDefs   go to state 170
+    memberDef    go to state 171
+    identifier   go to state 130
 
 
-state 156
+state 153
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -3275,70 +3155,129 @@ state 156
     '/'   shift, and go to state 75
     ':'   shift, and go to state 76
     '^'   shift, and go to state 77
-    ')'   shift, and go to state 174
+    ')'   shift, and go to state 172
 
 
-state 157
+state 154
 
    61 stmts: '{' stmtList '}' .
 
     $default  reduce using rule 61 (stmts)
 
 
+state 155
+
+   66 optStatements: '\n' . statement optStatements
+
+    REAL    shift, and go to state 2
+    INT     shift, and go to state 3
+    NAME    shift, and go to state 4
+    STRING  shift, and go to state 5
+    RBNULL  shift, and go to state 6
+    FALSE   shift, and go to state 7
+    TRUE    shift, and go to state 8
+    FOR     shift, and go to state 12
+    IF      shift, and go to state 13
+    WHILE   shift, and go to state 14
+    NEXT    shift, and go to state 15
+    BREAK   shift, and go to state 16
+    RETURN  shift, and go to state 17
+    '+'     shift, and go to state 20
+    '-'     shift, and go to state 21
+    '('     shift, and go to state 22
+    '!'     shift, and go to state 24
+    ';'     shift, and go to state 25
+
+    expression       go to state 94
+    arrowAssign      go to state 28
+    tildeAssign      go to state 29
+    equationAssign   go to state 30
+    variable         go to state 31
+    functionCall     go to state 32
+    statement        go to state 173
+    ifStatement      go to state 37
+    forStatement     go to state 38
+    whileStatement   go to state 39
+    nextStatement    go to state 40
+    breakStatement   go to state 41
+    returnStatement  go to state 42
+    identifier       go to state 43
+    constant         go to state 44
+
+
+state 156
+
+   65 optStatements: ';' . statement optStatements
+
+    REAL    shift, and go to state 2
+    INT     shift, and go to state 3
+    NAME    shift, and go to state 4
+    STRING  shift, and go to state 5
+    RBNULL  shift, and go to state 6
+    FALSE   shift, and go to state 7
+    TRUE    shift, and go to state 8
+    FOR     shift, and go to state 12
+    IF      shift, and go to state 13
+    WHILE   shift, and go to state 14
+    NEXT    shift, and go to state 15
+    BREAK   shift, and go to state 16
+    RETURN  shift, and go to state 17
+    '+'     shift, and go to state 20
+    '-'     shift, and go to state 21
+    '('     shift, and go to state 22
+    '!'     shift, and go to state 24
+    ';'     shift, and go to state 25
+
+    expression       go to state 94
+    arrowAssign      go to state 28
+    tildeAssign      go to state 29
+    equationAssign   go to state 30
+    variable         go to state 31
+    functionCall     go to state 32
+    statement        go to state 174
+    ifStatement      go to state 37
+    forStatement     go to state 38
+    whileStatement   go to state 39
+    nextStatement    go to state 40
+    breakStatement   go to state 41
+    returnStatement  go to state 42
+    identifier       go to state 43
+    constant         go to state 44
+
+
+state 157
+
+   63 stmtList: statement optStatements .
+
+    $default  reduce using rule 63 (stmtList)
+
+
 state 158
-
-   66 optStatements: '\n' statement . optStatements
-
-    '\n'  shift, and go to state 137
-    ';'   shift, and go to state 138
-
-    '\n'      [reduce using rule 67 (optStatements)]
-    ';'       [reduce using rule 67 (optStatements)]
-    $default  reduce using rule 67 (optStatements)
-
-    optStatements  go to state 175
-
-
-state 159
-
-   65 optStatements: ';' statement . optStatements
-
-    '\n'  shift, and go to state 137
-    ';'   shift, and go to state 138
-
-    '\n'      [reduce using rule 67 (optStatements)]
-    ';'       [reduce using rule 67 (optStatements)]
-    $default  reduce using rule 67 (optStatements)
-
-    optStatements  go to state 176
-
-
-state 160
 
    88 ifStatement: IF cond stmts ELSE stmts .
 
     $default  reduce using rule 88 (ifStatement)
 
 
-state 161
+state 159
 
    44 functionCall: variable '.' identifier '(' argumentList . ')'
 
-    ')'  shift, and go to state 177
+    ')'  shift, and go to state 175
 
 
-state 162
+state 160
 
    47 optArguments: ',' argument . optArguments
 
-    ','  shift, and go to state 145
+    ','  shift, and go to state 142
 
     $default  reduce using rule 48 (optArguments)
 
-    optArguments  go to state 178
+    optArguments  go to state 176
 
 
-state 163
+state 161
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -3378,32 +3317,32 @@ state 163
     $default  reduce using rule 50 (argument)
 
 
-state 164
+state 162
 
    41 optElement: '[' expression ']' optElement .
 
     $default  reduce using rule 41 (optElement)
 
 
-state 165
+state 163
 
    51 functionDef: FUNCTION identifier '(' formalList ')' stmts .
 
     $default  reduce using rule 51 (functionDef)
 
 
-state 166
+state 164
 
    55 optFormals: ',' formal . optFormals
 
-    ','  shift, and go to state 150
+    ','  shift, and go to state 147
 
     $default  reduce using rule 56 (optFormals)
 
-    optFormals  go to state 179
+    optFormals  go to state 177
 
 
-state 167
+state 165
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -3443,7 +3382,7 @@ state 167
     $default  reduce using rule 58 (formal)
 
 
-state 168
+state 166
 
    60 formal: identifier identifier EQUAL . expression
 
@@ -3459,7 +3398,7 @@ state 168
     '('     shift, and go to state 22
     '!'     shift, and go to state 24
 
-    expression      go to state 180
+    expression      go to state 178
     arrowAssign     go to state 28
     tildeAssign     go to state 29
     equationAssign  go to state 30
@@ -3469,7 +3408,7 @@ state 168
     constant        go to state 44
 
 
-state 169
+state 167
 
    52 functionDef: FUNCTION identifier identifier '(' formalList ')' . stmts
 
@@ -3493,18 +3432,14 @@ state 169
     '{'     shift, and go to state 93
     ';'     shift, and go to state 25
 
-    ';'       [reduce using rule 64 (stmtList)]
-    $default  reduce using rule 64 (stmtList)
-
     expression       go to state 94
     arrowAssign      go to state 28
     tildeAssign      go to state 29
     equationAssign   go to state 30
     variable         go to state 31
     functionCall     go to state 32
-    stmts            go to state 181
-    stmtList         go to state 96
-    statement        go to state 97
+    stmts            go to state 179
+    statement        go to state 96
     ifStatement      go to state 37
     forStatement     go to state 38
     whileStatement   go to state 39
@@ -3515,82 +3450,92 @@ state 169
     constant         go to state 44
 
 
-state 170
+state 168
 
    85 memberDef: functionDef .
 
     $default  reduce using rule 85 (memberDef)
 
 
-state 171
+state 169
 
    84 memberDef: formal .
 
     $default  reduce using rule 84 (memberDef)
 
 
-state 172
+state 170
 
    86 classDef: CLASS identifier ':' identifier '{' memberDefs . '}'
 
-    '}'  shift, and go to state 182
+    '}'  shift, and go to state 180
 
 
-state 173
+state 171
 
    79 memberDefs: memberDef . optMemberDefs
 
-    '\n'  shift, and go to state 183
-    ';'   shift, and go to state 184
+    '\n'  shift, and go to state 181
+    ';'   shift, and go to state 182
 
     $default  reduce using rule 83 (optMemberDefs)
 
-    optMemberDefs  go to state 185
+    optMemberDefs  go to state 183
 
 
-state 174
+state 172
 
    91 forCond: '(' identifier IN expression ')' .
 
     $default  reduce using rule 91 (forCond)
 
 
+state 173
+
+   66 optStatements: '\n' statement . optStatements
+
+    '\n'  shift, and go to state 155
+    ';'   shift, and go to state 156
+
+    $default  reduce using rule 67 (optStatements)
+
+    optStatements  go to state 184
+
+
+state 174
+
+   65 optStatements: ';' statement . optStatements
+
+    '\n'  shift, and go to state 155
+    ';'   shift, and go to state 156
+
+    $default  reduce using rule 67 (optStatements)
+
+    optStatements  go to state 185
+
+
 state 175
-
-   66 optStatements: '\n' statement optStatements .
-
-    $default  reduce using rule 66 (optStatements)
-
-
-state 176
-
-   65 optStatements: ';' statement optStatements .
-
-    $default  reduce using rule 65 (optStatements)
-
-
-state 177
 
    44 functionCall: variable '.' identifier '(' argumentList ')' .
 
     $default  reduce using rule 44 (functionCall)
 
 
-state 178
+state 176
 
    47 optArguments: ',' argument optArguments .
 
     $default  reduce using rule 47 (optArguments)
 
 
-state 179
+state 177
 
    55 optFormals: ',' formal optFormals .
 
     $default  reduce using rule 55 (optFormals)
 
 
-state 180
+state 178
 
    15 expression: expression . ':' expression
    16           | expression . '+' expression
@@ -3630,59 +3575,73 @@ state 180
     $default  reduce using rule 60 (formal)
 
 
-state 181
+state 179
 
    52 functionDef: FUNCTION identifier identifier '(' formalList ')' stmts .
 
     $default  reduce using rule 52 (functionDef)
 
 
-state 182
+state 180
 
    86 classDef: CLASS identifier ':' identifier '{' memberDefs '}' .
 
     $default  reduce using rule 86 (classDef)
 
 
-state 183
+state 181
 
    82 optMemberDefs: '\n' . memberDef optMemberDefs
 
     NAME      shift, and go to state 4
     FUNCTION  shift, and go to state 10
 
-    functionDef  go to state 170
-    formal       go to state 171
+    functionDef  go to state 168
+    formal       go to state 169
     memberDef    go to state 186
-    identifier   go to state 131
+    identifier   go to state 130
 
 
-state 184
+state 182
 
    81 optMemberDefs: ';' . memberDef optMemberDefs
 
     NAME      shift, and go to state 4
     FUNCTION  shift, and go to state 10
 
-    functionDef  go to state 170
-    formal       go to state 171
+    functionDef  go to state 168
+    formal       go to state 169
     memberDef    go to state 187
-    identifier   go to state 131
+    identifier   go to state 130
 
 
-state 185
+state 183
 
    79 memberDefs: memberDef optMemberDefs .
 
     $default  reduce using rule 79 (memberDefs)
 
 
+state 184
+
+   66 optStatements: '\n' statement optStatements .
+
+    $default  reduce using rule 66 (optStatements)
+
+
+state 185
+
+   65 optStatements: ';' statement optStatements .
+
+    $default  reduce using rule 65 (optStatements)
+
+
 state 186
 
    82 optMemberDefs: '\n' memberDef . optMemberDefs
 
-    '\n'  shift, and go to state 183
-    ';'   shift, and go to state 184
+    '\n'  shift, and go to state 181
+    ';'   shift, and go to state 182
 
     $default  reduce using rule 83 (optMemberDefs)
 
@@ -3693,8 +3652,8 @@ state 187
 
    81 optMemberDefs: ';' memberDef . optMemberDefs
 
-    '\n'  shift, and go to state 183
-    ';'   shift, and go to state 184
+    '\n'  shift, and go to state 181
+    ';'   shift, and go to state 182
 
     $default  reduce using rule 83 (optMemberDefs)
 

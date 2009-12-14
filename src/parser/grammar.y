@@ -326,11 +326,11 @@ functionDef :   FUNCTION identifier '(' formalList ')' stmts
             ;
 
 formalList  :   formal optFormals   { $2->push_front($1); $$ = $2; }
-            |   /* empty */         { $$ = new std::list<SyntaxFormal *>(); }
+            |   /* empty */         { $$ = new std::list<SyntaxFormal*>(); }
             ;
 
 optFormals  :   ',' formal optFormals   { $3->push_front($2); $$ = $3; }
-            |   /* empty */             { $$ = new std::list<SyntaxFormal *>(); }
+            |   /* empty */             { $$ = new std::list<SyntaxFormal*>(); }
             ;
 
 formal      :   identifier
@@ -356,16 +356,21 @@ formal      :   identifier
             ;
 
 stmts       :   '{' stmtList '}'                { $$ = $2; }
-            |   stmtList                        { $$ = $1; }
+            |   statement
+                {
+                    std::list<SyntaxElement*> stmts;
+                    stmts.push_back($1);
+                    $$ = &stmts;
+                }
             ;
 
 stmtList        :   statement optStatements     { $2->push_front($1); $$ = $2; }
-                |   /* empty */                 { $$ = new std::list<SyntaxElement *>(); }   
+                |   /* empty */                 { $$ = new std::list<SyntaxElement*>(); }   
                 ;
 
 optStatements   :   ';' statement optStatements     { $3->push_front($2); $$ = $3; }
                 |   '\n' statement optStatements    { $3->push_front($2); $$ = $3; }
-                |   /* empty */                     { $$ = new std::list<SyntaxElement *>(); }
+                |   /* empty */                     { $$ = new std::list<SyntaxElement*>(); }
                 ;
 
 statement   :   ifStatement             { $$ = $1; }
