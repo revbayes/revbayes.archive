@@ -19,10 +19,15 @@
 #include "Distribution.h"
 #include "RbDouble.h"
 #include "RbNames.h"
+#include "StringVector.h"
 
 
+/** Get class vector describing type of object */
+const StringVector& Distribution::getClass(void) const {
 
-const StringVector Distribution::rbClass = StringVector(RbNames::Distribution::name) + RbObject::rbClass;
+    static StringVector rbClass = StringVector(Distribution_name) + RbComplex::getClass();
+    return rbClass;
+}
 
 
 std::set<DAGNode*>& Distribution::getParents() {

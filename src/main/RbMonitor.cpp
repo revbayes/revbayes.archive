@@ -5,6 +5,8 @@
 #include "RbInt.h"
 #include "RbMonitor.h"
 #include "RbNames.h"
+#include "StringVector.h"
+
 #include <iostream>
 
 
@@ -43,7 +45,7 @@ bool RbMonitor::equals(const RbObject* obj) const
 /** Get class vector describing type of object */
 const StringVector& RbMonitor::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::RbMonitor::name) + RbComplex::getClass();
+    static StringVector rbClass = StringVector(RbMonitor_name) + RbComplex::getClass();
     return rbClass;
 }
 
@@ -61,39 +63,6 @@ std::string RbMonitor::toString(void) const {
     return "";
 }
 
-RbObject& RbMonitor::operator=(const RbObject& obj) {
-	try {
-        // Use built-in fast down-casting first
-        const RbMonitor& x = dynamic_cast<const RbMonitor&> (obj);
-
-        RbMonitor& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const RbMonitor& x = dynamic_cast<const RbMonitor&> (*(obj.convertTo(RbNames::Monitor::name)));
-
-            RbMonitor& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::Monitor::name);
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-RbMonitor& RbMonitor::operator=(const RbMonitor& o) {
-
-	(*node) = (*o.node);
-	outStrm = o.outStrm;
-	sampleFrequency = o.sampleFrequency;
-	return *this;
-}
 
 void RbMonitor::monitor(int i) {
 

@@ -24,19 +24,23 @@
 
 #include <set>
 #include <string>
-#include "RbObject.h"
+#include "RbComplex.h"
 #include "StringVector.h"
 
 class RandomNumberGenerator;
 class DAGNode;
 
-class Distribution: public RbObject {
+class Distribution: public RbComplex {
 
 public:
     static const StringVector   rbClass;            //!< Static class attribute
 
 	virtual ~Distribution() { }                        //!< Destructor does nothing
 
+    // Basic utility functions
+    virtual const StringVector&     getClass(void) const;       //!< Get class vector describing type of object    
+
+    // Regular functions
 	std::set<DAGNode*>&            getParents(void);
     std::string                    getReturnType() const { return returnType; }    //!< Get return type
 	virtual double                 lnPdf(const RbObject* o) = 0;       //!< Ln probability density function
@@ -46,7 +50,7 @@ public:
 
 protected:
 	Distribution(RandomNumberGenerator* r) :
-		RbObject() {
+		RbComplex() {
 		rng = r;
 	}
 

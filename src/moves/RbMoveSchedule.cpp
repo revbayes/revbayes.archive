@@ -57,39 +57,6 @@ std::string RbMoveSchedule::toString(void) const {
     return "move schedule";
 }
 
-RbObject& RbMoveSchedule::operator=(const RbObject& obj) {
-    try {
-        // Use built-in fast down-casting first
-        const RbMoveSchedule& x = dynamic_cast<const RbMoveSchedule&> (obj);
-
-        RbMoveSchedule& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const RbMoveSchedule& x = dynamic_cast<const RbMoveSchedule&> (*(obj.convertTo(
-                    "moveSchedule")));
-
-            RbMoveSchedule& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0]
-                    + " to moveSchedule");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-RbMoveSchedule& RbMoveSchedule::operator=(const RbMoveSchedule& obj) {
-    rng = obj.rng;
-    schedule = obj.schedule;
-    sumWeights = obj.sumWeights;
-}
 
 RbMove* RbMoveSchedule::getNext() {
 

@@ -45,6 +45,10 @@ add_executable(testParser \\
 ../../dag/ConstantNode.cpp \\
 ../../dag/StochasticNode.cpp \\
 ../../dag/DeterministicNode.cpp \\
+../../moves/objects/RbMove.cpp \\
+../../moves/RbMoveSchedule.cpp \\
+../../distributions/Distribution.cpp \\
+../../main/RbMonitor.cpp \\
 ../../utils/RbException.cpp \\
-../../utils/RbNames.h \\
+../../utils/RandomNumberGenerator.cpp \\
 testParser.cpp)

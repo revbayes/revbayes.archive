@@ -34,11 +34,7 @@ class RbMoveSchedule : public RbComplex {
         double					   getUpdateWeight(void) { return dagUpdateWeight; }
 
 
-        // overloaded operators
-        RbObject&                  operator=(const RbObject& o);
-        RbMoveSchedule&            operator=(const RbMoveSchedule& o);
-
-        RbMove*                         getNext();
+        RbMove*                         getNext(); 
         void                            addMove(RbMove* m, double w);
 
     protected:
