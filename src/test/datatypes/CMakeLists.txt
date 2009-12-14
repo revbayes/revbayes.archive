@@ -4,7 +4,7 @@
 #add_executable(testDouble ${datatypes}../../utils/RbException.cpp  ../../datatypes/RbObject.cpp ../../datatypes/primitive/RbDouble.cpp testDouble.cpp)
 
 ### int
-#add_executable(testInt ../../datatypes/RbObject.cpp ../../datatypes/primitive/RbPrimitive.cpp ../../datatypes/complex/RbComplex.cpp ../../datatypes/complex/StringVector.cpp ../../utils/RbException.cpp ../../datatypes/primitive/RbInt.cpp ../../datatypes/primitive/RbBool.cpp ../../datatypes/primitive/RbDouble.cpp testInt.cpp)
+#add_executable(testInt ../../datatypes/RbObject.cpp ../../datatypes/complex/RbComplex.cpp ../../datatypes/complex/StringVector.cpp ../../utils/RbException.cpp ../../datatypes/primitive/RbInt.cpp ../../datatypes/primitive/RbBool.cpp ../../datatypes/primitive/RbDouble.cpp testInt.cpp)
 ###add_executable(testInt ${sources} testInt.cpp)
 
 ### bool

@@ -168,6 +168,16 @@ RbObject* StringVector::getElementRef(const IntVector& index) {
 }
 
 
+/** Allow parser to resize the string vector */
+void StringVector::resize(IntVector const& len) {
+
+    if ( len.size() != 1 )
+        throw (RbException("Length specification error"));
+
+    value.resize(len[0]);
+}
+
+
 /** Allow parser to set an element (any type conversion is done by the parser) */
 void StringVector::setElement(const IntVector& index, RbObject* val) {
 

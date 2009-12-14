@@ -39,7 +39,7 @@ class RbObjectWrapper {
         virtual const RbObject*         getValElement(const IntVector& index) const = 0;            //!< Get value element
         virtual void                    printStruct(std::ostream& o) const;                         //!< Print struct for user
         virtual void                    printValue(std::ostream& o) const = 0;                      //!< Print value for user
-        virtual void                    setElement(const IntVector& index, RbObject* val);          //!< Set element value
+        virtual void                    setElement(const IntVector& index, RbObject* val) = 0;      //!< Set element value
 
         // Functions you may want to overrride
         virtual const RbObjectWrapper*  getVarElement(const IntVector& index) const;                //!< Get variable element

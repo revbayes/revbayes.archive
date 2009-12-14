@@ -75,6 +75,54 @@ UserFunction::~UserFunction() {
 }
 
 
+/** Brief ino on the function */
+std::string UserFunction::briefInfo(void) const {
+
+    std::ostringstream o;
+    o << "UserFunction: ";
+    printValue(o);
+
+    return o.str();
+}
+
+
+/** Clone function */
+UserFunction* UserFunction::clone(void) const {
+
+    return new UserFunction(*this);
+}
+
+
+/** Equals comparison */
+bool UserFunction::equals(const RbObject* x) const {
+
+	const UserFunction* p = dynamic_cast<const UserFunction*>(x);
+    if (p == NULL)
+        return false;
+
+    bool result = true;
+    result = result && defineEnvironment == p->defineEnvironment;   // Environments MUST be same pointer
+    result = result && returnType == p->returnType;                 // Return type must be same
+
+    int index;
+    for (index=0; argumentRules[index]!= NULL && p->argumentRules[index]!=NULL; index++)
+        result = result && argumentRules[index] == p->argumentRules[index];         // TODO: Equals comparison is needed!
+
+    if (argumentRules[index] != NULL || p->argumentRules[index] != NULL)
+        return false;
+    
+    if (code->size() != p->code->size())
+        return false;
+
+    std::list<SyntaxElement*>::const_iterator i, j;
+    for (i=code->begin(), j=p->code->begin(); i!=code->end(); ++i, ++j)
+        result = result && ((*i)->equals(*j));
+
+    return result;
+}
+
+
+
 /** Execute function */
 const RbObject* UserFunction::executeOperation(const std::vector<RbObjectWrapper*>& args) const {
 

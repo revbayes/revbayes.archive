@@ -6,6 +6,7 @@ add_executable(testParser \\
 ../../parser/Frame.cpp \\
 ../../parser/FunctionTable.cpp \\
 ../../parser/Workspace.cpp \\
+../../parser/SyntaxElement.cpp \\
 ../../parser/SyntaxAssignExpr.cpp \\
 ../../parser/SyntaxBinaryExpr.cpp \\
 ../../parser/SyntaxClassDef.cpp \\
@@ -21,16 +22,17 @@ add_executable(testParser \\
 ../../datatypes/RbObject.cpp \\
 ../../datatypes/RbInternal.cpp \\
 ../../datatypes/RbUndefined.cpp \\
-../../datatypes/primitive/RbPrimitive.cpp \\
 ../../datatypes/primitive/RbDouble.cpp \\
 ../../datatypes/primitive/RbInt.cpp \\
 ../../datatypes/primitive/RbBool.cpp \\
 ../../datatypes/complex/RbComplex.cpp \\
 ../../datatypes/complex/MethodDescr.cpp \\
 ../../datatypes/complex/MethodTable.cpp \\
+../../datatypes/complex/RbString.cpp \\
 ../../datatypes/complex/StringVector.cpp \\
 ../../datatypes/complex/IntVector.cpp \\
-../../datatypes/complex/RbBitset.cpp \\
+../../datatypes/complex/Vector.cpp \\
+../../datatypes/complex/Simplex.cpp \\
 ../../functions/Argument.cpp \\
 ../../functions/ArgumentRule.cpp \\
 ../../functions/Ellipsis.cpp \\
@@ -44,17 +46,5 @@ add_executable(testParser \\
 ../../dag/StochasticNode.cpp \\
 ../../dag/DeterministicNode.cpp \\
 ../../utils/RbException.cpp \\
-../../utils/RbStatistics.cpp \\
 ../../utils/RbNames.h \\
-../../utils/RbMath.cpp \\
-../../moves/objects/MoveSlidingWindow.cpp \\
-../../moves/objects/RbMove.cpp \\
-../../moves/RbMoveSchedule.cpp \\
-../../moves/objects/MoveScale.cpp
-../../distributions/Distribution.cpp
-../../distributions/statistics/DistExponential.cpp
-../../distributions/statistics/DistNormal.cpp \\
-../../distributions/statistics/DistUniform.cpp \\
-../../main/RbMonitor.cpp \\
-../../inference/mcmc/RbMcmc.cpp \\
 testParser.cpp)

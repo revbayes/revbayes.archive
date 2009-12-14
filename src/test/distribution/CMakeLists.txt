@@ -2,7 +2,7 @@
 
 ### normal distribution
 add_executable(testDistNormal ../../datatypes/RbObject.cpp ../../datatypes/complex/StringVector.cpp ../../datatypes/complex/RbComplex.cpp \\
-../../utils/RbException.cpp ../../dag/ConstantNode.cpp ../../dag/DAGNode.cpp ../../datatypes/primitive/RbPrimitive.cpp \\
+../../utils/RbException.cpp ../../dag/ConstantNode.cpp ../../dag/DAGNode.cpp \\
 ../../moves/objects/RbMove.cpp ../../moves/RbMoveSchedule.cpp ../../utils/RandomNumberGenerator.cpp \\
 ../../datatypes/primitive/RbDouble.cpp ../../datatypes/primitive/RbInt.cpp ../../datatypes/primitive/RbBool.cpp \\
 ../../functions/Argument.cpp ../../functions/ArgumentRule.cpp ../../functions/RbFunction.cpp \\
@@ -11,7 +11,7 @@ add_executable(testDistNormal ../../datatypes/RbObject.cpp ../../datatypes/compl
 
 
 add_executable(testDists ../../datatypes/RbObject.cpp ../../datatypes/complex/StringVector.cpp ../../datatypes/complex/RbComplex.cpp \\
-../../utils/RbException.cpp ../../dag/ConstantNode.cpp ../../dag/DAGNode.cpp ../../datatypes/primitive/RbPrimitive.cpp \\
+../../utils/RbException.cpp ../../dag/ConstantNode.cpp ../../dag/DAGNode.cpp \\
 ../../datatypes/primitive/RbDouble.cpp ../../datatypes/primitive/RbInt.cpp ../../datatypes/primitive/RbBool.cpp \\
 ../../functions/Argument.cpp ../../functions/ArgumentRule.cpp ../../functions/RbFunction.cpp \\
 ../../utils/RbStatistics.cpp ../../utils/RbMath.cpp \\

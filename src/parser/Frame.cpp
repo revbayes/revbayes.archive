@@ -137,7 +137,14 @@ int Frame::getDim(const std::string& name) const {
 }
 
 
-/** Get variable (a regular pointer so that caller can ask the variable to set its value, for instance) */
+/** Get value (read-only) */
+const RbObject* Frame::getValue(const std::string& name) const {
+
+   return getVariable(name)->getValue(); 
+}
+
+
+/** Get variable (read-only) */
 const RbObjectWrapper* Frame::getVariable(const std::string& name) const {
 
     std::map<const std::string, ObjectSlot>::const_iterator it = variableTable.find(name);

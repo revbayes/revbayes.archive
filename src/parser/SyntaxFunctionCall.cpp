@@ -122,7 +122,7 @@ DAGNode* SyntaxFunctionCall::getDAGNode(Frame* formal) const {
     if (variable == NULL) {
         func = Workspace::userWorkspace().getFunction(*functionName, args);
         if (func == NULL)
-            throw(RbException("Could not find function called '" + functionName->getString() +
+            throw(RbException("Could not find function called '" + functionName->getValue() +
                 "' taking specified arguments"));
     }
     else

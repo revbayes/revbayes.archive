@@ -46,7 +46,7 @@ class UserFunction :  public RbFunction {
 
         // Basic utility functions
         std::string                 briefInfo() const;                  //!< Brief info about object
-        RbObject*                   clone() const;                      //!< Clone object
+        UserFunction*               clone() const;                      //!< Clone object
         bool                        equals(const RbObject* x) const;    //!< Equals comparison
         const StringVector&         getClass() const;                   //!< Get class vector
         std::string                 toString() const;                   //!< Complete info about object

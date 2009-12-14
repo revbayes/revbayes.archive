@@ -43,6 +43,17 @@ RbFunction::RbFunction(const RbFunction &fn) : RbObject() {
 }
 
 
+/** Brief ino on the function */
+std::string RbFunction::briefInfo(void) const {
+
+    std::ostringstream o;
+    o << "RbFunction: ";
+    printValue(o);
+
+    return o.str();
+}
+
+
 /** Get class vector describing type of object */
 const StringVector& RbFunction::getClass(void) const { 
 
