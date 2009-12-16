@@ -199,10 +199,19 @@
 #include <list>
 #include <string>
 
-extern int yyerror(char *);
+/* Set flag for debugging info */
+#if defined (DEBUG_PARSER)
+#define YY_VERBOSE
+#endif
+
 extern int yylex(void);
 extern char *yytext;
-extern Parser parser;
+
+/* The function yyerror handles errors. It is defined below. */
+int yyerror(char *);
+
+/* We use the global parser to execute the syntax tree */
+Parser& parser = Parser::getParser();
 
 #ifdef YYDEBUG
 #warning "Compiled with parser debug option"
@@ -260,12 +269,13 @@ typedef struct yyltype
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 91 "grammar.y"
+#line 100 "grammar.y"
 {
-    RbString*                       string;
+    char*                           string;
     double                          realValue;
     int                             intValue;
     bool                            boolValue;
+    RbString*                       idString;
     SyntaxElement*                  syntaxElement;
     SyntaxVariable*                 syntaxVariable;
     SyntaxFunctionCall*             syntaxFunctionCall;
@@ -276,7 +286,7 @@ typedef union YYSTYPE
     std::list<SyntaxFormal *>*      formalList;
 }
 /* Line 193 of yacc.c.  */
-#line 280 "grammar.tab.c"
+#line 290 "grammar.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -289,7 +299,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 293 "grammar.tab.c"
+#line 303 "grammar.tab.c"
 
 #ifdef short
 # undef short
@@ -616,17 +626,17 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   199,   199,   200,   201,   202,   203,   204,   205,   206,
-     207,   210,   212,   214,   215,   216,   218,   220,   221,   222,
-     223,   224,   226,   227,   228,   229,   230,   231,   233,   234,
-     235,   236,   238,   239,   240,   242,   244,   247,   254,   261,
-     268,   273,   280,   281,   284,   289,   296,   297,   300,   301,
-     304,   309,   316,   321,   328,   329,   332,   333,   336,   341,
-     346,   351,   358,   359,   367,   368,   371,   372,   373,   376,
-     377,   378,   379,   380,   381,   382,   383,   384,   387,   388,
-     391,   392,   395,   396,   397,   400,   401,   404,   411,   412,
-     414,   417,   420,   423,   426,   429,   432,   433,   436,   439,
-     440,   441,   442,   443,   444
+       0,   209,   209,   210,   211,   212,   217,   222,   227,   232,
+     237,   244,   246,   248,   249,   250,   252,   254,   255,   256,
+     257,   258,   260,   261,   262,   263,   264,   265,   267,   268,
+     269,   270,   272,   273,   274,   276,   278,   281,   288,   295,
+     302,   307,   314,   315,   318,   323,   330,   331,   334,   335,
+     338,   343,   350,   355,   362,   363,   366,   367,   370,   375,
+     380,   385,   392,   393,   401,   402,   405,   406,   407,   410,
+     411,   412,   413,   414,   415,   416,   417,   418,   421,   422,
+     425,   426,   429,   430,   431,   434,   435,   438,   445,   446,
+     448,   451,   454,   457,   460,   463,   466,   467,   470,   473,
+     474,   475,   476,   477,   478
 };
 #endif
 
@@ -1729,182 +1739,200 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 199 "grammar.y"
+#line 209 "grammar.y"
     { return 0; }
     break;
 
   case 3:
-#line 200 "grammar.y"
+#line 210 "grammar.y"
     { return 0; }
     break;
 
   case 4:
-#line 201 "grammar.y"
+#line 211 "grammar.y"
     { return 0;}
     break;
 
   case 5:
-#line 202 "grammar.y"
-    { return parser.execute((yyvsp[(1) - (2)].syntaxElement)); }
+#line 213 "grammar.y"
+    {
+                    PRINTF("Bison trying to execute statement\n");
+                    return parser.execute((yyvsp[(1) - (2)].syntaxElement));
+                }
     break;
 
   case 6:
-#line 203 "grammar.y"
-    { return parser.execute((yyvsp[(1) - (2)].syntaxElement)); }
+#line 218 "grammar.y"
+    {
+                    PRINTF("Bison trying to execute declaration\n");
+                    return parser.execute((yyvsp[(1) - (2)].syntaxElement));
+                }
     break;
 
   case 7:
-#line 204 "grammar.y"
-    { return parser.execute((yyvsp[(1) - (2)].syntaxElement)); }
+#line 223 "grammar.y"
+    {
+                    PRINTF("Bison trying to execute expression\n");
+                    return parser.execute((yyvsp[(1) - (2)].syntaxElement));
+                }
     break;
 
   case 8:
-#line 205 "grammar.y"
-    { return parser.info(new SyntaxConstant((yyvsp[(2) - (3)].string))); }
+#line 228 "grammar.y"
+    {
+                    PRINTF("Bison trying to get help for symbol\n");
+                    return parser.help((yyvsp[(2) - (3)].idString));
+                }
     break;
 
   case 9:
-#line 206 "grammar.y"
-    { return parser.info((yyvsp[(2) - (3)].syntaxFunctionCall)); }
+#line 233 "grammar.y"
+    {
+                    PRINTF("Bison trying to get help for function call\n");
+                    return parser.help((yyvsp[(2) - (3)].syntaxFunctionCall));
+                }
     break;
 
   case 10:
-#line 207 "grammar.y"
-    { YYABORT; }
+#line 238 "grammar.y"
+    {
+                    PRINTF("Bison calling YYABORT\n");
+                    YYABORT;
+                }
     break;
 
   case 11:
-#line 210 "grammar.y"
+#line 244 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 12:
-#line 212 "grammar.y"
+#line 246 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(2) - (3)].syntaxElement); }
     break;
 
   case 13:
-#line 214 "grammar.y"
+#line 248 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxUnaryExpr(SyntaxUnaryExpr::UMinus, (yyvsp[(2) - (2)].syntaxElement)); }
     break;
 
   case 14:
-#line 215 "grammar.y"
+#line 249 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxUnaryExpr(SyntaxUnaryExpr::UPlus, (yyvsp[(2) - (2)].syntaxElement)); }
     break;
 
   case 15:
-#line 216 "grammar.y"
+#line 250 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxUnaryExpr(SyntaxUnaryExpr::UNot, (yyvsp[(2) - (2)].syntaxElement)); }
     break;
 
   case 16:
-#line 218 "grammar.y"
+#line 252 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Range, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 17:
-#line 220 "grammar.y"
+#line 254 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Add, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 18:
-#line 221 "grammar.y"
+#line 255 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Sub, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 19:
-#line 222 "grammar.y"
+#line 256 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Mul, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 20:
-#line 223 "grammar.y"
+#line 257 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Div, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 21:
-#line 224 "grammar.y"
+#line 258 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Exp, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 22:
-#line 226 "grammar.y"
+#line 260 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Lt, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 23:
-#line 227 "grammar.y"
+#line 261 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Le, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 24:
-#line 228 "grammar.y"
+#line 262 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Eq, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 25:
-#line 229 "grammar.y"
+#line 263 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Ne, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 26:
-#line 230 "grammar.y"
+#line 264 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Ge, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 27:
-#line 231 "grammar.y"
+#line 265 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Gt, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 28:
-#line 233 "grammar.y"
+#line 267 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::And, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 29:
-#line 234 "grammar.y"
+#line 268 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Or, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 30:
-#line 235 "grammar.y"
+#line 269 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::And2, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 31:
-#line 236 "grammar.y"
+#line 270 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Or2, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 32:
-#line 238 "grammar.y"
+#line 272 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 33:
-#line 239 "grammar.y"
+#line 273 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 34:
-#line 240 "grammar.y"
+#line 274 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 35:
-#line 242 "grammar.y"
+#line 276 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxFunctionCall); }
     break;
 
   case 36:
-#line 244 "grammar.y"
+#line 278 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxVariable); }
     break;
 
   case 37:
-#line 248 "grammar.y"
+#line 282 "grammar.y"
     { 
                         PRINTF("Parser inserting arrow assignment (ARROW_ASSIGN) in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxAssignExpr(SyntaxAssignExpr::ArrowAssign, (yyvsp[(1) - (3)].syntaxVariable), (yyvsp[(3) - (3)].syntaxElement));
@@ -1912,7 +1940,7 @@ yyreduce:
     break;
 
   case 38:
-#line 255 "grammar.y"
+#line 289 "grammar.y"
     {
                         PRINTF("Parser inserting tilde assignment (TILDE_ASSIGN) in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxAssignExpr(SyntaxAssignExpr::TildeAssign, (yyvsp[(1) - (3)].syntaxVariable), (yyvsp[(3) - (3)].syntaxFunctionCall));
@@ -1920,7 +1948,7 @@ yyreduce:
     break;
 
   case 39:
-#line 262 "grammar.y"
+#line 296 "grammar.y"
     {
                         PRINTF("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
                         (yyval.syntaxElement) = new SyntaxAssignExpr(SyntaxAssignExpr::EquationAssign, (yyvsp[(1) - (3)].syntaxVariable), (yyvsp[(3) - (3)].syntaxElement)); 
@@ -1928,69 +1956,69 @@ yyreduce:
     break;
 
   case 40:
-#line 269 "grammar.y"
+#line 303 "grammar.y"
     {
                     PRINTF("Parser inserting variable (VARIABLE) in syntax tree\n");
-                    (yyval.syntaxVariable) = new SyntaxVariable((yyvsp[(1) - (2)].string), (yyvsp[(2) - (2)].syntaxElementList));
+                    (yyval.syntaxVariable) = new SyntaxVariable((yyvsp[(1) - (2)].idString), (yyvsp[(2) - (2)].syntaxElementList));
                 }
     break;
 
   case 41:
-#line 274 "grammar.y"
+#line 308 "grammar.y"
     {
                     PRINTF("Parser inserting member variable (MEMBER) in syntax tree\n");
-                    (yyval.syntaxVariable) = new SyntaxVariable((yyvsp[(1) - (4)].syntaxVariable), (yyvsp[(3) - (4)].string), (yyvsp[(4) - (4)].syntaxElementList));
+                    (yyval.syntaxVariable) = new SyntaxVariable((yyvsp[(1) - (4)].syntaxVariable), (yyvsp[(3) - (4)].idString), (yyvsp[(4) - (4)].syntaxElementList));
                 }
     break;
 
   case 42:
-#line 280 "grammar.y"
+#line 314 "grammar.y"
     { (yyvsp[(4) - (4)].syntaxElementList)->push_front((yyvsp[(2) - (4)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(4) - (4)].syntaxElementList); }
     break;
 
   case 43:
-#line 281 "grammar.y"
+#line 315 "grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(); }
     break;
 
   case 44:
-#line 285 "grammar.y"
+#line 319 "grammar.y"
     {
                         PRINTF("Parser inserting function call in syntax tree\n");
-                        (yyval.syntaxFunctionCall) = new SyntaxFunctionCall((yyvsp[(1) - (4)].string), (yyvsp[(3) - (4)].argumentList));
+                        (yyval.syntaxFunctionCall) = new SyntaxFunctionCall((yyvsp[(1) - (4)].idString), (yyvsp[(3) - (4)].argumentList));
                     }
     break;
 
   case 45:
-#line 290 "grammar.y"
+#line 324 "grammar.y"
     {
                         PRINTF("Parser inserting member function call in syntax tree\n");
-                        (yyval.syntaxFunctionCall) = new SyntaxFunctionCall((yyvsp[(1) - (6)].syntaxVariable), (yyvsp[(3) - (6)].string), (yyvsp[(5) - (6)].argumentList));
+                        (yyval.syntaxFunctionCall) = new SyntaxFunctionCall((yyvsp[(1) - (6)].syntaxVariable), (yyvsp[(3) - (6)].idString), (yyvsp[(5) - (6)].argumentList));
                     }
     break;
 
   case 46:
-#line 296 "grammar.y"
+#line 330 "grammar.y"
     { (yyvsp[(2) - (2)].argumentList)->push_front((yyvsp[(1) - (2)].syntaxLabeledExpr)); (yyval.argumentList) = (yyvsp[(2) - (2)].argumentList); }
     break;
 
   case 47:
-#line 297 "grammar.y"
+#line 331 "grammar.y"
     { (yyval.argumentList) = new std::list<SyntaxLabeledExpr *>(); }
     break;
 
   case 48:
-#line 300 "grammar.y"
+#line 334 "grammar.y"
     { (yyvsp[(3) - (3)].argumentList)->push_front((yyvsp[(2) - (3)].syntaxLabeledExpr)); (yyval.argumentList) = (yyvsp[(3) - (3)].argumentList); }
     break;
 
   case 49:
-#line 301 "grammar.y"
+#line 335 "grammar.y"
     { (yyval.argumentList) = new std::list<SyntaxLabeledExpr *>(); }
     break;
 
   case 50:
-#line 305 "grammar.y"
+#line 339 "grammar.y"
     {
                     PRINTF("Parser inserting unlabeled argument in syntax tree\n");
                     (yyval.syntaxLabeledExpr) = new SyntaxLabeledExpr(NULL, (yyvsp[(1) - (1)].syntaxElement));
@@ -1998,88 +2026,88 @@ yyreduce:
     break;
 
   case 51:
-#line 310 "grammar.y"
+#line 344 "grammar.y"
     { 
                     PRINTF("Parser inserting labeled argument in syntax tree\n");
-                    (yyval.syntaxLabeledExpr) = new SyntaxLabeledExpr((yyvsp[(1) - (3)].string), (yyvsp[(3) - (3)].syntaxElement));
+                    (yyval.syntaxLabeledExpr) = new SyntaxLabeledExpr((yyvsp[(1) - (3)].idString), (yyvsp[(3) - (3)].syntaxElement));
                 }
     break;
 
   case 52:
-#line 317 "grammar.y"
+#line 351 "grammar.y"
     {
                 PRINTF("Parser inserting function definition in syntax tree\n");
-                (yyval.syntaxElement) = new SyntaxFunctionDef((RbString*)(NULL), (yyvsp[(2) - (6)].string), (yyvsp[(4) - (6)].formalList), (yyvsp[(6) - (6)].syntaxElementList));
+                (yyval.syntaxElement) = new SyntaxFunctionDef((RbString*)(NULL), (yyvsp[(2) - (6)].idString), (yyvsp[(4) - (6)].formalList), (yyvsp[(6) - (6)].syntaxElementList));
                 }
     break;
 
   case 53:
-#line 322 "grammar.y"
+#line 356 "grammar.y"
     {
                 PRINTF("Parser inserting typed function definition in syntax tree\n");
-                (yyval.syntaxElement) = new SyntaxFunctionDef((yyvsp[(2) - (7)].string), (yyvsp[(3) - (7)].string), (yyvsp[(5) - (7)].formalList), (yyvsp[(7) - (7)].syntaxElementList));
+                (yyval.syntaxElement) = new SyntaxFunctionDef((yyvsp[(2) - (7)].idString), (yyvsp[(3) - (7)].idString), (yyvsp[(5) - (7)].formalList), (yyvsp[(7) - (7)].syntaxElementList));
                 }
     break;
 
   case 54:
-#line 328 "grammar.y"
+#line 362 "grammar.y"
     { (yyvsp[(2) - (2)].formalList)->push_front((yyvsp[(1) - (2)].syntaxFormal)); (yyval.formalList) = (yyvsp[(2) - (2)].formalList); }
     break;
 
   case 55:
-#line 329 "grammar.y"
+#line 363 "grammar.y"
     { (yyval.formalList) = new std::list<SyntaxFormal*>(); }
     break;
 
   case 56:
-#line 332 "grammar.y"
+#line 366 "grammar.y"
     { (yyvsp[(3) - (3)].formalList)->push_front((yyvsp[(2) - (3)].syntaxFormal)); (yyval.formalList) = (yyvsp[(3) - (3)].formalList); }
     break;
 
   case 57:
-#line 333 "grammar.y"
+#line 367 "grammar.y"
     { (yyval.formalList) = new std::list<SyntaxFormal*>(); }
     break;
 
   case 58:
-#line 337 "grammar.y"
+#line 371 "grammar.y"
     {
                     PRINTF("Inserting untyped labeled formal argument without default in syntax tree\n");
-                    (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (1)].string), NULL);
+                    (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (1)].idString), NULL);
                 }
     break;
 
   case 59:
-#line 342 "grammar.y"
+#line 376 "grammar.y"
     { 
                     PRINTF("Inserting untyped labeled formal argument with default in syntax tree\n");
-                    (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (3)].string), (yyvsp[(3) - (3)].syntaxElement));
+                    (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (3)].idString), (yyvsp[(3) - (3)].syntaxElement));
                 }
     break;
 
   case 60:
-#line 347 "grammar.y"
+#line 381 "grammar.y"
     {
                     PRINTF("Inserting untyped labeled formal argument without default in syntax tree\n");
-                    (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (2)].string), (yyvsp[(2) - (2)].string), NULL);
+                    (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (2)].idString), (yyvsp[(2) - (2)].idString), NULL);
                 }
     break;
 
   case 61:
-#line 352 "grammar.y"
+#line 386 "grammar.y"
     {
                     PRINTF("Inserting typed labeled formal argument with default in syntax tree\n");
-                    (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (4)].string), (yyvsp[(2) - (4)].string), (yyvsp[(4) - (4)].syntaxElement));
+                    (yyval.syntaxFormal) = new SyntaxFormal((yyvsp[(1) - (4)].idString), (yyvsp[(2) - (4)].idString), (yyvsp[(4) - (4)].syntaxElement));
                 }
     break;
 
   case 62:
-#line 358 "grammar.y"
+#line 392 "grammar.y"
     { (yyval.syntaxElementList) = (yyvsp[(2) - (3)].syntaxElementList); }
     break;
 
   case 63:
-#line 360 "grammar.y"
+#line 394 "grammar.y"
     {
                     std::list<SyntaxElement*> stmts;
                     stmts.push_back((yyvsp[(1) - (1)].syntaxElement));
@@ -2088,210 +2116,210 @@ yyreduce:
     break;
 
   case 64:
-#line 367 "grammar.y"
+#line 401 "grammar.y"
     { (yyvsp[(2) - (2)].syntaxElementList)->push_front((yyvsp[(1) - (2)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(2) - (2)].syntaxElementList); }
     break;
 
   case 65:
-#line 368 "grammar.y"
+#line 402 "grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(); }
     break;
 
   case 66:
-#line 371 "grammar.y"
+#line 405 "grammar.y"
     { (yyvsp[(3) - (3)].syntaxElementList)->push_front((yyvsp[(2) - (3)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(3) - (3)].syntaxElementList); }
     break;
 
   case 67:
-#line 372 "grammar.y"
+#line 406 "grammar.y"
     { (yyvsp[(3) - (3)].syntaxElementList)->push_front((yyvsp[(2) - (3)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(3) - (3)].syntaxElementList); }
     break;
 
   case 68:
-#line 373 "grammar.y"
+#line 407 "grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(); }
     break;
 
   case 69:
-#line 376 "grammar.y"
+#line 410 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 70:
-#line 377 "grammar.y"
+#line 411 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 71:
-#line 378 "grammar.y"
+#line 412 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 72:
-#line 379 "grammar.y"
+#line 413 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 73:
-#line 380 "grammar.y"
+#line 414 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 74:
-#line 381 "grammar.y"
+#line 415 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 75:
-#line 382 "grammar.y"
+#line 416 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (2)].syntaxElement); }
     break;
 
   case 76:
-#line 383 "grammar.y"
+#line 417 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (2)].syntaxElement); }
     break;
 
   case 77:
-#line 384 "grammar.y"
+#line 418 "grammar.y"
     { (yyval.syntaxElement) = NULL; }
     break;
 
   case 78:
-#line 387 "grammar.y"
+#line 421 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 79:
-#line 388 "grammar.y"
+#line 422 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 80:
-#line 391 "grammar.y"
+#line 425 "grammar.y"
     { (yyvsp[(2) - (2)].syntaxElementList)->push_front((yyvsp[(1) - (2)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(2) - (2)].syntaxElementList); }
     break;
 
   case 81:
-#line 392 "grammar.y"
+#line 426 "grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(); }
     break;
 
   case 82:
-#line 395 "grammar.y"
+#line 429 "grammar.y"
     { (yyvsp[(3) - (3)].syntaxElementList)->push_back((yyvsp[(2) - (3)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(3) - (3)].syntaxElementList); }
     break;
 
   case 83:
-#line 396 "grammar.y"
+#line 430 "grammar.y"
     { (yyvsp[(3) - (3)].syntaxElementList)->push_back((yyvsp[(2) - (3)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(3) - (3)].syntaxElementList); }
     break;
 
   case 84:
-#line 397 "grammar.y"
+#line 431 "grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(); }
     break;
 
   case 85:
-#line 400 "grammar.y"
+#line 434 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxFormal); }
     break;
 
   case 86:
-#line 401 "grammar.y"
+#line 435 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 87:
-#line 405 "grammar.y"
+#line 439 "grammar.y"
     {
                 PRINTF("Parser inserting class definition (CLASS_DEF) in syntax tree\n");
-                (yyval.syntaxElement) = new SyntaxClassDef((yyvsp[(2) - (7)].string), (yyvsp[(4) - (7)].string), (yyvsp[(6) - (7)].syntaxElementList));
+                (yyval.syntaxElement) = new SyntaxClassDef((yyvsp[(2) - (7)].idString), (yyvsp[(4) - (7)].idString), (yyvsp[(6) - (7)].syntaxElementList));
                 }
     break;
 
   case 88:
-#line 411 "grammar.y"
+#line 445 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::If, (yyvsp[(2) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElementList)); }
     break;
 
   case 89:
-#line 412 "grammar.y"
+#line 446 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::IfElse, (yyvsp[(2) - (5)].syntaxElement), (yyvsp[(3) - (5)].syntaxElementList), (yyvsp[(5) - (5)].syntaxElementList)); }
     break;
 
   case 90:
-#line 414 "grammar.y"
+#line 448 "grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(2) - (3)].syntaxElement); }
     break;
 
   case 91:
-#line 417 "grammar.y"
+#line 451 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::For, (yyvsp[(2) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElementList)); }
     break;
 
   case 92:
-#line 420 "grammar.y"
-    { (yyval.syntaxElement) = new SyntaxForCondition((yyvsp[(2) - (5)].string), (yyvsp[(4) - (5)].syntaxElement)); }
+#line 454 "grammar.y"
+    { (yyval.syntaxElement) = new SyntaxForCondition((yyvsp[(2) - (5)].idString), (yyvsp[(4) - (5)].syntaxElement)); }
     break;
 
   case 93:
-#line 423 "grammar.y"
+#line 457 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::While, (yyvsp[(2) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElementList)); }
     break;
 
   case 94:
-#line 426 "grammar.y"
+#line 460 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::Next); }
     break;
 
   case 95:
-#line 429 "grammar.y"
+#line 463 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::Break); }
     break;
 
   case 96:
-#line 432 "grammar.y"
+#line 466 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::Return); }
     break;
 
   case 97:
-#line 433 "grammar.y"
+#line 467 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::Return, (yyvsp[(2) - (2)].syntaxElement)); }
     break;
 
   case 98:
-#line 436 "grammar.y"
-    { (yyval.string) = (yyvsp[(1) - (1)].string); }
+#line 470 "grammar.y"
+    { (yyval.idString) = new RbString((yyvsp[(1) - (1)].string)); }
     break;
 
   case 99:
-#line 439 "grammar.y"
+#line 473 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxConstant(new RbBool(false)); }
     break;
 
   case 100:
-#line 440 "grammar.y"
+#line 474 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxConstant(new RbBool(true)); }
     break;
 
   case 101:
-#line 441 "grammar.y"
+#line 475 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxConstant(NULL); }
     break;
 
   case 102:
-#line 442 "grammar.y"
+#line 476 "grammar.y"
     { (yyval.syntaxElement) = new SyntaxConstant(new RbInt((yyvsp[(1) - (1)].intValue))); }
     break;
 
   case 103:
-#line 443 "grammar.y"
-    { (yyval.syntaxElement) = new SyntaxConstant((yyvsp[(1) - (1)].string)); }
+#line 477 "grammar.y"
+    { (yyval.syntaxElement) = new SyntaxConstant(new RbString((yyvsp[(1) - (1)].string))); }
     break;
 
   case 104:
-#line 445 "grammar.y"
+#line 479 "grammar.y"
     {
                     /* This code records and preserves input format of the real */
                     int prec;
@@ -2330,7 +2358,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 2334 "grammar.tab.c"
+#line 2362 "grammar.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2544,7 +2572,7 @@ yyreturn:
 }
 
 
-#line 481 "grammar.y"
+#line 515 "grammar.y"
 
 
 
@@ -2552,6 +2580,6 @@ yyreturn:
 int yyerror(char *msg)
 {
     PRINTF("Bison code said: %s\n", msg);
-    return 0;     // or return 1 ??
+    return 1;
 }
 

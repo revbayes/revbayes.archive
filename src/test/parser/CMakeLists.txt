@@ -19,6 +19,10 @@ add_executable(testParser \\
 ../../parser/SyntaxStatement.cpp \\
 ../../parser/SyntaxUnaryExpr.cpp \\
 ../../parser/SyntaxVariable.cpp \\
+../../parser/Parser.cpp \\
+../../parser/lex.yy.cpp \\
+../../parser/grammar.tab.cpp \\
+../../ui/UserInterface.cpp \\
 ../../datatypes/RbObject.cpp \\
 ../../datatypes/RbInternal.cpp \\
 ../../datatypes/RbUndefined.cpp \\

@@ -5,34 +5,16 @@
  */
 
 #include <iostream>
-#include <cmath>
-#include <assert.h>
-#include <vector>
 
-#include "Argument.h"
-#include "ConstantNode.h"
-#include "DAGNode.h"
-#include "Distribution.h"
-#include "DistExponential.h"
-#include "DistNormal.h"
-#include "DistUniform.h"
-#include "MoveSlidingWindow.h"
-#include "MoveScale.h"
-#include "RbDouble.h"
-#include "RbInt.h"
-#include "RbMcmc.h"
-#include "RbModel.h"
-#include "RbMonitor.h"
-#include "RbMove.h"
-#include "RbMoveSchedule.h"
-#include "RbObject.h"
-#include "RbException.h"
-#include "StochasticNode.h"
+#include "Parser.h"
 
 int main(int argc, char **argv) {
 
     // Print a nifty message
-    std::cout << "Welcome to RevBayes" << std::endl;
+    std::cout << std::endl;
+    std::cout << "RevBayes: An R-like environment for evolutionary analysis using Bayesian inference" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Released under the GPL license, version 3" << std::endl;
     std::cout << std::endl;
 
     // Create command line variable
@@ -44,16 +26,14 @@ int main(int argc, char **argv) {
         std::string line;
 
         // Read the command
-        std::cout << "RevBayes >";
-        std::cin >> line;
-        commandLine += line;
+        std::cout << "RevBayes > ";
+        getline(std::cin, line);
 
         // Process the command line
-
-        // If incomplete statement, then delete end comment and newline
-        // else clear commandLine
-        
+        Parser::getParser().processCommand(line);
     }
 
     return 0;
 }
+
+

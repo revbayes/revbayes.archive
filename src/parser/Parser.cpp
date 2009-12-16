@@ -26,26 +26,80 @@
 #include <sstream>
 
 /** Trigger printing of PRINTF debug statements by defining DEBUG_PARSER */
-#ifndef NDEBUG
 #ifdef DEBUG_PARSER
 #define PRINTF printf
 #else
 #define PRINTF(...)
 #endif
+
+
+/** This function gets help info about a symbol */
+int Parser::help(RbString *symbol) const {
+
+    std::ostringstream msg;
+
+#if defined DEBUG_PARSER
+    // Print syntax tree 
+    std::cerr << std::endl;
+    std::cerr << "Parser trying to get help for symbol '" << std::string(*symbol) << "'";
+    std::cerr << std::endl;
 #endif
+
+    // Get some help when we have some help to get
+
+    // Print some silly stuff for now
+    msg << "Sorry, I don't know anything about '" << std::string(*symbol);
+    msg << "'; I wish I did because it looks interesting." << std::endl;
+
+    // Output the message
+    UserInterface::userInterface().output(msg.str());
+
+    // Delete the symbol
+    delete symbol;
+
+    // Return success
+    return 0;
+}
+
+
+/** This function prints help info about a function if it sees a function call */
+int Parser::help(SyntaxElement *root) const {
+
+    std::ostringstream msg;
+
+#if defined DEBUG_PARSER
+    // Print syntax tree
+    std::cerr << std::endl;
+    std::cerr << "Syntax tree root before help:\n";
+    root->print(std::cerr);
+    std::cerr << std::endl;
+#endif
+
+    RbString symbol;
+
+    if ( root->isType(SyntaxFunctionCall_name) ) {
+        symbol = *((SyntaxFunctionCall*)(root))->getFunctionName();
+    }
+    else {
+        msg << "I have no clue -- Bison was not supposed to ask me about this!";
+        UserInterface::userInterface().output(msg.str());
+        delete root;
+        return 1;
+    }
+
+    return help(&symbol);
+}
 
 
 /** This function causes recursive execution of a syntax tree by calling the root to get its value */
 int Parser::execute(SyntaxElement *root) const {
 
 #ifdef DEBUG_PARSER
-    /* No implemeneted recursive print yet, sorry
-    //! Print syntax tree
+    // Print syntax tree
     std::cerr << std::endl;
-    std::cerr << "Syntax tree before execution:\n";
-    root->print(cerr);
+    std::cerr << "Syntax tree root before execution:\n";
+    root->print(std::cerr);
     std::cerr << std::endl;
-    */
 #endif
 
     // Declare a variable for the result
@@ -56,6 +110,7 @@ int Parser::execute(SyntaxElement *root) const {
         result = root->getValue();
     }
     catch(RbException& rbException) {
+        PRINTF("Caught an exception\n");
 
         // Catch a quit request
         if (rbException.getExceptionType() == RbException::QUIT)
@@ -88,80 +143,50 @@ int Parser::execute(SyntaxElement *root) const {
 }
 
 
-/** This function gets info about a symbol */
-int Parser::info(RbString *symbol) const {
+/** Give flex a line to parse */
+void Parser::getline(char* buf, int maxsize) {
 
-    std::ostringstream msg;
+    rrcommand.getline(buf, maxsize-1);
+    buf[strlen(buf)] = '\n';
+    buf[strlen(buf)+1] = '\0';
 
-#if defined DEBUG_PARSER
-    /*
-    Not yet, sorry;
-    // Print syntax tree recursively
-    std::cerr << std::endl;
-    std::cerr << "Syntax tree before info:\n";
-    root->print(std::cerr);
-    std::cerr << std::endl;
-    */
-#endif
-
-    // Get some help when we have some help to get
-
-    // Print some silly stuff for now
-    msg << "Sorry, I don't know anything about '" << std::string(*symbol);
-    msg << "'; I wish I did because it looks interesting" << std::endl;
-
-    // Output the message
-    UserInterface::userInterface().output(msg.str());
-
-    // Delete the symbol
-    delete symbol;
-
-    // Return success
-    return 0;
+    PRINTF("Parser gave flex line:\n%s", buf);
 }
 
 
-/** This function prints info about a function if it sees a function call */
-int Parser::info(SyntaxElement *root) const {
+/** Process command with the help of the Bison-generated code; return 1 if command is incomplete */
+int Parser::processCommand(std::string& command) {
 
-    std::ostringstream msg;
+    extern int yyparse(void);   // Defined in grammar.tab.c (from gammar.y)
 
-#if defined DEBUG_PARSER
-    /*
-    Not yet, sorry;
-    // Print syntax tree recursively
-    std::cerr << std::endl;
-    std::cerr << "Syntax tree before info:\n";
-    root->print(std::cerr);
-    std::cerr << std::endl;
-    */
-#endif
+    // Put command where flex can find it
+    rrcommand << command;
 
-    RbString symbol;
+    // Call Bison code, which calls Flex code, which calls rrinput
+    PRINTF("Calling bison with rrcommand = '%s'\n", rrcommand.str().c_str());
+    int result = yyparse();
 
-    if ( root->isType(SyntaxFunctionCall_name) ) {
-        symbol = *((SyntaxFunctionCall*)(root))->getFunctionName();
+    // Error or just incomplete statement?
+    if (result == 0) {
+        PRINTF("Pareser resetting command string\n");
+        rrcommand.str("");
+        rrcommand.clear();  // Clear any error flags
     }
     else {
-        msg << "I have no clue -- Bison was not supposed to ask me about this!";
-        UserInterface::userInterface().output(msg.str());
-        delete root;
-        return 1;
+        PRINTF("Incomplete command; appending to command string\n");
+        rrcommand << " ";
     }
 
-    // Get some help
-
-    // Print some silly stuff for now
-    msg << "Sorry, I don't know anything about '" << std::string(symbol);
-    msg  << "'; I wish I did because it looks interesting" << std::endl;
-
-    // Output the message
-    UserInterface::userInterface().output(msg.str());
-
-    // Delete syntax tree
-    delete root;
-
-    // Return success
-    return 0;
+    return result;
 }
+
+
+/** Call-back function for the flex-generated code in lex.yy.cpp */
+void rrinput(char* buf, int& result, int maxsize) {
+
+    buf[0] = '\0';
+    Parser::getParser().getline(buf, maxsize);
+    result = int(strlen(buf));
+}
+
 

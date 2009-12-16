@@ -550,9 +550,13 @@ char *yytext;
  */
 
 /* The following statements go into the resulting cpp code */
+
+/* Define the call-back function for receiving input */
 #define YY_INPUT rrinput
+
 #include <cstring>
 
+/* Hack for Windows */
 #ifdef WIN32
 #define strdup(a) _strdup(a)
 #define yywrap() 1
@@ -562,7 +566,8 @@ extern "C" {
 }
 #endif
 
-/* include objects needed to understand grammar.tab.h */
+/* Include objects needed to understand grammar.tab.h */
+#include "Parser.h"     // To catch any parser debug flags
 #include "RbString.h"
 #include "SyntaxElement.h"
 #include "SyntaxFormal.h"
@@ -571,17 +576,16 @@ extern "C" {
 
 #include "grammar.tab.h"
 
-#ifdef DEBUG_LEX
+#ifdef DEBUG_PARSER
 #define PRINTF printf
 #else
 #define PRINTF(...)
 #endif
 
-
 #define YY_NEVER_INTERACTIVE 1
 extern void rrinput(char *,int &,int);
 #define YY_NO_UNISTD_H
-#line 585 "lex.yy.cpp"
+#line 589 "lex.yy.cpp"
 
 #define INITIAL 0
 
@@ -734,9 +738,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 55 "lex.l"
+#line 59 "lex.l"
 
-#line 740 "lex.yy.cpp"
+#line 744 "lex.yy.cpp"
 
 	if ( !(yy_init) )
 		{
@@ -821,7 +825,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 56 "lex.l"
+#line 60 "lex.l"
 {
                                             PRINTF("Found 'function'\n");
                                             return FUNCTION;
@@ -829,7 +833,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 60 "lex.l"
+#line 64 "lex.l"
 {
                                             PRINTF("Found 'class'\n");
                                             return CLASS;
@@ -837,7 +841,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 64 "lex.l"
+#line 68 "lex.l"
 {
                                             PRINTF("Found 'for'\n");
                                             return FOR;
@@ -845,7 +849,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 68 "lex.l"
+#line 72 "lex.l"
 {
                                             PRINTF("Found 'in'\n");
                                             return IN;
@@ -853,7 +857,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 72 "lex.l"
+#line 76 "lex.l"
 {
                                             PRINTF("Found 'if'\n");
                                             return IF;
@@ -861,7 +865,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 76 "lex.l"
+#line 80 "lex.l"
 {
                                             PRINTF("Found 'else'\n");
                                             return ELSE;
@@ -869,7 +873,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 80 "lex.l"
+#line 84 "lex.l"
 {
                                             PRINTF("Found 'while'\n");
                                             return WHILE;
@@ -877,7 +881,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 84 "lex.l"
+#line 88 "lex.l"
 {
                                             PRINTF("Found 'next'\n");
                                             return NEXT;
@@ -885,7 +889,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 88 "lex.l"
+#line 92 "lex.l"
 {
                                             PRINTF("Found 'break'\n");
                                             return BREAK;
@@ -893,7 +897,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 92 "lex.l"
+#line 96 "lex.l"
 {
                                             PRINTF("Found 'return'\n");
                                             return RETURN;
@@ -901,7 +905,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 96 "lex.l"
+#line 100 "lex.l"
 {
                                             PRINTF("Found 'null'\n");
                                             return NULL;
@@ -909,7 +913,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 100 "lex.l"
+#line 104 "lex.l"
 {
                                             PRINTF("Found 'false'\n");
                                             return FALSE;
@@ -917,7 +921,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 104 "lex.l"
+#line 108 "lex.l"
 {
                                             PRINTF("Found 'true'\n");
                                             return TRUE;
@@ -925,7 +929,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 108 "lex.l"
+#line 112 "lex.l"
 {
                                             PRINTF("Found 'NULL'\n");
                                             return NULL;
@@ -933,7 +937,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 112 "lex.l"
+#line 116 "lex.l"
 {
                                             PRINTF("Found 'FALSE'\n");
                                             return FALSE;
@@ -941,7 +945,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 116 "lex.l"
+#line 120 "lex.l"
 {
                                             PRINTF("Found 'TRUE'\n");
                                             return TRUE;
@@ -949,7 +953,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 120 "lex.l"
+#line 124 "lex.l"
 {
                                             PRINTF("Found real %s\n", yytext);
                                             yylval.realValue = strtod(yytext,NULL); 
@@ -959,7 +963,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 126 "lex.l"
+#line 130 "lex.l"
 {
                                             PRINTF("Found real %s\n", yytext);
                                             yylval.realValue = strtod(yytext,NULL); 
@@ -969,7 +973,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 132 "lex.l"
+#line 136 "lex.l"
 { 
                                             /* Treat ints with exponents as floating point values */
                                             PRINTF("Found int with exponent %s\n", yytext);
@@ -980,7 +984,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 139 "lex.l"
+#line 143 "lex.l"
 {
                                             PRINTF("Found int %s\n", yytext);
                                             yylval.intValue = strtol(yytext,NULL,10); 
@@ -990,10 +994,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 145 "lex.l"
+#line 149 "lex.l"
 {
                                             PRINTF("Found id (name) %s\n", yytext);
-                                            yylval.string = new RbString(yytext);
+                                            yylval.string = yytext;
                                             PRINTF("string value = %s\n", yylval.string);
                                             return NAME;
                                         }
@@ -1001,17 +1005,17 @@ YY_RULE_SETUP
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 151 "lex.l"
+#line 155 "lex.l"
 {
                                             PRINTF("Found string %s\n", yytext); 
-                                            yylval.string = new RbString(yytext);
+                                            yylval.string = yytext;
                                             PRINTF("string value = %s\n", yylval.string);
                                             return STRING;
                                         }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 157 "lex.l"
+#line 161 "lex.l"
 {
                                             PRINTF("Found comment %s\n", yytext);
                                             return COMMENT;
@@ -1019,7 +1023,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 161 "lex.l"
+#line 165 "lex.l"
 {
                                             PRINTF("Found '<-'\n");
                                             return LEFT_ASSIGN;
@@ -1027,7 +1031,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 165 "lex.l"
+#line 169 "lex.l"
 {
                                             PRINTF("Found ':='\n");
                                             return EQUATION_ASSIGN;
@@ -1035,7 +1039,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 169 "lex.l"
+#line 173 "lex.l"
 {
                                             PRINTF("Found '~'\n");
                                             return TILDE_ASSIGN;
@@ -1043,7 +1047,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 173 "lex.l"
+#line 177 "lex.l"
 {
                                             PRINTF("Found '='\n");
                                             return EQUAL;
@@ -1051,7 +1055,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 177 "lex.l"
+#line 181 "lex.l"
 {
                                             PRINTF("Found '&'\n");
                                             return AND;
@@ -1059,7 +1063,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 181 "lex.l"
+#line 185 "lex.l"
 {
                                             PRINTF("Found '|'\n");
                                             return OR;
@@ -1067,7 +1071,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 185 "lex.l"
+#line 189 "lex.l"
 {
                                             PRINTF("Found '&&'\n");
                                             return AND;
@@ -1075,7 +1079,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 189 "lex.l"
+#line 193 "lex.l"
 {
                                             PRINTF("Found '||'\n");
                                             return OR;
@@ -1083,7 +1087,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 193 "lex.l"
+#line 197 "lex.l"
 {
                                             PRINTF("Found '>'\n");
                                             return GT;
@@ -1091,7 +1095,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 197 "lex.l"
+#line 201 "lex.l"
 {
                                             PRINTF("Found '>='\n");
                                             return GE;
@@ -1099,7 +1103,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 201 "lex.l"
+#line 205 "lex.l"
 {
                                             PRINTF("Found '<'\n");
                                             return LT;
@@ -1107,7 +1111,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 205 "lex.l"
+#line 209 "lex.l"
 {
                                             PRINTF("Found '<='\n");
                                             return LE;
@@ -1115,7 +1119,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 209 "lex.l"
+#line 213 "lex.l"
 {
                                             PRINTF("Found '=='\n");
                                             return EQ;
@@ -1123,7 +1127,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 213 "lex.l"
+#line 217 "lex.l"
 {
                                             PRINTF("Found '!='\n");
                                             return EQ;
@@ -1131,7 +1135,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 217 "lex.l"
+#line 221 "lex.l"
 {
                                             PRINTF ("Found white space\n");
                                             /* Ignore white space */
@@ -1140,7 +1144,7 @@ YY_RULE_SETUP
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-#line 221 "lex.l"
+#line 225 "lex.l"
 {
                                             PRINTF ("Found DOS newline\n");
                                             return '\n';
@@ -1148,7 +1152,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 225 "lex.l"
+#line 229 "lex.l"
 {
                                             PRINTF ("Found carriage return\n");
                                             return '\r';
@@ -1157,7 +1161,7 @@ YY_RULE_SETUP
 case 41:
 /* rule 41 can match eol */
 YY_RULE_SETUP
-#line 229 "lex.l"
+#line 233 "lex.l"
 {
                                             PRINTF ("Found newline\n");
                                             return yytext[0];
@@ -1165,7 +1169,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 233 "lex.l"
+#line 237 "lex.l"
 {
                                             /* any character not matching existing rules */
                                             /* pass it onto the parser and let the parser handle it */
@@ -1175,10 +1179,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 239 "lex.l"
+#line 243 "lex.l"
 ECHO;
 	YY_BREAK
-#line 1182 "lex.yy.cpp"
+#line 1186 "lex.yy.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2164,7 +2168,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 239 "lex.l"
+#line 243 "lex.l"
 
 
 

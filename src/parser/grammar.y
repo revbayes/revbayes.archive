@@ -46,10 +46,19 @@
 #include <list>
 #include <string>
 
-extern int yyerror(char *);
+/* Set flag for debugging info */
+#if defined (DEBUG_PARSER)
+#define YY_VERBOSE
+#endif
+
 extern int yylex(void);
 extern char *yytext;
-extern Parser parser;
+
+/* The function yyerror handles errors. It is defined below. */
+int yyerror(char *);
+
+/* We use the global parser to execute the syntax tree */
+Parser& parser = Parser::getParser();
 
 #ifdef YYDEBUG
 #warning "Compiled with parser debug option"
@@ -89,10 +98,11 @@ typedef struct yyltype
 
 /* Bison needs a union of the types handled by the parser */
 %union {
-    RbString*                       string;
+    char*                           string;
     double                          realValue;
     int                             intValue;
     bool                            boolValue;
+    RbString*                       idString;
     SyntaxElement*                  syntaxElement;
     SyntaxVariable*                 syntaxVariable;
     SyntaxFunctionCall*             syntaxFunctionCall;
@@ -108,7 +118,7 @@ typedef struct yyltype
 %type <realValue> REAL
 %type <intValue> INT RBNULL
 %type <boolValue> FALSE TRUE
-%type <string> identifier
+%type <idString> identifier
 %type <syntaxVariable> variable
 %type <syntaxFunctionCall> functionCall
 %type <syntaxLabeledExpr> argument
@@ -199,12 +209,36 @@ typedef struct yyltype
 prog    :       END_OF_INPUT            { return 0; }
         |       '\n'                    { return 0; }
         |       COMMENT '\n'            { return 0;}
-        |       statement '\n'          { return parser.execute($1); }
-        |       declaration '\n'        { return parser.execute($1); }
-        |       expression '\n'         { return parser.execute($1); }
-        |       '?' identifier '\n'     { return parser.info(new SyntaxConstant($2)); }
-        |       '?' functionCall '\n'   { return parser.info($2); }
-        |       error                   { YYABORT; }
+        |       statement '\n'
+                {
+                    PRINTF("Bison trying to execute statement\n");
+                    return parser.execute($1);
+                }
+        |       declaration '\n'
+                {
+                    PRINTF("Bison trying to execute declaration\n");
+                    return parser.execute($1);
+                }
+        |       expression '\n'
+                {
+                    PRINTF("Bison trying to execute expression\n");
+                    return parser.execute($1);
+                }
+        |       '?' identifier '\n'
+                {
+                    PRINTF("Bison trying to get help for symbol\n");
+                    return parser.help($2);
+                }
+        |       '?' functionCall '\n'
+                {
+                    PRINTF("Bison trying to get help for function call\n");
+                    return parser.help($2);
+                }
+        |       error
+                {
+                    PRINTF("Bison calling YYABORT\n");
+                    YYABORT;
+                }
         ;
 
 expression  :   constant                    { $$ = $1; }
@@ -433,14 +467,14 @@ returnStatement :   RETURN              { $$ = new SyntaxStatement(SyntaxStateme
                 |   RETURN expression   { $$ = new SyntaxStatement(SyntaxStatement::Return, $2); }
                 ;
 
-identifier  :   NAME    { $$ = $1; }
+identifier  :   NAME    { $$ = new RbString($1); }
             ;
 
 constant    :   FALSE   { $$ = new SyntaxConstant(new RbBool(false)); }
             |   TRUE    { $$ = new SyntaxConstant(new RbBool(true)); }
             |   RBNULL  { $$ = new SyntaxConstant(NULL); }
             |   INT     { $$ = new SyntaxConstant(new RbInt($1)); }
-            |   STRING  { $$ = new SyntaxConstant($1); }
+            |   STRING  { $$ = new SyntaxConstant(new RbString($1)); }
             |   REAL
                 {
                     /* This code records and preserves input format of the real */
@@ -485,5 +519,5 @@ constant    :   FALSE   { $$ = new SyntaxConstant(new RbBool(false)); }
 int yyerror(char *msg)
 {
     PRINTF("Bison code said: %s\n", msg);
-    return 0;     // or return 1 ??
+    return 1;
 }

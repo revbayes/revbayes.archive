@@ -12,9 +12,13 @@
  */
 
 /* The following statements go into the resulting cpp code */
+
+/* Define the call-back function for receiving input */
 #define YY_INPUT rrinput
+
 #include <cstring>
 
+/* Hack for Windows */
 #ifdef WIN32
 #define strdup(a) _strdup(a)
 #define yywrap() 1
@@ -24,7 +28,8 @@ extern "C" {
 }
 #endif
 
-/* include objects needed to understand grammar.tab.h */
+/* Include objects needed to understand grammar.tab.h */
+#include "Parser.h"     // To catch any parser debug flags
 #include "RbString.h"
 #include "SyntaxElement.h"
 #include "SyntaxFormal.h"
@@ -33,12 +38,11 @@ extern "C" {
 
 #include "grammar.tab.h"
 
-#ifdef DEBUG_LEX
+#ifdef DEBUG_PARSER
 #define PRINTF printf
 #else
 #define PRINTF(...)
 #endif
-
 
 #define YY_NEVER_INTERACTIVE 1
 extern void rrinput(char *,int &,int);
@@ -144,13 +148,13 @@ TRUE                                    {
                                         }
 {ID}                                    {
                                             PRINTF("Found id (name) %s\n", yytext);
-                                            yylval.string = new RbString(yytext);
+                                            yylval.string = yytext;
                                             PRINTF("string value = %s\n", yylval.string);
                                             return NAME;
                                         }
 {STRING}                                {
                                             PRINTF("Found string %s\n", yytext); 
-                                            yylval.string = new RbString(yytext);
+                                            yylval.string = yytext;
                                             PRINTF("string value = %s\n", yylval.string);
                                             return STRING;
                                         }
