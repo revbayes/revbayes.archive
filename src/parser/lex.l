@@ -58,186 +58,186 @@ COMMENT  \x23.*
 
 %%
 function                                {
-                                            PRINTF("Found 'function'\n");
+                                            PRINTF("Flex found 'function'\n");
                                             return FUNCTION;
                                         }
 class                                   {
-                                            PRINTF("Found 'class'\n");
+                                            PRINTF("Flex found 'class'\n");
                                             return CLASS;
                                         }
 for                                     {
-                                            PRINTF("Found 'for'\n");
+                                            PRINTF("Flex found 'for'\n");
                                             return FOR;
                                         }
 in                                      {
-                                            PRINTF("Found 'in'\n");
+                                            PRINTF("Flex found 'in'\n");
                                             return IN;
                                         }
 if                                      {
-                                            PRINTF("Found 'if'\n");
+                                            PRINTF("Flex found 'if'\n");
                                             return IF;
                                         }
 else                                    {
-                                            PRINTF("Found 'else'\n");
+                                            PRINTF("Flex found 'else'\n");
                                             return ELSE;
                                         }
 while                                   {
-                                            PRINTF("Found 'while'\n");
+                                            PRINTF("Flex found 'while'\n");
                                             return WHILE;
                                         }
 next                                    {
-                                            PRINTF("Found 'next'\n");
+                                            PRINTF("Flex found 'next'\n");
                                             return NEXT;
                                         }
 break                                   {
-                                            PRINTF("Found 'break'\n");
+                                            PRINTF("Flex found 'break'\n");
                                             return BREAK;
                                         }
 return                                  {
-                                            PRINTF("Found 'return'\n");
+                                            PRINTF("Flex found 'return'\n");
                                             return RETURN;
                                         }
 null                                    {
-                                            PRINTF("Found 'null'\n");
-                                            return NULL;
+                                            PRINTF("Flex found 'null'\n");
+                                            return RBNULL;
                                         }
 false                                   {
-                                            PRINTF("Found 'false'\n");
+                                            PRINTF("Flex found 'false'\n");
                                             return FALSE;
                                         }
 true                                    {
-                                            PRINTF("Found 'true'\n");
+                                            PRINTF("Flex found 'true'\n");
                                             return TRUE;
                                         }
 NULL                                    {
-                                            PRINTF("Found 'NULL'\n");
-                                            return NULL;
+                                            PRINTF("Flex found 'NULL'\n");
+                                            return RBNULL;
                                         }
 FALSE                                   {
-                                            PRINTF("Found 'FALSE'\n");
+                                            PRINTF("Flex found 'FALSE'\n");
                                             return FALSE;
                                         }
 TRUE                                    {
-                                            PRINTF("Found 'TRUE'\n");
+                                            PRINTF("Flex found 'TRUE'\n");
                                             return TRUE;
                                         }
 {OPTSIGN}{DIGIT}+"."{DIGIT}*({EXP})?    {
-                                            PRINTF("Found real %s\n", yytext);
+                                            PRINTF("Flex found real %s -- ", yytext);
                                             yylval.realValue = strtod(yytext,NULL); 
                                             PRINTF("double value = %f\n",yylval.realValue);
                                             return REAL;
                                         }
 {OPTSIGN}{DIGIT}*"."{DIGIT}+({EXP})?    {
-                                            PRINTF("Found real %s\n", yytext);
+                                            PRINTF("Flex found real %s -- ", yytext);
                                             yylval.realValue = strtod(yytext,NULL); 
                                             PRINTF("double value = %f\n",yylval.realValue);
                                             return REAL;
                                         }
 {OPTSIGN}{DIGIT}+{EXP}                  { 
                                             /* Treat ints with exponents as floating point values */
-                                            PRINTF("Found int with exponent %s\n", yytext);
+                                            PRINTF("Flex found int with exponent %s -- ", yytext);
                                             yylval.realValue = strtod(yytext,NULL); 
                                             PRINTF("double value = %f\n",yylval.realValue);
                                             return REAL;
                                         }
 {OPTSIGN}{DIGIT}+                       {
-                                            PRINTF("Found int %s\n", yytext);
+                                            PRINTF("Flex found int %s -- ", yytext);
                                             yylval.intValue = strtol(yytext,NULL,10); 
                                             PRINTF("int value = %d\n",yylval.intValue);
                                             return INT;
                                         }
 {ID}                                    {
-                                            PRINTF("Found id (name) %s\n", yytext);
+                                            PRINTF("Flex found id (name) %s -- ", yytext);
                                             yylval.string = yytext;
                                             PRINTF("string value = %s\n", yylval.string);
                                             return NAME;
                                         }
 {STRING}                                {
-                                            PRINTF("Found string %s\n", yytext); 
+                                            PRINTF("Flex found string %s -- ", yytext); 
                                             yylval.string = yytext;
                                             PRINTF("string value = %s\n", yylval.string);
                                             return STRING;
                                         }
 {COMMENT}                               {
-                                            PRINTF("Found comment %s\n", yytext);
+                                            PRINTF("Flex found comment %s\n", yytext);
                                             return COMMENT;
                                         }
 "<-"                                    {
-                                            PRINTF("Found '<-'\n");
-                                            return LEFT_ASSIGN;
+                                            PRINTF("Flex found '<-'\n");
+                                            return ARROW_ASSIGN;
                                         }
 ":="                                    {
-                                            PRINTF("Found ':='\n");
+                                            PRINTF("Flex found ':='\n");
                                             return EQUATION_ASSIGN;
                                         }
 "~"                                     {
-                                            PRINTF("Found '~'\n");
+                                            PRINTF("Flex found '~'\n");
                                             return TILDE_ASSIGN;
                                         }
 "="                                     {
-                                            PRINTF("Found '='\n");
+                                            PRINTF("Flex found '='\n");
                                             return EQUAL;
                                         }
 "&"                                     {
-                                            PRINTF("Found '&'\n");
+                                            PRINTF("Flex found '&'\n");
                                             return AND;
                                         }
 "|"                                     {
-                                            PRINTF("Found '|'\n");
+                                            PRINTF("Flex found '|'\n");
                                             return OR;
                                         }
 "&&"                                    {
-                                            PRINTF("Found '&&'\n");
+                                            PRINTF("Flex found '&&'\n");
                                             return AND;
                                         }
 "||"                                    {
-                                            PRINTF("Found '||'\n");
+                                            PRINTF("Flex found '||'\n");
                                             return OR;
                                         }
 ">"                                     {
-                                            PRINTF("Found '>'\n");
+                                            PRINTF("Flex found '>'\n");
                                             return GT;
                                         }
 ">="                                    {
-                                            PRINTF("Found '>='\n");
+                                            PRINTF("Flex found '>='\n");
                                             return GE;
                                         }
 "<"                                     {
-                                            PRINTF("Found '<'\n");
+                                            PRINTF("Flex found '<'\n");
                                             return LT;
                                         }
 "<="                                    {
-                                            PRINTF("Found '<='\n");
+                                            PRINTF("Flex found '<='\n");
                                             return LE;
                                         }
 "=="                                    {
-                                            PRINTF("Found '=='\n");
+                                            PRINTF("Flex found '=='\n");
                                             return EQ;
                                         }
 "!="                                    {
-                                            PRINTF("Found '!='\n");
+                                            PRINTF("Flex found '!='\n");
                                             return EQ;
                                         }
 [ \t]+                                  {
-                                            PRINTF ("Found white space\n");
+                                            PRINTF ("Flex found white space\n");
                                             /* Ignore white space */
                                         }
 "\r\n"                                  {
-                                            PRINTF ("Found DOS newline\n");
+                                            PRINTF ("Flex found DOS newline\n");
                                             return '\n';
                                         }
 "\r"                                    {
-                                            PRINTF ("Found carriage return\n");
+                                            PRINTF ("Flex found carriage return\n");
                                             return '\r';
                                         }
 "\n"                                    {
-                                            PRINTF ("Found newline\n");
+                                            PRINTF ("Flex found newline\n");
                                             return yytext[0];
                                         }
 .                                       {
                                             /* any character not matching existing rules */
                                             /* pass it onto the parser and let the parser handle it */
-                                            PRINTF("Found char 0x%X ('%c')\n", yytext[0], yytext[0]);
+                                            PRINTF("Flex found char 0x%X ('%c')\n", yytext[0], yytext[0]);
                                             return yytext[0];
                                         }
 %%

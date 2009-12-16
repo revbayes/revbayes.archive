@@ -57,7 +57,7 @@
      NEXT = 273,
      BREAK = 274,
      RETURN = 275,
-     LEFT_ASSIGN = 276,
+     ARROW_ASSIGN = 276,
      TILDE_ASSIGN = 277,
      EQUATION_ASSIGN = 278,
      EQUAL = 279,
@@ -73,10 +73,9 @@
      NE = 289,
      END_OF_INPUT = 290,
      LOW = 291,
-     ARROW_ASSIGN = 292,
-     UNOT = 293,
-     UPLUS = 294,
-     UMINUS = 295
+     UNOT = 292,
+     UPLUS = 293,
+     UMINUS = 294
    };
 #endif
 /* Tokens.  */
@@ -98,7 +97,7 @@
 #define NEXT 273
 #define BREAK 274
 #define RETURN 275
-#define LEFT_ASSIGN 276
+#define ARROW_ASSIGN 276
 #define TILDE_ASSIGN 277
 #define EQUATION_ASSIGN 278
 #define EQUAL 279
@@ -114,10 +113,9 @@
 #define NE 289
 #define END_OF_INPUT 290
 #define LOW 291
-#define ARROW_ASSIGN 292
-#define UNOT 293
-#define UPLUS 294
-#define UMINUS 295
+#define UNOT 292
+#define UPLUS 293
+#define UMINUS 294
 
 
 
@@ -141,7 +139,7 @@ typedef union YYSTYPE
     std::list<SyntaxFormal *>*      formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 145 "grammar.tab.h"
+#line 143 "grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

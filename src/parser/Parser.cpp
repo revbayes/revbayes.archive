@@ -147,8 +147,9 @@ int Parser::execute(SyntaxElement *root) const {
 void Parser::getline(char* buf, int maxsize) {
 
     rrcommand.getline(buf, maxsize-1);
-    buf[strlen(buf)] = '\n';
-    buf[strlen(buf)+1] = '\0';
+    size_t i = strlen(buf);
+    buf[i++] = '\n';
+    buf[i] = '\0';
 
     PRINTF("Parser gave flex line:\n%s", buf);
 }
@@ -168,7 +169,7 @@ int Parser::processCommand(std::string& command) {
 
     // Error or just incomplete statement?
     if (result == 0) {
-        PRINTF("Pareser resetting command string\n");
+        PRINTF("Parser resetting command string\n");
         rrcommand.str("");
         rrcommand.clear();  // Clear any error flags
     }

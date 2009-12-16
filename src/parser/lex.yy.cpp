@@ -827,7 +827,7 @@ case 1:
 YY_RULE_SETUP
 #line 60 "lex.l"
 {
-                                            PRINTF("Found 'function'\n");
+                                            PRINTF("Flex found 'function'\n");
                                             return FUNCTION;
                                         }
 	YY_BREAK
@@ -835,7 +835,7 @@ case 2:
 YY_RULE_SETUP
 #line 64 "lex.l"
 {
-                                            PRINTF("Found 'class'\n");
+                                            PRINTF("Flex found 'class'\n");
                                             return CLASS;
                                         }
 	YY_BREAK
@@ -843,7 +843,7 @@ case 3:
 YY_RULE_SETUP
 #line 68 "lex.l"
 {
-                                            PRINTF("Found 'for'\n");
+                                            PRINTF("Flex found 'for'\n");
                                             return FOR;
                                         }
 	YY_BREAK
@@ -851,7 +851,7 @@ case 4:
 YY_RULE_SETUP
 #line 72 "lex.l"
 {
-                                            PRINTF("Found 'in'\n");
+                                            PRINTF("Flex found 'in'\n");
                                             return IN;
                                         }
 	YY_BREAK
@@ -859,7 +859,7 @@ case 5:
 YY_RULE_SETUP
 #line 76 "lex.l"
 {
-                                            PRINTF("Found 'if'\n");
+                                            PRINTF("Flex found 'if'\n");
                                             return IF;
                                         }
 	YY_BREAK
@@ -867,7 +867,7 @@ case 6:
 YY_RULE_SETUP
 #line 80 "lex.l"
 {
-                                            PRINTF("Found 'else'\n");
+                                            PRINTF("Flex found 'else'\n");
                                             return ELSE;
                                         }
 	YY_BREAK
@@ -875,7 +875,7 @@ case 7:
 YY_RULE_SETUP
 #line 84 "lex.l"
 {
-                                            PRINTF("Found 'while'\n");
+                                            PRINTF("Flex found 'while'\n");
                                             return WHILE;
                                         }
 	YY_BREAK
@@ -883,7 +883,7 @@ case 8:
 YY_RULE_SETUP
 #line 88 "lex.l"
 {
-                                            PRINTF("Found 'next'\n");
+                                            PRINTF("Flex found 'next'\n");
                                             return NEXT;
                                         }
 	YY_BREAK
@@ -891,7 +891,7 @@ case 9:
 YY_RULE_SETUP
 #line 92 "lex.l"
 {
-                                            PRINTF("Found 'break'\n");
+                                            PRINTF("Flex found 'break'\n");
                                             return BREAK;
                                         }
 	YY_BREAK
@@ -899,7 +899,7 @@ case 10:
 YY_RULE_SETUP
 #line 96 "lex.l"
 {
-                                            PRINTF("Found 'return'\n");
+                                            PRINTF("Flex found 'return'\n");
                                             return RETURN;
                                         }
 	YY_BREAK
@@ -907,15 +907,15 @@ case 11:
 YY_RULE_SETUP
 #line 100 "lex.l"
 {
-                                            PRINTF("Found 'null'\n");
-                                            return NULL;
+                                            PRINTF("Flex found 'null'\n");
+                                            return RBNULL;
                                         }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 104 "lex.l"
 {
-                                            PRINTF("Found 'false'\n");
+                                            PRINTF("Flex found 'false'\n");
                                             return FALSE;
                                         }
 	YY_BREAK
@@ -923,7 +923,7 @@ case 13:
 YY_RULE_SETUP
 #line 108 "lex.l"
 {
-                                            PRINTF("Found 'true'\n");
+                                            PRINTF("Flex found 'true'\n");
                                             return TRUE;
                                         }
 	YY_BREAK
@@ -931,15 +931,15 @@ case 14:
 YY_RULE_SETUP
 #line 112 "lex.l"
 {
-                                            PRINTF("Found 'NULL'\n");
-                                            return NULL;
+                                            PRINTF("Flex found 'NULL'\n");
+                                            return RBNULL;
                                         }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 116 "lex.l"
 {
-                                            PRINTF("Found 'FALSE'\n");
+                                            PRINTF("Flex found 'FALSE'\n");
                                             return FALSE;
                                         }
 	YY_BREAK
@@ -947,7 +947,7 @@ case 16:
 YY_RULE_SETUP
 #line 120 "lex.l"
 {
-                                            PRINTF("Found 'TRUE'\n");
+                                            PRINTF("Flex found 'TRUE'\n");
                                             return TRUE;
                                         }
 	YY_BREAK
@@ -955,7 +955,7 @@ case 17:
 YY_RULE_SETUP
 #line 124 "lex.l"
 {
-                                            PRINTF("Found real %s\n", yytext);
+                                            PRINTF("Flex found real %s -- ", yytext);
                                             yylval.realValue = strtod(yytext,NULL); 
                                             PRINTF("double value = %f\n",yylval.realValue);
                                             return REAL;
@@ -965,7 +965,7 @@ case 18:
 YY_RULE_SETUP
 #line 130 "lex.l"
 {
-                                            PRINTF("Found real %s\n", yytext);
+                                            PRINTF("Flex found real %s -- ", yytext);
                                             yylval.realValue = strtod(yytext,NULL); 
                                             PRINTF("double value = %f\n",yylval.realValue);
                                             return REAL;
@@ -976,7 +976,7 @@ YY_RULE_SETUP
 #line 136 "lex.l"
 { 
                                             /* Treat ints with exponents as floating point values */
-                                            PRINTF("Found int with exponent %s\n", yytext);
+                                            PRINTF("Flex found int with exponent %s -- ", yytext);
                                             yylval.realValue = strtod(yytext,NULL); 
                                             PRINTF("double value = %f\n",yylval.realValue);
                                             return REAL;
@@ -986,7 +986,7 @@ case 20:
 YY_RULE_SETUP
 #line 143 "lex.l"
 {
-                                            PRINTF("Found int %s\n", yytext);
+                                            PRINTF("Flex found int %s -- ", yytext);
                                             yylval.intValue = strtol(yytext,NULL,10); 
                                             PRINTF("int value = %d\n",yylval.intValue);
                                             return INT;
@@ -996,7 +996,7 @@ case 21:
 YY_RULE_SETUP
 #line 149 "lex.l"
 {
-                                            PRINTF("Found id (name) %s\n", yytext);
+                                            PRINTF("Flex found id (name) %s -- ", yytext);
                                             yylval.string = yytext;
                                             PRINTF("string value = %s\n", yylval.string);
                                             return NAME;
@@ -1007,7 +1007,7 @@ case 22:
 YY_RULE_SETUP
 #line 155 "lex.l"
 {
-                                            PRINTF("Found string %s\n", yytext); 
+                                            PRINTF("Flex found string %s -- ", yytext); 
                                             yylval.string = yytext;
                                             PRINTF("string value = %s\n", yylval.string);
                                             return STRING;
@@ -1017,7 +1017,7 @@ case 23:
 YY_RULE_SETUP
 #line 161 "lex.l"
 {
-                                            PRINTF("Found comment %s\n", yytext);
+                                            PRINTF("Flex found comment %s\n", yytext);
                                             return COMMENT;
                                         }
 	YY_BREAK
@@ -1025,15 +1025,15 @@ case 24:
 YY_RULE_SETUP
 #line 165 "lex.l"
 {
-                                            PRINTF("Found '<-'\n");
-                                            return LEFT_ASSIGN;
+                                            PRINTF("Flex found '<-'\n");
+                                            return ARROW_ASSIGN;
                                         }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 169 "lex.l"
 {
-                                            PRINTF("Found ':='\n");
+                                            PRINTF("Flex found ':='\n");
                                             return EQUATION_ASSIGN;
                                         }
 	YY_BREAK
@@ -1041,7 +1041,7 @@ case 26:
 YY_RULE_SETUP
 #line 173 "lex.l"
 {
-                                            PRINTF("Found '~'\n");
+                                            PRINTF("Flex found '~'\n");
                                             return TILDE_ASSIGN;
                                         }
 	YY_BREAK
@@ -1049,7 +1049,7 @@ case 27:
 YY_RULE_SETUP
 #line 177 "lex.l"
 {
-                                            PRINTF("Found '='\n");
+                                            PRINTF("Flex found '='\n");
                                             return EQUAL;
                                         }
 	YY_BREAK
@@ -1057,7 +1057,7 @@ case 28:
 YY_RULE_SETUP
 #line 181 "lex.l"
 {
-                                            PRINTF("Found '&'\n");
+                                            PRINTF("Flex found '&'\n");
                                             return AND;
                                         }
 	YY_BREAK
@@ -1065,7 +1065,7 @@ case 29:
 YY_RULE_SETUP
 #line 185 "lex.l"
 {
-                                            PRINTF("Found '|'\n");
+                                            PRINTF("Flex found '|'\n");
                                             return OR;
                                         }
 	YY_BREAK
@@ -1073,7 +1073,7 @@ case 30:
 YY_RULE_SETUP
 #line 189 "lex.l"
 {
-                                            PRINTF("Found '&&'\n");
+                                            PRINTF("Flex found '&&'\n");
                                             return AND;
                                         }
 	YY_BREAK
@@ -1081,7 +1081,7 @@ case 31:
 YY_RULE_SETUP
 #line 193 "lex.l"
 {
-                                            PRINTF("Found '||'\n");
+                                            PRINTF("Flex found '||'\n");
                                             return OR;
                                         }
 	YY_BREAK
@@ -1089,7 +1089,7 @@ case 32:
 YY_RULE_SETUP
 #line 197 "lex.l"
 {
-                                            PRINTF("Found '>'\n");
+                                            PRINTF("Flex found '>'\n");
                                             return GT;
                                         }
 	YY_BREAK
@@ -1097,7 +1097,7 @@ case 33:
 YY_RULE_SETUP
 #line 201 "lex.l"
 {
-                                            PRINTF("Found '>='\n");
+                                            PRINTF("Flex found '>='\n");
                                             return GE;
                                         }
 	YY_BREAK
@@ -1105,7 +1105,7 @@ case 34:
 YY_RULE_SETUP
 #line 205 "lex.l"
 {
-                                            PRINTF("Found '<'\n");
+                                            PRINTF("Flex found '<'\n");
                                             return LT;
                                         }
 	YY_BREAK
@@ -1113,7 +1113,7 @@ case 35:
 YY_RULE_SETUP
 #line 209 "lex.l"
 {
-                                            PRINTF("Found '<='\n");
+                                            PRINTF("Flex found '<='\n");
                                             return LE;
                                         }
 	YY_BREAK
@@ -1121,7 +1121,7 @@ case 36:
 YY_RULE_SETUP
 #line 213 "lex.l"
 {
-                                            PRINTF("Found '=='\n");
+                                            PRINTF("Flex found '=='\n");
                                             return EQ;
                                         }
 	YY_BREAK
@@ -1129,7 +1129,7 @@ case 37:
 YY_RULE_SETUP
 #line 217 "lex.l"
 {
-                                            PRINTF("Found '!='\n");
+                                            PRINTF("Flex found '!='\n");
                                             return EQ;
                                         }
 	YY_BREAK
@@ -1137,7 +1137,7 @@ case 38:
 YY_RULE_SETUP
 #line 221 "lex.l"
 {
-                                            PRINTF ("Found white space\n");
+                                            PRINTF ("Flex found white space\n");
                                             /* Ignore white space */
                                         }
 	YY_BREAK
@@ -1146,7 +1146,7 @@ case 39:
 YY_RULE_SETUP
 #line 225 "lex.l"
 {
-                                            PRINTF ("Found DOS newline\n");
+                                            PRINTF ("Flex found DOS newline\n");
                                             return '\n';
                                         }
 	YY_BREAK
@@ -1154,7 +1154,7 @@ case 40:
 YY_RULE_SETUP
 #line 229 "lex.l"
 {
-                                            PRINTF ("Found carriage return\n");
+                                            PRINTF ("Flex found carriage return\n");
                                             return '\r';
                                         }
 	YY_BREAK
@@ -1163,7 +1163,7 @@ case 41:
 YY_RULE_SETUP
 #line 233 "lex.l"
 {
-                                            PRINTF ("Found newline\n");
+                                            PRINTF ("Flex found newline\n");
                                             return yytext[0];
                                         }
 	YY_BREAK
@@ -1173,7 +1173,7 @@ YY_RULE_SETUP
 {
                                             /* any character not matching existing rules */
                                             /* pass it onto the parser and let the parser handle it */
-                                            PRINTF("Found char 0x%X ('%c')\n", yytext[0], yytext[0]);
+                                            PRINTF("Flex found char 0x%X ('%c')\n", yytext[0], yytext[0]);
                                             return yytext[0];
                                         }
 	YY_BREAK
