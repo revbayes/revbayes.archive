@@ -62,16 +62,23 @@ ObjectSlot::ObjectSlot(RbObjectWrapper* initVariable) {
 
 /** Copy constructor */
 ObjectSlot::ObjectSlot(const ObjectSlot& x) {
-
+    printf("Copy\n");
     atomicType = x.atomicType;
     dim        = x.dim;
+    std::cerr << x.variable;
+    x.variable->printValue(std::cerr);
+    variable = NULL;
+    printf ("Variable is NULL\n");
+    x.variable->clone();
+    printf ("Variable is cloned\n");
+
     variable   = x.variable->clone();
 }
 
 
 /** Assignment operator */
 ObjectSlot& ObjectSlot::operator=(const ObjectSlot& x) {
-
+    printf("Assignment\n");
     if (this != &x) {
         atomicType = x.atomicType;
         dim        = x.dim;

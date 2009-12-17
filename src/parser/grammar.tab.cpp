@@ -634,7 +634,7 @@ static const yytype_uint16 yyrline[] =
      411,   412,   413,   414,   415,   416,   417,   418,   421,   422,
      425,   426,   429,   430,   431,   434,   435,   438,   445,   446,
      448,   451,   454,   457,   460,   463,   466,   467,   470,   473,
-     474,   475,   476,   477,   478
+     478,   483,   488,   493,   498
 };
 #endif
 
@@ -2284,32 +2284,47 @@ yyreduce:
     break;
 
   case 99:
-#line 473 "grammar.y"
-    { (yyval.syntaxElement) = new SyntaxConstant(new RbBool(false)); }
+#line 474 "grammar.y"
+    {
+                    PRINTF("Parser inserting bool constant (false) in syntax tree\n");
+                    (yyval.syntaxElement) = new SyntaxConstant(new RbBool(false));
+                }
     break;
 
   case 100:
-#line 474 "grammar.y"
-    { (yyval.syntaxElement) = new SyntaxConstant(new RbBool(true)); }
+#line 479 "grammar.y"
+    {
+                    PRINTF("Parser inserting bool constant (true) in syntax tree\n");
+                    (yyval.syntaxElement) = new SyntaxConstant(new RbBool(true));
+                }
     break;
 
   case 101:
-#line 475 "grammar.y"
-    { (yyval.syntaxElement) = new SyntaxConstant(NULL); }
+#line 484 "grammar.y"
+    {
+                    PRINTF("Parser inserting null constant in syntax tree\n");
+                    (yyval.syntaxElement) = new SyntaxConstant(NULL);
+                }
     break;
 
   case 102:
-#line 476 "grammar.y"
-    { (yyval.syntaxElement) = new SyntaxConstant(new RbInt((yyvsp[(1) - (1)].intValue))); }
+#line 489 "grammar.y"
+    {
+                    PRINTF("Parser inserting int constant in syntax tree\n");
+                    (yyval.syntaxElement) = new SyntaxConstant(new RbInt((yyvsp[(1) - (1)].intValue)));
+                }
     break;
 
   case 103:
-#line 477 "grammar.y"
-    { (yyval.syntaxElement) = new SyntaxConstant(new RbString((yyvsp[(1) - (1)].string))); }
+#line 494 "grammar.y"
+    {
+                    PRINTF("Parser inserting string constant in syntax tree\n");
+                    (yyval.syntaxElement) = new SyntaxConstant(new RbString((yyvsp[(1) - (1)].string)));
+                }
     break;
 
   case 104:
-#line 479 "grammar.y"
+#line 499 "grammar.y"
     {
                     /* This code records and preserves input format of the real */
                     int prec;
@@ -2342,13 +2357,14 @@ yyreduce:
                     RbDouble *real = new RbDouble((yyvsp[(1) - (1)].realValue));
                     //real->setPrecision(prec);
                     //real->setScientific(sci);
+                    PRINTF("Parser inserting double constant in syntax tree \n");
                     (yyval.syntaxElement) = new SyntaxConstant(real);
                 }
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 2352 "grammar.tab.c"
+#line 2368 "grammar.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2562,7 +2578,7 @@ yyreturn:
 }
 
 
-#line 515 "grammar.y"
+#line 536 "grammar.y"
 
 
 

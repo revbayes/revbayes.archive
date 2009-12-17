@@ -40,11 +40,17 @@
 class Frame {
 
     public:
-                                Frame(Frame* parentFr=NULL);    //!< Constructor from parent frame
-        virtual                 ~Frame() {}                     //!< Destructor; do not destroy entire environment
+                                Frame();                        //!< Constructor of frame with NULL parent
+                                Frame(Frame* parentFr);         //!< Constructor of frame with parent
+                                Frame(const Frame& x);          //!< Copy constructor
+        virtual                 ~Frame();                       //!< Destroy table of frame, not entire environment
 
-        // Basic utility function
-        virtual Frame*          clone(void) const { return new Frame(*this); }  //!< Clone object
+        // Assignment operator
+        Frame&                  operator=(const Frame& x);      //!< Assignment operator needed
+
+        // Basic utility functions
+        virtual Frame*          clone(void) const { return new Frame(*this); }  //!< Clone frame
+        virtual Frame*          cloneEnvironment(void) const;                   //!< Clone environment
         virtual void            printValue(std::ostream& o) const;              //!< Print table for user
         virtual std::string     toString(void) const;                           //!< Complete info to string
 
@@ -55,21 +61,19 @@ class Frame {
 	    void                    addVariable(const std::string& name, const std::string& type, int dim=0);   //!< Add declared but empty slot
         void                    eraseVariable(const std::string& name);                     //!< Erase a variable
         bool                    existsVariable(const std::string& name) const;              //!< Does variable exist?
-        const std::string&      getDeclaredType(const std::string& name) const;             //!< Get declared type of variable
-        int                     getDim(const std::string& name) const;                      //!< Get dim of variable
         Frame*                  getParentFrame(void) const { return parentFrame; }          //!< Get parent frame 
         const RbObject*         getValue(const std::string& name) const;                    //!< Get value
         const RbObjectWrapper*  getVariable(const std::string& name) const;                 //!< Get variable
-        const RbObjectWrapper*  getVarElement(const std::string& name, const IntVector& index) const;//!< Get var elem
         const RbObject*         getValElement(const std::string& name, const IntVector& index) const;//!< Get val elem
-        void                    setVariable(const std::string& name, RbObjectWrapper* var); //!< Set variable
+        const RbObjectWrapper*  getVarElement(const std::string& name, const IntVector& index) const;//!< Get var elem
         void                    setValue(const std::string& name, RbObject* val);           //!< Set variable value
+        void                    setVariable(const std::string& name, RbObjectWrapper* var); //!< Set variable
         void                    setValElement(const std::string& name, const IntVector& index, RbObject* value); //!< Set element of an object
         void                    setVarElement(const std::string& name, const IntVector& index, DAGNode* variable); //!< Set element of a DAG node container
 	
     private:
         Frame*                                  parentFrame;        //!< Pointer to enclosing frame
-	    std::map<const std::string, ObjectSlot> variableTable;      //!< Variable table
+	    std::map<std::string, RbObjectWrapper*> variableTable;      //!< Variable table
 };
 
 #endif

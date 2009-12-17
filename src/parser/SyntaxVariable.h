@@ -53,7 +53,7 @@ class SyntaxVariable : public SyntaxElement {
         std::string         getFullName(Frame* frame) const;            //!< Get full name, with indices and base obj
         RbObject*           getReference(Frame* frame=NULL) const;      //!< Get value reference TODO: implement!!
         RbObject*           getValue(Frame* frame=NULL) const;          //!< Get semantic value
-        bool                isMember() const { return variable==NULL; } //!< Is member variable?
+        bool                isMember() const { return variable!=NULL; } //!< Is member variable?
 
     protected:
         RbString*                       identifier;     //!< The name of the variable

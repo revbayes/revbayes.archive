@@ -470,11 +470,31 @@ returnStatement :   RETURN              { $$ = new SyntaxStatement(SyntaxStateme
 identifier  :   NAME    { $$ = new RbString($1); }
             ;
 
-constant    :   FALSE   { $$ = new SyntaxConstant(new RbBool(false)); }
-            |   TRUE    { $$ = new SyntaxConstant(new RbBool(true)); }
-            |   RBNULL  { $$ = new SyntaxConstant(NULL); }
-            |   INT     { $$ = new SyntaxConstant(new RbInt($1)); }
-            |   STRING  { $$ = new SyntaxConstant(new RbString($1)); }
+constant    :   FALSE
+                {
+                    PRINTF("Parser inserting bool constant (false) in syntax tree\n");
+                    $$ = new SyntaxConstant(new RbBool(false));
+                }
+            |   TRUE
+                {
+                    PRINTF("Parser inserting bool constant (true) in syntax tree\n");
+                    $$ = new SyntaxConstant(new RbBool(true));
+                }
+            |   RBNULL
+                {
+                    PRINTF("Parser inserting null constant in syntax tree\n");
+                    $$ = new SyntaxConstant(NULL);
+                }
+            |   INT
+                {
+                    PRINTF("Parser inserting int constant in syntax tree\n");
+                    $$ = new SyntaxConstant(new RbInt($1));
+                }
+            |   STRING
+                {
+                    PRINTF("Parser inserting string constant in syntax tree\n");
+                    $$ = new SyntaxConstant(new RbString($1));
+                }
             |   REAL
                 {
                     /* This code records and preserves input format of the real */
@@ -508,6 +528,7 @@ constant    :   FALSE   { $$ = new SyntaxConstant(new RbBool(false)); }
                     RbDouble *real = new RbDouble($1);
                     //real->setPrecision(prec);
                     //real->setScientific(sci);
+                    PRINTF("Parser inserting double constant in syntax tree \n");
                     $$ = new SyntaxConstant(real);
                 }
             ;

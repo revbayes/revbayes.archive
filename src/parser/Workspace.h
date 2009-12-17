@@ -64,7 +64,7 @@
  * the function table.
  *
  */
-class Workspace : Frame {
+class Workspace : public Frame {
 
     public:
 
@@ -79,7 +79,7 @@ class Workspace : Frame {
 
         /** Get global workspace */
         static Workspace& globalWorkspace() {
-                static Workspace globalSpace = Workspace(NULL);
+                static Workspace globalSpace = Workspace();
                 return globalSpace;
         }
 
@@ -90,13 +90,14 @@ class Workspace : Frame {
         }
  
     private:
-            Workspace(Workspace* parentSpace = NULL);                   //!< Prevent construction
-            Workspace(const Workspace& w) {}                            //!< Prevent copy construction
-            ~Workspace();                       //!< Destructor, delete objects here
+                        Workspace();                                        //!< Workspace with NULL parent
+                        Workspace(Workspace* parentSpace);                  //!< Workspace with parent
+                        Workspace(const Workspace& w) {}                    //!< Prevent copy
+                        ~Workspace();                                       //!< Delete function table
 
-        Workspace&          operator=(const Workspace& w);  //! Prevent assignment
+        Workspace&      operator=(const Workspace& w);                      //! Prevent assignment
 
-        FunctionTable*      functionTable;      //!< Table holding functions
+        FunctionTable*  functionTable;                                      //!< Table holding functions
 };
 
 #endif

@@ -21,6 +21,7 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
+#include "Parser.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
@@ -111,6 +112,8 @@ DAGNode* SyntaxAssignExpr::getDAGNode(Frame* frame) const {
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
 RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
 
+    PRINTF("Evaluating assign expression\n");
+
     // Get variable identifier
     RbString varName = *variable->getIdentifier();
 
@@ -120,17 +123,21 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
     // Deal with arrow assignments
     if (opType == ArrowAssign) {
 
+        PRINTF("Arrow assignment\n");
+
         // Calculate the value of the rhs expression
         RbObject* exprValue = expression->getValue();
 
         // Does the variable exist? If not, add it - but only to workspace, not to complex objects
-        if (!variable->isMember() && !frame->existsVariable(varName)) {
+        if (!variable->isMember()  && !frame->existsVariable(varName)) {
 
+            PRINTF("Add new variable\n");
             // It does not exist - add it
             if (index.size() != 0)
                 frame->addVariable(varName, index, new ConstantNode(exprValue));
             else
                 frame->addVariable(varName, new ConstantNode(exprValue));
+            PRINTF("Added new variable\n");
         }
         else {
 
@@ -142,6 +149,7 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                     frame->setValue(varName, exprValue);
             }
             else {
+                printf ("Assigning to existing member variable\n");
                 /* TODO: Do this properly
                 RbObject* theObjRef = variable->getReference(frame);
                 RbComplex* containerRef = dynamic_cast<RbComplex*>(theObjRef);

@@ -22,6 +22,7 @@
 #include "SyntaxFunctionCall.h"
 #include "SyntaxVariable.h"
 #include "UserInterface.h"
+#include "Workspace.h"
 
 #include <sstream>
 
@@ -107,7 +108,8 @@ int Parser::execute(SyntaxElement *root) const {
     
     //! Execute syntax tree
     try {
-        result = root->getValue();
+        PRINTF("Trying to get the semantic vlaue of the syntax tree.\n");
+        result = root->getValue(&Workspace::userWorkspace());
     }
     catch(RbException& rbException) {
         PRINTF("Caught an exception\n");

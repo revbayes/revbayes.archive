@@ -25,6 +25,7 @@
 #ifndef Parser_H
 #define Parser_H
 
+
 #include <sstream>
 #include <string>
 
@@ -32,7 +33,16 @@ class RbString;
 class SyntaxElement;
 
 /* Flag for generating debugging info from flex and bison code */
+/* Also from syntax elements, frame and workspace */
 #define DEBUG_PARSER
+
+/* The magic PRINTF defines */
+#if defined (DEBUG_PARSER)
+#define PRINTF printf
+#else
+#define PRINTF(...)
+#endif
+
 
 class Parser {
 

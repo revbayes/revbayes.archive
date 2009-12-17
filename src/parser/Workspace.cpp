@@ -25,9 +25,20 @@
 
 #include <sstream>
 
-/** Basic constructor */
+
+/** Default constructor */
+Workspace::Workspace() : Frame() {
+}
+
+
+/** Constructor of workspace with parent */
 Workspace::Workspace(Workspace* parentSpace)
-    : Frame(parentSpace), functionTable(parentSpace->getFunctionTable()) {
+    : Frame(parentSpace) {
+
+    if (parentSpace == NULL)
+        functionTable = new FunctionTable();
+    else
+        functionTable = parentSpace->getFunctionTable();
 }
 
 
