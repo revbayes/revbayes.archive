@@ -59,7 +59,7 @@ RbObject* DistNormal::clone(void) const {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double DistNormal::pdf(RbObject* obs) {
+double DistNormal::pdf(const RbObject* obs) {
 	double m = ((RbDouble*) mu->getValue())->getValue();
 	double s = ((RbDouble*) sigma->getValue())->getValue();
 	double o = ((RbDouble*) obs)->getValue();
@@ -80,7 +80,7 @@ double DistNormal::pdf(RbObject* obs) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double DistNormal::lnPdf(RbObject* obs) {
+double DistNormal::lnPdf(const RbObject* obs) {
 
 	double m = ((RbDouble*) mu->getValue())->getValue();
 	double s = ((RbDouble*) sigma->getValue())->getValue();
@@ -95,7 +95,7 @@ RbObject* DistNormal::rv(void) {
 	double m = ((RbDouble*) mu->getValue())->getValue();
 	double s = ((RbDouble*) sigma->getValue())->getValue();
 
-	double u = RbStatistics::Normal::rv(rng,m,s);
+	double u = RbStatistics::Normal::rv(m,s,rng);
 	RbDouble* x = new RbDouble(u);
 	return (RbObject*)x;
 }

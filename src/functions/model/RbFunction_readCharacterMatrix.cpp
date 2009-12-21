@@ -25,9 +25,8 @@
 #include "StringVector.h"
 #include "RbString.h"
 #include "RbNames.h"
+#include "RbUndefined.h"
 #include <cmath>
-
-const StringVector RbFunction_readCharacterMatrix::rbClass = StringVector(RbNames::ReadAlignment::name) + RbFunction::rbClass;
 
 /** Define the argument rules */
 
@@ -36,23 +35,16 @@ const StringVector RbFunction_readCharacterMatrix::rbClass = StringVector(RbName
 
 
 /** Default constructor, allocate workspace */
-RbFunction_readCharacterMatrix::RbFunction_readCharacterMatrix(void)
-    : RbFunction() {
+RbFunction_readCharacterMatrix::RbFunction_readCharacterMatrix(void) :
+    RbFunction() {
 
-	argRules.push_back( ArgumentRule(RbNames::ReadAlignment::fileName, RbNames::String::name) );
-	argRules.push_back( ArgumentRule(RbNames::ReadAlignment::fileType, RbNames::String::name) );
-	argRules.push_back( ArgumentRule(RbNames::ReadAlignment::alignmentType, RbNames::String::name) );
-	returnType = RbNames::CharacterMatrix::name;
-} 
+}
 
 /** Copy constructor */
-RbFunction_readCharacterMatrix::RbFunction_readCharacterMatrix(const RbFunction_readCharacterMatrix& s)
-    : RbFunction(s) {
-    
-	argRules.push_back( ArgumentRule(RbNames::ReadAlignment::fileName, RbNames::String::name) );
-	argRules.push_back( ArgumentRule(RbNames::ReadAlignment::fileType, RbNames::String::name) );
-	argRules.push_back( ArgumentRule(RbNames::ReadAlignment::alignmentType, RbNames::String::name) );
-	returnType = RbNames::CharacterMatrix::name;
+RbFunction_readCharacterMatrix::RbFunction_readCharacterMatrix(
+        const RbFunction_readCharacterMatrix& s) :
+    RbFunction(s) {
+
 }
 
 /** Destructor, delete workspace */
@@ -71,81 +63,8 @@ RbFunction_readCharacterMatrix::~RbFunction_readCharacterMatrix() {
  */
 RbObject* RbFunction_readCharacterMatrix::clone(void) const {
 
-    RbObject *x = new RbFunction_readCharacterMatrix( *this );
+    RbObject *x = new RbFunction_readCharacterMatrix(*this);
     return x;
-}
-
-RbObject& RbFunction_readCharacterMatrix::operator=(const RbObject& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const RbFunction_readCharacterMatrix& x = dynamic_cast<const RbFunction_readCharacterMatrix&> (obj);
-
-        RbFunction_readCharacterMatrix& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const RbFunction_readCharacterMatrix& x = dynamic_cast<const RbFunction_readCharacterMatrix&> (*(obj.convertTo(RbNames::ReadAlignment::name)));
-
-            RbFunction_readCharacterMatrix& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::ReadAlignment::name);
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-RbFunction_readCharacterMatrix& RbFunction_readCharacterMatrix::operator=(const RbFunction_readCharacterMatrix& obj) {
-    argRules = obj.argRules;
-    returnType = obj.returnType;
-    return (*this);
-}
-
-void RbFunction_readCharacterMatrix::printValue(std::ostream &o) const {
-
-    //o << "Printing character matrix" << std::endl;
-}
-
-/**
- * @brief dump function
- *
- * This function dumps this object.
- *
- * @see RbObject.dump()
- * @param c           the stream where to dump to
- *
- */
-void RbFunction_readCharacterMatrix::dump(std::ostream& c){
-    //TODO implement
-
-    std::string message = "Dump function of RbFunction_readCharacterMatrix not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
-}
-
-/**
- * @brief resurrect function
- *
- * This function resurrects this object.
- *
- * @see RbObject.resurrect()
- * @param x           the object from which to resurrect
- *
- */
-void RbFunction_readCharacterMatrix::resurrect(const RbDumpState& x){
-    //TODO implement
-    std::string message = "Resurrect function of RbFunction_readCharacterMatrix not fully implemented!";
-    RbException e;
-    e.setMessage(message);
-    throw e;
 }
 
 std::string RbFunction_readCharacterMatrix::toString(void) const {
@@ -153,33 +72,42 @@ std::string RbFunction_readCharacterMatrix::toString(void) const {
     return RbNames::ReadAlignment::name;
 }
 
-
-/**
- * @brief overloaded == operators
- *
- * This function compares this object
- *
- * @param o           the object to compare to
- *
- */
-bool RbFunction_readCharacterMatrix::equals(const RbObject* o) const {
-
-    return false;
-}
-
 /** Execute function */
-RbObject* RbFunction_readCharacterMatrix::executeOperation(const std::vector<DAGNode*>& arguments) {
+const RbObject* RbFunction_readCharacterMatrix::executeOperation(
+        const std::vector<RbObjectWrapper*>& arguments) const {
 
     /* Get actual argument */
-    std::string fName = ((RbString*) arguments[0]->getValue())->getString();
-    std::string fType = ((RbString*) arguments[1]->getValue())->getString();
-    std::string aType = ((RbString*) arguments[2]->getValue())->getString();
+    std::string fName = ((RbString*) arguments[0]->getValue())->getValue();
+    std::string fType = ((RbString*) arguments[1]->getValue())->getValue();
+    std::string aType = ((RbString*) arguments[2]->getValue())->getValue();
 
-	RbCharacterMatrix* m;
-	if (aType == RbNames::AlignmentType::dna)
-		m = new RbDnaAlignment(fName,fType);
-	else if (aType == RbNames::AlignmentType::aa)
-		;
-		
+    RbCharacterMatrix* m;
+    if (aType == RbNames::AlignmentType::dna)
+        m = new RbDnaAlignment(fName, fType);
+    else if (aType == RbNames::AlignmentType::aa)
+        ;
+
     return m;
+}
+
+/** Get the return type */
+const std::string RbFunction_readCharacterMatrix::getReturnType(void) const {
+
+    const static std::string returnType = RbNames::CharacterMatrix::name;
+    return returnType;
+}
+
+/** Get the argument rules */
+const ArgumentRule** RbFunction_readCharacterMatrix::getArgumentRules(void) const {
+
+    const static ArgumentRule* argRules[] = { new ArgumentRule(
+            RbNames::ReadAlignment::fileName, RbNames::RbString::name,
+            new RbString(""), new RbUndefined, new RbUndefined),
+            new ArgumentRule(RbNames::ReadAlignment::fileType,
+                    RbNames::RbString::name, new RbString(""), new RbUndefined,
+                    new RbUndefined), new ArgumentRule(
+                    RbNames::ReadAlignment::alignmentType,
+                    RbNames::RbString::name, new RbString(""), new RbUndefined,
+                    new RbUndefined), NULL };
+    return argRules;
 }

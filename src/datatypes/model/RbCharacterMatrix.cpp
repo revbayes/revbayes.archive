@@ -10,8 +10,6 @@
 #include <sstream>
 
 
-const StringVector RbCharacterMatrix::rbClass = StringVector(RbNames::CharacterMatrix::name) + RbComplex::rbClass;
-
 RbCharacterMatrix::RbCharacterMatrix(std::string fileName, std::string fileType, int ns) {
 
 	charMatrix = NULL;
@@ -73,6 +71,13 @@ void RbCharacterMatrix::freeCharMatrix(void) {
 		delete [] charMatrix;
 		}
 	charMatrix = NULL;
+}
+
+/** Get class vector describing type of object */
+const StringVector& RbCharacterMatrix::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::CharacterMatrix::name) + RbComplex::getClass();
+    return rbClass;
 }
 
 void RbCharacterMatrix::readFasta(std::string fileName) {

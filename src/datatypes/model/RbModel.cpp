@@ -12,8 +12,6 @@
 #include "RbNames.h"
 #include "StringVector.h"
 
-const StringVector RbModel::rbClass = StringVector("model") + RbComplex::rbClass;
-
 RbModel::RbModel(std::vector<DAGNode*>& s, RandomNumberGenerator* r) {
 
 	rng = r;
@@ -88,6 +86,13 @@ DAGNode* RbModel::getDagToUpdate(void) {
     return NULL;
 }
 
+/** Get string showing inheritance */
+const StringVector& RbModel::getClass(void) const {
+
+    static StringVector rbClass = StringVector(RbNames::Model::name) + RbComplex::getClass();
+    return rbClass;
+}
+
 void RbModel::monitor(int i) {
     for (std::set<DAGNode*>::iterator it=dagNodes.begin(); it!= dagNodes.end(); it++){
         (*it)->monitor(i);
@@ -157,7 +162,7 @@ void RbModel::print(std::ostream& o) const {
 
     o << "Model:" << std::endl;
     for (int i=0; i<sinkDags.size(); i++)
-    	sinkDags[i]->print(o);
+    	sinkDags[i]->printValue(o);
 }
 
 RbObject* RbModel::clone(void) const {
@@ -169,7 +174,7 @@ RbObject* RbModel::clone(void) const {
 void RbModel::printValue(std::ostream& o) const {
 
     for (int i=0; i<sinkDags.size(); i++)
-    	sinkDags[i]->print(o);
+    	sinkDags[i]->printValue(o);
 }
 
 std::string RbModel::toString(void) const {

@@ -23,9 +23,6 @@
 #include "RbTopology.h"
 #include "StringVector.h"
 
-const StringVector RbBranch::rbClass = StringVector(RbNames::Branch::name) + RbComplex::rbClass;
-
-
 /**
  * @brief default constructor
  *
@@ -108,37 +105,27 @@ std::string RbBranch::toString() const {
  * @param c           the stream where to print to
  *
  */
-void RbBranch::print(std::ostream &c) const {
+void RbBranch::printValue(std::ostream &c) const {
 	std::string s = RbNames::Branch::name + " from " + parent->toString() + " to " + child->toString();
 
 	c << s << std::endl;
 }
 
 /**
- * @brief dump function
+ * @brief print function
  *
- * This function dumps this object.
+ * This function prints this object.
  *
- * @see RbObject.dump()
- * @param c           the stream where to dump to
- *
- */
-void RbBranch::dump(std::ostream& c){
-
-}
-
-/**
- * @brief resurrect function
- *
- * This function resurrects this object.
- *
- * @see RbObject.resurrect()
- * @param x           the object from which to resurrect
+ * @see RbObject.print()
+ * @param c           the stream where to print to
  *
  */
-void RbBranch::resurrect(const RbDumpState& x){
+void RbBranch::print(std::ostream &c) const {
+    std::string s = RbNames::Branch::name + " from " + parent->toString() + " to " + child->toString();
 
+    c << s << std::endl;
 }
+
 
 /**
  * @brief overloaded == operators
@@ -165,6 +152,12 @@ bool RbBranch::equals(const RbBranch* n) const {
 	return n == this;
 }
 
+/** Get string showing inheritance */
+const StringVector& RbBranch::getClass(void) const {
+
+    static StringVector rbClass = StringVector(RbNames::Branch::name) + RbComplex::getClass();
+    return rbClass;
+}
 
 /**
  * @brief Get parent node of branch

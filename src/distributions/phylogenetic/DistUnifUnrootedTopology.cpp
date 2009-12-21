@@ -59,7 +59,7 @@ RbObject* DistUnifUnrootedTopology::clone(void) const {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double DistUnifUnrootedTopology::pdf(RbObject* obs) {
+double DistUnifUnrootedTopology::pdf(const RbObject* obs) {
 	int m = ((RbInt*) numTaxa->getValue())->getValue();
 	RbUnrootedTopology* o = ((RbUnrootedTopology*) obs);
 
@@ -79,7 +79,7 @@ double DistUnifUnrootedTopology::pdf(RbObject* obs) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double DistUnifUnrootedTopology::lnPdf(RbObject* obs) {
+double DistUnifUnrootedTopology::lnPdf(const RbObject* obs) {
 
 	int m = ((RbInt*) numTaxa->getValue())->getValue();
 	RbUnrootedTopology* o = ((RbUnrootedTopology*) obs);
@@ -92,7 +92,7 @@ double DistUnifUnrootedTopology::lnPdf(RbObject* obs) {
 RbObject* DistUnifUnrootedTopology::rv(void) {
 	int m = ((RbInt*) numTaxa->getValue())->getValue();
 
-	RbUnrootedTopology* u = RbStatistics::UniformUnrootedTopology::rv(rng,m);
+	RbUnrootedTopology* u = RbStatistics::UniformUnrootedTopology::rv(m,rng);
 	return (RbObject*)u;
 }
 

@@ -42,6 +42,9 @@ class RbMcmc : public RbComplex {
 
    	    RbModel*                    modelPtr;
    	    RandomNumberGenerator*      rng;
+
+   	    RbInt*                      burnin;
+   	    RbInt*                      chainLength;
    	 
 };
 

@@ -51,6 +51,7 @@
 #define RbFunction_dgamma_name                        "gamma density"
 #define RbFunction_dnorm_name                         "normal density"
 #define RbFunction_ln_name                            "log_e"
+#define RbFunction_pow_name                            "a^b"
 #define RbFunction_pbeta_name                         "beta cdf"
 #define RbFunction_pchisq_name                        "chi-square cdf"
 #define RbFunction_pexp_name                          "exponential cdf"
@@ -352,6 +353,10 @@ namespace RbNames {
     namespace RandomNumberGenerator {
     const std::string       name    = "randomNumberGenerator";
     }
+
+    namespace Sqrt {
+        const std::string       name    = "sqrt";
+        }
 
 	
 

@@ -29,8 +29,6 @@
 class RbBranch : public RbComplex {
 
 public:
-        static const StringVector   rbClass;            //!< Static class attribute
-
 	// TODO not sure if I want to allow branch to be instantiated without the two nodes attached to it
         RbBranch(void);                                             //!< default constructor
         RbBranch(const RbBranch &b);                                        //!< copy constructor
@@ -39,10 +37,9 @@ public:
 
 	// implemented abstract/virtual functions from base classes
 	RbObject*  clone(void) const;                                        //!< clone this object
-	const StringVector&        getClass() const { return rbClass; }            //!< Get class
+	const StringVector&        getClass() const;                         //!< Get class
 	void       print(std::ostream &c) const;                            //!< Print the value to ostream c
-	void       dump(std::ostream& c);                              //!< Dump to ostream c
-	void       resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
+	void       printValue(std::ostream &c) const;                            //!< Print the value to ostream c
 	std::string toString() const ;
 
 	//overloaded operators

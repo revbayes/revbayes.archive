@@ -27,6 +27,7 @@
 #include <vector>
 
 class RbDumpState;
+class DAGNode;
 
 /** This is the class for the sqrt() function, which takes a single
  *  scalar real or int.
@@ -43,21 +44,14 @@ class RbFunction_readCharacterMatrix :  public RbFunction {
             RbFunction_readCharacterMatrix(const RbFunction_readCharacterMatrix& s);      //!< Copy constructor
 	        ~RbFunction_readCharacterMatrix();                             //!< Destructor, delete workspace
 
-        // implemented abstract/virtual functions from base classes
-        RbObject*           clone(void) const ;                                 //!< clone this object
-        void                dump(std::ostream& c);                              //!< Dump to ostream c
-        void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
-        bool                equals(const RbObject* o) const;                    //!< Comparison
 
-        const StringVector& getClass() const { return rbClass; }        //!< Get class
-        void                printValue(std::ostream& o) const;          //!< Print value (for user)
-        std::string         toString(void) const;                       //!< General info on object
+	        RbObject*                   clone(void) const ;                                             //!< clone this object
+	        const StringVector&         getClass(void) const;                                           //!< Get class
+	        std::string                 toString(void) const;                                           //!< General info on object
 
-        RbObject*                 executeOperation(const std::vector<DAGNode*>& arguments);              //!< Get result
-
-        // overloaded operators
-        RbObject&           operator=(const RbObject& obj);
-        RbFunction_readCharacterMatrix&    operator=(const RbFunction_readCharacterMatrix& obj);
+	        const RbObject*             executeOperation(const std::vector<RbObjectWrapper*>& arguments) const; //!< Get result
+	        const ArgumentRule**        getArgumentRules(void) const;                                   //!< Get the number of argument rules
+	        const std::string           getReturnType(void) const;
 
     protected:
 };

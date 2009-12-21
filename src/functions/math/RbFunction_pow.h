@@ -36,14 +36,14 @@ class RbFunction_pow :  public RbFunction {
 
     public:
                                     RbFunction_pow(void);                                           //!< Default constructor, allocate workspace
-                                    RbFunction_pow(const RbFunction_ln& s);                         //!< Copy constructor
+                                    RbFunction_pow(const RbFunction_pow& s);                         //!< Copy constructor
                                    ~RbFunction_pow(void);                                           //!< Destructor, delete workspace
 
         RbObject*                   clone(void) const ;                                             //!< clone this object
         const StringVector&         getClass(void) const;                                           //!< Get class
         std::string					toString(void) const;                                           //!< General info on object
 
-        const RbObject*             executeOperation(const std::vector<DAGNode*>& arguments) const; //!< Get result
+        const RbObject*             executeOperation(const std::vector<RbObjectWrapper*>& arguments) const; //!< Get result
 		const ArgumentRule**        getArgumentRules(void) const;                                   //!< Get the number of argument rules
         const std::string           getReturnType(void) const;                                      //!< Get return type
 

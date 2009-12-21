@@ -15,7 +15,6 @@ class DAGNode;
 
 class DistExponential : public Distribution {
 public:
-        static const StringVector   rbClass;            //!< Static class attribute
 
 	DistExponential(DAGNode* l, RandomNumberGenerator* r);
 	DistExponential(const DistExponential& d);
@@ -31,8 +30,8 @@ public:
         RbObject&			operator=(const RbObject& o);
         DistExponential&    operator=(const DistExponential& o);
 
-	double lnPdf(RbObject* o); //!< Ln probability density
-	double pdf(RbObject* o); //!< Probability density
+	double lnPdf(const RbObject* o); //!< Ln probability density
+	double pdf(const RbObject* o); //!< Probability density
 	RbObject* rv();
 
 private:

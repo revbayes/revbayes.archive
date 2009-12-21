@@ -16,8 +16,6 @@
 #include "RbStatistics.h"
 #include "RbNames.h"
 
-const StringVector DistExponential::rbClass = StringVector(RbNames::Exponential::name) + Distribution::rbClass;
-
 DistExponential::DistExponential(DAGNode* l, RandomNumberGenerator* r) : Distribution(r) {
 
 	lambda = l;
@@ -64,7 +62,7 @@ RbObject* DistExponential::clone(void) const {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double DistExponential::pdf(RbObject* obs) {
+double DistExponential::pdf(const RbObject* obs) {
     // first some argument checking
     assert(typeid(*obs) == typeid(RbDouble));
 
@@ -86,7 +84,7 @@ double DistExponential::pdf(RbObject* obs) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double DistExponential::lnPdf(RbObject* obs) {
+double DistExponential::lnPdf(const RbObject* obs) {
     // first some argument checking
     assert(typeid(*obs) == typeid(RbDouble));
 
@@ -98,7 +96,7 @@ double DistExponential::lnPdf(RbObject* obs) {
 RbObject* DistExponential::rv(void) {
 
     double l = ((RbDouble*) lambda->getValue())->getValue();
-	double u = RbStatistics::Exponential::rv(rng,l);
+	double u = RbStatistics::Exponential::rv(l,rng);
 	RbDouble* x = new RbDouble(u);
 
 	return (RbObject*) x;
@@ -110,7 +108,9 @@ bool DistExponential::equals(const RbObject* o) const {
 }
 
 const StringVector& DistExponential::getClass(void) const {
-    rbClass;
+    static StringVector rbClass = StringVector(RbNames::Exponential::name)
+                + Distribution::getClass();
+    return rbClass;
 }
 
 void DistExponential::print(std::ostream& o) const {

@@ -43,6 +43,7 @@ class RbException : public RbInternal {
 
         // Regular functions
         exceptionT          getExceptionType(void) { return exceptionType; }        //!< Get exception type 
+        void                setMessage(std::string msg);
         std::string         getMessage(void) const;
      
     private:

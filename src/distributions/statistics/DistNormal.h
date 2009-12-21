@@ -32,8 +32,8 @@ public:
         RbObject&			operator=(const RbObject& o);
         DistNormal&         operator=(const DistNormal& o);
 
-	double lnPdf(RbObject* obs); //!< Ln probability density
-	double pdf(RbObject* obs); //!< Probability density
+	double lnPdf(const RbObject* obs); //!< Ln probability density
+	double pdf(const RbObject* obs); //!< Probability density
 	RbObject* rv();
 
 private:

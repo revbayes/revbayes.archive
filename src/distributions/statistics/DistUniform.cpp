@@ -59,7 +59,7 @@ RbObject* DistUniform::clone(void) const {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double DistUniform::pdf(RbObject* obs) {
+double DistUniform::pdf(const RbObject* obs) {
 	// first some argument checking
 	assert(typeid(*obs) == typeid(RbDouble));
 
@@ -82,7 +82,7 @@ double DistUniform::pdf(RbObject* obs) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double DistUniform::lnPdf(RbObject* obs) {
+double DistUniform::lnPdf(const RbObject* obs) {
 	// first some argument checking
 	assert(typeid(*obs) == typeid(RbDouble));
 
@@ -95,7 +95,7 @@ double DistUniform::lnPdf(RbObject* obs) {
 RbObject* DistUniform::rv() {
     double lw = ((RbDouble*) lower->getValue())->getValue();
     double up = ((RbDouble*) upper->getValue())->getValue();
-    double u = RbStatistics::Uniform::rv(rng, lw, up);
+    double u = RbStatistics::Uniform::rv(lw, up, rng);
 	RbDouble* x = new RbDouble(u);
 	return (RbObject*)x;
 }

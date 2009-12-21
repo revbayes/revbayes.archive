@@ -28,11 +28,12 @@ class RbBitset;
 class RbCharacterMatrix : public RbComplex {
 
     public:
-        static const StringVector   rbClass;            //!< Static class attribute
         RbBitset*** getCharacterMatrix(void) { return charMatrix; }
 
 		RbCharacterMatrix(const RbCharacterMatrix& a);
 	       virtual ~RbCharacterMatrix() {}
+
+	       const StringVector&        getClass() const;            //!< Get class
 	       int getNumTaxa(void) { return numTaxa; }
 	       int getNumChar(void) { return numChar; }
 	       int getNumStates(void) { return numStates; }

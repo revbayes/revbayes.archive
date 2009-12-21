@@ -37,8 +37,6 @@ class RbDumpState;
 class RbFunction_sqrt :  public RbFunction {
 
     public:
-		static const StringVector   rbClass;            //!< Static class attribute
-
             RbFunction_sqrt(void);                              //!< Default constructor, allocate workspace
             RbFunction_sqrt(const RbFunction_sqrt& s);      //!< Copy constructor
 	        ~RbFunction_sqrt();                             //!< Destructor, delete workspace
@@ -50,19 +48,19 @@ class RbFunction_sqrt :  public RbFunction {
         void                resurrect(const RbDumpState& x);                    //!< Resurrect from dumped state
         bool                equals(const RbObject* o) const;                    //!< Comparison
 
-        const StringVector& getClass() const { return rbClass; }        //!< Get class
+        const StringVector& getClass() const;                                   //!< Get class
         void                printValue(std::ostream& o) const;          //!< Print value (for user)
         std::string         toString(void) const;                       //!< General info on object
 
         // Type conversion
         bool                isConvertibleTo(const std::string& type) const;
         RbObject*           convertTo(const std::string& type) const;
-        virtual const int           getNumberOfRules() const;                   //!< Get number of argument rules for the function
 
-        RbObject*                 executeOperation(const std::vector<DAGNode*>& arguments);              //!< Get result
+        const RbObject*             executeOperation(const std::vector<RbObjectWrapper*>& arguments) const; //!< Get result
+        const ArgumentRule**        getArgumentRules(void) const;                                   //!< Get the number of argument rules
+        const std::string           getReturnType(void) const;
 
         // overloaded operators
-        RbObject&           operator=(const RbObject& obj);
         RbFunction_sqrt&    operator=(const RbFunction_sqrt& obj);
 
     protected:

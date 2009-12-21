@@ -35,8 +35,8 @@ public:
         DistUniform&        operator=(const DistUniform& o);
 		RbObject* rv();
 
-	double lnPdf(RbObject* obs); //!< Ln probability density
-	double pdf(RbObject* obs); //!< Probability density
+	double lnPdf(const RbObject* obs); //!< Ln probability density
+	double pdf(const RbObject* obs); //!< Probability density
 
 private:
 	DAGNode* lower;

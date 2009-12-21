@@ -26,7 +26,6 @@ class RbDumpState;
 class RbDnaAlignment : public RbCharacterMatrix {
 
     public:
-        static const StringVector   rbClass;            //!< Static class attribute
 
 	        RbDnaAlignment(std::string fileName, std::string fileType);   
 	        RbDnaAlignment(const RbDnaAlignment& a);
@@ -34,7 +33,7 @@ class RbDnaAlignment : public RbCharacterMatrix {
 	       
 	    RbObject*               clone() const;                          //!< Copy
 	    bool                    equals(const RbObject* obj) const;      //!< Equals comparison
-	    const StringVector&     getClass() const { return rbClass; }    //!< Get class
+	    const StringVector&     getClass() const;                       //!< Get class
 	    void                    printValue(std::ostream& o) const;      //!< Print value (for user)
 	    std::string             toString(void) const;                   //!< General info on object
 

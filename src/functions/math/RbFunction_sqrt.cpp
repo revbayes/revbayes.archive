@@ -20,9 +20,8 @@
 #include "RbObject.h"
 #include "DAGNode.h"
 #include "RbException.h"
+#include "RbNames.h"
 #include <cmath>
-
-const StringVector RbFunction_sqrt::rbClass = StringVector("sqrt") + RbFunction::rbClass;
 
 /** Define the argument rules */
 
@@ -32,18 +31,16 @@ const StringVector RbFunction_sqrt::rbClass = StringVector("sqrt") + RbFunction:
 
 /** Default constructor, allocate workspace */
 RbFunction_sqrt::RbFunction_sqrt(void)
-    : RbFunction(), value(new RbDouble(0)) {
+    : RbFunction() {
 
-	argRules.push_back( ArgumentRule("x", "double") );
-	returnType = "double";
+    value = new RbDouble(0.0);
 } 
 
 /** Copy constructor */
 RbFunction_sqrt::RbFunction_sqrt(const RbFunction_sqrt& s)
-    : RbFunction(s), value(new RbDouble(0)) {
+    : RbFunction(s) {
     
-	argRules.push_back( ArgumentRule("x", "double") );
-	returnType = "double";
+    value = new RbDouble(0.0);
 }
 
 /** Destructor, delete workspace */
@@ -67,36 +64,8 @@ RbObject* RbFunction_sqrt::clone(void) const {
     return x;
 }
 
-RbObject& RbFunction_sqrt::operator=(const RbObject& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const RbFunction_sqrt& x = dynamic_cast<const RbFunction_sqrt&> (obj);
-
-        RbFunction_sqrt& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const RbFunction_sqrt& x = dynamic_cast<const RbFunction_sqrt&> (*(obj.convertTo("sqrt")));
-
-            RbFunction_sqrt& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to sqrt");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
 
 RbFunction_sqrt& RbFunction_sqrt::operator=(const RbFunction_sqrt& obj) {
-    argRules = obj.argRules;
-    returnType = obj.returnType;
     (*value) = (*obj.value);
     return (*this);
 }
@@ -163,6 +132,11 @@ std::string RbFunction_sqrt::toString(void) const {
     return "Value = " + tempStr;
 }
 
+const std::string RbFunction_sqrt::getReturnType(void) const {
+
+    const static std::string returnType = RbNames::Double::name;
+    return returnType;
+}
 
 /**
  * @brief overloaded == operators
@@ -178,13 +152,24 @@ bool RbFunction_sqrt::equals(const RbObject* o) const {
 }
 
 
-/** Get number of argument rules */
-const int RbFunction_sqrt::getNumberOfRules(void) const {
-    return 1;
+/** Get string showing inheritance */
+const StringVector& RbFunction_sqrt::getClass(void) const {
+
+    static StringVector rbClass = StringVector(RbNames::Sqrt::name) + RbFunction::getClass();
+    return rbClass;
+}
+
+/** Get the argument rules */
+const ArgumentRule** RbFunction_sqrt::getArgumentRules(void) const {
+
+    const static ArgumentRule* argRules[] = {
+        new ArgumentRule("x", "double"),
+        NULL };
+    return argRules;
 }
 
 /** Execute function */
-RbObject* RbFunction_sqrt::executeOperation(const std::vector<DAGNode*>& arguments) {
+const RbObject* RbFunction_sqrt::executeOperation(const std::vector<RbObjectWrapper*>& arguments) const {
 
     /* Get actual argument */
     RbDouble *arg = (RbDouble*) arguments[0]->getValue();

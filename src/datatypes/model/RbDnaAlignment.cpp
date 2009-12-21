@@ -10,9 +10,6 @@
 #include <cmath>
 #include "StringVector.h"
 
-const StringVector RbDnaAlignment::rbClass = StringVector(RbNames::DnaAlignment::name) + RbCharacterMatrix::rbClass;
-
-
 RbDnaAlignment::RbDnaAlignment(std::string fileName, std::string fileType) : RbCharacterMatrix(fileName, fileType, 4) {
 
 }	
@@ -33,6 +30,13 @@ RbObject* RbDnaAlignment::clone() const {
 
 bool RbDnaAlignment::equals(const RbObject* obj) const {
 
+}
+
+/** Get class vector describing type of object */
+const StringVector& RbDnaAlignment::getClass() const {
+
+    static StringVector rbClass = StringVector(RbNames::DnaAlignment::name) + RbComplex::getClass();
+    return rbClass;
 }
 
 void RbDnaAlignment::printValue(std::ostream& o) const {

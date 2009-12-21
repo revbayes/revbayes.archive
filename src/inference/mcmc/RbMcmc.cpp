@@ -20,16 +20,16 @@
 RbMcmc::RbMcmc(RbModel* mp, RandomNumberGenerator* r) {
 
 	modelPtr = mp;
-	members.insert(std::make_pair("burnin", new RbInt(10000)));
-	members.insert(std::make_pair("chainLength", new RbInt(10000)));
+	burnin = new RbInt(10000);
+	chainLength = new RbInt(10000);
 	rng = r;
 }
 
 RbMcmc::RbMcmc(RbModel* mp, RbInt* b, RbInt* cl, RandomNumberGenerator* r) {
 
 	modelPtr = mp;
-	members.insert(std::make_pair("burnin",b));
-	members.insert(std::make_pair("chainLength",cl));
+    burnin = new RbInt(10000);
+    chainLength = new RbInt(10000);
 	rng = r;
 }
 
@@ -56,13 +56,7 @@ void RbMcmc::runChain(void) {
 std::cerr << " start chain " << std::endl;
 	int chainLength = 0;
 	int burnIn = 0;
-	for (std::map<std::string,RbObject*>::iterator m=members.begin(); m != members.end(); m++)
-		{
-		if ( m->first == "burnin" )
-			burnIn = ((RbInt*)m->second)->getValue();
-		else if ( m->first == "chainLength" )
-			chainLength = ((RbInt*)m->second)->getValue();
-		}
+
 		
 	for (int i=0; i<(burnIn+chainLength); i++) 
 		{

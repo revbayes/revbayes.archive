@@ -18,10 +18,10 @@ int main(int argc, char **argv) {
 
 	// execute the function
 	ConstantNode* cn = new ConstantNode(x);
-	Argument* a = new Argument("x", cn);
-	std::vector<Argument*> args;
+	Argument a = Argument("x", cn);
+	std::vector<Argument> args;
 	args.push_back( a );
-	RbObject* result = f.execute(args);
+	const RbObject* result = f.execute(args);
 
 	// check the result
 	assert ( result->equals(new RbDouble(5)) );

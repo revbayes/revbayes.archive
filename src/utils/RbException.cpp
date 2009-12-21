@@ -75,6 +75,11 @@ std::string RbException::getMessage(void) const {
     return message;
 }
 
+void RbException::setMessage(std::string msg) {
+
+    message = msg;
+}
+
 std::string RbException::toString(void) const {
 
 	std::ostringstream o;
