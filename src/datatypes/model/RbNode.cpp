@@ -72,7 +72,7 @@ RbObject* RbNode::clone() const {
 /** Get string showing inheritance */
 const StringVector& RbNode::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RbNode_name) + RbComplex::getClass();
+    static StringVector rbClass = StringVector(RbNames::Node::name) + RbComplex::getClass();
 	return rbClass;
 }
 
@@ -87,7 +87,7 @@ const StringVector& RbNode::getClass(void) const {
  */
 std::string RbNode::toString(void) const {
 
-	std::string tmp = RbNode_name + "(";
+	std::string tmp = RbNames::Node::name + "(";
 
 	// print for all children
 
@@ -96,6 +96,20 @@ std::string RbNode::toString(void) const {
 	}
 
 	return tmp + ")";
+}
+
+/**
+ * @brief print function
+ *
+ * This function prints this object.
+ *
+ * @see RbObject.print()
+ * @param c           the stream where to print to
+ *
+ */
+void RbNode::printValue(std::ostream &c) const {
+
+    c << RbNames::Node::name << "(" << index << ")" << std::endl;
 }
 
 /**

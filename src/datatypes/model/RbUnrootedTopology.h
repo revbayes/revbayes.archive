@@ -15,7 +15,7 @@ class RandomNumberGenerator;
 class RbUnrootedTopology : public RbTopology {
 
     public:
-        static const StringVector   rbClass;            //!< Static class attribute
+        //static const StringVector   rbClass;            //!< Static class attribute
         
         RbUnrootedTopology(RbNode* bn);
         RbUnrootedTopology(const RbUnrootedTopology& m);
@@ -24,7 +24,7 @@ class RbUnrootedTopology : public RbTopology {
         void runChain(void);
         RbObject*                  clone() const;                                  //!< Clone object
         bool                       equals(const RbObject* obj) const;              //!< Equals comparison
-        const StringVector&        getClass() const { return rbClass; }            //!< Get class
+        const StringVector&        getClass() const ;            //!< Get class
         void                       print(std::ostream& o) const;                   //!< Print complete object info
         void                       printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                toString(void) const;                           //!< General info on object

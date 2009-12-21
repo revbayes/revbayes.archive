@@ -1,7 +1,17 @@
 ### add test for distributions
 
 ### normal distribution
-add_executable(testDistNormal ../../datatypes/RbObject.cpp ../../datatypes/complex/StringVector.cpp ../../datatypes/complex/RbComplex.cpp \\
+add_executable(testDistNormal ../../datatypes/RbObject.cpp ../../datatypes/complex/RbComplex.cpp \\
+../../datatypes/RbInternal.cpp ../../datatypes/complex/RbString.cpp \\
+../../datatypes/complex/MethodTable.cpp ../../datatypes/complex/MethodDescr.cpp \\
+../../parser/FunctionTable.cpp ../../datatypes/RbUndefined.cpp \\
+../../dag/RbObjectWrapper.cpp ../../dag/ContainerIterator.cpp ../../dag/DAGNodeContainer.cpp \\
+../../dag/StochasticNode.cpp \\
+../../distributions/Distribution.cpp \\
+../../datatypes/model/RbNode.cpp ../../datatypes/model/RbUnrootedTopology.cpp \\
+../../datatypes/model/RbTopology.cpp \\
+../../factory/RandomNumberFactory.cpp ../../datatypes/complex/RbBitSet.cpp \\
+../../datatypes/complex/IntVector.cpp ../../datatypes/complex/StringVector.cpp \\
 ../../utils/RbException.cpp ../../dag/ConstantNode.cpp ../../dag/DAGNode.cpp \\
 ../../moves/objects/RbMove.cpp ../../moves/RbMoveSchedule.cpp ../../utils/RandomNumberGenerator.cpp \\
 ../../datatypes/primitive/RbDouble.cpp ../../datatypes/primitive/RbInt.cpp ../../datatypes/primitive/RbBool.cpp \\

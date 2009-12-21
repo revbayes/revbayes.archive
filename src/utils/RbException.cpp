@@ -70,6 +70,11 @@ void RbException::printValue(std::ostream& o) const {
 	o << message;
 }
 
+std::string RbException::getMessage(void) const {
+
+    return message;
+}
+
 std::string RbException::toString(void) const {
 
 	std::ostringstream o;

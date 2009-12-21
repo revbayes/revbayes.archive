@@ -23,9 +23,6 @@
 #include "RbTopology.h"
 #include "StringVector.h"
 
-const StringVector RbTopology::rbClass = StringVector(RbNames::Topology::name) + RbComplex::rbClass;
-
-
 /**
  * @brief default constructor
  *
@@ -370,7 +367,8 @@ bool RbTopology::equals(const RbObject* obj) const {
 }
 
 const StringVector& RbTopology::getClass(void) const {
-    rbClass;
+    static StringVector rbClass = StringVector(RbNames::Topology::name) + RbComplex::getClass();
+    return rbClass;
 }
 
 void RbTopology::print(std::ostream& o) const {

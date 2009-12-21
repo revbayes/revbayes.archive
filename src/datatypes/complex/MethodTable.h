@@ -22,7 +22,7 @@
 #ifndef MethodTable_H
 #define MethodTable_H
 
-#include "MethodDescr.h";
+#include "MethodDescr.h"
 #include "RbInternal.h"
 
 #include <map>

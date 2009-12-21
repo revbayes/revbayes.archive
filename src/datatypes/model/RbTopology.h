@@ -29,7 +29,7 @@
 class RbTopology : public RbComplex {
 
 public:
-    static const StringVector   rbClass;            //!< Static class attribute
+    //static const StringVector   rbClass;            //!< Static class attribute
 
 	virtual ~RbTopology(void);                                                             //!< return RbNodes to RbNode factory?
 	RbObject* clone() const;                                                           //!< deep copy of this topology

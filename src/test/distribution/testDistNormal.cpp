@@ -29,11 +29,11 @@ int main(int argc, char **argv) {
 	ConstantNode* cnMu = new ConstantNode(mu);
 	ConstantNode* cnX = new ConstantNode(x);
 	
-	Argument* aMu    = new Argument("mu", cnMu);
-	Argument* aSigma = new Argument("sigma", cnSigma);
-	Argument* aX     = new Argument("", cnX);
+	Argument aMu    = Argument("mu", cnMu);
+	Argument aSigma = Argument("sigma", cnSigma);
+	Argument aX     = Argument("", cnX);
 	
-	std::vector<Argument*> args;
+	std::vector<Argument> args;
 	args.push_back( aX );
 	args.push_back( aSigma );
 	args.push_back( aMu );

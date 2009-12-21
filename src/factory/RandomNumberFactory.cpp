@@ -7,7 +7,11 @@
 RandomNumberFactory::RandomNumberFactory(void) {
 
 	setSeed();
-	seedGenerator = new RandomNumberGenerator(I1, I2);
+	// TODO hack, need to be cleaned up
+	std::vector<unsigned int> s;
+	s.push_back(I1);
+	s.push_back(I2);
+	seedGenerator = new RandomNumberGenerator(s);
 }
 
 RandomNumberFactory::~RandomNumberFactory(void) {
@@ -27,13 +31,20 @@ RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(void) {
 
 	unsigned int s1 = seedGenerator->nextUnsignedInt( UINT_MAX );
 	unsigned int s2 = seedGenerator->nextUnsignedInt( UINT_MAX );
-	RandomNumberGenerator *r = new RandomNumberGenerator( s1, s2 );
+    // TODO hack, need to be cleaned up
+    std::vector<unsigned int> s;
+    s.push_back(s1);
+    s.push_back(s2);
+	RandomNumberGenerator *r = new RandomNumberGenerator( s );
 	allocatedRandomNumbers.insert( r );
 	return r;
 }
 
-RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(unsigned int s) {
+RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(unsigned int s1) {
 
+    // TODO hack, need to be cleaned up
+    std::vector<unsigned int> s;
+    s.push_back(s1);
 	RandomNumberGenerator *r = new RandomNumberGenerator( s );
 	allocatedRandomNumbers.insert( r );
 	return r;

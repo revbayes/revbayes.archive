@@ -39,9 +39,9 @@ public:
 	                            RbNode(int idx);
 	                            RbNode(RbNode* p, std::set<RbNode*>& c);
 
-        RbObject*               clone(void) const;                                                  //!< Clone object
-        bool                    equals(const RbObject* obj) const;                                  //!< Equals comparison
+        RbObject*               clone(void) const;                                                  //!< Equals comparison
 		const StringVector&     getClass(void) const;                                               //!< Get class vector
+		void                    print(std::ostream& o) const;                                       //!< Print value for user
 		void                    printValue(std::ostream& o) const;                                  //!< Print value for user
 		std::string             toString(void) const;                                               //!< Complete info 
 

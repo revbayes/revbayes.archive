@@ -16,8 +16,6 @@
 #include "RbObject.h"
 #include "StringVector.h"
 
-const StringVector RbUnrootedTopology::rbClass = StringVector((RbNames::UnrootedTopology::name)) + RbTopology::rbClass;
-
 RbUnrootedTopology::RbUnrootedTopology(RbNode* bn) : RbTopology(bn){
 
 }
@@ -40,6 +38,11 @@ RbObject* RbUnrootedTopology::clone() const {
 
 bool RbUnrootedTopology::equals(const RbObject* obj) const {
 	return (this == obj);
+}
+
+const StringVector& RbUnrootedTopology::getClass(void) const {
+    static StringVector rbClass = StringVector(RbNames::UnrootedTopology::name) + RbTopology::getClass();
+    return rbClass;
 }
 
 RbObject& RbUnrootedTopology::operator=(const RbObject& obj) {
