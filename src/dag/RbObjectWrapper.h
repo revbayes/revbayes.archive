@@ -41,12 +41,12 @@ class RbObjectWrapper {
         virtual void                    printValue(std::ostream& o) const = 0;                      //!< Print value for user
         virtual void                    setElement(const IntVector& index, RbObject* val) = 0;      //!< Set element value
 
-        // Functions you may want to overrride
+        // Functions you may want to override
         virtual const RbObjectWrapper*  getVarElement(const IntVector& index) const;                //!< Get variable element
         virtual int                     getWrapperDim(void) { return 0; }                           //!< Get wrapper dim
         virtual void                    setElement(const IntVector& index, RbObjectWrapper* var);   //!< Set variable element
 
-        // Functions you should not overrride
+        // Functions you should not override
         bool                            isType(const std::string& type) const;                      //!< Is wrapper of type?
 
     protected:

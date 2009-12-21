@@ -24,6 +24,7 @@
 #include "RbObject.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
+#include "RbUndefined.h"
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -61,7 +62,7 @@ RbObject* RbFunction_rexp::clone(void) const {
 
 
 /** Execute the function */
-const RbObject* RbFunction_rexp::executeOperation(const std::vector<DAGNode*>& arguments) const {
+const RbObject* RbFunction_rexp::executeOperation(const std::vector<RbObjectWrapper*>& arguments) const {
 
     RbDouble *rate = (RbDouble*) arguments[0]->getValue();
 	RandomNumberFactory& rnf = RandomNumberFactory::randomNumberFactoryInstance();
@@ -100,7 +101,7 @@ const std::string RbFunction_rexp::getReturnType(void) const {
 /** Get string showing value */
 std::string RbFunction_rexp::toString(void) const {
 
-    RbDouble *rate = (RbDouble*) arguments[0]->getValue();
+    RbDouble *rate = (RbDouble*) processedArguments[0]->getValue();
     std::ostringstream o;
 	o << std::fixed << std::setprecision(6);
 	o << value->getValue() << " ~ Exponential( " << rate->getValue() << " )";

@@ -7,14 +7,6 @@
 #include "DAGNode.h"
 #include "RbDouble.h"
 #include "RbInt.h"
-#include "RbFunction_dbeta.h"
-#include "RbFunction_pbeta.h"
-#include "RbFunction_rbeta.h"
-#include "RbFunction_qbeta.h"
-#include "RbFunction_dchisq.h"
-#include "RbFunction_pchisq.h"
-#include "RbFunction_rchisq.h"
-#include "RbFunction_qchisq.h"
 #include "RbFunction_dexp.h"
 #include "RbFunction_pexp.h"
 #include "RbFunction_rexp.h"
@@ -28,16 +20,6 @@
 
 int main(int argc, char **argv) {
 	// create a DistNormal object
-	
-	RbFunction_dbeta   dbeta;
-	RbFunction_pbeta   pbeta;
-	RbFunction_qbeta   qbeta;
-	RbFunction_rbeta   rbeta;	
-	
-	RbFunction_dchisq  dchisq;
-	RbFunction_pchisq  pchisq;
-	RbFunction_qchisq  qchisq;
-	RbFunction_rchisq  rchisq;	
 	
 	RbFunction_dexp   dexp;
 	RbFunction_pexp    pexp;
@@ -65,15 +47,15 @@ int main(int argc, char **argv) {
 	ConstantNode* cnDf     = new ConstantNode(df);
 	ConstantNode* cnLambda = new ConstantNode(lambda);
 	
-	Argument* aMu     = new Argument("mu", cnMu);
-	Argument* aSigma  = new Argument("sigma", cnSigma);
-	Argument* aX      = new Argument("", cnX);
-	Argument* aAlpha  = new Argument("alpha", cnAlpha);
-	Argument* aBeta   = new Argument("beta", cnBeta);
-	Argument* aDf     = new Argument("df", cnDf);
-	Argument* aLambda = new Argument("rate", cnLambda);
+	Argument aMu     = Argument("mu", cnMu);
+	Argument aSigma  = Argument("sigma", cnSigma);
+	Argument aX      = Argument("", cnX);
+	Argument aAlpha  = Argument("alpha", cnAlpha);
+	Argument aBeta   = Argument("beta", cnBeta);
+	Argument aDf     = Argument("df", cnDf);
+	Argument aLambda = Argument("rate", cnLambda);
 	
-	std::vector<Argument*> args;
+	std::vector<Argument> args;
 
 	// TODO some more meaningful test
 
@@ -82,7 +64,7 @@ int main(int argc, char **argv) {
 	try 
 	{
 		//Beta distribution
-		std::cout << "Testing Beta Distribution" << '\n';
+		/*std::cout << "Testing Beta Distribution" << '\n';
 		args.push_back( aX );
 		args.push_back( aAlpha );
 		args.push_back( aBeta );
@@ -133,7 +115,7 @@ int main(int argc, char **argv) {
 		expectedQ = 1.386294; //taken from R
 		std::cout << "The quantile is " << q << '\n';
 		std::cout << "The expected quantile is " << expectedQ << '\n';
-		assert(fabs(q-expectedQ) <= 0.00001);
+		assert(fabs(q-expectedQ) <= 0.00001);*/
 		
 		
 		
@@ -143,22 +125,22 @@ int main(int argc, char **argv) {
 		args.push_back( aX );
 		args.push_back( aLambda );
 	
-		pdf = ((RbDouble*) dexp.execute(args))->getValue();
-		expectedPDF = 0.6065307; //taken from R
+		double pdf = ((RbDouble*) dexp.execute(args))->getValue();
+		double expectedPDF = 0.6065307; //taken from R
 		std::cout << "The pdf is " << pdf << '\n';
 		std::cout << "The expected pdf is " << expectedPDF << '\n';
 		assert(fabs(pdf-expectedPDF) <= 0.0000001);
 
 		// calculate the cdf for some known parameters
-		cdf = ((RbDouble*) pexp.execute(args))->getValue();
-		expectedCDF = 0.3934693; //taken from R
+		double cdf = ((RbDouble*) pexp.execute(args))->getValue();
+		double expectedCDF = 0.3934693; //taken from R
 		std::cout << "The cdf is " << cdf << '\n';
 		std::cout << "The expected cdf is " << expectedCDF << '\n';
 		assert(fabs(cdf-expectedCDF) <= 0.0000001);
 
 		// calculate the quantile for some known parameters
-		q = ((RbDouble*) qexp.execute(args))->getValue();
-		expectedQ = 0.6931472; //taken from R
+		double q = ((RbDouble*) qexp.execute(args))->getValue();
+		double expectedQ = 0.6931472; //taken from R
 		std::cout << "The quantile is " << q << '\n';
 		std::cout << "The expected quantile is " << expectedQ << '\n';
 		assert(fabs(q-expectedQ) <= 0.0000001);

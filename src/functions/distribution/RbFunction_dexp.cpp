@@ -22,6 +22,7 @@
 #include "RbObject.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
+#include "RbUndefined.h"
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -59,7 +60,7 @@ RbObject* RbFunction_dexp::clone(void) const {
 
 
 /** Execute the function */
-const RbObject* RbFunction_dexp::executeOperation(const std::vector<DAGNode*>& arguments) const {
+const RbObject* RbFunction_dexp::executeOperation(const std::vector<RbObjectWrapper*>& arguments) const {
 
     RbDouble *x    = (RbDouble*) arguments[0]->getValue();
     RbDouble *rate = (RbDouble*) arguments[1]->getValue();
@@ -98,8 +99,8 @@ const std::string RbFunction_dexp::getReturnType(void) const {
 /** Get string showing value */
 std::string RbFunction_dexp::toString(void) const {
 
-    RbDouble *x    = (RbDouble*) arguments[0]->getValue();
-    RbDouble *rate = (RbDouble*) arguments[1]->getValue();
+    RbDouble *x    = (RbDouble*) processedArguments[0]->getValue();
+    RbDouble *rate = (RbDouble*) processedArguments[1]->getValue();
     std::ostringstream o;
 	o << std::fixed << std::setprecision(6);
 	o << "Exponential: f( " << x->getValue() << " | " << rate->getValue() << " ) = " << value->getValue();
