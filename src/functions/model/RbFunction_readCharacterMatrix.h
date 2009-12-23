@@ -38,7 +38,6 @@ class DAGNode;
 class RbFunction_readCharacterMatrix :  public RbFunction {
 
     public:
-		static const StringVector   rbClass;            //!< Static class attribute
 
             RbFunction_readCharacterMatrix(void);                              //!< Default constructor, allocate workspace
             RbFunction_readCharacterMatrix(const RbFunction_readCharacterMatrix& s);      //!< Copy constructor

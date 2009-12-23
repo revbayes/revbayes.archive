@@ -18,8 +18,6 @@
 #include "RbNames.h"
 
 
-const StringVector DistUnifUnrootedTopology::rbClass = StringVector(RbNames::DistUnifUnrootedTopology::name) + Distribution::rbClass;
-
 DistUnifUnrootedTopology::DistUnifUnrootedTopology(DAGNode* n, RandomNumberGenerator* r) : Distribution(r) {
 
 	numTaxa = n;
@@ -101,8 +99,11 @@ bool DistUnifUnrootedTopology::equals(const RbObject* o) const {
 	return false;
 }
 
+/** Get class vector describing type of object */
 const StringVector& DistUnifUnrootedTopology::getClass(void) const {
-    rbClass;
+
+    static StringVector rbClass = StringVector(RbNames::DistUnifUnrootedTopology::name) + Distribution::getClass();
+    return rbClass;
 }
 
 void DistUnifUnrootedTopology::printValue(std::ostream& o) const {

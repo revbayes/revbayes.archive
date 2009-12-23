@@ -16,7 +16,6 @@ class DAGNode;
 
 class DistUnifUnrootedTopology : public Distribution {
 public:
-        static const StringVector   rbClass;            //!< Static class attribute
 
 	DistUnifUnrootedTopology(DAGNode* n, RandomNumberGenerator* r);
 	DistUnifUnrootedTopology(const DistUnifUnrootedTopology& d);

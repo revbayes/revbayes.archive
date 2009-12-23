@@ -33,8 +33,6 @@ class DAGNode;
 class Distribution: public RbComplex {
 
 public:
-    static const StringVector   rbClass;            //!< Static class attribute
-
 	virtual ~Distribution() { }                        //!< Destructor does nothing
 
     // Basic utility functions

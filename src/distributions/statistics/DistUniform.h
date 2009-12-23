@@ -17,7 +17,6 @@ class DAGNode;
 
 class DistUniform : public Distribution {
 public:
-        static const StringVector   rbClass;            //!< Static class attribute
 
         DistUniform(DAGNode* l, DAGNode* u, RandomNumberGenerator* r);
         DistUniform(const DistUniform& d);

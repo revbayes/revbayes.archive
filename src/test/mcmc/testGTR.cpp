@@ -14,18 +14,21 @@
 #include "Argument.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
+#include "DeterministicNode.h"
 #include "Distribution.h"
 #include "DistDirichlet.h"
 #include "DistExponential.h"
 #include "DistNormal.h"
 #include "DistUniform.h"
 #include "DistUnifUnrootedTopology.h"
+#include "IntVector.h"
 #include "MoveSlidingWindow.h"
 #include "MoveScale.h"
 #include "RbCharacterMatrix.h"
 #include "RbDouble.h"
 #include "RbInt.h"
 #include "RbFunction_readCharacterMatrix.h"
+#include "RbFunction_GTR.h"
 #include "RbMcmc.h"
 #include "RbModel.h"
 #include "RbMonitor.h"
@@ -35,7 +38,6 @@
 #include "RbObject.h"
 #include "RbException.h"
 #include "RbString.h"
-#include "RbVector.h"
 #include "StochasticNode.h"
 #include "RandomNumberGenerator.h"
 
@@ -63,11 +65,21 @@ int main(int argc, char **argv) {
     ConstantNode* nTaxa = new ConstantNode(new RbInt(aln->getNumTaxa()));
     StochasticNode* treetop = new StochasticNode(new DistUnifUnrootedTopology(nTaxa, rng));
 
-    ConstantNode* b = new ConstantNode(new RbVector(1,1,1,1));
-    StochasticNode* baseFreq = new StochasticNode(new DistDirichlet(), rng);
-    ConstantNode* a = new ConstantNode(new RbVector(1,1,1,1,1,1));
-    StochasticNode* rates = new StochasticNode(new DistDirichlet(a), rng);
-    DeterministicNode* q = new DeterministicNode(new RbFunction_GTR(baseFreq, rates));
+    std::vector<int> bv;
+    for (int i=0; i<4; i++) {
+        bv.push_back(1);
+    }
+    ConstantNode* b = new ConstantNode(new IntVector(bv));
+    StochasticNode* baseFreq = new StochasticNode(new DistDirichlet(b,rng));
+    std::vector<int> av;
+        for (int i=0; i<6; i++) {
+            av.push_back(1);
+        }
+    ConstantNode* a = new ConstantNode(new IntVector(av));
+    StochasticNode* rates = new StochasticNode(new DistDirichlet(a,rng));
+
+
+    //DeterministicNode* q = new DeterministicNode(new RbFunction_GTR());
 
 #   if 0
     ConstantNode* lambda = new ConstantNode(new RbDouble(10.0));

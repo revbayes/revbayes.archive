@@ -136,6 +136,13 @@ RbObject* Vector::getElementRef(const IntVector& index) {
     throw (RbException("Elements are not modifiable"));
 }
 
+/** Tell the parser it cannot modify the elements */
+std::vector<double>& Vector::getValue(void) {
+
+    return value;
+}
+
+
 
 /** Allow the parser to resize the vector */
 void Vector::resize(const IntVector& len) {

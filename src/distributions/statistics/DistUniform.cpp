@@ -16,8 +16,6 @@
 #include "RbStatistics.h"
 #include "RbNames.h"
 
-const StringVector DistUniform::rbClass = StringVector(RbNames::Uniform::name) + Distribution::rbClass;
-
 DistUniform::DistUniform(DAGNode* l, DAGNode* u, RandomNumberGenerator* r) : Distribution(r) {
 
 	lower = l;
@@ -105,7 +103,10 @@ bool DistUniform::equals(const RbObject* o) const {
 	return false;
 }
 
+/** Get class vector describing type of object */
 const StringVector& DistUniform::getClass(void) const {
+
+    static StringVector rbClass = StringVector(RbNames::Uniform::name) + Distribution::getClass();
     return rbClass;
 }
 

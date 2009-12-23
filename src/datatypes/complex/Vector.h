@@ -51,6 +51,9 @@ class Vector : public RbComplex {
         void                        resize(int n) { resize(IntVector(n)); }         //!< Resize
         size_t                      size() const { return value.size(); }           //!< Get size
 
+        // getter and setter
+        std::vector<double>&        getValue(void);
+
         // Element access functions for parser
 	    int                         getDim(void) const { return 1; }                //!< Get subscript dimensions
         const StringVector&         getAtomicClass(void) const;                     //!< Get atomic (element) class

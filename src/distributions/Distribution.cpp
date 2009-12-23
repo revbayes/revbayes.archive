@@ -25,7 +25,7 @@
 /** Get class vector describing type of object */
 const StringVector& Distribution::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Distribution_name) + RbComplex::getClass();
+    static StringVector rbClass = StringVector(RbNames::Distribution::name) + RbComplex::getClass();
     return rbClass;
 }
 

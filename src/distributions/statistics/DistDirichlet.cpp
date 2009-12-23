@@ -14,10 +14,8 @@
 #include "RbMath.h"
 #include "RbStatistics.h"
 #include "RbNames.h"
-#include "RbVector.h"
+#include "Vector.h"
 
-
-const StringVector DistDirichlet::rbClass = StringVector(RbNames::Dirichlet::name) + Distribution::rbClass;
 
 DistDirichlet::DistDirichlet(DAGNode* a, RandomNumberGenerator* r) : Distribution(r) {
 
@@ -60,9 +58,9 @@ RbObject* DistDirichlet::clone(void) const {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double DistDirichlet::pdf(RbObject* obs) {
-    RbVector a = ((RbVector*) alpha->getValue());
-    RbVector o = ((RbVector*) obs)->getValue();
+double DistDirichlet::pdf(const RbObject* obs) {
+    std::vector<double>& a = ((Vector*) alpha->getValue())->getValue();
+    std::vector<double>& o = ((Vector*) obs)->getValue();
 
     double pdf = RbStatistics::Dirichlet::pdf(a,o);
 
@@ -80,10 +78,9 @@ double DistDirichlet::pdf(RbObject* obs) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double DistDirichlet::lnPdf(RbObject* obs) {
-
-    RbVector a = ((RbVector*) alpha->getValue());
-    RbVector o = ((RbVector*) obs)->getValue();
+double DistDirichlet::lnPdf(const RbObject* obs) {
+    std::vector<double>& a = ((Vector*) alpha->getValue())->getValue();
+    std::vector<double>& o = ((Vector*) obs)->getValue();
 
     double lnpdf = RbStatistics::Dirichlet::lnPdf(a,o);
 
@@ -91,10 +88,10 @@ double DistDirichlet::lnPdf(RbObject* obs) {
 }
 
 RbObject* DistDirichlet::rv(void) {
-    RbVector a = ((RbVector*) alpha->getValue());
+    std::vector<double>& a = ((Vector*) alpha->getValue())->getValue();
 
-    std::vector<double> u = RbStatistics::Dirichlet::rv(rng,a);
-    RbVector* x = new RbVector(u);
+    std::vector<double> u = RbStatistics::Dirichlet::rv(a, rng);
+    Vector* x = new Vector(u);
     return (RbObject*)x;
 }
 
@@ -103,8 +100,11 @@ bool DistDirichlet::equals(const RbObject* o) const {
     return false;
 }
 
+/** Get string showing inheritance */
 const StringVector& DistDirichlet::getClass(void) const {
-    rbClass;
+
+    static StringVector rbClass = StringVector(RbNames::Dirichlet::name) + Distribution::getClass();
+    return rbClass;
 }
 
 void DistDirichlet::print(std::ostream& o) const {
@@ -120,34 +120,6 @@ void DistDirichlet::printValue(std::ostream& o) const {
 std::string DistDirichlet::toString(void) const {
 
     return "Dirichlet Distribution( alpha = " + alpha->toString() + ")";
-}
-
-RbObject& DistDirichlet::operator=(const RbObject& obj) {
-
-
-    try {
-        // Use built-in fast down-casting first
-        const DistDirichlet& x = dynamic_cast<const DistDirichlet&> (obj);
-
-        DistDirichlet& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const DistDirichlet& x = dynamic_cast<const DistDirichlet&> (*(obj.convertTo(RbNames::Dirichlet::name)));
-
-            DistDirichlet& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::Dirichlet::name);
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
 }
 
 DistDirichlet& DistDirichlet::operator=(const DistDirichlet& obj) {

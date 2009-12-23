@@ -90,6 +90,13 @@ const RbObject* RbFunction_readCharacterMatrix::executeOperation(
     return m;
 }
 
+/** Get class vector describing type of object */
+const StringVector& RbFunction_readCharacterMatrix::getClass(void) const {
+
+    static StringVector rbClass = StringVector(RbNames::ReadCharacterMatrix::name) + RbFunction::getClass();
+    return rbClass;
+}
+
 /** Get the return type */
 const std::string RbFunction_readCharacterMatrix::getReturnType(void) const {
 

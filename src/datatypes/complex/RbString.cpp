@@ -60,7 +60,7 @@ bool RbString::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const StringVector& RbString::getClass() const {
 
-    static StringVector rbClass = StringVector(RbString_name) + RbComplex::getClass();
+    static StringVector rbClass = StringVector(RbNames::String::name) + RbComplex::getClass();
     return rbClass;
 }
 

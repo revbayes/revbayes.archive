@@ -16,8 +16,6 @@
 #include "RbNames.h"
 
 
-const StringVector DistNormal::rbClass = StringVector(RbNames::Normal::name) + Distribution::rbClass;
-
 DistNormal::DistNormal(DAGNode* m, DAGNode* s, RandomNumberGenerator* r) : Distribution(r) {
 
 	sigma = s;
@@ -105,8 +103,11 @@ bool DistNormal::equals(const RbObject* o) const {
 	return false;
 }
 
+/** Get string showing inheritance */
 const StringVector& DistNormal::getClass(void) const {
-    rbClass;
+
+    static StringVector rbClass = StringVector(RbNames::Normal::name) + Distribution::getClass();
+    return rbClass;
 }
 
 void DistNormal::print(std::ostream& o) const {
@@ -122,34 +123,6 @@ void DistNormal::printValue(std::ostream& o) const {
 std::string DistNormal::toString(void) const {
 
 	return "Normal Distribution( mean = " + mu->toString() + ", std = " + sigma->toString() + ")";
-}
-
-RbObject& DistNormal::operator=(const RbObject& obj) {
-
-
-    try {
-        // Use built-in fast down-casting first
-        const DistNormal& x = dynamic_cast<const DistNormal&> (obj);
-
-        DistNormal& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const DistNormal& x = dynamic_cast<const DistNormal&> (*(obj.convertTo(RbNames::Normal::name)));
-
-            DistNormal& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to " + RbNames::Normal::name);
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
 }
 
 DistNormal& DistNormal::operator=(const DistNormal& obj) {

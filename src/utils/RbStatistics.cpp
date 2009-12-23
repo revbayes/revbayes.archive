@@ -405,8 +405,9 @@ double RbStatistics::Dirichlet::lnPdf(const std::vector<double> &a, const std::v
  * \return Does not return a value (the random variable is initialized in the parameter z).
  * \throws Does not throw an error.
  */
-void RbStatistics::Dirichlet::rv(const std::vector<double> &a, std::vector<double> &z, RandomNumberGenerator* rng) {
+std::vector<double> RbStatistics::Dirichlet::rv(const std::vector<double> &a, RandomNumberGenerator* rng) {
 
+    std::vector<double> z;
 	int n = a.size();
 	double sum = 0.0;
 	for(int i=0; i<n; i++)
@@ -416,6 +417,8 @@ void RbStatistics::Dirichlet::rv(const std::vector<double> &a, std::vector<doubl
 		}
 	for(int i=0; i<n; i++)
 		z[i] /= sum;
+
+	return z;
 }
 
 #pragma mark Exponential Distribution
