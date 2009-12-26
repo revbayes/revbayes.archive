@@ -45,6 +45,10 @@ RbDouble::RbDouble(const bool v)
     else value = 0.0;
 }
 
+RbDouble::~RbDouble(void) {
+
+}
+
 
 /** Clone object */
 RbObject* RbDouble::clone(void) const {

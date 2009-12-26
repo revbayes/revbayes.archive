@@ -53,7 +53,7 @@ class Argument : public RbInternal {
 
     protected:
         std::string                 label;          //!< Label of argument
-        RbObjectWrapper*            wrapper;        //!< The wraper of the value passed in as argument
+        RbObjectWrapper*            wrapper;        //!< The wrapper of the value passed in as argument
 };
 
 #endif

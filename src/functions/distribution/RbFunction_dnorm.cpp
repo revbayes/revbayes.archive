@@ -40,8 +40,7 @@ RbFunction_dnorm::RbFunction_dnorm(void) : RbFunction() {
 /** Copy constructor */
 RbFunction_dnorm::RbFunction_dnorm(const RbFunction_dnorm& s) : RbFunction(s) {
     
-	value = new RbDouble(0.0);
-	*value = *s.value;
+	value = (RbDouble*)s.value->clone();
 }
 
 

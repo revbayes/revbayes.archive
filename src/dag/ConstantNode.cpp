@@ -52,6 +52,7 @@ ConstantNode::ConstantNode(RbObject* val)
  */
 ConstantNode::ConstantNode(const ConstantNode &d)
     :   DAGNode(d) {
+
 }
 
 

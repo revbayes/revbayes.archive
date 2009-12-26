@@ -145,7 +145,6 @@ void RbFunction::printValue(std::ostream& o) const {
  */
 bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector* matchScore) {
 
-
     /*********************  0. Initialization  **********************/
 
 	/* Get the argument rules */
@@ -156,6 +155,9 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
 	while ( theRules[nRules++] != NULL )
 		;
 
+	// Comment Sebastian: I cannot explain why, but we counted to many rules
+	nRules--;
+
     /* Forget previously processed arguments; we own the object wrappers and need to delete them */
     for (std::vector<RbObjectWrapper*>::iterator i= processedArguments.begin();
         i!=processedArguments.end(); i++)
@@ -165,7 +167,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
 
     /* Check the number arguments and get the final number we expect */
     int numFinalArgs;
-    if ( theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) < nRules )
+    if ( theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) < nRules)
         numFinalArgs = nRules - 1;
     else
         numFinalArgs = nRules;

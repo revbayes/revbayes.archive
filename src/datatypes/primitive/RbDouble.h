@@ -33,6 +33,7 @@ class RbDouble : public RbObject {
 	                        RbDouble(const double v);                   //!< Construct from double
 	                        RbDouble(const int v);                      //!< Construct from int 
 	                        RbDouble(const bool v);                     //!< Construct from bool
+	                        ~RbDouble(void);                            //!< destructor
 
         // Basic utility functions
         RbObject*           clone(void) const;                          //!< Clone object

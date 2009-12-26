@@ -39,6 +39,7 @@ Argument::Argument(const Argument& x)
 
     label   = x.label;
     wrapper = x.wrapper->clone();
+
 }
 
 
@@ -46,6 +47,7 @@ Argument::Argument(const Argument& x)
 Argument::~Argument() { 
 
 	delete wrapper; 
+
 } 
 
 

@@ -28,22 +28,21 @@
 
 #include <iostream>
 
-
 /**
  * @brief DAGNode default constructor
  *
  * This constructor creates an empty DAGNode.
  *
  */
-DAGNode::DAGNode()
-    : storedValue(NULL), value(NULL), changed(false), 
-      children(), parents() {
-	  
-      moves = NULL;
-      touchedProbability = true;
-      touchedLikelihood = true;
-}
+DAGNode::DAGNode() :
+    changed(false), children(), parents() {
 
+    value = NULL;
+    storedValue = NULL;
+    moves = NULL;
+    touchedProbability = true;
+    touchedLikelihood = true;
+}
 
 /**
  * @brief DAGNode constructor from value
@@ -53,15 +52,18 @@ DAGNode::DAGNode()
  * @param val   The value of the DAG node
  *
  */
-DAGNode::DAGNode(RbObject *val)
-    : storedValue(NULL), value(val), changed(false), 
-      children(), parents() {
-	  
-      moves = NULL;
-      touchedProbability = true;
-      touchedLikelihood = true;
-}
+DAGNode::DAGNode(RbObject *val) {
 
+    changed = false;
+    //    children;
+    //    parents;
+    storedValue = NULL;
+    value = val;
+    moves = NULL;
+    touchedProbability = true;
+    touchedLikelihood = true;
+
+}
 
 /**
  * @brief DAGNode copy constructor
@@ -72,23 +74,41 @@ DAGNode::DAGNode(RbObject *val)
  * @param d     The DAG node to clone.
  *
  */
-DAGNode::DAGNode(const DAGNode &d)
-    :   storedValue(d.storedValue->clone()), value(d.value->clone()),
-        changed(d.changed), 
-        children(), parents() {
-        
-      touchedProbability = d.touchedProbability;
-      touchedLikelihood = d.touchedLikelihood;
+DAGNode::DAGNode(const DAGNode &d) :
+    changed(d.changed), children(),
+            parents() {
 
-    for (std::set<DAGNode*>::iterator i=d.children.begin(); i!=d.children.end(); i++)
-            children.insert((DAGNode*)(*i)->clone());
+    touchedProbability = d.touchedProbability;
+    touchedLikelihood = d.touchedLikelihood;
 
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
-            parents.insert((DAGNode*)(*i)->clone());
-            
-    (*moves) = (*d.moves);
+    for (std::set<DAGNode*>::iterator i = d.children.begin(); i
+            != d.children.end(); i++)
+        children.insert((DAGNode*) (*i)->clone());
+
+    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++)
+        parents.insert((DAGNode*) (*i)->clone());
+
+    if (d.value != NULL) {
+        value = d.value->clone();
+    }
+    else {
+        value = NULL;
+    }
+
+    if (d.storedValue != NULL) {
+        storedValue = d.storedValue->clone();
+    }
+    else {
+        storedValue = NULL;
+    }
+
+    if (d.moves != NULL) {
+        moves = (RbMoveSchedule*)d.moves->clone();
+    }
+    else {
+        moves = NULL;
+    }
 }
-
 
 /**
  * @brief DAGNode destructor
@@ -101,41 +121,43 @@ DAGNode::DAGNode(const DAGNode &d)
  */
 DAGNode::~DAGNode(void) {
 
-	if ( value != NULL )
-		delete value;
-	if ( storedValue != NULL )
-		delete storedValue;
+    if (value != NULL) {
+        delete value;
+    }
+    if (storedValue != NULL) {
+        delete storedValue;
+    }
+
 }
 
 void DAGNode::accept() {
-//std::cerr << "accept" << std::endl;
+    //std::cerr << "accept" << std::endl;
     // keep new value
     keep();
     // keep the affected parents
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-    	(*i)->keepAffectedParents();
-    	(*i)->keep();
+    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+        (*i)->keepAffectedParents();
+        (*i)->keep();
     }
     // keep the affected children
-    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-    	(*i)->keepAffectedChildren();
-    	(*i)->keep();
+    for (std::set<DAGNode*>::iterator i = children.begin(); i != children.end(); i++) {
+        (*i)->keepAffectedChildren();
+        (*i)->keep();
     }
-	
-	// call accept for the move
-	lastMove->acceptMove();
+
+    // call accept for the move
+    lastMove->acceptMove();
 }
 
 void DAGNode::addMonitor(RbMonitor* m) {
-	monitors.insert(m);
+    monitors.insert(m);
 }
 
 void DAGNode::addMove(RbMove* m, double w) {
-	if (moves != NULL) {
-		moves->addMove(m,w);
-	}
+    if (moves != NULL) {
+        moves->addMove(m, w);
+    }
 }
-
 
 /**
  * @brief Compare DAG nodes
@@ -147,56 +169,60 @@ void DAGNode::addMove(RbMove* m, double w) {
  */
 bool DAGNode::equals(const RbObjectWrapper* x) const {
 
-    const DAGNode* d = dynamic_cast<const DAGNode*>(x);
+    const DAGNode* d = dynamic_cast<const DAGNode*> (x);
 
     if (d == NULL)
         return false;
 
-	if (value != d->value || storedValue != d->storedValue)
+    if (value != d->value || storedValue != d->storedValue)
         return false;
 
-    if (changed != d->changed || touchedProbability != d->touchedProbability || touchedLikelihood != d->touchedLikelihood)
+    if (changed != d->changed || touchedProbability != d->touchedProbability
+            || touchedLikelihood != d->touchedLikelihood)
         return false;
 
-    if (children.size() != d->children.size() || parents.size() != d->parents.size())
+    if (children.size() != d->children.size() || parents.size()
+            != d->parents.size())
         return false;
 
-    for (std::set<DAGNode*>::iterator i=d->children.begin(); i!=d->children.end(); i++)
+    for (std::set<DAGNode*>::iterator i = d->children.begin(); i
+            != d->children.end(); i++)
         if (children.find(*i) == children.end())
             return false;
 
-    for (std::set<DAGNode*>::iterator i=d->parents.begin(); i!=d->parents.end(); i++)
+    for (std::set<DAGNode*>::iterator i = d->parents.begin(); i
+            != d->parents.end(); i++)
         if (parents.find(*i) == parents.end())
             return false;
 
     return true;
 }
 
-
 /** Get class vector describing type of object */
 const StringVector& DAGNode::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::DAGNode::name) + RbObjectWrapper::getClass();
+    static StringVector rbClass = StringVector(RbNames::DAGNode::name)
+            + RbObjectWrapper::getClass();
     return rbClass;
 }
 
-
 double DAGNode::getLnLikelihood(void) {
-	if (touchedLikelihood == true) {
-	    double lnLikelihood = 0.0;
-	    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-	        lnLikelihood += (*i)->getLnProbability();
-	    }
-	    currentLikelihood = lnLikelihood;
-	    touchedLikelihood = false;
-	}
+    if (touchedLikelihood == true) {
+        double lnLikelihood = 0.0;
+        for (std::set<DAGNode*>::iterator i = children.begin(); i
+                != children.end(); i++) {
+            lnLikelihood += (*i)->getLnProbability();
+        }
+        currentLikelihood = lnLikelihood;
+        touchedLikelihood = false;
+    }
     return currentLikelihood;
 }
 
 double DAGNode::getLnLikelihoodRatio(void) {
     currentLikelihood = getLnLikelihood();
-//std::cerr << "current likelihood = " << currentLikelihood << std::endl;
-//std::cerr << "stored likelihood = " << storedLikelihood << std::endl;
+    //std::cerr << "current likelihood = " << currentLikelihood << std::endl;
+    //std::cerr << "stored likelihood = " << storedLikelihood << std::endl;
     return currentLikelihood - storedLikelihood;
 }
 
@@ -205,29 +231,27 @@ double DAGNode::getLnPriorRatio(void) {
 }
 
 RbMove* DAGNode::getNextMove(void) {
-	if (moves == NULL) {
-		return NULL;
-	}
-	lastMove = moves->getNext();
+    if (moves == NULL) {
+        return NULL;
+    }
+    lastMove = moves->getNext();
     return lastMove;
 }
 
 double DAGNode::getUpdateWeight(void) {
-	if (moves == NULL) 
-		return 0.0;
-	return moves->getUpdateWeight();
+    if (moves == NULL)
+        return 0.0;
+    return moves->getUpdateWeight();
 }
-
 
 /** Get value element */
 const RbObject* DAGNode::getValElement(const IntVector& index) const {
 
     if (index.size() == 0 || int(index.size()) != value->getDim())
-        throw (RbException("Subscript error"));
+        throw(RbException("Subscript error"));
 
-    return ((const RbComplex*)(value))->getElement(index);
+    return ((const RbComplex*) (value))->getElement(index);
 }
-
 
 /** Print struct for user */
 void DAGNode::printStruct(std::ostream& o) const {
@@ -243,39 +267,39 @@ void DAGNode::printStruct(std::ostream& o) const {
     value->printValue(o);
 }
 
-
 double DAGNode::performMove(void) {
-	if (moves == NULL) {
-		return 0.0;
-	}	
-	store();
-	RbMove* m = getNextMove();
-	double hr = m->performMove();
-	
-	// mark this node as changed for recalculations
-	changed = true;
-	touch();
-	
-	// propagate the change to the children
+    if (moves == NULL) {
+        return 0.0;
+    }
+    store();
+    RbMove* m = getNextMove();
+    double hr = m->performMove();
+
+    // mark this node as changed for recalculations
+    changed = true;
+    touch();
+
+    // propagate the change to the children
     // touch the affected parents
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-    	(*i)->touchAffectedParents();
-    	(*i)->touch();
+    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+        (*i)->touchAffectedParents();
+        (*i)->touch();
     }
     // touch the affected children
-    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-    	(*i)->touchAffectedChildren();
-    	(*i)->touch();
+    for (std::set<DAGNode*>::iterator i = children.begin(); i != children.end(); i++) {
+        (*i)->touchAffectedChildren();
+        (*i)->touch();
     }
-	
-	return hr;
+
+    return hr;
 }
 
 void DAGNode::monitor(int i) {
-	if (!monitors.empty()) {
-    	for (std::set<RbMonitor*>::iterator it=monitors.begin(); it!= monitors.end(); it++){
-    	    (*it)->monitor(i);
-    	}
+    if (!monitors.empty()) {
+        for (std::set<RbMonitor*>::iterator it = monitors.begin(); it
+                != monitors.end(); it++) {
+            (*it)->monitor(i);
+        }
     }
 }
 
@@ -290,21 +314,19 @@ void DAGNode::monitor(int i) {
  */
 void DAGNode::printChildren(std::ostream& o) const {
 
-	if ( children.empty() )	
-		{
-		o << "No children" << std::endl;
-		return;
-		}
+    if (children.empty()) {
+        o << "No children" << std::endl;
+        return;
+    }
 
     int count = 1;
-	for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++, count++) {
-		o << "children[" << count << "]:" << std::endl;
+    for (std::set<DAGNode*>::iterator i = children.begin(); i != children.end(); i++, count++) {
+        o << "children[" << count << "]:" << std::endl;
         o << (*i) << std::endl;
     }
 
-	o << std::endl;
+    o << std::endl;
 }
-
 
 /**
  * @brief Print parents
@@ -317,41 +339,39 @@ void DAGNode::printChildren(std::ostream& o) const {
  */
 void DAGNode::printParents(std::ostream& o) const {
 
-	if ( parents.empty() )
-		{
-		o << "No parents" << std::endl;
-		return;
-		}
+    if (parents.empty()) {
+        o << "No parents" << std::endl;
+        return;
+    }
 
     int count = 1;
-	for (std::set<DAGNode*>::iterator i=parents.begin(); i != parents.end(); i++, count++) {
-		o << "parents[" << count << "]:" << std::endl;
+    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++, count++) {
+        o << "parents[" << count << "]:" << std::endl;
         o << (*i) << std::endl;
     }
 
-	o << std::endl;
+    o << std::endl;
 }
 
-
 void DAGNode::reject() {
-//std::cerr << "reject" << std::endl;
+    //std::cerr << "reject" << std::endl;
     // restore new value
     restore();
-    
+
     // restore the affected parents
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-    	(*i)->restoreAffectedParents();
-    	(*i)->restore();
+    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
+        (*i)->restoreAffectedParents();
+        (*i)->restore();
     }
-    
+
     // restore the affected children
-    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-    	(*i)->restoreAffectedChildren();
-    	(*i)->restore();
+    for (std::set<DAGNode*>::iterator i = children.begin(); i != children.end(); i++) {
+        (*i)->restoreAffectedChildren();
+        (*i)->restore();
     }
-	
-	// call accept for the move
-	lastMove->rejectMove();
+
+    // call accept for the move
+    lastMove->rejectMove();
 }
 
 /**
@@ -367,19 +387,18 @@ void DAGNode::restore() {
 
     if (changed) {
         // TODO: If value is just a pointer to somebody else's value, then don't swap, just do: "value = storedValue;"
-        temp        = value;
-        value       = storedValue;
+        temp = value;
+        value = storedValue;
         storedValue = temp;
     }
-//    if (touched) {
-        currentLikelihood = storedLikelihood;
-        currentProbability = storedProbability;    
-//    }
+    //    if (touched) {
+    currentLikelihood = storedLikelihood;
+    currentProbability = storedProbability;
+    //    }
 
-    
-    keep();     // Sets touched and changed to false
+
+    keep(); // Sets touched and changed to false
 }
-
 
 /**
  * @brief Set value
@@ -401,21 +420,18 @@ void DAGNode::store(void) {
     storedProbability = currentProbability;
 }
 
-
 /** Print value for user */
 void DAGNode::printValue(std::ostream &o) const {
 
     value->printValue(o);
 }
 
-
 /** Set element value */
 void DAGNode::setElement(const IntVector& index, RbObject* val) {
 
     if (index.size() == 0 || int(index.size()) != value->getDim())
-        throw (RbException("Subscript error"));
+        throw(RbException("Subscript error"));
 
-    ((RbComplex*)(value))->setElement(index, val);
+    ((RbComplex*) (value))->setElement(index, val);
 }
-
 

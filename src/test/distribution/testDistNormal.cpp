@@ -14,6 +14,7 @@
 #include "RbException.h"
 
 int main(int argc, char **argv) {
+    std::cout << "Test for the normal distribution" << '\n';
 
 	// create a DistNormal object
 	RbDouble* sigma = new RbDouble(1.0);
@@ -24,14 +25,17 @@ int main(int argc, char **argv) {
 	RbFunction_pnorm   pnorm;
 	RbFunction_qnorm   qnorm;
 	RbFunction_rnorm   rnorm;	
-	
+
+    std::cout << "Creating constant nodes." << '\n';
 	ConstantNode* cnSigma = new ConstantNode(sigma);
 	ConstantNode* cnMu = new ConstantNode(mu);
 	ConstantNode* cnX = new ConstantNode(x);
-	
+
+    std::cout << "Creating arguments nodes." << '\n';
 	Argument aMu    = Argument("mu", cnMu);
 	Argument aSigma = Argument("sigma", cnSigma);
 	Argument aX     = Argument("", cnX);
+    std::cout << "Arguments created." << '\n';
 	
 	std::vector<Argument> args;
 	args.push_back( aX );
@@ -44,6 +48,7 @@ int main(int argc, char **argv) {
 	
 	try 
 	{
+        std::cout << "Testing Normal Distribution" << '\n';
 	
 		double pdf = ((RbDouble*) dnorm.execute(args))->getValue();
 		double expectedPDF = 0.3520653; //taken from R
