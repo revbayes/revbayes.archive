@@ -52,15 +52,12 @@ class StringVector : public RbComplex {
 
         // Element access functions for parser
         int                     getDim(void) const { return 1; }                //!< Get subscript dimension
-        const StringVector&     getAtomicClass(void) const;                     //!< Get atomic (element) class
+        const std::string&      getElementType(void) const;                     //!< Get element type
         const RbObject*         getElement(const IntVector& index) const;       //!< Get element (a copy)
-        const IntVector&        getElementLength(void) const;                   //!< Get length in each dimension
+        const IntVector&        getLength(void) const;                          //!< Get length in each dimension
         void                    resize(const IntVector& len);                   //!< Resize
         void                    setElement(const IntVector& index, RbObject* val);  //!< Set element
-        void                    setElementLength(const IntVector& len);         //!< Set length in each dimension
-
-    protected:
-        RbObject*               getElementRef(const IntVector& index);          //!< Access to elements (none)
+        void                    setLength(const IntVector& len);                //!< Set length in each dimension
 
     private:
 	    std::vector<std::string>    value;                                      //!< Vector of values

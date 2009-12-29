@@ -14,12 +14,12 @@
  * $Id: RbDataType.h 9 2009-08-23 13:04:35Z ronquist $
  */
 
-#include "MethodTable.h"
+#include "DAGNode.h"
+#include "IntVector.h"
 #include "RbComplex.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "RbObjectWrapper.h"
 #include "StringVector.h"
 
 #include <map>
@@ -29,19 +29,31 @@
 #include <vector>
 
 
+/** Get end iterator */
+ContainerIterator RbComplex::end(void) const {
+
+    IntVector tempIndex = getLength();
+    for (size_t i=0; i<tempIndex.size(); i++)
+        tempIndex[i]--;
+    ContainerIterator temp(tempIndex, getLength());
+    ++temp;
+    return temp;
+}
+
+
 /** Execute method with preset args: map to builtin or to function object if class has the method */
-const RbObject* RbComplex::executeMethod(int funcId) {
+const RbObject* RbComplex::executeMethod(const std::string& name) {
 
     std::ostringstream msg;
-    msg << "No member method with id " << funcId;
+    msg << "No member method '" << name << "'";
     throw (RbException(msg.str()));
 }
 
 
 /** Execute method with args passed in: map to builtin function or to function object */
-const RbObject* RbComplex::executeMethod(const std::string& funcName, std::vector<Argument>& args) {
+const RbObject* RbComplex::executeMethod(const std::string& name, std::vector<Argument>& args) {
 
-    throw (RbException("No member method '" + funcName + "'"));
+    throw (RbException("No member method '" + name + "'"));
 }
 
 
@@ -61,39 +73,47 @@ const RbObject* RbComplex::getElement(const IntVector& index) const {
 
 
 /** Return non-const pointer giving caller modify access to element */
-RbObject* RbComplex::getElementRef(const IntVector& index) {
+RbObject* RbComplex::getElementPtr(const IntVector& index) {
 
-    throw (RbException("Object does not have elements"));
+    if (getDim() == 0)
+        throw RbException("Object does not have elements");
+    else
+        throw RbException("Elements are not modifiable");
 }
 
 
 /** Get element length in each dimension */
-const IntVector& RbComplex::getElementLength() const {
+const IntVector& RbComplex::getLength() const {
 
     throw (RbException("Object does not have elements"));
 }
 
 
-/** Get names of member variables */
-const std::vector<std::string>& RbComplex::getMembers(void) const {
-
-    static std::vector<std::string> members;
-    return members;
-}
-
-
-/** Return non-const pointer giving caller modify access to member variable */
-RbObject* RbComplex::getMemberRef(const std::string& name) {
+/** Get member rules */
+const ArgumentRule** RbComplex::getMemberRules(void) const {
 
     throw (RbException("Object does not have members"));
 }
 
 
-/** Get method descriptions: return empty table by default */
-const MethodTable& RbComplex::getMethodTable(void) const {
+/** Get member variable table */
+const MemberTable& RbComplex::getMembers(void) const {
 
-    static MethodTable methodTable;
-    return methodTable;
+    throw (RbException("Object does not have members"));
+}
+
+
+/** Return non-const pointer giving caller modify access to member variable */
+RbObject* RbComplex::getMemberPtr(const std::string& name) {
+
+    throw (RbException("Object does not have members"));
+}
+
+
+/** Get method description table */
+const MethodTable& RbComplex::getMethods(void) const {
+
+    throw (RbException("Object does not have functions"));
 }
 
 
@@ -105,16 +125,16 @@ const RbObject* RbComplex::getValue(const std::string& name) const {
 
 
 /** Get member variable */
-const RbObjectWrapper* RbComplex::getVariable(const std::string& name) const {
+const DAGNode* RbComplex::getVariable(const std::string& name) const {
 
     throw (RbException("No member '" + name + "'"));
 }
 
 
 /** Set arguments of method; return an internal function id number */
-int RbComplex::setArguments(const std::string& funcName, std::vector<Argument>& args) {
+void RbComplex::setArguments(const std::string& name, std::vector<Argument>& args) {
 
-    throw (RbException("No member method '" + funcName + "'"));
+    throw (RbException("No member method '" + name + "'"));
 }
 
 
@@ -127,7 +147,7 @@ void RbComplex::setValue(const std::string& name, RbObject* val) {
 
 
 /** Set member variable */
-void RbComplex::setVariable(const std::string& name, RbObjectWrapper* var) {
+void RbComplex::setVariable(const std::string& name, DAGNode* var) {
 
     delete var;
     throw (RbException("No member '" + name + "'"));
@@ -150,7 +170,7 @@ void RbComplex::setElement(const IntVector& index, RbObject* val) {
 
 
 /** Set element length */
-void RbComplex::setElementLength(const IntVector& len) {
+void RbComplex::setLength(const IntVector& len) {
 
     throw (RbException("Object does not have elements"));
 }

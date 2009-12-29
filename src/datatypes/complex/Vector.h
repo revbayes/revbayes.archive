@@ -51,21 +51,19 @@ class Vector : public RbComplex {
         void                        resize(int n) { resize(IntVector(n)); }         //!< Resize
         size_t                      size() const { return value.size(); }           //!< Get size
 
-        // getter and setter
-        std::vector<double>&        getValue(void);
+        // Getter
+        std::vector<double>&        getValue(void);                                 //!< Get value directly
 
         // Element access functions for parser
 	    int                         getDim(void) const { return 1; }                //!< Get subscript dimensions
-        const StringVector&         getAtomicClass(void) const;                     //!< Get atomic (element) class
+        const std::string&          getElementType(void) const;                     //!< Get element type
         const RbObject*             getElement(const IntVector& index) const;       //!< Get element (read-only)
-        const IntVector&            getElementLength(void) const;                   //!< Get length in each dim
+        const IntVector&            getLength(void) const;                          //!< Get length in each dim
         virtual void                resize(const IntVector& len);                   //!< Resize
         virtual void                setElement(const IntVector& index, RbObject* val); //!< Set element
-        virtual void                setElementLength(const IntVector& len);         //!< Set length in each dim
+        virtual void                setLength(const IntVector& len);                //!< Set length in each dim
 
     protected:
-        RbObject*                   getElementRef(const IntVector& index);          //!< Access to elements (none)
-
 	    std::vector<double>         value;                                          //!< Vector of values
 };
 

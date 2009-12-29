@@ -128,14 +128,6 @@ const StringVector& StringVector::getClass() const {
 }
 
 
-/** Get atomic class */
-const StringVector& StringVector::getAtomicClass(void) const {
-
-    static RbString x;
-    return x.getClass();
-}
-
-
 /** Get element for parser (read-only) */
 const RbObject* StringVector::getElement(const IntVector& index) const {
 
@@ -151,20 +143,21 @@ const RbObject* StringVector::getElement(const IntVector& index) const {
 }
 
 
+/** Get element class */
+const std::string& StringVector::getElementType(void) const {
+
+    static std::string rbType = RbString_name;
+    return rbType;
+}
+
+
 /** Get element length for parser */
-const IntVector& StringVector::getElementLength() const {
+const IntVector& StringVector::getLength() const {
 
     static IntVector length = IntVector(0);
 
     length[0] = int(value.size());
     return length;
-}
-
-
-/** Tell the parser it cannot modify the elements */
-RbObject* StringVector::getElementRef(const IntVector& index) { 
-
-    throw (RbException("Elements are not modifiable"));
 }
 
 
@@ -199,7 +192,7 @@ void StringVector::setElement(const IntVector& index, RbObject* val) {
 
 
 /** Allow parser to rearrange the container (actually do not allow it) */
-void StringVector::setElementLength(const IntVector& len) {
+void StringVector::setLength(const IntVector& len) {
 
     if ( len.size() != 1 && len[0] != int(value.size()) )
         throw (RbException("Length specification error"));

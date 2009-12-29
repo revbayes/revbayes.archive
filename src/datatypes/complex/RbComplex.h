@@ -18,17 +18,25 @@
 #ifndef RbComplex_H
 #define RbComplex_H
 
+#include "ContainerIterator.h"
 #include "RbObject.h"
 
+#include <map>
 #include <ostream>
 #include <string>
 #include <vector>
 
 class Argument;
+class ArgumentRule;
+class DAGNode;
+class DeterministicNode;
 class IntVector;
-class MethodTable;
-class RbObjectWrapper;
+class MemberFunction;
+class MoveSchedule;
 class StringVector;
+
+typedef std::map<std::string, DAGNode*>         MemberTable;        //!< Member table type def, for convenience
+typedef std::map<std::string, MemberFunction*>  MethodTable;        //!< Method table type def, for convenience
 
 class RbComplex : public RbObject {
 
@@ -43,36 +51,43 @@ class RbComplex : public RbObject {
 		virtual std::string             toString(void) const = 0;                                               //!< Complete info 
 
         // Member variable functions: override if object contains member variables
-        virtual const std::vector<std::string>& getMembers(void) const;                                         //!< Get member names
+        virtual const ArgumentRule**    getMemberRules(void) const;                                             //!< Get member rules
+        virtual const MemberTable&      getMembers(void) const;                                                 //!< Get members
         virtual const RbObject*         getValue(const std::string& name) const;                                //!< Get member value
-        virtual const RbObjectWrapper*  getVariable(const std::string& name) const;                             //!< Get member variable
+        virtual const DAGNode*          getVariable(const std::string& name) const;                             //!< Get member variable
         virtual void                    setValue(const std::string& name, RbObject* val);                       //!< Set member value
-        virtual void                    setVariable(const std::string& name, RbObjectWrapper* var);             //!< Set member variable
+        virtual void                    setVariable(const std::string& name, DAGNode* var);                     //!< Set member variable
 
         // Member method functions: override if object contains member functions
-        virtual const RbObject*         executeMethod(int funcId);                                              //!< Execute function with preprocessed args
-        virtual const RbObject*         executeMethod(const std::string& name, std::vector<Argument>& args);    //!< Execute function
-        virtual const MethodTable&      getMethodTable(void) const;                                             //!< Get method descriptions
-        virtual int                     setArguments(const std::string& name, std::vector<Argument>& args);     //!< Set arguments and get funcId back 
+        virtual const RbObject*         executeMethod(const std::string& name);                                 //!< Execute method with preprocessed args
+        virtual const RbObject*         executeMethod(const std::string& name, std::vector<Argument>& args);    //!< Execute method
+        virtual const MethodTable&      getMethods(void) const;                                                 //!< Get method descriptions
+        virtual void                    setArguments(const std::string& name, std::vector<Argument>& args);     //!< Set arguments of method 
 
 		// Element access functions: override if object contains elements
+        ContainerIterator               begin() const { return ContainerIterator(getLength()); }                //!< First index
+        ContainerIterator               end() const;                                                            //!< Last index + 1
         virtual int                     getDim(void) { return 0; }                                              //!< Get subscript dimensions
-        virtual const StringVector&     getAtomicClass(void) { return getClass() ; }                            //!< Get atomic (element) class
+        virtual const StringVector&     getElementClass(void) const { return getClass() ; }                     //!< Get element class
         virtual const RbObject*         getElement(const IntVector& index) const;                               //!< Get element (read-only)
-        virtual const IntVector&        getElementLength(void) const;                                           //!< Get length in each dim
+        virtual const IntVector&        getLength(void) const;                                                  //!< Get length in each dim
         virtual void                    resize(const IntVector& len);                                           //!< Resize
         virtual void                    setElement(const IntVector& index, RbObject* val);                      //!< Set element
-        virtual void                    setElementLength(const IntVector& len);                                 //!< Get length in each dim
+        virtual void                    setLength(const IntVector& len);                                        //!< Set length in each dim
+
+        // Default moves for types that contain sets of stochastic nodes
+        MoveSchedule*                   getDefaultMoves(DeterministicNode* node) const { return NULL; }         //!< Get block moves applicable to the complex datatype
 
     protected:
                                         RbComplex(void) : RbObject() {}                                         //!< No objects of this class
 
         // Override these functions to provide friend classes with modify access to members or elements
-        virtual RbObject*               getMemberRef(const std::string& name);                                  //!< Allow modify access to member
-        virtual RbObject*               getElementRef(const IntVector& index);                                  //!< Allow modify access to element 
+        virtual RbObject*               getMemberPtr(const std::string& name);                                  //!< Allow modify access to member
+        virtual RbObject*               getElementPtr(const IntVector& index);                                  //!< Allow modify access to element 
 
-        // These are friends that can try to modify members or elements
+        // These are friends that may modify members or elements
         friend class                    SyntaxVariable;                                                         //!< The parser class dealing with variables 
 };
 
 #endif
+

@@ -62,6 +62,28 @@ IntVector* IntVector::clone() const {
 }
 
 
+/** Equals comparison */
+bool IntVector::operator==(const IntVector& x) const {
+
+    if (size() != x.size())
+        return false;
+
+    for (size_t i=0; i<value.size(); i++) {
+        if (value[i] != x.value[i])
+            return false;
+    }
+
+    return true;
+}
+
+
+/** Not equals comparison */
+bool IntVector::operator!=(const IntVector& x) const {
+
+    return !operator==(x);
+}
+
+
 /** Pointer-based equals comparison */
 bool IntVector::equals(const RbObject* obj) const {
 
@@ -103,14 +125,6 @@ const StringVector& IntVector::getClass() const {
 }
 
 
-/** Get atomic class */
-const StringVector& IntVector::getAtomicClass(void) const {
-
-    static RbInt x = RbInt(0);
-    return x.getClass();
-}
-
-
 /** Get element for parser (read-only) */
 const RbObject* IntVector::getElement(const IntVector& index) const {
 
@@ -126,20 +140,21 @@ const RbObject* IntVector::getElement(const IntVector& index) const {
 }
 
 
+/** Get element class */
+const std::string& IntVector::getElementType(void) const {
+
+    static std::string rbType = RbInt_name;
+    return rbType;
+}
+
+
 /** Get element length for parser */
-const IntVector& IntVector::getElementLength(void) const {
+const IntVector& IntVector::getLength(void) const {
 
     static IntVector length = IntVector(0);
 
     length[0] = int(value.size());
     return length;
-}
-
-
-/** Tell the parser it cannot modify the elements */
-RbObject* IntVector::getElementRef(const IntVector& index) {
-
-    throw (RbException("Elements are not modifiable"));
 }
 
 
@@ -178,7 +193,7 @@ void IntVector::setElement(const IntVector& index, RbObject* val) {
 
 
 /** Allow parser to rearrange the container (actually do not allow it) */
-void IntVector::setElementLength(const IntVector& len) {
+void IntVector::setLength(const IntVector& len) {
 
     if ( len.size() != 1 && len[0] != int(value.size()) )
         throw (RbException("Length specification error"));

@@ -97,14 +97,6 @@ const StringVector& Vector::getClass() const {
 }
 
 
-/** Get atomic class */
-const StringVector& Vector::getAtomicClass(void) const {
-
-    static RbDouble x = RbDouble(0.0);
-    return x.getClass();
-}
-
-
 /** Get element for parser (read-only) */
 const RbObject* Vector::getElement(const IntVector& index) const {
 
@@ -120,28 +112,22 @@ const RbObject* Vector::getElement(const IntVector& index) const {
 }
 
 
+/** Get element type */
+const std::string& Vector::getElementType(void) const {
+
+    static std::string rbType = RbDouble_name;
+    return rbType;
+}
+
+
 /** Get element length for parser */
-const IntVector& Vector::getElementLength(void) const {
+const IntVector& Vector::getLength(void) const {
 
     static IntVector length = IntVector(0);
 
     length[0] = int(value.size());
     return length;
 }
-
-
-/** Tell the parser it cannot modify the elements */
-RbObject* Vector::getElementRef(const IntVector& index) {
-
-    throw (RbException("Elements are not modifiable"));
-}
-
-/** Tell the parser it cannot modify the elements */
-std::vector<double>& Vector::getValue(void) {
-
-    return value;
-}
-
 
 
 /** Allow the parser to resize the vector */
@@ -179,7 +165,7 @@ void Vector::setElement(const IntVector& index, RbObject* val) {
 
 
 /** Allow parser to rearrange the container (actually do not allow it) */
-void Vector::setElementLength(const IntVector& len) {
+void Vector::setLength(const IntVector& len) {
 
     if ( len.size() != 1 && len[0] != int(value.size()) )
         throw (RbException("Length specification error"));
