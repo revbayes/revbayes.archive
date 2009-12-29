@@ -39,10 +39,8 @@ class RbObject {
         virtual RbObject*           convertTo(const std::string& type) const;           //! Convert to type
         virtual bool                isConvertibleTo(const std::string& type) const;     //! Is convertible to type?
         
-        // Functions for containers: override if object is a container with elements
+        // Subscript dimensions: override if object supports subscripting
         virtual int                 getDim(void) const { return 0; }                    //!< Get subscript dimensions
-        virtual const StringVector& getAtomicClass(void) const { return getClass(); }   //!< Get atomic class
-        const std::string&          getAtomicType(void) const;                          //!< Get atomic type
 
         // Basic utility functions you do not have to override
         const std::string&          getType(void) const;                                //!< Get type
@@ -52,5 +50,8 @@ class RbObject {
    protected:
 		                            RbObject(void) {}                   //!< No objects of this class
 };
+
+
+std::ostream& operator<<(std::ostream& o, const RbObject& x);           //!< Overloaded output operator
 
 #endif

@@ -50,13 +50,6 @@ const StringVector& RbObject::getClass(void) const {
 }
 
 
-/** Get atomic type (first entry in atomic class vector, describing type beyond which subscripts do not work) */
-const std::string& RbObject::getAtomicType(void) const {
-
-    return getAtomicClass()[0];
-}
-
-
 /** Get type (first entry in class vector) */
 const std::string& RbObject::getType(void) const {
 
@@ -90,4 +83,13 @@ void RbObject::print(std::ostream& o) const {
 
     o << toString() << std::endl;
 }
+
+
+/** Make sure we can print the value of the object easily */
+std::ostream& operator<<(std::ostream& o, const RbObject& x) {
+
+    x.printValue(o);
+    return o;
+}
+
 
