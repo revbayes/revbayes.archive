@@ -1,19 +1,18 @@
 /**
  * @file
- * This file contains the interface for distributions.
- * A distribution is taken in the statistical sense.
- * This interface specifies the pdf, cdf, quantile and rv function with its parameters which need to be provided by any distribution.
+ * This file contains the declaration of Distribution, which specifies the
+ * interface for distributions in RevBayes. A distribution is taken in
+ * the statistical sense.
  *
- * @brief Declaration of Interface Distribution
+ * @brief Declaration of Distribution
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The REvBayes core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-27, version 1.0
  * @interface Distribution
- * @extends RbObject
  * @package distributions
  *
  * $Id$
@@ -22,39 +21,39 @@
 #ifndef Distribution_H
 #define Distribution_H
 
-#include <set>
-#include <string>
-#include "RbComplex.h"
+#include "MemberObject.h"
 #include "StringVector.h"
 
-class RandomNumberGenerator;
+#include <set>
+#include <string>
+
+class ArgumentRule;
 class DAGNode;
+class RandomNumberGenerator;
+class StringVector;
 
-class Distribution: public RbComplex {
+class Distribution: public MemberObject {
 
-public:
-	virtual ~Distribution() { }                        //!< Destructor does nothing
+    public:
+	    virtual                         ~Distribution() {}                          //!< Destructor
 
-    // Basic utility functions
-    virtual const StringVector&     getClass(void) const;       //!< Get class vector describing type of object    
+        // Basic utility functions
+        virtual const StringVector&     getClass(void) const;                       //!< Get class vector   
 
-    // Regular functions
-	std::set<DAGNode*>&            getParents(void);
-    std::string                    getReturnType() const { return returnType; }    //!< Get return type
-	virtual double                 lnPdf(const RbObject* o) = 0;       //!< Ln probability density function
-	virtual double                 pdf(const RbObject* o) = 0;         //!< Probability density function
-	virtual RbObject*              rv()  = 0;
+        // Member rules and variable type
+        virtual const ArgumentRule**    getMemberRules(void) = 0;                   //!< Get member rules
+        virtual const std::string       getReturnType() const = 0;                  //!< Get variable type
 
+        // Distribution functions
+        virtual double                  lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) = 0;  //!< Calculate ln prior ratio
+        virtual double                  lnPdf(const RbObject* value) = 0;           //!< Ln probability density function
+        virtual double                  lnLikelihoodRatio(const RbObject* value) = 0;    //!< Calculate ln likelihood ratio
+        virtual double                  pdf(const RbObject* value) = 0;             //!< Probability density function
+        virtual RbObject*               rv()  = 0;                                  //!< Generate a random draw
 
-protected:
-	Distribution(RandomNumberGenerator* r) :
-		RbComplex() {
-		rng = r;
-	}
-
-	RandomNumberGenerator* 			rng;
-	std::set<DAGNode*>             parents;
-	std::string                    returnType;
+    protected:
+                                        Distribution(const ArgumentRule** memberRules); //!< Constructor
 };
 
 #endif
+

@@ -1,17 +1,17 @@
 /**
  * @file
- * This file contains the abstract class for distributions implementing the distribution interface with the common functions.
+ * This file contains the partial implementation of Distribution, the atbstract
+ * base class for distributions in RevBayes.
  *
- * @brief Implementation of the abstract class Distribution
+ * @brief Partial implementation of Distribution
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The REvBayes development core team
+ * @author The RevBayes core development team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
  * @interface Distribution
- * @extends RbObject
  *
  * $Id$
  */
@@ -22,15 +22,17 @@
 #include "StringVector.h"
 
 
+/** Constructor passes member rules to base class */
+Distribution::Distribution(const ArgumentRule** memberRules)
+    : MemberObject(memberRules) {
+}
+
+
 /** Get class vector describing type of object */
 const StringVector& Distribution::getClass(void) const {
 
-    static StringVector rbClass = StringVector(RbNames::Distribution::name) + RbComplex::getClass();
+    static StringVector rbClass = StringVector(Distribution_name) + MemberObject::getClass();
     return rbClass;
 }
 
 
-std::set<DAGNode*>& Distribution::getParents() {
-
-    return parents;
-}
