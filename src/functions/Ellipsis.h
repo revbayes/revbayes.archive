@@ -26,7 +26,7 @@
 #include <ostream>
 #include <string>
 
-class RbObjectWrapper;
+class DAGNode;
 
 
 class Ellipsis : public ArgumentRule {
@@ -40,7 +40,7 @@ class Ellipsis : public ArgumentRule {
         std::string     toString(void) const;                               //!< Complete info 
 
         // Regular functions
-        bool            isArgValid(const RbObjectWrapper* var) const { return true; }  //!< Anything goes
+        bool            isArgValid(const DAGNode* var) const { return true; }   //!< Anything goes
 };
 
 #endif

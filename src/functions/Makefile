@@ -2,7 +2,7 @@ srcdir      = .
 RM          = rm
 CXX         = g++
 CC          = g++
-INCLUDES    = -I./ -I../parser -I../dag -I../datatypes -I../datatypes/complex -I../utils
+INCLUDES    = -I./ -I../parser -I../dag -I../datatypes -I../datatypes/complex -I../utils -I../main
 CXXFLAGS    = -O3 -ffast-math -Wall
 LDFLAGS     =  -lreadline -lm -lxml2 -lpthread
 LIBS        = -lreadline -lm 
@@ -10,7 +10,7 @@ INSTALL     = @INSTALL@
 
 CFLAGS = $(CXXFLAGS)
 
-all: Argument.o ArgumentRule.o Ellipsis.o RbFunction.o UserFunction.o
+all: Argument.o ArgumentRule.o Ellipsis.o RbFunction.o UserFunction.o MemberFunction.o ObjectCreatorFunction.o DistributionFunction.o
 
 Argument.o: Argument.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Argument.cpp
@@ -26,6 +26,15 @@ RbFunction.o: RbFunction.cpp
 
 UserFunction.o: UserFunction.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c UserFunction.cpp
+
+MemberFunction.o: MemberFunction.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c MemberFunction.cpp
+
+ConstructorFunction.o: ConstructorFunction.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c ConstructorFunction.cpp
+
+DistributionFunction.o: DistributionFunction.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c DistributionFunction.cpp
 
 clean: 
 	rm -f *.o

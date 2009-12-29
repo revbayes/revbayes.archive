@@ -16,10 +16,11 @@
  */
 
 #include "ArgumentRule.h"
+#include "DAGNode.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "RbObjectWrapper.h"
 #include "RbUndefined.h"
+#include "StringVector.h"
 
 #include <sstream>
 
@@ -116,18 +117,8 @@ const StringVector& ArgumentRule::getClass(void) const {
 }
 
 
-/**
- * @brief Test if argument is valid
- *
- * Checks that the type is right and returns based on this.
- *
- * @param val   The object to be tested
- * @returns     Result of comparison
- *
- * @todo        Type conversion is not implemented elsewhere for args
- */
 /** Test if argument is valid */
-bool ArgumentRule::isArgValid(const RbObjectWrapper* var) const {
+bool ArgumentRule::isArgValid(const DAGNode* var) const {
 
     const RbObject* val = var->getValue();
 

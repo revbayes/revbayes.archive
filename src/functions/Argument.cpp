@@ -19,26 +19,29 @@
 #include <sstream>
 
 #include "Argument.h"
+#include "DAGNode.h"
 #include "RbNames.h"
-#include "RbObjectWrapper.h"
 #include "StringVector.h"
 
 
-/** Construct from argument label and argument wrapper */
-Argument::Argument(const std::string& argLabel, RbObjectWrapper* arg)
+/** Construct from argument label and DAG node */
+Argument::Argument(const std::string& argLabel, DAGNode* arg)
     : RbInternal() {
 
     label   = argLabel;
-    wrapper = arg;
+    dagNode = arg;
 }
 
 
-/** Copy constructor: Make independent copy of wrapper */
+/** Copy constructor: Make independent copy of DAG node */
 Argument::Argument(const Argument& x)
     : RbInternal() {
 
     label   = x.label;
-    wrapper = x.wrapper->clone();
+    if (x.dagNode == NULL)
+        dagNode = NULL;
+    else
+        dagNode = x.dagNode->clone();
 
 }
 
@@ -46,17 +49,20 @@ Argument::Argument(const Argument& x)
 /** Destructor: Delete wrapper */
 Argument::~Argument() { 
 
-	delete wrapper; 
+	delete dagNode;
 
 } 
 
 
-/** Assignment operator: Make independent copy of wrapper */
+/** Assignment operator: Make independent copy of DAG node */
 Argument& Argument::operator=(const Argument& x) {
 
     if (this != &x) {
-        delete wrapper;
-        wrapper = x.wrapper->clone();
+        delete dagNode;
+        if (x.dagNode == NULL)
+            dagNode = NULL;
+        else
+            dagNode = x.dagNode->clone();
         label = x.label;
     }
 
@@ -77,7 +83,7 @@ std::string Argument::toString(void) const {
 
     std::ostringstream o;
     o << "Argument: label = \"" << label << "\", value = ";
-    wrapper->printValue(o);
+    dagNode->printValue(o);
 
     return o.str();
 }

@@ -19,9 +19,9 @@
 #include "Frame.h"
 #include "RbNames.h"
 #include "RbString.h"
+#include "StringVector.h"
 #include "SyntaxElement.h"
 #include "UserFunction.h"
-#include "Workspace.h"
 
 #include <list>
 #include <sstream>
@@ -124,7 +124,7 @@ bool UserFunction::equals(const RbObject* x) const {
 
 
 /** Execute function */
-const RbObject* UserFunction::executeOperation(const std::vector<RbObjectWrapper*>& args) const {
+const RbObject* UserFunction::executeOperation(const std::vector<DAGNode*>& args) const {
 
     std::cerr << "I am a user-defined function." << std::endl;
     std::cerr << "I know who I am but I do not know how to execute myself." << std::endl;

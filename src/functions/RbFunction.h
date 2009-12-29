@@ -29,17 +29,17 @@
 #include "RbObject.h"
 
 class ArgumentRule;
+class DAGNode;
 class IntVector;
-class RbObjectWrapper;
 class StringVector;
 
 /**
  * This is the interface and abstract base class for functions in
  * RevBayes. Function instances are put in the function table in the
  * relevant frame (user workspace or base environment) if they are
- * global. If they are member functions, they are instead associated
- * with the function table of the approprioate class in the class
- * table of the user workspace.
+ * global. If they are member functions of user-defined type, they
+ * are instead associated with the function table of the approprioate
+ * class in the class table of the user workspace.
  * 
  * A function instance knows its argument rules and can process a
  * vector of labeled argument values according to these rules to pro-
@@ -60,14 +60,14 @@ class RbFunction :  public RbObject {
 		virtual bool                            equals(const RbObject* obj) const;                                                  //!< Check that the functions are the same
 		virtual const StringVector&             getClass(void) const;                                                               //!< Get class vector
 		void                                    printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
-        std::string                             toString(void) const = 0;                                                           //!< Complete info about object
+        virtual std::string                     toString(void) const;                                                               //!< Complete info about object
 
         // Regular functions
         virtual const ArgumentRule**            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
-        virtual const std::string               getReturnType(void) const = 0;                                                      //!< Get return type
+        virtual const std::string               getReturnType(void) const = 0;                                                     //!< Get return type
         const RbObject*                         execute(void);                                                                      //!< Execute using processed args
         const RbObject*                         execute(const std::vector<Argument>& args);                                         //!< Execute function
-        std::vector<RbObjectWrapper*> const &   getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
+        std::vector<DAGNode*> const &           getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
         bool                                    processArguments(const std::vector<Argument>& args, IntVector* matchScore=NULL);    //!< Process args, return a match score if pointer is not null
 
 
@@ -75,9 +75,9 @@ class RbFunction :  public RbObject {
                                                 RbFunction(void);                                                                   //!< Basic constructor
                                                 RbFunction(const RbFunction& fn);                                                   //!< Copy constructor
 
-		virtual const RbObject*                 executeOperation(const std::vector<RbObjectWrapper*>& args) const = 0;              //!< Execute operation
+		virtual const RbObject*                 executeOperation(const std::vector<DAGNode*>& args) const = 0;                      //!< Execute operation
 
-        std::vector<RbObjectWrapper*>           processedArguments;                                                                 //!< Processed arguments
+        std::vector<DAGNode*>                   processedArguments;                                                                 //!< Processed arguments
         bool                                    argumentsProcessed;                                                                 //!< Are arguments processed?
 };
 

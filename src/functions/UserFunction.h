@@ -27,9 +27,9 @@
 #include "RbFunction.h"
 
 class ArgumentRule;
+class DAGNode;
 class Frame;
 class RbObject;
-class RbObjectWrapper;
 class RbString;
 class StringVector;
 class SyntaxElement;
@@ -61,7 +61,7 @@ class UserFunction :  public RbFunction {
         std::list<SyntaxElement*>*  code;               //!< The code
         Frame*                      defineEnvironment;  //!< The definition environment
 
-		const RbObject*             executeOperation(const std::vector<RbObjectWrapper*>& args) const;  //!< Execute operation
+		const RbObject*             executeOperation(const std::vector<DAGNode*>& args) const;  //!< Execute operation
 };
 
 #endif

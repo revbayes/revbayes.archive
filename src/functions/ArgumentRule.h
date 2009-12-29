@@ -24,10 +24,11 @@
 
 #include "RbInternal.h"
 
-#include "StringVector.h"
-
 #include <string>
 
+class DAGNode;
+class RbObject;
+class StringVector;
 
 class ArgumentRule : public RbInternal {
 
@@ -55,7 +56,7 @@ class ArgumentRule : public RbInternal {
         const RbObject&             getMaxValue(void) const { return *maxValue; }       //!< Get max
         bool                        getNumDim(void) const { return numDim; }            //!< Get dim
         std::string                 getType(void) const { return requiredType; }        //!< Get atomic type of argument
-        virtual bool                isArgValid(const RbObjectWrapper* var) const;       //!< Is var a valid argument?
+        virtual bool                isArgValid(const DAGNode* var) const;               //!< Is var a valid argument?
 
     protected:
         std::string                 label;                                              //!< Label of argument
