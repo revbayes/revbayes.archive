@@ -30,7 +30,7 @@ class RbException : public RbInternal {
         enum                exceptionT { DEFAULT, QUIT };                           //!< Exception types
         static std::string  exceptionName[];                                        //!< Exception type names
 
-	                        RbException(void);                                      //!< Default contructor
+	                        RbException(void);                                      //!< Default constructor
                             RbException(const std::string& msg);                    //!< Default with message 
                             RbException(const std::ostringstream& msg);             //!< Default with message
                             RbException(exceptionT type, const std::string& msg="");//!< General constructor
