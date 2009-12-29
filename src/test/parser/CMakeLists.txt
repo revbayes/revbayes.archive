@@ -2,6 +2,7 @@
 
 ### normal parser
 add_executable(testParser \\
+../../parser/ObjectSlot.cpp \\
 ../../parser/Frame.cpp \\
 ../../parser/FunctionTable.cpp \\
 ../../parser/Workspace.cpp \\
@@ -29,29 +30,30 @@ add_executable(testParser \\
 ../../datatypes/primitive/RbInt.cpp \\
 ../../datatypes/primitive/RbBool.cpp \\
 ../../datatypes/complex/RbComplex.cpp \\
-../../datatypes/complex/MethodDescr.cpp \\
-../../datatypes/complex/MethodTable.cpp \\
 ../../datatypes/complex/RbString.cpp \\
 ../../datatypes/complex/StringVector.cpp \\
 ../../datatypes/complex/IntVector.cpp \\
 ../../datatypes/complex/Vector.cpp \\
 ../../datatypes/complex/Simplex.cpp \\
+../../datatypes/complex/Container.cpp \\
+../../datatypes/complex/MemberObject.cpp \\
 ../../functions/Argument.cpp \\
 ../../functions/ArgumentRule.cpp \\
 ../../functions/Ellipsis.cpp \\
 ../../functions/RbFunction.cpp \\
 ../../functions/UserFunction.cpp \\
-../../dag/RbObjectWrapper.cpp \\
-../../dag/DAGNodeContainer.cpp \\
-../../dag/ContainerIterator.cpp \\
+../../functions/MemberFunction.cpp \\
 ../../dag/DAGNode.cpp  \\
 ../../dag/ConstantNode.cpp \\
+../../dag/VariableNode.cpp  \\
 ../../dag/StochasticNode.cpp \\
 ../../dag/DeterministicNode.cpp \\
-../../moves/objects/RbMove.cpp \\
-../../moves/RbMoveSchedule.cpp \\
+../../dag/ContainerIterator.cpp \\
+../../dag/DAGNodeContainer.cpp \\
+../../moves/Move.cpp \\
+../../moves/MoveSchedule.cpp \\
 ../../distributions/Distribution.cpp \\
-../../main/RbMonitor.cpp \\
+../../main/Monitor.cpp \\
 ../../utils/RbException.cpp \\
 ../../utils/RandomNumberGenerator.cpp \\
 testParser.cpp)
