@@ -7,10 +7,10 @@ CXXFLAGS    = -O3 -ffast-math -Wall
 
 CFLAGS = $(CXXFLAGS)
 
-all: RbMoveSchedule.o
+all: MoveSchedule.o
 
-RbMoveSchedule.o: RbMoveSchedule.cpp
-	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbMoveSchedule.cpp
+MoveSchedule.o: MoveSchedule.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c MoveSchedule.cpp
 
 clean: 
 	rm -f *.o
