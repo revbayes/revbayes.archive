@@ -29,28 +29,33 @@ class StringVector;
 class ConstantNode : public DAGNode {
 
     public:
-	     ConstantNode(RbObject* val);            //!< Constructor from value
-	     ConstantNode(const ConstantNode& c);    //!< Copy constructor
+                                ConstantNode(RbObject* val);                //!< Constructor from value
+                                ConstantNode(const std::string& valType);   //!< Constructor from value type
+                                ConstantNode(const ConstantNode& x);        //!< Copy constructor
+                                ~ConstantNode();                            //!< Destructor
 
-	     ConstantNode*          clone(void) const;                          //!< Clone this object
-	     bool                   equals(const RbObjectWrapper* obj) const;   //!< Object comparison
-	     const StringVector&    getClass(void) const;                       //!< Get class vector
-	     void                   printValue(std::ostream& o) const;                    //!< Print value (for user)
-         std::string            toString(void) const;                                 //!< General info on object
+        // Assignment operator
+        ConstantNode&           operator=(const ConstantNode& x);           //!< Assignment
 
+        // Basic utility functions
+        ConstantNode*           clone(void) const;                          //!< Clone this object
+        const StringVector&     getClass(void) const;                       //!< Get class vector
+        void                    printStruct(std::ostream& o) const;         //!< Print struct for user
+        void                    printValue(std::ostream& o) const;          //!< Print struct for user
+        std::string             toString(void) const;                       //!< Complete info on object
 
-        // overloaded functions from DAGNode
-        double                  getLnProbabilityRatio(void);
-        double                  getLnProbability(void);
-        void    	            keepAffectedChildren(void);                         //!< Keep value of affected nodes recursively
-        void	                keepAffectedParents(void);                         //!< Keep value of affected nodes recursively
-        void         	  		restoreAffectedChildren(void);                      //!< Restore affected nodes recursively
-        void         	  		restoreAffectedParents(void);                      //!< Restore affected nodes recursively
-        void    	       		touchAffectedChildren(void);                        //!< Mark affected nodes recursively
-        void	           		touchAffectedParents(void);                        //!< Mark affected nodes recursively
+        // Get and set value and value elements
+        const RbObject*         getStoredValue(void) { return value; }              //!< Get stored value
+        const RbObject*         getValElement(const IntVector& index) const;        //!< Get element of value    
+        const RbObject*         getValue(void) { return value; }                    //!< Get value
+        const RbObject*         getValue(void) const { return value; }              //!< Get value (const)
+        bool                    isTouched (void) const { return false; }            //!< Touched by a move?
+        void                    setElement(const IntVector& index, RbObject* val);  //!< Set element of value
+        void                    setValue(RbObject* val);                            //!< Set value
 
     protected:
-    	
+        void                    touchAffected(void) const;                  //!< Touch affected if value is reset
+        RbObject*               value;                                      //!< The constant value
 };
 
 #endif

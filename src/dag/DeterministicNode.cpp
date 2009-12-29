@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the implementation of DeterministicNode, which is derived
- * from DAGNode. DeterministicNode is used for DAG nodes associated with an
+ * from VariableNode. DeterministicNode is used for DAG nodes associated with an
  * expression (equation) that determines their value.
  *
  * @brief Implementation of DeterministicNode
@@ -19,49 +19,85 @@
 
 #include "ContainerIterator.h"
 #include "DAGNode.h"
-#include "DAGNodeContainer.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
 #include "RbFunction.h"
-#include "RbMove.h"
-#include "RbMoveSchedule.h"
 #include "RbNames.h"
-#include "RbObjectWrapper.h"
+#include "StringVector.h"
 
 
-/** Constructor from function; get arguments from the function object */
-DeterministicNode::DeterministicNode(RbFunction* func) : DAGNode()  {
+/** Constructor from function: get parents from the function object */
+DeterministicNode::DeterministicNode(RbFunction* func) : VariableNode(func->getReturnType())  {
 
-    // Set the function
-	function = func;
-	
-    // Extract the parent nodes and connect the graph
-    // TODO: Check for cycles!! For instance theNode->isPresentInDAG(this);
-    const std::vector<RbObjectWrapper*>& arguments = func->getProcessedArguments();
-    for (std::vector<RbObjectWrapper*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
-        if ( (*i)->isType(DAGNode_name) == true ) {
-            DAGNode* theNode = (DAGNode*)(*i);
-            parents.insert( theNode );
-            theNode->addChildNode( this );
-        }
-        else {
-            DAGNodeContainer* container = (DAGNodeContainer*)(*i);
-            for (ContainerIterator j=container->begin(); j!=container->end(); j++) {
-                parents.insert((*container)[j]);
-                (*container)[j]->addChildNode( this );
-            }
-       }
+    /* Check for cycles */
+    const std::vector<DAGNode*>& arguments = func->getProcessedArguments();
+    std::list<DAGNode*> done;
+    for (std::vector<DAGNode*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
+        if ((*i)->isParentInDAG(this, done))
+            throw RbException ("Invalid assignment: Cycles in the DAG");
     }
 
-    // Set value; DAG nodes should have a value at all times
+    /* Set parents and add this node as a child node of these */
+    for (std::vector<DAGNode*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
+        parents.insert(*i);
+        (*i)->addChildNode(this);
+    }
+
+    /* Set flag */
+    changed = false;
+
+    /* Set the function */
+    function = func;
+
+    /* Set value and stored value */
     value = function->execute();
+    storedValue = value->clone();
+
+    /* Get default block moves, if any */
+    RbComplex* complexValue = dynamic_cast<RbComplex*>(storedValue);
+    if (complexValue != NULL) {
+        moves = complexValue->getDefaultMoves(this);
+    }
 }
 
 
 /** Copy constructor */
-DeterministicNode::DeterministicNode(const DeterministicNode& d) : DAGNode(d) {
+DeterministicNode::DeterministicNode(const DeterministicNode& x) : VariableNode(x) {
 
-	function = (RbFunction*)d.function->clone();
+    changed     = x.changed;
+    function    = (RbFunction*)(x.function->clone());
+    value       = function->execute();
+    storedValue = value->clone();
+}
+
+
+/** Destructor: do not delete value because it only points to another object */
+DeterministicNode::~DeterministicNode(void) {
+
+    delete function;
+    delete storedValue;
+}
+
+
+/** Assignment operator */
+DeterministicNode& DeterministicNode::operator=(const DeterministicNode& x) {
+
+    if (this != &x) {
+        VariableNode::operator=(x);
+
+        changed     = x.changed;
+
+        delete function;
+        function    = (RbFunction*)(x.function->clone());
+
+        delete storedValue;
+        value       = function->execute();
+        storedValue = value->clone();
+
+        //blockMoves = x.blockMoves;
+    }
+
+    return (*this);
 }
 
 
@@ -75,167 +111,168 @@ DeterministicNode* DeterministicNode::clone(void) const {
 /** Get class vector describing type of object */
 const StringVector& DeterministicNode::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::DeterministicNode::name) + DAGNode::getClass();
+    static StringVector rbClass = StringVector(DeterministicNode_name) + VariableNode::getClass();
     return rbClass;
 }
 
 
-/**
- * @brief Thouch affected nodes
- *
- * This function touches all affected DAG nodes, i.e. marks them as changed.
- *
- */
-void DeterministicNode::touchAffectedChildren(void) {
+/** Get affected nodes: touch and pass through to next stochastic node */
+void DeterministicNode::getAffected(std::set<StochasticNode*>& affected) {
 
-//    if (!touched) {
-        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-            (*i)->touchAffectedChildren();
-        	(*i)->touch();
-        }
-//    }
-}
-
-/**
- * @brief Thouch affected nodes
- *
- * This function touches all affected DAG nodes, i.e. marks them as changed.
- *
- */
-void DeterministicNode::touchAffectedParents(void) {
-
-//    if (!touched) {
-        for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-            (*i)->touchAffectedParents();
-        	(*i)->touch();
-        }
-//    }
-}
-
-/**
- * @brief Tell affected DAG nodes to keep current value
- *
- * This function calls all affected DAG nodes so that they
- * have a chance to keep the current value and discard the
- * previous value.
- *
- */
-void DeterministicNode::keepAffectedChildren() {
-
-    if (changed) {
-        for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-            (*i)->keepAffectedChildren();
-        	(*i)->keep();
-        }
-    }
-}
-
-/**
- * @brief Tell affected DAG nodes to keep current value
- *
- * This function calls all affected DAG nodes so that they
- * have a chance to keep the current value and discard the
- * previous value.
- *
- */
-void DeterministicNode::keepAffectedParents() {
-
-    if (changed) {
-        for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-            (*i)->keepAffectedParents();
-        	(*i)->keep();
+    /* If we have already touched this node, we are done; otherwise, get the affected children */
+    if (!touched) {
+        touched = true;
+        changed = false;
+        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+            (*i)->getAffected(affected);
         }
     }
 }
 
 
-/**
- * @brief Restore affected nodes
- *
- * This function calls all nodes that are affected by this DAG node and restores
- * them.
- *
- */
-void DeterministicNode::restoreAffectedChildren() {
+/** Get stored value intelligently */
+const RbObject* DeterministicNode::getStoredValue(void) {
 
-    for (std::set<DAGNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-        (*i)->restoreAffectedChildren();
-     	(*i)->restore();
-    }
-}
-
-/**
- * @brief Restore affected nodes
- *
- * This function calls all nodes that are affected by this DAG node and restores
- * them.
- *
- */
-void DeterministicNode::restoreAffectedParents() {
-
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-        (*i)->restoreAffectedParents();
-       	(*i)->restore();
-    }
+    update();
+    return storedValue;
 }
 
 
-bool DeterministicNode::equals(const RbObject* obj) const {
-	return false;
-}
+/** Get value intelligently: value is a passive pointer that points to value in function or storedValue */
+const RbObject* DeterministicNode::getValue(void) {
 
-double DeterministicNode::getLnProbabilityRatio() {
-	double lnProb = 0.0;
-	for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-		lnProb += (*i)->getLnProbabilityRatio();
-	}
-	return lnProb;
-}
-
-double DeterministicNode::getLnProbability() {
-	if (touchedProbability == true) { 
-		double lnProb = 0.0;
-		for (std::set<DAGNode*>::iterator i = children.begin(); i != children.end(); i++) {
-			lnProb += (*i)->getLnProbability();
-		}
-		currentProbability = lnProb;
-		touchedProbability = false;
-	}
-	return currentProbability;
+    update();
+    return value;
 }
 
 
-/** Get value intelligently */
-const RbObject* DeterministicNode::getValue() {
+/** Get value element */
+const RbObject* DeterministicNode::getValElement(const IntVector& index) const {
 
-    if (isTouched() && !isChanged()) {
-        if (storedValue != NULL)
-            delete storedValue;     // Stored value is always managed by us
-        storedValue = value->clone();
-        value = function->execute();
-        changed = true;
-    }
+    const RbComplex* complexObject = dynamic_cast<const RbComplex*>(value);
+    if (complexObject == NULL)
+        throw RbException("Object does not have elements");
+
+    return complexObject->getElement(index);
+}
+
+
+/** Get value unconditionally: throw an error if touched and not changed */
+const RbObject* DeterministicNode::getValue(void) const {
+
+    if (touched && !changed)
+        throw RbException("Value is out of date");
 
     return value;
 }
 
 
-/**
- * @brief Print function
- *
- * This function prints complete info about the  object.
- *
- * @param o           The ostream for printing
- *
- */
-void DeterministicNode::printValue(std::ostream &o) const {
+/** Keep value of node and affected variable nodes */
+void DeterministicNode::keepAffected(void) {
 
-    o << value->toString() << std::endl;
+    if (touched) {
+        if (!changed)
+            update();
+        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+            (*i)->keepAffected();
+        }
+    }
+    touched = changed = false;
 }
 
+
+/** Print value for user */
+void DeterministicNode::printValue(std::ostream& o) const {
+
+    if (touched)
+        throw RbException("Cannot print value while in touched state");
+
+    value->printValue(o);
+}
+
+
+/** Print struct for user */
+void DeterministicNode::printStruct(std::ostream& o) const {
+
+    if (touched)
+        throw RbException("Cannot print struct while in touched state");
+
+    o << "Wrapper:" << std::endl;
+    o << "&.class    = " << getClass() << std::endl;
+    o << "&.function = " << function << std::endl;
+    o << "&.value    = " << getValue() << std::endl;
+    o << std::endl;
+}
+
+
+/** Restore value of node and affected variable nodes */
+void DeterministicNode::restoreAffected(void) {
+
+    if (touched) {
+        if (!changed)
+            update();
+        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+            (*i)->restoreAffected();
+        }
+     	value = storedValue;        // Remember, value is just a pointer
+    }
+    touched = changed = false;
+}
+
+
+/** Set element: throw error */
+void DeterministicNode::setElement(const IntVector& index, RbObject* val) {
+
+    throw RbException("Cannot set element of deterministic DAG node");
+}
+
+
+/** Set value: throw error */
+void DeterministicNode::setValue(RbObject* val) {
+
+    throw RbException("Cannot set value of deterministic DAG node");
+}
+
+
+/** Complete info about object */
 std::string DeterministicNode::toString(void) const {
 
-    return value->toString();
+    std::ostringstream o;
+
+    o << "DeterministicNode:" << std::endl;
+
+    o << "name        = " << name << std::endl;
+    o << "touched     = " << (touched ? "true" : "false") << std::endl;
+    o << "changed     = " << (changed ? "true" : "false") << std::endl;
+
+    o << "function    = ";
+    function->printValue(o);
+    o << std::endl;
+
+    o << "value       = ";
+    value->printValue(o);
+    o << std::endl;
+
+    o << "storedValue = ";
+    storedValue->printValue(o);
+    o << std::endl;
+
+    return o.str();
+}
+
+
+/** Update value and stored value after node and its surroundings have been touched by a move */
+void DeterministicNode::update(void) {
+
+    if (touched && !changed) {
+        if (value != storedValue) {
+            if (storedValue != NULL)
+                delete storedValue;
+            storedValue = value->clone();
+        }
+        value = function->execute();
+        changed = true;
+    }
 }
 
 

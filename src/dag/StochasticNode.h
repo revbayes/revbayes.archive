@@ -20,42 +20,63 @@
 #ifndef StochasticNode_H
 #define StochasticNode_H
 
-#include "DAGNode.h"
+#include "VariableNode.h"
 
 class Distribution;
+class RbObject;
+class StringVector;
 
-class StochasticNode : public DAGNode {
+class StochasticNode : public VariableNode {
 
     public:
-	                StochasticNode(Distribution* d);         //!< Constructor from distribution
-	                StochasticNode(const StochasticNode& s); //!< Copy constructor
-	        virtual ~StochasticNode();                       //!< Destructor
+                            StochasticNode(Distribution* d);         //!< Constructor from distribution
+                            StochasticNode(const StochasticNode& s); //!< Copy constructor
+                            ~StochasticNode();                       //!< Destructor
 
-       // Basic utility functions
-        StochasticNode*     clone() const;                  //!< Clone the stochastic node
-        const StringVector& getClass() const;               //!< Get class vector
-        std::string         toString() const;               //!< Complete info about object
+        // Assignment operator
+        StochasticNode&     operator=(const StochasticNode& x);      //!< Assignment operator
+
+        // Basic utility functions
+        StochasticNode*     clone() const;                          //!< Clone the stochastic node
+        const StringVector& getClass() const;                       //!< Get class vector
+        const RbObject*     getStoredValue();                       //!< Get stored value
+        const RbObject*     getValElement(const IntVector& index) const;  //!< Get value element
+        const RbObject*     getValue();                             //!< Get current value
+        const RbObject*     getValue() const;                       //!< Get current value (const)
+        const StringVector& getValueClass() const;                  //!< Get value class
+        void                printStruct(std::ostream& o) const;     //!< Print struct for user
+        void                printValue(std::ostream& o) const;      //!< Print struct for user
+        void                setElement(const IntVector& index, RbObject* value);    //!< Set value element
+        void                setValue(RbObject* value);              //!< Set value
+        std::string         toString() const;                       //!< Complete info about object
 
         // Regular functions
-        void            initializeValue(RbObject* v);
-	    double          getLnProbabilityRatio(void);
-	    double          getLnProbability(void);
-        void            clamp(RbObject* observedVal);       //!< Clamp the node with an observed value
-        void            touchAffected();                    //!< Touch affected nodes
-        void            unclamp() { clamped = false; }      //!< Unclamp the node
-
-
-        void    	            keepAffectedChildren();                         //!< Keep value of affected nodes recursively
-        void	                keepAffectedParents();                         //!< Keep value of affected nodes recursively
-        void         	  		restoreAffectedChildren();                      //!< Restore affected nodes recursively
-        void         	  		restoreAffectedParents();                      //!< Restore affected nodes recursively
-        void    	       		touchAffectedChildren();                        //!< Mark affected nodes recursively
-        void	           		touchAffectedParents();                        //!< Mark affected nodes recursively
+        double              calculateLnProbability(void);           //!< Calculate log conditional probability
+        void                clamp(RbObject* observedVal);           //!< Clamp the node with an observed value
+        double              getLnLikelihoodRatio(void);             //!< Get log likelihood ratio
+        double              getLnPriorRatio(void);                  //!< Get log prior ratio
+        void                unclamp();                              //!< Unclamp the node
         
-    private:
-        bool            clamped;                    //!< Is the stochastic node clamped, ie, does it have data?
-        Distribution*   distribution;               //!< Distribution (density functions, random draw function)
-        
+        // Functions for updating part of a DAG
+        void                getAffected(std::set<StochasticNode*>& affected);   //!< Mark and get affected nodes
+        void                keep();                                 //!< Keep value of this and affected nodes
+        void    	        keepAffected();                         //!< Keep value of affected nodes recursively
+        void                restore();                              //!< Restore value of this and affected nodes
+        void                restoreAffected();                      //!< Restore value of  affected nodes recursively
+
+    protected:
+        // Function serving moves
+        RbObject*           getValuePtr(std::set<StochasticNode*>& affected);   //!< Get mutable value and affected nodes
+
+        // Member variables
+        bool                clamped;                                //!< Is the node clamped with data?
+
+        Distribution*       distribution;                           //!< Distribution (density functions, random draw function)
+
+        RbObject*           value;                                  //!< Current value
+        const RbObject*     storedValue;                            //!< Stored value
+
+        friend class RbMove;                                        //!< Allow mmoves access to value
 };
 
 #endif

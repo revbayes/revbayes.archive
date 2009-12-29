@@ -12,7 +12,6 @@
  * @version 1.0
  * @since 2009-08-16, version 1.0
  * @interface DAGNode
- * @extends RbObject
  *
  * $Id$
  */
@@ -20,131 +19,69 @@
 #ifndef DAGNode_H
 #define DAGNode_H
 
-#include "RbObject.h"
-#include "RbObjectWrapper.h"
 
-class RbMonitor;
-class RbMove;
-class RbMoveSchedule;
-class StringVector;
-
+#include <list>
+#include <map>
 #include <set>
+#include <string>
 
+class IntVector;
+class RbObject;
+class StringVector;
+class VariableNode;
 
-/**
- * @brief DAGNode, abstract base class for nodes in a model graph (DAG)
- *
- * This is the abstract base class for nodes in a model graph, a DAG (Directed
- * Acyclic Graph). DAGNode objects fall into three types, 
- *
- * A DAGNode has the ability to restore itself to a previous state to facilitate
- * MCMC sampling. A touched flag is used to mark a node for later recalculation.
- * The node will then be recalculated when its getValue method is called. When it
- * is recalculated, the changed flag is set to true so that subsequent calls to
- * get value knows that the work has been done.
- *
- * Note that only some nodes need to recalculate their value; others have a fixed
- * value and the base class behavior of just returning the value unconditionally
- * on a call to getValue is appropriate. When getValue is called, the old value
- * should be kept in storedValue in all derived classes that have a value that
- * can change.  A subsequent call to restore will restore the value of the node to
- * its previous value; a call to keep will simply unmark the node by setting
- * the touched flag to false.
- *
- * To facilitate operation on sections of DAGs, this class also implements a
- * touchAffected function, which touches all affected children nodes until it
- * reaches a node that says no additional children will be affected; this would
- * typically be a stochastic node. Similarly, keep and restore have recursive
- * versions that deal with all affected nodes in the graph (as determined by their
- * touched flags). Normally, it is the recursive versions that should be called
- * during an MCMC run.
- *
- * The language is structured such that all named objects will be folded into
- * DAGNode objects. Syntax elements produced by the parser are also converted to
- * unnamed DAGNode objects when representing dynamically evaluated expressions.
- */
-class DAGNode : public RbObjectWrapper {
+class DAGNode {
 
     public:
-		virtual                        ~DAGNode(void);                                                             //!< Destructor
+        virtual                         ~DAGNode(void);                                         //!< Destructor
 
-										// Basic utility functions
-	    virtual DAGNode*                clone(void) const = 0;                                                     //!< Clone this node
-        virtual const StringVector&     getAtomicClass(void) const { return value->getClass(); }                   //!< Get atomic class vector
-        virtual const StringVector&     getClass(void) const;                                                      //!< Get class vector
-        virtual int                     getDim(void) const { return value->getDim(); }                             //!< Get value dimension
-        const RbObject*                 getValue(void) const { return value; }                                     //!< Get value
-        virtual const RbObject*         getValElement(const IntVector& index) const;                               //!< Get value element
-        virtual void                    printStruct(std::ostream& o) const;                                        //!< Print struct for user
-        virtual void                    printValue(std::ostream& o) const;                                         //!< Print value for user
-        virtual void                    setElement(const IntVector& index, RbObject* val);                         //!< Set value element
+        // Functions you have to override
+        virtual DAGNode*                clone(void) const = 0;                                  //!< Clone this node
+        virtual const StringVector&     getClass(void) const;                                   //!< Get class vector
+        virtual const RbObject*         getStoredValue(void) = 0;                               //!< Get stored value
+        virtual const RbObject*         getValElement(const IntVector& index) const = 0;        //!< Get value element
+        virtual const RbObject*         getValue(void) = 0;                                     //!< Get value
+        virtual const RbObject*         getValue(void) const = 0;                               //!< Get value (const)
+        virtual bool                    isTouched(void) const = 0;                              //!< Is touched by a move?
+        virtual void                    printValue(std::ostream& o) const = 0;                  //!< Print value for user
+        virtual void                    printStruct(std::ostream& o) const = 0;                 //!< Print struct for user
+        virtual void                    setElement(const IntVector& index, RbObject*val) = 0;   //!< Set value element
+        virtual std::string             toString(void) const = 0;                               //!< Complete info about object
 
-										// Unclassified functions
-        void							accept(void);
-	    void							addChildNode(DAGNode* c) { children.insert(c); }                           //!< Add child node
-	    void							addMonitor(RbMonitor* m);
-	    void							addMove(RbMove* m, double w);
-	    void							addParentNode(DAGNode* p) { parents.insert(p); }
-	    void							assignMoveSchedule(RbMoveSchedule* ms) { moves = ms; }
-        virtual bool					equals(const RbObjectWrapper *x) const;                                    //!< Compare DAG nodes
-	    std::set<DAGNode*>&				getChildrenNodes(void) { return children; }                                //!< Get children nodes
-	    double							getLnLikelihoodRatio(void);
-	    double							getLnLikelihood(void);
-	    double							getLnPriorRatio(void);
-	    virtual double					getLnProbabilityRatio(void) = 0;
-	    virtual double					getLnProbability(void) = 0;
-	    std::set<DAGNode*>&				getParentNodes(void) { return parents; }                                   //!< Get parent nodes
-	    const RbObject*					getStoredValue(void) const { return storedValue; }                         //!< Get stored value
-	    double							getUpdateWeight(void);
-        bool							hasAttachedMove(void) { return moves != NULL; }
-        void							keep(void) { touchedProbability = touchedLikelihood = changed = false; }   //!< Keep current value of node
-        virtual void					keepAffectedChildren(void) = 0;                                            //!< Keep value of affected nodes recursively
-        virtual void					keepAffectedParents(void) = 0;                                             //!< Keep value of affected nodes recursively
-        void							monitor(int i);
-        double							performMove(void);
-        void							printChildren(std::ostream& o) const;                                      //!< Print children DAG nodes
-	    void							printParents(std::ostream& o) const;                                       //!< Print parent DAG nodes
-	    void							reject(void);
-	    void							removeChildNode(DAGNode* c) { children.erase(c); }                         //!< Remove a child node
-        void							restore(void);                                                             //!< Restore node to previous value
-        virtual void					restoreAffectedChildren(void) = 0;                                         //!< Restore affected nodes recursively
-        virtual void					restoreAffectedParents(void) = 0;                                          //!< Restore affected nodes recursively
-        void							setValue(RbObject* val);                                                   //!< Set the value of the node
-        void							touch(void) { touchedLikelihood = touchedProbability = true; }             //!< Mark node for recalculation
-        virtual void					touchAffectedChildren(void) = 0;                                           //!< Mark affected nodes recursively
-        virtual void					touchAffectedParents(void) = 0;                                            //!< Mark affected nodes recursively
-        
-	    bool							isChanged(void) const { return changed; }                                  //!< Has the node recalculated its value?
-        bool							isTouched(void) const { return touchedLikelihood || touchedProbability; }  //!< Is the node marked for recalculation?
+        // Functions you may want to override
+        virtual int                     getDim(void) const { return 0; }                        //!< Get wrapper dim
+        virtual const DAGNode*          getVarElement(const IntVector& index) const;            //!< Get variable element
+        virtual void                    setElement(const IntVector& index, DAGNode* var);       //!< Set variable element
+
+        // Functions you should not overrride
+        const std::string&              getName(void) const { return name; }                    //!< Get name
+        const std::string&              getType(void) const;                                    //!< Get wrapper type
+        const std::string&              getValueType(void) const { return valueType; }          //!< Get value type
+        bool                            isType(const std::string& type) const;                  //!< Is wrapper of type?
+        void                            setName(const std::string& id) { name=id; }             //!< Set name
+
+        // DAG functions
+        void                            addChildNode(VariableNode* c) { children.insert(c); }   //!< Add child node
+        DAGNode*                        cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const; //!< Clone graph
+        std::set<VariableNode*>&        getChildrenNodes(void) { return children; }             //!< Get children nodes
+        bool                            isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const;  //!< Is node x a parent of the caller in the DAG?
+        int                             numChildren(void) const { return int(children.size()); }//!< Number of children
+        int                             numParents(void) const { return int(parents.size()); }  //!< Number of parents
+        int                             numRefs(void) const;                                    //!< Number of references
+        void                            printChildren(std::ostream& o) const;                   //!< Print children DAG nodes
+        void                            printParents(std::ostream& o) const;                    //!< Print children DAG nodes
+        void                            removeChildNode(VariableNode* c) { children.erase(c); } //!< Remove a child node
 
     protected:
-										// The constructors are protected because this is an abstract class.
-										// Only instances from derived classes are allowed.
-										DAGNode(void);                                                             //!< Default constructor
-										DAGNode(RbObject* val);                                                    //!< Constructor from value
-										DAGNode(const DAGNode& d);                                                 //!< Copy constructor
+                                        DAGNode(const std::string& valType);                    //!< Constructor
+ 
+        std::set<VariableNode*>         children;                                               //!< Set of children nodes
+        std::set<DAGNode*>              parents;                                                //!< Set of parent nodes
+        std::string                     name;                                                   //!< Name, "" if not named
+        const std::string&              valueType;                                              //!< Type of value
 
-        RbMove*							getNextMove(void);
-        void							store(void);
-
-	    const RbObject*					storedValue;                                                               //!< Holds the previous value
-	    const RbObject*					value;                                                                     //!< Holds the current value
-        
-        double							storedLikelihood;
-        double							currentLikelihood;
-        double							storedProbability;
-        double							currentProbability;
-	
-	    bool							changed;                                                                   //!< True if value has been recalculated
-	    bool							touchedProbability;                                                        //!< Marks node for recalculation of the probability
-	    bool							touchedLikelihood;                                                         //!< Marks node for recalculation of the likelihood
-
-	    std::set<DAGNode*>				children;                                                                  //!< Set of children nodes
-	    std::set<DAGNode*>				parents;                                                                   //!< Set of parent nodes
-	    RbMoveSchedule*					moves;
-	    std::set<RbMonitor*>			monitors;
-	    
-	    RbMove*							lastMove;
 };
 
 #endif
+
+

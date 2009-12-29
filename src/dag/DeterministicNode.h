@@ -20,48 +20,53 @@
 #ifndef DeterministicNode_H
 #define DeterministicNode_H
 
+#include "VariableNode.h"
+
 #include <string>
 #include <vector>
 
-#include "DAGNode.h"
-#include "RbFunction.h"
+class RbFunction;
 
-class DeterministicNode : public DAGNode {
+class DeterministicNode : public VariableNode {
 
     public:
-            DeterministicNode(RbFunction* func);                        //!< Constructor, get args from func
-	        DeterministicNode(const DeterministicNode& d);                                  //!< Copy constructor
+                            DeterministicNode(RbFunction* func);            //!< Constructor from function
+                            DeterministicNode(const DeterministicNode& d);  //!< Copy constructor
+                            ~DeterministicNode();                           //!< Destructor
 
-            //TODO: Destructor is not needed if we just use a pointer here and not a full copy.
-            virtual ~DeterministicNode() {}                         //!< Destructor (delete function?)
+        // Assignment operator
+        DeterministicNode&  operator=(const DeterministicNode& x);  //!< Assignment operator
 
-        RbObject&           operator=(const RbObject& o);
-        DAGNode&            operator=(const DAGNode& o);
-        DeterministicNode&  operator=(const DeterministicNode& o);
+        // Basic utility functions
+        DeterministicNode*  clone() const;                          //!< Clone the deterministic node
+        const StringVector& getClass() const;                       //!< Get class vector
+        const RbObject*     getStoredValue();                       //!< Get stored value intelligently
+        const RbObject*     getValElement(const IntVector& index) const;  //!< Get value element
+        const RbObject*     getValue();                             //!< Get current value intelligently
+        const RbObject*     getValue() const;                       //!< Get current value stupidly
+        const StringVector& getValueClass() const;                  //!< Get value class
+        void                printStruct(std::ostream& o) const;     //!< Print struct for user
+        void                printValue(std::ostream& o) const;      //!< Print value for user
+        void                setElement(const IntVector& index, RbObject* value);    //!< Set value element
+        void                setValue(RbObject* value);              //!< Set value
+        std::string         toString(void) const;                   //!< Complete info about object
 
-        // Standard utility functions
-        DeterministicNode*  clone() const;									    //!< Clone this object
-        bool                equals(const RbObject* d) const;           //!< Compare
-         const StringVector&    getClass() const;                               //!< Get class
-	     void                   printValue(std::ostream& o) const;                    //!< Print value (for user)
-         std::string            toString(void) const;     
+        // Functions for updating part of a DAG
+        void    	        getAffected(std::set<StochasticNode*>& affected);//!< Mark and get affected nodes
+        void    	        keepAffected();                         //!< Keep value of affected nodes
+        void                restoreAffected();                      //!< Restore value of affected nodes
 
-        // Regular member functions
-        const RbObject*      getValue();         //!< Get current value
-	    double               getLnProbabilityRatio(void);
-	    double               getLnProbability(void);
-	    
-        void    	            keepAffectedChildren();                         //!< Keep value of affected nodes recursively
-        void	                keepAffectedParents();                         //!< Keep value of affected nodes recursively
-        void         	  		restoreAffectedChildren();                      //!< Restore affected nodes recursively
-        void         	  		restoreAffectedParents();                      //!< Restore affected nodes recursively
-        void    	       		touchAffectedChildren();                        //!< Mark affected nodes recursively
-        void	           		touchAffectedParents();                        //!< Mark affected nodes recursively
-        
-    private:
-	    RbFunction*             function;       //!< Function calculating value
-	    
+   protected:
+        // Utility function
+        void                update(void);                           //!< Update value and storedValue
+
+        // Member variables
+        bool                changed;                                //!< True when value updated after touch
+        RbFunction*         function;                               //!< Function calculating value
+        const RbObject*     value;                                  //!< Ptr to current value
+        RbObject*           storedValue;                            //!< Stored value
 };
 
 #endif
+
 

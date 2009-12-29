@@ -18,50 +18,51 @@
  */
 
 
-#include <iostream>
-#include <string>
-#include <set>
 #include "ConstantNode.h"
-#include "DAGNode.h"
 #include "RbException.h"
 #include "RbMove.h"
 #include "RbMoveSchedule.h"
 #include "RbNames.h"
+#include "StochasticNode.h"
 #include "StringVector.h"
 
+#include <iostream>
+#include <string>
+#include <set>
 
-/**
- * @brief ConstantNode constructor from value
- *
- * This constructor creates a constant node from a value.
- *
- */
+
+/** Constructor from value */
 ConstantNode::ConstantNode(RbObject* val)
-    : DAGNode(val) {
+    : DAGNode(val->getType()), value(val) {
 }
 
 
-/**
- * @brief ConstantNode copy constructor
- *
- * This constructor creates a ConstantNode as a copy of another
- * ConstantNode.
- *
- * @param d     The constant node to clone.
- *
- */
-ConstantNode::ConstantNode(const ConstantNode &d)
-    :   DAGNode(d) {
+/** Constructor from value class */
+ConstantNode::ConstantNode(const std::string& valType)
+    : DAGNode(valType), value(NULL) {
 
 }
 
 
-/**
- * @brief Clone a ConstantNode
- *
- * This is the clone function for ConstantNode objects.
- *
- */
+/** Copy constructor */
+ConstantNode::ConstantNode(const ConstantNode& x)
+    : DAGNode(x) {
+
+    value = x.value->clone();
+}
+
+
+/** Destructor */
+ConstantNode::~ConstantNode() {
+
+    if (children.size() != 0)
+        throw RbException("Invalid delete: node with children");
+
+    delete value;
+}
+
+
+/** Clone this object */
 ConstantNode* ConstantNode::clone(void) const {
 
     return new ConstantNode(*this);
@@ -71,130 +72,80 @@ ConstantNode* ConstantNode::clone(void) const {
 /** Get class vector describing type of object */
 const StringVector& ConstantNode::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::ConstantNode::name) + DAGNode::getClass();
+    static StringVector rbClass = StringVector(ConstantNode_name) + DAGNode::getClass();
     return rbClass;
 }
 
 
-/**
- * @brief Thouch affected nodes
- *
- * This function touches all affected DAG nodes, i.e. marks them as changed.
- *
- */
-void ConstantNode::touchAffectedChildren() {
+/** Get value element */
+const RbObject* ConstantNode::getValElement(const IntVector& index) const {
 
-}
+    RbComplex* complexObject = dynamic_cast<RbComplex*>(value);
+    if (complexObject == NULL)
+        throw RbException("Object does not have elements");
 
-/**
- * @brief Thouch affected nodes
- *
- * This function touches all affected DAG nodes, i.e. marks them as changed.
- *
- */
-void ConstantNode::touchAffectedParents() {
-
-}
-
-/**
- * @brief Tell affected DAG nodes to keep current value
- *
- * This function calls all affected DAG nodes so that they
- * have a chance to keep the current value and discard the
- * previous value.
- *
- */
-void ConstantNode::keepAffectedChildren() {
-
-}
-
-/**
- * @brief Tell affected DAG nodes to keep current value
- *
- * This function calls all affected DAG nodes so that they
- * have a chance to keep the current value and discard the
- * previous value.
- *
- */
-void ConstantNode::keepAffectedParents() {
-
-}
-
-/**
- * @brief Restore affected nodes
- *
- * This function calls all nodes that are affected by this DAG node and restores
- * them.
- *
- */
-void ConstantNode::restoreAffectedChildren() {
-
-}
-
-/**
- * @brief Restore affected nodes
- *
- * This function calls all nodes that are affected by this DAG node and restores
- * them.
- *
- */
-void ConstantNode::restoreAffectedParents() {
-
-}
-
-/**
- * @brief Compare constant nodes
- *
- * To be the same, the constant nodes must have the same value and the same
- * children. It is the pointers to these objects we need to compare, not
- * their current values.
- *
- */
-bool ConstantNode::equals(const RbObjectWrapper* x) const {
-
-	const ConstantNode* p = dynamic_cast<const ConstantNode*>(x);
-    if (p == NULL)
-        return false;
-
-    if (value != p->value || storedValue != p->storedValue)
-        return false;
-
-    if (changed != p->changed || touchedProbability != p->touchedProbability || touchedLikelihood != p->touchedLikelihood)
-        return false;
-
-    if (children.size() != p->children.size() || parents.size() != p->parents.size())
-        return false;
-
-    for (std::set<DAGNode*>::iterator i=p->children.begin(); i!=p->children.end(); i++)
-        if (children.find(*i) == children.end())
-            return false;
-
-    return true;
-}
-
-double ConstantNode::getLnProbabilityRatio() {
-    return 0.0;
-}
-
-double ConstantNode::getLnProbability() {
-    return 0.0;
+    return complexObject->getElement(index);
 }
 
 
-/**
- * @brief Print constant node
- *
- * This function prints the content of the node.
- *
- * @param o     The ostream for printing.
- *
- */
-void ConstantNode::printValue(std::ostream &o) const {
+/** Print value for user */
+void ConstantNode::printValue(std::ostream& o) const {
 
-    o << value->toString() << std::endl;
+    value->printValue(o);
 }
 
+
+/** Print struct for user */
+void ConstantNode::printStruct(std::ostream &o) const {
+
+    o << "Wrapper:" << std::endl;
+    o << "&.class = " << getClass() << std::endl;
+    o << "&.value = " << getValue() << std::endl;
+}
+
+
+/** Set Element */
+void ConstantNode::setElement(const IntVector& index, RbObject* val) {
+
+    RbComplex* complexObject = dynamic_cast<RbComplex*>(value);
+    if (complexObject == NULL)
+        throw RbException("Object does not have elements");
+
+    complexObject->setElement(index, val);
+
+    touchAffected();
+}
+
+
+/** Set value */
+void ConstantNode::setValue(RbObject* val) {
+
+    if (val != NULL && !val->isType(getValueType()))
+        throw RbException("Invalid assignment: type mismatch");
+
+    if (value != NULL)
+        delete value;
+    value = val;
+
+    touchAffected();
+}
+
+
+/** Complete info on object */
 std::string ConstantNode::toString(void) const {
 
-    return value->toString();
+    std::ostringstream o;
+    o << "ConstantNode: value = ";
+    value->printValue(o);
+
+    return o.str();
+}
+
+
+/** Touch affected: only needed if a set function is called */
+void ConstantNode::touchAffected(void) const {
+
+    std::set<StochasticNode*> temp;
+    for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++)
+        (*i)->getAffected(temp);
 }

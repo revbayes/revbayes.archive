@@ -20,418 +20,152 @@
 #include "DAGNode.h"
 #include "IntVector.h"
 #include "RbException.h"
-#include "RbMonitor.h"
-#include "RbMove.h"
-#include "RbMoveSchedule.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "StringVector.h"
+#include "VariableNode.h"
 
 #include <iostream>
 
-/**
- * @brief DAGNode default constructor
- *
- * This constructor creates an empty DAGNode.
- *
- */
-DAGNode::DAGNode() :
-    changed(false), children(), parents() {
 
-    value = NULL;
-    storedValue = NULL;
-    moves = NULL;
-    touchedProbability = true;
-    touchedLikelihood = true;
+/** Constructor: set value type */
+DAGNode::DAGNode(const std::string& valType)
+    : children(), parents(), name(""), valueType(valType) {
 }
 
-/**
- * @brief DAGNode constructor from value
- *
- * This constructor creates a DAGNode with a variable attached to the node.
- *
- * @param val   The value of the DAG node
- *
- */
-DAGNode::DAGNode(RbObject *val) {
 
-    changed = false;
-    //    children;
-    //    parents;
-    storedValue = NULL;
-    value = val;
-    moves = NULL;
-    touchedProbability = true;
-    touchedLikelihood = true;
+/** Destructor needs to be careful with graph and references */
+DAGNode::~DAGNode() {
 
-}
+    if (children.size() != 0)
+        throw RbException("Invalid deletion: node with children");
 
-/**
- * @brief DAGNode copy constructor
- *
- * This constructor creates a DAGNode as a copy of another
- * DAGNode.
- *
- * @param d     The DAG node to clone.
- *
- */
-DAGNode::DAGNode(const DAGNode &d) :
-    changed(d.changed), children(),
-            parents() {
-
-    touchedProbability = d.touchedProbability;
-    touchedLikelihood = d.touchedLikelihood;
-
-    for (std::set<DAGNode*>::iterator i = d.children.begin(); i
-            != d.children.end(); i++)
-        children.insert((DAGNode*) (*i)->clone());
-
-    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++)
-        parents.insert((DAGNode*) (*i)->clone());
-
-    if (d.value != NULL) {
-        value = d.value->clone();
-    }
-    else {
-        value = NULL;
-    }
-
-    if (d.storedValue != NULL) {
-        storedValue = d.storedValue->clone();
-    }
-    else {
-        storedValue = NULL;
-    }
-
-    if (d.moves != NULL) {
-        moves = (RbMoveSchedule*)d.moves->clone();
-    }
-    else {
-        moves = NULL;
+    /* Remove connections and delete orphan nodes */
+    for(std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
+        (*i)->removeChildNode((VariableNode*)(this));
+        if ((*i)->numRefs() == 0)
+            delete (*i);
     }
 }
 
-/**
- * @brief DAGNode destructor
- *
- * This is the standard destructor for all DAG nodes.
- * TODO: If value is just a pointer to somebody else's value in DeterministicNode
- *       then DO NOT DELETE value here! However, in constant node, value does need
- *       to be deleted, so value and storedValue really should not be in this class.
- *
- */
-DAGNode::~DAGNode(void) {
 
-    if (value != NULL) {
-        delete value;
-    }
-    if (storedValue != NULL) {
-        delete storedValue;
+/** Clone the entire graph */
+DAGNode* DAGNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
+
+    DAGNode* temp = clone();
+
+    temp->children.clear();
+    for(std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
+        if (newNodes.find((DAGNode*)(*i)) == newNodes.end())
+            newNodes[(DAGNode*)(*i)] = (*i)->cloneDAG(newNodes);
+        temp->children.insert((VariableNode*)(newNodes[(DAGNode*)(*i)]));
     }
 
-}
-
-void DAGNode::accept() {
-    //std::cerr << "accept" << std::endl;
-    // keep new value
-    keep();
-    // keep the affected parents
-    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-        (*i)->keepAffectedParents();
-        (*i)->keep();
-    }
-    // keep the affected children
-    for (std::set<DAGNode*>::iterator i = children.begin(); i != children.end(); i++) {
-        (*i)->keepAffectedChildren();
-        (*i)->keep();
+    temp->parents.clear();
+    for(std::set<DAGNode*>::const_iterator i=parents.begin(); i!=parents.end(); i++) {
+        if (newNodes.find(*i) == newNodes.end())
+            newNodes[(*i)] = (*i)->cloneDAG(newNodes);
+        temp->parents.insert(newNodes[(*i)]);
     }
 
-    // call accept for the move
-    lastMove->acceptMove();
+    return temp;
 }
 
-void DAGNode::addMonitor(RbMonitor* m) {
-    monitors.insert(m);
-}
-
-void DAGNode::addMove(RbMove* m, double w) {
-    if (moves != NULL) {
-        moves->addMove(m, w);
-    }
-}
-
-/**
- * @brief Compare DAG nodes
- *
- * To be the same, the DAG nodes must have the same parents and children,
- * as well as the same value and storedValue. It is the pointers to these
- * objects we need to compare, not their current values.
- *
- */
-bool DAGNode::equals(const RbObjectWrapper* x) const {
-
-    const DAGNode* d = dynamic_cast<const DAGNode*> (x);
-
-    if (d == NULL)
-        return false;
-
-    if (value != d->value || storedValue != d->storedValue)
-        return false;
-
-    if (changed != d->changed || touchedProbability != d->touchedProbability
-            || touchedLikelihood != d->touchedLikelihood)
-        return false;
-
-    if (children.size() != d->children.size() || parents.size()
-            != d->parents.size())
-        return false;
-
-    for (std::set<DAGNode*>::iterator i = d->children.begin(); i
-            != d->children.end(); i++)
-        if (children.find(*i) == children.end())
-            return false;
-
-    for (std::set<DAGNode*>::iterator i = d->parents.begin(); i
-            != d->parents.end(); i++)
-        if (parents.find(*i) == parents.end())
-            return false;
-
-    return true;
-}
 
 /** Get class vector describing type of object */
 const StringVector& DAGNode::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::DAGNode::name)
-            + RbObjectWrapper::getClass();
+    static StringVector rbClass = StringVector(DAGNode_name);
     return rbClass;
 }
 
-double DAGNode::getLnLikelihood(void) {
-    if (touchedLikelihood == true) {
-        double lnLikelihood = 0.0;
-        for (std::set<DAGNode*>::iterator i = children.begin(); i
-                != children.end(); i++) {
-            lnLikelihood += (*i)->getLnProbability();
-        }
-        currentLikelihood = lnLikelihood;
-        touchedLikelihood = false;
-    }
-    return currentLikelihood;
+
+/** Get type of wrapper (first entry in class vector) */
+const std::string& DAGNode::getType(void) const { 
+
+	return getClass()[0]; 
 }
 
-double DAGNode::getLnLikelihoodRatio(void) {
-    currentLikelihood = getLnLikelihood();
-    //std::cerr << "current likelihood = " << currentLikelihood << std::endl;
-    //std::cerr << "stored likelihood = " << storedLikelihood << std::endl;
-    return currentLikelihood - storedLikelihood;
+
+/** Get element variable; default throws error, override if wrapper has variable elements */
+const DAGNode* DAGNode::getVarElement(const IntVector& index) const {
+
+    throw (RbException("No variable elements"));
 }
 
-double DAGNode::getLnPriorRatio(void) {
-    return getLnProbabilityRatio();
-}
 
-RbMove* DAGNode::getNextMove(void) {
-    if (moves == NULL) {
-        return NULL;
-    }
-    lastMove = moves->getNext();
-    return lastMove;
-}
+/** Is wrapper of specified type? We need to check entire class vector in case we are derived from type. */
+bool DAGNode::isType(const std::string& type) const {
 
-double DAGNode::getUpdateWeight(void) {
-    if (moves == NULL)
-        return 0.0;
-    return moves->getUpdateWeight();
-}
+    const StringVector& classVec = getClass();
 
-/** Get value element */
-const RbObject* DAGNode::getValElement(const IntVector& index) const {
-
-    if (index.size() == 0 || int(index.size()) != value->getDim())
-        throw(RbException("Subscript error"));
-
-    return ((const RbComplex*) (value))->getElement(index);
-}
-
-/** Print struct for user */
-void DAGNode::printStruct(std::ostream& o) const {
-
-    RbObjectWrapper::printStruct(o);
-
-    o << "_valueClass = ";
-    value->getClass().printValue(o);
-
-    o << ".value = ";
-    if (value->isType(RbComplex_name))
-        o << std::endl;
-    value->printValue(o);
-}
-
-double DAGNode::performMove(void) {
-    if (moves == NULL) {
-        return 0.0;
-    }
-    store();
-    RbMove* m = getNextMove();
-    double hr = m->performMove();
-
-    // mark this node as changed for recalculations
-    changed = true;
-    touch();
-
-    // propagate the change to the children
-    // touch the affected parents
-    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-        (*i)->touchAffectedParents();
-        (*i)->touch();
-    }
-    // touch the affected children
-    for (std::set<DAGNode*>::iterator i = children.begin(); i != children.end(); i++) {
-        (*i)->touchAffectedChildren();
-        (*i)->touch();
+    for (size_t i=0; i<classVec.size(); i++) {
+        if (type == classVec[i])
+            return true;
     }
 
-    return hr;
+	return false;
 }
 
-void DAGNode::monitor(int i) {
-    if (!monitors.empty()) {
-        for (std::set<RbMonitor*>::iterator it = monitors.begin(); it
-                != monitors.end(); it++) {
-            (*it)->monitor(i);
+
+/** Check if node is a parent of node x in the DAG: needed to check for cycles in the DAG */
+bool DAGNode::isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const {
+
+    for(std::set<DAGNode*>::const_iterator i=parents.begin(); i!=parents.end(); i++) {
+        if (find(done.begin(), done.end(), (*i)) == done.end()) {
+            if ((*i)->isParentInDAG(x, done))
+                return true;
         }
     }
+
+    return false;
 }
 
-/**
- * @brief Print children
- *
- * This function prints the children DAG nodes to an ostream with a header
- * for each child.
- *
- * @param o     The ostream for printing.
- *
- */
+
+/** Get number of references to the node from Frame and other DAG nodes */
+int DAGNode::numRefs(void) const {
+
+    if (name == "")
+        return numChildren();
+    else
+        return numChildren() + 1;
+}
+
+
+/** Print children */
 void DAGNode::printChildren(std::ostream& o) const {
 
-    if (children.empty()) {
+    if ( children.empty() )	{
         o << "No children" << std::endl;
         return;
     }
 
     int count = 1;
-    for (std::set<DAGNode*>::iterator i = children.begin(); i != children.end(); i++, count++) {
-        o << "children[" << count << "]:" << std::endl;
-        o << (*i) << std::endl;
+    for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++, count++) {
+        o << "children[" << count << "] = <DAG ptr> " << (*i) << " of type " << (*i)->getType() << std::endl;
     }
-
-    o << std::endl;
 }
 
-/**
- * @brief Print parents
- *
- * This function prints the parent DAG nodes to an ostream with a header
- * for each parent.
- *
- * @param o     The ostream for printing.
- *
- */
+
+/** Print parents */
 void DAGNode::printParents(std::ostream& o) const {
 
-    if (parents.empty()) {
+    if ( parents.empty() ) {
         o << "No parents" << std::endl;
         return;
     }
 
     int count = 1;
-    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++, count++) {
-        o << "parents[" << count << "]:" << std::endl;
-        o << (*i) << std::endl;
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i != parents.end(); i++, count++) {
+        o << "parents[" << count << "] = <DAG ptr> " << (*i) << " of type " << (*i)->getType() << std::endl;
     }
-
-    o << std::endl;
 }
 
-void DAGNode::reject() {
-    //std::cerr << "reject" << std::endl;
-    // restore new value
-    restore();
 
-    // restore the affected parents
-    for (std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++) {
-        (*i)->restoreAffectedParents();
-        (*i)->restore();
-    }
+/** Set element variable; default throws error, override if wrapper has variable elements */
+void DAGNode::setElement(const IntVector& index, DAGNode* var) {
 
-    // restore the affected children
-    for (std::set<DAGNode*>::iterator i = children.begin(); i != children.end(); i++) {
-        (*i)->restoreAffectedChildren();
-        (*i)->restore();
-    }
-
-    // call accept for the move
-    lastMove->rejectMove();
+    throw (RbException("No variable elements"));
 }
 
-/**
- * @brief Restore the old value
- *
- * This function restores the old value of the DAG node. It is typically called
- * during MCMC sampling when a proposed value is rejected.
- *
- */
-void DAGNode::restore() {
-
-    const RbObject* temp;
-
-    if (changed) {
-        // TODO: If value is just a pointer to somebody else's value, then don't swap, just do: "value = storedValue;"
-        temp = value;
-        value = storedValue;
-        storedValue = temp;
-    }
-    //    if (touched) {
-    currentLikelihood = storedLikelihood;
-    currentProbability = storedProbability;
-    //    }
-
-
-    keep(); // Sets touched and changed to false
-}
-
-/**
- * @brief Set value
- *
- * This function sets the value of the node.
- *
- */
-void DAGNode::setValue(RbObject* val) {
-
-    if (value != NULL)
-        delete value;
-
-    value = val;
-}
-
-void DAGNode::store(void) {
-    storedValue = value->clone();
-    storedLikelihood = currentLikelihood;
-    storedProbability = currentProbability;
-}
-
-/** Print value for user */
-void DAGNode::printValue(std::ostream &o) const {
-
-    value->printValue(o);
-}
-
-/** Set element value */
-void DAGNode::setElement(const IntVector& index, RbObject* val) {
-
-    if (index.size() == 0 || int(index.size()) != value->getDim())
-        throw(RbException("Subscript error"));
-
-    ((RbComplex*) (value))->setElement(index, val);
-}
 

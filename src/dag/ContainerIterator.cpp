@@ -34,7 +34,7 @@ ContainerIterator::ContainerIterator(const std::vector<int> len) {
 }
 
 
-/** Constructor from IntVector*/
+/** Constructor from length in each dimension */
 ContainerIterator::ContainerIterator(const IntVector& len) {
 
     if (len.size() == 0)
@@ -44,6 +44,25 @@ ContainerIterator::ContainerIterator(const IntVector& len) {
         if (len[i] <= 0)
             throw (RbException("Container index with nonpositive length"));
         push_back(0);
+        length.push_back(len[i]);
+    }
+}
+
+
+/** Constructor from start value and length in each dimension */
+ContainerIterator::ContainerIterator(const IntVector& index, const IntVector& len) {
+
+    if (len.size() == 0 || index.size() == 0)
+        throw RbException("Container index with missing length");
+
+    if (len.size() != index.size())
+        throw RbException("Index does not fit dimensions");
+
+
+    for (size_t i=0; i<len.size(); i++) {
+        if (len[i] <= 0)
+            throw (RbException("Container index with nonpositive length"));
+        push_back(index[i]);
         length.push_back(len[i]);
     }
 }

@@ -28,6 +28,7 @@ class ContainerIterator : public std::vector<int> {
                         ContainerIterator() : std::vector<int>() {}        //!< Empty index 
                         ContainerIterator(const std::vector<int> len);     //!< From length in each dimension 
                         ContainerIterator(const IntVector& len);           //!< From length in each dimension 
+                        ContainerIterator(const IntVector& index, const IntVector& len);    //!< Set value and length
 
         ContainerIterator&  operator++();                                   //!< Increment index (prefix)
         ContainerIterator&  operator--();                                   //!< Decrement index (prefix)
