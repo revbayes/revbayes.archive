@@ -25,6 +25,7 @@
 #include "RbInt.h"
 #include "RbNames.h"
 #include "RbException.h"
+#include "StringVector.h"
 #include "SyntaxVariable.h"
 #include "Workspace.h"
 
@@ -146,7 +147,7 @@ DAGNode* SyntaxVariable::getDAGNode(Frame* frame) const {
         args.push_back(Argument("index", indexArgs));
     }
     else
-        args.push_back(Argument("index", (RbObjectWrapper*)(NULL)));
+        args.push_back(Argument("index", (DAGNode*)(NULL)));
 
     RbFunction *varFunc     = Workspace::globalWorkspace().getFunction(".lookup", args);
     DeterministicNode* root = new DeterministicNode(varFunc);
@@ -238,7 +239,7 @@ RbObject* SyntaxVariable::getValue(Frame* frame) const {
         if (complexObj == NULL) {
             throw RbException("Variable " + variable->getFullName(frame) + " does not have members");
         }
-        const RbObjectWrapper* theVar = complexObj->getVariable(*identifier);
+        const DAGNode* theVar = complexObj->getVariable(*identifier);
         if (theIndex.size() == 0)
             return theVar->getValue()->clone();
         else

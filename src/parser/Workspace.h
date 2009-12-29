@@ -75,7 +75,8 @@ class Workspace : public Frame {
         FunctionTable*  getFunctionTable() { return functionTable; }                //!< Get function table
         RbFunction*     getFunction(const std::string& name,
                             const std::vector<Argument>& args);                     //!< Get function
-        void            printValue(std::ostream &c) const;                          //!< Print workspace
+        bool            isXOfTypeY(const std::string& x, const std::string& y) const;   //!< Type checking
+        void            printValue(std::ostream& c) const;                          //!< Print workspace
 
         /** Get global workspace */
         static Workspace& globalWorkspace() {

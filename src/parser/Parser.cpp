@@ -108,7 +108,7 @@ int Parser::execute(SyntaxElement *root) const {
     
     //! Execute syntax tree
     try {
-        PRINTF("Trying to get the semantic vlaue of the syntax tree.\n");
+        PRINTF("Trying to get the semantic value of the syntax tree.\n");
         result = root->getValue(&Workspace::userWorkspace());
     }
     catch(RbException& rbException) {

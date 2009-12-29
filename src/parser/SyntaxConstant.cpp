@@ -16,6 +16,7 @@
 #include <iostream>
 
 #include "ConstantNode.h"
+#include "RbObject.h"
 #include "SyntaxConstant.h"
 
 

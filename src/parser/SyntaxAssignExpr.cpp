@@ -126,18 +126,16 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
         PRINTF("Arrow assignment\n");
 
         // Calculate the value of the rhs expression
-        RbObject* exprValue = expression->getValue();
+        RbObject* exprValue = expression->getValue(frame);
 
         // Does the variable exist? If not, add it - but only to workspace, not to complex objects
         if (!variable->isMember()  && !frame->existsVariable(varName)) {
 
-            PRINTF("Add new variable\n");
             // It does not exist - add it
             if (index.size() != 0)
                 frame->addVariable(varName, index, new ConstantNode(exprValue));
             else
                 frame->addVariable(varName, new ConstantNode(exprValue));
-            PRINTF("Added new variable\n");
         }
         else {
 
@@ -169,8 +167,14 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
     // Deal with equation assignments
     else if (opType == EquationAssign) {
 
+        PRINTF("Equation assignment\n");
+
+        std::cerr << expression;
+        std::cerr << frame;
         // Get DAG node representation of expression
-        DAGNode* dag = expression->getDAGNode();
+        DAGNode* dag = expression->getDAGNode(frame);
+        PRINTF("Reached here\n");
+
         DeterministicNode* node = dynamic_cast<DeterministicNode*>(dag);
         if (node == NULL) {
             delete dag;
@@ -215,8 +219,10 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
     // Deal with tilde assignments
     else if (opType == TildeAssign) {
 
+        PRINTF("Tilde assignment\n");
+
         // Get distribution
-        RbObject* exprValue = expression->getValue();
+        RbObject* exprValue = expression->getValue(frame);
         Distribution* dist = dynamic_cast<Distribution*>(exprValue);
         if (dist == NULL) {
             delete exprValue;

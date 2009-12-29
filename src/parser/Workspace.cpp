@@ -93,6 +93,14 @@ RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Ar
 }
 
 
+/** Type checking using type table */
+bool Workspace::isXOfTypeY(const std::string& x, const std::string& y) const {
+
+    // TODO: Actually use a type table!
+    return x == y;
+}
+
+
 /** Print workspace */
 void Workspace::printValue(std::ostream& o) const {
 

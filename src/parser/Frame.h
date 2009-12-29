@@ -26,27 +26,21 @@
 #ifndef Frame_H 
 #define Frame_H
 
-#include "DAGNode.h"
-#include "IntVector.h"
 #include "ObjectSlot.h"
-#include "RbObject.h"
-#include "RbObjectWrapper.h"
 
 #include <map>
 #include <string>
 
+class DAGNode;
+class IntVector;
+class RbObject;
 
-/** Frame: class used to hold local variable table */
 class Frame {
 
     public:
-                                Frame();                        //!< Constructor of frame with NULL parent
+                                Frame(void);                    //!< Constructor of frame with NULL parent
                                 Frame(Frame* parentFr);         //!< Constructor of frame with parent
-                                Frame(const Frame& x);          //!< Copy constructor
-        virtual                 ~Frame();                       //!< Destroy table of frame, not entire environment
-
-        // Assignment operator
-        Frame&                  operator=(const Frame& x);      //!< Assignment operator needed
+        virtual                 ~Frame() {}                     //!< Destroy table of frame, not entire environment
 
         // Basic utility functions
         virtual Frame*          clone(void) const { return new Frame(*this); }  //!< Clone frame
@@ -56,24 +50,24 @@ class Frame {
 
         // Regular functions
 	    void                    addVariable(const std::string& name, RbObject* value);      //!< Add a const variable
-	    void                    addVariable(const std::string& name, RbObjectWrapper* var); //!< Add a variable
+	    void                    addVariable(const std::string& name, DAGNode* var);         //!< Add a variable
 	    void                    addVariable(const std::string& name, const IntVector& index, DAGNode* var);   //!< Add container variable
 	    void                    addVariable(const std::string& name, const std::string& type, int dim=0);   //!< Add declared but empty slot
         void                    eraseVariable(const std::string& name);                     //!< Erase a variable
         bool                    existsVariable(const std::string& name) const;              //!< Does variable exist?
         Frame*                  getParentFrame(void) const { return parentFrame; }          //!< Get parent frame 
         const RbObject*         getValue(const std::string& name) const;                    //!< Get value
-        const RbObjectWrapper*  getVariable(const std::string& name) const;                 //!< Get variable
-        const RbObject*         getValElement(const std::string& name, const IntVector& index) const;//!< Get val elem
-        const RbObjectWrapper*  getVarElement(const std::string& name, const IntVector& index) const;//!< Get var elem
+        const DAGNode*          getVariable(const std::string& name) const;                 //!< Get variable
+        const RbObject*         getValElement(const std::string& name, const IntVector& index) const;   //!< Get val elem
+        const DAGNode*          getVarElement(const std::string& name, const IntVector& index) const;   //!< Get var elem
         void                    setValue(const std::string& name, RbObject* val);           //!< Set variable value
-        void                    setVariable(const std::string& name, RbObjectWrapper* var); //!< Set variable
-        void                    setValElement(const std::string& name, const IntVector& index, RbObject* value); //!< Set element of an object
-        void                    setVarElement(const std::string& name, const IntVector& index, DAGNode* variable); //!< Set element of a DAG node container
+        void                    setVariable(const std::string& name, DAGNode* var);         //!< Set variable
+        void                    setValElement(const std::string& name, const IntVector& index, RbObject* value);    //!< Set element of an object
+        void                    setVarElement(const std::string& name, const IntVector& index, DAGNode* variable);  //!< Set element of a DAG node container
 	
     private:
-        Frame*                                  parentFrame;        //!< Pointer to enclosing frame
-	    std::map<std::string, RbObjectWrapper*> variableTable;      //!< Variable table
+        Frame*                              parentFrame;        //!< Pointer to enclosing frame
+        std::map<std::string, ObjectSlot>   variableTable;      //!< Variable table
 };
 
 #endif

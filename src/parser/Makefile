@@ -20,7 +20,7 @@ grammar.tab.o: grammar.tab.c
     
 lex.yy.o: lex.yy.cpp grammar.tab.h
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c lex.yy.cpp
-    
+
 ObjectSlot.o: ObjectSlot.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c ObjectSlot.cpp
 
