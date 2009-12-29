@@ -7,10 +7,10 @@ CXXFLAGS    = -O3 -ffast-math -Wall
 
 CFLAGS = $(CXXFLAGS)
 
-all: RbMonitor.o
+all: Monitor.o
 
-RbMonitor.o: RbMonitor.cpp
-	$(CXX) $(INCLUDES) $(CXXFLAGS) -c RbMonitor.cpp
+Monitor.o: Monitor.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Monitor.cpp
 
 clean: 
 	rm -f *.o

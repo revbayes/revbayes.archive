@@ -66,11 +66,12 @@ std::string RbMonitor::toString(void) const {
 
 void RbMonitor::monitor(int i) {
 
-	if (i % sampleFrequency == 0)
-		{
-		(*outStrm) << node->getValue()->toString() << std::endl;
-		
-		}
+    if (i == 0) {
+        (*outstrm) << node->getName();
+    }
+    if (i % sampleFrequency == 0) {
+        node->printValue(*outstrm);
+    }
 }
 
 

@@ -1,5 +1,5 @@
-#ifndef Monitor_H
-#define Monitor_H
+#ifndef RbMonitor_H
+#define RbMonitor_H
 
 #include <string>
 #include <vector>
