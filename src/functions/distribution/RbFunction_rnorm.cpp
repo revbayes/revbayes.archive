@@ -25,6 +25,8 @@
 #include "RbNames.h"
 #include "RbStatistics.h"
 #include "RbUndefined.h"
+#include "StringVector.h"
+
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -62,7 +64,7 @@ RbObject* RbFunction_rnorm::clone(void) const {
 
 
 /** Execute the function */
-const RbObject* RbFunction_rnorm::executeOperation(const std::vector<RbObjectWrapper*>& arguments) const {
+const RbObject* RbFunction_rnorm::executeOperation(const std::vector<DAGNode*>& arguments) const {
 
     RbDouble *mu    = (RbDouble*) arguments[0]->getValue();
     RbDouble *sigma = (RbDouble*) arguments[1]->getValue();
@@ -103,7 +105,7 @@ const std::string RbFunction_rnorm::getReturnType(void) const {
 /** Get string showing value */
 std::string RbFunction_rnorm::toString(void) const {
 
-	const std::vector<RbObjectWrapper*>& args = getProcessedArguments();
+	const std::vector<DAGNode*>& args = getProcessedArguments();
     RbDouble *mu    = (RbDouble*) args[0]->getValue();
 	RbDouble *sigma = (RbDouble*) args[1]->getValue();
 

@@ -20,7 +20,7 @@ RbMonitor::RbMonitor(std::ostream& o, DAGNode* n, RbInt& f) {
 
 RbMonitor::RbMonitor(const RbMonitor& m) {
 
-	(*node) = (*m.node);
+	//(*node) = (*m.node);
 	outStrm = m.outStrm;
 	sampleFrequency = m.sampleFrequency;
 }
@@ -66,11 +66,8 @@ std::string RbMonitor::toString(void) const {
 
 void RbMonitor::monitor(int i) {
 
-    if (i == 0) {
-        (*outstrm) << node->getName();
-    }
     if (i % sampleFrequency == 0) {
-        node->printValue(*outstrm);
+        node->printValue(*outStrm);
     }
 }
 

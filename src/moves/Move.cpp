@@ -1,59 +1,75 @@
-/*
- * RbMove.cpp
+/**
+ * @file
+ * This file contains the implementation of some common functions
+ * in Move, which is the abstract base class for moves in mcmc
+ * inference.
  *
- *  Created on: 25 nov 2009
- *      Author: Sebastian
+ * @brief Declaration of Move
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-09-08, version 1.0
+ *
+ * $Id$
  */
+
+#include "DAGNode.h"
+#include "Move.h"
+#include "RbComplex.h"
+#include "RbNames.h"
+#include "StringVector.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "DAGNode.h"
-#include "RbComplex.h"
-#include "RbMove.h"
-#include "RbNames.h"
-#include "StringVector.h"
 
+/** Constructor */
+Move::Move(VariableNode* node, RandomNumberGenerator* rgen) {
 
-
-
-RbMove::RbMove(DAGNode* n, RandomNumberGenerator* r) {
-    node = n;
-    rng = r;
-}
-
-RbMove::~RbMove(void){
-
+    theNode = node;
+    rng = rgen;
 }
 
 
-double RbMove::performMove(void) {
+/** Accept the move: update statistics and call derived method */
+void Move::acceptMove(void) {
 
-    nTries++;
-    perform();
-}
-
-void RbMove::acceptMove(void) {
-
-    nAcceptances++;
+    numAccepted++;
     accept();
 }
 
-const StringVector& RbMove::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RbNames::Move::name) + RbComplex::getClass();
+/** Calculate acceptance probability */
+double Move::getAcceptanceProbability(void) {
+
+    return numAccepted/(double)numTried;
+}
+
+
+/** Get class vector describing type of object */
+const StringVector& Move::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(Move_name) + RbComplex::getClass();
 	return rbClass;
 }
 
-void RbMove::rejectMove(void) {
 
-    reject();
+/** Perform the move: update statistics and call derived method */
+double Move::performMove(void) {
+
+    numTried++;
+    return perform();
 }
 
-double RbMove::getAcceptanceProbability(void) {
 
-    return nAcceptances/(double)nTries;
+/** Reject the move: call derived method so we can restore node(s) */
+void Move::rejectMove(void) {
+
+    reject();
 }
 
 

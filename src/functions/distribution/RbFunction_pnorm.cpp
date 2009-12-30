@@ -23,10 +23,11 @@
 #include "RbNames.h"
 #include "RbStatistics.h"
 #include "RbUndefined.h"
+#include "StringVector.h"
+
 #include <iomanip>
 #include <sstream>
 #include <string>
-
 
 
 /** Default constructor */
@@ -60,7 +61,7 @@ RbObject* RbFunction_pnorm::clone(void) const {
 
 
 /** Execute the function */
-const RbObject* RbFunction_pnorm::executeOperation(const std::vector<RbObjectWrapper*>& args) const {
+const RbObject* RbFunction_pnorm::executeOperation(const std::vector<DAGNode*>& args) const {
 
     RbDouble *x     = (RbDouble*) args[0]->getValue();
     RbDouble *mu    = (RbDouble*) args[1]->getValue();

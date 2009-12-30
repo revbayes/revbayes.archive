@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the declaration of Move, which is the abstract
- * base class for moves.
+ * base class for moves used in mcmc inference.
  *
  * @brief Declaration of Move
  *
@@ -32,14 +32,14 @@ class Move : public RbComplex {
     public:
         virtual                 ~Move(void) {}                      //!< Virtual destructor, just in case
 
+        // Basic utility functions
+        const StringVector&     getClass(void) const;               //!< Get class vector
+
         // Move functions
         void                    acceptMove(void);				    //!< Accept the move, update statistics
         double                  getAcceptanceProbability(void);     //!< Get acceptance probability
         double                  performMove(void);                  //!< Perform the move, update statistics
         void                    rejectMove(void);                   //!< Reject the move
-
-        // Basic utility functions
-        const StringVector&     getClass(void) const;               //!< Get class vector
 
     protected:
                                 Move(VariableNode* node, RandomNumberGenerator* rgen);      //!< Constructor

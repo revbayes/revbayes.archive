@@ -20,14 +20,14 @@
 #include "RbDouble.h"
 #include "RbFunction_dnorm.h"
 #include "RbObject.h"
-#include "RbObjectWrapper.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
 #include "RbUndefined.h"
+#include "StringVector.h"
+
 #include <iomanip>
 #include <sstream>
 #include <string>
-
 
 
 /** Default constructor */
@@ -60,7 +60,7 @@ RbObject* RbFunction_dnorm::clone(void) const {
 
 
 /** Execute the function */
-const RbObject* RbFunction_dnorm::executeOperation(const std::vector<RbObjectWrapper*>& args) const {
+const RbObject* RbFunction_dnorm::executeOperation(const std::vector<DAGNode*>& args) const {
 
     RbDouble *x     = (RbDouble*) args[0]->getValue();
     RbDouble *mu    = (RbDouble*) args[1]->getValue();

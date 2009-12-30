@@ -19,6 +19,7 @@
 #define RbFunction_rnorm_H
 
 #include "RbFunction.h"
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -26,7 +27,7 @@
 class ArgumentRule;
 class RbDouble;
 class RbObject;
-class RbObjectWrapper;
+class StringVector;
 
 /** This is the class for the dnorm() function, which takes a single
  *  scalar real or int.
@@ -42,7 +43,7 @@ class RbFunction_rnorm :  public RbFunction {
         const StringVector&         getClass(void) const;                                              //!< Get class
         std::string                 toString(void) const;                                              //!< General info on object
 
-        const RbObject*             executeOperation(const std::vector<RbObjectWrapper*>& args) const; //!< Get result
+        const RbObject*             executeOperation(const std::vector<DAGNode*>& args) const; //!< Get result
 		const ArgumentRule**        getArgumentRules(void) const;                                      //!< Get the number of argument rules
         const std::string           getReturnType(void) const;                                         //!< Get return type
 
