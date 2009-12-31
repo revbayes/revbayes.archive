@@ -153,7 +153,7 @@ void Parser::getline(char* buf, int maxsize) {
     buf[i++] = '\n';
     buf[i] = '\0';
 
-    PRINTF("Parser gave flex line:\n%s", buf);
+    PRINTF("Parser gave flex line: %s", buf);
 }
 
 
@@ -166,12 +166,12 @@ int Parser::processCommand(std::string& command) {
     rrcommand << command;
 
     // Call Bison code, which calls Flex code, which calls rrinput
-    PRINTF("Calling bison with rrcommand = '%s'\n", rrcommand.str().c_str());
+    PRINTF("\nCalling bison with rrcommand = '%s'\n", rrcommand.str().c_str());
     int result = yyparse();
 
     // Error or just incomplete statement?
     if (result == 0) {
-        PRINTF("Parser resetting command string\n");
+        PRINTF("Parser resetting command string\n\n");
         rrcommand.str("");
         rrcommand.clear();  // Clear any error flags
     }

@@ -25,6 +25,7 @@
 #include "StringVector.h"
 #include "VariableNode.h"
 
+#include <algorithm>
 #include <iostream>
 
 
@@ -141,7 +142,7 @@ void DAGNode::printChildren(std::ostream& o) const {
     }
 
     int count = 1;
-    for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++, count++) {
+    for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++, count++) {
         o << "children[" << count << "] = <DAG ptr> " << (*i) << " of type " << (*i)->getType() << std::endl;
     }
 }
@@ -156,7 +157,7 @@ void DAGNode::printParents(std::ostream& o) const {
     }
 
     int count = 1;
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i != parents.end(); i++, count++) {
+    for (std::set<DAGNode*>::const_iterator i=parents.begin(); i != parents.end(); i++, count++) {
         o << "parents[" << count << "] = <DAG ptr> " << (*i) << " of type " << (*i)->getType() << std::endl;
     }
 }

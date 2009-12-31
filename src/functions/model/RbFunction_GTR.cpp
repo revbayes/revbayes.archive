@@ -74,7 +74,7 @@ std::string RbFunction_GTR::toString(void) const {
 
 /** Execute function */
 const RbObject* RbFunction_GTR::executeOperation(
-        const std::vector<RbObjectWrapper*>& arguments) const {
+        const std::vector<DAGNode*>& arguments) const {
 
     return NULL;
 }

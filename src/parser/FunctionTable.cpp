@@ -169,6 +169,7 @@ RbFunction* FunctionTable::getFunction(const std::string& name, const std::vecto
     std::pair<std::multimap<std::string, RbFunction*>::const_iterator,
               std::multimap<std::string, RbFunction*>::const_iterator> retVal;
 
+    size_t i = table.size();
     retVal = table.equal_range(name);
     if (retVal.first == table.end()) {
         if (parentTable != NULL)

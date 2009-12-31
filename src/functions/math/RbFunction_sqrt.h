@@ -56,7 +56,7 @@ class RbFunction_sqrt :  public RbFunction {
         bool                isConvertibleTo(const std::string& type) const;
         RbObject*           convertTo(const std::string& type) const;
 
-        const RbObject*             executeOperation(const std::vector<RbObjectWrapper*>& arguments) const; //!< Get result
+        const RbObject*             executeOperation(const std::vector<DAGNode*>& arguments) const; //!< Get result
         const ArgumentRule**        getArgumentRules(void) const;                                   //!< Get the number of argument rules
         const std::string           getReturnType(void) const;
 

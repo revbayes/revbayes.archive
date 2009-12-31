@@ -559,6 +559,8 @@ char *yytext;
 /* Hack for Windows */
 #ifdef WIN32
 #define strdup(a) _strdup(a)
+int isatty(int) { return 0; }
+#define YY_SKIP_YYWRAP
 #define yywrap() 1
 #else
 extern "C" { 

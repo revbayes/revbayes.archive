@@ -54,7 +54,7 @@ RbObject* RbFunction_ln::clone(void) const {
 }
 
 /** Execute the function */
-const RbObject* RbFunction_ln::executeOperation(const std::vector<RbObjectWrapper*>& arguments) const {
+const RbObject* RbFunction_ln::executeOperation(const std::vector<DAGNode*>& arguments) const {
 
     RbDouble *arg = (RbDouble*) arguments[0]->getValue();
     if ( arg->getValue() < 0.0 )

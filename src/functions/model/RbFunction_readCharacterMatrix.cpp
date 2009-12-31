@@ -74,7 +74,7 @@ std::string RbFunction_readCharacterMatrix::toString(void) const {
 
 /** Execute function */
 const RbObject* RbFunction_readCharacterMatrix::executeOperation(
-        const std::vector<RbObjectWrapper*>& arguments) const {
+        const std::vector<DAGNode*>& arguments) const {
 
     /* Get actual argument */
     std::string fName = ((RbString*) arguments[0]->getValue())->getValue();

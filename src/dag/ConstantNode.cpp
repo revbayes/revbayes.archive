@@ -20,8 +20,6 @@
 
 #include "ConstantNode.h"
 #include "RbException.h"
-#include "RbMove.h"
-#include "RbMoveSchedule.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
 #include "StringVector.h"

@@ -255,10 +255,6 @@ namespace Vector {
 const std::string name = "vector";
 }
 
-namespace RbObjectWrapper {
-const std::string name = "wrapper";
-}
-
 namespace RbObject {
 const std::string name = "object";
 }

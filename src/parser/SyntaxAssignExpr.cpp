@@ -169,12 +169,8 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
 
         PRINTF("Equation assignment\n");
 
-        std::cerr << expression;
-        std::cerr << frame;
         // Get DAG node representation of expression
         DAGNode* dag = expression->getDAGNode(frame);
-        PRINTF("Reached here\n");
-
         DeterministicNode* node = dynamic_cast<DeterministicNode*>(dag);
         if (node == NULL) {
             delete dag;
@@ -280,5 +276,3 @@ void SyntaxAssignExpr::print(std::ostream& o) const {
     o << "expression    = " << expression->briefInfo() << std::endl;
     o << "operation     = " << opCode[opType];
 }
-
-

@@ -169,7 +169,7 @@ const ArgumentRule** RbFunction_sqrt::getArgumentRules(void) const {
 }
 
 /** Execute function */
-const RbObject* RbFunction_sqrt::executeOperation(const std::vector<RbObjectWrapper*>& arguments) const {
+const RbObject* RbFunction_sqrt::executeOperation(const std::vector<DAGNode*>& arguments) const {
 
     /* Get actual argument */
     RbDouble *arg = (RbDouble*) arguments[0]->getValue();

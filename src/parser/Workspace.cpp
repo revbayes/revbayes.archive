@@ -27,18 +27,13 @@
 
 
 /** Default constructor */
-Workspace::Workspace() : Frame() {
+Workspace::Workspace() : Frame(), functionTable(new FunctionTable()) {
 }
 
 
 /** Constructor of workspace with parent */
 Workspace::Workspace(Workspace* parentSpace)
-    : Frame(parentSpace) {
-
-    if (parentSpace == NULL)
-        functionTable = new FunctionTable();
-    else
-        functionTable = parentSpace->getFunctionTable();
+    : Frame(parentSpace), functionTable(new FunctionTable()) {
 }
 
 

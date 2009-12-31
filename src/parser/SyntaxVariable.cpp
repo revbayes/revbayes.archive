@@ -253,7 +253,10 @@ void SyntaxVariable::print(std::ostream& o) const {
 
     o << "SyntaxVariable:" << std::endl;
     o << "identifier = " << identifier->briefInfo() << std::endl;
-    o << "variable   = " << variable->briefInfo() << std::endl;
+    if (variable == NULL)
+        o << "variable   = NULL" << std::endl;
+    else
+        o << "variable   = " << variable->briefInfo() << std::endl;
     o << "index      = [";
     for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
         if (i != (*index).begin())

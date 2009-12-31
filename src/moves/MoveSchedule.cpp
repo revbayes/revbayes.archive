@@ -24,6 +24,9 @@
 #include "StringVector.h"
 #include "VariableNode.h"
 
+#include <algorithm>
+
+
 /** Constructor */
 MoveSchedule::MoveSchedule(VariableNode* node, double weight)
     : RbComplex() {

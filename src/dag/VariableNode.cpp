@@ -25,6 +25,8 @@
 #include "StringVector.h"
 #include "VariableNode.h"
 
+#include <algorithm>
+
 
 /** Constructor */
 VariableNode::VariableNode(const std::string& valType)

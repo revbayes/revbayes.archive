@@ -60,7 +60,7 @@ RbObject* RbFunction_qexp::clone(void) const {
 
 
 /** Execute the function */
-const RbObject* RbFunction_qexp::executeOperation(const std::vector<RbObjectWrapper*>& arguments) const {
+const RbObject* RbFunction_qexp::executeOperation(const std::vector<DAGNode*>& arguments) const {
 
     RbDouble *x    = (RbDouble*) processedArguments[0]->getValue();
     RbDouble *rate = (RbDouble*) processedArguments[1]->getValue();

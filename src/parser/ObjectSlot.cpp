@@ -41,42 +41,6 @@ ObjectSlot::ObjectSlot(const std::string& valType, int valDim) {
 }
 
 
-/** Copy constructor */
-ObjectSlot::ObjectSlot(const ObjectSlot& x) {
-
-    type = x.type;
-    dim  = x.dim;
-    if (variable != NULL)
-        variable = x.variable->clone();
-    else
-        variable = NULL;
-}
-
-
-/** Destructor */
-ObjectSlot::~ObjectSlot(void) {
-
-    if (variable != NULL)
-        delete variable;
-}
-
-
-/** Assignment operator */
-ObjectSlot& ObjectSlot::operator=(const ObjectSlot& x) {
-
-    if (this != &x) {
-        type = x.type;
-        dim  = x.dim;
-
-        if (variable != NULL)
-            delete variable;
-        variable = x.variable->clone();
-    }
-
-    return (*this);
-}
-
-
 /** Get type description with dimensions indicated with "[]" */
 std::string ObjectSlot::getTypeDescr(void) const {
 

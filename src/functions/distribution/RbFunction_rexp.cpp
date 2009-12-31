@@ -62,7 +62,7 @@ RbObject* RbFunction_rexp::clone(void) const {
 
 
 /** Execute the function */
-const RbObject* RbFunction_rexp::executeOperation(const std::vector<RbObjectWrapper*>& arguments) const {
+const RbObject* RbFunction_rexp::executeOperation(const std::vector<DAGNode*>& arguments) const {
 
     RbDouble *rate = (RbDouble*) arguments[0]->getValue();
 	RandomNumberFactory& rnf = RandomNumberFactory::randomNumberFactoryInstance();

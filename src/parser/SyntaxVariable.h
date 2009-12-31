@@ -17,7 +17,7 @@
 #define SyntaxVariable_H
 
 #include "IntVector.h"
-#include "RbString.h";
+#include "RbString.h"
 #include "SyntaxElement.h"
 
 #include <iostream>

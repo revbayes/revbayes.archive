@@ -55,7 +55,7 @@ RbObject* RbFunction_pow::clone(void) const {
 
 /** Execute the function */
 const RbObject* RbFunction_pow::executeOperation(
-        const std::vector<RbObjectWrapper*>& arguments) const {
+        const std::vector<DAGNode*>& arguments) const {
 
     /* Get actual argument */
     RbDouble *arg1 = (RbDouble*) arguments[0]->getValue();

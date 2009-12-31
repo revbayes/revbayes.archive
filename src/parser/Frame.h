@@ -26,8 +26,6 @@
 #ifndef Frame_H 
 #define Frame_H
 
-#include "ObjectSlot.h"
-
 #include <map>
 #include <string>
 
@@ -35,12 +33,22 @@ class DAGNode;
 class IntVector;
 class RbObject;
 
+typedef struct {
+    std::string type;
+    int         dim;
+    DAGNode*    variable;
+} ObjectSlot;
+
 class Frame {
 
     public:
                                 Frame(void);                    //!< Constructor of frame with NULL parent
                                 Frame(Frame* parentFr);         //!< Constructor of frame with parent
-        virtual                 ~Frame() {}                     //!< Destroy table of frame, not entire environment
+                                Frame(const Frame& x);          //!< Copy constructor
+        virtual                 ~Frame();                       //!< Destroy table of frame, not entire environment
+
+        // Assignment operator
+        Frame&                  operator=(const Frame& x);                      //!< Assignment
 
         // Basic utility functions
         virtual Frame*          clone(void) const { return new Frame(*this); }  //!< Clone frame
@@ -71,5 +79,3 @@ class Frame {
 };
 
 #endif
-
-

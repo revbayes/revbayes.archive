@@ -38,8 +38,8 @@ class SyntaxStatement : public SyntaxElement {
                             std::list<SyntaxElement*>*  stmts);     //!< IF, FOR, WHILE cond stmts
             SyntaxStatement(statementT                  type,
                             SyntaxElement*              expr,
-                            std::list<SyntaxElement*>*  stmts,
-                            std::list<SyntaxElement*>*  stmts);     //!< IF_ELSE
+                            std::list<SyntaxElement*>*  stmts1,
+                            std::list<SyntaxElement*>*  stmts2);    //!< IF_ELSE
             SyntaxStatement(const SyntaxStatement& x);              //!< Copy constructor
 	        virtual ~SyntaxStatement();                             //!< Destroy operands
 

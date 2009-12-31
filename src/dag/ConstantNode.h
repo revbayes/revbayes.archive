@@ -23,7 +23,6 @@
 #include "DAGNode.h"
 
 class RbObject;
-class RbObjectWrapper;
 class StringVector;
 
 class ConstantNode : public DAGNode {
