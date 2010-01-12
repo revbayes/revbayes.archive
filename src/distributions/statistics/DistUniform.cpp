@@ -16,7 +16,7 @@
 #include "RbStatistics.h"
 #include "RbNames.h"
 
-DistUniform::DistUniform(DAGNode* l, DAGNode* u, RandomNumberGenerator* r) : Distribution(r) {
+DistUniform::DistUniform(DAGNode* l, DAGNode* u, RandomNumberGenerator* r) : Distribution(NULL, r) {
 
 	lower = l;
 	upper = u;

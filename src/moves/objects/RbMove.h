@@ -20,6 +20,7 @@ public:
         double                      getAcceptanceProbability(void);
         double                      performMove(void);
         void                        rejectMove(void);
+//        virtual RbObject*           clone() = 0;
 
         // Basic utility functions
         const StringVector& getClass(void) const;               //!< Get class vector

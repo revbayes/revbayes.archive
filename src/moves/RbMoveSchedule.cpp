@@ -7,6 +7,7 @@
 
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "RbMove.h"
 #include "RbMoveSchedule.h"
 #include "RbNames.h"
 
@@ -17,6 +18,19 @@ RbMoveSchedule::RbMoveSchedule(RandomNumberGenerator* r, double w) {
     rng = r;
     sumWeights = 0.0;
     dagUpdateWeight = w;
+}
+
+RbMoveSchedule::RbMoveSchedule(const RbMoveSchedule& ms) {
+    rng = ms.rng;
+    sumWeights = ms.sumWeights;
+    dagUpdateWeight = ms.dagUpdateWeight;
+
+    for (std::map<double,RbMove*>::const_iterator it=ms.schedule.begin(); it!=ms.schedule.end(); it++) {
+
+        double w = it->first;
+        RbMove* m = (RbMove*)it->second->clone();
+        schedule.insert(std::make_pair(w,m));
+    }
 }
 
 RbMoveSchedule::~RbMoveSchedule() {

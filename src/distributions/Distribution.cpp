@@ -23,8 +23,9 @@
 
 
 /** Constructor passes member rules to base class */
-Distribution::Distribution(const ArgumentRule** memberRules)
+Distribution::Distribution(const ArgumentRule** memberRules, RandomNumberGenerator* r)
     : MemberObject(memberRules) {
+    rng = r;
 }
 
 

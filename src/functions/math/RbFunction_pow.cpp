@@ -71,10 +71,10 @@ const RbObject* RbFunction_pow::executeOperation(
 /** Get the argument rules */
 const ArgumentRule** RbFunction_pow::getArgumentRules(void) const {
 
-    const static ArgumentRule* argRules[] = { new ArgumentRule("x",
-            RbNames::Double::name, new RbDouble(1.0), new RbDouble(0.0),
-            new RbUndefined), new ArgumentRule("y", RbNames::Double::name,
-            new RbDouble(1.0), new RbDouble(0.0), new RbUndefined), NULL };
+    const static ArgumentRule* argRules[] = {
+            new ArgumentRule("x", RbNames::Double::name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined),
+            new ArgumentRule("y", RbNames::Double::name, new RbDouble(1.0), new RbDouble(0.0), new RbUndefined),
+            NULL };
     return argRules;
 }
 

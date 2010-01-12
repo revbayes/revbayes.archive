@@ -80,6 +80,11 @@ class DAGNodeContainer : public VariableNode {
         void                    keepAffected(void);                                 //!< Keep value of affected nodes
         void                    restoreAffected(void);                              //!< Restore value of affected nodes
 
+        // overwritten probability functions
+        double              getLnLikelihoodRatio(void);             //!< Get log likelihood ratio
+        double              getLnPriorRatio(void);                  //!< Get log prior ratio
+
+
         // Element access functions
         int                     getDim() const { return length.size(); }            //!< Get dimensions
         const IntVector&        getLength() const { return length; }                //!< Get length in each dim

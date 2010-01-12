@@ -10,7 +10,9 @@
 #include "RbException.h"
 #include "RbModel.h"
 #include "RbNames.h"
+#include "StochasticNode.h"
 #include "StringVector.h"
+#include "VariableNode.h"
 
 RbModel::RbModel(std::vector<DAGNode*>& s, RandomNumberGenerator* r) {
 
@@ -52,14 +54,16 @@ void RbModel::initializeUpdateInfo(void) {
 	double sumWeights = 0.0;
     for (std::set<DAGNode*>::iterator it=dagNodes.begin(); it!= dagNodes.end(); it++)
 		{
-		if ( (*it)->hasAttachedMove() == true )
-			{
-			double x = (*it)->getUpdateWeight();
-			sumWeights += x;
-			changeableDags.push_back( *it );
-			changeableDagUpdateProbs.push_back( x );
-			}
-		}
+        if ((*it)->isType(VariableNode_name)) {
+            VariableNode* n = (VariableNode*)(*it);
+            if (n->hasAttachedMove() == true) {
+                double x = n->getUpdateWeight();
+                sumWeights += x;
+                changeableDags.push_back(*it);
+                changeableDagUpdateProbs.push_back(x);
+            }
+        }
+    }
 	for (int i=0; i<changeableDagUpdateProbs.size(); i++)
 		changeableDagUpdateProbs[i] /= sumWeights;
 }
@@ -68,9 +72,12 @@ void RbModel::initializeDAGs(void) {
 
     for (std::set<DAGNode*>::iterator it=dagNodes.begin(); it!= dagNodes.end(); it++)
 		{
-		(*it)->getLnLikelihood();
-		(*it)->getLnProbability();
-		}
+        if ((*it)->isType(StochasticNode_name)) {
+            StochasticNode* n = (StochasticNode*)(*it);
+            n->getLnLikelihoodRatio();
+            n->getLnPriorRatio();
+        }
+    }
 }
 
 DAGNode* RbModel::getDagToUpdate(void) {
@@ -95,7 +102,11 @@ const StringVector& RbModel::getClass(void) const {
 
 void RbModel::monitor(int i) {
     for (std::set<DAGNode*>::iterator it=dagNodes.begin(); it!= dagNodes.end(); it++){
-        (*it)->monitor(i);
+
+        if ((*it)->isType(VariableNode_name)) {
+            VariableNode* n = (VariableNode*)(*it);
+            n->monitor(i);
+        }
     }
 }
 

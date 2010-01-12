@@ -56,6 +56,10 @@ class DeterministicNode : public VariableNode {
         void    	        keepAffected();                         //!< Keep value of affected nodes
         void                restoreAffected();                      //!< Restore value of affected nodes
 
+        // overwritten probability functions
+        double              getLnLikelihoodRatio(void);             //!< Get log likelihood ratio
+        double              getLnPriorRatio(void);                  //!< Get log prior ratio
+
    protected:
         // Utility function
         void                update(void);                           //!< Update value and storedValue

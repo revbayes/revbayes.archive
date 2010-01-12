@@ -53,6 +53,12 @@ class VariableNode : public DAGNode {
         virtual void    	        getAffected(std::set<StochasticNode*>& affected) = 0;   //!< Mark and get affected nodes
         virtual void    	        keepAffected(void) = 0;                                 //!< Keep value of affected nodes
         virtual void                restoreAffected(void) = 0;                              //!< Restore value of affected nodes
+        bool                        hasAttachedMove(void) const ;                           //!< Checks if the node has a move attached
+
+        // probability functions
+        virtual double              getLnLikelihoodRatio(void) = 0;             //!< Get log likelihood ratio
+        virtual double              getLnPriorRatio(void) = 0;                  //!< Get log prior ratio
+
 
         // Monitor and move functions
         void                        addMonitor(Monitor* monitor);                           //!< Add a monitor
@@ -62,6 +68,7 @@ class VariableNode : public DAGNode {
         std::vector<Monitor*>*      getMonitors(void) { return monitors; }                  //!< Return moves
         MoveSchedule*               getMoves(void) { return moves; }                        //!< Return moves
         double                      getUpdateWeight(void) const;                            //!< Get update weight
+        void                        monitor(int i);                                         //!< Monitor/Log/Write down the current value for iteration i
         void                        setUpdateWeight(double weight);                         //!< Set update weight
 
     protected:

@@ -21,6 +21,7 @@ class RbMoveSchedule : public RbComplex {
     public:
 
         RbMoveSchedule(RandomNumberGenerator* r, double w);
+        RbMoveSchedule(const RbMoveSchedule& ms);
         virtual ~RbMoveSchedule();
 
 

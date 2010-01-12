@@ -142,17 +142,20 @@ const StringVector& StochasticNode::getClass() const {
 /** Get the ln likelihood ratio of this node: delegate to distribution */
 double StochasticNode::getLnLikelihoodRatio(void) {
 
-	return distribution->lnLikelihoodRatio(value);
+    if (touched) {
+        double lnLikelihood = 0.0;
+        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++)
+            lnLikelihood += (*i)->getLnPriorRatio();
+    }
+    else
+        return 0.0;
 }
 
 
 /** Get the ln prior ratio of this node: delegate to distribution if touched */
 double StochasticNode::getLnPriorRatio(void) {
 
-    if (touched)
-	    return distribution->lnPriorRatio(value, storedValue);
-    else
-        return 0.0;
+    return distribution->lnPdfRatio(value, storedValue);
 }
 
 

@@ -16,7 +16,7 @@
 #include "RbNames.h"
 
 
-DistNormal::DistNormal(DAGNode* m, DAGNode* s, RandomNumberGenerator* r) : Distribution(r) {
+DistNormal::DistNormal(DAGNode* m, DAGNode* s, RandomNumberGenerator* r) : Distribution(NULL, r) {
 
 	sigma = s;
 	mu    = m;

@@ -159,6 +159,23 @@ double VariableNode::getUpdateWeight(void) const {
         return moves->getUpdateWeight();
 }
 
+/** check if node has a move attached */
+bool VariableNode::hasAttachedMove(void) const {
+
+    if (moves == NULL)
+        return false;
+    else
+        return true;
+}
+
+void VariableNode::monitor(int i) {
+    if (!monitors->empty()) {
+        for (std::vector<Monitor*>::iterator it = monitors->begin(); it
+                != monitors->end(); it++) {
+            (*it)->monitor(i);
+        }
+    }
+}
 
 /** Set update weight */
 void VariableNode::setUpdateWeight(double weight) {

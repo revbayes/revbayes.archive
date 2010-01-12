@@ -46,6 +46,7 @@ public:
 		std::string             toString(void) const;                                               //!< Complete info 
 
 	// overloaded operators
+	bool       equals(const RbObject* n) const;                          //!< Comparison
 	bool       equals(const RbNode* n) const;                          //!< Comparison
 
 	// member functions

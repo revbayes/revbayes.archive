@@ -53,30 +53,32 @@ const StringVector& RbMcmc::getClass() const {
 
 void RbMcmc::runChain(void) {
 
-std::cerr << " start chain " << std::endl;
-	int chainLength = 0;
-	int burnIn = 0;
+	int cl = *chainLength;
+	int bi = *burnin;
 
+	std::cerr << " start chain " << std::endl;
 		
-	for (int i=0; i<(burnIn+chainLength); i++) 
+	for (int i=0; i<(bi+cl); i++)
 		{
+
+	    std::cerr << " get random DAG node " << std::endl;
 		// get the DAG-Node
 		DAGNode* node = getDagToUpdate();
-		
 
+		std::cerr << " update " << std::endl;
 		
 		// update the dag-node
 		double lnHastingsRatio = update(node);
-//std::cerr << "Hastings ratio = " << lnHastingsRatio << std::endl;
+std::cerr << "Hastings ratio = " << lnHastingsRatio << std::endl;
 		
 		
 		// get prior
 		double lnPriorRatio = getLnPriorRatio(node);
-//std::cerr << "Prior ratio = " << lnPriorRatio << std::endl;
+std::cerr << "Prior ratio = " << lnPriorRatio << std::endl;
 		
 		// get likelihood
 		double lnLikelihoodRatio = getLnLikelihoodRatio(node);
-//std::cerr << "Likelihood ratio = " << lnLikelihoodRatio << std::endl;
+std::cerr << "Likelihood ratio = " << lnLikelihoodRatio << std::endl;
 		
 		// calc acceptance
 		double r = calculateAcceptanceProb( lnLikelihoodRatio + lnPriorRatio + lnHastingsRatio );
@@ -89,9 +91,9 @@ std::cerr << " start chain " << std::endl;
 			reject(node);
 			
 		// monitor
-		if (i > burnIn) 
+		if (i > bi)
 			{
-			modelPtr->monitor(i-burnIn);
+			modelPtr->monitor(i-bi);
 			}
 		}
 std::cerr << " finished chain " << std::endl;
@@ -173,6 +175,7 @@ double RbMcmc::getLnPriorRatio(DAGNode* d) {
 }
 
 double RbMcmc::update(DAGNode* d) {
+    std::cout << "update DAG" << std::endl;
 	return d->performMove();
 }
 

@@ -53,17 +53,23 @@ class DAGNode {
         virtual const DAGNode*          getVarElement(const IntVector& index) const;            //!< Get variable element
         virtual void                    setElement(const IntVector& index, DAGNode* var);       //!< Set variable element
 
-        // Functions you should not overrride
+        // Functions you should not override
         const std::string&              getName(void) const { return name; }                    //!< Get name
         const std::string&              getType(void) const;                                    //!< Get wrapper type
         const std::string&              getValueType(void) const { return valueType; }          //!< Get value type
         bool                            isType(const std::string& type) const;                  //!< Is wrapper of type?
         void                            setName(const std::string& id) { name=id; }             //!< Set name
 
+        // overloaded operators
+        RbObject&                       operator=(const RbObject& o);
+        DAGNode&                        operator=(const DAGNode& o);
+
         // DAG functions
         void                            addChildNode(VariableNode* c) { children.insert(c); }   //!< Add child node
         DAGNode*                        cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const; //!< Clone graph
         std::set<VariableNode*>&        getChildrenNodes(void) { return children; }             //!< Get children nodes
+        std::set<DAGNode*>&             getParentNodes(void) { return parents; }                //!< Get children nodes
+        virtual bool                    hasAttachedMove(void) const { return false; }           //!< Checks if the node has a move attached
         bool                            isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const;  //!< Is node x a parent of the caller in the DAG?
         int                             numChildren(void) const { return int(children.size()); }//!< Number of children
         int                             numParents(void) const { return int(parents.size()); }  //!< Number of parents

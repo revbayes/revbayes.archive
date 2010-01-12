@@ -14,28 +14,38 @@
 
 class DAGNode;
 
-class DistUnifUnrootedTopology : public Distribution {
-public:
+class DistUnifUnrootedTopology: public Distribution {
+    public:
 
-	DistUnifUnrootedTopology(DAGNode* n, RandomNumberGenerator* r);
-	DistUnifUnrootedTopology(const DistUnifUnrootedTopology& d);
-	virtual ~DistUnifUnrootedTopology();
-        RbObject*           clone(void) const;                                    //!< Clone object
-        bool                equals(const RbObject* o) const;                      //!< Equals comparison
-        const StringVector& getClass(void) const;                                   //!< Get class
-       void                printValue(std::ostream& o) const;                    //!< Print value (for user)
-       std::string         toString(void) const;                                 //!< General info on object
+        DistUnifUnrootedTopology(DAGNode* n, RandomNumberGenerator* r);
+        DistUnifUnrootedTopology(const DistUnifUnrootedTopology& d);
+        virtual ~DistUnifUnrootedTopology();
+        RbObject* clone(void) const; //!< Clone object
+        bool equals(const RbObject* o) const; //!< Equals comparison
+        const StringVector& getClass(void) const; //!< Get class
+        void printValue(std::ostream& o) const; //!< Print value (for user)
+        std::string toString(void) const; //!< General info on object
 
         // overloaded operators
-        RbObject&			operator=(const RbObject& o);
-        DistUnifUnrootedTopology&         operator=(const DistUnifUnrootedTopology& o);
+        RbObject& operator=(const RbObject& o);
+        DistUnifUnrootedTopology& operator=(const DistUnifUnrootedTopology& o);
 
-	double lnPdf(const RbObject* obs); //!< Ln probability density
-	double pdf(const RbObject* obs); //!< Probability density
-	RbObject* rv();
+        // overwritten from MemberObject
+        const RbObject*         executeOperation(const std::string& name, std::vector<DAGNode*>& args);      //!< Execute method
 
-private:
-	DAGNode* numTaxa;
+
+        // overwritten from Distribution
+        const ArgumentRule**    getMemberRules(void);                   //!< Get member rules
+        const std::string       getReturnType() const;                  //!< Get variable type
+
+        double                  lnPdfRatio(const RbObject* newVal, const RbObject* oldVal);  //!< Calculate ln prior ratio
+        double                  lnPdf(const RbObject* value);           //!< Ln probability density function
+//        double                  lnLikelihoodRatio(const RbObject* value);    //!< Calculate ln likelihood ratio
+        double                  pdf(const RbObject* value);             //!< Probability density function
+        RbObject*               rv();                                  //!< Generate a random draw
+
+    private:
+        DAGNode* numTaxa;
 };
 
 #endif /* DistUnifUnrootedTopology_H */

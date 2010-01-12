@@ -25,7 +25,16 @@ class DistDirichlet: public Distribution {
         // overloaded operators
         DistDirichlet&      operator=(const DistDirichlet& o);
 
+        // overwritten from MemberObject
+        const RbObject*         executeOperation(const std::string& name, std::vector<DAGNode*>& args);      //!< Execute method
+
+        // overwritten from Distribution
+        const ArgumentRule**    getMemberRules(void);                   //!< Get member rules
+        const std::string       getReturnType() const;                  //!< Get variable type
+
+
         // overloaded functions
+        double              lnPdfRatio(const RbObject* newVal, const RbObject* oldVal);  //!< Calculate ln prior ratio
         double              lnPdf(const RbObject* obs);                             //!< Ln probability density
         double              pdf(const RbObject* obs);                               //!< Probability density
         RbObject*           rv();

@@ -2,7 +2,6 @@
 
 ### normal parser
 add_executable(testParser \\
-../../parser/ObjectSlot.cpp \\
 ../../parser/Frame.cpp \\
 ../../parser/FunctionTable.cpp \\
 ../../parser/Workspace.cpp \\

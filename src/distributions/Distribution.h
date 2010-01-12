@@ -45,14 +45,16 @@ class Distribution: public MemberObject {
         virtual const std::string       getReturnType() const = 0;                  //!< Get variable type
 
         // Distribution functions
-        virtual double                  lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) = 0;  //!< Calculate ln prior ratio
+        virtual double                  lnPdfRatio(const RbObject* newVal, const RbObject* oldVal) = 0;  //!< Calculate ln prior ratio
         virtual double                  lnPdf(const RbObject* value) = 0;           //!< Ln probability density function
-        virtual double                  lnLikelihoodRatio(const RbObject* value) = 0;    //!< Calculate ln likelihood ratio
+//        virtual double                  lnLikelihoodRatio(const RbObject* value) = 0;    //!< Calculate ln likelihood ratio
         virtual double                  pdf(const RbObject* value) = 0;             //!< Probability density function
         virtual RbObject*               rv()  = 0;                                  //!< Generate a random draw
 
     protected:
-                                        Distribution(const ArgumentRule** memberRules); //!< Constructor
+                                        Distribution(const ArgumentRule** memberRules, RandomNumberGenerator* r); //!< Constructor
+
+        RandomNumberGenerator*          rng;
 };
 
 #endif

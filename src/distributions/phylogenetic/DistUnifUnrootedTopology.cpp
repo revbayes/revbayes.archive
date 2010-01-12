@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <cassert>
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "DistUnifUnrootedTopology.h"
 #include "RbUnrootedTopology.h"
@@ -15,19 +16,20 @@
 #include "RbInt.h"
 #include "RbMath.h"
 #include "RbStatistics.h"
+#include "RbUndefined.h"
 #include "RbNames.h"
 
 
-DistUnifUnrootedTopology::DistUnifUnrootedTopology(DAGNode* n, RandomNumberGenerator* r) : Distribution(r) {
+DistUnifUnrootedTopology::DistUnifUnrootedTopology(DAGNode* n, RandomNumberGenerator* r) : Distribution(NULL, r) {
 
 	numTaxa = n;
-	returnType = RbNames::UnrootedTopology::name;
+//	returnType = RbNames::UnrootedTopology::name;
 }
 
 DistUnifUnrootedTopology::DistUnifUnrootedTopology(const DistUnifUnrootedTopology& d) : Distribution(d) {
 
 	numTaxa = d.numTaxa;
-	returnType = d.returnType;
+//	returnType = d.returnType;
 }
 
 DistUnifUnrootedTopology::~DistUnifUnrootedTopology() {
@@ -87,11 +89,20 @@ double DistUnifUnrootedTopology::lnPdf(const RbObject* obs) {
 	return lnpdf;
 }
 
+double  DistUnifUnrootedTopology::lnPdfRatio(const RbObject* newVal, const RbObject* oldVal) {
+    return 0.0;
+}
+
+
 RbObject* DistUnifUnrootedTopology::rv(void) {
 	int m = ((RbInt*) numTaxa->getValue())->getValue();
 
 	RbUnrootedTopology* u = RbStatistics::UniformUnrootedTopology::rv(m,rng);
 	return (RbObject*)u;
+}
+
+const RbObject* DistUnifUnrootedTopology::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
+    return NULL;
 }
 
 bool DistUnifUnrootedTopology::equals(const RbObject* o) const {
@@ -104,6 +115,19 @@ const StringVector& DistUnifUnrootedTopology::getClass(void) const {
 
     static StringVector rbClass = StringVector(RbNames::DistUnifUnrootedTopology::name) + Distribution::getClass();
     return rbClass;
+}
+
+/** Get the argument rules */
+const ArgumentRule** DistUnifUnrootedTopology::getMemberRules(void) {
+
+    const static ArgumentRule* argRules[] = {
+        new ArgumentRule( "taxa", RbNames::Int::name, new RbUndefined, new RbInt(1), new RbUndefined ),
+        NULL };
+    return argRules;
+}
+
+const std::string DistUnifUnrootedTopology::getReturnType(void) const {
+    return RbNames::UnrootedTopology::name;
 }
 
 void DistUnifUnrootedTopology::printValue(std::ostream& o) const {
@@ -147,7 +171,6 @@ RbObject& DistUnifUnrootedTopology::operator=(const RbObject& obj) {
 DistUnifUnrootedTopology& DistUnifUnrootedTopology::operator=(const DistUnifUnrootedTopology& obj) {
 
     *numTaxa = *(obj.numTaxa);
-    returnType = obj.returnType;
     
     return (*this);
 }

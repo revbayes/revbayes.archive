@@ -16,7 +16,7 @@
 #include "RbStatistics.h"
 #include "RbNames.h"
 
-DistExponential::DistExponential(DAGNode* l, RandomNumberGenerator* r) : Distribution(r) {
+DistExponential::DistExponential(DAGNode* l, RandomNumberGenerator* r) : Distribution(NULL, r) {
 
 	lambda = l;
 	returnType = RbNames::Double::name;

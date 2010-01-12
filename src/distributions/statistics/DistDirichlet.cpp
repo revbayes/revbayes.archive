@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <cassert>
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "DistDirichlet.h"
 #include "RbDouble.h"
@@ -14,21 +15,20 @@
 #include "RbMath.h"
 #include "RbStatistics.h"
 #include "RbNames.h"
+#include "RbUndefined.h"
 #include "Vector.h"
 
 
-DistDirichlet::DistDirichlet(DAGNode* a, RandomNumberGenerator* r) : Distribution(r) {
+DistDirichlet::DistDirichlet(DAGNode* a, RandomNumberGenerator* r) : Distribution(NULL, r) {
 
     alpha = a;
     value = NULL;
-    returnType = RbNames::Vector::name;
 }
 
 DistDirichlet::DistDirichlet(const DistDirichlet& d) : Distribution(d) {
 
     *alpha = *d.alpha;
     *value    = *d.value;
-    returnType = d.returnType;
 }
 
 DistDirichlet::~DistDirichlet() {
@@ -87,6 +87,10 @@ double DistDirichlet::lnPdf(const RbObject* obs) {
     return lnpdf;
 }
 
+double DistDirichlet::lnPdfRatio(const RbObject* newVal, const RbObject* oldVal) {
+    return lnPdf(newVal) - lnPdf(oldVal);
+}
+
 RbObject* DistDirichlet::rv(void) {
     std::vector<double>& a = ((Vector*) alpha->getValue())->getValue();
 
@@ -100,11 +104,28 @@ bool DistDirichlet::equals(const RbObject* o) const {
     return false;
 }
 
+const RbObject* DistDirichlet::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
+    return NULL;
+}
+
 /** Get string showing inheritance */
 const StringVector& DistDirichlet::getClass(void) const {
 
     static StringVector rbClass = StringVector(RbNames::Dirichlet::name) + Distribution::getClass();
     return rbClass;
+}
+
+/** Get the argument rules */
+const ArgumentRule** DistDirichlet::getMemberRules(void) {
+
+    const static ArgumentRule* argRules[] = {
+        new ArgumentRule( "alpha", Vector_name, new RbUndefined, new RbUndefined, new RbUndefined ),
+        NULL };
+    return argRules;
+}
+
+const std::string DistDirichlet::getReturnType(void) const {
+    return RbNames::Vector::name;
 }
 
 void DistDirichlet::print(std::ostream& o) const {
