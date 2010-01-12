@@ -84,7 +84,7 @@ const StringVector& DAGNode::getClass() const {
 /** Get type of wrapper (first entry in class vector) */
 const std::string& DAGNode::getType(void) const { 
 
-	return getClass()[0]; 
+    return getClass()[0];
 }
 
 
@@ -105,7 +105,7 @@ bool DAGNode::isType(const std::string& type) const {
             return true;
     }
 
-	return false;
+    return false;
 }
 
 
@@ -136,7 +136,7 @@ int DAGNode::numRefs(void) const {
 /** Print children */
 void DAGNode::printChildren(std::ostream& o) const {
 
-    if ( children.empty() )	{
+    if ( children.empty() ) {
         o << "No children" << std::endl;
         return;
     }
