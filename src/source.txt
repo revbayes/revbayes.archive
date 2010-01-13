@@ -1,0 +1,16 @@
+
+/**
+ * @brief Brief description (header)
+ *
+ * This function does foo.
+ *
+ * @param param     Input param
+ * @pre             The precondition of an entity
+ * @see function    Another similar function, e.g. overloaded one, called one, ...
+ * @returns         Return value
+ * @throw           May throw this exception
+ *
+ */
+returnType class::method(type param) {
+}
+
