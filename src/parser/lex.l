@@ -20,8 +20,10 @@
 
 /* Hack for Windows */
 #ifdef WIN32
+#define YY_SKIP_YYWRAP
 #define strdup(a) _strdup(a)
 #define yywrap() 1
+int isatty(int) return 0;
 #else
 extern "C" { 
    char *strdup(const char *s);
