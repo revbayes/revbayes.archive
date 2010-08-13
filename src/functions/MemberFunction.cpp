@@ -30,18 +30,25 @@
 
 
 /** Constructor */
-MemberFunction::MemberFunction(const std::string& retType, const ArgumentRule** argRules)
+MemberFunction::MemberFunction(const std::string& retType, const ArgumentRules& argRules)
     : RbFunction(), returnType(retType), argumentRules(argRules) {
 }
 
 
-/** Brief ino on the function */
+/** Brief info on the function */
 std::string MemberFunction::briefInfo(void) const {
 
     std::ostringstream o;
     o << "MemberFunction: " << (*this);
 
     return o.str();
+}
+
+
+/** Clone the object */
+MemberFunction* MemberFunction::clone(void) const {
+
+    return new MemberFunction(*this);
 }
 
 
@@ -62,21 +69,21 @@ const StringVector& MemberFunction::getClass(void) const {
 
 
 /** Execute operation: we rely on the object's own implementation, so we do nothing here */
-const RbObject* MemberFunction::executeOperation(const std::vector<DAGNode*>& args) const {
+const RbObject* MemberFunction::executeOperation(const std::vector<DAGNode*>& args) {
 
     return NULL;
 }
 
 
 /** Get argument rules */
-const ArgumentRule** MemberFunction::getArgumentRules(void) const {
+const ArgumentRules& MemberFunction::getArgumentRules(void) const {
 
     return argumentRules;
 }
 
 
 /** Get return type */
-const std::string MemberFunction::getReturnType(void) const {
+const std::string& MemberFunction::getReturnType(void) const {
 
     return returnType;
 }

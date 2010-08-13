@@ -24,6 +24,7 @@
 /* The following statements go into the resulting C code */
 
 #include "Parser.h"
+#include "PosReal.h"
 #include "RbBool.h"
 #include "RbDouble.h"
 #include "RbInt.h"
@@ -55,7 +56,7 @@ extern int yylex(void);
 extern char *yytext;
 
 /* The function yyerror handles errors. It is defined below. */
-int yyerror(char *);
+int yyerror(const char *);
 
 /* We use the global parser to execute the syntax tree */
 Parser& parser = Parser::getParser();
@@ -73,26 +74,15 @@ Parser& parser = Parser::getParser();
 
 #define YY_NEVER_INTERACTIVE
 
-/**
- * @todo Add functionality for locality determination
- *       in parser. The code below is just a stub.
- */
 
-#if 0
 /* struct holding source location for accurate error reports */
 typedef struct yyltype
 {
     int first_line;
     int first_column;
-    int first_byte;
-
     int last_line;
     int last_column;
-    int last_byte;
-}
-
-#define YYLTYPE yyltype
-#endif
+} yyltype;
 
 %}
 
@@ -118,22 +108,23 @@ typedef struct yyltype
 %type <realValue> REAL
 %type <intValue> INT RBNULL
 %type <boolValue> FALSE TRUE
-%type <idString> identifier
+%type <idString> identifier typeSpec optDims dimList optRef
 %type <syntaxVariable> variable
 %type <syntaxFunctionCall> functionCall
 %type <syntaxLabeledExpr> argument
 %type <syntaxFormal> formal
 %type <syntaxElement> constant
-%type <syntaxElement> statement expression
+%type <syntaxElement> statement expression stmt_or_expr
 %type <syntaxElement> arrowAssign tildeAssign equationAssign
 %type <syntaxElement> declaration classDef memberDef
 %type <syntaxElement> functionDef
 %type <syntaxElement> forStatement ifStatement whileStatement
 %type <syntaxElement> forCond cond returnStatement
 %type <syntaxElement> nextStatement breakStatement
-%type <syntaxElementList> optElement memberDefs optMemberDefs
+%type <syntaxElementList> elementList optElements
+%type <syntaxElementList> stmts stmtList
+%type <syntaxElementList> memberDefs
 %type <argumentList> argumentList optArguments
-%type <syntaxElementList> stmts stmtList optStatements
 %type <formalList> formalList optFormals
 
 /* Tokens returned by the lexer and handled by the parser */
@@ -143,12 +134,29 @@ typedef struct yyltype
 %token AND OR AND2 OR2 GT GE LT LE EQ NE
 %token END_OF_INPUT
 
+/* Destructors */
+%destructor { for (std::list<SyntaxElement*    >::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting element list\n"); } elementList optElements stmts stmtList memberDefs
+%destructor { for (std::list<SyntaxLabeledExpr*>::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting argument list\n"); } argumentList optArguments
+%destructor { for (std::list<SyntaxFormal*     >::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting formal list\n"); } formalList optFormals
+%destructor { delete ($$); PRINTF("Deleting identifier  ...\n"); } identifier typeSpec optDims dimList optRef
+%destructor { delete ($$); PRINTF("Deleting variable    ...\n"); } variable functionCall argument formal constant
+%destructor { delete ($$); PRINTF("Deleting expression  ...\n"); } statement expression stmt_or_expr 
+%destructor { delete ($$); PRINTF("Deleting assignment  ...\n"); } arrowAssign tildeAssign equationAssign 
+%destructor { delete ($$); PRINTF("Deleting declaration ...\n"); } declaration classDef memberDef 
+%destructor { delete ($$); PRINTF("Deleting functiondef ...\n"); } functionDef 
+%destructor { delete ($$); PRINTF("Deleting for/if/while...\n"); } forStatement ifStatement whileStatement 
+%destructor { delete ($$); PRINTF("Deleting cond/return ...\n"); } forCond cond returnStatement
+%destructor { delete ($$); PRINTF("Deleting next/break  ...\n"); } nextStatement breakStatement
+
+/* Use location tracking */
+%locations
+
 /*
  * Precedence table, low to high, with order of evaluation.
  * We follow R as much as possible. 
  */
 %left       '?'
-%left       LOW WHILE FOR
+%left       WHILE FOR
 %right      IF
 %left       ELSE
 %right      ARROW_ASSIGN
@@ -164,8 +172,9 @@ typedef struct yyltype
 %left       ':'
 %left       UMINUS UPLUS
 %right      '^'
-%left       '.'
+%left       '.' UAND
 %nonassoc   '(' '['
+
 %%
 
 /*
@@ -206,12 +215,29 @@ typedef struct yyltype
  * mentation.
  */
 
-prog    :       END_OF_INPUT            { return 0; }
-        |       '\n'                    { return 0; }
-        |       COMMENT '\n'            { return 0;}
-        |       statement '\n'
+prog    :       END_OF_INPUT
                 {
-                    PRINTF("Bison trying to execute statement\n");
+                    PRINTF("Bison encountered end_of_input; ignored\n");
+                    return 0;
+                }
+        |       '\n'
+                {
+                    PRINTF("Bison encountered newline; ignored\n");
+                    return 0;
+                }
+        |       COMMENT '\n'
+                {
+                    PRINTF("Bison encountered comment; ignored\n");
+                    return 0;
+                }
+        |       stmt_or_expr '\n'
+                {
+                    PRINTF("Bison trying to execute statement or expression\n");
+                    return parser.execute($1);
+                }
+        |       stmt_or_expr ';'
+                {
+                    PRINTF("Bison trying to execute statement or expression\n");
                     return parser.execute($1);
                 }
         |       declaration '\n'
@@ -219,12 +245,17 @@ prog    :       END_OF_INPUT            { return 0; }
                     PRINTF("Bison trying to execute declaration\n");
                     return parser.execute($1);
                 }
-        |       expression '\n'
+        |       declaration ';'
                 {
-                    PRINTF("Bison trying to execute expression\n");
+                    PRINTF("Bison trying to execute declaration\n");
                     return parser.execute($1);
                 }
         |       '?' identifier '\n'
+                {
+                    PRINTF("Bison trying to get help for symbol\n");
+                    return parser.help($2);
+                }
+        |       '?' identifier ';'
                 {
                     PRINTF("Bison trying to get help for symbol\n");
                     return parser.help($2);
@@ -234,9 +265,15 @@ prog    :       END_OF_INPUT            { return 0; }
                     PRINTF("Bison trying to get help for function call\n");
                     return parser.help($2);
                 }
+        |       '?' functionCall ';'
+                {
+                    PRINTF("Bison trying to get help for function call\n");
+                    return parser.help($2);
+                }
         |       error
                 {
                     PRINTF("Bison calling YYABORT\n");
+                    PRINTF("Error when reading line %d position %d to line %d position %d\n", @$.first_line, @$.first_column, @$.last_line, @$.last_column);
                     YYABORT;
                 }
         ;
@@ -248,6 +285,7 @@ expression  :   constant                    { $$ = $1; }
             |   '-' expression %prec UMINUS { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UMinus, $2); }
             |   '+' expression %prec UPLUS  { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UPlus, $2); }
             |   '!' expression %prec UNOT   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UNot, $2); }
+            |   AND expression %prec UAND   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UAnd, $2); }
 
             |   expression ':' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Range, $1, $3); }
 
@@ -292,53 +330,57 @@ tildeAssign     :   variable TILDE_ASSIGN functionCall
                     }
                 ;
 
-equationAssign     :   variable EQUATION_ASSIGN expression
+equationAssign  :   variable EQUATION_ASSIGN expression
                     {
                         PRINTF("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
                         $$ = new SyntaxAssignExpr(SyntaxAssignExpr::EquationAssign, $1, $3); 
                     }
                 ;
 
-variable    :   identifier optElement
+variable    :   identifier optElements
                 {
                     PRINTF("Parser inserting variable (VARIABLE) in syntax tree\n");
                     $$ = new SyntaxVariable($1, $2);
                 }
-            |   variable '.' identifier optElement
+            |   variable '.' identifier optElements
                 {
                     PRINTF("Parser inserting member variable (MEMBER) in syntax tree\n");
                     $$ = new SyntaxVariable($1, $3, $4);
                 }
             ;
 
-optElement  :   '[' expression ']' optElement   { $4->push_front($2); $$ = $4; }
-            |   /* empty */                     { $$ = new std::list<SyntaxElement*>(); }
+optElements :   /* empty */                     { $$ = new std::list<SyntaxElement*>(); }
+            |   elementList                     { $$ = $1; }
+            ;
+            
+elementList :   '[' expression ']'              { $$ = new std::list<SyntaxElement*>(1, $2); }
+            |   elementList '[' expression ']'  { $1->push_back($3); $$ = $1; }
             ;
 
-functionCall    :   identifier '(' argumentList ')' 
+functionCall    :   identifier '(' optArguments ')' 
                     {
                         PRINTF("Parser inserting function call in syntax tree\n");
                         $$ = new SyntaxFunctionCall($1, $3);
                     }
-                |   variable '.' identifier '(' argumentList ')'
+                |   variable '.' identifier '(' optArguments ')'
                     {
                         PRINTF("Parser inserting member function call in syntax tree\n");
                         $$ = new SyntaxFunctionCall($1, $3, $5);
                     }
                 ;
 
-argumentList    :   argument optArguments   { $2->push_front($1); $$ = $2; }
-                |   /* empty */             { $$ = new std::list<SyntaxLabeledExpr *>(); }
+optArguments    :   /* empty */             { $$ = new std::list<SyntaxLabeledExpr *>(); }
+                |   argumentList            { $$ = $1; }
                 ;
 
-optArguments    :   ',' argument optArguments   { $3->push_front($2); $$ = $3; }
-                |   /* empty */                 { $$ = new std::list<SyntaxLabeledExpr *>(); }
+argumentList    :   argument                    { $$ = new std::list<SyntaxLabeledExpr *>(1,$1); }
+                |   argumentList ',' argument   { $1->push_back($3); $$ = $1; }
                 ;
 
-argument   :   expression
+argument   :    expression
                 {
                     PRINTF("Parser inserting unlabeled argument in syntax tree\n");
-                    $$ = new SyntaxLabeledExpr(NULL, $1);
+                    $$ = new SyntaxLabeledExpr(new RbString(""), $1);
                 }
             |   identifier EQUAL expression
                 { 
@@ -347,50 +389,66 @@ argument   :   expression
                 }
             ;
 
-functionDef :   FUNCTION identifier '(' formalList ')' stmts
+functionDef :   FUNCTION identifier '(' optFormals ')' stmts
                 {
                 PRINTF("Parser inserting function definition in syntax tree\n");
-                $$ = new SyntaxFunctionDef((RbString*)(NULL), $2, $4, $6);
+                $$ = new SyntaxFunctionDef(NULL, $2, $4, $6);
                 }
-            |   FUNCTION identifier identifier '(' formalList ')' stmts
+ 
+            |   FUNCTION typeSpec identifier '(' optFormals ')' stmts
                 {
                 PRINTF("Parser inserting typed function definition in syntax tree\n");
                 $$ = new SyntaxFunctionDef($2, $3, $5, $7);
                 }
             ;
 
-formalList  :   formal optFormals   { $2->push_front($1); $$ = $2; }
-            |   /* empty */         { $$ = new std::list<SyntaxFormal*>(); }
+optFormals  :   /* empty */             { $$ = new std::list<SyntaxFormal *>(); }
+            |   formalList              { $$ = $1; }
             ;
 
-optFormals  :   ',' formal optFormals   { $3->push_front($2); $$ = $3; }
-            |   /* empty */             { $$ = new std::list<SyntaxFormal*>(); }
+formalList  :   formal                  { $$ = new std::list<SyntaxFormal *>(1,$1); }
+            |   formalList ',' formal   { $1->push_back($3); $$ = $1; }
             ;
 
 formal      :   identifier
                 {
-                    PRINTF("Inserting untyped labeled formal argument without default in syntax tree\n");
+                    PRINTF("Inserting labeled formal argument without default in syntax tree\n");
                     $$ = new SyntaxFormal($1, NULL);
                 }
             |   identifier EQUAL expression
-                { 
-                    PRINTF("Inserting untyped labeled formal argument with default in syntax tree\n");
+                {
+                    PRINTF("Inserting labeled formal argument with default in syntax tree\n");
                     $$ = new SyntaxFormal($1, $3);
                 }
-            |   identifier identifier
+            |   typeSpec identifier
                 {
-                    PRINTF("Inserting untyped labeled formal argument without default in syntax tree\n");
+                    PRINTF("Inserting typed labeled formal argument without default in syntax tree\n");
                     $$ = new SyntaxFormal($1, $2, NULL);
                 }
-            |   identifier identifier EQUAL expression
+            |   typeSpec identifier EQUAL expression
                 {
                     PRINTF("Inserting typed labeled formal argument with default in syntax tree\n");
                     $$ = new SyntaxFormal($1, $2, $4);
                 }
             ;
 
+typeSpec    :   identifier optDims optRef   { $1->append(*($2)); delete($2); $1->append(*($3)); delete($3); $$ = $1; }
+            ;
+
+optDims     :   /* empty */                 { $$ = new RbString(); }
+            |   dimList                     { $$ = $1; }
+            ;
+
+dimList     :   '[' ']'                     { $$ = new RbString("[]"); }
+            |   dimList '[' ']'             { $1->append("[]"); $$ = $1; }
+            ;
+
+optRef      :   /* empty */                 { $$ = new RbString(); }
+            |   '&'                         { $$ = new RbString("&"); }
+            ;
+
 stmts       :   '{' stmtList '}'                { $$ = $2; }
-            |   statement
+            |   stmt_or_expr
                 {
                     std::list<SyntaxElement*> stmts;
                     stmts.push_back($1);
@@ -398,14 +456,13 @@ stmts       :   '{' stmtList '}'                { $$ = $2; }
                 }
             ;
 
-stmtList        :   statement optStatements     { $2->push_front($1); $$ = $2; }
-                |   /* empty */                 { $$ = new std::list<SyntaxElement*>(); }   
-                ;
-
-optStatements   :   ';' statement optStatements     { $3->push_front($2); $$ = $3; }
-                |   '\n' statement optStatements    { $3->push_front($2); $$ = $3; }
-                |   /* empty */                     { $$ = new std::list<SyntaxElement*>(); }
-                ;
+stmtList    :   /* empty */                 { $$ = new std::list<SyntaxElement*>(); }
+            |   stmt_or_expr                { $$ = new std::list<SyntaxElement*>(1, $1); }
+            |   stmtList ';' stmt_or_expr   { $1->push_back($3); $$ = $1; }
+            |   stmtList ';'                { $$ = $1; }
+            |   stmtList '\n' stmt_or_expr  { $1->push_back($3); $$ = $1; }
+            |   stmtList '\n'               { $$ = $1; }
+            ;
 
 statement   :   ifStatement             { $$ = $1; }
             |   forStatement            { $$ = $1; }
@@ -413,22 +470,22 @@ statement   :   ifStatement             { $$ = $1; }
             |   nextStatement           { $$ = $1; }
             |   breakStatement          { $$ = $1; }
             |   returnStatement         { $$ = $1; }
-            |   expression '\n'         { $$ = $1; }
-            |   expression ';'          { $$ = $1; }
-            |   ';'                     { $$ = NULL; }
             ;
+
+stmt_or_expr    :   statement           { $$ = $1; }
+                |   expression          { $$ = $1; }
+                ;
 
 declaration     :   classDef        { $$ = $1; }
                 |   functionDef     { $$ = $1; }
                 ;
 
-memberDefs      :   memberDef optMemberDefs     { $2->push_front($1); $$ = $2; }
-                |   /* empty */                 { $$ = new std::list<SyntaxElement*>(); }
-                ;
-
-optMemberDefs   :   ';' memberDef optMemberDefs     { $3->push_back($2); $$ = $3; }
-                |   '\n' memberDef optMemberDefs    { $3->push_back($2); $$ = $3; }
-                |   /* empty */                     { $$ = new std::list<SyntaxElement*>(); }
+memberDefs      :   /* empty */                 { $$ = new std::list<SyntaxElement*>(); }
+                |   memberDef                   { $$ = new std::list<SyntaxElement*>(1, $1); }
+                |   memberDefs ';' memberDef    { $1->push_back($3); $$ = $1; }
+                |   memberDefs ';'              { $$ = $1; }
+                |   memberDefs '\n' memberDef   { $1->push_back($3); $$ = $1; }
+                |   memberDefs '\n'             { $$ = $1; }
                 ;
 
 memberDef   :   formal      { $$ = $1; }
@@ -523,9 +580,13 @@ constant    :   FALSE
                                 break;
                             }
                         }
-                        prec = strlen(yytext) - 1 - i;
+                        prec = (int)(strlen(yytext)) - 1 - i;
                     }
-                    RbDouble *real = new RbDouble($1);
+                    RbDouble* real;
+                    if ($1 > 0.0)
+                        real = new PosReal($1);
+                    else
+                        real = new RbDouble($1);
                     //real->setPrecision(prec);
                     //real->setScientific(sci);
                     PRINTF("Parser inserting double constant in syntax tree \n");
@@ -537,7 +598,7 @@ constant    :   FALSE
 
 
 /* Definition of yyerror. */
-int yyerror(char *msg)
+int yyerror(const char *msg)
 {
     PRINTF("Bison code said: %s\n", msg);
     return 1;

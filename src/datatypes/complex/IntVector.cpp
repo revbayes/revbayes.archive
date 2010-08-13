@@ -33,9 +33,9 @@ IntVector::IntVector(int x) {
 }
 
 /** Construct vector with n ints x */
-IntVector::IntVector(int n, int x) {
+IntVector::IntVector(size_t n, int x) {
 
-    for (int i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
         value.push_back(x);
 }
 
@@ -50,8 +50,8 @@ IntVector::IntVector(std::vector<int>& x) {
 /** Constructor from container iterator */
 IntVector::IntVector(const ContainerIterator& x) {
 
-    for (size_t i=0; i<x.size(); i++)
-        value.push_back(x[i]);
+    for (ContainerIterator::const_iterator i=x.begin(); i!=x.end(); i++)
+        value.push_back(*i);
 }
 
 
@@ -120,7 +120,7 @@ bool IntVector::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const StringVector& IntVector::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::IntVector::name) + RbComplex::getClass();
+    static StringVector rbClass = StringVector(IntVector_name) + RbComplex::getClass();
     return rbClass;
 }
 

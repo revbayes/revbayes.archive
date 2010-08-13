@@ -23,16 +23,24 @@
 #ifndef Workspace_H
 #define Workspace_H
 
-#include "DAGNode.h"
 #include "Frame.h"
 #include "FunctionTable.h"
-#include "RbFunction.h"
-#include "RbObject.h"
+#include "StringVector.h"
 
 #include <map>
 #include <ostream>
 #include <string>
 
+class ConstantNode;
+class DAGNode;
+class Distribution;
+class DistributionReal;
+class MemberObject;
+class RandomNumberGenerator;
+class RbFunction;
+class RbObject;
+
+typedef std::map<std::string, StringVector> TypeTable;
 
 /**
  * @brief Workspace
@@ -68,15 +76,23 @@ class Workspace : public Frame {
 
     public:
 
-        void            addFunction(const std::string& name, RbFunction* func);     //!< Add function
-        const RbObject* executeFunction(const std::string& name,
-                            const std::vector<Argument>& args) const;               //!< Execute function
-        void            eraseFunction(const std::string& name);                     //!< Erase function
-        FunctionTable*  getFunctionTable() { return functionTable; }                //!< Get function table
-        RbFunction*     getFunction(const std::string& name,
-                            const std::vector<Argument>& args);                     //!< Get function
-        bool            isXOfTypeY(const std::string& x, const std::string& y) const;   //!< Type checking
-        void            printValue(std::ostream& c) const;                          //!< Print workspace
+        bool                    addDistribution(const std::string& name, Distribution* dist);       //!< Add distribution
+        bool                    addDistribution(const std::string& name, DistributionReal* dist);   //!< Add real-valued distribution
+        bool                    addFunction(const std::string& name, RbFunction* func);             //!< Add function
+        bool                    addType(const RbObject* exampleObj);                                //!< Add type
+        bool                    addTypeWithConstructor(const std::string& name, MemberObject* templ);   //!< Add type with constructor
+        const RbObject*         executeFunction(const std::string& name,
+                                    const std::vector<Argument>& args) const;                       //!< Execute function
+        FunctionTable*          getFunctionTable() { return functionTable; }                        //!< Get function table
+        RbFunction*             getFunction(const std::string& name,
+                                    const std::vector<Argument>& args);                             //!< Get function copy
+        RbObject*               getFunctionValue(const std::string& name,
+                                    const std::vector<Argument>& args) const;                       //!< Get function value
+        RandomNumberGenerator*  get_rng(void);                                                      //!< Get default random number generator
+        void                    initializeGlobalWorkspace(void);                                    //!< Initialize global workspace
+
+        bool                    isXOfTypeY(const std::string& x, const std::string& y) const;       //!< Type checking
+        void                    printValue(std::ostream& c) const;                                  //!< Print workspace
 
         /** Get global workspace */
         static Workspace& globalWorkspace() {
@@ -91,14 +107,15 @@ class Workspace : public Frame {
         }
  
     private:
-                        Workspace();                                        //!< Workspace with NULL parent
-                        Workspace(Workspace* parentSpace);                  //!< Workspace with parent
-                        Workspace(const Workspace& w) {}                    //!< Prevent copy
-                        ~Workspace();                                       //!< Delete function table
+                                Workspace();                                //!< Workspace with NULL parent
+                                Workspace(Workspace* parentSpace);          //!< Workspace with parent
+                                Workspace(const Workspace& w) {}            //!< Prevent copy
+                                ~Workspace();                               //!< Delete function table
 
-        Workspace&      operator=(const Workspace& w);                      //! Prevent assignment
+        Workspace&              operator=(const Workspace& w);              //! Prevent assignment
 
-        FunctionTable*  functionTable;                                      //!< Table holding functions
+        FunctionTable*          functionTable;                              //!< Table holding functions
+        TypeTable               typeTable;                                  //!< Type table
 };
 
 #endif

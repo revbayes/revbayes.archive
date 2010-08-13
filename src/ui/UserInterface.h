@@ -26,9 +26,10 @@
 class UserInterface {
 
     public:
-        bool            initialize(void) { return true;}       //!< Initialize interface    
-        void            output(std::string msg);               //!< Display message from string
-        void            output(std::ostringstream msg);        //!< Display message from stringstream
+        bool            ask(std::string msg);                   //!< Ask user a question
+        bool            initialize(void) { return true;}        //!< Initialize interface    
+        void            output(std::string msg);                //!< Display message from string
+        void            output(std::ostringstream msg);         //!< Display message from stringstream
 
         /** Get user interface */
         static UserInterface& userInterface() {

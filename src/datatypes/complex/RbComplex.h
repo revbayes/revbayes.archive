@@ -18,7 +18,6 @@
 #ifndef RbComplex_H
 #define RbComplex_H
 
-#include "ContainerIterator.h"
 #include "RbObject.h"
 
 #include <map>
@@ -28,15 +27,17 @@
 
 class Argument;
 class ArgumentRule;
+class ContainerIterator;
 class DAGNode;
 class DeterministicNode;
+class Frame;
 class IntVector;
-class MemberFunction;
+class MethodTable;
 class MoveSchedule;
 class StringVector;
 
-typedef std::map<std::string, DAGNode*>         MemberTable;        //!< Member table type def, for convenience
-typedef std::map<std::string, MemberFunction*>  MethodTable;        //!< Method table type def, for convenience
+typedef Frame                                   MemberTable;        //!< Member table type def, for convenience
+typedef std::vector<ArgumentRule*>              MemberRules;        //!< Member rules type def, for convenience
 
 class RbComplex : public RbObject {
 
@@ -51,7 +52,7 @@ class RbComplex : public RbObject {
 		virtual std::string             toString(void) const = 0;                                               //!< Complete info 
 
         // Member variable functions: override if object contains member variables
-        virtual const ArgumentRule**    getMemberRules(void) const;                                             //!< Get member rules
+        virtual const MemberRules&      getMemberRules(void) const;                                             //!< Get member rules
         virtual const MemberTable&      getMembers(void) const;                                                 //!< Get members
         virtual const RbObject*         getValue(const std::string& name) const;                                //!< Get member value
         virtual const DAGNode*          getVariable(const std::string& name) const;                             //!< Get member variable
@@ -59,14 +60,14 @@ class RbComplex : public RbObject {
         virtual void                    setVariable(const std::string& name, DAGNode* var);                     //!< Set member variable
 
         // Member method functions: override if object contains member functions
-        virtual const RbObject*         executeMethod(const std::string& name);                                 //!< Execute method with preprocessed args
+        virtual const RbObject*         executeMethod(const std::string& name, int funcId);                     //!< Execute method with preprocessed args
         virtual const RbObject*         executeMethod(const std::string& name, std::vector<Argument>& args);    //!< Execute method
         virtual const MethodTable&      getMethods(void) const;                                                 //!< Get method descriptions
-        virtual void                    setArguments(const std::string& name, std::vector<Argument>& args);     //!< Set arguments of method 
+        virtual int                     setArguments(const std::string& name, std::vector<Argument>& args);     //!< Set arguments of method 
 
 		// Element access functions: override if object contains elements
-        ContainerIterator               begin() const { return ContainerIterator(getLength()); }                //!< First index
-        ContainerIterator               end() const;                                                            //!< Last index + 1
+        ContainerIterator               begin(void) const;                                                      //!< Begin iterator
+        ContainerIterator               end(void) const;                                                        //!< End iterator
         virtual int                     getDim(void) { return 0; }                                              //!< Get subscript dimensions
         virtual const StringVector&     getElementClass(void) const { return getClass() ; }                     //!< Get element class
         virtual const RbObject*         getElement(const IntVector& index) const;                               //!< Get element (read-only)
@@ -80,13 +81,6 @@ class RbComplex : public RbObject {
 
     protected:
                                         RbComplex(void) : RbObject() {}                                         //!< No objects of this class
-
-        // Override these functions to provide friend classes with modify access to members or elements
-        virtual RbObject*               getMemberPtr(const std::string& name);                                  //!< Allow modify access to member
-        virtual RbObject*               getElementPtr(const IntVector& index);                                  //!< Allow modify access to element 
-
-        // These are friends that may modify members or elements
-        friend class                    SyntaxVariable;                                                         //!< The parser class dealing with variables 
 };
 
 #endif

@@ -20,6 +20,36 @@
 #include "UserInterface.h"
 
 
+/** Ask user a yes/no question */
+bool UserInterface::ask(std::string msg) {
+
+    std::string answer, dummy;
+    std::cout << msg << "? (yes/no) ";
+    std::cin >> answer;
+    for (size_t i=0; i<answer.size(); i++)
+        answer[i] = tolower(answer[i]);
+
+    while (answer!="y" && answer!="yes" && answer!="n" && answer!="no") {
+
+        std::getline(std::cin, dummy);
+        std::cout << std::endl;
+        std::cout << "Please answer yes or no." << std::endl;
+        std::cout << msg << "? (yes/no) ";
+
+        std::cin >> answer;
+        for (size_t i=0; i<answer.size(); i++)
+            answer[i] = tolower(answer[i]);
+    }
+
+    std::getline(std::cin, dummy);
+
+    if (answer[0] == 'y')
+        return true;
+    else
+        return false;
+}
+
+
 /** Print a message and a newline */
 void UserInterface::output(std::string msg) {
 

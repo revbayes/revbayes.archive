@@ -51,14 +51,15 @@ class SyntaxVariable : public SyntaxElement {
         const RbString*     getIdentifier() const;                      //!< Get identifier
         IntVector           getIndex(Frame* frame) const;               //!< Get index
         std::string         getFullName(Frame* frame) const;            //!< Get full name, with indices and base obj
-        RbObject*           getReference(Frame* frame=NULL) const;      //!< Get value reference TODO: implement!!
         RbObject*           getValue(Frame* frame=NULL) const;          //!< Get semantic value
+        const RbObject*     getValuePtr(Frame* frame) const;            //!< Get pointer to base object
+        SyntaxVariable*     getVariable(void) { return variable; }      //!< Get base variable
         bool                isMember() const { return variable!=NULL; } //!< Is member variable?
 
     protected:
         RbString*                       identifier;     //!< The name of the variable
         std::list<SyntaxElement*>*      index;          //!< Vector of int indices to members
-        SyntaxVariable*                 variable;       //!< Wrapping variable
+        SyntaxVariable*                 variable;       //!< Base variable (pointing to a complex object)
 };
 
 #endif

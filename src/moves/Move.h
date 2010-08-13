@@ -18,42 +18,50 @@
 #ifndef Move_H
 #define Move_H
 
-#include "RbComplex.h"
+#include "MemberObject.h"
 
-#include <string>
-#include <vector>
-
-class VariableNode;
 class RandomNumberGenerator;
 class StringVector;
 
-class Move : public RbComplex {
+class Move : public MemberObject {
 
     public:
-        virtual                 ~Move(void) {}                      //!< Virtual destructor, just in case
+        virtual                     ~Move(void) {}                                  //!< Destructor
 
         // Basic utility functions
-        const StringVector&     getClass(void) const;               //!< Get class vector
+        virtual RbObject*           clone(void) const = 0;                          //!< Clone the object
+        virtual const StringVector& getClass(void) const;                           //!< Get class vector
 
-        // Move functions
-        void                    acceptMove(void);				    //!< Accept the move, update statistics
-        double                  getAcceptanceProbability(void);     //!< Get acceptance probability
-        double                  performMove(void);                  //!< Perform the move, update statistics
-        void                    rejectMove(void);                   //!< Reject the move
+        // Member variable rules
+        virtual const MemberRules&  getMemberRules(void) const = 0;                 //!< Get member rules
+        void                        setVariable(const std::string& name, DAGNode* var); //!< Only allow constants
+
+        // Member method inits
+        virtual const MethodTable& getMethodInits(void) const;                      //!< Get method inits
+
+        // Move functions you have to override
+        virtual void                acceptMove(void) = 0;                           //!< Accept the move
+        virtual void                performMove(double& lnPriorRatio,
+                                                double& lnLikelihoodRatio,
+                                                double& lnHastingsRatio) = 0;       //!< Perform the move
+        virtual void                rejectMove(void) = 0;                           //!< Reject the move
+
+        // Move functions you should not override
+        double                      getAcceptanceProbability(void);                 //!< Get acceptance probability
+        double                      getUpdateWeight(void) const;                    //!< Get update weight
+        void                        resetCounters(void);                            //!< Reset numTried/numAccepted
+        void                        setUpdateWeight(double weight);                 //!< Set update weight
 
     protected:
-                                Move(VariableNode* node, RandomNumberGenerator* rgen);      //!< Constructor
+                                    Move(const MemberRules& memberRules);           //!< Parser constructor
 
-        // Functions you have to override
-        virtual double          perform(void) = 0;                  //!< Perform the move, update statistics
-        virtual void            accept(void) = 0;                   //!< Accept the move, update statistics
-        virtual void            reject(void) = 0;                   //!< Reject the move
+        // Member method call (throw an error: no member methods)
+        virtual const RbObject*     executeOperation(const std::string&     name,
+                                                     std::vector<DAGNode*>& args);  //!< Execute method
 
-        // Member variables
-		RandomNumberGenerator*  rng;                                //!< Random number generator (ptr)
-        int                     numAccepted;                        //!< Number accepted moves
-        int                     numTried;                           //!< Number of times move was tried
-        VariableNode*           theNode;                            //!< The node to change (ptr)
+        // Hidden member variables (not visible to parser)
+        int                         numAccepted;                                    //!< Number of times accepted
+        int                         numTried;                                       //!< Number of times tried
 };
 
 #endif

@@ -24,15 +24,13 @@
 #include <iostream>
 #include <vector>
 
-class ContainerIterator;
-
 class IntVector : public RbComplex {
 
     public:
             // Constructors and destructor
             IntVector() : RbComplex() {}                //!< Default constructor (empty vector)
             IntVector(int x);                           //!< Construct vector with one int x
-            IntVector(int n, int x);                    //!< Construct vector with n ints x
+            IntVector(size_t n, int x);                 //!< Construct vector with n ints x
             IntVector(std::vector<int>& x);             //!< Constructor from int vector
             IntVector(const ContainerIterator& x);      //!< Constructor from container iterator
 
@@ -44,15 +42,15 @@ class IntVector : public RbComplex {
         std::string         toString(void) const;                           //!< Complete info about object
 
         // Overloaded operators and built-in functions
-        int&                operator[](int i) { return value[i]; }          //!< Index op allowing change
-        const int&          operator[](int i) const { return value[i]; }    //!< Const index op
+        int&                operator[](size_t i) { return value[i]; }       //!< Index op allowing change
+        const int&          operator[](size_t i) const { return value[i]; } //!< Const index op
         bool                operator==(const IntVector& x) const;           //!< Equals comparison
         bool                operator!=(const IntVector& x) const;           //!< Not equals comparison
         void                clear(void) { value.clear(); }                  //!< Clear
         void                pop_back(void) { value.pop_back(); }            //!< Drop element
         void                push_back(int x) { value.push_back(x); }        //!< Append element to end
         void                push_front(int x) { value.insert(value.begin(), x); }   //!< Add element in front
-        void                resize(int n) { value.resize(n); }              //!< Resize
+        void                resize(size_t n) { value.resize(n); }           //!< Resize
         size_t              size() const { return value.size(); }           //!< Get size
 
         // Element access functions for parser

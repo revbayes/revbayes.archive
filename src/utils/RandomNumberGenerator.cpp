@@ -36,7 +36,7 @@ bool RandomNumberGenerator::equals(const RbObject* obj) const {
 
 const StringVector& RandomNumberGenerator::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RbNames::RandomNumberGenerator::name) + RbComplex::getClass();
+    static StringVector rbClass = StringVector(RandomNumberGenerator_name) + RbComplex::getClass();
 	return rbClass;
 }
 

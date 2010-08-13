@@ -2,7 +2,7 @@ srcdir      = .
 RM          = rm
 CXX         = g++
 CC          = g++
-INCLUDES    = -I../ -I../complex -I../../utils -I../../functions
+INCLUDES    = -I../ -I../complex -I../../utils -I../../functions -I../../dag
 CXXFLAGS    = -O3 -ffast-math -Wall
 
 CFLAGS = $(CXXFLAGS)

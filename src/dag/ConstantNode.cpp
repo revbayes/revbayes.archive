@@ -38,7 +38,6 @@ ConstantNode::ConstantNode(RbObject* val)
 /** Constructor from value class */
 ConstantNode::ConstantNode(const std::string& valType)
     : DAGNode(valType), value(NULL) {
-
 }
 
 
@@ -53,10 +52,26 @@ ConstantNode::ConstantNode(const ConstantNode& x)
 /** Destructor */
 ConstantNode::~ConstantNode() {
 
-    if (children.size() != 0)
-        throw RbException("Invalid delete: node with children");
-
+    if (numRefs() != 0)
+        throw RbException ("Cannot delete node with references"); 
+    
     delete value;
+}
+
+
+/** Assignment operator */
+ConstantNode& ConstantNode::operator=(const ConstantNode& x) {
+
+    if (this != &x) {
+
+        if (valueType != x.valueType)
+            throw RbException("Type mismatch");
+
+        delete value;
+        value = x.value->clone();
+    }
+
+    return (*this);
 }
 
 
@@ -64,6 +79,25 @@ ConstantNode::~ConstantNode() {
 ConstantNode* ConstantNode::clone(void) const {
 
     return new ConstantNode(*this);
+}
+
+
+/** Cloning the entire graph only involves children for a constant node */
+ConstantNode* ConstantNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
+
+    if (newNodes.find((DAGNode*)(this)) != newNodes.end())
+        return (ConstantNode*)(newNodes[(DAGNode*)(this)]);
+
+    /* Make pristine copy */
+    ConstantNode* copy = clone();
+    newNodes[(DAGNode*)(this)] = copy;
+
+    /* Make sure the children clone themselves */
+    for(std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
+        (*i)->cloneDAG(newNodes);
+    }
+ 
+    return copy;
 }
 
 
@@ -97,8 +131,15 @@ void ConstantNode::printValue(std::ostream& o) const {
 void ConstantNode::printStruct(std::ostream &o) const {
 
     o << "Wrapper:" << std::endl;
-    o << "&.class = " << getClass() << std::endl;
-    o << "&.value = " << getValue() << std::endl;
+    o << "&.class   = " << getClass() << std::endl;
+    o << "&.value   = " << value << std::endl;
+    o << "&.parents = " << std::endl;
+    printParents(o);
+    o << std::endl;
+    o << "&.children = " << std::endl;
+    printChildren(o);
+    o << std::endl;
+    o << std::endl;
 }
 
 
@@ -141,9 +182,9 @@ std::string ConstantNode::toString(void) const {
 
 
 /** Touch affected: only needed if a set function is called */
-void ConstantNode::touchAffected(void) const {
+void ConstantNode::touchAffected(void) {
 
-    std::set<StochasticNode*> temp;
     for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++)
-        (*i)->getAffected(temp);
+        (*i)->touchAffected();
 }
+

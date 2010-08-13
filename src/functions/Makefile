@@ -2,7 +2,7 @@ srcdir      = .
 RM          = rm
 CXX         = g++
 CC          = g++
-INCLUDES    = -I./ -I../parser -I../dag -I../datatypes -I../datatypes/complex -I../utils -I../main
+INCLUDES    = -I./ -I../parser -I../dag -I../datatypes -I../datatypes/complex -I../utils -I../main -I../distributions -I../datatypes/primitive
 CXXFLAGS    = -O3 -ffast-math -Wall
 LDFLAGS     =  -lreadline -lm -lxml2 -lpthread
 LIBS        = -lreadline -lm 
@@ -10,13 +10,16 @@ INSTALL     = @INSTALL@
 
 CFLAGS = $(CXXFLAGS)
 
-all: Argument.o ArgumentRule.o Ellipsis.o RbFunction.o UserFunction.o MemberFunction.o ObjectCreatorFunction.o DistributionFunction.o
+all: Argument.o ArgumentRule.o MinmaxRule.o Ellipsis.o RbFunction.o UserFunction.o MemberFunction.o ConstructorFunction.o DistributionFunction.o
 
 Argument.o: Argument.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Argument.cpp
 
 ArgumentRule.o: ArgumentRule.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c ArgumentRule.cpp
+
+MinmaxRule.o: MinmaxRule.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c MinmaxRule.cpp
 
 Ellipsis.o: Ellipsis.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Ellipsis.cpp

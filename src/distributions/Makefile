@@ -10,10 +10,13 @@ INSTALL     = @INSTALL@
 
 CFLAGS = $(CXXFLAGS)
 
-all: Distribution.o
+all: Distribution.o DistributionReal.o
 
 Distribution.o: Distribution.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Distribution.cpp
+
+DistributionReal.o: DistributionReal.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c DistributionReal.cpp
 
 clean: 
 	rm -f *.o

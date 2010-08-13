@@ -25,6 +25,12 @@
 #include <sstream>
 
 
+/** Default constructor */
+RbDouble::RbDouble(void)
+    : RbObject(), value(0.0) {
+}
+
+
 /** Construct from double */
 RbDouble::RbDouble(const double v)
     : RbObject(), value(v) {
@@ -45,10 +51,6 @@ RbDouble::RbDouble(const bool v)
     else value = 0.0;
 }
 
-RbDouble::~RbDouble(void) {
-
-}
-
 
 /** Clone object */
 RbObject* RbDouble::clone(void) const {
@@ -57,10 +59,10 @@ RbObject* RbDouble::clone(void) const {
 }
 
 
-/** Convert to object of another class. The caller manages the object */
+/** Convert to object of another class. The caller manages the object. */
 RbObject* RbDouble::convertTo(const std::string& type) const {
 
-    if (type == RbNames::RbBool::name) {
+    if (type == RbBool_name) {
         return new RbBool(value == 0.0);
     }
 
@@ -77,12 +79,12 @@ bool RbDouble::equals(const RbObject* obj) const {
         return value == p->value;
 
     // Try converting the object to a double
-    p = dynamic_cast<const RbDouble*>(obj->convertTo(RbNames::RbDouble::name));
+    p = dynamic_cast<const RbDouble*>(obj->convertTo(RbDouble_name));
     if (p == NULL)
         return false;
 
     // Get result
-    double result = (value == p->value);
+    bool result = (value == p->value);
     delete p;
     return result;
 }
@@ -91,7 +93,7 @@ bool RbDouble::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const StringVector& RbDouble::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::RbDouble::name) + RbObject::getClass();
+    static StringVector rbClass = StringVector(RbDouble_name) + RbObject::getClass();
     return rbClass;
 }
 

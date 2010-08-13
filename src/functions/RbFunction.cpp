@@ -18,16 +18,17 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
+#include "ContainerIterator.h"
 #include "DAGNode.h"
 #include "DAGNodeContainer.h"
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
-#include "RbUndefined.h"
 #include "StringVector.h"
 
 #include <sstream>
+
 
 /** Basic constructor */
 RbFunction::RbFunction(void) : RbObject() {
@@ -36,10 +37,49 @@ RbFunction::RbFunction(void) : RbObject() {
 }
 
 
-/** Copy constructor; we do not want to copy the processed arguments */
-RbFunction::RbFunction(const RbFunction &fn) : RbObject() {
+/** Copy constructor */
+RbFunction::RbFunction(const RbFunction &x) : RbObject(x) {
 
-    argumentsProcessed = false;    
+    argumentsProcessed = x.argumentsProcessed;
+    if (x.argumentsProcessed == true) {
+
+        std::vector<bool>::const_iterator i;
+        std::vector<DAGNode*>::const_iterator j;
+        for (i=x.referenceArgument.begin(), j=x.processedArguments.begin(); i!=x.referenceArgument.end(); i++, j++) {
+            referenceArgument.push_back(*i);
+            processedArguments.push_back((*j));
+        }
+    }
+}
+
+
+/** Destructor: delete the processed arguments */
+RbFunction::~RbFunction(void) {
+
+    deleteProcessedArguments();
+}
+
+
+/** Assignment operator */
+RbFunction& RbFunction::operator=(const RbFunction& x) {
+
+    if (this != &x) {
+
+        deleteProcessedArguments();
+
+        argumentsProcessed = x.argumentsProcessed;
+        if (x.argumentsProcessed == true) {
+
+            std::vector<bool>::const_iterator i;
+            std::vector<DAGNode*>::const_iterator j;
+            for (i=x.referenceArgument.begin(), j=x.processedArguments.begin(); i!=x.referenceArgument.end(); i++, j++) {
+                referenceArgument.push_back(*i);
+                processedArguments.push_back((*j));
+            }
+        }
+    }
+
+    return (*this);
 }
 
 
@@ -47,7 +87,7 @@ RbFunction::RbFunction(const RbFunction &fn) : RbObject() {
 std::string RbFunction::briefInfo(void) const {
 
     std::ostringstream o;
-    o << "RbFunction: " << (*this);
+    o << getType() << ": " << (*this);
 
     return o.str();
 }
@@ -60,6 +100,26 @@ bool RbFunction::equals(const RbObject* x) const {
 }
 
 
+/** Delete processed arguments if not reference arguments */
+void RbFunction::deleteProcessedArguments(void) {
+
+    if (argumentsProcessed) {
+
+        std::vector<bool>::iterator i;
+        std::vector<DAGNode*>::iterator j;
+        for (i=referenceArgument.begin(), j=processedArguments.begin(); i!=referenceArgument.end(); i++, j++) {
+            /*
+            if ((*j)->numRefs() == 0)
+                delete (*j);
+            */
+        }
+    }
+    referenceArgument.clear();
+    processedArguments.clear();
+    argumentsProcessed = false;
+}
+
+
 /** Get class vector describing type of object */
 const StringVector& RbFunction::getClass(void) const { 
 
@@ -68,7 +128,7 @@ const StringVector& RbFunction::getClass(void) const {
 }
 
 
-/** Simple execute function with arguments simply passed in as they are given */
+/** Execute function with arguments simply passed in as they are given */
 const RbObject* RbFunction::execute(const std::vector<Argument>& args) {
 
     if (processArguments(args) == false)
@@ -89,14 +149,32 @@ const RbObject* RbFunction::execute() {
 }
 
 
+/** Get new result value */
+RbObject* RbFunction::getValue() {
+
+    if (!argumentsProcessed) {
+        throw RbException("Arguments were not processed before executing function.");
+    }
+    
+    const RbObject* result = executeOperation(processedArguments);
+    if (result == NULL)
+        return NULL;
+    else
+        return result->clone();
+}
+
+
 /** Print value for user */
 void RbFunction::printValue(std::ostream& o) const {
 
-    const ArgumentRule** argRules = getArgumentRules();
+    const ArgumentRules& argRules = getArgumentRules();
 
-    o << getReturnType() << " function (";
-    for (int i=0; argRules[i]!=NULL; i++)
+    o << "<" << getReturnType() << "> function (";
+    for (size_t i=0; i<argRules.size(); i++) {
+        if (i != 0)
+            o << ", ";
         argRules[i]->printValue(o);
+    }
     o << ")";
 }
 
@@ -145,31 +223,26 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
     /*********************  0. Initialization  **********************/
 
     /* Get the argument rules */
-    const ArgumentRule** theRules = getArgumentRules();
+    const ArgumentRules& theRules = getArgumentRules();
 
     /* Get the number of argument rules */
-    int nRules;
-    for ( nRules = 0; theRules[nRules] != NULL; nRules++ )
-        ;
+    int nRules = int(theRules.size());
 
-    /* Forget previously processed arguments; we own the object wrappers and need to delete them */
-    for (std::vector<DAGNode*>::iterator i= processedArguments.begin();
-        i!=processedArguments.end(); i++)
-        delete (*i);
-    processedArguments.clear();
-    argumentsProcessed = false;
+    /* Delete previously processed arguments */
+    deleteProcessedArguments();
 
-    /* Check the number arguments and get the final number we expect */
+    /* Check the number of arguments and get the final number we expect */
     int numFinalArgs;
-    if ( theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) < nRules)
+    if (nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) < nRules)
         numFinalArgs = nRules - 1;
     else
         numFinalArgs = nRules;
-    if ( !theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) > numFinalArgs )
+    if ( (nRules == 0 || (nRules > 0 && !theRules[nRules-1]->isType(Ellipsis_name))) && int(args.size()) > numFinalArgs)
         return false;
 
-    /* Fill processedArguments with null arguments */
+    /* Fill processedArguments with null arguments and resize referenceArgument */
     processedArguments.insert(processedArguments.begin(), numFinalArgs, (DAGNode*)(NULL));
+    referenceArgument.resize(numFinalArgs);
 
     /* Keep track of which arguments we have used */
     std::vector<bool> taken = std::vector<bool>(args.size(), false);
@@ -179,21 +252,24 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
 
     /* Wrap final args into one DAGNodeContainer object.
        TODO: Keep labels, discarded here. */
-    if ( theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) >= nRules ) {
+    if ( nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) >= nRules ) {
 
-        int numEllipsisArgs = args.size() - nRules + 1;
+        int numEllipsisArgs = int(args.size()) - nRules + 1;
         DAGNodeContainer* ellipsisArgs = new DAGNodeContainer(numEllipsisArgs, std::string(RbObject_name));
-        ContainerIterator ellipsisIndex = (*ellipsisArgs).begin();
+        ContainerIterator ellipsisIt = ellipsisArgs->begin();
 
         for (size_t i=nRules-1; i<args.size(); i++) {
 
-            const DAGNode* theDAGNode = args[i].getDAGNode();
+            const DAGNode* theDAGNode = args[i].getVariable();
             if ( theDAGNode == NULL )
                 return false;
-            (*ellipsisArgs)[ellipsisIndex++] = theDAGNode->clone();
+            ellipsisArgs->setElement(ellipsisIt++, theDAGNode->clone());
             taken[i] = true;
         }
         processedArguments[numFinalArgs-1] = ellipsisArgs;
+        referenceArgument [numFinalArgs-1] = false;
+        if (!theRules[nRules - 1]->isArgValid(ellipsisArgs))
+            return false;
     }
 
 
@@ -215,9 +291,13 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
 
             if ( args[i].getLabel() == theRules[j]->getLabel() ) {
 
-                if ( theRules[j]->isArgValid(args[i].getDAGNode()) && processedArguments[j] == NULL ) {
+                if ( theRules[j]->isArgValid(args[i].getVariable()) && processedArguments[j] == NULL ) {
                     taken[i] = true;
-                    processedArguments[j] = args[i].getDAGNode()->clone();
+                    if (args[i].getVariable()->getName() == "")
+                        processedArguments[j] = args[i].getVariable();
+                    else
+                        processedArguments[j] = args[i].getVariable();
+                    referenceArgument[j] = theRules[j]->isWrapperRule();
                 }
                 else
                     return false;
@@ -256,9 +336,13 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
         if (nMatches != 1)
             return false;
  
-        if ( theRules[matchRule]->isArgValid(args[i].getDAGNode()) ) {
+        if ( theRules[matchRule]->isArgValid(args[i].getVariable()) ) {
             taken[i] = true;
-            processedArguments[matchRule] = args[i].getDAGNode()->clone();
+            if (args[i].getVariable()->getName() == "")
+                processedArguments[matchRule] = args[i].getVariable();
+            else
+                processedArguments[matchRule] = args[i].getVariable();
+            referenceArgument[matchRule] = theRules[matchRule]->isWrapperRule();
         }
         else
             return false;
@@ -278,9 +362,13 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
         for (int j=0; j<numFinalArgs; j++) {
 
             if ( processedArguments[j] == NULL ) {
-                if ( theRules[j]->isArgValid(args[i].getDAGNode()) ) {
+                if ( theRules[j]->isArgValid(args[i].getVariable()) ) {
                     taken[i] = true;
-                    processedArguments[j] = args[i].getDAGNode()->clone();
+                    if (args[i].getVariable()->getName() == "")
+                        processedArguments[j] = args[i].getVariable();
+                    else
+                        processedArguments[j] = args[i].getVariable();
+                    referenceArgument[j] = theRules[j]->isWrapperRule();
                     break;
                 }
                 else
@@ -297,10 +385,14 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
         if ( processedArguments[i] != NULL )
             continue;
 
-        if ( theRules[i]->getDefaultValue().isType(RbUndefined_name) )
+        if ( !theRules[i]->hasDefault() )
             return false;
 
-        processedArguments[i] = new ConstantNode(theRules[i]->getDefaultValue().clone());
+        if ( theRules[i]->isWrapperRule() )
+            processedArguments[i] = theRules[i]->getDefaultVariablePtr();
+        else
+            processedArguments[i] = new ConstantNode(theRules[i]->getDefaultValue());
+        referenceArgument[i] = theRules[i]->isWrapperRule();
     }
 
     /*********************  6. Count match score and return  **********************/
@@ -320,7 +412,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
             if ( argClass[j] == theRules[i]->getType() )
                 break;
 
-        matchScore->push_back(j);
+        matchScore->push_back(int(j));
     }
 
     return true;
@@ -331,9 +423,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
 std::string RbFunction::toString(void) const {
 
     std::ostringstream o;
-    o << "RbFunction: ";
-    printValue(o);
-    o << std::endl;
+    o << getType() << ": " << (*this) << std::endl;
     
     if (argumentsProcessed)
         o << "Arguments processed; there are " << processedArguments.size() << " values." << std::endl;
@@ -343,7 +433,7 @@ std::string RbFunction::toString(void) const {
     int index=1;
     for (std::vector<DAGNode*>::const_iterator i=processedArguments.begin(); i!=processedArguments.end(); i++, index++) {
         o << " processedArguments[" << index << "] = ";
-        (*i)->getValue()->printValue(o);
+        (*i)->printValue(o);
         o << std::endl;
     }
 

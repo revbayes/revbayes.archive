@@ -20,14 +20,17 @@
 
 /* Hack for Windows */
 #ifdef WIN32
-#define YY_SKIP_YYWRAP
 #define strdup(a) _strdup(a)
+#define fileno _fileno
+#define YY_SKIP_YYWRAP
 #define yywrap() 1
-int isatty(int) return 0;
+int isatty(int) { return 0; }
 #else
 extern "C" { 
    char *strdup(const char *s);
 }
+#define YY_SKIP_YYWRAP
+#define yywrap() 1
 #endif
 
 /* Include objects needed to understand grammar.tab.h */
@@ -156,7 +159,9 @@ TRUE                                    {
                                         }
 {STRING}                                {
                                             PRINTF("Flex found string %s -- ", yytext); 
-                                            yylval.string = yytext;
+                                            /* Strip quotes from string */
+                                            yytext[strlen(yytext)-1] = '\0';
+                                            yylval.string = yytext + 1;
                                             PRINTF("string value = %s\n", yylval.string);
                                             return STRING;
                                         }
@@ -224,16 +229,9 @@ TRUE                                    {
                                             PRINTF ("Flex found white space\n");
                                             /* Ignore white space */
                                         }
-"\r\n"                                  {
-                                            PRINTF ("Flex found DOS newline\n");
-                                            return '\n';
-                                        }
-"\r"                                    {
-                                            PRINTF ("Flex found carriage return\n");
-                                            return '\r';
-                                        }
 "\n"                                    {
                                             PRINTF ("Flex found newline\n");
+                                            foundNewline = true;
                                             return yytext[0];
                                         }
 .                                       {

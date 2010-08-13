@@ -18,14 +18,16 @@
 
 #include "ConstantNode.h"
 #include "Container.h"
-#include "ContainerIterator.h"
 #include "DAGNodeContainer.h"
+#include "IntVector.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "RbString.h"
 #include "StochasticNode.h"
 #include "StringVector.h"
 #include "Workspace.h"
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 
@@ -42,39 +44,42 @@ DAGNodeContainer::DAGNodeContainer(DAGNode* x) : VariableNode(x->getType()) {
     length      = IntVector(1);
     value       = new Container(x->getValue()->clone());
     storedValue = value->clone();
+    names       = NULL;
 }
 
 
 /** Construct vector with n copies of x */
-DAGNodeContainer::DAGNodeContainer(int n, DAGNode* x) : VariableNode(x->getType()) {
+DAGNodeContainer::DAGNodeContainer(size_t n, DAGNode* x) : VariableNode(x->getType()) {
 
     nodes.push_back(x);
-    for (int i=1; i<n; i++)
+    for (size_t i=1; i<n; i++)
         nodes.push_back(x->clone());
 
-    for (int i=0; i<n; i++) {
-        parents.insert(nodes[i]);
-        nodes[i]->addChildNode(this);
+    for (std::vector<DAGNode*>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
+        parents.insert(*i);
+        (*i)->addChildNode(this);
     }
 
     changed     = false;
-    length      = IntVector(n);
+    length      = IntVector(int(n));
     value       = new Container(n, x->getValue()->clone());
     storedValue = value->clone();
+    names       = NULL;
 }
 
 
 /** Construct empty vector of length  n */
-DAGNodeContainer::DAGNodeContainer(int n, const std::string& valType)
+DAGNodeContainer::DAGNodeContainer(size_t n, const std::string& valType)
     : VariableNode(valType) {
 
-    for (int i=0; i<n; i++)
+    for (size_t i=0; i<n; i++)
         nodes.push_back(NULL);
 
     changed     = false;
-    length      = IntVector(n);
+    length      = IntVector(int(n));
     value       = new Container(length, valueType);
     storedValue = value->clone();
+    names       = NULL;
 }
 
 
@@ -96,15 +101,16 @@ DAGNodeContainer::DAGNodeContainer(const IntVector& len, DAGNode* x)
     for (int i=1; i<n; i++)
         nodes.push_back(x->clone());
 
-    for (int i=0; i<n; i++) {
-        parents.insert(nodes[i]);
-        nodes[i]->addChildNode(this);
+    for (std::vector<DAGNode*>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
+        parents.insert(*i);
+        (*i)->addChildNode(this);
     }
 
     changed     = false;
     length      = len;
     value       = new Container(len, x->getValue()->clone());
     storedValue = value->clone();
+    names       = NULL;
 }
 
 
@@ -117,8 +123,8 @@ DAGNodeContainer::DAGNodeContainer(const IntVector& len, const std::string& valT
 
     int n = 1;
     for (size_t i=0; i<len.size(); i++) {
-        if (len[i] <= 0)
-            throw (RbException("Nonpositive length"));
+        if (len[i] < 0)
+            throw (RbException("Negative length"));
         n *= len[i];
     }
 
@@ -129,6 +135,7 @@ DAGNodeContainer::DAGNodeContainer(const IntVector& len, const std::string& valT
     length      = len;
     value       = new Container(len, valueType);
     storedValue = value->clone();
+    names       = NULL;
 }
 
 
@@ -139,16 +146,39 @@ DAGNodeContainer::DAGNodeContainer(const DAGNodeContainer& x)
     changed = x.changed;
     length  = x.length;
 
-    for (std::vector<DAGNode*>::const_iterator i=x.nodes.begin(); i!=x.nodes.end(); i++)
-        nodes.push_back((*i)->clone());
+    for (std::vector<DAGNode*>::const_iterator i=x.nodes.begin(); i!=x.nodes.end(); i++) {
+        DAGNode* theNode = (*i)->clone();
+        nodes.push_back(theNode);
+        parents.insert(theNode);
+        theNode->addChildNode(this);
+    }
 
     value       = x.value->clone();
     storedValue = x.storedValue->clone();
+    if (x.names == NULL)
+        names = NULL;
+    else
+        names = x.names->clone();
 }
 
 
-/** Destructor needed to destroy value and stored value; nodes are deleted through parents */
+/** Destructor needed to destroy value, stored value and nodes */
 DAGNodeContainer::~DAGNodeContainer() {
+
+    if (numRefs() != 0)
+        throw RbException ("Cannot delete node with references");
+
+    for(std::vector<DAGNode*>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
+        DAGNode* theNode = (*i);
+        if (theNode != NULL) {
+            theNode->removeChildNode(this);
+            if (theNode->numRefs() == 0)
+                delete theNode;
+        }
+    }
+    parents.clear();
+    nodes.clear();
+    delete names;
 
     delete value;
     delete storedValue;
@@ -159,72 +189,168 @@ DAGNodeContainer::~DAGNodeContainer() {
 DAGNodeContainer& DAGNodeContainer::operator=(const DAGNodeContainer& x) {
 
     if (this != &x) {
-        VariableNode::operator=(x);
+
+        if (valueType != x.valueType || getDim() != x.getDim())
+            throw RbException("Type or dim mismatch");
+
+        /* Remove nodes and parents */
+        for(std::vector<DAGNode*>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
+            DAGNode* theNode = (*i);
+            if (theNode != NULL) {
+                theNode->removeChildNode(this);
+                theNode->setName("");
+                if (theNode->numRefs() == 0)
+                    delete theNode;
+            }
+        }
+        parents.clear();
+        nodes.clear();
+        delete names;
+        names = NULL;
 
         changed = x.changed;
         length  = x.length;
 
-        nodes.clear();
-        for (std::vector<DAGNode*>::const_iterator i=x.nodes.begin(); i!=x.nodes.end(); i++)
-            nodes.push_back((*i)->clone());         
+        /* Add nodes and parents */
+        for (std::vector<DAGNode*>::const_iterator i=x.nodes.begin(); i!=x.nodes.end(); i++) {
+            DAGNode* theNode = (*i)->clone();
+            nodes.push_back(theNode);
+            parents.insert(theNode);
+            theNode->addChildNode(this);
+        }
 
         value       = x.value->clone();
         storedValue = x.storedValue->clone();
+        if (x.names == NULL)
+            names = NULL;
+        else
+            names = x.names->clone();
     }
 
     return (*this);
 }
 
 
-/** Subscript operator (container iterator) */
-DAGNode*& DAGNodeContainer::operator[](const ContainerIterator& i) {
+/** Subscript operator (vector index) */
+DAGNode*& DAGNodeContainer::operator[](const IntVector& i) {
 
-    int offset = getOffset(i);
-    return nodes[offset];
+    return nodes[getOffset(i)];
 }
 
 
-/** Subscript const operator (container iterator) */
-DAGNode* const& DAGNodeContainer::operator[](const ContainerIterator& i) const {
+/** Subscript const operator (vector index) */
+DAGNode* const& DAGNodeContainer::operator[](const IntVector& i) const {
 
-    int offset = getOffset(i);
-    return nodes[offset];
+    return nodes[getOffset(i)];
 }
 
 
 /** Subscript operator */
-DAGNode*& DAGNodeContainer::operator[](int i) {
+DAGNode*& DAGNodeContainer::operator[](size_t i) {
 
-    if (i < 0 || i > int(nodes.size()))
+    if (i >= nodes.size())
         throw RbException("Index out of bounds");
     return nodes[i];
 }
 
 
 /** Subscript const operator */
-DAGNode* const& DAGNodeContainer::operator[](int i) const {
+DAGNode* const& DAGNodeContainer::operator[](size_t i) const {
 
-    if (i < 0 || i > int(nodes.size()))
+    if (i >= nodes.size())
         throw RbException("Index out of bounds");
     return nodes[i];
 }
 
 
-/** Clone function */
+/** Return begin iterator */
+ContainerIterator DAGNodeContainer::begin(void) const {
+
+    IntVector temp = getLength();
+    for (size_t i=0; i<temp.size(); i++)
+        temp[i] = 0;
+
+    return ContainerIterator(temp, getLength());
+}
+
+
+/** Clear container */
+void DAGNodeContainer::clear(void) {
+
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
+        (*i)->removeChildNode(this);
+        (*i)->setName("");
+        if ((*i)->numRefs() == 0)
+            delete(*i);
+    }
+
+    for (size_t i=0; i<length.size(); i++)
+        length[i] = 0;
+
+    nodes.clear();
+}
+
+
+/** Clone object */
 DAGNodeContainer* DAGNodeContainer::clone() const {
 
     return new DAGNodeContainer(*this);
 }
 
 
-/** Get end iterator */
+/** Clone entire graph */
+DAGNodeContainer* DAGNodeContainer::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
+
+    if (newNodes.find((DAGNodeContainer*)(this)) != newNodes.end())
+        return (DAGNodeContainer*)(newNodes[(DAGNode*)(this)]);
+
+    /* Make pristine copy */
+    DAGNodeContainer* copy = new DAGNodeContainer(length, valueType);
+    newNodes[(DAGNode*)(this)] = copy;
+
+    copy->touched     = true;
+    copy->changed     = false;
+    copy->length      = length;
+    copy->value       = value->clone();
+    copy->storedValue = copy->value->clone();
+    if (names == NULL)
+        copy->names = NULL;
+    else
+        copy->names = names->clone();
+
+    /* Clone parents */
+    copy->nodes.clear();
+    for (std::vector<DAGNode*>::const_iterator i=nodes.begin(); i!= nodes.end(); i++) {
+        if ((*i) == NULL)
+            copy->nodes.push_back(NULL);
+        else {
+            DAGNode* theParentCopy = (*i)->cloneDAG(newNodes);
+            copy->parents.insert(theParentCopy);
+            copy->nodes.push_back(theParentCopy);
+            theParentCopy->addChildNode(copy);
+        }
+    }
+    copy->update();
+    copy->keepAffected();
+
+    /* Make sure the children clone themselves */
+    for(std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
+        (*i)->cloneDAG(newNodes);
+    }
+
+    return copy;
+}
+
+
+/** Return end iterator */
 ContainerIterator DAGNodeContainer::end(void) const {
 
-    IntVector   temp;
-    for (size_t i=0; i!=length.size(); ++i)
-        temp.push_back(length[i]-1);
+    IntVector temp = getLength();
+    for (size_t i=0; i<temp.size(); i++)
+        temp[i]--;
 
-    return ++ContainerIterator(temp);
+    ContainerIterator tempIt(temp, getLength());
+    return ++tempIt;
 }
 
 
@@ -249,32 +375,18 @@ const StringVector& DAGNodeContainer::getClass(void) const {
 }
 
 
-/** Get offset to element or subcontainer; also check index */
-int DAGNodeContainer::getOffset(const ContainerIterator& index) const {
+/** Get element name */
+std::string DAGNodeContainer::getElementName(const IntVector& index) const {
 
-    if (index.size() > length.size())
-        throw (RbException("Too many indices"));
-    for (size_t i=0; i<index.size(); i++) {
-        if (index[i] < 0 || index[i] >= length[i])
-            throw (RbException("Index out of range"));
-    }
-
-    int offset = 0;
-    int numVals = 1;
-    size_t i;
-    for (i=length.size()-1; i>=index.size(); i--)
-         numVals *= length[i];
-    for (; i>=0; i--) {
-        offset += (index[i] * numVals);
-        numVals *= length[i];
-    }
- 
-    return offset;
+    if (names == NULL)
+        return "";
+    else
+        return (*names)[getOffset(index)];
 }
 
 
 /** Get offset to element or subcontainer; also check index */
-int DAGNodeContainer::getOffset(const IntVector& index) const {
+size_t DAGNodeContainer::getOffset(const IntVector& index) const {
 
     if (index.size() > length.size())
         throw (RbException("Too many indices"));
@@ -283,10 +395,10 @@ int DAGNodeContainer::getOffset(const IntVector& index) const {
             throw (RbException("Index out of range"));
     }
 
-    int offset = 0;
+    size_t offset = 0;
     int numVals = 1;
-    size_t i;
-    for (i=length.size()-1; i>=index.size(); i--)
+    int i;
+    for (i=int(length.size())-1; i>=int(index.size()); i--)
          numVals *= length[i];
     for (; i>=0; i--) {
         offset += (index[i] * numVals);
@@ -300,6 +412,9 @@ int DAGNodeContainer::getOffset(const IntVector& index) const {
 /** Get stored value */
 const RbObject* DAGNodeContainer::getStoredValue(void) {
 
+    if (!touched)
+        return value;
+
     update();
     return storedValue;
 }
@@ -309,20 +424,23 @@ const RbObject* DAGNodeContainer::getStoredValue(void) {
 DAGNodeContainer* DAGNodeContainer::getSubContainer(const IntVector& index) const {
 
     // Get offset; this throws an error if something wrong with index
-    int offset = getOffset(index);
+    size_t offset = getOffset(index);
 
     // Create a new vector of the right size
     IntVector tempLength;
     for (size_t i=index.size(); i<length.size(); i++)
         tempLength.push_back(length[i]);
-    DAGNodeContainer *temp = new DAGNodeContainer(tempLength, valueType);
+    DAGNodeContainer* temp = new DAGNodeContainer(tempLength, valueType);
 
     // Fill it with content
     int numSubvals = 1;
     for (size_t i=length.size()-1; i>=index.size(); i--)
         numSubvals *= length[i];
-    for (int i=0; i<numSubvals; i++)
-        temp->nodes[i] = nodes[i+offset];
+
+    std::vector<DAGNode*>::iterator i = temp->nodes.begin();
+    std::vector<DAGNode*>::const_iterator j = nodes.begin() + offset;
+    for (; i!=temp->nodes.end(); i++, j++)
+        (*i) = (*j);
 
     return temp;
 }
@@ -343,7 +461,7 @@ const RbObject* DAGNodeContainer::getValElement(const IntVector& index) const {
         valueIndex.push_back(length[i]);        
 
     // Get offset; this throws an error if something wrong with index
-    int offset = getOffset(containerIndex);
+    size_t offset = getOffset(containerIndex);
 
     // Get element
     DAGNode* element = nodes[offset];
@@ -370,11 +488,11 @@ const RbObject* DAGNodeContainer::getValue(void) {
 }
 
 
-/** Get value (const) */
+/** Get const value if possible */
 const RbObject* DAGNodeContainer::getValue(void) const {
 
     if (touched && !changed)
-        throw RbException("Value is out of date");
+        throw RbException("Constant value not available");
 
     return value;
 }
@@ -388,7 +506,22 @@ const DAGNode* DAGNodeContainer::getVarElement(const IntVector& index) const {
         throw (RbException("Index error: Not index to variable"));
 
     // Get offset; this throws an error if something wrong with index
-    int offset = getOffset(index);
+    size_t offset = getOffset(index);
+
+    // Return element
+    return nodes[offset];
+}
+
+
+/** Get non-const variable element for friend class Frame */
+DAGNode* DAGNodeContainer::getVarElement(const IntVector& index) {
+
+    // Check that the index is to a variable element
+    if (index.size() != length.size())
+        throw (RbException("Index error: Not index to variable"));
+
+    // Get offset; this throws an error if something wrong with index
+    size_t offset = getOffset(index);
 
     // Return element
     return nodes[offset];
@@ -400,7 +533,7 @@ void DAGNodeContainer::keepAffected(void) {
 
     if (touched) {
         if (!changed)
-            throw RbException("Keep called without previous update");
+            update();
         for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++)
             (*i)->keepAffected();
     }
@@ -411,18 +544,31 @@ void DAGNodeContainer::keepAffected(void) {
 /** Print struct for user */
 void DAGNodeContainer::printStruct(std::ostream& o) const {
 
+    if (touched && !changed)
+        throw RbException ("Cannot print value while in touched state");
+
     o << "Wrapper:" << std::endl;
     o << "&.class  = " << getClass() << std::endl;
     o << "&.dim    = " << getDim() << std::endl;
     o << "&.length = " << getLength() << std::endl;
-    o << "&.value  = " << getValue() << std::endl;
+    o << "&.value  = " << value << std::endl;
+    o << "&.parents = " << std::endl;
+    printParents(o);
+    o << std::endl;
+    o << "&.children = " << std::endl;
+    printChildren(o);
+    o << std::endl;
+    o << std::endl;
 }
 
 
 /** Print value for user */
 void DAGNodeContainer::printValue(std::ostream& o) const {
 
-    getValue()->printValue(o);
+    if (touched && !changed)
+        throw RbException ("Cannot print value while in touched state");
+
+    value->printValue(o);
 }
 
 
@@ -437,16 +583,10 @@ void DAGNodeContainer::resize(const IntVector& len) {
     if (len.size() != length.size())
         throw (RbException("Cannot resize container: dimensions do not match"));
 
-    // Check new length specification is OK
-    for (size_t i=0; i<len.size(); i++) {
-        if (len[i] < length[i])
-            throw (RbException("Cannot shrink container"));
-    }
-
     // Calculate handy numbers
-    IntVector numValsSource = IntVector(len.size()), numValsTarget = IntVector(len.size());
+    IntVector numValsSource = IntVector(len.size(), 0), numValsTarget = IntVector(len.size(), 0);
     int numSourceVals = 1, numTargetVals = 1;
-    for (int i=len.size()-1; i>=0; i--) {
+    for (int i=int(len.size())-1; i>=0; i--) {
         numSourceVals *= length[i];
         numTargetVals *= len[i];
         numValsSource[i] = numSourceVals;
@@ -454,24 +594,43 @@ void DAGNodeContainer::resize(const IntVector& len) {
     }
 
     // Create new empty nodes vector
+    StringVector* tempNames;
     std::vector<DAGNode*> tempNodes = std::vector<DAGNode*>(numValsTarget[0]);
+    if (names != NULL)
+        tempNames = new StringVector(numValsTarget[0]);
 
     // Reorganize content
-    int sourceIndex = 0, targetIndex = 0;
-    do {
-        for (int i=0; i<length[length.size()-1]; i++)
-            tempNodes[targetIndex++] = nodes[sourceIndex++];
-
-        for (int i=length.size()-1; i>=0; i--) {
-            if (sourceIndex % numValsSource[i] == 0) {
-                targetIndex += numValsTarget[i] - (targetIndex % numValsTarget[i]);
+    if (nodes.size() > 0) {
+        int sourceIndex = 0, targetIndex = 0;
+        do {
+            for (int i=0; i<length[length.size()-1]; i++) {
+                tempNodes[targetIndex] = nodes[sourceIndex];
+                if (names != NULL)
+                    tempNames[targetIndex] = names[sourceIndex];
+                targetIndex++;
+                sourceIndex++;
             }
-        }
-    } while (sourceIndex < (int)(nodes.size()));
+
+            for (int i=int(length.size())-1; i>=0; i--) {
+                if (sourceIndex % numValsSource[i] == 0) {
+                    targetIndex += numValsTarget[i] - (targetIndex % numValsTarget[i]);
+                }
+            }
+        } while (sourceIndex < (int)(nodes.size()) && targetIndex < numValsTarget[0]);
+    }
 
     // Copy the new container and length specification
+    nodes.clear();
     nodes  = tempNodes;
     length = len;
+    if (names != NULL) {
+        delete names;
+        names = tempNames;
+    }
+
+    // Resize value container
+    value->resize(length);
+    storedValue->resize(length);
 }
 
 
@@ -479,14 +638,14 @@ void DAGNodeContainer::resize(const IntVector& len) {
 void DAGNodeContainer::restoreAffected(void) {
 
     if (touched) {
-        if (!changed)
-            throw RbException("Restore called without previous update");
+        if (changed) {
+            Container* temp = value;
+            value = storedValue;
+            storedValue = temp;
+        }
         for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
             (*i)->restoreAffected();
         }
-        Container* temp = value;
-        value = storedValue;
-        storedValue = temp;
     }
     touched = changed = false;
 }
@@ -500,8 +659,8 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
         IntVector tempLen  = length;
         bool      growSize = false;
         for (size_t i=0; i<index.size(); i++) {
-            if (index[i] > tempLen[i]) {
-                tempLen[i] = index[i];
+            if (index[i] >= tempLen[i]) {
+                tempLen[i] = index[i] + 1;
                 growSize = true;
             }
             else if (index[i] < 0)
@@ -512,7 +671,10 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
     }
 
     // Get offset; also checks for errors in index
-    int offset = getOffset(index);
+    size_t offset = getOffset(index);
+
+    // Find target node
+    std::vector<DAGNode*>::iterator targetIt = nodes.begin() + offset;
 
     // Check if parser wants to set multiple elements
     if (index.size() < length.size()) {
@@ -539,30 +701,30 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
             throw RbException("Unequal source and target sizes");
 
         // Cycle through assignments
-        for (ContainerIterator i=source->begin(); i<source->end(); ++i) {
+        for (ContainerIterator i=source->begin(); i!=source->end(); ++i) {
 
             // Do the assignment
             const RbObject* elem = source->getElement(i);
             if (elem->isType(getValueType())) {
-                if (nodes[offset] != NULL && nodes[offset]->isType(StochasticNode_name))
-                    ((StochasticNode*)(nodes[offset]))->clamp(elem->clone());
+                if ((*targetIt) != NULL && (*targetIt)->isType(StochasticNode_name))
+                    ((StochasticNode*)(*targetIt))->clamp(elem->clone());
                 else {
-                    if (nodes[offset] != NULL) {
-                        nodes[offset]->removeChildNode(this);
-                        if (nodes[offset]->numRefs() == 0)
-                            delete nodes[offset];
-                        parents.erase(nodes[offset]);
+                    if ((*targetIt) != NULL) {
+                        (*targetIt)->removeChildNode(this);
+                        if ((*targetIt)->numRefs() == 0)
+                            delete (*targetIt);
+                        parents.erase(*targetIt);
                     }
-                    nodes[offset] = new ConstantNode(elem->clone());
-                    nodes[offset]->addChildNode(this);
-                    parents.insert(nodes[offset]);
+                    (*targetIt) = new ConstantNode(elem->clone());
+                    (*targetIt)->addChildNode(this);
+                    parents.insert(*targetIt);
                 }
             }
             else
                 throw (RbException("Incompatible types"));
 
-            // Increase offset for target nodes
-            offset++;
+            // Increase target iterator
+            targetIt++;
         }
         delete val;     // We are responsible for deleting the useless container
         return;
@@ -570,26 +732,26 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
 
     // Parser wants to set a single element
     if (val->isType(getValueType())) {
-        if (nodes[offset] != NULL && nodes[offset]->isType(StochasticNode_name))
-            ((StochasticNode*)(nodes[offset]))->clamp(val);
+        if ((*targetIt) != NULL && (*targetIt)->isType(StochasticNode_name))
+            ((StochasticNode*)(*targetIt))->clamp(val);
         else {
-            if (nodes[offset] != NULL) {
-                nodes[offset]->removeChildNode(this);
-                if (nodes[offset]->numRefs() == 0)
-                    delete nodes[offset];
-                parents.erase(nodes[offset]);
+            if ((*targetIt) != NULL) {
+                (*targetIt)->removeChildNode(this);
+                if ((*targetIt)->numRefs() == 0)
+                    delete (*targetIt);
+                parents.erase(*targetIt);
             }
-            nodes[offset] = new ConstantNode(val);
-            nodes[offset]->addChildNode(this);
-            parents.insert(nodes[offset]);
+            (*targetIt) = new ConstantNode(val);
+            (*targetIt)->addChildNode(this);
+            parents.insert(*targetIt);
         }
     }
     else
         throw (RbException("Incompatible types"));
 
     touched = true;
-    std::set<StochasticNode*> temp;
-    getAffected(temp);
+    changed = false;
+    touchAffected();
 }
 
 
@@ -601,8 +763,8 @@ void DAGNodeContainer::setElement(const IntVector& index, DAGNode* var) {
         IntVector tempLen  = length;
         bool      growSize = false;
         for (size_t i=0; i<index.size(); i++) {
-            if (index[i] > tempLen[i]) {
-                tempLen[i] = index[i];
+            if (index[i] >= tempLen[i]) {
+                tempLen[i] = index[i] + 1;
                 growSize = true;
             }
             else if (index[i] < 0)
@@ -613,7 +775,10 @@ void DAGNodeContainer::setElement(const IntVector& index, DAGNode* var) {
     }
 
     // Get offset; also checks for errors in index
-    int offset = getOffset(index);
+    size_t offset = getOffset(index);
+
+    // Get target iterator
+    std::vector<DAGNode*>::iterator targetIt = nodes.begin() + offset;
 
     // Check if parser wants to set multiple elements
     if (index.size() < length.size()) {
@@ -644,23 +809,23 @@ void DAGNodeContainer::setElement(const IntVector& index, DAGNode* var) {
         for (ContainerIterator i=source->begin(); i!=source->end(); ++i) {
 
             // Do the assignment
-            const DAGNode* elem = source->getVarElement(i);
+            const DAGNode* elem = (*source)[i];
             if (Workspace::userWorkspace().isXOfTypeY(elem->getType(), valueType)) {
-                if (nodes[offset] != NULL) {
-                    nodes[offset]->removeChildNode(this);
-                    if (nodes[offset]->numRefs() == 0)
-                        delete nodes[offset];
-                    parents.erase(nodes[offset]);
+                if ((*targetIt) != NULL) {
+                    (*targetIt)->removeChildNode(this);
+                    if ((*targetIt)->numRefs() == 0)
+                        delete (*targetIt);
+                    parents.erase(*targetIt);
                 }
-                nodes[offset] = elem->clone();
-                nodes[offset]->addChildNode(this);
-                parents.insert(nodes[offset]);
+                (*targetIt) = elem->clone();
+                (*targetIt)->addChildNode(this);
+                parents.insert(*targetIt);
             }
             else
                 throw (RbException("Incompatible types"));
 
-            // Increase offset for target nodes
-            offset++;
+            // Increase target iterator
+            targetIt++;
         }
         if (var->numRefs() == 0)
             delete var;     // We are responsible for deleting the useless container
@@ -668,23 +833,43 @@ void DAGNodeContainer::setElement(const IntVector& index, DAGNode* var) {
     }
 
     // Parser wants to set a single element
-    if (var == NULL || Workspace::userWorkspace().isXOfTypeY(var->getType(), valueType)) {
-        if (nodes[offset] != NULL) {
-            nodes[offset]->removeChildNode(this);
-            if (nodes[offset]->numRefs() == 0)
-                delete nodes[offset];
-            parents.erase(nodes[offset]);
+    if (var == NULL || Workspace::userWorkspace().isXOfTypeY(var->getValueType(), valueType)) {
+        if ((*targetIt) != NULL) {
+            (*targetIt)->removeChildNode(this);
+            (*targetIt)->setName("");
+            if ((*targetIt)->numRefs() == 0)
+                delete (*targetIt);
+            parents.erase(*targetIt);
         }
-        nodes[offset] = var;
-        nodes[offset]->addChildNode(this);
-        parents.insert(nodes[offset]);
+        if (var != NULL) {
+            if (var->getName() != "")
+                throw RbException("Cannot use reference in DAG node container");
+            std::ostringstream varName;
+            varName << getName();
+            for (size_t i=0; i<index.size(); i++)
+                varName << "[" << index[i]+1 << "]";
+            var->setName(varName.str());
+            var->addChildNode(this);
+            parents.insert(var);
+        }
+        (*targetIt) = var;
     }
     else
         throw (RbException("Incompatible types"));
 
     touched = true;
-    std::set<StochasticNode*> temp;
-    getAffected(temp);
+    changed = false;
+    touchAffected();
+}
+
+
+/** Set element name */
+void DAGNodeContainer::setElementName(const IntVector& index, const std::string& name) {
+
+    if (names == NULL)
+        names = new StringVector(nodes.size());
+
+    (*names)[getOffset(index)] = RbString(name);
 }
 
 
@@ -708,10 +893,50 @@ void DAGNodeContainer::setLength(const IntVector& len) {
 }
 
 
+/** Set name of container and all elements */
+void DAGNodeContainer::setName(std::string& name) {
+
+    DAGNode::setName(name);
+
+    std::vector<DAGNode*>::iterator i=nodes.begin();
+    for (ContainerIterator index=begin(); index!=end(); i++, index++) {
+        if ((*i) != NULL) {
+            std::ostringstream varName;
+            varName << name;
+            for (size_t k=0; k<index.size(); k++)
+                varName << "[" << index[k] + 1 << "]";
+            (*i)->setName(varName.str());
+        }
+    }
+}
+
+
 /** Set value of container */
 void DAGNodeContainer::setValue(RbObject* val) {
 
     throw RbException("Invalid assignment of value to node container");
+}
+
+
+/** Swap parent node in nodes and parents */
+void DAGNodeContainer::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
+
+    if (parents.find(oldNode) == parents.end())
+        throw RbException("Node is not a parent");
+    oldNode->removeChildNode(this);
+    newNode->addChildNode(this);
+    parents.erase(oldNode);
+    parents.insert(newNode);
+
+    std::vector<DAGNode*>::iterator it = std::find(nodes.begin(), nodes.end(), oldNode);
+    if (it == nodes.end())
+        throw RbException("Node is not in container");
+    it = nodes.erase(it);
+    nodes.insert(it, newNode);
+
+    touched = true;
+    changed = false;
+    touchAffected();
 }
 
 
@@ -731,6 +956,16 @@ std::string DAGNodeContainer::toString(void) const {
 }
 
 
+/** Tell affected nodes that upstream value has been reset */
+void DAGNodeContainer::touchAffected(void) {
+
+    touched = true;
+    changed = false;
+    for (std::set<VariableNode*>::iterator i=children.begin(); i!= children.end(); i++)
+        (*i)->touchAffected();
+}
+
+
 /** Update value and stored value */
 void DAGNodeContainer::update(void) {
 
@@ -738,10 +973,13 @@ void DAGNodeContainer::update(void) {
         Container* temp = storedValue;
         storedValue = value;
         value = temp;
-        std::vector<DAGNode*>::iterator i;
-        ContainerIterator j;
-        for (i=nodes.begin(), j=value->begin(); i!=nodes.end(); i++, j++) {
-            (*value)[j] = (*i)->getValue()->clone();
+        std::vector<DAGNode*>::iterator i = nodes.begin();
+        ContainerIterator j = value->begin();
+        for (; i!=nodes.end(); i++, j++) {
+            if ((*i) == NULL)
+                (*value)[j] = NULL;
+            else
+                (*value)[j] = (*i)->getValue()->clone();
         }
         changed = true;
     }

@@ -17,28 +17,59 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
+#include "Frame.h"
 #include "MemberFunction.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "StringVector.h"
+#include "VariableNode.h"
 
 
-/** Constructor: we set member variables here from member rules, derived classes deal with functions */
-MemberObject::MemberObject(const ArgumentRule** memberRules) : RbComplex() {
+/** Constructor: we set member variables here from member rules */
+MemberObject::MemberObject(const MemberRules& memberRules, const MethodTable& methodInits)
+    : RbComplex(), members(), methods(methodInits) {
 
-    /* Fill member table based on member rules */
-    for (int i=0; memberRules[i]!=NULL; i++) {
-        std::string name = memberRules[i]->getLabel();
-        ConstantNode* theVar;
-        if (memberRules[i]->getDefaultValue().isType(RbUndefined_name))
-            theVar = NULL;
-        else {
-            theVar = new ConstantNode(memberRules[i]->getDefaultValue().clone());
-            theVar->setName(memberRules[i]->getLabel());
+    /* Fill member table (frame) based on member rules */
+    for (MemberRules::const_iterator i=memberRules.begin(); i!=memberRules.end(); i++) {
+
+        std::string name = (*i)->getLabel();
+        if ((*i)->isWrapperRule()) {
+            if ((*i)->hasDefault() == false)
+                members.addReference(name, (*i)->getValueType(), (*i)->getDim());
+            else
+                members.addReference(name, (*i)->getDefaultVariablePtr());
         }
-        members.insert(std::pair<std::string, DAGNode*>(name, theVar));
+        else {
+            if ((*i)->hasDefault() == false)
+                members.addVariable(name, (*i)->getValueType(), (*i)->getDim());
+            else
+                members.addVariable(name, (*i)->getDefaultVariable());
+        }
     }
+}
+
+
+/** Pointer-based equals comparison */
+bool MemberObject::equals(const RbObject* obj) const {
+
+    if (this != obj) {
+
+        if (getType() != obj->getType())
+            return false;
+
+        MemberObject* p = (MemberObject*)(obj);
+
+        // It is impossible to look into the C++ code of methods, so return
+        // false if there are any methods
+        if (methods.size() != 0 || p->methods.size() != 0)
+            return false;
+
+        if (members != p->members)
+            return false;
+    }
+
+    return true;
 }
 
 
@@ -51,16 +82,10 @@ const StringVector& MemberObject::getClass(void) const {
 
 
 /** Execute member function with preprocessed arguments */
-const RbObject* MemberObject::executeMethod(const std::string& name) {
-
-    /* Find the method */
-    std::map<std::string, MemberFunction*>::iterator it = methods.find(name);
-    if (it == methods.end())
-        throw RbException("No method named '" + name + "'");
-    MemberFunction* theMethod = (*it).second;
+const RbObject* MemberObject::executeMethod(const std::string& name, int funcId) {
 
     /* Get preprocessed arguments */
-    std::vector<DAGNode*> arguments = theMethod->getProcessedArguments();
+    std::vector<DAGNode*> arguments = methods.getProcessedArguments(funcId);
 
     /* Execute the operation */
     return executeOperation(name, arguments);
@@ -70,16 +95,11 @@ const RbObject* MemberObject::executeMethod(const std::string& name) {
 /** Execute member function */
 const RbObject* MemberObject::executeMethod(const std::string& name, std::vector<Argument>& args) {
 
-    /* Find the method */
-    std::map<std::string, MemberFunction*>::iterator it = methods.find(name);
-    if (it == methods.end())
-        throw RbException("No method named '" + name + "'");
-    MemberFunction* theMethod = (*it).second;
-
     /* Process the arguments */
-    if (!theMethod->processArguments(args))
-        throw RbException("Arguments do not match method '" + name + "'");
-    std::vector<DAGNode*> arguments = theMethod->getProcessedArguments();
+    int funcId = methods.processArguments(name, args);
+
+    /* Get the processed arguments */
+    std::vector<DAGNode*> arguments = methods.getProcessedArguments(funcId);
 
     /* Execute the operation */
     return executeOperation(name, arguments);
@@ -87,75 +107,85 @@ const RbObject* MemberObject::executeMethod(const std::string& name, std::vector
 
 
 /** Get value of a member variable */
+const RbObject* MemberObject::getValue(const std::string& name) {
+
+    return members.getValue(name);
+}
+
+
+/** Get value of a member variable (const) */
 const RbObject* MemberObject::getValue(const std::string& name) const {
 
-    return getVariable(name)->getValue();
+    return members.getVariable(name)->getValue();
 }
 
 
 /** Get a member variable */
 const DAGNode* MemberObject::getVariable(const std::string& name) const {
 
-    std::map<std::string, DAGNode*>::const_iterator it = members.find(name);
-    if (it == members.end())
-        throw RbException("No member variable called '" + name + "'");
+    return members.getVariable(name);
+}
 
-    return (*it).second;
+
+/** Get a member variable (non-const, for derived classes) */
+DAGNode* MemberObject::getVariable(const std::string& name) {
+
+    return const_cast<DAGNode*>(members.getVariable(name));
+}
+
+
+/** Print value for user */
+void MemberObject::printValue(std::ostream& o) const {
+
+    const VariableTable& varTable = members.getVariableTable();
+    for (VariableTable::const_iterator i=varTable.begin(); i!=varTable.end(); i++) {
+        o << "." << (*i).first << std::endl;
+        if ((*i).second.variable == NULL)
+            o << "NULL";
+        else
+            (*i).second.variable->printValue(o);
+        o << std::endl << std::endl;
+    }
 }
 
 
 /** Set arguments of a member function */
-void MemberObject::setArguments(const std::string& name, std::vector<Argument>& args) {
+int MemberObject::setArguments(const std::string& name, std::vector<Argument>& args) {
 
-    /* Find the method */
-    std::map<std::string, MemberFunction*>::iterator it = methods.find(name);
-    if (it == methods.end())
-        throw RbException("No method named '" + name + "'");
-    MemberFunction* theMethod = (*it).second;
+    /* Process the arguments and return function id */
+    int funcId = methods.processArguments(name, args);
+    return funcId;
+}
 
-    /* Process the arguments */
-    if (!theMethod->processArguments(args))
-        throw RbException("Arguments do not match method '" + name + "'");
+
+/** Set base name of member variables */
+void MemberObject::setName(const std::string& name) {
+
+    members.setFrameName(name);
 }
 
 
 /** Set value of a member variable */
 void MemberObject::setValue(const std::string& name, RbObject* val) {
 
-    /* Wrap in a constant node */
-    ConstantNode* theVar = new ConstantNode(val);
-
-    /* Set variable with the constant node */
-    setVariable(name, theVar);
+    members.setValue(name, val);
 }
 
 
 /** Set a member variable */
 void MemberObject::setVariable(const std::string& name, DAGNode* var) {
 
-    /* Find the rule */
-    const ArgumentRule** theRules = getMemberRules();
-    int i;
-    for (i=0; theRules[i]!=NULL; i++) {
-        if (theRules[i]->getLabel() == name)
-            break;
-    }
-    if (theRules[i] == NULL)
-        throw RbException("No member variable '" + name + "'");
-
-    /* Check if var is valid */
-    if (!theRules[i]->isArgValid(var))
-        throw RbException("Invalid assignment: type mismatch");
-
-    /* Find variable and remove */
-    MemberTable::iterator it=members.find(name);
-    (*it).second->setName("");
-    if ((*it).second != NULL && (*it).second->numRefs() == 0)
-        delete (*it).second;
-
-    /* Set variable */
-    var->setName(name);
-    (*it).second = var;
+    members.setVariable(name, var);
 }
 
+
+/** Complete info about object */
+std::string MemberObject::toString(void) const {
+
+    std::ostringstream o;
+    o << getType() << ":" << std::endl;
+    printValue(o);
+
+    return o.str();
+}
 

@@ -15,10 +15,50 @@
  * $Id$
  */
 
+#include "DAGNode.h"
 #include "Ellipsis.h"
+#include "RbNames.h"
+#include "RbObject.h"
+#include "StringVector.h"
 
 #include <sstream>
 
+
+/** Constructor allowing all types and dims */
+Ellipsis::Ellipsis(void)
+    : ArgumentRule("", "") {
+}
+
+
+/** Constructor requiring a certain type and dim */
+Ellipsis::Ellipsis(const std::string& type, int dim)
+    : ArgumentRule("", type, dim) {
+}
+
+
+/** Get class vector describing type of object */
+const StringVector& Ellipsis::getClass(void) const {
+
+    static StringVector rbClass = StringVector(Ellipsis_name) + ArgumentRule::getClass();
+    return rbClass;
+}
+
+
+/** Check validity of argument: Is it called on single arg or all args? */
+bool Ellipsis::isArgValid(DAGNode* var) const {
+
+    if (!var->getValue()->isType(valueType))
+        return false;
+
+    return true;
+}
+
+
+/** Print value for user (in descriptions of functions, for instance */
+void Ellipsis::printValue(std::ostream &o) const {
+
+    o << ". . .";
+}
 
 /** Provide complete information about object */
 std::string Ellipsis::toString(void) const {
@@ -29,12 +69,4 @@ std::string Ellipsis::toString(void) const {
 
     return o.str();
 }
-
-
-/** Print value for user (in descriptions of functions, for instance */
-void Ellipsis::printValue(std::ostream &o) const {
-
-    o << ". . .";
-}
-
 

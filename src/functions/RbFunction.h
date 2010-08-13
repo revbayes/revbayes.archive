@@ -33,6 +33,8 @@ class DAGNode;
 class IntVector;
 class StringVector;
 
+typedef std::vector<ArgumentRule*> ArgumentRules;
+
 /**
  * This is the interface and abstract base class for functions in
  * RevBayes. Function instances are put in the function table in the
@@ -53,31 +55,41 @@ class StringVector;
 class RbFunction :  public RbObject {
 
     public:
-		virtual                                 ~RbFunction(void) { }                                                               //!< Virtual destructor because of virtual functions
+		virtual                                 ~RbFunction(void);                                                                  //!< Destructor
 
         // Basic utility functions
         virtual std::string                     briefInfo(void) const;                                                              //!< Brief info about object
-		virtual bool                            equals(const RbObject* obj) const;                                                  //!< Check that the functions are the same
-		virtual const StringVector&             getClass(void) const;                                                               //!< Get class vector
-		void                                    printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
+        virtual RbObject*                       clone(void) const = 0;                                                              //!< Clone object
+    	virtual bool                            equals(const RbObject* obj) const;                                                  //!< Check that the functions are the same
+    	virtual const StringVector&             getClass(void) const;                                                               //!< Get class vector
+    	void                                    printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
         virtual std::string                     toString(void) const;                                                               //!< Complete info about object
 
-        // Regular functions
-        virtual const ArgumentRule**            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
-        virtual const std::string               getReturnType(void) const = 0;                                                     //!< Get return type
+        // RbFunction functions
+        virtual const ArgumentRules&            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
+        virtual int                             getReturnDim(void) const { return 0; }                                              //!< Get dim of return value
+        virtual const std::string&              getReturnType(void) const = 0;                                                      //!< Get type of return value
         const RbObject*                         execute(void);                                                                      //!< Execute using processed args
         const RbObject*                         execute(const std::vector<Argument>& args);                                         //!< Execute function
-        std::vector<DAGNode*> const &           getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
-        bool                                    processArguments(const std::vector<Argument>& args, IntVector* matchScore=NULL);    //!< Process args, return a match score if pointer is not null
+        std::vector<DAGNode*> const&            getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
+        virtual bool                            processArguments(const std::vector<Argument>& args, IntVector* matchScore=NULL);    //!< Process args, return a match score if pointer is not null
 
+        // Test of new design
+        virtual RbObject*                       getValue(void);                                                                     //!< Get result (new object)
 
     protected:
                                                 RbFunction(void);                                                                   //!< Basic constructor
-                                                RbFunction(const RbFunction& fn);                                                   //!< Copy constructor
+                                                RbFunction(const RbFunction& x);                                                    //!< Copy constructor
 
-		virtual const RbObject*                 executeOperation(const std::vector<DAGNode*>& args) const = 0;                      //!< Execute operation
+        // Assignment operator
+        RbFunction&                             operator=(const RbFunction& x);                                                     //!< Assignment operator
+
+    	virtual const RbObject*                 executeOperation(const std::vector<DAGNode*>& args) = 0;                            //!< Execute operation
+
+        void                                    deleteProcessedArguments(void);                                                     //!< Delete processed arguments
 
         std::vector<DAGNode*>                   processedArguments;                                                                 //!< Processed arguments
+        std::vector<bool>                       referenceArgument;                                                                  //!< Is processed argument reference?
         bool                                    argumentsProcessed;                                                                 //!< Are arguments processed?
 };
 

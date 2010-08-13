@@ -27,12 +27,12 @@
 #include <sstream>
 
 /** Basic constructor */
-UserFunction::UserFunction( const ArgumentRule**        argRules,
-                            const RbString*             retType,
+UserFunction::UserFunction( const ArgumentRules&        argRules,
+                            const std::string           retType,
                             std::list<SyntaxElement*>*  stmts,
-                            Frame*                      defineEnv) : RbFunction() {
-    
-    argumentRules       = argRules;
+                            Frame*                      defineEnv)
+    : RbFunction(), argumentRules(argRules) {
+
     returnType          = retType;
     code                = stmts;
     defineEnvironment   = defineEnv;
@@ -40,18 +40,11 @@ UserFunction::UserFunction( const ArgumentRule**        argRules,
 
 
 /** Copy constructor */
-UserFunction::UserFunction(const UserFunction &x) : RbFunction(x) {
+UserFunction::UserFunction(const UserFunction &x)
+    : RbFunction(x), argumentRules(x.argumentRules) {
 
-    returnType          = new RbString(*(x.returnType));
+    returnType          = x.returnType;
     defineEnvironment   = x.defineEnvironment->clone();
-
-    int numRules=0;
-    while (x.argumentRules[numRules++] != NULL)
-        ;
-    argumentRules = (const ArgumentRule**) calloc (numRules, sizeof(ArgumentRule*));
-    for (int i=0; x.argumentRules[i] != NULL; i++)
-        argumentRules[i] = x.argumentRules[i]->clone();
-
     for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
         code->push_back((*i)->clone());
 }
@@ -59,12 +52,6 @@ UserFunction::UserFunction(const UserFunction &x) : RbFunction(x) {
 
 /** Destructor */
 UserFunction::~UserFunction() {
-
-    for (int i=0; argumentRules[i] != NULL; i++)
-        delete argumentRules[i];
-    free (argumentRules);
-
-    delete returnType;
 
     for (std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++)
         delete (*i);
@@ -96,35 +83,12 @@ UserFunction* UserFunction::clone(void) const {
 /** Equals comparison */
 bool UserFunction::equals(const RbObject* x) const {
 
-	const UserFunction* p = dynamic_cast<const UserFunction*>(x);
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    result = result && defineEnvironment == p->defineEnvironment;   // Environments MUST be same pointer
-    result = result && returnType == p->returnType;                 // Return type must be same
-
-    int index;
-    for (index=0; argumentRules[index]!= NULL && p->argumentRules[index]!=NULL; index++)
-        result = result && argumentRules[index] == p->argumentRules[index];         // TODO: Equals comparison is needed!
-
-    if (argumentRules[index] != NULL || p->argumentRules[index] != NULL)
-        return false;
-    
-    if (code->size() != p->code->size())
-        return false;
-
-    std::list<SyntaxElement*>::const_iterator i, j;
-    for (i=code->begin(), j=p->code->begin(); i!=code->end(); ++i, ++j)
-        result = result && ((*i)->equals(*j));
-
-    return result;
+	return false;   // Close approximation to truth
 }
 
 
-
 /** Execute function */
-const RbObject* UserFunction::executeOperation(const std::vector<DAGNode*>& args) const {
+const RbObject* UserFunction::executeOperation(const std::vector<DAGNode*>& args) {
 
     std::cerr << "I am a user-defined function." << std::endl;
     std::cerr << "I know who I am but I do not know how to execute myself." << std::endl;
@@ -136,7 +100,7 @@ const RbObject* UserFunction::executeOperation(const std::vector<DAGNode*>& args
 
 
 /** Get argument rules */
-const ArgumentRule** UserFunction::getArgumentRules() const {
+const ArgumentRules& UserFunction::getArgumentRules() const {
 
     return argumentRules;
 }
@@ -151,25 +115,19 @@ const StringVector& UserFunction::getClass() const {
 
 
 /** Get return type */
-const std::string UserFunction::getReturnType() const {
+const std::string& UserFunction::getReturnType() const {
 
-    return *returnType;
+    return returnType;
 }
 
 
 /** Complete info about object */
 std::string UserFunction::toString() const {
 
-    int numRules;
-    for (numRules = 0; argumentRules[numRules] != NULL; numRules++)
-        ;
-
     std::ostringstream o;
     o << "User-defined function:" << std::endl;
-    o << "formals     = " << numRules << " formal arguments" << std::endl;
-    o << "return type = ";
-    returnType->printValue(o);
-    o << std::endl;
+    o << "formals     = " << argumentRules.size() << " formal arguments" << std::endl;
+    o << "return type = " << returnType << std::endl;
     o << "code        = " << code->size() << " lines of code" << std::endl;
     o << "definition environment:" << std::endl;
     defineEnvironment->printValue(o);

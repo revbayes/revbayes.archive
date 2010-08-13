@@ -28,45 +28,8 @@
 Argument::Argument(const std::string& argLabel, DAGNode* arg)
     : RbInternal() {
 
-    label   = argLabel;
-    dagNode = arg;
-}
-
-
-/** Copy constructor: Make independent copy of DAG node */
-Argument::Argument(const Argument& x)
-    : RbInternal() {
-
-    label   = x.label;
-    if (x.dagNode == NULL)
-        dagNode = NULL;
-    else
-        dagNode = x.dagNode->clone();
-
-}
-
-
-/** Destructor: Delete wrapper */
-Argument::~Argument() { 
-
-	delete dagNode;
-
-} 
-
-
-/** Assignment operator: Make independent copy of DAG node */
-Argument& Argument::operator=(const Argument& x) {
-
-    if (this != &x) {
-        delete dagNode;
-        if (x.dagNode == NULL)
-            dagNode = NULL;
-        else
-            dagNode = x.dagNode->clone();
-        label = x.label;
-    }
-
-    return (*this);
+    label      = argLabel;
+    dagNodePtr = arg;
 }
 
 
@@ -83,9 +46,8 @@ std::string Argument::toString(void) const {
 
     std::ostringstream o;
     o << "Argument: label = \"" << label << "\", value = ";
-    dagNode->printValue(o);
+    dagNodePtr->printValue(o);
 
     return o.str();
 }
-
 

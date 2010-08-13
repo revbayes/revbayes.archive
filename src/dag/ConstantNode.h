@@ -34,7 +34,7 @@ class ConstantNode : public DAGNode {
                                 ~ConstantNode();                            //!< Destructor
 
         // Assignment operator
-        ConstantNode&           operator=(const ConstantNode& x);           //!< Assignment
+        ConstantNode&           operator=(const ConstantNode& x);           //!< Assignment operator
 
         // Basic utility functions
         ConstantNode*           clone(void) const;                          //!< Clone this object
@@ -43,18 +43,21 @@ class ConstantNode : public DAGNode {
         void                    printValue(std::ostream& o) const;          //!< Print struct for user
         std::string             toString(void) const;                       //!< Complete info on object
 
-        // Get and set value and value elements
+        // ConstantNode functions
         const RbObject*         getStoredValue(void) { return value; }              //!< Get stored value
         const RbObject*         getValElement(const IntVector& index) const;        //!< Get element of value    
         const RbObject*         getValue(void) { return value; }                    //!< Get value
         const RbObject*         getValue(void) const { return value; }              //!< Get value (const)
-        bool                    isTouched (void) const { return false; }            //!< Touched by a move?
         void                    setElement(const IntVector& index, RbObject* val);  //!< Set element of value
         void                    setValue(RbObject* val);                            //!< Set value
 
+        // DAG functions
+        ConstantNode*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const; //!< Clone entire graph
+        bool                    isTouched (void) const { return false; }            //!< Touched by a move?
+        void                    touchAffected(void);                                //!< Tell affected nodes value is reset
+
     protected:
-        void                    touchAffected(void) const;                  //!< Touch affected if value is reset
-        RbObject*               value;                                      //!< The constant value
+        RbObject*               value;                                              //!< The constant value
 };
 
 #endif

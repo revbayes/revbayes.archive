@@ -19,12 +19,14 @@
 
 #include "ConstantNode.h"
 #include "DAGNode.h"
+#include "DAGNodeContainer.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
 #include "Parser.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
+#include "StringVector.h"
 #include "SyntaxAssignExpr.h"
 #include "Workspace.h"
 
@@ -147,19 +149,20 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                     frame->setValue(varName, exprValue);
             }
             else {
-                printf ("Assigning to existing member variable\n");
-                /* TODO: Do this properly
-                RbObject* theObjRef = variable->getReference(frame);
-                RbComplex* containerRef = dynamic_cast<RbComplex*>(theObjRef);
-                if (containerRef == NULL) {
-                    delete exprValue;
-                    throw RbException("Variable " + variable->getFullName(frame) + " does not have members");
+                PRINTF ("Assigning to existing member variable\n");
+                const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getVariable()->getValuePtr(frame));
+                if (objectPtr == NULL)
+                    throw RbException("Variable " + variable->getVariable()->getFullName(frame) + " does not have members");
+                RbComplex* theObject = const_cast<RbComplex*>(objectPtr);
+                if (index.size() == 0)
+                    theObject->setValue(varName, exprValue);
+                else {
+                    const DAGNodeContainer* containerPtr = dynamic_cast<const DAGNodeContainer*>(theObject->getVariable(varName));
+                    if (containerPtr == NULL)
+                        throw RbException("Variable " + variable->getVariable()->getFullName(frame) + "." + std::string(varName) + " does not have elements");
+                    DAGNodeContainer* container = const_cast<DAGNodeContainer*>(containerPtr);
+                    container->setElement(index, exprValue);
                 }
-                if (index.size() != 0)
-                    containerRef->setElement(varName, index, exprValue);
-                else
-                    containerRef->setValue(varName, exprValue);
-                */
             }
         }
     }
@@ -196,18 +199,21 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                     frame->setVariable(varName, node);
             }
             else {
-                /* TODO: Do this properly
-                RbObject* theObjRef = variable->getReference(frame);
-                RbComplex* containerRef = dynamic_cast<RbComplex*>(theObjRef);
-                if (containerRef == NULL) {
-                    delete node;
-                    throw RbException("Variable " + variable->getFullName(frame) + " does not have members");
+
+                PRINTF ("Assigning equation to existing member variable\n");
+                const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getVariable()->getValuePtr(frame));
+                if (objectPtr == NULL)
+                    throw RbException("Variable " + variable->getVariable()->getFullName(frame) + " does not have members");
+                RbComplex* theObject = const_cast<RbComplex*>(objectPtr);
+                if (index.size() == 0)
+                    theObject->setVariable(varName, node);
+                else {
+                    const DAGNodeContainer* containerPtr = dynamic_cast<const DAGNodeContainer*>(theObject->getVariable(varName));
+                    if (containerPtr == NULL)
+                        throw RbException("Variable " + variable->getVariable()->getFullName(frame) + "." + std::string(varName) + " does not have elements");
+                    DAGNodeContainer* container = const_cast<DAGNodeContainer*>(containerPtr);
+                    container->setElement(index, node);
                 }
-                if (index.size() != 0)
-                    containerRef->setVarElement(varName, index, node);
-                else
-                    containerRef->setVariable(varName, node);
-                */
             }
         }
     }
@@ -247,24 +253,27 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                     frame->setVariable(varName, node);
             }
             else {
-                /* TODO: Do this properly
-                RbObject* theObjRef = variable->getReference(frame);
-                RbComplex* containerRef = dynamic_cast<RbComplex*>(theObjRef);
-                if (containerRef == NULL) {
-                    delete exprValue;
-                    throw RbException("Variable " + variable->getFullName(frame) + " does not have members");
+
+                PRINTF ("Assigning distribution to existing member variable\n");
+                const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getVariable()->getValuePtr(frame));
+                if (objectPtr == NULL)
+                    throw RbException("Variable " + variable->getVariable()->getFullName(frame) + " does not have members");
+                RbComplex* theObject = const_cast<RbComplex*>(objectPtr);
+                if (index.size() == 0)
+                    theObject->setVariable(varName, node);
+                else {
+                    const DAGNodeContainer* containerPtr = dynamic_cast<const DAGNodeContainer*>(theObject->getVariable(varName));
+                    if (containerPtr == NULL)
+                        throw RbException("Variable " + variable->getVariable()->getFullName(frame) + "." + std::string(varName) + " does not have elements");
+                    DAGNodeContainer* container = const_cast<DAGNodeContainer*>(containerPtr);
+                    container->setElement(index, node);
                 }
-                if (index.size() != 0)
-                    containerRef->setVarElement(varName, index, node);
-                else
-                    containerRef->setVariable(varName, node);
-                */
             }
         }
     }
 
     // Return copy of the value of the rhs expression
-    return expression->getValue();
+    return expression->getValue(frame);
 }
 
 

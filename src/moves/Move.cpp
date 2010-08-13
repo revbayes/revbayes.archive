@@ -4,7 +4,7 @@
  * in Move, which is the abstract base class for moves in mcmc
  * inference.
  *
- * @brief Declaration of Move
+ * @brief Partial implementation of Move
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -16,30 +16,34 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Move.h"
-#include "RbComplex.h"
+#include "PosReal.h"
+#include "RbException.h"
 #include "RbNames.h"
 #include "StringVector.h"
+#include "Workspace.h"
+#include "WrapperRule.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
 
 
-/** Constructor */
-Move::Move(VariableNode* node, RandomNumberGenerator* rgen) {
+/** Constructor for parser use */
+Move::Move(const MemberRules& memberRules)
+    : MemberObject(memberRules, MethodTable()) {
 
-    theNode = node;
-    rng = rgen;
+    numAccepted = 0;
+    numTried    = 0;
 }
 
 
-/** Accept the move: update statistics and call derived method */
-void Move::acceptMove(void) {
+/** Execute member method. We throw an error because there are no visible member methods */
+const RbObject* Move::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
 
-    numAccepted++;
-    accept();
+    throw RbException ("Object does not have methods");
 }
 
 
@@ -47,6 +51,24 @@ void Move::acceptMove(void) {
 double Move::getAcceptanceProbability(void) {
 
     return numAccepted/(double)numTried;
+}
+
+
+/** Get member rules: weight and random number generator */
+const MemberRules& Move::getMemberRules(void) const {
+
+    static MemberRules memberRules;
+    static bool        rulesSet = false;
+
+    if (!rulesSet) {
+
+        memberRules.push_back(new ArgumentRule("weight", new PosReal(1.0)));
+        memberRules.push_back(new WrapperRule( "rng",    Workspace::globalWorkspace().getVariable("_rng")));
+
+        rulesSet = true;
+    }
+
+    return memberRules;
 }
 
 
@@ -58,18 +80,47 @@ const StringVector& Move::getClass(void) const {
 }
 
 
-/** Perform the move: update statistics and call derived method */
-double Move::performMove(void) {
+/** Get method inits */
+const MethodTable& Move::getMethodInits(void) const {
 
-    numTried++;
-    return perform();
+    static MethodTable methodInits = MethodTable();
+
+    return methodInits;
 }
 
 
-/** Reject the move: call derived method so we can restore node(s) */
-void Move::rejectMove(void) {
+/** Get update weight */
+double Move::getUpdateWeight(void) const {
 
-    reject();
+    return ((RbDouble*)(getValue("weight")))->getValue();
+}
+
+
+/** Reset counters (numTried, numAccepted) */
+void Move::resetCounters(void) {
+
+    numAccepted = 0;
+    numTried    = 0;
+}
+
+
+/** Set update weight but not negative */
+void Move::setUpdateWeight(double weight) {
+
+    if (weight < 0.0)
+        throw RbException("Negative update weight not allowed");
+
+    setValue("weight", new RbDouble(weight));
+}
+
+
+/** Only allow constant values for member variables */
+void Move::setVariable(const std::string& name, DAGNode* var) {
+
+    if (!var->isType(ConstantNode_name))
+        throw RbException("Only constant values allowed for member variables");
+
+    MemberObject::setVariable(name, var);
 }
 
 

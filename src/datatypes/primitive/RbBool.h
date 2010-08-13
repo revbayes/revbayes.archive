@@ -30,7 +30,7 @@ class StringVector;
 class RbBool : public RbObject {
 
     public:
-	                        RbBool(const bool v);                       //!< Construct from bool
+                            RbBool(const bool v);                       //!< Construct from bool
 
         // Basic utility functions
         RbObject*           clone(void) const;                          //!< Clone object
@@ -45,10 +45,10 @@ class RbBool : public RbObject {
 
         // Getters and setters
         void                setValue(bool x) { value = x; }             //!< Set value
-	    bool                getValue(void) const { return value; }      //!< Get value
+        bool                getValue(void) const { return value; }      //!< Get value
 
     private:
-	    bool                value;                                      //!< Value member
+        bool                value;                                      //!< Value member
 };
 
 #endif

@@ -27,20 +27,22 @@
 #include <string>
 
 class DAGNode;
-
+class StringVector;
 
 class Ellipsis : public ArgumentRule {
 
     public:
-                        Ellipsis() : ArgumentRule("", "") { }               //! No labels or types required
+                            Ellipsis(void);                                     //! No labels or types required
+                            Ellipsis(const std::string& type, int dim=0);       //! Type and dim required
 
         // Basic utility functions
-        Ellipsis*       clone(void) const { return new Ellipsis(*this); }   //!< Clone object
-        void            printValue(std::ostream& o) const;                  //!< Print value for user
-        std::string     toString(void) const;                               //!< Complete info 
+        Ellipsis*           clone(void) const { return new Ellipsis(*this); }   //!< Clone object
+        const StringVector& getClass(void) const;                               //!< Get class vector
+        void                printValue(std::ostream& o) const;                  //!< Print value for user
+        std::string         toString(void) const;                               //!< Complete info 
 
         // Regular functions
-        bool            isArgValid(const DAGNode* var) const { return true; }   //!< Anything goes
+        bool                isArgValid(DAGNode* var) const;                     //!< Check arg validity
 };
 
 #endif

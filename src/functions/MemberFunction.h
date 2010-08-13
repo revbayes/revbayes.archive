@@ -32,22 +32,23 @@ class StringVector;
 class MemberFunction :  public RbFunction {
 
     public:
-                                    MemberFunction(const std::string& retType, const ArgumentRule** argRules);  //!< Constructor
+                                    MemberFunction(const std::string& retType, const ArgumentRules& argRules);  //!< Constructor
 
         // Basic utility functions
         std::string                 briefInfo(void) const;                  //!< Brief info about object
+        MemberFunction*             clone(void) const;                      //!< Clone the object
     	bool                        equals(const RbObject* obj) const;      //!< Equals comparison
     	const StringVector&         getClass(void) const;                   //!< Get class vector
         std::string                 toString(void) const;                   //!< Complete info about object
 
         // Regular functions
-        const ArgumentRule**        getArgumentRules(void) const;           //!< Get argument rules
-        const std::string           getReturnType(void) const;              //!< Get type of return value
+        const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
+        const std::string&          getReturnType(void) const;              //!< Get type of return value
 
     protected:
-        const RbObject*             executeOperation(const std::vector<DAGNode*>& args) const;  //!< Execute operation
+        const RbObject*             executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
         std::string                 returnType;                             //!< Return type
-        const ArgumentRule**        argumentRules;                          //!< Argument rules
+        const ArgumentRules&        argumentRules;                          //!< Argument rules
 };
 
 #endif

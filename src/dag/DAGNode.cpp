@@ -35,41 +35,17 @@ DAGNode::DAGNode(const std::string& valType)
 }
 
 
-/** Destructor needs to be careful with graph and references */
-DAGNode::~DAGNode() {
-
-    if (children.size() != 0)
-        throw RbException("Invalid deletion: node with children");
-
-    /* Remove connections and delete orphan nodes */
-    for(std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-        (*i)->removeChildNode((VariableNode*)(this));
-        if ((*i)->numRefs() == 0)
-            delete (*i);
-    }
-}
-
-
-/** Clone the entire graph */
-DAGNode* DAGNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
-
-    DAGNode* temp = clone();
-
-    temp->children.clear();
-    for(std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
-        if (newNodes.find((DAGNode*)(*i)) == newNodes.end())
-            newNodes[(DAGNode*)(*i)] = (*i)->cloneDAG(newNodes);
-        temp->children.insert((VariableNode*)(newNodes[(DAGNode*)(*i)]));
-    }
-
-    temp->parents.clear();
-    for(std::set<DAGNode*>::const_iterator i=parents.begin(); i!=parents.end(); i++) {
-        if (newNodes.find(*i) == newNodes.end())
-            newNodes[(*i)] = (*i)->cloneDAG(newNodes);
-        temp->parents.insert(newNodes[(*i)]);
-    }
-
-    return temp;
+/**
+ * Copy constructor should not copy children because it creates an
+ * independent node. Name also needs to be reset for the same reason.
+ * The new node is simply not used by any other objects at this point.
+ * The parent nodes are left empty here because they are better dealt
+ * with by the derived VariableNode classes, which have to maintain
+ * dual copies of them (function arguments, distribution parameters,
+ * or container elements).
+ */
+DAGNode::DAGNode(const DAGNode& x)
+    : children(), parents(), name(""), valueType(x.valueType) {
 }
 
 
@@ -143,7 +119,8 @@ void DAGNode::printChildren(std::ostream& o) const {
 
     int count = 1;
     for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++, count++) {
-        o << "children[" << count << "] = <DAG ptr> " << (*i) << " of type " << (*i)->getType() << std::endl;
+        o << "children[" << count << "] = '" << (*i)->getName();
+        o << "' [" << (*i) << "] of type " << (*i)->getType() << std::endl;
     }
 }
 
@@ -158,7 +135,8 @@ void DAGNode::printParents(std::ostream& o) const {
 
     int count = 1;
     for (std::set<DAGNode*>::const_iterator i=parents.begin(); i != parents.end(); i++, count++) {
-        o << "parents[" << count << "] = <DAG ptr> " << (*i) << " of type " << (*i)->getType() << std::endl;
+        o << "parents[" << count << "] = '" << (*i)->getName();
+        o << "' [" << (*i) << "] of type " << (*i)->getType() << std::endl;
     }
 }
 

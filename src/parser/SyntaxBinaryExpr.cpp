@@ -17,16 +17,18 @@
 #include <list>
 #include <sstream>
 
+#include "Argument.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
+#include "StringVector.h"
 #include "SyntaxBinaryExpr.h"
 #include "Workspace.h"
 
 
 /** Static vector of strings giving names of operator types */
-std::string SyntaxBinaryExpr::opCode[] = { "RANGE", "ADD", "SUB", "MUL", "DIV", "EXP", "LT", "LE",
-                                           "EQ", "NE", "GE", "GT", "AND", "OR", "AND2", "OR2"}; 
+std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", "exp", "lt", "le",
+                                           "eq", "ne", "ge", "gt", "and", "or", "and2", "or2"};
 
 
 /** Construct from operator type and operands */
@@ -114,7 +116,7 @@ RbObject* SyntaxBinaryExpr::getValue(Frame* frame) const {
     args.push_back(Argument("y", rightOperand->getDAGNode(frame)));
 
     // Execute function
-    std::string funcName = "." + opCode[operation];
+    std::string funcName = "_" + opCode[operation];
     const RbObject* retVal = Workspace::globalWorkspace().executeFunction(funcName, args);
 
     // Return value (we pass on management responsibility to caller)

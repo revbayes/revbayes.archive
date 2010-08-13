@@ -34,7 +34,7 @@ class Container : public RbComplex {
 
     public:
                             Container(RbObject* x);                         //!< Vector with one node x
-                            Container(int n, RbObject* x);                  //!< Vector with n copies of x
+                            Container(size_t n, RbObject* x);               //!< Vector with n copies of x
                             Container(const IntVector& len, RbObject* x);   //!< Array of given dimensions with copies of x
                             Container(const IntVector& len, const std::string& elemType); //!< Empty array of given dimensions
                             Container(const Container& x);                  //!< Copy constructor
@@ -42,13 +42,13 @@ class Container : public RbComplex {
 
         // Overloaded operators
         Container&          operator=(const Container& x);                  //!< Assignment operator
-        RbObject*&          operator[](const ContainerIterator& i);         //!< Element access
-        RbObject* const&    operator[](const ContainerIterator& i) const;   //!< Element const access
-        RbObject*&          operator[](const int i);                        //!< Element access
-        RbObject* const&    operator[](const int i) const;                  //!< Element const access
+        RbObject*&          operator[](const IntVector& i);                 //!< Element access
+        RbObject* const&    operator[](const IntVector& i) const;           //!< Element const access
+        RbObject*&          operator[](const size_t i);                     //!< Element access
+        RbObject* const&    operator[](const size_t i) const;               //!< Element const access
 
         // Replicated vector functions
-        void                resize(int n) { resize (IntVector(n)); }        //!< Resize vector
+        void                resize(size_t n) { resize (IntVector(int(n))); }//!< Resize vector
         void                resize(const IntVector& len);                   //!< Resize container
         size_t              size() const { return elements.size(); }        //!< Get number of elements
 
@@ -60,7 +60,7 @@ class Container : public RbComplex {
         std::string         toString() const;                               //!< Complete info about object
 
         // Element access functions
-        int                 getDim() const { return length.size(); }        //!< Get subscript dimensions
+        int                 getDim() const { return int(length.size()); }   //!< Get subscript dimensions
         const std::string&  getElementType(void) const { return elementType; }  //!< Get element type
         const RbObject*     getElement(const IntVector& index) const;       //!< Get element (read-only)
         const IntVector&    getLength() const { return length; }            //!< Get length in each dim
@@ -69,7 +69,7 @@ class Container : public RbComplex {
         void                setLength(const IntVector& len);                //!< Reorganize container
 
     protected:
-        int                 getOffset(const ContainerIterator& index) const;//!< Get offset in element vector
+        size_t              getOffset(const IntVector& index) const;        //!< Get offset in element vector
         RbObject*           getElementPtr(const IntVector& index);          //!< Allow modify access to element
 
         // Member variables

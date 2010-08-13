@@ -36,14 +36,14 @@ Container::Container(RbObject* x)
 
 
 /** Construct vector with n copies of x */
-Container::Container(int n, RbObject* x)
+Container::Container(size_t n, RbObject* x)
     : RbComplex(), elementType(x->getType()) {
 
     elements.push_back(x);
-    for (int i=1; i<n; i++)
+    for (size_t i=1; i<n; i++)
         elements.push_back(x->clone());
 
-    length       = IntVector(n);
+    length       = IntVector(int(n));
 }
 
 
@@ -78,8 +78,8 @@ Container::Container(const IntVector& len, const std::string& elemType)
 
     int n = 1;
     for (size_t i=0; i<len.size(); i++) {
-        if (len[i] <= 0)
-            throw (RbException("Nonpositive length"));
+        if (len[i] < 0)
+            throw (RbException("Negative length"));
         n *= len[i];
     }
 
@@ -144,23 +144,23 @@ Container& Container::operator=(const Container& x) {
 
 
 /** Subscript operator (container iterator) */
-RbObject*& Container::operator[](const ContainerIterator& i) {
+RbObject*& Container::operator[](const IntVector& i) {
 
-    int offset = getOffset(i);
+    size_t offset = getOffset(i);
     return elements[offset];
 }
 
 
 /** Subscript const operator (container iterator) */
-RbObject* const& Container::operator[](const ContainerIterator& i) const {
+RbObject* const& Container::operator[](const IntVector& i) const {
 
-    int offset = getOffset(i);
+    size_t offset = getOffset(i);
     return elements[offset];
 }
 
 
 /** Subscript operator */
-RbObject*& Container::operator[](int i) {
+RbObject*& Container::operator[](size_t i) {
 
     if (i < 0 || i > int(elements.size()))
         throw RbException("Index out of bounds");
@@ -169,7 +169,7 @@ RbObject*& Container::operator[](int i) {
 
 
 /** Subscript const operator */
-RbObject* const& Container::operator[](int i) const {
+RbObject* const& Container::operator[](size_t i) const {
 
     if (i < 0 || i > int(elements.size()))
         throw RbException("Index out of bounds");
@@ -212,7 +212,7 @@ const StringVector& Container::getClass(void) const {
 
 
 /** Get offset to element or subcontainer; also check index */
-int Container::getOffset(const ContainerIterator& index) const {
+size_t Container::getOffset(const IntVector& index) const {
 
     if (index.size() > length.size())
         throw (RbException("Too many indices"));
@@ -221,10 +221,10 @@ int Container::getOffset(const ContainerIterator& index) const {
             throw (RbException("Index out of range"));
     }
 
-    int offset = 0;
+    size_t offset = 0;
     int numVals = 1;
-    size_t i;
-    for (i=length.size()-1; i>=index.size(); i--)
+    int i;
+    for (i=int(length.size())-1; i>=int(index.size()); i--)
          numVals *= length[i];
     for (; i>=0; i--) {
         offset += (index[i] * numVals);
@@ -239,7 +239,7 @@ int Container::getOffset(const ContainerIterator& index) const {
 Container* Container::getSubContainer(const IntVector& index) const {
 
     // Get offset; this throws an error if something wrong with index
-    int offset = getOffset(index);
+    size_t offset = getOffset(index);
 
     // Create a new vector of the right size
     IntVector tempLength;
@@ -273,7 +273,7 @@ const RbObject* Container::getElement(const IntVector& index) const {
         valueIndex.push_back(length[i]);        
 
     // Get offset; this throws an error if something wrong with index
-    int offset = getOffset(containerIndex);
+    size_t offset = getOffset(containerIndex);
 
     // Get element
     RbObject* element = elements[offset];
@@ -305,7 +305,7 @@ RbObject* Container::getElementPtr(const IntVector& index) {
         valueIndex.push_back(length[i]);        
 
     // Get offset; this throws an error if something wrong with index
-    int offset = getOffset(containerIndex);
+    size_t offset = getOffset(containerIndex);
 
     // Get element
     RbObject* element = elements[offset];
@@ -330,8 +330,8 @@ void Container::setElement(const IntVector& index, RbObject* val) {
         IntVector tempLen  = length;
         bool      growSize = false;
         for (size_t i=0; i<index.size(); i++) {
-            if (index[i] > tempLen[i]) {
-                tempLen[i] = index[i];
+            if (index[i] >= tempLen[i]) {
+                tempLen[i] = index[i] + 1;
                 growSize = true;
             }
             else if (index[i] < 0)
@@ -342,7 +342,7 @@ void Container::setElement(const IntVector& index, RbObject* val) {
     }
 
     // Get offset; also checks for errors in index
-    int offset = getOffset(index);
+    size_t offset = getOffset(index);
 
     // Check if parser wants to set multiple elements
     if (index.size() < length.size()) {
@@ -407,7 +407,10 @@ void Container::printValue(std::ostream& o) const {
         for (std::vector<RbObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) {
             if (i != elements.begin())
                 o << ", ";
-            (*i)->printValue(o);
+            if ((*i) == NULL)
+                o << "NULL";
+            else
+                (*i)->printValue(o);
         }
         o <<  "}";
     }
@@ -451,9 +454,9 @@ void Container::resize(const IntVector& len) {
     }
 
     // Calculate handy numbers
-    IntVector numValsSource = IntVector(len.size()), numValsTarget = IntVector(len.size());
+    IntVector numValsSource = IntVector(len.size(), 0), numValsTarget = IntVector(len.size(), 0);
     int numSourceVals = 1, numTargetVals = 1;
-    for (int i=len.size()-1; i>=0; i--) {
+    for (int i=int(len.size())-1; i>=0; i--) {
         numSourceVals *= length[i];
         numTargetVals *= len[i];
         numValsSource[i] = numSourceVals;
@@ -469,7 +472,7 @@ void Container::resize(const IntVector& len) {
         for (int i=0; i<length[length.size()-1]; i++)
             tempElements[targetIndex++] = elements[sourceIndex++];
 
-        for (int i=length.size()-1; i>=0; i--) {
+        for (int i=int(length.size())-1; i>=0; i--) {
             if (sourceIndex % numValsSource[i] == 0) {
                 targetIndex += numValsTarget[i] - (targetIndex % numValsTarget[i]);
             }

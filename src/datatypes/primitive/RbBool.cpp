@@ -42,11 +42,11 @@ RbObject* RbBool::clone(void) const {
 /** Convert to object of another class. The caller manages the object */
 RbObject* RbBool::convertTo(const std::string& type) const {
 
-	if (type == RbNames::RbInt::name) {
+	if (type == RbInt_name) {
     	if (value) return new RbInt(1);
         else return new RbInt(0);
     }
-    else if (type == RbNames::RbDouble::name) {
+    else if (type == RbDouble_name) {
         if (value) return new RbDouble(1.0);
         else return new RbDouble(0.0);
     }
@@ -64,7 +64,7 @@ bool RbBool::equals(const RbObject* obj) const {
         return value == p->value;
 
     // Try converting the object to a bool
-    p = dynamic_cast<const RbBool*>(obj->convertTo(RbNames::RbBool::name));
+    p = dynamic_cast<const RbBool*>(obj->convertTo(RbBool_name));
     if (p == NULL)
         return false;
 
@@ -78,7 +78,7 @@ bool RbBool::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const StringVector& RbBool::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::RbBool::name) + RbObject::getClass();
+    static StringVector rbClass = StringVector(RbBool_name) + RbObject::getClass();
     return rbClass;
 }
 

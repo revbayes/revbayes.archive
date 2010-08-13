@@ -20,6 +20,7 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
+#include "StringVector.h"
 #include "SyntaxStatement.h"
 #include "Workspace.h"
 

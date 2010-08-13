@@ -72,10 +72,10 @@
      EQ = 288,
      NE = 289,
      END_OF_INPUT = 290,
-     LOW = 291,
-     UNOT = 292,
-     UPLUS = 293,
-     UMINUS = 294
+     UNOT = 291,
+     UPLUS = 292,
+     UMINUS = 293,
+     UAND = 294
    };
 #endif
 /* Tokens.  */
@@ -112,17 +112,17 @@
 #define EQ 288
 #define NE 289
 #define END_OF_INPUT 290
-#define LOW 291
-#define UNOT 292
-#define UPLUS 293
-#define UMINUS 294
+#define UNOT 291
+#define UPLUS 292
+#define UMINUS 293
+#define UAND 294
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 100 "grammar.y"
+#line 90 "grammar.y"
 {
     char*                           string;
     double                          realValue;
@@ -148,3 +148,17 @@ typedef union YYSTYPE
 
 extern YYSTYPE yylval;
 
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+} YYLTYPE;
+# define yyltype YYLTYPE /* obsolescent; will be withdrawn */
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
+
+extern YYLTYPE yylloc;

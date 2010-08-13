@@ -1,13 +1,13 @@
 srcdir      = .
 RM          = rm
 CXX         = g++
-INCLUDES    = -I. -I../main -I../dag -I../datatypes -I../datatypes/complex -I../functions -I../utils -I../datatypes/primitive -I../distributions -I../ui
+INCLUDES    = -I. -I../main -I../dag -I../datatypes -I../datatypes/complex -I../functions -I../utils -I../datatypes/primitive -I../distributions -I../ui -I../distributions/statistics -I../functions/model -I../inference/mcmc -I../functions/builtin -I../datatypes/model -I../moves/simple -I../moves -I../functions/basic -I../functions/builtin
 CXXFLAGS    = -O3 -ffast-math -Wall
 BISON       = bison
 FLEX        = flex
 BISONFLAGS  = -y -v
 
-all: grammar.tab.c lex.yy.cpp ObjectSlot.o Frame.o FunctionTable.o Workspace.o SyntaxElement.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o SyntaxUnaryExpr.o SyntaxFunctionCall.o SyntaxLabeledExpr.o SyntaxAssignExpr.o SyntaxFormal.o SyntaxFunctionDef.o SyntaxClassDef.o SyntaxForCondition.o SyntaxStatement.o Parser.o grammar.tab.o lex.yy.o
+all: grammar.tab.c lex.yy.cpp Frame.o FunctionTable.o MethodTable.o Workspace.o SyntaxElement.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o SyntaxUnaryExpr.o SyntaxFunctionCall.o SyntaxLabeledExpr.o SyntaxAssignExpr.o SyntaxFormal.o SyntaxFunctionDef.o SyntaxClassDef.o SyntaxForCondition.o SyntaxStatement.o Parser.o grammar.tab.o lex.yy.o
 
 grammar.tab.c grammar.tab.h: grammar.y
 	$(BISON) -o grammar.tab.c --defines $(BISONFLAGS) grammar.y
@@ -21,11 +21,11 @@ grammar.tab.o: grammar.tab.c
 lex.yy.o: lex.yy.cpp grammar.tab.h
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c lex.yy.cpp
 
-ObjectSlot.o: ObjectSlot.cpp
-	$(CXX) $(INCLUDES) $(CXXFLAGS) -c ObjectSlot.cpp
-
 Frame.o: Frame.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Frame.cpp
+
+MethodTable.o: MethodTable.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c MethodTable.cpp
 
 FunctionTable.o: FunctionTable.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c FunctionTable.cpp
@@ -76,6 +76,6 @@ Parser.o: Parser.cpp
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c Parser.cpp
 
 clean:
-	rm -f *.o lex.yy.cpp grammar.tab.c grammar.tab.h grammar.output
+	rm -f *.o grammar.tab.h grammar.tab.c grammar.output
 
 

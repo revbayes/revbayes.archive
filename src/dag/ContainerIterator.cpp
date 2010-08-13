@@ -19,36 +19,6 @@
 #include "RbException.h"
 
 
-/** Constructor from vector<int> */
-ContainerIterator::ContainerIterator(const std::vector<int> len) {
-
-    if (len.size() == 0)
-        throw (RbException("Container index with missing length"));
-
-    for (std::vector<int>::const_iterator i=len.begin(); i!=len.end(); i++) {
-        if ((*i) <= 0)
-            throw (RbException("Container index with nonpositive length"));
-        push_back(0);
-        length.push_back(*i);
-    }
-}
-
-
-/** Constructor from length in each dimension */
-ContainerIterator::ContainerIterator(const IntVector& len) {
-
-    if (len.size() == 0)
-        throw (RbException("Container index with missing length"));
-
-    for (size_t i=0; i<len.size(); i++) {
-        if (len[i] <= 0)
-            throw (RbException("Container index with nonpositive length"));
-        push_back(0);
-        length.push_back(len[i]);
-    }
-}
-
-
 /** Constructor from start value and length in each dimension */
 ContainerIterator::ContainerIterator(const IntVector& index, const IntVector& len) {
 
@@ -134,7 +104,11 @@ bool ContainerIterator::operator==(const ContainerIterator& x) const {
         return false;
 
     std::vector<int>::const_iterator i, j;
-    for (i=begin(), j=length.begin(); i!=end(); i++, j++) {
+    for (i=length.begin(), j=x.length.begin(); i!=length.end(); i++, j++) {
+        if ((*i) != (*j))
+            return false;
+    }
+    for (i=begin(), j=x.begin(); i!=end(); i++, j++) {
         if ((*i) != (*j))
             return false;
     }

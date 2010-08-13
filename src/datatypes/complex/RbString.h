@@ -41,7 +41,9 @@ class RbString : public RbComplex {
                                 operator std::string() const;           //!< Type conversion
 
         // Regular functions
-        std::string             getValue(void) const { return value; }  //!< Get value
+        void                    append(const RbString& s) { value += s.value; } //!< Append string
+        void                    append(const char* s) { value += s; }           //!< Append C string
+        std::string             getValue(void) const { return value; }          //!< Get value
         void                    setValue(const std::string& x) { value = x; }   //!< Set value
 
     private:

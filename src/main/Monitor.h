@@ -20,6 +20,7 @@
 
 #include "RbComplex.h"
 
+#include <fstream>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -31,7 +32,7 @@ class VariableNode;
 class Monitor : public RbComplex {
 
     public:
-                                Monitor(std::ostream& o, VariableNode* node, int freq); //!< Constructor
+                                Monitor(VariableNode* node, int freq);          //!< Constructor
 
         // Basic utility functions
         RbObject*               clone() const;                                  //!< Clone object
@@ -41,15 +42,14 @@ class Monitor : public RbComplex {
         std::string             toString(void) const;                           //!< Complete info about object
 
         // Monitor functions
-        void                    monitor(int gen) const;                         //!< Monitor at generation gen
-        void                    printHeader(void) const;                        //!< Monitor at generation gen
+        void                    monitor(std::ofstream& o) const;                //!< Monitor unconditionally
+        void                    monitor(int gen, std::ofstream& o) const;       //!< Monitor at generation gen
+        void                    printHeader(std::ofstream& o) const;            //!< Print header
 
     private:
-        std::ostream&           outStrm;                                        //!< The stream for writing
         VariableNode*           theNode;                                        //!< The node to monitor
-        int                     sampleFrequency;                                //!< The sample frequency
+        int                     samplingFrequency;                              //!< Sampling frequency
 };
 
 #endif
-
 

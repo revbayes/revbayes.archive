@@ -37,8 +37,8 @@ class SyntaxElement;
 class UserFunction :  public RbFunction {
 
     public:
-                UserFunction(   const ArgumentRule**        argRules,
-                                const RbString*             retType,
+                UserFunction(   const ArgumentRules&        argRules,
+                                const std::string           retType,
                                 std::list<SyntaxElement*>*  stmts,
                                 Frame*                      defineEnv);     //!< Constructor
                 UserFunction(const UserFunction& x);                        //!< Copy constructor
@@ -52,16 +52,16 @@ class UserFunction :  public RbFunction {
         std::string                 toString() const;                   //!< Complete info about object
 
         // Regular functions
-        const ArgumentRule**        getArgumentRules(void) const;       //!< Get arg rules
-        const std::string           getReturnType(void) const;          //!< Get return type
+        const ArgumentRules&        getArgumentRules(void) const;       //!< Get arg rules
+        const std::string&          getReturnType(void) const;          //!< Get return type
 
     protected:
-        const ArgumentRule**        argumentRules;      //!< The argument rules
-        const RbString*             returnType;         //!< The return type
+        const ArgumentRules         argumentRules;      //!< The argument rules
+        std::string                 returnType;         //!< The return type
         std::list<SyntaxElement*>*  code;               //!< The code
         Frame*                      defineEnvironment;  //!< The definition environment
 
-		const RbObject*             executeOperation(const std::vector<DAGNode*>& args) const;  //!< Execute operation
+		const RbObject*             executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 };
 
 #endif

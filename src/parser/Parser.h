@@ -53,6 +53,7 @@ class Parser {
         int                 help(RbString* symbol) const;               //!< Get help for a symbol
         int                 help(SyntaxElement* root) const;            //!< Get help for a function call
         int                 processCommand(std::string& command);       //!< Process command with help from Bison
+        void                reset(void);                                //!< Reset the parser
 
         /** Get singleton parser */
         static Parser& getParser() {
@@ -72,6 +73,9 @@ class Parser {
 
 // Global call-back function for flex-generated code
 void rrinput(char* buf, int& result, int maxsize);
+
+// Global flag indicating whether flex found newline
+extern bool foundNewline;
 
 #endif
 

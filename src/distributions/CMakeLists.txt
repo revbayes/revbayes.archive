@@ -5,5 +5,4 @@
 #add_subdirectory (MyDistribution)
 
 
-#CMAKE_INCLUDE_PATH (phylogenetic)
 #CMAKE_INCLUDE_PATH (statistics)

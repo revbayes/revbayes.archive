@@ -42,13 +42,13 @@ class Vector : public RbComplex {
         virtual std::string         toString(void) const;                           //!< Complete info about object
 
         // Overloaded operators and built-in functions
-        virtual double&             operator[](int i) { return value[i]; }          //!< Index op allowing change
-        const double&               operator[](int i) const { return value[i]; }    //!< Const index op
+        virtual double&             operator[](size_t i) { return value[i]; }       //!< Index op allowing change
+        const double&               operator[](size_t i) const { return value[i]; } //!< Const index op
         void                        clear(void) { value.clear(); }                  //!< Clear
         virtual void                pop_back(void) { value.pop_back(); }            //!< Drop element
         virtual void                push_back(double x) { value.push_back(x); }     //!< Append element to end
         virtual void                push_front(double x) { value.insert(value.begin(), x); }   //!< Add element in front
-        void                        resize(int n) { resize(IntVector(n)); }         //!< Resize
+        void                        resize(size_t n) { resize(IntVector(int(n))); } //!< Resize
         size_t                      size() const { return value.size(); }           //!< Get size
 
         // Getter

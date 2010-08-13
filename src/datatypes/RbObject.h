@@ -37,7 +37,7 @@ class RbObject {
         // Basic utility functions you may want to override
         virtual std::string         briefInfo(void) const;                              //!< Brief info about object
         virtual RbObject*           convertTo(const std::string& type) const;           //! Convert to type
-        virtual bool                isConvertibleTo(const std::string& type) const;     //! Is convertible to type?
+        virtual bool                isConvertibleTo(const std::string& type, int dim = 0) const;    //! Is convertible to type and dim?
         
         // Subscript dimensions: override if object supports subscripting
         virtual int                 getDim(void) const { return 0; }                    //!< Get subscript dimensions

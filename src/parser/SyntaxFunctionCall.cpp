@@ -13,6 +13,7 @@
  * $Id$
  */
 
+#include "Argument.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
@@ -108,15 +109,16 @@ const StringVector& SyntaxFunctionCall::getClass(void) const {
 
 
 /** Convert element to DAG node */
-DAGNode* SyntaxFunctionCall::getDAGNode(Frame* formal) const {
+DAGNode* SyntaxFunctionCall::getDAGNode(Frame* frame) const {
 
+    // Package arguments
     std::vector<Argument> args;
     if (variable != NULL) {
         args.push_back(Argument("object", variable->getDAGNode()));
         args.push_back(Argument("function", new ConstantNode(functionName)));
     }
     for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        args.push_back(Argument(*(*i)->getLabel(), (*i)->getDAGNode(formal)));    
+        args.push_back(Argument(*(*i)->getLabel(), (*i)->getExpression()->getDAGNode(frame)));    
 
     RbFunction* func;
     if (variable == NULL) {
@@ -126,9 +128,9 @@ DAGNode* SyntaxFunctionCall::getDAGNode(Frame* formal) const {
                 "' taking specified arguments"));
     }
     else
-        func = Workspace::globalWorkspace().getFunction(".memberCall", args);
+        func = Workspace::globalWorkspace().getFunction("_memberCall", args);
 
-    return new DeterministicNode((RbFunction*)(func));
+    return new DeterministicNode(func);
 }
 
 
@@ -143,20 +145,32 @@ RbObject* SyntaxFunctionCall::getValue(Frame* frame) const {
     // Package arguments
     std::vector<Argument> args;
     for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        args.push_back(Argument(*(*i)->getLabel(), (*i)->getDAGNode(frame)));    
+        args.push_back(Argument(*(*i)->getLabel(), (*i)->getExpression()->getDAGNode(frame)));    
 
     // Get function pointer and execute function
+    RbObject* retVal;
     if (variable == NULL) {
-        const RbObject* retVal =  Workspace::userWorkspace().executeFunction(*functionName, args);
-        return retVal->clone();
+        retVal = Workspace::userWorkspace().getFunctionValue(*functionName, args);
     }
     else {
-        RbComplex* theObject = dynamic_cast<RbComplex*>(variable->getValue());
-        if (theObject == NULL)
+        const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getValuePtr(frame));
+        if (objectPtr == NULL)
             throw(RbException("Object does not have member functions"));
-        const RbObject* retVal = theObject->executeMethod(*functionName, args);    
-        return retVal->clone();    
+        RbComplex* theObject = const_cast<RbComplex*>(objectPtr);
+        const RbObject* retPtr = theObject->executeMethod(*functionName, args);
+        if (retPtr != NULL)
+            retVal = retPtr->clone();
+        else
+            retVal = NULL;
     }
+
+    // Delete arguments
+    for (std::vector<Argument>::iterator i=args.begin(); i!=args.end(); i++) {
+        if ((*i).getVariable()->numRefs() == 0)
+            delete (*i).getVariable();
+    }
+
+    return retVal;
 }
 
 
@@ -164,8 +178,12 @@ RbObject* SyntaxFunctionCall::getValue(Frame* frame) const {
 void SyntaxFunctionCall::print(std::ostream& o) const {
 
     o << "SyntaxFunctionCall:" << std::endl;
-    o << "functionName  = " << functionName->briefInfo() << std::endl;
-    o << "variable      = " << variable->briefInfo() << std::endl;
+    o << "functionName  = " << functionName << std::endl;
+    o << "variable      = ";
+    if (variable == NULL)
+        o << "NULL" << std::endl;
+    else
+        o << variable->briefInfo() << std::endl;
     if (arguments->size() == 0)
         o << "arguments     = []";
     else {
@@ -174,5 +192,4 @@ void SyntaxFunctionCall::print(std::ostream& o) const {
             o << "arguments[" << index <<  "]  = " << (*i)->briefInfo() << std::endl;
     }
 }
-
 

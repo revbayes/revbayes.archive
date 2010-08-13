@@ -27,7 +27,7 @@
 
 
 /** Construct empty vector of length n */
-StringVector::StringVector(int n) : RbComplex() {
+StringVector::StringVector(size_t n) : RbComplex() {
 
     value.resize(n);
 }
@@ -41,9 +41,9 @@ StringVector::StringVector(const std::string& x) : RbComplex() {
 
 
 /** Construct vector with n strings x */
-StringVector::StringVector(int n, const std::string& x) : RbComplex() {
+StringVector::StringVector(size_t n, const std::string& x) : RbComplex() {
 
-    for (int i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
         value.push_back(x);
 }
 
@@ -123,7 +123,7 @@ bool StringVector::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const StringVector& StringVector::getClass() const {
 
-    static StringVector rbClass = StringVector(RbNames::StringVector::name) + RbComplex::getClass();
+    static StringVector rbClass = StringVector(StringVector_name) + RbComplex::getClass();
     return rbClass;
 }
 

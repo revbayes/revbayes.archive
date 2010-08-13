@@ -2,7 +2,8 @@
  * @file
  * This file contains the declaration of Argument, which is
  * used to hold a potentially labeled argument passed to a
- * function. The Argument class manages the argument wrapper.
+ * function. The Argument class just holds a DAG node pointer,
+ * it does not manage the DAG node itself.
  *
  * @brief Declaration of Argument
  *
@@ -19,36 +20,31 @@
 #ifndef Argument_H
 #define Argument_H
 
+#include "DAGNode.h"
 #include "RbInternal.h"
+#include "RbObject.h"
 
 #include <ostream>
 #include <string>
-
-class DAGNode;
-
 
 class Argument : public RbInternal {
 
     public:
                     Argument(const std::string& argLabel, DAGNode* arg);            //!< Constructor 
-                    Argument(const Argument& a);                                    //!< Copy constructor 
-            virtual ~Argument();                                                    //!< Destructor 
-
-        // Assignment operator
-        Argument&                   operator=(const Argument& x);                       //!< Assignment operator
 
         // Basic utility functions
-        Argument*                   clone(void) const { return new Argument (*this); }  //!< Clone object
-        virtual const StringVector& getClass(void) const;                               //!< Get class vector
-        std::string                 toString(void) const;                               //!< Complete info about object
+        Argument*               clone(void) const { return new Argument (*this); }  //!< Clone object
+        const StringVector&     getClass(void) const;                               //!< Get class vector
+        std::string             toString(void) const;                               //!< Complete info about object
 
         // Regular functions
-        std::string                 getLabel(void) const { return label; }              //!< Get label of argument
-        const DAGNode*              getDAGNode(void) const { return dagNode; }          //!< Get DAG node wrapping the argument
+        std::string             getLabel(void) const { return label; }              //!< Get label of argument
+        DAGNode*                getVariable(void) const { return dagNodePtr; }      //!< Get argument variable
+        RbObject*               getValue(void) const { return dagNodePtr->getValue()->clone(); }    //!< Get argument value
 
     protected:
         std::string                 label;          //!< Label of argument
-        const DAGNode*              dagNode;        //!< The DAG node wrapper of the argument value
+        DAGNode*                    dagNodePtr;     //!< Pointer to the DAG node wrapper of the argument value
 };
 
 #endif

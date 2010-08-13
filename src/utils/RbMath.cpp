@@ -6,7 +6,7 @@
 
 
 
-#pragma mark Math Functions
+// Math Functions
 
 /*!
  * Back-substitution of Gaussian elimination

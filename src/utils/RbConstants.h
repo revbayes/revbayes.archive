@@ -16,6 +16,7 @@
 *
 * $Id: RbStatistics.h 100 2009-11-25 02:02:14Z jhuelsenbeck $
 */
+
 #ifndef RbConstants_H
 #define RbConstants_H
 
@@ -30,12 +31,8 @@ namespace RbConstants {
 
 	namespace Object {
 	double      undefined = DBL_MAX;
-	double   	neginf 	= DBL_MIN;
+	double   	neginf    = DBL_MIN;
 	}
-
-
-
-
 
 }
 

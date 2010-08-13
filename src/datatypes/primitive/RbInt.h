@@ -26,12 +26,11 @@
 
 class StringVector;
 
-
 class RbInt : public RbObject {
 
     public:
-	                        RbInt(const int v);                         //!< Constructor from int
-	                        RbInt(const bool v);                        //!< Constructor from bool
+                            RbInt(const int v);                         //!< Constructor from int
+                            RbInt(const bool v);                        //!< Constructor from bool
 
         // Basic utility functions
         RbObject*           clone(void) const;                          //!< Clone object
@@ -46,10 +45,10 @@ class RbInt : public RbObject {
 
         // Getters and setters
         void                setValue(int x) { value = x; }              //!< Set value
-	    int                 getValue(void) const { return value; }      //!< Get value
+        int                 getValue(void) const { return value; }      //!< Get value
 
     private:
-	    int                 value;                                      //!< Value member
+        int                 value;                                      //!< Value member
 };
 
 #endif

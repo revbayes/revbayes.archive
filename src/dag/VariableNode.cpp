@@ -32,113 +32,7 @@
 VariableNode::VariableNode(const std::string& valType)
     : DAGNode(valType) {
 
-    touched  = false;
-    moves    = NULL;
-    monitors = NULL;
-}
-
-
-/** Copy constructor */
-VariableNode::VariableNode(const VariableNode& x)
-    : DAGNode(x.valueType) {
-
-    touched = x.touched;
-
-    if (x.moves != NULL)
-        moves = (MoveSchedule*)(x.moves->clone());
-    else
-        moves = NULL;
-
-    if (x.monitors != NULL) {
-        monitors = new std::vector<Monitor*>();
-        for (std::vector<Monitor*>::iterator i=x.monitors->begin(); i!=x.monitors->end(); i++)
-            monitors->push_back(*i);
-    }
-    else
-        monitors = NULL;
-}
-
-
-/** Destructor */
-VariableNode::~VariableNode(void) {
-
-    if (moves != NULL)
-        delete moves;
-
-    if (monitors != NULL) {
-        for (std::vector<Monitor*>::iterator i=monitors->begin(); i!=monitors->end(); i++)
-            delete (*i);
-        delete monitors;
-    }
-}
-
-
-/** Assignment operator */
-VariableNode& VariableNode::operator=(const VariableNode& x) {
-
-    if (this != &x) {
-
-        touched = x.touched;
-
-        if (moves != NULL)
-            delete moves;
-        if (x.moves != NULL)
-            moves = (MoveSchedule*)(x.moves->clone());
-        else
-            moves = NULL;
-
-        if (monitors != NULL) {
-            for (std::vector<Monitor*>::iterator i=monitors->begin(); i!=monitors->end(); i++)
-                delete (*i);
-            delete monitors;
-        }
-        if (x.monitors != NULL) {
-            monitors = new std::vector<Monitor*>();
-            for (std::vector<Monitor*>::iterator i=x.monitors->begin(); i!=x.monitors->end(); i++)
-                monitors->push_back(*i);
-        }
-        else
-            monitors = NULL;
-    }
-
-    return (*this);
-}
-
-
-/** Add a monitor */
-void VariableNode::addMonitor(Monitor* monitor) {
-
-    monitors->push_back(monitor);
-}
-
-
-/** Add a move */
-void VariableNode::addMove(Move* move) {
-
-    if (moves == NULL)
-        moves = new MoveSchedule(this, 1.0);
-    moves->addMove(move);
-}
-
-
-/** Erase a monitor */
-void VariableNode::eraseMonitor(Monitor* monitor) {
-
-    std::vector<Monitor*>::iterator it;
-    it = find(monitors->begin(), monitors->end(), monitor);
-    if (it == monitors->end())
-        throw RbException("Could not find monitor");
-    else
-        monitors->erase(it);
-}
-
-
-/** Erase a move */
-void VariableNode::eraseMove(Move* move) {
-
-    if (moves == NULL)
-        throw RbException("No moves to erase");
-    moves->eraseMove(move);
+    touched      = false;
 }
 
 
@@ -150,43 +44,12 @@ const StringVector& VariableNode::getClass() const {
 }
 
 
-/** Get update weight */
-double VariableNode::getUpdateWeight(void) const {
+/** Get default monitors */
+std::vector<Monitor*> VariableNode::getDefaultMonitors(void) {
 
-    if (moves == NULL) 
-        return 0.0;
-    else
-        return moves->getUpdateWeight();
+    std::vector<Monitor*>   monitors;
+    monitors.push_back(new Monitor(this, 100));
+
+    return monitors;
 }
-
-/** check if node has a move attached */
-bool VariableNode::hasAttachedMove(void) const {
-
-    if (moves == NULL)
-        return false;
-    else
-        return true;
-}
-
-void VariableNode::monitor(int i) {
-    if (!monitors->empty()) {
-        for (std::vector<Monitor*>::iterator it = monitors->begin(); it
-                != monitors->end(); it++) {
-            (*it)->monitor(i);
-        }
-    }
-}
-
-/** Set update weight */
-void VariableNode::setUpdateWeight(double weight) {
-
-    if (weight < 0.0)
-        throw RbException("Negative update weight");
-
-    if (moves == NULL)
-        moves = new MoveSchedule(this, weight);
-    else
-        moves->setUpdateWeight(weight);
-}
-
 

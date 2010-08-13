@@ -15,13 +15,17 @@
 
 #include <iostream>
 #include <list>
+#include <string>
 #include <sstream>
 
+#include "Argument.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DAGNodeContainer.h"
 #include "DeterministicNode.h"
+#include "Func__lookup.h"
 #include "IntVector.h"
+#include "MemberObject.h"
 #include "RbInt.h"
 #include "RbNames.h"
 #include "RbException.h"
@@ -130,36 +134,21 @@ const StringVector& SyntaxVariable::getClass(void) const {
 /** Convert element to DAG node */
 DAGNode* SyntaxVariable::getDAGNode(Frame* frame) const {
 
-    std::vector<Argument> args;
-    if (variable == NULL)
-        args.push_back(Argument("variable", NULL));
-    else
-        args.push_back(Argument("variable", variable->getDAGNode()));
-
-    args.push_back(Argument("id", new ConstantNode(identifier)));
-
-    if (index->size() > 0) {
-        DAGNodeContainer* indexArgs = new DAGNodeContainer(index->size(), (DAGNode*)(NULL));
-        std::list<SyntaxElement*>::iterator j = index->begin();
-        for (ContainerIterator i=indexArgs->begin(); i!=indexArgs->end(); i++, j++) {
-            (*indexArgs)[i] = (*j)->getDAGNode(frame);
+    if (variable == NULL) {
+        Func__lookup* lookup = new Func__lookup(frame->getType(*identifier), frame->getDim(*identifier));
+        DAGNode* theVar = frame->getVariable(*identifier);
+        std::vector<Argument> args;
+        args.push_back(Argument("", theVar));
+        for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++) {
+            args.push_back(Argument("", (*i)->getDAGNode(frame)));
         }
-        args.push_back(Argument("index", indexArgs));
+        lookup->processArguments(args);
+        return new DeterministicNode(lookup);
     }
-    else
-        args.push_back(Argument("index", (DAGNode*)(NULL)));
-
-    RbFunction *varFunc     = Workspace::globalWorkspace().getFunction(".lookup", args);
-    DeterministicNode* root = new DeterministicNode(varFunc);
-
-    return root;
-}
-
-
-/** Get identifier */
-const RbString* SyntaxVariable::getIdentifier() const {
-
-    return identifier;
+    else {
+        // TODO: do this properly
+        return NULL;
+    }
 }
 
 
@@ -177,6 +166,13 @@ std::string SyntaxVariable::getFullName(Frame* frame) const {
         theName << "[" << theIndex[i] << "]";
 
     return theName.str();
+}
+
+
+/** Get identifier */
+const RbString* SyntaxVariable::getIdentifier() const {
+
+    return identifier;
 }
 
 
@@ -234,17 +230,48 @@ RbObject* SyntaxVariable::getValue(Frame* frame) const {
         else
             return frame->getValElement(*identifier, theIndex)->clone();
     }
-    else {
-        RbComplex* complexObj = (RbComplex*)(variable->getValue());
-        if (complexObj == NULL) {
-            throw RbException("Variable " + variable->getFullName(frame) + " does not have members");
-        }
-        const DAGNode* theVar = complexObj->getVariable(*identifier);
+
+    const MemberObject* object = dynamic_cast<const MemberObject*>(variable->getValuePtr(frame));
+    if (object == NULL)
+        throw RbException("Object " + variable->getFullName(frame) + " does not have members");
+
+    if (theIndex.size() == 0)
+        return object->getValue(*identifier)->clone();
+
+    const DAGNodeContainer* container = dynamic_cast<const DAGNodeContainer*>(object->getVariable(*identifier));
+    if (container == NULL)
+        throw RbException("Object " + variable->getFullName(frame) + "." + std::string(*identifier) + " does not have elements");
+
+    return container->getValElement(theIndex)->clone();
+}
+
+
+/** Get pointer to variable value */
+const RbObject* SyntaxVariable::getValuePtr(Frame* frame) const {
+
+    /* Get subscript */
+    IntVector theIndex = getIndex(frame);
+
+    /* Get value */
+    if (variable == NULL) {
         if (theIndex.size() == 0)
-            return theVar->getValue()->clone();
+            return frame->getValue(*identifier);
         else
-            return theVar->getValElement(theIndex)->clone();
-   }
+            return frame->getValElement(*identifier, theIndex);
+    }
+
+    const MemberObject* object = dynamic_cast<const MemberObject*>(variable->getValuePtr(frame));
+    if (object == NULL)
+        throw RbException("Object " + variable->getFullName(frame) + " does not have members");
+
+    if (theIndex.size() == 0)
+        return object->getValue(*identifier);
+
+    const DAGNodeContainer* container = dynamic_cast<const DAGNodeContainer*>(object->getVariable(*identifier));
+    if (container == NULL)
+        throw RbException("Object " + variable->getFullName(frame) + "." + std::string(*identifier) + " does not have elements");
+
+    return container->getValElement(theIndex);
 }
 
 

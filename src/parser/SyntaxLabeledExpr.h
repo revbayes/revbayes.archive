@@ -38,6 +38,7 @@ class SyntaxLabeledExpr : public SyntaxElement {
         void            print(std::ostream& o) const;               //!< Print info about object
 
         // Regular functions
+        SyntaxElement*  getExpression(void) { return expression; }  //!< Return expression
         const RbString* getLabel() const { return label; }          //!< Return label    
         DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
         RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value

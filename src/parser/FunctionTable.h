@@ -19,6 +19,7 @@
 #ifndef FunctionTable_H
 #define FunctionTable_H
 
+#include "RbFunction.h"     // For typedef of ArgumentRules
 #include "RbInternal.h"
 
 #include <map>
@@ -28,21 +29,19 @@
 
 class Argument;
 class ArgumentRule;
-class RbFunction;
 class RbObject;
 
-class FunctionTable : RbInternal {
+class FunctionTable : public RbInternal {
 
     public:
                         FunctionTable(FunctionTable* parent=NULL);  //!< Empty table
                         FunctionTable(const FunctionTable& x);      //!< Copy constructor
-                        ~FunctionTable();                           //!< Delete functions
+        virtual         ~FunctionTable();                           //!< Delete functions
 
         // Assignment operator
         FunctionTable&  operator=(const FunctionTable& x);          //!< Assignment operator 
 
         // Static help function that can be used by other objects, like MethodTable
-        static bool     isDistinctFormal(const ArgumentRule** x, const ArgumentRule** y); //!< Are formals unique?
 
         // Basic utility functions
         std::string     briefInfo(void) const;                                  //!< Brief info to string
@@ -50,13 +49,19 @@ class FunctionTable : RbInternal {
         std::string     toString(void) const;                                   //!< Complete info to string
         void            printValue(std::ostream& o) const;                      //!< Print table for user
 
-        // Regular functions
-        void            addFunction(const std::string name, RbFunction* func);  //!< Add function
-        void            eraseFunction(const std::string& name);                 //!< Erase function
+        // FunctionTable functions
+        virtual void    addFunction(const std::string name, RbFunction* func);  //!< Add function
+        void            clear(void);                                            //!< Clear table
+        void            eraseFunction(const std::string& name);                 //!< Erase a function (all versions)
         const RbObject* executeFunction(const std::string& name, const std::vector<Argument>& args) const;  //!< Execute function
         RbFunction*     getFunction(const std::string& name, const std::vector<Argument>& args) const;      //!< Get function (a copy)
+        RbObject*       getFunctionValue(const std::string& name, const std::vector<Argument>& args) const; //!< Get function value
+        bool            isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;             //!< Are formals unique?
+        size_t          size(void) const { return table.size(); }                //!< Get size TODO: Include parent size?
 
     protected:
+        RbFunction*     findFunction(const std::string& name, const std::vector<Argument>& args) const;     //!< Find function, process args
+        
         std::multimap<std::string, RbFunction*>     table;          //!< Table of functions
         FunctionTable*                              parentTable;    //!< Enclosing table
 };

@@ -30,9 +30,9 @@ class StringVector : public RbComplex {
     public:
             // Constructors and destructor
 	        StringVector(void) : RbComplex() {}                 //!< Default constructor (empty vector)
-	        StringVector(int n);                                //!< Construct vector of length n of empty strings
+	        StringVector(size_t n);                             //!< Construct vector of length n of empty strings
             StringVector(const std::string& x);                 //!< Construct vector with one string x
-	        StringVector(int n, const std::string& x);          //!< Construct vector with n strings x
+	        StringVector(size_t n, const std::string& x);       //!< Construct vector with n strings x
 	        StringVector(const std::vector<std::string>& x);    //!< Constructor from string vector
 
         // Basic utility functions

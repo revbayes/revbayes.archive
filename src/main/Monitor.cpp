@@ -24,15 +24,15 @@
 
 
 /** Constructor */
-Monitor::Monitor(std::ostream& o, VariableNode* node, int freq)
-    : RbComplex(), outStrm(o), theNode(node), sampleFrequency(freq) {
+Monitor::Monitor(VariableNode* node, int freq)
+    : RbComplex(), theNode(node), samplingFrequency(freq) {
 }
 
 
 /** Clone the object */
 RbObject* Monitor::clone(void) const {
 
-    return (RbObject*)(new Monitor(*this));
+    return new Monitor(*this);
 }
 
 
@@ -44,9 +44,8 @@ bool Monitor::equals(const RbObject* obj) const {
         return NULL;
 
     bool result = true;
-    result = result && outStrm == p->outStrm;
     result = result && theNode == p->theNode;
-    result = result && sampleFrequency == p->sampleFrequency;
+    result = result && samplingFrequency == p->samplingFrequency;
 
     return result;
 }
@@ -60,30 +59,36 @@ const StringVector& Monitor::getClass() const {
 }
 
 
-/** Monitor value at generation gen */
-void Monitor::monitor(int gen) const {
+/** Monitor value unconditionally */
+void Monitor::monitor(std::ofstream& o) const {
 
-    if (gen % sampleFrequency == 0) {
-        theNode->printValue(outStrm);
+    theNode->printValue(o);
+}
+
+
+/** Monitor value at generation gen */
+void Monitor::monitor(int gen, std::ofstream& o) const {
+
+    if (gen % samplingFrequency == 0) {
+        theNode->printValue(o);
     }
 }
 
 
 /** Print header for monitored values */
-void Monitor::printHeader(void) const {
+void Monitor::printHeader(std::ofstream& o) const {
 
-    // TODO: Figure out better header for elements of containers
     if (theNode->getName() != "")
-        outStrm << theNode->getName();
+        o << theNode->getName();
     else
-        outStrm << "Unnamed node";
+        o << "Unnamed " << theNode->getType();
 }
 
 
 /** Print value for user */
 void Monitor::printValue(std::ostream& o) const {
 
-    o << "Monitor: interval = " << sampleFrequency << "; node = '" << theNode->getName() << "'";
+    o << "Monitor: interval = " << samplingFrequency << "; node = '" << theNode->getName() << "'";
 }
 
 
@@ -91,7 +96,7 @@ void Monitor::printValue(std::ostream& o) const {
 std::string Monitor::toString(void) const {
 
     std::ostringstream o;
-    o << "Monitor: interval = " << sampleFrequency << "; node = '" << theNode->getName() << "'";
+    o << "Monitor: interval = " << samplingFrequency << "; node = '" << theNode->getName() << "'";
 
     return o.str();
 }

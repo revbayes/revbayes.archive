@@ -17,9 +17,11 @@
 #include <vector>
 #include <sstream>
 
+#include "Argument.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
+#include "StringVector.h"
 #include "SyntaxUnaryExpr.h"
 #include "Workspace.h"
 

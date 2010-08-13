@@ -19,363 +19,106 @@
 #ifndef RbNames_H
 #define RbNames_H
 
-#define AlignmentFileType_nexus                       "nexus"
-#define AlignmentFileType_phylip                      "phylip"
-#define AlignmentFileType_fasta                       "fasta"
-#define AlignmentType_dna                             "dna"
-#define AlignmentType_aa                              "amino acid"
-#define AlignmentType_morph                           "morphology"
-#define Argument_name                                 "argument"
-#define ArgumentRule_name                             "argument rule"
-#define ConstantNode_name                             "constant node"
-#define Container_name                                "container"
-#define DAGNode_name                                  "dag node"
-#define DAGNodeContainer_name                         "dag node container"
-#define DeterministicNode_name                        "deterministic node"
-#define Distribution_name                             "distribution"
-#define Ellipsis_name                                 "ellipsis"
-#define IntVector_name                                "int vector"
-#define MemberObject_name                             "member object"
-#define MemberFunction_name                           "member function"
-#define Monitor_name                                  "monitor"
-#define Move_name                                     "move"
-#define MoveSchedule_name                             "move schedule"
-#define MoveScale_name                                "move(scale)"
-#define MoveSlidingWindow_name                        "move(sliding window)"
-#define RandomNumberGenerator_name                    "random number generator"
-#define RbBool_name                                   "bool"
-#define RbComplex_name                                "complex"
-#define RbDouble_name                                 "double"
-#define RbException_name                              "exception"
-#define RbFunction_name                               "function"
-#define RbFunction_dchisq_name                        "chi-square density"
-#define RbFunction_dbeta_name                         "beta density"
-#define RbFunction_dexp_name                          "exponential density"
-#define RbFunction_dgamma_name                        "gamma density"
-#define RbFunction_dnorm_name                         "normal density"
-#define RbFunction_ln_name                            "log_e"
-#define RbFunction_pow_name                            "a^b"
-#define RbFunction_pbeta_name                         "beta cdf"
-#define RbFunction_pchisq_name                        "chi-square cdf"
-#define RbFunction_pexp_name                          "exponential cdf"
-#define RbFunction_pnorm_name                         "normal cdf"
-#define RbFunction_qbeta_name                         "beta quantile"
-#define RbFunction_qchisq_name                        "chi-square quantile"
-#define RbFunction_qexp_name                          "exponential quantile"
-#define RbFunction_qnorm_name                         "normal quantile"
-#define RbFunction_readCharacterMatrix_name           "read alignment"
-#define RbFunction_readCharacterMatrix_fileType       "file type"
-#define RbFunction_readCharacterMatrix_alignmentType  "alignment type"
-#define RbFunction_readCharacterMatrix_fileName       "file name"
-#define RbInt_name                                    "int"
-#define RbInternal_name                               "internal"
-#define RbMcmc_name                                   "mcmc"
-#define RbMonitor_name                                "monitor"
-#define RbMove_name                                   "move"
-#define RbMoveSchedule_name                           "move(schedule)"
-#define RbNode_name                                   "node"
-#define RbObject_name                                 "object"
-#define RbPrimitive_name                              "primitive"
-#define RbString_name                                 "string"
-#define RbTopology_name                               "topology"
-#define RbUndefined_name                              "undefined"
-#define RbUnrootedTopology_name                       "unrooted topology"
-#define Simplex_name                                  "Simplex"
-#define SyntaxAssignExpr_name                         "assignment"
-#define SyntaxElement_name                            "syntax element"
-#define SyntaxFunctionCall_name                       "function call"
-#define SyntaxVariable_name                           "variable"
-#define StochasticNode_name                           "stochastic node"
-#define StringVector_name                             "string vector"
-#define UserFunction_name                             "user function"
-#define Vector_name                                   "vector"
-#define VariableNode_name                             "variable node"
-
 #include <string>
 
-namespace RbNames {
+const std::string AlignmentFileType_nexus                       = "nexus";
+const std::string AlignmentFileType_phylip                      = "phylip";
+const std::string AlignmentFileType_fasta                       = "fasta";
+const std::string AlignmentType_dna                             = "dna";
+const std::string AlignmentType_aa                              = "amino acid";
+const std::string AlignmentType_morph                           = "morphology";
+const std::string Argument_name                                 = "argument";
+const std::string ArgumentRule_name                             = "argument rule";
+const std::string ConstantNode_name                             = "constant node";
+const std::string ConstructorFunction_name                      = "constructor function";
+const std::string Container_name                                = "container";
+const std::string DAGNode_name                                  = "dag node";
+const std::string DAGNodeContainer_name                         = "dag node container";
+const std::string DeterministicNode_name                        = "deterministic node";
+const std::string Distribution_name                             = "distribution";
+const std::string DistributionFunction_name                     = "distribution function";
+const std::string DistributionReal_name                         = "distribution on real";
+const std::string Dist_exp_name                                 = "exponential distribution";
+const std::string Dist_norm_name                                = "normal distribution";
+const std::string Dist_unif_name                                = "uniform distribution";
+const std::string Ellipsis_name                                 = "ellipsis";
+const std::string Func__lookup_name                             = "_lookup function";
+const std::string Func__range_name                              = "_range function";
+const std::string Func_ls_name                                  = "ls function";
+const std::string Func_model_name                               = "model function";
+const std::string Func_source_name                              = "source function";
+const std::string Func_quit_name                                = "quit function";
+const std::string IntVector_name                                = "int vector";
+const std::string Mcmc_name                                     = "mcmc";
+const std::string MemberObject_name                             = "member object";
+const std::string MemberFunction_name                           = "member function";
+const std::string MinmaxRule_name                               = "minmax rule";
+const std::string Model_name                                    = "model";
+const std::string Monitor_name                                  = "monitor";
+const std::string Move_name                                     = "move";
+const std::string MoveSchedule_name                             = "move schedule";
+const std::string MoveScale_name                                = "move(scale)";
+const std::string MoveSlidingWindow_name                        = "move(sliding window)";
+const std::string Move_mscale_name                              = "mscale move";
+const std::string Move_mslide_name                              = "mslide move";
+const std::string PosReal_name                                  = "posReal";
+const std::string PosScalarRule_name                            = "posScalarRule";
+const std::string RandomNumberGenerator_name                    = "random number generator";
+const std::string RbBool_name                                   = "bool";
+const std::string RbComplex_name                                = "complex";
+const std::string RbDouble_name                                 = "real";
+const std::string RbException_name                              = "exception";
+const std::string RbFunction_name                               = "function";
+const std::string RbFunction_dchisq_name                        = "chi-square density";
+const std::string RbFunction_dbeta_name                         = "beta density";
+const std::string RbFunction_dexp_name                          = "exponential density";
+const std::string RbFunction_dgamma_name                        = "gamma density";
+const std::string RbFunction_dnorm_name                         = "normal density";
+const std::string RbFunction_ln_name                            = "log_e";
+const std::string RbFunction_pow_name                           = "a^b";
+const std::string RbFunction_pbeta_name                         = "beta cdf";
+const std::string RbFunction_pchisq_name                        = "chi-square cdf";
+const std::string RbFunction_pexp_name                          = "exponential cdf";
+const std::string RbFunction_pnorm_name                         = "normal cdf";
+const std::string RbFunction_qbeta_name                         = "beta quantile";
+const std::string RbFunction_qchisq_name                        = "chi-square quantile";
+const std::string RbFunction_qexp_name                          = "exponential quantile";
+const std::string RbFunction_qnorm_name                         = "normal quantile";
+const std::string RbFunction_readCharacterMatrix_name           = "read alignment";
+const std::string RbFunction_readCharacterMatrix_fileType       = "file type";
+const std::string RbFunction_readCharacterMatrix_alignmentType  = "alignment type";
+const std::string RbFunction_readCharacterMatrix_fileName       = "file name";
+const std::string RbInt_name                                    = "int";
+const std::string RbInternal_name                               = "internal";
+const std::string RbMcmc_name                                   = "mcmc";
+const std::string RbMonitor_name                                = "monitor";
+const std::string RbMove_name                                   = "move";
+const std::string RbMoveSchedule_name                           = "move(schedule)";
+const std::string RbNode_name                                   = "node";
+const std::string RbNULL_name                                   = "NULL";
+const std::string RbObject_name                                 = "object";
+const std::string RbPrimitive_name                              = "primitive";
+const std::string RbString_name                                 = "string";
+const std::string RbTopology_name                               = "topology";
+const std::string RbUndefined_name                              = "undefined";
+const std::string RbUnrootedTopology_name                       = "unrooted topology";
+const std::string RetValFunction_name                           = "return value function";
+const std::string SimpleMove_name                               = "simple move";
+const std::string Simplex_name                                  = "simplex";
+const std::string SyntaxAssignExpr_name                         = "assignment";
+const std::string SyntaxElement_name                            = "syntax element";
+const std::string SyntaxFunctionCall_name                       = "function call";
+const std::string SyntaxVariable_name                           = "variable";
+const std::string StochasticNode_name                           = "stochastic node";
+const std::string StringVector_name                             = "string vector";
+const std::string UserFunction_name                             = "user function";
+const std::string Vector_name                                   = "vector";
+const std::string VariableNode_name                             = "variable node";
+const std::string WrapperRule_name                              = "wrapper rule";
+
+#define RbDouble_name3 "yes!"
+
+static const std::string RbDouble_name2 = "really";
 
-namespace AaAlignment {
-const std::string name = "aaAlignment";
-}
-
-namespace AlignmentType {
-const std::string dna = "DNA";
-const std::string aa = "Amino Acid";
-const std::string morph = "Morphology";
-}
-
-namespace AlignmentFileType {
-const std::string nexus = "Nexus";
-const std::string phylip = "Phylip";
-const std::string fasta = "Fasta";
-}
-
-#pragma mark Beta Distribution
-
-namespace Beta {
-const std::string name = "distBeta";
-const std::string alpha = "alpha";
-const std::string beta = "beta";
-}
-
-namespace Branch {
-const std::string name = "branch";
-}
-
-namespace CharacterMatrix {
-const std::string name = "characterMatrix";
-}
-
-namespace ConstantNode {
-const std::string name = "constantNode";
-}
-
-namespace DnaAlignment {
-const std::string name = "dnaAlignment";
-}
-
-namespace Double {
-const std::string name = "double";
-}
-
-#pragma mark Chi-Square Distribution
-
-namespace ChiSquare {
-}
-
-namespace DAGNode {
-const std::string name = "dagNode";
-}
-
-namespace DAGNodeContainer {
-const std::string name = "dagNodeContainer";
-}
-
-namespace DeterministicNode {
-const std::string name = "deterministcNode";
-}
-
-namespace Distribution {
-const std::string name = "distribution";
-}
-
-namespace DistUnifUnrootedTopology {
-const std::string name = "distUniformUnrootedTopology";
-}
-
-#pragma mark Dirichlet Distribution
-
-namespace Dirichlet {
-const std::string name = "distDirichlet";
-}
-
-#pragma mark Exponential Distribution
-
-namespace Exponential {
-const std::string name = "distExponential";
-const std::string lambda = "rate";
-}
-
-#pragma mark Gamma Distribution
-
-namespace Gamma {
-}
-
-namespace GTR {
-const std::string name = "gtr";
-}
-
-namespace Int {
-const std::string name = "int";
-}
-
-#pragma mark LogNormal Distribution
-
-namespace LogNormal {
-}
-
-namespace MCMC {
-const std::string name = "MCMC";
-}
-
-namespace Model {
-const std::string name = "model";
-}
-
-namespace Node {
-const std::string name = "node";
-}
-
-namespace Matrix {
-        const std::string    name    = "matrix";
-        }
-
-#pragma mark Normal Distribution
-
-namespace Normal {
-const std::string name;
-const std::string dname = "dnorm";
-const std::string pname = "pnorm";
-const std::string rname = "rvnorm";
-const std::string mu;
-const std::string sigma;
-}
-
-#pragma mark Poisson Distribution
-
-namespace Poisson {
-}
-
-namespace ReadCharacterMatrix {
-const std::string name = "readCharMatrix";
-}
-
-namespace StochasticNode {
-const std::string name = "stochasticNode";
-}
-
-namespace String {
-const std::string name = "string";
-}
-
-#pragma mark Uniform(0,1) Distribution
-
-namespace Uniform01 {
-const std::string name = "distUniform01";
-}
-
-namespace Uniform {
-const std::string name = "distUniform";
-const std::string lower = "lower";
-const std::string upper = "upper";
-}
-
-namespace Vector {
-const std::string name = "vector";
-}
-
-namespace RbObject {
-const std::string name = "object";
-}
-
-namespace RbUndefined {
-const std::string name = "undefined";
-}
-
-namespace RbFunction {
-const std::string name = "function";
-}
-
-namespace UserFunction {
-const std::string name = "userFunction";
-}
-
-namespace Argument {
-const std::string name = "argument";
-}
-
-namespace ArgumentRule {
-const std::string name = "argumentRule";
-}
-
-namespace RbMonitor {
-const std::string name = "monitor";
-}
-
-namespace RbMove {
-const std::string name = "move";
-}
-
-namespace RbMoveSchedule {
-const std::string name = "moveSchedule";
-}
-
-namespace MoveScale {
-const std::string name = "moveScale";
-}
-
-namespace MoveSlidingWindow {
-const std::string name = "moveSlidingWindow";
-}
-
-namespace RbMcmc {
-const std::string name = "mcmc";
-}
-
-namespace RbString {
-const std::string name = "string";
-}
-
-namespace RbInt {
-const std::string name = "int";
-}
-
-namespace RbDouble {
-const std::string name = "double";
-}
-
-namespace RbBool {
-const std::string name = "bool";
-}
-
-namespace Topology {
-const std::string name = "topology";
-}
-
-#pragma mark Undefined Data Type
-
-namespace Undefined {
-const std::string name = "undefined";
-}
-
-namespace UnrootedTopology {
-const std::string name = "unrootedTopology";
-}
-
-namespace ReadAlignment {
-const std::string name = "readAlignment";
-const std::string fileType = "fileType";
-const std::string alignmentType = "alignmentType";
-const std::string fileName = "alignmentFileName";
-}
-
-namespace StringVector {
-const std::string name = "stringVector";
-}
-
-namespace IntVector {
-const std::string name = "intVector";
-}
-
-namespace RbComplex {
-const std::string name = "complex";
-}
-
-namespace RbException {
-const std::string name = "exception";
-}
-
-namespace RbPrimitive {
-const std::string name = "primitive";
-}
-
-namespace Move {
-const std::string name = "move";
-}
-
-namespace MoveSchedule {
-const std::string name = "moveSchedule";
-}
-
-namespace RandomNumberGenerator {
-const std::string name = "randomNumberGenerator";
-}
-
-namespace Sqrt {
-const std::string name = "sqrt";
-}
-
-}
 
 #endif

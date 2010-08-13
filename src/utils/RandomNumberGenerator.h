@@ -30,7 +30,8 @@ class RandomNumberGenerator : public RbComplex {
         void                        setSeed(std::vector<unsigned int> s);
 		int                         nextInt(int max);
 		unsigned int                nextUnsignedInt(unsigned int max);
-		double                      nextDouble(void);
+		double                      rv01(void) { return nextDouble(); }             //!< Get a random [0,1) var
+		double                      nextDouble(void);                             
 		double                      nextDouble(double max);
 
 	private:

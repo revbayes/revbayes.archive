@@ -49,6 +49,7 @@ class MoveSchedule : public RbComplex {
         // Functions for managing the move schedule
         void                    addMove(Move* move);                                //!< Add move
         void                    eraseMove(const Move* move);                        //!< Erase  move
+        std::vector<Move*>&     getMoves(void) { return schedule; }                 //!< Get the moves
         double					getUpdateWeight(void) { return nodeUpdateWeight; }  //!< Get update weight
         void                    setUpdateWeight(double weight);                     //!< Set node update weight
 

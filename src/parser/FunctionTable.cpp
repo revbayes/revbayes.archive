@@ -71,7 +71,7 @@ void FunctionTable::addFunction(const std::string name, RbFunction* func) {
 
     retVal = table.equal_range(name);
     for (std::multimap<std::string, RbFunction*>::iterator i=retVal.first; i!=retVal.second; i++) {
-        if (!FunctionTable::isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules())) {
+        if (!isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules())) {
             std::ostringstream msg;
             i->second->printValue(msg);
             msg << " cannot overload ";
@@ -93,42 +93,54 @@ std::string FunctionTable::briefInfo () const {
 }
 
 
-/** Erase function but not in parent frame */
+/** Clear table */
+void FunctionTable::clear(void) {
+
+    for (std::multimap<std::string, RbFunction*>::iterator i=table.begin(); i!=table.end(); i++)
+        delete (*i).second;
+
+    table.clear();
+}
+
+
+/** Erase function */
 void FunctionTable::eraseFunction(const std::string& name) {
 
     std::pair<std::multimap<std::string, RbFunction*>::iterator,
               std::multimap<std::string, RbFunction*>::iterator> retVal;
 
     retVal = table.equal_range(name);
-    if (retVal.first == table.end()) {
-        if (parentTable != NULL)
-            parentTable->eraseFunction(name);
-        else
-            throw RbException("No function named '"+ name + "'");
-    }
-
-    if (parentTable != NULL)
-        table.erase(retVal.first, retVal.second);
-    else
-        throw RbException("Functions in base environment cannot be erased");
+    table.erase(retVal.first, retVal.second);
 }
 
 
 /** Execute function */
 const RbObject* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) const {
 
+    RbFunction* theFunction = findFunction(name, args);
+
+    return theFunction->execute();
+}
+
+
+/** Find function (also processes arguments) */
+RbFunction* FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args) const {
+
     std::pair<std::multimap<std::string, RbFunction*>::const_iterator,
               std::multimap<std::string, RbFunction*>::const_iterator> retVal;
 
-    retVal = table.equal_range(name);
-    if (retVal.first == table.end()) {
+    size_t count = table.count(name);
+    if (count == 0) {
         if (parentTable != NULL)
-            return parentTable->executeFunction(name, args);
+            return parentTable->findFunction(name, args);
         else
             throw RbException("No function named '"+ name + "'");
     }
-    else if (retVal.first == retVal.second) {
-        return ((RbFunction*)(retVal.first->second))->execute(args);
+    retVal = table.equal_range(name);
+    if (count == 1) {
+        if (retVal.first->second->processArguments(args) == false)
+            throw RbException("Argument mismatch for call to '" + name + "'");
+        return retVal.first->second;
     }
     else {
         IntVector matchScore, bestScore;
@@ -158,7 +170,7 @@ const RbObject* FunctionTable::executeFunction(const std::string& name, const st
         if ( bestMatch == NULL )
             throw RbException("No overloaded function '" + name + "' matches arguments");
         else
-            return bestMatch->execute();    // Arguments are already processed!
+            return bestMatch;
     }
 }
 
@@ -166,72 +178,36 @@ const RbObject* FunctionTable::executeFunction(const std::string& name, const st
 /** Get function */
 RbFunction* FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) const {
 
-    std::pair<std::multimap<std::string, RbFunction*>::const_iterator,
-              std::multimap<std::string, RbFunction*>::const_iterator> retVal;
+    RbFunction* theFunction = (RbFunction*)(findFunction(name, args)->clone());
 
-    size_t i = table.size();
-    retVal = table.equal_range(name);
-    if (retVal.first == table.end()) {
-        if (parentTable != NULL)
-            return parentTable->getFunction(name, args);
-        else
-            throw RbException("No function named '"+ name + "'");
-    }
-    else if (retVal.first == retVal.second) {
-        RbFunction* func = (RbFunction*)(retVal.first->second->clone());
-        func->processArguments(args);
-        return func;
-    }
-    else {
-        IntVector matchScore, bestScore;
-        const RbFunction* bestMatch = NULL;
-        bool foundFirst = false;
+    theFunction->processArguments(args);
 
-        for (std::multimap<std::string, RbFunction*>::const_iterator i=retVal.first; i!=retVal.second; i++) {
-            if ( i->second->processArguments(args, &matchScore) ) {
-                if ( foundFirst == false ) {
-                    foundFirst = true;
-                    bestScore = matchScore;
-                    bestMatch = i->second;
-                }
-                else {
-                    size_t j;
-                    for (j=0; j<matchScore.size() && j<bestScore.size(); j++) {
-                        if (matchScore[j] < bestScore[j]) {
-                            bestScore = matchScore;
-                            bestMatch = i->second;
-                        }
-                        else if (matchScore[j] > bestScore[j])
-                            break;
-                    }
-                    if (j==matchScore.size() || j==bestScore.size())
-                        throw RbException("Ambiguous call to function '" + name + "'");
-                }
-            }
-        }
-        if ( bestMatch == NULL )
-            throw RbException("No overloaded function '" + name + "' matches arguments");
+    return theFunction;
+}
 
-        RbFunction* func = (RbFunction*)(bestMatch->clone());
-        func->processArguments(args);       // Function clone does not have processed arguments
-        return func;
-    }
+
+/** Get function value */
+RbObject* FunctionTable::getFunctionValue(const std::string& name, const std::vector<Argument>& args) const {
+
+    RbFunction* theFunction = findFunction(name, args);
+
+    return theFunction->getValue();
 }
 
 
 /** Check if two formals are unique */
-bool FunctionTable::isDistinctFormal(const ArgumentRule** x, const ArgumentRule** y) {
+bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const  {
 
     /* Check that all labels are unique in both sets of argument rules */
-    for (int i=0; x[i]!=NULL; i++) {
-        for (int j=i+1; x[j]!=NULL; j++) {
+    for (size_t i=0; i<x.size(); i++) {
+        for (size_t j=i+1; j < y.size(); j++) {
             if (x[i]->getLabel().size() != 0 && x[j]->getLabel().size() != 0)
             if (x[i]->getLabel() == x[j]->getLabel())
                 return false;
         }
     }
-    for (int i=0; y[i]!=NULL; i++) {
-        for (int j=i+1; y[j]!=NULL; j++) {
+    for (size_t i=0; i<y.size(); i++) {
+        for (size_t j=i+1; j<y.size(); j++) {
             if (y[i]->getLabel().size() != 0 && y[j]->getLabel().size() != 0)
             if (y[i]->getLabel() == y[j]->getLabel())
                 return false;
@@ -239,13 +215,13 @@ bool FunctionTable::isDistinctFormal(const ArgumentRule** x, const ArgumentRule*
     }
 
     /* Check that the same labels are not used for different positions */
-    for (int i=0; x[i]!=NULL; i++) {
+    for (size_t i=0; i<x.size(); i++) {
 
         const std::string& xLabel = x[i]->getLabel();
         if (xLabel.size() == 0)
             continue;
 
-        for (int j=0; y[j]!=NULL; j++) {
+        for (size_t j=0; j<y.size(); j++) {
 
             const std::string& yLabel = y[i]->getLabel();
             if (yLabel.size() == 0)
@@ -257,22 +233,22 @@ bool FunctionTable::isDistinctFormal(const ArgumentRule** x, const ArgumentRule*
     }
 
     /* Check that types are different for at least one argument without default values */
-    int i;
-    for (i=0; x[i]!=NULL && y[i]!=NULL; i++) {
-        if (x[i]->getDefaultValue().isType(RbUndefined_name) &&
-            y[i]->getDefaultValue().isType(RbUndefined_name) &&
+    size_t i;
+    for (i=0; i<x.size() && i<y.size(); i++) {
+        if (x[i]->getDefaultValue() == NULL &&
+            y[i]->getDefaultValue() == NULL &&
             !x[i]->isType(Ellipsis_name) &&
-            !y[i]->isType(Ellipsis_name) && 
-            (x[i]->getNumDim() != y[i]->getNumDim() || x[i]->getType() != y[i]->getType()))
+            !y[i]->isType(Ellipsis_name) &&
+            (x[i]->getDim() != y[i]->getDim() || x[i]->getValueType() != y[i]->getValueType()))
             return true;
     }
-    for (int j=i; x[j]!=NULL; j++) {
-        if (x[j]->getDefaultValue().isType(RbUndefined_name) &&
+    for (size_t j=i; j<x.size(); j++) {
+        if (x[j]->getDefaultValue() == NULL &&
             !x[j]->isType(Ellipsis_name))
             return true;
     }
-    for (int j=i; y[j]!=NULL; j++) {
-        if (y[j]->getDefaultValue().isType(RbUndefined_name) &&
+    for (size_t j=i; j<y.size(); j++) {
+        if (y[j]->getDefaultValue() == NULL &&
             !y[j]->isType(Ellipsis_name))
             return true;
     }

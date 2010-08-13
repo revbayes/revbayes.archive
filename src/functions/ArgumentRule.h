@@ -1,7 +1,8 @@
 /**
  * @file
  * This file contains the declaration of ArgumentRule, which is
- * used to describe rules for arguments passed to functions.
+ * the base class for objects used to describe rules for
+ * arguments passed to functions.
  *
  * @brief Declaration of ArgumentRule
  *
@@ -33,40 +34,40 @@ class StringVector;
 class ArgumentRule : public RbInternal {
 
     public:
-                                    ArgumentRule(const std::string& argName, const std::string& type, int dim=0);  //!< Constructor of rule without default value
-                                    ArgumentRule(const std::string& argName, RbObject* defVal);                    //!< Constructor of rule with default value
-                                    ArgumentRule(const std::string& argName, const std::string& t, RbObject* dv);  //!< Constructor of rule with required type and default value
-                                    ArgumentRule(const std::string& argName, const std::string& t, RbObject* dv, RbObject* mnv, RbObject* mxv);    //!< Constructor of rule with required type, default value, min and max
-		                            ArgumentRule(const ArgumentRule& a);                    //!< Copy constructor
-        virtual                     ~ArgumentRule(void);                                    //!< Destructor
+                                    ArgumentRule(const std::string& argName, const std::string& valType, int varDim=0);    //!< Constructor of rule without default value
+                                    ArgumentRule(const std::string& argName, const std::string& valType, int varDim, RbObject* defVal);     //!< Constructor of rule with default value
+                                    ArgumentRule(const std::string& argName, RbObject* defVal);     //!< Constructor of rule with default value and implicit type and dim
+                                    ArgumentRule(const std::string& argName, DAGNode* defVar);      //!< Constructor of rule with default variable and implicit type and dim
+		                            ArgumentRule(const ArgumentRule& a);                //!< Copy constructor
+        virtual                     ~ArgumentRule(void);                                //!< Destructor
 
         // Assignment operator
-        ArgumentRule&               operator=(const ArgumentRule& x);                       //!< Assignment operator
+        ArgumentRule&               operator=(const ArgumentRule& x);                   //!< Assignment operator
 
         // Basic utility functions
-        ArgumentRule*               clone(void) const { return new ArgumentRule(*this); }   //!< Clone object
-        virtual const StringVector& getClass(void) const;                                   //!< Get class vector
-        void                        printValue(std::ostream& o) const;                      //!< Print value (for user)
-        std::string                 toString(void) const;                                   //!< General info on object
+        virtual ArgumentRule*       clone(void) const { return new ArgumentRule(*this); }   //!< Clone object
+        virtual const StringVector& getClass(void) const;                               //!< Get class vector
+        void                        printValue(std::ostream& o) const;                  //!< Print value for user
+        std::string                 toString(void) const;                               //!< General info on object
 
-        // Regular functions
-        const RbObject&             getDefaultValue(void) const { return *defaultValue; }
+        // ArgumentRule functions
+        RbObject*                   getDefaultValue(void) const;                        //!< Get default val (copy)
+        DAGNode*                    getDefaultVariable(void) const;                     //!< Get default node (copy)
+        DAGNode*                    getDefaultVariablePtr(void) const;                  //!< Get default node (ptr)
+        int                         getDim(void) const { return dim; }                  //!< Get argument dim
         std::string                 getLabel(void) const { return label; }              //!< Get label of argument
-        const RbObject&             getMinValue(void) const { return *minValue; }       //!< Get min
-        const RbObject&             getMaxValue(void) const { return *maxValue; }       //!< Get max
-        bool                        getNumDim(void) const { return numDim; }            //!< Get dim
-        std::string                 getType(void) const { return requiredType; }        //!< Get atomic type of argument
-        virtual bool                isArgValid(const DAGNode* var) const;               //!< Is var a valid argument?
+        const std::string&          getValueType(void) const { return valueType; }      //!< Get value type
+        bool                        hasDefault(void) const;                             //!< Has default?
+        virtual bool                isArgValid(DAGNode* var) const;                     //!< Is var valid argument?
+        bool                        isWrapperRule(void) const { return wrapperRule; }   //!< Is '&' argument
+        void                        setWrapperRule(bool val) { wrapperRule = val; }     //!< Set wrapperRule flag
 
     protected:
         std::string                 label;                                              //!< Label of argument
-        std::string                 requiredType;                                       //!< Type of argument
-        int                         numDim;                                             //!< Dimensions of argument
-        RbObject*                   defaultValue;                                       //!< Default value
-        RbObject*                   minValue;                                           //!< Min value
-        RbObject*                   maxValue;                                           //!< Max value
+        std::string                 valueType;                                          //!< Type of argument value
+        int                         dim;                                                //!< Dim of argument
+        DAGNode*                    defaultVariable;                                    //!< Default variable
+        bool                        wrapperRule;                                        //!< Is wrapper argument?
 };
 
 #endif
-
-

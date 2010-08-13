@@ -45,7 +45,7 @@ RbObject* RbObject::convertTo(const std::string& type) const {
 /** Get class vector describing type of object */
 const StringVector& RbObject::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RbNames::RbObject::name);
+    static StringVector rbClass = StringVector(RbObject_name);
 	return rbClass; 
 }
 
@@ -58,7 +58,7 @@ const std::string& RbObject::getType(void) const {
 
 
 /** Is convertible to type? Default is false */
-bool RbObject::isConvertibleTo(const std::string& type) const {
+bool RbObject::isConvertibleTo(const std::string& type, int dim) const {
 
     return false;
 }

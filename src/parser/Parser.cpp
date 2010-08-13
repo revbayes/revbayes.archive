@@ -18,6 +18,7 @@
 #include "RbNames.h"
 #include "RbObject.h"
 #include "RbString.h"
+#include "StringVector.h"
 #include "SyntaxElement.h"
 #include "SyntaxFunctionCall.h"
 #include "SyntaxVariable.h"
@@ -33,6 +34,10 @@
 #define PRINTF(...)
 #endif
 
+
+// Global flags indicating whether flex found a newline or EOF
+bool foundNewline;
+bool foundEOF;
 
 /** This function gets help info about a symbol */
 int Parser::help(RbString *symbol) const {
@@ -108,31 +113,30 @@ int Parser::execute(SyntaxElement *root) const {
     
     //! Execute syntax tree
     try {
-        PRINTF("Trying to get the semantic value of the syntax tree.\n");
+        PRINTF("Parser getting the semantic value of the syntax tree...\n");
         result = root->getValue(&Workspace::userWorkspace());
     }
     catch(RbException& rbException) {
-        PRINTF("Caught an exception\n");
 
         // Catch a quit request
         if (rbException.getExceptionType() == RbException::QUIT)
             exit(0);
 
         // All other exceptions
+        PRINTF("Caught an exception\n");
         std::ostringstream msg;
         rbException.printValue(msg);
         msg << std::endl;
         UserInterface::userInterface().output(msg.str());
 
-        // Return failure
-        return 1;
+        // Return signal indicating problem
+        return 2;
     }
 
     // Print result if the root is not an assign expression
     if (result != NULL && !root->isType(SyntaxAssignExpr_name)) {
         std::ostringstream msg;
         result->printValue(msg);
-        msg << std::endl;
         UserInterface::userInterface().output(msg.str());
     }
 
@@ -148,12 +152,25 @@ int Parser::execute(SyntaxElement *root) const {
 /** Give flex a line to parse */
 void Parser::getline(char* buf, int maxsize) {
 
-    rrcommand.getline(buf, maxsize-1);
-    size_t i = strlen(buf);
-    buf[i++] = '\n';
-    buf[i] = '\0';
+    if (!rrcommand.good()) {
+        foundEOF = true;
+        buf[0] = EOF;
+        buf[1] = '\0';
+    }
+    else {
+        foundNewline = false;
+        rrcommand.getline(buf, maxsize-3);
+        size_t i = strlen(buf);
+        buf[i++] = '\n';
+        buf[i] = '\0';
+    }
 
-    PRINTF("Parser gave flex line: %s", buf);
+#if defined (DEBUG_PARSER)
+    if (foundEOF == true)
+        PRINTF("Parser gave flex EOF\n");
+    else
+        PRINTF("Parser gave flex line(s):\n %s", buf);
+#endif
 }
 
 
@@ -162,29 +179,73 @@ int Parser::processCommand(std::string& command) {
 
     extern int yyparse(void);   // Defined in grammar.tab.c (from gammar.y)
 
-    // Put command where flex can find it
-    rrcommand << command;
+    // Append command to stream where flex can find it
+    rrcommand.str(rrcommand.str() + command);
 
     // Call Bison code, which calls Flex code, which calls rrinput
-    PRINTF("\nCalling bison with rrcommand = '%s'\n", rrcommand.str().c_str());
-    int result = yyparse();
+    PRINTF("\nCalling bison with rrcommand:\n'%s'\n", rrcommand.str().c_str());
+    foundNewline = false;
+    foundEOF = false;
+    int result;
+    try {
+        result = yyparse();
+    }
+    catch(RbException& rbException) {
+        PRINTF("Caught an exception\n");
 
-    // Error or just incomplete statement?
+        // Catch a quit request
+        if (rbException.getExceptionType() == RbException::QUIT)
+            exit(0);
+
+        // All other exceptions
+        PRINTF("Parse error\n");
+        std::ostringstream msg;
+        rbException.printValue(msg);
+        msg << std::endl;
+        UserInterface::userInterface().output(msg.str());
+
+        // Return signal indicating problem
+        return 1;
+    }
+
     if (result == 0) {
         PRINTF("Parser resetting command string\n\n");
         rrcommand.str("");
         rrcommand.clear();  // Clear any error flags
+        return 0;
+    }
+    else if (result == 1 && foundNewline == true && foundEOF == false && !rrcommand.good()) {
+        PRINTF("Incomplete command ending with inappropriate newline; stripping newline and appending to command string\n");
+        rrcommand.str(rrcommand.str() + " ");
+        rrcommand.clear();
+        return 1;
+    }
+    else if (result == 1 && foundNewline == true && foundEOF == true) {
+        PRINTF("Incomplete command ending with appropriate newline; keeping newline and appending to command string\n");
+        rrcommand.str(rrcommand.str() + "\n ");
+        rrcommand.clear();
+        return 1;
     }
     else {
-        PRINTF("Incomplete command; appending to command string\n");
-        rrcommand << " ";
+        PRINTF("Syntax error\n");
+        rrcommand.str("");
+        while (foundNewline == false)
+            yyparse();
+        rrcommand.clear();
+        return 2;
     }
-
-    return result;
 }
 
 
-/** Call-back function for the flex-generated code in lex.yy.cpp */
+/** Reset the parser */
+void Parser::reset(void) {
+
+    rrcommand.str("");
+    rrcommand.clear();
+}
+
+
+/** Global call-back function for the flex-generated code in lex.yy.cpp */
 void rrinput(char* buf, int& result, int maxsize) {
 
     buf[0] = '\0';

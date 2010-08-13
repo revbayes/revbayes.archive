@@ -13,10 +13,12 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "StringVector.h"
 #include "SyntaxFunctionDef.h"
 #include "UserFunction.h"
 #include "Workspace.h"
@@ -123,10 +125,10 @@ DAGNode* SyntaxFunctionDef::getDAGNode(Frame* formal) const {
 RbObject* SyntaxFunctionDef::getValue(Frame* frame) const {
 
     // Get argument rules from the formals
-    const ArgumentRule** argRules = (const ArgumentRule**) calloc (formalArgs->size()+1, sizeof(ArgumentRule*));
-    int index = 0;
+    static ArgumentRules argRules;
+
     for (std::list<SyntaxFormal*>::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
-        argRules[index++] = (*i)->getArgumentRule(frame);
+        argRules.push_back( (*i)->getArgumentRule(frame) );
 
     // Create copy of the statements
     std::list<SyntaxElement*>* stmts = new std::list<SyntaxElement*>();
@@ -137,7 +139,7 @@ RbObject* SyntaxFunctionDef::getValue(Frame* frame) const {
     Frame* defineEnvironment = frame->clone();  //TODO: make deep copy of entire environment
 
     // Create the function
-    UserFunction* theFunction = new UserFunction(argRules, returnType, stmts, defineEnvironment);
+    UserFunction* theFunction = new UserFunction(argRules, (*returnType), stmts, defineEnvironment);
 
     // Insert in the user workspace
     Workspace::userWorkspace().addFunction(*functionName, theFunction);

@@ -16,7 +16,6 @@
  * $Id$
  */
 
-#include "ContainerIterator.h"
 #include "IntVector.h"
 #include "RbDouble.h"
 #include "RbException.h"

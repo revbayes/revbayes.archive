@@ -24,7 +24,7 @@
 
 /** Constructor with implicit type */
 SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal)
-    : SyntaxElement(), type(new RbString(RbNames::RbObject::name)), label(id), defaultExpr(defaultVal) {
+    : SyntaxElement(), type(new RbString(RbObject_name)), label(id), defaultExpr(defaultVal) {
 
     if (defaultExpr != NULL && !defaultExpr->isConstExpr())
         throw(RbException("Default value is not a constant expression"));
@@ -101,12 +101,13 @@ bool SyntaxFormal::equals(const SyntaxElement* elem) const {
 
 
 /** Make argument rule from element */
+// TODO: Add dimensions
 ArgumentRule* SyntaxFormal::getArgumentRule(Frame* frame) const {
 
     if (defaultExpr == NULL)
         return new ArgumentRule(*label, *type);
     else
-        return new ArgumentRule(*label, *type, defaultExpr->getValue(frame));
+        return new ArgumentRule(*label, *type, 0, defaultExpr->getValue(frame));
 }
 
 

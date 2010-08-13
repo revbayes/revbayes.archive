@@ -30,6 +30,7 @@ class RbFunction;
 class DeterministicNode : public VariableNode {
 
     public:
+                            DeterministicNode(const std::string& type);     //!< Constructor of empty node
                             DeterministicNode(RbFunction* func);            //!< Constructor from function
                             DeterministicNode(const DeterministicNode& d);  //!< Copy constructor
                             ~DeterministicNode();                           //!< Destructor
@@ -40,10 +41,11 @@ class DeterministicNode : public VariableNode {
         // Basic utility functions
         DeterministicNode*  clone() const;                          //!< Clone the deterministic node
         const StringVector& getClass() const;                       //!< Get class vector
+        const RbFunction*   getFunction(void) const { return function; }    //!< Get function
         const RbObject*     getStoredValue();                       //!< Get stored value intelligently
         const RbObject*     getValElement(const IntVector& index) const;  //!< Get value element
         const RbObject*     getValue();                             //!< Get current value intelligently
-        const RbObject*     getValue() const;                       //!< Get current value stupidly
+        const RbObject*     getValue() const;                       //!< Get current value (const) if possible
         const StringVector& getValueClass() const;                  //!< Get value class
         void                printStruct(std::ostream& o) const;     //!< Print struct for user
         void                printValue(std::ostream& o) const;      //!< Print value for user
@@ -51,16 +53,18 @@ class DeterministicNode : public VariableNode {
         void                setValue(RbObject* value);              //!< Set value
         std::string         toString(void) const;                   //!< Complete info about object
 
-        // Functions for updating part of a DAG
+        // DAG functions
+        DeterministicNode*  cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const; //!< Clone entire graph
         void    	        getAffected(std::set<StochasticNode*>& affected);//!< Mark and get affected nodes
         void    	        keepAffected();                         //!< Keep value of affected nodes
         void                restoreAffected();                      //!< Restore value of affected nodes
+        void                swapParentNode(DAGNode* oldP, DAGNode* newP);   //!< Swap a parent node
+        void                touchAffected(void);                    //!< Tell affected nodes value is reset
 
-        // overwritten probability functions
-        double              getLnLikelihoodRatio(void);             //!< Get log likelihood ratio
-        double              getLnPriorRatio(void);                  //!< Get log prior ratio
+        // Move function
+        MoveSchedule*       getDefaultMoves(void);                  //!< Get default moves
 
-   protected:
+    protected:
         // Utility function
         void                update(void);                           //!< Update value and storedValue
 
@@ -72,5 +76,4 @@ class DeterministicNode : public VariableNode {
 };
 
 #endif
-
 
