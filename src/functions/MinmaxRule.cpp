@@ -23,7 +23,6 @@
 #include "RbInt.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "RbUndefined.h"
 #include "StringVector.h"
 #include "Workspace.h"
 

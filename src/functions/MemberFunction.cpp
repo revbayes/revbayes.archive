@@ -23,7 +23,6 @@
 #include "RbException.h"
 #include "MemberFunction.h"
 #include "RbNames.h"
-#include "RbUndefined.h"
 #include "StringVector.h"
 
 #include <sstream>
