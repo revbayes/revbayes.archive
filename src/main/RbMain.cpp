@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     std::cout << std::endl;
     std::cout << "                            RevBayes" << std::endl;
     std::cout << std::endl;
-    std::cout << "          An R-like environment for evolutionary analysis" << std::endl;
+    std::cout << "          An R-like environment for phylogenetic analysis" << std::endl;
     std::cout << "                     using Bayesian inference" << std::endl;
     std::cout << std::endl;
     std::cout << "             Released under the GPL license, version 3" << std::endl;

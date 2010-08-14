@@ -8,7 +8,6 @@ class ProbabilityCalculator : public RbObject {
 
 public:
 
-
 private:
 
 	
