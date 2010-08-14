@@ -7,18 +7,32 @@
 
 
 
+RandomNumberGenerator::RandomNumberGenerator(void) {
+
+	name = "";
+	unsigned int x  = (unsigned int)( time(0) );
+	unsigned int s1 = x & 0xFFFF;
+	unsigned int s2 = x >> 16;
+	seed.push_back(s1);
+	seed.push_back(s2);
+}
+
 RandomNumberGenerator::RandomNumberGenerator(std::string n, std::vector<unsigned int> s) {
+
     name = n;
     seed = s;
 }
 
 RandomNumberGenerator::RandomNumberGenerator(std::vector<unsigned int> s) {
+
+	name = "";
 	seed = s;
 }
 
 RandomNumberGenerator::RandomNumberGenerator(const RandomNumberGenerator& rng) {
-    seed = rng.seed;
+
     name = rng.name;
+    seed = rng.seed;
 }
 
 RandomNumberGenerator::~RandomNumberGenerator() {
@@ -26,11 +40,13 @@ RandomNumberGenerator::~RandomNumberGenerator() {
 }
 
 RbObject* RandomNumberGenerator::clone() const {
+
     RandomNumberGenerator* x = new RandomNumberGenerator(*this);
     return (RbObject*) x;
 }
 
 bool RandomNumberGenerator::equals(const RbObject* obj) const {
+
     return false;
 }
 
@@ -41,14 +57,17 @@ const StringVector& RandomNumberGenerator::getClass(void) const {
 }
 
 void RandomNumberGenerator::print(std::ostream& o) const {
+
     o << "Random Number Generator (" << name << ")" << std::endl;
 }
 
 void RandomNumberGenerator::printValue(std::ostream& o) const {
+
     o << name << std::endl;
 }
 
 std::string RandomNumberGenerator::toString(void) const {
+
     return "Random Number Generator (" + name + ")";
 }
 
@@ -108,6 +127,7 @@ RandomNumberGenerator& RandomNumberGenerator::operator=(const RandomNumberGenera
 }
 
 void RandomNumberGenerator::setSeed(std::vector<unsigned int> s) {
+
     seed = s;
 }
 
@@ -132,5 +152,5 @@ double RandomNumberGenerator::uniform01(void) {
 	// Returns a pseudo-random number between 0 and 1.
 	seed[0] = 36969 * (seed[0] & 0177777) + (seed[0] >> 16);
 	seed[1]= 18000 * (seed[1] & 0177777) + (seed[1] >> 16);
-	return ((seed[0] << 16)^(seed[1] & 0177777)) * 2.328306437080797e-10; 	/*!< in [0,1) */
+	return (((seed[0] << 16)^(seed[1] & 0177777)) * 2.328306437080797e-10) + 2.328306435996595e-10;
 }

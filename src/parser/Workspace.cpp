@@ -200,16 +200,13 @@ RandomNumberGenerator* Workspace::get_rng(void) {
 void Workspace::initializeGlobalWorkspace(void) {
 
     /* Add global variables */
-    std::vector<unsigned int> seeds;
-    seeds.push_back(1);
-    seeds.push_back(1337);
-    addVariable("_rng", new RandomNumberGenerator(seeds));
+    addVariable("_rng", new RandomNumberGenerator);
 
     /* Add types */
     addType(new RbInt(0));
     addType(new RbDouble());
     addType(new PosReal(1.0));
-    addType(new RandomNumberGenerator(seeds));
+    addType(new RandomNumberGenerator);
 
     /* Add member object types with auto-generated constructors */
     addTypeWithConstructor("mcmc", new Mcmc());
