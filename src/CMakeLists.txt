@@ -1,47 +1,108 @@
-# The name of our project is "REvBayes". CMakeLists files in this project can
+# The name of our project is "RevBayes". CMakeLists files in this project can
 # refer to the root source directory of the project as ${REVBAYES_SOURCE_DIR} and
 # to the root binary directory of the project as ${REVBAYES_BINARY_DIR}.
 cmake_minimum_required (VERSION 2.6)
 project (REVBAYES)
 
 # dag
-SET ( dag ../../dag/ConstantNode.cpp ../../dag/ContainerIterator.cpp ../../dag/DAGNode.cpp ../../dag/DAGNodeContainer.cpp ../../dag/DeterministicNode.cpp ../../dag/StochasticNode.cpp ../../dag/VariableNode.cpp )
+SET ( dag \\
+../../dag/ConstantNode.cpp \\
+../../dag/DAGNode.cpp \\
+../../dag/DAGNodeContainer.cpp \\
+../../dag/DeterministicNode.cpp \\
+../../dag/StochasticNode.cpp \\
+../../dag/VariableNode.cpp )
 
 # data types
-SET ( complex ../../datatypes/complex/Intvector.cpp ../../datatypes/complex/MemberObject.cpp ../../datatypes/complex/RbBitset.cpp ../../datatypes/complex/RbComplex.cpp ../../datatypes/complex/RbString.cpp ../../datatypes/complex/StringVector.cpp ../../datatypes/complex/Vector.cpp)
-SET ( model ../../datatypes/model/RbBranch.cpp ../../datatypes/model/RbCharacterMatrix.cpp ../../datatypes/model/RbDnaAlignment.cpp ../../datatypes/model/RbModel.cpp ../../datatypes/model/RbNode.cpp ../../datatypes/model/RbTopology.cpp ../../datatypes/model/RbUnrootedTopology.cpp)
-SET ( primitive ../../datatypes/primitive/RbBool.cpp ../../datatypes/primitive/RbDouble.cpp ../../datatypes/primitive/RbInt.cpp )
-SET ( data_types ${primitive} ${complex} ${model} ../../datatypes/RbInternal.cpp ../../datatypes/RbObject.cpp ../../datatypes/RbUndefined.cpp )
+SET ( complex \\
+../../datatypes/complex/Intvector.cpp \\
+../../datatypes/complex/RbBitset.cpp \\
+../../datatypes/complex/RbComplex.cpp \\
+../../datatypes/complex/RbString.cpp \\
+../../datatypes/complex/StringVector.cpp \\
+../../datatypes/complex/Vector.cpp)
+
+SET ( model \\
+../../datatypes/model/RbBranch.cpp \\
+../../datatypes/model/RbCharacterMatrix.cpp \\
+../../datatypes/model/RbDnaAlignment.cpp \\
+../../datatypes/model/Model.cpp \\
+../../datatypes/model/RbNode.cpp \\
+../../datatypes/model/RbTopology.cpp \\
+../../datatypes/model/RbUnrootedTopology.cpp)
+
+SET ( primitive \\
+../../datatypes/primitive/RbBool.cpp \\
+../../datatypes/primitive/RbDouble.cpp \\
+../../datatypes/primitive/RbInt.cpp )
+
+SET ( data_types \\
+${primitive} ${complex} ${model} \\
+../../datatypes/RbInternal.cpp \\
+../../datatypes/RbObject.cpp \\
+../../datatypes/RbUndefined.cpp )
 
 # distributions
-SET ( dist_phylogenetic ../../distributions/phylogenetic/DistUnifUnrootedTopology.cpp)
-#SET ( dist_statistic ../../distributions/statistics/DistBeta.cpp ../../distributions/statistics/DistDirichlet.cpp ../../distributions/statistics/DistExponential.cpp ../../distributions/statistics/DistNormal.cpp ../../distributions/statistics/DistUniform.cpp )
-SET ( dist_statistic ../../distributions/statistics/DistDirichlet.cpp ../../distributions/statistics/DistExponential.cpp ../../distributions/statistics/DistNormal.cpp ../../distributions/statistics/DistUniform.cpp )
-SET ( distribution ../../distributions/Distribution.cpp ${dist_phylogenetic} ${dist_statistic})
+SET ( dist_phylogenetic \\
+../../distributions/phylogenetic/Distribution_Nucleotide.cpp \\
+../../distributions/phylogenetic/DistUnifUnrootedTopology.cpp)
+
+SET ( dist_statistic
+../../distributions/statistics/DistBeta.cpp
+../../distributions/statistics/DistDirichlet.cpp
+../../distributions/statistics/Dist_exp.cpp
+../../distributions/statistics/Dist_norm.cpp
+../../distributions/statistics/Dist_unif.cpp )
+
+SET ( distribution \\
+../../distributions/Distribution.cpp \\
+${dist_phylogenetic} ${dist_statistic})
 
 # factory
-SET ( factory ../../factory/RandomNumberFactory.cpp)
+SET ( factory \\
+../../factory/RandomNumberFactory.cpp)
 
 
 # functions
+SET ( function_basic
+../../functions/basic/func__lookup.cpp
+../../functions/basic/func__range.cpp )
 SET ( function_builtin )
 SET ( function_command )
-SET ( function_distribution ../../functions/distribution/RbFunction_dexp.cpp ../../functions/distribution/RbFunction_dnorm.cpp ../../functions/distribution/RbFunction_pexp.cpp ../../functions/distribution/RbFunction_pnorm.cpp ../../functions/distribution/RbFunction_qexp.cpp ../../functions/distribution/RbFunction_qnorm.cpp ../../functions/distribution/RbFunction_rexp.cpp ../../functions/distribution/RbFunction_rnorm.cpp )
-SET ( function_math ../../functions/math/RbFunction_ln.cpp ../../functions/math/RbFunction_pow.cpp ../../functions/math/RbFunction_sqrt.cpp )
-SET ( function_model ../../functions/model/RbFunction_GTR.cpp ../../functions/model/RbFunction_readCharacterMatrix.cpp )
-SET ( function ${function_builtin} ${function_command} ${function_distribution} ${function_math} ${function_model} ../../functions/Argument.cpp ../../functions/ArgumentRule.cpp ../../functions/RbFunction.cpp )
+SET ( function_math
+../../functions/math/RbFunction_ln.cpp
+../../functions/math/RbFunction_pow.cpp
+../../functions/math/RbFunction_sqrt.cpp )
+SET ( function_model
+../../functions/model/RbFunction_GTR.cpp
+../../functions/model/RbFunction_readCharacterMatrix.cpp )
+SET ( function
+${function_basic}
+${function_builtin}
+${function_command}
+${function_math}
+${function_model}
+../../functions/Argument.cpp
+../../functions/ArgumentRule.cpp
+../../functions/RbFunction.cpp )
 
 # inference
-SET ( mcmc ../../inference/mcmc/RbMcmc.cpp )
+SET ( mcmc
+../../inference/mcmc/Mcmc.cpp )
 SET ( inference ${mcmc} )
 
 # main
-SET ( main ../../main/RbMonitor.cpp )
+SET ( main
+../../main/Monitor.cpp )
 
 # moves
-SET ( move_function ../../moves/functions/RbMoveFunction.cpp)
-SET ( moves_objects ../../moves/objects/MoveScale.cpp ../../moves/objects/MoveSlidingWindow.cpp ../../moves/objects/RbMove.cpp )
-SET ( moves ${moves_function} ${moves_objects} ../../moves/RbMoveSchedule.cpp)
+SET ( moves_simple
+../../moves/simple/Move_mscale.cpp
+../../moves/simple/Move_mslide.cpp)
+SET ( moves ${moves_simple}
+../../moves/MoveSchedule.cpp
+../../moves/Move.cpp
+../../moves/SimpleMove.cpp)
 
 # parser
 SET ( parser ../../parser/FunctionTable.cpp)
@@ -50,7 +111,14 @@ SET ( parser ../../parser/FunctionTable.cpp)
 SET ( ui )
 
 # utils
-SET ( utils ../../utils/RandomNumberGenerator.cpp ../../utils/RbException.cpp ../../utils/RbMath.cpp ../../utils/RbStatistics.cpp )
+SET ( utils_phylogenetic
+../../utils/phylogenetic/NewickConverter.cpp)
+SET ( utils ${utils_phylogenetic}
+../../utils/ContainerIterator.cpp
+../../utils/RandomNumberGenerator.cpp
+../../utils/RbException.cpp
+../../utils/RbMath.cpp
+../../utils/RbStatistics.cpp )
 
 # all sources
 SET ( sources ${dag} ${data_types} ${distribution} ${factory} ${function} ${inference} ${main} ${moves} ${parser} ${ui} ${utils})
@@ -61,12 +129,15 @@ include_directories (dag)
 include_directories (datatypes)
 include_directories (datatypes/complex)
 include_directories (datatypes/model)
+include_directories (datatypes/phylogenetic)
 include_directories (datatypes/primitive)
 include_directories (distributions)
 include_directories (distributions/phylogenetic)
 include_directories (distributions/statistics)
 include_directories (factory)
 include_directories (functions)
+include_directories (functions/basic)
+include_directories (functions/builtin)
 include_directories (functions/distribution)
 include_directories (functions/command)
 include_directories (functions/math)
@@ -74,13 +145,13 @@ include_directories (functions/model)
 include_directories (inference)
 include_directories (inference/mcmc)
 include_directories (moves)
-include_directories (moves/functions)
-include_directories (moves/objects)
+include_directories (moves/simple)
 include_directories (parser)
 include_directories (probabilityCalculators)
 include_directories (test)
 include_directories (ui)
 include_directories (utils)
+include_directories (utils/phylogenetic)
 
 # Recurse into the subdirectories. This does not actually
 # cause another cmake executable to run. The same process will walk through
