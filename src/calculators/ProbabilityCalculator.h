@@ -7,7 +7,7 @@
 class ProbabilityCalculator : public RbObject {
 
 public:
-
+	int this_should_not_be_here;
 private:
 
 	
