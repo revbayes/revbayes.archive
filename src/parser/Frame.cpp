@@ -20,10 +20,10 @@
 #include "ContainerIterator.h"
 #include "DAGNodeContainer.h"
 #include "Frame.h"
-#include "Parser.h"         // Capture parser debug flag
 #include "IntVector.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "RbOptions.h"         // For PRINTF
 #include "StochasticNode.h"
 #include "StringVector.h"
 #include "Workspace.h"

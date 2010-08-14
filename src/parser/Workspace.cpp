@@ -17,17 +17,18 @@
  * $Id$
  */
 
+// Regular include files
 #include "ConstantNode.h"
 #include "ConstructorFunction.h"
 #include "Distribution.h"
 #include "DistributionReal.h"
 #include "DistributionFunction.h"
-#include "Parser.h"         // For PRINTF
 #include "FunctionTable.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbObject.h"
+#include "RbOptions.h"         // For PRINTF
 #include "Workspace.h"
 
 // Objects added to the workspace in initializeGlobalWorkspace()
