@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     // Print a nifty message
     std::cout << std::endl;
     std::cout << std::endl;
-    std::cout << "                            RevBayes" << std::endl;
+    std::cout << "                             RevBayes" << std::endl;
     std::cout << std::endl;
     std::cout << "          An R-like environment for phylogenetic analysis" << std::endl;
     std::cout << "                     using Bayesian inference" << std::endl;
