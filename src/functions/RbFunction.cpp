@@ -92,6 +92,11 @@ std::string RbFunction::briefInfo(void) const {
     return o.str();
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* RbFunction::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Pointer-based equals comparison */
 bool RbFunction::equals(const RbObject* x) const {
@@ -163,6 +168,11 @@ RbObject* RbFunction::getValue() {
         return result->clone();
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool RbFunction::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Print value for user */
 void RbFunction::printValue(std::ostream& o) const {

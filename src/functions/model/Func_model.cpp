@@ -32,6 +32,11 @@ RbObject* Func_model::clone(void) const {
     return new Func_model(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Func_model::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Get argument rules */
 const ArgumentRules& Func_model::getArgumentRules(void) const {
@@ -86,3 +91,10 @@ RbObject* Func_model::getValue(void) {
 
     return new Model(args);
 }
+
+/** Convert to object of another class. The caller manages the object. */
+bool Func_model::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
+

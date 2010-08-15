@@ -38,6 +38,11 @@ RbObject* Func_ls::clone(void) const {
     return new Func_ls(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Func_ls::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Get argument rules */
 const ArgumentRules& Func_ls::getArgumentRules(void) const {
@@ -96,4 +101,9 @@ const std::string& Func_ls::getReturnType(void) const {
     return RbNULL_name;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool Func_ls::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 

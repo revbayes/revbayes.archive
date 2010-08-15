@@ -75,6 +75,11 @@ Func__lookup* Func__lookup::clone(void) const {
     return new Func__lookup(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Func__lookup::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Pointer-based equals comparison */
 bool Func__lookup::equals(const RbObject* x) const {
@@ -146,5 +151,11 @@ int Func__lookup::getReturnDim(void) const {
 const std::string& Func__lookup::getReturnType(void) const {
 
     return argRules[0]->getValueType();
+}
+
+/** Convert to object of another class. The caller manages the object. */
+bool Func__lookup::isConvertibleTo(const std::string& type) const {
+
+    return false;
 }
 

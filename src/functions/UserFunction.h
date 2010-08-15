@@ -55,7 +55,9 @@ class UserFunction :  public RbFunction {
         const ArgumentRules&        getArgumentRules(void) const;       //!< Get arg rules
         const std::string&          getReturnType(void) const;          //!< Get return type
 
-    protected:
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
         const ArgumentRules         argumentRules;      //!< The argument rules
         std::string                 returnType;         //!< The return type
         std::list<SyntaxElement*>*  code;               //!< The code

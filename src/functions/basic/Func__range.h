@@ -41,7 +41,9 @@ class Func__range :  public RbFunction {
         // New design
         RbObject*                   getValue(void);                         //!< Get function value
 
-    protected:
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
         const RbObject*             executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 };
 

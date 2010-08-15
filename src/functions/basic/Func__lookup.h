@@ -46,7 +46,9 @@ class Func__lookup :  public RbFunction {
         int                         getReturnDim(void) const;               //!< Get dim of return value
         const std::string&          getReturnType(void) const;              //!< Get type of return value
 
-    protected:
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
         const RbObject*             executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 
         ArgumentRules               argRules;                               //!< The argument rules

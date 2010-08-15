@@ -37,6 +37,11 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
     return new ConstructorFunction(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* ConstructorFunction::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Pointer-based equals comparison */
 bool ConstructorFunction::equals(const RbObject* x) const {
@@ -103,5 +108,11 @@ const StringVector& ConstructorFunction::getClass(void) const {
 const std::string& ConstructorFunction::getReturnType(void) const {
 
     return templateObject->getType();
+}
+
+/** Convert to object of another class. The caller manages the object. */
+bool ConstructorFunction::isConvertibleTo(const std::string& type) const {
+
+    return false;
 }
 

@@ -50,6 +50,11 @@ MemberFunction* MemberFunction::clone(void) const {
     return new MemberFunction(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* MemberFunction::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Pointer-based equals comparison */
 bool MemberFunction::equals(const RbObject* x) const {
@@ -87,6 +92,11 @@ const std::string& MemberFunction::getReturnType(void) const {
     return returnType;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool MemberFunction::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Complete info about object */
 std::string MemberFunction::toString(void) const {

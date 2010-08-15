@@ -37,6 +37,11 @@ RbObject* Func_quit::clone(void) const {
     return new Func_quit(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Func_quit::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Get argument rules */
 const ArgumentRules& Func_quit::getArgumentRules(void) const {
@@ -71,6 +76,12 @@ const StringVector& Func_quit::getClass(void) const {
 const std::string& Func_quit::getReturnType(void) const {
 
     return RbNULL_name;
+}
+
+/** Convert to object of another class. The caller manages the object. */
+bool Func_quit::isConvertibleTo(const std::string& type) const {
+
+    return false;
 }
 
 

@@ -33,7 +33,9 @@ class Func_ls :  public RbFunction {
         const ArgumentRules&    getArgumentRules(void) const;       //!< Get argument rules
         const std::string&      getReturnType(void) const;          //!< Get type of return val
 
-    protected:
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
     	const RbObject*         executeOperation(const std::vector<DAGNode*>& args);    //!< Execute function
 };
 

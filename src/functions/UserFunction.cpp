@@ -79,6 +79,11 @@ UserFunction* UserFunction::clone(void) const {
     return new UserFunction(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* UserFunction::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Equals comparison */
 bool UserFunction::equals(const RbObject* x) const {
@@ -120,6 +125,11 @@ const std::string& UserFunction::getReturnType() const {
     return returnType;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool UserFunction::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Complete info about object */
 std::string UserFunction::toString() const {
