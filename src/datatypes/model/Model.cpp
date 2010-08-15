@@ -75,7 +75,6 @@ Model::Model(const std::vector<DAGNode*>& sinkNodes)
     }
 }
 
-
 /** Destructor */
 Model::~Model(void) {
 
@@ -89,7 +88,6 @@ Model::~Model(void) {
         }
     }
 }
-
 
 /** Copy constructor */
 Model::Model(const Model& x)
@@ -119,7 +117,6 @@ Model::Model(const Model& x)
         dagNodes.push_back(theNode);
     }
 }
-
 
 /** Assignment operator */
 Model& Model::operator=(const Model& x) {
@@ -165,7 +162,6 @@ Model& Model::operator=(const Model& x) {
     return (*this);
 }
 
-
 /** Clone the object */
 Model* Model::clone(void) const {
 
@@ -175,6 +171,7 @@ Model* Model::clone(void) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* Model::convertTo(const std::string& type) const {
 
+    throw (RbException("Conversion to " + type + " not supported"));
     return NULL;
 }
 
@@ -183,7 +180,6 @@ bool Model::equals(const RbObject* obj) const {
 
     return false;
 }
-
 
 /** Get class vector describing object */
 const StringVector& Model::getClass(void) const {
@@ -215,7 +211,6 @@ void Model::printValue(std::ostream& o) const {
         (*i)->printChildren(o);
     }
 }
-
 
 /** Complete info about object */
 std::string Model::toString(void) const {

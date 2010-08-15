@@ -48,6 +48,7 @@ RbObject* RandomNumberGenerator::clone(void) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* RandomNumberGenerator::convertTo(const std::string& type) const {
 
+    throw (RbException("Conversion to " + type + " not supported"));
     return NULL;
 }
 

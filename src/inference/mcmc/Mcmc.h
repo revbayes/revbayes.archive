@@ -33,33 +33,28 @@ class StringVector;
 class Mcmc: public MemberObject {
 
     public:
-                                        Mcmc(void);                             //!< Parser constructor
-                                        Mcmc(Model*      model,
-                                             int         ngen,
-                                             int         printfreq,
-                                             int         samplefreq,
-                                             std::string filename);             //!< Internal constructor
-	    virtual                         ~Mcmc() {}                              //!< Destructor
+								    Mcmc(void);                                                                        //!< Parser constructor
+									Mcmc(Model* model, int ngen, int printfreq, int samplefreq, std::string filename); //!< Internal constructor
+	    virtual                    ~Mcmc(void) {}                                                                      //!< Destructor
 
         // Basic utility functions
-        Mcmc*                   clone() const;                                  //!< Clone object
-        const StringVector&     getClass(void) const;                           //!< Get class vector   
+        Mcmc*                       clone(void) const;                                                                 //!< Clone object
+        const StringVector&         getClass(void) const;                                                              //!< Get class vector   
 
         // Member variable rules
-        const MemberRules&      getMemberRules(void) const;                     //!< Get member rules
-        void                    setVariable(const std::string& name, DAGNode* var);     //!< Only constants allowed
+        const MemberRules&          getMemberRules(void) const;                                                        //!< Get member rules
+        void                        setVariable(const std::string& name, DAGNode* var);                                //!< Only constants allowed
 
         // Member method inits
-        const MethodTable&      getMethodInits(void) const;                     //!< Get method inits
+        const MethodTable&          getMethodInits(void) const;                                                        //!< Get method inits
         
         // Mcmc functions
-        void                    update(void);                                   //!< Update the chain
+        void                        update(void);                                                                      //!< Update the chain
 
 	protected:
-        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
-        const RbObject*         executeOperation(const std::string&     name,
-                                                 std::vector<DAGNode*>& args);  //!< Execute method
+        RbObject*                   convertTo(const std::string& type) const;                                          //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;                                    //!< Is convertible to type and dim?
+        const RbObject*             executeOperation(const std::string& name, std::vector<DAGNode*>& args);            //!< Execute method
 };
 
 #endif

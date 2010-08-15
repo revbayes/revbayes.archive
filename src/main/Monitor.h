@@ -32,27 +32,27 @@ class VariableNode;
 class Monitor : public RbComplex {
 
     public:
-                                Monitor(VariableNode* node, int freq);          //!< Constructor
+                                    Monitor(VariableNode* node, int freq);          //!< Constructor
 
         // Basic utility functions
-        RbObject*               clone() const;                                  //!< Clone object
-        bool                    equals(const RbObject* obj) const;              //!< Equals comparison
-        const StringVector&     getClass() const;                               //!< Get class
-        void                    printValue(std::ostream& o) const;              //!< Print value (for user)
-        std::string             toString(void) const;                           //!< Complete info about object
+        RbObject*                   clone(void) const;                              //!< Clone object
+        bool                        equals(const RbObject* obj) const;              //!< Equals comparison
+        const StringVector&         getClass(void) const;                           //!< Get class
+        void                        printValue(std::ostream& o) const;              //!< Print value (for user)
+        std::string                 toString(void) const;                           //!< Complete info about object
 
         // Monitor functions
-        void                    monitor(std::ofstream& o) const;                //!< Monitor unconditionally
-        void                    monitor(int gen, std::ofstream& o) const;       //!< Monitor at generation gen
-        void                    printHeader(std::ofstream& o) const;            //!< Print header
+        void                        monitor(std::ofstream& o) const;                //!< Monitor unconditionally
+        void                        monitor(int gen, std::ofstream& o) const;       //!< Monitor at generation gen
+        void                        printHeader(std::ofstream& o) const;            //!< Print header
 
 	protected:
         RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
         bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
 
     private:
-        VariableNode*           theNode;                                        //!< The node to monitor
-        int                     samplingFrequency;                              //!< Sampling frequency
+        VariableNode*               theNode;                                         //!< The node to monitor
+        int                         samplingFrequency;                               //!< Sampling frequency
 };
 
 #endif

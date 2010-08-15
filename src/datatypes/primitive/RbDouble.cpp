@@ -61,7 +61,9 @@ RbObject* RbDouble::clone(void) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* RbDouble::convertTo(const std::string& type) const {
 
-    return NULL;
+    if (type == RbBool_name)
+        return new RbBool(value == 0.0);
+	return NULL;
 }
 
 /** Pointer-based equals comparison */
@@ -94,7 +96,9 @@ const StringVector& RbDouble::getClass() const {
 /** Convert to object of another class. The caller manages the object. */
 bool RbDouble::isConvertibleTo(const std::string& type) const {
 
-    return false;
+    if (type == RbBool_name)
+        return true;
+	return false;
 }
 
 /** Print value for user */
@@ -110,7 +114,6 @@ std::string RbDouble::toString(void) const {
 	std::ostringstream o;
     o << "RbDouble: value = ";
     printValue(o);
-
     return o.str();
 }
 

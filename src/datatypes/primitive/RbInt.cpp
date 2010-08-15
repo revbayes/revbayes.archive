@@ -18,9 +18,12 @@
 
 
 #include "RbBool.h"
+#include "PosReal.h"
 #include "RbDouble.h"
+#include "RbException.h"
 #include "RbInt.h"
 #include "RbNames.h"
+#include "RbString.h"
 #include "StringVector.h"
 
 #include <sstream>
@@ -47,6 +50,21 @@ RbObject* RbInt::clone(void) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* RbInt::convertTo(const std::string& type) const {
 
+    if (type == RbBool_name) 
+        return new RbBool(value == 0);
+    else if (type == RbDouble_name)
+        return new RbDouble(value);
+    else if (type == PosReal_name && value > 0)
+        return new PosReal(value);
+    else if (type == RbString_name) 
+		{
+        std::ostringstream o;
+        o << value;
+        return new RbString(o.str());
+		}
+    else if (type == IntVector_name)
+        return new IntVector(value);
+    throw RbException("Cannot convert int to " + type + ".");
     return NULL;
 }
 

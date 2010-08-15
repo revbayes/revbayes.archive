@@ -69,6 +69,7 @@ Mcmc* Mcmc::clone(void) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* Mcmc::convertTo(const std::string& type) const {
 
+    throw (RbException("Conversion to " + type + " not supported"));
     return NULL;
 }
 

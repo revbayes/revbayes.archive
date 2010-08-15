@@ -25,7 +25,7 @@ class StringVector;
 class RbInternal {
 
     public:
-		virtual                     ~RbInternal(void) {}                    //! Virtual destructor
+		virtual                    ~RbInternal(void) {}                     //! Virtual destructor
 
         // Basic utility functions you have to override
         virtual RbInternal*         clone(void) const = 0;                  //!< Clone object
