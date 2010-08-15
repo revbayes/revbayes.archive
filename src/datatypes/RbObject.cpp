@@ -33,14 +33,16 @@ std::string RbObject::briefInfo(void) const {
     return o.str();
 }
 
-
 /** Convert to type: throw an error */
-RbObject* RbObject::convertTo(const std::string& type) const {
+RbObject* RbObject::convert(const std::string& type) const {
 
-    throw (RbException("Conversion to " + type + " not supported"));
-    return NULL;    // Dummy return
+    if (getType() == type) {
+        return this->clone();
+    }
+    else {
+        return convertTo(type);
+    }
 }
-
 
 /** Get class vector describing type of object */
 const StringVector& RbObject::getClass(void) const { 
@@ -56,13 +58,23 @@ const std::string& RbObject::getType(void) const {
     return getClass()[0];
 }
 
+/** Is convertible to type? Default is false */
+bool RbObject::isConvertible(const std::string& type) const {
+
+    const std::string& myType = getType();
+
+    if (myType.compare(type) == 0)
+        true;
+    else
+        return isConvertibleTo(type);
+	return false;
+}
 
 /** Is convertible to type? Default is false */
-bool RbObject::isConvertibleTo(const std::string& type, int dim) const {
+bool RbObject::isConvertible(const std::string& type, int dim) const {
 
     return false;
 }
-
 
 /** Are we of specified type? We need to check entire class vector in case we are derived from type. */
 bool RbObject::isType(const std::string& type) const {
