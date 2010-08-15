@@ -40,12 +40,6 @@ ContainerIterator RbComplex::begin(void) const {
     return ContainerIterator(temp, getLength());
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* RbComplex::convertTo(const std::string& type) const {
-
-    return NULL;
-}
-
 /** Return end iterator */
 ContainerIterator RbComplex::end(void) const {
 
@@ -126,12 +120,6 @@ const RbObject* RbComplex::getValue(const std::string& name) const {
 const DAGNode* RbComplex::getVariable(const std::string& name) const {
 
     throw (RbException("No member '" + name + "'"));
-}
-
-/** Convert to object of another class. The caller manages the object. */
-bool RbComplex::isConvertibleTo(const std::string& type) const {
-
-    return false;
 }
 
 /** Set arguments of method; return an internal function id number */

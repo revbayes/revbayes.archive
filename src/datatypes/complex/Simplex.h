@@ -28,37 +28,33 @@
 class Simplex : public Vector {
 
     public:
-                            Simplex() : Vector() {}                         //!< Empty simplex
-                            Simplex(int n);                                 //!< Simplex of length (size) n
-                            Simplex(const std::vector<double>& x);          //!< Simplex from double vector
+                                    Simplex(void) : Vector() {}                        //!< Empty simplex
+                                    Simplex(int n);                                    //!< Simplex of length (size) n
+                                    Simplex(const std::vector<double>& x);             //!< Simplex from double vector
 
         // Basic utility functions
-        Simplex*            clone() const;                                  //!< Clone object
-        bool                equals(const RbObject* obj) const;              //!< Equals comparison
-        const StringVector& getClass() const;                               //!< Get class
-        std::string         toString(void) const;                           //!< Complete info about object
+        Simplex*                    clone(void) const;                                 //!< Clone object
+        bool                        equals(const RbObject* obj) const;                 //!< Equals comparison
+        const StringVector&         getClass(void) const;                              //!< Get class
+        std::string                 toString(void) const;                              //!< Complete info about object
 
         // Overloaded operators and built-in functions
-        double&             operator[](int i);                              //!< Index op allowing change
-        void                pop_back(void);                                 //!< Drop element
-        void                push_back(double x);                            //!< Append element to end
-        void                push_front(double x);                           //!< Add element in front
+        double&                     operator[](int i);                                 //!< Index op allowing change
+        void                        pop_back(void);                                    //!< Drop element
+        void                        push_back(double x);                               //!< Append element to end
+        void                        push_front(double x);                              //!< Add element in front
 
         // Regular functions
-        void                setValue(const Vector& x);                      //!< Set value from Vector
-        void                setValue(const std::vector<double>& x);         //!< Set value from vector<double>
-        const std::vector<double>&  getValue(void) const { return value; }  //!< Get value
+        void                        setValue(const Vector& x);                         //!< Set value from Vector
+        void                        setValue(const std::vector<double>& x);            //!< Set value from vector<double>
+        const std::vector<double>&  getValue(void) const { return value; }             //!< Get value
 
         // Element access functions for parser
-        void                resize(const IntVector& len);                   //!< Resize
-        void                setElement(const IntVector& index, RbObject* val); //!< Set element
-
-	protected:
-        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
+        void                        resize(const IntVector& len);                      //!< Resize
+        void                        setElement(const IntVector& index, RbObject* val); //!< Set element
 
     private:
-        void                rescale(void);                                  //!< Rescale the simplex
+        void                        rescale(void);                                     //!< Rescale the simplex
 };
 
 #endif

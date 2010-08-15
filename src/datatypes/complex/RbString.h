@@ -26,32 +26,32 @@ class RbDumpState;
 class RbString : public RbComplex {
 
     public:
-                                RbString(void) : RbComplex(), value() {}//!< Default: empty string
-                                RbString(const std::string& v);         //!< Constructor from string
+                                    RbString(void) : RbComplex(), value() {}         //!< Default: empty string
+                                    RbString(const std::string& v);                  //!< Constructor from string
 
         // Basic utility functions
-	    RbObject*               clone() const;                          //!< Copy
-	    bool                    equals(const RbObject* obj) const;      //!< Equals comparison
-        const StringVector&     getClass() const;                       //!< Get class
-        void                    printValue(std::ostream& o) const;      //!< Print value (for user)
-        std::string             toString(void) const;                   //!< General info on object
+	    RbObject*                   clone(void) const;                               //!< Copy
+	    bool                        equals(const RbObject* obj) const;               //!< Equals comparison
+        const StringVector&         getClass(void) const;                            //!< Get class
+        void                        printValue(std::ostream& o) const;               //!< Print value (for user)
+        std::string                 toString(void) const;                            //!< General info on object
 
         // Overloaded operators
-        RbString                operator+(const RbString& s) const;     //!< String concatenation
-                                operator std::string() const;           //!< Type conversion
+        RbString                    operator+(const RbString& s) const;              //!< String concatenation
+                                    operator std::string() const;                    //!< Type conversion
 
         // Regular functions
-        void                    append(const RbString& s) { value += s.value; } //!< Append string
-        void                    append(const char* s) { value += s; }           //!< Append C string
-        std::string             getValue(void) const { return value; }          //!< Get value
-        void                    setValue(const std::string& x) { value = x; }   //!< Set value
+        void                        append(const RbString& s) { value += s.value; }  //!< Append string
+        void                        append(const char* s) { value += s; }            //!< Append C string
+        std::string                 getValue(void) const { return value; }           //!< Get value
+        void                        setValue(const std::string& x) { value = x; }    //!< Set value
 
 	protected:
         RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
         bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
 
     private:
-        std::string             value;      //!< Value member
+        std::string                 value;                                           //!< Value member
 };
 
 #endif

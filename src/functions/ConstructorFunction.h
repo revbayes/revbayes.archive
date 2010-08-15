@@ -46,8 +46,6 @@ class ConstructorFunction :  public RbFunction {
         RbObject*                   getValue(void);                         //!< Get new result object
 
 	protected:
-        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
         const RbObject*             executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 
         MemberObject*               templateObject;                         //!< The template object

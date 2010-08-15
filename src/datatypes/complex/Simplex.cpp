@@ -59,12 +59,6 @@ Simplex* Simplex::clone() const {
     return new Simplex(*this);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Simplex::convertTo(const std::string& type) const {
-
-    return NULL;
-}
-
 /** Pointer-based equals comparison */
 bool Simplex::equals(const RbObject* obj) const {
 
@@ -103,12 +97,6 @@ const StringVector& Simplex::getClass() const {
 
     static StringVector rbClass = StringVector(Simplex_name) + Vector::getClass();
     return rbClass;
-}
-
-/** Convert to object of another class. The caller manages the object. */
-bool Simplex::isConvertibleTo(const std::string& type) const {
-
-    return false;
 }
 
 /** Drop an element */

@@ -41,6 +41,9 @@ RbString RbString::operator+(const RbString& s) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* RbString::convertTo(const std::string& type) const {
 
+    /*if (type == Nucleotide_name)
+        return new Nucleotide(value[0]);
+    throw RbException("Cannot convert string to " + type + ".");*/
     return NULL;
 }
 
@@ -72,6 +75,8 @@ const StringVector& RbString::getClass() const {
 /** Convert to object of another class. The caller manages the object. */
 bool RbString::isConvertibleTo(const std::string& type) const {
 
+    /*if (type == Nucleotide_name) 
+        return true;*/
     return false;
 }
 

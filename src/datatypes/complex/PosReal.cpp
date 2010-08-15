@@ -25,17 +25,16 @@
 #include <sstream>
 
 
+
 /** Construct from double */
-PosReal::PosReal(const double v)
-    : RbDouble(v) {
+PosReal::PosReal(const double v) : RbDouble(v) {
 
     if (v <= 0.0)
         throw RbException("Nonpositive value for " + PosReal_name);
 }
 
 /** Construct from int */
-PosReal::PosReal(const int v)
-    : RbDouble(v) {
+PosReal::PosReal(const int v) : RbDouble(v) {
 
     if (v <= 0)
         throw RbException("Nonpositive value for " + PosReal_name);
@@ -50,8 +49,9 @@ RbObject* PosReal::clone(void) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* PosReal::convertTo(const std::string& type) const {
 
-    return NULL;
-}
+    if (type == RbDouble_name)
+        return new RbDouble(value);
+    return NULL;}
 
 /** Get class vector describing type of object */
 const StringVector& PosReal::getClass() const {
@@ -63,6 +63,10 @@ const StringVector& PosReal::getClass() const {
 /** Convert to object of another class. The caller manages the object. */
 bool PosReal::isConvertibleTo(const std::string& type) const {
 
+    if (type == PosReal_name)
+        return true;
+    else if (type == RbDouble_name)
+        return true;
     return false;
 }
 

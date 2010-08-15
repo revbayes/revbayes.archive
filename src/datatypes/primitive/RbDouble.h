@@ -52,9 +52,7 @@ class RbDouble : public RbObject {
 	protected:
         virtual RbObject*           convertTo(const std::string& type) const;        //!< Convert to type
         virtual bool                isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
-	
-    private:
-        double                      value;                                           //!< Value member
+		double                      value;                                           //!< Value member
 };
 
 #endif

@@ -17,7 +17,6 @@
  */
 
 #include "IntVector.h"
-#include "RbComplex.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
@@ -27,21 +26,21 @@
 
 
 /** Construct empty vector of length n */
-StringVector::StringVector(size_t n) : RbComplex() {
+StringVector::StringVector(size_t n) : Container() {
 
     value.resize(n);
 }
 
 
 /** Construct vector with one string x */
-StringVector::StringVector(const std::string& x) : RbComplex() {
+StringVector::StringVector(const std::string& x) : Container() {
 
     value.push_back(x);
 }
 
 
 /** Construct vector with n strings x */
-StringVector::StringVector(size_t n, const std::string& x) : RbComplex() {
+StringVector::StringVector(size_t n, const std::string& x) : Container() {
 
     for (size_t i = 0; i < n; i++)
         value.push_back(x);
@@ -49,7 +48,7 @@ StringVector::StringVector(size_t n, const std::string& x) : RbComplex() {
 
 
 /** Constructor from std::string vector */
-StringVector::StringVector(const std::vector<std::string>& x) : RbComplex() {
+StringVector::StringVector(const std::vector<std::string>& x) : Container() {
 
     value = x;
 }

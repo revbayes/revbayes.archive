@@ -20,6 +20,7 @@
 #include "RbDouble.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "Simplex.h"
 #include "StringVector.h"
 #include "Vector.h"
 
@@ -49,7 +50,7 @@ Vector::Vector(std::vector<double>& x) {
 
 
 /** Clone function */
-Vector* Vector::clone() const {
+Vector* Vector::clone(void) const {
 
     return new Vector(*this);
 }
@@ -57,7 +58,10 @@ Vector* Vector::clone() const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* Vector::convertTo(const std::string& type) const {
 
-    return NULL;
+    if (type == Simplex_name)
+        return new Simplex(value);
+    throw RbException("Cannot convert Vector to " + type + ".");
+	return NULL;
 }
 
 /** Pointer-based equals comparison */
@@ -94,7 +98,7 @@ bool Vector::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Vector::getClass() const {
+const StringVector& Vector::getClass(void) const {
 
     static StringVector rbClass = StringVector(Vector_name) + RbComplex::getClass();
     return rbClass;
@@ -136,6 +140,9 @@ const IntVector& Vector::getLength(void) const {
 /** Convert to object of another class. The caller manages the object. */
 bool Vector::isConvertibleTo(const std::string& type) const {
 
+    std::cout << "Is Vector convertible to " + type + "." << std::endl;
+    if (type == Simplex_name)
+        return true;
     return false;
 }
 

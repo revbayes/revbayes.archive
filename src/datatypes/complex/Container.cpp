@@ -17,13 +17,24 @@
 
 #include "Container.h"
 #include "ContainerIterator.h"
+#include "RbDouble.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "RbOptions.h"
+#include "Simplex.h"
 #include "StringVector.h"
 
 #include <iostream>
 #include <sstream>
 
+
+
+/** Construct empty vector, should only be used by parser */
+Container::Container(void)
+    : RbComplex(), elementType(RbObject_name) {
+
+    length = IntVector(0);
+}
 
 /** Construct vector with one node x */
 Container::Container(RbObject* x)
@@ -31,7 +42,7 @@ Container::Container(RbObject* x)
 
     elements.push_back(x);
 
-    length       = IntVector(1);
+    length = IntVector(1);
 }
 
 
@@ -178,7 +189,7 @@ RbObject* const& Container::operator[](size_t i) const {
 
 
 /** Clone function */
-Container* Container::clone() const {
+Container* Container::clone(void) const {
 
     return new Container(*this);
 }
@@ -186,7 +197,19 @@ Container* Container::clone() const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* Container::convertTo(const std::string& type) const {
 
-    return NULL;
+    if (type == Simplex_name) 
+		{
+        std::vector<double> v;
+        for (int i=0; i<length.size(); i++) 
+			{
+            v.push_back(((RbDouble*) getElementAt(i))->getValue());
+			}
+        return new Simplex(v);
+		}
+
+    throw RbException("Cannot convert Container to " + type + ".");
+	
+	return NULL;
 }
 
 /** Pointer-based equals comparison */
@@ -294,6 +317,22 @@ const RbObject* Container::getElement(const IntVector& index) const {
         return ((RbComplex*)(element))->getElement(valueIndex);
 }
 
+/** Get element */
+RbObject* Container::getElementAt(const int index) const {
+
+    // Check that the index is to a value element
+    if ( index < getLength().size() )
+        throw (RbException("Index error: Not value element"));
+
+    // Get element
+    RbObject* element = elements[index];
+
+    // Return value
+    if (element == NULL)
+        return NULL;
+    else
+        return element;
+}
 
 /** Get element ptr */
 RbObject* Container::getElementPtr(const IntVector& index) {

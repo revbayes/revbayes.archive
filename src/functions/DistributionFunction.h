@@ -54,8 +54,6 @@ class DistributionFunction :  public RbFunction {
         bool                        processArguments(const std::vector<Argument>& args, IntVector* matchScore=NULL);    //!< Process args, set member variables of distribution
 
 	protected:
-        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
         const RbObject*             executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 
         ArgumentRules               argumentRules;                          //!< Argument rules

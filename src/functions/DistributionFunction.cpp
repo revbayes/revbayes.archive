@@ -139,12 +139,6 @@ DistributionFunction* DistributionFunction::clone(void) const {
     return new DistributionFunction(*this);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* DistributionFunction::convertTo(const std::string& type) const {
-
-    return NULL;
-}
-
 /** Pointer-based equals comparison */
 bool DistributionFunction::equals(const RbObject* x) const {
 
@@ -197,12 +191,6 @@ const StringVector& DistributionFunction::getClass(void) const {
 const std::string& DistributionFunction::getReturnType(void) const {
 
     return returnType;
-}
-
-/** Convert to object of another class. The caller manages the object. */
-bool DistributionFunction::isConvertibleTo(const std::string& type) const {
-
-    return false;
 }
 
 /** Process arguments */

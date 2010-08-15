@@ -32,12 +32,6 @@ Func__range* Func__range::clone(void) const {
     return new Func__range(*this);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Func__range::convertTo(const std::string& type) const {
-
-    return NULL;
-}
-
 /** Get argument rules */
 const ArgumentRules& Func__range::getArgumentRules(void) const {
 
@@ -110,8 +104,3 @@ RbObject* Func__range::getValue(void) {
     return new IntVector(temp);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool Func__range::isConvertibleTo(const std::string& type) const {
-
-    return false;
-}
