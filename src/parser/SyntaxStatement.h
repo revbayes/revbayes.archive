@@ -30,7 +30,7 @@ class SyntaxStatement : public SyntaxElement {
         static std::string stmtName[];                                      //!< Statement names for printing
 
             // Constructors and destructor
-            SyntaxStatement(statementT type);      //!< NEXT, BREAK, RETURN
+            SyntaxStatement(statementT type);                       //!< NEXT, BREAK, RETURN
             SyntaxStatement(SyntaxStatement::statementT type,
                             SyntaxElement*              expr);      //!< RETURN expr
             SyntaxStatement(statementT                  type,

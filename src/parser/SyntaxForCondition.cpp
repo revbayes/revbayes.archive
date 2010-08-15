@@ -13,21 +13,23 @@
  * $Id$
  */
 
+#include "ConstantNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "SyntaxForCondition.h"
 
+#include <cassert>
 #include <sstream>
 
 
 /** Standard constructor */
 SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr)
-    : SyntaxElement(), varName(identifier), inExpression(inExpr) {
+    : SyntaxElement(), varName(identifier), inExpression(inExpr), isLoopInitialized(false), vector(NULL) {
 
     if (inExpression == NULL) {
         delete varName;
-        throw RbException("The 'in' expression of for loop empty");
+        throw RbException("The 'in' expression of for loop is empty");
     }
 }
 
@@ -36,8 +38,10 @@ SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inEx
 SyntaxForCondition::SyntaxForCondition(const SyntaxForCondition& x)
     : SyntaxElement(x) {
 
-    varName         = new RbString(*(x.varName));
-    inExpression    = x.inExpression->clone();
+    varName             = new RbString(*(x.varName));
+    inExpression        = x.inExpression->clone();
+    isLoopInitialized   = false;
+    vector              = NULL;
 }
 
 
@@ -46,6 +50,8 @@ SyntaxForCondition::~SyntaxForCondition() {
     
     delete varName;
     delete inExpression;
+    if (isLoopInitialized)
+        delete vector;
 }
 
 
@@ -90,6 +96,62 @@ bool SyntaxForCondition::equals(const SyntaxElement* elem) const {
 DAGNode* SyntaxForCondition::getDAGNode(Frame* frame) const {
 
     return NULL;
+}
+
+
+/** Initialize loop state */
+void SyntaxForCondition::initializeLoop(Frame* frame) {
+
+    assert (!isLoopInitialized);
+
+    // Evaluate expression and check that we get a vector
+    RbObject* value = inExpression->getValue(frame);
+
+    // Check that it is a vector of Container type
+    vector = NULL;
+    intVector = NULL;
+    if ( value->getDim() != 1 )
+        throw ( RbException("The 'in' expression does not evaluate to a vector") );
+    vector = dynamic_cast<Container*>(value);
+    if ( !vector ) {
+        // throw ( RbException("The 'in' expression does not evaluate to a container") );
+        intVector = dynamic_cast<IntVector*>(value);
+        if ( !intVector )
+            throw ( RbException("The 'in' expression does not evaluate to a container or int vector") );
+    }
+
+    // Initialize nextValue
+    nextElement = 0;
+
+    // Add loop variable to frame if it is not there already
+    if ( !frame->existsVariable( *varName ) ) {
+        if (vector != NULL)
+            frame->addVariable( *varName, vector->getElementType() );
+        else
+            frame->addVariable( *varName, intVector->getElementType() );
+    }
+
+    isLoopInitialized = true;
+}
+
+
+/** Get next loop state */
+bool SyntaxForCondition::getNextLoopState(Frame* frame) {
+
+    if (!isLoopInitialized)
+        initializeLoop(frame);
+    
+    if ( (vector != NULL && nextElement == vector->size()) || (intVector != NULL && nextElement == intVector->size()) )
+        return false;
+
+    if (vector != NULL)
+        frame->setVariable( *varName, new ConstantNode(vector->getElement(nextElement)->clone()) );
+    else if (intVector != NULL)
+        frame->setVariable( *varName, new ConstantNode(intVector->getElement(nextElement)->clone()) );
+
+    nextElement++;
+
+    return true;
 }
 
 

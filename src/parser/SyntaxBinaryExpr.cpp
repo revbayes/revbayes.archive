@@ -112,8 +112,8 @@ RbObject* SyntaxBinaryExpr::getValue(Frame* frame) const {
 
     // Package the arguments
     std::vector<Argument> args;
-    args.push_back(Argument("x", leftOperand->getDAGNode(frame)));
-    args.push_back(Argument("y", rightOperand->getDAGNode(frame)));
+    args.push_back(Argument("", leftOperand->getDAGNode(frame)));
+    args.push_back(Argument("", rightOperand->getDAGNode(frame)));
 
     // Execute function
     std::string funcName = "_" + opCode[operation];

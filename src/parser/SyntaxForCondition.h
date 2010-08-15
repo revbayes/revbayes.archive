@@ -16,6 +16,8 @@
 #ifndef SyntaxForCondition_H
 #define SyntaxForCondition_H
 
+#include "Container.h"
+#include "IntVector.h"
 #include "SyntaxElement.h"
 
 #include <iostream>
@@ -39,11 +41,18 @@ class SyntaxForCondition : public SyntaxElement {
 
         // Regular functions
         DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
+        bool            getNextLoopState(Frame* frame);             //!< Get next state of loop
         RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
 
     protected:
-        RbString*       varName;            //!< The name of the variable
-        SyntaxElement*  inExpression;       //!< The expression resulting in a vector of values
+        RbString*       varName;                                    //!< The name of the variable
+        SyntaxElement*  inExpression;                               //!< The expression that should result in a vector of values
+        bool            isLoopInitialized;                          //!< Is loop state initialized?
+        Container*      vector;                                     //!< Vector result of 'in' expression
+        IntVector*      intVector;                                  //!< Vector result of 'in' expression
+        size_t          nextElement;                                //!< Next element in vector
+
+        void            initializeLoop(Frame* frame);               //!< Initialize loop
 };
 
 #endif

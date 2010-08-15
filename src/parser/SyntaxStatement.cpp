@@ -13,6 +13,7 @@
  * $Id$
  */
 
+#include <cassert>
 #include <iostream>
 #include <list>
 #include <sstream>
@@ -21,6 +22,7 @@
 #include "DeterministicNode.h"
 #include "RbException.h"
 #include "StringVector.h"
+#include "SyntaxForCondition.h"
 #include "SyntaxStatement.h"
 #include "Workspace.h"
 
@@ -145,11 +147,32 @@ RbObject* SyntaxStatement::getValue(Frame* frame) const {
 
     if (statementType == For) {
 
-        // Execute expression and hope to find one or more values in a vector
+        // Convert expression to for condition
+        SyntaxForCondition* forCond = dynamic_cast<SyntaxForCondition*>(expression);
+        assert (forCond != NULL);
 
-        // If the variable symbol is not in the environment, create a new variable in a new frame
+        // Now loop over statements inside the for loop
+        while (forCond->getNextLoopState(frame)) {
+            for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
 
-        // Cycle through the statements, assigning each one of the values in turn to the variable
+                // Catch flow control statements first
+                SyntaxStatement* stmt = dynamic_cast<SyntaxStatement*>( *i );
+                if ( stmt != NULL ) {
+                    statementT stmtType = stmt->statementType;
+                    if ( stmtType == SyntaxStatement::Next )
+                        continue;
+                    if ( stmtType == SyntaxStatement::Break )
+                        return NULL;
+                }
+
+                // Execute statement
+                RbObject* result = (*i)->getValue(frame);
+                delete result;  // discard result
+            }
+        }
+    }
+    else {
+        throw (RbException("Statement of type " + stmtName[statementType] + " not implemented yet"));
     }
 
     return NULL;

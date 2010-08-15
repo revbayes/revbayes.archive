@@ -55,8 +55,8 @@ const RbObject* Func__range::executeOperation(const std::vector<DAGNode*>& args)
 
     static IntVector retVal;
 
-    int first = ((RbInt*)(args[0]))->getValue();
-    int last  = ((RbInt*)(args[0]))->getValue();
+    int first = ((RbInt*)(args[0])->getValue())->getValue();
+    int last  = ((RbInt*)(args[1])->getValue())->getValue();
 
     std::vector<int> temp;
     for (int i=first; i<last; i++)
