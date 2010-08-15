@@ -31,29 +31,17 @@ RbBool::RbBool(const bool v)
     : RbObject(), value(v) {
 }
 
-
 /** Clone object */
 RbObject* RbBool::clone(void) const {
 
 	return  (RbObject*)(new RbBool(*this));
 }
 
-
-/** Convert to object of another class. The caller manages the object */
+/** Convert to object of another class. The caller manages the object. */
 RbObject* RbBool::convertTo(const std::string& type) const {
-
-	if (type == RbInt_name) {
-    	if (value) return new RbInt(1);
-        else return new RbInt(0);
-    }
-    else if (type == RbDouble_name) {
-        if (value) return new RbDouble(1.0);
-        else return new RbDouble(0.0);
-    }
 
     return NULL;
 }
-
 
 /** Pointer-based equals comparison */
 bool RbBool::equals(const RbObject* obj) const {
@@ -64,7 +52,7 @@ bool RbBool::equals(const RbObject* obj) const {
         return value == p->value;
 
     // Try converting the object to a bool
-    p = dynamic_cast<const RbBool*>(obj->convertTo(RbBool_name));
+    p = dynamic_cast<const RbBool*>(obj->convert(RbBool_name));
     if (p == NULL)
         return false;
 
@@ -74,7 +62,6 @@ bool RbBool::equals(const RbObject* obj) const {
     return result;
 }
 
-
 /** Get class vector describing type of object */
 const StringVector& RbBool::getClass() const {
 
@@ -82,13 +69,17 @@ const StringVector& RbBool::getClass() const {
     return rbClass;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool RbBool::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Print value for user */
 void RbBool::printValue(std::ostream &o) const {
 
     o << (value ? "true" : "false");
 }
-
 
 /** Get complete info about object */
 std::string RbBool::toString(void) const {

@@ -38,6 +38,11 @@ RbString RbString::operator+(const RbString& s) const {
     return RbString(value+s.value);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* RbString::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Clone function */
 RbObject* RbString::clone() const {
@@ -64,6 +69,11 @@ const StringVector& RbString::getClass() const {
     return rbClass;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool RbString::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Print value */
 void RbString::printValue(std::ostream& o) const {

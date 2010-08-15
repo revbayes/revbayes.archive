@@ -29,20 +29,21 @@ class StringVector;
 class PosReal : public RbDouble {
 
     public:
-                            PosReal(const double v);                   //!< Construct from double
-                            PosReal(const int v);                      //!< Construct from int 
-                            PosReal(const bool v);                     //!< Construct from bool
+                                    PosReal(const double v);                        //!< Construct from double
+                                    PosReal(const int v);                           //!< Construct from int 
+                                    PosReal(const bool v);                          //!< Construct from bool
 
         // Basic utility functions
-        RbObject*           clone(void) const;                          //!< Clone object
-        const StringVector& getClass(void) const;                       //!< Get class vector
-        std::string         toString(void) const;                       //!< Complete info about object
-
-        // Type conversion
-        RbObject*           convertTo(const std::string& type) const;       //!< Convert to type
+        RbObject*                   clone(void) const;                               //!< Clone object
+        const StringVector&         getClass(void) const;                            //!< Get class vector
+        std::string                 toString(void) const;                            //!< Complete info about object
 
         // Setter disallowing nonpositive values
-        void                setValue(double x);                         //!< Set value
+        void                        setValue(double x);                              //!< Set value
+
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
 };
 
 #endif

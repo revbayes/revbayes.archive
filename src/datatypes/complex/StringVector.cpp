@@ -79,6 +79,11 @@ StringVector StringVector::operator+(const StringVector& x) const {
     return tempVec;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* StringVector::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Clone function */
 StringVector* StringVector::clone() const {
@@ -103,7 +108,7 @@ bool StringVector::equals(const RbObject* obj) const {
     }
 
     // Try converting the value to a string vector
-    p = dynamic_cast<const StringVector*> (obj->convertTo(getType()));
+    p = dynamic_cast<const StringVector*> (obj->convert(getType()));
     if (p == NULL)
         return false;
 
@@ -160,6 +165,11 @@ const IntVector& StringVector::getLength() const {
     return length;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool StringVector::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Allow parser to resize the string vector */
 void StringVector::resize(IntVector const& len) {

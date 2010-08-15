@@ -68,7 +68,9 @@ class Container : public RbComplex {
         void                setElement(const IntVector& index, RbObject* val);  //!< Set value element
         void                setLength(const IntVector& len);                //!< Reorganize container
 
-    protected:
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
         size_t              getOffset(const IntVector& index) const;        //!< Get offset in element vector
         RbObject*           getElementPtr(const IntVector& index);          //!< Allow modify access to element
 

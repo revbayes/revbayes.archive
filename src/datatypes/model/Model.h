@@ -49,7 +49,9 @@ class Model: public RbComplex {
         // Model functions
         std::vector<DAGNode*>&  getDAGNodes(void) { return dagNodes; }              //!< Get the DAG nodes
 
-    protected:
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
         std::vector<DAGNode*>   dagNodes;                                           //!< The DAG nodes
         std::vector<bool>       maintainedHere;                                     //!< True if DAG node maintained here
 };

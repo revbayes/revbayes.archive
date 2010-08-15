@@ -79,7 +79,9 @@ class RbComplex : public RbObject {
         // Default moves for types that contain sets of stochastic nodes
         MoveSchedule*                   getDefaultMoves(DeterministicNode* node) const { return NULL; }         //!< Get block moves applicable to the complex datatype
 
-    protected:
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
                                         RbComplex(void) : RbObject() {}                                         //!< No objects of this class
 };
 

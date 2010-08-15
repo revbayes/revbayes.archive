@@ -63,7 +63,9 @@ class Vector : public RbComplex {
         virtual void                setElement(const IntVector& index, RbObject* val); //!< Set element
         virtual void                setLength(const IntVector& len);                //!< Set length in each dim
 
-    protected:
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
 	    std::vector<double>         value;                                          //!< Vector of values
 };
 

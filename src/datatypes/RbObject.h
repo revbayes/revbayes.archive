@@ -25,33 +25,35 @@ class StringVector;
 class RbObject {
 
     public:
-        virtual                     ~RbObject(void) {}                                  //! Virtual destructor
+        virtual                    ~RbObject(void) {}                                               //! Virtual destructor
 
         // Basic utility functions you have to override (also getClass()!)
-        virtual RbObject*           clone(void) const = 0;                              //!< Clone object
-        virtual bool                equals(const RbObject* x) const = 0;                //!< Equals comparison
-        virtual const StringVector& getClass(void) const;                               //!< Get class vector
-        virtual void                printValue(std::ostream& o) const = 0;              //!< Print value for user
-        virtual std::string         toString(void) const = 0;                           //!< Complete info about object
+        virtual RbObject*           clone(void) const = 0;                                          //!< Clone object
+        virtual bool                equals(const RbObject* x) const = 0;                            //!< Equals comparison
+        virtual const StringVector& getClass(void) const;                                           //!< Get class vector
+        virtual void                printValue(std::ostream& o) const = 0;                          //!< Print value for user
+        virtual std::string         toString(void) const = 0;                                       //!< Complete info about object
 
         // Basic utility functions you may want to override
-        virtual std::string         briefInfo(void) const;                              //!< Brief info about object
-        virtual RbObject*           convertTo(const std::string& type) const;           //! Convert to type
-        virtual bool                isConvertibleTo(const std::string& type, int dim = 0) const;    //! Is convertible to type and dim?
+        virtual std::string         briefInfo(void) const;                                          //!< Brief info about object
+        RbObject*                   convert(const std::string& type) const;                         //! Convert to type
+        bool                        isConvertible(const std::string& type) const;                   //! Is convertible to type?
+        virtual bool                isConvertible(const std::string& type, int dim = 0) const;      //! Is convertible to type and dim?
         
         // Subscript dimensions: override if object supports subscripting
-        virtual int                 getDim(void) const { return 0; }                    //!< Get subscript dimensions
+        virtual int                 getDim(void) const { return 0; }                                //!< Get subscript dimensions
 
         // Basic utility functions you do not have to override
-        const std::string&          getType(void) const;                                //!< Get type
-        bool                        isType(const std::string& type) const;              //!< Is the object of class type?
-        void                        print(std::ostream& o) const;                       //!< Print complete object info
+        const std::string&          getType(void) const;                                            //!< Get type
+        bool                        isType(const std::string& type) const;                          //!< Is the object of class type?
+        void                        print(std::ostream& o) const;                                   //!< Print complete object info
 
    protected:
-		                            RbObject(void) {}                   //!< No objects of this class
+        virtual RbObject*           convertTo(const std::string& type) const = 0;                   //! Convert to type
+        virtual bool                isConvertibleTo(const std::string& type) const = 0;             //! Is convertible to type and dim?
+		                            RbObject(void) {}                                               //!< No objects of this class
 };
 
-
-std::ostream& operator<<(std::ostream& o, const RbObject& x);           //!< Overloaded output operator
+std::ostream& operator<<(std::ostream& o, const RbObject& x);                                       //!< Overloaded output operator
 
 #endif

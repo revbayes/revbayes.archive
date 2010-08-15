@@ -30,7 +30,6 @@ RbInt::RbInt(const int v)
     : RbObject(), value(v) {
 }
 
-
 /** Construct from bool */
 RbInt::RbInt(const bool v)
     : RbObject() {
@@ -39,27 +38,17 @@ RbInt::RbInt(const bool v)
     else value = 0;
 }
 
-
 /** Clone object */
 RbObject* RbInt::clone(void) const {
 
 	return  (RbObject*)(new RbInt(*this));
 }
 
-
-/** Convert to object of another class. The caller manages the object */
+/** Convert to object of another class. The caller manages the object. */
 RbObject* RbInt::convertTo(const std::string& type) const {
-
-	if (type == RbBool_name) {
-        return new RbBool(value == 0);
-    }
-    else if (type == RbDouble_name) {
-        return new RbDouble(value);
-    }
 
     return NULL;
 }
-
 
 /** Pointer-based equals comparison */
 bool RbInt::equals(const RbObject* obj) const {
@@ -70,7 +59,7 @@ bool RbInt::equals(const RbObject* obj) const {
         return value == p->value;
 
     // Try converting the object to an int
-    p = dynamic_cast<const RbInt*>(obj->convertTo(RbInt_name));
+    p = dynamic_cast<const RbInt*>(obj->convert(RbInt_name));
     if (p == NULL)
         return false;
 
@@ -80,7 +69,6 @@ bool RbInt::equals(const RbObject* obj) const {
     return result;
 }
 
-
 /** Get class vector describing type of object */
 const StringVector& RbInt::getClass() const {
 
@@ -88,13 +76,17 @@ const StringVector& RbInt::getClass() const {
     return rbClass;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool RbInt::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Print value for user */
 void RbInt::printValue(std::ostream &o) const {
 
     o << value;
 }
-
 
 /** Get complete info about object */
 std::string RbInt::toString(void) const {

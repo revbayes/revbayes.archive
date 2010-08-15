@@ -53,6 +53,10 @@ class Simplex : public Vector {
         void                resize(const IntVector& len);                   //!< Resize
         void                setElement(const IntVector& index, RbObject* val); //!< Set element
 
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
+
     private:
         void                rescale(void);                                  //!< Rescale the simplex
 };

@@ -54,6 +54,11 @@ Vector* Vector::clone() const {
     return new Vector(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Vector::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Pointer-based equals comparison */
 bool Vector::equals(const RbObject* obj) const {
@@ -71,7 +76,7 @@ bool Vector::equals(const RbObject* obj) const {
     }
 
     // Try converting the value to a double vector
-    p = dynamic_cast<const Vector*> (obj->convertTo(getType()));
+    p = dynamic_cast<const Vector*> (obj->convert(getType()));
     if (p == NULL)
         return false;
 
@@ -128,6 +133,11 @@ const IntVector& Vector::getLength(void) const {
     return length;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool Vector::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Allow the parser to resize the vector */
 void Vector::resize(const IntVector& len) {

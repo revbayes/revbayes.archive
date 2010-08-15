@@ -83,6 +83,11 @@ bool IntVector::operator!=(const IntVector& x) const {
     return !operator==(x);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* IntVector::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Pointer-based equals comparison */
 bool IntVector::equals(const RbObject* obj) const {
@@ -100,7 +105,7 @@ bool IntVector::equals(const RbObject* obj) const {
     }
 
     // Try converting the value to an int vector
-    p = dynamic_cast<const IntVector*> (obj->convertTo(getType()));
+    p = dynamic_cast<const IntVector*> (obj->convert(getType()));
     if (p == NULL)
         return false;
 
@@ -157,6 +162,11 @@ const IntVector& IntVector::getLength(void) const {
     return length;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool IntVector::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Allow the parser to resize the vector */
 void IntVector::resize(const IntVector& len) {

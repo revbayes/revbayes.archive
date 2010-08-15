@@ -172,6 +172,11 @@ Model* Model::clone(void) const {
     return new Model(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Model::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Pointer-based equals comparison */
 bool Model::equals(const RbObject* obj) const {
@@ -187,6 +192,11 @@ const StringVector& Model::getClass(void) const {
     return rbClass;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool Model::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Print value for user */
 void Model::printValue(std::ostream& o) const {

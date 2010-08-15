@@ -46,6 +46,10 @@ class RbString : public RbComplex {
         std::string             getValue(void) const { return value; }          //!< Get value
         void                    setValue(const std::string& x) { value = x; }   //!< Set value
 
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
+
     private:
         std::string             value;      //!< Value member
 };

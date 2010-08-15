@@ -58,17 +58,11 @@ RbObject* RbDouble::clone(void) const {
 	return  (RbObject*)(new RbDouble(*this));
 }
 
-
 /** Convert to object of another class. The caller manages the object. */
 RbObject* RbDouble::convertTo(const std::string& type) const {
 
-    if (type == RbBool_name) {
-        return new RbBool(value == 0.0);
-    }
-
     return NULL;
 }
-
 
 /** Pointer-based equals comparison */
 bool RbDouble::equals(const RbObject* obj) const {
@@ -79,7 +73,7 @@ bool RbDouble::equals(const RbObject* obj) const {
         return value == p->value;
 
     // Try converting the object to a double
-    p = dynamic_cast<const RbDouble*>(obj->convertTo(RbDouble_name));
+    p = dynamic_cast<const RbDouble*>(obj->convert(RbDouble_name));
     if (p == NULL)
         return false;
 
@@ -97,6 +91,11 @@ const StringVector& RbDouble::getClass() const {
     return rbClass;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool RbDouble::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Print value for user */
 void RbDouble::printValue(std::ostream &o) const {

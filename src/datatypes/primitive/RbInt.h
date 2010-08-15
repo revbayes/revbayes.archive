@@ -29,26 +29,29 @@ class StringVector;
 class RbInt : public RbObject {
 
     public:
-                            RbInt(const int v);                         //!< Constructor from int
-                            RbInt(const bool v);                        //!< Constructor from bool
+                                    RbInt(const int v);                              //!< Constructor from int
+                                    RbInt(const bool v);                             //!< Constructor from bool
 
         // Basic utility functions
-        RbObject*           clone(void) const;                          //!< Clone object
-        bool                equals(const RbObject* obj) const;          //!< Equals comparison
-        const StringVector& getClass(void) const;                       //!< Get class vector
-        void                printValue(std::ostream& o) const;          //!< Print value (for user)
-        std::string         toString(void) const;                       //!< Complete info about object
+        RbObject*                   clone(void) const;                               //!< Clone object
+        bool                        equals(const RbObject* obj) const;               //!< Equals comparison
+        const StringVector&         getClass(void) const;                            //!< Get class vector
+        void                        printValue(std::ostream& o) const;               //!< Print value (for user)
+        std::string                 toString(void) const;                            //!< Complete info about object
 
         // Type conversion
-        RbObject*           convertTo(const std::string& type) const;   //!< Convert to type
-                            operator int(void) const { return value; }  //!< Type conversion to int
+                                    operator int(void) const { return value; }       //!< Type conversion to int
 
         // Getters and setters
-        void                setValue(int x) { value = x; }              //!< Set value
-        int                 getValue(void) const { return value; }      //!< Get value
+        void                        setValue(int x) { value = x; }                   //!< Set value
+        int                         getValue(void) const { return value; }           //!< Get value
+
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
 
     private:
-        int                 value;                                      //!< Value member
+        int                         value;                                           //!< Value member
 };
 
 #endif

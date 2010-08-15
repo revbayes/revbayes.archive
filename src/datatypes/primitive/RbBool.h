@@ -30,25 +30,28 @@ class StringVector;
 class RbBool : public RbObject {
 
     public:
-                            RbBool(const bool v);                       //!< Construct from bool
+                                    RbBool(const bool v);                            //!< Construct from bool
 
         // Basic utility functions
-        RbObject*           clone(void) const;                          //!< Clone object
-        bool                equals(const RbObject* obj) const;          //!< Equals comparison
-        const StringVector& getClass(void) const;                       //!< Get class vector
-        void                printValue(std::ostream& o) const;          //!< Print value (for user)
-        std::string         toString(void) const;                       //!< Complete info about object
+        RbObject*                   clone(void) const;                               //!< Clone object
+        bool                        equals(const RbObject* obj) const;               //!< Equals comparison
+        const StringVector&         getClass(void) const;                            //!< Get class vector
+        void                        printValue(std::ostream& o) const;               //!< Print value (for user)
+        std::string                 toString(void) const;                            //!< Complete info about object
 
         // Type conversion
-        RbObject*           convertTo(const std::string& type) const;   //!< Convert to type
-                            operator bool(void) const { return value; } //!< Type conversion to bool
+                                    operator bool(void) const { return value; }      //!< Type conversion to bool
 
         // Getters and setters
-        void                setValue(bool x) { value = x; }             //!< Set value
-        bool                getValue(void) const { return value; }      //!< Get value
+        void                        setValue(bool x) { value = x; }                  //!< Set value
+        bool                        getValue(void) const { return value; }           //!< Get value
+
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
 
     private:
-        bool                value;                                      //!< Value member
+        bool                        value;                                           //!< Value member
 };
 
 #endif

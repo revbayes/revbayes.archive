@@ -33,7 +33,6 @@ PosReal::PosReal(const double v)
         throw RbException("Nonpositive value for " + PosReal_name);
 }
 
-
 /** Construct from int */
 PosReal::PosReal(const int v)
     : RbDouble(v) {
@@ -42,20 +41,17 @@ PosReal::PosReal(const int v)
         throw RbException("Nonpositive value for " + PosReal_name);
 }
 
-
 /** Clone object */
 RbObject* PosReal::clone(void) const {
 
 	return  (RbObject*)(new PosReal(*this));
 }
 
-
-/** Convert to object of another class. Do not convert to bool as in base class. */
+/** Convert to object of another class. The caller manages the object. */
 RbObject* PosReal::convertTo(const std::string& type) const {
 
     return NULL;
 }
-
 
 /** Get class vector describing type of object */
 const StringVector& PosReal::getClass() const {
@@ -64,6 +60,11 @@ const StringVector& PosReal::getClass() const {
     return rbClass;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool PosReal::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Set value */
 void PosReal::setValue(double x) {
@@ -73,7 +74,6 @@ void PosReal::setValue(double x) {
 
     RbDouble::setValue(x);
 }
-
 
 /** Get complete info about object */
 std::string PosReal::toString(void) const {
