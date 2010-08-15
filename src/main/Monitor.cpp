@@ -16,6 +16,7 @@
  */
 
 #include "Monitor.h"
+#include "RbException.h"
 #include "RbNames.h"
 #include "StringVector.h"
 #include "VariableNode.h"
