@@ -66,6 +66,11 @@ Mcmc* Mcmc::clone(void) const {
     return new Mcmc(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Mcmc::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Map calls to member methods */
 const RbObject* Mcmc::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
@@ -127,6 +132,11 @@ const MethodTable& Mcmc::getMethodInits(void) const {
     return methodInits;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool Mcmc::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Allow only constant member variables */
 void Mcmc::setVariable(const std::string& name, DAGNode* var) {

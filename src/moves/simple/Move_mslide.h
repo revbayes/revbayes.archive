@@ -44,7 +44,9 @@ class Move_mslide : public SimpleMove {
         // Member variable inits
         const MemberRules&      getMemberRules(void) const;                         //!< Get member rules
 
-    protected:
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
         double                  perform(std::set<StochasticNode*>& affectedNodes);  //!< Perform move
 };
 

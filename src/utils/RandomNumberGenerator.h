@@ -35,6 +35,10 @@ class RandomNumberGenerator : public RbComplex {
 		double						nextDouble(void);                             
 		double						nextDouble(double max);
 
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;       //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const; //!< Is convertible to type and dim?
+
 	private:
 	
 		double uniform01(void);

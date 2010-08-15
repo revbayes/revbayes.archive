@@ -35,14 +35,20 @@ RandomNumberGenerator::RandomNumberGenerator(const RandomNumberGenerator& rng) {
     seed = rng.seed;
 }
 
-RandomNumberGenerator::~RandomNumberGenerator() {
+RandomNumberGenerator::~RandomNumberGenerator(void) {
 
 }
 
-RbObject* RandomNumberGenerator::clone() const {
+RbObject* RandomNumberGenerator::clone(void) const {
 
     RandomNumberGenerator* x = new RandomNumberGenerator(*this);
     return (RbObject*) x;
+}
+
+/** Convert to object of another class. The caller manages the object. */
+RbObject* RandomNumberGenerator::convertTo(const std::string& type) const {
+
+    return NULL;
 }
 
 bool RandomNumberGenerator::equals(const RbObject* obj) const {
@@ -54,6 +60,12 @@ const StringVector& RandomNumberGenerator::getClass(void) const {
 
     static StringVector rbClass = StringVector(RandomNumberGenerator_name) + RbComplex::getClass();
 	return rbClass;
+}
+
+/** Convert to object of another class. The caller manages the object. */
+bool RandomNumberGenerator::isConvertibleTo(const std::string& type) const {
+
+    return false;
 }
 
 void RandomNumberGenerator::print(std::ostream& o) const {
@@ -104,7 +116,7 @@ RbObject& RandomNumberGenerator::operator=(const RbObject& obj) {
     } catch (std::bad_cast & bce) {
         try {
             // Try converting the value to an argumentRule
-            const RandomNumberGenerator& x = dynamic_cast<const RandomNumberGenerator&> (*(obj.convertTo("rng")));
+            const RandomNumberGenerator& x = dynamic_cast<const RandomNumberGenerator&> (*(obj.convert("rng")));
 
             RandomNumberGenerator& y = (*this);
             y = x;

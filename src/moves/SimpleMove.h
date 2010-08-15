@@ -44,7 +44,10 @@ class SimpleMove : public Move {
         void                        rejectMove(void);                   //!< Reject the move
         void                        setNodePtr(StochasticNode* node) { nodePtr = node; }    //!< Set node ptr
 
-    protected:
+	protected:
+        virtual RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        virtual bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
+
                                     SimpleMove(const MemberRules& memberRules);             //!< Parser constructor
 
         // Function you have to override

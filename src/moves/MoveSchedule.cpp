@@ -88,6 +88,11 @@ RbObject* MoveSchedule::clone(void) const {
     return (RbObject*)(new MoveSchedule(*this));
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* MoveSchedule::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Get class vector describing type of object */
 const StringVector& MoveSchedule::getClass(void) const { 
@@ -125,6 +130,11 @@ void MoveSchedule::eraseMove(const Move* move) {
     schedule.erase(i);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool MoveSchedule::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Print value for user */
 void MoveSchedule::printValue(std::ostream& o) const {

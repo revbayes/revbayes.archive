@@ -51,6 +51,11 @@ RbObject* Move_mscale::clone(void) const {
     return new Move_mscale(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Move_mscale::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Get class vector describing type of object */
 const StringVector& Move_mscale::getClass() const {
@@ -59,6 +64,11 @@ const StringVector& Move_mscale::getClass() const {
     return rbClass;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool Move_mscale::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Return member rules */
 const MemberRules& Move_mscale::getMemberRules(void) const {

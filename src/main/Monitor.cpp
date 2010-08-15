@@ -35,6 +35,11 @@ RbObject* Monitor::clone(void) const {
     return new Monitor(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Monitor::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Equals comparison */
 bool Monitor::equals(const RbObject* obj) const {
@@ -58,6 +63,11 @@ const StringVector& Monitor::getClass() const {
     return rbClass;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool Monitor::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Monitor value unconditionally */
 void Monitor::monitor(std::ofstream& o) const {

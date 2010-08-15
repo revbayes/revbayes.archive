@@ -46,6 +46,10 @@ class Monitor : public RbComplex {
         void                    monitor(int gen, std::ofstream& o) const;       //!< Monitor at generation gen
         void                    printHeader(std::ofstream& o) const;            //!< Print header
 
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
+
     private:
         VariableNode*           theNode;                                        //!< The node to monitor
         int                     samplingFrequency;                              //!< Sampling frequency

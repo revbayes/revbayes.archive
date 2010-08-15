@@ -52,6 +52,11 @@ RbObject* Move_mslide::clone(void) const {
     return new Move_mslide(*this);
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Move_mslide::convertTo(const std::string& type) const {
+
+    return NULL;
+}
 
 /** Get class vector describing type of object */
 const StringVector& Move_mslide::getClass() const {
@@ -81,6 +86,11 @@ const MemberRules& Move_mslide::getMemberRules(void) const {
     return memberRules;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool Move_mslide::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Perform the move */
 double Move_mslide::perform(std::set<StochasticNode*>& affectedNodes) {

@@ -52,7 +52,10 @@ class Move : public MemberObject {
         void                        resetCounters(void);                            //!< Reset numTried/numAccepted
         void                        setUpdateWeight(double weight);                 //!< Set update weight
 
-    protected:
+	protected:
+        virtual RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        virtual bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
+
                                     Move(const MemberRules& memberRules);           //!< Parser constructor
 
         // Member method call (throw an error: no member methods)

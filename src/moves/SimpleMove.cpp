@@ -41,7 +41,11 @@ void SimpleMove::acceptMove(void) {
     nodePtr->keep();
 }
 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* SimpleMove::convertTo(const std::string& type) const {
 
+    return NULL;
+}
 
 /** Get class vector describing type of object */
 const StringVector& SimpleMove::getClass(void) const { 
@@ -50,6 +54,11 @@ const StringVector& SimpleMove::getClass(void) const {
 	return rbClass;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool SimpleMove::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
 
 /** Perform the move */
 void SimpleMove::performMove(double& lnPriorRatio, double& lnLikelihoodRatio, double& lnHastingsRatio) {

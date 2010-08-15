@@ -55,7 +55,9 @@ class Mcmc: public MemberObject {
         // Mcmc functions
         void                    update(void);                                   //!< Update the chain
 
-    protected:
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
         const RbObject*         executeOperation(const std::string&     name,
                                                  std::vector<DAGNode*>& args);  //!< Execute method
 };
