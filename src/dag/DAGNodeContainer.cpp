@@ -707,7 +707,7 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
             const RbObject* elem = source->getElement(i);
             if (elem->isType(getValueType())) {
                 if ((*targetIt) != NULL && (*targetIt)->isType(StochasticNode_name))
-                    ((StochasticNode*)(*targetIt))->clamp(elem->clone());
+                    ((StochasticNode*)(*targetIt))->setValue(elem->clone());
                 else {
                     if ((*targetIt) != NULL) {
                         (*targetIt)->removeChildNode(this);
@@ -733,7 +733,7 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
     // Parser wants to set a single element
     if (val->isType(getValueType())) {
         if ((*targetIt) != NULL && (*targetIt)->isType(StochasticNode_name))
-            ((StochasticNode*)(*targetIt))->clamp(val);
+            ((StochasticNode*)(*targetIt))->setValue(val);
         else {
             if ((*targetIt) != NULL) {
                 (*targetIt)->removeChildNode(this);

@@ -607,10 +607,10 @@ void Frame::setValue(const std::string& name, RbObject* value) {
 			}
 		}
 	
-    /* Clamp */
+    /* Set value of stochastic node */
     if (variable != NULL && value != NULL && variable->isType(StochasticNode_name)) 
 		{
-        ((StochasticNode*)(variable))->clamp(value);
+        ((StochasticNode*)(variable))->setValue(value);
         return;
 		}
 
