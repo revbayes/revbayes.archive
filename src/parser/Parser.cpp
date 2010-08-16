@@ -44,12 +44,12 @@ int Parser::help(RbString *symbol) const {
 
     std::ostringstream msg;
 
-#if defined DEBUG_PARSER
+#	if defined DEBUG_PARSER
     // Print syntax tree 
     std::cerr << std::endl;
     std::cerr << "Parser trying to get help for symbol '" << std::string(*symbol) << "'";
     std::cerr << std::endl;
-#endif
+#	endif
 
     // Get some help when we have some help to get
 
@@ -58,7 +58,7 @@ int Parser::help(RbString *symbol) const {
     msg << "'; I wish I did because it looks interesting." << std::endl;
 
     // Output the message
-    UserInterface::userInterface().output(msg.str());
+    RBOUT(msg.str());
 
     // Delete the symbol
     delete symbol;
@@ -73,13 +73,13 @@ int Parser::help(SyntaxElement *root) const {
 
     std::ostringstream msg;
 
-#if defined DEBUG_PARSER
+#	if defined DEBUG_PARSER
     // Print syntax tree
     std::cerr << std::endl;
     std::cerr << "Syntax tree root before help:\n";
     root->print(std::cerr);
     std::cerr << std::endl;
-#endif
+#	endif
 
     RbString symbol;
 
@@ -88,7 +88,7 @@ int Parser::help(SyntaxElement *root) const {
     }
     else {
         msg << "I have no clue -- Bison was not supposed to ask me about this!";
-        UserInterface::userInterface().output(msg.str());
+        RBOUT(msg.str());
         delete root;
         return 1;
     }
@@ -100,13 +100,13 @@ int Parser::help(SyntaxElement *root) const {
 /** This function causes recursive execution of a syntax tree by calling the root to get its value */
 int Parser::execute(SyntaxElement *root) const {
 
-#ifdef DEBUG_PARSER
+#	ifdef DEBUG_PARSER
     // Print syntax tree
     std::cerr << std::endl;
     std::cerr << "Syntax tree root before execution:\n";
     root->print(std::cerr);
     std::cerr << std::endl;
-#endif
+#	endif
 
     // Declare a variable for the result
     RbObject *result;
@@ -127,7 +127,7 @@ int Parser::execute(SyntaxElement *root) const {
         std::ostringstream msg;
         rbException.printValue(msg);
         msg << std::endl;
-        UserInterface::userInterface().output(msg.str());
+        RBOUT(msg.str());
 
         // Return signal indicating problem
         return 2;
@@ -137,7 +137,7 @@ int Parser::execute(SyntaxElement *root) const {
     if (result != NULL && !root->isType(SyntaxAssignExpr_name)) {
         std::ostringstream msg;
         result->printValue(msg);
-        UserInterface::userInterface().output(msg.str());
+        RBOUT(msg.str());
     }
 
     // Delete syntax tree and result
@@ -165,12 +165,12 @@ void Parser::getline(char* buf, int maxsize) {
         buf[i] = '\0';
     }
 
-#if defined (DEBUG_PARSER)
+#	if defined (DEBUG_PARSER)
     if (foundEOF == true)
         PRINTF("Parser gave flex EOF\n");
     else
         PRINTF("Parser gave flex line(s):\n %s", buf);
-#endif
+#	endif
 }
 
 
@@ -202,7 +202,7 @@ int Parser::processCommand(std::string& command) {
         std::ostringstream msg;
         rbException.printValue(msg);
         msg << std::endl;
-        UserInterface::userInterface().output(msg.str());
+        RBOUT(msg.str());
 
         // Return signal indicating problem
         return 1;

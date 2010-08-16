@@ -19,28 +19,30 @@
 
 #include "UserInterface.h"
 
+const std::string pad = "   ";
+
+
 
 /** Ask user a yes/no question */
 bool UserInterface::ask(std::string msg) {
 
     std::string answer, dummy;
-    std::cout << msg << "? (yes/no) ";
+	RBOUT(msg + "? (yes/no) ");
     std::cin >> answer;
     for (size_t i=0; i<answer.size(); i++)
         answer[i] = tolower(answer[i]);
 
-    while (answer!="y" && answer!="yes" && answer!="n" && answer!="no") {
-
+    while (answer!="y" && answer!="yes" && answer!="n" && answer!="no") 
+		{
         std::getline(std::cin, dummy);
         std::cout << std::endl;
-        std::cout << "Please answer yes or no." << std::endl;
-        std::cout << msg << "? (yes/no) ";
+		RBOUT("Please answer yes or no.");
+		RBOUT(msg + "? (yes/no) ");
 
         std::cin >> answer;
         for (size_t i=0; i<answer.size(); i++)
             answer[i] = tolower(answer[i]);
-    }
-
+		}
     std::getline(std::cin, dummy);
 
     if (answer[0] == 'y')
@@ -49,13 +51,11 @@ bool UserInterface::ask(std::string msg) {
         return false;
 }
 
-
 /** Print a message and a newline */
 void UserInterface::output(std::string msg) {
 
-    std::cout << msg << std::endl;
+    std::cout << pad << msg << std::endl;
 }
-
 
 /** Convert to string and then call output to print message string */
 void UserInterface::output(std::ostringstream msg) {

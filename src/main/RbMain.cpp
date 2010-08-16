@@ -8,20 +8,17 @@
 
 #include "Parser.h"
 #include "Workspace.h"
+#include "UserInterface.h"
+
+
 
 int main(int argc, char **argv) {
 
     // Print a nifty message
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << "                             RevBayes" << std::endl;
-    std::cout << std::endl;
-    std::cout << "          An R-like environment for phylogenetic analysis" << std::endl;
-    std::cout << "                     using Bayesian inference" << std::endl;
-    std::cout << std::endl;
-    std::cout << "             Released under the GPL license, version 3" << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
+	RBOUT("                             RevBayes\n");
+	RBOUT("          An R-like environment for phylogenetic analysis");
+	RBOUT("                     using Bayesian inference\n");
+	RBOUT("             Released under the GPL license, version 3\n\n");
 
     Workspace::globalWorkspace().initializeGlobalWorkspace();
 

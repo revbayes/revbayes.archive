@@ -23,26 +23,26 @@
 #include <iostream>
 #include <sstream>
 
+#define RBOUT(m) UserInterface::userInterface().output((m))
+
 class UserInterface {
 
     public:
-        bool            ask(std::string msg);                   //!< Ask user a question
-        bool            initialize(void) { return true;}        //!< Initialize interface    
-        void            output(std::string msg);                //!< Display message from string
-        void            output(std::ostringstream msg);         //!< Display message from stringstream
-
-        /** Get user interface */
-        static UserInterface& userInterface() {
-                static UserInterface theInterface = UserInterface();
-                return theInterface;
-        }
+        bool                        ask(std::string msg);                                      //!< Ask user a question
+        bool                        initialize(void) { return true; }                          //!< Initialize interface    
+        void                        output(std::string msg);                                   //!< Display message from string
+        void                        output(std::ostringstream msg);                            //!< Display message from stringstream
+        static UserInterface&       userInterface(void)                                        //!< Get the user interface
+		                               {
+		                               static UserInterface theInterface = UserInterface();
+		                               return theInterface;
+		                               }
 
     protected:
-                        UserInterface() {}                                      //!< Prevent construction
-                        UserInterface(const UserInterface& x) {}                //!< Prevent copy construction
-            virtual     ~UserInterface() {}                                     //!< Destructor
-
-        UserInterface&  operator=(const UserInterface& w) { return (*this); }   //! Prevent assignment
+                                    UserInterface(void) {}                                     //!< Prevent construction
+                                    UserInterface(const UserInterface& x) {}                   //!< Prevent copy construction
+            virtual                ~UserInterface(void) {}                                     //!< Destructor
+        UserInterface&              operator=(const UserInterface& w) { return (*this); }      //!< Prevent assignment
 };
 
 #endif

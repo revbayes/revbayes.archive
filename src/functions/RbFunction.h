@@ -55,7 +55,7 @@ typedef std::vector<ArgumentRule*> ArgumentRules;
 class RbFunction :  public RbObject {
 
     public:
-		virtual                                 ~RbFunction(void);                                                                  //!< Destructor
+		virtual                                ~RbFunction(void);                                                                   //!< Destructor
 
         // Basic utility functions
         virtual std::string                     briefInfo(void) const;                                                              //!< Brief info about object
@@ -78,8 +78,8 @@ class RbFunction :  public RbObject {
         virtual RbObject*                       getValue(void);                                                                     //!< Get result (new object)
 
 	protected:
-        virtual RbObject*                       convertTo(const std::string& type) const;        //!< Convert to type
-        virtual bool                            isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
+        virtual RbObject*                       convertTo(const std::string& type) const;                                           //!< Convert to type
+        virtual bool                            isConvertibleTo(const std::string& type) const;                                     //!< Is convertible to type and dim?
                                                 RbFunction(void);                                                                   //!< Basic constructor
                                                 RbFunction(const RbFunction& x);                                                    //!< Copy constructor
 
