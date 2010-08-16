@@ -25,6 +25,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "StringVector.h"
+#include "UserInterface.h"
 
 #include <sstream>
 
@@ -32,6 +33,7 @@
 /** Default constructor */
 Model::Model(void)
     : dagNodes(), maintainedHere() {
+	
 }
 
 /** Sinknodes constructor */
@@ -197,6 +199,24 @@ bool Model::isConvertibleTo(const std::string& type) const {
 /** Print value for user */
 void Model::printValue(std::ostream& o) const {
 
+	std::ostringstream msg;
+
+	RBOUT("\n");
+    msg << "Model with " << dagNodes.size() << " vertices" << std::endl;
+	RBOUT(msg.str());
+	msg.str("");
+	RBOUT("-----------------------------------------------");
+	int cnt = 0;
+    for (std::vector<DAGNode*>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
+		{   	
+		msg << "Vertex " << ++cnt << ": \"" << (*i)->getName() << "\"";
+		RBOUT(msg.str());
+		msg.str("");
+		
+		
+		}
+		
+#	if 0
     o << std::endl;
     o << "Model with " << dagNodes.size() << " DAG nodes" << std::endl;
 
@@ -210,6 +230,7 @@ void Model::printValue(std::ostream& o) const {
         (*i)->printParents(o);
         (*i)->printChildren(o);
     }
+#	endif
 }
 
 /** Complete info about object */

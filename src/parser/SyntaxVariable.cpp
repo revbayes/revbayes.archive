@@ -224,12 +224,13 @@ RbObject* SyntaxVariable::getValue(Frame* frame) const {
     IntVector theIndex = getIndex(frame);
 
     /* Get value */
-    if (variable == NULL) {
+    if (variable == NULL) 
+		{
         if (theIndex.size() == 0)
             return frame->getValue(*identifier)->clone();
         else
             return frame->getValElement(*identifier, theIndex)->clone();
-    }
+		}
 
     const MemberObject* object = dynamic_cast<const MemberObject*>(variable->getValuePtr(frame));
     if (object == NULL)

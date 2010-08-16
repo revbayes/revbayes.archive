@@ -134,11 +134,12 @@ int Parser::execute(SyntaxElement *root) const {
     }
 
     // Print result if the root is not an assign expression
-    if (result != NULL && !root->isType(SyntaxAssignExpr_name)) {
+    if (result != NULL && !root->isType(SyntaxAssignExpr_name)) 
+		{
         std::ostringstream msg;
         result->printValue(msg);
         RBOUT(msg.str());
-    }
+		}
 
     // Delete syntax tree and result
     delete result;

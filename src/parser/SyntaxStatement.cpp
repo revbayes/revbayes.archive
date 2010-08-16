@@ -21,9 +21,11 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
+#include "RbNames.h"
 #include "StringVector.h"
 #include "SyntaxForCondition.h"
 #include "SyntaxStatement.h"
+#include "UserInterface.h"
 #include "Workspace.h"
 
 
@@ -167,7 +169,16 @@ RbObject* SyntaxStatement::getValue(Frame* frame) const {
 
                 // Execute statement
                 RbObject* result = (*i)->getValue(frame);
-                delete result;  // discard result
+				
+				if ( result != NULL && !(*i)->isType(SyntaxAssignExpr_name) )
+					{
+					std::ostringstream msg;
+					result->printValue(msg);
+					RBOUT(msg.str());
+					}
+					
+				if ( result != NULL )
+					delete result;  // discard result
             }
         }
     }
