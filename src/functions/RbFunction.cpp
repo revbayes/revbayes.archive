@@ -92,11 +92,13 @@ std::string RbFunction::briefInfo(void) const {
     return o.str();
 }
 
+
 /** Convert to object of another class. The caller manages the object. */
 RbObject* RbFunction::convertTo(const std::string& type) const {
 
     return NULL;
 }
+
 
 /** Pointer-based equals comparison */
 bool RbFunction::equals(const RbObject* x) const {
@@ -125,16 +127,8 @@ void RbFunction::deleteProcessedArguments(void) {
 }
 
 
-/** Get class vector describing type of object */
-const StringVector& RbFunction::getClass(void) const { 
-
-    static StringVector rbClass = StringVector(RbFunction_name) + RbObject::getClass();
-    return rbClass; 
-}
-
-
 /** Execute function with arguments simply passed in as they are given */
-const RbObject* RbFunction::execute(const std::vector<Argument>& args) {
+RbObject* RbFunction::execute(const std::vector<Argument>& args) {
 
     if (processArguments(args) == false)
         throw RbException("Arguments do not match formals.");
@@ -144,35 +138,30 @@ const RbObject* RbFunction::execute(const std::vector<Argument>& args) {
 
 
 /** Execute function for repeated evaluation after arguments have been set */
-const RbObject* RbFunction::execute() {
-
-    if (!argumentsProcessed) {
-        throw RbException("Arguments were not processed before executing function.");
-    }
-    const RbObject* result = executeOperation(processedArguments);
-    return result;
-}
-
-
-/** Get new result value */
-RbObject* RbFunction::getValue() {
+RbObject* RbFunction::execute() {
 
     if (!argumentsProcessed) {
         throw RbException("Arguments were not processed before executing function.");
     }
     
-    const RbObject* result = executeOperation(processedArguments);
-    if (result == NULL)
-        return NULL;
-    else
-        return result->clone();
+    return executeOperation(processedArguments);
 }
 
-/** Convert to object of another class. The caller manages the object. */
+
+/** Get class vector describing type of object */
+const StringVector& RbFunction::getClass(void) const { 
+
+    static StringVector rbClass = StringVector(RbFunction_name) + RbObject::getClass();
+    return rbClass; 
+}
+
+
+/** Is object convertible to object of another class? */
 bool RbFunction::isConvertibleTo(const std::string& type) const {
 
     return false;
 }
+
 
 /** Print value for user */
 void RbFunction::printValue(std::ostream& o) const {
@@ -265,7 +254,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
     if ( nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) >= nRules ) {
 
         int numEllipsisArgs = int(args.size()) - nRules + 1;
-        DAGNodeContainer* ellipsisArgs = new DAGNodeContainer(numEllipsisArgs, std::string(RbObject_name));
+        DAGNodeContainer* ellipsisArgs = new DAGNodeContainer(numEllipsisArgs, theRules[nRules-1]->getValueType());
         ContainerIterator ellipsisIt = ellipsisArgs->begin();
 
         for (size_t i=nRules-1; i<args.size(); i++) {
@@ -278,8 +267,6 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
         }
         processedArguments[numFinalArgs-1] = ellipsisArgs;
         referenceArgument [numFinalArgs-1] = false;
-        if (!theRules[nRules - 1]->isArgValid(ellipsisArgs))
-            return false;
     }
 
 

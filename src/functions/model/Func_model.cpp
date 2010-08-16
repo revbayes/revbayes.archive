@@ -32,6 +32,17 @@ RbObject* Func_model::clone(void) const {
     return new Func_model(*this);
 }
 
+
+/** Execute function */
+RbObject* Func_model::executeOperation(const std::vector<DAGNode*>& args) {
+
+    if (args[0]->numChildren() != 0)
+        throw RbException("Node is not a sink node");
+
+    return new Model(args);
+}
+
+
 /** Get argument rules */
 const ArgumentRules& Func_model::getArgumentRules(void) const {
 
@@ -48,18 +59,6 @@ const ArgumentRules& Func_model::getArgumentRules(void) const {
 }
 
 
-/** Execute function */
-const RbObject* Func_model::executeOperation(const std::vector<DAGNode*>& args) {
-
-    if (args[0]->numChildren() != 0)
-        throw RbException("Node is not a sink node");
-
-    model = Model(args);
-
-    return &model;
-}
-
-
 /** Get class vector describing type of object */
 const StringVector& Func_model::getClass(void) const {
 
@@ -72,17 +71,5 @@ const StringVector& Func_model::getClass(void) const {
 const std::string& Func_model::getReturnType(void) const {
 
     return Model_name;
-}
-
-
-/** Get value */
-RbObject* Func_model::getValue(void) {
-
-    std::vector<DAGNode*> const & args = getProcessedArguments();
-
-    if (args[0]->numChildren() != 0)
-        throw RbException("Node is not a sink node");
-
-    return new Model(args);
 }
 

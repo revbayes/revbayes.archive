@@ -31,7 +31,6 @@ class Func__lookup :  public RbFunction {
     public:
                                     Func__lookup(const std::string& type, int dim); //!< Constructor
                                     Func__lookup(const Func__lookup& x);            //!< Copy constructor
-                                    ~Func__lookup(void);                            //!< Destructor
 
         // Assignment operator
         Func__lookup&               operator=(const Func__lookup& x);     //!< Assignment operator
@@ -45,12 +44,12 @@ class Func__lookup :  public RbFunction {
         const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
         int                         getReturnDim(void) const;               //!< Get dim of return value
         const std::string&          getReturnType(void) const;              //!< Get type of return value
+        DAGNode*                    getVariable(void) const;                //!< Get pointer to variable (for changing variable)
 
 	protected:
-        const RbObject*             executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 
         ArgumentRules               argRules;                               //!< The argument rules
-        RbObject*                   retValue;                               //!< Workspace
 };
 
 #endif

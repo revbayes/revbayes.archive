@@ -16,11 +16,12 @@
  */
 
 #include "ArgumentRule.h"
-#include "Ellipsis.h"
-#include "IntVector.h"
-#include "Func__lookup.h"
 #include "DAGNode.h"
+#include "DAGNodeContainer.h"
+#include "Ellipsis.h"
+#include "Func__lookup.h"
 #include "Frame.h"
+#include "IntVector.h"
 #include "RbException.h"
 #include "RbInt.h"
 #include "RbNames.h"
@@ -28,12 +29,13 @@
 #include "StringVector.h"
 #include "WrapperRule.h"
 
+#include <cassert>
 #include <sstream>
 
 
 /** Construct from type and dim */
 Func__lookup::Func__lookup(const std::string& type, int dim)
-    : RbFunction(), retValue(NULL) {
+    : RbFunction() {
 
     argRules.push_back(new WrapperRule("", type, dim));
     argRules.push_back(new Ellipsis(RbInt_name));
@@ -42,14 +44,7 @@ Func__lookup::Func__lookup(const std::string& type, int dim)
 
 /** Copy constructor */
 Func__lookup::Func__lookup(const Func__lookup& x)
-    : RbFunction(x), argRules(x.argRules), retValue(NULL) {
-}
-
-
-/** Destructor */
-Func__lookup::~Func__lookup(void) {
-
-    delete retValue;
+    : RbFunction(x), argRules(x.argRules) {
 }
 
 
@@ -75,6 +70,7 @@ Func__lookup* Func__lookup::clone(void) const {
     return new Func__lookup(*this);
 }
 
+
 /** Pointer-based equals comparison */
 bool Func__lookup::equals(const RbObject* x) const {
 
@@ -99,23 +95,24 @@ bool Func__lookup::equals(const RbObject* x) const {
 
 
 /** Execute operation: calculate index and get value from variable */
-const RbObject* Func__lookup::executeOperation(const std::vector<DAGNode*>& args) {
-
-    delete retValue;
+RbObject* Func__lookup::executeOperation(const std::vector<DAGNode*>& args) {
 
     DAGNode* theVariable = args[0];
 
+    // Get the index vector from the DAGNodeContainer corresponding to the ellipsis,
+    // if there is one. Subtract one to get internal 0-based index.
     IntVector index;
-    for (std::vector<DAGNode*>::const_iterator i=args.begin()+1; i!=args.end(); i++) {
-        index.push_back(((RbInt*)((*i)->getValue()))->getValue());
+    if (args.size() > 1) {
+        const Container* indexContainer = dynamic_cast<const Container*>(args[1]->getValue());
+        assert(indexContainer != NULL);
+        for (size_t i=0; i<indexContainer->size(); i++)
+            index.push_back(((RbInt*)((*indexContainer)[i]))->getValue()-1);
     }
-
+    
     if (index.size() == 0)
-        retValue = theVariable->getValue()->clone();
+        return theVariable->getValue()->clone();
     else
-        retValue = theVariable->getValElement(index)->clone();
-
-    return retValue;
+        return theVariable->getValElement(index)->clone();
 }
 
 
@@ -145,5 +142,29 @@ int Func__lookup::getReturnDim(void) const {
 const std::string& Func__lookup::getReturnType(void) const {
 
     return argRules[0]->getValueType();
+}
+
+/** Get variable */
+DAGNode* Func__lookup::getVariable(void) const {
+
+    const std::vector<DAGNode*>& args = processedArguments;
+    DAGNode* theVariable = args[0];
+
+    if (args.size() == 1)
+        return theVariable;
+
+    DAGNodeContainer* theVariableContainer = dynamic_cast<DAGNodeContainer*>(args[0]);
+    if (theVariableContainer == NULL)
+        throw ("Reference to a value element that is not a DAG node");
+
+    // Get the index vector from the DAGNodeContainer corresponding to the ellipsis,
+    // if there is one. Subtract one to get internal 0-based index.
+    IntVector index;
+    const Container* indexContainer = dynamic_cast<const Container*>(args[1]->getValue());
+    assert(indexContainer != NULL);
+    for (size_t i=0; i<indexContainer->size(); i++)
+        index.push_back(((RbInt*)((*indexContainer)[i]))->getValue()-1);
+    
+    return theVariableContainer->getVarElement(index);
 }
 

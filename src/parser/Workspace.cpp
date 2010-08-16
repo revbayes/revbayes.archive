@@ -36,6 +36,7 @@
 #include "Dist_norm.h"
 #include "Dist_unif.h"
 #include "Func__range.h"
+#include "Func_clamp.h"
 #include "Func_ls.h"
 #include "Func_model.h"
 #include "Func_quit.h"
@@ -223,6 +224,7 @@ void Workspace::initializeGlobalWorkspace(void) {
     addFunction("_range", new Func__range());
 
     /* Add regular functions */
+    addFunction("clamp",  new Func_clamp()); 
     addFunction("ls",     new Func_ls());
     addFunction("model",  new Func_model());
     addFunction("q",      new Func_quit());

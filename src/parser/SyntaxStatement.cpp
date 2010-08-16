@@ -191,11 +191,10 @@ void SyntaxStatement::print(std::ostream& o) const {
     if (statements1 == NULL)
         o << "statements1   = NULL" << std::endl;
     else
-        o << "statements1   = <" << statements1->size() << " statements" << std::endl;
+        o << "statements1   = <" << statements1->size() << " statements>" << std::endl;
     if (statements2 == NULL)
         o << "statements2   = NULL" << std::endl;
     else
-        o << "statements2   = <" << statements2->size() << " statements" << std::endl;
+        o << "statements2   = <" << statements2->size() << " statements>" << std::endl;
 }
-
 

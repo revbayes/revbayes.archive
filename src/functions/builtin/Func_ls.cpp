@@ -38,33 +38,12 @@ RbObject* Func_ls::clone(void) const {
     return new Func_ls(*this);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Func_ls::convertTo(const std::string& type) const {
-
-    return NULL;
-}
-
-/** Get argument rules */
-const ArgumentRules& Func_ls::getArgumentRules(void) const {
-
-    static ArgumentRules argumentRules;
-    static bool          rulesSet = false;
-
-    if (!rulesSet) {
-
-        argumentRules.push_back(new ArgumentRule("all", new RbBool(false)));
-        rulesSet = true;
-    }
-
-    return argumentRules;
-}
-
 
 /** Execute function */
-const RbObject* Func_ls::executeOperation(const std::vector<DAGNode*>& args) {
+RbObject* Func_ls::executeOperation(const std::vector<DAGNode*>& args) {
 
     /* Open file */
-    bool printAll = ((RbBool*) args[0])->getValue();
+    bool printAll = ((RbBool*) (args[0]->getValue()))->getValue();
     
     std::cout << "User workspace:" << std::endl;
     std::cout << "===============" << std::endl;
@@ -87,6 +66,22 @@ const RbObject* Func_ls::executeOperation(const std::vector<DAGNode*>& args) {
 }
 
 
+/** Get argument rules */
+const ArgumentRules& Func_ls::getArgumentRules(void) const {
+
+    static ArgumentRules argumentRules;
+    static bool          rulesSet = false;
+
+    if (!rulesSet) {
+
+        argumentRules.push_back(new ArgumentRule("all", new RbBool(false)));
+        rulesSet = true;
+    }
+
+    return argumentRules;
+}
+
+
 /** Get class vector describing type of object */
 const StringVector& Func_ls::getClass(void) const {
 
@@ -99,11 +94,5 @@ const StringVector& Func_ls::getClass(void) const {
 const std::string& Func_ls::getReturnType(void) const {
 
     return RbNULL_name;
-}
-
-/** Convert to object of another class. The caller manages the object. */
-bool Func_ls::isConvertibleTo(const std::string& type) const {
-
-    return false;
 }
 

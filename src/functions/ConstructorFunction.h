@@ -42,11 +42,8 @@ class ConstructorFunction :  public RbFunction {
         const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
         const std::string&          getReturnType(void) const;              //!< Get type of return value
 
-        // Test new design
-        RbObject*                   getValue(void);                         //!< Get new result object
-
 	protected:
-        const RbObject*             executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 
         MemberObject*               templateObject;                         //!< The template object
 };

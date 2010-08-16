@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of Func__range, which is used
- * to look up a variable.
+ * This file contains the declaration of Func_clamp, which is used
+ * to clamp a stochastic node to an observed value.
  *
- * @brief Declaration of Func__range
+ * @brief Declaration of Func_clamp
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -14,8 +14,8 @@
  * $Id$
  */
 
-#ifndef Func__range_H
-#define Func__range_H
+#ifndef Func_clamp_H
+#define Func_clamp_H
 
 #include "RbFunction.h"
 
@@ -26,20 +26,19 @@
 class DAGNode;
 class StringVector;
 
-class Func__range :  public RbFunction {
+class Func_clamp :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func__range*                clone(void) const;                      //!< Clone the object
+        Func_clamp*                 clone(void) const;                      //!< Clone the object
     	const StringVector&         getClass(void) const;                   //!< Get class vector
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
-        int                         getReturnDim(void) const;               //!< Get dim of return value
         const std::string&          getReturnType(void) const;              //!< Get type of return value
 
 	protected:
-        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        RbObject*                   executeOperation(const std::vector<DAGNode*> & args);    //!< Execute operation
 };
 
 #endif

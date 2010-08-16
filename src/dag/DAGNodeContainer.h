@@ -42,6 +42,7 @@ class DAGNodeContainer : public VariableNode {
 
     public:
         friend class Frame;                                     //!< Give Frame direct access
+        friend class Func__lookup;                              //!< Give Func__lookup direct access
 
             DAGNodeContainer(DAGNode* x);                       //!< Vector with one node x
             DAGNodeContainer(size_t n, DAGNode* x);             //!< Vector with n copies of x

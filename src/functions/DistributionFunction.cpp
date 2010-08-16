@@ -39,9 +39,6 @@ DistributionFunction::DistributionFunction(Distribution* dist, FuncType funcType
     /* Set the function type */
     functionType = funcType;
 
-    /* Initialize return value */
-    retObject = NULL;
-
     /* Get the distribution parameter rules and set type to value argument except for rng */
     const ArgumentRules& memberRules = dist->getMemberRules();
     for (ArgumentRules::const_iterator i = memberRules.begin(); i!=memberRules.end(); i++) {
@@ -76,8 +73,6 @@ DistributionFunction::DistributionFunction(const DistributionFunction& x) {
     returnType    = x.returnType;
     distribution  = dynamic_cast<Distribution*>(x.distribution->clone());
     functionType  = x.functionType;
-    retObject     = NULL;   // Do not copy work space
-    retDouble     = x.retDouble;
 
     /* Modify argument rules based on function type */
     if (functionType == DENSITY) {
@@ -97,7 +92,6 @@ DistributionFunction::DistributionFunction(const DistributionFunction& x) {
 /** Destructor */
 DistributionFunction::~DistributionFunction(void) {
 
-    delete retObject;
     delete distribution;
 }
 
@@ -113,7 +107,6 @@ DistributionFunction& DistributionFunction::operator=(const DistributionFunction
         returnType    = x.returnType;
         distribution  = dynamic_cast<Distribution*>(x.distribution->clone());
         functionType  = x.functionType;
-        retDouble     = x.retDouble;
 
         /* Modify argument rules based on function type */
         if (functionType == DENSITY) {
@@ -147,28 +140,25 @@ bool DistributionFunction::equals(const RbObject* x) const {
 
 
 /** Execute operation: switch based on type */
-const RbObject* DistributionFunction::executeOperation(const std::vector<DAGNode*>& args) {
+RbObject* DistributionFunction::executeOperation(const std::vector<DAGNode*>& args) {
 
     if (functionType == DENSITY) {
         if (((RbBool*)(args.back()->getValue()))->getValue() == false)
-            retDouble.setValue(distribution->pdf(args[0]->getValue()));
+            return new RbDouble(distribution->pdf(args[0]->getValue()));
         else
-            retDouble.setValue(distribution->lnPdf(args[0]->getValue()));
+            return new RbDouble(distribution->lnPdf(args[0]->getValue()));
     }
     else if (functionType == RVALUE) {
-        if (retObject != NULL)
-            delete retObject;
-         retObject = distribution->rv();
-         return retObject;
+         return distribution->rv();
     }
     else if (functionType == PROB) {
-        retDouble.setValue(((DistributionReal*)(distribution))->cdf(((RbDouble*)(args[0]->getValue()))->getValue()));
+        return new RbDouble(((DistributionReal*)(distribution))->cdf(((RbDouble*)(args[0]->getValue()))->getValue()));
     }
     else if (functionType == QUANTILE) {
-        retDouble.setValue((((DistributionReal*)(distribution))->quantile(((RbDouble*)(args[0]->getValue()))->getValue())));
+        return new RbDouble((((DistributionReal*)(distribution))->quantile(((RbDouble*)(args[0]->getValue()))->getValue())));
     }
 
-    return &retDouble;
+    throw ("Unrecognized distribution function");
 }
 
 
@@ -214,5 +204,4 @@ bool DistributionFunction::processArguments(const std::vector<Argument>& args, I
 
     return true;
 }
-
 

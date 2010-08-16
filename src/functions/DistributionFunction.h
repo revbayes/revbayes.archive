@@ -54,14 +54,12 @@ class DistributionFunction :  public RbFunction {
         bool                        processArguments(const std::vector<Argument>& args, IntVector* matchScore=NULL);    //!< Process args, set member variables of distribution
 
 	protected:
-        const RbObject*             executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 
         ArgumentRules               argumentRules;                          //!< Argument rules
         std::string                 returnType;                             //!< Return type
         Distribution*               distribution;                           //!< The distribution
         FuncType                    functionType;                           //!< Function type
-        RbObject*                   retObject;                              //!< Return object (for rdist fxn)
-        RbDouble                    retDouble;                              //!< Return double (for ddist, pdist or qdist fxn)
 };
 
 #endif

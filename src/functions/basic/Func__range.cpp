@@ -32,6 +32,21 @@ Func__range* Func__range::clone(void) const {
     return new Func__range(*this);
 }
 
+
+/** Execute function */
+RbObject* Func__range::executeOperation(const std::vector<DAGNode*>& args) {
+
+    int first = ((RbInt*)(args[0])->getValue())->getValue();
+    int last  = ((RbInt*)(args[1])->getValue())->getValue();
+
+    std::vector<int> temp;
+    for (int i=first; i<=last; i++)
+        temp.push_back(i);
+
+    return new IntVector(temp);
+}
+
+
 /** Get argument rules */
 const ArgumentRules& Func__range::getArgumentRules(void) const {
 
@@ -46,24 +61,6 @@ const ArgumentRules& Func__range::getArgumentRules(void) const {
     }
 
     return argumentRules;
-}
-
-
-/** Execute function */
-const RbObject* Func__range::executeOperation(const std::vector<DAGNode*>& args) {
-
-    static IntVector retVal;
-
-    int first = ((RbInt*)(args[0])->getValue())->getValue();
-    int last  = ((RbInt*)(args[1])->getValue())->getValue();
-
-    std::vector<int> temp;
-    for (int i=first; i<last; i++)
-        temp.push_back(i);
-
-    retVal = IntVector(temp);
-
-    return &retVal;
 }
 
 
@@ -86,21 +83,5 @@ int Func__range::getReturnDim(void) const {
 const std::string& Func__range::getReturnType(void) const {
 
     return IntVector_name;
-}
-
-
-/** Get value */
-RbObject* Func__range::getValue(void) {
-
-    std::vector<DAGNode*> const & args = getProcessedArguments();
-
-    int first = ((RbInt*)(args[0]))->getValue();
-    int last  = ((RbInt*)(args[0]))->getValue();
-
-    std::vector<int> temp;
-    for (int i=first; i<last; i++)
-        temp.push_back(i);
-
-    return new IntVector(temp);
 }
 

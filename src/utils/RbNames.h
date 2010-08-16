@@ -44,6 +44,7 @@ const std::string Dist_unif_name                                = "uniform distr
 const std::string Ellipsis_name                                 = "ellipsis";
 const std::string Func__lookup_name                             = "_lookup function";
 const std::string Func__range_name                              = "_range function";
+const std::string Func_clamp_name                               = "clamp function";
 const std::string Func_ls_name                                  = "ls function";
 const std::string Func_model_name                               = "model function";
 const std::string Func_source_name                              = "source function";

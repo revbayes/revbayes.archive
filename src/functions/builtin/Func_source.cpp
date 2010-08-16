@@ -37,30 +37,9 @@ RbObject* Func_source::clone(void) const {
     return new Func_source(*this);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Func_source::convertTo(const std::string& type) const {
-
-    return NULL;
-}
-
-/** Get argument rules */
-const ArgumentRules& Func_source::getArgumentRules(void) const {
-
-    static ArgumentRules argumentRules;
-    static bool          rulesSet = false;
-
-    if (!rulesSet) {
-
-        argumentRules.push_back(new ArgumentRule("file", RbString_name));
-        rulesSet = true;
-    }
-
-    return argumentRules;
-}
-
 
 /** Execute function */
-const RbObject* Func_source::executeOperation(const std::vector<DAGNode*>& args) {
+RbObject* Func_source::executeOperation(const std::vector<DAGNode*>& args) {
 
     /* Open file */
     std::string filename = ((RbString*)(args[0]->getValue()))->getValue();
@@ -95,6 +74,22 @@ const RbObject* Func_source::executeOperation(const std::vector<DAGNode*>& args)
 }
 
 
+/** Get argument rules */
+const ArgumentRules& Func_source::getArgumentRules(void) const {
+
+    static ArgumentRules argumentRules;
+    static bool          rulesSet = false;
+
+    if (!rulesSet) {
+
+        argumentRules.push_back(new ArgumentRule("file", RbString_name));
+        rulesSet = true;
+    }
+
+    return argumentRules;
+}
+
+
 /** Get class vector describing type of object */
 const StringVector& Func_source::getClass(void) const {
 
@@ -109,9 +104,4 @@ const std::string& Func_source::getReturnType(void) const {
     return RbNULL_name;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool Func_source::isConvertibleTo(const std::string& type) const {
-
-    return false;
-}
 

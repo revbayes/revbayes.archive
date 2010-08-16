@@ -37,22 +37,9 @@ RbObject* Func_quit::clone(void) const {
     return new Func_quit(*this);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Func_quit::convertTo(const std::string& type) const {
 
-    return NULL;
-}
-
-/** Get argument rules */
-const ArgumentRules& Func_quit::getArgumentRules(void) const {
-
-    static ArgumentRules argumentRules;
-    return argumentRules;
-}
-
-
-/** Execute function */
-const RbObject* Func_quit::executeOperation(const std::vector<DAGNode*>& args) {
+/** Execute operation */
+RbObject* Func_quit::executeOperation(const std::vector<DAGNode*>& args) {
 
     /* Ask if user really wants to quit */
     //bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit"); // TEMP: Getting tired of typing 'y' (JPH)
@@ -62,6 +49,14 @@ const RbObject* Func_quit::executeOperation(const std::vector<DAGNode*>& args) {
         throw RbException(RbException::QUIT);
 
     return NULL;
+}
+
+
+/** Get argument rules */
+const ArgumentRules& Func_quit::getArgumentRules(void) const {
+
+    static ArgumentRules argumentRules;
+    return argumentRules;
 }
 
 
@@ -78,11 +73,4 @@ const std::string& Func_quit::getReturnType(void) const {
 
     return RbNULL_name;
 }
-
-/** Convert to object of another class. The caller manages the object. */
-bool Func_quit::isConvertibleTo(const std::string& type) const {
-
-    return false;
-}
-
 

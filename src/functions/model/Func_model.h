@@ -38,9 +38,7 @@ class Func_model :  public RbFunction {
         RbObject*               getValue(void);                                         //!< Get function value
 
 	protected:
-    	const RbObject*         executeOperation(const std::vector<DAGNode*>& args);    //!< Execute function
-
-        Model                   model;
+    	RbObject*               executeOperation(const std::vector<DAGNode*>& args);    //!< Execute function
 };
 
 #endif

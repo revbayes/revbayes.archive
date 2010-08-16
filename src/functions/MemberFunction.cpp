@@ -50,6 +50,7 @@ MemberFunction* MemberFunction::clone(void) const {
     return new MemberFunction(*this);
 }
 
+
 /** Pointer-based equals comparison */
 bool MemberFunction::equals(const RbObject* x) const {
 
@@ -58,18 +59,18 @@ bool MemberFunction::equals(const RbObject* x) const {
 }
 
 
+/** Execute operation: we rely on the object's own implementation, so we do nothing here */
+RbObject* MemberFunction::executeOperation(const std::vector<DAGNode*>& args) {
+
+    return NULL;
+}
+
+
 /** Get class vector describing type of object */
 const StringVector& MemberFunction::getClass(void) const { 
 
     static StringVector rbClass = StringVector(MemberFunction_name) + RbFunction::getClass();
 	return rbClass; 
-}
-
-
-/** Execute operation: we rely on the object's own implementation, so we do nothing here */
-const RbObject* MemberFunction::executeOperation(const std::vector<DAGNode*>& args) {
-
-    return NULL;
 }
 
 

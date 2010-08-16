@@ -69,30 +69,28 @@ class RbFunction :  public RbObject {
         virtual const ArgumentRules&            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual int                             getReturnDim(void) const { return 0; }                                              //!< Get dim of return value
         virtual const std::string&              getReturnType(void) const = 0;                                                      //!< Get type of return value
-        const RbObject*                         execute(void);                                                                      //!< Execute using processed args
-        const RbObject*                         execute(const std::vector<Argument>& args);                                         //!< Execute function
+        RbObject*                               execute(void);                                                                      //!< Execute using processed args
+        RbObject*                               execute(const std::vector<Argument>& args);                                         //!< Execute function
         std::vector<DAGNode*> const&            getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
         virtual bool                            processArguments(const std::vector<Argument>& args, IntVector* matchScore=NULL);    //!< Process args, return a match score if pointer is not null
 
-        // Test of new design
-        virtual RbObject*                       getValue(void);                                                                     //!< Get result (new object)
-
 	protected:
-        virtual RbObject*                       convertTo(const std::string& type) const;                                           //!< Convert to type
-        virtual bool                            isConvertibleTo(const std::string& type) const;                                     //!< Is convertible to type and dim?
-                                                RbFunction(void);                                                                   //!< Basic constructor
-                                                RbFunction(const RbFunction& x);                                                    //!< Copy constructor
+                                                RbFunction(void);                                                   //!< Basic constructor
+                                                RbFunction(const RbFunction& x);                                    //!< Copy constructor
 
         // Assignment operator
-        RbFunction&                             operator=(const RbFunction& x);                                                     //!< Assignment operator
+        RbFunction&                             operator=(const RbFunction& x);                                     //!< Assignment operator
 
-    	virtual const RbObject*                 executeOperation(const std::vector<DAGNode*>& args) = 0;                            //!< Execute operation
+        // Regular utility functions
+        virtual RbObject*                       convertTo(const std::string& type) const;                           //!< Convert to type
+        void                                    deleteProcessedArguments(void);                                     //!< Delete processed arguments
+    	virtual RbObject*                       executeOperation(std::vector<DAGNode*> const& args) = 0;            //!< Execute operation
+        virtual bool                            isConvertibleTo(const std::string& type) const;                     //!< Is convertible to type and dim?
 
-        void                                    deleteProcessedArguments(void);                                                     //!< Delete processed arguments
-
-        std::vector<DAGNode*>                   processedArguments;                                                                 //!< Processed arguments
-        std::vector<bool>                       referenceArgument;                                                                  //!< Is processed argument reference?
-        bool                                    argumentsProcessed;                                                                 //!< Are arguments processed?
+        // Member variables
+        std::vector<DAGNode*>                   processedArguments;                                                 //!< Processed arguments
+        std::vector<bool>                       referenceArgument;                                                  //!< Is processed argument reference?
+        bool                                    argumentsProcessed;                                                 //!< Are arguments processed?
 };
 
 #endif

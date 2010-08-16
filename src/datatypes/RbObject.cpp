@@ -33,6 +33,7 @@ std::string RbObject::briefInfo(void) const {
     return o.str();
 }
 
+
 /** Convert to type: throw an error */
 RbObject* RbObject::convert(const std::string& type) const {
 
@@ -43,6 +44,7 @@ RbObject* RbObject::convert(const std::string& type) const {
         return convertTo(type);
     }
 }
+
 
 /** Get class vector describing type of object */
 const StringVector& RbObject::getClass(void) const { 
@@ -57,6 +59,7 @@ const std::string& RbObject::getType(void) const {
     return getClass()[0];
 }
 
+
 /** Is convertible to type? Default is false */
 bool RbObject::isConvertible(const std::string& type) const {
 
@@ -68,6 +71,7 @@ bool RbObject::isConvertible(const std::string& type) const {
         return isConvertibleTo(type);
 	return false;
 }
+
 
 /** Are we of specified type? We need to check entire class vector in case we are derived from type. */
 bool RbObject::isType(const std::string& type) const {
@@ -94,5 +98,4 @@ std::ostream& operator<<(std::ostream& o, const RbObject& x) {
     x.printValue(o);
     return o;
 }
-
 

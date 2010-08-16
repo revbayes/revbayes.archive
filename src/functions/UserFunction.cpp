@@ -62,7 +62,7 @@ UserFunction::~UserFunction() {
 }
 
 
-/** Brief ino on the function */
+/** Brief info on the function */
 std::string UserFunction::briefInfo(void) const {
 
     std::ostringstream o;
@@ -79,6 +79,7 @@ UserFunction* UserFunction::clone(void) const {
     return new UserFunction(*this);
 }
 
+
 /** Equals comparison */
 bool UserFunction::equals(const RbObject* x) const {
 
@@ -87,7 +88,7 @@ bool UserFunction::equals(const RbObject* x) const {
 
 
 /** Execute function */
-const RbObject* UserFunction::executeOperation(const std::vector<DAGNode*>& args) {
+RbObject* UserFunction::executeOperation(const std::vector<DAGNode*>& args) {
 
     std::cerr << "I am a user-defined function." << std::endl;
     std::cerr << "I know who I am but I do not know how to execute myself." << std::endl;

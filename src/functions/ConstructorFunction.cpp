@@ -37,6 +37,7 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
     return new ConstructorFunction(*this);
 }
 
+
 /** Pointer-based equals comparison */
 bool ConstructorFunction::equals(const RbObject* x) const {
 
@@ -44,11 +45,10 @@ bool ConstructorFunction::equals(const RbObject* x) const {
 }
 
 
-/** Get value: Produce a new object */
-RbObject* ConstructorFunction::getValue(void) {
+/** Execute operation: we reset our template object here */
+RbObject* ConstructorFunction::executeOperation(const std::vector<DAGNode*>& args) {
 
     const ArgumentRules&          argRules = getArgumentRules();
-    std::vector<DAGNode*>const &  args     = getProcessedArguments();
 
     MemberObject* copy = (MemberObject*)(templateObject->clone());
 
@@ -62,24 +62,6 @@ RbObject* ConstructorFunction::getValue(void) {
     }
  
     return copy;
-}
-
-
-/** Execute operation: we reset our template object here */
-const RbObject* ConstructorFunction::executeOperation(const std::vector<DAGNode*>& args) {
-
-    const ArgumentRules&    argRules = getArgumentRules();
-
-    ArgumentRules::const_iterator i;
-    std::vector<DAGNode*>::const_iterator j;
-    for (i=argRules.begin(), j=args.begin(); i!=argRules.end(); i++, j++) {
-        if ((*i)->isWrapperRule())
-            templateObject->setVariable((*i)->getLabel(), (*j));
-        else
-            templateObject->setValue((*i)->getLabel(), (*j)->getValue()->clone());
-    }
- 
-    return templateObject;
 }
 
 

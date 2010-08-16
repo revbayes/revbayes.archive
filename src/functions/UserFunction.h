@@ -61,7 +61,7 @@ class UserFunction :  public RbFunction {
         std::list<SyntaxElement*>*  code;               //!< The code
         Frame*                      defineEnvironment;  //!< The definition environment
 
-		const RbObject*             executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+		RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 };
 
 #endif

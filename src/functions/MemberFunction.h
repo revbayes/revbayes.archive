@@ -46,7 +46,8 @@ class MemberFunction :  public RbFunction {
         const std::string&          getReturnType(void) const;              //!< Get type of return value
 
 	protected:
-        const RbObject*             executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+
         std::string                 returnType;                             //!< Return type
         const ArgumentRules&        argumentRules;                          //!< Argument rules
 };

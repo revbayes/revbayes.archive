@@ -44,7 +44,7 @@ const StringVector& Ellipsis::getClass(void) const {
 }
 
 
-/** Check validity of argument: Is it called on single arg or all args? */
+/** Check validity of argument. Call it on a single argument if it is used! */
 bool Ellipsis::isArgValid(DAGNode* var) const {
 
     if (!var->getValue()->isType(valueType))
