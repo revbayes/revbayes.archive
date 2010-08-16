@@ -97,6 +97,16 @@ const StringVector& RbInt::getClass() const {
 /** Convert to object of another class. The caller manages the object. */
 bool RbInt::isConvertibleTo(const std::string& type) const {
 
+    if (type == RbBool_name)
+        return true;
+    else if (type == RbDouble_name)
+        return true;
+    else if (type == PosReal_name && value > 0)
+        return true;
+    else if (type == RbString_name)
+        return true;
+    else if (type == IntVector_name)
+        return true;
     return false;
 }
 

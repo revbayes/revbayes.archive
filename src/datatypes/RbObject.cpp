@@ -51,7 +51,6 @@ const StringVector& RbObject::getClass(void) const {
 	return rbClass; 
 }
 
-
 /** Get type (first entry in class vector) */
 const std::string& RbObject::getType(void) const {
 
@@ -70,12 +69,6 @@ bool RbObject::isConvertible(const std::string& type) const {
 	return false;
 }
 
-/** Is convertible to type? Default is false */
-bool RbObject::isConvertible(const std::string& type, int dim) const {
-
-    return false;
-}
-
 /** Are we of specified type? We need to check entire class vector in case we are derived from type. */
 bool RbObject::isType(const std::string& type) const {
 
@@ -89,13 +82,11 @@ bool RbObject::isType(const std::string& type) const {
 	return false;
 }
 
-
 /** Print info about object simply by using toString function */
 void RbObject::print(std::ostream& o) const {
 
     o << toString() << std::endl;
 }
-
 
 /** Make sure we can print the value of the object easily */
 std::ostream& operator<<(std::ostream& o, const RbObject& x) {

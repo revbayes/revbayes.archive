@@ -50,14 +50,13 @@ ConstantNode::ConstantNode(const ConstantNode& x)
 
 
 /** Destructor */
-ConstantNode::~ConstantNode() {
+ConstantNode::~ConstantNode(void) {
 
     if (numRefs() != 0)
         throw RbException ("Cannot delete node with references"); 
     
     delete value;
 }
-
 
 /** Assignment operator */
 ConstantNode& ConstantNode::operator=(const ConstantNode& x) {
@@ -74,13 +73,11 @@ ConstantNode& ConstantNode::operator=(const ConstantNode& x) {
     return (*this);
 }
 
-
 /** Clone this object */
 ConstantNode* ConstantNode::clone(void) const {
 
     return new ConstantNode(*this);
 }
-
 
 /** Cloning the entire graph only involves children for a constant node */
 ConstantNode* ConstantNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
@@ -100,6 +97,12 @@ ConstantNode* ConstantNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) con
     return copy;
 }
 
+/** convert value to type */
+void ConstantNode::convertValueTo(const std::string &type) {
+
+    value = value->convert(type);
+    valueType = type;
+}
 
 /** Get class vector describing type of object */
 const StringVector& ConstantNode::getClass() const {
@@ -107,7 +110,6 @@ const StringVector& ConstantNode::getClass() const {
     static StringVector rbClass = StringVector(ConstantNode_name) + DAGNode::getClass();
     return rbClass;
 }
-
 
 /** Get value element */
 const RbObject* ConstantNode::getValElement(const IntVector& index) const {
@@ -119,13 +121,17 @@ const RbObject* ConstantNode::getValElement(const IntVector& index) const {
     return complexObject->getElement(index);
 }
 
+/** check if we can convert the value */
+bool ConstantNode::isValueConvertibleTo(const std::string& type) const {
+
+    return value->isConvertible(type);
+}
 
 /** Print value for user */
 void ConstantNode::printValue(std::ostream& o) const {
 
     value->printValue(o);
 }
-
 
 /** Print struct for user */
 void ConstantNode::printStruct(std::ostream &o) const {

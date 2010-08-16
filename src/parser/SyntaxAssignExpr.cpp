@@ -123,32 +123,33 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
     IntVector index = variable->getIndex(frame);
 
     // Deal with arrow assignments
-    if (opType == ArrowAssign) {
-
+    if (opType == ArrowAssign) 
+		{
         PRINTF("Arrow assignment\n");
-
         // Calculate the value of the rhs expression
         RbObject* exprValue = expression->getValue(frame);
 
         // Does the variable exist? If not, add it - but only to workspace, not to complex objects
-        if (!variable->isMember()  && !frame->existsVariable(varName)) {
-
+        if (!variable->isMember()  && !frame->existsVariable(varName)) 
+			{
             // It does not exist - add it
             if (index.size() != 0)
                 frame->addVariable(varName, index, new ConstantNode(exprValue));
             else
                 frame->addVariable(varName, new ConstantNode(exprValue));
-        }
-        else {
-
+			}
+        else 
+			{
             // It exists - use the frame or a complex object to assign to it 
-            if (!variable->isMember()) {
+            if (!variable->isMember()) 
+				{
                 if (index.size() != 0)
                     frame->setValElement(varName, index, exprValue);
                 else
                     frame->setValue(varName, exprValue);
-            }
-            else {
+				}
+            else 
+				{
                 PRINTF ("Assigning to existing member variable\n");
                 const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getVariable()->getValuePtr(frame));
                 if (objectPtr == NULL)
@@ -156,16 +157,17 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                 RbComplex* theObject = const_cast<RbComplex*>(objectPtr);
                 if (index.size() == 0)
                     theObject->setValue(varName, exprValue);
-                else {
+                else 
+					{
                     const DAGNodeContainer* containerPtr = dynamic_cast<const DAGNodeContainer*>(theObject->getVariable(varName));
                     if (containerPtr == NULL)
                         throw RbException("Variable " + variable->getVariable()->getFullName(frame) + "." + std::string(varName) + " does not have elements");
                     DAGNodeContainer* container = const_cast<DAGNodeContainer*>(containerPtr);
                     container->setElement(index, exprValue);
-                }
-            }
-        }
-    }
+					}
+				}
+			}
+		}
 
     // Deal with equation assignments
     else if (opType == EquationAssign) {

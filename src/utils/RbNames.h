@@ -116,9 +116,4 @@ const std::string Vector_name                                   = "vector";
 const std::string VariableNode_name                             = "variable node";
 const std::string WrapperRule_name                              = "wrapper rule";
 
-#define RbDouble_name3 "yes!"
-
-static const std::string RbDouble_name2 = "really";
-
-
 #endif

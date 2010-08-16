@@ -55,8 +55,9 @@ const ArgumentRules& Func_quit::getArgumentRules(void) const {
 const RbObject* Func_quit::executeOperation(const std::vector<DAGNode*>& args) {
 
     /* Ask if user really wants to quit */
-    bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit");
-    
+    //bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit"); // TEMP: Getting tired of typing 'y' (JPH)
+    bool wantToQuit = true;
+	
     if (wantToQuit)
         throw RbException(RbException::QUIT);
 

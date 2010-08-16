@@ -590,39 +590,29 @@ void Frame::setValue(const std::string& name, RbObject* value) {
     bool referenceVar = (*it).second.reference;
 
     /* Check type */
-    if (value != NULL && !value->isType((*it).second.type)) {
-        std::ostringstream msg;
-        msg << (*it).second.type;
-        for (int i=0; i<(*it).second.dim; i++)
-            msg << "[]";
-        msg << " variable does not take ";
-        msg << value->getType();
-        msg << " value";
-        throw (RbException(msg.str()));
-    }
-
-    /* Check for repeated assignment first*/
-    if (variable != NULL && variable->getDim() > 0) {
-
-        /* We want to do repeated assignment */
-        DAGNodeContainer* container = (DAGNodeContainer*)(variable);
-        for (ContainerIterator i=container->begin(); i!=container->end(); i++) {
-            if ((*container)[i] != NULL && (*container)[i]->isType(StochasticNode_name) && value != NULL)
-                ((StochasticNode*)((*container)[i]))->clamp(value->clone());
-            else
-                container->setElement(i, value->clone());
-        }
-        delete value;
-        return;
-    }
-
-    /* Simple assignment */
-
+    if (value != NULL && !Workspace::userWorkspace().isXOfTypeY(value->getType(), (*it).second.type)) 
+		{
+        if ( value->isConvertible((*it).second.type) ) 
+			{
+            value = value->convert((*it).second.type);
+			}
+        else 
+			{
+            std::ostringstream msg;
+            msg << (*it).second.type;
+            msg << " variable does not take ";
+            msg << value->getType();
+            msg << " value";
+            throw(RbException(msg.str()));
+			}
+		}
+	
     /* Clamp */
-    if (variable != NULL && value != NULL && variable->isType(StochasticNode_name)) {
+    if (variable != NULL && value != NULL && variable->isType(StochasticNode_name)) 
+		{
         ((StochasticNode*)(variable))->clamp(value);
         return;
-    }
+		}
 
     /* Create new variable */
     ConstantNode* var;
@@ -632,8 +622,8 @@ void Frame::setValue(const std::string& name, RbObject* value) {
         var = new ConstantNode(value);
 
     /* Update DAG if necessary */
-    if (variable != NULL && referenceVar == false) {
-
+    if (variable != NULL && referenceVar == false) 
+		{
         if (variable->numChildren() > 0 && var == NULL)
             throw RbException("Cannot set node with children to NULL");
 
@@ -644,7 +634,7 @@ void Frame::setValue(const std::string& name, RbObject* value) {
 
         variable->setName("");
             delete variable;
-    }
+		}
 
     /* Set new variable */
     if (referenceVar == false)
@@ -658,51 +648,63 @@ void Frame::setVariable(const std::string& name, DAGNode* var) {
 
     /* Find the variable */
     std::map<std::string, ObjectSlot>::iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentFrame != NULL) {
+    if (it == variableTable.end()) 
+		{
+        if (parentFrame != NULL) 
+			{
             parentFrame->setVariable(name, var);
             return;
-        }
+			}
         else
             throw (RbException("Variable '" + name + "' does not exist"));
-    }
+		}
 
     // We are responsible for setting it
     DAGNode* variable = (*it).second.variable;
     bool referenceVar = (*it).second.reference;
 
     // Special case if var is NULL
-    if (var == NULL) {
-        if (variable != NULL) {
-            if (referenceVar == false || (referenceVar == true && (*it).second.temp == true)) {
+    if (var == NULL) 
+		{
+        if (variable != NULL) 
+			{
+            if (referenceVar == false || (referenceVar == true && (*it).second.temp == true)) 
+				{
                 if (variable->numChildren() != 0)
                     throw RbException("Cannot set node with children to NULL");
                 variable->setName("");
                 if (variable->numRefs() == 0)
                     delete variable;
-            }
-        }
+				}
+			}
         (*it).second.variable = NULL;
         return;
-    }
-
-    /* Check for repeated assignment first */
-    if (variable != NULL && variable->getDim() > 0 && var->getDim() == 0 &&
-        Workspace::userWorkspace().isXOfTypeY(var->getValueType(), variable->getValueType())) {
-
-        /* We want to do repeated assignment */
-        DAGNodeContainer* container = (DAGNodeContainer*)(variable);
-        for (ContainerIterator i=container->begin(); i!=container->end(); i++) {
-            if (i == container->begin())
-                container->setElement(i, var);
-            else
-                container->setElement(i, var->clone());
-        }
-        return;
-    }
+		}
 
     /* Check type and dim */
-    if ((*it).second.dim != var->getDim() || !Workspace::userWorkspace().isXOfTypeY(var->getValueType(), (*it).second.type)) {
+    if ( !Workspace::userWorkspace().isXOfTypeY(var->getTypeOfValue(), (*it).second.type) ) 
+		{
+        // TODO need to try to convert the variable
+        std::cout << "Try to convert " << var->getTypeOfValue() << " into " << (*it).second.type << std::endl;
+        std::cout << "Var is of type " << var->getClass()[0] << std::endl;
+        var->printStruct(std::cout);
+        if (var->isValueConvertibleTo((*it).second.type)) 
+			{
+            var->convertValueTo((*it).second.type);
+			}
+        else 
+			{
+            std::ostringstream msg;
+            msg << (*it).second.type;
+            msg << " variable does not take ";
+            msg << var->getTypeOfValue();
+            msg << " value";
+            throw(RbException(msg.str()));
+			}
+		}
+	
+	/*if ((*it).second.dim != var->getDim() || !Workspace::userWorkspace().isXOfTypeY(var->getValueType(), (*it).second.type)) 
+		{
         std::ostringstream msg;
         msg << (*it).second.type;
         for (int i=0; i<(*it).second.dim; i++)
@@ -713,7 +715,7 @@ void Frame::setVariable(const std::string& name, DAGNode* var) {
             msg << "[]";
         msg << " value";
         throw (RbException(msg.str()));
-    }
+		}*/
 
     /* Simple assignment */
 

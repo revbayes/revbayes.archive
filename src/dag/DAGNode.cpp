@@ -30,10 +30,9 @@
 
 
 /** Constructor: set value type */
-DAGNode::DAGNode(const std::string& valType)
-    : children(), parents(), name(""), valueType(valType) {
-}
+DAGNode::DAGNode(const std::string& valType) : children(), parents(), name(""), valueType(valType) {
 
+}
 
 /**
  * Copy constructor should not copy children because it creates an
@@ -44,10 +43,15 @@ DAGNode::DAGNode(const std::string& valType)
  * dual copies of them (function arguments, distribution parameters,
  * or container elements).
  */
-DAGNode::DAGNode(const DAGNode& x)
-    : children(), parents(), name(""), valueType(x.valueType) {
+DAGNode::DAGNode(const DAGNode& x) : children(), parents(), name(""), valueType(x.valueType) {
+
 }
 
+/** convert value to type */
+void DAGNode::convertValueTo(const std::string &type) {
+
+    throw RbException("Cannot convert value of non constant dag node.");
+}
 
 /** Get class vector describing type of object */
 const StringVector& DAGNode::getClass() const {
@@ -56,20 +60,17 @@ const StringVector& DAGNode::getClass() const {
     return rbClass;
 }
 
-
 /** Get type of wrapper (first entry in class vector) */
 const std::string& DAGNode::getType(void) const { 
 
     return getClass()[0];
 }
 
-
 /** Get element variable; default throws error, override if wrapper has variable elements */
 const DAGNode* DAGNode::getVarElement(const IntVector& index) const {
 
     throw (RbException("No variable elements"));
 }
-
 
 /** Is wrapper of specified type? We need to check entire class vector in case we are derived from type. */
 bool DAGNode::isType(const std::string& type) const {
@@ -84,7 +85,6 @@ bool DAGNode::isType(const std::string& type) const {
     return false;
 }
 
-
 /** Check if node is a parent of node x in the DAG: needed to check for cycles in the DAG */
 bool DAGNode::isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const {
 
@@ -98,7 +98,6 @@ bool DAGNode::isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const {
     return false;
 }
 
-
 /** Get number of references to the node from Frame and other DAG nodes */
 int DAGNode::numRefs(void) const {
 
@@ -107,7 +106,6 @@ int DAGNode::numRefs(void) const {
     else
         return numChildren() + 1;
 }
-
 
 /** Print children */
 void DAGNode::printChildren(std::ostream& o) const {
@@ -124,7 +122,6 @@ void DAGNode::printChildren(std::ostream& o) const {
     }
 }
 
-
 /** Print parents */
 void DAGNode::printParents(std::ostream& o) const {
 
@@ -139,7 +136,6 @@ void DAGNode::printParents(std::ostream& o) const {
         o << "' [" << (*i) << "] of type " << (*i)->getType() << std::endl;
     }
 }
-
 
 /** Set element variable; default throws error, override if wrapper has variable elements */
 void DAGNode::setElement(const IntVector& index, DAGNode* var) {
