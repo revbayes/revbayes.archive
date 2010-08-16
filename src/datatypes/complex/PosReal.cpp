@@ -83,8 +83,9 @@ void PosReal::setValue(double x) {
 std::string PosReal::toString(void) const {
 
 	std::ostringstream o;
-    o << "PosReal: value = ";
+    o << "+Real(";
     printValue(o);
+	o << ")";
 
     return o.str();
 }

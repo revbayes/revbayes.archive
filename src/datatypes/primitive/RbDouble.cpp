@@ -112,8 +112,9 @@ void RbDouble::printValue(std::ostream &o) const {
 std::string RbDouble::toString(void) const {
 
 	std::ostringstream o;
-    o << "RbDouble: value = ";
+    o << "Real(";
     printValue(o);
+	o << ")";
     return o.str();
 }
 

@@ -16,6 +16,7 @@
  */
 
 #include "ContainerIterator.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DAGNodeContainer.h"
 #include "DeterministicNode.h"
@@ -196,6 +197,18 @@ bool Model::isConvertibleTo(const std::string& type) const {
     return false;
 }
 
+int Model::getIndexForVector(DAGNode* p) const {
+
+	int cnt = 0;
+    for (std::vector<DAGNode*>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
+		{
+		cnt++;
+		if ( (*i) == p )
+			return cnt;
+		}
+	return -1;
+}
+
 /** Print value for user */
 void Model::printValue(std::ostream& o) const {
 
@@ -209,10 +222,55 @@ void Model::printValue(std::ostream& o) const {
 	int cnt = 0;
     for (std::vector<DAGNode*>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
 		{   	
-		msg << "Vertex " << ++cnt << ": \"" << (*i)->getName() << "\"";
+		msg << "Vertex " << ++cnt;
 		RBOUT(msg.str());
 		msg.str("");
 		
+		msg << "   Name         = " << (*i)->getName();
+		RBOUT(msg.str());
+		msg.str("");
+
+		msg << "   Type         = " << (*i)->getType();
+		RBOUT(msg.str());
+		msg.str("");
+		
+        if ((*i)->isType(DeterministicNode_name))
+            msg << "   Function     = " << ((DeterministicNode*)(*i))->getFunction()->getType();
+        else if ((*i)->isType(StochasticNode_name))
+            msg << "   Distribution = " << ((StochasticNode*)(*i))->getDistribution()->getType();
+		if ( msg.str() != "" )
+			RBOUT(msg.str());
+		msg.str("");
+       
+		if ( (*i)->isType(ConstantNode_name) )
+            msg << "   Value        = " << ((ConstantNode*)(*i))->getValue()->toString();
+		else if ( (*i)->isType(StochasticNode_name) )
+            msg << "   Value        = " << ((StochasticNode*)(*i))->getValue()->toString();
+		if ( msg.str() != "" )
+			RBOUT(msg.str());
+		msg.str("");
+		
+		msg << "   Parents      = ";
+		std::set<DAGNode*>& parentNodes = (*i)->getParents();
+		for (std::set<DAGNode*>::iterator j=parentNodes.begin(); j!=parentNodes.end(); j++) 
+			{   	
+			int idx = getIndexForVector((*j));
+			msg << idx << " ";
+			}
+		if ( msg.str() != "" )
+			RBOUT(msg.str());
+		msg.str("");
+		
+		msg << "   Children     = ";
+        std::set<VariableNode*>& childrenNodes = (*i)->getChildren();
+		for (std::set<VariableNode*>::iterator j=childrenNodes.begin(); j!=childrenNodes.end(); j++) 
+			{   	
+			int idx = getIndexForVector((*j));
+			msg << idx << " ";
+			}
+		if ( msg.str() != "" )
+			RBOUT(msg.str());
+		msg.str("");
 		
 		}
 		

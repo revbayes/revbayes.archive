@@ -65,6 +65,7 @@ class DAGNode {
         virtual DAGNode*                cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;           //!< Clone graph
         virtual void                    convertValueTo(const std::string& type);                              //!< Convert the the value to the specific type. Should only be allowed for constant nodes.
         std::set<VariableNode*>&        getChildren(void) { return children; }                                //!< Return children
+		std::set<DAGNode*>&             getParents(void) { return parents; }                                  //!< Return parents
         bool                            isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const;     //!< Is node x a parent of the caller in the DAG?
         virtual bool                    isValueConvertibleTo(const std::string& type) const { return false; } //!< Can we convert the the value to the specific type? Should only be allowed for constant nodes.
         int                             numChildren(void) const { return int(children.size()); }              //!< Number of children

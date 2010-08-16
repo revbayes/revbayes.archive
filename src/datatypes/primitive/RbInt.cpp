@@ -120,8 +120,9 @@ void RbInt::printValue(std::ostream &o) const {
 std::string RbInt::toString(void) const {
 
 	std::ostringstream o;
-    o << "RbInt: value = ";
+    o << "Integer(";
     printValue(o);
+	o<< ")";
 
     return o.str();
 }

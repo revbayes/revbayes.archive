@@ -75,7 +75,7 @@ class DAGNodeContainer : public VariableNode {
         const RbObject*         getValue() const;                                   //!< Get const value if poss.
         void                    printStruct(std::ostream& o) const;                 //!< Print struct for user
         void                    printValue(std::ostream& o) const;                  //!< Print value for user
-        void                    setName(std::string& name);                         //!< Set name of container and elements
+        void                    setName(const std::string& name);                   //!< Set name of container and elements
         void                    setValue(RbObject* val);                            //!< Set value
         std::string             toString() const;                                   //!< Complete info about object
 

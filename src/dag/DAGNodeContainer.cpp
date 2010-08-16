@@ -894,7 +894,7 @@ void DAGNodeContainer::setLength(const IntVector& len) {
 
 
 /** Set name of container and all elements */
-void DAGNodeContainer::setName(std::string& name) {
+void DAGNodeContainer::setName(const std::string& name) {
 
     DAGNode::setName(name);
 
