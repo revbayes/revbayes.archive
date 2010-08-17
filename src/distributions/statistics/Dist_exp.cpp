@@ -32,19 +32,16 @@
 
 
 /** Default constructor for parser use */
-Dist_exp::Dist_exp(void)
-    : DistributionReal(getMemberRules()) {
+Dist_exp::Dist_exp(void) : DistributionReal(getMemberRules()) {
+
 }
 
-
 /** Constructor for internal use */
-Dist_exp::Dist_exp(double rate, RandomNumberGenerator* rng)
-    : DistributionReal(getMemberRules()) {
+Dist_exp::Dist_exp(double rate, RandomNumberGenerator* rng) : DistributionReal(getMemberRules()) {
 
     setValue("rate", new RbDouble(rate));
     setValue("rng",  rng);
 }
-
 
 /**
  * This function calculates the cumulative probability for
@@ -63,13 +60,11 @@ double Dist_exp::cdf(double q) {
     return 1.0 - std::exp( -lambda * q );
 }
 
-
 /** Clone this object */
 Dist_exp* Dist_exp::clone(void) const {
 
     return new Dist_exp(*this);
 }
-
 
 /** Get class vector showing type of object */
 const StringVector& Dist_exp::getClass(void) const {
@@ -78,13 +73,11 @@ const StringVector& Dist_exp::getClass(void) const {
     return rbClass;
 }
 
-
 /** Get default move */
 Move* Dist_exp::getDefaultMove(StochasticNode* node) {
 
     return new Move_mscale(node, 2.0*std::log(1.5), 1.0, Workspace::globalWorkspace().get_rng());
 }
-
 
 /** Get min value of distribution */
 const RbDouble* Dist_exp::getMin(void) {
@@ -92,7 +85,6 @@ const RbDouble* Dist_exp::getMin(void) {
     static RbDouble rbZero = RbDouble(0.0);
     return &rbZero;
 }
-
 
 /** Get member variable rules */
 const MemberRules& Dist_exp::getMemberRules(void) const {
@@ -114,13 +106,11 @@ const MemberRules& Dist_exp::getMemberRules(void) const {
     return memberRules;
 }
 
-
 /** Get random variable type */
 const std::string& Dist_exp::getVariableType(void) const {
 
     return PosReal_name;
 }
-
 
 /**
  * This function calculates the natural log of the likelihood
@@ -141,7 +131,6 @@ double Dist_exp::lnLikelihoodRatio(const RbObject* value) {
     return std::log( lambdaNew ) - std::log( lambdaOld ) + (lambdaOld - lambdaNew) * x;
 }
 
-
 /**
  * This function calculates the natural log of the probability
  * density for an exponentially-distributed random variable.
@@ -158,7 +147,6 @@ double Dist_exp::lnPdf(const RbObject* value) {
 
     return std::log(lambda) -lambda * x;
 }
-
 
 /**
  * This function calculates the natural log of the probability
@@ -179,7 +167,6 @@ double Dist_exp::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
     return lambda * (oldX - newX);
 }
 
-
 /**
  * This function calculates the probability density
  * for an exponentially-distributed random variable.
@@ -197,7 +184,6 @@ double Dist_exp::pdf(const RbObject* value) {
     return lambda * std::exp( -lambda * x );
 }
 
-
 /**
  * This function calculates the quantile for an
  * exponentially-distributed random variable.
@@ -214,7 +200,6 @@ double Dist_exp::quantile(const double p) {
 
     return -( 1.0 / lambda ) * std::log( 1.0 - p );
 }
-
 
 /**
  * This function generates an exponentially-distributed
