@@ -32,14 +32,12 @@
 
 
 /** Default constructor */
-Model::Model(void)
-    : dagNodes(), maintainedHere() {
+Model::Model(void) : dagNodes(), maintainedHere() {
 	
 }
 
 /** Sinknodes constructor */
-Model::Model(const std::vector<DAGNode*>& sinkNodes)
-    : RbComplex(), dagNodes(), maintainedHere() {
+Model::Model(const std::vector<DAGNode*>& sinkNodes) : RbComplex(), dagNodes(), maintainedHere() {
 
     /* Check to see that we have at least one DAG node */
     if (sinkNodes.empty())
@@ -93,8 +91,7 @@ Model::~Model(void) {
 }
 
 /** Copy constructor */
-Model::Model(const Model& x)
-    : RbComplex(), dagNodes(), maintainedHere() {
+Model::Model(const Model& x) : RbComplex(), dagNodes(), maintainedHere() {
 
     /* Make copy of DAG by pulling from first node in x */
     std::map<DAGNode*, DAGNode*> newNodes;
@@ -191,16 +188,98 @@ const StringVector& Model::getClass(void) const {
     return rbClass;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool Model::isConvertibleTo(const std::string& type) const {
+/** Get a list of the nodes in dagNodes that are exposed. */
+void Model::getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool exposeEverybody, bool usePlates) const {
 
-    return false;
+	// initialize a set of DAGNodes that are excluded from being printed in the model
+	std::set<DAGNode*> excludedNodes;
+    for (std::vector<DAGNode*>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
+		{
+		if (usePlates == true)
+			{
+			if ( (*i)->getType() == DAGNodeContainer_name )
+				{
+				std::set<DAGNode*>& parentNodes = (*i)->getParents();
+				for (std::set<DAGNode*>::iterator j=parentNodes.begin(); j != parentNodes.end(); j++) 
+					excludedNodes.insert( (*j) );
+				}
+			}
+		else 
+			{
+			if ( (*i)->getType() == DAGNodeContainer_name )
+				excludedNodes.insert( (*i) );
+			}
+		}
+	
+	// initialize a vector of DAGNodes to be included in the printed model
+	exposedDagNodes.clear();
+    for (std::vector<DAGNode*>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
+		{
+		bool nodeIsExcluded = false;
+		std::set<DAGNode*>::iterator it = excludedNodes.find( (*i) );
+		if (it != excludedNodes.end())
+			nodeIsExcluded = true;
+		if (exposeEverybody == true)
+			{
+			exposedDagNodes.push_back( (*i) );
+			}
+		else 
+			{
+			if ( (*i)->getIsDagExposed() == true && nodeIsExcluded == false )
+				exposedDagNodes.push_back( (*i) );
+			}
+		}
 }
 
-int Model::getIndexForVector(DAGNode* p) const {
+/** Get a list of the DAG nodes that are children of p and in the list nodeList. */
+void Model::getExposedChildren(DAGNode* p, std::set<VariableNode*>& ec, std::vector<DAGNode*>& nodeList) const {
+
+	std::set<VariableNode*>& childNodes = p->getChildren();
+	for (std::set<VariableNode*>::iterator i=childNodes.begin(); i != childNodes.end(); i++) 
+		{
+		DAGNode* q = dynamic_cast<DAGNode*>((*i));
+		if (q)
+			{
+			bool isQinList = false;
+			std::vector<DAGNode*>::iterator it = std::find ( nodeList.begin(), nodeList.end(), q );
+			if (it != nodeList.end())	
+				isQinList = true;
+			
+			if ( isQinList == true )
+				ec.insert( (*i) );
+			else 
+				getExposedChildren( q, ec, nodeList );
+			}
+		else 
+			{
+			throw (RbException("Cannot cast VariableNode to be a DAGNode"));
+			}
+		}
+}
+
+/** Get a list of the DAG nodes that are parents of p and in the list nodeList. */
+void Model::getExposedParents(DAGNode* p, std::set<DAGNode*>& ep, std::vector<DAGNode*>& nodeList) const {
+
+	std::set<DAGNode*>& parentNodes = p->getParents();
+	for (std::set<DAGNode*>::iterator i=parentNodes.begin(); i != parentNodes.end(); i++) 
+		{
+		bool isIinList = false;
+		std::vector<DAGNode*>::iterator it = std::find ( nodeList.begin(), nodeList.end(), (*i) );
+		if (it != nodeList.end())	
+			isIinList = true;
+		
+		if ( isIinList == true )
+			ep.insert( (*i) );
+		else 
+			getExposedParents( (*i), ep, nodeList );
+		}
+}
+
+/** Find the offset of the node p in the vector v. */
+int Model::getIndexForVector(const std::vector<DAGNode*>& v, const DAGNode* p) const {
 
 	int cnt = 0;
-    for (std::vector<DAGNode*>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
+    for (std::vector<DAGNode*>::const_iterator i=v.begin(); i!=v.end(); i++) 
 		{
 		cnt++;
 		if ( (*i) == p )
@@ -209,28 +288,50 @@ int Model::getIndexForVector(DAGNode* p) const {
 	return -1;
 }
 
+/** Convert to object of another class. The caller manages the object. */
+bool Model::isConvertibleTo(const std::string& type) const {
+
+    return false;
+}
+
 /** Print value for user */
 void Model::printValue(std::ostream& o) const {
 
-	std::ostringstream msg;
+	/* set flags for writing out the model */
+	bool showHiddenDagNodes = false;
+	bool usePlates          = true;
 
+	/* initialize a list of the DAGNodes to be printed as part of the model */
+	std::vector<DAGNode*> exposedDagNodes;
+	getExposedDagNodes( exposedDagNodes, showHiddenDagNodes, usePlates );
+
+	/* print the information on the model */
+	std::ostringstream msg;
 	RBOUT("\n");
-    msg << "Model with " << dagNodes.size() << " vertices" << std::endl;
+    msg << "Model with " << exposedDagNodes.size() << " vertices";
 	RBOUT(msg.str());
 	msg.str("");
-	RBOUT("-----------------------------------------------");
+	RBOUT("-------------------------------------");
 	int cnt = 0;
-    for (std::vector<DAGNode*>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
+    for (std::vector<DAGNode*>::const_iterator i=exposedDagNodes.begin(); i!=exposedDagNodes.end(); i++) 
 		{   	
 		msg << "Vertex " << ++cnt;
-		RBOUT(msg.str());
-		msg.str("");
-		
-		msg << "   Name         = " << (*i)->getName();
-		RBOUT(msg.str());
+		std::string nameStr = msg.str();
+		int nameStrSize = nameStr.size();
+		for (int j=0; j<18-nameStrSize; j++)
+			nameStr += " ";
+		nameStr += (*i)->getName();
+		RBOUT(nameStr);
 		msg.str("");
 
-		msg << "   Type         = " << (*i)->getType();
+		if ( (*i)->getType() == ConstantNode_name )
+			msg << "   Type         = Constant";
+		else if ( (*i)->getType() == StochasticNode_name )
+			msg << "   Type         = Stochastic";
+		else if ( (*i)->getType() == DAGNodeContainer_name )
+			msg << "   Type         = Plate";
+		else 
+			msg << "   Type         = Deterministic";
 		RBOUT(msg.str());
 		msg.str("");
 		
@@ -251,44 +352,32 @@ void Model::printValue(std::ostream& o) const {
 		msg.str("");
 		
 		msg << "   Parents      = ";
-		std::set<DAGNode*>& parentNodes = (*i)->getParents();
-		for (std::set<DAGNode*>::iterator j=parentNodes.begin(); j!=parentNodes.end(); j++) 
+		std::set<DAGNode*> exposedParents;
+		getExposedParents( (*i), exposedParents, exposedDagNodes );
+		for (std::set<DAGNode*>::const_iterator j=exposedParents.begin(); j != exposedParents.end(); j++) 
 			{   	
-			int idx = getIndexForVector((*j));
+			int idx = getIndexForVector( exposedDagNodes, (*j) );
 			msg << idx << " ";
 			}
-		if ( msg.str() != "" )
-			RBOUT(msg.str());
+		if (exposedParents.size() == 0)
+			msg << "No Parents";
+		RBOUT(msg.str());
 		msg.str("");
 		
 		msg << "   Children     = ";
-        std::set<VariableNode*>& childrenNodes = (*i)->getChildren();
-		for (std::set<VariableNode*>::iterator j=childrenNodes.begin(); j!=childrenNodes.end(); j++) 
+		std::set<VariableNode*> exposedChildren;
+		getExposedChildren( (*i), exposedChildren, exposedDagNodes );
+		for (std::set<VariableNode*>::const_iterator j=exposedChildren.begin(); j != exposedChildren.end(); j++) 
 			{   	
-			int idx = getIndexForVector((*j));
+			int idx = getIndexForVector( exposedDagNodes, (*j) );
 			msg << idx << " ";
 			}
-		if ( msg.str() != "" )
-			RBOUT(msg.str());
+		if (exposedChildren.size() == 0)
+			msg << "No Children";
+		RBOUT(msg.str());
 		msg.str("");
-		
 		}
-		
-#	if 0
-    o << std::endl;
-    o << "Model with " << dagNodes.size() << " DAG nodes" << std::endl;
-
-    for (std::vector<DAGNode*>::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {   	
-        o << std::endl;
-        o << "'" << (*i)->getName() << "' [" << (*i) << "] of type " << (*i)->getType() << std::endl;
-        if ((*i)->isType(DeterministicNode_name))
-            o << "Function: " << ((DeterministicNode*)(*i))->getFunction()->getType() << std::endl;
-        if ((*i)->isType(StochasticNode_name))
-            o << "Distribution: " << ((StochasticNode*)(*i))->getDistribution()->getType() << std::endl;
-        (*i)->printParents(o);
-        (*i)->printChildren(o);
-    }
-#	endif
+	RBOUT("-------------------------------------");
 }
 
 /** Complete info about object */

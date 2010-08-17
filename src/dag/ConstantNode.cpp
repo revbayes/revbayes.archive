@@ -30,31 +30,33 @@
 
 
 /** Constructor from value */
-ConstantNode::ConstantNode(RbObject* val)
-    : DAGNode(val->getType()), value(val) {
-}
+ConstantNode::ConstantNode(RbObject* val) : DAGNode(val->getType()), value(val) {
 
+	isDagExposed = true;
+	if ( value->getType() == RandomNumberGenerator_name )
+		isDagExposed = false;
+}
 
 /** Constructor from value class */
-ConstantNode::ConstantNode(const std::string& valType)
-    : DAGNode(valType), value(NULL) {
-}
+ConstantNode::ConstantNode(const std::string& valType) : DAGNode(valType), value(NULL) {
 
+	isDagExposed = true;
+	if ( value->getType() == RandomNumberGenerator_name )
+		isDagExposed = false;
+}
 
 /** Copy constructor */
-ConstantNode::ConstantNode(const ConstantNode& x)
-    : DAGNode(x) {
+ConstantNode::ConstantNode(const ConstantNode& x) : DAGNode(x) {
 
     value = x.value->clone();
+	isDagExposed = x.isDagExposed;
 }
-
 
 /** Destructor */
 ConstantNode::~ConstantNode(void) {
 
     if (numRefs() != 0)
         throw RbException ("Cannot delete node with references"); 
-    
     delete value;
 }
 
@@ -148,7 +150,6 @@ void ConstantNode::printStruct(std::ostream &o) const {
     o << std::endl;
 }
 
-
 /** Set Element */
 void ConstantNode::setElement(const IntVector& index, RbObject* val) {
 
@@ -160,7 +161,6 @@ void ConstantNode::setElement(const IntVector& index, RbObject* val) {
 
     touchAffected();
 }
-
 
 /** Set value */
 void ConstantNode::setValue(RbObject* val) {
@@ -175,7 +175,6 @@ void ConstantNode::setValue(RbObject* val) {
     touchAffected();
 }
 
-
 /** Complete info on object */
 std::string ConstantNode::toString(void) const {
 
@@ -185,7 +184,6 @@ std::string ConstantNode::toString(void) const {
 
     return o.str();
 }
-
 
 /** Touch affected: only needed if a set function is called */
 void ConstantNode::touchAffected(void) {

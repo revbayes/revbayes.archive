@@ -54,6 +54,7 @@ class DAGNode {
         virtual void                    setName(const std::string& id) { name=id; }                           //!< Set name
 
         // Functions you should not override
+		const bool                      getIsDagExposed(void) { return isDagExposed; }                        //!< Get DAG exposure
         const std::string&              getName(void) const { return name; }                                  //!< Get name
         const std::string&              getType(void) const;                                                  //!< Get wrapper type
         const std::string&              getTypeOfValue(void) const { return valueType; }                      //!< Get value type
@@ -84,6 +85,7 @@ class DAGNode {
         std::set<DAGNode*>              parents;                                                              //!< Set of parent nodes
         std::string                     name;                                                                 //!< Name, "" if not named
         std::string                     valueType;                                                            //!< Type of value
+		bool                            isDagExposed;                                                         //!< Flag indicating whether DAG should be exposed to user
 
 };
 

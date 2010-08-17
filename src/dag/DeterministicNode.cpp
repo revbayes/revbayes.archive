@@ -28,8 +28,9 @@
 
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode(const std::string& type)
-    : VariableNode(type), changed(false), function(NULL), value(NULL), storedValue(NULL)  {
+DeterministicNode::DeterministicNode(const std::string& type) : VariableNode(type), changed(false), function(NULL), value(NULL), storedValue(NULL)  {
+	
+	isDagExposed = false;
 }
 
 
@@ -59,17 +60,20 @@ DeterministicNode::DeterministicNode(RbFunction* func) : VariableNode(func->getR
     /* Set value and stored value */
     storedValue = function->execute()->clone();
     value = storedValue;
+	
+	/* set whether to expose this DAG to the user */
+	isDagExposed = false;
 }
 
 
 /** Copy constructor */
-DeterministicNode::DeterministicNode(const DeterministicNode& x)
-    : VariableNode(x) {
+DeterministicNode::DeterministicNode(const DeterministicNode& x) : VariableNode(x) {
 
-    changed     = x.changed;
-    function    = (RbFunction*)(x.function->clone());
-    storedValue = function->execute()->clone();
-    value       = storedValue;
+    changed      = x.changed;
+    function     = (RbFunction*)(x.function->clone());
+    storedValue  = function->execute()->clone();
+    value        = storedValue;
+	isDagExposed = x.isDagExposed;
 
     /* Set parents and add this node as a child node of these */
     const std::vector<DAGNode*>& arguments = function->getProcessedArguments();

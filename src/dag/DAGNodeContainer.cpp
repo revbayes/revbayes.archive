@@ -40,11 +40,12 @@ DAGNodeContainer::DAGNodeContainer(DAGNode* x) : VariableNode(x->getType()) {
     parents.insert(x);
     x->addChildNode(this);
     
-    changed     = false;
-    length      = IntVector(1);
-    value       = new Container(x->getValue()->clone());
-    storedValue = value->clone();
-    names       = NULL;
+    changed      = false;
+    length       = IntVector(1);
+    value        = new Container(x->getValue()->clone());
+    storedValue  = value->clone();
+    names        = NULL;
+	isDagExposed = true;
 }
 
 
@@ -60,11 +61,12 @@ DAGNodeContainer::DAGNodeContainer(size_t n, DAGNode* x) : VariableNode(x->getTy
         (*i)->addChildNode(this);
     }
 
-    changed     = false;
-    length      = IntVector(int(n));
-    value       = new Container(n, x->getValue()->clone());
-    storedValue = value->clone();
-    names       = NULL;
+    changed      = false;
+    length       = IntVector(int(n));
+    value        = new Container(n, x->getValue()->clone());
+    storedValue  = value->clone();
+    names        = NULL;
+	isDagExposed = true;
 }
 
 
@@ -75,11 +77,12 @@ DAGNodeContainer::DAGNodeContainer(size_t n, const std::string& valType)
     for (size_t i=0; i<n; i++)
         nodes.push_back(NULL);
 
-    changed     = false;
-    length      = IntVector(int(n));
-    value       = new Container(length, valueType);
-    storedValue = value->clone();
-    names       = NULL;
+    changed      = false;
+    length       = IntVector(int(n));
+    value        = new Container(length, valueType);
+    storedValue  = value->clone();
+    names        = NULL;
+	isDagExposed = true;
 }
 
 
@@ -106,11 +109,12 @@ DAGNodeContainer::DAGNodeContainer(const IntVector& len, DAGNode* x)
         (*i)->addChildNode(this);
     }
 
-    changed     = false;
-    length      = len;
-    value       = new Container(len, x->getValue()->clone());
-    storedValue = value->clone();
-    names       = NULL;
+    changed      = false;
+    length       = len;
+    value        = new Container(len, x->getValue()->clone());
+    storedValue  = value->clone();
+    names        = NULL;
+	isDagExposed = true;
 }
 
 
@@ -136,8 +140,8 @@ DAGNodeContainer::DAGNodeContainer(const IntVector& len, const std::string& valT
     value       = new Container(len, valueType);
     storedValue = value->clone();
     names       = NULL;
+	isDagExposed = true;
 }
-
 
 /** Copy constructor needed to make sure nodes elements are independent */
 DAGNodeContainer::DAGNodeContainer(const DAGNodeContainer& x)
@@ -159,8 +163,8 @@ DAGNodeContainer::DAGNodeContainer(const DAGNodeContainer& x)
         names = NULL;
     else
         names = x.names->clone();
+	isDagExposed = true;
 }
-
 
 /** Destructor needed to destroy value, stored value and nodes */
 DAGNodeContainer::~DAGNodeContainer() {

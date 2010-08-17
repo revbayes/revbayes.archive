@@ -28,8 +28,9 @@
 
 
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode(const std::string& type)
-    : VariableNode(type), clamped(false), distribution(NULL), value(NULL), storedValue(NULL) {
+StochasticNode::StochasticNode(const std::string& type) : VariableNode(type), clamped(false), distribution(NULL), value(NULL), storedValue(NULL) {
+
+	isDagExposed = true;
 }
 
 
@@ -38,8 +39,7 @@ StochasticNode::StochasticNode(const std::string& type)
  *
  * @note MemberTable is a typedef for std::map<std::string, DAGNode*> defined in RbComplex.h.
  */
-StochasticNode::StochasticNode(Distribution* dist)
-    : VariableNode(dist->getVariableType()) {
+StochasticNode::StochasticNode(Distribution* dist) : VariableNode(dist->getVariableType()) {
 
     /* Get distribution parameters */
     const VariableTable& params = dist->getMembers().getVariableTable();
@@ -63,12 +63,13 @@ StochasticNode::StochasticNode(Distribution* dist)
 
     value        = distribution->rv();
     storedValue  = value->clone();
+	
+	isDagExposed = true;
 }
 
 
 /** Copy constructor */
-StochasticNode::StochasticNode(const StochasticNode& x)
-    : VariableNode(x) {
+StochasticNode::StochasticNode(const StochasticNode& x) : VariableNode(x) {
 
     /* Set distribution */
     distribution = (Distribution*)(x.distribution->clone());
@@ -84,6 +85,7 @@ StochasticNode::StochasticNode(const StochasticNode& x)
 
     clamped      = x.clamped;
     value        = x.value->clone();
+	isDagExposed = x.isDagExposed;
     if (clamped == false)
         storedValue  = value->clone();
     else
@@ -92,7 +94,7 @@ StochasticNode::StochasticNode(const StochasticNode& x)
 
 
 /** Destructor */
-StochasticNode::~StochasticNode() {
+StochasticNode::~StochasticNode(void) {
 
     if (numRefs() != 0)
         throw RbException ("Cannot delete node with references"); 
