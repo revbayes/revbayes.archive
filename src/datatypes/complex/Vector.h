@@ -52,7 +52,7 @@ class Vector : public Container {
         size_t                      size(void) const { return value.size(); }                  //!< Get size
 
         // Getter
-        std::vector<double>&        getValue(void);                                            //!< Get value directly
+        std::vector<double>&        getValue(void) { return value; }                           //!< Get value directly
 
         // Element access functions for parser
 	    int                         getDim(void) const { return 1; }                           //!< Get subscript dimensions

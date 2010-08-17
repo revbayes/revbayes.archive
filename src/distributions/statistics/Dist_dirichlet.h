@@ -18,7 +18,7 @@
 #ifndef Dist_dirichlet_H
 #define Dist_dirichlet_H
 
-#include "DistributionReal.h"
+#include "Distribution.h"
 
 #include <ostream>
 #include <string>
@@ -28,7 +28,7 @@ class RbDouble;
 class StochasticNode;
 class StringVector;
 
-class Dist_dirichlet: public DistributionReal {
+class Dist_dirichlet: public Distribution {
 
     public:
                                     Dist_dirichlet(void);                                               //!< Parser constructor
@@ -51,7 +51,7 @@ class Dist_dirichlet: public DistributionReal {
         double                      lnPriorRatio(const RbObject* newVal, const RbObject* oldVal);       //!< Ln prior ratio
         double                      pdf(const RbObject* value);                                         //!< Probability density
         double                      quantile(const double p);                                           //!< Quantile
-        RbDouble*                   rv(void);                                                           //!< Generate random variable
+        RbObject*                   rv(void);                                                           //!< Generate random variable
 };
 
 #endif

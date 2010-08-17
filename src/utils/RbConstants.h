@@ -25,13 +25,13 @@
 namespace RbConstants {
 
 	namespace Double {
-	double      inf     = DBL_MAX;
-	double   	neginf 	= DBL_MIN;
+	const double    inf       = DBL_MAX;
+	const double    neginf 	  = DBL_MIN;
 	}
 
 	namespace Object {
-	double      undefined = DBL_MAX;
-	double   	neginf    = DBL_MIN;
+	const double    undefined = DBL_MAX;
+	const double    neginf    = DBL_MIN;
 	}
 
 }

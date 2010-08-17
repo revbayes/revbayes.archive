@@ -18,15 +18,16 @@
 #include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Dist_dirichlet.h"
-#include "Move_mscale.h"
+#include "Move_msimplex.h"
 #include "PosReal.h"
 #include "RandomNumberGenerator.h"
 #include "RbDouble.h"
 #include "RbException.h"
 #include "RbMath.h"
 #include "RbNames.h"
+#include "RbStatistics.h"
+#include "Simplex.h"
 #include "StringVector.h"
-#include "Vector.h"
 #include "Workspace.h"
 #include "WrapperRule.h"
 
@@ -36,14 +37,14 @@
 
 
 /** Default constructor for parser use */
-Dist_dirichlet::Dist_dirichlet(void) : DistributionReal(getMemberRules()) {
+Dist_dirichlet::Dist_dirichlet(void) : Distribution(getMemberRules()) {
 
 }
 
 /** Constructor for internal use */
-Dist_dirichlet::Dist_dirichlet(std::vector<double> a, RandomNumberGenerator* rng) : DistributionReal(getMemberRules()) {
+Dist_dirichlet::Dist_dirichlet(std::vector<double> a, RandomNumberGenerator* rng) : Distribution(getMemberRules()) {
 
-    setValue("alpha", new Vector(a));
+    setValue("alpha", new Simplex(a));
     setValue("rng",  rng);
 }
 
@@ -60,7 +61,7 @@ Dist_dirichlet::Dist_dirichlet(std::vector<double> a, RandomNumberGenerator* rng
 double Dist_dirichlet::cdf(double q) {
 
 	/* TO DO: We should implement the cumulative probability for the Dirichlet. The most recent
-	   algorithms are discussed in
+	   algorithms are discussed in:
 	   
 	   Gouda, A. A., and T. Szantai. 2010. On numerical calculation of probabilities according 
 	   to Dirichlet distribution. Ann. Oper. Res. 177:185–200. */
@@ -76,21 +77,21 @@ Dist_dirichlet* Dist_dirichlet::clone(void) const {
 /** Get class vector showing type of object */
 const StringVector& Dist_dirichlet::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Dist_dirichlet_name) + DistributionReal::getClass();
+    static StringVector rbClass = StringVector(Dist_dirichlet_name) + Distribution::getClass();
     return rbClass;
 }
 
 /** Get default move */
 Move* Dist_dirichlet::getDefaultMove(StochasticNode* node) {
 
-    return new Move_mscale(node, 2.0*std::log(1.5), 1.0, Workspace::globalWorkspace().get_rng());
+	// default move for a stochastic node having a Dirichlet distribution
+    return new Move_msimplex(node, 300.0, 4, 1.0, Workspace::globalWorkspace().get_rng());
 }
 
 /** Get min value of distribution */
 const RbDouble* Dist_dirichlet::getMin(void) {
 
-    static RbDouble rbZero = RbDouble(0.0);
-    return &rbZero;
+    return NULL;
 }
 
 /** Get member variable rules */
@@ -116,7 +117,7 @@ const MemberRules& Dist_dirichlet::getMemberRules(void) const {
 /** Get random variable type */
 const std::string& Dist_dirichlet::getVariableType(void) const {
 
-    return Vector_name;
+    return Simplex_name;
 }
 
 /**
@@ -173,17 +174,7 @@ double Dist_dirichlet::lnPdf(const RbObject* value) {
 	if ( a.size() != x.size() )
 		throw (RbException("Inconsistent size of vectors when calculating Dirichlet log probability density"));
 
-	// calculate the log probability density
-	int n = a.size();
-	double alpha0 = 0.0;
-	for (int i=0; i<n; i++)
-		alpha0 += a[i];
-	double lnP = RbMath::lnGamma(alpha0);
-	for (int i=0; i<n; i++)
-		lnP -= RbMath::lnGamma(a[i]);
-	for (int i=0; i<n; i++)
-		lnP += (a[i] - 1.0) * std::log(x[i]);	
-    return lnP;
+	return RbStatistics::Dirichlet::lnPdf( a, x );
 }
 
 /**
@@ -199,7 +190,7 @@ double Dist_dirichlet::lnPdf(const RbObject* value) {
 double Dist_dirichlet::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
 
 	// get the values and the parameters of the Dirichlet
-    std::vector<double> a    = ((Vector*) getValue("alpha"))->getValue();
+    std::vector<double> a    = ((Vector*) getValue("rate"))->getValue();
     std::vector<double> newX = ((Vector*) newVal)->getValue();
     std::vector<double> oldX = ((Vector*) oldVal)->getValue();
 
@@ -226,10 +217,15 @@ double Dist_dirichlet::lnPriorRatio(const RbObject* newVal, const RbObject* oldV
  */
 double Dist_dirichlet::pdf(const RbObject* value) {
 
-	double lnP = lnP(value);
-	if (lnP < -300.0)
-		return 0.0;
-    return exp(lnP);
+	// get the value and the parameters of the Dirichlet
+    std::vector<double> a = ((Vector*) getValue("alpha"))->getValue();
+    std::vector<double> x = ((Simplex*) value)->getValue();
+
+	// check that the vectors are both the same size
+	if ( a.size() != x.size() )
+		throw (RbException("Inconsistent size of vectors when calculating Dirichlet log probability density"));
+
+	return RbStatistics::Dirichlet::pdf( a, x );
 }
 
 /**
@@ -244,7 +240,7 @@ double Dist_dirichlet::pdf(const RbObject* value) {
  */
 double Dist_dirichlet::quantile(const double p) {
 
-	throw (RbException("The quanitle function is not implemented for the Dirichlet distribution"));
+	throw (RbException("Cannot calculate the quantiles of a Dirichlet"));
     return 0.0;
 }
 
@@ -256,14 +252,14 @@ double Dist_dirichlet::quantile(const double p) {
  *
  * @return      Random draw from exponential distribution
  */
-RbDouble* Dist_dirichlet::rv(void) {
+RbObject* Dist_dirichlet::rv(void) {
 
-    double                 lambda = ((RbDouble*) getValue("rate"))->getValue();
-    RandomNumberGenerator* rng    = (RandomNumberGenerator*)(getValue("rng"));
+    std::vector<double> a      = ((Vector*) getValue("alpha"))->getValue();
+    RandomNumberGenerator* rng = (RandomNumberGenerator*)(getValue("rng"));
+	std::vector<double> r(a.size());
 
-    double u = rng->rv01();
-
-    return new PosReal(-( 1.0 / lambda ) * std::log( u ));
+	r = RbStatistics::Dirichlet::rv(a, rng);
+    return new Simplex( r );
 }
 
 

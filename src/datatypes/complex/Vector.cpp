@@ -27,12 +27,12 @@
 #include <sstream>
 
 
+
 /** Construct vector with one double x */
 Vector::Vector(double x) {
 
     value.push_back(x);
 }
-
 
 /** Construct vector with n doubles x */
 Vector::Vector(int n, double x) {
@@ -41,13 +41,11 @@ Vector::Vector(int n, double x) {
         value.push_back(x);
 }
 
-
 /** Constructor from double vector */
 Vector::Vector(std::vector<double>& x) {
 
     value = x;
 }
-
 
 /** Clone function */
 Vector* Vector::clone(void) const {

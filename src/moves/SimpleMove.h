@@ -32,33 +32,33 @@ class StringVector;
 class SimpleMove : public Move {
 
     public:
-        virtual                     ~SimpleMove(void) {}                //!< Destructor
+        virtual                    ~SimpleMove(void) {}                                                                      //!< Destructor
 
         // Basic utility functions
-        virtual RbObject*           clone(void) const = 0;              //!< Clone the object
-        virtual const StringVector& getClass(void) const;               //!< Get class vector
+        virtual RbObject*           clone(void) const = 0;                                                                   //!< Clone the object
+        virtual const StringVector& getClass(void) const;                                                                    //!< Get class vector
 
         // SimpleMove functions
-        void                        acceptMove(void);				    //!< Accept the move, update statistics
+        void                        acceptMove(void);				                                                         //!< Accept the move, update statistics
         void                        performMove(double& lnPriorRatio, double& lnLikelihoodRatio, double& lnHastingsRatio);   //!< Call perform, calculate ratios
-        void                        rejectMove(void);                   //!< Reject the move
-        void                        setNodePtr(StochasticNode* node) { nodePtr = node; }    //!< Set node ptr
+        void                        rejectMove(void);                                                                        //!< Reject the move
+        void                        setNodePtr(StochasticNode* node) { nodePtr = node; }                                     //!< Set node ptr
 
 	protected:
-        virtual RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
-        virtual bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
+        virtual RbObject*           convertTo(const std::string& type) const;                                                //!< Convert to type
+        virtual bool                isConvertibleTo(const std::string& type) const;                                          //!< Is convertible to type and dim?
 
-                                    SimpleMove(const MemberRules& memberRules);             //!< Parser constructor
+                                    SimpleMove(const MemberRules& memberRules);                                              //!< Parser constructor
 
         // Function you have to override
-        virtual double              perform(std::set<StochasticNode*>& affectedNodes) = 0;  //!< Perform the move
+        virtual double              perform(std::set<StochasticNode*>& affectedNodes) = 0;                                   //!< Perform the move
 
         // Functions you may want to override for additional statistics purposes, e.g.
-        virtual void                accept(void) {}                                         //!< Accept the move
-        virtual void                reject(void) {}                                         //!< Reject the move
+        virtual void                accept(void) {}                                                                          //!< Accept the move
+        virtual void                reject(void) {}                                                                          //!< Reject the move
 
         // Member variable (hidden from parser)
-        StochasticNode*             nodePtr;                            //!< The node to change (ptr)
+        StochasticNode*             nodePtr;                                                                                 //!< The node to change (ptr)
 };
 
 #endif

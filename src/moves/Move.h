@@ -26,45 +26,41 @@ class StringVector;
 class Move : public MemberObject {
 
     public:
-        virtual                     ~Move(void) {}                                  //!< Destructor
+        virtual                    ~Move(void) {}                                                                               //!< Destructor
 
         // Basic utility functions
-        virtual RbObject*           clone(void) const = 0;                          //!< Clone the object
-        virtual const StringVector& getClass(void) const;                           //!< Get class vector
+        virtual RbObject*           clone(void) const = 0;                                                                      //!< Clone the object
+        virtual const StringVector& getClass(void) const;                                                                       //!< Get class vector
 
         // Member variable rules
-        virtual const MemberRules&  getMemberRules(void) const = 0;                 //!< Get member rules
-        void                        setVariable(const std::string& name, DAGNode* var); //!< Only allow constants
+        virtual const MemberRules&  getMemberRules(void) const = 0;                                                             //!< Get member rules
+        void                        setVariable(const std::string& name, DAGNode* var);                                         //!< Only allow constants
 
         // Member method inits
-        virtual const MethodTable& getMethodInits(void) const;                      //!< Get method inits
+        virtual const MethodTable&  getMethodInits(void) const;                                                                 //!< Get method inits
 
         // Move functions you have to override
-        virtual void                acceptMove(void) = 0;                           //!< Accept the move
-        virtual void                performMove(double& lnPriorRatio,
-                                                double& lnLikelihoodRatio,
-                                                double& lnHastingsRatio) = 0;       //!< Perform the move
-        virtual void                rejectMove(void) = 0;                           //!< Reject the move
+        virtual void                acceptMove(void) = 0;                                                                       //!< Accept the move
+        virtual void                performMove(double& lnPriorRatio, double& lnLikelihoodRatio, double& lnHastingsRatio) = 0;  //!< Perform the move
+        virtual void                rejectMove(void) = 0;                                                                       //!< Reject the move
 
         // Move functions you should not override
-        double                      getAcceptanceProbability(void);                 //!< Get acceptance probability
-        double                      getUpdateWeight(void) const;                    //!< Get update weight
-        void                        resetCounters(void);                            //!< Reset numTried/numAccepted
-        void                        setUpdateWeight(double weight);                 //!< Set update weight
+        double                      getAcceptanceProbability(void);                                                             //!< Get acceptance probability
+        double                      getUpdateWeight(void) const;                                                                //!< Get update weight
+        void                        resetCounters(void);                                                                        //!< Reset numTried/numAccepted
+        void                        setUpdateWeight(double weight);                                                             //!< Set update weight
 
 	protected:
-        virtual RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
-        virtual bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
-
-                                    Move(const MemberRules& memberRules);           //!< Parser constructor
+        virtual RbObject*           convertTo(const std::string& type) const;                                                   //!< Convert to type
+        virtual bool                isConvertibleTo(const std::string& type) const;                                             //!< Is convertible to type and dim?
+                                    Move(const MemberRules& memberRules);                                                       //!< Parser constructor
 
         // Member method call (throw an error: no member methods)
-        virtual const RbObject*     executeOperation(const std::string&     name,
-                                                     std::vector<DAGNode*>& args);  //!< Execute method
+        virtual const RbObject*     executeOperation(const std::string& name, std::vector<DAGNode*>& args);                     //!< Execute method
 
         // Hidden member variables (not visible to parser)
-        int                         numAccepted;                                    //!< Number of times accepted
-        int                         numTried;                                       //!< Number of times tried
+        int                         numAccepted;                                                                                //!< Number of times accepted
+        int                         numTried;                                                                                   //!< Number of times tried
 };
 
 #endif

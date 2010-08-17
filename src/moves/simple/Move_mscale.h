@@ -31,23 +31,21 @@ class RbObject;
 class Move_mscale : public SimpleMove {
 
     public:
-                                Move_mscale(void);                                  //!< Parser constructor
-                                Move_mscale(StochasticNode*         node,
-                                            double                  lambda,
-                                            double                  weight = 1.0,
-                                            RandomNumberGenerator*  rng = Workspace::globalWorkspace().get_rng());   //!< Internal constructor
+                                    Move_mscale(void);                                                      //!< Parser constructor
+                                    Move_mscale(StochasticNode* node, double lambda, double weight = 1.0, 
+									RandomNumberGenerator* rng = Workspace::globalWorkspace().get_rng());   //!< Internal constructor
 
         // Basic utility functions
-        RbObject*               clone() const;                                      //!< Clone object
-        const StringVector&     getClass() const;                                   //!< Get class vector
+        RbObject*                   clone(void) const;                                                      //!< Clone object
+        const StringVector&         getClass(void) const;                                                   //!< Get class vector
 
         // Member variable inits
-        const MemberRules&      getMemberRules(void) const;                         //!< Get member rules
+        const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
 
 	protected:
-        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
-        double                  perform(std::set<StochasticNode*>& affectedNodes);  //!< Perform move
+        RbObject*                   convertTo(const std::string& type) const;                               //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;                         //!< Is convertible to type and dim?
+        double                      perform(std::set<StochasticNode*>& affectedNodes);                      //!< Perform move
 };
 
 #endif
