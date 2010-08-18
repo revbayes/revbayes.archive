@@ -49,6 +49,7 @@ const std::string Func_clamp_name                               = "clamp functio
 const std::string Func_ls_name                                  = "ls function";
 const std::string Func_model_name                               = "model function";
 const std::string Func_source_name                              = "source function";
+const std::string Func_sqrt_name                                = "Square Root Function";
 const std::string Func_quit_name                                = "quit function";
 const std::string IntVector_name                                = "int vector";
 const std::string Mcmc_name                                     = "mcmc";

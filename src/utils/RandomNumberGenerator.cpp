@@ -164,6 +164,6 @@ double RandomNumberGenerator::uniform01(void) {
 
 	// Returns a pseudo-random number between 0 and 1.
 	seed[0] = 36969 * (seed[0] & 0177777) + (seed[0] >> 16);
-	seed[1]= 18000 * (seed[1] & 0177777) + (seed[1] >> 16);
+	seed[1] = 18000 * (seed[1] & 0177777) + (seed[1] >> 16);
 	return (((seed[0] << 16)^(seed[1] & 0177777)) * 2.328306437080797e-10) + 2.328306435996595e-10;
 }

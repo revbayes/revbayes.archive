@@ -41,7 +41,7 @@ class RandomNumberGenerator : public RbComplex {
 
 	private:
 	
-		double uniform01(void);
+		double                      uniform01(void);
 		std::string					name;											// name of selected random number generator
 		std::vector<unsigned int>	seed;											// list of seed values
 };
