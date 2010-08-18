@@ -7,16 +7,16 @@ BISON       = bison
 FLEX        = flex
 BISONFLAGS  = -y -v
 
-all: grammar.tab.c lex.yy.cpp Frame.o FunctionTable.o MethodTable.o Workspace.o SyntaxElement.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o SyntaxUnaryExpr.o SyntaxFunctionCall.o SyntaxLabeledExpr.o SyntaxAssignExpr.o SyntaxFormal.o SyntaxFunctionDef.o SyntaxClassDef.o SyntaxForCondition.o SyntaxStatement.o Parser.o grammar.tab.o lex.yy.o
+all: grammar.tab.cpp lex.yy.cpp Frame.o FunctionTable.o MethodTable.o Workspace.o SyntaxElement.o SyntaxConstant.o SyntaxVariable.o SyntaxBinaryExpr.o SyntaxUnaryExpr.o SyntaxFunctionCall.o SyntaxLabeledExpr.o SyntaxAssignExpr.o SyntaxFormal.o SyntaxFunctionDef.o SyntaxClassDef.o SyntaxForCondition.o SyntaxStatement.o Parser.o grammar.tab.o lex.yy.o
 
-grammar.tab.c grammar.tab.h: grammar.y
-	$(BISON) -o grammar.tab.c --defines $(BISONFLAGS) grammar.y
+grammar.tab.cpp grammar.tab.h: grammar.y
+	$(BISON) -o grammar.tab.cpp --defines $(BISONFLAGS) grammar.y
 
 lex.yy.cpp: lex.l
 	$(FLEX) -olex.yy.cpp lex.l
 
-grammar.tab.o: grammar.tab.c
-	g++ $(INCLUDES) $(CXXFLAGS) -c grammar.tab.c
+grammar.tab.o: grammar.tab.cpp
+	g++ $(INCLUDES) $(CXXFLAGS) -c grammar.tab.cpp
     
 lex.yy.o: lex.yy.cpp grammar.tab.h
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -c lex.yy.cpp

@@ -124,7 +124,7 @@ typedef struct yyltype
 %type <syntaxElementList> elementList optElements
 %type <syntaxElementList> stmts stmtList
 %type <syntaxElementList> memberDefs
-%type <argumentList> argumentList optArguments
+%type <argumentList> argumentList optArguments vectorList vector
 %type <formalList> formalList optFormals
 
 /* Tokens returned by the lexer and handled by the parser */
@@ -135,8 +135,8 @@ typedef struct yyltype
 %token END_OF_INPUT
 
 /* Destructors */
-%destructor { for (std::list<SyntaxElement*    >::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting element list\n"); } elementList optElements stmts stmtList memberDefs
-%destructor { for (std::list<SyntaxLabeledExpr*>::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting argument list\n"); } argumentList optArguments
+%destructor { for (std::list<SyntaxElement*    >::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting element list\n"); } elementList optElements stmts stmtList memberDefs 
+%destructor { for (std::list<SyntaxLabeledExpr*>::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting argument list\n"); } argumentList optArguments vectorList vector
 %destructor { for (std::list<SyntaxFormal*     >::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting formal list\n"); } formalList optFormals
 %destructor { delete ($$); PRINTF("Deleting identifier  ...\n"); } identifier typeSpec optDims dimList optRef
 %destructor { delete ($$); PRINTF("Deleting variable    ...\n"); } variable functionCall argument formal constant
@@ -279,6 +279,8 @@ prog    :       END_OF_INPUT
         ;
 
 expression  :   constant                    { $$ = $1; }
+
+            |   vector                      { $$ = new SyntaxFunctionCall(new RbString("v"), $1); }
 
             |   '(' expression ')'          { $$ = $2; }
 
@@ -525,6 +527,14 @@ returnStatement :   RETURN              { $$ = new SyntaxStatement(SyntaxStateme
                 ;
 
 identifier  :   NAME    { $$ = new RbString($1); }
+            ;
+
+
+vector      :   '[' vectorList ']'      { $$ = $2; }
+            ;
+
+vectorList  :   vectorList ',' expression   { $1->push_back(new SyntaxLabeledExpr(new RbString(""), $3)); $$ = $1; }
+            |   expression                  { $$ = new std::list<SyntaxLabeledExpr*>(1, new SyntaxLabeledExpr(new RbString(""), $1)); }
             ;
 
 constant    :   FALSE
