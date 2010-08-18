@@ -145,7 +145,7 @@ namespace RbStatistics {
 	
 									destV.clear();
 									for (int i=0; i<k; i++)
-										destV.push_back( sourceV[(int)(rng->rv01()*(sourceV.size()))] );
+										destV.push_back( sourceV[(int)(rng->uniform01()*(sourceV.size()))] );
 									}
 	template <class T> void		randomlySelectFromVectorWithoutReplacement(std::vector<T>& sourceV, std::vector<T>& destV, int k, RandomNumberGenerator* rng) {
 	

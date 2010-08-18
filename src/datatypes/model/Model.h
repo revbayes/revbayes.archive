@@ -56,7 +56,7 @@ class Model : public RbComplex {
 		void                        getExposedParents(DAGNode* p, std::set<DAGNode*>& ep, std::vector<DAGNode*>& nodeList) const;           //!< Make a list of the parents of a DAGNode (p) that are exposed to the user.
 		int                         getIndexForVector(const std::vector<DAGNode*>& v, const DAGNode* p) const;                              //!< Finds position of a DAGNode in a vector of DAGNodes
         bool                        isConvertibleTo(const std::string& type) const;                                                         //!< Checks if the Model object can be converted to be an object of type.
-        std::vector<DAGNode*>       dagNodes;                                                                                               //!< A vector containing the DAGNode~s in the model graph.
+        std::vector<DAGNode*>       dagNodes;                                                                                               //!< A vector containing the DAGNodes in the model graph.
         std::vector<bool>           maintainedHere;                                                                                         //!< True if the DAGNode is maintained by the Model object.
 };
 
