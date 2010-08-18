@@ -32,6 +32,7 @@
 #include "Workspace.h"
 
 // Objects added to the workspace in initializeGlobalWorkspace()
+#include "Dist_dirichlet.h"
 #include "Dist_exp.h"
 #include "Dist_norm.h"
 #include "Dist_unif.h"
@@ -43,6 +44,7 @@
 #include "Func_source.h"
 #include "Mcmc.h"
 #include "Move_mscale.h"
+#include "Move_msimplex.h"
 #include "Move_mslide.h"
 #include "PosReal.h"
 #include "RbInt.h"
@@ -211,14 +213,16 @@ void Workspace::initializeGlobalWorkspace(void) {
     addType(new RandomNumberGenerator);
 
     /* Add member object types with auto-generated constructors */
-    addTypeWithConstructor("mcmc", new Mcmc());
-    addTypeWithConstructor("mslide", new Move_mslide());
-    addTypeWithConstructor("mscale", new Move_mscale());
+    addTypeWithConstructor("mcmc",     new Mcmc());
+    addTypeWithConstructor("mslide",   new Move_mslide());
+    addTypeWithConstructor("mscale",   new Move_mscale());
+    addTypeWithConstructor("msimplex", new Move_msimplex());
 
     /* Add distributions with distribution constructors and distribution functions*/
-    addDistribution("exp",  new Dist_exp());
-    addDistribution("norm", new Dist_norm());
-    addDistribution("unif", new Dist_unif());
+    addDistribution("dirichlet", new Dist_dirichlet());
+    addDistribution("exp",       new Dist_exp());
+    addDistribution("norm",      new Dist_norm());
+    addDistribution("unif",      new Dist_unif());
 
     /* Add basic internal functions */
     addFunction("_range", new Func__range());
