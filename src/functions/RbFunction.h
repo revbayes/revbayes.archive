@@ -75,22 +75,22 @@ class RbFunction :  public RbObject {
         virtual bool                            processArguments(const std::vector<Argument>& args, IntVector* matchScore=NULL);    //!< Process args, return a match score if pointer is not null
 
 	protected:
-                                                RbFunction(void);                                                   //!< Basic constructor
-                                                RbFunction(const RbFunction& x);                                    //!< Copy constructor
+                                                RbFunction(void);                                                                   //!< Basic constructor
+                                                RbFunction(const RbFunction& x);                                                    //!< Copy constructor
 
         // Assignment operator
-        RbFunction&                             operator=(const RbFunction& x);                                     //!< Assignment operator
+        RbFunction&                             operator=(const RbFunction& x);                                                     //!< Assignment operator
 
         // Regular utility functions
-        virtual RbObject*                       convertTo(const std::string& type) const;                           //!< Convert to type
-        void                                    deleteProcessedArguments(void);                                     //!< Delete processed arguments
-    	virtual RbObject*                       executeOperation(std::vector<DAGNode*> const& args) = 0;            //!< Execute operation
-        virtual bool                            isConvertibleTo(const std::string& type) const;                     //!< Is convertible to type and dim?
+        virtual RbObject*                       convertTo(const std::string& type) const;                                           //!< Convert to type
+        void                                    deleteProcessedArguments(void);                                                     //!< Delete processed arguments
+    	virtual RbObject*                       executeOperation(std::vector<DAGNode*> const& args) = 0;                            //!< Execute operation
+        virtual bool                            isConvertibleTo(const std::string& type) const;                                     //!< Is convertible to type and dim?
 
         // Member variables
-        std::vector<DAGNode*>                   processedArguments;                                                 //!< Processed arguments
-        std::vector<bool>                       referenceArgument;                                                  //!< Is processed argument reference?
-        bool                                    argumentsProcessed;                                                 //!< Are arguments processed?
+        std::vector<DAGNode*>                   processedArguments;                                                                 //!< Processed arguments
+        std::vector<bool>                       referenceArgument;                                                                  //!< Is processed argument reference?
+        bool                                    argumentsProcessed;                                                                 //!< Are arguments processed?
 };
 
 #endif

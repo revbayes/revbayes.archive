@@ -239,7 +239,7 @@ void Workspace::initializeGlobalWorkspace(void) {
     addFunction("source", new Func_source());
     addFunction("sqrt",   new Func_sqrt());
     addFunction("v",      new Func_v_int());
-    addFunction("v",      new Func_v_double());
+    //addFunction("v",      new Func_v_double());
 }
 
 

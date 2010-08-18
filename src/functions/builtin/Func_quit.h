@@ -26,15 +26,15 @@ class Func_quit :  public RbFunction {
 
     public:
         // Basic utility functions
-        RbObject*               clone(void) const;                  //!< Clone object
-    	const StringVector&     getClass(void) const;               //!< Get class vector
+        RbObject*                   clone(void) const;                                      //!< Clone object
+    	const StringVector&         getClass(void) const;                                   //!< Get class vector
 
         // Func_quit functions
-        const ArgumentRules&    getArgumentRules(void) const;       //!< Get argument rules
-        const std::string&      getReturnType(void) const;          //!< Get type of return val
+        const ArgumentRules&        getArgumentRules(void) const;                           //!< Get argument rules
+        const std::string&          getReturnType(void) const;                              //!< Get type of return val
 
 	protected:
-    	RbObject*               executeOperation(const std::vector<DAGNode*>& args);    //!< Execute function
+    	RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute function
 };
 
 #endif
