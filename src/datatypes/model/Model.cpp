@@ -31,12 +31,12 @@
 #include <sstream>
 
 
-/** Default constructor */
+/** Default constructor for a Model object. */
 Model::Model(void) : dagNodes(), maintainedHere() {
 	
 }
 
-/** Sinknodes constructor */
+/** Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. */
 Model::Model(const std::vector<DAGNode*>& sinkNodes) : RbComplex(), dagNodes(), maintainedHere() {
 
     /* Check to see that we have at least one DAG node */

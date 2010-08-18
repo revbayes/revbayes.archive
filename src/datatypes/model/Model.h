@@ -31,33 +31,33 @@ class StringVector;
 class Model : public RbComplex {
 
     public:
-                                    Model(void);                                                                                            //!< Default constructor
-                                    Model(const std::vector<DAGNode*>& sinkNodes);                                                          //!< Constructor
-                                    Model(const Model& x);                                                                                  //!< Copy constructor
-								   ~Model(void);                                                                                            //!< Destructor
+                                    Model(void);                                                                                            //!< Default constructor for a Model object
+                                    Model(const std::vector<DAGNode*>& sinkNodes);                                                          //!< Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. 
+                                    Model(const Model& x);                                                                                  //!< Copy constructor for a Model object.
+								   ~Model(void);                                                                                            //!< Destructor for Model object.
 
         // Assignment operator
         Model&                      operator=(const Model& x);                                                                              //!< Assignment operator
 
         // Basic utility functions
-        Model*                      clone(void) const;                                                                                      //!< Clone object
-        bool                        equals(const RbObject* x) const;                                                                        //!< Equals comparison
-        const StringVector&         getClass(void) const;                                                                                   //!< Get class vector
-        void                        printValue(std::ostream& o) const;                                                                      //!< Print value for user
+        Model*                      clone(void) const;                                                                                      //!< Make a copy (clone) of the Model.
+        bool                        equals(const RbObject* x) const;                                                                        //!< Compare two Models and return if they are equal to one another.
+        const StringVector&         getClass(void) const;                                                                                   //!< Initialize the inheritance hierarchy for a Model object.
+        void                        printValue(std::ostream& o) const;                                                                      //!< Print the Model for the user as a list of the DAGNodes in the model graph.
         std::string                 toString(void) const;                                                                                   //!< Complete info
 
         // Model functions
-        std::vector<DAGNode*>&      getDAGNodes(void) { return dagNodes; }                                                                  //!< Get the DAG nodes
+        std::vector<DAGNode*>&      getDAGNodes(void) { return dagNodes; }                                                                  //!< Return the DAGNodes in the model graph.
 
 	protected:
-        RbObject*                   convertTo(const std::string& type) const;                                                               //!< Convert to type
-		void                        getExposedChildren(DAGNode* p, std::set<VariableNode*>& ec, std::vector<DAGNode*>& nodeList) const;     //!< Make a list of the children of p that are exposed to the user
-		void                        getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool exposeEverybody, bool usePlates) const; //!< Get a list of the DAG nodes that are exposed to the user
-		void                        getExposedParents(DAGNode* p, std::set<DAGNode*>& ep, std::vector<DAGNode*>& nodeList) const;           //!< Make a list of the parents of p that are exposed to the user
-		int                         getIndexForVector(const std::vector<DAGNode*>& v, const DAGNode* p) const;                              //!< finds position of a DAG node in a vector of DAG nodes
-        bool                        isConvertibleTo(const std::string& type) const;                                                         //!< Is convertible to type and dim?
-        std::vector<DAGNode*>       dagNodes;                                                                                               //!< The DAG nodes
-        std::vector<bool>           maintainedHere;                                                                                         //!< True if DAG node maintained here
+        RbObject*                   convertTo(const std::string& type) const;                                                               //!< Convert the Model object to an object of type.
+		void                        getExposedChildren(DAGNode* p, std::set<VariableNode*>& ec, std::vector<DAGNode*>& nodeList) const;     //!< Make a list of the children of a DAGNode (p) that are exposed to the user.
+		void                        getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool exposeEverybody, bool usePlates) const; //!< Get a list of the DAGNodes that are exposed to the user.
+		void                        getExposedParents(DAGNode* p, std::set<DAGNode*>& ep, std::vector<DAGNode*>& nodeList) const;           //!< Make a list of the parents of a DAGNode (p) that are exposed to the user.
+		int                         getIndexForVector(const std::vector<DAGNode*>& v, const DAGNode* p) const;                              //!< Finds position of a DAGNode in a vector of DAGNodes
+        bool                        isConvertibleTo(const std::string& type) const;                                                         //!< Checks if the Model object can be converted to be an object of type.
+        std::vector<DAGNode*>       dagNodes;                                                                                               //!< A vector containing the DAGNode~s in the model graph.
+        std::vector<bool>           maintainedHere;                                                                                         //!< True if the DAGNode is maintained by the Model object.
 };
 
 #endif
