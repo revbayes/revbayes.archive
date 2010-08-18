@@ -9,6 +9,8 @@
 
 #define MAXK 20
 
+
+
 #pragma mark Beta Distribution
 
 /*!
@@ -1337,6 +1339,7 @@ int RbStatistics::Helper::poissonRatioUniforms(double lambda, RandomNumberGenera
 		}
 	return(k);
 }
+
 
 
 
