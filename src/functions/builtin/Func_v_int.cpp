@@ -24,7 +24,6 @@
 #include "Ellipsis.h"
 #include "Func__lookup.h"
 #include "Func_v_int.h"
-#include "PosReal.h"
 #include "RbException.h"
 #include "RbInt.h"
 #include "RbNames.h"
