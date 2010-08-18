@@ -736,9 +736,12 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
 
     // Parser wants to set a single element
     if (val->isType(getValueType())) {
-        if ((*targetIt) != NULL && (*targetIt)->isType(StochasticNode_name))
+        if ((*targetIt) != NULL && (*targetIt)->isType(StochasticNode_name)) {
+            // We just set the value of the stochastic node
             ((StochasticNode*)(*targetIt))->setValue(val);
+        }
         else {
+            // We replace the node with a constant node
             if ((*targetIt) != NULL) {
                 (*targetIt)->removeChildNode(this);
                 if ((*targetIt)->numRefs() == 0)
@@ -839,12 +842,20 @@ void DAGNodeContainer::setElement(const IntVector& index, DAGNode* var) {
     // Parser wants to set a single element
     if (var == NULL || Workspace::userWorkspace().isXOfTypeY(var->getValueType(), valueType)) {
         if ((*targetIt) != NULL) {
+            // If conversion of constant to stochastic node, save value
+            if ((*targetIt)->isType(ConstantNode_name) &&
+                var->isType(StochasticNode_name) &&
+                (*targetIt)->getValue() != NULL &&
+                (*targetIt)->getValue()->isType(var->getValueType())) {
+                ((StochasticNode *)var)->setValue((*targetIt)->getValue()->clone());
+            }
             (*targetIt)->removeChildNode(this);
             (*targetIt)->setName("");
             if ((*targetIt)->numRefs() == 0)
                 delete (*targetIt);
             parents.erase(*targetIt);
         }
+        (*targetIt) = NULL;
         if (var != NULL) {
             if (var->getName() != "")
                 throw RbException("Cannot use reference in DAG node container");

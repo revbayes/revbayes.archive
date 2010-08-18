@@ -719,7 +719,16 @@ void Frame::setVariable(const std::string& name, DAGNode* var) {
 
     /* Simple assignment */
 
-    /* Update DAG if necessary */
+    // If conversion of constant to stochastic node, save value of old variable
+    if ((*it).second.variable != NULL &&
+        variable->isType(ConstantNode_name) &&
+        var->isType(StochasticNode_name) &&
+        variable->getValue() != NULL &&
+        variable->getValue()->isType(var->getValueType())) {
+        ((StochasticNode *)var)->setValue(variable->getValue()->clone());
+    }
+
+    /* Delete variable and update DAG if appropriate */
     if (variable != NULL && (referenceVar == false || (*it).second.temp == true)) {
 
         std::set<VariableNode*> children = variable->getChildren();
@@ -727,11 +736,12 @@ void Frame::setVariable(const std::string& name, DAGNode* var) {
             (*i)->swapParentNode(variable, var);
 
         variable->setName("");
-            delete variable;
+        delete variable;
         (*it).second.temp = false;
+        (*it).second.variable = NULL;
     }
 
-    /* Set new variable */
+    /* Set name of new variable */
     std::string varName;
     if (frameName != "")
         varName = frameName + "." + name;
@@ -745,6 +755,8 @@ void Frame::setVariable(const std::string& name, DAGNode* var) {
         var->setName(varName);
         (*it).second.temp = true;
     }
+
+    // Set new variable
     (*it).second.variable = var;
 }
 

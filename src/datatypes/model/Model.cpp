@@ -28,6 +28,7 @@
 #include "StringVector.h"
 #include "UserInterface.h"
 
+#include <algorithm>
 #include <sstream>
 
 

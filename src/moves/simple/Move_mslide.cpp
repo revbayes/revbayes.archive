@@ -103,7 +103,7 @@ double Move_mslide::perform(std::set<StochasticNode*>& affectedNodes) {
     double maxVal = ((RbDouble*)(nodePtr->getDistribution()->getMax()))->getValue();
 
     double curVal = valPtr->getValue();
-    double u      = rng->rv01();
+    double u      = rng->uniform01();
     double newVal = curVal + (delta*(u-0.5));
 
     /* reflect the new value */

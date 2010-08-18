@@ -257,7 +257,7 @@ RbDouble* Dist_unif::rv(void) {
     double                 max = ((RbDouble*) getValue("max"))->getValue();
     RandomNumberGenerator* rng = (RandomNumberGenerator*)(getValue("rng"));
 
-    double u = rng->rv01();
+    double u = rng->uniform01();
 
     return new RbDouble(min + ( max - min ) * u);
 }

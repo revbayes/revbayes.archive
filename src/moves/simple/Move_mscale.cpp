@@ -99,7 +99,7 @@ double Move_mscale::perform(std::set<StochasticNode*>& affectedNodes) {
     double                 lambda = ((RbDouble*)(getValue("lambda")))->getValue();
 
     double curVal = valPtr->getValue();
-    double u      = rng->rv01();
+    double u      = rng->uniform01();
     double newVal = curVal * std::exp(lambda*(u-0.5));
 
     valPtr->setValue(newVal);

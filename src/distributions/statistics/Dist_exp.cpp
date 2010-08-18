@@ -214,7 +214,7 @@ RbDouble* Dist_exp::rv(void) {
     double                 lambda = ((RbDouble*) getValue("rate"))->getValue();
     RandomNumberGenerator* rng    = (RandomNumberGenerator*)(getValue("rng"));
 
-    double u = rng->rv01();
+    double u = rng->uniform01();
 
     return new PosReal(-( 1.0 / lambda ) * std::log( u ));
 }

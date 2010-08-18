@@ -31,7 +31,8 @@ class IntVector : public RbComplex {
                                     IntVector(void) : RbComplex() {}                              //!< Default constructor (empty vector)
                                     IntVector(int x);                                             //!< Construct vector with one int x
                                     IntVector(size_t n, int x);                                   //!< Construct vector with n ints x
-                                    IntVector(std::vector<int>& x);                               //!< Constructor from int vector
+                                    IntVector(const std::vector<int>& x);                         //!< Constructor from int vector
+                                    IntVector(const std::vector<unsigned int>& x);                //!< Constructor from unsigned int vector
                                     IntVector(const ContainerIterator& x);                        //!< Constructor from container iterator
 
         // Basic utility functions

@@ -250,7 +250,7 @@ void Mcmc::update(void) {
     for (int gen=1; gen<ngen; gen++) {
 
         /* Get the move */
-        double u = rng->rv01();
+        double u = rng->uniform01();
         std::map<double, Move*>::iterator it = moves.upper_bound(u);
         Move* theMove = (*it).second;
 
@@ -269,7 +269,7 @@ void Mcmc::update(void) {
             r = exp(lnR);
 
         /* Accept or reject the move */
-        u = rng->rv01();
+        u = rng->uniform01();
         if (u < r) {
             theMove->acceptMove();
             lnProbability += lnPriorRatio + lnLikelihoodRatio;

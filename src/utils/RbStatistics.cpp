@@ -10,6 +10,7 @@
 #define MAXK 20
 
 
+#pragma warning (disable: 4068)
 
 #pragma mark Beta Distribution
 
@@ -485,7 +486,7 @@ double RbStatistics::Exponential::quantile(double lambda, double p) {
 
 double RbStatistics::Exponential::rv(double lambda, RandomNumberGenerator* rng) {
 
-	double u = rng->nextDouble();
+	double u = rng->uniform01();
 	return -(1.0/lambda) * std::log(u);
 }
 
@@ -961,8 +962,8 @@ double RbStatistics::Normal::rv(double mu, double sigma, RandomNumberGenerator* 
 	double rsq = 0.0;
 	do
 		{
-		v1 = 2.0 * rng->nextDouble() - 1.0;
-		v2 = 2.0 * rng->nextDouble() - 1.0;
+		v1 = 2.0 * rng->uniform01() - 1.0;
+		v2 = 2.0 * rng->uniform01() - 1.0;
 		rsq = v1 * v1 + v2 * v2;
 		} while ( rsq >= 1.0 || rsq == 0.0 );
 	double fac = sqrt(-2.0 * log(rsq)/rsq);
@@ -1046,7 +1047,7 @@ double RbStatistics::Uniform::quantile(double a, double b, double p) {
 
 double RbStatistics::Uniform::rv(double a, double b, RandomNumberGenerator* rng) {
 
-	double u = rng->nextDouble();
+	double u = rng->uniform01();
 	return (a + (b-a)*u);
 }
 
@@ -1115,7 +1116,7 @@ double RbStatistics::Uniform::quantile(double p) {
 
 double RbStatistics::Uniform::rv(RandomNumberGenerator* rng) {
 
-	return rng->nextDouble();
+	return rng->uniform01();
 }
 
 
@@ -1141,7 +1142,7 @@ double RbStatistics::Helper::rndGamma(double s, RandomNumberGenerator& rng) {
 	else if (s > 1.0)  
 		r = rndGamma2(s, rng);
 	else           
-		r =- log(rng.nextDouble());
+		r =- log(rng.uniform01());
 	return (r);
 }
 
@@ -1168,14 +1169,14 @@ double RbStatistics::Helper::rndGamma1(double s, RandomNumberGenerator& rng) {
 		}
 	for (;;) 
 		{
-		r = rng.nextDouble();
+		r = rng.uniform01();
 		if (r > p)        
 			x = a - log((1.0 - r) / (1.0 - p)), w = a * log(x) - d;
 		else if (r>uf)  
 			x = a * pow(r / p, 1.0 / s), w = x;
 		else            
 			return (0.0);
-		r = rng.nextDouble();
+		r = rng.uniform01();
 		if (1.0 - r <= w && r > 0.0)
 		if (r*(w + 1.0) >= 1.0 || -log(r) <= w)  
 			continue;
@@ -1206,13 +1207,13 @@ double RbStatistics::Helper::rndGamma2(double s, RandomNumberGenerator& rng) {
 		}
 	for (;;) 
 		{
-		r = rng.nextDouble();
+		r = rng.uniform01();
 		g = r - r * r;
 		f = (r - 0.5) * h / sqrt(g);
 		x = b + f;
 		if (x <= 0.0) 
 			continue;
-		r = rng.nextDouble();
+		r = rng.uniform01();
 		d = 64.0 * r * r * g * g * g;
 		if (d * x < x - 2.0 * f * f || log(d) < 2.0 * (b * log(x / b) - f))  
 			break;
@@ -1234,9 +1235,9 @@ double RbStatistics::Helper::rndGamma2(double s, RandomNumberGenerator& rng) {
 int RbStatistics::Helper::poissonLow(double lambda, RandomNumberGenerator& rng) {
 
 	double d = sqrt(lambda);
-	if (rng.nextDouble() >= d) 
+	if (rng.uniform01() >= d) 
 		return 0;
-	double r = rng.nextDouble() * d;
+	double r = rng.uniform01() * d;
 	if (r > lambda * (1.0 - lambda)) 
 		return 0;
 	if (r > 0.5 * lambda * lambda * (1.0 - lambda)) 
@@ -1268,7 +1269,7 @@ int RbStatistics::Helper::poissonInver(double lambda, RandomNumberGenerator& rng
 
 	while (1) 
 		{  
-		double r = rng.nextDouble();  
+		double r = rng.uniform01();  
 		x = 0;  
 		double f = p_f0;
 		do 
@@ -1322,10 +1323,10 @@ int RbStatistics::Helper::poissonRatioUniforms(double lambda, RandomNumberGenera
 
 	while(1) 
 		{
-		u = rng.nextDouble();
+		u = rng.uniform01();
 		if (u == 0.0) 
 			continue;
-		x = p_a + p_h * (rng.nextDouble() - 0.5) / u;
+		x = p_a + p_h * (rng.uniform01() - 0.5) / u;
 		if (x < 0 || x >= p_bound) 
 			continue;
 		k = (int)(x);
@@ -1340,6 +1341,7 @@ int RbStatistics::Helper::poissonRatioUniforms(double lambda, RandomNumberGenera
 	return(k);
 }
 
+#pragma warning (disable: 4068)
 
 
 

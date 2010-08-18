@@ -200,7 +200,7 @@ RbObject* Container::convertTo(const std::string& type) const {
     if (type == Simplex_name) 
 		{
         std::vector<double> v;
-        for (int i=0; i<length.size(); i++) 
+        for (size_t i=0; i<length.size(); i++) 
 			{
             v.push_back(((RbDouble*) getElementAt(i))->getValue());
 			}
@@ -318,7 +318,7 @@ const RbObject* Container::getElement(const IntVector& index) const {
 }
 
 /** Get element */
-RbObject* Container::getElementAt(const int index) const {
+RbObject* Container::getElementAt(const size_t index) const {
 
     // Check that the index is to a value element
     if ( index < getLength().size() )

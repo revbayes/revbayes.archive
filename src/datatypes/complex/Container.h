@@ -64,7 +64,7 @@ class Container : public RbComplex {
         int                         getDim(void) const { return int(length.size()); }             //!< Get subscript dimensions
         const std::string&          getElementType(void) const { return elementType; }            //!< Get element type
         const RbObject*             getElement(const IntVector& index) const;                     //!< Get element (read-only)
-        virtual RbObject*           getElementAt(const int index) const;                          //!< Get element (read-only)
+        virtual RbObject*           getElementAt(const size_t index) const;                       //!< Get element (read-only)
         const IntVector&            getLength(void) const { return length; }                      //!< Get length in each dim
         Container*                  getSubContainer(const IntVector& index) const;                //!< Get subcontainer
         void                        setElement(const IntVector& index, RbObject* val);            //!< Set value element

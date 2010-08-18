@@ -1,3 +1,5 @@
+
+
 #include "RandomNumberGenerator.h"
 #include "RbComplex.h"
 #include "RbException.h"
@@ -6,10 +8,10 @@
 #include <ctime>
 
 
+/** Default constructor calling time to get the initial seeds */
+RandomNumberGenerator::RandomNumberGenerator(void)
+    : RbComplex() {
 
-RandomNumberGenerator::RandomNumberGenerator(void) {
-
-	name = "";
 	unsigned int x  = (unsigned int)( time(0) );
 	unsigned int s1 = x & 0xFFFF;
 	unsigned int s2 = x >> 16;
@@ -17,132 +19,88 @@ RandomNumberGenerator::RandomNumberGenerator(void) {
 	seed.push_back(s2);
 }
 
-RandomNumberGenerator::RandomNumberGenerator(std::string n, std::vector<unsigned int> s) {
 
-    name = n;
-    seed = s;
-}
-
+/** Constructor explicitly setting the seeds */
 RandomNumberGenerator::RandomNumberGenerator(std::vector<unsigned int> s) {
 
-	name = "";
+    if (s.size() != 2)
+        throw RbException("Two integer seeds required");
+
 	seed = s;
 }
 
-RandomNumberGenerator::RandomNumberGenerator(const RandomNumberGenerator& rng) {
 
-    name = rng.name;
-    seed = rng.seed;
-}
-
-RandomNumberGenerator::~RandomNumberGenerator(void) {
-
-}
-
+/** Clone function */
 RbObject* RandomNumberGenerator::clone(void) const {
 
-    RandomNumberGenerator* x = new RandomNumberGenerator(*this);
-    return (RbObject*) x;
+    return new RandomNumberGenerator(*this);
 }
+
 
 /** Convert to object of another class. The caller manages the object. */
 RbObject* RandomNumberGenerator::convertTo(const std::string& type) const {
 
-    throw (RbException("Conversion to " + type + " not supported"));
+    throw (RbException("Conversion of " + getType() + " to " + type + " not supported"));
     return NULL;
 }
 
+
+/** Pointer-based equals comparison */
 bool RandomNumberGenerator::equals(const RbObject* obj) const {
 
-    return false;
+    const RandomNumberGenerator* p = dynamic_cast<const RandomNumberGenerator*>(obj);
+    if (p == NULL)
+        return false;
+
+    if (seed != p->seed)
+        return false;
+
+    return true;
 }
 
+
+/** Get class vector describing type of object */
 const StringVector& RandomNumberGenerator::getClass(void) const { 
 
     static StringVector rbClass = StringVector(RandomNumberGenerator_name) + RbComplex::getClass();
 	return rbClass;
 }
 
-/** Convert to object of another class. The caller manages the object. */
+
+/** Is convertible to type? */
 bool RandomNumberGenerator::isConvertibleTo(const std::string& type) const {
 
     return false;
 }
 
-void RandomNumberGenerator::print(std::ostream& o) const {
 
-    o << "Random Number Generator (" << name << ")" << std::endl;
-}
-
+/** Print value for user */
 void RandomNumberGenerator::printValue(std::ostream& o) const {
 
-    o << name << std::endl;
+    o << "Random number generator (seed = " << IntVector(seed) << ")";
 }
 
+
+/** Get complete info about object */
 std::string RandomNumberGenerator::toString(void) const {
 
-    return "Random Number Generator (" + name + ")";
+    std::ostringstream o;
+    o << "Random Number Generator:" << std::endl;
+    o << "seed = " << IntVector(seed) << std::endl;
+
+    return o.str();
 }
 
 
-int RandomNumberGenerator::nextInt(int max) {
-
-	return (int)(uniform01()*max);
-}
-
-unsigned int RandomNumberGenerator::nextUnsignedInt(unsigned int max) {
-
-	return (unsigned int)(uniform01()*max);
-}
-
-double RandomNumberGenerator::nextDouble(void) {
-
-	return uniform01();
-}
-
-double RandomNumberGenerator::nextDouble(double max) {
-
-	return ( uniform01()*max );
-}
-
-RbObject& RandomNumberGenerator::operator=(const RbObject& obj) {
-
-    try {
-        // Use built-in fast down-casting first
-        const RandomNumberGenerator& x = dynamic_cast<const RandomNumberGenerator&> (obj);
-
-        RandomNumberGenerator& y = (*this);
-        y = x;
-        return y;
-    } catch (std::bad_cast & bce) {
-        try {
-            // Try converting the value to an argumentRule
-            const RandomNumberGenerator& x = dynamic_cast<const RandomNumberGenerator&> (*(obj.convert("rng")));
-
-            RandomNumberGenerator& y = (*this);
-            y = x;
-            return y;
-        } catch (std::bad_cast & bce) {
-            RbException e("Not supported assignment of " + obj.getClass()[0] + " to rng");
-            throw e;
-        }
-    }
-
-    // dummy return
-    return (*this);
-}
-
-RandomNumberGenerator& RandomNumberGenerator::operator=(const RandomNumberGenerator& obj) {
-
-    seed = obj.seed;
-    name = obj.name;
-    return (*this);
-}
-
+/** Set the seed of the random number generator */
 void RandomNumberGenerator::setSeed(std::vector<unsigned int> s) {
+
+    if (s.size() != 2)
+        throw RbException("Two integer seeds required");
 
     seed = s;
 }
+
 
 /*!
  * This function generates a uniformly-distributed random variable on the interval [0,1).

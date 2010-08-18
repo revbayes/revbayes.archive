@@ -327,8 +327,8 @@ RbDouble* Dist_norm::rv(void) {
     double v2  = 0.0;
     double rsq = 0.0;
     do {
-        v1 = 2.0 * rng->rv01() - 1.0;
-        v2 = 2.0 * rng->rv01() - 1.0;
+        v1 = 2.0 * rng->uniform01() - 1.0;
+        v2 = 2.0 * rng->uniform01() - 1.0;
         rsq = v1 * v1 + v2 * v2;
     } while ( rsq >= 1.0 || rsq == 0.0 );
 

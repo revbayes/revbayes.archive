@@ -141,7 +141,7 @@ double Move_msimplex::perform(std::set<StochasticNode*>& affectedNodes) {
 			tmpV.push_back(i);
 		RbStatistics::Helper::randomlySelectFromVectorWithoutReplacement<int>(tmpV, indicesToUpdate, k, rng);
 		std::map<int,int> mapper;
-		for (int i=0; i<indicesToUpdate.size(); i++)
+		for (size_t i=0; i<indicesToUpdate.size(); i++)
 			mapper.insert( std::make_pair(indicesToUpdate[i], i) );
 			
 		// set up the vectors
@@ -157,14 +157,14 @@ double Move_msimplex::perform(std::set<StochasticNode*>& affectedNodes) {
 			else 
 				x[x.size()-1] += curVal[i];
 			}
-		for (int i=0; i<x.size(); i++)
+		for (size_t i=0; i<x.size(); i++)
 			alphaForward[i] = x[i] * alpha0;
 			
 		// draw a new value for the reduced vector
 		z = RbStatistics::Dirichlet::rv( alphaForward, rng );
 		
 		// fill in the Dirichlet parameters for the reverse probability calculations
-		for (int i=0; i<z.size(); i++)
+		for (size_t i=0; i<z.size(); i++)
 			alphaReverse[i] = z[i] * alpha0;
 		
 		// fill in the full vector
@@ -187,7 +187,7 @@ double Move_msimplex::perform(std::set<StochasticNode*>& affectedNodes) {
 		// we update all of the elements in the vector
 		// first, we get the parameters of the Dirichlet for the forward move
 		std::vector<double> alphaForward(curVal.size());
-		for (int i=0; i<curVal.size(); i++)
+		for (size_t i=0; i<curVal.size(); i++)
 			alphaForward[i] = curVal[i] * alpha0;
 			
 		// then, we propose new values
@@ -195,7 +195,7 @@ double Move_msimplex::perform(std::set<StochasticNode*>& affectedNodes) {
 		
 		// and calculate the Dirichlet parameters for the (imagined) reverse move
 		std::vector<double> alphaReverse(newVal.size());
-		for (int i=0; i<curVal.size(); i++)
+		for (size_t i=0; i<curVal.size(); i++)
 			alphaReverse[i] = newVal[i] * alpha0;	
 		
 		// finally, ew calculate the log of the Hastings ratio

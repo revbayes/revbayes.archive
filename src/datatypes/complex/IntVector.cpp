@@ -41,9 +41,17 @@ IntVector::IntVector(size_t n, int x) {
 
 
 /** Constructor from int vector */
-IntVector::IntVector(std::vector<int>& x) {
+IntVector::IntVector(const std::vector<int>& x) {
 
     value = x;
+}
+
+
+/** Constructor from unsigned int vector */
+IntVector::IntVector(const std::vector<unsigned int>& x) {
+
+    for (std::vector<unsigned int>::const_iterator i=x.begin(); i!=x.end(); i++)
+        value.push_back(*i);
 }
 
 
