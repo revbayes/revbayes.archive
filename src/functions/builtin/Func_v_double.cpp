@@ -1,4 +1,4 @@
-Func_v_double/**
+/**
  * @file
  * This file contains the implementation of Func_v_double, which 
  * constructs a double vector from a list of doubles.
@@ -16,8 +16,8 @@ Func_v_double/**
  * $Id$
  */
 
+
 #include "ArgumentRule.h"
-#include "ContainerIterator.h"
 #include "DAGNode.h"
 #include "DAGNodeContainer.h"
 #include "DeterministicNode.h"
@@ -34,7 +34,6 @@ Func_v_double/**
 
 #include <cassert>
 #include <cmath>
-
 
 /** Clone object */
 Func_v_double* Func_v_double::clone(void) const {

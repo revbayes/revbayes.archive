@@ -17,7 +17,6 @@
  */
 
 #include "ArgumentRule.h"
-#include "ContainerIterator.h"
 #include "DAGNode.h"
 #include "DAGNodeContainer.h"
 #include "DeterministicNode.h"

@@ -44,6 +44,7 @@
 #include "Func_source.h"
 #include "Func_sqrt.h"
 #include "Func_v_int.h"
+#include "Func_v_double.h"
 #include "Mcmc.h"
 #include "Move_mscale.h"
 #include "Move_msimplex.h"
@@ -238,6 +239,7 @@ void Workspace::initializeGlobalWorkspace(void) {
     addFunction("source", new Func_source());
     addFunction("sqrt",   new Func_sqrt());
     addFunction("v",      new Func_v_int());
+    addFunction("v",      new Func_v_double());
 }
 
 
