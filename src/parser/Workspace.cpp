@@ -42,6 +42,8 @@
 #include "Func_model.h"
 #include "Func_quit.h"
 #include "Func_source.h"
+#include "Func_sqrt.h"
+#include "Func_v_int.h"
 #include "Mcmc.h"
 #include "Move_mscale.h"
 #include "Move_msimplex.h"
@@ -234,6 +236,8 @@ void Workspace::initializeGlobalWorkspace(void) {
     addFunction("q",      new Func_quit());
     addFunction("quit",   new Func_quit());
     addFunction("source", new Func_source());
+    addFunction("sqrt",   new Func_sqrt());
+    addFunction("v",      new Func_v_int());
 }
 
 
