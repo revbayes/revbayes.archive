@@ -220,13 +220,13 @@ void IntVector::setLength(const IntVector& len) {
 /** Print value for user */
 void IntVector::printValue(std::ostream& o) const {
 
-    o << "{ ";
+    o << "[ ";
     for (std::vector<int>::const_iterator i = value.begin(); i!= value.end(); i++) {
         if (i != value.begin())
             o << ", ";
         o << (*i);
     }
-    o <<  " }";
+    o <<  " ]";
 }
 
 

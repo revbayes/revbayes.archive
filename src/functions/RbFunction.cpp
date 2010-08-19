@@ -26,6 +26,7 @@
 #include "RbFunction.h"
 #include "RbNames.h"
 #include "StringVector.h"
+#include "Workspace.h"
 
 #include <sstream>
 
@@ -262,6 +263,8 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
             const DAGNode* theDAGNode = args[i].getVariable();
             if ( theDAGNode == NULL )
                 return false;
+            if ( !Workspace::globalWorkspace().isXOfTypeY(theDAGNode->getValueType(), ellipsisArgs->getValueType()) )
+                return false;
             ellipsisArgs->setElement(ellipsisIt++, theDAGNode->clone());
             taken[i] = true;
         }
@@ -399,17 +402,38 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
     if ( matchScore == NULL )
         return true;
 
-    /* Now count the score */
+    /* Now count the score, first for normal arguments */
     matchScore->clear();
-    for(int i=0; i<numFinalArgs; i++) {
+    int argIndex;
+    for(argIndex=0; argIndex<numFinalArgs; argIndex++) {
 
-        const StringVector& argClass = processedArguments[i]->getClass();
+        if ( theRules[argIndex]->isType(Ellipsis_name) )
+            break;
+
+        const StringVector& argClass = processedArguments[argIndex]->getValue()->getClass();
         size_t j;
         for (j=0; j<argClass.size(); j++)
-            if ( argClass[j] == theRules[i]->getType() )
+            if ( argClass[j] == theRules[argIndex]->getValueType() )
                 break;
 
         matchScore->push_back(int(j));
+    }
+
+    /* ... then for ellipsis arguments */
+    if ( argIndex < numFinalArgs ) {
+    
+        DAGNodeContainer* container = (DAGNodeContainer*)(processedArguments[argIndex]);
+
+        for (ContainerIterator it=container->begin(); it!=container->end(); it++) {
+
+            const StringVector& argClass = container->getValElement(it)->getClass();
+            size_t j;
+            for (j=0; j<argClass.size(); j++)
+                if ( argClass[j] == theRules[argIndex]->getValueType() )
+                    break;
+
+            matchScore->push_back(int(j));
+        }
     }
 
     return true;

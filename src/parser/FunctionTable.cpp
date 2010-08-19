@@ -73,9 +73,11 @@ void FunctionTable::addFunction(const std::string name, RbFunction* func) {
     for (std::multimap<std::string, RbFunction*>::iterator i=retVal.first; i!=retVal.second; i++) {
         if (!isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules())) {
             std::ostringstream msg;
+            msg << "'";
             i->second->printValue(msg);
-            msg << " cannot overload ";
+            msg << "' cannot overload '";
             func->printValue(msg);
+            msg << "'";
             throw RbException(msg.str());
         }
     }
@@ -235,20 +237,20 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     /* Check that types are different for at least one argument without default values */
     size_t i;
     for (i=0; i<x.size() && i<y.size(); i++) {
-        if (x[i]->getDefaultValue() == NULL &&
-            y[i]->getDefaultValue() == NULL &&
+        if (x[i]->hasDefault() == false &&
+            y[i]->hasDefault() == false &&
             !x[i]->isType(Ellipsis_name) &&
             !y[i]->isType(Ellipsis_name) &&
             (x[i]->getDim() != y[i]->getDim() || x[i]->getValueType() != y[i]->getValueType()))
             return true;
     }
     for (size_t j=i; j<x.size(); j++) {
-        if (x[j]->getDefaultValue() == NULL &&
+        if (x[j]->hasDefault() == false &&
             !x[j]->isType(Ellipsis_name))
             return true;
     }
     for (size_t j=i; j<y.size(); j++) {
-        if (y[j]->getDefaultValue() == NULL &&
+        if (y[j]->hasDefault() == false &&
             !y[j]->isType(Ellipsis_name))
             return true;
     }

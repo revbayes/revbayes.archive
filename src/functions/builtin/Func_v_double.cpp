@@ -45,13 +45,18 @@ Func_v_double* Func_v_double::clone(void) const {
 /** Execute function */
 RbObject* Func_v_double::executeOperation(const std::vector<DAGNode*>& args) {
 
-    assert(args.size() == 1 && args[0]->isType(DAGNodeContainer_name));
+    assert (args.size() == 2 && args[1]->isType(DAGNodeContainer_name));
 
+    // Create temporary vector for the ints 
     std::vector<double>    tempVec;
-    DAGNodeContainer*      elements = dynamic_cast<DAGNodeContainer*>(args[0]);
 
+    // Get first element
+    tempVec.push_back(((RbDouble*)(args[0]->getValue()))->getValue());
+
+    // Get following elements
+    DAGNodeContainer*   elements = dynamic_cast<DAGNodeContainer*>(args[1]);
     for (size_t i=0; i<elements->size(); i++) {
-        tempVec.push_back( ((RbDouble*)(elements->getValElement(i)))->getValue() );
+        tempVec.push_back(((RbDouble*)(elements->getValElement(i)))->getValue());
     }
 
     return new Vector(tempVec);
@@ -66,6 +71,7 @@ const ArgumentRules& Func_v_double::getArgumentRules(void) const {
 
     if (!rulesSet) 
 		{
+        argumentRules.push_back(new ArgumentRule("", RbDouble_name));
         argumentRules.push_back(new Ellipsis(RbDouble_name));
         rulesSet = true;
 		}

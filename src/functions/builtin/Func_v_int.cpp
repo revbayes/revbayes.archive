@@ -44,11 +44,16 @@ Func_v_int* Func_v_int::clone(void) const {
 /** Execute function */
 RbObject* Func_v_int::executeOperation(const std::vector<DAGNode*>& args) {
 
-    assert (args.size() == 1 && args[0]->isType(DAGNodeContainer_name));
+    assert (args.size() == 2 && args[1]->isType(DAGNodeContainer_name));
 
+    // Create temporary vector for the ints 
     std::vector<int>    tempVec;
-    DAGNodeContainer*   elements = dynamic_cast<DAGNodeContainer*>(args[0]);
 
+    // Get first element
+    tempVec.push_back(((RbInt*)(args[0]->getValue()))->getValue());
+
+    // Get following elements
+    DAGNodeContainer*   elements = dynamic_cast<DAGNodeContainer*>(args[1]);
     for (size_t i=0; i<elements->size(); i++) {
         tempVec.push_back(((RbInt*)(elements->getValElement(i)))->getValue());
     }
@@ -65,6 +70,7 @@ const ArgumentRules& Func_v_int::getArgumentRules(void) const {
 
     if (!rulesSet) 
 		{
+        argumentRules.push_back(new ArgumentRule("", RbInt_name));
         argumentRules.push_back(new Ellipsis(RbInt_name));
         rulesSet = true;
 		}

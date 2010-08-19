@@ -22,6 +22,7 @@
 #include "RbNames.h"
 #include "StringVector.h"
 
+#include <iomanip>
 #include <sstream>
 
 
@@ -104,7 +105,13 @@ bool RbDouble::isConvertibleTo(const std::string& type) const {
 /** Print value for user */
 void RbDouble::printValue(std::ostream &o) const {
 
+    int previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+
     o << value;
+
+    o.setf(previousFlags);
+    o << std::setprecision(previousPrecision);
 }
 
 

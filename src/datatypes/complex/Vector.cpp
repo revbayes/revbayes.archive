@@ -24,6 +24,8 @@
 #include "StringVector.h"
 #include "Vector.h"
 
+#include <cmath>
+#include <iomanip>
 #include <sstream>
 
 
@@ -189,13 +191,21 @@ void Vector::setLength(const IntVector& len) {
 /** Print value for user */
 void Vector::printValue(std::ostream& o) const {
 
-    o << "{ ";
+    int previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+
+    o << "[ ";
+    o << std::fixed;
+    o << std::setprecision(1);
     for (std::vector<double>::const_iterator i = value.begin(); i!= value.end(); i++) {
         if (i != value.begin())
             o << ", ";
         o << (*i);
     }
-    o <<  " }";
+    o <<  " ]";
+
+    o.setf(previousFlags);
+    o << std::setprecision(previousPrecision);
 }
 
 

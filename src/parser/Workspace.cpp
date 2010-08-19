@@ -29,6 +29,7 @@
 #include "RbFunction.h"
 #include "RbObject.h"
 #include "RbOptions.h"         // For PRINTF
+#include "UserInterface.h"
 #include "Workspace.h"
 
 // Objects added to the workspace in initializeGlobalWorkspace()
@@ -52,6 +53,7 @@
 #include "PosReal.h"
 #include "RbInt.h"
 #include "RbDouble.h"
+#include "Vector.h"
 
 #include <sstream>
 #include <vector>
@@ -206,40 +208,61 @@ RandomNumberGenerator* Workspace::get_rng(void) {
 /** Initialize global workspace */
 void Workspace::initializeGlobalWorkspace(void) {
 
-    /* Add global variables */
-    addVariable("_rng", new RandomNumberGenerator);
+    try {
 
-    /* Add types */
-    addType(new RbInt(0));
-    addType(new RbDouble());
-    addType(new PosReal(1.0));
-    addType(new RandomNumberGenerator);
+        /* Add global variables */
+        addVariable("_rng", new RandomNumberGenerator);
 
-    /* Add member object types with auto-generated constructors */
-    addTypeWithConstructor("mcmc",     new Mcmc());
-    addTypeWithConstructor("mslide",   new Move_mslide());
-    addTypeWithConstructor("mscale",   new Move_mscale());
-    addTypeWithConstructor("msimplex", new Move_msimplex());
+        /* Add types */
+        addType(new RbInt(0));
+        addType(new RbDouble());
+        addType(new PosReal(1.0));
+        addType(new IntVector());
+        addType(new Vector());
+        addType(new RandomNumberGenerator);
 
-    /* Add distributions with distribution constructors and distribution functions*/
-    addDistribution("dirichlet", new Dist_dirichlet());
-    addDistribution("exp",       new Dist_exp());
-    addDistribution("norm",      new Dist_norm());
-    addDistribution("unif",      new Dist_unif());
+        /* Add member object types with auto-generated constructors */
+        addTypeWithConstructor("mcmc",     new Mcmc());
+        addTypeWithConstructor("mslide",   new Move_mslide());
+        addTypeWithConstructor("mscale",   new Move_mscale());
+        addTypeWithConstructor("msimplex", new Move_msimplex());
 
-    /* Add basic internal functions */
-    addFunction("_range", new Func__range());
+        /* Add distributions with distribution constructors and distribution functions*/
+        addDistribution("dirichlet", new Dist_dirichlet());
+        addDistribution("exp",       new Dist_exp());
+        addDistribution("norm",      new Dist_norm());
+        addDistribution("unif",      new Dist_unif());
 
-    /* Add regular functions */
-    addFunction("clamp",  new Func_clamp()); 
-    addFunction("ls",     new Func_ls());
-    addFunction("model",  new Func_model());
-    addFunction("q",      new Func_quit());
-    addFunction("quit",   new Func_quit());
-    addFunction("source", new Func_source());
-    addFunction("sqrt",   new Func_sqrt());
-    addFunction("v",      new Func_v_int());
-    //addFunction("v",      new Func_v_double());
+        /* Add basic internal functions */
+        addFunction("_range", new Func__range());
+
+        /* Add regular functions */
+        addFunction("clamp",  new Func_clamp()); 
+        addFunction("ls",     new Func_ls());
+        addFunction("model",  new Func_model());
+        addFunction("q",      new Func_quit());
+        addFunction("quit",   new Func_quit());
+        addFunction("source", new Func_source());
+        addFunction("sqrt",   new Func_sqrt());
+        addFunction("v",      new Func_v_int());
+        addFunction("v",      new Func_v_double());
+    }
+    catch(RbException& rbException) {
+
+        PRINTF("Caught an exception while initializing the workspace\n");
+        std::ostringstream msg;
+        rbException.printValue(msg);
+        msg << std::endl;
+        RBOUT(msg.str());
+
+        RBOUT("Caught an exception while initializing the workspace. This is a");
+        RBOUT("bug. If you are not a RevBayes developer, please report it to the");
+        RBOUT("RevBayes core development team.\n");
+
+        RBOUT("Press any character to exit the program.");
+        getchar();
+        exit(0);
+    }
 }
 
 
