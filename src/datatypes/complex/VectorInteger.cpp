@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of IntVector, a complex type
+ * This file contains the implementation of VectorInteger, a complex type
  * used to hold int vectors.
  *
- * @brief Implementation of IntVector
+ * @brief Implementation of VectorInteger
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -17,9 +17,9 @@
  */
 
 #include "ContainerIterator.h"
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "RbException.h"
-#include "RbInt.h"
+#include "Integer.h"
 #include "RbNames.h"
 #include "VectorString.h"
 
@@ -27,13 +27,13 @@
 
 
 /** Construct vector with one int x */
-IntVector::IntVector(int x) {
+VectorInteger::VectorInteger(int x) {
 
     value.push_back(x);
 }
 
 /** Construct vector with n ints x */
-IntVector::IntVector(size_t n, int x) {
+VectorInteger::VectorInteger(size_t n, int x) {
 
     for (size_t i = 0; i < n; i++)
         value.push_back(x);
@@ -41,14 +41,14 @@ IntVector::IntVector(size_t n, int x) {
 
 
 /** Constructor from int vector */
-IntVector::IntVector(const std::vector<int>& x) {
+VectorInteger::VectorInteger(const std::vector<int>& x) {
 
     value = x;
 }
 
 
 /** Constructor from unsigned int vector */
-IntVector::IntVector(const std::vector<unsigned int>& x) {
+VectorInteger::VectorInteger(const std::vector<unsigned int>& x) {
 
     for (std::vector<unsigned int>::const_iterator i=x.begin(); i!=x.end(); i++)
         value.push_back(*i);
@@ -56,7 +56,7 @@ IntVector::IntVector(const std::vector<unsigned int>& x) {
 
 
 /** Constructor from container iterator */
-IntVector::IntVector(const ContainerIterator& x) {
+VectorInteger::VectorInteger(const ContainerIterator& x) {
 
     for (ContainerIterator::const_iterator i=x.begin(); i!=x.end(); i++)
         value.push_back(*i);
@@ -64,14 +64,14 @@ IntVector::IntVector(const ContainerIterator& x) {
 
 
 /** Clone function */
-IntVector* IntVector::clone() const {
+VectorInteger* VectorInteger::clone() const {
 
-    return new IntVector(*this);
+    return new VectorInteger(*this);
 }
 
 
 /** Equals comparison */
-bool IntVector::operator==(const IntVector& x) const {
+bool VectorInteger::operator==(const VectorInteger& x) const {
 
     if (size() != x.size())
         return false;
@@ -86,22 +86,22 @@ bool IntVector::operator==(const IntVector& x) const {
 
 
 /** Not equals comparison */
-bool IntVector::operator!=(const IntVector& x) const {
+bool VectorInteger::operator!=(const VectorInteger& x) const {
 
     return !operator==(x);
 }
 
 /** Convert to object of another class. The caller manages the object. */
-RbObject* IntVector::convertTo(const std::string& type) const {
+RbObject* VectorInteger::convertTo(const std::string& type) const {
 
     return NULL;
 }
 
 /** Pointer-based equals comparison */
-bool IntVector::equals(const RbObject* obj) const {
+bool VectorInteger::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
-    const IntVector* p = dynamic_cast<const IntVector*> (obj);
+    const VectorInteger* p = dynamic_cast<const VectorInteger*> (obj);
     if (p != NULL) {
         if (value.size() != p->value.size())
             return false;
@@ -113,7 +113,7 @@ bool IntVector::equals(const RbObject* obj) const {
     }
 
     // Try converting the value to an int vector
-    p = dynamic_cast<const IntVector*> (obj->convert(getType()));
+    p = dynamic_cast<const VectorInteger*> (obj->convert(getType()));
     if (p == NULL)
         return false;
 
@@ -131,17 +131,17 @@ bool IntVector::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& IntVector::getClass() const {
+const VectorString& VectorInteger::getClass() const {
 
-    static VectorString rbClass = VectorString(IntVector_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(VectorInteger_name) + RbComplex::getClass();
     return rbClass;
 }
 
 
 /** Get element for parser (read-only) */
-const RbObject* IntVector::getElement(const IntVector& index) const {
+const RbObject* VectorInteger::getElement(const VectorInteger& index) const {
 
-    static RbInt x = RbInt(0);
+    static Integer x = Integer(0);
 
     if (index.size() != 1)
         throw (RbException("Index error"));
@@ -154,7 +154,7 @@ const RbObject* IntVector::getElement(const IntVector& index) const {
 
 
 /** Get element class */
-const std::string& IntVector::getElementType(void) const {
+const std::string& VectorInteger::getElementType(void) const {
 
     static std::string rbType = RbInt_name;
     return rbType;
@@ -162,22 +162,22 @@ const std::string& IntVector::getElementType(void) const {
 
 
 /** Get element length for parser */
-const IntVector& IntVector::getLength(void) const {
+const VectorInteger& VectorInteger::getLength(void) const {
 
-    static IntVector length = IntVector(0);
+    static VectorInteger length = VectorInteger(0);
 
     length[0] = int(value.size());
     return length;
 }
 
 /** Convert to object of another class. The caller manages the object. */
-bool IntVector::isConvertibleTo(const std::string& type) const {
+bool VectorInteger::isConvertibleTo(const std::string& type) const {
 
     return false;
 }
 
 /** Allow the parser to resize the vector */
-void IntVector::resize(const IntVector& len) {
+void VectorInteger::resize(const VectorInteger& len) {
 
     if (len.size() != 1 || len[0] < 0)
         throw (RbException("Length specification error"));
@@ -187,7 +187,7 @@ void IntVector::resize(const IntVector& len) {
 
 
 /** Allow parser to set an element (any type conversion is done by parser) */
-void IntVector::setElement(const IntVector& index, RbObject* val) {
+void VectorInteger::setElement(const VectorInteger& index, RbObject* val) {
 
     if ( !val->isType(RbInt_name) )
         throw (RbException("Type mismatch"));
@@ -206,19 +206,19 @@ void IntVector::setElement(const IntVector& index, RbObject* val) {
             value[i] = 0;
     }
 
-    value[index[0]] = ((RbInt*)(val))->getValue();
+    value[index[0]] = ((Integer*)(val))->getValue();
 }
 
 
 /** Allow parser to rearrange the container (actually do not allow it) */
-void IntVector::setLength(const IntVector& len) {
+void VectorInteger::setLength(const VectorInteger& len) {
 
     if ( len.size() != 1 && len[0] != int(value.size()) )
         throw (RbException("Length specification error"));
 }
 
 /** Print value for user */
-void IntVector::printValue(std::ostream& o) const {
+void VectorInteger::printValue(std::ostream& o) const {
 
     o << "[ ";
     for (std::vector<int>::const_iterator i = value.begin(); i!= value.end(); i++) {
@@ -231,10 +231,10 @@ void IntVector::printValue(std::ostream& o) const {
 
 
 /** Complete info about object */
-std::string IntVector::toString(void) const {
+std::string VectorInteger::toString(void) const {
 
     std::ostringstream o;
-    o <<  "IntVector: value = ";
+    o <<  "VectorInteger: value = ";
     printValue(o);
 
     return o.str();

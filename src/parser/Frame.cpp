@@ -20,7 +20,7 @@
 #include "ContainerIterator.h"
 #include "DAGNodeContainer.h"
 #include "Frame.h"
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbOptions.h"         // For PRINTF
@@ -289,7 +289,7 @@ void Frame::addVariable(const std::string& name, DAGNode* var) {
 
 
 /** Add container variable object to table */
-void Frame::addVariable(const std::string& name, const IntVector& index, DAGNode* var) {
+void Frame::addVariable(const std::string& name, const VectorInteger& index, DAGNode* var) {
 
     /* Throw an error if the variable is NULL */
     if (var == NULL)
@@ -301,7 +301,7 @@ void Frame::addVariable(const std::string& name, const IntVector& index, DAGNode
     if (variableTable.find(name) != variableTable.end())
         throw (RbException("Variable " + name + " already exists"));
 
-    IntVector length = index;
+    VectorInteger length = index;
     for (size_t i=0; i<length.size(); i++)
         length[i]++;
     DAGNodeContainer* container = new DAGNodeContainer(length, var->getValueType());
@@ -480,7 +480,7 @@ DAGNode* Frame::getVariable(const std::string& name) {
 
 
 /** Get value element (read-only) */
-const RbObject* Frame::getValElement(const std::string& name, const IntVector& index) const {
+const RbObject* Frame::getValElement(const std::string& name, const VectorInteger& index) const {
 
     // Find the variable
     std::map<std::string, ObjectSlot>::const_iterator it = variableTable.find(name);
@@ -500,7 +500,7 @@ const RbObject* Frame::getValElement(const std::string& name, const IntVector& i
 
 
 /** Get variable element (non-const) */
-DAGNode* Frame::getVarElement(const std::string& name, const IntVector& index) {
+DAGNode* Frame::getVarElement(const std::string& name, const VectorInteger& index) {
 
     // Find the variable
     std::map<std::string, ObjectSlot>::const_iterator it = variableTable.find(name);
@@ -523,7 +523,7 @@ DAGNode* Frame::getVarElement(const std::string& name, const IntVector& index) {
 
 
 /** Get variable element (read-only) */
-const DAGNode* Frame::getVarElement(const std::string& name, const IntVector& index) const {
+const DAGNode* Frame::getVarElement(const std::string& name, const VectorInteger& index) const {
 
     // Find the variable
     std::map<std::string, ObjectSlot>::const_iterator it = variableTable.find(name);
@@ -762,7 +762,7 @@ void Frame::setVariable(const std::string& name, DAGNode* var) {
 
 
 /** Set element of variable with object */
-void Frame::setValElement(const std::string& name, const IntVector& index, RbObject* value) {
+void Frame::setValElement(const std::string& name, const VectorInteger& index, RbObject* value) {
 
     /* Check for inadvertent calls */
     if (index.size() == 0)
@@ -781,7 +781,7 @@ void Frame::setValElement(const std::string& name, const IntVector& index, RbObj
     DAGNode* variable = (*it).second.variable;
 
     /* Special case when variable is NULL */
-    IntVector length = index;
+    VectorInteger length = index;
     for (size_t i=0; i<length.size(); i++)
         length[i]++;
     if ((value == NULL || value->isType((*it).second.type)) && int(index.size()) == (*it).second.dim && variable == NULL) {
@@ -803,7 +803,7 @@ void Frame::setValElement(const std::string& name, const IntVector& index, RbObj
 
 
 /** Set element of variable with DAG node */
-void Frame::setVarElement(const std::string& name, const IntVector& index, DAGNode* var) {
+void Frame::setVarElement(const std::string& name, const VectorInteger& index, DAGNode* var) {
 
      /* Check for inadvertent calls */
     if (index.size() == 0)

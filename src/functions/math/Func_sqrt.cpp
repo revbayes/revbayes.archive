@@ -22,7 +22,7 @@
 #include "Func__lookup.h"
 #include "Func_sqrt.h"
 #include "RealPos.h"
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
@@ -42,7 +42,7 @@ Func_sqrt* Func_sqrt::clone(void) const {
 /** Execute function */
 RbObject* Func_sqrt::executeOperation(const std::vector<DAGNode*>& args) {
 
-    double x = (((RbDouble*) (args[0]->getValue())))->getValue();
+    double x = (((Real*) (args[0]->getValue())))->getValue();
 	if (x < 0.0)
 		throw (RbException("Square root of negative number. RevBayes does not (yet) support complex numbers"));
     return new RealPos( sqrt(x) );

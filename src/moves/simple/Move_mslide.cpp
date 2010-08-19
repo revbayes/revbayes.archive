@@ -95,12 +95,12 @@ bool Move_mslide::isConvertibleTo(const std::string& type) const {
 /** Perform the move */
 double Move_mslide::perform(std::set<StochasticNode*>& affectedNodes) {
 
-    RbDouble*              valPtr = (RbDouble*)(nodePtr->getValuePtr(affectedNodes));
+    Real*              valPtr = (Real*)(nodePtr->getValuePtr(affectedNodes));
     RandomNumberGenerator* rng    = (RandomNumberGenerator*)(getValue("rng"));
-    double                 delta  = ((RbDouble*)(getValue("delta")))->getValue();
+    double                 delta  = ((Real*)(getValue("delta")))->getValue();
 
-    double minVal = ((RbDouble*)(nodePtr->getDistribution()->getMin()))->getValue();
-    double maxVal = ((RbDouble*)(nodePtr->getDistribution()->getMax()))->getValue();
+    double minVal = ((Real*)(nodePtr->getDistribution()->getMin()))->getValue();
+    double maxVal = ((Real*)(nodePtr->getDistribution()->getMax()))->getValue();
 
     double curVal = valPtr->getValue();
     double u      = rng->uniform01();

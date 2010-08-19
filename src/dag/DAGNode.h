@@ -25,7 +25,7 @@
 #include <set>
 #include <string>
 
-class IntVector;
+class VectorInteger;
 class RbObject;
 class VectorString;
 class VariableNode;
@@ -38,19 +38,19 @@ class DAGNode {
         // Functions you have to override
         virtual DAGNode*                clone(void) const = 0;                                                //!< Clone this node
         virtual const VectorString&     getClass(void) const;                                                 //!< Get class vector
-        virtual const RbObject*         getValElement(const IntVector& index) const = 0;                      //!< Get value element
+        virtual const RbObject*         getValElement(const VectorInteger& index) const = 0;                      //!< Get value element
         virtual const RbObject*         getStoredValue(void) = 0;                                             //!< Get stored value
         virtual const RbObject*         getValue(void) = 0;                                                   //!< Get value
         virtual const RbObject*         getValue(void) const = 0;                                             //!< Get value (const)
         virtual void                    printValue(std::ostream& o) const = 0;                                //!< Print value for user
         virtual void                    printStruct(std::ostream& o) const = 0;                               //!< Print struct for user
-        virtual void                    setElement(const IntVector& index, RbObject*val) = 0;                 //!< Set value element
+        virtual void                    setElement(const VectorInteger& index, RbObject*val) = 0;                 //!< Set value element
         virtual std::string             toString(void) const = 0;                                             //!< Complete info about object
 
         // Functions you may want to override
         virtual int                     getDim(void) const { return 0; }                                      //!< Get wrapper dim
-        virtual const DAGNode*          getVarElement(const IntVector& index) const;                          //!< Get variable element
-        virtual void                    setElement(const IntVector& index, DAGNode* var);                     //!< Set variable element
+        virtual const DAGNode*          getVarElement(const VectorInteger& index) const;                          //!< Get variable element
+        virtual void                    setElement(const VectorInteger& index, DAGNode* var);                     //!< Set variable element
         virtual void                    setName(const std::string& id) { name=id; }                           //!< Set name
 
         // Functions you should not override

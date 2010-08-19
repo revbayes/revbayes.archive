@@ -20,8 +20,8 @@
 #include "DAGNode.h"
 #include "Distribution.h"
 #include "DistributionReal.h"
-#include "RbBool.h"
-#include "RbDouble.h"
+#include "Boolean.h"
+#include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "VectorString.h"
@@ -50,17 +50,17 @@ DistributionFunction::DistributionFunction(Distribution* dist, FuncType funcType
     /* Modify argument rules and set return type based on function type */
     if (functionType == DENSITY) {
         argumentRules.insert(argumentRules.begin(), new ArgumentRule("x", distribution->getVariableType()));
-        returnType = RbDouble_name;
+        returnType = Real_name;
     }
     else if (functionType == RVALUE) {
         returnType = distribution->getVariableType();
     }
     else if (functionType == PROB) {
         argumentRules.insert(argumentRules.begin(), new ArgumentRule("q", distribution->getVariableType()));
-        returnType = RbDouble_name;
+        returnType = Real_name;
     }
     else if (functionType == QUANTILE) {
-        argumentRules.insert(argumentRules.begin(), new ArgumentRule("p", RbDouble_name));
+        argumentRules.insert(argumentRules.begin(), new ArgumentRule("p", Real_name));
         returnType = distribution->getVariableType();
     }
 }
@@ -84,7 +84,7 @@ DistributionFunction::DistributionFunction(const DistributionFunction& x) {
         argumentRules.insert(argumentRules.begin(), new ArgumentRule("q", distribution->getVariableType()));
     }
     else if (functionType == QUANTILE) {
-        argumentRules.insert(argumentRules.begin(), new ArgumentRule("p", RbDouble_name));
+        argumentRules.insert(argumentRules.begin(), new ArgumentRule("p", Real_name));
     }
 }
 
@@ -118,7 +118,7 @@ DistributionFunction& DistributionFunction::operator=(const DistributionFunction
             argumentRules.insert(argumentRules.begin(), new ArgumentRule("q", distribution->getVariableType()));
         }
         else if (functionType == QUANTILE) {
-            argumentRules.insert(argumentRules.begin(), new ArgumentRule("p", RbDouble_name));
+            argumentRules.insert(argumentRules.begin(), new ArgumentRule("p", Real_name));
         }
     }
 
@@ -143,19 +143,19 @@ bool DistributionFunction::equals(const RbObject* x) const {
 RbObject* DistributionFunction::executeOperation(const std::vector<DAGNode*>& args) {
 
     if (functionType == DENSITY) {
-        if (((RbBool*)(args.back()->getValue()))->getValue() == false)
-            return new RbDouble(distribution->pdf(args[0]->getValue()));
+        if (((Boolean*)(args.back()->getValue()))->getValue() == false)
+            return new Real(distribution->pdf(args[0]->getValue()));
         else
-            return new RbDouble(distribution->lnPdf(args[0]->getValue()));
+            return new Real(distribution->lnPdf(args[0]->getValue()));
     }
     else if (functionType == RVALUE) {
          return distribution->rv();
     }
     else if (functionType == PROB) {
-        return new RbDouble(((DistributionReal*)(distribution))->cdf(((RbDouble*)(args[0]->getValue()))->getValue()));
+        return new Real(((DistributionReal*)(distribution))->cdf(((Real*)(args[0]->getValue()))->getValue()));
     }
     else if (functionType == QUANTILE) {
-        return new RbDouble((((DistributionReal*)(distribution))->quantile(((RbDouble*)(args[0]->getValue()))->getValue())));
+        return new Real((((DistributionReal*)(distribution))->quantile(((Real*)(args[0]->getValue()))->getValue())));
     }
 
     throw ("Unrecognized distribution function");
@@ -184,7 +184,7 @@ const std::string& DistributionFunction::getReturnType(void) const {
 }
 
 /** Process arguments */
-bool DistributionFunction::processArguments(const std::vector<Argument>& args, IntVector* matchScore) {
+bool DistributionFunction::processArguments(const std::vector<Argument>& args, VectorInteger* matchScore) {
 
     if (!RbFunction::processArguments(args, matchScore))
         return false;

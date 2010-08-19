@@ -17,7 +17,7 @@
 #define SyntaxForCondition_H
 
 #include "Container.h"
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "SyntaxElement.h"
 
 #include <iostream>
@@ -49,7 +49,7 @@ class SyntaxForCondition : public SyntaxElement {
         SyntaxElement*  inExpression;                               //!< The expression that should result in a vector of values
         bool            isLoopInitialized;                          //!< Is loop state initialized?
         Container*      vector;                                     //!< Vector result of 'in' expression
-        IntVector*      intVector;                                  //!< Vector result of 'in' expression
+        VectorInteger*      intVector;                                  //!< Vector result of 'in' expression
         size_t          nextElement;                                //!< Next element in vector
 
         void            initializeLoop(Frame* frame);               //!< Initialize loop

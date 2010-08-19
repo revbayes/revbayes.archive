@@ -280,7 +280,7 @@ const RbObject* StochasticNode::getStoredValue(void) {
 
 
 /** Get value element */
-const RbObject* StochasticNode::getValElement(const IntVector& index) const {
+const RbObject* StochasticNode::getValElement(const VectorInteger& index) const {
 
     if (value->getDim() == 0)
         throw RbException("Object does not have elements");
@@ -387,7 +387,7 @@ void StochasticNode::restoreAffected() {
 
 
 /** Set element: set value element */
-void StochasticNode::setElement(const IntVector& index, RbObject* val) {
+void StochasticNode::setElement(const VectorInteger& index, RbObject* val) {
 
     if (clamped)
         throw RbException("Cannot set value element of clamped node");

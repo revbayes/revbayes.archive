@@ -115,7 +115,7 @@ void SyntaxForCondition::initializeLoop(Frame* frame) {
     vector = dynamic_cast<Container*>(value);
     if ( !vector ) {
         // throw ( RbException("The 'in' expression does not evaluate to a container") );
-        intVector = dynamic_cast<IntVector*>(value);
+        intVector = dynamic_cast<VectorInteger*>(value);
         if ( !intVector )
             throw ( RbException("The 'in' expression does not evaluate to a container or int vector") );
     }

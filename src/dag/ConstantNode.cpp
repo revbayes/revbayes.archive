@@ -114,7 +114,7 @@ const VectorString& ConstantNode::getClass() const {
 }
 
 /** Get value element */
-const RbObject* ConstantNode::getValElement(const IntVector& index) const {
+const RbObject* ConstantNode::getValElement(const VectorInteger& index) const {
 
     RbComplex* complexObject = dynamic_cast<RbComplex*>(value);
     if (complexObject == NULL)
@@ -151,7 +151,7 @@ void ConstantNode::printStruct(std::ostream &o) const {
 }
 
 /** Set Element */
-void ConstantNode::setElement(const IntVector& index, RbObject* val) {
+void ConstantNode::setElement(const VectorInteger& index, RbObject* val) {
 
     RbComplex* complexObject = dynamic_cast<RbComplex*>(value);
     if (complexObject == NULL)

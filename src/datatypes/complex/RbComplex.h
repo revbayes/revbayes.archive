@@ -31,7 +31,7 @@ class ContainerIterator;
 class DAGNode;
 class DeterministicNode;
 class Frame;
-class IntVector;
+class VectorInteger;
 class MethodTable;
 class MoveSchedule;
 class VectorString;
@@ -70,11 +70,11 @@ class RbComplex : public RbObject {
         ContainerIterator           end(void) const;                                                        //!< End iterator
         virtual int                 getDim(void) { return 0; }                                              //!< Get subscript dimensions
         virtual const VectorString& getElementClass(void) const { return getClass() ; }                     //!< Get element class
-        virtual const RbObject*     getElement(const IntVector& index) const;                               //!< Get element (read-only)
-        virtual const IntVector&    getLength(void) const;                                                  //!< Get length in each dim
-        virtual void                resize(const IntVector& len);                                           //!< Resize
-        virtual void                setElement(const IntVector& index, RbObject* val);                      //!< Set element
-        virtual void                setLength(const IntVector& len);                                        //!< Set length in each dim
+        virtual const RbObject*     getElement(const VectorInteger& index) const;                               //!< Get element (read-only)
+        virtual const VectorInteger&    getLength(void) const;                                                  //!< Get length in each dim
+        virtual void                resize(const VectorInteger& len);                                           //!< Resize
+        virtual void                setElement(const VectorInteger& index, RbObject* val);                      //!< Set element
+        virtual void                setLength(const VectorInteger& len);                                        //!< Set length in each dim
 
         // Default moves for types that contain sets of stochastic nodes
         MoveSchedule*               getDefaultMoves(DeterministicNode* node) const { return NULL; }         //!< Get block moves applicable to the complex datatype

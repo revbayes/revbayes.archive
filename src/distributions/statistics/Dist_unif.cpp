@@ -22,7 +22,7 @@
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "VectorString.h"
@@ -43,8 +43,8 @@ Dist_unif::Dist_unif(void)
 Dist_unif::Dist_unif(double min, double max, RandomNumberGenerator* rng)
     : DistributionReal(getMemberRules()) {
 
-    setValue("min", new RbDouble(min));
-    setValue("max", new RbDouble(max));
+    setValue("min", new Real(min));
+    setValue("max", new Real(max));
     setValue("rng", rng);
 }
 
@@ -61,8 +61,8 @@ Dist_unif::Dist_unif(double min, double max, RandomNumberGenerator* rng)
  */
 double Dist_unif::cdf(double q) {
 
-    double min = ((RbDouble*) getValue("min"))->getValue();
-    double max = ((RbDouble*) getValue("max"))->getValue();
+    double min = ((Real*) getValue("min"))->getValue();
+    double max = ((Real*) getValue("max"))->getValue();
 
     if ( q < min )
         return 0.0;
@@ -91,8 +91,8 @@ const VectorString& Dist_unif::getClass(void) const {
 /** Get default move */
 Move* Dist_unif::getDefaultMove(StochasticNode* node) {
 
-    double min = ((RbDouble*) getValue("min"))->getValue();
-    double max = ((RbDouble*) getValue("max"))->getValue();
+    double min = ((Real*) getValue("min"))->getValue();
+    double max = ((Real*) getValue("max"))->getValue();
 
     double delta = (max - min) / 100.0;
 
@@ -101,9 +101,9 @@ Move* Dist_unif::getDefaultMove(StochasticNode* node) {
 
 
 /** Get max value of distribution */
-const RbDouble* Dist_unif::getMax(void) {
+const Real* Dist_unif::getMax(void) {
 
-    return (RbDouble*)(getValue("max"));
+    return (Real*)(getValue("max"));
 }
 
 
@@ -115,8 +115,8 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new WrapperRule("min", RbDouble_name));
-        memberRules.push_back(new WrapperRule("max", RbDouble_name));
+        memberRules.push_back(new WrapperRule("min", Real_name));
+        memberRules.push_back(new WrapperRule("max", Real_name));
 
         /* Inherit rng from Distribution, put it at back */
         const MemberRules& inheritedRules = Distribution::getMemberRules();
@@ -130,9 +130,9 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
 
 
 /** Get min value of distribution */
-const RbDouble* Dist_unif::getMin(void) {
+const Real* Dist_unif::getMin(void) {
 
-    return (RbDouble*)(getValue("min"));
+    return (Real*)(getValue("min"));
 }
 
 
@@ -148,11 +148,11 @@ const RbDouble* Dist_unif::getMin(void) {
  */
 double Dist_unif::lnLikelihoodRatio(const RbObject* value) {
 
-    double minNew = ((RbDouble*) (getVariable("min")->getValue      ()))->getValue();
-    double minOld = ((RbDouble*) (getVariable("min")->getStoredValue()))->getValue();
-    double maxNew = ((RbDouble*) (getVariable("max")->getValue      ()))->getValue();
-    double maxOld = ((RbDouble*) (getVariable("max")->getStoredValue()))->getValue();
-    double x      = ((RbDouble*) value)->getValue();
+    double minNew = ((Real*) (getVariable("min")->getValue      ()))->getValue();
+    double minOld = ((Real*) (getVariable("min")->getStoredValue()))->getValue();
+    double maxNew = ((Real*) (getVariable("max")->getValue      ()))->getValue();
+    double maxOld = ((Real*) (getVariable("max")->getStoredValue()))->getValue();
+    double x      = ((Real*) value)->getValue();
 
     if ( x < minOld || x > maxOld )
         throw RbException("nan");
@@ -175,9 +175,9 @@ double Dist_unif::lnLikelihoodRatio(const RbObject* value) {
  */
 double Dist_unif::lnPdf(const RbObject* value) {
 
-    double min = ((RbDouble*) getValue("min"))->getValue();
-    double max = ((RbDouble*) getValue("max"))->getValue();
-    double x   = ((RbDouble*) value)->getValue();
+    double min = ((Real*) getValue("min"))->getValue();
+    double max = ((Real*) getValue("max"))->getValue();
+    double x   = ((Real*) value)->getValue();
 
     if ( x < min || x > max )
         return RbConstants::Double::neginf;
@@ -213,9 +213,9 @@ double Dist_unif::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
  */
 double Dist_unif::pdf(const RbObject* value) {
 
-    double min = ((RbDouble*) getValue("min"))->getValue();
-    double max = ((RbDouble*) getValue("max"))->getValue();
-    double x   = ((RbDouble*) value)->getValue();
+    double min = ((Real*) getValue("min"))->getValue();
+    double max = ((Real*) getValue("max"))->getValue();
+    double x   = ((Real*) value)->getValue();
 
     if ( x < min || x > max )
         return 0.0;
@@ -236,8 +236,8 @@ double Dist_unif::pdf(const RbObject* value) {
  */
 double Dist_unif::quantile(const double p) {
 
-    double min = ((RbDouble*) getValue("min"))->getValue();
-    double max = ((RbDouble*) getValue("max"))->getValue();
+    double min = ((Real*) getValue("min"))->getValue();
+    double max = ((Real*) getValue("max"))->getValue();
 
     return min + ( max - min ) * p;
 }
@@ -251,15 +251,15 @@ double Dist_unif::quantile(const double p) {
  *
  * @return      Random draw from uniform distribution
  */
-RbDouble* Dist_unif::rv(void) {
+Real* Dist_unif::rv(void) {
 
-    double                 min = ((RbDouble*) getValue("min"))->getValue();
-    double                 max = ((RbDouble*) getValue("max"))->getValue();
+    double                 min = ((Real*) getValue("min"))->getValue();
+    double                 max = ((Real*) getValue("max"))->getValue();
     RandomNumberGenerator* rng = (RandomNumberGenerator*)(getValue("rng"));
 
     double u = rng->uniform01();
 
-    return new RbDouble(min + ( max - min ) * u);
+    return new Real(min + ( max - min ) * u);
 }
 
 

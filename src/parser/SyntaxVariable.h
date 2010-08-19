@@ -16,7 +16,7 @@
 #ifndef SyntaxVariable_H
 #define SyntaxVariable_H
 
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "RbString.h"
 #include "SyntaxElement.h"
 
@@ -49,7 +49,7 @@ class SyntaxVariable : public SyntaxElement {
         // Regular functions
         DAGNode*            getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
         const RbString*     getIdentifier() const;                      //!< Get identifier
-        IntVector           getIndex(Frame* frame) const;               //!< Get index
+        VectorInteger           getIndex(Frame* frame) const;               //!< Get index
         std::string         getFullName(Frame* frame) const;            //!< Get full name, with indices and base obj
         RbObject*           getValue(Frame* frame=NULL) const;          //!< Get semantic value
         const RbObject*     getValuePtr(Frame* frame) const;            //!< Get pointer to base object

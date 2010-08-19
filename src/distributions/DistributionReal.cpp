@@ -21,7 +21,7 @@
 #include "DistributionReal.h"
 #include "MemberFunction.h"
 #include "RbException.h"
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbNames.h"
 #include "VectorString.h"
 
@@ -39,7 +39,7 @@ const RbObject* DistributionReal::executeOperation(const std::string& name, std:
 
     /* Manage all calls here, for simplicity, instead of relying on inheritance */
     if (name == "cdf") {
-        retDouble.setValue(cdf(((RbDouble*)(args[0]->getValue()))->getValue()));
+        retDouble.setValue(cdf(((Real*)(args[0]->getValue()))->getValue()));
     }
     else if (name == "lnPdf") {
         retDouble.setValue(lnPdf(args[0]->getValue()));
@@ -48,12 +48,12 @@ const RbObject* DistributionReal::executeOperation(const std::string& name, std:
         retDouble.setValue(pdf(args[0]->getValue()));
     }
     else if (name == "quantile") {
-        retDouble.setValue(quantile(((RbDouble*)(args[0]->getValue()))->getValue()));
+        retDouble.setValue(quantile(((Real*)(args[0]->getValue()))->getValue()));
     }
     else if (name == "rv") {
         if (getVariableType() == RealPos_name)
             return rv();
-        RbDouble* randomVal = (RbDouble*)(rv());
+        Real* randomVal = (Real*)(rv());
         retDouble.setValue(*randomVal);
         delete randomVal;
     }
@@ -73,17 +73,17 @@ const VectorString& DistributionReal::getClass(void) const {
 
 
 /** Get max value of distribution */
-const RbDouble* DistributionReal::getMax(void) {
+const Real* DistributionReal::getMax(void) {
 
-    static RbDouble rbMax = RbDouble(DBL_MAX);
+    static Real rbMax = Real(DBL_MAX);
     return &rbMax;
 }
 
 
 /** Get min value of distribution */
-const RbDouble* DistributionReal::getMin(void) {
+const Real* DistributionReal::getMin(void) {
 
-    static RbDouble rbMin = RbDouble(DBL_MIN);
+    static Real rbMin = Real(DBL_MIN);
     return &rbMin;
 }
 
@@ -91,7 +91,7 @@ const RbDouble* DistributionReal::getMin(void) {
 /** Get variable type */
 const std::string& DistributionReal::getVariableType(void) const {
 
-    return RbDouble_name;
+    return Real_name;
 }
 
 
@@ -109,10 +109,10 @@ const MethodTable& DistributionReal::getMethodInits(void) const {
         methodInits = Distribution::getMethodInits();
         
         cdfArgRules.push_back(new ArgumentRule("q", RealPos_name));
-        methodInits.addFunction("cdf", new MemberFunction(RbDouble_name, cdfArgRules));
+        methodInits.addFunction("cdf", new MemberFunction(Real_name, cdfArgRules));
 
         quantileArgRules.push_back(new ArgumentRule("p", RealPos_name));
-        methodInits.addFunction("quantile", new MemberFunction(RbDouble_name, quantileArgRules));
+        methodInits.addFunction("quantile", new MemberFunction(Real_name, quantileArgRules));
 
         initsSet = true;
     }

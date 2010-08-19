@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of RbDouble, which is
+ * This file contains the implementation of Real, which is
  * a RevBayes wrapper around a regular double.
  *
- * @brief Implementation of RbDouble
+ * @brief Implementation of Real
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -17,8 +17,8 @@
  */
 
 
-#include "RbBool.h"
-#include "RbDouble.h"
+#include "Boolean.h"
+#include "Real.h"
 #include "RbNames.h"
 #include "VectorString.h"
 
@@ -27,25 +27,25 @@
 
 
 /** Default constructor */
-RbDouble::RbDouble(void)
+Real::Real(void)
     : RbObject(), value(0.0) {
 }
 
 
 /** Construct from double */
-RbDouble::RbDouble(const double v)
+Real::Real(const double v)
     : RbObject(), value(v) {
 }
 
 
 /** Construct from int */
-RbDouble::RbDouble(const int v)
+Real::Real(const int v)
     : RbObject(), value(v) {
 }
 
 
 /** Construct from bool */
-RbDouble::RbDouble(const bool v)
+Real::Real(const bool v)
     : RbObject() {
 
     if (v) value = 1.0;
@@ -54,29 +54,29 @@ RbDouble::RbDouble(const bool v)
 
 
 /** Clone object */
-RbObject* RbDouble::clone(void) const {
+RbObject* Real::clone(void) const {
 
-	return  (RbObject*)(new RbDouble(*this));
+	return  (RbObject*)(new Real(*this));
 }
 
 /** Convert to object of another class. The caller manages the object. */
-RbObject* RbDouble::convertTo(const std::string& type) const {
+RbObject* Real::convertTo(const std::string& type) const {
 
     if (type == RbBool_name)
-        return new RbBool(value == 0.0);
+        return new Boolean(value == 0.0);
 	return NULL;
 }
 
 /** Pointer-based equals comparison */
-bool RbDouble::equals(const RbObject* obj) const {
+bool Real::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
-    const RbDouble* p = dynamic_cast<const RbDouble*>(obj);
+    const Real* p = dynamic_cast<const Real*>(obj);
     if (p != NULL)
         return value == p->value;
 
     // Try converting the object to a double
-    p = dynamic_cast<const RbDouble*>(obj->convert(RbDouble_name));
+    p = dynamic_cast<const Real*>(obj->convert(Real_name));
     if (p == NULL)
         return false;
 
@@ -88,14 +88,14 @@ bool RbDouble::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& RbDouble::getClass() const {
+const VectorString& Real::getClass() const {
 
-    static VectorString rbClass = VectorString(RbDouble_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(Real_name) + RbObject::getClass();
     return rbClass;
 }
 
 /** Convert to object of another class. The caller manages the object. */
-bool RbDouble::isConvertibleTo(const std::string& type) const {
+bool Real::isConvertibleTo(const std::string& type) const {
 
     if (type == RbBool_name)
         return true;
@@ -103,7 +103,7 @@ bool RbDouble::isConvertibleTo(const std::string& type) const {
 }
 
 /** Print value for user */
-void RbDouble::printValue(std::ostream &o) const {
+void Real::printValue(std::ostream &o) const {
 
     int previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -116,7 +116,7 @@ void RbDouble::printValue(std::ostream &o) const {
 
 
 /** Get complete info about object */
-std::string RbDouble::toString(void) const {
+std::string Real::toString(void) const {
 
 	std::ostringstream o;
     o << "Real(";

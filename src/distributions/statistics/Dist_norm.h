@@ -24,7 +24,7 @@
 #include <string>
 
 class DAGNode;
-class RbDouble;
+class Real;
 class VectorString;
 
 class Dist_norm: public DistributionReal {
@@ -50,7 +50,7 @@ class Dist_norm: public DistributionReal {
         double              lnPriorRatio(const RbObject* newVal, const RbObject* oldVal); //!< Ln prior ratio
         double              pdf(const RbObject* value);                         //!< Probability density
         double              quantile(const double p);                           //!< Quantile
-        RbDouble*           rv();                                               //!< Generate random variable
+        Real*           rv();                                               //!< Generate random variable
 };
 
 #endif

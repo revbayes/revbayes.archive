@@ -19,14 +19,14 @@
 #ifndef RealPos_H
 #define RealPos_H
 
-#include "RbDouble.h"
+#include "Real.h"
 
 #include <ostream>
 #include <string>
 
 class VectorString;
 
-class RealPos : public RbDouble {
+class RealPos : public Real {
 
     public:
                                     RealPos(const double v);                        //!< Construct from double

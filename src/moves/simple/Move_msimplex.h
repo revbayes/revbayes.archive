@@ -25,7 +25,7 @@
 #include "SimpleMove.h"
 #include "Workspace.h"
 
-class RbDouble;
+class Real;
 class RbObject;
 
 class Move_msimplex : public SimpleMove {

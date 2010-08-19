@@ -19,16 +19,16 @@
 #ifndef Simplex_H
 #define Simplex_H
 
-#include "Vector.h"
+#include "VectorReal.h"
 
 #include <ostream>
 #include <string>
 #include <vector>
 
-class Simplex : public Vector {
+class Simplex : public VectorReal {
 
     public:
-                                    Simplex(void) : Vector() {}                        //!< Empty simplex
+                                    Simplex(void) : VectorReal() {}                        //!< Empty simplex
                                     Simplex(int n);                                    //!< Simplex of length (size) n
                                     Simplex(const std::vector<double>& x);             //!< Simplex from double vector
 
@@ -45,13 +45,13 @@ class Simplex : public Vector {
         void                        push_front(double x);                              //!< Add element in front
 
         // Regular functions
-        void                        setValue(const Vector& x);                         //!< Set value from Vector
+        void                        setValue(const VectorReal& x);                         //!< Set value from Vector
         void                        setValue(const std::vector<double>& x);            //!< Set value from vector<double>
         const std::vector<double>&  getValue(void) const { return value; }             //!< Get value
 
         // Element access functions for parser
-        void                        resize(const IntVector& len);                      //!< Resize
-        void                        setElement(const IntVector& index, RbObject* val); //!< Set element
+        void                        resize(const VectorInteger& len);                      //!< Resize
+        void                        setElement(const VectorInteger& index, RbObject* val); //!< Set element
 
     private:
         void                        rescale(void);                                     //!< Rescale the simplex

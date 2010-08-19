@@ -24,9 +24,9 @@
 #include "DAGNodeContainer.h"
 #include "DeterministicNode.h"
 #include "Func__lookup.h"
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "MemberObject.h"
-#include "RbInt.h"
+#include "Integer.h"
 #include "RbNames.h"
 #include "RbException.h"
 #include "VectorString.h"
@@ -161,7 +161,7 @@ std::string SyntaxVariable::getFullName(Frame* frame) const {
 
     theName << std::string(*identifier);
 
-    IntVector theIndex = getIndex(frame);
+    VectorInteger theIndex = getIndex(frame);
     for (size_t i=0; i<theIndex.size(); i++)
         theName << "[" << theIndex[i] << "]";
 
@@ -177,9 +177,9 @@ const RbString* SyntaxVariable::getIdentifier() const {
 
 
 /** Get index */
-IntVector SyntaxVariable::getIndex(Frame* frame) const {
+VectorInteger SyntaxVariable::getIndex(Frame* frame) const {
 
-    IntVector theIndex;
+    VectorInteger theIndex;
 
     for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
 
@@ -188,7 +188,7 @@ IntVector SyntaxVariable::getIndex(Frame* frame) const {
         if (indexObj == NULL) {
             throw (RbException("Erroneous index expression for " + std::string(*identifier)));
         }
-        RbInt*  intIndex = dynamic_cast<RbInt*>(indexObj);
+        Integer*  intIndex = dynamic_cast<Integer*>(indexObj);
         if (indexObj == NULL) {
             throw (RbException("Index expression for " + std::string(*identifier) + " does not evaluat to int"));
         }
@@ -221,7 +221,7 @@ IntVector SyntaxVariable::getIndex(Frame* frame) const {
 RbObject* SyntaxVariable::getValue(Frame* frame) const {
 
     /* Get subscript */
-    IntVector theIndex = getIndex(frame);
+    VectorInteger theIndex = getIndex(frame);
 
     /* Get value */
     if (variable == NULL) 
@@ -251,7 +251,7 @@ RbObject* SyntaxVariable::getValue(Frame* frame) const {
 const RbObject* SyntaxVariable::getValuePtr(Frame* frame) const {
 
     /* Get subscript */
-    IntVector theIndex = getIndex(frame);
+    VectorInteger theIndex = getIndex(frame);
 
     /* Get value */
     if (variable == NULL) {

@@ -53,11 +53,11 @@ class VectorString : public Container {
         // Element access functions for parser
         int                         getDim(void) const { return 1; }                    //!< Get subscript dimension
         const std::string&          getElementType(void) const;                         //!< Get element type
-        const RbObject*             getElement(const IntVector& index) const;           //!< Get element (a copy)
-        const IntVector&            getLength(void) const;                              //!< Get length in each dimension
-        void                        resize(const IntVector& len);                       //!< Resize
-        void                        setElement(const IntVector& index, RbObject* val);  //!< Set element
-        void                        setLength(const IntVector& len);                    //!< Set length in each dimension
+        const RbObject*             getElement(const VectorInteger& index) const;           //!< Get element (a copy)
+        const VectorInteger&            getLength(void) const;                              //!< Get length in each dimension
+        void                        resize(const VectorInteger& len);                       //!< Resize
+        void                        setElement(const VectorInteger& index, RbObject* val);  //!< Set element
+        void                        setLength(const VectorInteger& len);                    //!< Set length in each dimension
 
 	protected:
         RbObject*                   convertTo(const std::string& type) const;            //!< Convert to type

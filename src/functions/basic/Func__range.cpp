@@ -19,8 +19,8 @@
 #include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Func__range.h"
-#include "IntVector.h"
-#include "RbInt.h"
+#include "VectorInteger.h"
+#include "Integer.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "VectorString.h"
@@ -36,14 +36,14 @@ Func__range* Func__range::clone(void) const {
 /** Execute function */
 RbObject* Func__range::executeOperation(const std::vector<DAGNode*>& args) {
 
-    int first = ((RbInt*)(args[0])->getValue())->getValue();
-    int last  = ((RbInt*)(args[1])->getValue())->getValue();
+    int first = ((Integer*)(args[0])->getValue())->getValue();
+    int last  = ((Integer*)(args[1])->getValue())->getValue();
 
     std::vector<int> temp;
     for (int i=first; i<=last; i++)
         temp.push_back(i);
 
-    return new IntVector(temp);
+    return new VectorInteger(temp);
 }
 
 
@@ -82,6 +82,6 @@ int Func__range::getReturnDim(void) const {
 /** Get return type */
 const std::string& Func__range::getReturnType(void) const {
 
-    return IntVector_name;
+    return VectorInteger_name;
 }
 

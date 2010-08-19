@@ -51,9 +51,9 @@
 #include "Move_msimplex.h"
 #include "Move_mslide.h"
 #include "RealPos.h"
-#include "RbInt.h"
-#include "RbDouble.h"
-#include "Vector.h"
+#include "Integer.h"
+#include "Real.h"
+#include "VectorReal.h"
 
 #include <sstream>
 #include <vector>
@@ -214,11 +214,11 @@ void Workspace::initializeGlobalWorkspace(void) {
         addVariable("_rng", new RandomNumberGenerator);
 
         /* Add types */
-        addType(new RbInt(0));
-        addType(new RbDouble());
+        addType(new Integer(0));
+        addType(new Real());
         addType(new RealPos(1.0));
-        addType(new IntVector());
-        addType(new Vector());
+        addType(new VectorInteger());
+        addType(new VectorReal());
         addType(new RandomNumberGenerator);
 
         /* Add member object types with auto-generated constructors */

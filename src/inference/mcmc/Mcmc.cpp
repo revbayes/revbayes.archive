@@ -27,7 +27,7 @@
 #include "MoveSchedule.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "RbInt.h"
+#include "Integer.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "StochasticNode.h"
@@ -53,9 +53,9 @@ Mcmc::Mcmc(Model* model, int ngen, int printfreq, int samplefreq, std::string fi
     : MemberObject(getMemberRules(), getMethodInits()) {
 
     setValue("model",      model);
-    setValue("ngen",       new RbInt(ngen));
-    setValue("printfreq",  new RbInt(printfreq));
-    setValue("samplefreq", new RbInt(samplefreq));
+    setValue("ngen",       new Integer(ngen));
+    setValue("printfreq",  new Integer(printfreq));
+    setValue("samplefreq", new Integer(samplefreq));
     setValue("filename",   new RbString(filename));
 }
 
@@ -103,9 +103,9 @@ const MemberRules& Mcmc::getMemberRules(void) const {
     if (!rulesSet) {
 
         memberRules.push_back(new ArgumentRule("model",      Model_name));
-        memberRules.push_back(new MinmaxRule(  "ngen",       RbInt_name, new RbInt(1), NULL));
-        memberRules.push_back(new MinmaxRule(  "printfreq",  RbInt_name, new RbInt(1), NULL));
-        memberRules.push_back(new MinmaxRule(  "samplefreq", RbInt_name, new RbInt(1), NULL));
+        memberRules.push_back(new MinmaxRule(  "ngen",       RbInt_name, new Integer(1), NULL));
+        memberRules.push_back(new MinmaxRule(  "printfreq",  RbInt_name, new Integer(1), NULL));
+        memberRules.push_back(new MinmaxRule(  "samplefreq", RbInt_name, new Integer(1), NULL));
         memberRules.push_back(new ArgumentRule("filename",   new RbString("out")));
         memberRules.push_back(new WrapperRule( "rng",        Workspace::globalWorkspace().getVariable("_rng")));
 
@@ -212,9 +212,9 @@ void Mcmc::update(void) {
     /* Get the chain settings */
     std::cerr << "Getting the chain settings ..." << std::endl;
 
-    int                    ngen       = ((RbInt*)(getValue("ngen")))->getValue();
-    int                    printfreq  = ((RbInt*)(getValue("printfreq")))->getValue();
-    int                    samplefreq = ((RbInt*)(getValue("samplefreq")))->getValue();
+    int                    ngen       = ((Integer*)(getValue("ngen")))->getValue();
+    int                    printfreq  = ((Integer*)(getValue("printfreq")))->getValue();
+    int                    samplefreq = ((Integer*)(getValue("samplefreq")))->getValue();
     std::string            fileName   = ((RbString*)(getValue("filename")))->getValue();
     RandomNumberGenerator* rng        = (RandomNumberGenerator*)(getValue("rng"));
 

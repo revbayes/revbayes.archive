@@ -21,7 +21,7 @@
 #include "Move_msimplex.h"
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbException.h"
 #include "RbMath.h"
 #include "RbNames.h"
@@ -89,7 +89,7 @@ Move* Dist_dirichlet::getDefaultMove(StochasticNode* node) {
 }
 
 /** Get min value of distribution */
-const RbDouble* Dist_dirichlet::getMin(void) {
+const Real* Dist_dirichlet::getMin(void) {
 
     return NULL;
 }
@@ -133,9 +133,9 @@ const std::string& Dist_dirichlet::getVariableType(void) const {
 double Dist_dirichlet::lnLikelihoodRatio(const RbObject* value) {
 
 	// get the value and the parameters of the Dirichlet
-    std::vector<double> aNew = ((Vector*) (getVariable("alpha")->getValue      ()))->getValue();
-    std::vector<double> aOld = ((Vector*) (getVariable("alpha")->getStoredValue()))->getValue();
-    std::vector<double> x    = ((Vector*) value)->getValue();
+    std::vector<double> aNew = ((VectorReal*) (getVariable("alpha")->getValue      ()))->getValue();
+    std::vector<double> aOld = ((VectorReal*) (getVariable("alpha")->getStoredValue()))->getValue();
+    std::vector<double> x    = ((VectorReal*) value)->getValue();
 	
 	// check that the vectors are all the same size
 	if ( aNew.size() != aOld.size() || aNew.size() != x.size() )
@@ -167,8 +167,8 @@ double Dist_dirichlet::lnLikelihoodRatio(const RbObject* value) {
 double Dist_dirichlet::lnPdf(const RbObject* value) {
 
 	// get the value and the parameters of the Dirichlet
-    std::vector<double> a = ((Vector*) getValue("alpha"))->getValue();
-    std::vector<double> x = ((Vector*) value)->getValue();
+    std::vector<double> a = ((VectorReal*) getValue("alpha"))->getValue();
+    std::vector<double> x = ((VectorReal*) value)->getValue();
 
 	// check that the vectors are both the same size
 	if ( a.size() != x.size() )
@@ -190,9 +190,9 @@ double Dist_dirichlet::lnPdf(const RbObject* value) {
 double Dist_dirichlet::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
 
 	// get the values and the parameters of the Dirichlet
-    std::vector<double> a    = ((Vector*) getValue("rate"))->getValue();
-    std::vector<double> newX = ((Vector*) newVal)->getValue();
-    std::vector<double> oldX = ((Vector*) oldVal)->getValue();
+    std::vector<double> a    = ((VectorReal*) getValue("rate"))->getValue();
+    std::vector<double> newX = ((VectorReal*) newVal)->getValue();
+    std::vector<double> oldX = ((VectorReal*) oldVal)->getValue();
 
 	// check that the vectors are all the same size
 	if ( a.size() != newX.size() || a.size() != oldX.size() )
@@ -218,7 +218,7 @@ double Dist_dirichlet::lnPriorRatio(const RbObject* newVal, const RbObject* oldV
 double Dist_dirichlet::pdf(const RbObject* value) {
 
 	// get the value and the parameters of the Dirichlet
-    std::vector<double> a = ((Vector*) getValue("alpha"))->getValue();
+    std::vector<double> a = ((VectorReal*) getValue("alpha"))->getValue();
     std::vector<double> x = ((Simplex*) value)->getValue();
 
 	// check that the vectors are both the same size
@@ -254,7 +254,7 @@ double Dist_dirichlet::quantile(const double p) {
  */
 RbObject* Dist_dirichlet::rv(void) {
 
-    std::vector<double> a      = ((Vector*) getValue("alpha"))->getValue();
+    std::vector<double> a      = ((VectorReal*) getValue("alpha"))->getValue();
     RandomNumberGenerator* rng = (RandomNumberGenerator*)(getValue("rng"));
 	std::vector<double> r(a.size());
 

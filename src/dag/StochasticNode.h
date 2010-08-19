@@ -41,13 +41,13 @@ class StochasticNode : public VariableNode {
         StochasticNode*         clone(void) const;                                             //!< Clone the stochastic node
         const VectorString&     getClass(void) const;                                          //!< Get class vector
         const RbObject*         getStoredValue(void);                                          //!< Get stored value
-        const RbObject*         getValElement(const IntVector& index) const;                   //!< Get value element
+        const RbObject*         getValElement(const VectorInteger& index) const;                   //!< Get value element
         const RbObject*         getValue(void);                                                //!< Get current value
         const RbObject*         getValue(void) const;                                          //!< Get const value if possible
         const VectorString&     getValueClass(void) const;                                     //!< Get value class
         void                    printStruct(std::ostream& o) const;                            //!< Print struct for user
         void                    printValue(std::ostream& o) const;                             //!< Print struct for user
-        void                    setElement(const IntVector& index, RbObject* value);           //!< Set value element
+        void                    setElement(const VectorInteger& index, RbObject* value);           //!< Set value element
         void                    setName(const std::string& name);                              //!< Set name
         void                    setValue(RbObject* value);                                     //!< Set value
         std::string             toString(void) const;                                          //!< Complete info about object

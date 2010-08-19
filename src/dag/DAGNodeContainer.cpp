@@ -19,7 +19,7 @@
 #include "ConstantNode.h"
 #include "Container.h"
 #include "DAGNodeContainer.h"
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
@@ -41,7 +41,7 @@ DAGNodeContainer::DAGNodeContainer(DAGNode* x) : VariableNode(x->getType()) {
     x->addChildNode(this);
     
     changed      = false;
-    length       = IntVector(1);
+    length       = VectorInteger(1);
     value        = new Container(x->getValue()->clone());
     storedValue  = value->clone();
     names        = NULL;
@@ -62,7 +62,7 @@ DAGNodeContainer::DAGNodeContainer(size_t n, DAGNode* x) : VariableNode(x->getTy
     }
 
     changed      = false;
-    length       = IntVector(int(n));
+    length       = VectorInteger(int(n));
     value        = new Container(n, x->getValue()->clone());
     storedValue  = value->clone();
     names        = NULL;
@@ -78,7 +78,7 @@ DAGNodeContainer::DAGNodeContainer(size_t n, const std::string& valType)
         nodes.push_back(NULL);
 
     changed      = false;
-    length       = IntVector(int(n));
+    length       = VectorInteger(int(n));
     value        = new Container(length, valueType);
     storedValue  = value->clone();
     names        = NULL;
@@ -87,7 +87,7 @@ DAGNodeContainer::DAGNodeContainer(size_t n, const std::string& valType)
 
 
 /** Construct array of given dimensions containing copies of x */
-DAGNodeContainer::DAGNodeContainer(const IntVector& len, DAGNode* x)
+DAGNodeContainer::DAGNodeContainer(const VectorInteger& len, DAGNode* x)
     : VariableNode(x->getValueType()) {
 
     if (len.size() == 0)
@@ -119,7 +119,7 @@ DAGNodeContainer::DAGNodeContainer(const IntVector& len, DAGNode* x)
 
 
 /** Construct empty array of given dimensions */
-DAGNodeContainer::DAGNodeContainer(const IntVector& len, const std::string& valType)
+DAGNodeContainer::DAGNodeContainer(const VectorInteger& len, const std::string& valType)
     : VariableNode(valType) {
 
     if (len.size() == 0)
@@ -236,14 +236,14 @@ DAGNodeContainer& DAGNodeContainer::operator=(const DAGNodeContainer& x) {
 
 
 /** Subscript operator (vector index) */
-DAGNode*& DAGNodeContainer::operator[](const IntVector& i) {
+DAGNode*& DAGNodeContainer::operator[](const VectorInteger& i) {
 
     return nodes[getOffset(i)];
 }
 
 
 /** Subscript const operator (vector index) */
-DAGNode* const& DAGNodeContainer::operator[](const IntVector& i) const {
+DAGNode* const& DAGNodeContainer::operator[](const VectorInteger& i) const {
 
     return nodes[getOffset(i)];
 }
@@ -270,7 +270,7 @@ DAGNode* const& DAGNodeContainer::operator[](size_t i) const {
 /** Return begin iterator */
 ContainerIterator DAGNodeContainer::begin(void) const {
 
-    IntVector temp = getLength();
+    VectorInteger temp = getLength();
     for (size_t i=0; i<temp.size(); i++)
         temp[i] = 0;
 
@@ -349,7 +349,7 @@ DAGNodeContainer* DAGNodeContainer::cloneDAG(std::map<DAGNode*, DAGNode*>& newNo
 /** Return end iterator */
 ContainerIterator DAGNodeContainer::end(void) const {
 
-    IntVector temp = getLength();
+    VectorInteger temp = getLength();
     for (size_t i=0; i<temp.size(); i++)
         temp[i]--;
 
@@ -380,7 +380,7 @@ const VectorString& DAGNodeContainer::getClass(void) const {
 
 
 /** Get element name */
-std::string DAGNodeContainer::getElementName(const IntVector& index) const {
+std::string DAGNodeContainer::getElementName(const VectorInteger& index) const {
 
     if (names == NULL)
         return "";
@@ -390,7 +390,7 @@ std::string DAGNodeContainer::getElementName(const IntVector& index) const {
 
 
 /** Get offset to element or subcontainer; also check index */
-size_t DAGNodeContainer::getOffset(const IntVector& index) const {
+size_t DAGNodeContainer::getOffset(const VectorInteger& index) const {
 
     if (index.size() > length.size())
         throw (RbException("Too many indices"));
@@ -425,13 +425,13 @@ const RbObject* DAGNodeContainer::getStoredValue(void) {
 
 
 /** Get subcontainer */
-DAGNodeContainer* DAGNodeContainer::getSubContainer(const IntVector& index) const {
+DAGNodeContainer* DAGNodeContainer::getSubContainer(const VectorInteger& index) const {
 
     // Get offset; this throws an error if something wrong with index
     size_t offset = getOffset(index);
 
     // Create a new vector of the right size
-    IntVector tempLength;
+    VectorInteger tempLength;
     for (size_t i=index.size(); i<length.size(); i++)
         tempLength.push_back(length[i]);
     DAGNodeContainer* temp = new DAGNodeContainer(tempLength, valueType);
@@ -451,16 +451,16 @@ DAGNodeContainer* DAGNodeContainer::getSubContainer(const IntVector& index) cons
 
 
 /** Get value element */
-const RbObject* DAGNodeContainer::getValElement(const IntVector& index) const {
+const RbObject* DAGNodeContainer::getValElement(const VectorInteger& index) const {
 
     // Check that the index is to a value element
     if (int(index.size()) < getDim())
         throw (RbException("Index error: Not value element"));
 
     // Split the index up
-    IntVector containerIndex = index;
+    VectorInteger containerIndex = index;
     containerIndex.resize(length.size());
-    IntVector valueIndex;
+    VectorInteger valueIndex;
     for (size_t i=length.size(); i<index.size(); i++)
         valueIndex.push_back(length[i]);        
 
@@ -503,7 +503,7 @@ const RbObject* DAGNodeContainer::getValue(void) const {
 
 
 /** Get variable element */
-const DAGNode* DAGNodeContainer::getVarElement(const IntVector& index) const {
+const DAGNode* DAGNodeContainer::getVarElement(const VectorInteger& index) const {
 
     // Check that the index is to a variable element
     if (index.size() != length.size())
@@ -518,7 +518,7 @@ const DAGNode* DAGNodeContainer::getVarElement(const IntVector& index) const {
 
 
 /** Get non-const variable element for friend class Frame */
-DAGNode* DAGNodeContainer::getVarElement(const IntVector& index) {
+DAGNode* DAGNodeContainer::getVarElement(const VectorInteger& index) {
 
     // Check that the index is to a variable element
     if (index.size() != length.size())
@@ -577,7 +577,7 @@ void DAGNodeContainer::printValue(std::ostream& o) const {
 
 
 /** Reset container length in different dimensions */
-void DAGNodeContainer::resize(const IntVector& len) {
+void DAGNodeContainer::resize(const VectorInteger& len) {
 
     // Check if there is anything to do
     if (len.equals(&length))
@@ -588,7 +588,7 @@ void DAGNodeContainer::resize(const IntVector& len) {
         throw (RbException("Cannot resize container: dimensions do not match"));
 
     // Calculate handy numbers
-    IntVector numValsSource = IntVector(len.size(), 0), numValsTarget = IntVector(len.size(), 0);
+    VectorInteger numValsSource = VectorInteger(len.size(), 0), numValsTarget = VectorInteger(len.size(), 0);
     int numSourceVals = 1, numTargetVals = 1;
     for (int i=int(len.size())-1; i>=0; i--) {
         numSourceVals *= length[i];
@@ -656,11 +656,11 @@ void DAGNodeContainer::restoreAffected(void) {
 
 
 /** Set value element or elements from value */
-void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
+void DAGNodeContainer::setElement(const VectorInteger& index, RbObject* val) {
 
     // Resize if necessary
     if (index.size() == length.size()) {
-        IntVector tempLen  = length;
+        VectorInteger tempLen  = length;
         bool      growSize = false;
         for (size_t i=0; i<index.size(); i++) {
             if (index[i] >= tempLen[i]) {
@@ -692,7 +692,7 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
             throw RbException("Source does not have elements");
     
         // Count number of elements
-        const IntVector& sourceLen = source->getLength();
+        const VectorInteger& sourceLen = source->getLength();
         int numSourceElements = 1;
         for (size_t i=0; i<sourceLen.size(); i++)
             numSourceElements *= sourceLen[i];
@@ -763,11 +763,11 @@ void DAGNodeContainer::setElement(const IntVector& index, RbObject* val) {
 
 
 /** Set element from DAG node */
-void DAGNodeContainer::setElement(const IntVector& index, DAGNode* var) {
+void DAGNodeContainer::setElement(const VectorInteger& index, DAGNode* var) {
 
     // Resize if necessary
     if (index.size() == length.size()) {
-        IntVector tempLen  = length;
+        VectorInteger tempLen  = length;
         bool      growSize = false;
         for (size_t i=0; i<index.size(); i++) {
             if (index[i] >= tempLen[i]) {
@@ -800,7 +800,7 @@ void DAGNodeContainer::setElement(const IntVector& index, DAGNode* var) {
         DAGNodeContainer* source = dynamic_cast<DAGNodeContainer*>(var);
     
         // Count number of elements
-        const IntVector& sourceLen = source->getLength();
+        const VectorInteger& sourceLen = source->getLength();
         int numSourceElements = 1;
         for (size_t i=0; i<sourceLen.size(); i++)
             numSourceElements *= sourceLen[i];
@@ -879,7 +879,7 @@ void DAGNodeContainer::setElement(const IntVector& index, DAGNode* var) {
 
 
 /** Set element name */
-void DAGNodeContainer::setElementName(const IntVector& index, const std::string& name) {
+void DAGNodeContainer::setElementName(const VectorInteger& index, const std::string& name) {
 
     if (names == NULL)
         names = new VectorString(nodes.size());
@@ -889,7 +889,7 @@ void DAGNodeContainer::setElementName(const IntVector& index, const std::string&
 
 
 /** Set length in each dimension: reorganize the content of the container */
-void DAGNodeContainer::setLength(const IntVector& len) {
+void DAGNodeContainer::setLength(const VectorInteger& len) {
 
     if (len.size() != length.size())
         throw (RbException("Cannot change number of dimensions"));

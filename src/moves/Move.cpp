@@ -97,7 +97,7 @@ const MethodTable& Move::getMethodInits(void) const {
 /** Get update weight */
 double Move::getUpdateWeight(void) const {
 
-    return ((RbDouble*)(getValue("weight")))->getValue();
+    return ((Real*)(getValue("weight")))->getValue();
 }
 
 /** Convert to object of another class. The caller manages the object. */
@@ -120,7 +120,7 @@ void Move::setUpdateWeight(double weight) {
     if (weight < 0.0)
         throw RbException("Negative update weight not allowed");
 
-    setValue("weight", new RbDouble(weight));
+    setValue("weight", new Real(weight));
 }
 
 

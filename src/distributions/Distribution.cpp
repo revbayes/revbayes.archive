@@ -21,7 +21,7 @@
 #include "Distribution.h"
 #include "MemberFunction.h"
 #include "RandomNumberGenerator.h"
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "VectorString.h"
@@ -120,10 +120,10 @@ const MethodTable& Distribution::getMethodInits(void) const {
     if (!initsSet) {
 
         lnPdfArgRules.push_back(new ArgumentRule("x", RbObject_name));
-        methodInits.addFunction("lnPdf", new MemberFunction(RbDouble_name, lnPdfArgRules));
+        methodInits.addFunction("lnPdf", new MemberFunction(Real_name, lnPdfArgRules));
 
         pdfArgRules.push_back(new ArgumentRule("x", RbObject_name));
-        methodInits.addFunction("pdf",   new MemberFunction(RbDouble_name, pdfArgRules));
+        methodInits.addFunction("pdf",   new MemberFunction(Real_name, pdfArgRules));
 
         methodInits.addFunction("rv",    new MemberFunction(RbObject_name, ArgumentRules()));
 

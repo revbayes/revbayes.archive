@@ -17,7 +17,7 @@
 
 #include "Container.h"
 #include "ContainerIterator.h"
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbOptions.h"
@@ -33,7 +33,7 @@
 Container::Container(void)
     : RbComplex(), elementType(RbObject_name) {
 
-    length = IntVector(0);
+    length = VectorInteger(0);
 }
 
 /** Construct vector with one node x */
@@ -42,7 +42,7 @@ Container::Container(RbObject* x)
 
     elements.push_back(x);
 
-    length = IntVector(1);
+    length = VectorInteger(1);
 }
 
 
@@ -54,12 +54,12 @@ Container::Container(size_t n, RbObject* x)
     for (size_t i=1; i<n; i++)
         elements.push_back(x->clone());
 
-    length       = IntVector(int(n));
+    length       = VectorInteger(int(n));
 }
 
 
 /** Construct array of given dimensions containing copies of x */
-Container::Container(const IntVector& len, RbObject* x)
+Container::Container(const VectorInteger& len, RbObject* x)
     : RbComplex(), elementType(x->getType()) {
 
     if (len.size() == 0)
@@ -81,7 +81,7 @@ Container::Container(const IntVector& len, RbObject* x)
 
 
 /** Construct empty array of given dimensions */
-Container::Container(const IntVector& len, const std::string& elemType)
+Container::Container(const VectorInteger& len, const std::string& elemType)
     : RbComplex(), elementType(elemType) {
 
     if (len.size() == 0)
@@ -155,7 +155,7 @@ Container& Container::operator=(const Container& x) {
 
 
 /** Subscript operator (container iterator) */
-RbObject*& Container::operator[](const IntVector& i) {
+RbObject*& Container::operator[](const VectorInteger& i) {
 
     size_t offset = getOffset(i);
     return elements[offset];
@@ -163,7 +163,7 @@ RbObject*& Container::operator[](const IntVector& i) {
 
 
 /** Subscript const operator (container iterator) */
-RbObject* const& Container::operator[](const IntVector& i) const {
+RbObject* const& Container::operator[](const VectorInteger& i) const {
 
     size_t offset = getOffset(i);
     return elements[offset];
@@ -202,7 +202,7 @@ RbObject* Container::convertTo(const std::string& type) const {
         std::vector<double> v;
         for (size_t i=0; i<length.size(); i++) 
 			{
-            v.push_back(((RbDouble*) getElementAt(i))->getValue());
+            v.push_back(((Real*) getElementAt(i))->getValue());
 			}
         return new Simplex(v);
 		}
@@ -240,7 +240,7 @@ const VectorString& Container::getClass(void) const {
 
 
 /** Get offset to element or subcontainer; also check index */
-size_t Container::getOffset(const IntVector& index) const {
+size_t Container::getOffset(const VectorInteger& index) const {
 
     if (index.size() > length.size())
         throw (RbException("Too many indices"));
@@ -264,13 +264,13 @@ size_t Container::getOffset(const IntVector& index) const {
 
 
 /** Get subcontainer */
-Container* Container::getSubContainer(const IntVector& index) const {
+Container* Container::getSubContainer(const VectorInteger& index) const {
 
     // Get offset; this throws an error if something wrong with index
     size_t offset = getOffset(index);
 
     // Create a new vector of the right size
-    IntVector tempLength;
+    VectorInteger tempLength;
     for (size_t i=index.size(); i<length.size(); i++)
         tempLength.push_back(length[i]);
     Container *temp = new Container(tempLength, getElementType());
@@ -287,16 +287,16 @@ Container* Container::getSubContainer(const IntVector& index) const {
 
 
 /** Get element (read-only) */
-const RbObject* Container::getElement(const IntVector& index) const {
+const RbObject* Container::getElement(const VectorInteger& index) const {
 
     // Check that the index is to a value element
     if (int(index.size()) < getDim())
         throw (RbException("Index error: Not value element"));
 
     // Split the index up
-    IntVector containerIndex = index;
+    VectorInteger containerIndex = index;
     containerIndex.resize(length.size());
-    IntVector valueIndex;
+    VectorInteger valueIndex;
     for (size_t i=length.size(); i<index.size(); i++)
         valueIndex.push_back(length[i]);        
 
@@ -335,16 +335,16 @@ RbObject* Container::getElementAt(const size_t index) const {
 }
 
 /** Get element ptr */
-RbObject* Container::getElementPtr(const IntVector& index) {
+RbObject* Container::getElementPtr(const VectorInteger& index) {
 
     // Check that the index is to a value element
     if (int(index.size()) < getDim())
         throw (RbException("Index error: Not value element"));
 
     // Split the index up
-    IntVector containerIndex = index;
+    VectorInteger containerIndex = index;
     containerIndex.resize(length.size());
-    IntVector valueIndex;
+    VectorInteger valueIndex;
     for (size_t i=length.size(); i<index.size(); i++)
         valueIndex.push_back(length[i]);        
 
@@ -372,11 +372,11 @@ bool Container::isConvertibleTo(const std::string& type) const {
 }
 
 /** Set value element or elements from value */
-void Container::setElement(const IntVector& index, RbObject* val) {
+void Container::setElement(const VectorInteger& index, RbObject* val) {
 
     // Resize if necessary
     if (index.size() == length.size()) {
-        IntVector tempLen  = length;
+        VectorInteger tempLen  = length;
         bool      growSize = false;
         for (size_t i=0; i<index.size(); i++) {
             if (index[i] >= tempLen[i]) {
@@ -405,7 +405,7 @@ void Container::setElement(const IntVector& index, RbObject* val) {
         RbComplex* source = dynamic_cast<RbComplex*>(val);
     
         // Count number of elements
-        const IntVector& sourceLen = source->getLength();
+        const VectorInteger& sourceLen = source->getLength();
         int numSourceElements = 1;
         for (size_t i=0; i<sourceLen.size(); i++)
             numSourceElements *= sourceLen[i];
@@ -486,7 +486,7 @@ void Container::printValue(std::ostream& o) const {
 
 
 /** Reset container length in different dimensions */
-void Container::resize(const IntVector& len) {
+void Container::resize(const VectorInteger& len) {
 
     // Check if there is anything to do
     if (len.equals(&length))
@@ -503,7 +503,7 @@ void Container::resize(const IntVector& len) {
     }
 
     // Calculate handy numbers
-    IntVector numValsSource = IntVector(len.size(), 0), numValsTarget = IntVector(len.size(), 0);
+    VectorInteger numValsSource = VectorInteger(len.size(), 0), numValsTarget = VectorInteger(len.size(), 0);
     int numSourceVals = 1, numTargetVals = 1;
     for (int i=int(len.size())-1; i>=0; i--) {
         numSourceVals *= length[i];
@@ -535,7 +535,7 @@ void Container::resize(const IntVector& len) {
 
 
 /** Set length in each dimension: reorganize the content of the container */
-void Container::setLength(const IntVector& len) {
+void Container::setLength(const VectorInteger& len) {
 
     if (len.size() != length.size())
         throw (RbException("Cannot change number of dimensions"));

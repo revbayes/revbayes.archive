@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of RbBool, which is
+ * This file contains the implementation of Boolean, which is
  * a RevBayes wrapper around a regular bool.
  *
- * @brief Implementation of RbBool
+ * @brief Implementation of Boolean
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -17,9 +17,9 @@
  */
 
 
-#include "RbBool.h"
-#include "RbDouble.h"
-#include "RbInt.h"
+#include "Boolean.h"
+#include "Real.h"
+#include "Integer.h"
 #include "RbNames.h"
 #include "VectorString.h"
 
@@ -27,46 +27,46 @@
 
 
 /** Construct from bool */
-RbBool::RbBool(const bool v)
+Boolean::Boolean(const bool v)
     : RbObject(), value(v) {
 }
 
 /** Clone object */
-RbObject* RbBool::clone(void) const {
+RbObject* Boolean::clone(void) const {
 
-	return  (RbObject*)(new RbBool(*this));
+	return  (RbObject*)(new Boolean(*this));
 }
 
 /** Convert to object of another class. The caller manages the object. */
-RbObject* RbBool::convertTo(const std::string& type) const {
+RbObject* Boolean::convertTo(const std::string& type) const {
 
     if (type == RbInt_name) 
 		{
         if (value) 
-			return new RbInt(1);
+			return new Integer(1);
         else 
-			return new RbInt(0);
+			return new Integer(0);
 		}
-    else if (type == RbDouble_name) 
+    else if (type == Real_name) 
 		{
         if (value) 
-			return new RbDouble(1.0);
+			return new Real(1.0);
         else 
-			return new RbDouble(0.0);
+			return new Real(0.0);
 		}
     return NULL;
 }
 
 /** Pointer-based equals comparison */
-bool RbBool::equals(const RbObject* obj) const {
+bool Boolean::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
-    const RbBool* p = dynamic_cast<const RbBool*>(obj);
+    const Boolean* p = dynamic_cast<const Boolean*>(obj);
     if (p != NULL)
         return value == p->value;
 
     // Try converting the object to a bool
-    p = dynamic_cast<const RbBool*>(obj->convert(RbBool_name));
+    p = dynamic_cast<const Boolean*>(obj->convert(RbBool_name));
     if (p == NULL)
         return false;
 
@@ -77,33 +77,33 @@ bool RbBool::equals(const RbObject* obj) const {
 }
 
 /** Get class vector describing type of object */
-const VectorString& RbBool::getClass() const {
+const VectorString& Boolean::getClass() const {
 
     static VectorString rbClass = VectorString(RbBool_name) + RbObject::getClass();
     return rbClass;
 }
 
 /** Convert to object of another class. The caller manages the object. */
-bool RbBool::isConvertibleTo(const std::string& type) const {
+bool Boolean::isConvertibleTo(const std::string& type) const {
 
     if (type == RbInt_name)
         return true;
-    else if (type == RbDouble_name)
+    else if (type == Real_name)
         return true;
     return false;
 }
 
 /** Print value for user */
-void RbBool::printValue(std::ostream &o) const {
+void Boolean::printValue(std::ostream &o) const {
 
     o << (value ? "true" : "false");
 }
 
 /** Get complete info about object */
-std::string RbBool::toString(void) const {
+std::string Boolean::toString(void) const {
 
 	std::ostringstream o;
-    o << "RbBool: value = ";
+    o << "Boolean: value = ";
     printValue(o);
     return o.str();
 }

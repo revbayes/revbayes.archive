@@ -20,12 +20,12 @@
 
 #include <vector>
 
-class IntVector;
+class VectorInteger;
 
 class ContainerIterator : public std::vector<int> {
 
     public:
-                                ContainerIterator(const IntVector& index, const IntVector& len);     //!< Set value and length
+                                ContainerIterator(const VectorInteger& index, const VectorInteger& len);     //!< Set value and length
 
         void                    printValue(std::ostream& o) const;                                   //!< Print value for user
         ContainerIterator&      operator++(void);                                                    //!< Increment index (prefix)

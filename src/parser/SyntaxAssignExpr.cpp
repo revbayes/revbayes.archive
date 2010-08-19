@@ -120,7 +120,7 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
     RbString varName = *variable->getIdentifier();
 
     // Get index
-    IntVector index = variable->getIndex(frame);
+    VectorInteger index = variable->getIndex(frame);
 
     // Deal with arrow assignments
     if (opType == ArrowAssign) 

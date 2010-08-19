@@ -16,7 +16,7 @@
 
 #include "ArgumentRule.h"
 #include "FunctionTable.h"
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
@@ -145,7 +145,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
         return retVal.first->second;
     }
     else {
-        IntVector matchScore, bestScore;
+        VectorInteger matchScore, bestScore;
         RbFunction* bestMatch = NULL;
 
         for (std::multimap<std::string, RbFunction*>::const_iterator i=retVal.first; i!=retVal.second; i++) {

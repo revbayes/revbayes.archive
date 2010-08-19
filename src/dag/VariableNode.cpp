@@ -15,7 +15,7 @@
  * $Id: DAGNode.cpp 188 2009-12-13 14:50:43Z ronquist $
  */
 
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "Monitor.h"
 #include "Move.h"
 #include "MoveSchedule.h"

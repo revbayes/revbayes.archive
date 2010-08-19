@@ -16,7 +16,7 @@
 
 #include "ContainerIterator.h"
 #include "DAGNode.h"
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "RbComplex.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -33,7 +33,7 @@
 /** Return begin iterator */
 ContainerIterator RbComplex::begin(void) const {
 
-    IntVector temp = getLength();
+    VectorInteger temp = getLength();
     for (size_t i=0; i<temp.size(); i++)
         temp[i] = 0;
 
@@ -43,7 +43,7 @@ ContainerIterator RbComplex::begin(void) const {
 /** Return end iterator */
 ContainerIterator RbComplex::end(void) const {
 
-    IntVector temp = getLength();
+    VectorInteger temp = getLength();
     for (size_t i=0; i<temp.size(); i++)
         temp[i]--;
 
@@ -75,14 +75,14 @@ const VectorString& RbComplex::getClass(void) const {
 
 
 /** Get element */
-const RbObject* RbComplex::getElement(const IntVector& index) const {
+const RbObject* RbComplex::getElement(const VectorInteger& index) const {
 
     throw (RbException("Object does not have elements"));
 }
 
 
 /** Get element length in each dimension */
-const IntVector& RbComplex::getLength() const {
+const VectorInteger& RbComplex::getLength() const {
 
     throw (RbException("Object does not have elements"));
 }
@@ -146,14 +146,14 @@ void RbComplex::setVariable(const std::string& name, DAGNode* var) {
 
 
 /** Resize container */
-void RbComplex::resize(const IntVector& len) {
+void RbComplex::resize(const VectorInteger& len) {
 
     throw (RbException("Object does not have elements"));
 }
 
 
 /** Set element */
-void RbComplex::setElement(const IntVector& index, RbObject* val) {
+void RbComplex::setElement(const VectorInteger& index, RbObject* val) {
 
     delete val;
     throw (RbException("Object does not have elements"));
@@ -161,7 +161,7 @@ void RbComplex::setElement(const IntVector& index, RbObject* val) {
 
 
 /** Set element length */
-void RbComplex::setLength(const IntVector& len) {
+void RbComplex::setLength(const VectorInteger& len) {
 
     throw (RbException("Object does not have elements"));
 }

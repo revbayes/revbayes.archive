@@ -21,7 +21,7 @@
 #include "Move_mslide.h"
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbException.h"
 #include "RbMath.h"
 #include "RbNames.h"
@@ -43,8 +43,8 @@ Dist_norm::Dist_norm(void)
 Dist_norm::Dist_norm(double mu, double sigma, RandomNumberGenerator* rng)
     : DistributionReal(getMemberRules()) {
 
-    setValue("mean",  new RbDouble(mu));
-    setValue("sigma", new RbDouble(sigma));
+    setValue("mean",  new Real(mu));
+    setValue("sigma", new Real(sigma));
     setValue("rng",   rng);
 }
 
@@ -62,8 +62,8 @@ Dist_norm::Dist_norm(double mu, double sigma, RandomNumberGenerator* rng)
  */
 double Dist_norm::cdf(double q) {
 
-    double mu    = ((RbDouble*) getValue("mean"))->getValue();
-    double sigma = ((RbDouble*) getValue("sd"))->getValue();
+    double mu    = ((Real*) getValue("mean"))->getValue();
+    double sigma = ((Real*) getValue("sd"))->getValue();
 
     double p;
     double z = (q - mu) / sigma;
@@ -125,7 +125,7 @@ const VectorString& Dist_norm::getClass(void) const {
 /** Get default move; TODO: Normal move is more natural default move */
 Move* Dist_norm::getDefaultMove(StochasticNode* node) {
 
-    double sd = ((RbDouble*) (getValue("sd")))->getValue();
+    double sd = ((Real*) (getValue("sd")))->getValue();
 
     return new Move_mslide(node, sd/100.0, 1.0, Workspace::globalWorkspace().get_rng());
 }
@@ -139,7 +139,7 @@ const MemberRules& Dist_norm::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new WrapperRule("mean", RbDouble_name));
+        memberRules.push_back(new WrapperRule("mean", Real_name));
         memberRules.push_back(new WrapperRule("sd", RealPos_name));
 
         /* Inherit rng from Distribution, put it at back */
@@ -165,11 +165,11 @@ const MemberRules& Dist_norm::getMemberRules(void) const {
  */
 double Dist_norm::lnLikelihoodRatio(const RbObject* value) {
 
-    double muNew    = ((RbDouble*) (getVariable("mean")->getValue      ()))->getValue();
-    double muOld    = ((RbDouble*) (getVariable("mean")->getStoredValue()))->getValue();
-    double sigmaNew = ((RbDouble*) (getVariable("sd"  )->getValue      ()))->getValue();
-    double sigmaOld = ((RbDouble*) (getVariable("sd"  )->getStoredValue()))->getValue();
-    double x        = ((RbDouble*) value)->getValue();
+    double muNew    = ((Real*) (getVariable("mean")->getValue      ()))->getValue();
+    double muOld    = ((Real*) (getVariable("mean")->getStoredValue()))->getValue();
+    double sigmaNew = ((Real*) (getVariable("sd"  )->getValue      ()))->getValue();
+    double sigmaOld = ((Real*) (getVariable("sd"  )->getStoredValue()))->getValue();
+    double x        = ((Real*) value)->getValue();
 
     double newZ = ( x - muNew ) / sigmaNew;
     double oldZ = ( x - muOld ) / sigmaOld;
@@ -195,9 +195,9 @@ double Dist_norm::lnLikelihoodRatio(const RbObject* value) {
  */
 double Dist_norm::lnPdf(const RbObject* value) {
 
-    double mu    = ((RbDouble*) getValue("mean"))->getValue();
-    double sigma = ((RbDouble*) getValue("sd"))->getValue();
-    double x     = ((RbDouble*) value)->getValue();
+    double mu    = ((Real*) getValue("mean"))->getValue();
+    double sigma = ((Real*) getValue("sd"))->getValue();
+    double x     = ((Real*) value)->getValue();
 
     double z = ( x - mu ) / sigma;
 
@@ -217,10 +217,10 @@ double Dist_norm::lnPdf(const RbObject* value) {
  */
 double Dist_norm::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
 
-    double mu    = ((RbDouble*) getValue("mean"))->getValue();
-    double sigma = ((RbDouble*) getValue("sd"))->getValue();
-    double newX = ((RbDouble*) newVal)->getValue();
-    double oldX = ((RbDouble*) oldVal)->getValue();
+    double mu    = ((Real*) getValue("mean"))->getValue();
+    double sigma = ((Real*) getValue("sd"))->getValue();
+    double newX = ((Real*) newVal)->getValue();
+    double oldX = ((Real*) oldVal)->getValue();
 
     double newZ = ( newX - mu ) / sigma;
     double oldZ = ( oldX - mu ) / sigma;
@@ -240,9 +240,9 @@ double Dist_norm::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
  */
 double Dist_norm::pdf(const RbObject* value) {
 
-    double mu    = ((RbDouble*) getValue("mean"))->getValue();
-    double sigma = ((RbDouble*) getValue("sd"))->getValue();
-    double x     = ((RbDouble*) value)->getValue();
+    double mu    = ((Real*) getValue("mean"))->getValue();
+    double sigma = ((Real*) getValue("sd"))->getValue();
+    double x     = ((Real*) value)->getValue();
 
     double z = (x - mu) / sigma;
 
@@ -268,8 +268,8 @@ double Dist_norm::pdf(const RbObject* value) {
  */
 double Dist_norm::quantile(const double p) {
 
-    double mu    = ((RbDouble*) getValue("mean"))->getValue();
-    double sigma = ((RbDouble*) getValue("sd"))->getValue();
+    double mu    = ((Real*) getValue("mean"))->getValue();
+    double sigma = ((Real*) getValue("sd"))->getValue();
 
     double a0 = -0.322232431088;
     double a1 = -1.0;
@@ -308,18 +308,18 @@ double Dist_norm::quantile(const double p) {
  *
  * @return      Random draw
  */
-RbDouble* Dist_norm::rv(void) {
+Real* Dist_norm::rv(void) {
 
     static bool availableNormalRv = false;
     static double extraNormalRv;
 
     if (availableNormalRv) {
         availableNormalRv = false;
-        return new RbDouble( extraNormalRv );
+        return new Real( extraNormalRv );
     }
 
-    double mu    = ((RbDouble*) getValue("mean"))->getValue();
-    double sigma = ((RbDouble*) getValue("sd"))->getValue();
+    double mu    = ((Real*) getValue("mean"))->getValue();
+    double sigma = ((Real*) getValue("sd"))->getValue();
 
     RandomNumberGenerator* rng = (RandomNumberGenerator*)(getValue("rng"));
 
@@ -337,7 +337,7 @@ RbDouble* Dist_norm::rv(void) {
     extraNormalRv = ( mu + sigma * ( v1 * fac ) );
     availableNormalRv = true;
 
-    return new RbDouble( mu + sigma * (v2 * fac) );
+    return new Real( mu + sigma * (v2 * fac) );
 }
 
 

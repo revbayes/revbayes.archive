@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of RbBool, which is
+ * This file contains the declaration of Boolean, which is
  * a RevBayes wrapper around a regular bool.
  *
- * @brief Declaration of RbBool
+ * @brief Declaration of Boolean
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -27,10 +27,10 @@
 class VectorString;
 
 
-class RbBool : public RbObject {
+class Boolean : public RbObject {
 
     public:
-                                    RbBool(const bool v);                            //!< Construct from bool
+                                    Boolean(const bool v);                            //!< Construct from bool
 
         // Basic utility functions
         RbObject*                   clone(void) const;                               //!< Clone object

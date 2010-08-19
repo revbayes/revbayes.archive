@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of Vector, a complex type
+ * This file contains the implementation of VectorReal, a complex type
  * used to hold double vectors.
  *
- * @brief Implementation of Vector
+ * @brief Implementation of VectorReal
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -16,13 +16,13 @@
  * $Id$
  */
 
-#include "IntVector.h"
-#include "RbDouble.h"
+#include "VectorInteger.h"
+#include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "Simplex.h"
 #include "VectorString.h"
-#include "Vector.h"
+#include "VectorReal.h"
 
 #include <cmath>
 #include <iomanip>
@@ -31,44 +31,44 @@
 
 
 /** Construct vector with one double x */
-Vector::Vector(double x) {
+VectorReal::VectorReal(double x) {
 
     value.push_back(x);
 }
 
 /** Construct vector with n doubles x */
-Vector::Vector(int n, double x) {
+VectorReal::VectorReal(int n, double x) {
 
     for (double i = 0; i < n; i++)
         value.push_back(x);
 }
 
 /** Constructor from double vector */
-Vector::Vector(std::vector<double>& x) {
+VectorReal::VectorReal(std::vector<double>& x) {
 
     value = x;
 }
 
 /** Clone function */
-Vector* Vector::clone(void) const {
+VectorReal* VectorReal::clone(void) const {
 
-    return new Vector(*this);
+    return new VectorReal(*this);
 }
 
 /** Convert to object of another class. The caller manages the object. */
-RbObject* Vector::convertTo(const std::string& type) const {
+RbObject* VectorReal::convertTo(const std::string& type) const {
 
     if (type == Simplex_name)
         return new Simplex(value);
-    throw RbException("Cannot convert Vector to " + type + ".");
+    throw RbException("Cannot convert VectorReal to " + type + ".");
 	return NULL;
 }
 
 /** Pointer-based equals comparison */
-bool Vector::equals(const RbObject* obj) const {
+bool VectorReal::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
-    const Vector* p = dynamic_cast<const Vector*> (obj);
+    const VectorReal* p = dynamic_cast<const VectorReal*> (obj);
     if (p != NULL) {
         if (value.size() != p->value.size())
             return false;
@@ -80,7 +80,7 @@ bool Vector::equals(const RbObject* obj) const {
     }
 
     // Try converting the value to a double vector
-    p = dynamic_cast<const Vector*> (obj->convert(getType()));
+    p = dynamic_cast<const VectorReal*> (obj->convert(getType()));
     if (p == NULL)
         return false;
 
@@ -98,7 +98,7 @@ bool Vector::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Vector::getClass(void) const {
+const VectorString& VectorReal::getClass(void) const {
 
     static VectorString rbClass = VectorString(Vector_name) + RbComplex::getClass();
     return rbClass;
@@ -106,9 +106,9 @@ const VectorString& Vector::getClass(void) const {
 
 
 /** Get element for parser (read-only) */
-const RbObject* Vector::getElement(const IntVector& index) const {
+const RbObject* VectorReal::getElement(const VectorInteger& index) const {
 
-    static RbDouble x = RbDouble(0.0);
+    static Real x = Real(0.0);
 
     if (index.size() != 1)
         throw (RbException("Index error"));
@@ -121,33 +121,33 @@ const RbObject* Vector::getElement(const IntVector& index) const {
 
 
 /** Get element type */
-const std::string& Vector::getElementType(void) const {
+const std::string& VectorReal::getElementType(void) const {
 
-    static std::string rbType = RbDouble_name;
+    static std::string rbType = Real_name;
     return rbType;
 }
 
 
 /** Get element length for parser */
-const IntVector& Vector::getLength(void) const {
+const VectorInteger& VectorReal::getLength(void) const {
 
-    static IntVector length = IntVector(0);
+    static VectorInteger length = VectorInteger(0);
 
     length[0] = int(value.size());
     return length;
 }
 
 /** Convert to object of another class. The caller manages the object. */
-bool Vector::isConvertibleTo(const std::string& type) const {
+bool VectorReal::isConvertibleTo(const std::string& type) const {
 
-    std::cout << "Is Vector convertible to " + type + "." << std::endl;
+    std::cout << "Is VectorReal convertible to " + type + "." << std::endl;
     if (type == Simplex_name)
         return true;
     return false;
 }
 
 /** Allow the parser to resize the vector */
-void Vector::resize(const IntVector& len) {
+void VectorReal::resize(const VectorInteger& len) {
 
     if (len.size() != 1 || len[0] < 0)
         throw (RbException("Length specification error"));
@@ -157,9 +157,9 @@ void Vector::resize(const IntVector& len) {
 
 
 /** Allow parser to set an element (any type conversion is done by parser) */
-void Vector::setElement(const IntVector& index, RbObject* val) {
+void VectorReal::setElement(const VectorInteger& index, RbObject* val) {
 
-    if ( !val->isType(RbDouble_name) )
+    if ( !val->isType(Real_name) )
         throw (RbException("Type mismatch"));
 
     if ( index.size() != 1 || index[0] < 1 )
@@ -176,12 +176,12 @@ void Vector::setElement(const IntVector& index, RbObject* val) {
             value[i] = 0;
     }
 
-    value[index[0]] = ((RbDouble*)(val))->getValue();
+    value[index[0]] = ((Real*)(val))->getValue();
 }
 
 
 /** Allow parser to rearrange the container (actually do not allow it) */
-void Vector::setLength(const IntVector& len) {
+void VectorReal::setLength(const VectorInteger& len) {
 
     if ( len.size() != 1 && len[0] != int(value.size()) )
         throw (RbException("Length specification error"));
@@ -189,7 +189,7 @@ void Vector::setLength(const IntVector& len) {
 
 
 /** Print value for user */
-void Vector::printValue(std::ostream& o) const {
+void VectorReal::printValue(std::ostream& o) const {
 
     int previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -210,10 +210,10 @@ void Vector::printValue(std::ostream& o) const {
 
 
 /** Complete info about object */
-std::string Vector::toString(void) const {
+std::string VectorReal::toString(void) const {
 
     std::ostringstream o;
-    o <<  "Vector: value = ";
+    o <<  "VectorReal: value = ";
     printValue(o);
 
     return o.str();

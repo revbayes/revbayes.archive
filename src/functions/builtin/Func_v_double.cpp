@@ -25,11 +25,11 @@
 #include "Func__lookup.h"
 #include "Func_v_double.h"
 #include "RbException.h"
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
 #include "VectorString.h"
-#include "Vector.h"
+#include "VectorReal.h"
 #include "WrapperRule.h"
 
 #include <cassert>
@@ -49,17 +49,17 @@ RbObject* Func_v_double::executeOperation(const std::vector<DAGNode*>& args) {
     std::vector<double>    tempVec;
 
     // Get first element
-    tempVec.push_back(((RbDouble*)(args[0]->getValue()))->getValue());
+    tempVec.push_back(((Real*)(args[0]->getValue()))->getValue());
 
     // Get following elements
     if ( args.size() > 1 ) {
         DAGNodeContainer*   elements = dynamic_cast<DAGNodeContainer*>(args[1]);
         for (size_t i=0; i<elements->size(); i++) {
-            tempVec.push_back(((RbDouble*)(elements->getValElement(i)))->getValue());
+            tempVec.push_back(((Real*)(elements->getValElement(i)))->getValue());
         }
     }
 
-    return new Vector(tempVec);
+    return new VectorReal(tempVec);
 }
 
 
@@ -71,8 +71,8 @@ const ArgumentRules& Func_v_double::getArgumentRules(void) const {
 
     if (!rulesSet) 
 		{
-        argumentRules.push_back(new ArgumentRule("", RbDouble_name));
-        argumentRules.push_back(new Ellipsis(RbDouble_name));
+        argumentRules.push_back(new ArgumentRule("", Real_name));
+        argumentRules.push_back(new Ellipsis(Real_name));
         rulesSet = true;
 		}
 

@@ -30,7 +30,7 @@
 
 class ArgumentRule;
 class DAGNode;
-class IntVector;
+class VectorInteger;
 class VectorString;
 
 typedef std::vector<ArgumentRule*> ArgumentRules;
@@ -72,7 +72,7 @@ class RbFunction :  public RbObject {
         RbObject*                               execute(void);                                                                      //!< Execute using processed args
         RbObject*                               execute(const std::vector<Argument>& args);                                         //!< Execute function
         std::vector<DAGNode*> const&            getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
-        virtual bool                            processArguments(const std::vector<Argument>& args, IntVector* matchScore=NULL);    //!< Process args, return a match score if pointer is not null
+        virtual bool                            processArguments(const std::vector<Argument>& args, VectorInteger* matchScore=NULL);    //!< Process args, return a match score if pointer is not null
 
 	protected:
                                                 RbFunction(void);                                                                   //!< Basic constructor

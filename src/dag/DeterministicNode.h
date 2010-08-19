@@ -43,13 +43,13 @@ class DeterministicNode : public VariableNode {
         const VectorString&     getClass(void) const;                                          //!< Get class vector
         const RbFunction*       getFunction(void) const { return function; }                   //!< Get function
         const RbObject*         getStoredValue(void);                                          //!< Get stored value intelligently
-        const RbObject*         getValElement(const IntVector& index) const;                   //!< Get value element
+        const RbObject*         getValElement(const VectorInteger& index) const;                   //!< Get value element
         const RbObject*         getValue(void);                                                //!< Get current value intelligently
         const RbObject*         getValue(void) const;                                          //!< Get current value (const) if possible
         const VectorString&     getValueClass(void) const;                                     //!< Get value class
         void                    printStruct(std::ostream& o) const;                            //!< Print struct for user
         void                    printValue(std::ostream& o) const;                             //!< Print value for user
-        void                    setElement(const IntVector& index, RbObject* value);           //!< Set value element
+        void                    setElement(const VectorInteger& index, RbObject* value);           //!< Set value element
         void                    setValue(RbObject* value);                                     //!< Set value
         std::string             toString(void) const;                                          //!< Complete info about object
 

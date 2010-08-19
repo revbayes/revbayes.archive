@@ -21,7 +21,7 @@
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "RbInt.h"
+#include "Integer.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
 #include "Simplex.h"
@@ -41,7 +41,7 @@ Move_msimplex::Move_msimplex(void) : SimpleMove(getMemberRules()) {
 Move_msimplex::Move_msimplex(StochasticNode* node, double tuning, int nc, double weight, RandomNumberGenerator* rng) : SimpleMove(getMemberRules()) {
 
     setValue("tuning", new RealPos(tuning));
-    setValue("num_cats", new RbInt(nc));
+    setValue("num_cats", new Integer(nc));
     setValue("weight", new RealPos(weight));
     setValue("rng",    rng);
 
@@ -99,8 +99,8 @@ double Move_msimplex::perform(std::set<StochasticNode*>& affectedNodes) {
 
     Simplex*               valPtr  = (Simplex*)(nodePtr->getValuePtr(affectedNodes));
     RandomNumberGenerator* rng     = (RandomNumberGenerator*)(getValue("rng"));
-    double                 alpha0  = ((RbDouble*)(getValue("tuning")))->getValue();
-    int                    k       = ((RbInt*)(getValue("num_cats")))->getValue();
+    double                 alpha0  = ((Real*)(getValue("tuning")))->getValue();
+    int                    k       = ((Integer*)(getValue("num_cats")))->getValue();
 	int                    n       = valPtr->getValue().size();
 
 	std::vector<double> curVal = valPtr->getValue();

@@ -22,7 +22,7 @@
 #include "Func_ls.h"
 #include "Model.h"
 #include "Parser.h"
-#include "RbBool.h"
+#include "Boolean.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
@@ -43,7 +43,7 @@ RbObject* Func_ls::clone(void) const {
 RbObject* Func_ls::executeOperation(const std::vector<DAGNode*>& args) {
 
     /* Open file */
-    bool printAll = ((RbBool*) (args[0]->getValue()))->getValue();
+    bool printAll = ((Boolean*) (args[0]->getValue()))->getValue();
     
     std::cout << "User workspace:" << std::endl;
     std::cout << "===============" << std::endl;
@@ -74,7 +74,7 @@ const ArgumentRules& Func_ls::getArgumentRules(void) const {
 
     if (!rulesSet) {
 
-        argumentRules.push_back(new ArgumentRule("all", new RbBool(false)));
+        argumentRules.push_back(new ArgumentRule("all", new Boolean(false)));
         rulesSet = true;
     }
 

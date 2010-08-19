@@ -18,7 +18,7 @@
  */
 
 #include "DAGNode.h"
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
@@ -67,7 +67,7 @@ const std::string& DAGNode::getType(void) const {
 }
 
 /** Get element variable; default throws error, override if wrapper has variable elements */
-const DAGNode* DAGNode::getVarElement(const IntVector& index) const {
+const DAGNode* DAGNode::getVarElement(const VectorInteger& index) const {
 
     throw (RbException("No variable elements"));
 }
@@ -138,7 +138,7 @@ void DAGNode::printParents(std::ostream& o) const {
 }
 
 /** Set element variable; default throws error, override if wrapper has variable elements */
-void DAGNode::setElement(const IntVector& index, DAGNode* var) {
+void DAGNode::setElement(const VectorInteger& index, DAGNode* var) {
 
     throw (RbException("No variable elements"));
 }

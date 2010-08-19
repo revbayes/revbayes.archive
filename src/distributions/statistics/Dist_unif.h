@@ -23,7 +23,7 @@
 #include <ostream>
 #include <string>
 
-class RbDouble;
+class Real;
 class VectorString;
 
 class Dist_unif: public DistributionReal {
@@ -44,14 +44,14 @@ class Dist_unif: public DistributionReal {
         // Real-valued distribution functions
         double          cdf(const double q);                                    //!< Cumulative density
         Move*           getDefaultMove(StochasticNode* node);                   //!< Get default move
-        const RbDouble* getMax(void);                                           //!< Get max value
-        const RbDouble* getMin(void);                                           //!< Get min value
+        const Real* getMax(void);                                           //!< Get max value
+        const Real* getMin(void);                                           //!< Get min value
         double          lnLikelihoodRatio(const RbObject* value);               //!< Ln likelihood ratio
         double          lnPdf(const RbObject* value);                           //!< Ln probability density
         double          lnPriorRatio(const RbObject* newVal, const RbObject* oldVal); //!< Ln prior ratio
         double          pdf(const RbObject* value);                             //!< Probability density
         double          quantile(const double p);                               //!< Quantile
-        RbDouble*       rv();                                                   //!< Generate random variable
+        Real*       rv();                                                   //!< Generate random variable
 };
 
 #endif

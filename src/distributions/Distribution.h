@@ -22,7 +22,7 @@
 #define Distribution_H
 
 #include "MemberObject.h"
-#include "RbDouble.h"
+#include "Real.h"
 
 #include <set>
 #include <string>
@@ -72,7 +72,7 @@ class Distribution: public MemberObject {
         virtual const RbObject*     executeOperation(const std::string& name, std::vector<DAGNode*>& args);         //!< Execute method
 
         // Workspace variables
-        RbDouble					retDouble;                                                                      //!< Return double
+        Real					retDouble;                                                                      //!< Return double
         RbObject*					retObject;                                                                      //!< Return object
 };
 

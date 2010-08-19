@@ -30,7 +30,7 @@
 #include <string>
 
 class DAGNode;
-class IntVector;
+class VectorInteger;
 class RbObject;
 
 typedef struct {
@@ -67,7 +67,7 @@ class Frame {
 	    void                        addReference(const std::string& name, const std::string& type, int dim=0);          //!< Add empty reference
 	    void                        addVariable(const std::string& name, RbObject* value);                              //!< Add a const variable
 	    void                        addVariable(const std::string& name, DAGNode* var);                                 //!< Add a variable
-	    void                        addVariable(const std::string& name, const IntVector& index, DAGNode* var);         //!< Add container variable
+	    void                        addVariable(const std::string& name, const VectorInteger& index, DAGNode* var);         //!< Add container variable
 	    void                        addVariable(const std::string& name, const std::string& type, int dim=0);           //!< Add declared but empty slot
         void                        eraseVariable(const std::string& name);                                             //!< Erase a variable
         bool                        existsVariable(const std::string& name) const;                                      //!< Does variable exist?
@@ -80,14 +80,14 @@ class Frame {
         DAGNode*                    getVariable(const std::string& name);                                               //!< Get non-const variable
         const Frame*                getVariableFrame(const std::string& name) const;                                    //!< Get frame of variable
         const VariableTable&        getVariableTable(void) const { return variableTable; }                              //!< Return variable table
-        const RbObject*             getValElement(const std::string& name, const IntVector& index) const;               //!< Get val elem
-        const DAGNode*              getVarElement(const std::string& name, const IntVector& index) const;               //!< Get var elem
-        DAGNode*                    getVarElement(const std::string& name, const IntVector& index);                     //!< Get non-const var elem
+        const RbObject*             getValElement(const std::string& name, const VectorInteger& index) const;               //!< Get val elem
+        const DAGNode*              getVarElement(const std::string& name, const VectorInteger& index) const;               //!< Get var elem
+        DAGNode*                    getVarElement(const std::string& name, const VectorInteger& index);                     //!< Get non-const var elem
         void                        setFrameName(const std::string& name);                                              //!< Set base name of frame
         void                        setValue(const std::string& name, RbObject* val);                                   //!< Set variable value
         void                        setVariable(const std::string& name, DAGNode* var);                                 //!< Set variable
-        void                        setValElement(const std::string& name, const IntVector& index, RbObject* value);    //!< Set element of an object
-        void                        setVarElement(const std::string& name, const IntVector& index, DAGNode* variable);  //!< Set element of a DAG node container
+        void                        setValElement(const std::string& name, const VectorInteger& index, RbObject* value);    //!< Set element of an object
+        void                        setVarElement(const std::string& name, const VectorInteger& index, DAGNode* variable);  //!< Set element of a DAG node container
         int                         getDim(void) const { return 1; }                                                    //!< Get subscript dimensions
 	
     protected:

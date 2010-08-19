@@ -45,10 +45,10 @@ class ConstantNode : public DAGNode {
 
         // ConstantNode functions
         const RbObject*         getStoredValue(void) { return value; }                         //!< Get stored value
-        const RbObject*         getValElement(const IntVector& index) const;                   //!< Get element of value    
+        const RbObject*         getValElement(const VectorInteger& index) const;                   //!< Get element of value    
         const RbObject*         getValue(void) { return value; }                               //!< Get value
         const RbObject*         getValue(void) const { return value; }                         //!< Get value (const)
-        void                    setElement(const IntVector& index, RbObject* val);             //!< Set element of value
+        void                    setElement(const VectorInteger& index, RbObject* val);             //!< Set element of value
         void                    setValue(RbObject* val);                                       //!< Set value
 
         // DAG functions

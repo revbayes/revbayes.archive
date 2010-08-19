@@ -218,7 +218,7 @@ void RbFunction::printValue(std::ostream& o) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
-bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector* matchScore) {
+bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInteger* matchScore) {
 
     /*********************  0. Initialization  **********************/
 

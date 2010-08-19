@@ -16,8 +16,8 @@
  * $Id$
  */
 
-#include "IntVector.h"
-#include "RbDouble.h"
+#include "VectorInteger.h"
+#include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "Simplex.h"
@@ -95,7 +95,7 @@ bool Simplex::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const VectorString& Simplex::getClass() const {
 
-    static VectorString rbClass = VectorString(Simplex_name) + Vector::getClass();
+    static VectorString rbClass = VectorString(Simplex_name) + VectorReal::getClass();
     return rbClass;
 }
 
@@ -134,21 +134,21 @@ void Simplex::rescale(void) {
 
 
 /** Do not allow the parser to resize the simplex */
-void Simplex::resize(const IntVector& len) {
+void Simplex::resize(const VectorInteger& len) {
 
     throw (RbException("Cannot resize simplex"));
 }
 
 
 /** Allow parser to set an element (actually do not) */
-void Simplex::setElement(const IntVector& index, RbObject* val) {
+void Simplex::setElement(const VectorInteger& index, RbObject* val) {
 
     throw (RbException("Cannot set single value of simplex"));
 }
 
 
-/** Set value of simplex using Vector */
-void Simplex::setValue(const Vector& x) {
+/** Set value of simplex using VectorReal */
+void Simplex::setValue(const VectorReal& x) {
 
     for (size_t i=0; i<x.size(); i++)
         if (x[i] < 0.0)

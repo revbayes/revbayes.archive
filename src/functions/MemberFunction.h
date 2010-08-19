@@ -26,7 +26,7 @@
 
 class ArgumentRule;
 class DAGNode;
-class IntVector;
+class VectorInteger;
 class VectorString;
 
 class MemberFunction :  public RbFunction {

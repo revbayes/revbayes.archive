@@ -16,7 +16,7 @@
  * $Id$
  */
 
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
@@ -133,7 +133,7 @@ const VectorString& VectorString::getClass() const {
 
 
 /** Get element for parser (read-only) */
-const RbObject* VectorString::getElement(const IntVector& index) const {
+const RbObject* VectorString::getElement(const VectorInteger& index) const {
 
     static RbString x;
 
@@ -156,9 +156,9 @@ const std::string& VectorString::getElementType(void) const {
 
 
 /** Get element length for parser */
-const IntVector& VectorString::getLength() const {
+const VectorInteger& VectorString::getLength() const {
 
-    static IntVector length = IntVector(0);
+    static VectorInteger length = VectorInteger(0);
 
     length[0] = int(value.size());
     return length;
@@ -171,7 +171,7 @@ bool VectorString::isConvertibleTo(const std::string& type) const {
 }
 
 /** Allow parser to resize the string vector */
-void VectorString::resize(IntVector const& len) {
+void VectorString::resize(VectorInteger const& len) {
 
     if ( len.size() != 1 )
         throw (RbException("Length specification error"));
@@ -181,7 +181,7 @@ void VectorString::resize(IntVector const& len) {
 
 
 /** Allow parser to set an element (any type conversion is done by the parser) */
-void VectorString::setElement(const IntVector& index, RbObject* val) {
+void VectorString::setElement(const VectorInteger& index, RbObject* val) {
 
     if ( !val->isType(RbString_name) )
         throw (RbException("Type mismatch"));
@@ -201,7 +201,7 @@ void VectorString::setElement(const IntVector& index, RbObject* val) {
 
 
 /** Allow parser to rearrange the container (actually do not allow it) */
-void VectorString::setLength(const IntVector& len) {
+void VectorString::setLength(const VectorInteger& len) {
 
     if ( len.size() != 1 && len[0] != int(value.size()) )
         throw (RbException("Length specification error"));

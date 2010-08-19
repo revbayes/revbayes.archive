@@ -21,9 +21,9 @@
 #include "Ellipsis.h"
 #include "Func__lookup.h"
 #include "Frame.h"
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "RbException.h"
-#include "RbInt.h"
+#include "Integer.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "VectorString.h"
@@ -101,12 +101,12 @@ RbObject* Func__lookup::executeOperation(const std::vector<DAGNode*>& args) {
 
     // Get the index vector from the DAGNodeContainer corresponding to the ellipsis,
     // if there is one. Subtract one to get internal 0-based index.
-    IntVector index;
+    VectorInteger index;
     if (args.size() > 1) {
         const Container* indexContainer = dynamic_cast<const Container*>(args[1]->getValue());
         assert(indexContainer != NULL);
         for (size_t i=0; i<indexContainer->size(); i++)
-            index.push_back(((RbInt*)((*indexContainer)[i]))->getValue()-1);
+            index.push_back(((Integer*)((*indexContainer)[i]))->getValue()-1);
     }
     
     if (index.size() == 0)
@@ -159,11 +159,11 @@ DAGNode* Func__lookup::getVariable(void) const {
 
     // Get the index vector from the DAGNodeContainer corresponding to the ellipsis,
     // if there is one. Subtract one to get internal 0-based index.
-    IntVector index;
+    VectorInteger index;
     const Container* indexContainer = dynamic_cast<const Container*>(args[1]->getValue());
     assert(indexContainer != NULL);
     for (size_t i=0; i<indexContainer->size(); i++)
-        index.push_back(((RbInt*)((*indexContainer)[i]))->getValue()-1);
+        index.push_back(((Integer*)((*indexContainer)[i]))->getValue()-1);
     
     return theVariableContainer->getVarElement(index);
 }

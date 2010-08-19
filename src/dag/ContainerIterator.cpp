@@ -15,12 +15,12 @@
  */
 
 #include "ContainerIterator.h"
-#include "IntVector.h"
+#include "VectorInteger.h"
 #include "RbException.h"
 
 
 /** Constructor from start value and length in each dimension */
-ContainerIterator::ContainerIterator(const IntVector& index, const IntVector& len) {
+ContainerIterator::ContainerIterator(const VectorInteger& index, const VectorInteger& len) {
 
     if (len.size() == 0 || index.size() == 0)
         throw RbException("Container index with missing length");

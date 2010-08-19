@@ -27,14 +27,14 @@
 
 
 /** Construct from double */
-RealPos::RealPos(const double v) : RbDouble(v) {
+RealPos::RealPos(const double v) : Real(v) {
 
     if (v <= 0.0)
         throw RbException("Nonpositive value for " + RealPos_name);
 }
 
 /** Construct from int */
-RealPos::RealPos(const int v) : RbDouble(v) {
+RealPos::RealPos(const int v) : Real(v) {
 
     if (v <= 0)
         throw RbException("Nonpositive value for " + RealPos_name);
@@ -49,14 +49,14 @@ RbObject* RealPos::clone(void) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* RealPos::convertTo(const std::string& type) const {
 
-    if (type == RbDouble_name)
-        return new RbDouble(value);
+    if (type == Real_name)
+        return new Real(value);
     return NULL;}
 
 /** Get class vector describing type of object */
 const VectorString& RealPos::getClass() const {
 
-    static VectorString rbClass = VectorString(RealPos_name) + RbDouble::getClass();
+    static VectorString rbClass = VectorString(RealPos_name) + Real::getClass();
     return rbClass;
 }
 
@@ -65,7 +65,7 @@ bool RealPos::isConvertibleTo(const std::string& type) const {
 
     if (type == RealPos_name)
         return true;
-    else if (type == RbDouble_name)
+    else if (type == Real_name)
         return true;
     return false;
 }
@@ -76,7 +76,7 @@ void RealPos::setValue(double x) {
     if (x <= 0.0)
         throw RbException("Nonpositive value for " + RealPos_name);
 
-    RbDouble::setValue(x);
+    Real::setValue(x);
 }
 
 /** Get complete info about object */

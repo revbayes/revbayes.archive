@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of RbInt, which is
+ * This file contains the implementation of Integer, which is
  * a RevBayes wrapper around a regular int.
  *
- * @brief Implementation of RbInt
+ * @brief Implementation of Integer
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -17,11 +17,11 @@
  */
 
 
-#include "RbBool.h"
+#include "Boolean.h"
 #include "RealPos.h"
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbException.h"
-#include "RbInt.h"
+#include "Integer.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "VectorString.h"
@@ -29,12 +29,12 @@
 #include <sstream>
 
 /** Construct from int */
-RbInt::RbInt(const int v)
+Integer::Integer(const int v)
     : RbObject(), value(v) {
 }
 
 /** Construct from bool */
-RbInt::RbInt(const bool v)
+Integer::Integer(const bool v)
     : RbObject() {
 
     if (v) value = 1;
@@ -42,18 +42,18 @@ RbInt::RbInt(const bool v)
 }
 
 /** Clone object */
-RbObject* RbInt::clone(void) const {
+RbObject* Integer::clone(void) const {
 
-	return  (RbObject*)(new RbInt(*this));
+	return  (RbObject*)(new Integer(*this));
 }
 
 /** Convert to object of another class. The caller manages the object. */
-RbObject* RbInt::convertTo(const std::string& type) const {
+RbObject* Integer::convertTo(const std::string& type) const {
 
     if (type == RbBool_name) 
-        return new RbBool(value == 0);
-    else if (type == RbDouble_name)
-        return new RbDouble(value);
+        return new Boolean(value == 0);
+    else if (type == Real_name)
+        return new Real(value);
     else if (type == RealPos_name && value > 0)
         return new RealPos(value);
     else if (type == RbString_name) 
@@ -62,22 +62,22 @@ RbObject* RbInt::convertTo(const std::string& type) const {
         o << value;
         return new RbString(o.str());
 		}
-    else if (type == IntVector_name)
-        return new IntVector(value);
+    else if (type == VectorInteger_name)
+        return new VectorInteger(value);
     throw RbException("Cannot convert int to " + type + ".");
     return NULL;
 }
 
 /** Pointer-based equals comparison */
-bool RbInt::equals(const RbObject* obj) const {
+bool Integer::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
-    const RbInt* p = dynamic_cast<const RbInt*>(obj);
+    const Integer* p = dynamic_cast<const Integer*>(obj);
     if (p != NULL)
         return value == p->value;
 
     // Try converting the object to an int
-    p = dynamic_cast<const RbInt*>(obj->convert(RbInt_name));
+    p = dynamic_cast<const Integer*>(obj->convert(RbInt_name));
     if (p == NULL)
         return false;
 
@@ -88,36 +88,36 @@ bool RbInt::equals(const RbObject* obj) const {
 }
 
 /** Get class vector describing type of object */
-const VectorString& RbInt::getClass() const {
+const VectorString& Integer::getClass() const {
 
     static VectorString rbClass = VectorString(RbInt_name) + RbObject::getClass();
     return rbClass;
 }
 
 /** Convert to object of another class. The caller manages the object. */
-bool RbInt::isConvertibleTo(const std::string& type) const {
+bool Integer::isConvertibleTo(const std::string& type) const {
 
     if (type == RbBool_name)
         return true;
-    else if (type == RbDouble_name)
+    else if (type == Real_name)
         return true;
     else if (type == RealPos_name && value > 0)
         return true;
     else if (type == RbString_name)
         return true;
-    else if (type == IntVector_name)
+    else if (type == VectorInteger_name)
         return true;
     return false;
 }
 
 /** Print value for user */
-void RbInt::printValue(std::ostream &o) const {
+void Integer::printValue(std::ostream &o) const {
 
     o << value;
 }
 
 /** Get complete info about object */
-std::string RbInt::toString(void) const {
+std::string Integer::toString(void) const {
 
 	std::ostringstream o;
     o << "Integer(";

@@ -77,7 +77,7 @@ bool RandomNumberGenerator::isConvertibleTo(const std::string& type) const {
 /** Print value for user */
 void RandomNumberGenerator::printValue(std::ostream& o) const {
 
-    o << "Random number generator (seed = " << IntVector(seed) << ")";
+    o << "Random number generator (seed = " << VectorInteger(seed) << ")";
 }
 
 
@@ -86,7 +86,7 @@ std::string RandomNumberGenerator::toString(void) const {
 
     std::ostringstream o;
     o << "Random Number Generator:" << std::endl;
-    o << "seed = " << IntVector(seed) << std::endl;
+    o << "seed = " << VectorInteger(seed) << std::endl;
 
     return o.str();
 }

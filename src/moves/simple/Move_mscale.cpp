@@ -94,9 +94,9 @@ const MemberRules& Move_mscale::getMemberRules(void) const {
 /** Perform the move */
 double Move_mscale::perform(std::set<StochasticNode*>& affectedNodes) {
 
-    RbDouble*              valPtr = (RbDouble*)(nodePtr->getValuePtr(affectedNodes));
+    Real*              valPtr = (Real*)(nodePtr->getValuePtr(affectedNodes));
     RandomNumberGenerator* rng    = (RandomNumberGenerator*)(getValue("rng"));
-    double                 lambda = ((RbDouble*)(getValue("lambda")))->getValue();
+    double                 lambda = ((Real*)(getValue("lambda")))->getValue();
 
     double curVal = valPtr->getValue();
     double u      = rng->uniform01();

@@ -24,7 +24,7 @@
 #include <string>
 
 class DAGNode;
-class RbDouble;
+class Real;
 class StochasticNode;
 class VectorString;
 
@@ -45,13 +45,13 @@ class Dist_exp: public DistributionReal {
         // Real-valued distribution functions
         double                      cdf(const double q);                                           //!< Cumulative density
         Move*                       getDefaultMove(StochasticNode* node);                          //!< Get default move
-        const RbDouble*             getMin(void);                                                  //!< Get min value
+        const Real*             getMin(void);                                                  //!< Get min value
         double                      lnLikelihoodRatio(const RbObject* value);                      //!< Ln likelihood ratio
         double                      lnPdf(const RbObject* value);                                  //!< Ln probability density
         double                      lnPriorRatio(const RbObject* newVal, const RbObject* oldVal);  //!< Ln prior ratio
         double                      pdf(const RbObject* value);                                    //!< Probability density
         double                      quantile(const double p);                                      //!< Quantile
-        RbDouble*                   rv(void);                                                      //!< Generate random variable
+        Real*                   rv(void);                                                      //!< Generate random variable
 };
 
 #endif

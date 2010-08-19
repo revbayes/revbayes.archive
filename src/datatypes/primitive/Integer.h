@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of RbInt, which is
+ * This file contains the declaration of Integer, which is
  * a RevBayes wrapper around a regular int.
  *
- * @brief Declaration of RbInt
+ * @brief Declaration of Integer
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -26,11 +26,11 @@
 
 class VectorString;
 
-class RbInt : public RbObject {
+class Integer : public RbObject {
 
     public:
-                                    RbInt(const int v);                              //!< Constructor from int
-                                    RbInt(const bool v);                             //!< Constructor from bool
+                                    Integer(const int v);                              //!< Constructor from int
+                                    Integer(const bool v);                             //!< Constructor from bool
 
         // Basic utility functions
         RbObject*                   clone(void) const;                               //!< Clone object

@@ -176,9 +176,9 @@
 
 #include "Parser.h"
 #include "RealPos.h"
-#include "RbBool.h"
-#include "RbDouble.h"
-#include "RbInt.h"
+#include "Boolean.h"
+#include "Real.h"
+#include "Integer.h"
 #include "RbString.h"
 #include "SyntaxElement.h"
 #include "SyntaxAssignExpr.h"
@@ -2640,7 +2640,7 @@ yyreduce:
 #line 541 "grammar.y"
     {
                     PRINTF("Parser inserting bool constant (false) in syntax tree\n");
-                    (yyval.syntaxElement) = new SyntaxConstant(new RbBool(false));
+                    (yyval.syntaxElement) = new SyntaxConstant(new Boolean(false));
                 }
     break;
 
@@ -2648,7 +2648,7 @@ yyreduce:
 #line 546 "grammar.y"
     {
                     PRINTF("Parser inserting bool constant (true) in syntax tree\n");
-                    (yyval.syntaxElement) = new SyntaxConstant(new RbBool(true));
+                    (yyval.syntaxElement) = new SyntaxConstant(new Boolean(true));
                 }
     break;
 
@@ -2664,7 +2664,7 @@ yyreduce:
 #line 556 "grammar.y"
     {
                     PRINTF("Parser inserting int constant in syntax tree\n");
-                    (yyval.syntaxElement) = new SyntaxConstant(new RbInt((yyvsp[(1) - (1)].intValue)));
+                    (yyval.syntaxElement) = new SyntaxConstant(new Integer((yyvsp[(1) - (1)].intValue)));
                 }
     break;
 
@@ -2707,11 +2707,11 @@ yyreduce:
                         }
                         prec = (int)(strlen(yytext)) - 1 - i;
                     }
-                    RbDouble* real;
+                    Real* real;
                     if ((yyvsp[(1) - (1)].realValue) > 0.0)
                         real = new RealPos((yyvsp[(1) - (1)].realValue));
                     else
-                        real = new RbDouble((yyvsp[(1) - (1)].realValue));
+                        real = new Real((yyvsp[(1) - (1)].realValue));
                     //real->setPrecision(prec);
                     //real->setScientific(sci);
                     PRINTF("Parser inserting double constant in syntax tree \n");

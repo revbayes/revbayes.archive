@@ -21,7 +21,7 @@
 #include "Move_mscale.h"
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbNames.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -39,7 +39,7 @@ Dist_exp::Dist_exp(void) : DistributionReal(getMemberRules()) {
 /** Constructor for internal use */
 Dist_exp::Dist_exp(double rate, RandomNumberGenerator* rng) : DistributionReal(getMemberRules()) {
 
-    setValue("rate", new RbDouble(rate));
+    setValue("rate", new Real(rate));
     setValue("rng",  rng);
 }
 
@@ -55,7 +55,7 @@ Dist_exp::Dist_exp(double rate, RandomNumberGenerator* rng) : DistributionReal(g
  */
 double Dist_exp::cdf(double q) {
 
-    double lambda = ((RbDouble*) getValue("rate"))->getValue();
+    double lambda = ((Real*) getValue("rate"))->getValue();
 
     return 1.0 - std::exp( -lambda * q );
 }
@@ -80,9 +80,9 @@ Move* Dist_exp::getDefaultMove(StochasticNode* node) {
 }
 
 /** Get min value of distribution */
-const RbDouble* Dist_exp::getMin(void) {
+const Real* Dist_exp::getMin(void) {
 
-    static RbDouble rbZero = RbDouble(0.0);
+    static Real rbZero = Real(0.0);
     return &rbZero;
 }
 
@@ -124,9 +124,9 @@ const std::string& Dist_exp::getVariableType(void) const {
  */
 double Dist_exp::lnLikelihoodRatio(const RbObject* value) {
 
-    double lambdaNew = ((RbDouble*) (getVariable("rate")->getValue      ()))->getValue();
-    double lambdaOld = ((RbDouble*) (getVariable("rate")->getStoredValue()))->getValue();
-    double x         = ((RbDouble*) value)->getValue();
+    double lambdaNew = ((Real*) (getVariable("rate")->getValue      ()))->getValue();
+    double lambdaOld = ((Real*) (getVariable("rate")->getStoredValue()))->getValue();
+    double x         = ((Real*) value)->getValue();
 
     return std::log( lambdaNew ) - std::log( lambdaOld ) + (lambdaOld - lambdaNew) * x;
 }
@@ -142,8 +142,8 @@ double Dist_exp::lnLikelihoodRatio(const RbObject* value) {
  */
 double Dist_exp::lnPdf(const RbObject* value) {
 
-    double lambda = ((RbDouble*) getValue("rate"))->getValue();
-    double x      = ((RbDouble*) value)->getValue();
+    double lambda = ((Real*) getValue("rate"))->getValue();
+    double x      = ((Real*) value)->getValue();
 
     return std::log(lambda) -lambda * x;
 }
@@ -160,9 +160,9 @@ double Dist_exp::lnPdf(const RbObject* value) {
  */
 double Dist_exp::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
 
-    double lambda = ((RbDouble*) getValue("rate"))->getValue();
-    double newX   = ((RbDouble*) newVal)->getValue();
-    double oldX   = ((RbDouble*) oldVal)->getValue();
+    double lambda = ((Real*) getValue("rate"))->getValue();
+    double newX   = ((Real*) newVal)->getValue();
+    double oldX   = ((Real*) oldVal)->getValue();
 
     return lambda * (oldX - newX);
 }
@@ -178,8 +178,8 @@ double Dist_exp::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
  */
 double Dist_exp::pdf(const RbObject* value) {
 
-    double lambda = ((RbDouble*) getValue("rate"))->getValue();
-    double x      = ((RbDouble*) value)->getValue();
+    double lambda = ((Real*) getValue("rate"))->getValue();
+    double x      = ((Real*) value)->getValue();
 
     return lambda * std::exp( -lambda * x );
 }
@@ -196,7 +196,7 @@ double Dist_exp::pdf(const RbObject* value) {
  */
 double Dist_exp::quantile(const double p) {
 
-    double lambda = ((RbDouble*) getValue("rate"))->getValue();
+    double lambda = ((Real*) getValue("rate"))->getValue();
 
     return -( 1.0 / lambda ) * std::log( 1.0 - p );
 }
@@ -209,9 +209,9 @@ double Dist_exp::quantile(const double p) {
  *
  * @return      Random draw from exponential distribution
  */
-RbDouble* Dist_exp::rv(void) {
+Real* Dist_exp::rv(void) {
 
-    double                 lambda = ((RbDouble*) getValue("rate"))->getValue();
+    double                 lambda = ((Real*) getValue("rate"))->getValue();
     RandomNumberGenerator* rng    = (RandomNumberGenerator*)(getValue("rng"));
 
     double u = rng->uniform01();

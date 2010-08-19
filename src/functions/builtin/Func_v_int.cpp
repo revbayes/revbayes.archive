@@ -24,7 +24,7 @@
 #include "Func__lookup.h"
 #include "Func_v_int.h"
 #include "RbException.h"
-#include "RbInt.h"
+#include "Integer.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
 #include "VectorString.h"
@@ -48,17 +48,17 @@ RbObject* Func_v_int::executeOperation(const std::vector<DAGNode*>& args) {
     std::vector<int>    tempVec;
 
     // Get first element
-    tempVec.push_back(((RbInt*)(args[0]->getValue()))->getValue());
+    tempVec.push_back(((Integer*)(args[0]->getValue()))->getValue());
 
     // Get following elements
     if (args.size() > 1) {
         DAGNodeContainer*   elements = dynamic_cast<DAGNodeContainer*>(args[1]);
         for (size_t i=0; i<elements->size(); i++) {
-            tempVec.push_back(((RbInt*)(elements->getValElement(i)))->getValue());
+            tempVec.push_back(((Integer*)(elements->getValElement(i)))->getValue());
         }
     }
 
-    return new IntVector(tempVec);
+    return new VectorInteger(tempVec);
 }
 
 
@@ -90,6 +90,6 @@ const VectorString& Func_v_int::getClass(void) const {
 /** Get return type */
 const std::string& Func_v_int::getReturnType(void) const {
 
-    return IntVector_name;
+    return VectorInteger_name;
 }
 

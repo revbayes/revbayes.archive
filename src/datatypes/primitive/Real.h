@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of RbDouble, which is
+ * This file contains the declaration of Real, which is
  * a RevBayes wrapper around a regular double.
  *
- * @brief Declaration of RbDouble
+ * @brief Declaration of Real
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -16,8 +16,8 @@
  * $Id$
  */
 
-#ifndef RbDouble_H
-#define RbDouble_H
+#ifndef Real_H
+#define Real_H
 
 #include "RbObject.h"
 
@@ -27,13 +27,13 @@
 class VectorString;
 
 /** @note Some functions are virtual because RealPos is derived from double */
-class RbDouble : public RbObject {
+class Real : public RbObject {
 
     public:
-                                    RbDouble(void);                                  //!< Default constructor (0.0)
-                                    RbDouble(const double v);                        //!< Construct from double
-                                    RbDouble(const int v);                           //!< Construct from int 
-                                    RbDouble(const bool v);                          //!< Construct from bool
+                                    Real(void);                                  //!< Default constructor (0.0)
+                                    Real(const double v);                        //!< Construct from double
+                                    Real(const int v);                           //!< Construct from int 
+                                    Real(const bool v);                          //!< Construct from bool
 
         // Basic utility functions
         virtual RbObject*           clone(void) const;                               //!< Clone object

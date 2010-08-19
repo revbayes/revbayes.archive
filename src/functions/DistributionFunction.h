@@ -17,7 +17,7 @@
 #ifndef DistributionFunction_H
 #define DistributionFunction_H
 
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbFunction.h"
 
 #include <map>
@@ -28,7 +28,7 @@
 class ArgumentRule;
 class DAGNode;
 class Distribution;
-class IntVector;
+class VectorInteger;
 class VectorString;
 
 class DistributionFunction :  public RbFunction {
@@ -51,7 +51,7 @@ class DistributionFunction :  public RbFunction {
         // DistributionFunction functions
         const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
         const std::string&          getReturnType(void) const;              //!< Get type of return value
-        bool                        processArguments(const std::vector<Argument>& args, IntVector* matchScore=NULL);    //!< Process args, set member variables of distribution
+        bool                        processArguments(const std::vector<Argument>& args, VectorInteger* matchScore=NULL);    //!< Process args, set member variables of distribution
 
 	protected:
         RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation

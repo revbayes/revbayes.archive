@@ -18,9 +18,9 @@
 #include "DAGNode.h"
 #include "ConstantNode.h"
 #include "MinmaxRule.h"
-#include "RbDouble.h"
+#include "Real.h"
 #include "RbException.h"
-#include "RbInt.h"
+#include "Integer.h"
 #include "RbNames.h"
 #include "RbObject.h"
 #include "VectorString.h"
@@ -34,7 +34,7 @@ MinmaxRule::MinmaxRule(const std::string& argName, const std::string& valType, R
     : ArgumentRule(argName, valType, 0) {
 
     /* TODO: Does not work in gcc
-    if (!Workspace::globalWorkspace().isXOfTypeY(valType, RbDouble_name) &&
+    if (!Workspace::globalWorkspace().isXOfTypeY(valType, Real_name) &&
         !Workspace::globalWorkspace().isXOfTypeY(valType, RbInt_name))
         throw RbException("Wrong type for argument rule with min and max");
     */
@@ -53,7 +53,7 @@ MinmaxRule::MinmaxRule(const std::string& argName, const std::string& valType, R
 MinmaxRule::MinmaxRule(const std::string& argName, RbObject* defVal, RbObject* min, RbObject* max)
     : ArgumentRule(argName, defVal) {
 
-    if (!defVal->isType(RbDouble_name) &&
+    if (!defVal->isType(Real_name) &&
         !defVal->isType(RbInt_name))
         throw RbException("Wrong type for argument rule with min and max");
 
@@ -137,28 +137,28 @@ bool MinmaxRule::isArgValid(DAGNode* var) const {
     if (val == NULL)
         return false;
 
-    if (val->isType(RbDouble_name)) {
-        double x = ((RbDouble*)(val))->getValue();
+    if (val->isType(Real_name)) {
+        double x = ((Real*)(val))->getValue();
         if (minVal != NULL) {
-            double min = ((RbDouble*)(minVal))->getValue();
+            double min = ((Real*)(minVal))->getValue();
             if (x < min)
                 return false;
         }
         if (maxVal != NULL) {
-            double max = ((RbDouble*)(maxVal))->getValue();
+            double max = ((Real*)(maxVal))->getValue();
             if (x > max)
                 return false;
         }
     }
     else if (val->isType(RbInt_name)) {
-        int x = ((RbInt*)(val))->getValue();
+        int x = ((Integer*)(val))->getValue();
         if (minVal != NULL) {
-            int min = ((RbInt*)(minVal))->getValue();
+            int min = ((Integer*)(minVal))->getValue();
             if (x < min)
                 return false;
         }
         if (maxVal != NULL) {
-            int max = ((RbInt*)(maxVal))->getValue();
+            int max = ((Integer*)(maxVal))->getValue();
             if (x > max)
                 return false;
         }
