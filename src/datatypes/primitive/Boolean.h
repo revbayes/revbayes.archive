@@ -16,8 +16,8 @@
  * $Id$
  */
 
-#ifndef RbBool_H
-#define RbBool_H
+#ifndef Boolean_H
+#define Boolean_H
 
 #include "RbObject.h"
 

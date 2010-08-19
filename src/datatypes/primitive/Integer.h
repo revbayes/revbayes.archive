@@ -16,8 +16,8 @@
  * $Id$
  */
 
-#ifndef RbInt_H
-#define RbInt_H
+#ifndef Integer_H
+#define Integer_H
 
 #include "RbObject.h"
 
