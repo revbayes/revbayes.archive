@@ -28,7 +28,7 @@ class Func_model :  public RbFunction {
     public:
         // Basic utility functions
         RbObject*               clone(void) const;                                      //!< Clone object
-    	const StringVector&     getClass(void) const;                                   //!< Get class vector
+    	const VectorString&     getClass(void) const;                                   //!< Get class vector
 
         // Func_model functions
         const ArgumentRules&    getArgumentRules(void) const;                           //!< Get argument rules

@@ -18,13 +18,13 @@
 
 
 #include "RbBool.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RbDouble.h"
 #include "RbException.h"
 #include "RbInt.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
@@ -54,8 +54,8 @@ RbObject* RbInt::convertTo(const std::string& type) const {
         return new RbBool(value == 0);
     else if (type == RbDouble_name)
         return new RbDouble(value);
-    else if (type == PosReal_name && value > 0)
-        return new PosReal(value);
+    else if (type == RealPos_name && value > 0)
+        return new RealPos(value);
     else if (type == RbString_name) 
 		{
         std::ostringstream o;
@@ -88,9 +88,9 @@ bool RbInt::equals(const RbObject* obj) const {
 }
 
 /** Get class vector describing type of object */
-const StringVector& RbInt::getClass() const {
+const VectorString& RbInt::getClass() const {
 
-    static StringVector rbClass = StringVector(RbInt_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(RbInt_name) + RbObject::getClass();
     return rbClass;
 }
 
@@ -101,7 +101,7 @@ bool RbInt::isConvertibleTo(const std::string& type) const {
         return true;
     else if (type == RbDouble_name)
         return true;
-    else if (type == PosReal_name && value > 0)
+    else if (type == RealPos_name && value > 0)
         return true;
     else if (type == RbString_name)
         return true;

@@ -27,7 +27,7 @@
 class ArgumentRule;
 class DAGNode;
 class IntVector;
-class StringVector;
+class VectorString;
 
 class MemberFunction :  public RbFunction {
 
@@ -38,7 +38,7 @@ class MemberFunction :  public RbFunction {
         std::string                 briefInfo(void) const;                  //!< Brief info about object
         MemberFunction*             clone(void) const;                      //!< Clone the object
     	bool                        equals(const RbObject* obj) const;      //!< Equals comparison
-    	const StringVector&         getClass(void) const;                   //!< Get class vector
+    	const VectorString&         getClass(void) const;                   //!< Get class vector
         std::string                 toString(void) const;                   //!< Complete info about object
 
         // Regular functions

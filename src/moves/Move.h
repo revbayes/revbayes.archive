@@ -21,7 +21,7 @@
 #include "MemberObject.h"
 
 class RandomNumberGenerator;
-class StringVector;
+class VectorString;
 
 class Move : public MemberObject {
 
@@ -30,7 +30,7 @@ class Move : public MemberObject {
 
         // Basic utility functions
         virtual RbObject*           clone(void) const = 0;                                                                      //!< Clone the object
-        virtual const StringVector& getClass(void) const;                                                                       //!< Get class vector
+        virtual const VectorString& getClass(void) const;                                                                       //!< Get class vector
 
         // Member variable rules
         virtual const MemberRules&  getMemberRules(void) const = 0;                                                             //!< Get member rules

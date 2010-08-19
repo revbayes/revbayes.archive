@@ -21,7 +21,7 @@
 #include "Model.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 #include "WrapperRule.h"
 
@@ -60,9 +60,9 @@ const ArgumentRules& Func_model::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Func_model::getClass(void) const {
+const VectorString& Func_model::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Func_model_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(Func_model_name) + RbFunction::getClass();
     return rbClass;
 }
 

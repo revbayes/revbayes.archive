@@ -22,7 +22,7 @@
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "VariableNode.h"
 
 
@@ -79,9 +79,9 @@ bool MemberObject::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& MemberObject::getClass(void) const {
+const VectorString& MemberObject::getClass(void) const {
 
-    static StringVector rbClass = StringVector(MemberObject_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(MemberObject_name) + RbComplex::getClass();
     return rbClass;
 }
 

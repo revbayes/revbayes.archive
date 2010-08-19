@@ -19,7 +19,7 @@
 #include "Frame.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "SyntaxElement.h"
 #include "UserFunction.h"
 
@@ -107,9 +107,9 @@ const ArgumentRules& UserFunction::getArgumentRules() const {
 
 
 /** Get class vector describing type of object */
-const StringVector& UserFunction::getClass() const {
+const VectorString& UserFunction::getClass() const {
 
-    static StringVector rbClass = StringVector(UserFunction_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(UserFunction_name) + RbFunction::getClass();
     return rbClass;
 }
 

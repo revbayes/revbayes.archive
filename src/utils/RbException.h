@@ -37,7 +37,7 @@ class RbException : public RbInternal {
 
         // Implemented abstract/virtual functions from base classes
         RbException*        clone(void) const;                                      //!< Clone this object
-        const StringVector& getClass() const;                                       //!< Get class vector
+        const VectorString& getClass() const;                                       //!< Get class vector
         void                printValue(std::ostream& o) const;                      //!< Print value (for user)
         std::string         toString(void) const;                                   //!< General info on object
 

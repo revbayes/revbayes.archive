@@ -29,7 +29,7 @@
 #include "RbInt.h"
 #include "RbNames.h"
 #include "RbException.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "SyntaxVariable.h"
 #include "Workspace.h"
 
@@ -124,9 +124,9 @@ bool SyntaxVariable::equals(const SyntaxElement* elem) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& SyntaxVariable::getClass(void) const { 
+const VectorString& SyntaxVariable::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(SyntaxVariable_name) + SyntaxElement::getClass();
+    static VectorString rbClass = VectorString(SyntaxVariable_name) + SyntaxElement::getClass();
 	return rbClass; 
 }
 

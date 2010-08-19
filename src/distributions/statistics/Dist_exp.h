@@ -26,7 +26,7 @@
 class DAGNode;
 class RbDouble;
 class StochasticNode;
-class StringVector;
+class VectorString;
 
 class Dist_exp: public DistributionReal {
 
@@ -36,11 +36,11 @@ class Dist_exp: public DistributionReal {
 
         // Basic utility functions
         Dist_exp*                   clone(void) const;                                             //!< Clone object
-        const StringVector&         getClass(void) const;                                          //!< Get class vector
+        const VectorString&         getClass(void) const;                                          //!< Get class vector
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                    //!< Get member variable rules
-        const std::string&          getVariableType(void) const;                                   //!< Get random variable type (PosReal)
+        const std::string&          getVariableType(void) const;                                   //!< Get random variable type (RealPos)
 
         // Real-valued distribution functions
         double                      cdf(const double q);                                           //!< Cumulative density

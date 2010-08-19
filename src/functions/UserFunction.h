@@ -31,7 +31,7 @@ class DAGNode;
 class Frame;
 class RbObject;
 class RbString;
-class StringVector;
+class VectorString;
 class SyntaxElement;
 
 class UserFunction :  public RbFunction {
@@ -48,7 +48,7 @@ class UserFunction :  public RbFunction {
         std::string                 briefInfo() const;                  //!< Brief info about object
         UserFunction*               clone() const;                      //!< Clone object
         bool                        equals(const RbObject* x) const;    //!< Equals comparison
-        const StringVector&         getClass() const;                   //!< Get class vector
+        const VectorString&         getClass() const;                   //!< Get class vector
         std::string                 toString() const;                   //!< Complete info about object
 
         // Regular functions

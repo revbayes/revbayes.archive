@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of PosReal, which is
+ * This file contains the declaration of RealPos, which is
  * used to hold strictly positive scalar values.
  *
- * @brief Declaration of PosReal
+ * @brief Declaration of RealPos
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -16,26 +16,26 @@
  * $Id$
  */
 
-#ifndef PosReal_H
-#define PosReal_H
+#ifndef RealPos_H
+#define RealPos_H
 
 #include "RbDouble.h"
 
 #include <ostream>
 #include <string>
 
-class StringVector;
+class VectorString;
 
-class PosReal : public RbDouble {
+class RealPos : public RbDouble {
 
     public:
-                                    PosReal(const double v);                        //!< Construct from double
-                                    PosReal(const int v);                           //!< Construct from int 
-                                    PosReal(const bool v);                          //!< Construct from bool
+                                    RealPos(const double v);                        //!< Construct from double
+                                    RealPos(const int v);                           //!< Construct from int 
+                                    RealPos(const bool v);                          //!< Construct from bool
 
         // Basic utility functions
         RbObject*                   clone(void) const;                               //!< Clone object
-        const StringVector&         getClass(void) const;                            //!< Get class vector
+        const VectorString&         getClass(void) const;                            //!< Get class vector
         std::string                 toString(void) const;                            //!< Complete info about object
 
         // Setter disallowing nonpositive values

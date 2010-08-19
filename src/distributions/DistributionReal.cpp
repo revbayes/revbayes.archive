@@ -23,7 +23,7 @@
 #include "RbException.h"
 #include "RbDouble.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <cfloat>
 
@@ -51,7 +51,7 @@ const RbObject* DistributionReal::executeOperation(const std::string& name, std:
         retDouble.setValue(quantile(((RbDouble*)(args[0]->getValue()))->getValue()));
     }
     else if (name == "rv") {
-        if (getVariableType() == PosReal_name)
+        if (getVariableType() == RealPos_name)
             return rv();
         RbDouble* randomVal = (RbDouble*)(rv());
         retDouble.setValue(*randomVal);
@@ -65,9 +65,9 @@ const RbObject* DistributionReal::executeOperation(const std::string& name, std:
 
 
 /** Get class vector describing type of object */
-const StringVector& DistributionReal::getClass(void) const {
+const VectorString& DistributionReal::getClass(void) const {
 
-    static StringVector rbClass = StringVector(DistributionReal_name) + Distribution::getClass();
+    static VectorString rbClass = VectorString(DistributionReal_name) + Distribution::getClass();
     return rbClass;
 }
 
@@ -108,10 +108,10 @@ const MethodTable& DistributionReal::getMethodInits(void) const {
         /* We inherit lnPdf, pdf and rv functions */
         methodInits = Distribution::getMethodInits();
         
-        cdfArgRules.push_back(new ArgumentRule("q", PosReal_name));
+        cdfArgRules.push_back(new ArgumentRule("q", RealPos_name));
         methodInits.addFunction("cdf", new MemberFunction(RbDouble_name, cdfArgRules));
 
-        quantileArgRules.push_back(new ArgumentRule("p", PosReal_name));
+        quantileArgRules.push_back(new ArgumentRule("p", RealPos_name));
         methodInits.addFunction("quantile", new MemberFunction(RbDouble_name, quantileArgRules));
 
         initsSet = true;

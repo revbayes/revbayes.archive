@@ -20,7 +20,7 @@
 #include <ostream>
 #include <string>
 
-class StringVector;
+class VectorString;
 
 class RbObject {
 
@@ -30,7 +30,7 @@ class RbObject {
         // Basic utility functions you have to override (also getClass()!)
         virtual RbObject*           clone(void) const = 0;                                          //!< Clone object
         virtual bool                equals(const RbObject* x) const = 0;                            //!< Equals comparison
-        virtual const StringVector& getClass(void) const;                                           //!< Get class vector
+        virtual const VectorString& getClass(void) const;                                           //!< Get class vector
         virtual void                printValue(std::ostream& o) const = 0;                          //!< Print value for user
         virtual std::string         toString(void) const = 0;                                       //!< Complete info about object
 

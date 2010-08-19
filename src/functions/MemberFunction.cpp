@@ -23,7 +23,7 @@
 #include "RbException.h"
 #include "MemberFunction.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
@@ -67,9 +67,9 @@ RbObject* MemberFunction::executeOperation(const std::vector<DAGNode*>& args) {
 
 
 /** Get class vector describing type of object */
-const StringVector& MemberFunction::getClass(void) const { 
+const VectorString& MemberFunction::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(MemberFunction_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(MemberFunction_name) + RbFunction::getClass();
 	return rbClass; 
 }
 

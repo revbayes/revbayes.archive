@@ -24,14 +24,14 @@
 #include <vector>
 
 class DAGNode;
-class StringVector;
+class VectorString;
 
 class Func_v_int :  public RbFunction {
 
     public:
         // Basic utility functions
         Func_v_int*                 clone(void) const;                                       //!< Clone the object
-    	const StringVector&         getClass(void) const;                                    //!< Get class vector
+    	const VectorString&         getClass(void) const;                                    //!< Get class vector
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;                            //!< Get argument rules

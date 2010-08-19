@@ -19,7 +19,7 @@
 #include "RbNames.h"
 #include "SimpleMove.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <set>
 
@@ -48,9 +48,9 @@ RbObject* SimpleMove::convertTo(const std::string& type) const {
 }
 
 /** Get class vector describing type of object */
-const StringVector& SimpleMove::getClass(void) const { 
+const VectorString& SimpleMove::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(SimpleMove_name) + Move::getClass();
+    static VectorString rbClass = VectorString(SimpleMove_name) + Move::getClass();
 	return rbClass;
 }
 

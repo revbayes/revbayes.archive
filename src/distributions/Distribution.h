@@ -32,7 +32,7 @@ class DAGNode;
 class Move;
 class RandomNumberGenerator;
 class StochasticNode;
-class StringVector;
+class VectorString;
 
 /** @note Constructor adds random number generator to argument rules */
 class Distribution: public MemberObject {
@@ -41,7 +41,7 @@ class Distribution: public MemberObject {
         virtual                    ~Distribution(void);                                                             //!< Destructor
 
         // Basic utility functions
-        virtual const StringVector& getClass(void) const;                                                           //!< Get class vector   
+        virtual const VectorString& getClass(void) const;                                                           //!< Get class vector   
 
         // Member variable rules and random variable type
         virtual const MemberRules&  getMemberRules(void) const;                                                     //!< Get member rules

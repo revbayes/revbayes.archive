@@ -19,7 +19,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
@@ -47,9 +47,9 @@ RbObject* RbObject::convert(const std::string& type) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& RbObject::getClass(void) const { 
+const VectorString& RbObject::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RbObject_name);
+    static VectorString rbClass = VectorString(RbObject_name);
 	return rbClass; 
 }
 
@@ -76,7 +76,7 @@ bool RbObject::isConvertible(const std::string& type) const {
 /** Are we of specified type? We need to check entire class vector in case we are derived from type. */
 bool RbObject::isType(const std::string& type) const {
 
-    const StringVector& classVec = getClass();
+    const VectorString& classVec = getClass();
 
     for (size_t i=0; i<classVec.size(); i++) {
         if (type == classVec[i])

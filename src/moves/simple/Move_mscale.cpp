@@ -17,11 +17,11 @@
 
 #include "ArgumentRule.h"
 #include "Move_mscale.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>
@@ -37,8 +37,8 @@ Move_mscale::Move_mscale(void)
 Move_mscale::Move_mscale(StochasticNode* node, double lambda, double weight, RandomNumberGenerator* rng)
     : SimpleMove(getMemberRules()) {
 
-    setValue("lambda", new PosReal(lambda));
-    setValue("weight", new PosReal(weight));
+    setValue("lambda", new RealPos(lambda));
+    setValue("weight", new RealPos(weight));
     setValue("rng",    rng);
 
     setNodePtr(node);
@@ -58,9 +58,9 @@ RbObject* Move_mscale::convertTo(const std::string& type) const {
 }
 
 /** Get class vector describing type of object */
-const StringVector& Move_mscale::getClass() const {
+const VectorString& Move_mscale::getClass() const {
 
-    static StringVector rbClass = StringVector(Move_mscale_name) + Move::getClass();
+    static VectorString rbClass = VectorString(Move_mscale_name) + Move::getClass();
     return rbClass;
 }
 
@@ -78,7 +78,7 @@ const MemberRules& Move_mscale::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new ArgumentRule("lambda", PosReal_name));
+        memberRules.push_back(new ArgumentRule("lambda", RealPos_name));
 
         /* Inherit weight and rng from Move, put it at back */
         const MemberRules& inheritedRules = Move::getMemberRules();

@@ -25,7 +25,7 @@
 #include "Model.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "UserInterface.h"
 
 #include <algorithm>
@@ -183,9 +183,9 @@ bool Model::equals(const RbObject* obj) const {
 }
 
 /** Get class vector describing object */
-const StringVector& Model::getClass(void) const {
+const VectorString& Model::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Model_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(Model_name) + RbComplex::getClass();
     return rbClass;
 }
 

@@ -24,7 +24,7 @@
 #include <string>
 
 class RbDouble;
-class StringVector;
+class VectorString;
 
 class Dist_unif: public DistributionReal {
 
@@ -36,7 +36,7 @@ class Dist_unif: public DistributionReal {
 
         // Basic utility functions
         Dist_unif*              clone(void) const;                              //!< Clone object
-        const StringVector&     getClass(void) const;                           //!< Get class vector
+        const VectorString&     getClass(void) const;                           //!< Get class vector
 
         // Member variable setup
         const MemberRules&      getMemberRules(void) const;                     //!< Get member variable rules

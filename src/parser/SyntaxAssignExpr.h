@@ -41,7 +41,7 @@ class SyntaxAssignExpr : public SyntaxElement {
         std::string         briefInfo() const;                          //!< Brief info about object
         SyntaxElement*      clone() const;                              //!< Clone object
         bool                equals(const SyntaxElement* elem) const;    //!< Equals comparison
-        const StringVector& getClass(void) const;                       //!< Get class vector 
+        const VectorString& getClass(void) const;                       //!< Get class vector 
         void                print(std::ostream& o) const;               //!< Print info about object
 
         // Regular functions

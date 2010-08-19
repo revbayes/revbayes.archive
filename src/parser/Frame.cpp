@@ -25,7 +25,7 @@
 #include "RbNames.h"
 #include "RbOptions.h"         // For PRINTF
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 
 #include <sstream>

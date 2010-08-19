@@ -25,7 +25,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "UserInterface.h"
 
 #include <fstream>
@@ -61,9 +61,9 @@ const ArgumentRules& Func_quit::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Func_quit::getClass(void) const {
+const VectorString& Func_quit::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Func_quit_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(Func_quit_name) + RbFunction::getClass();
     return rbClass;
 }
 

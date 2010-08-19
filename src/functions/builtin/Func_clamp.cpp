@@ -26,7 +26,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "WrapperRule.h"
 
 #include <cassert>
@@ -74,9 +74,9 @@ const ArgumentRules& Func_clamp::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Func_clamp::getClass(void) const {
+const VectorString& Func_clamp::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Func_clamp_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(Func_clamp_name) + RbFunction::getClass();
     return rbClass;
 }
 

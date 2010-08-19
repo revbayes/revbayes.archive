@@ -27,7 +27,7 @@
 #include "RbInt.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "WrapperRule.h"
 
 #include <cassert>
@@ -80,9 +80,9 @@ const ArgumentRules& Func_v_int::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Func_v_int::getClass(void) const {
+const VectorString& Func_v_int::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Func_v_int_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(Func_v_int_name) + RbFunction::getClass();
     return rbClass;
 }
 

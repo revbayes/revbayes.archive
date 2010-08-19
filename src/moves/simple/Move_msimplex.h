@@ -37,7 +37,7 @@ class Move_msimplex : public SimpleMove {
 
         // Basic utility functions
         RbObject*                   clone(void) const;                                                               //!< Clone object
-        const StringVector&         getClass(void) const;                                                            //!< Get class vector
+        const VectorString&         getClass(void) const;                                                            //!< Get class vector
 
         // Member variable inits
         const MemberRules&          getMemberRules(void) const;                                                      //!< Get member rules

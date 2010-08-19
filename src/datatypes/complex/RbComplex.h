@@ -34,7 +34,7 @@ class Frame;
 class IntVector;
 class MethodTable;
 class MoveSchedule;
-class StringVector;
+class VectorString;
 
 typedef Frame                       MemberTable;                                                            //!< Member table type def, for convenience
 typedef std::vector<ArgumentRule*>  MemberRules;                                                            //!< Member rules type def, for convenience
@@ -47,7 +47,7 @@ class RbComplex : public RbObject {
         // Basic utility functions you have to override
         virtual RbObject*           clone(void) const = 0;                                                  //!< Clone object
         virtual bool                equals(const RbObject* obj) const = 0;                                  //!< Equals comparison
-		virtual const StringVector& getClass(void) const;                                                   //!< Get class vector
+		virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
 		virtual void                printValue(std::ostream& o) const = 0;                                  //!< Print value for user
 		virtual std::string         toString(void) const = 0;                                               //!< Complete info 
 
@@ -69,7 +69,7 @@ class RbComplex : public RbObject {
         ContainerIterator           begin(void) const;                                                      //!< Begin iterator
         ContainerIterator           end(void) const;                                                        //!< End iterator
         virtual int                 getDim(void) { return 0; }                                              //!< Get subscript dimensions
-        virtual const StringVector& getElementClass(void) const { return getClass() ; }                     //!< Get element class
+        virtual const VectorString& getElementClass(void) const { return getClass() ; }                     //!< Get element class
         virtual const RbObject*     getElement(const IntVector& index) const;                               //!< Get element (read-only)
         virtual const IntVector&    getLength(void) const;                                                  //!< Get length in each dim
         virtual void                resize(const IntVector& len);                                           //!< Resize

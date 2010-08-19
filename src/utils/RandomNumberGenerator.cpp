@@ -60,9 +60,9 @@ bool RandomNumberGenerator::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& RandomNumberGenerator::getClass(void) const { 
+const VectorString& RandomNumberGenerator::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RandomNumberGenerator_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(RandomNumberGenerator_name) + RbComplex::getClass();
 	return rbClass;
 }
 

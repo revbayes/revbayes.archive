@@ -18,11 +18,11 @@
 #include "ArgumentRule.h"
 #include "Distribution.h"
 #include "Move_mslide.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>
@@ -38,8 +38,8 @@ Move_mslide::Move_mslide(void)
 Move_mslide::Move_mslide(StochasticNode* node, double delta, double weight, RandomNumberGenerator* rng)
     : SimpleMove(getMemberRules()) {
 
-    setValue("delta",  new PosReal(delta));
-    setValue("weight", new PosReal(weight));
+    setValue("delta",  new RealPos(delta));
+    setValue("weight", new RealPos(weight));
     setValue("rng",    rng);
 
     setNodePtr(node);
@@ -59,9 +59,9 @@ RbObject* Move_mslide::convertTo(const std::string& type) const {
 }
 
 /** Get class vector describing type of object */
-const StringVector& Move_mslide::getClass() const {
+const VectorString& Move_mslide::getClass() const {
 
-    static StringVector rbClass = StringVector(Move_mslide_name) + Move::getClass();
+    static VectorString rbClass = VectorString(Move_mslide_name) + Move::getClass();
     return rbClass;
 }
 
@@ -74,7 +74,7 @@ const MemberRules& Move_mslide::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new ArgumentRule("delta", PosReal_name));
+        memberRules.push_back(new ArgumentRule("delta", RealPos_name));
 
         /* Inherit weight and rng from Move, put it at back */
         const MemberRules& inheritedRules = Move::getMemberRules();

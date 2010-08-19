@@ -24,7 +24,7 @@
 #include "RbDouble.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 #include "WrapperRule.h"
 
@@ -85,9 +85,9 @@ const RbObject* Distribution::executeOperation(const std::string& name, std::vec
 
 
 /** Get class vector describing type of object */
-const StringVector& Distribution::getClass(void) const {
+const VectorString& Distribution::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Distribution_name) + MemberObject::getClass();
+    static VectorString rbClass = VectorString(Distribution_name) + MemberObject::getClass();
     return rbClass;
 }
 

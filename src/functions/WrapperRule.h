@@ -24,7 +24,7 @@
 #include <string>
 
 class DAGNode;
-class StringVector;
+class VectorString;
 
 class WrapperRule : public ArgumentRule {
 
@@ -34,7 +34,7 @@ class WrapperRule : public ArgumentRule {
 
         // Basic utility functions
         WrapperRule*                clone(void) const { return new WrapperRule(*this); }    //!< Clone object
-        virtual const StringVector& getClass(void) const;                                   //!< Get class vector
+        virtual const VectorString& getClass(void) const;                                   //!< Get class vector
 };
 
 #endif

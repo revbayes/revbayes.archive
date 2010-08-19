@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of StringVector, a complex type
+ * This file contains the declaration of VectorString, a complex type
  * used to hold string vectors.
  *
- * @brief Declaration of StringVector
+ * @brief Declaration of VectorString
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -16,8 +16,8 @@
  * $Id$
  */
 
-#ifndef StringVector_H
-#define StringVector_H
+#ifndef VectorString_H
+#define VectorString_H
 
 #include "Container.h"
 
@@ -25,28 +25,28 @@
 #include <string>
 #include <vector>
 
-class StringVector : public Container {
+class VectorString : public Container {
 
     public:
 		// Constructors and destructor
-	                                StringVector(void) : Container() {}                 //!< Default constructor (empty vector)
-	                                StringVector(size_t n);                             //!< Construct vector of length n of empty strings
-                                    StringVector(const std::string& x);                 //!< Construct vector with one string x
-	                                StringVector(size_t n, const std::string& x);       //!< Construct vector with n strings x
-	                                StringVector(const std::vector<std::string>& x);    //!< Constructor from string vector
+	                                VectorString(void) : Container() {}                 //!< Default constructor (empty vector)
+	                                VectorString(size_t n);                             //!< Construct vector of length n of empty strings
+                                    VectorString(const std::string& x);                 //!< Construct vector with one string x
+	                                VectorString(size_t n, const std::string& x);       //!< Construct vector with n strings x
+	                                VectorString(const std::vector<std::string>& x);    //!< Constructor from string vector
 
         // Basic utility functions
-        StringVector*               clone(void) const;                                  //!< Clone object
+        VectorString*               clone(void) const;                                  //!< Clone object
         bool                        equals(const RbObject* obj) const;                  //!< Equals comparison
-        const StringVector&         getClass(void) const;                               //!< Get class
+        const VectorString&         getClass(void) const;                               //!< Get class
         void                        printValue(std::ostream& o) const;                  //!< Print value (for user)
         std::string                 toString(void) const;                               //!< Complete info about object
 
         // Overloaded operators and built-in functions
 	    std::string&                operator[](size_t i) { return value[i]; }           //!< Index op allowing change
 	    const std::string&          operator[](size_t i) const { return value[i]; }     //!< Const index op
-        bool                        operator==(const StringVector& sv) const;           //!< Equality
-        StringVector                operator+(const StringVector& sv) const;            //!< Concatenate
+        bool                        operator==(const VectorString& sv) const;           //!< Equality
+        VectorString                operator+(const VectorString& sv) const;            //!< Concatenate
 	    void                        push_back(std::string x) { value.push_back(x); }    //!< Add element
 	    size_t                      size() const { return value.size(); }               //!< Get size
 

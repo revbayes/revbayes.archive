@@ -21,7 +21,7 @@
 #include "MoveSchedule.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "VariableNode.h"
 
 #include <algorithm>
@@ -95,9 +95,9 @@ RbObject* MoveSchedule::convertTo(const std::string& type) const {
 }
 
 /** Get class vector describing type of object */
-const StringVector& MoveSchedule::getClass(void) const { 
+const VectorString& MoveSchedule::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(MoveSchedule_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(MoveSchedule_name) + RbComplex::getClass();
 	return rbClass;
 }
 

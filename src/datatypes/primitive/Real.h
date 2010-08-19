@@ -24,9 +24,9 @@
 #include <ostream>
 #include <string>
 
-class StringVector;
+class VectorString;
 
-/** @note Some functions are virtual because PosReal is derived from double */
+/** @note Some functions are virtual because RealPos is derived from double */
 class RbDouble : public RbObject {
 
     public:
@@ -38,7 +38,7 @@ class RbDouble : public RbObject {
         // Basic utility functions
         virtual RbObject*           clone(void) const;                               //!< Clone object
         bool                        equals(const RbObject* obj) const;               //!< Equals comparison
-        virtual const StringVector& getClass(void) const;                            //!< Get class vector
+        virtual const VectorString& getClass(void) const;                            //!< Get class vector
         void                        printValue(std::ostream& o) const;               //!< Print value (for user)
         virtual std::string         toString(void) const;                            //!< Complete info about object
 

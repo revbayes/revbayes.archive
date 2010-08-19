@@ -19,14 +19,14 @@
 #include "DAGNode.h"
 #include "Dist_norm.h"
 #include "Move_mslide.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbDouble.h"
 #include "RbException.h"
 #include "RbMath.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 #include "WrapperRule.h"
 
@@ -115,9 +115,9 @@ Dist_norm* Dist_norm::clone(void) const {
 
 
 /** Get class vector showing type of object */
-const StringVector& Dist_norm::getClass(void) const {
+const VectorString& Dist_norm::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Dist_norm_name) + DistributionReal::getClass();
+    static VectorString rbClass = VectorString(Dist_norm_name) + DistributionReal::getClass();
     return rbClass;
 }
 
@@ -140,7 +140,7 @@ const MemberRules& Dist_norm::getMemberRules(void) const {
     if (!rulesSet) {
 
         memberRules.push_back(new WrapperRule("mean", RbDouble_name));
-        memberRules.push_back(new WrapperRule("sd", PosReal_name));
+        memberRules.push_back(new WrapperRule("sd", RealPos_name));
 
         /* Inherit rng from Distribution, put it at back */
         const MemberRules& inheritedRules = Distribution::getMemberRules();

@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of PosReal, which is
+ * This file contains the implementation of RealPos, which is
  * used to hold strictly positive scalar values.
  *
- * @brief Implementation of PosReal
+ * @brief Implementation of RealPos
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -17,53 +17,53 @@
  */
 
 
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
 
 
 /** Construct from double */
-PosReal::PosReal(const double v) : RbDouble(v) {
+RealPos::RealPos(const double v) : RbDouble(v) {
 
     if (v <= 0.0)
-        throw RbException("Nonpositive value for " + PosReal_name);
+        throw RbException("Nonpositive value for " + RealPos_name);
 }
 
 /** Construct from int */
-PosReal::PosReal(const int v) : RbDouble(v) {
+RealPos::RealPos(const int v) : RbDouble(v) {
 
     if (v <= 0)
-        throw RbException("Nonpositive value for " + PosReal_name);
+        throw RbException("Nonpositive value for " + RealPos_name);
 }
 
 /** Clone object */
-RbObject* PosReal::clone(void) const {
+RbObject* RealPos::clone(void) const {
 
-	return  (RbObject*)(new PosReal(*this));
+	return  (RbObject*)(new RealPos(*this));
 }
 
 /** Convert to object of another class. The caller manages the object. */
-RbObject* PosReal::convertTo(const std::string& type) const {
+RbObject* RealPos::convertTo(const std::string& type) const {
 
     if (type == RbDouble_name)
         return new RbDouble(value);
     return NULL;}
 
 /** Get class vector describing type of object */
-const StringVector& PosReal::getClass() const {
+const VectorString& RealPos::getClass() const {
 
-    static StringVector rbClass = StringVector(PosReal_name) + RbDouble::getClass();
+    static VectorString rbClass = VectorString(RealPos_name) + RbDouble::getClass();
     return rbClass;
 }
 
 /** Convert to object of another class. The caller manages the object. */
-bool PosReal::isConvertibleTo(const std::string& type) const {
+bool RealPos::isConvertibleTo(const std::string& type) const {
 
-    if (type == PosReal_name)
+    if (type == RealPos_name)
         return true;
     else if (type == RbDouble_name)
         return true;
@@ -71,16 +71,16 @@ bool PosReal::isConvertibleTo(const std::string& type) const {
 }
 
 /** Set value */
-void PosReal::setValue(double x) {
+void RealPos::setValue(double x) {
 
     if (x <= 0.0)
-        throw RbException("Nonpositive value for " + PosReal_name);
+        throw RbException("Nonpositive value for " + RealPos_name);
 
     RbDouble::setValue(x);
 }
 
 /** Get complete info about object */
-std::string PosReal::toString(void) const {
+std::string RealPos::toString(void) const {
 
 	std::ostringstream o;
     o << "+Real(";

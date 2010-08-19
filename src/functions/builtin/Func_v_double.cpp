@@ -28,7 +28,7 @@
 #include "RbDouble.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Vector.h"
 #include "WrapperRule.h"
 
@@ -81,9 +81,9 @@ const ArgumentRules& Func_v_double::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Func_v_double::getClass(void) const {
+const VectorString& Func_v_double::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Func_v_double_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(Func_v_double_name) + RbFunction::getClass();
     return rbClass;
 }
 

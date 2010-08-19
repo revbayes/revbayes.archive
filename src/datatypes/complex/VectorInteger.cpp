@@ -21,7 +21,7 @@
 #include "RbException.h"
 #include "RbInt.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
@@ -131,9 +131,9 @@ bool IntVector::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& IntVector::getClass() const {
+const VectorString& IntVector::getClass() const {
 
-    static StringVector rbClass = StringVector(IntVector_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(IntVector_name) + RbComplex::getClass();
     return rbClass;
 }
 

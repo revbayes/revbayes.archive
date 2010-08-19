@@ -19,13 +19,13 @@
 #include "DAGNode.h"
 #include "Dist_unif.h"
 #include "Move_mslide.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbDouble.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 #include "WrapperRule.h"
 
@@ -81,9 +81,9 @@ Dist_unif* Dist_unif::clone(void) const {
 
 
 /** Get class vector showing type of object */
-const StringVector& Dist_unif::getClass(void) const {
+const VectorString& Dist_unif::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Dist_unif_name) + DistributionReal::getClass();
+    static VectorString rbClass = VectorString(Dist_unif_name) + DistributionReal::getClass();
     return rbClass;
 }
 

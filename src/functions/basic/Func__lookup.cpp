@@ -26,7 +26,7 @@
 #include "RbInt.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "WrapperRule.h"
 
 #include <cassert>
@@ -124,9 +124,9 @@ const ArgumentRules& Func__lookup::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Func__lookup::getClass(void) const { 
+const VectorString& Func__lookup::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(Func__lookup_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(Func__lookup_name) + RbFunction::getClass();
 	return rbClass; 
 }
 

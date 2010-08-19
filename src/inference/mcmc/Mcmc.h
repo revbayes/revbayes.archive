@@ -28,7 +28,7 @@
 class ArgumentRule;
 class DAGNode;
 class Model;
-class StringVector;
+class VectorString;
 
 class Mcmc: public MemberObject {
 
@@ -39,7 +39,7 @@ class Mcmc: public MemberObject {
 
         // Basic utility functions
         Mcmc*                       clone(void) const;                                                                 //!< Clone object
-        const StringVector&         getClass(void) const;                                                              //!< Get class vector   
+        const VectorString&         getClass(void) const;                                                              //!< Get class vector   
 
         // Member variable rules
         const MemberRules&          getMemberRules(void) const;                                                        //!< Get member rules

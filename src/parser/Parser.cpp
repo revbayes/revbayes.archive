@@ -18,7 +18,7 @@
 #include "RbNames.h"
 #include "RbObject.h"
 #include "RbString.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "SyntaxElement.h"
 #include "SyntaxFunctionCall.h"
 #include "SyntaxVariable.h"

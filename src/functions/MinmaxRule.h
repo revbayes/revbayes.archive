@@ -28,7 +28,7 @@
 
 class DAGNode;
 class RbObject;
-class StringVector;
+class VectorString;
 
 class MinmaxRule : public ArgumentRule {
 
@@ -43,7 +43,7 @@ class MinmaxRule : public ArgumentRule {
 
         // Basic utility functions
         MinmaxRule*                 clone(void) const { return new MinmaxRule(*this); } //!< Clone object
-        virtual const StringVector& getClass(void) const;                               //!< Get class vector
+        virtual const VectorString& getClass(void) const;                               //!< Get class vector
         void                        printValue(std::ostream& o) const;                  //!< Print value for user
         std::string                 toString(void) const;                               //!< General info on object
 

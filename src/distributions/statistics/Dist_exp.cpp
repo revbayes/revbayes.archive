@@ -19,11 +19,11 @@
 #include "DAGNode.h"
 #include "Dist_exp.h"
 #include "Move_mscale.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbDouble.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 #include "WrapperRule.h"
 
@@ -67,9 +67,9 @@ Dist_exp* Dist_exp::clone(void) const {
 }
 
 /** Get class vector showing type of object */
-const StringVector& Dist_exp::getClass(void) const {
+const VectorString& Dist_exp::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Dist_exp_name) + DistributionReal::getClass();
+    static VectorString rbClass = VectorString(Dist_exp_name) + DistributionReal::getClass();
     return rbClass;
 }
 
@@ -94,7 +94,7 @@ const MemberRules& Dist_exp::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new WrapperRule("rate", PosReal_name));
+        memberRules.push_back(new WrapperRule("rate", RealPos_name));
 
         /* Inherit rng from Distribution, put it at back */
         const MemberRules& inheritedRules = Distribution::getMemberRules();
@@ -109,7 +109,7 @@ const MemberRules& Dist_exp::getMemberRules(void) const {
 /** Get random variable type */
 const std::string& Dist_exp::getVariableType(void) const {
 
-    return PosReal_name;
+    return RealPos_name;
 }
 
 /**
@@ -216,7 +216,7 @@ RbDouble* Dist_exp::rv(void) {
 
     double u = rng->uniform01();
 
-    return new PosReal(-( 1.0 / lambda ) * std::log( u ));
+    return new RealPos(-( 1.0 / lambda ) * std::log( u ));
 }
 
 

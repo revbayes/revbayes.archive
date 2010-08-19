@@ -29,7 +29,7 @@
 
 class ArgumentRule;
 class DAGNode;
-class StringVector;
+class VectorString;
 
 class MemberObject: public RbComplex {
 
@@ -39,7 +39,7 @@ class MemberObject: public RbComplex {
         // Basic utility functions
         virtual RbObject*           clone(void) const = 0;                                                        //!< Clone object
         virtual bool                equals(const RbObject* x) const;                                              //!< Equals comparison
-        virtual const StringVector& getClass(void) const;                                                         //!< Get class vector
+        virtual const VectorString& getClass(void) const;                                                         //!< Get class vector
         virtual void                printValue(std::ostream& o) const;                                            //!< Print value for user
         virtual std::string         toString(void) const;                                                         //!< Complete info
 

@@ -15,7 +15,7 @@
 
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <string>
 #include <iostream>
@@ -57,9 +57,9 @@ RbException* RbException::clone(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& RbException::getClass(void) const { 
+const VectorString& RbException::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RbException_name) + RbInternal::getClass();
+    static VectorString rbClass = VectorString(RbException_name) + RbInternal::getClass();
 	return rbClass;
 }
 

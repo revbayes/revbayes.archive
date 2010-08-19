@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-class StringVector;
+class VectorString;
 
 
 /**

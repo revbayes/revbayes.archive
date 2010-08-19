@@ -20,7 +20,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "SyntaxFunctionCall.h"
 #include "Workspace.h"
 
@@ -101,9 +101,9 @@ bool SyntaxFunctionCall::equals(const SyntaxElement* elem) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& SyntaxFunctionCall::getClass(void) const { 
+const VectorString& SyntaxFunctionCall::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(SyntaxFunctionCall_name) + SyntaxElement::getClass();
+    static VectorString rbClass = VectorString(SyntaxFunctionCall_name) + SyntaxElement::getClass();
 	return rbClass; 
 }
 

@@ -22,7 +22,7 @@
 #include "DeterministicNode.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "SyntaxForCondition.h"
 #include "SyntaxStatement.h"
 #include "UserInterface.h"

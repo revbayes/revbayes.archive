@@ -22,7 +22,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <iostream>
 #include <string>
@@ -107,9 +107,9 @@ void ConstantNode::convertValueTo(const std::string &type) {
 }
 
 /** Get class vector describing type of object */
-const StringVector& ConstantNode::getClass() const {
+const VectorString& ConstantNode::getClass() const {
 
-    static StringVector rbClass = StringVector(ConstantNode_name) + DAGNode::getClass();
+    static VectorString rbClass = VectorString(ConstantNode_name) + DAGNode::getClass();
     return rbClass;
 }
 

@@ -25,7 +25,7 @@
 
 #include "Frame.h"
 #include "FunctionTable.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <map>
 #include <ostream>
@@ -40,7 +40,7 @@ class RandomNumberGenerator;
 class RbFunction;
 class RbObject;
 
-typedef std::map<std::string, StringVector> TypeTable;
+typedef std::map<std::string, VectorString> TypeTable;
 
 /**
  * @brief Workspace

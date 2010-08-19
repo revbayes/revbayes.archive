@@ -22,7 +22,7 @@
 #include "RbNames.h"
 #include "RbOptions.h"
 #include "Simplex.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <iostream>
 #include <sstream>
@@ -232,9 +232,9 @@ bool Container::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Container::getClass(void) const {
+const VectorString& Container::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Container_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(Container_name) + RbComplex::getClass();
     return rbClass;
 }
 

@@ -23,7 +23,7 @@
 #include "RbInt.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -120,9 +120,9 @@ MinmaxRule& MinmaxRule::operator=(const MinmaxRule& x) {
 
 
 /** Get class vector describing type of object */
-const StringVector& MinmaxRule::getClass(void) const { 
+const VectorString& MinmaxRule::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(MinmaxRule_name) + ArgumentRule::getClass();
+    static VectorString rbClass = VectorString(MinmaxRule_name) + ArgumentRule::getClass();
 	return rbClass; 
 }
 

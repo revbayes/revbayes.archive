@@ -20,7 +20,7 @@
 #include "DAGNode.h"
 #include "MemberObject.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
@@ -73,9 +73,9 @@ const ArgumentRules& ConstructorFunction::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& ConstructorFunction::getClass(void) const { 
+const VectorString& ConstructorFunction::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(ConstructorFunction_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(ConstructorFunction_name) + RbFunction::getClass();
 	return rbClass; 
 }
 

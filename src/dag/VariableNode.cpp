@@ -22,7 +22,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "VariableNode.h"
 
 #include <algorithm>
@@ -37,9 +37,9 @@ VariableNode::VariableNode(const std::string& valType)
 
 
 /** Get class vector describing type of object */
-const StringVector& VariableNode::getClass() const {
+const VectorString& VariableNode::getClass() const {
 
-    static StringVector rbClass = StringVector(VariableNode_name) + DAGNode::getClass();
+    static VectorString rbClass = VectorString(VariableNode_name) + DAGNode::getClass();
     return rbClass;
 }
 

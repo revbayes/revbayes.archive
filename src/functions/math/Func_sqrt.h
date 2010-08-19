@@ -24,14 +24,14 @@
 #include <vector>
 
 class DAGNode;
-class StringVector;
+class VectorString;
 
 class Func_sqrt :  public RbFunction {
 
     public:
         // Basic utility functions
         Func_sqrt*                  clone(void) const;                                       //!< Clone the object
-    	const StringVector&         getClass(void) const;                                    //!< Get class vector
+    	const VectorString&         getClass(void) const;                                    //!< Get class vector
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;                            //!< Get argument rules

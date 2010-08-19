@@ -27,7 +27,7 @@
 
 class IntVector;
 class RbObject;
-class StringVector;
+class VectorString;
 class VariableNode;
 
 class DAGNode {
@@ -37,7 +37,7 @@ class DAGNode {
 
         // Functions you have to override
         virtual DAGNode*                clone(void) const = 0;                                                //!< Clone this node
-        virtual const StringVector&     getClass(void) const;                                                 //!< Get class vector
+        virtual const VectorString&     getClass(void) const;                                                 //!< Get class vector
         virtual const RbObject*         getValElement(const IntVector& index) const = 0;                      //!< Get value element
         virtual const RbObject*         getStoredValue(void) = 0;                                             //!< Get stored value
         virtual const RbObject*         getValue(void) = 0;                                                   //!< Get value

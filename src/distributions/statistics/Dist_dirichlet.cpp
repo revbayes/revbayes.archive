@@ -19,7 +19,7 @@
 #include "DAGNode.h"
 #include "Dist_dirichlet.h"
 #include "Move_msimplex.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbDouble.h"
 #include "RbException.h"
@@ -27,7 +27,7 @@
 #include "RbNames.h"
 #include "RbStatistics.h"
 #include "Simplex.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 #include "WrapperRule.h"
 
@@ -75,9 +75,9 @@ Dist_dirichlet* Dist_dirichlet::clone(void) const {
 }
 
 /** Get class vector showing type of object */
-const StringVector& Dist_dirichlet::getClass(void) const {
+const VectorString& Dist_dirichlet::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Dist_dirichlet_name) + Distribution::getClass();
+    static VectorString rbClass = VectorString(Dist_dirichlet_name) + Distribution::getClass();
     return rbClass;
 }
 

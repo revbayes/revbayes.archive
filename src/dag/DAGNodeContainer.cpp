@@ -24,7 +24,7 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 
 #include <algorithm>
@@ -372,9 +372,9 @@ void DAGNodeContainer::getAffected(std::set<StochasticNode*>& affected) {
 
 
 /** Get class vector describing type of object */
-const StringVector& DAGNodeContainer::getClass(void) const {
+const VectorString& DAGNodeContainer::getClass(void) const {
 
-    static StringVector rbClass = StringVector(DAGNodeContainer_name) + VariableNode::getClass();
+    static VectorString rbClass = VectorString(DAGNodeContainer_name) + VariableNode::getClass();
     return rbClass;
 }
 
@@ -598,10 +598,10 @@ void DAGNodeContainer::resize(const IntVector& len) {
     }
 
     // Create new empty nodes vector
-    StringVector* tempNames;
+    VectorString* tempNames;
     std::vector<DAGNode*> tempNodes = std::vector<DAGNode*>(numValsTarget[0]);
     if (names != NULL)
-        tempNames = new StringVector(numValsTarget[0]);
+        tempNames = new VectorString(numValsTarget[0]);
 
     // Reorganize content
     if (nodes.size() > 0) {
@@ -882,7 +882,7 @@ void DAGNodeContainer::setElement(const IntVector& index, DAGNode* var) {
 void DAGNodeContainer::setElementName(const IntVector& index, const std::string& name) {
 
     if (names == NULL)
-        names = new StringVector(nodes.size());
+        names = new VectorString(nodes.size());
 
     (*names)[getOffset(index)] = RbString(name);
 }

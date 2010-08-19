@@ -29,7 +29,7 @@ class ArgumentRule;
 class DAGNode;
 class Distribution;
 class IntVector;
-class StringVector;
+class VectorString;
 
 class DistributionFunction :  public RbFunction {
 
@@ -46,7 +46,7 @@ class DistributionFunction :  public RbFunction {
         // Basic utility functions
         DistributionFunction*       clone(void) const;                          //!< Clone object
     	bool                        equals(const RbObject* obj) const;          //!< Equals comparison
-    	const StringVector&         getClass(void) const;                       //!< Get class vector
+    	const VectorString&         getClass(void) const;                       //!< Get class vector
 
         // DistributionFunction functions
         const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules

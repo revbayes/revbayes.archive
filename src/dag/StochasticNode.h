@@ -24,7 +24,7 @@
 
 class Distribution;
 class RbObject;
-class StringVector;
+class VectorString;
 
 class StochasticNode : public VariableNode {
 
@@ -39,12 +39,12 @@ class StochasticNode : public VariableNode {
 
         // Basic utility functions
         StochasticNode*         clone(void) const;                                             //!< Clone the stochastic node
-        const StringVector&     getClass(void) const;                                          //!< Get class vector
+        const VectorString&     getClass(void) const;                                          //!< Get class vector
         const RbObject*         getStoredValue(void);                                          //!< Get stored value
         const RbObject*         getValElement(const IntVector& index) const;                   //!< Get value element
         const RbObject*         getValue(void);                                                //!< Get current value
         const RbObject*         getValue(void) const;                                          //!< Get const value if possible
-        const StringVector&     getValueClass(void) const;                                     //!< Get value class
+        const VectorString&     getValueClass(void) const;                                     //!< Get value class
         void                    printStruct(std::ostream& o) const;                            //!< Print struct for user
         void                    printValue(std::ostream& o) const;                             //!< Print struct for user
         void                    setElement(const IntVector& index, RbObject* value);           //!< Set value element

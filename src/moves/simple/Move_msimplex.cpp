@@ -18,7 +18,7 @@
 #include "ArgumentRule.h"
 #include "Distribution.h"
 #include "Move_msimplex.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbInt.h"
@@ -26,7 +26,7 @@
 #include "RbStatistics.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 
 #include <cmath>
@@ -40,9 +40,9 @@ Move_msimplex::Move_msimplex(void) : SimpleMove(getMemberRules()) {
 /** Constructor for internal use */
 Move_msimplex::Move_msimplex(StochasticNode* node, double tuning, int nc, double weight, RandomNumberGenerator* rng) : SimpleMove(getMemberRules()) {
 
-    setValue("tuning", new PosReal(tuning));
+    setValue("tuning", new RealPos(tuning));
     setValue("num_cats", new RbInt(nc));
-    setValue("weight", new PosReal(weight));
+    setValue("weight", new RealPos(weight));
     setValue("rng",    rng);
 
     setNodePtr(node);
@@ -61,9 +61,9 @@ RbObject* Move_msimplex::convertTo(const std::string& type) const {
 }
 
 /** Get class vector describing type of object */
-const StringVector& Move_msimplex::getClass() const {
+const VectorString& Move_msimplex::getClass() const {
 
-    static StringVector rbClass = StringVector(Move_mslide_name) + Move::getClass();
+    static VectorString rbClass = VectorString(Move_mslide_name) + Move::getClass();
     return rbClass;
 }
 
@@ -75,7 +75,7 @@ const MemberRules& Move_msimplex::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
-        memberRules.push_back(new ArgumentRule("tuning", PosReal_name));
+        memberRules.push_back(new ArgumentRule("tuning", RealPos_name));
         memberRules.push_back(new ArgumentRule("num_cats", RbInt_name));
 
         /* Inherit weight and rng from Move, put it at back */

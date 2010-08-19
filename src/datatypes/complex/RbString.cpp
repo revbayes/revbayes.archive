@@ -16,7 +16,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 
 /** Constructor from string */
@@ -66,9 +66,9 @@ bool RbString::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& RbString::getClass() const {
+const VectorString& RbString::getClass() const {
 
-    static StringVector rbClass = StringVector(RbString_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(RbString_name) + RbComplex::getClass();
     return rbClass;
 }
 

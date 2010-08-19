@@ -26,7 +26,7 @@
 #include "RbNames.h"
 #include "RbOptions.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "SyntaxAssignExpr.h"
 #include "Workspace.h"
 
@@ -93,9 +93,9 @@ bool SyntaxAssignExpr::equals(const SyntaxElement* elem) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& SyntaxAssignExpr::getClass(void) const { 
+const VectorString& SyntaxAssignExpr::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(SyntaxAssignExpr_name) + SyntaxElement::getClass();
+    static VectorString rbClass = VectorString(SyntaxAssignExpr_name) + SyntaxElement::getClass();
 	return rbClass; 
 }
 

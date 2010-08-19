@@ -18,7 +18,7 @@
 
 #include "DAGNode.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "WrapperRule.h"
 
 #include <string>
@@ -39,9 +39,9 @@ WrapperRule::WrapperRule(const std::string& argName, DAGNode* defVar)
 }
 
 /** Get class vector describing type of object */
-const StringVector& WrapperRule::getClass(void) const {
+const VectorString& WrapperRule::getClass(void) const {
 
-    static StringVector rbClass = StringVector(WrapperRule_name) + ArgumentRule::getClass();
+    static VectorString rbClass = VectorString(WrapperRule_name) + ArgumentRule::getClass();
     return rbClass;
 }
 

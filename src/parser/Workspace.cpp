@@ -50,7 +50,7 @@
 #include "Move_mscale.h"
 #include "Move_msimplex.h"
 #include "Move_mslide.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RbInt.h"
 #include "RbDouble.h"
 #include "Vector.h"
@@ -99,7 +99,7 @@ bool Workspace::addDistribution(const std::string& name, Distribution* dist) {
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, StringVector>(name, dist->getClass()));
+    typeTable.insert(std::pair<std::string, VectorString>(name, dist->getClass()));
 
     functionTable->addFunction(name, new ConstructorFunction(dist));
     functionTable->addFunction("d" + name, new DistributionFunction(dist, DistributionFunction::DENSITY));
@@ -117,7 +117,7 @@ bool Workspace::addDistribution(const std::string& name, DistributionReal* dist)
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, StringVector>(name, dist->getClass()));
+    typeTable.insert(std::pair<std::string, VectorString>(name, dist->getClass()));
 
     functionTable->addFunction(name, new ConstructorFunction(dist));
     functionTable->addFunction("d" + name, new DistributionFunction(dist, DistributionFunction::DENSITY));
@@ -153,7 +153,7 @@ bool Workspace::addType(const RbObject* exampleObj) {
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, StringVector>(exampleObj->getType(), exampleObj->getClass()));
+    typeTable.insert(std::pair<std::string, VectorString>(exampleObj->getType(), exampleObj->getClass()));
 
     delete exampleObj;
 
@@ -169,7 +169,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* te
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, StringVector>(name, templ->getClass()));
+    typeTable.insert(std::pair<std::string, VectorString>(name, templ->getClass()));
 
     functionTable->addFunction(name, new ConstructorFunction(templ));
 
@@ -216,7 +216,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add types */
         addType(new RbInt(0));
         addType(new RbDouble());
-        addType(new PosReal(1.0));
+        addType(new RealPos(1.0));
         addType(new IntVector());
         addType(new Vector());
         addType(new RandomNumberGenerator);
@@ -280,7 +280,7 @@ bool Workspace::isXOfTypeY(const std::string& x, const std::string& y) const {
             return ((Workspace*)(parentFrame))->isXOfTypeY(x, y);
     }
 
-    const StringVector& xVec = (*typeTable.find(x)).second;
+    const VectorString& xVec = (*typeTable.find(x)).second;
     size_t i;
     for (i=0; i<xVec.size(); i++) {
         if (xVec[i] == y)
@@ -306,7 +306,7 @@ void Workspace::printValue(std::ostream& o) const {
     o << std::endl;
 
     o << "Type table:" << std::endl;
-    std::map<std::string, StringVector>::const_iterator i;
+    std::map<std::string, VectorString>::const_iterator i;
     for (i=typeTable.begin(); i!=typeTable.end(); i++) {
         o << (*i).first << " = " << (*i).second << std::endl;
     }

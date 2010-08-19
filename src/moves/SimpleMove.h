@@ -27,7 +27,7 @@
 class VariableNode;
 class RandomNumberGenerator;
 class StochasticNode;
-class StringVector;
+class VectorString;
 
 class SimpleMove : public Move {
 
@@ -36,7 +36,7 @@ class SimpleMove : public Move {
 
         // Basic utility functions
         virtual RbObject*           clone(void) const = 0;                                                                   //!< Clone the object
-        virtual const StringVector& getClass(void) const;                                                                    //!< Get class vector
+        virtual const VectorString& getClass(void) const;                                                                    //!< Get class vector
 
         // SimpleMove functions
         void                        acceptMove(void);				                                                         //!< Accept the move, update statistics

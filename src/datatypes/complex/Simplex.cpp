@@ -21,7 +21,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "Simplex.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
@@ -93,9 +93,9 @@ bool Simplex::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Simplex::getClass() const {
+const VectorString& Simplex::getClass() const {
 
-    static StringVector rbClass = StringVector(Simplex_name) + Vector::getClass();
+    static VectorString rbClass = VectorString(Simplex_name) + Vector::getClass();
     return rbClass;
 }
 

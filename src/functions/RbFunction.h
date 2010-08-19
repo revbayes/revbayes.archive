@@ -31,7 +31,7 @@
 class ArgumentRule;
 class DAGNode;
 class IntVector;
-class StringVector;
+class VectorString;
 
 typedef std::vector<ArgumentRule*> ArgumentRules;
 
@@ -61,7 +61,7 @@ class RbFunction :  public RbObject {
         virtual std::string                     briefInfo(void) const;                                                              //!< Brief info about object
         virtual RbObject*                       clone(void) const = 0;                                                              //!< Clone object
     	virtual bool                            equals(const RbObject* obj) const;                                                  //!< Check that the functions are the same
-    	virtual const StringVector&             getClass(void) const;                                                               //!< Get class vector
+    	virtual const VectorString&             getClass(void) const;                                                               //!< Get class vector
     	void                                    printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
         virtual std::string                     toString(void) const;                                                               //!< Complete info about object
 

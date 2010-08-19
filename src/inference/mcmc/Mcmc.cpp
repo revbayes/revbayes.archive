@@ -31,7 +31,7 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "VariableNode.h"
 #include "Workspace.h"
 #include "WrapperRule.h"
@@ -87,9 +87,9 @@ const RbObject* Mcmc::executeOperation(const std::string& name, std::vector<DAGN
 
 
 /** Get class vector describing type of object */
-const StringVector& Mcmc::getClass(void) const {
+const VectorString& Mcmc::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Mcmc_name) + MemberObject::getClass();
+    static VectorString rbClass = VectorString(Mcmc_name) + MemberObject::getClass();
     return rbClass;
 }
 

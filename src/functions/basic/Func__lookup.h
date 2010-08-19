@@ -24,7 +24,7 @@
 #include <vector>
 
 class DAGNode;
-class StringVector;
+class VectorString;
 
 class Func__lookup :  public RbFunction {
 
@@ -38,7 +38,7 @@ class Func__lookup :  public RbFunction {
         // Basic utility functions
         Func__lookup*               clone(void) const;                      //!< Clone the object
     	bool                        equals(const RbObject* obj) const;      //!< Equals comparison
-    	const StringVector&         getClass(void) const;                   //!< Get class vector
+    	const VectorString&         getClass(void) const;                   //!< Get class vector
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules

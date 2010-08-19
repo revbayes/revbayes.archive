@@ -37,7 +37,7 @@ class Vector : public Container {
         // Basic utility functions
         virtual Vector*             clone(void) const;                                         //!< Clone object
         virtual bool                equals(const RbObject* obj) const;                         //!< Equals comparison
-        virtual const StringVector& getClass(void) const;                                      //!< Get class vector
+        virtual const VectorString& getClass(void) const;                                      //!< Get class vector
         virtual void                printValue(std::ostream& o) const;                         //!< Print value for user
         virtual std::string         toString(void) const;                                      //!< Complete info about object
 

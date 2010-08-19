@@ -21,7 +21,7 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "SyntaxBinaryExpr.h"
 #include "Workspace.h"
 

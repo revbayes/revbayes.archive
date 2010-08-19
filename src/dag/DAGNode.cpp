@@ -22,7 +22,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "VariableNode.h"
 
 #include <algorithm>
@@ -54,9 +54,9 @@ void DAGNode::convertValueTo(const std::string &type) {
 }
 
 /** Get class vector describing type of object */
-const StringVector& DAGNode::getClass() const {
+const VectorString& DAGNode::getClass() const {
 
-    static StringVector rbClass = StringVector(DAGNode_name);
+    static VectorString rbClass = VectorString(DAGNode_name);
     return rbClass;
 }
 
@@ -75,7 +75,7 @@ const DAGNode* DAGNode::getVarElement(const IntVector& index) const {
 /** Is wrapper of specified type? We need to check entire class vector in case we are derived from type. */
 bool DAGNode::isType(const std::string& type) const {
 
-    const StringVector& classVec = getClass();
+    const VectorString& classVec = getClass();
 
     for (size_t i=0; i<classVec.size(); i++) {
         if (type == classVec[i])

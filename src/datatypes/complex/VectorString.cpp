@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of StringVector, a complex type
+ * This file contains the implementation of VectorString, a complex type
  * used to hold string vectors.
  *
- * @brief Implementation of StringVector
+ * @brief Implementation of VectorString
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -20,27 +20,27 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
 
 /** Construct empty vector of length n */
-StringVector::StringVector(size_t n) : Container() {
+VectorString::VectorString(size_t n) : Container() {
 
     value.resize(n);
 }
 
 
 /** Construct vector with one string x */
-StringVector::StringVector(const std::string& x) : Container() {
+VectorString::VectorString(const std::string& x) : Container() {
 
     value.push_back(x);
 }
 
 
 /** Construct vector with n strings x */
-StringVector::StringVector(size_t n, const std::string& x) : Container() {
+VectorString::VectorString(size_t n, const std::string& x) : Container() {
 
     for (size_t i = 0; i < n; i++)
         value.push_back(x);
@@ -48,14 +48,14 @@ StringVector::StringVector(size_t n, const std::string& x) : Container() {
 
 
 /** Constructor from std::string vector */
-StringVector::StringVector(const std::vector<std::string>& x) : Container() {
+VectorString::VectorString(const std::vector<std::string>& x) : Container() {
 
     value = x;
 }
 
 
 /** Comparison  with operator== */
-bool StringVector::operator==(const StringVector& sv) const {
+bool VectorString::operator==(const VectorString& sv) const {
 
 	if ( size() != sv.size() )
 		return false;
@@ -69,9 +69,9 @@ bool StringVector::operator==(const StringVector& sv) const {
 
 
 /** Concatenation with operator+ */
-StringVector StringVector::operator+(const StringVector& x) const {
+VectorString VectorString::operator+(const VectorString& x) const {
 
-    StringVector tempVec = *this;
+    VectorString tempVec = *this;
     for (size_t i = 0; i < x.value.size(); i++)
         tempVec.push_back(x.value[i]);
 
@@ -79,23 +79,23 @@ StringVector StringVector::operator+(const StringVector& x) const {
 }
 
 /** Convert to object of another class. The caller manages the object. */
-RbObject* StringVector::convertTo(const std::string& type) const {
+RbObject* VectorString::convertTo(const std::string& type) const {
 
     return NULL;
 }
 
 /** Clone function */
-StringVector* StringVector::clone() const {
+VectorString* VectorString::clone() const {
 
-    return new StringVector(*this);
+    return new VectorString(*this);
 }
 
 
 /** Pointer-based equals comparison */
-bool StringVector::equals(const RbObject* obj) const {
+bool VectorString::equals(const RbObject* obj) const {
 
     // Use built-in fast down-casting first
-    const StringVector* p = dynamic_cast<const StringVector*> (obj);
+    const VectorString* p = dynamic_cast<const VectorString*> (obj);
     if (p != NULL) {
         if (value.size() != p->value.size())
             return false;
@@ -107,7 +107,7 @@ bool StringVector::equals(const RbObject* obj) const {
     }
 
     // Try converting the value to a string vector
-    p = dynamic_cast<const StringVector*> (obj->convert(getType()));
+    p = dynamic_cast<const VectorString*> (obj->convert(getType()));
     if (p == NULL)
         return false;
 
@@ -125,15 +125,15 @@ bool StringVector::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& StringVector::getClass() const {
+const VectorString& VectorString::getClass() const {
 
-    static StringVector rbClass = StringVector(StringVector_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(VectorString_name) + RbComplex::getClass();
     return rbClass;
 }
 
 
 /** Get element for parser (read-only) */
-const RbObject* StringVector::getElement(const IntVector& index) const {
+const RbObject* VectorString::getElement(const IntVector& index) const {
 
     static RbString x;
 
@@ -148,7 +148,7 @@ const RbObject* StringVector::getElement(const IntVector& index) const {
 
 
 /** Get element class */
-const std::string& StringVector::getElementType(void) const {
+const std::string& VectorString::getElementType(void) const {
 
     static std::string rbType = RbString_name;
     return rbType;
@@ -156,7 +156,7 @@ const std::string& StringVector::getElementType(void) const {
 
 
 /** Get element length for parser */
-const IntVector& StringVector::getLength() const {
+const IntVector& VectorString::getLength() const {
 
     static IntVector length = IntVector(0);
 
@@ -165,13 +165,13 @@ const IntVector& StringVector::getLength() const {
 }
 
 /** Convert to object of another class. The caller manages the object. */
-bool StringVector::isConvertibleTo(const std::string& type) const {
+bool VectorString::isConvertibleTo(const std::string& type) const {
 
     return false;
 }
 
 /** Allow parser to resize the string vector */
-void StringVector::resize(IntVector const& len) {
+void VectorString::resize(IntVector const& len) {
 
     if ( len.size() != 1 )
         throw (RbException("Length specification error"));
@@ -181,7 +181,7 @@ void StringVector::resize(IntVector const& len) {
 
 
 /** Allow parser to set an element (any type conversion is done by the parser) */
-void StringVector::setElement(const IntVector& index, RbObject* val) {
+void VectorString::setElement(const IntVector& index, RbObject* val) {
 
     if ( !val->isType(RbString_name) )
         throw (RbException("Type mismatch"));
@@ -201,7 +201,7 @@ void StringVector::setElement(const IntVector& index, RbObject* val) {
 
 
 /** Allow parser to rearrange the container (actually do not allow it) */
-void StringVector::setLength(const IntVector& len) {
+void VectorString::setLength(const IntVector& len) {
 
     if ( len.size() != 1 && len[0] != int(value.size()) )
         throw (RbException("Length specification error"));
@@ -209,7 +209,7 @@ void StringVector::setLength(const IntVector& len) {
 
 
 /** Print value for user */
-void StringVector::printValue(std::ostream& o) const {
+void VectorString::printValue(std::ostream& o) const {
 
     o << "[ ";
     for (std::vector<std::string>::const_iterator i = value.begin(); i!= value.end(); i++) {
@@ -222,10 +222,10 @@ void StringVector::printValue(std::ostream& o) const {
 
 
 /** Complete info about object */
-std::string StringVector::toString(void) const {
+std::string VectorString::toString(void) const {
 
     std::ostringstream o;
-    o << "StringVector: value = ";
+    o << "VectorString: value = ";
     printValue(o);
     
     return o.str();

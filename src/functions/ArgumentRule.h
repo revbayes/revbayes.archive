@@ -29,7 +29,7 @@
 
 class DAGNode;
 class RbObject;
-class StringVector;
+class VectorString;
 
 class ArgumentRule : public RbInternal {
 
@@ -46,7 +46,7 @@ class ArgumentRule : public RbInternal {
 
         // Basic utility functions
         virtual ArgumentRule*       clone(void) const { return new ArgumentRule(*this); }                                               //!< Clone object
-        virtual const StringVector& getClass(void) const;                                                                               //!< Get class vector
+        virtual const VectorString& getClass(void) const;                                                                               //!< Get class vector
         void                        printValue(std::ostream& o) const;                                                                  //!< Print value for user
         std::string                 toString(void) const;                                                                               //!< General info on object
 

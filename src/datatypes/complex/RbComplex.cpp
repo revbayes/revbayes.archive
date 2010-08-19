@@ -21,7 +21,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <map>
 #include <string>
@@ -67,9 +67,9 @@ const RbObject* RbComplex::executeMethod(const std::string& name, std::vector<Ar
 
 
 /** Get class vector describing type of object */
-const StringVector& RbComplex::getClass(void) const { 
+const VectorString& RbComplex::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RbComplex_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(RbComplex_name) + RbObject::getClass();
 	return rbClass;
 }
 

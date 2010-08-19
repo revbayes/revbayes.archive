@@ -19,7 +19,7 @@
 #include "Ellipsis.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
@@ -37,9 +37,9 @@ Ellipsis::Ellipsis(const std::string& type, int dim)
 
 
 /** Get class vector describing type of object */
-const StringVector& Ellipsis::getClass(void) const {
+const VectorString& Ellipsis::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Ellipsis_name) + ArgumentRule::getClass();
+    static VectorString rbClass = VectorString(Ellipsis_name) + ArgumentRule::getClass();
     return rbClass;
 }
 

@@ -19,10 +19,10 @@
 #include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Move.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 #include "WrapperRule.h"
 
@@ -67,7 +67,7 @@ const MemberRules& Move::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new ArgumentRule("weight", new PosReal(1.0)));
+        memberRules.push_back(new ArgumentRule("weight", new RealPos(1.0)));
         memberRules.push_back(new WrapperRule( "rng",    Workspace::globalWorkspace().getVariable("_rng")));
 
         rulesSet = true;
@@ -78,9 +78,9 @@ const MemberRules& Move::getMemberRules(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Move::getClass(void) const { 
+const VectorString& Move::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(Move_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(Move_name) + RbComplex::getClass();
 	return rbClass;
 }
 

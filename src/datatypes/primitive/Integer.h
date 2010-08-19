@@ -24,7 +24,7 @@
 #include <ostream>
 #include <string>
 
-class StringVector;
+class VectorString;
 
 class RbInt : public RbObject {
 
@@ -35,7 +35,7 @@ class RbInt : public RbObject {
         // Basic utility functions
         RbObject*                   clone(void) const;                               //!< Clone object
         bool                        equals(const RbObject* obj) const;               //!< Equals comparison
-        const StringVector&         getClass(void) const;                            //!< Get class vector
+        const VectorString&         getClass(void) const;                            //!< Get class vector
         void                        printValue(std::ostream& o) const;               //!< Print value (for user)
         std::string                 toString(void) const;                            //!< Complete info about object
 

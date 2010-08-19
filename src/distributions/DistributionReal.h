@@ -31,7 +31,7 @@ class DAGNode;
 class Move;
 class RandomNumberGenerator;
 class StochasticNode;
-class StringVector;
+class VectorString;
 
 class DistributionReal: public Distribution {
 
@@ -39,7 +39,7 @@ class DistributionReal: public Distribution {
 	    virtual                    ~DistributionReal(void) {}                                                  //!< Destructor
 
         // Basic utility functions
-        virtual const StringVector& getClass(void) const;                                                      //!< Get class vector   
+        virtual const VectorString& getClass(void) const;                                                      //!< Get class vector   
 
         // Member variable rules and random variable type
         virtual const MemberRules&  getMemberRules(void) const = 0;                                            //!< Get member rules

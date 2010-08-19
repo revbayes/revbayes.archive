@@ -26,7 +26,7 @@
 
 /* Forward declarations */
 class Frame;
-class StringVector;
+class VectorString;
 
 /**
  *  @brief Interface for syntax elements
@@ -70,7 +70,7 @@ class SyntaxElement {
         virtual std::string         briefInfo() const = 0;                      //!< Brief info about object
         virtual SyntaxElement*      clone() const = 0;                          //!< Clone object
         virtual bool                equals(const SyntaxElement* elem) const = 0;//!< Equals comparison
-        virtual const StringVector& getClass(void) const;                       //!< Get class vector 
+        virtual const VectorString& getClass(void) const;                       //!< Get class vector 
         virtual void                print(std::ostream& o) const = 0;           //!< Print info about object
 
         // Basic utility functions you should not override

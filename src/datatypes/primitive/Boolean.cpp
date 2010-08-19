@@ -21,7 +21,7 @@
 #include "RbDouble.h"
 #include "RbInt.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
@@ -77,9 +77,9 @@ bool RbBool::equals(const RbObject* obj) const {
 }
 
 /** Get class vector describing type of object */
-const StringVector& RbBool::getClass() const {
+const VectorString& RbBool::getClass() const {
 
-    static StringVector rbClass = StringVector(RbBool_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(RbBool_name) + RbObject::getClass();
     return rbClass;
 }
 

@@ -22,7 +22,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -120,9 +120,9 @@ ArgumentRule& ArgumentRule::operator=(const ArgumentRule& x) {
 
 
 /** Get class vector describing type of object */
-const StringVector& ArgumentRule::getClass(void) const { 
+const VectorString& ArgumentRule::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(ArgumentRule_name) + RbInternal::getClass();
+    static VectorString rbClass = VectorString(ArgumentRule_name) + RbInternal::getClass();
 	return rbClass; 
 }
 

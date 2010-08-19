@@ -23,7 +23,7 @@
 #include "RbInt.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 
 /** Clone object */
@@ -65,9 +65,9 @@ const ArgumentRules& Func__range::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Func__range::getClass(void) const {
+const VectorString& Func__range::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Func__range_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(Func__range_name) + RbFunction::getClass();
     return rbClass;
 }
 

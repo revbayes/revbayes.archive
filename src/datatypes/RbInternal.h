@@ -20,7 +20,7 @@
 #include <ostream>
 #include <string>
 
-class StringVector;
+class VectorString;
 
 class RbInternal {
 
@@ -29,7 +29,7 @@ class RbInternal {
 
         // Basic utility functions you have to override
         virtual RbInternal*         clone(void) const = 0;                  //!< Clone object
-        virtual const StringVector& getClass(void) const;                   //!< Get class vector
+        virtual const VectorString& getClass(void) const;                   //!< Get class vector
         virtual std::string         toString(void) const = 0;               //!< Print object to string
 
         // Basic utility functions you may want to override

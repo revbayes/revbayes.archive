@@ -38,7 +38,7 @@ class IntVector : public RbComplex {
         // Basic utility functions
         IntVector*                  clone(void) const;                                            //!< Clone object
         bool                        equals(const RbObject* obj) const;                            //!< Equals comparison
-        const StringVector&         getClass(void) const;                                         //!< Get class
+        const VectorString&         getClass(void) const;                                         //!< Get class
         void                        printValue(std::ostream& o) const;                            //!< Print value (for user)
         std::string                 toString(void) const;                                         //!< Complete info about object
 

@@ -26,7 +26,7 @@
 
 class DAGNode;
 class MemberObject;
-class StringVector;
+class VectorString;
 
 class ConstructorFunction :  public RbFunction {
 
@@ -36,7 +36,7 @@ class ConstructorFunction :  public RbFunction {
         // Basic utility functions
         ConstructorFunction*        clone(void) const;                      //!< Clone the object
     	bool                        equals(const RbObject* obj) const;      //!< Equals comparison
-    	const StringVector&         getClass(void) const;                   //!< Get class vector
+    	const VectorString&         getClass(void) const;                   //!< Get class vector
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules

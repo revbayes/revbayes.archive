@@ -19,7 +19,7 @@
 #include "DeterministicNode.h"
 #include "RbException.h"
 #include "RbObject.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "SyntaxLabeledExpr.h"
 #include "Workspace.h"
 

@@ -35,7 +35,7 @@ class Simplex : public Vector {
         // Basic utility functions
         Simplex*                    clone(void) const;                                 //!< Clone object
         bool                        equals(const RbObject* obj) const;                 //!< Equals comparison
-        const StringVector&         getClass(void) const;                              //!< Get class
+        const VectorString&         getClass(void) const;                              //!< Get class
         std::string                 toString(void) const;                              //!< Complete info about object
 
         // Overloaded operators and built-in functions

@@ -24,7 +24,7 @@
 #include "RbDouble.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
@@ -170,9 +170,9 @@ const ArgumentRules& DistributionFunction::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& DistributionFunction::getClass(void) const { 
+const VectorString& DistributionFunction::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(DistributionFunction_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(DistributionFunction_name) + RbFunction::getClass();
 	return rbClass; 
 }
 

@@ -17,13 +17,13 @@
 
 #include "RbNames.h"
 #include "SyntaxElement.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 
 /** Get class vector describing type of object */
-const StringVector& SyntaxElement::getClass(void) const { 
+const VectorString& SyntaxElement::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(SyntaxElement_name);
+    static VectorString rbClass = VectorString(SyntaxElement_name);
 	return rbClass; 
 }
 
@@ -38,7 +38,7 @@ const std::string& SyntaxElement::getType(void) const {
 /** Are we of specified type? We need to check entire class vector in case we are derived from type. */
 bool SyntaxElement::isType(const std::string& type) const {
 
-    const StringVector& classVec = getClass();
+    const VectorString& classVec = getClass();
 
     for (size_t i=0; i<classVec.size(); i++) {
         if (type == classVec[i])

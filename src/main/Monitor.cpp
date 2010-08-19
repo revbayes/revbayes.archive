@@ -18,7 +18,7 @@
 #include "Monitor.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "VariableNode.h"
 
 #include <sstream>
@@ -59,9 +59,9 @@ bool Monitor::equals(const RbObject* obj) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Monitor::getClass() const {
+const VectorString& Monitor::getClass() const {
 
-    static StringVector rbClass = StringVector(Monitor_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(Monitor_name) + RbComplex::getClass();
     return rbClass;
 }
 

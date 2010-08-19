@@ -25,7 +25,7 @@
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -150,9 +150,9 @@ RbObject* RbFunction::execute() {
 
 
 /** Get class vector describing type of object */
-const StringVector& RbFunction::getClass(void) const { 
+const VectorString& RbFunction::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RbFunction_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(RbFunction_name) + RbObject::getClass();
     return rbClass; 
 }
 
@@ -410,7 +410,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
         if ( theRules[argIndex]->isType(Ellipsis_name) )
             break;
 
-        const StringVector& argClass = processedArguments[argIndex]->getValue()->getClass();
+        const VectorString& argClass = processedArguments[argIndex]->getValue()->getClass();
         size_t j;
         for (j=0; j<argClass.size(); j++)
             if ( argClass[j] == theRules[argIndex]->getValueType() )
@@ -426,7 +426,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, IntVector*
 
         for (ContainerIterator it=container->begin(); it!=container->end(); it++) {
 
-            const StringVector& argClass = container->getValElement(it)->getClass();
+            const VectorString& argClass = container->getValElement(it)->getClass();
             size_t j;
             for (j=0; j<argClass.size(); j++)
                 if ( argClass[j] == theRules[argIndex]->getValueType() )

@@ -21,12 +21,12 @@
 #include "DeterministicNode.h"
 #include "Func__lookup.h"
 #include "Func_sqrt.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RbDouble.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 #include "WrapperRule.h"
 
 #include <cassert>
@@ -45,7 +45,7 @@ RbObject* Func_sqrt::executeOperation(const std::vector<DAGNode*>& args) {
     double x = (((RbDouble*) (args[0]->getValue())))->getValue();
 	if (x < 0.0)
 		throw (RbException("Square root of negative number. RevBayes does not (yet) support complex numbers"));
-    return new PosReal( sqrt(x) );
+    return new RealPos( sqrt(x) );
 }
 
 
@@ -66,9 +66,9 @@ const ArgumentRules& Func_sqrt::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const StringVector& Func_sqrt::getClass(void) const {
+const VectorString& Func_sqrt::getClass(void) const {
 
-    static StringVector rbClass = StringVector(Func_sqrt_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(Func_sqrt_name) + RbFunction::getClass();
     return rbClass;
 }
 
@@ -76,6 +76,6 @@ const StringVector& Func_sqrt::getClass(void) const {
 /** Get return type */
 const std::string& Func_sqrt::getReturnType(void) const {
 
-    return PosReal_name;
+    return RealPos_name;
 }
 

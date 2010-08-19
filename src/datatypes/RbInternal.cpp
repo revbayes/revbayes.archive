@@ -18,15 +18,15 @@
 
 #include "RbNames.h"
 #include "RbInternal.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <sstream>
 
 
 /** Get class vector describing type of object */
-const StringVector& RbInternal::getClass(void) const { 
+const VectorString& RbInternal::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(RbInternal_name);
+    static VectorString rbClass = VectorString(RbInternal_name);
 	return rbClass; 
 }
 
@@ -41,7 +41,7 @@ const std::string& RbInternal::getType(void) const {
 /** Are we of specified type? We need to check entire class vector in case we are derived from type. */
 bool RbInternal::isType(const std::string& type) const {
 
-    const StringVector& classVec = getClass();
+    const VectorString& classVec = getClass();
 
     for (size_t i=0; i<classVec.size(); i++) {
         if (type == classVec[i])

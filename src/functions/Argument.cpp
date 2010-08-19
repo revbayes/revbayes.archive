@@ -21,7 +21,7 @@
 #include "Argument.h"
 #include "DAGNode.h"
 #include "RbNames.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 
 /** Construct from argument label and DAG node */
@@ -34,9 +34,9 @@ Argument::Argument(const std::string& argLabel, DAGNode* arg)
 
 
 /** Get class vector describing type of object */
-const StringVector& Argument::getClass(void) const { 
+const VectorString& Argument::getClass(void) const { 
 
-    static StringVector rbClass = StringVector(Argument_name) + RbInternal::getClass();
+    static VectorString rbClass = VectorString(Argument_name) + RbInternal::getClass();
 	return rbClass; 
 }
 

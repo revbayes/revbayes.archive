@@ -23,7 +23,7 @@
 #include "DAGNode.h"
 
 class RbObject;
-class StringVector;
+class VectorString;
 
 class ConstantNode : public DAGNode {
 
@@ -38,7 +38,7 @@ class ConstantNode : public DAGNode {
 
         // Basic utility functions
         ConstantNode*           clone(void) const;                                             //!< Clone this object
-        const StringVector&     getClass(void) const;                                          //!< Get class vector
+        const VectorString&     getClass(void) const;                                          //!< Get class vector
         void                    printStruct(std::ostream& o) const;                            //!< Print struct for user
         void                    printValue(std::ostream& o) const;                             //!< Print struct for user
         std::string             toString(void) const;                                          //!< Complete info on object

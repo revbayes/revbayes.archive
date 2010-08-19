@@ -175,7 +175,7 @@
 /* The following statements go into the resulting C code */
 
 #include "Parser.h"
-#include "PosReal.h"
+#include "RealPos.h"
 #include "RbBool.h"
 #include "RbDouble.h"
 #include "RbInt.h"
@@ -2709,7 +2709,7 @@ yyreduce:
                     }
                     RbDouble* real;
                     if ((yyvsp[(1) - (1)].realValue) > 0.0)
-                        real = new PosReal((yyvsp[(1) - (1)].realValue));
+                        real = new RealPos((yyvsp[(1) - (1)].realValue));
                     else
                         real = new RbDouble((yyvsp[(1) - (1)].realValue));
                     //real->setPrecision(prec);

@@ -22,7 +22,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 #include <algorithm>
 
@@ -235,9 +235,9 @@ void StochasticNode::getAffected(std::set<StochasticNode*>& affected) {
 
 
 /** Get class vector describing type of object */
-const StringVector& StochasticNode::getClass() const {
+const VectorString& StochasticNode::getClass() const {
 
-    static StringVector rbClass = StringVector(StochasticNode_name) + VariableNode::getClass();
+    static VectorString rbClass = VectorString(StochasticNode_name) + VariableNode::getClass();
     return rbClass;
 }
 

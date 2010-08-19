@@ -34,7 +34,7 @@ class Argument : public RbInternal {
 
         // Basic utility functions
         Argument*               clone(void) const { return new Argument (*this); }  //!< Clone object
-        const StringVector&     getClass(void) const;                               //!< Get class vector
+        const VectorString&     getClass(void) const;                               //!< Get class vector
         std::string             toString(void) const;                               //!< Complete info about object
 
         // Regular functions

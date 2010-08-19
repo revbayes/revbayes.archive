@@ -25,7 +25,7 @@
 
 class DAGNode;
 class RbDouble;
-class StringVector;
+class VectorString;
 
 class Dist_norm: public DistributionReal {
 
@@ -37,7 +37,7 @@ class Dist_norm: public DistributionReal {
 
         // Basic utility functions
         Dist_norm*          clone(void) const;                                  //!< Clone object
-        const StringVector& getClass(void) const;                               //!< Get class vector
+        const VectorString& getClass(void) const;                               //!< Get class vector
 
         // Member variable setup
         const MemberRules&  getMemberRules(void) const;                         //!< Get member variable rules

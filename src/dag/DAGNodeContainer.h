@@ -36,7 +36,7 @@ class ContainerIterator;
 class DAGNode;
 class IntVector;
 class RbString;
-class StringVector;
+class VectorString;
 
 class DAGNodeContainer : public VariableNode {
 
@@ -69,7 +69,7 @@ class DAGNodeContainer : public VariableNode {
 
         // Basic utility functions
         DAGNodeContainer*       clone(void) const;                                                   //!< Clone object
-        const StringVector&     getClass(void) const;                                                //!< Get class
+        const VectorString&     getClass(void) const;                                                //!< Get class
         const RbObject*         getStoredValue(void);                                                //!< Get stored value
         const RbObject*         getValue(void);                                                      //!< Get value
         const RbObject*         getValue(void) const;                                                //!< Get const value if poss.
@@ -114,7 +114,7 @@ class DAGNodeContainer : public VariableNode {
         bool                    changed;                                                             //!< Recalculated after touch?
         IntVector               length;                                                              //!< Length in each dimension
 	    std::vector<DAGNode*>   nodes;                                                               //!< Vector of nodes
-        StringVector*           names;                                                               //!< Vector of element names
+        VectorString*           names;                                                               //!< Vector of element names
         Container*              value;                                                               //!< Holds value
         Container*              storedValue;                                                         //!< Stored value
 };

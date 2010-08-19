@@ -5,7 +5,7 @@
 #include <vector>
 #include "RbObject.h"
 #include "RbComplex.h"
-#include "StringVector.h"
+#include "VectorString.h"
 
 class RandomNumberGenerator : public RbComplex {
 
@@ -17,7 +17,7 @@ class RandomNumberGenerator : public RbComplex {
         // Basic utility functions
         RbObject*					clone() const;                                  //!< Clone object
         bool						equals(const RbObject* obj) const;              //!< Equals comparison
-        const StringVector&			getClass(void) const;                           //!< Get class
+        const VectorString&			getClass(void) const;                           //!< Get class
         void						printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string					toString(void) const;                           //!< General info on object
 
