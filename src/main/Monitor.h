@@ -35,7 +35,7 @@ class Monitor : public RbComplex {
                                     Monitor(VariableNode* node, int freq);          //!< Constructor
 
         // Basic utility functions
-        Monitor*                    clone(void) const;                              //!< Clone object
+        RbObject*                   clone(void) const;                              //!< Clone object
         bool                        equals(const RbObject* obj) const;              //!< Equals comparison
         const VectorString&         getClass(void) const;                           //!< Get class
         void                        printValue(std::ostream& o) const;              //!< Print value (for user)

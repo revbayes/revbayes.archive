@@ -31,8 +31,7 @@
 
 
 /** Construct vector with one double x */
-VectorRealPos::VectorRealPos(double x)
-    : Container(RealPos_name) {
+VectorRealPos::VectorRealPos(double x) {
 
     if (x <= 0.0)
         throw RbException("Nonpositive value for " + VectorRealPos_name);
@@ -41,8 +40,7 @@ VectorRealPos::VectorRealPos(double x)
 }
 
 /** Construct vector with n doubles x */
-VectorRealPos::VectorRealPos(int n, double x)
-    : Container(RealPos_name) {
+VectorRealPos::VectorRealPos(int n, double x) {
 
     if (x <= 0.0)
         throw RbException("Nonpositive value for " + VectorRealPos_name);
@@ -52,10 +50,9 @@ VectorRealPos::VectorRealPos(int n, double x)
 }
 
 /** Constructor from double vector */
-VectorRealPos::VectorRealPos(std::vector<double>& x)
-    : Container(RealPos_name) {
+VectorRealPos::VectorRealPos(std::vector<double>& x) {
 
-    for (size_t i=0; i<x.size(); i++)
+    for (int i=0; i<x.size(); i++)
         {
         if (x[i] <= 0.0)
             throw RbException("Nonpositive value for " + VectorRealPos_name);

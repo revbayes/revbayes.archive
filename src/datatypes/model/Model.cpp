@@ -289,7 +289,7 @@ int Model::getIndexForVector(const std::vector<DAGNode*>& v, const DAGNode* p) c
 	return -1;
 }
 
-/** Is the object convertible to an object of another class type? */
+/** Convert to object of another class. The caller manages the object. */
 bool Model::isConvertibleTo(const std::string& type) const {
 
     return false;

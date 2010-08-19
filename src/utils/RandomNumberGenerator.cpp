@@ -31,7 +31,7 @@ RandomNumberGenerator::RandomNumberGenerator(std::vector<unsigned int> s) {
 
 
 /** Clone function */
-RandomNumberGenerator* RandomNumberGenerator::clone(void) const {
+RbObject* RandomNumberGenerator::clone(void) const {
 
     return new RandomNumberGenerator(*this);
 }
@@ -67,7 +67,7 @@ const VectorString& RandomNumberGenerator::getClass(void) const {
 }
 
 
-/** Is the object convertible to an object of another class type? */
+/** Is convertible to type? */
 bool RandomNumberGenerator::isConvertibleTo(const std::string& type) const {
 
     return false;

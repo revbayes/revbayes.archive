@@ -35,7 +35,7 @@ class SimpleMove : public Move {
         virtual                    ~SimpleMove(void) {}                                                                      //!< Destructor
 
         // Basic utility functions
-        virtual SimpleMove*         clone(void) const = 0;                                                                   //!< Clone the object
+        virtual RbObject*           clone(void) const = 0;                                                                   //!< Clone the object
         virtual const VectorString& getClass(void) const;                                                                    //!< Get class vector
 
         // SimpleMove functions

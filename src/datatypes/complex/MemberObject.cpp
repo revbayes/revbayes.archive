@@ -138,7 +138,7 @@ DAGNode* MemberObject::getVariable(const std::string& name) {
     return const_cast<DAGNode*>(members.getVariable(name));
 }
 
-/** Is the object convertible to an object of another class type? */
+/** Convert to object of another class. The caller manages the object. */
 bool MemberObject::isConvertibleTo(const std::string& type) const {
 
     return false;

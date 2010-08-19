@@ -36,7 +36,7 @@ class Move_mscale : public SimpleMove {
 									RandomNumberGenerator* rng = Workspace::globalWorkspace().get_rng());   //!< Internal constructor
 
         // Basic utility functions
-        Move_mscale*                clone(void) const;                                                      //!< Clone object
+        RbObject*                   clone(void) const;                                                      //!< Clone object
         const VectorString&         getClass(void) const;                                                   //!< Get class vector
 
         // Member variable inits

@@ -45,7 +45,7 @@ class RbComplex : public RbObject {
 		virtual                     ~RbComplex(void) {}                                                      //!< Virtual destructor 
 
         // Basic utility functions you have to override
-        virtual RbComplex*           clone(void) const = 0;                                                  //!< Clone object
+        virtual RbObject*            clone(void) const = 0;                                                  //!< Clone object
         virtual bool                 equals(const RbObject* obj) const = 0;                                  //!< Equals comparison
 		virtual const VectorString&  getClass(void) const;                                                   //!< Get class vector
 		virtual void                 printValue(std::ostream& o) const = 0;                                  //!< Print value for user

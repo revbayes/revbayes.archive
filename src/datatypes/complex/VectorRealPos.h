@@ -19,9 +19,8 @@
 #ifndef VectorRealPos_H
 #define VectorRealPos_H
 
-#include "Container.h"
-#include "RbNames.h"
 #include "VectorInteger.h"
+#include "Container.h"
 
 #include <iostream>
 #include <string>
@@ -30,7 +29,7 @@
 class VectorRealPos : public Container {
 
     public:
-                                    VectorRealPos(void) : Container(RealPos_name) {}           //!< Default constructor (empty vector)
+                                    VectorRealPos(void) : Container() {}                       //!< Default constructor (empty vector)
                                     VectorRealPos(double x);                                   //!< Construct vector with one double x
 	                                VectorRealPos(int n, double x);                            //!< Construct vector with n doubles x
 	                                VectorRealPos(std::vector<double>& x);                     //!< Constructor from double vector

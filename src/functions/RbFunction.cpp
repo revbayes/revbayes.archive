@@ -157,7 +157,7 @@ const VectorString& RbFunction::getClass(void) const {
 }
 
 
-/** Is the object convertible to an object of another class type? */
+/** Is object convertible to object of another class? */
 bool RbFunction::isConvertibleTo(const std::string& type) const {
 
     return false;

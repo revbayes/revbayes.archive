@@ -100,7 +100,7 @@ double Move::getUpdateWeight(void) const {
     return ((Real*)(getValue("weight")))->getValue();
 }
 
-/** Is the object convertible to an object of another class type? */
+/** Convert to object of another class. The caller manages the object. */
 bool Move::isConvertibleTo(const std::string& type) const {
 
     return false;

@@ -54,7 +54,7 @@ const VectorString& SimpleMove::getClass(void) const {
 	return rbClass;
 }
 
-/** Is the object convertible to an object of another class type? */
+/** Convert to object of another class. The caller manages the object. */
 bool SimpleMove::isConvertibleTo(const std::string& type) const {
 
     return false;

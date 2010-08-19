@@ -31,7 +31,7 @@
 #include <ostream>
 #include <vector>
 
-class ContainerObject;
+class Container;
 class ContainerIterator;
 class DAGNode;
 class VectorInteger;
@@ -104,19 +104,19 @@ class DAGNodeContainer : public VariableNode {
 
     private:
         // Utility functions
-        size_t                  getOffset(const VectorInteger& index) const;                            //!< Get offset in nodes vector
-        void                    update(void);                                                           //!< Update value
+        size_t                  getOffset(const VectorInteger& index) const;                             //!< Get offset in nodes vector
+        void                    update(void);                                                        //!< Update value
 
         // Give friend class Frame access to elements
-        DAGNode*                getVarElement(const VectorInteger& index);                              //!< Get variable element
+        DAGNode*                getVarElement(const VectorInteger& index);                               //!< Get variable element
 
         // Member variables
-        bool                    changed;                                                                //!< Recalculated after touch?
-        VectorInteger           length;                                                                 //!< Length in each dimension
-	    std::vector<DAGNode*>   nodes;                                                                  //!< Vector of nodes
-        VectorString*           names;                                                                  //!< Vector of element names
-        ContainerObject*        value;                                                                  //!< Holds value
-        ContainerObject*        storedValue;                                                            //!< Stored value
+        bool                    changed;                                                             //!< Recalculated after touch?
+        VectorInteger               length;                                                              //!< Length in each dimension
+	    std::vector<DAGNode*>   nodes;                                                               //!< Vector of nodes
+        VectorString*           names;                                                               //!< Vector of element names
+        Container*              value;                                                               //!< Holds value
+        Container*              storedValue;                                                         //!< Stored value
 };
 
 #endif

@@ -31,23 +31,20 @@
 
 
 /** Construct vector with one double x */
-VectorReal::VectorReal(double x)
-    : Container(Real_name) {
+VectorReal::VectorReal(double x) {
 
     value.push_back(x);
 }
 
 /** Construct vector with n doubles x */
-VectorReal::VectorReal(int n, double x)
-    : Container(Real_name) {
+VectorReal::VectorReal(int n, double x) {
 
     for (double i = 0; i < n; i++)
         value.push_back(x);
 }
 
 /** Constructor from double vector */
-VectorReal::VectorReal(std::vector<double>& x)
-    : Container(Real_name) {
+VectorReal::VectorReal(std::vector<double>& x) {
 
     value = x;
 }
