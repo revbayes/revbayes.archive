@@ -44,8 +44,6 @@ Func_v_int* Func_v_int::clone(void) const {
 /** Execute function */
 RbObject* Func_v_int::executeOperation(const std::vector<DAGNode*>& args) {
 
-    assert (args.size() == 2 && args[1]->isType(DAGNodeContainer_name));
-
     // Create temporary vector for the ints 
     std::vector<int>    tempVec;
 
@@ -53,9 +51,11 @@ RbObject* Func_v_int::executeOperation(const std::vector<DAGNode*>& args) {
     tempVec.push_back(((RbInt*)(args[0]->getValue()))->getValue());
 
     // Get following elements
-    DAGNodeContainer*   elements = dynamic_cast<DAGNodeContainer*>(args[1]);
-    for (size_t i=0; i<elements->size(); i++) {
-        tempVec.push_back(((RbInt*)(elements->getValElement(i)))->getValue());
+    if (args.size() > 1) {
+        DAGNodeContainer*   elements = dynamic_cast<DAGNodeContainer*>(args[1]);
+        for (size_t i=0; i<elements->size(); i++) {
+            tempVec.push_back(((RbInt*)(elements->getValElement(i)))->getValue());
+        }
     }
 
     return new IntVector(tempVec);
