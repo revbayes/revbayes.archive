@@ -32,6 +32,7 @@ const std::string ArgumentRule_name                             = "argument rule
 const std::string ConstantNode_name                             = "Constant Node";
 const std::string ConstructorFunction_name                      = "constructor function";
 const std::string Container_name                                = "container";
+const std::string ContainerObject_name                          = "object container";
 const std::string DAGNode_name                                  = "DAG Vertex";
 const std::string DAGNodeContainer_name                         = "DAG Vertex Container";
 const std::string DeterministicNode_name                        = "Deterministic Vertex";

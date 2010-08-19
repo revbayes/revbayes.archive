@@ -83,9 +83,9 @@ void MoveSchedule::addMove(Move* move) {
 
 
 /** Clone object */
-RbObject* MoveSchedule::clone(void) const {
+MoveSchedule* MoveSchedule::clone(void) const {
 
-    return (RbObject*)(new MoveSchedule(*this));
+    return new MoveSchedule(*this);
 }
 
 /** Convert to object of another class. The caller manages the object. */
@@ -130,7 +130,7 @@ void MoveSchedule::eraseMove(const Move* move) {
     schedule.erase(i);
 }
 
-/** Convert to object of another class. The caller manages the object. */
+/** Is the object convertible to an object of another class type? */
 bool MoveSchedule::isConvertibleTo(const std::string& type) const {
 
     return false;

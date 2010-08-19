@@ -26,21 +26,21 @@
 
 
 /** Construct empty vector of length n */
-VectorString::VectorString(size_t n) : Container() {
+VectorString::VectorString(size_t n) : Container(RbString_name) {
 
     value.resize(n);
 }
 
 
 /** Construct vector with one string x */
-VectorString::VectorString(const std::string& x) : Container() {
+VectorString::VectorString(const std::string& x) : Container(RbString_name) {
 
     value.push_back(x);
 }
 
 
 /** Construct vector with n strings x */
-VectorString::VectorString(size_t n, const std::string& x) : Container() {
+VectorString::VectorString(size_t n, const std::string& x) : Container(RbString_name) {
 
     for (size_t i = 0; i < n; i++)
         value.push_back(x);
@@ -48,7 +48,7 @@ VectorString::VectorString(size_t n, const std::string& x) : Container() {
 
 
 /** Constructor from std::string vector */
-VectorString::VectorString(const std::vector<std::string>& x) : Container() {
+VectorString::VectorString(const std::vector<std::string>& x) : Container(RbString_name) {
 
     value = x;
 }

@@ -30,7 +30,7 @@ class RbString : public RbComplex {
                                     RbString(const std::string& v);                  //!< Constructor from string
 
         // Basic utility functions
-	    RbObject*                   clone(void) const;                               //!< Copy
+	    RbString*                   clone(void) const;                               //!< Copy
 	    bool                        equals(const RbObject* obj) const;               //!< Equals comparison
         const VectorString&         getClass(void) const;                            //!< Get class
         void                        printValue(std::ostream& o) const;               //!< Print value (for user)

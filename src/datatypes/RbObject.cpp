@@ -60,16 +60,13 @@ const std::string& RbObject::getType(void) const {
 }
 
 
-/** Is convertible to type? Default is false */
+/** Is the object convertible to type? */
 bool RbObject::isConvertible(const std::string& type) const {
 
-    const std::string& myType = getType();
-
-    if (myType.compare(type) == 0)
-        true;
+    if (getType().compare(type) == 0)
+        return true;
     else
         return isConvertibleTo(type);
-	return false;
 }
 
 

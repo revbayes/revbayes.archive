@@ -46,7 +46,7 @@ Move_mscale::Move_mscale(StochasticNode* node, double lambda, double weight, Ran
 
 
 /** Clone object */
-RbObject* Move_mscale::clone(void) const {
+Move_mscale* Move_mscale::clone(void) const {
 
     return new Move_mscale(*this);
 }
@@ -64,7 +64,7 @@ const VectorString& Move_mscale::getClass() const {
     return rbClass;
 }
 
-/** Convert to object of another class. The caller manages the object. */
+/** Is the object convertible to an object of another class type? */
 bool Move_mscale::isConvertibleTo(const std::string& type) const {
 
     return false;

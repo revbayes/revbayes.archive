@@ -47,7 +47,7 @@ Move_mslide::Move_mslide(StochasticNode* node, double delta, double weight, Rand
 
 
 /** Clone object */
-RbObject* Move_mslide::clone(void) const {
+Move_mslide* Move_mslide::clone(void) const {
 
     return new Move_mslide(*this);
 }
@@ -86,7 +86,7 @@ const MemberRules& Move_mslide::getMemberRules(void) const {
     return memberRules;
 }
 
-/** Convert to object of another class. The caller manages the object. */
+/** Is the object convertible to an object of another class type? */
 bool Move_mslide::isConvertibleTo(const std::string& type) const {
 
     return false;

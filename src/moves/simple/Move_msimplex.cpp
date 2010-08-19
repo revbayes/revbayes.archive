@@ -49,7 +49,7 @@ Move_msimplex::Move_msimplex(StochasticNode* node, double tuning, int nc, double
 }
 
 /** Clone object */
-RbObject* Move_msimplex::clone(void) const {
+Move_msimplex* Move_msimplex::clone(void) const {
 
     return new Move_msimplex(*this);
 }
@@ -88,7 +88,7 @@ const MemberRules& Move_msimplex::getMemberRules(void) const {
     return memberRules;
 }
 
-/** Convert to object of another class. The caller manages the object. */
+/** Is the object convertible to an object of another class type? */
 bool Move_msimplex::isConvertibleTo(const std::string& type) const {
 
     return false;

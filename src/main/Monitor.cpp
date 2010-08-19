@@ -31,7 +31,7 @@ Monitor::Monitor(VariableNode* node, int freq)
 
 
 /** Clone the object */
-RbObject* Monitor::clone(void) const {
+Monitor* Monitor::clone(void) const {
 
     return new Monitor(*this);
 }
@@ -65,7 +65,7 @@ const VectorString& Monitor::getClass() const {
     return rbClass;
 }
 
-/** Convert to object of another class. The caller manages the object. */
+/** Is the object convertible to an object of another class type? */
 bool Monitor::isConvertibleTo(const std::string& type) const {
 
     return false;

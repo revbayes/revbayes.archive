@@ -38,6 +38,13 @@ RbString RbString::operator+(const RbString& s) const {
     return RbString(value+s.value);
 }
 
+/** Clone function */
+RbString* RbString::clone() const {
+
+	return new RbString(*this);
+}
+
+
 /** Convert to object of another class. The caller manages the object. */
 RbObject* RbString::convertTo(const std::string& type) const {
 
@@ -46,13 +53,6 @@ RbObject* RbString::convertTo(const std::string& type) const {
     throw RbException("Cannot convert string to " + type + ".");*/
     return NULL;
 }
-
-/** Clone function */
-RbObject* RbString::clone() const {
-
-	return (RbObject*)(new RbString(*this));
-}
-
 
 /** Equals comparison */
 bool RbString::equals(const RbObject* obj) const {
@@ -72,11 +72,9 @@ const VectorString& RbString::getClass() const {
     return rbClass;
 }
 
-/** Convert to object of another class. The caller manages the object. */
+/** Is the object convertible to an object of another class type? */
 bool RbString::isConvertibleTo(const std::string& type) const {
 
-    /*if (type == Nucleotide_name) 
-        return true;*/
     return false;
 }
 

@@ -20,6 +20,7 @@
 #define VectorString_H
 
 #include "Container.h"
+#include "RbNames.h"
 
 #include <iostream>
 #include <string>
@@ -29,7 +30,7 @@ class VectorString : public Container {
 
     public:
 		// Constructors and destructor
-	                                VectorString(void) : Container() {}                     //!< Default constructor (empty vector)
+	                                VectorString(void) : Container(RbString_name) {}        //!< Default constructor (empty vector)
 	                                VectorString(size_t n);                                 //!< Construct vector of length n of empty strings
                                     VectorString(const std::string& x);                     //!< Construct vector with one string x
 	                                VectorString(size_t n, const std::string& x);           //!< Construct vector with n strings x

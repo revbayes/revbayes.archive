@@ -19,8 +19,9 @@
 #ifndef VectorReal_H
 #define VectorReal_H
 
-#include "VectorInteger.h"
 #include "Container.h"
+#include "RbNames.h"
+#include "VectorInteger.h"
 
 #include <iostream>
 #include <string>
@@ -29,7 +30,7 @@
 class VectorReal : public Container {
 
     public:
-                                    VectorReal(void) : Container() {}                          //!< Default constructor (empty vector)
+                                    VectorReal(void) : Container(Real_name) {}                 //!< Default constructor (empty vector)
                                     VectorReal(double x);                                      //!< Construct vector with one double x
 	                                VectorReal(int n, double x);                               //!< Construct vector with n doubles x
 	                                VectorReal(std::vector<double>& x);                        //!< Constructor from double vector

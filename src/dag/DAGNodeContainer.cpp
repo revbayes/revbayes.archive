@@ -17,7 +17,8 @@
  */
 
 #include "ConstantNode.h"
-#include "Container.h"
+#include "ContainerIterator.h"
+#include "ContainerObject.h"
 #include "DAGNodeContainer.h"
 #include "VectorInteger.h"
 #include "RbException.h"
@@ -42,7 +43,7 @@ DAGNodeContainer::DAGNodeContainer(DAGNode* x) : VariableNode(x->getType()) {
     
     changed      = false;
     length       = VectorInteger(1);
-    value        = new Container(x->getValue()->clone());
+    value        = new ContainerObject(x->getValue()->clone());
     storedValue  = value->clone();
     names        = NULL;
 	isDagExposed = true;
@@ -63,7 +64,7 @@ DAGNodeContainer::DAGNodeContainer(size_t n, DAGNode* x) : VariableNode(x->getTy
 
     changed      = false;
     length       = VectorInteger(int(n));
-    value        = new Container(n, x->getValue()->clone());
+    value        = new ContainerObject(n, x->getValue()->clone());
     storedValue  = value->clone();
     names        = NULL;
 	isDagExposed = true;
@@ -79,7 +80,7 @@ DAGNodeContainer::DAGNodeContainer(size_t n, const std::string& valType)
 
     changed      = false;
     length       = VectorInteger(int(n));
-    value        = new Container(length, valueType);
+    value        = new ContainerObject(length, valueType);
     storedValue  = value->clone();
     names        = NULL;
 	isDagExposed = true;
@@ -111,7 +112,7 @@ DAGNodeContainer::DAGNodeContainer(const VectorInteger& len, DAGNode* x)
 
     changed      = false;
     length       = len;
-    value        = new Container(len, x->getValue()->clone());
+    value        = new ContainerObject(len, x->getValue()->clone());
     storedValue  = value->clone();
     names        = NULL;
 	isDagExposed = true;
@@ -137,7 +138,7 @@ DAGNodeContainer::DAGNodeContainer(const VectorInteger& len, const std::string& 
 
     changed     = false;
     length      = len;
-    value       = new Container(len, valueType);
+    value       = new ContainerObject(len, valueType);
     storedValue = value->clone();
     names       = NULL;
 	isDagExposed = true;
@@ -643,7 +644,7 @@ void DAGNodeContainer::restoreAffected(void) {
 
     if (touched) {
         if (changed) {
-            Container* temp = value;
+            ContainerObject* temp = value;
             value = storedValue;
             storedValue = temp;
         }
@@ -985,7 +986,7 @@ void DAGNodeContainer::touchAffected(void) {
 void DAGNodeContainer::update(void) {
 
     if (touched && !changed) {
-        Container* temp = storedValue;
+        ContainerObject* temp = storedValue;
         storedValue = value;
         value = temp;
         std::vector<DAGNode*>::iterator i = nodes.begin();

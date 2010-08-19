@@ -15,7 +15,7 @@ class RandomNumberGenerator : public RbComplex {
     		RandomNumberGenerator(std::vector<unsigned int> s);                     //!< Constructor explicitly setting seeds
 
         // Basic utility functions
-        RbObject*					clone() const;                                  //!< Clone object
+        RandomNumberGenerator*      clone() const;                                  //!< Clone object
         bool						equals(const RbObject* obj) const;              //!< Equals comparison
         const VectorString&			getClass(void) const;                           //!< Get class
         void						printValue(std::ostream& o) const;              //!< Print value (for user)
