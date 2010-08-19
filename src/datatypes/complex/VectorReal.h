@@ -16,8 +16,8 @@
  * $Id$
  */
 
-#ifndef Vector_H
-#define Vector_H
+#ifndef VectorReal_H
+#define VectorReal_H
 
 #include "VectorInteger.h"
 #include "Container.h"
