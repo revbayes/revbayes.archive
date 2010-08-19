@@ -35,6 +35,7 @@
 // Objects added to the workspace in initializeGlobalWorkspace()
 #include "Dist_dirichlet.h"
 #include "Dist_exp.h"
+#include "Dist_multinomial.h"
 #include "Dist_norm.h"
 #include "Dist_unif.h"
 #include "Func__range.h"
@@ -47,13 +48,16 @@
 #include "Func_v_int.h"
 #include "Func_v_double.h"
 #include "Mcmc.h"
+#include "Move_mmultinomial.h"
 #include "Move_mscale.h"
 #include "Move_msimplex.h"
 #include "Move_mslide.h"
 #include "RealPos.h"
 #include "Integer.h"
 #include "Real.h"
+#include "Simplex.h"
 #include "VectorReal.h"
+#include "VectorRealPos.h"
 
 #include <sstream>
 #include <vector>
@@ -213,25 +217,30 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add global variables */
         addVariable("_rng", new RandomNumberGenerator);
 
-        /* Add types */
+        /* Add types: add a dummy variable which will be deleted. We only do
+           this to get the inheritance hierarchy. */
         addType(new Integer(0));
         addType(new Real());
         addType(new RealPos(1.0));
+        addType(new Simplex());
         addType(new VectorInteger());
         addType(new VectorReal());
+        addType(new VectorRealPos());
         addType(new RandomNumberGenerator);
 
         /* Add member object types with auto-generated constructors */
-        addTypeWithConstructor("mcmc",     new Mcmc());
-        addTypeWithConstructor("mslide",   new Move_mslide());
-        addTypeWithConstructor("mscale",   new Move_mscale());
-        addTypeWithConstructor("msimplex", new Move_msimplex());
+        addTypeWithConstructor("mcmc",         new Mcmc());
+        addTypeWithConstructor("mmultinomial", new Move_mmultinomial());
+        addTypeWithConstructor("mslide",       new Move_mslide());
+        addTypeWithConstructor("mscale",       new Move_mscale());
+        addTypeWithConstructor("msimplex",     new Move_msimplex());
 
         /* Add distributions with distribution constructors and distribution functions*/
-        addDistribution("dirichlet", new Dist_dirichlet());
-        addDistribution("exp",       new Dist_exp());
-        addDistribution("norm",      new Dist_norm());
-        addDistribution("unif",      new Dist_unif());
+        addDistribution("dirichlet",   new Dist_dirichlet());
+        addDistribution("exp",         new Dist_exp());
+        addDistribution("multinomial", new Dist_multinomial());
+        addDistribution("norm",        new Dist_norm());
+        addDistribution("unif",        new Dist_unif());
 
         /* Add basic internal functions */
         addFunction("_range", new Func__range());

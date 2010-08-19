@@ -63,6 +63,10 @@ class VectorReal : public Container {
         virtual void                setElement(const VectorInteger& index, RbObject* val);     //!< Set element
         virtual void                setLength(const VectorInteger& len);                       //!< Set length in each dim
 
+        // Regular functions
+        void                        setValue(const VectorReal& x);                             //!< Set value from Vector
+        void                        setValue(const std::vector<double>& x);                    //!< Set value from vector<double>
+
 	protected:
         RbObject*                   convertTo(const std::string& type) const;                  //!< Convert to type
         bool                        isConvertibleTo(const std::string& type) const;            //!< Is convertible to type and dim?

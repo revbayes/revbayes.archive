@@ -188,6 +188,23 @@ void VectorReal::setLength(const VectorInteger& len) {
 }
 
 
+/** Set value of simplex using VectorReal */
+void VectorReal::setValue(const VectorReal& x) {
+
+    value.resize(x.size());
+    for (size_t i=0; i<x.size(); i++)    
+        value[i] = x[i];
+}   
+
+
+/** Set value of simplex using vector<double> */
+void VectorReal::setValue(const std::vector<double>& x) {
+
+    value.clear();
+    value = x;
+}
+
+
 /** Print value for user */
 void VectorReal::printValue(std::ostream& o) const {
 

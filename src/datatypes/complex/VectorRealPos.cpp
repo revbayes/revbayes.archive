@@ -112,7 +112,7 @@ bool VectorRealPos::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const VectorString& VectorRealPos::getClass(void) const {
 
-    static VectorString rbClass = VectorString(VectorReal_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(VectorRealPos_name) + RbComplex::getClass();
     return rbClass;
 }
 

@@ -175,9 +175,7 @@ double Dist_multinomial::lnPriorRatio(const RbObject* newVal, const RbObject* ol
 
 	// calculate the log prior ratio
 	int n = p.size();
-	double lnP = 0.0;
-	for (int i=0; i<n; i++)
-		lnP += (p[i] - 1.0) * (std::log(newX[i]) - std::log(oldX[i]));
+	double lnP = RbStatistics::Multinomial::lnPdf( p, newX ) - RbStatistics::Multinomial::lnPdf( p, oldX );
     return lnP;
 }
 
