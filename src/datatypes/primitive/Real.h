@@ -30,10 +30,10 @@ class VectorString;
 class Real : public RbObject {
 
     public:
-                                    Real(void);                                  //!< Default constructor (0.0)
-                                    Real(const double v);                        //!< Construct from double
-                                    Real(const int v);                           //!< Construct from int 
-                                    Real(const bool v);                          //!< Construct from bool
+                                    Real(void);                                      //!< Default constructor (0.0)
+                                    Real(const double v);                            //!< Construct from double
+                                    Real(const int v);                               //!< Construct from int 
+                                    Real(const bool v);                              //!< Construct from bool
 
         // Basic utility functions
         virtual RbObject*           clone(void) const;                               //!< Clone object

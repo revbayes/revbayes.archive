@@ -29,13 +29,13 @@
 class VectorReal : public Container {
 
     public:
-                                    VectorReal(void) : Container() {}                              //!< Default constructor (empty vector)
-                                    VectorReal(double x);                                          //!< Construct vector with one double x
-	                                VectorReal(int n, double x);                                   //!< Construct vector with n doubles x
-	                                VectorReal(std::vector<double>& x);                            //!< Constructor from double vector
+                                    VectorReal(void) : Container() {}                          //!< Default constructor (empty vector)
+                                    VectorReal(double x);                                      //!< Construct vector with one double x
+	                                VectorReal(int n, double x);                               //!< Construct vector with n doubles x
+	                                VectorReal(std::vector<double>& x);                        //!< Constructor from double vector
 
         // Basic utility functions
-        virtual VectorReal*             clone(void) const;                                         //!< Clone object
+        virtual VectorReal*         clone(void) const;                                         //!< Clone object
         virtual bool                equals(const RbObject* obj) const;                         //!< Equals comparison
         virtual const VectorString& getClass(void) const;                                      //!< Get class vector
         virtual void                printValue(std::ostream& o) const;                         //!< Print value for user
@@ -48,7 +48,7 @@ class VectorReal : public Container {
         virtual void                pop_back(void) { value.pop_back(); }                       //!< Drop element
         virtual void                push_back(double x) { value.push_back(x); }                //!< Append element to end
         virtual void                push_front(double x) { value.insert(value.begin(), x); }   //!< Add element in front
-        void                        resize(size_t n) { resize(VectorInteger(int(n))); }            //!< Resize
+        void                        resize(size_t n) { resize(VectorInteger(int(n))); }        //!< Resize
         size_t                      size(void) const { return value.size(); }                  //!< Get size
 
         // Getter
@@ -57,11 +57,11 @@ class VectorReal : public Container {
         // Element access functions for parser
 	    int                         getDim(void) const { return 1; }                           //!< Get subscript dimensions
         const std::string&          getElementType(void) const;                                //!< Get element type
-        const RbObject*             getElement(const VectorInteger& index) const;                  //!< Get element (read-only)
-        const VectorInteger&            getLength(void) const;                                     //!< Get length in each dim
-        virtual void                resize(const VectorInteger& len);                              //!< Resize
-        virtual void                setElement(const VectorInteger& index, RbObject* val);         //!< Set element
-        virtual void                setLength(const VectorInteger& len);                           //!< Set length in each dim
+        const RbObject*             getElement(const VectorInteger& index) const;              //!< Get element (read-only)
+        const VectorInteger&        getLength(void) const;                                     //!< Get length in each dim
+        virtual void                resize(const VectorInteger& len);                          //!< Resize
+        virtual void                setElement(const VectorInteger& index, RbObject* val);     //!< Set element
+        virtual void                setLength(const VectorInteger& len);                       //!< Set length in each dim
 
 	protected:
         RbObject*                   convertTo(const std::string& type) const;                  //!< Convert to type

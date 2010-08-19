@@ -30,7 +30,7 @@ class VectorString;
 class Boolean : public RbObject {
 
     public:
-                                    Boolean(const bool v);                            //!< Construct from bool
+                                    Boolean(const bool v);                           //!< Construct from bool
 
         // Basic utility functions
         RbObject*                   clone(void) const;                               //!< Clone object

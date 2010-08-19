@@ -29,8 +29,8 @@ class VectorString;
 class Integer : public RbObject {
 
     public:
-                                    Integer(const int v);                              //!< Constructor from int
-                                    Integer(const bool v);                             //!< Constructor from bool
+                                    Integer(const int v);                           //!< Constructor from int
+                                    Integer(const bool v);                          //!< Constructor from bool
 
         // Basic utility functions
         RbObject*                   clone(void) const;                               //!< Clone object
