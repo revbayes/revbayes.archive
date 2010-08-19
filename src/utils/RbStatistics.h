@@ -32,103 +32,114 @@ namespace RbStatistics {
 
 	namespace Beta {
 	
-	double                      pdf(double a, double b, double x);                                  /*!< Beta(a,b) probability density */
-	double                      lnPdf(double a, double b, double x);                                /*!< Beta(a,b) log_e probability density */
-	double                      cdf(double a, double b, double x);                                  /*!< Beta(a,b) cumulative probability */
-	double                      quantile(double a, double b, double p);                             /*!< Beta(a,b) quantile */
-	double                      rv(double a, double b, RandomNumberGenerator* rng);                 /*!< Beta(a,b) random variable */
+	double                      pdf(double a, double b, double x);                                    /*!< Beta(a,b) probability density */
+	double                      lnPdf(double a, double b, double x);                                  /*!< Beta(a,b) log_e probability density */
+	double                      cdf(double a, double b, double x);                                    /*!< Beta(a,b) cumulative probability */
+	double                      quantile(double a, double b, double p);                               /*!< Beta(a,b) quantile */
+	double                      rv(double a, double b, RandomNumberGenerator* rng);                   /*!< Beta(a,b) random variable */
 	}
 	
 #pragma mark Chi-Square Distribution
 
 	namespace ChiSquare {
 	
-	double                      pdf(double v, double x);                                            /*!< Chi-Square(v) probability density */
-	double                      lnPdf(double v, double x);                                          /*!< Chi-Square(v) log_e probability density */
-	double                      cdf(double v, double x);                                            /*!< Chi-Square(v) cumulative probability */
-	double                      quantile(double v, double p);                                       /*!< Chi-Square(v) quantile */
-	double                      rv(double v, RandomNumberGenerator* rng);                           /*!< Chi-Square(v) random variable */
+	double                      pdf(double v, double x);                                              /*!< Chi-Square(v) probability density */
+	double                      lnPdf(double v, double x);                                            /*!< Chi-Square(v) log_e probability density */
+	double                      cdf(double v, double x);                                              /*!< Chi-Square(v) cumulative probability */
+	double                      quantile(double v, double p);                                         /*!< Chi-Square(v) quantile */
+	double                      rv(double v, RandomNumberGenerator* rng);                             /*!< Chi-Square(v) random variable */
 	}
 
 #pragma mark Dirichlet Distribution
 
 	namespace Dirichlet {
-	double                      pdf(const std::vector<double>& a, const std::vector<double>& z);    /*!< Dirichlet(a[]) probability density */
-	double                      lnPdf(const std::vector<double>& a, const std::vector<double>& z);  /*!< Dirichlet(a[]) log_e probability density */
-	std::vector<double>         rv(const std::vector<double>& a, RandomNumberGenerator* rng);       /*!< Dirichlet(a[]) log_e random variable */
+	double                      pdf(const std::vector<double>& a, const std::vector<double>& z);      /*!< Dirichlet(a[]) probability density */
+	double                      lnPdf(const std::vector<double>& a, const std::vector<double>& z);    /*!< Dirichlet(a[]) log_e probability density */
+	std::vector<double>         rv(const std::vector<double>& a, RandomNumberGenerator* rng);         /*!< Dirichlet(a[]) random variable */
 	}
 
 #pragma mark Exponential Distribution
 
 	namespace Exponential {
 	
-	double                      pdf(double lambda, double x);                                       /*!< Exponential(lambda) probability density */
-	double                      lnPdf(double lambda, double x);                                     /*!< Exponential(lambda) log_e probability density */
-	double                      cdf(double lambda, double x);                                       /*!< Exponential(lambda) cumulative probability */
-	double                      quantile(double lambda, double p);                                  /*!< Exponential(lambda) quantile */
-	double                      rv(double lambda, RandomNumberGenerator* rng);                      /*!< Exponential(lambda) random variable */
+	double                      pdf(double lambda, double x);                                         /*!< Exponential(lambda) probability density */
+	double                      lnPdf(double lambda, double x);                                       /*!< Exponential(lambda) log_e probability density */
+	double                      cdf(double lambda, double x);                                         /*!< Exponential(lambda) cumulative probability */
+	double                      quantile(double lambda, double p);                                    /*!< Exponential(lambda) quantile */
+	double                      rv(double lambda, RandomNumberGenerator* rng);                        /*!< Exponential(lambda) random variable */
 	}
 
 #pragma mark Gamma Distribution
 
 	namespace Gamma {
 	
-	double                      pdf(double a, double b, double x);                                  /*!< Gamma(a,b) probability density */
-	double                      lnPdf(double a, double b, double x);                                /*!< Log of the Gamma(a,b) probability density */  
-	double                      cdf(double a, double b, double x);                                  /*!< Gamma(a,b) cumulative probability */
-	double                      quantile(double a, double b, double p);                             /*!< Gamma(a,b) quantile */
-	double                      rv(double a, double b, RandomNumberGenerator* rng);                 /*!< Gamma(a,b) random variable */
+	double                      pdf(double a, double b, double x);                                    /*!< Gamma(a,b) probability density */
+	double                      lnPdf(double a, double b, double x);                                  /*!< Log of the Gamma(a,b) probability density */  
+	double                      cdf(double a, double b, double x);                                    /*!< Gamma(a,b) cumulative probability */
+	double                      quantile(double a, double b, double p);                               /*!< Gamma(a,b) quantile */
+	double                      rv(double a, double b, RandomNumberGenerator* rng);                   /*!< Gamma(a,b) random variable */
 	}
 
 #pragma mark LogNormal Distribution
 
 	namespace LogNormal {
 	
-	double                      pdf(double mu, double sigma, double x);                             /*!< LogNormal(mu,sigma) probability density */
-	double                      lnPdf(double mu, double sigma, double x);                           /*!< Log of the LogNormal(mu,sigma) probability density */
-	double                      cdf(double mu, double sigma, double x);                             /*!< LogNormal(mu,sigma) cumulative probability */
-	double                      quantile(double mu, double sigma, double p);                        /*!< LogNormal(mu,sigma) quantile */
-	double                      rv(double mu, double sigma, RandomNumberGenerator* rng);            /*!< LogNormal(mu,sigma) random variable */
+	double                      pdf(double mu, double sigma, double x);                               /*!< LogNormal(mu,sigma) probability density */
+	double                      lnPdf(double mu, double sigma, double x);                             /*!< Log of the LogNormal(mu,sigma) probability density */
+	double                      cdf(double mu, double sigma, double x);                               /*!< LogNormal(mu,sigma) cumulative probability */
+	double                      quantile(double mu, double sigma, double p);                          /*!< LogNormal(mu,sigma) quantile */
+	double                      rv(double mu, double sigma, RandomNumberGenerator* rng);              /*!< LogNormal(mu,sigma) random variable */
 	}
 
 #pragma mark Poisson Distribution
 
 	namespace Poisson {
 	
-	double                      pdf(double lambda, int x);                                          /*!< Poisson(lambda) probability */
-	double                      lnPdf(double lambda, int x);                                        /*!< Log of the Poisson(lambda) probability */
-	double                      cdf(double lambda, int x);                                          /*!< Poisson(lambda) cumulative probability */
-	double                      quantile(double lambda, double p);                                  /*!< Poisson(lambda) quantile */
-	int                         rv(double lambda, RandomNumberGenerator* rng);                      /*!< Poisson(lambda) random variable */
+	double                      pdf(double lambda, int x);                                            /*!< Poisson(lambda) probability */
+	double                      lnPdf(double lambda, int x);                                          /*!< Log of the Poisson(lambda) probability */
+	double                      cdf(double lambda, int x);                                            /*!< Poisson(lambda) cumulative probability */
+	double                      quantile(double lambda, double p);                                    /*!< Poisson(lambda) quantile */
+	int                         rv(double lambda, RandomNumberGenerator* rng);                        /*!< Poisson(lambda) random variable */
 	}
 
 #pragma mark Normal Distribution
 
 	namespace Normal {
 	
-	double                      pdf(double mu, double sigma, double x);                             /*!< Normal(mu,sigma) probability density */
-	double                      lnPdf(double mu, double sigma, double x);                           /*!< Log of the Normal(mu,sigma) probability density */
-	double                      cdf(double mu, double sigma, double x);                             /*!< Normal(mu,sigma) cumulative probability */
-	double                      quantile(double p);                                                 /*!< Normal(0,1) quantile */
-	double                      quantile(double mu, double sigma, double p);                        /*!< Normal(mu,sigma) quantile */
-	double                      rv(double mu, double sigma, RandomNumberGenerator* rng);            /*!< Normal(mu,sigma) random variable */
+	double                      pdf(double mu, double sigma, double x);                               /*!< Normal(mu,sigma) probability density */
+	double                      lnPdf(double mu, double sigma, double x);                             /*!< Log of the Normal(mu,sigma) probability density */
+	double                      cdf(double mu, double sigma, double x);                               /*!< Normal(mu,sigma) cumulative probability */
+	double                      quantile(double p);                                                   /*!< Normal(0,1) quantile */
+	double                      quantile(double mu, double sigma, double p);                          /*!< Normal(mu,sigma) quantile */
+	double                      rv(double mu, double sigma, RandomNumberGenerator* rng);              /*!< Normal(mu,sigma) random variable */
+	}
+
+#pragma mark Multinomial Distribution
+
+	namespace Multinomial {
+	double                      pdf(const std::vector<double>& p, const std::vector<int>& x);         /*!< Multinomial(p[]) probability */
+	double                      pdf(const std::vector<double>& p, const std::vector<double>& x);      /*!< Multinomial(p[]) probability */
+	double                      lnPdf(const std::vector<double>& p, const std::vector<int>& x);       /*!< Multinomial(p[]) log_e probability */
+	double                      lnPdf(const std::vector<double>& p, const std::vector<double>& x);    /*!< Multinomial(p[]) log_e probability */
+	std::vector<int>            rv(const std::vector<double>& p, RandomNumberGenerator* rng);         /*!< Multinomial(p[]) random variable */
+	std::vector<int>            rv(const std::vector<double>& p, int n, RandomNumberGenerator* rng);  /*!< Multinomial(p[]) random variable */
 	}
 
 #pragma mark Uniform Distribution
 
 	namespace Uniform {
 	
-	double                      pdf(double a, double b, double x);                                  /*!< Uniform(a,b) probability density */
-	double                      lnPdf(double a, double b, double x);                                /*!< Log of the Uniform(a,b) probability density */
-	double                      cdf(double a, double b, double x);                                  /*!< Uniform(a,b) cumulative probability */
-	double                      quantile(double a, double b, double p);                             /*!< Uniform(a,b) quantile */
-	double                      rv(double a, double b, RandomNumberGenerator* rng);                 /*!< Uniform(a,b) random variable */
+	double                      pdf(double a, double b, double x);                                    /*!< Uniform(a,b) probability density */
+	double                      lnPdf(double a, double b, double x);                                  /*!< Log of the Uniform(a,b) probability density */
+	double                      cdf(double a, double b, double x);                                    /*!< Uniform(a,b) cumulative probability */
+	double                      quantile(double a, double b, double p);                               /*!< Uniform(a,b) quantile */
+	double                      rv(double a, double b, RandomNumberGenerator* rng);                   /*!< Uniform(a,b) random variable */
 
-	double                      pdf(double x);                                                      /*!< Uniform(0,1) probability density */
-	double                      lnPdf(double x);                                                    /*!< Log of the Uniform(0,1) probability density */
-	double                      cdf(double x);                                                      /*!< Uniform(0,1) cumulative probability */
-	inline                      double quantile(double p);                                          /*!< Uniform(0,1) quantile */
-	double                      rv(RandomNumberGenerator* rng);                                     /*!< Uniform(0,1) random variable */
+	double                      pdf(double x);                                                        /*!< Uniform(0,1) probability density */
+	double                      lnPdf(double x);                                                      /*!< Log of the Uniform(0,1) probability density */
+	double                      cdf(double x);                                                        /*!< Uniform(0,1) cumulative probability */
+	inline                      double quantile(double p);                                            /*!< Uniform(0,1) quantile */
+	double                      rv(RandomNumberGenerator* rng);                                       /*!< Uniform(0,1) random variable */
 	}
 	
 #pragma mark Helper Functions
@@ -172,4 +183,4 @@ namespace RbStatistics {
 
 #pragma warning (default: 4068)
 #endif
-    
+      

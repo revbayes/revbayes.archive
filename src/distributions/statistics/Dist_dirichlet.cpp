@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of Dist_exp, which is used to hold
- * parameters and functions related to an exponential distribution.
+ * This file contains the implementation of Dist_dirichlet, which is used to hold
+ * parameters and functions related to a Dirichlet distribution.
  *
- * @brief Implementation of Dist_exp
+ * @brief Implementation of Dist_dirichlet
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2009-12-14 12:43:32 +0100 (Mån, 14 Dec 2009) $
@@ -27,6 +27,7 @@
 #include "RbNames.h"
 #include "RbStatistics.h"
 #include "Simplex.h"
+#include "VectorReal.h"
 #include "VectorString.h"
 #include "Workspace.h"
 #include "WrapperRule.h"
@@ -44,15 +45,15 @@ Dist_dirichlet::Dist_dirichlet(void) : Distribution(getMemberRules()) {
 /** Constructor for internal use */
 Dist_dirichlet::Dist_dirichlet(std::vector<double> a, RandomNumberGenerator* rng) : Distribution(getMemberRules()) {
 
-    setValue("alpha", new Simplex(a));
+    setValue("alpha", new VectorReal(a));
     setValue("rng",  rng);
 }
 
 /**
  * This function calculates the cumulative probability for
- * an exponentially-distributed random variable.
+ * a Dirichlet-distributed random variable.
  *
- * @brief Exponential cumulative probability
+ * @brief Dirichlet cumulative probability
  *
  * @param q     Quantile
  * @return      Cumulative probability
@@ -64,7 +65,13 @@ double Dist_dirichlet::cdf(double q) {
 	   algorithms are discussed in:
 	   
 	   Gouda, A. A., and T. Szantai. 2010. On numerical calculation of probabilities according 
-	   to Dirichlet distribution. Ann. Oper. Res. 177:185–200. */
+	   to Dirichlet distribution. Ann. Oper. Res. 177:185–200. 
+       
+       Also, note that implementing the CDF here will require some changes to the object
+       hierarchy; The cdf function is declared as pure virtual in the base classes of this object,
+       and the pure virtual base class definition only takes in a single double. To properly 
+       implement the cdf of the Dirichlet, however, you need to pass in a vector (a simplex)
+       of values. */
     return 0.0;
 }
 
@@ -125,7 +132,7 @@ const std::string& Dist_dirichlet::getVariableType(void) const {
  * ratio for an Dirichlet-distributed random variable under
  * two different values of the distribution parameter.
  *
- * @brief Natural log of exponential likelihood ratio
+ * @brief Natural log of Dirichlet likelihood ratio
  *
  * @param value     Value of random variable
  * @return          Natural log of the likelihood ratio
@@ -157,9 +164,9 @@ double Dist_dirichlet::lnLikelihoodRatio(const RbObject* value) {
 
 /**
  * This function calculates the natural log of the probability
- * density for an exponentially-distributed random variable.
+ * density for a Dirichlet-distributed random variable.
  *
- * @brief Natural log of exponential probability density
+ * @brief Natural log of Dirichlet probability density
  *
  * @param value Observed value
  * @return      Natural log of the probability density
@@ -179,9 +186,9 @@ double Dist_dirichlet::lnPdf(const RbObject* value) {
 
 /**
  * This function calculates the natural log of the probability
- * density ratio for two exponentially-distributed random variables.
+ * density ratio for two Dirichlet-distributed random variables.
  *
- * @brief Natural log of exponential probability density ratio
+ * @brief Natural log of Dirichlet probability density ratio
  *
  * @param newX      Value in numerator
  * @param oldX      Value in denominator
@@ -208,9 +215,9 @@ double Dist_dirichlet::lnPriorRatio(const RbObject* newVal, const RbObject* oldV
 
 /**
  * This function calculates the probability density
- * for an exponentially-distributed random variable.
+ * for a Dirichlet-distributed random variable.
  *
- * @brief Exponential probability density
+ * @brief Dirichlet probability density
  *
  * @param value Observed value
  * @return      Probability density
@@ -229,10 +236,10 @@ double Dist_dirichlet::pdf(const RbObject* value) {
 }
 
 /**
- * This function calculates the quantile for an
- * exponentially-distributed random variable.
+ * This function calculates the quantile for a
+ * Dirichlet-distributed random variable.
  *
- * @brief Quantile of exponential probability density
+ * @brief Quantile of Dirichlet probability density
  *
  * @param p     Cumulative probability of quantile
  * @return      Quantile
@@ -240,17 +247,19 @@ double Dist_dirichlet::pdf(const RbObject* value) {
  */
 double Dist_dirichlet::quantile(const double p) {
 
+    /* TO DO: I don't know if this can be sensibly implemented. See notes
+       (above) on the cdf function for a Dirichlet rv. */
 	throw (RbException("Cannot calculate the quantiles of a Dirichlet"));
     return 0.0;
 }
 
 /**
- * This function generates an exponentially-distributed
+ * This function generates an Dirichlet-distributed
  * random variable.
  *
- * @brief Random draw from exponential distribution
+ * @brief Random draw from Dirichlet distribution
  *
- * @return      Random draw from exponential distribution
+ * @return      Random draw from Dirichlet distribution
  */
 RbObject* Dist_dirichlet::rv(void) {
 

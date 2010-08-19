@@ -72,7 +72,7 @@ class Distribution: public MemberObject {
         virtual const RbObject*     executeOperation(const std::string& name, std::vector<DAGNode*>& args);         //!< Execute method
 
         // Workspace variables
-        Real					retDouble;                                                                      //!< Return double
+        Real                        retDouble;                                                                      //!< Return double
         RbObject*					retObject;                                                                      //!< Return object
 };
 

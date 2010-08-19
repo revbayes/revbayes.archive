@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of Dist_exp, which is used to hold
- * parameters and functions related to an exponential distribution.
+ * This file contains the declaration of Dist_dirichlet, which is used to hold
+ * parameters and functions related to a Dirichlet distribution.
  *
- * @brief Declaration of Dist_exp
+ * @brief Declaration of Dist_dirichlet
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2009-12-14 12:43:32 +0100 (Mån, 14 Dec 2009) $
@@ -45,7 +45,7 @@ class Dist_dirichlet: public Distribution {
         // Real-valued distribution functions
         double                      cdf(const double q);                                                //!< Cumulative density
         Move*                       getDefaultMove(StochasticNode* node);                               //!< Get default move
-        const Real*             getMin(void);                                                       //!< Get min value
+        const Real*                 getMin(void);                                                       //!< Get min value
         double                      lnLikelihoodRatio(const RbObject* value);                           //!< Ln likelihood ratio
         double                      lnPdf(const RbObject* value);                                       //!< Ln probability density
         double                      lnPriorRatio(const RbObject* newVal, const RbObject* oldVal);       //!< Ln prior ratio

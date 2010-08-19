@@ -154,6 +154,7 @@ double RbStatistics::Beta::quantile(double a, double b, double p) {
  * \brief Beta random variable.
  * \param a parameter of the Beta. 
  * \param b parameter of the Beta. 
+ * \param rng is a pointer to a random number object. 
  * \return Returns the random variable.
  * \throws Does not throw an error.
  */
@@ -335,9 +336,8 @@ double RbStatistics::ChiSquare::rv(double v, RandomNumberGenerator* rng) {
  * for a Dirichlet-distributed random variable.
  *
  * \brief Dirichlet probability density.
- * \param *a is a pointer to a vector of doubles containing the Dirichlet parameters. 
- * \param *z is a pointer to a vector of doubles containing the random variables. 
- * \param n is the number of Dirichlet parameters/random variables.
+ * \param a is a reference to a vector of doubles containing the Dirichlet parameters. 
+ * \param z is a reference to a vector of doubles containing the random variables. 
  * \return Returns the probability density.
  * \throws Throws an MbException::ERROR.
  */
@@ -376,9 +376,8 @@ double RbStatistics::Dirichlet::pdf(const std::vector<double> &a, const std::vec
  * for a Dirichlet-distributed random variable.
  *
  * \brief Natural log of Dirichlet probability density.
- * \param *a is a pointer to a vector of doubles containing the Dirichlet parameters. 
- * \param *z is a pointer to a vector of doubles containing the random variables. 
- * \param n is the number of Dirichlet parameters/random variables.
+ * \param a is a reference to a vector of doubles containing the Dirichlet parameters. 
+ * \param z is a reference to a vector of doubles containing the random variables. 
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
@@ -400,10 +399,9 @@ double RbStatistics::Dirichlet::lnPdf(const std::vector<double> &a, const std::v
  * This function generates a Dirichlet-distributed random variable.
  *
  * \brief Dirichlet random variable.
- * \param *a is a pointer to a vector of doubles containing the parameters of the Dirichlet. 
- * \param n is an integer with the number of Dirichlet prameters. 
- * \param *z is a pointer to a vector of doubles containing the Dirichlet random variable. 
- * \return Does not return a value (the random variable is initialized in the parameter z).
+ * \param a is a reference to a vector of doubles containing the Dirichlet parameters. 
+ * \param rng is a pointer to a random number object. 
+ * \return Returns a vector containing the Dirichlet random variable.
  * \throws Does not throw an error.
  */
 std::vector<double> RbStatistics::Dirichlet::rv(const std::vector<double> &a, RandomNumberGenerator* rng) {
@@ -663,6 +661,7 @@ double RbStatistics::LogNormal::quantile(double mu, double sigma, double p) {
  * \brief Log normal random variable.
  * \param mu is the mean parameter of the log normal. 
  * \param sigma is the variance parameter of the log normal. 
+ * \param rng is a pointer to a random number object. 
  * \return Returns a log normally distributed random variable.
  * \throws Does not throw an error.
  */
@@ -762,6 +761,7 @@ double RbStatistics::Poisson::quantile(double lambda, double p) {
  *
  * \brief Poisson(lambda) random variable.
  * \param lambda the rate parameter of the Poisson. 
+ * \param rng is a pointer to a random number object. 
  * \return This function returns a Poisson-distributed integer.
  * \throws Does not throw an error.
  */
@@ -970,6 +970,154 @@ double RbStatistics::Normal::rv(double mu, double sigma, RandomNumberGenerator* 
 	//extraNormalRv = v1 * fac;
 	//availableNormalRv = true;
 	return ( mu + sigma * (v2 * fac) );
+}
+
+#pragma mark Multinomial Distribution
+
+/*!
+ * This function calculates the probability  
+ * for a Multinomially-distributed random variable.
+ *
+ * \brief Multinomially probability.
+ * \param p is a reference to a vector of doubles containing the Multinomial parameters. 
+ * \param x is a reference to a vector of doubles containing the random variables. 
+ * \return Returns the probability.
+ * \throws Throws an MbException::ERROR.
+ */
+double RbStatistics::Multinomial::pdf(const std::vector<double> &p, const std::vector<double> &x) {
+	
+    double lnP = RbStatistics::Multinomial::lnPdf(p,x);
+    if (lnP < -300.0)
+        return 0.0;
+	return lnP;
+}
+
+/*!
+ * This function calculates the probability  
+ * for a Multinomially-distributed random variable.
+ *
+ * \brief Multinomially probability.
+ * \param p is a reference to a vector of doubles containing the Multinomial parameters. 
+ * \param x is a reference to a vector of ints containing the random variables. 
+ * \return Returns the probability.
+ * \throws Throws an MbException::ERROR.
+ */
+double RbStatistics::Multinomial::pdf(const std::vector<double> &p, const std::vector<int> &x) {
+	
+    double lnP = RbStatistics::Multinomial::lnPdf(p,x);
+    if (lnP < -300.0)
+        return 0.0;
+	return lnP;
+}
+
+/*!
+ * This function calculates the natural log of the probability  
+ * for a Multinomially-distributed random variable.
+ *
+ * \brief Natural log of Multinomial probability.
+ * \param p is a reference to a vector of doubles containing the Multinomial parameters. 
+ * \param x is a reference to a vector of doubles containing the random variables. 
+ * \return Returns the natural log of the probability.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std::vector<double> &x) {
+
+    if ( p.size() != x.size() )
+        throw (RbException("Mismatch in sizes of parameter and observation vector in Multinomial lnPdf"));
+        
+    double lnP = 0.0;
+    double sum = 0.0;
+    for (int i=0; i<x.size(); i++)
+        {
+        lnP -= RbMath::lnGamma(x[i] + 1.0);
+        lnP += x[i] * log(p[i]);
+        sum += x[i];
+        }
+    lnP += RbMath::lnGamma(sum + 1.0);
+	return lnP;
+}
+
+/*!
+ * This function calculates the natural log of the probability  
+ * for a Multinomially-distributed random variable.
+ *
+ * \brief Natural log of Multinomial probability.
+ * \param p is a reference to a vector of doubles containing the Multinomial parameters. 
+ * \param x is a reference to a vector of ints containing the random variables. 
+ * \return Returns the natural log of the probability.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std::vector<int> &x) {
+
+    if ( p.size() != x.size() )
+        throw (RbException("Mismatch in sizes of parameter and observation vector in Multinomial lnPdf"));
+        
+    double lnP = 0.0;
+    int sum = 0;
+    for (int i=0; i<x.size(); i++)
+        {
+        lnP -= RbMath::lnGamma((double)x[i] + 1.0);
+        lnP += (double)x[i] * log(p[i]);
+        sum += x[i];
+        }
+    lnP += RbMath::lnGamma((double)sum + 1.0);
+	return lnP;
+}
+
+/*!
+ * This function generates a Multinomially-distributed random variable.
+ *
+ * \brief Multinomially random variable.
+ * \param p is a reference to a vector of doubles containing the parameters of the Multinomial. 
+ * \param x is a reference to a vector of ints containing the Multinomial random variable. 
+ * \return Returns a vector of integers containing the random variable.
+ * \throws Does not throw an error.
+ */
+std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, RandomNumberGenerator* rng) {
+
+    std::vector<int> x(p.size(),0);
+    double u = rng->uniform01();
+    double sum = 0.0;
+    for (int i=0; i<p.size(); i++)
+        {
+        sum += p[i];
+        if (u < sum)
+            {
+            x[i]++;
+            break;
+            }
+        }
+	return x;
+}
+
+/*!
+ * This function generates a Multinomially-distributed random variable.
+ *
+ * \brief Multinomially random variable.
+ * \param p is a reference to a vector of doubles containing the parameters of the Multinomial. 
+ * \param n is an integer with the number of draws from the multinomial
+ * \param rng is a pointer to a random number object. 
+ * \return Returns a vector of integers containing the random variable.
+ * \throws Does not throw an error.
+ */
+std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, int n, RandomNumberGenerator* rng) {
+
+    std::vector<int> x(p.size(),0);
+    for (int i=0; i<n; i++)
+        {
+        double u = rng->uniform01();
+        double sum = 0.0;
+        for (int j=0; j<p.size(); j++)
+            {
+            sum += p[j];
+            if (u < sum)
+                {
+                x[j]++;
+                break;
+                }
+            }
+        }
+	return x;
 }
 
 #pragma mark Uniform Distribution
