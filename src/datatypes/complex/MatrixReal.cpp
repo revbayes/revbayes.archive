@@ -1,5 +1,5 @@
 /*
- *  Matrix.cpp
+ *  MatrixReal.cpp
  *  revbayes_xcode
  *
  *  Created by John Huelsenbeck on 8/19/10.
@@ -7,5 +7,5 @@
  *
  */
 
-#include "Matrix.h"
+#include "MatrixReal.h"
 
