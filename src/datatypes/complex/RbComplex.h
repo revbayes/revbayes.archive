@@ -36,51 +36,51 @@ class MethodTable;
 class MoveSchedule;
 class VectorString;
 
-typedef Frame                       MemberTable;                                                            //!< Member table type def, for convenience
-typedef std::vector<ArgumentRule*>  MemberRules;                                                            //!< Member rules type def, for convenience
+typedef Frame                        MemberTable;                                                            //!< Member table type def, for convenience
+typedef std::vector<ArgumentRule*>   MemberRules;                                                            //!< Member rules type def, for convenience
 
 class RbComplex : public RbObject {
 
     public:
-		virtual                    ~RbComplex(void) {}                                                      //!< Virtual destructor 
+		virtual                     ~RbComplex(void) {}                                                      //!< Virtual destructor 
 
         // Basic utility functions you have to override
-        virtual RbObject*           clone(void) const = 0;                                                  //!< Clone object
-        virtual bool                equals(const RbObject* obj) const = 0;                                  //!< Equals comparison
-		virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
-		virtual void                printValue(std::ostream& o) const = 0;                                  //!< Print value for user
-		virtual std::string         toString(void) const = 0;                                               //!< Complete info 
+        virtual RbObject*            clone(void) const = 0;                                                  //!< Clone object
+        virtual bool                 equals(const RbObject* obj) const = 0;                                  //!< Equals comparison
+		virtual const VectorString&  getClass(void) const;                                                   //!< Get class vector
+		virtual void                 printValue(std::ostream& o) const = 0;                                  //!< Print value for user
+		virtual std::string          toString(void) const = 0;                                               //!< Complete info 
 
         // Member variable functions: override if object contains member variables
-        virtual const MemberRules&  getMemberRules(void) const;                                             //!< Get member rules
-        virtual const MemberTable&  getMembers(void) const;                                                 //!< Get members
-        virtual const RbObject*     getValue(const std::string& name) const;                                //!< Get member value
-        virtual const DAGNode*      getVariable(const std::string& name) const;                             //!< Get member variable
-        virtual void                setValue(const std::string& name, RbObject* val);                       //!< Set member value
-        virtual void                setVariable(const std::string& name, DAGNode* var);                     //!< Set member variable
+        virtual const MemberRules&   getMemberRules(void) const;                                             //!< Get member rules
+        virtual const MemberTable&   getMembers(void) const;                                                 //!< Get members
+        virtual const RbObject*      getValue(const std::string& name) const;                                //!< Get member value
+        virtual const DAGNode*       getVariable(const std::string& name) const;                             //!< Get member variable
+        virtual void                 setValue(const std::string& name, RbObject* val);                       //!< Set member value
+        virtual void                 setVariable(const std::string& name, DAGNode* var);                     //!< Set member variable
 
         // Member method functions: override if object contains member functions
-        virtual const RbObject*     executeMethod(const std::string& name, int funcId);                     //!< Execute method with preprocessed args
-        virtual const RbObject*     executeMethod(const std::string& name, std::vector<Argument>& args);    //!< Execute method
-        virtual const MethodTable&  getMethods(void) const;                                                 //!< Get method descriptions
-        virtual int                 setArguments(const std::string& name, std::vector<Argument>& args);     //!< Set arguments of method 
+        virtual const RbObject*      executeMethod(const std::string& name, int funcId);                     //!< Execute method with preprocessed args
+        virtual const RbObject*      executeMethod(const std::string& name, std::vector<Argument>& args);    //!< Execute method
+        virtual const MethodTable&   getMethods(void) const;                                                 //!< Get method descriptions
+        virtual int                  setArguments(const std::string& name, std::vector<Argument>& args);     //!< Set arguments of method 
 
 		// Element access functions: override if object contains elements
-        ContainerIterator           begin(void) const;                                                      //!< Begin iterator
-        ContainerIterator           end(void) const;                                                        //!< End iterator
-        virtual int                 getDim(void) { return 0; }                                              //!< Get subscript dimensions
-        virtual const VectorString& getElementClass(void) const { return getClass() ; }                     //!< Get element class
-        virtual const RbObject*     getElement(const VectorInteger& index) const;                               //!< Get element (read-only)
-        virtual const VectorInteger&    getLength(void) const;                                                  //!< Get length in each dim
-        virtual void                resize(const VectorInteger& len);                                           //!< Resize
-        virtual void                setElement(const VectorInteger& index, RbObject* val);                      //!< Set element
-        virtual void                setLength(const VectorInteger& len);                                        //!< Set length in each dim
+        ContainerIterator            begin(void) const;                                                      //!< Begin iterator
+        ContainerIterator            end(void) const;                                                        //!< End iterator
+        virtual int                  getDim(void) { return 0; }                                              //!< Get subscript dimensions
+        virtual const VectorString&  getElementClass(void) const { return getClass() ; }                     //!< Get element class
+        virtual const RbObject*      getElement(const VectorInteger& index) const;                           //!< Get element (read-only)
+        virtual const VectorInteger& getLength(void) const;                                                  //!< Get length in each dim
+        virtual void                 resize(const VectorInteger& len);                                       //!< Resize
+        virtual void                 setElement(const VectorInteger& index, RbObject* val);                  //!< Set element
+        virtual void                 setLength(const VectorInteger& len);                                    //!< Set length in each dim
 
         // Default moves for types that contain sets of stochastic nodes
-        MoveSchedule*               getDefaultMoves(DeterministicNode* node) const { return NULL; }         //!< Get block moves applicable to the complex datatype
+        MoveSchedule*                getDefaultMoves(DeterministicNode* node) const { return NULL; }         //!< Get block moves applicable to the complex datatype
 
 	protected:
-                                    RbComplex(void) : RbObject() {}                                         //!< No objects of this class
+                                     RbComplex(void) : RbObject() {}                                         //!< No objects of this class
 };
 
 #endif
