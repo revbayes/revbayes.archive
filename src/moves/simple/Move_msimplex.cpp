@@ -76,7 +76,7 @@ const MemberRules& Move_msimplex::getMemberRules(void) const {
     if (!rulesSet) 
 		{
         memberRules.push_back(new ArgumentRule("tuning", RealPos_name));
-        memberRules.push_back(new ArgumentRule("num_cats", RbInt_name));
+        memberRules.push_back(new ArgumentRule("num_cats", Integer_name));
 
         /* Inherit weight and rng from Move, put it at back */
         const MemberRules& inheritedRules = Move::getMemberRules();

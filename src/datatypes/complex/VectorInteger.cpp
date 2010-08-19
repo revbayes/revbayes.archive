@@ -156,7 +156,7 @@ const RbObject* VectorInteger::getElement(const VectorInteger& index) const {
 /** Get element class */
 const std::string& VectorInteger::getElementType(void) const {
 
-    static std::string rbType = RbInt_name;
+    static std::string rbType = Integer_name;
     return rbType;
 }
 
@@ -189,7 +189,7 @@ void VectorInteger::resize(const VectorInteger& len) {
 /** Allow parser to set an element (any type conversion is done by parser) */
 void VectorInteger::setElement(const VectorInteger& index, RbObject* val) {
 
-    if ( !val->isType(RbInt_name) )
+    if ( !val->isType(Integer_name) )
         throw (RbException("Type mismatch"));
 
     if ( index.size() != 1 || index[0] < 1 )

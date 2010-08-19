@@ -27,8 +27,8 @@
 
 
 /** Default constructor */
-Real::Real(void)
-    : RbObject(), value(0.0) {
+Real::Real(void) : RbObject(), value(0.0) {
+
 }
 
 

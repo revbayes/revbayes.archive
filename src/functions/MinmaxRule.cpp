@@ -54,7 +54,7 @@ MinmaxRule::MinmaxRule(const std::string& argName, RbObject* defVal, RbObject* m
     : ArgumentRule(argName, defVal) {
 
     if (!defVal->isType(Real_name) &&
-        !defVal->isType(RbInt_name))
+        !defVal->isType(Integer_name))
         throw RbException("Wrong type for argument rule with min and max");
 
     if (min != NULL && !min->isType(valueType))
@@ -150,7 +150,7 @@ bool MinmaxRule::isArgValid(DAGNode* var) const {
                 return false;
         }
     }
-    else if (val->isType(RbInt_name)) {
+    else if (val->isType(Integer_name)) {
         int x = ((Integer*)(val))->getValue();
         if (minVal != NULL) {
             int min = ((Integer*)(minVal))->getValue();

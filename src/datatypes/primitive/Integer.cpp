@@ -77,7 +77,7 @@ bool Integer::equals(const RbObject* obj) const {
         return value == p->value;
 
     // Try converting the object to an int
-    p = dynamic_cast<const Integer*>(obj->convert(RbInt_name));
+    p = dynamic_cast<const Integer*>(obj->convert(Integer_name));
     if (p == NULL)
         return false;
 
@@ -90,7 +90,7 @@ bool Integer::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const VectorString& Integer::getClass() const {
 
-    static VectorString rbClass = VectorString(RbInt_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(Integer_name) + RbObject::getClass();
     return rbClass;
 }
 

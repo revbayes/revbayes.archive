@@ -70,8 +70,8 @@ const ArgumentRules& Func_v_int::getArgumentRules(void) const {
 
     if (!rulesSet) 
 		{
-        argumentRules.push_back(new ArgumentRule("", RbInt_name));
-        argumentRules.push_back(new Ellipsis(RbInt_name));
+        argumentRules.push_back(new ArgumentRule("", Integer_name));
+        argumentRules.push_back(new Ellipsis(Integer_name));
         rulesSet = true;
 		}
 

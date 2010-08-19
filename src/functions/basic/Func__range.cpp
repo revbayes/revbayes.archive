@@ -55,8 +55,8 @@ const ArgumentRules& Func__range::getArgumentRules(void) const {
 
     if (!rulesSet) {
 
-        argumentRules.push_back(new ArgumentRule("", RbInt_name));
-        argumentRules.push_back(new ArgumentRule("", RbInt_name));
+        argumentRules.push_back(new ArgumentRule("", Integer_name));
+        argumentRules.push_back(new ArgumentRule("", Integer_name));
         rulesSet = true;
     }
 

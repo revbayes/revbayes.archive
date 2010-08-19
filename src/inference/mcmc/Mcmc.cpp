@@ -103,9 +103,9 @@ const MemberRules& Mcmc::getMemberRules(void) const {
     if (!rulesSet) {
 
         memberRules.push_back(new ArgumentRule("model",      Model_name));
-        memberRules.push_back(new MinmaxRule(  "ngen",       RbInt_name, new Integer(1), NULL));
-        memberRules.push_back(new MinmaxRule(  "printfreq",  RbInt_name, new Integer(1), NULL));
-        memberRules.push_back(new MinmaxRule(  "samplefreq", RbInt_name, new Integer(1), NULL));
+        memberRules.push_back(new MinmaxRule(  "ngen",       Integer_name, new Integer(1), NULL));
+        memberRules.push_back(new MinmaxRule(  "printfreq",  Integer_name, new Integer(1), NULL));
+        memberRules.push_back(new MinmaxRule(  "samplefreq", Integer_name, new Integer(1), NULL));
         memberRules.push_back(new ArgumentRule("filename",   new RbString("out")));
         memberRules.push_back(new WrapperRule( "rng",        Workspace::globalWorkspace().getVariable("_rng")));
 

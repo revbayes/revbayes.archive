@@ -91,6 +91,6 @@ const VectorString& Func_v_double::getClass(void) const {
 /** Get return type */
 const std::string& Func_v_double::getReturnType(void) const {
 
-    return Vector_name;
+    return VectorReal_name;
 }
 

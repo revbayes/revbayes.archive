@@ -102,7 +102,7 @@ const MemberRules& Dist_dirichlet::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
-        memberRules.push_back(new WrapperRule("alpha", Vector_name));
+        memberRules.push_back(new WrapperRule("alpha", VectorReal_name));
 
         /* Inherit rng from Distribution, put it at back */
         const MemberRules& inheritedRules = Distribution::getMemberRules();

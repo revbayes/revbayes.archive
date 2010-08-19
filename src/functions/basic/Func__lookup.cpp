@@ -38,7 +38,7 @@ Func__lookup::Func__lookup(const std::string& type, int dim)
     : RbFunction() {
 
     argRules.push_back(new WrapperRule("", type, dim));
-    argRules.push_back(new Ellipsis(RbInt_name));
+    argRules.push_back(new Ellipsis(Integer_name));
 }
 
 

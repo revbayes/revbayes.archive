@@ -40,7 +40,7 @@ RbObject* Boolean::clone(void) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* Boolean::convertTo(const std::string& type) const {
 
-    if (type == RbInt_name) 
+    if (type == Integer_name) 
 		{
         if (value) 
 			return new Integer(1);
@@ -86,7 +86,7 @@ const VectorString& Boolean::getClass() const {
 /** Convert to object of another class. The caller manages the object. */
 bool Boolean::isConvertibleTo(const std::string& type) const {
 
-    if (type == RbInt_name)
+    if (type == Integer_name)
         return true;
     else if (type == Real_name)
         return true;

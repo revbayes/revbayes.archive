@@ -100,7 +100,7 @@ bool VectorReal::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const VectorString& VectorReal::getClass(void) const {
 
-    static VectorString rbClass = VectorString(Vector_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(VectorReal_name) + RbComplex::getClass();
     return rbClass;
 }
 
