@@ -37,7 +37,7 @@ class MemberObject: public RbComplex {
         virtual                    ~MemberObject(void) {}                                                         //!< Destructor
 
         // Basic utility functions
-        virtual RbObject*           clone(void) const = 0;                                                        //!< Clone object
+        virtual MemberObject*       clone(void) const = 0;                                                        //!< Clone object
         virtual bool                equals(const RbObject* x) const;                                              //!< Equals comparison
         virtual const VectorString& getClass(void) const;                                                         //!< Get class vector
         virtual void                printValue(std::ostream& o) const;                                            //!< Print value for user

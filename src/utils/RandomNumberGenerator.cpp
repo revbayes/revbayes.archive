@@ -31,7 +31,7 @@ RandomNumberGenerator::RandomNumberGenerator(std::vector<unsigned int> s) {
 
 
 /** Clone function */
-RbObject* RandomNumberGenerator::clone(void) const {
+RandomNumberGenerator* RandomNumberGenerator::clone(void) const {
 
     return new RandomNumberGenerator(*this);
 }

@@ -52,7 +52,7 @@ VectorRealPos::VectorRealPos(int n, double x) {
 /** Constructor from double vector */
 VectorRealPos::VectorRealPos(std::vector<double>& x) {
 
-    for (int i=0; i<x.size(); i++)
+    for (size_t i=0; i<x.size(); i++)
         {
         if (x[i] <= 0.0)
             throw RbException("Nonpositive value for " + VectorRealPos_name);

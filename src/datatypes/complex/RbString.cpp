@@ -48,9 +48,9 @@ RbObject* RbString::convertTo(const std::string& type) const {
 }
 
 /** Clone function */
-RbObject* RbString::clone() const {
+RbString* RbString::clone() const {
 
-	return (RbObject*)(new RbString(*this));
+	return new RbString(*this);
 }
 
 

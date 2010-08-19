@@ -31,7 +31,7 @@ Monitor::Monitor(VariableNode* node, int freq)
 
 
 /** Clone the object */
-RbObject* Monitor::clone(void) const {
+Monitor* Monitor::clone(void) const {
 
     return new Monitor(*this);
 }

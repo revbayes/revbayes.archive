@@ -49,7 +49,7 @@ Move_msimplex::Move_msimplex(StochasticNode* node, double tuning, int nc, double
 }
 
 /** Clone object */
-RbObject* Move_msimplex::clone(void) const {
+Move_msimplex* Move_msimplex::clone(void) const {
 
     return new Move_msimplex(*this);
 }

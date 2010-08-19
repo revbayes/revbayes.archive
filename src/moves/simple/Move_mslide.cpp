@@ -47,7 +47,7 @@ Move_mslide::Move_mslide(StochasticNode* node, double delta, double weight, Rand
 
 
 /** Clone object */
-RbObject* Move_mslide::clone(void) const {
+Move_mslide* Move_mslide::clone(void) const {
 
     return new Move_mslide(*this);
 }

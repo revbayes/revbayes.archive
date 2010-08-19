@@ -83,9 +83,9 @@ void MoveSchedule::addMove(Move* move) {
 
 
 /** Clone object */
-RbObject* MoveSchedule::clone(void) const {
+MoveSchedule* MoveSchedule::clone(void) const {
 
-    return (RbObject*)(new MoveSchedule(*this));
+    return new MoveSchedule(*this);
 }
 
 /** Convert to object of another class. The caller manages the object. */

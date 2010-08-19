@@ -29,7 +29,7 @@ class Move : public MemberObject {
         virtual                    ~Move(void) {}                                                                               //!< Destructor
 
         // Basic utility functions
-        virtual RbObject*           clone(void) const = 0;                                                                      //!< Clone the object
+        virtual Move*               clone(void) const = 0;                                                                      //!< Clone the object
         virtual const VectorString& getClass(void) const;                                                                       //!< Get class vector
 
         // Member variable rules

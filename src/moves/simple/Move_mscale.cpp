@@ -46,7 +46,7 @@ Move_mscale::Move_mscale(StochasticNode* node, double lambda, double weight, Ran
 
 
 /** Clone object */
-RbObject* Move_mscale::clone(void) const {
+Move_mscale* Move_mscale::clone(void) const {
 
     return new Move_mscale(*this);
 }

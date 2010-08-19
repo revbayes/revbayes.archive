@@ -40,7 +40,7 @@ class MoveSchedule : public RbComplex {
         MoveSchedule&           operator=(const MoveSchedule& x);                   //!< Assignment operator
 
         // Basic RbObject functions
-        RbObject*               clone() const;                                      //!< Clone object
+        MoveSchedule*           clone() const;                                      //!< Clone object
         bool                    equals(const RbObject* obj) const;                  //!< Equals comparison
  		const VectorString&     getClass(void) const;                               //!< Get class
         void                    printValue(std::ostream& o) const;                  //!< Print value (for user)
