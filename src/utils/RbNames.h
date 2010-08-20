@@ -73,6 +73,7 @@ const std::string Move_mmultinomial_name                        = "mmultinomial 
 const std::string Move_mscale_name                              = "mscale move";
 const std::string Move_mslide_name                              = "mslide move";
 const std::string Move_msimplex_name                            = "msimplex move";
+const std::string pad                                           = "   ";
 const std::string PosScalarRule_name                            = "posScalarRule";
 const std::string RandomNumberGenerator_name                    = "Random Number Generator";
 const std::string RbBool_name                                   = "bool";

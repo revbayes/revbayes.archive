@@ -17,9 +17,8 @@
  * $Id$
  */
 
+#include "RbNames.h"
 #include "UserInterface.h"
-
-const std::string pad = "   ";
 
 
 

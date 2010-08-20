@@ -41,7 +41,7 @@ class UserInterface {
     protected:
                                     UserInterface(void) {}                                     //!< Prevent construction
                                     UserInterface(const UserInterface& x) {}                   //!< Prevent copy construction
-            virtual                ~UserInterface(void) {}                                     //!< Destructor
+        virtual                    ~UserInterface(void) {}                                     //!< Destructor
         UserInterface&              operator=(const UserInterface& w) { return (*this); }      //!< Prevent assignment
 };
 
