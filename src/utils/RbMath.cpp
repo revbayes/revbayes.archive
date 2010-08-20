@@ -652,6 +652,13 @@ double RbMath::incompleteGamma(double x, double alpha, double scale) {
 		return (gin);
 }
 
+bool RbMath::isEqualTo(double x, double y, double tolerance) {
+
+    if ( fabs(x - y) < tolerance )
+        return true;
+    return false;
+}
+
 /* log factorial ln(n!) */
 /*!
  * This function calculates the natural log of the factorial of n using

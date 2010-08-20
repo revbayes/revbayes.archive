@@ -22,6 +22,7 @@ namespace RbMath {
 		double                      hypotenuse(double a, double b);                                                            /*!< Xxx */
 		double                      incompleteBeta(double a, double b, double x);                                              /*!< Xxx */
 		double                      incompleteGamma(double x, double alpha, double scale);                                     /*!< Xxx */
+        bool                        isEqualTo(double x, double y, double tolerance);                                           /*!< Is x equal to y within a certain tolerance */
 		double                      lnGamma(double a);                                                                         /*!< Xxx */
 		double                      lnFactorial(int n);                                                                        /*!< Xxx */
 		double                      rbEpsilon(void);                                                                           /*!< Xxx */

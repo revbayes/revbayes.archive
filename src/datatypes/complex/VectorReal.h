@@ -51,6 +51,9 @@ class VectorReal : public RbComplex {
         void                        resize(size_t n) { resize(VectorInteger(int(n))); }        //!< Resize (from size_t)
         size_t                      size(void) const { return value.size(); }                  //!< Get size
 
+        // Getter
+        const std::vector<double>&  getValue(void) { return value; }                           //!< Get value directly
+
         // Element access functions for parser
 	    int                         getDim(void) const { return 1; }                           //!< Get subscript dimensions
         virtual const std::string&  getElementType(void) const;                                //!< Get element type

@@ -174,7 +174,6 @@ double Dist_multinomial::lnPriorRatio(const RbObject* newVal, const RbObject* ol
 		throw (RbException("Inconsistent size of vectors when calculating Dirichlet prior ratio"));
 
 	// calculate the log prior ratio
-	int n = p.size();
 	double lnP = RbStatistics::Multinomial::lnPdf( p, newX ) - RbStatistics::Multinomial::lnPdf( p, oldX );
     return lnP;
 }

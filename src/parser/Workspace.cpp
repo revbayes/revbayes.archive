@@ -255,6 +255,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction("sqrt",   new Func_sqrt());
         addFunction("v",      new Func_v_int());
         addFunction("v",      new Func_v_double());
+        addFunction("s",      new Func_s_doublevec());
+        addFunction("s",      new Func_s_int());
+        addFunction("s",      new Func_s_realvec());
     }
     catch(RbException& rbException) {
 

@@ -30,27 +30,25 @@ class VectorString;
 class Dist_norm: public DistributionReal {
 
     public:
-                            Dist_norm(void);                                    //!< Parser constructor
-                            Dist_norm(double                mu,
-                                     double                 sigma,
-                                     RandomNumberGenerator* rng);               //!< Internal constructor
+                                    Dist_norm(void);                                                 //!< Parser constructor
+                                    Dist_norm(double mu, double sigma, RandomNumberGenerator* rng);  //!< Internal constructor
 
         // Basic utility functions
-        Dist_norm*          clone(void) const;                                  //!< Clone object
-        const VectorString& getClass(void) const;                               //!< Get class vector
+        Dist_norm*                  clone(void) const;                                               //!< Clone object
+        const VectorString&         getClass(void) const;                                            //!< Get class vector
 
         // Member variable setup
-        const MemberRules&  getMemberRules(void) const;                         //!< Get member variable rules
+        const MemberRules&          getMemberRules(void) const;                                      //!< Get member variable rules
 
         // Normal distribution functions
-        double              cdf(const double q);                                //!< Cumulative density
-        Move*               getDefaultMove(StochasticNode* node);               //!< Get default move
-        double              lnLikelihoodRatio(const RbObject* value);           //!< Ln likelihood ratio
-        double              lnPdf(const RbObject* value);                       //!< Ln probability density
-        double              lnPriorRatio(const RbObject* newVal, const RbObject* oldVal); //!< Ln prior ratio
-        double              pdf(const RbObject* value);                         //!< Probability density
-        double              quantile(const double p);                           //!< Quantile
-        Real*           rv();                                               //!< Generate random variable
+        double                      cdf(const double q);                                             //!< Cumulative density
+        Move*                       getDefaultMove(StochasticNode* node);                            //!< Get default move
+        double                      lnLikelihoodRatio(const RbObject* value);                        //!< Ln likelihood ratio
+        double                      lnPdf(const RbObject* value);                                    //!< Ln probability density
+        double                      lnPriorRatio(const RbObject* newVal, const RbObject* oldVal);    //!< Ln prior ratio
+        double                      pdf(const RbObject* value);                                      //!< Probability density
+        double                      quantile(const double p);                                        //!< Quantile
+        Real*                       rv(void);                                                        //!< Generate random variable
 };
 
 #endif
