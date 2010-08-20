@@ -40,6 +40,7 @@ class VariableNode : public DAGNode {
         virtual const RbObject*         getStoredValue(void) = 0;                                    //!< Get stored value
         virtual const RbObject*         getValElement(const VectorInteger& index) const = 0;             //!< Get value element
         virtual const RbObject*         getValue(void) = 0;                                          //!< Get value
+        //virtual bool                    isParentMutableTo(const DAGNode* node, const std::string& type, int dim);     //!< Is parent mutable to type and dim?
         virtual void                    printStruct(std::ostream& o) const = 0;                      //!< Print struct for user
         virtual void                    printValue(std::ostream& o) const = 0;                       //!< Print value for user
         virtual void                    setElement(const VectorInteger& index, RbObject* val) = 0;       //!< Set value element

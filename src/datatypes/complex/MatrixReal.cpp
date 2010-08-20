@@ -578,7 +578,7 @@ bool MatrixReal::numFmt(int& numToLft, int& numToRht, std::string s) const {
     bool foundDecimalPoint = false;
     for (size_t i=0; i<s.size(); i++)
         {
-        if ( isdigit(s[i]) == true )
+        if ( isdigit(s[i]) != 0 )
             n[ba]++;
         else if (s[i] == '.')
             {
@@ -761,12 +761,12 @@ void MatrixReal::printValue(std::ostream& o) const {
             v << value[i][j];
             int numToLft, numToRht;
             numFmt(numToLft, numToRht, v.str());
-            for (size_t k=0; k<maxToLft-numToLft; k++)
+            for (int k=0; k<maxToLft-numToLft; k++)
                 lineStr += " ";
             lineStr += v.str();
             if (numToRht == 0 && foundDecimalPoint == true)
                 lineStr += ".";
-            for (size_t k=0; k<maxToRht-numToRht; k++)
+            for (int k=0; k<maxToRht-numToRht; k++)
                 lineStr += "0";
             if (j+1 < value[i].size())
                 lineStr += ", ";

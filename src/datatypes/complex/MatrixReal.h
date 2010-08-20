@@ -82,9 +82,9 @@ class MatrixReal : public RbComplex {
         MatrixReal                                 operator+(const MatrixReal& A, const MatrixReal& B);                        //!< operator + 
         MatrixReal                                 operator-(const MatrixReal& A, const MatrixReal& B);                        //!< operator - 
         MatrixReal                                 operator*(const MatrixReal& A, const MatrixReal& B);                        //!< operator * (matrix multiplication) 
-        MatrixReal&                                operator+=(const MatrixReal& A, const MatrixReal& B);                       //!< operator += 
-        MatrixReal&                                operator-=(const MatrixReal& A, const MatrixReal& B);                       //!< operator -= 
-        MatrixReal&                                operator*=(const MatrixReal& A, const MatrixReal& B);                       //!< operator *= (matrix multiplication)
+        MatrixReal&                                operator+=(MatrixReal& A, const MatrixReal& B);                              //!< operator += 
+        MatrixReal&                                operator-=(MatrixReal& A, const MatrixReal& B);                              //!< operator -= 
+        MatrixReal&                                operator*=(MatrixReal& A, const MatrixReal& B);                              //!< operator *= (matrix multiplication)
         MatrixReal                                 operator+(const double &a, const MatrixReal& B);                            //!< operator + for scalar + matrix 
         MatrixReal                                 operator-(const double &a, const MatrixReal& B);                            //!< operator - for scalar - matrix 
         MatrixReal                                 operator*(const double &a, const MatrixReal& B);                            //!< operator * for scalar * matrix 
@@ -93,9 +93,9 @@ class MatrixReal : public RbComplex {
         MatrixReal                                 operator-(const MatrixReal& A, const double& b);                            //!< operator - for matrix - scalar 
         MatrixReal                                 operator*(const MatrixReal& A, const double& b);                            //!< operator * for matrix * scalar 
         MatrixReal                                 operator/(const MatrixReal& A, const double& b);                            //!< operator / for matrix / scalar 
-        MatrixReal&                                operator+=(const MatrixReal& A, const double& b);                           //!< operator += for scalar 
-        MatrixReal&                                operator-=(const MatrixReal& A, const double& b);                           //!< operator -= for scalar 
-        MatrixReal&                                operator*=(const MatrixReal& A, const double& b);                           //!< operator *= for scalar 
+        MatrixReal&                                operator+=(MatrixReal& A, const double& b);                              //!< operator += for scalar 
+        MatrixReal&                                operator-=(MatrixReal& A, const double& b);                              //!< operator -= for scalar 
+        MatrixReal&                                operator*=(MatrixReal& A, const double& b);                                 //!< operator *= for scalar 
         MatrixReal&                                operator/=(MatrixReal& A, const double& b);                                 //!< operator /= for scalar 
 
 #endif
