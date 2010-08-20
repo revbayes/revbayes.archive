@@ -51,6 +51,7 @@
 #include "Func_sqrt.h"
 #include "Func_v_int.h"
 #include "Func_v_double.h"
+#include "Func_v_vecrealvec.h"
 #include "Mcmc.h"
 #include "Move_mmultinomial.h"
 #include "Move_mscale.h"
@@ -250,19 +251,20 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction("_range", new Func__range());
 
         /* Add regular functions */
-        addFunction( "clamp",     new Func_clamp()       ); 
-        addFunction( "ls",        new Func_ls()          );
-        addFunction( "model",     new Func_model()       );
-        addFunction( "normalize", new Func_normalize()   );
-        addFunction( "q",         new Func_quit()        );
-        addFunction( "quit",      new Func_quit()        );
-        addFunction( "source",    new Func_source()      );
-        addFunction( "sqrt",      new Func_sqrt()        );
-        addFunction( "v",         new Func_v_int()       );
-        addFunction( "v",         new Func_v_double()    );
-        addFunction( "s",         new Func_s_doublevec() );
-        addFunction( "s",         new Func_s_int()       );
-        addFunction( "s",         new Func_s_realvec()   );
+        addFunction( "clamp",     new Func_clamp()        ); 
+        addFunction( "ls",        new Func_ls()           );
+        addFunction( "model",     new Func_model()        );
+        addFunction( "normalize", new Func_normalize()    );
+        addFunction( "q",         new Func_quit()         );
+        addFunction( "quit",      new Func_quit()         );
+        addFunction( "source",    new Func_source()       );
+        addFunction( "sqrt",      new Func_sqrt()         );
+        addFunction( "v",         new Func_v_int()        );
+        addFunction( "v",         new Func_v_double()     );
+        addFunction( "v",         new Func_v_vecrealvec() );
+        addFunction( "s",         new Func_s_doublevec()  );
+        addFunction( "s",         new Func_s_int()        );
+        addFunction( "s",         new Func_s_realvec()    );
     }
     catch(RbException& rbException) {
 

@@ -18,9 +18,11 @@
 
 #include "MatrixReal.h"
 #include "RbException.h"
+#include "RbMath.h"
 #include "RbNames.h"
 #include "Real.h"
 #include "Simplex.h"
+#include "UserInterface.h"
 #include "VectorInteger.h"
 #include "VectorReal.h"
 #include "VectorString.h"
@@ -44,6 +46,20 @@ MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, const double x) :
     for (size_t i=0; i<nRows; i++)
         for (size_t j=0; j<nCols; j++)
             value[i][j] = x;
+}
+
+
+/** Construct matrix from a two-dimensional set of STL vectors */
+MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) {
+
+    value = x;
+    nRows = value.size();
+    nCols = value[0].size();
+    for (size_t i=0; i<value.size(); i++)
+        {
+        if (value[i].size() != nCols)
+            throw RbException("Attempted to initialize a matrix using a jagged matrix");
+        }
 }
 
 
@@ -77,7 +93,7 @@ bool MatrixReal::equals(const RbObject* obj) const {
 
     for ( size_t i=0; i<nRows; i++)
         for ( size_t j=0; j<nCols; j++ )
-            if ( temp[i][j] != value[i][j] )
+            if ( RbMath::isEqualTo(temp[i][j], value[i][j], 0.0000001) == false )
                 return false;
             
     return true;
@@ -145,6 +161,28 @@ const VectorInteger& MatrixReal::getLength(void) const {
 bool MatrixReal::isConvertibleTo(const std::string& type) const {
 
     return false;
+}
+
+
+/** Calculates the number of digits to the left and right of the decimal point */
+bool MatrixReal::numFmt(int& numToLft, int& numToRht, std::string s) const {
+
+    int ba = 0;
+    int n[2] = { 0, 0 };
+    bool foundDecimalPoint = false;
+    for (size_t i=0; i<s.size(); i++)
+        {
+        if ( isdigit(s[i]) == true )
+            n[ba]++;
+        else if (s[i] == '.')
+            {
+            ba = 1;
+            foundDecimalPoint = true;
+            }
+        }
+    numToLft = n[0];
+    numToRht = n[1];
+    return foundDecimalPoint;
 }
 
 
@@ -265,25 +303,76 @@ void MatrixReal::setLength(const VectorInteger& len) {
 }
 
 
+void MatrixReal::setValue(const std::vector<std::vector<double> >& x) { 
+
+    value = x; 
+    nRows = value.size();
+    nCols = value[0].size();
+    for (size_t i=0; i<value.size(); i++)
+        {
+        if (value[i].size() != nCols)
+            throw RbException("Attempted to initialize a matrix using a jagged matrix");
+        }
+}
+
+
 /** Print value for user */
 void MatrixReal::printValue(std::ostream& o) const {
 
     int previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
+    
+    // find the maximum number of digits to the left and right of the decimal place
+    int maxToLft = 0, maxToRht = 0;
+    bool foundDecimalPoint = false;
+    for (size_t i=0; i<value.size(); i++)
+        {
+        for (size_t j=0; j<value[i].size(); j++)
+            {
+            std::ostringstream v;
+            v << value[i][j];
+            int numToLft, numToRht;
+            if (numFmt(numToLft, numToRht, v.str()) == true)
+                foundDecimalPoint = true;
+            if (numToLft > maxToLft)
+                maxToLft = numToLft;
+            if (numToRht > maxToRht)
+                maxToRht = numToRht;
+            }
+        }
 
-    /*
-    // TODO: replace with working code
-    o << "[ ";
-    o << std::fixed;
-    o << std::setprecision(1);
-    for (std::vector<double>::const_iterator i = value.begin(); i!= value.end(); i++) {
-        if (i != value.begin())
-            o << ", ";
-        o << (*i);
-    }
-    o <<  " ]";
-    */
+    // print the matrix with each column of equal width and each column centered on the decimal
+    for (size_t i=0; i<value.size(); i++)
+        {
+        std::string lineStr = "";
+        if (i == 0)
+            lineStr += "[[ ";
+        else 
+            lineStr += " [ ";
+        for (size_t j=0; j<value[i].size(); j++)
+            {
+            std::ostringstream v;
+            v << value[i][j];
+            int numToLft, numToRht;
+            numFmt(numToLft, numToRht, v.str());
+            for (size_t k=0; k<maxToLft-numToLft; k++)
+                lineStr += " ";
+            lineStr += v.str();
+            if (numToRht == 0 && foundDecimalPoint == true)
+                lineStr += ".";
+            for (size_t k=0; k<maxToRht-numToRht; k++)
+                lineStr += "0";
+            if (j+1 < value[i].size())
+                lineStr += ", ";
+            }
+        if (i == value.size()-1)
+            lineStr += " ]]";
+        else 
+            lineStr += " ],";
 
+        RBOUT(lineStr);
+        }
+    
     o.setf(previousFlags);
     o << std::setprecision(previousPrecision);
 }

@@ -16,7 +16,7 @@
 #define RbOptions_H
 
 /* Flag for generating debugging info */
-#define DEBUG_PARSER
+#undef DEBUG_PARSER
 
 /* The magic PRINTF defines */
 #if defined (DEBUG_PARSER)

@@ -66,7 +66,7 @@ class VectorReal : public RbComplex {
         // Regular functions
         const std::vector<double>&  getValue(void) const { return value; }                      //!< Get value directly
         virtual void                setValue(const std::vector<double>& x) { value = x; }       //!< Set value directly
-        void                        setValue(const VectorReal& x);                             //!< Set value from Vector
+        void                        setValue(const VectorReal& x);                              //!< Set value from Vector
 
     protected:
         virtual RbObject*           convertTo(const std::string& type) const;                  //!< Convert to type
