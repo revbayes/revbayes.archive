@@ -24,6 +24,7 @@
 #include "Ellipsis.h"
 #include "Func__lookup.h"
 #include "Func_s_int.h"
+#include "Integer.h"
 #include "RbMath.h"
 #include "RbException.h"
 #include "Real.h"
