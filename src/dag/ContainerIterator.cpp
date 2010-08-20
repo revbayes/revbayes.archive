@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the implementation of ContainerIterator, which is
- * used to iterate through a container.
+ * used to iterate through a container or plate.
  *
  * @brief Implementation of ContainerIterator
  *

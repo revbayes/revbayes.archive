@@ -18,7 +18,7 @@
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
-#include "DAGNodeContainer.h"
+#include "DAGNodePlate.h"
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "MemberFunction.h"

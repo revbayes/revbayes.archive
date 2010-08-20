@@ -18,7 +18,7 @@
 
 #include "ArgumentRule.h"
 #include "DAGNode.h"
-#include "DAGNodeContainer.h"
+#include "DAGNodePlate.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
 #include "Func__lookup.h"
@@ -52,7 +52,7 @@ RbObject* Func_v_int::executeOperation(const std::vector<DAGNode*>& args) {
 
     // Get following elements
     if (args.size() > 1) {
-        DAGNodeContainer*   elements = dynamic_cast<DAGNodeContainer*>(args[1]);
+        DAGNodePlate*   elements = dynamic_cast<DAGNodePlate*>(args[1]);
         for (size_t i=0; i<elements->size(); i++) {
             tempVec.push_back(((Integer*)(elements->getValElement(i)))->getValue());
         }

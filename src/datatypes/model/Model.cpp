@@ -18,7 +18,7 @@
 #include "ContainerIterator.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
-#include "DAGNodeContainer.h"
+#include "DAGNodePlate.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
 #include "StochasticNode.h"

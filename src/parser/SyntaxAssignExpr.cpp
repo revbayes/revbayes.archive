@@ -19,7 +19,7 @@
 
 #include "ConstantNode.h"
 #include "DAGNode.h"
-#include "DAGNodeContainer.h"
+#include "DAGNodePlate.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
 #include "RbException.h"
@@ -161,10 +161,10 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                     theObject->setValue(varName, exprValue);
                 else 
 					{
-                    const DAGNodeContainer* containerPtr = dynamic_cast<const DAGNodeContainer*>(theObject->getVariable(varName));
+                    const DAGNodePlate* containerPtr = dynamic_cast<const DAGNodePlate*>(theObject->getVariable(varName));
                     if (containerPtr == NULL)
                         throw RbException("Variable " + variable->getVariable()->getFullName(frame) + "." + std::string(varName) + " does not have elements");
-                    DAGNodeContainer* container = const_cast<DAGNodeContainer*>(containerPtr);
+                    DAGNodePlate* container = const_cast<DAGNodePlate*>(containerPtr);
                     container->setElement(index, exprValue);
 					}
 				}
@@ -212,10 +212,10 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                 if (index.size() == 0)
                     theObject->setVariable(varName, node);
                 else {
-                    const DAGNodeContainer* containerPtr = dynamic_cast<const DAGNodeContainer*>(theObject->getVariable(varName));
+                    const DAGNodePlate* containerPtr = dynamic_cast<const DAGNodePlate*>(theObject->getVariable(varName));
                     if (containerPtr == NULL)
                         throw RbException("Variable " + variable->getVariable()->getFullName(frame) + "." + std::string(varName) + " does not have elements");
-                    DAGNodeContainer* container = const_cast<DAGNodeContainer*>(containerPtr);
+                    DAGNodePlate* container = const_cast<DAGNodePlate*>(containerPtr);
                     container->setElement(index, node);
                 }
             }
@@ -266,10 +266,10 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
                 if (index.size() == 0)
                     theObject->setVariable(varName, node);
                 else {
-                    const DAGNodeContainer* containerPtr = dynamic_cast<const DAGNodeContainer*>(theObject->getVariable(varName));
+                    const DAGNodePlate* containerPtr = dynamic_cast<const DAGNodePlate*>(theObject->getVariable(varName));
                     if (containerPtr == NULL)
                         throw RbException("Variable " + variable->getVariable()->getFullName(frame) + "." + std::string(varName) + " does not have elements");
-                    DAGNodeContainer* container = const_cast<DAGNodeContainer*>(containerPtr);
+                    DAGNodePlate* container = const_cast<DAGNodePlate*>(containerPtr);
                     container->setElement(index, node);
                 }
             }

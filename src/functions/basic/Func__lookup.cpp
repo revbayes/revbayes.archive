@@ -18,7 +18,7 @@
 #include "ArgumentRule.h"
 #include "Container.h"
 #include "DAGNode.h"
-#include "DAGNodeContainer.h"
+#include "DAGNodePlate.h"
 #include "Ellipsis.h"
 #include "Func__lookup.h"
 #include "Frame.h"
@@ -100,7 +100,7 @@ RbObject* Func__lookup::executeOperation(const std::vector<DAGNode*>& args) {
 
     DAGNode* theVariable = args[0];
 
-    // Get the index vector from the DAGNodeContainer corresponding to the ellipsis,
+    // Get the index vector from the DAGNodePlate corresponding to the ellipsis,
     // if there is one. Subtract one to get internal 0-based index.
     VectorInteger index;
     if (args.size() > 1) {
@@ -154,11 +154,11 @@ DAGNode* Func__lookup::getVariable(void) const {
     if (args.size() == 1)
         return theVariable;
 
-    DAGNodeContainer* theVariableContainer = dynamic_cast<DAGNodeContainer*>(args[0]);
+    DAGNodePlate* theVariableContainer = dynamic_cast<DAGNodePlate*>(args[0]);
     if (theVariableContainer == NULL)
         throw ("Reference to a value element that is not a DAG node");
 
-    // Get the index vector from the DAGNodeContainer corresponding to the ellipsis,
+    // Get the index vector from the DAGNodePlate corresponding to the ellipsis,
     // if there is one. Subtract one to get internal 0-based index.
     VectorInteger index;
     const Container* indexContainer = dynamic_cast<const Container*>(args[1]->getValue());

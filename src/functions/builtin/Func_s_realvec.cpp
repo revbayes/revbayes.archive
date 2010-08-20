@@ -19,7 +19,7 @@
 
 #include "ArgumentRule.h"
 #include "DAGNode.h"
-#include "DAGNodeContainer.h"
+#include "DAGNodePlate.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
 #include "Func__lookup.h"

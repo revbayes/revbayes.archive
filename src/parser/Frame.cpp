@@ -18,7 +18,7 @@
 
 #include "ConstantNode.h"
 #include "ContainerIterator.h"
-#include "DAGNodeContainer.h"
+#include "DAGNodePlate.h"
 #include "Frame.h"
 #include "VectorInteger.h"
 #include "RbException.h"
@@ -304,7 +304,7 @@ void Frame::addVariable(const std::string& name, const VectorInteger& index, DAG
     VectorInteger length = index;
     for (size_t i=0; i<length.size(); i++)
         length[i]++;
-    DAGNodeContainer* container = new DAGNodeContainer(length, var->getValueType());
+    DAGNodePlate* container = new DAGNodePlate(length, var->getValueType());
     container->setElement(index, var);
 
     ObjectSlot slot;
@@ -518,7 +518,7 @@ DAGNode* Frame::getVarElement(const std::string& name, const VectorInteger& inde
     if (int(index.size()) != (*it).second.dim)
         throw (RbException("Subscript error"));
 
-    return ((DAGNodeContainer*)((*it).second.variable))->getVarElement(index);
+    return ((DAGNodePlate*)((*it).second.variable))->getVarElement(index);
 }
 
 
@@ -541,7 +541,7 @@ const DAGNode* Frame::getVarElement(const std::string& name, const VectorInteger
     if (int(index.size()) != (*it).second.dim)
         throw (RbException("Subscript error"));
 
-    return ((DAGNodeContainer*)((*it).second.variable))->getVarElement(index);
+    return ((DAGNodePlate*)((*it).second.variable))->getVarElement(index);
 }
 
 
@@ -788,9 +788,9 @@ void Frame::setValElement(const std::string& name, const VectorInteger& index, R
         length[i]++;
     if ((value == NULL || value->isType((*it).second.type)) && int(index.size()) == (*it).second.dim && variable == NULL) {
         if (value == NULL)
-            variable = (*it).second.variable = new DAGNodeContainer(length, (*it).second.type);
+            variable = (*it).second.variable = new DAGNodePlate(length, (*it).second.type);
         else
-            variable = (*it).second.variable = new DAGNodeContainer(length, new ConstantNode(value));
+            variable = (*it).second.variable = new DAGNodePlate(length, new ConstantNode(value));
         return;
     }
 
@@ -829,9 +829,9 @@ void Frame::setVarElement(const std::string& name, const VectorInteger& index, D
     if ((var == NULL || Workspace::userWorkspace().isXOfTypeY(var->getValueType(), (*it).second.type)) &&
         int(index.size()) == (*it).second.dim && variable == NULL) {
         if (var == NULL)
-            variable = (*it).second.variable = new DAGNodeContainer(index, (*it).second.type);
+            variable = (*it).second.variable = new DAGNodePlate(index, (*it).second.type);
         else
-            variable = (*it).second.variable = new DAGNodeContainer(index, var);
+            variable = (*it).second.variable = new DAGNodePlate(index, var);
         return;
     }
 

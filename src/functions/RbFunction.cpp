@@ -20,7 +20,7 @@
 #include "ConstantNode.h"
 #include "ContainerIterator.h"
 #include "DAGNode.h"
-#include "DAGNodeContainer.h"
+#include "DAGNodePlate.h"
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "RbFunction.h"
@@ -206,7 +206,7 @@ void RbFunction::printValue(std::ostream& o) const {
  *
  *  1. If the last argument rule is an ellipsis, and it is the kth argument passed
  *     in, then all arguments passed in, from position k to the end, are wrapped
- *     in a single DAGNodeContainer object. These arguments are not matched to any
+ *     in a single DAGNodePlate object. These arguments are not matched to any
  *     rules.
  *  2. The remaining arguments are matched to labels using exact matching. If the
  *     type does not match the type of the rule, it is an error.
@@ -250,12 +250,12 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
 
     /*********************  1. Deal with ellipsis  **********************/
 
-    /* Wrap final args into one DAGNodeContainer object.
+    /* Wrap final args into one DAGNodePlate object.
        TODO: Keep labels, discarded here. */
     if ( nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) >= nRules ) {
 
         int numEllipsisArgs = int(args.size()) - nRules + 1;
-        DAGNodeContainer* ellipsisArgs = new DAGNodeContainer(numEllipsisArgs, theRules[nRules-1]->getValueType());
+        DAGNodePlate* ellipsisArgs = new DAGNodePlate(numEllipsisArgs, theRules[nRules-1]->getValueType());
         ContainerIterator ellipsisIt = ellipsisArgs->begin();
 
         for (size_t i=nRules-1; i<args.size(); i++) {
@@ -422,7 +422,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
     /* ... then for ellipsis arguments */
     if ( argIndex < numFinalArgs ) {
     
-        DAGNodeContainer* container = (DAGNodeContainer*)(processedArguments[argIndex]);
+        DAGNodePlate* container = (DAGNodePlate*)(processedArguments[argIndex]);
 
         for (ContainerIterator it=container->begin(); it!=container->end(); it++) {
 

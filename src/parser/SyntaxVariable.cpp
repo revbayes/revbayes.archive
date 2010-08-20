@@ -21,7 +21,7 @@
 #include "Argument.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
-#include "DAGNodeContainer.h"
+#include "DAGNodePlate.h"
 #include "DeterministicNode.h"
 #include "Func__lookup.h"
 #include "VectorInteger.h"
@@ -239,7 +239,7 @@ RbObject* SyntaxVariable::getValue(Frame* frame) const {
     if (theIndex.size() == 0)
         return object->getValue(*identifier)->clone();
 
-    const DAGNodeContainer* container = dynamic_cast<const DAGNodeContainer*>(object->getVariable(*identifier));
+    const DAGNodePlate* container = dynamic_cast<const DAGNodePlate*>(object->getVariable(*identifier));
     if (container == NULL)
         throw RbException("Object " + variable->getFullName(frame) + "." + std::string(*identifier) + " does not have elements");
 
@@ -268,7 +268,7 @@ const RbObject* SyntaxVariable::getValuePtr(Frame* frame) const {
     if (theIndex.size() == 0)
         return object->getValue(*identifier);
 
-    const DAGNodeContainer* container = dynamic_cast<const DAGNodeContainer*>(object->getVariable(*identifier));
+    const DAGNodePlate* container = dynamic_cast<const DAGNodePlate*>(object->getVariable(*identifier));
     if (container == NULL)
         throw RbException("Object " + variable->getFullName(frame) + "." + std::string(*identifier) + " does not have elements");
 
