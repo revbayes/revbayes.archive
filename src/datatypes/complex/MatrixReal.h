@@ -58,21 +58,44 @@ class MatrixReal : public RbComplex {
         // Overloaded operators and built-in functions
         std::vector<double>&                       operator[](size_t i) { return value[i]; }                                   //!< Index op allowing change
         const std::vector<double>&                 operator[](size_t i) const { return value[i]; }                             //!< Const index op
-
+        
         // Regular functions
-        const std::vector<std::vector<double> >&   getValue(void) const { return value; }                                     //!< Get value directly
-        virtual void                               setValue(const std::vector<std::vector<double> >& x);                      //!< Set value directly
+        int                                        getNumRows(void) const { return nRows; }                                    //!< Get the number of rows in the matrix
+        int                                        getNumCols(void) const { return nCols; }                                    //!< Get the number of columns in the matrix
+        const std::vector<std::vector<double> >&   getValue(void) const { return value; }                                      //!< Get value directly
+        void                                       matrixMult(const MatrixReal& a, const MatrixReal& b);
+        virtual void                               setValue(const std::vector<std::vector<double> >& x);                       //!< Set value directly
 
 	protected:
-        virtual RbObject*                          convertTo(const std::string& type) const;                                  //!< Convert to type
-        virtual bool                               isConvertibleTo(const std::string& type) const;                            //!< Is convertible to type and dim?
+        virtual RbObject*                          convertTo(const std::string& type) const;                                   //!< Convert to type
+        virtual bool                               isConvertibleTo(const std::string& type) const;                             //!< Is convertible to type and dim?
 
     private:
         // helper functions for this class
-        bool                                       numFmt(int& numToLft, int& numToRht, std::string s) const;                 //!< Calculates the number of digits to the left and right of the decimal
-        std::vector<std::vector<double> >          value;                                                                     //!< Vector of vector of values
-        size_t                                     nRows;                                                                     //!< Number of rows
-        size_t                                     nCols;                                                                     //!< Number of columns
+        bool                                       numFmt(int& numToLft, int& numToRht, std::string s) const;                  //!< Calculates the number of digits to the left and right of the decimal
+        std::vector<std::vector<double> >          value;                                                                      //!< Vector of vector of values
+        size_t                                     nRows;                                                                      //!< Number of rows
+        size_t                                     nCols;                                                                      //!< Number of columns
 };
+
+        // operators defined outside of the class
+        MatrixReal                                 operator+(const MatrixReal &A, const MatrixReal &B);                        //!< operator + 
+        MatrixReal                                 operator-(const MatrixReal &A, const MatrixReal &B);                        //!< operator - 
+        MatrixReal                                 operator*(const MatrixReal &A, const MatrixReal &B);                        //!< operator * (matrix multiplication) 
+        MatrixReal&                                operator+=(const MatrixReal &A, const MatrixReal &B);                       //!< operator += 
+        MatrixReal&                                operator-=(const MatrixReal &A, const MatrixReal &B);                       //!< operator -= 
+        MatrixReal&                                operator*=(const MatrixReal &A, const MatrixReal &B);                       //!< operator *= (matrix multiplication)
+        MatrixReal                                 operator+(double &a, const MatrixReal &B);                                  //!< operator + for scalar + matrix 
+        MatrixReal                                 operator-(double &a, const MatrixReal &B);                                  //!< operator - for scalar - matrix 
+        MatrixReal                                 operator*(double &a, const MatrixReal &B);                                  //!< operator * for scalar * matrix 
+        MatrixReal                                 operator/(double &a, const MatrixReal &B);                                  //!< operator / for scalar / matrix 
+        MatrixReal                                 operator+(const MatrixReal &A, double &b);                                  //!< operator + for matrix + scalar 
+        MatrixReal                                 operator-(const MatrixReal &A, double &b);                                  //!< operator - for matrix - scalar 
+        MatrixReal                                 operator*(const MatrixReal &A, double &b);                                  //!< operator * for matrix * scalar 
+        MatrixReal                                 operator/(const MatrixReal &A, double &b);                                  //!< operator / for matrix / scalar 
+        MatrixReal&                                operator+=(const MatrixReal &A, double &b);                                 //!< operator += for scalar 
+        MatrixReal&                                operator-=(const MatrixReal &A, double &b);                                 //!< operator -= for scalar 
+        MatrixReal&                                operator*=(const MatrixReal &A, double &b);                                 //!< operator *= for scalar 
+        MatrixReal&                                operator/=(MatrixReal& A, double& b);                                       //!< operator /= for scalar 
 
 #endif

@@ -16,9 +16,9 @@
  * \param b Solution vector
  * \return Returns nothing
  */
-void RbMath::backSubstitutionRow(RbMatrix<double> &u, std::vector<double> &b) {
+void RbMath::backSubstitutionRow(MatrixReal& u, std::vector<double>& b) {
 
-	int n = u.dim1();
+	int n = u.getNumRows();
 	b[n-1] /= u[n-1][n-1];
 	for (int i=n-2; i>=0; i--) 
 		{
@@ -53,9 +53,9 @@ double RbMath::beta(double a, double b) {
  * \param uMat The U matrix
  * \return Returns nothing
  */
-void RbMath::computeLandU(RbMatrix<double> &aMat, RbMatrix<double> &lMat, RbMatrix<double> &uMat) {
+void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) {
 
-	int n = aMat.dim1();
+	int n = aMat.getNumRows();
 	for (int j=0; j<n; j++) 
 		{
 		for (int k=0; k<j; k++)
@@ -102,30 +102,36 @@ void RbMath::computeLandU(RbMatrix<double> &aMat, RbMatrix<double> &lMat, RbMatr
  *    The Johns Hopkins University Press, Baltimore, Maryland. [algorithm 11.3.1]
  * \todo See if ldexp is faster than regular matrix division by scalar
  */
-int RbMath::expMatrixPade(RbMatrix<double>& A, RbMatrix<double>& F, int qValue) {
+int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 
-	int dim = A.dim1();
-	if (dim != A.dim2())
+	int dim = A.getNumRows();
+	if (dim != A.getNumCols())
 		return (1);
 	
 	// create identity matrices
-	RbMatrix<double> D(dim,dim,0.0);
+	MatrixReal D(dim, dim, 0.0);
+	MatrixReal N(dim, dim, 0.0);
+	MatrixReal X(dim, dim, 0.0);
 	for (int i=0; i<dim; i++)
+        {
 		D[i][i] = 1.0;
-	RbMatrix<double> N(D.copy()), X(D.copy());
+        N[i][i] = 1.0;
+        X[i][i] = 1.0;
+        }
 
 	// create uninitialized matrix
-	RbMatrix<double> cX(dim, dim);
+	MatrixReal cX(dim, dim, 0.0);
 	
 	// We assume that we have a rate matrix where rows sum to zero
 	// Then the infinity-norm is twice the maximum absolute value
 	// of the diagonal cells.
 	double normA = 0.0;
-	for (int i=0; i<dim; i++) {
+	for (int i=0; i<dim; i++) 
+        {
 		double x = fabs (A[i][i]);
 		if (x > normA)
 			normA = x;
-	}
+        }
 	normA *= 2.0;
 
 	// Calculate 1 + floor (log2(normA))
@@ -139,14 +145,17 @@ int RbMath::expMatrixPade(RbMatrix<double>& A, RbMatrix<double>& F, int qValue) 
 		j = y;
 
 	// divide A by scalar 2^j
-	A /= ldexp (1.0, j);
+	//A /= ldexp(1.0, j);
+    double myFactor = 1.0 / ldexp(1.0, j);
+    A *= myFactor;
 	
 	double c = 1.0;
-	for (int k=1; k<=qValue; k++) {
+	for (int k=1; k<=qValue; k++) 
+        {
 		c = c * (qValue - k + 1.0) / ((2.0 * qValue - k + 1.0) * k);
 
 		/* X = AX */
-		X = A * X;
+        X = A * X;
 
 		/* N = N + cX */
 		cX = c * X;
@@ -231,9 +240,9 @@ int RbMath::findPadeQValue(const double& tolerance) {
  * \param b [in/out] Solution vector
  * \return Returns nothing
  */
-void RbMath::forwardSubstitutionRow(RbMatrix<double>& L, std::vector<double>& b) {
+void RbMath::forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b) {
 
-	int n = L.dim1();
+	int n = L.getNumRows();
 	b[0] = b[0] / L[0][0];
 	for (int i=1; i<n; i++) 
 		{
@@ -418,11 +427,11 @@ double RbMath::gamma(double x) {
  * \param xMat ??
  * \return Returns nothing
  */
-void RbMath::gaussianElimination(RbMatrix<double>& a, RbMatrix<double>& bMat, RbMatrix<double>& xMat) {
+void RbMath::gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xMat) {
 
-	int n = a.dim1();
-	RbMatrix<double> lMat(n, n);
-	RbMatrix<double> uMat(n, n);
+	int n = a.getNumRows();
+	MatrixReal lMat(n, n, 0.0);
+	MatrixReal uMat(n, n, 0.0);
 	std::vector<double> bVec(n);
 
 	RbMath::computeLandU(a, lMat, uMat);
@@ -770,12 +779,12 @@ double RbMath::rbEpsilon(void) {
  * \param t [out] Transposed matrix
  * \return 0 on success, 1 on failure
  */
-int RbMath::transposeMatrix(const RbMatrix<double>& a, RbMatrix<double>& t) {
+int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
 	
-	int m = a.dim1();
-	int n = a.dim2();
+	int m = a.getNumRows();
+	int n = a.getNumCols();
 	
-	if ( m != t.dim2() || n != t.dim1() )
+	if ( m != t.getNumCols() || n != t.getNumRows() )
 		return (1);
 
 	for (int i=0; i<m; i++)

@@ -63,12 +63,418 @@ MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) {
 }
 
 
+/*!
+ * This function performs addition of a scalar to
+ * each element of a matrix and returns the
+ * resulting matrix.
+ *
+ * \brief operator+ (scalar)
+ * \param A Matrix
+ * \param b Scalar
+ * \return A + b
+ */
+MatrixReal operator+(const MatrixReal& A, double& b) {
+
+	MatrixReal B;
+    B = A;
+	for (int i=0; i<B.getNumRows(); i++)
+		for (int j=0; j<B.getNumCols(); j++)
+			B[i][j] = A[i][j] + b;
+	return B;
+}
+
+/*!
+ * This function performs subtraction of a scalar from
+ * each element of a matrix and returns the
+ * resulting matrix.
+ *
+ * \brief operator- (scalar)
+ * \param A Matrix
+ * \param b Scalar
+ * \return A - b
+ */
+MatrixReal operator-(const MatrixReal& A, double& b) {
+
+	MatrixReal B;
+    B = A;
+	for (int i=0; i<B.getNumRows(); i++)
+		for (int j=0; j<B.getNumCols(); j++)
+			B[i][j] = A[i][j] - b;
+	return B;
+}
+
+/*!
+ * This function performs multiplication of a scalar to
+ * each element of a matrix and returns the
+ * resulting matrix.
+ *
+ * \brief operator* (scalar)
+ * \param A Matrix
+ * \param b Scalar
+ * \return A * b
+ */
+MatrixReal operator*(const MatrixReal& A, double& b) {
+
+	MatrixReal B;
+    B = A;
+	for (int i=0; i<B.getNumRows(); i++)
+		for (int j=0; j<B.getNumCols(); j++)
+			B[i][j] = A[i][j] * b;
+	return B;
+}
+
+/*!
+ * This function performs division with a scalar of
+ * each element of a matrix and returns the
+ * resulting matrix.
+ *
+ * \brief operator/ (scalar)
+ * \param A Matrix
+ * \param b Scalar
+ * \return A / b
+ */
+MatrixReal operator/(const MatrixReal& A, double& b) {
+
+	MatrixReal B;
+    B = A;
+	for (int i=0; i<B.getNumRows(); i++)
+		for (int j=0; j<B.getNumCols(); j++)
+			B[i][j] = A[i][j] / b;
+	return B;
+}
+
+/*!
+ * This function performs addition of a scalar to
+ * each element of a matrix and returns the
+ * resulting matrix.
+ *
+ * \brief operator+ (scalar first)
+ * \param a Scalar
+ * \param B Matrix
+ * \return a + B
+ */
+MatrixReal operator+(double& a, const MatrixReal& B) {
+
+	MatrixReal A;
+    A = B;
+	for (int i=0; i<A.getNumRows(); i++)
+		for (int j=0; j<A.getNumCols(); j++)
+			A[i][j] = a + B[i][j];
+	return A;
+}
+
+/*!
+ * This function subtracts each element of a
+ * a matrix from a scalar and returns the
+ * resulting matrix.
+ *
+ * \brief operator- (scalar first)
+ * \param a Scalar
+ * \param B Matrix
+ * \return a - B
+ */
+MatrixReal operator-(double& a, const MatrixReal& B) {
+
+	MatrixReal A;
+    A = B;
+	for (int i=0; i<A.getNumRows(); i++)
+		for (int j=0; j<A.getNumCols(); j++)
+			A[i][j] = a - B[i][j];
+	return A;
+}
+
+/*!
+ * This function performs multiplication of a scalar to
+ * each element of a matrix and returns the
+ * resulting matrix.
+ *
+ * \brief operator* (scalar first)
+ * \param a Scalar
+ * \param B Matrix
+ * \return a * B
+ */
+MatrixReal operator*(double& a, const MatrixReal& B) {
+
+	MatrixReal A;
+    A = B;
+	for (int i=0; i<A.getNumRows(); i++)
+		for (int j=0; j<A.getNumCols(); j++)
+			A[i][j] = a * B[i][j];
+	return A;
+}
+
+/*!
+ * This function performs division of a scalar by
+ * each element of a matrix and returns the
+ * resulting matrix.
+ *
+ * \brief operator/ (scalar first)
+ * \param a Scalar
+ * \param B Matrix
+ * \return a / B
+ */
+MatrixReal operator/(double& a, const MatrixReal& B) {
+
+	MatrixReal A;
+    A = B;
+	for (int i=0; i<A.getNumRows(); i++)
+		for (int j=0; j<A.getNumCols(); j++)
+			A[i][j] = a / B[i][j];
+	return A;
+}
+
+/*!
+ * This function performs addition of a scalar to
+ * each element of a matrix in place and returns the
+ * resulting matrix.
+ *
+ * \brief operator+= (scalar)
+ * \param A Matrix
+ * \param b Scalar
+ * \return A += b
+ */
+MatrixReal &operator+=(MatrixReal& A, double& b) {
+
+	for (int i=0; i<A.getNumRows(); i++)
+		for (int j=0; j<A.getNumCols(); j++)
+			A[i][j] += b;
+	return A;
+}
+
+/*!
+ * This function performs subtraction of a scalar from
+ * each element of a matrix in place and returns the
+ * resulting matrix.
+ *
+ * \brief operator-= (scalar)
+ * \param A Matrix
+ * \param b Scalar
+ * \return A -= b
+ */
+MatrixReal &operator-=(MatrixReal& A, double& b) {
+
+	for (int i=0; i<A.getNumRows(); i++)
+		for (int j=0; j<A.getNumCols(); j++)
+			A[i][j] -= b;
+	return A;
+}
+
+/*!
+ * This function performs multiplication of a scalar to
+ * each element of a matrix in place and returns the
+ * resulting matrix.
+ *
+ * \brief operator*= (scalar)
+ * \param A Matrix
+ * \param b Scalar
+ * \return A *= b
+ */
+MatrixReal &operator*=(MatrixReal& A, double& b) {
+
+	for (int i=0; i<A.getNumRows(); i++)
+		for (int j=0; j<A.getNumCols(); j++)
+			A[i][j] *= b;
+	return A;
+}
+
+/*!
+ * This function performs division with a scalar of
+ * each element of a matrix in place and returns the
+ * resulting matrix.
+ *
+ * \brief operator/= (scalar)
+ * \param A Matrix
+ * \param b Scalar
+ * \return A /= b
+ */
+MatrixReal &operator/=(MatrixReal& A, double& b) {
+
+	for (int i=0; i<A.getNumRows(); i++)
+		for (int j=0; j<A.getNumCols(); j++)
+			A[i][j] /= b;
+	return A;
+}
+
+/*!
+ * This function performs elementwise addition of two
+ * matrices and returns the resulting matrix. If the
+ * matrices are not conformant, a null matrix is returned.
+ *
+ * \brief operator+
+ * \param A Matrix 1
+ * \param B Matrix 2
+ * \return A + B, null matrix on failure
+ */
+MatrixReal operator+(const MatrixReal& A, const MatrixReal& B) {
+
+	int m = A.getNumRows();
+	int n = A.getNumCols();
+	if (B.getNumRows() != m || B.getNumCols() != n)
+        throw RbException("Cannot add matrices A and B: the matrices are not of the same dimension");
+	else 
+        {
+		MatrixReal C(m, n, 0.0);
+		for (int i=0; i<m; i++) 
+            {
+			for (int j=0; j<n; j++)
+				C[i][j] = A[i][j] + B[i][j];
+            }
+		return C;
+        }
+}
+
+/*!
+ * This function performs elementwise subtraction of two
+ * matrices and returns the resulting matrix. If the
+ * matrices are not conformant, a null matrix is returned.
+ *
+ * \brief operator-
+ * \param A Matrix 1
+ * \param B Matrix 2
+ * \return A - B, null matrix on failure
+ */
+MatrixReal operator-(const MatrixReal& A, const MatrixReal& B) {
+
+	int m = A.getNumRows();
+	int n = A.getNumCols();
+	if (B.getNumRows() != m || B.getNumCols() != n)
+        throw RbException("Cannot subtract matrices A and B: the matrices are not of the same dimension");
+	else 
+        {
+		MatrixReal C(m, n, 0.0);
+		for (int i=0; i<m; i++) 
+            {
+			for (int j=0; j<n; j++)
+				C[i][j] = A[i][j] - B[i][j];
+            }
+		return C;
+        }
+}
+
+/*!
+ * Compute C = A*B, where C[i][j] is the dot-product of 
+ * row i of A and column j of B. Note that this operator
+ * does not perform elementwise multiplication. If the 
+ * matrices do not have the right dimensions for matrix
+ * multiplication (that is, if the number of columns of A
+ * is different from the number of rows of B), the function
+ * returns a null matrix.
+ *
+ * \brief Matrix multiplication
+ * \param A An (m X n) matrix
+ * \param B An (n X k) matrix
+ * \return A * B, an (m X k) matrix, or null matrix on failure
+ */
+MatrixReal operator*(const MatrixReal& A, const MatrixReal& B) {
+
+	if ( A.getNumCols() != B.getNumRows() )
+        throw RbException("Cannot multiply matrices A and B: the number of columns of A does not equal the number of rows in B");
+	int M = A.getNumRows();
+	int N = A.getNumCols();
+	int K = B.getNumCols();
+	MatrixReal C(M, K, 0.0);
+	for (int i=0; i<M; i++) {
+		for (int j=0; j<K; j++) {
+			double sum = 0.0;
+			for (int k=0; k<N; k++)
+				sum += A[i][k] * B [k][j];
+			C[i][j] = sum;
+		}
+	}
+	return C;
+}
+
+/*!
+ * This function performs elementwise addition on two
+ * matrices and puts the result in the first matrix.
+ * If the two matrices are nonconformant, the first
+ * matrix is left intact.
+ *
+ * \brief operator+=
+ * \param A Matrix 1
+ * \param B Matrix 2
+ * \return A += B, A unmodified on failure
+ */
+MatrixReal&  operator+=(MatrixReal& A, const MatrixReal& B) {
+
+	int m = A.getNumRows();
+	int n = A.getNumCols();
+	if (B.getNumRows() == m && B.getNumCols() == n) 
+        {
+		for (int i=0; i<m; i++) 
+            {
+			for (int j=0; j<n; j++)
+				A[i][j] += B[i][j];
+            }
+        }
+	return A;
+}
+
+/*!
+ * This function performs elementwise subtraction on two
+ * matrices and puts the result in the first matrix.
+ * If the two matrices are nonconformant, the first
+ * matrix is left intact.
+ *
+ * \brief operator-=
+ * \param A Matrix 1
+ * \param B Matrix 2
+ * \return A -= B, A unmodified on failure
+ */
+MatrixReal&  operator-=(MatrixReal& A, const MatrixReal& B) {
+
+	int m = A.getNumRows();
+	int n = A.getNumCols();
+	if (B.getNumRows() == m && B.getNumCols() == n) 
+        {
+		for (int i=0; i<m; i++) 
+            {
+			for (int j=0; j<n; j++)
+				A[i][j] -= B[i][j];
+            }
+        }
+	return A;
+}
+
+/*!
+ * Compute C = A*B, where C[i][j] is the dot-product of 
+ * row i of A and column j of B. Then assign the result to
+ * A. Note that this operator does not perform elementwise
+ * multiplication. If the matrices are not both square of the
+ * same dimension, then the operation is not possible to
+ * perform and we return an unomidified A.
+ *
+ * \brief Matrix multiplication with assignment (operator *=)
+ * \param A An (n X n) matrix
+ * \param B An (n X n) matrix
+ * \return A = A * B, an (n X n) matrix, or unmodified A on failure
+ */
+MatrixReal &operator*=(MatrixReal& A, const MatrixReal& B) {
+
+	if ( A.getNumRows() == A.getNumCols() && B.getNumRows() == B.getNumCols() && A.getNumRows() == B.getNumRows() ) 
+        {
+		int N = A.getNumRows();
+		MatrixReal C(N, N, 0.0);
+		for (int i=0; i<N; i++) 
+            {
+			for (int j=0; j<N; j++) 
+                {
+				double sum = 0.0;
+				for (int k=0; k<N; k++)
+					sum += A[i][k] * B [k][j];
+				C[i][j] = sum;
+                }
+            }
+		A = C;
+        }
+	return A;
+}
+
 /** Clone function */
 MatrixReal* MatrixReal::clone(void) const {
 
     return new MatrixReal(*this);
 }
-
 
 /** Convert to object of another class. The caller manages the object. */
 RbObject* MatrixReal::convertTo(const std::string& type) const {
