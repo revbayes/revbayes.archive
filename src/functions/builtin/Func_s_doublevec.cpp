@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the implementation of Func_s_doublevec, which 
- * constructs a simplex.
+ * constructs a simplex from a list of doubles.
  *
  * @brief Implementation of Func_s_doublevec
  *
@@ -50,17 +50,16 @@ RbObject* Func_s_doublevec::executeOperation(const std::vector<DAGNode*>& args) 
     // Create temporary vector for the ints 
     std::vector<double>    tempVec;
 
-    // Get first element
-    tempVec.push_back( ((Real*)(args[0]->getValue()))->getValue() );
+    // Get first and second elements
+    tempVec.push_back( ((RealPos*)(args[0]->getValue()))->getValue() );
+    tempVec.push_back( ((RealPos*)(args[1]->getValue()))->getValue() );
 
     // Get following elements
     if ( args.size() > 1 ) 
         {
-        DAGNodeContainer*   elements = dynamic_cast<DAGNodeContainer*>(args[1]);
+        DAGNodeContainer* elements = dynamic_cast<DAGNodeContainer*>(args[2]);
         for (size_t i=0; i<elements->size(); i++) 
-            {
-            tempVec.push_back( ((Real*)(elements->getValElement(i)))->getValue() );
-            }
+            tempVec.push_back( ((RealPos*)(elements->getValElement(i)))->getValue() );
         }
         
     // check that the elements sum to 1.0
@@ -69,6 +68,8 @@ RbObject* Func_s_doublevec::executeOperation(const std::vector<DAGNode*>& args) 
         sum += tempVec[i];
     if ( RbMath::isEqualTo(sum, 1.0, 0.0000001) == false )
 		throw (RbException("The values for the simple do not sum to one"));
+        
+    // renormalization, just to be really, really safe
 
     return new Simplex(tempVec);
 }
@@ -82,8 +83,9 @@ const ArgumentRules& Func_s_doublevec::getArgumentRules(void) const {
 
     if (!rulesSet) 
 		{
-        argumentRules.push_back(new ArgumentRule("", Real_name));
-        argumentRules.push_back(new Ellipsis(Real_name));
+        argumentRules.push_back(new ArgumentRule("", RealPos_name));
+        argumentRules.push_back(new ArgumentRule("", RealPos_name));
+        argumentRules.push_back(new Ellipsis(RealPos_name));
         rulesSet = true;
 		}
 

@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of Func_s_realvec, which 
- * constructs a simplex from a VectorReal.
+ * This file contains the declaration of Func_normalize, which 
+ * normalizes a vector of positive real numbers.
  *
- * @brief Implementation of Func_s_realvec
+ * @brief Implementation of Func_normalize
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -23,7 +23,8 @@
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
 #include "Func__lookup.h"
-#include "Func_s_realvec.h"
+#include "Func_normalize.h"
+#include "Integer.h"
 #include "RbMath.h"
 #include "RbException.h"
 #include "Real.h"
@@ -38,40 +39,37 @@
 #include <cmath>
 
 /** Clone object */
-Func_s_realvec* Func_s_realvec::clone(void) const {
+Func_normalize* Func_normalize::clone(void) const {
 
-    return new Func_s_realvec(*this);
+    return new Func_normalize(*this);
 }
 
 
 /** Execute function */
-RbObject* Func_s_realvec::executeOperation(const std::vector<DAGNode*>& args) {
+RbObject* Func_normalize::executeOperation(const std::vector<DAGNode*>& args) {
 
-    // Get the vector of real numbers 
-    std::vector<double> tempVec = ((VectorRealPos*)(args[0]->getValue()))->getValue();
-        
-    // check that the elements sum to 1.0
-    double sum = 0.0;
+    // Get first element
+    std::vector<double> tempVec    = ((VectorRealPos*)(args[0]->getValue()))->getValue();
+    std::vector<double> desiredSum = ((RealPos*)(args[1]->getValue()))->getValue();
+    
+    // set up the default simplex
     for (size_t i=0; i<tempVec.size(); i++)
-        sum += tempVec[i];
-    if ( RbMath::isEqualTo(sum, 1.0, 0.0000001) == false )
-		throw (RbException("The values for the simple do not sum to one"));
+        RbMath::normalize(tempVec, desiredSum);
         
-    // renormalize 
-
     return new Simplex(tempVec);
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_s_realvec::getArgumentRules(void) const {
+const ArgumentRules& Func_normalize::getArgumentRules(void) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
     if (!rulesSet) 
 		{
-        argumentRules.push_back(new ArgumentRule("", VectorRealPos_name));
+        argumentRules.push_back(new ArgumentRule("", VectorRealPos));
+        argumentRules.push_back(new ArgumentRule("", new RealPos(1.0)));
         rulesSet = true;
 		}
 
@@ -80,15 +78,15 @@ const ArgumentRules& Func_s_realvec::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Func_s_realvec::getClass(void) const {
+const VectorString& Func_normalize::getClass(void) const {
 
-    static VectorString rbClass = VectorString(Func_s_realvec_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString(Func_normalize_name) + RbFunction::getClass();
     return rbClass;
 }
 
 
 /** Get return type */
-const std::string& Func_s_realvec::getReturnType(void) const {
+const std::string& Func_normalize::getReturnType(void) const {
 
     return Simplex_name;
 }

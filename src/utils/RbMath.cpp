@@ -652,6 +652,17 @@ double RbMath::incompleteGamma(double x, double alpha, double scale) {
 		return (gin);
 }
 
+/*!
+ * This function checks whether two values are equal to one
+ * another within some tolerance.
+ *
+ * \brief Checks whether two values are equal.
+ * \param x is the first value.
+ * \param y is the second value.
+ * \param tolerance is the tolerance for the comparison.
+ * \return Returns a bool which is false if the two values are not the same. 
+ * \throws Does not throw an error.
+ */
 bool RbMath::isEqualTo(double x, double y, double tolerance) {
 
     if ( fabs(x - y) < tolerance )
@@ -710,6 +721,25 @@ double RbMath::lnGamma(double a) {
 	return  (f + (x-0.5)*log(x) - x + 0.918938533204673 + 
 			(((-0.000595238095238*z+0.000793650793651)*z-0.002777777777778)*z +
 			0.083333333333333)/x);  
+}
+
+/*!
+ * This function normalizes a vector such that its sum is some value.
+ *
+ * \brief Vector normalization function.
+ * \param x is a reference to the vector to be normalized .
+ * \param sum is the desired sum for the normalized vector.
+ * \return Does not return a value. 
+ * \throws Does not throw an error.
+ */
+void RbMath::normalize(std::vector<double>& x, double sum) {
+
+    double s = 0.0;
+    for (size_t i=0; i<x.size(); i++)
+        s += x[i];
+    double factor = sum / s;
+    for (size_t i=0; i<x.size(); i++)
+        x[i] *= factor;
 }
 
 /*!

@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the implementation of Func_s_int, which 
- * constructs a simplex.
+ * constructs a simplex from a single integer.
  *
  * @brief Implementation of Func_s_int
  *
