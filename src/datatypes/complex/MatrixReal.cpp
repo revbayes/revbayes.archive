@@ -73,7 +73,7 @@ MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) {
  * \param b Scalar
  * \return A + b
  */
-MatrixReal operator+(const MatrixReal& A, double& b) {
+MatrixReal operator+(const MatrixReal& A, const double& b) {
 
 	MatrixReal B;
     B = A;
@@ -93,7 +93,7 @@ MatrixReal operator+(const MatrixReal& A, double& b) {
  * \param b Scalar
  * \return A - b
  */
-MatrixReal operator-(const MatrixReal& A, double& b) {
+MatrixReal operator-(const MatrixReal& A, const double& b) {
 
 	MatrixReal B;
     B = A;
@@ -113,7 +113,7 @@ MatrixReal operator-(const MatrixReal& A, double& b) {
  * \param b Scalar
  * \return A * b
  */
-MatrixReal operator*(const MatrixReal& A, double& b) {
+MatrixReal operator*(const MatrixReal& A, const double& b) {
 
 	MatrixReal B;
     B = A;
@@ -133,7 +133,7 @@ MatrixReal operator*(const MatrixReal& A, double& b) {
  * \param b Scalar
  * \return A / b
  */
-MatrixReal operator/(const MatrixReal& A, double& b) {
+MatrixReal operator/(const MatrixReal& A, const double& b) {
 
 	MatrixReal B;
     B = A;
@@ -153,7 +153,7 @@ MatrixReal operator/(const MatrixReal& A, double& b) {
  * \param B Matrix
  * \return a + B
  */
-MatrixReal operator+(double& a, const MatrixReal& B) {
+MatrixReal operator+(const double& a, const MatrixReal& B) {
 
 	MatrixReal A;
     A = B;
@@ -173,7 +173,7 @@ MatrixReal operator+(double& a, const MatrixReal& B) {
  * \param B Matrix
  * \return a - B
  */
-MatrixReal operator-(double& a, const MatrixReal& B) {
+MatrixReal operator-(const double& a, const MatrixReal& B) {
 
 	MatrixReal A;
     A = B;
@@ -193,7 +193,7 @@ MatrixReal operator-(double& a, const MatrixReal& B) {
  * \param B Matrix
  * \return a * B
  */
-MatrixReal operator*(double& a, const MatrixReal& B) {
+MatrixReal operator*(const double& a, const MatrixReal& B) {
 
 	MatrixReal A;
     A = B;
@@ -213,7 +213,7 @@ MatrixReal operator*(double& a, const MatrixReal& B) {
  * \param B Matrix
  * \return a / B
  */
-MatrixReal operator/(double& a, const MatrixReal& B) {
+MatrixReal operator/(const double& a, const MatrixReal& B) {
 
 	MatrixReal A;
     A = B;
@@ -233,7 +233,7 @@ MatrixReal operator/(double& a, const MatrixReal& B) {
  * \param b Scalar
  * \return A += b
  */
-MatrixReal &operator+=(MatrixReal& A, double& b) {
+MatrixReal &operator+=(MatrixReal& A, const double& b) {
 
 	for (int i=0; i<A.getNumRows(); i++)
 		for (int j=0; j<A.getNumCols(); j++)
@@ -251,7 +251,7 @@ MatrixReal &operator+=(MatrixReal& A, double& b) {
  * \param b Scalar
  * \return A -= b
  */
-MatrixReal &operator-=(MatrixReal& A, double& b) {
+MatrixReal &operator-=(MatrixReal& A, const double& b) {
 
 	for (int i=0; i<A.getNumRows(); i++)
 		for (int j=0; j<A.getNumCols(); j++)
@@ -269,7 +269,7 @@ MatrixReal &operator-=(MatrixReal& A, double& b) {
  * \param b Scalar
  * \return A *= b
  */
-MatrixReal &operator*=(MatrixReal& A, double& b) {
+MatrixReal &operator*=(MatrixReal& A, const double& b) {
 
 	for (int i=0; i<A.getNumRows(); i++)
 		for (int j=0; j<A.getNumCols(); j++)
@@ -287,7 +287,7 @@ MatrixReal &operator*=(MatrixReal& A, double& b) {
  * \param b Scalar
  * \return A /= b
  */
-MatrixReal &operator/=(MatrixReal& A, double& b) {
+MatrixReal &operator/=(MatrixReal& A, const double& b) {
 
 	for (int i=0; i<A.getNumRows(); i++)
 		for (int j=0; j<A.getNumCols(); j++)
