@@ -26,7 +26,7 @@
 #include "Func_s_doublevec.h"
 #include "RbMath.h"
 #include "RbException.h"
-#include "Real.h"
+#include "RealPos.h"
 #include "RbNames.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
@@ -70,6 +70,7 @@ RbObject* Func_s_doublevec::executeOperation(const std::vector<DAGNode*>& args) 
 		throw (RbException("The values for the simple do not sum to one"));
         
     // renormalization, just to be really, really safe
+    RbMath::normalize(tempVec, 1.0);
 
     return new Simplex(tempVec);
 }

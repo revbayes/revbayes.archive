@@ -57,7 +57,8 @@ RbObject* Func_s_realvec::executeOperation(const std::vector<DAGNode*>& args) {
     if ( RbMath::isEqualTo(sum, 1.0, 0.0000001) == false )
 		throw (RbException("The values for the simple do not sum to one"));
         
-    // renormalize 
+    // renormalization, just to be really, really safe
+    RbMath::normalize(tempVec, 1.0);
 
     return new Simplex(tempVec);
 }

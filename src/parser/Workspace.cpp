@@ -42,6 +42,7 @@
 #include "Func_clamp.h"
 #include "Func_ls.h"
 #include "Func_model.h"
+#include "Func_normalize.h"
 #include "Func_quit.h"
 #include "Func_s_doublevec.h"
 #include "Func_s_int.h"
@@ -249,18 +250,19 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction("_range", new Func__range());
 
         /* Add regular functions */
-        addFunction("clamp",  new Func_clamp()); 
-        addFunction("ls",     new Func_ls());
-        addFunction("model",  new Func_model());
-        addFunction("q",      new Func_quit());
-        addFunction("quit",   new Func_quit());
-        addFunction("source", new Func_source());
-        addFunction("sqrt",   new Func_sqrt());
-        addFunction("v",      new Func_v_int());
-        addFunction("v",      new Func_v_double());
-        addFunction("s",      new Func_s_doublevec());
-        addFunction("s",      new Func_s_int());
-        addFunction("s",      new Func_s_realvec());
+        addFunction( "clamp",     new Func_clamp()       ); 
+        addFunction( "ls",        new Func_ls()          );
+        addFunction( "model",     new Func_model()       );
+        addFunction( "normalize", new Func_normalize()   );
+        addFunction( "q",         new Func_quit()        );
+        addFunction( "quit",      new Func_quit()        );
+        addFunction( "source",    new Func_source()      );
+        addFunction( "sqrt",      new Func_sqrt()        );
+        addFunction( "v",         new Func_v_int()       );
+        addFunction( "v",         new Func_v_double()    );
+        addFunction( "s",         new Func_s_doublevec() );
+        addFunction( "s",         new Func_s_int()       );
+        addFunction( "s",         new Func_s_realvec()   );
     }
     catch(RbException& rbException) {
 

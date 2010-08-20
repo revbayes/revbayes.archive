@@ -27,7 +27,7 @@
 #include "Integer.h"
 #include "RbMath.h"
 #include "RbException.h"
-#include "Real.h"
+#include "RealPos.h"
 #include "RbNames.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
@@ -50,11 +50,10 @@ RbObject* Func_normalize::executeOperation(const std::vector<DAGNode*>& args) {
 
     // Get first element
     std::vector<double> tempVec    = ((VectorRealPos*)(args[0]->getValue()))->getValue();
-    std::vector<double> desiredSum = ((RealPos*)(args[1]->getValue()))->getValue();
+    double              desiredSum = ((RealPos*)(args[1]->getValue()))->getValue();
     
-    // set up the default simplex
-    for (size_t i=0; i<tempVec.size(); i++)
-        RbMath::normalize(tempVec, desiredSum);
+    // normalize the vector
+    RbMath::normalize(tempVec, desiredSum);
         
     return new Simplex(tempVec);
 }
@@ -68,7 +67,7 @@ const ArgumentRules& Func_normalize::getArgumentRules(void) const {
 
     if (!rulesSet) 
 		{
-        argumentRules.push_back(new ArgumentRule("", VectorRealPos));
+        argumentRules.push_back(new ArgumentRule("", VectorRealPos_name));
         argumentRules.push_back(new ArgumentRule("", new RealPos(1.0)));
         rulesSet = true;
 		}
