@@ -132,6 +132,7 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
         // Does the variable exist? If not, add it - but only to workspace, not to complex objects
         if (!variable->isMember()  && !frame->existsVariable(varName)) 
 			{
+            PRINTF ("Creating new variable\n");
             // It does not exist - add it
             if (index.size() != 0)
                 frame->addVariable(varName, index, new ConstantNode(exprValue));
@@ -143,6 +144,7 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
             // It exists - use the frame or a complex object to assign to it 
             if (!variable->isMember()) 
 				{
+                PRINTF ("Assigning to existing simple variable\n");
                 if (index.size() != 0)
                     frame->setValElement(varName, index, exprValue);
                 else

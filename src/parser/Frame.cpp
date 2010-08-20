@@ -682,10 +682,11 @@ void Frame::setVariable(const std::string& name, DAGNode* var) {
 		}
 
     /* Check type and dim */
-    if ( !Workspace::userWorkspace().isXOfTypeY(var->getTypeOfValue(), (*it).second.type) ) 
+    if ( !Workspace::userWorkspace().isXOfTypeY(var->getValueType(), (*it).second.type) ) 
 		{
         // TODO need to try to convert the variable
-        std::cout << "Try to convert " << var->getTypeOfValue() << " into " << (*it).second.type << std::endl;
+        /*
+        std::cout << "Try to convert " << var->getValueType() << " into " << (*it).second.type << std::endl;
         std::cout << "Var is of type " << var->getClass()[0] << std::endl;
         var->printStruct(std::cout);
         if (var->isValueConvertibleTo((*it).second.type)) 
@@ -697,10 +698,11 @@ void Frame::setVariable(const std::string& name, DAGNode* var) {
             std::ostringstream msg;
             msg << (*it).second.type;
             msg << " variable does not take ";
-            msg << var->getTypeOfValue();
+            msg << var->getValueType();
             msg << " value";
             throw(RbException(msg.str()));
 			}
+        */
 		}
 	
 	/*if ((*it).second.dim != var->getDim() || !Workspace::userWorkspace().isXOfTypeY(var->getValueType(), (*it).second.type)) 

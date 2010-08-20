@@ -47,12 +47,6 @@ DAGNode::DAGNode(const DAGNode& x) : children(), parents(), name(""), valueType(
 
 }
 
-/** convert value to type */
-void DAGNode::convertValueTo(const std::string &type) {
-
-    throw RbException("Cannot convert value of non constant dag node.");
-}
-
 /** Get class vector describing type of object */
 const VectorString& DAGNode::getClass() const {
 

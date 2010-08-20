@@ -71,7 +71,7 @@ class Container : public RbComplex {
 
 	protected:
         RbObject*                   convertTo(const std::string& type) const;                         //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;                   //!< Is convertible to type and dim?
+        bool                        isConvertibleTo(const std::string& type) const;                   //!< Is convertible to type?
         size_t                      getOffset(const VectorInteger& index) const;                      //!< Get offset in element vector
         RbObject*                   getElementPtr(const VectorInteger& index);                        //!< Allow modify access to element
 

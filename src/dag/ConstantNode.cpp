@@ -99,13 +99,6 @@ ConstantNode* ConstantNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) con
     return copy;
 }
 
-/** convert value to type */
-void ConstantNode::convertValueTo(const std::string &type) {
-
-    value = value->convert(type);
-    valueType = type;
-}
-
 /** Get class vector describing type of object */
 const VectorString& ConstantNode::getClass() const {
 

@@ -57,14 +57,12 @@ class DAGNode {
 		const bool                      getIsDagExposed(void) { return isDagExposed; }                        //!< Get DAG exposure
         const std::string&              getName(void) const { return name; }                                  //!< Get name
         const std::string&              getType(void) const;                                                  //!< Get wrapper type
-        const std::string&              getTypeOfValue(void) const { return valueType; }                      //!< Get value type
         const std::string&              getValueType(void) const { return valueType; }                        //!< Get value type
         bool                            isType(const std::string& type) const;                                //!< Is wrapper of type?
 
         // DAG functions
         void                            addChildNode(VariableNode* c) { children.insert(c); }                 //!< Add child node
         virtual DAGNode*                cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;           //!< Clone graph
-        virtual void                    convertValueTo(const std::string& type);                              //!< Convert the the value to the specific type. Should only be allowed for constant nodes.
         std::set<VariableNode*>&        getChildren(void) { return children; }                                //!< Return children
 		std::set<DAGNode*>&             getParents(void) { return parents; }                                  //!< Return parents
         bool                            isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const;     //!< Is node x a parent of the caller in the DAG?
@@ -84,7 +82,7 @@ class DAGNode {
         std::set<VariableNode*>         children;                                                             //!< Set of children nodes
         std::set<DAGNode*>              parents;                                                              //!< Set of parent nodes
         std::string                     name;                                                                 //!< Name, "" if not named
-        std::string                     valueType;                                                            //!< Type of value
+        const std::string&              valueType;                                                            //!< Type of value
 		bool                            isDagExposed;                                                         //!< Flag indicating whether DAG should be exposed to user
 
 };
