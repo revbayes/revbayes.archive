@@ -348,7 +348,7 @@ void MatrixReal::printValue(std::ostream& o) const {
         if (i == 0)
             lineStr += "[[ ";
         else 
-            lineStr += " [ ";
+            lineStr += pad  + " [ ";
         for (size_t j=0; j<value[i].size(); j++)
             {
             std::ostringstream v;
@@ -368,9 +368,10 @@ void MatrixReal::printValue(std::ostream& o) const {
         if (i == value.size()-1)
             lineStr += " ]]";
         else 
-            lineStr += " ],";
+            lineStr += " ],\n";
 
-        RBOUT(lineStr);
+        o << lineStr;
+        //RBOUT(lineStr);
         }
     
     o.setf(previousFlags);
