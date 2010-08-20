@@ -197,16 +197,6 @@ Container* Container::clone(void) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* Container::convertTo(const std::string& type) const {
 
-    if (type == Simplex_name) 
-		{
-        std::vector<double> v;
-        for (size_t i=0; i<length.size(); i++) 
-			{
-            v.push_back(((Real*) getElementAt(i))->getValue());
-			}
-        return new Simplex(v);
-		}
-
     throw RbException("Cannot convert Container to " + type + ".");
 	
 	return NULL;
@@ -317,22 +307,6 @@ const RbObject* Container::getElement(const VectorInteger& index) const {
         return ((RbComplex*)(element))->getElement(valueIndex);
 }
 
-/** Get element */
-RbObject* Container::getElementAt(const size_t index) const {
-
-    // Check that the index is to a value element
-    if ( index < getLength().size() )
-        throw (RbException("Index error: Not value element"));
-
-    // Get element
-    RbObject* element = elements[index];
-
-    // Return value
-    if (element == NULL)
-        return NULL;
-    else
-        return element;
-}
 
 /** Get element ptr */
 RbObject* Container::getElementPtr(const VectorInteger& index) {

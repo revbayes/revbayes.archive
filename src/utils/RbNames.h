@@ -55,6 +55,7 @@ const std::string Func_sqrt_name                                = "Square Root F
 const std::string Func_v_double_name                            = "Vector of Reals Constructor Function";
 const std::string Func_v_int_name                               = "Vector of Integers Constructor Function";
 const std::string Integer_name                                  = "Integer";
+const std::string MatrixReal_name                               = "Matrix";
 const std::string Mcmc_name                                     = "mcmc";
 const std::string MemberObject_name                             = "member object";
 const std::string MemberFunction_name                           = "member function";

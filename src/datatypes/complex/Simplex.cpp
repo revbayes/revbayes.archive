@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the implementation of Simplex, a complex type
- * used to hold a simplex simplex.
+ * used to hold a simplex.
  *
  * @brief Implementation of Simplex
  *
@@ -16,38 +16,48 @@
  * $Id$
  */
 
-#include "VectorInteger.h"
-#include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "Real.h"
 #include "Simplex.h"
+#include "VectorInteger.h"
 #include "VectorString.h"
 
 #include <sstream>
 
 
 /** Construct simplex of length (size) n */
-Simplex::Simplex(int n) {
+Simplex::Simplex(const size_t n) : VectorRealPos() {
 
-    for (int i=0; i<n; i++)
+    for (size_t i=0; i<n; i++)
         value.push_back(1.0/n);
 }
 
 
 /** Construct simplex from double vector */
-Simplex::Simplex(const std::vector<double>& x) {
+Simplex::Simplex(const std::vector<double>& x) : VectorRealPos(x) {
 
     for (size_t i=0; i<x.size(); i++)
-        if (x[i] < 0.0)
-            throw (RbException("Cannot set simplex from negative value"));
+        if (x[i] <= 0.0)
+            throw (RbException("Cannot set simplex from nonpositive value"));
 
-    value = x;
+    rescale();
+}
+
+
+/** Construct simplex from double vector */
+Simplex::Simplex(const VectorRealPos& x) : VectorRealPos(x) {
+
+    for (size_t i=0; i<x.size(); i++)
+        if (x[i] <= 0.0)
+            throw (RbException("Cannot set simplex from nonpositive value"));
+
     rescale();
 }
 
 
 /** Non-const subscript operator */
-double& Simplex::operator[](int i) {
+double& Simplex::operator[](size_t i) {
 
     throw (RbException("Cannot grant non-const access to single value of simplex"));
 }
@@ -59,45 +69,26 @@ Simplex* Simplex::clone() const {
     return new Simplex(*this);
 }
 
+
 /** Pointer-based equals comparison */
 bool Simplex::equals(const RbObject* obj) const {
 
-    // Use built-in fast down-casting first
-    const Simplex* p = dynamic_cast<const Simplex*> (obj);
-    if (p != NULL) {
-        if (value.size() != p->value.size())
-            return false;
-        for (size_t i = 0; i < value.size(); i++) {
-            if (value[i] != p->value[i])
-                return false;
-        }
-        return true;
-    }
-
-    // Try converting the value to a simplex
-    p = dynamic_cast<const Simplex*> (obj->convert(getType()));
-    if (p == NULL)
+    // First check type
+    if ( !obj->isType(Simplex_name) )
         return false;
 
-    bool result = true;
-    if (value.size() == p->value.size()) {
-        for (size_t i = 0; i < value.size(); i++)
-            result = result && (value[i] == p->value[i]);
-    }
-    else
-        result = false;
-
-    delete p;
-    return result;
+    // Then use parent's function
+    return VectorRealPos::equals(obj);
 }
 
 
 /** Get class vector describing type of object */
 const VectorString& Simplex::getClass() const {
 
-    static VectorString rbClass = VectorString(Simplex_name) + VectorReal::getClass();
+    static VectorString rbClass = VectorString(Simplex_name) + VectorRealPos::getClass();
     return rbClass;
 }
+
 
 /** Drop an element */
 void Simplex::pop_back(void) {
@@ -147,12 +138,8 @@ void Simplex::setElement(const VectorInteger& index, RbObject* val) {
 }
 
 
-/** Set value of simplex using VectorReal */
-void Simplex::setValue(const VectorReal& x) {
-
-    for (size_t i=0; i<x.size(); i++)
-        if (x[i] < 0.0)
-            throw (RbException("Cannot set simplex with negative value"));
+/** Set value of simplex using VectorRealPos */
+void Simplex::setValue(const VectorRealPos& x) {
 
     value.resize(x.size());
     for (size_t i=0; i<x.size(); i++)    

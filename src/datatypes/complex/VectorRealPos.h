@@ -20,53 +20,40 @@
 #define VectorRealPos_H
 
 #include "VectorInteger.h"
-#include "Container.h"
+#include "VectorReal.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
 
-class VectorRealPos : public Container {
+class VectorRealPos : public VectorReal {
 
     public:
-                                    VectorRealPos(void) : Container() {}                       //!< Default constructor (empty vector)
-                                    VectorRealPos(double x);                                   //!< Construct vector with one double x
-	                                VectorRealPos(int n, double x);                            //!< Construct vector with n doubles x
-	                                VectorRealPos(std::vector<double>& x);                     //!< Constructor from double vector
+                                    VectorRealPos(void) : VectorReal() {}                   //!< Default constructor (empty vector)
+                                    VectorRealPos(const double x);                          //!< Construct vector with one double x
+	                                VectorRealPos(const size_t n, const double x);          //!< Construct vector with n doubles x
+	                                VectorRealPos(const std::vector<double>& x);            //!< Constructor from double vector
 
         // Basic utility functions
-        virtual VectorRealPos*      clone(void) const;                                         //!< Clone object
-        virtual bool                equals(const RbObject* obj) const;                         //!< Equals comparison
-        virtual const VectorString& getClass(void) const;                                      //!< Get class vector
-        virtual void                printValue(std::ostream& o) const;                         //!< Print value for user
-        virtual std::string         toString(void) const;                                      //!< Complete info about object
+        virtual VectorRealPos*      clone(void) const;                                      //!< Clone object
+        virtual bool                equals(const RbObject* obj) const;                      //!< Equals comparison
+        virtual const VectorString& getClass(void) const;                                   //!< Get class vector
+        virtual std::string         toString(void) const;                                   //!< Complete info about object
 
         // Overloaded operators and built-in functions
-        virtual double&             operator[](size_t i) { return value[i]; }                  //!< Index op allowing change
-        const double&               operator[](size_t i) const { return value[i]; }            //!< Const index op
-        void                        clear(void) { value.clear(); }                             //!< Clear
-        virtual void                pop_back(void) { value.pop_back(); }                       //!< Drop element
-        virtual void                push_back(double x) { value.push_back(x); }                //!< Append element to end
-        virtual void                push_front(double x) { value.insert(value.begin(), x); }   //!< Add element in front
-        void                        resize(size_t n) { resize(VectorInteger(int(n))); }        //!< Resize
-        size_t                      size(void) const { return value.size(); }                  //!< Get size
-
-        // Getter
-        std::vector<double>&        getValue(void) { return value; }                           //!< Get value directly
+        virtual void                push_back(double x);                                    //!< Append element to end
+        virtual void                push_front(double x);                                   //!< Add element in front
 
         // Element access functions for parser
-	    int                         getDim(void) const { return 1; }                           //!< Get subscript dimensions
-        const std::string&          getElementType(void) const;                                //!< Get element type
-        const RbObject*             getElement(const VectorInteger& index) const;              //!< Get element (read-only)
-        const VectorInteger&        getLength(void) const;                                     //!< Get length in each dim
-        virtual void                resize(const VectorInteger& len);                          //!< Resize
-        virtual void                setElement(const VectorInteger& index, RbObject* val);     //!< Set element
-        virtual void                setLength(const VectorInteger& len);                       //!< Set length in each dim
+        const std::string&          getElementType(void) const;                             //!< Get element type
+        virtual void                setElement(const VectorInteger& index, RbObject* val);  //!< Set element
+
+        // Regular functions
+        virtual void                setValue(const std::vector<double>& x);                 //!< Set value directly after checking
 
 	protected:
-        RbObject*                   convertTo(const std::string& type) const;                  //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;            //!< Is convertible to type and dim?
-	    std::vector<double>         value;                                                     //!< Vector of values
+        RbObject*                   convertTo(const std::string& type) const;               //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;         //!< Is convertible to type and dim?
 };
 
 #endif

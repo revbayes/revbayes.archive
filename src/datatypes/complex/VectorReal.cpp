@@ -16,35 +16,36 @@
  * $Id$
  */
 
-#include "VectorInteger.h"
-#include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "Real.h"
 #include "Simplex.h"
-#include "VectorString.h"
+#include "VectorInteger.h"
 #include "VectorReal.h"
+#include "VectorString.h"
 
 #include <cmath>
 #include <iomanip>
+#include <limits>
 #include <sstream>
 
 
 
 /** Construct vector with one double x */
-VectorReal::VectorReal(double x) {
+VectorReal::VectorReal(const double x) : RbComplex() {
 
     value.push_back(x);
 }
 
 /** Construct vector with n doubles x */
-VectorReal::VectorReal(int n, double x) {
+VectorReal::VectorReal(const size_t n, const double x) : RbComplex() {
 
-    for (double i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
         value.push_back(x);
 }
 
 /** Constructor from double vector */
-VectorReal::VectorReal(std::vector<double>& x) {
+VectorReal::VectorReal(const std::vector<double>& x) : RbComplex() {
 
     value = x;
 }
@@ -58,42 +59,29 @@ VectorReal* VectorReal::clone(void) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* VectorReal::convertTo(const std::string& type) const {
 
-    if (type == Simplex_name)
-        return new Simplex(value);
     throw RbException("Cannot convert VectorReal to " + type + ".");
 	return NULL;
 }
 
+
 /** Pointer-based equals comparison */
 bool VectorReal::equals(const RbObject* obj) const {
 
-    // Use built-in fast down-casting first
-    const VectorReal* p = dynamic_cast<const VectorReal*> (obj);
-    if (p != NULL) {
-        if (value.size() != p->value.size())
-            return false;
-        for (size_t i = 0; i < value.size(); i++) {
-            if (value[i] != p->value[i])
-                return false;
-        }
-        return true;
-    }
-
-    // Try converting the value to a double vector
-    p = dynamic_cast<const VectorReal*> (obj->convert(getType()));
-    if (p == NULL)
+    // Check type first
+    if ( !obj->isType( VectorReal_name ) )
         return false;
 
-    bool result = true;
-    if (value.size() == p->value.size()) {
-        for (size_t i = 0; i < value.size(); i++)
-            result = result && (value[i] == p->value[i]);
-    }
-    else
-        result = false;
+    // Now go through all elements
+    const VectorReal& vec = *((VectorReal*)(obj));
 
-    delete p;
-    return result;
+    if ( vec.size() != value.size() )
+        return false;
+
+    for ( size_t i=0; i<vec.size(); i++)
+        if ( vec[i] != value[i] )
+            return false;
+            
+    return true;
 }
 
 
@@ -140,9 +128,6 @@ const VectorInteger& VectorReal::getLength(void) const {
 /** Convert to object of another class. The caller manages the object. */
 bool VectorReal::isConvertibleTo(const std::string& type) const {
 
-    std::cout << "Is VectorReal convertible to " + type + "." << std::endl;
-    if (type == Simplex_name)
-        return true;
     return false;
 }
 
@@ -168,12 +153,12 @@ void VectorReal::setElement(const VectorInteger& index, RbObject* val) {
     // Do we want to allow resize to fit the new element or throw an error?
     // If we resize, then we have to fill in elements with some default value
     // or alternatively, keep a vector of bools signifying which elements should
-    // be considered null elements. Maybe we could use nan.
+    // be considered null elements. Here we use nan.
     if ( index[0] >= int(value.size()) ) {
         int oldLen = int(value.size());
         resize(index[0]);
         for (int i=oldLen; i<index[0]; i++)
-            value[i] = 0;
+            value[i] = std::numeric_limits<double>::quiet_NaN();
     }
 
     value[index[0]] = ((Real*)(val))->getValue();
@@ -195,14 +180,6 @@ void VectorReal::setValue(const VectorReal& x) {
     for (size_t i=0; i<x.size(); i++)    
         value[i] = x[i];
 }   
-
-
-/** Set value of simplex using vector<double> */
-void VectorReal::setValue(const std::vector<double>& x) {
-
-    value.clear();
-    value = x;
-}
 
 
 /** Print value for user */

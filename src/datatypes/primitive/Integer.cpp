@@ -18,12 +18,13 @@
 
 
 #include "Boolean.h"
+#include "Integer.h"
 #include "RealPos.h"
 #include "Real.h"
 #include "RbException.h"
-#include "Integer.h"
 #include "RbNames.h"
 #include "RbString.h"
+#include "VectorInteger.h"
 #include "VectorString.h"
 
 #include <sstream>

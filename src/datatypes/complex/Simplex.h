@@ -19,18 +19,19 @@
 #ifndef Simplex_H
 #define Simplex_H
 
-#include "VectorReal.h"
+#include "VectorRealPos.h"
 
 #include <ostream>
 #include <string>
 #include <vector>
 
-class Simplex : public VectorReal {
+class Simplex : public VectorRealPos {
 
     public:
-                                    Simplex(void) : VectorReal() {}                        //!< Empty simplex
-                                    Simplex(int n);                                        //!< Simplex of length (size) n
-                                    Simplex(const std::vector<double>& x);                 //!< Simplex from double vector
+                                    Simplex(void) : VectorRealPos() {}                  //!< Empty simplex
+                                    Simplex(const size_t n);                            //!< Simplex of length (size) n
+                                    Simplex(const std::vector<double>& x);              //!< Simplex from double vector
+                                    Simplex(const VectorRealPos& x);                    //!< Simplex from positive real vector
 
         // Basic utility functions
         Simplex*                    clone(void) const;                                     //!< Clone object
@@ -39,24 +40,23 @@ class Simplex : public VectorReal {
         std::string                 toString(void) const;                                  //!< Complete info about object
 
         // Overloaded operators and built-in functions
-        double&                     operator[](int i);                                     //!< Index op allowing change
-        void                        pop_back(void);                                        //!< Drop element
-        void                        push_back(double x);                                   //!< Append element to end
-        void                        push_front(double x);                                  //!< Add element in front
+        double&                     operator[](size_t i);                                   //!< Index op allowing change - throw error
+        void                        pop_back(void);                                         //!< Drop element - throw error
+        void                        push_back(double x);                                    //!< Append element to end - throw error 
+        void                        push_front(double x);                                   //!< Add element - throw error
 
         // Regular functions
-        void                        setValue(const VectorReal& x);                         //!< Set value from Vector
-        void                        setValue(const std::vector<double>& x);                //!< Set value from vector<double>
-        const std::vector<double>&  getValue(void) const { return value; }                 //!< Get value
+        void                        setValue(const VectorRealPos& x);                       //!< Set value from VectorRealPos & rescale
+        void                        setValue(const std::vector<double>& x);                 //!< Set value from vector<double>, check & rescale
+        const std::vector<double>&  getValue(void) const { return value; }                  //!< Get value
 
         // Element access functions for parser
-        void                        resize(const VectorInteger& len);                      //!< Resize
-        void                        setElement(const VectorInteger& index, RbObject* val); //!< Set element
+        void                        resize(const VectorInteger& len);                       //!< Resize - throw error
+        void                        setElement(const VectorInteger& index, RbObject* val);  //!< Set element - throw error
 
     private:
-        void                        rescale(void);                                         //!< Rescale the simplex
+        void                        rescale(void);                                          //!< Rescale the simplex
 };
 
 #endif
-
 

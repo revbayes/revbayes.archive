@@ -125,7 +125,7 @@ double Dist_multinomial::lnLikelihoodRatio(const RbObject* value) {
 	
 	// calculate the likelihood ratio for the two values of the Multinomial parameters
 	double lnP = 0.0;
-	for (int i=0; i<x.size(); i++)
+	for (size_t i=0; i<x.size(); i++)
         lnP += x[i] * ( std::log(pNew[i]) - std::log(pOld[i]));
 	return lnP;	
 }

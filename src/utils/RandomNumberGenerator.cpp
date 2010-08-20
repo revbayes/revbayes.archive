@@ -5,6 +5,8 @@
 #include "RbException.h"
 #include "RbObject.h"
 #include "RbNames.h"
+#include "VectorInteger.h"
+
 #include <ctime>
 
 

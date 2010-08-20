@@ -19,20 +19,20 @@
 #ifndef VectorString_H
 #define VectorString_H
 
-#include "Container.h"
+#include "RbComplex.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
 
-class VectorString : public Container {
+class VectorString : public RbComplex {
 
     public:
 		// Constructors and destructor
-	                                VectorString(void) : Container() {}                     //!< Default constructor (empty vector)
-	                                VectorString(size_t n);                                 //!< Construct vector of length n of empty strings
+	                                VectorString(void) : RbComplex() {}                     //!< Default constructor (empty vector)
+	                                VectorString(const size_t n);                           //!< Construct vector of length n of empty strings
                                     VectorString(const std::string& x);                     //!< Construct vector with one string x
-	                                VectorString(size_t n, const std::string& x);           //!< Construct vector with n strings x
+	                                VectorString(const size_t n, const std::string& x);     //!< Construct vector with n strings x
 	                                VectorString(const std::vector<std::string>& x);        //!< Constructor from string vector
 
         // Basic utility functions

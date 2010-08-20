@@ -16,6 +16,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "Container.h"
 #include "DAGNode.h"
 #include "DAGNodeContainer.h"
 #include "Ellipsis.h"
