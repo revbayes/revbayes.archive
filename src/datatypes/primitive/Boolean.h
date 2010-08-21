@@ -30,6 +30,7 @@ class VectorString;
 class Boolean : public RbObject {
 
     public:
+                                    Boolean(void);                                   //!< Default constructor
                                     Boolean(const bool v);                           //!< Construct from bool
 
         // Basic utility functions

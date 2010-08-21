@@ -44,6 +44,42 @@ double RbMath::beta(double a, double b) {
 }
 
 /*!
+ * The following functions check whether two double-precision real
+ * numbers are equal. They are described in:
+ *
+ * Knuth, D. E. 1981. The art of computer programming: Seminumerical
+ *    algorithms, Volume 2. Addison-Wesley.
+ *
+ * Note that approximately equal to is more stringent than essentially
+ * equal to.
+ *
+ * \brief Comparison functions
+ * \param a First double-precision number
+ * \param b Second double-precision number
+ * \param epsilon How close should the numbers be
+ * \return true / false
+ */
+bool RbMath::compApproximatelyEqual(double a, double b, double epsilon) {
+
+    return fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+bool RbMath::compEssentiallyEqual(double a, double b, double epsilon) {
+
+    return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+bool RbMath::compDefinitelyGreaterThan(double a, double b, double epsilon) {
+
+    return (a - b) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+bool RbMath::compDefinitelyLessThan(double a, double b, double epsilon) {
+
+    return (b - a) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+/*!
  * This function computes the L and U decomposition of a matrix. Basically,
  * we find matrices lMat and uMat such that: lMat * uMat = aMat
  *
@@ -248,7 +284,9 @@ void RbMath::forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b) {
 		{
 		double dotProduct = 0.0;
 		for (int j=0; j<i; j++)
+            {
 	      	dotProduct += L[i][j] * b[j];
+            }
 		b[i] = (b[i] - dotProduct) / L[i][i];
 		}
 }
@@ -433,7 +471,6 @@ void RbMath::gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xM
 	MatrixReal lMat(n, n, 0.0);
 	MatrixReal uMat(n, n, 0.0);
 	std::vector<double> bVec(n);
-
 	RbMath::computeLandU(a, lMat, uMat);
 
 	for (int k=0; k<n; k++) 
@@ -661,24 +698,6 @@ double RbMath::incompleteGamma(double x, double alpha, double scale) {
 		return (gin);
 }
 
-/*!
- * This function checks whether two values are equal to one
- * another within some tolerance.
- *
- * \brief Checks whether two values are equal.
- * \param x is the first value.
- * \param y is the second value.
- * \param tolerance is the tolerance for the comparison.
- * \return Returns a bool which is false if the two values are not the same. 
- * \throws Does not throw an error.
- */
-bool RbMath::isEqualTo(double x, double y, double tolerance) {
-
-    if ( fabs(x - y) < tolerance )
-        return true;
-    return false;
-}
-
 /* log factorial ln(n!) */
 /*!
  * This function calculates the natural log of the factorial of n using
@@ -730,6 +749,40 @@ double RbMath::lnGamma(double a) {
 	return  (f + (x-0.5)*log(x) - x + 0.918938533204673 + 
 			(((-0.000595238095238*z+0.000793650793651)*z-0.002777777777778)*z +
 			0.083333333333333)/x);  
+}
+
+void RbMath::matrixInverse(MatrixReal& a, MatrixReal& aInv) {
+
+    // get dimensions: we assume a square matrix
+	int n = a.getNumRows();
+    
+    // copy original matrix, a, into a working version, aTmp
+    MatrixReal aTmp(a);
+    
+    // set up some matrices for work
+	MatrixReal lMat(n, n, 0.0);
+	MatrixReal uMat(n, n, 0.0);
+    MatrixReal identity(n, n, 0.0);
+    for (int i=0; i<n; i++)
+        identity[i][i] = 1.0;
+	std::vector<double> bVec(n);
+    
+    // compute the matrix inverse
+	RbMath::computeLandU(aTmp, lMat, uMat);
+	for (int k=0; k<n; k++) 
+		{
+		for (int i=0; i<n; i++)
+			bVec[i] = identity[i][k];
+
+		/* Answer of Ly = b (which is solving for y) is copied into b. */
+		forwardSubstitutionRow(lMat, bVec);
+
+		/* Answer of Ux = y (solving for x and the y was copied into b above) 
+			is also copied into b. */
+		backSubstitutionRow(uMat, bVec);
+		for (int i=0; i<n; i++)
+			aInv[i][k] = bVec[i];
+		}
 }
 
 /*!
@@ -792,4 +845,5 @@ int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
 			t[j][i] = a[i][j];
 	return (0);
 }
+
 

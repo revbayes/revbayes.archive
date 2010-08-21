@@ -33,13 +33,25 @@
 #include "Workspace.h"
 
 // Objects added to the workspace in initializeGlobalWorkspace()
+#include "Boolean.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exp.h"
 #include "Dist_multinomial.h"
 #include "Dist_norm.h"
 #include "Dist_unif.h"
 #include "Func__add.h"
+#include "Func__and.h"
+#include "Func__div.h"
+#include "Func__eq.h"
+#include "Func__ge.h"
+#include "Func__gt.h"
+#include "Func__le.h"
+#include "Func__lt.h"
+#include "Func__mul.h"
+#include "Func__ne.h"
+#include "Func__or.h"
 #include "Func__range.h"
+#include "Func__sub.h"
 #include "Func_clamp.h"
 #include "Func_ls.h"
 #include "Func_model.h"
@@ -53,6 +65,7 @@
 #include "Func_v_int.h"
 #include "Func_v_double.h"
 #include "Func_v_vecrealvec.h"
+#include "MatrixReal.h"
 #include "Mcmc.h"
 #include "Move_mmultinomial.h"
 #include "Move_mscale.h"
@@ -225,7 +238,9 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add types: add a dummy variable which will be deleted. We only do
            this to get the inheritance hierarchy. */
-        addType( new Integer(0)            );
+        addType( new Boolean()             );
+        addType( new Integer()             );
+        addType( new MatrixReal()          );
         addType( new Real()                );
         addType( new RealPos(1.0)          );
         addType( new Simplex()             );
@@ -251,11 +266,59 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add basic internal functions */
         addFunction( "_range",    new Func__range()       );
         
-        /* add basic arithmetic templated functions */
-        addFunction( "_add",      new Func__add< Integer, Integer, Integer >() );
-        addFunction( "_add",      new Func__add<    Real,    Real,    Real >() );
-        addFunction( "_add",      new Func__add< Integer,    Real,    Real >() );
-        addFunction( "_add",      new Func__add<    Real, Integer,    Real >() );
+        /* Add basic arithmetic/logic templated functions */
+        addFunction( "_add",      new Func__add<    Integer,    Integer,    Integer >() );
+        addFunction( "_add",      new Func__add<       Real,       Real,       Real >() );
+        addFunction( "_add",      new Func__add<    Integer,       Real,       Real >() );
+        addFunction( "_add",      new Func__add<       Real,    Integer,       Real >() );
+        addFunction( "_add",      new Func__add< MatrixReal, MatrixReal, MatrixReal >() );
+        addFunction( "_div",      new Func__div<    Integer,    Integer,       Real >() );
+        addFunction( "_div",      new Func__div<       Real,       Real,       Real >() );
+        addFunction( "_div",      new Func__div<    Integer,       Real,       Real >() );
+        addFunction( "_div",      new Func__div<       Real,    Integer,       Real >() );
+        addFunction( "_div",      new Func__div< MatrixReal, MatrixReal, MatrixReal >() );
+        addFunction( "_mul",      new Func__mul<    Integer,    Integer,    Integer >() );
+        addFunction( "_mul",      new Func__mul<       Real,       Real,       Real >() );
+        addFunction( "_mul",      new Func__mul<    Integer,       Real,       Real >() );
+        addFunction( "_mul",      new Func__mul<       Real,    Integer,       Real >() );
+        addFunction( "_mul",      new Func__mul< MatrixReal, MatrixReal, MatrixReal >() );
+        addFunction( "_sub",      new Func__sub<    Integer,    Integer,    Integer >() );
+        addFunction( "_sub",      new Func__sub<       Real,       Real,       Real >() );
+        addFunction( "_sub",      new Func__sub<    Integer,       Real,       Real >() );
+        addFunction( "_sub",      new Func__sub<       Real,    Integer,       Real >() );
+        addFunction( "_sub",      new Func__sub< MatrixReal, MatrixReal, MatrixReal >() );
+        addFunction( "_and",      new Func__and<    Integer,    Integer >()             );
+        addFunction( "_and",      new Func__and<       Real,       Real >()             );
+        addFunction( "_and",      new Func__and<    Integer,       Real >()             );
+        addFunction( "_and",      new Func__and<       Real,    Integer >()             );
+        addFunction( "_eq",       new Func__eq<     Integer,    Integer >()             );
+        addFunction( "_eq",       new Func__eq<        Real,       Real >()             );
+        addFunction( "_eq",       new Func__eq<     Integer,       Real >()             );
+        addFunction( "_eq",       new Func__eq<        Real,    Integer >()             );
+        addFunction( "_ge",       new Func__ge<     Integer,    Integer >()             );
+        addFunction( "_ge",       new Func__ge<        Real,       Real >()             );
+        addFunction( "_ge",       new Func__ge<     Integer,       Real >()             );
+        addFunction( "_ge",       new Func__ge<        Real,    Integer >()             );
+        addFunction( "_gt",       new Func__gt<     Integer,    Integer >()             );
+        addFunction( "_gt",       new Func__gt<        Real,       Real >()             );
+        addFunction( "_gt",       new Func__gt<     Integer,       Real >()             );
+        addFunction( "_gt",       new Func__gt<        Real,    Integer >()             );
+        addFunction( "_lt",       new Func__lt<     Integer,    Integer >()             );
+        addFunction( "_lt",       new Func__lt<        Real,       Real >()             );
+        addFunction( "_lt",       new Func__lt<     Integer,       Real >()             );
+        addFunction( "_lt",       new Func__lt<        Real,    Integer >()             );
+        addFunction( "_le",       new Func__le<     Integer,    Integer >()             );
+        addFunction( "_le",       new Func__le<        Real,       Real >()             );
+        addFunction( "_le",       new Func__le<     Integer,       Real >()             );
+        addFunction( "_le",       new Func__le<        Real,    Integer >()             );
+        addFunction( "_ne",       new Func__ne<     Integer,    Integer >()             );
+        addFunction( "_ne",       new Func__ne<        Real,       Real >()             );
+        addFunction( "_ne",       new Func__ne<     Integer,       Real >()             );
+        addFunction( "_ne",       new Func__ne<        Real,    Integer >()             );
+        addFunction( "_or",       new Func__or<     Integer,    Integer >()             );
+        addFunction( "_or",       new Func__or<        Real,       Real >()             );
+        addFunction( "_or",       new Func__or<     Integer,       Real >()             );
+        addFunction( "_or",       new Func__or<        Real,    Integer >()             );
 
         /* Add regular functions */
         addFunction( "clamp",     new Func_clamp()        ); 

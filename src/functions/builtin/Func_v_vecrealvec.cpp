@@ -81,7 +81,7 @@ RbObject* Func_v_vecrealvec::executeOperation(const std::vector<DAGNode*>& args)
             tmpM[2+i] = tmpV;
             }
         }
-
+        
     // Make and return the matrix
     return new MatrixReal(tmpM);
 }

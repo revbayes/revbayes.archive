@@ -1,10 +1,9 @@
 /**
  * @file
- * This file contains the declaration of Func__le, which is used
- * to compare two variables, and determine if the first is less than 
- * or equal to the second.
+ * This file contains the declaration of Func__or, which is used
+ * to perform the logical OR on two variables (ints or bools)
  *
- * @brief Declaration of Func__le
+ * @brief Declaration of Func__or
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -15,8 +14,8 @@
  * $Id$
  */
 
-#ifndef Func__le_H
-#define Func__le_H
+#ifndef Func__or_H
+#define Func__or_H
 
 #include "RbFunction.h"
 
@@ -27,11 +26,11 @@ class DAGNode;
 class VectorString;
 
 template <typename firstValType, typename secondValType>
-class Func__le :  public RbFunction {
+class Func__or :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func__le*                   clone(void) const;                                      //!< Clone the object
+        Func__or*                   clone(void) const;                                      //!< Clone the object
     	const VectorString&         getClass(void) const;                                   //!< Get class vector
 
         // Regular functions
@@ -58,59 +57,59 @@ class Func__le :  public RbFunction {
 
 /** Clone object */
 template <typename firstValType, typename secondValType>
-Func__le<firstValType, secondValType>* Func__le<firstValType, secondValType>::clone(void) const {
+Func__or<firstValType, secondValType>* Func__or<firstValType, secondValType>::clone(void) const {
 
-    return new Func__le(*this);
+    return new Func__or(*this);
 }
 
 
-/** Execute function: Bool <- Integer < Integer */
+/** Execute function: Boolean <- Integer | Integer */
 template <>
-RbObject* Func__le<Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+RbObject* Func__or<Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
 
-    int val1  = ((Integer*)(args[0])->getValue())->getValue();
-    int val2  = ((Integer*)(args[1])->getValue())->getValue();
-    bool comp = (val1 <= val2);
+    bool val1 = (bool)(((Integer*)(args[0])->getValue())->getValue());
+    bool val2 = (bool)(((Integer*)(args[1])->getValue())->getValue());
+    bool comp = (val1 || val2);
     return new Boolean(comp);
 }
 
 
-/** Execute function: Bool <- Real < Real */
+/** Execute function: Boolean <- Integer | Boolean */
 template <>
-RbObject* Func__le<Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+RbObject* Func__or<Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
-    double val1 = ((Real*)(args[0])->getValue())->getValue();
-    double val2 = ((Real*)(args[1])->getValue())->getValue();
-    bool comp   = ( RbMath::compApproximatelyEqual(val1, val2, 0.00001) || val1 < val2 );
+    bool val1 = (bool)(((Integer*)(args[0])->getValue())->getValue());
+    bool val2 = ((Boolean*)(args[1])->getValue())->getValue();
+    bool comp = (val1 || val2);
     return new Boolean(comp);
 }
 
 
-/** Execute function: Bool <- Integer < Real */
+/** Execute function: Boolean <- Boolean | Integer */
 template <>
-RbObject* Func__le<Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+RbObject* Func__or<Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
-    double val1 = (double)(((Integer*)(args[0])->getValue())->getValue());
-    double val2 = ((Real*)(args[1])->getValue())->getValue();
-    bool comp   = ( RbMath::compApproximatelyEqual(val1, val2, 0.00001) || val1 < val2 );
+    bool val1 = ((Boolean*)(args[0])->getValue())->getValue();
+    bool val2 = (bool)(((Integer*)(args[1])->getValue())->getValue());
+    bool comp = (val1 || val2);
     return new Boolean(comp);
 }
 
 
-/** Execute function: Bool <- Real < Integer */
+/** Execute function: Boolean <- Boolean | Boolean */
 template <>
-RbObject* Func__le<Real,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+RbObject* Func__or<Real,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
 
-    double val1 = ((Real*)(args[0])->getValue())->getValue();
-    double val2 = (double)(((Integer*)(args[1])->getValue())->getValue());
-    bool comp   = ( RbMath::compApproximatelyEqual(val1, val2, 0.00001) || val1 < val2 );
+    bool val1 = ((Boolean*)(args[0])->getValue())->getValue();
+    bool val2 = ((Boolean*)(args[1])->getValue())->getValue();
+    bool comp = (val1 || val2);
     return new Boolean(comp);
 }
 
 
 /** Get argument rules */
 template <typename firstValType, typename secondValType>
-const ArgumentRules& Func__le<firstValType, secondValType>::getArgumentRules(void) const {
+const ArgumentRules& Func__or<firstValType, secondValType>::getArgumentRules(void) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
@@ -132,12 +131,12 @@ const ArgumentRules& Func__le<firstValType, secondValType>::getArgumentRules(voi
 
 /** Get class vector describing type of object */
 template <typename firstValType, typename secondValType>
-const VectorString& Func__le<firstValType, secondValType>::getClass(void) const {
+const VectorString& Func__or<firstValType, secondValType>::getClass(void) const {
 
     firstValType*  dummy1 = new firstValType();
     secondValType* dummy2 = new secondValType();
     
-    std::string funcAddName = "Func__le<" + dummy1->getType() + "_" + dummy2->getType() + ">_name"; 
+    std::string funcAddName = "Func__or<" + dummy1->getType() + "_" + dummy2->getType() + ">_name"; 
     static VectorString rbClass = VectorString(funcAddName) + RbFunction::getClass();
     
     delete dummy1;
@@ -149,7 +148,7 @@ const VectorString& Func__le<firstValType, secondValType>::getClass(void) const 
 
 /** Get return dimension */
 template <typename firstValType, typename secondValType>
-int Func__le<firstValType, secondValType>::getReturnDim(void) const {
+int Func__or<firstValType, secondValType>::getReturnDim(void) const {
 
     return 1;
 }
@@ -157,7 +156,7 @@ int Func__le<firstValType, secondValType>::getReturnDim(void) const {
 
 /** Get return type */
 template <typename firstValType, typename secondValType>
-const std::string& Func__le<firstValType, secondValType>::getReturnType(void) const {
+const std::string& Func__or<firstValType, secondValType>::getReturnType(void) const {
 
     return Boolean_name;
 }

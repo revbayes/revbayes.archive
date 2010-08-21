@@ -26,9 +26,14 @@
 #include <sstream>
 
 
+/** Default constructor */
+Boolean::Boolean(void) : RbObject(), value(false) {
+
+}
+
 /** Construct from bool */
-Boolean::Boolean(const bool v)
-    : RbObject(), value(v) {
+Boolean::Boolean(const bool v) : RbObject(), value(v) {
+
 }
 
 /** Clone object */
@@ -66,7 +71,7 @@ bool Boolean::equals(const RbObject* obj) const {
         return value == p->value;
 
     // Try converting the object to a bool
-    p = dynamic_cast<const Boolean*>(obj->convert(RbBool_name));
+    p = dynamic_cast<const Boolean*>(obj->convert(Boolean_name));
     if (p == NULL)
         return false;
 
@@ -79,7 +84,7 @@ bool Boolean::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const VectorString& Boolean::getClass() const {
 
-    static VectorString rbClass = VectorString(RbBool_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(Boolean_name) + RbObject::getClass();
     return rbClass;
 }
 

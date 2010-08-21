@@ -66,7 +66,7 @@ RbObject* Func_s_doublevec::executeOperation(const std::vector<DAGNode*>& args) 
     double sum = 0.0;
     for (size_t i=0; i<tempVec.size(); i++)
         sum += tempVec[i];
-    if ( RbMath::isEqualTo(sum, 1.0, 0.0000001) == false )
+    if ( RbMath::compApproximatelyEqual(sum, 1.0, 0.0000001) == false )
 		throw (RbException("The values for the simple do not sum to one"));
         
     // renormalization, just to be really, really safe

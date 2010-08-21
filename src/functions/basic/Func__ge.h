@@ -1,8 +1,8 @@
 /**
  * @file
  * This file contains the declaration of Func__ge, which is used
- * to compare two variables, and determine if the first is greater than the 
- * second.
+ * to compare two variables, and determine if the first is greater
+ * or equal to the second.
  *
  * @brief Declaration of Func__ge
  *

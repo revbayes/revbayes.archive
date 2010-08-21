@@ -33,35 +33,44 @@
 #include <sstream>
 
 
+
+/** Default constructor for matrix */
+MatrixReal::MatrixReal(void) : RbComplex() {
+
+    numRows = 0;
+    numCols = 0;
+}
+
 /** Construct matrix of specified dimensions, initialize it with double x (default 0.0) */
 MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, const double x) : RbComplex() {
 
-    if (nRows < 0 || nCols < 0)
+    if (numRows < 0 || numCols < 0)
         throw RbException("Negative size of matrix");
 
-    value.resize(nRows);
-    for (size_t i=0; i<nRows; i++)
-        value[i].resize(nCols);
+    numRows = nRows;
+    numCols = nCols;
 
-    for (size_t i=0; i<nRows; i++)
-        for (size_t j=0; j<nCols; j++)
+    value.resize(numRows);
+    for (size_t i=0; i<numRows; i++)
+        value[i].resize(numCols);
+
+    for (size_t i=0; i<numRows; i++)
+        for (size_t j=0; j<numCols; j++)
             value[i][j] = x;
 }
 
-
 /** Construct matrix from a two-dimensional set of STL vectors */
-MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) {
+MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : RbComplex() {
 
     value = x;
-    nRows = value.size();
-    nCols = value[0].size();
+    numRows = value.size();
+    numCols = value[0].size();
     for (size_t i=0; i<value.size(); i++)
         {
-        if (value[i].size() != nCols)
+        if (value[i].size() != numCols)
             throw RbException("Attempted to initialize a matrix using a jagged matrix");
         }
 }
-
 
 /*!
  * This function performs addition of a scalar to
@@ -483,7 +492,6 @@ RbObject* MatrixReal::convertTo(const std::string& type) const {
 	return NULL;
 }
 
-
 /** Pointer-based equals comparison */
 bool MatrixReal::equals(const RbObject* obj) const {
 
@@ -494,17 +502,16 @@ bool MatrixReal::equals(const RbObject* obj) const {
     // Now go through all elements
     const MatrixReal& temp = *((MatrixReal*)(obj));
 
-    if ( temp.nRows != nRows || temp.nCols != nCols )
+    if ( temp.numRows != numRows || temp.numCols != numCols )
         return false;
 
-    for ( size_t i=0; i<nRows; i++)
-        for ( size_t j=0; j<nCols; j++ )
-            if ( RbMath::isEqualTo(temp[i][j], value[i][j], 0.0000001) == false )
+    for ( size_t i=0; i<numRows; i++)
+        for ( size_t j=0; j<numCols; j++ )
+            if ( RbMath::compApproximatelyEqual(temp[i][j], value[i][j], 0.0000001) == false )
                 return false;
             
     return true;
 }
-
 
 /** Get class vector describing type of object */
 const VectorString& MatrixReal::getClass(void) const {
@@ -512,7 +519,6 @@ const VectorString& MatrixReal::getClass(void) const {
     static VectorString rbClass = VectorString(MatrixReal_name) + RbComplex::getClass();
     return rbClass;
 }
-
 
 /**
  * Get element for parser (read-only). Since MatrixReal is implemented as a vector
@@ -525,15 +531,15 @@ const RbObject* MatrixReal::getElement(const VectorInteger& index) const {
 
     // The parser might want to access a row vector or a matrix element
     if ( index.size() == 1 ) {
-        if ( index[0] < 0 || index[0] >= (int)nRows )
+        if ( index[0] < 0 || index[0] >= (int)numRows )
             throw RbException("Row index out of bounds");
         x = value[index[0]];
         return &x;
     }
     else if ( index.size() == 2 ) {
-        if ( index[0] < 0 || index[0] >= (int)nRows )
+        if ( index[0] < 0 || index[0] >= (int)numRows )
             throw RbException("Row index out of bounds");
-        if ( index[1] < 0 || index[1] >= (int)nCols )
+        if ( index[1] < 0 || index[1] >= (int)numCols )
             throw RbException("Column index out of bounds");
         y = value[index[0]][index[1]];
         return &y;
@@ -544,14 +550,12 @@ const RbObject* MatrixReal::getElement(const VectorInteger& index) const {
     return NULL;
 }
 
-
 /** Get element type for parser */
 const std::string& MatrixReal::getElementType(void) const {
 
     static std::string rbType = VectorReal_name;
     return rbType;
 }
-
 
 /** Get element length for parser */
 const VectorInteger& MatrixReal::getLength(void) const {
@@ -562,13 +566,11 @@ const VectorInteger& MatrixReal::getLength(void) const {
     return length;
 }
 
-
 /** Convert to object of another class. The caller manages the object. */
 bool MatrixReal::isConvertibleTo(const std::string& type) const {
 
     return false;
 }
-
 
 /** Calculates the number of digits to the left and right of the decimal point */
 bool MatrixReal::numFmt(int& numToLft, int& numToRht, std::string s) const {
@@ -591,7 +593,6 @@ bool MatrixReal::numFmt(int& numToLft, int& numToRht, std::string s) const {
     return foundDecimalPoint;
 }
 
-
 /** Allow the parser to resize the matrix */
 void MatrixReal::resize(const VectorInteger& len) {
 
@@ -603,29 +604,28 @@ void MatrixReal::resize(const VectorInteger& len) {
             throw (RbException("Negative length specification"));
 
     // Record old size
-    size_t oldNRows = nRows;
-    size_t oldNCols = nCols;
+    size_t oldNRows = numRows;
+    size_t oldNCols = numCols;
 
     // Resize vectors
     value.resize(len[0]);
     if ( len.size() == 2 ) {
-        for ( size_t i=0; i<nCols; i++ )
+        for ( size_t i=0; i<numCols; i++ )
             value[i].resize(len[1]);
     }
     
     // Record new size
-    nRows = len[0];
-    nCols = len[1];
+    numRows = len[0];
+    numCols = len[1];
 
     // Fill new cells with NaN
     for (size_t i=0; i<oldNRows; i++)
-        for (size_t j=oldNCols; j<nCols; j++)
+        for (size_t j=oldNCols; j<numCols; j++)
             value[i][j] = std::numeric_limits<double>::quiet_NaN();
-    for (size_t i=oldNRows; i<nRows; i++)
-        for (size_t j=0; j<nCols; j++)
+    for (size_t i=oldNRows; i<numRows; i++)
+        for (size_t j=0; j<numCols; j++)
             value[i][j] = std::numeric_limits<double>::quiet_NaN();
 }
-
 
 /** Allow parser to set an element (any type conversion is done by parser) */
 void MatrixReal::setElement(const VectorInteger& index, RbObject* val) {
@@ -639,18 +639,18 @@ void MatrixReal::setElement(const VectorInteger& index, RbObject* val) {
         throw (RbException("Type mismatch"));
 
     // Resize if necessary
-    if ( index[0] >= (int)nRows || (index.size() == 2 && index[1] >= (int)nCols) ) {
+    if ( index[0] >= (int)numRows || (index.size() == 2 && index[1] >= (int)numCols) ) {
 
         VectorInteger newLen;
-        if (index[0] >= (int)nRows)
+        if (index[0] >= (int)numRows)
             newLen.push_back(index[0] + 1);
         else
-            newLen.push_back(nRows);
+            newLen.push_back(numRows);
 
-        if (index.size() == 2 && index[1] >= (int)nCols)
+        if (index.size() == 2 && index[1] >= (int)numCols)
             newLen.push_back(index[1] + 1);
         else
-            newLen.push_back(nCols);
+            newLen.push_back(numCols);
 
         resize(newLen);
     }
@@ -659,10 +659,10 @@ void MatrixReal::setElement(const VectorInteger& index, RbObject* val) {
     if ( index.size() == 1 ) {
         VectorReal* vec = dynamic_cast<VectorReal*>(val);
         
-        if ( vec->size() != nCols )
+        if ( vec->size() != numCols )
             throw RbException("Row vector has wrong number of elements");
 
-        for (size_t j=0; j<nCols; j++)
+        for (size_t j=0; j<numCols; j++)
             value[index[0]][j] = (*vec)[j];
 
         delete val;
@@ -673,18 +673,17 @@ void MatrixReal::setElement(const VectorInteger& index, RbObject* val) {
     }
 }
 
-
 /** Allow parser to rearrange the matrix */
 void MatrixReal::setLength(const VectorInteger& len) {
 
     // If just one dimension, we don\t do anything
-    if ( len.size() == 1 && len[0] != nRows )
+    if ( len.size() == 1 && len[0] != numRows )
         throw (RbException("Length specification error"));
 
     // If two dimensions, we rearrange the matrix
-    if ( len.size() == 2 && (len[0] != nRows || len[1] != nCols) ) {
+    if ( len.size() == 2 && (len[0] != numRows || len[1] != numCols) ) {
 
-        if ( len[0] * len[1] != nRows * nCols )
+        if ( len[0] * len[1] != numRows * numCols )
             throw RbException("New length specification does not match number of elements");
 
         // Create temp vector
@@ -697,30 +696,29 @@ void MatrixReal::setLength(const VectorInteger& len) {
         size_t index = 0;
         for (int i=0; i<len[0]; i++) {
             for (int j=0; j<len[1]; j++) {
-                temp[i][j] = value[index/nCols][index%nCols];
+                temp[i][j] = value[index/numCols][index%numCols];
                 ++index;
             }
         }
         // Reset the value
-        nRows = len[0];
-        nCols = len[1];
+        numRows = len[0];
+        numCols = len[1];
         value = temp;
     }
 }
 
-
+/** Set the value of the matrix */
 void MatrixReal::setValue(const std::vector<std::vector<double> >& x) { 
 
     value = x; 
-    nRows = value.size();
-    nCols = value[0].size();
+    numRows = value.size();
+    numCols = value[0].size();
     for (size_t i=0; i<value.size(); i++)
         {
-        if (value[i].size() != nCols)
+        if (value[i].size() != numCols)
             throw RbException("Attempted to initialize a matrix using a jagged matrix");
         }
 }
-
 
 /** Print value for user */
 void MatrixReal::printValue(std::ostream& o) const {
@@ -783,7 +781,6 @@ void MatrixReal::printValue(std::ostream& o) const {
     o.setf(previousFlags);
     o << std::setprecision(previousPrecision);
 }
-
 
 /** Complete info about object */
 std::string MatrixReal::toString(void) const {

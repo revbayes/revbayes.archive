@@ -12,6 +12,10 @@ namespace RbMath {
 
 		void                        backSubstitutionRow(MatrixReal& u, std::vector<double>& b);              //!< Xxx 
 		double                      beta(double a, double b);                                                //!< Xxx 
+        bool                        compApproximatelyEqual(double a, double b, double epsilon);              //!< Compares two doubles for equality
+        bool                        compEssentiallyEqual(double a, double b, double epsilon);                //!< Compares two doubles for equality
+        bool                        compDefinitelyGreaterThan(double a, double b, double epsilon);           //!< Tests whether one number is greater than another
+        bool                        compDefinitelyLessThan(double a, double b, double epsilon);              //!< Tests whether one number is less than another
 		void                        computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat);      //!< Xxx 
 		int                         expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue);                 //!< Xxx 
 		double                      factorial(int x);                                                        //!< Calculate the factorial 
@@ -22,7 +26,7 @@ namespace RbMath {
 		double                      hypotenuse(double a, double b);                                          //!< Xxx 
 		double                      incompleteBeta(double a, double b, double x);                            //!< Xxx 
 		double                      incompleteGamma(double x, double alpha, double scale);                   //!< Xxx 
-        bool                        isEqualTo(double x, double y, double tolerance);                         //!< Is x equal to y within a certain tolerance 
+        void                        matrixInverse(MatrixReal& a, MatrixReal& aInv);                          //!< Computer the inverse of a matrix
 		double                      lnGamma(double a);                                                       //!< Calculate the log of the Gamma function 
 		double                      lnFactorial(int n);                                                      //!< Calculate the log factorial 
         void                        normalize(std::vector<double>& x, double sum);                           //!< Normalize a vector so that its sum is sum

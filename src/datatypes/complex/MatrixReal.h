@@ -35,7 +35,7 @@
 class MatrixReal : public RbComplex {
 
     public:
-                                                   MatrixReal(void) : RbComplex(), nRows(0), nCols(0) {}                       //!< Default constructor (empty matrix)
+                                                   MatrixReal(void);                                                           //!< Default constructor (empty matrix)
                                                    MatrixReal(const size_t nRows, const size_t nCols, const double x = 0.0);   //!< Construct matrix containing double x
                                                    MatrixReal(const std::vector<std::vector<double> >& x);                     //!< Construct matrix from a two-dimensional set of STL vectors
 
@@ -60,8 +60,8 @@ class MatrixReal : public RbComplex {
         const std::vector<double>&                 operator[](size_t i) const { return value[i]; }                             //!< Const index op
         
         // Regular functions
-        int                                        getNumRows(void) const { return nRows; }                                    //!< Get the number of rows in the matrix
-        int                                        getNumCols(void) const { return nCols; }                                    //!< Get the number of columns in the matrix
+        int                                        getNumRows(void) const { return numRows; }                                  //!< Get the number of rows in the matrix
+        int                                        getNumCols(void) const { return numCols; }                                  //!< Get the number of columns in the matrix
         const std::vector<std::vector<double> >&   getValue(void) const { return value; }                                      //!< Get value directly
         void                                       matrixMult(const MatrixReal& a, const MatrixReal& b);
         virtual void                               setValue(const std::vector<std::vector<double> >& x);                       //!< Set value directly
@@ -74,8 +74,8 @@ class MatrixReal : public RbComplex {
         // helper functions for this class
         bool                                       numFmt(int& numToLft, int& numToRht, std::string s) const;                  //!< Calculates the number of digits to the left and right of the decimal
         std::vector<std::vector<double> >          value;                                                                      //!< Vector of vector of values
-        size_t                                     nRows;                                                                      //!< Number of rows
-        size_t                                     nCols;                                                                      //!< Number of columns
+        size_t                                     numRows;                                                                    //!< Number of rows
+        size_t                                     numCols;                                                                    //!< Number of columns
 };
 
         // operators defined outside of the class

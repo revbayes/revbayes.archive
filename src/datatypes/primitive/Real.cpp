@@ -62,7 +62,7 @@ RbObject* Real::clone(void) const {
 /** Convert to object of another class. The caller manages the object. */
 RbObject* Real::convertTo(const std::string& type) const {
 
-    if (type == RbBool_name)
+    if (type == Boolean_name)
         return new Boolean(value == 0.0);
 	return NULL;
 }
@@ -97,7 +97,7 @@ const VectorString& Real::getClass() const {
 /** Convert to object of another class. The caller manages the object. */
 bool Real::isConvertibleTo(const std::string& type) const {
 
-    if (type == RbBool_name)
+    if (type == Boolean_name)
         return true;
 	return false;
 }
