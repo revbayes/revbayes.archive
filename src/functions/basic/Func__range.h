@@ -30,13 +30,13 @@ class Func__range :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func__range*                clone(void) const;                      //!< Clone the object
-    	const VectorString&         getClass(void) const;                   //!< Get class vector
+        Func__range*                clone(void) const;                                      //!< Clone the object
+    	const VectorString&         getClass(void) const;                                   //!< Get class vector
 
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
-        int                         getReturnDim(void) const;               //!< Get dim of return value
-        const std::string&          getReturnType(void) const;              //!< Get type of return value
+        const ArgumentRules&        getArgumentRules(void) const;                           //!< Get argument rules
+        int                         getReturnDim(void) const;                               //!< Get dim of return value
+        const std::string&          getReturnType(void) const;                              //!< Get type of return value
 
 	protected:
         RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation

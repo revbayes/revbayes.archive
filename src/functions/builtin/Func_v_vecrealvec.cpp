@@ -62,12 +62,12 @@ RbObject* Func_v_vecrealvec::executeOperation(const std::vector<DAGNode*>& args)
     // set the matrix, row-by-row
     tmpV = ((VectorReal*)(args[0]->getValue()))->getValue();
     if (tmpV.size() != numCols)
-        throw RbException("Attempted to initialize a matrix using a jagged matrix");
+        throw RbException("The number of entries in each row of the matrix must be equal");
     tmpM[0] = tmpV;
 
     tmpV = ((VectorReal*)(args[1]->getValue()))->getValue();
     if (tmpV.size() != numCols)
-        throw RbException("Attempted to initialize a matrix using a jagged matrix");
+        throw RbException("The number of entries in each row of the matrix must be equal");
     tmpM[1] = tmpV;
     
     if ( args.size() > 2 ) 
@@ -77,7 +77,7 @@ RbObject* Func_v_vecrealvec::executeOperation(const std::vector<DAGNode*>& args)
             {
             tmpV = ((VectorReal*)(args[i]->getValue()))->getValue();
             if (tmpV.size() != numCols)
-                throw RbException("Attempted to initialize a matrix using a jagged matrix");
+                throw RbException("The number of entries in each row of the matrix must be equal");
             tmpM[2+i] = tmpV;
             }
         }

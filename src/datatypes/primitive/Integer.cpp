@@ -29,6 +29,11 @@
 
 #include <sstream>
 
+/** Default constructor */
+Integer::Integer(void) : RbObject(), value(0) {
+
+}
+
 /** Construct from int */
 Integer::Integer(const int v)
     : RbObject(), value(v) {

@@ -38,6 +38,7 @@
 #include "Dist_multinomial.h"
 #include "Dist_norm.h"
 #include "Dist_unif.h"
+#include "Func__add.h"
 #include "Func__range.h"
 #include "Func_clamp.h"
 #include "Func_ls.h"
@@ -220,35 +221,41 @@ void Workspace::initializeGlobalWorkspace(void) {
     try {
 
         /* Add global variables */
-        addVariable("_rng", new RandomNumberGenerator);
+        addVariable( "_rng", new RandomNumberGenerator );
 
         /* Add types: add a dummy variable which will be deleted. We only do
            this to get the inheritance hierarchy. */
-        addType(new Integer(0));
-        addType(new Real());
-        addType(new RealPos(1.0));
-        addType(new Simplex());
-        addType(new VectorInteger());
-        addType(new VectorReal());
-        addType(new VectorRealPos());
-        addType(new RandomNumberGenerator);
+        addType( new Integer(0)            );
+        addType( new Real()                );
+        addType( new RealPos(1.0)          );
+        addType( new Simplex()             );
+        addType( new VectorInteger()       );
+        addType( new VectorReal()          );
+        addType( new VectorRealPos()       );
+        addType( new RandomNumberGenerator );
 
         /* Add member object types with auto-generated constructors */
-        addTypeWithConstructor("mcmc",         new Mcmc());
-        addTypeWithConstructor("mmultinomial", new Move_mmultinomial());
-        addTypeWithConstructor("mslide",       new Move_mslide());
-        addTypeWithConstructor("mscale",       new Move_mscale());
-        addTypeWithConstructor("msimplex",     new Move_msimplex());
+        addTypeWithConstructor( "mcmc",         new Mcmc()              );
+        addTypeWithConstructor( "mmultinomial", new Move_mmultinomial() );
+        addTypeWithConstructor( "mslide",       new Move_mslide()       );
+        addTypeWithConstructor( "mscale",       new Move_mscale()       );
+        addTypeWithConstructor( "msimplex",     new Move_msimplex()     );
 
         /* Add distributions with distribution constructors and distribution functions*/
-        addDistribution("dirichlet",   new Dist_dirichlet());
-        addDistribution("exp",         new Dist_exp());
-        addDistribution("multinomial", new Dist_multinomial());
-        addDistribution("norm",        new Dist_norm());
-        addDistribution("unif",        new Dist_unif());
+        addDistribution( "dirichlet",   new Dist_dirichlet()   );
+        addDistribution( "exp",         new Dist_exp()         );
+        addDistribution( "multinomial", new Dist_multinomial() );
+        addDistribution( "norm",        new Dist_norm()        );
+        addDistribution( "unif",        new Dist_unif()        );
 
         /* Add basic internal functions */
-        addFunction("_range", new Func__range());
+        addFunction( "_range",    new Func__range()       );
+        
+        /* add basic arithmetic templated functions */
+        addFunction( "_add",      new Func__add< Integer, Integer, Integer >() );
+        addFunction( "_add",      new Func__add<    Real,    Real,    Real >() );
+        addFunction( "_add",      new Func__add< Integer,    Real,    Real >() );
+        addFunction( "_add",      new Func__add<    Real, Integer,    Real >() );
 
         /* Add regular functions */
         addFunction( "clamp",     new Func_clamp()        ); 

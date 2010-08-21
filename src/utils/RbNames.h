@@ -44,6 +44,7 @@ const std::string Dist_multinomial_name                         = "Multinomial D
 const std::string Dist_norm_name                                = "Normal Distribution";
 const std::string Dist_unif_name                                = "Uniform Distribution";
 const std::string Ellipsis_name                                 = "ellipsis";
+const std::string Func__add_name                                = "Addition";
 const std::string Func__lookup_name                             = "Lookup function";
 const std::string Func__range_name                              = "Range function";
 const std::string Func_clamp_name                               = "Clamp function";

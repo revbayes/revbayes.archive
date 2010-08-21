@@ -29,6 +29,7 @@ class VectorString;
 class Integer : public RbObject {
 
     public:
+                                    Integer(void);                                  //!< Default constructor
                                     Integer(const int v);                           //!< Constructor from int
                                     Integer(const bool v);                          //!< Constructor from bool
 
