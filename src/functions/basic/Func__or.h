@@ -136,7 +136,7 @@ const VectorString& Func__or<firstValType, secondValType>::getClass(void) const 
     firstValType*  dummy1 = new firstValType();
     secondValType* dummy2 = new secondValType();
     
-    std::string funcAddName = "Func__or<" + dummy1->getType() + "_" + dummy2->getType() + ">_name"; 
+    std::string funcAddName = "Func__or<" + dummy1->getType() + "," + dummy2->getType() + ">"; 
     static VectorString rbClass = VectorString(funcAddName) + RbFunction::getClass();
     
     delete dummy1;

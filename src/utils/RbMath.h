@@ -31,7 +31,7 @@ namespace RbMath {
 		double                      lnFactorial(int n);                                                      //!< Calculate the log factorial 
         void                        normalize(std::vector<double>& x, double sum);                           //!< Normalize a vector so that its sum is sum
 		double                      rbEpsilon(void);                                                         //!< Xxx 
-		int                         transposeMatrix(const MatrixReal& a, MatrixReal& t);                     //!< Xxx 
+		int                         transposeMatrix(const MatrixReal& a, MatrixReal& t);                     //!< Transpose a matrix 
 }
 
 #endif

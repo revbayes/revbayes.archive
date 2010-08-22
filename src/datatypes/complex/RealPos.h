@@ -29,6 +29,7 @@ class VectorString;
 class RealPos : public Real {
 
     public:
+                                    RealPos(void);                                  //!< Default constructor
                                     RealPos(const double v);                        //!< Construct from double
                                     RealPos(const int v);                           //!< Construct from int 
                                     RealPos(const bool v);                          //!< Construct from bool

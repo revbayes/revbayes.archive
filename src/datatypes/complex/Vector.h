@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of VectorInteger, a complex type
- * used to hold int vectors.
+ * This file contains the declaration of Vector, a complex type
+ * that acts as a base class for all vectors.
  *
- * @brief Declaration of VectorInteger
+ * @brief Declaration of Vector
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -16,31 +16,26 @@
  * $Id$
  */
 
-#ifndef VectorInteger_H
-#define VectorInteger_H
+#ifndef Vector_H
+#define Vector_H
 
 #include "RbComplex.h"
 
 #include <iostream>
 #include <vector>
 
-class VectorInteger : public RbComplex {
+class Vector : public RbComplex {
 
     public:
-        // Constructors and destructor
-                                    VectorInteger(void) : RbComplex() {}                          //!< Default constructor (empty vector)
-                                    VectorInteger(int x);                                         //!< Construct vector with one int x
-                                    VectorInteger(size_t n, int x);                               //!< Construct vector with n ints x
-                                    VectorInteger(const std::vector<int>& x);                     //!< Constructor from int vector
-                                    VectorInteger(const std::vector<unsigned int>& x);            //!< Constructor from unsigned int vector
-                                    VectorInteger(const ContainerIterator& x);                    //!< Constructor from container iterator
+        // destructor
+		virtual                     ~Vector(void) {}                                              //!< Virtual destructor 
 
-        // Basic utility functions
-        VectorInteger*              clone(void) const;                                            //!< Clone object
-        bool                        equals(const RbObject* obj) const;                            //!< Equals comparison
-        const VectorString&         getClass(void) const;                                         //!< Get class
-        void                        printValue(std::ostream& o) const;                            //!< Print value (for user)
-        std::string                 toString(void) const;                                         //!< Complete info about object
+        // Basic utility functions, most of which are carried through as pure virtual from RbComplex
+        virtual Vector*              clone(void) const = 0;                                       //!< Clone object
+        virtual bool                 equals(const RbObject* obj) const = 0;                       //!< Equals comparison
+		virtual const VectorString&  getClass(void) const;                                        //!< Get class vector
+		virtual void                 printValue(std::ostream& o) const = 0;                       //!< Print value for user
+		virtual std::string          toString(void) const = 0;                                    //!< Complete info 
 
         // Overloaded operators and built-in functions
         int&                        operator[](size_t i) { return value[i]; }                     //!< Index op allowing change
@@ -63,12 +58,8 @@ class VectorInteger : public RbComplex {
         void                        setElement(const VectorInteger& index, RbObject* val);        //!< Set element
         void                        setLength(const VectorInteger& len);                          //!< Set length in each dim
 
-	protected:
-        RbObject*                   convertTo(const std::string& type) const;                     //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;               //!< Is convertible to type and dim?
-
     private:
-        std::vector<int>            value;                                                        //!< Vector of values
+        bool                        isRowVector;                                                  //!< Indicates whether the vector is a row vector (true) or a column vector (false)
 };
 
 #endif

@@ -1,8 +1,10 @@
-#include "RbMath.h"
 #include <cassert>
 #include <cmath>
 #include <iostream>
 #include <vector>
+
+#include "RbException.h"
+#include "RbMath.h"
 
 
 
@@ -838,7 +840,7 @@ int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
 	int n = a.getNumCols();
 	
 	if ( m != t.getNumCols() || n != t.getNumRows() )
-		return (1);
+        throw (RbException("Cannot tranpose an N X M matrix if the other matrix is not M X N"));
 
 	for (int i=0; i<m; i++)
 		for (int j=0; j<n; j++)

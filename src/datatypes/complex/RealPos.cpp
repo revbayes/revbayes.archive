@@ -26,6 +26,11 @@
 
 
 
+/** Default constructor */
+RealPos::RealPos(void) : Real(1.0) {
+
+}
+
 /** Construct from double */
 RealPos::RealPos(const double v) : Real(v) {
 

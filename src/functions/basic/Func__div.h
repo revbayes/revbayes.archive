@@ -150,7 +150,7 @@ const VectorString& Func__div<firstValType, secondValType, sumType>::getClass(vo
     secondValType* dummy2 = new secondValType();
     sumType*       dummy3 = new sumType();
     
-    std::string funcAddName = "Func__div<" + dummy1->getType() + "_" + dummy2->getType() + "_" + dummy3->getType() + ">_name"; 
+    std::string funcAddName = "Func__div<" + dummy1->getType() + "," + dummy2->getType() + "," + dummy3->getType() + ">"; 
     static VectorString rbClass = VectorString(funcAddName) + RbFunction::getClass();
     
     delete dummy1;

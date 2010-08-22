@@ -11,8 +11,7 @@
 
 
 /** Default constructor calling time to get the initial seeds */
-RandomNumberGenerator::RandomNumberGenerator(void)
-    : RbComplex() {
+RandomNumberGenerator::RandomNumberGenerator(void) : RbComplex() {
 
 	unsigned int x  = (unsigned int)( time(0) );
 	unsigned int s1 = x & 0xFFFF;
@@ -23,11 +22,10 @@ RandomNumberGenerator::RandomNumberGenerator(void)
 
 
 /** Constructor explicitly setting the seeds */
-RandomNumberGenerator::RandomNumberGenerator(std::vector<unsigned int> s) {
+RandomNumberGenerator::RandomNumberGenerator(std::vector<unsigned int> s) : RbComplex() {
 
     if (s.size() != 2)
         throw RbException("Two integer seeds required");
-
 	seed = s;
 }
 

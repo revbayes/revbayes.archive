@@ -62,6 +62,7 @@
 #include "Func_s_realvec.h"
 #include "Func_source.h"
 #include "Func_sqrt.h"
+#include "Func_transpose.h"
 #include "Func_v_int.h"
 #include "Func_v_double.h"
 #include "Func_v_vecrealvec.h"
@@ -231,8 +232,8 @@ RandomNumberGenerator* Workspace::get_rng(void) {
 /** Initialize global workspace */
 void Workspace::initializeGlobalWorkspace(void) {
 
-    try {
-
+    try 
+        {
         /* Add global variables */
         addVariable( "_rng", new RandomNumberGenerator );
 
@@ -242,7 +243,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new Integer()             );
         addType( new MatrixReal()          );
         addType( new Real()                );
-        addType( new RealPos(1.0)          );
+        addType( new RealPos()             );
         addType( new Simplex()             );
         addType( new VectorInteger()       );
         addType( new VectorReal()          );
@@ -267,58 +268,64 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_range",    new Func__range()       );
         
         /* Add basic arithmetic/logic templated functions */
-        addFunction( "_add",      new Func__add<    Integer,    Integer,    Integer >() );
-        addFunction( "_add",      new Func__add<       Real,       Real,       Real >() );
-        addFunction( "_add",      new Func__add<    Integer,       Real,       Real >() );
-        addFunction( "_add",      new Func__add<       Real,    Integer,       Real >() );
-        addFunction( "_add",      new Func__add< MatrixReal, MatrixReal, MatrixReal >() );
-        addFunction( "_div",      new Func__div<    Integer,    Integer,       Real >() );
-        addFunction( "_div",      new Func__div<       Real,       Real,       Real >() );
-        addFunction( "_div",      new Func__div<    Integer,       Real,       Real >() );
-        addFunction( "_div",      new Func__div<       Real,    Integer,       Real >() );
-        addFunction( "_div",      new Func__div< MatrixReal, MatrixReal, MatrixReal >() );
-        addFunction( "_mul",      new Func__mul<    Integer,    Integer,    Integer >() );
-        addFunction( "_mul",      new Func__mul<       Real,       Real,       Real >() );
-        addFunction( "_mul",      new Func__mul<    Integer,       Real,       Real >() );
-        addFunction( "_mul",      new Func__mul<       Real,    Integer,       Real >() );
-        addFunction( "_mul",      new Func__mul< MatrixReal, MatrixReal, MatrixReal >() );
-        addFunction( "_sub",      new Func__sub<    Integer,    Integer,    Integer >() );
-        addFunction( "_sub",      new Func__sub<       Real,       Real,       Real >() );
-        addFunction( "_sub",      new Func__sub<    Integer,       Real,       Real >() );
-        addFunction( "_sub",      new Func__sub<       Real,    Integer,       Real >() );
-        addFunction( "_sub",      new Func__sub< MatrixReal, MatrixReal, MatrixReal >() );
-        addFunction( "_and",      new Func__and<    Integer,    Integer >()             );
-        addFunction( "_and",      new Func__and<       Real,       Real >()             );
-        addFunction( "_and",      new Func__and<    Integer,       Real >()             );
-        addFunction( "_and",      new Func__and<       Real,    Integer >()             );
-        addFunction( "_eq",       new Func__eq<     Integer,    Integer >()             );
-        addFunction( "_eq",       new Func__eq<        Real,       Real >()             );
-        addFunction( "_eq",       new Func__eq<     Integer,       Real >()             );
-        addFunction( "_eq",       new Func__eq<        Real,    Integer >()             );
-        addFunction( "_ge",       new Func__ge<     Integer,    Integer >()             );
-        addFunction( "_ge",       new Func__ge<        Real,       Real >()             );
-        addFunction( "_ge",       new Func__ge<     Integer,       Real >()             );
-        addFunction( "_ge",       new Func__ge<        Real,    Integer >()             );
-        addFunction( "_gt",       new Func__gt<     Integer,    Integer >()             );
-        addFunction( "_gt",       new Func__gt<        Real,       Real >()             );
-        addFunction( "_gt",       new Func__gt<     Integer,       Real >()             );
-        addFunction( "_gt",       new Func__gt<        Real,    Integer >()             );
-        addFunction( "_lt",       new Func__lt<     Integer,    Integer >()             );
-        addFunction( "_lt",       new Func__lt<        Real,       Real >()             );
-        addFunction( "_lt",       new Func__lt<     Integer,       Real >()             );
-        addFunction( "_lt",       new Func__lt<        Real,    Integer >()             );
-        addFunction( "_le",       new Func__le<     Integer,    Integer >()             );
-        addFunction( "_le",       new Func__le<        Real,       Real >()             );
-        addFunction( "_le",       new Func__le<     Integer,       Real >()             );
-        addFunction( "_le",       new Func__le<        Real,    Integer >()             );
-        addFunction( "_ne",       new Func__ne<     Integer,    Integer >()             );
-        addFunction( "_ne",       new Func__ne<        Real,       Real >()             );
-        addFunction( "_ne",       new Func__ne<     Integer,       Real >()             );
-        addFunction( "_ne",       new Func__ne<        Real,    Integer >()             );
-        addFunction( "_or",       new Func__or<     Integer,    Integer >()             );
-        addFunction( "_or",       new Func__or<        Real,       Real >()             );
-        addFunction( "_or",       new Func__or<     Integer,       Real >()             );
-        addFunction( "_or",       new Func__or<        Real,    Integer >()             );
+        addFunction( "_add",      new Func__add<            Integer,        Integer,    Integer >() );
+        addFunction( "_add",      new Func__add<               Real,           Real,       Real >() );
+        addFunction( "_add",      new Func__add<            Integer,           Real,       Real >() );
+        addFunction( "_add",      new Func__add<               Real,        Integer,       Real >() );
+        addFunction( "_add",      new Func__add<         MatrixReal,     MatrixReal, MatrixReal >() );
+        addFunction( "_div",      new Func__div<            Integer,        Integer,       Real >() );
+        addFunction( "_div",      new Func__div<               Real,           Real,       Real >() );
+        addFunction( "_div",      new Func__div<            Integer,           Real,       Real >() );
+        addFunction( "_div",      new Func__div<               Real,        Integer,       Real >() );
+        addFunction( "_div",      new Func__div<         MatrixReal,     MatrixReal, MatrixReal >() );
+        addFunction( "_mul",      new Func__mul<            Integer,        Integer,    Integer >() );
+        addFunction( "_mul",      new Func__mul<               Real,           Real,       Real >() );
+        addFunction( "_mul",      new Func__mul<            Integer,           Real,       Real >() );
+        addFunction( "_mul",      new Func__mul<               Real,        Integer,       Real >() );
+        addFunction( "_mul",      new Func__mul<         MatrixReal,     MatrixReal, MatrixReal >() );
+        addFunction( "_mul",      new Func__mul<         MatrixReal,           Real, MatrixReal >() );
+        addFunction( "_mul",      new Func__mul<               Real,     MatrixReal, MatrixReal >() );
+        addFunction( "_sub",      new Func__sub<            Integer,        Integer,    Integer >() );
+        addFunction( "_sub",      new Func__sub<               Real,           Real,       Real >() );
+        addFunction( "_sub",      new Func__sub<            Integer,           Real,       Real >() );
+        addFunction( "_sub",      new Func__sub<               Real,        Integer,       Real >() );
+        addFunction( "_sub",      new Func__sub<         MatrixReal,     MatrixReal, MatrixReal >() );
+        addFunction( "_and",      new Func__and<            Integer,        Integer >()             );
+        addFunction( "_and",      new Func__and<               Real,           Real >()             );
+        addFunction( "_and",      new Func__and<            Integer,           Real >()             );
+        addFunction( "_and",      new Func__and<               Real,        Integer >()             );
+        addFunction( "_eq",       new Func__eq<             Integer,        Integer >()             );
+        addFunction( "_eq",       new Func__eq<                Real,           Real >()             );
+        addFunction( "_eq",       new Func__eq<             Integer,           Real >()             );
+        addFunction( "_eq",       new Func__eq<                Real,        Integer >()             );
+        addFunction( "_ge",       new Func__ge<             Integer,        Integer >()             );
+        addFunction( "_ge",       new Func__ge<                Real,           Real >()             );
+        addFunction( "_ge",       new Func__ge<             Integer,           Real >()             );
+        addFunction( "_ge",       new Func__ge<                Real,        Integer >()             );
+        addFunction( "_gt",       new Func__gt<             Integer,        Integer >()             );
+        addFunction( "_gt",       new Func__gt<                Real,           Real >()             );
+        addFunction( "_gt",       new Func__gt<             Integer,           Real >()             );
+        addFunction( "_gt",       new Func__gt<                Real,        Integer >()             );
+        addFunction( "_lt",       new Func__lt<             Integer,        Integer >()             );
+        addFunction( "_lt",       new Func__lt<                Real,           Real >()             );
+        addFunction( "_lt",       new Func__lt<             Integer,           Real >()             );
+        addFunction( "_lt",       new Func__lt<                Real,        Integer >()             );
+        addFunction( "_le",       new Func__le<             Integer,        Integer >()             );
+        addFunction( "_le",       new Func__le<                Real,           Real >()             );
+        addFunction( "_le",       new Func__le<             Integer,           Real >()             );
+        addFunction( "_le",       new Func__le<                Real,        Integer >()             );
+        addFunction( "_ne",       new Func__ne<             Integer,        Integer >()             );
+        addFunction( "_ne",       new Func__ne<                Real,           Real >()             );
+        addFunction( "_ne",       new Func__ne<             Integer,           Real >()             );
+        addFunction( "_ne",       new Func__ne<                Real,        Integer >()             );
+        addFunction( "_or",       new Func__or<             Integer,        Integer >()             );
+        addFunction( "_or",       new Func__or<                Real,           Real >()             );
+        addFunction( "_or",       new Func__or<             Integer,           Real >()             );
+        addFunction( "_or",       new Func__or<                Real,        Integer >()             );
+        addFunction( "transpose", new Func_transpose<    MatrixReal,     MatrixReal >()             );
+        addFunction( "transpose", new Func_transpose< VectorInteger,  VectorInteger >()             );
+        addFunction( "transpose", new Func_transpose<    VectorReal,     VectorReal >()             );
+        addFunction( "transpose", new Func_transpose< VectorRealPos,  VectorRealPos >()             );
 
         /* Add regular functions */
         addFunction( "clamp",     new Func_clamp()        ); 
@@ -335,9 +342,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "s",         new Func_s_doublevec()  );
         addFunction( "s",         new Func_s_int()        );
         addFunction( "s",         new Func_s_realvec()    );
-    }
-    catch(RbException& rbException) {
-
+        }
+    catch(RbException& rbException) 
+        {
         PRINTF("Caught an exception while initializing the workspace\n");
         std::ostringstream msg;
         rbException.printValue(msg);
@@ -351,7 +358,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         RBOUT("Press any character to exit the program.");
         getchar();
         exit(0);
-    }
+        }
 }
 
 

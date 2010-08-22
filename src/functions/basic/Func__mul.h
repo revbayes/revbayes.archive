@@ -117,6 +117,28 @@ RbObject* Func__mul<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const st
 }
 
 
+/** Execute function: RealMatrix <- RealMatrix * Real */
+template <>
+RbObject* Func__mul<MatrixReal,Real,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+
+    MatrixReal val1 = ((MatrixReal*)(args[0])->getValue())->getValue();
+    double     val2 = ((Real*)(args[1])->getValue())->getValue();
+    MatrixReal prod = val1 * val2;
+    return new MatrixReal(prod);
+}
+
+
+/** Execute function: RealMatrix <- Real * RealMatrix */
+template <>
+RbObject* Func__mul<Real,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+
+    double     val1 = ((Real*)(args[0])->getValue())->getValue();
+    MatrixReal val2 = ((MatrixReal*)(args[1])->getValue())->getValue();
+    MatrixReal prod = val1 * val2;
+    return new MatrixReal(prod);
+}
+
+
 /** Get argument rules */
 template <typename firstValType, typename secondValType, typename sumType>
 const ArgumentRules& Func__mul<firstValType, secondValType, sumType>::getArgumentRules(void) const {
@@ -147,7 +169,7 @@ const VectorString& Func__mul<firstValType, secondValType, sumType>::getClass(vo
     secondValType* dummy2 = new secondValType();
     sumType*       dummy3 = new sumType();
     
-    std::string funcAddName = "Func__mul<" + dummy1->getType() + "_" + dummy2->getType() + "_" + dummy3->getType() + ">_name"; 
+    std::string funcAddName = "Func__mul<" + dummy1->getType() + "," + dummy2->getType() + "," + dummy3->getType() + ">"; 
     static VectorString rbClass = VectorString(funcAddName) + RbFunction::getClass();
     
     delete dummy1;
