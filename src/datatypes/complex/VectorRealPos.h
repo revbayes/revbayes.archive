@@ -29,31 +29,33 @@
 class VectorRealPos : public VectorReal {
 
     public:
-                                    VectorRealPos(void) : VectorReal() {}                   //!< Default constructor (empty vector)
-                                    VectorRealPos(const double x);                          //!< Construct vector with one double x
-	                                VectorRealPos(const size_t n, const double x);          //!< Construct vector with n doubles x
-	                                VectorRealPos(const std::vector<double>& x);            //!< Constructor from double vector
+        // Constructors and destructor
+                                    VectorRealPos(void);                                          //!< Default constructor (empty vector)
+                                    VectorRealPos(double x);                                      //!< Construct vector with one double x
+                                    VectorRealPos(size_t n, double x);                            //!< Construct vector with n doubles x
+                                    VectorRealPos(const std::vector<double>& x);                  //!< Constructor from double vector
+                                    VectorRealPos(const ContainerIterator& x);                    //!< Constructor from container iterator
 
-        // Basic utility functions
-        virtual VectorRealPos*      clone(void) const;                                      //!< Clone object
-        virtual bool                equals(const RbObject* obj) const;                      //!< Equals comparison
-        virtual const VectorString& getClass(void) const;                                   //!< Get class vector
-        virtual std::string         toString(void) const;                                   //!< Complete info about object
+        // Basic utility functions, pure virtual in RbComplex and implemented here
+        virtual VectorRealPos*      clone(void) const;                                            //!< Clone object
+        virtual bool                equals(const RbObject* obj) const;                            //!< Equals comparison
+        virtual const VectorString& getClass(void) const;                                         //!< Get class vector
+        virtual std::string         toString(void) const;                                         //!< Complete info about object
 
-        // Overloaded operators and built-in functions
-        virtual void                push_back(double x);                                    //!< Append element to end
-        virtual void                push_front(double x);                                   //!< Add element in front
+        // Overloaded built-in functions
+        void                        push_back(double x);                                          //!< Append element to end
+        void                        push_front(double x);                                         //!< Add element in front
+        void                        setValue(const VectorReal& x);                                //!< Set the value
+        void                        setValue(const VectorRealPos& x);                             //!< Set the value
+        void                        setValue(const std::vector<double>& x);                       //!< Set the value
 
         // Element access functions for parser
-        const std::string&          getElementType(void) const;                             //!< Get element type
-        virtual void                setElement(const VectorInteger& index, RbObject* val);  //!< Set element
-
-        // Regular functions
-        virtual void                setValue(const std::vector<double>& x);                 //!< Set value directly after checking
+        virtual const std::string&  getElementType(void) const;                                   //!< Get element type
+        virtual void                setElement(const VectorInteger& index, RbObject* val);        //!< Set element
 
 	protected:
-        RbObject*                   convertTo(const std::string& type) const;               //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;         //!< Is convertible to type and dim?
+        RbObject*                   convertTo(const std::string& type) const;                     //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;               //!< Is convertible to type and dim?
 };
 
 #endif

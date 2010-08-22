@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "ContainerIterator.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "Real.h"
@@ -31,7 +32,13 @@
 
 
 /** Construct vector with one double x */
-VectorRealPos::VectorRealPos(const double x) : VectorReal(x) {
+VectorRealPos::VectorRealPos(void) : VectorReal() {
+
+}
+
+
+/** Construct vector with one double x */
+VectorRealPos::VectorRealPos(double x) : VectorReal(x) {
 
     if (x <= 0.0)
         throw RbException("Nonpositive value for " + VectorRealPos_name);
@@ -39,7 +46,7 @@ VectorRealPos::VectorRealPos(const double x) : VectorReal(x) {
 
 
 /** Construct vector with n doubles x */
-VectorRealPos::VectorRealPos(const size_t n, const double x) : VectorReal(n, x) {
+VectorRealPos::VectorRealPos(size_t n, double x) : VectorReal(n, x) {
 
     if (x <= 0.0)
         throw RbException("Nonpositive value for " + VectorRealPos_name);
@@ -54,6 +61,14 @@ VectorRealPos::VectorRealPos(const std::vector<double>& x) : VectorReal(x) {
         if (x[i] <= 0.0)
             throw RbException("Nonpositive value for " + VectorRealPos_name);
         }
+}
+
+
+/** Constructor from container iterator */
+VectorRealPos::VectorRealPos(const ContainerIterator& x) : VectorReal() {
+
+    for (ContainerIterator::const_iterator i=x.begin(); i!=x.end(); i++)
+        value.push_back(*i);
 }
 
 
@@ -141,6 +156,27 @@ void VectorRealPos::setElement(const VectorInteger& index, RbObject* val) {
 
     VectorReal::setElement(index, val);
 }
+
+
+/** Set value of vector using VectorReal */
+void VectorRealPos::setValue(const VectorReal& x) {
+
+    value.resize(x.size());
+    for (size_t i=0; i<x.size(); i++)    
+         if (x[i] <= 0.0)
+            throw RbException("Trying to set positive real matrix with negative value(s)");
+    for (size_t i=0; i<x.size(); i++)    
+        value[i] = x[i];
+}   
+
+
+/** Set value of vector using VectorReal */
+void VectorRealPos::setValue(const VectorRealPos& x) {
+
+    value.resize(x.size());
+    for (size_t i=0; i<x.size(); i++)    
+        value[i] = x[i];
+}   
 
 
 /** Set the value directly */

@@ -19,62 +19,59 @@
 #ifndef VectorReal_H
 #define VectorReal_H
 
-#include "RbComplex.h"
-#include "VectorInteger.h"
+#include "Vector.h"
 
 #include <iostream>
-#include <string>
 #include <vector>
 
-class VectorReal : public RbComplex {
+class VectorReal : public Vector {
 
     public:
-                                    VectorReal(void) : RbComplex() {}                          //!< Default constructor (empty vector)
-                                    VectorReal(const double x);                                //!< Construct vector with one double x
-	                                VectorReal(const size_t n, const double x);                //!< Construct vector with n doubles x
-	                                VectorReal(const std::vector<double>& x);                  //!< Constructor from double vector
+        // Constructors and destructor
+                                    VectorReal(void);                                             //!< Default constructor (empty vector)
+                                    VectorReal(double x);                                         //!< Construct vector with one double x
+                                    VectorReal(size_t n, double x);                               //!< Construct vector with n doubles x
+                                    VectorReal(const std::vector<double>& x);                     //!< Constructor from double vector
+                                    VectorReal(const ContainerIterator& x);                       //!< Constructor from container iterator
 
-        // Basic utility functions
-        virtual VectorReal*         clone(void) const;                                         //!< Clone object
-        virtual bool                equals(const RbObject* obj) const;                         //!< Equals comparison
-        virtual const VectorString& getClass(void) const;                                      //!< Get class vector
-        void                        printValue(std::ostream& o) const;                         //!< Print value for user
-        virtual std::string         toString(void) const;                                      //!< Complete info about object
+        // Operators
+        double&                     operator[](size_t i) { return value[i]; }                     //!< Index op allowing change
+        const double&               operator[](size_t i) const { return value[i]; }               //!< Const index op
+        bool                        operator==(const VectorReal& x) const;                        //!< Equals comparison
+        bool                        operator!=(const VectorReal& x) const;                        //!< Not equals comparison
+        
+        // Basic utility functions, pure virtual in RbComplex and implemented here
+        virtual VectorReal*         clone(void) const;                                            //!< Clone object
+        virtual bool                equals(const RbObject* obj) const;                            //!< Equals comparison
+        virtual const VectorString& getClass(void) const;                                         //!< Get class
+        virtual void                printValue(std::ostream& o) const;                            //!< Print value (for user)
+        virtual std::string         toString(void) const;                                         //!< Complete info about object
 
-        // Overloaded operators and built-in functions
-        virtual double&             operator[](size_t i) { return value[i]; }                  //!< Index op allowing change
-        const double&               operator[](size_t i) const { return value[i]; }            //!< Const index op
-        void                        clear(void) { value.clear(); }                             //!< Clear
-        virtual void                pop_back(void) { value.pop_back(); }                       //!< Drop element
-        virtual void                push_back(double x) { value.push_back(x); }                //!< Append element to end
-        virtual void                push_front(double x) { value.insert(value.begin(), x); }   //!< Add element in front
-        void                        resize(size_t n) { resize(VectorInteger(int(n))); }        //!< Resize (from size_t)
-        size_t                      size(void) const { return value.size(); }                  //!< Get size
-
-        // Getter
-        const std::vector<double>&  getValue(void) { return value; }                           //!< Get value directly
+        // Overloaded built-in functions
+        void                        clear(void) { value.clear(); }                                //!< Clear
+        const std::vector<double>&  getValue(void) const { return value; }                        //!< Get value
+        void                        pop_back(void) { value.pop_back(); }                          //!< Drop element
+        virtual void                push_back(int x) { value.push_back(x); }                      //!< Append element to end
+        virtual void                push_front(int x) { value.insert(value.begin(), x); }         //!< Add element in front
+        void                        resize(size_t n) { value.resize(n); }                         //!< Resize
+        virtual void                setValue(const VectorReal& x);                                //!< Set the value
+        virtual void                setValue(const std::vector<double>& x);                       //!< Set the value
+        size_t                      size(void) const { return value.size(); }                     //!< Get size
 
         // Element access functions for parser
-	    int                         getDim(void) const { return 1; }                           //!< Get subscript dimensions
-        virtual const std::string&  getElementType(void) const;                                //!< Get element type
-        const RbObject*             getElement(const VectorInteger& index) const;              //!< Get element (read-only)
-        const VectorInteger&        getLength(void) const;                                     //!< Get length in each dim
-        virtual void                resize(const VectorInteger& len);                          //!< Resize
-        virtual void                setElement(const VectorInteger& index, RbObject* val);     //!< Set element
-        void                        setLength(const VectorInteger& len);                       //!< Set length in each dim
+        virtual const std::string&  getElementType(void) const;                                   //!< Get element type
+        const RbObject*             getElement(const VectorInteger& index) const;                 //!< Get element (read-only)
+        const VectorInteger&        getLength(void) const;                                        //!< Get length in each dim
+        void                        resize(const VectorInteger& len);                             //!< Resize
+        virtual void                setElement(const VectorInteger& index, RbObject* val);        //!< Set element
+        void                        setLength(const VectorInteger& len);                          //!< Set length in each dim
 
-        // Regular functions
-        const std::vector<double>&  getValue(void) const { return value; }                      //!< Get value directly
-        virtual void                setValue(const std::vector<double>& x) { value = x; }       //!< Set value directly
-        void                        setValue(const VectorReal& x);                              //!< Set value from Vector
-
-    protected:
-        virtual RbObject*           convertTo(const std::string& type) const;                  //!< Convert to type
-        virtual bool                isConvertibleTo(const std::string& type) const;            //!< Is convertible to type and dim?
-
-        // Member variable protected so that it can be accessed by derived class VectorRealPos
-        std::vector<double>         value;                                                     //!< Vector of values
+	protected:
+        RbObject*                   convertTo(const std::string& type) const;                     //!< Convert to type
+        bool                        isConvertibleTo(const std::string& type) const;               //!< Is convertible to type and dim?
+        std::vector<double>         value;                                                        //!< Vector of values
 };
 
 #endif
+
 

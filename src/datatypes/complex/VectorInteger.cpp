@@ -26,14 +26,22 @@
 #include <sstream>
 
 
+
+/** Default constructor */
+VectorInteger::VectorInteger(void) : Vector() {
+
+}
+
+
 /** Construct vector with one int x */
-VectorInteger::VectorInteger(int x) {
+VectorInteger::VectorInteger(int x) : Vector() {
 
     value.push_back(x);
 }
 
+
 /** Construct vector with n ints x */
-VectorInteger::VectorInteger(size_t n, int x) {
+VectorInteger::VectorInteger(size_t n, int x) : Vector() {
 
     for (size_t i = 0; i < n; i++)
         value.push_back(x);
@@ -41,14 +49,14 @@ VectorInteger::VectorInteger(size_t n, int x) {
 
 
 /** Constructor from int vector */
-VectorInteger::VectorInteger(const std::vector<int>& x) {
+VectorInteger::VectorInteger(const std::vector<int>& x) : Vector() {
 
     value = x;
 }
 
 
 /** Constructor from unsigned int vector */
-VectorInteger::VectorInteger(const std::vector<unsigned int>& x) {
+VectorInteger::VectorInteger(const std::vector<unsigned int>& x) : Vector() {
 
     for (std::vector<unsigned int>::const_iterator i=x.begin(); i!=x.end(); i++)
         value.push_back(*i);
@@ -56,17 +64,10 @@ VectorInteger::VectorInteger(const std::vector<unsigned int>& x) {
 
 
 /** Constructor from container iterator */
-VectorInteger::VectorInteger(const ContainerIterator& x) {
+VectorInteger::VectorInteger(const ContainerIterator& x) : Vector() {
 
     for (ContainerIterator::const_iterator i=x.begin(); i!=x.end(); i++)
         value.push_back(*i);
-}
-
-
-/** Clone function */
-VectorInteger* VectorInteger::clone() const {
-
-    return new VectorInteger(*this);
 }
 
 
@@ -91,11 +92,20 @@ bool VectorInteger::operator!=(const VectorInteger& x) const {
     return !operator==(x);
 }
 
+
+/** Clone function */
+VectorInteger* VectorInteger::clone() const {
+
+    return new VectorInteger(*this);
+}
+
+
 /** Convert to object of another class. The caller manages the object. */
 RbObject* VectorInteger::convertTo(const std::string& type) const {
 
     return NULL;
 }
+
 
 /** Pointer-based equals comparison */
 bool VectorInteger::equals(const RbObject* obj) const {
@@ -133,7 +143,7 @@ bool VectorInteger::equals(const RbObject* obj) const {
 /** Get class vector describing type of object */
 const VectorString& VectorInteger::getClass() const {
 
-    static VectorString rbClass = VectorString(VectorInteger_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(VectorInteger_name) + Vector::getClass();
     return rbClass;
 }
 
@@ -170,11 +180,29 @@ const VectorInteger& VectorInteger::getLength(void) const {
     return length;
 }
 
+
 /** Convert to object of another class. The caller manages the object. */
 bool VectorInteger::isConvertibleTo(const std::string& type) const {
 
     return false;
 }
+
+
+/** Print value for user */
+void VectorInteger::printValue(std::ostream& o) const {
+
+    o << "[ ";
+    for (std::vector<int>::const_iterator i = value.begin(); i!= value.end(); i++) 
+        {
+        if (i != value.begin())
+            o << ", ";
+        o << (*i);
+        }
+    o <<  " ]";
+    if (getIsRowVector() == false)
+        o << "'";
+}
+
 
 /** Allow the parser to resize the vector */
 void VectorInteger::resize(const VectorInteger& len) {
@@ -217,17 +245,14 @@ void VectorInteger::setLength(const VectorInteger& len) {
         throw (RbException("Length specification error"));
 }
 
-/** Print value for user */
-void VectorInteger::printValue(std::ostream& o) const {
 
-    o << "[ ";
-    for (std::vector<int>::const_iterator i = value.begin(); i!= value.end(); i++) {
-        if (i != value.begin())
-            o << ", ";
-        o << (*i);
-    }
-    o <<  " ]";
-}
+/** Set value of vector using VectorReal */
+void VectorInteger::setValue(const VectorInteger& x) {
+
+    value.resize(x.size());
+    for (size_t i=0; i<x.size(); i++)    
+        value[i] = x[i];
+}   
 
 
 /** Complete info about object */

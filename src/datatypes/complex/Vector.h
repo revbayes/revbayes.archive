@@ -28,38 +28,36 @@ class Vector : public RbComplex {
 
     public:
         // destructor
-		virtual                     ~Vector(void) {}                                              //!< Virtual destructor 
+		virtual                      ~Vector(void) {}                                              //!< Virtual destructor 
 
         // Basic utility functions, most of which are carried through as pure virtual from RbComplex
-        virtual Vector*              clone(void) const = 0;                                       //!< Clone object
-        virtual bool                 equals(const RbObject* obj) const = 0;                       //!< Equals comparison
-		virtual const VectorString&  getClass(void) const;                                        //!< Get class vector
-		virtual void                 printValue(std::ostream& o) const = 0;                       //!< Print value for user
-		virtual std::string          toString(void) const = 0;                                    //!< Complete info 
+        virtual Vector*               clone(void) const = 0;                                       //!< Clone object
+        virtual bool                  equals(const RbObject* obj) const = 0;                       //!< Equals comparison
+		virtual const VectorString&   getClass(void) const;                                        //!< Get class vector
+		virtual void                  printValue(std::ostream& o) const = 0;                       //!< Print value for user
+		virtual std::string           toString(void) const = 0;                                    //!< Complete info 
 
-        // Overloaded operators and built-in functions
-        int&                        operator[](size_t i) { return value[i]; }                     //!< Index op allowing change
-        const int&                  operator[](size_t i) const { return value[i]; }               //!< Const index op
-        bool                        operator==(const VectorInteger& x) const;                     //!< Equals comparison
-        bool                        operator!=(const VectorInteger& x) const;                     //!< Not equals comparison
-        void                        clear(void) { value.clear(); }                                //!< Clear
-        void                        pop_back(void) { value.pop_back(); }                          //!< Drop element
-        void                        push_back(int x) { value.push_back(x); }                      //!< Append element to end
-        void                        push_front(int x) { value.insert(value.begin(), x); }         //!< Add element in front
-        void                        resize(size_t n) { value.resize(n); }                         //!< Resize
-        size_t                      size(void) const { return value.size(); }                     //!< Get size
+        // Convenience functions, with the pure virtual ones to be implemented in the derived VectorXxx classes
+        virtual void                 clear(void) = 0;                                              //!< Clear
+        bool                         getIsRowVector(void) const { return isRowVector; }            //!< Is the vector a row vector
+        virtual void                 pop_back(void) = 0;                                           //!< Drop element
+        virtual void                 push_back(int x) = 0;                                         //!< Append element to end
+        virtual void                 push_front(int x) = 0;                                        //!< Add element in front
+        virtual void                 resize(size_t n) = 0;                                         //!< Resize
+        virtual size_t               size(void) const = 0;                                         //!< Get size
+        void                         transpose(void);                                              //!< Transpose vector
 
-        // Element access functions for parser
-        int                         getDim(void) const { return 1; }                              //!< Get subscript dimensions
-        const std::string&          getElementType(void) const;                                   //!< Get element type
-        const RbObject*             getElement(const VectorInteger& index) const;                 //!< Get element (read-only)
-        const VectorInteger&        getLength(void) const;                                        //!< Get length in each dim
-        void                        resize(const VectorInteger& len);                             //!< Resize
-        void                        setElement(const VectorInteger& index, RbObject* val);        //!< Set element
-        void                        setLength(const VectorInteger& len);                          //!< Set length in each dim
+        // Element access functions for parser to be implemented in the derived VectorXxx classes
+        int                          getDim(void) const { return 1; }                              //!< Get subscript dimensions
+        virtual const std::string&   getElementType(void) const = 0;                               //!< Get element type
+        virtual const RbObject*      getElement(const VectorInteger& index) const = 0;             //!< Get element (read-only)
+        virtual const VectorInteger& getLength(void) const = 0;                                    //!< Get length in each dim
+        virtual void                 resize(const VectorInteger& len) = 0;                         //!< Resize
+        virtual void                 setElement(const VectorInteger& index, RbObject* val) = 0;    //!< Set element
+        virtual void                 setLength(const VectorInteger& len) = 0;                      //!< Set length in each dim
 
     private:
-        bool                        isRowVector;                                                  //!< Indicates whether the vector is a row vector (true) or a column vector (false)
+        bool                         isRowVector;                                                  //!< Indicates whether the vector is a row vector (true) or a column vector (false)
 };
 
 #endif
