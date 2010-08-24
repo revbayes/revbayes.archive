@@ -35,12 +35,11 @@ Move_mslide::Move_mslide(void)
 
 
 /** Constructor for internal use */
-Move_mslide::Move_mslide(StochasticNode* node, double delta, double weight, RandomNumberGenerator* rng)
+Move_mslide::Move_mslide(StochasticNode* node, double delta, double weight)
     : SimpleMove(getMemberRules()) {
 
     setValue("delta",  new RealPos(delta));
     setValue("weight", new RealPos(weight));
-    setValue("rng",    rng);
 
     setNodePtr(node);
 }
@@ -96,7 +95,7 @@ bool Move_mslide::isConvertibleTo(const std::string& type) const {
 double Move_mslide::perform(std::set<StochasticNode*>& affectedNodes) {
 
     Real*              valPtr = (Real*)(nodePtr->getValuePtr(affectedNodes));
-    RandomNumberGenerator* rng    = (RandomNumberGenerator*)(getValue("rng"));
+    RandomNumberGenerator* rng    = GLOBAL_RNG;
     double                 delta  = ((Real*)(getValue("delta")))->getValue();
 
     double minVal = ((Real*)(nodePtr->getDistribution()->getMin()))->getValue();

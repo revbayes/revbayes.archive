@@ -117,7 +117,7 @@ RbObject* SyntaxBinaryExpr::getValue(Frame* frame) const {
 
     // Execute function
     std::string funcName = "_" + opCode[operation];
-    const RbObject* retVal = Workspace::globalWorkspace().executeFunction(funcName, args);
+    const DAGNode* retVal = Workspace::globalWorkspace().executeFunction(funcName, args);
 
     // Return value (we pass on management responsibility to caller)
     return retVal->clone();

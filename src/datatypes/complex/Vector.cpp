@@ -22,6 +22,12 @@
 
 
 
+/** Default constructor*/
+Vector::Vector(void) {
+
+    isRowVector = true;
+}
+
 /** Get class vector describing type of object */
 const VectorString& Vector::getClass(void) const { 
 
@@ -30,9 +36,10 @@ const VectorString& Vector::getClass(void) const {
 }
 
 void Vector::transpose(void) {
-
+std::cout << "Transposing vector isRowVector = " << isRowVector << "->";
     if (isRowVector == true)
         isRowVector = false;
     else 
         isRowVector = true;
+std::cout << isRowVector << std::endl;
 }

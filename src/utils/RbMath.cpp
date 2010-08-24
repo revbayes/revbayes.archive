@@ -5,6 +5,7 @@
 
 #include "RbException.h"
 #include "RbMath.h"
+#include "RbSettings.h"
 
 
 
@@ -61,9 +62,21 @@ double RbMath::beta(double a, double b) {
  * \param epsilon How close should the numbers be
  * \return true / false
  */
+bool RbMath::compApproximatelyEqual(double a, double b) {
+
+    double epsilon = RbSettings::userSettings().getTolerance();
+    return fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
 bool RbMath::compApproximatelyEqual(double a, double b, double epsilon) {
 
     return fabs(a - b) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+bool RbMath::compEssentiallyEqual(double a, double b) {
+
+    double epsilon = RbSettings::userSettings().getTolerance();
+    return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
 }
 
 bool RbMath::compEssentiallyEqual(double a, double b, double epsilon) {
@@ -71,9 +84,21 @@ bool RbMath::compEssentiallyEqual(double a, double b, double epsilon) {
     return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
 }
 
+bool RbMath::compDefinitelyGreaterThan(double a, double b) {
+
+    double epsilon = RbSettings::userSettings().getTolerance();
+    return (a - b) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
 bool RbMath::compDefinitelyGreaterThan(double a, double b, double epsilon) {
 
     return (a - b) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+bool RbMath::compDefinitelyLessThan(double a, double b) {
+
+    double epsilon = RbSettings::userSettings().getTolerance();
+    return (b - a) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
 }
 
 bool RbMath::compDefinitelyLessThan(double a, double b, double epsilon) {
@@ -848,4 +873,45 @@ int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
 	return (0);
 }
 
+void RbMath::vectorMultiplication(const VectorReal& v1, const VectorReal& v2, MatrixReal& p) {
+
+    if ( v1.size() != v2.size() )
+        throw (RbException("Cannot multiply two vectors of different dimensions"));
+        
+std::cout << "v1 : " << v1.getIsRowVector() << std::endl;
+std::cout << "v2 : " << v2.getIsRowVector() << std::endl;
+
+    int n = v1.size();
+    if ( v1.getIsRowVector() == true && v2.getIsRowVector() == false )
+        {
+        VectorInteger sizeVec(2);
+        sizeVec[0] = 1;
+        sizeVec[1] = 1;
+        p.resize(sizeVec);
+
+        double sum = 0.0;
+        for (size_t i=0; i<n; i++)
+            sum += v1[i] * v2[i];
+        p[0][0] = sum;
+        }
+    else if ( v1.getIsRowVector() == false && v2.getIsRowVector() == true )
+        {
+        VectorInteger sizeVec(2);
+        sizeVec[0] = n;
+        sizeVec[1] = n;
+        p.resize(sizeVec);
+        
+        for (size_t i=0; i<n; i++)
+            for (size_t j=0; j<n; j++)
+                p[i][j] = v1[i] * v2[j];
+        }
+    else if ( v1.getIsRowVector() == false && v2.getIsRowVector() == false )
+        {
+        throw (RbException("Cannot multiply two column vectors"));
+        }
+    else 
+        {
+        throw (RbException("Cannot multiply two row vectors"));
+        }
+}
 

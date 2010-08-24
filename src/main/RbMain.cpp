@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "Parser.h"
+#include "RbSettings.h"
 #include "Workspace.h"
 #include "UserInterface.h"
 
@@ -20,6 +21,7 @@ int main(int argc, char **argv) {
 	RBOUT("                     using Bayesian inference\n");
 	RBOUT("             Released under the GPL license, version 3\n\n");
 
+    RbSettings::userSettings().initializeUserSettings();
     Workspace::globalWorkspace().initializeGlobalWorkspace();
 
 #	if defined DEBUG_PARSER

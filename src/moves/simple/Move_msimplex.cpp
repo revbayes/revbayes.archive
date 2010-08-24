@@ -38,12 +38,11 @@ Move_msimplex::Move_msimplex(void) : SimpleMove(getMemberRules()) {
 }
 
 /** Constructor for internal use */
-Move_msimplex::Move_msimplex(StochasticNode* node, double tuning, int nc, double weight, RandomNumberGenerator* rng) : SimpleMove(getMemberRules()) {
+Move_msimplex::Move_msimplex(StochasticNode* node, double tuning, int nc, double weight) : SimpleMove(getMemberRules()) {
 
     setValue("tuning", new RealPos(tuning));
     setValue("num_cats", new Integer(nc));
     setValue("weight", new RealPos(weight));
-    setValue("rng",    rng);
 
     setNodePtr(node);
 }
@@ -98,7 +97,7 @@ bool Move_msimplex::isConvertibleTo(const std::string& type) const {
 double Move_msimplex::perform(std::set<StochasticNode*>& affectedNodes) {
 
     Simplex*               valPtr  = (Simplex*)(nodePtr->getValuePtr(affectedNodes));
-    RandomNumberGenerator* rng     = (RandomNumberGenerator*)(getValue("rng"));
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
     double                 alpha0  = ((Real*)(getValue("tuning")))->getValue();
     int                    k       = ((Integer*)(getValue("num_cats")))->getValue();
 	int                    n       = valPtr->getValue().size();

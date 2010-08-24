@@ -54,7 +54,7 @@ class Mcmc: public MemberObject {
 	protected:
         RbObject*                   convertTo(const std::string& type) const;                                          //!< Convert to type
         bool                        isConvertibleTo(const std::string& type) const;                                    //!< Is convertible to type and dim?
-        const RbObject*             executeOperation(const std::string& name, std::vector<DAGNode*>& args);            //!< Execute method
+        DAGNode*                    executeOperation(const std::string& name, std::vector<DAGNode*>& args);            //!< Execute method
 };
 
 #endif

@@ -43,10 +43,9 @@ Dist_dirichlet::Dist_dirichlet(void) : Distribution(getMemberRules()) {
 }
 
 /** Constructor for internal use */
-Dist_dirichlet::Dist_dirichlet(std::vector<double> a, RandomNumberGenerator* rng) : Distribution(getMemberRules()) {
+Dist_dirichlet::Dist_dirichlet(std::vector<double> a) : Distribution(getMemberRules()) {
 
     setValue("alpha", new VectorReal(a));
-    setValue("rng",  rng);
 }
 
 /**
@@ -92,7 +91,7 @@ const VectorString& Dist_dirichlet::getClass(void) const {
 Move* Dist_dirichlet::getDefaultMove(StochasticNode* node) {
 
 	// default move for a stochastic node having a Dirichlet distribution
-    return new Move_msimplex(node, 300.0, 4, 1.0, Workspace::globalWorkspace().get_rng());
+    return new Move_msimplex(node, 300.0, 4, 1.0);
 }
 
 /** Get min value of distribution */
@@ -264,7 +263,7 @@ double Dist_dirichlet::quantile(const double p) {
 RbObject* Dist_dirichlet::rv(void) {
 
     std::vector<double> a      = ((VectorReal*) getValue("alpha"))->getValue();
-    RandomNumberGenerator* rng = (RandomNumberGenerator*)(getValue("rng"));
+    RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector<double> r(a.size());
 
 	r = RbStatistics::Dirichlet::rv(a, rng);

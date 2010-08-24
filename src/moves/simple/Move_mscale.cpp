@@ -34,12 +34,10 @@ Move_mscale::Move_mscale(void)
 
 
 /** Constructor for internal use */
-Move_mscale::Move_mscale(StochasticNode* node, double lambda, double weight, RandomNumberGenerator* rng)
-    : SimpleMove(getMemberRules()) {
+Move_mscale::Move_mscale(StochasticNode* node, double lambda, double weight) : SimpleMove(getMemberRules()) {
 
     setValue("lambda", new RealPos(lambda));
     setValue("weight", new RealPos(weight));
-    setValue("rng",    rng);
 
     setNodePtr(node);
 }
@@ -95,7 +93,7 @@ const MemberRules& Move_mscale::getMemberRules(void) const {
 double Move_mscale::perform(std::set<StochasticNode*>& affectedNodes) {
 
     Real*              valPtr = (Real*)(nodePtr->getValuePtr(affectedNodes));
-    RandomNumberGenerator* rng    = (RandomNumberGenerator*)(getValue("rng"));
+    RandomNumberGenerator* rng    = GLOBAL_RNG;
     double                 lambda = ((Real*)(getValue("lambda")))->getValue();
 
     double curVal = valPtr->getValue();

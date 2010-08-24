@@ -17,6 +17,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DistributionReal.h"
 #include "MemberFunction.h"
@@ -35,7 +36,7 @@ DistributionReal::DistributionReal(const MemberRules& memberRules)
 
 
 /** Map calls to member methods */
-const RbObject* DistributionReal::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
+DAGNode* DistributionReal::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
 
     /* Manage all calls here, for simplicity, instead of relying on inheritance */
     if (name == "cdf") {
@@ -52,7 +53,7 @@ const RbObject* DistributionReal::executeOperation(const std::string& name, std:
     }
     else if (name == "rv") {
         if (getVariableType() == RealPos_name)
-            return rv();
+            return new ConstantNode(rv());
         Real* randomVal = (Real*)(rv());
         retDouble.setValue(*randomVal);
         delete randomVal;
@@ -60,7 +61,7 @@ const RbObject* DistributionReal::executeOperation(const std::string& name, std:
     else
         throw RbException("No member method called '" + name + "'");
 
-    return &retDouble;
+    return new ConstantNode(&retDouble);
 }
 
 

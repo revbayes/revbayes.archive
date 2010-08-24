@@ -22,8 +22,8 @@
 #include <set>
 #include <string>
 
+#include "RandomNumberFactory.h"
 #include "SimpleMove.h"
-#include "Workspace.h"
 
 class Real;
 class RbObject;
@@ -32,8 +32,7 @@ class Move_msimplex : public SimpleMove {
 
     public:
                                     Move_msimplex(void);                                                             //!< Parser constructor
-                                    Move_msimplex(StochasticNode* node, double tuning, int nc, double weight = 1.0, 
-									RandomNumberGenerator* rng = Workspace::globalWorkspace().get_rng());            //!< Internal constructor
+                                    Move_msimplex(StochasticNode* node, double tuning, int nc, double weight = 1.0); //!< Internal constructor
 
         // Basic utility functions
         Move_msimplex*              clone(void) const;                                                               //!< Clone object

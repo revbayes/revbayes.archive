@@ -24,6 +24,7 @@
 #include "DistributionReal.h"
 #include "DistributionFunction.h"
 #include "FunctionTable.h"
+#include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbFunction.h"
@@ -84,14 +85,14 @@
 
 
 /** Constructor of global workspace */
-Workspace::Workspace()
-    : Frame(), functionTable(new FunctionTable()) {
+Workspace::Workspace() : Frame(), functionTable(new FunctionTable()) {
+
 }
 
 
 /** Constructor of user workspace */
-Workspace::Workspace(Workspace* parentSpace)
-    : Frame(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())) {
+Workspace::Workspace(Workspace* parentSpace) : Frame(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())) {
+
 }
 
 
@@ -202,7 +203,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* te
 
 
 /** Execute function */
-const RbObject* Workspace::executeFunction(const std::string& name, const std::vector<Argument>& args) const {
+const DAGNode* Workspace::executeFunction(const std::string& name, const std::vector<Argument>& args) const {
 
     return functionTable->executeFunction(name, args);
 }
@@ -234,9 +235,6 @@ void Workspace::initializeGlobalWorkspace(void) {
 
     try 
         {
-        /* Add global variables */
-        addVariable( "_rng", new RandomNumberGenerator );
-
         /* Add types: add a dummy variable which will be deleted. We only do
            this to get the inheritance hierarchy. */
         addType( new Boolean()             );
@@ -266,7 +264,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add basic internal functions */
         addFunction( "_range",    new Func__range()       );
-        
+       
         /* Add basic arithmetic/logic templated functions */
         addFunction( "_add",      new Func__add<            Integer,        Integer,    Integer >() );
         addFunction( "_add",      new Func__add<               Real,           Real,       Real >() );
@@ -285,6 +283,12 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_mul",      new Func__mul<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<         MatrixReal,           Real, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<               Real,     MatrixReal, MatrixReal >() );
+        addFunction( "_mul",      new Func__mul<          VectorReal,    VectorReal, MatrixReal >() );
+        addFunction( "_mul",      new Func__mul<          VectorReal,    MatrixReal, MatrixReal >() );
+        addFunction( "_mul",      new Func__mul<          MatrixReal,    VectorReal, MatrixReal >() );
+        addFunction( "_mul",      new Func__mul<       VectorRealPos,    MatrixReal, MatrixReal >() );
+        addFunction( "_mul",      new Func__mul<          MatrixReal, VectorRealPos, MatrixReal >() );
+        addFunction( "_mul",      new Func__mul<       VectorRealPos, VectorRealPos, MatrixReal >() );
         addFunction( "_sub",      new Func__sub<            Integer,        Integer,    Integer >() );
         addFunction( "_sub",      new Func__sub<               Real,           Real,       Real >() );
         addFunction( "_sub",      new Func__sub<            Integer,           Real,       Real >() );

@@ -81,7 +81,7 @@ class Workspace : public Frame {
         bool                    addFunction(const std::string& name, RbFunction* func);             //!< Add function
         bool                    addType(const RbObject* exampleObj);                                //!< Add type
         bool                    addTypeWithConstructor(const std::string& name, MemberObject* templ);   //!< Add type with constructor
-        const RbObject*         executeFunction(const std::string& name,
+        const DAGNode*         executeFunction(const std::string& name,
                                     const std::vector<Argument>& args) const;                       //!< Execute function
         FunctionTable*          getFunctionTable() { return functionTable; }                        //!< Get function table
         RbFunction*             getFunction(const std::string& name,
@@ -110,7 +110,7 @@ class Workspace : public Frame {
                                 Workspace();                                //!< Workspace with NULL parent
                                 Workspace(Workspace* parentSpace);          //!< Workspace with parent
                                 Workspace(const Workspace& w) {}            //!< Prevent copy
-                                ~Workspace();                               //!< Delete function table
+                               ~Workspace();                                //!< Delete function table
 
         Workspace&              operator=(const Workspace& w);              //! Prevent assignment
 

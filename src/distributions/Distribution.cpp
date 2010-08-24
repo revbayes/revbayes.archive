@@ -17,6 +17,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Distribution.h"
 #include "MemberFunction.h"
@@ -30,20 +31,20 @@
 
 
 /** Constructor with inheritance for member rules but not for method inits */
-Distribution::Distribution(const  MemberRules& memberRules)
-    : MemberObject(memberRules, getMethodInits()), retObject(NULL) {
+Distribution::Distribution(const  MemberRules& memberRules) : MemberObject(memberRules, getMethodInits()), retObject(NULL) {
+
 }
 
 
 /** Constructor with inheritance both for member rules and method inits */
-Distribution::Distribution(const  MemberRules& memberRules, const MethodTable& methodInits)
-    : MemberObject(memberRules, methodInits), retObject(NULL) {
+Distribution::Distribution(const  MemberRules& memberRules, const MethodTable& methodInits) : MemberObject(memberRules, methodInits), retObject(NULL) {
+
 }
 
 
 /** Copy constructor */
-Distribution::Distribution(const Distribution& x)
-    : MemberObject(x), retObject(NULL) {
+Distribution::Distribution(const Distribution& x) : MemberObject(x), retObject(NULL) {
+
 }
 
 
@@ -64,7 +65,7 @@ Distribution& Distribution::operator=(const Distribution& x) {
 
 
 /** Map calls to member methods */
-const RbObject* Distribution::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
+DAGNode* Distribution::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
 
     if (name == "lnPdf") {
         retDouble.setValue(lnPdf(args[0]->getValue()));
@@ -75,12 +76,12 @@ const RbObject* Distribution::executeOperation(const std::string& name, std::vec
     else if (name == "rv") {
         delete retObject;
         retObject = rv();
-        return retObject;
+        return new ConstantNode(retObject);
     }
     else
         throw RbException("No member method called '" + name + "'");
 
-    return &retDouble;
+    return new ConstantNode(&retDouble);
 }
 
 
@@ -100,7 +101,6 @@ const MemberRules& Distribution::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new WrapperRule("rng", Workspace::globalWorkspace().getVariable("_rng")));
         rulesSet = true;
     }
 

@@ -28,6 +28,7 @@ class Vector : public RbComplex {
 
     public:
         // destructor
+                                      Vector(void);
 		virtual                      ~Vector(void) {}                                              //!< Virtual destructor 
 
         // Basic utility functions, most of which are carried through as pure virtual from RbComplex

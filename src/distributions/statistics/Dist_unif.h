@@ -30,7 +30,7 @@ class Dist_unif: public DistributionReal {
 
     public:
                                     Dist_unif(void);                                                //!< Parser constructor
-                                    Dist_unif(double min, double max, RandomNumberGenerator* rng);  //!< Internal constructor
+                                    Dist_unif(double min, double max);                              //!< Internal constructor
 
         // Basic utility functions
         Dist_unif*                  clone(void) const;                                              //!< Clone object

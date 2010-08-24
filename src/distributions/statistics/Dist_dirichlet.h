@@ -32,7 +32,7 @@ class Dist_dirichlet: public Distribution {
 
     public:
                                     Dist_dirichlet(void);                                               //!< Parser constructor
-                                    Dist_dirichlet(std::vector<double> a, RandomNumberGenerator* rng);  //!< Internal constructor
+                                    Dist_dirichlet(std::vector<double> a);                              //!< Internal constructor
 
         // Basic utility functions
         Dist_dirichlet*             clone(void) const;                                                  //!< Clone object

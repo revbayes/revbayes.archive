@@ -37,10 +37,9 @@ Dist_exp::Dist_exp(void) : DistributionReal(getMemberRules()) {
 }
 
 /** Constructor for internal use */
-Dist_exp::Dist_exp(double rate, RandomNumberGenerator* rng) : DistributionReal(getMemberRules()) {
+Dist_exp::Dist_exp(double rate) : DistributionReal(getMemberRules()) {
 
     setValue("rate", new Real(rate));
-    setValue("rng",  rng);
 }
 
 /**
@@ -76,7 +75,7 @@ const VectorString& Dist_exp::getClass(void) const {
 /** Get default move */
 Move* Dist_exp::getDefaultMove(StochasticNode* node) {
 
-    return new Move_mscale(node, 2.0*std::log(1.5), 1.0, Workspace::globalWorkspace().get_rng());
+    return new Move_mscale(node, 2.0*std::log(1.5), 1.0);
 }
 
 /** Get min value of distribution */
@@ -212,7 +211,7 @@ double Dist_exp::quantile(const double p) {
 Real* Dist_exp::rv(void) {
 
     double                 lambda = ((Real*) getValue("rate"))->getValue();
-    RandomNumberGenerator* rng    = (RandomNumberGenerator*)(getValue("rng"));
+    RandomNumberGenerator* rng    = GLOBAL_RNG;
 
     double u = rng->uniform01();
 

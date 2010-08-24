@@ -34,18 +34,16 @@
 
 
 /** Default constructor for parser use */
-Dist_unif::Dist_unif(void)
-    : DistributionReal(getMemberRules()) {
+Dist_unif::Dist_unif(void) : DistributionReal(getMemberRules()) {
+
 }
 
 
 /** Constructor for test use */
-Dist_unif::Dist_unif(double min, double max, RandomNumberGenerator* rng)
-    : DistributionReal(getMemberRules()) {
+Dist_unif::Dist_unif(double min, double max) : DistributionReal(getMemberRules()) {
 
     setValue("min", new Real(min));
     setValue("max", new Real(max));
-    setValue("rng", rng);
 }
 
 
@@ -96,7 +94,7 @@ Move* Dist_unif::getDefaultMove(StochasticNode* node) {
 
     double delta = (max - min) / 100.0;
 
-    return new Move_mslide(node, delta, 1.0, Workspace::globalWorkspace().get_rng());
+    return new Move_mslide(node, delta, 1.0);
 }
 
 
@@ -118,7 +116,6 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
         memberRules.push_back(new WrapperRule("min", Real_name));
         memberRules.push_back(new WrapperRule("max", Real_name));
 
-        /* Inherit rng from Distribution, put it at back */
         const MemberRules& inheritedRules = Distribution::getMemberRules();
         memberRules.insert(memberRules.end(), inheritedRules.begin(), inheritedRules.end()); 
 
@@ -255,7 +252,7 @@ Real* Dist_unif::rv(void) {
 
     double                 min = ((Real*) getValue("min"))->getValue();
     double                 max = ((Real*) getValue("max"))->getValue();
-    RandomNumberGenerator* rng = (RandomNumberGenerator*)(getValue("rng"));
+    RandomNumberGenerator* rng = GLOBAL_RNG;
 
     double u = rng->uniform01();
 

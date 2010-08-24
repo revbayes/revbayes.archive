@@ -25,6 +25,7 @@
 #include "Model.h"
 #include "Move.h"
 #include "MoveSchedule.h"
+#include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "Integer.h"
@@ -74,7 +75,7 @@ RbObject* Mcmc::convertTo(const std::string& type) const {
 }
 
 /** Map calls to member methods */
-const RbObject* Mcmc::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
+DAGNode* Mcmc::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
 
     if (name == "update") {
        update();
@@ -107,7 +108,6 @@ const MemberRules& Mcmc::getMemberRules(void) const {
         memberRules.push_back(new MinmaxRule(  "printfreq",  Integer_name, new Integer(1), NULL));
         memberRules.push_back(new MinmaxRule(  "samplefreq", Integer_name, new Integer(1), NULL));
         memberRules.push_back(new ArgumentRule("filename",   new RbString("out")));
-        memberRules.push_back(new WrapperRule( "rng",        Workspace::globalWorkspace().getVariable("_rng")));
 
         rulesSet = true;
     }
@@ -216,7 +216,7 @@ void Mcmc::update(void) {
     int                    printfreq  = ((Integer*)(getValue("printfreq")))->getValue();
     int                    samplefreq = ((Integer*)(getValue("samplefreq")))->getValue();
     std::string            fileName   = ((RbString*)(getValue("filename")))->getValue();
-    RandomNumberGenerator* rng        = (RandomNumberGenerator*)(getValue("rng"));
+    RandomNumberGenerator* rng        = GLOBAL_RNG;
 
     /* Open the output file and print headers */
     std::cerr << "Opening file and printing headers ..." << std::endl;

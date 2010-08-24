@@ -58,7 +58,7 @@ DeterministicNode::DeterministicNode(RbFunction* func) : VariableNode(func->getR
     function = func;
 
     /* Set value and stored value */
-    storedValue = function->execute()->clone();
+    storedValue = function->execute()->getValue()->clone();
     value = storedValue;
 	
 	/* set whether to expose this DAG to the user */
@@ -71,7 +71,7 @@ DeterministicNode::DeterministicNode(const DeterministicNode& x) : VariableNode(
 
     changed      = x.changed;
     function     = (RbFunction*)(x.function->clone());
-    storedValue  = function->execute()->clone();
+    storedValue  = function->execute()->getValue()->clone();
     value        = storedValue;
 	isDagExposed = x.isDagExposed;
 
@@ -123,7 +123,7 @@ DeterministicNode& DeterministicNode::operator=(const DeterministicNode& x) {
         function    = (RbFunction*)(x.function->clone());
 
         delete storedValue;
-        storedValue = function->execute()->clone();
+        storedValue = function->execute()->getValue()->clone();
         value       = storedValue;
 
         /* Set parents and add this node as a child node of these */
@@ -161,7 +161,7 @@ DeterministicNode* DeterministicNode::cloneDAG(std::map<DAGNode*, DAGNode*>& new
     std::vector<DAGNode*>& params     = const_cast<std::vector<DAGNode*>& > (function->getProcessedArguments());
     std::vector<DAGNode*>& copyParams = const_cast<std::vector<DAGNode*>& > (copy->function->getProcessedArguments());
     copyParams.clear();
-    copy->storedValue = function->execute()->clone();   // Make sure we have a copy of the value
+    copy->storedValue = function->execute()->getValue()->clone();   // Make sure we have a copy of the value
     copy->value = copy->storedValue;
     copy->touched = false;
     copy->changed = false;
@@ -395,7 +395,7 @@ void DeterministicNode::update(void) {
                 delete storedValue;
             storedValue = value->clone();
         }
-        value = function->execute();
+        value = function->execute()->getValue();
         changed = true;
     }
 }

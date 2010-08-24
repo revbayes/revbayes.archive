@@ -69,7 +69,7 @@ class Distribution: public MemberObject {
         Distribution&               operator=(const Distribution& x);                                               //!< Assignment operator
 
         // Member method call
-        virtual const RbObject*     executeOperation(const std::string& name, std::vector<DAGNode*>& args);         //!< Execute method
+        virtual DAGNode*            executeOperation(const std::string& name, std::vector<DAGNode*>& args);         //!< Execute method
 
         // Workspace variables
         Real                        retDouble;                                                                      //!< Return double

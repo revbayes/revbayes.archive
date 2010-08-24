@@ -31,7 +31,7 @@ class Dist_norm: public DistributionReal {
 
     public:
                                     Dist_norm(void);                                                 //!< Parser constructor
-                                    Dist_norm(double mu, double sigma, RandomNumberGenerator* rng);  //!< Internal constructor
+                                    Dist_norm(double mu, double sigma);                              //!< Internal constructor
 
         // Basic utility functions
         Dist_norm*                  clone(void) const;                                               //!< Clone object

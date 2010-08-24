@@ -34,18 +34,16 @@
 
 
 /** Constructor for parser use */
-Dist_norm::Dist_norm(void)
-    : DistributionReal(getMemberRules()) {
+Dist_norm::Dist_norm(void) : DistributionReal(getMemberRules()) {
+
 }
 
 
 /** Constructor for internal use */
-Dist_norm::Dist_norm(double mu, double sigma, RandomNumberGenerator* rng)
-    : DistributionReal(getMemberRules()) {
+Dist_norm::Dist_norm(double mu, double sigma) : DistributionReal(getMemberRules()) {
 
     setValue("mean",  new Real(mu));
     setValue("sigma", new Real(sigma));
-    setValue("rng",   rng);
 }
 
 
@@ -127,7 +125,7 @@ Move* Dist_norm::getDefaultMove(StochasticNode* node) {
 
     double sd = ((Real*) (getValue("sd")))->getValue();
 
-    return new Move_mslide(node, sd/100.0, 1.0, Workspace::globalWorkspace().get_rng());
+    return new Move_mslide(node, sd/100.0, 1.0);
 }
 
 
@@ -142,7 +140,6 @@ const MemberRules& Dist_norm::getMemberRules(void) const {
         memberRules.push_back(new WrapperRule("mean", Real_name));
         memberRules.push_back(new WrapperRule("sd", RealPos_name));
 
-        /* Inherit rng from Distribution, put it at back */
         const MemberRules& inheritedRules = Distribution::getMemberRules();
         memberRules.insert(memberRules.end(), inheritedRules.begin(), inheritedRules.end()); 
 
@@ -321,7 +318,7 @@ Real* Dist_norm::rv(void) {
     double mu    = ((Real*) getValue("mean"))->getValue();
     double sigma = ((Real*) getValue("sd"))->getValue();
 
-    RandomNumberGenerator* rng = (RandomNumberGenerator*)(getValue("rng"));
+    RandomNumberGenerator* rng = GLOBAL_RNG;
 
     double v1  = 0.0;
     double v2  = 0.0;

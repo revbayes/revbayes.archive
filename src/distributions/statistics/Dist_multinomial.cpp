@@ -44,10 +44,9 @@ Dist_multinomial::Dist_multinomial(void) : Distribution(getMemberRules()) {
 }
 
 /** Constructor for internal use */
-Dist_multinomial::Dist_multinomial(std::vector<double> a, RandomNumberGenerator* rng) : Distribution(getMemberRules()) {
+Dist_multinomial::Dist_multinomial(std::vector<double> a) : Distribution(getMemberRules()) {
 
     setValue("p", new Simplex(a));
-    setValue("rng",  rng);
 }
 
 /** Clone this object */
@@ -67,7 +66,7 @@ const VectorString& Dist_multinomial::getClass(void) const {
 Move* Dist_multinomial::getDefaultMove(StochasticNode* node) {
 
 	// default move for a stochastic node having a Dirichlet distribution
-    return new Move_mmultinomial(node, 300.0, 4, 1.0, Workspace::globalWorkspace().get_rng());
+    return new Move_mmultinomial(node, 300.0, 4, 1.0);
 }
 
 /** Get min value of distribution */
@@ -211,7 +210,7 @@ double Dist_multinomial::pdf(const RbObject* value) {
 RbObject* Dist_multinomial::rv(void) {
 
     std::vector<double> p      = ((Simplex*) getValue("p"))->getValue();
-    RandomNumberGenerator* rng = (RandomNumberGenerator*)(getValue("rng"));
+    RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector<int> r(p.size());
 
 	r = RbStatistics::Multinomial::rv(p, rng);

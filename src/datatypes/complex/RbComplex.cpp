@@ -53,14 +53,14 @@ ContainerIterator RbComplex::end(void) const {
 
 
 /** Execute method with args preprocessed: map to builtin function or to function object */
-const RbObject* RbComplex::executeMethod(const std::string& name, int funcId) {
+const DAGNode* RbComplex::executeMethod(const std::string& name, int funcId) {
 
     throw (RbException("No member method '" + name + "'"));
 }
 
 
 /** Execute method with args passed in: map to builtin function or to function object */
-const RbObject* RbComplex::executeMethod(const std::string& name, std::vector<Argument>& args) {
+const DAGNode* RbComplex::executeMethod(const std::string& name, std::vector<Argument>& args) {
 
     throw (RbException("No member method '" + name + "'"));
 }

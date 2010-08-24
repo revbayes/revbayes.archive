@@ -32,7 +32,7 @@ class Dist_multinomial: public Distribution {
 
     public:
                                     Dist_multinomial(void);                                               //!< Parser constructor
-                                    Dist_multinomial(std::vector<double> a, RandomNumberGenerator* rng);  //!< Internal constructor
+                                    Dist_multinomial(std::vector<double> a);                              //!< Internal constructor
 
         // Basic utility functions
         Dist_multinomial*           clone(void) const;                                                    //!< Clone object

@@ -32,7 +32,7 @@ class Dist_exp: public DistributionReal {
 
     public:
                                     Dist_exp(void);                                                //!< Parser constructor
-                                    Dist_exp(double rate, RandomNumberGenerator* rng);             //!< Internal constructor
+                                    Dist_exp(double rate);                                         //!< Internal constructor
 
         // Basic utility functions
         Dist_exp*                   clone(void) const;                                             //!< Clone object

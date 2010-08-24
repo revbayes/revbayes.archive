@@ -117,7 +117,7 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 /** Execute function */
-const RbObject* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) const {
+DAGNode* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) const {
 
     RbFunction* theFunction = findFunction(name, args);
 
@@ -193,7 +193,7 @@ RbObject* FunctionTable::getFunctionValue(const std::string& name, const std::ve
 
     RbFunction* theFunction = findFunction(name, args);
 
-    return theFunction->execute();
+    return theFunction->execute()->getValue();
 }
 
 

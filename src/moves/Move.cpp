@@ -46,7 +46,7 @@ RbObject* Move::convertTo(const std::string& type) const {
 }
 
 /** Execute member method. We throw an error because there are no visible member methods */
-const RbObject* Move::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
+DAGNode* Move::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
 
     throw RbException ("Object does not have methods");
 }
@@ -68,7 +68,6 @@ const MemberRules& Move::getMemberRules(void) const {
     if (!rulesSet) {
 
         memberRules.push_back(new ArgumentRule("weight", new RealPos(1.0)));
-        memberRules.push_back(new WrapperRule( "rng",    Workspace::globalWorkspace().getVariable("_rng")));
 
         rulesSet = true;
     }

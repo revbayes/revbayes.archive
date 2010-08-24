@@ -36,7 +36,7 @@ class FunctionTable : public RbInternal {
     public:
                         FunctionTable(FunctionTable* parent=NULL);  //!< Empty table
                         FunctionTable(const FunctionTable& x);      //!< Copy constructor
-        virtual         ~FunctionTable();                           //!< Delete functions
+        virtual        ~FunctionTable();                           //!< Delete functions
 
         // Assignment operator
         FunctionTable&  operator=(const FunctionTable& x);          //!< Assignment operator 
@@ -53,7 +53,7 @@ class FunctionTable : public RbInternal {
         virtual void    addFunction(const std::string name, RbFunction* func);  //!< Add function
         void            clear(void);                                            //!< Clear table
         void            eraseFunction(const std::string& name);                 //!< Erase a function (all versions)
-        const RbObject* executeFunction(const std::string& name, const std::vector<Argument>& args) const;  //!< Execute function
+        DAGNode*        executeFunction(const std::string& name, const std::vector<Argument>& args) const;  //!< Execute function
         RbFunction*     getFunction(const std::string& name, const std::vector<Argument>& args) const;      //!< Get function (a copy)
         RbObject*       getFunctionValue(const std::string& name, const std::vector<Argument>& args) const; //!< Get function value
         bool            isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;             //!< Are formals unique?

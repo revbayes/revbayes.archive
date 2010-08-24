@@ -27,8 +27,7 @@
 
 
 /** Constructor: we set member variables here from member rules */
-MemberObject::MemberObject(const MemberRules& memberRules, const MethodTable& methodInits)
-    : RbComplex(), members(), methods(methodInits) {
+MemberObject::MemberObject(const MemberRules& memberRules, const MethodTable& methodInits) : RbComplex(), members(), methods(methodInits) {
 
     /* Fill member table (frame) based on member rules */
     for (MemberRules::const_iterator i=memberRules.begin(); i!=memberRules.end(); i++) {
@@ -87,7 +86,7 @@ const VectorString& MemberObject::getClass(void) const {
 
 
 /** Execute member function with preprocessed arguments */
-const RbObject* MemberObject::executeMethod(const std::string& name, int funcId) {
+DAGNode* MemberObject::executeMethod(const std::string& name, int funcId) {
 
     /* Get preprocessed arguments */
     std::vector<DAGNode*> arguments = methods.getProcessedArguments(funcId);
@@ -98,7 +97,7 @@ const RbObject* MemberObject::executeMethod(const std::string& name, int funcId)
 
 
 /** Execute member function */
-const RbObject* MemberObject::executeMethod(const std::string& name, std::vector<Argument>& args) {
+DAGNode* MemberObject::executeMethod(const std::string& name, std::vector<Argument>& args) {
 
     /* Process the arguments */
     int funcId = methods.processArguments(name, args);

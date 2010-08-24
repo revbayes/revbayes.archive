@@ -54,8 +54,8 @@ class MemberObject: public RbComplex {
         virtual void                setVariable(const std::string& name, DAGNode* var);                           //!< Set member variable
 
         // Member method functions
-        const RbObject*             executeMethod(const std::string& name, int funcId);                           //!< Execute method with preprocessed args
-        const RbObject*             executeMethod(const std::string& name, std::vector<Argument>& args);          //!< Execute method
+        DAGNode*                   executeMethod(const std::string& name, int funcId);                           //!< Execute method with preprocessed args
+        DAGNode*                   executeMethod(const std::string& name, std::vector<Argument>& args);          //!< Execute method
         virtual const MethodTable&  getMethodInits(void) const = 0;                                               //!< Get method specifications
         const MethodTable&          getMethods(void) const { return methods; }                                    //!< Get methods
         int                         setArguments(const std::string& name, std::vector<Argument>& args);           //!< Set arguments of method
@@ -66,7 +66,7 @@ class MemberObject: public RbComplex {
 									MemberObject(const MemberRules& memberRules, const MethodTable& methodInits); //!< Constructor
 
         // Protected functions
-        virtual const RbObject*     executeOperation(const std::string& name, std::vector<DAGNode*>& args) = 0;   //!< Execute method
+        virtual DAGNode*           executeOperation(const std::string& name, std::vector<DAGNode*>& args) = 0;   //!< Execute method
         DAGNode*                    getVariable(const std::string& name);                                         //!< Get member variable (non-const)
 
         // Members keep track of variables and functions belonging to the object
