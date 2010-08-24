@@ -31,6 +31,13 @@
 /** Constructor */
 MemberFunction::MemberFunction(const std::string& retType, const ArgumentRules& argRules)
     : RbFunction(), returnType(retType), argumentRules(argRules) {
+    dim = 0;
+}
+
+/** Constructor */
+MemberFunction::MemberFunction(const std::string& retType, const int d, const ArgumentRules& argRules)
+    : RbFunction(), returnType(retType), argumentRules(argRules) {
+    dim = d;
 }
 
 
@@ -60,7 +67,7 @@ bool MemberFunction::equals(const RbObject* x) const {
 
 
 /** Execute operation: we rely on the object's own implementation, so we do nothing here */
-RbObject* MemberFunction::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* MemberFunction::executeOperation(const std::vector<DAGNode*>& args) {
 
     return NULL;
 }

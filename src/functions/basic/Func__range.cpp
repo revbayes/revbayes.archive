@@ -17,6 +17,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Func__range.h"
 #include "VectorInteger.h"
@@ -34,7 +35,7 @@ Func__range* Func__range::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func__range::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__range::executeOperation(const std::vector<DAGNode*>& args) {
 
     int first = ((Integer*)(args[0])->getValue())->getValue();
     int last  = ((Integer*)(args[1])->getValue())->getValue();
@@ -43,7 +44,7 @@ RbObject* Func__range::executeOperation(const std::vector<DAGNode*>& args) {
     for (int i=first; i<=last; i++)
         temp.push_back(i);
 
-    return new VectorInteger(temp);
+    return new ConstantNode(new VectorInteger(temp));
 }
 
 

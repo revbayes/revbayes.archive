@@ -39,7 +39,7 @@ Func_clamp* Func_clamp::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func_clamp::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_clamp::executeOperation(const std::vector<DAGNode*>& args) {
 
     // Get the stochastic node from the variable lookup
     const DeterministicNode* lookupNode = dynamic_cast<const DeterministicNode*>(args[0]);

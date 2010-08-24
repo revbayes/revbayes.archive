@@ -18,6 +18,7 @@
 
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DAGNodePlate.h"
 #include "DeterministicNode.h"
@@ -46,7 +47,7 @@ Func_s_int* Func_s_int::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func_s_int::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_s_int::executeOperation(const std::vector<DAGNode*>& args) {
 
 
     // Get first element
@@ -59,7 +60,7 @@ RbObject* Func_s_int::executeOperation(const std::vector<DAGNode*>& args) {
     // set up the default simplex
     std::vector<double> tempVec( simplexSize, 1.0/simplexSize );
 
-    return new Simplex(tempVec);
+    return new ConstantNode(new Simplex(tempVec));
 }
 
 

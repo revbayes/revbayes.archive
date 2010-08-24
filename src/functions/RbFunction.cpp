@@ -129,7 +129,7 @@ void RbFunction::deleteProcessedArguments(void) {
 
 
 /** Execute function with arguments simply passed in as they are given */
-RbObject* RbFunction::execute(const std::vector<Argument>& args) {
+DAGNode* RbFunction::execute(const std::vector<Argument>& args) {
 
     if (processArguments(args) == false)
         throw RbException("Arguments do not match formals.");
@@ -139,7 +139,7 @@ RbObject* RbFunction::execute(const std::vector<Argument>& args) {
 
 
 /** Execute function for repeated evaluation after arguments have been set */
-RbObject* RbFunction::execute() {
+DAGNode* RbFunction::execute() {
 
     if (!argumentsProcessed) {
         throw RbException("Arguments were not processed before executing function.");

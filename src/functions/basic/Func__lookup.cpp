@@ -73,7 +73,7 @@ Func__lookup* Func__lookup::clone(void) const {
 
 
 /** Pointer-based equals comparison */
-bool Func__lookup::equals(const RbObject* x) const {
+bool Func__lookup::equals(const DAGNode* x) const {
 
     const Func__lookup* p = dynamic_cast<const Func__lookup*>(x);
     if ( p == NULL)
@@ -96,7 +96,7 @@ bool Func__lookup::equals(const RbObject* x) const {
 
 
 /** Execute operation: calculate index and get value from variable */
-RbObject* Func__lookup::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__lookup::executeOperation(const std::vector<DAGNode*>& args) {
 
     DAGNode* theVariable = args[0];
 
@@ -111,9 +111,11 @@ RbObject* Func__lookup::executeOperation(const std::vector<DAGNode*>& args) {
     }
     
     if (index.size() == 0)
-        return theVariable->getValue()->clone();
+        return theVariable->clone();
+//        return theVariable->getValue()->clone();
     else
-        return theVariable->getValElement(index)->clone();
+        return theVariable->clone();
+//        return theVariable->getValElement(index)->clone();
 }
 
 

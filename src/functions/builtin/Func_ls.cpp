@@ -40,7 +40,7 @@ RbObject* Func_ls::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func_ls::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_ls::executeOperation(const std::vector<DAGNode*>& args) {
 
     /* Open file */
     bool printAll = ((Boolean*) (args[0]->getValue()))->getValue();

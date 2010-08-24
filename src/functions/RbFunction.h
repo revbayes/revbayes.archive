@@ -69,8 +69,8 @@ class RbFunction :  public RbObject {
         virtual const ArgumentRules&            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual int                             getReturnDim(void) const { return 0; }                                              //!< Get dim of return value
         virtual const std::string&              getReturnType(void) const = 0;                                                      //!< Get type of return value
-        RbObject*                               execute(void);                                                                      //!< Execute using processed args
-        RbObject*                               execute(const std::vector<Argument>& args);                                         //!< Execute function
+        DAGNode*                                execute(void);                                                                      //!< Execute using processed args
+        DAGNode*                                execute(const std::vector<Argument>& args);                                         //!< Execute function
         std::vector<DAGNode*> const&            getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
         virtual bool                            processArguments(const std::vector<Argument>& args, VectorInteger* matchScore=NULL);    //!< Process args, return a match score if pointer is not null
 
@@ -84,7 +84,7 @@ class RbFunction :  public RbObject {
         // Regular utility functions
         virtual RbObject*                       convertTo(const std::string& type) const;                                           //!< Convert to type
         void                                    deleteProcessedArguments(void);                                                     //!< Delete processed arguments
-    	virtual RbObject*                       executeOperation(std::vector<DAGNode*> const& args) = 0;                            //!< Execute operation
+    	virtual DAGNode*                        executeOperation(std::vector<DAGNode*> const& args) = 0;                            //!< Execute operation
         virtual bool                            isConvertibleTo(const std::string& type) const;                                     //!< Is convertible to type and dim?
 
         // Member variables

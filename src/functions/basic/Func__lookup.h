@@ -37,7 +37,7 @@ class Func__lookup :  public RbFunction {
 
         // Basic utility functions
         Func__lookup*               clone(void) const;                      //!< Clone the object
-    	bool                        equals(const RbObject* obj) const;      //!< Equals comparison
+    	bool                        equals(const DAGNode* obj) const;      //!< Equals comparison
     	const VectorString&         getClass(void) const;                   //!< Get class vector
 
         // Regular functions
@@ -47,7 +47,7 @@ class Func__lookup :  public RbFunction {
         DAGNode*                    getVariable(void) const;                //!< Get pointer to variable (for changing variable)
 
 	protected:
-        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 
         ArgumentRules               argRules;                               //!< The argument rules
 };

@@ -54,7 +54,7 @@ class DistributionFunction :  public RbFunction {
         bool                        processArguments(const std::vector<Argument>& args, VectorInteger* matchScore=NULL);    //!< Process args, set member variables of distribution
 
 	protected:
-        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 
         ArgumentRules               argumentRules;                          //!< Argument rules
         std::string                 returnType;                             //!< Return type

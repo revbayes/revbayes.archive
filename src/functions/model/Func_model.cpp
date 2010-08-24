@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Func_model.h"
 #include "Model.h"
@@ -34,12 +35,12 @@ RbObject* Func_model::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func_model::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_model::executeOperation(const std::vector<DAGNode*>& args) {
 
     if (args[0]->numChildren() != 0)
         throw RbException("Node is not a sink node");
 
-    return new Model(args);
+    return new ConstantNode(new Model(args));
 }
 
 

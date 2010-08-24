@@ -39,7 +39,7 @@ RbObject* Func_source::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func_source::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_source::executeOperation(const std::vector<DAGNode*>& args) {
 
     /* Open file */
     std::string filename = ((RbString*)(args[0]->getValue()))->getValue();

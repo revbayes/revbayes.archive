@@ -39,7 +39,7 @@ class Func__eq :  public RbFunction {
         const std::string&          getReturnType(void) const;                              //!< Get type of return value
 
 	protected:
-        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 };
 
 #endif
@@ -65,45 +65,45 @@ Func__eq<firstValType, secondValType>* Func__eq<firstValType, secondValType>::cl
 
 /** Execute function: Bool <- Integer == Integer */
 template <>
-RbObject* Func__eq<Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__eq<Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
 
     int val1  = ((Integer*)(args[0])->getValue())->getValue();
     int val2  = ((Integer*)(args[1])->getValue())->getValue();
     bool comp = (val1 == val2);
-    return new Boolean(comp);
+    return new ConstantNode( new Boolean(comp));
 }
 
 
 /** Execute function: Bool <- Real == Real */
 template <>
-RbObject* Func__eq<Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__eq<Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = ((Real*)(args[0])->getValue())->getValue();
     double val2 = ((Real*)(args[1])->getValue())->getValue();
     bool comp   = RbMath::compApproximatelyEqual(val1, val2, 0.00001);
-    return new Boolean(comp);
+    return new ConstantNode( new Boolean(comp));
 }
 
 
 /** Execute function: Bool <- Integer == Real */
 template <>
-RbObject* Func__eq<Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__eq<Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = (double)(((Integer*)(args[0])->getValue())->getValue());
     double val2 = ((Real*)(args[1])->getValue())->getValue();
     bool comp   = RbMath::compApproximatelyEqual(val1, val2, 0.00001);
-    return new Boolean(comp);
+    return new ConstantNode( new Boolean(comp));
 }
 
 
 /** Execute function: Bool <- Real == Integer */
 template <>
-RbObject* Func__eq<Real,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__eq<Real,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = ((Real*)(args[0])->getValue())->getValue();
     double val2 = (double)(((Integer*)(args[1])->getValue())->getValue());
     bool comp   = RbMath::compApproximatelyEqual(val1, val2, 0.00001);
-    return new Boolean(comp);
+    return new ConstantNode( new Boolean(comp));
 }
 
 

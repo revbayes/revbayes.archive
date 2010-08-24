@@ -17,6 +17,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DAGNodePlate.h"
 #include "DeterministicNode.h"
@@ -42,7 +43,7 @@ Func_v_int* Func_v_int::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func_v_int::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_v_int::executeOperation(const std::vector<DAGNode*>& args) {
 
     // Create temporary vector for the ints 
     std::vector<int>    tempVec;
@@ -58,7 +59,7 @@ RbObject* Func_v_int::executeOperation(const std::vector<DAGNode*>& args) {
         }
     }
 
-    return new VectorInteger(tempVec);
+    return new ConstantNode(new VectorInteger(tempVec));
 }
 
 

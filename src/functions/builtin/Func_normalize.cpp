@@ -18,6 +18,7 @@
 
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DAGNodePlate.h"
 #include "DeterministicNode.h"
@@ -46,7 +47,7 @@ Func_normalize* Func_normalize::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func_normalize::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_normalize::executeOperation(const std::vector<DAGNode*>& args) {
 
     // Get first element
     std::vector<double> tempVec    = ((VectorRealPos*)(args[0]->getValue()))->getValue();
@@ -55,7 +56,7 @@ RbObject* Func_normalize::executeOperation(const std::vector<DAGNode*>& args) {
     // normalize the vector
     RbMath::normalize(tempVec, desiredSum);
         
-    return new Simplex(tempVec);
+    return new ConstantNode(new Simplex(tempVec));
 }
 
 

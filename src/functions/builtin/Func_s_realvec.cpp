@@ -18,6 +18,7 @@
 
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DAGNodePlate.h"
 #include "DeterministicNode.h"
@@ -45,7 +46,7 @@ Func_s_realvec* Func_s_realvec::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func_s_realvec::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_s_realvec::executeOperation(const std::vector<DAGNode*>& args) {
 
     // Get the vector of real numbers 
     std::vector<double> tempVec = ((VectorRealPos*)(args[0]->getValue()))->getValue();
@@ -60,7 +61,7 @@ RbObject* Func_s_realvec::executeOperation(const std::vector<DAGNode*>& args) {
     // renormalization, just to be really, really safe
     RbMath::normalize(tempVec, 1.0);
 
-    return new Simplex(tempVec);
+    return new ConstantNode(new Simplex(tempVec));
 }
 
 

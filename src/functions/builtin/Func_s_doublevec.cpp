@@ -18,6 +18,7 @@
 
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DAGNodePlate.h"
 #include "DeterministicNode.h"
@@ -45,7 +46,7 @@ Func_s_doublevec* Func_s_doublevec::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func_s_doublevec::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_s_doublevec::executeOperation(const std::vector<DAGNode*>& args) {
 
     // Create temporary vector for the ints 
     std::vector<double>    tempVec;
@@ -72,7 +73,7 @@ RbObject* Func_s_doublevec::executeOperation(const std::vector<DAGNode*>& args) 
     // renormalization, just to be really, really safe
     RbMath::normalize(tempVec, 1.0);
 
-    return new Simplex(tempVec);
+    return new ConstantNode(new Simplex(tempVec));
 }
 
 

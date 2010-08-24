@@ -39,7 +39,7 @@ class Func__div :  public RbFunction {
         const std::string&          getReturnType(void) const;                              //!< Get type of return value
 
 	protected:
-        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 };
 
 #endif
@@ -65,58 +65,58 @@ Func__div<firstValType, secondValType, sumType>* Func__div<firstValType, secondV
 
 /** Execute function: Integer <- Integer / Integer */
 template <>
-RbObject* Func__div<Integer,Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__div<Integer,Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = (double)(((Integer*)(args[0])->getValue())->getValue());
     double val2 = (double)(((Integer*)(args[1])->getValue())->getValue());
     double quot = val1 / val2;
-    return new Real(quot);
+    return new ConstantNode( new Real(quot));
 }
 
 
 /** Execute function: Real <- Real / Real */
 template <>
-RbObject* Func__div<Real,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__div<Real,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = ((Real*)(args[0])->getValue())->getValue();
     double val2 = ((Real*)(args[1])->getValue())->getValue();
     double quot = val1 / val2;
-    return new Real(quot);
+    return new ConstantNode( new Real(quot));
 }
 
 
 /** Execute function: Real <- Integer / Real */
 template <>
-RbObject* Func__div<Integer,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__div<Integer,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = (double)(((Integer*)(args[0])->getValue())->getValue());
     double val2 = ((Real*)(args[1])->getValue())->getValue();
     double quot = val1 / val2;
-    return new Real(quot);
+    return new ConstantNode( new Real(quot));
 }
 
 
 /** Execute function: Real <- Real / Integer */
 template <>
-RbObject* Func__div<Real,Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__div<Real,Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = ((Real*)(args[0])->getValue())->getValue();
     double val2 = (double)(((Integer*)(args[1])->getValue())->getValue());
     double quot = val1 / val2;
-    return new Real(quot);
+    return new ConstantNode( new Real(quot));
 }
 
 
 /** Execute function: MatrixReal <- MatrixReal / MatrixReal */
 template <>
-RbObject* Func__div<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__div<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
 
     MatrixReal val1 = ((MatrixReal*)(args[0])->getValue())->getValue();
     MatrixReal val2 = ((MatrixReal*)(args[1])->getValue())->getValue();
     MatrixReal val2Inv(val2);
     RbMath::matrixInverse(val2, val2Inv);
     MatrixReal quot = val1 * val2Inv;
-    return new MatrixReal(quot);
+    return new ConstantNode( new MatrixReal(quot));
 }
 
 

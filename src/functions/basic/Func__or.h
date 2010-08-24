@@ -39,7 +39,7 @@ class Func__or :  public RbFunction {
         const std::string&          getReturnType(void) const;                              //!< Get type of return value
 
 	protected:
-        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 };
 
 #endif
@@ -65,45 +65,45 @@ Func__or<firstValType, secondValType>* Func__or<firstValType, secondValType>::cl
 
 /** Execute function: Boolean <- Integer | Integer */
 template <>
-RbObject* Func__or<Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__or<Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
 
     bool val1 = (bool)(((Integer*)(args[0])->getValue())->getValue());
     bool val2 = (bool)(((Integer*)(args[1])->getValue())->getValue());
     bool comp = (val1 || val2);
-    return new Boolean(comp);
+    return new ConstantNode( new Boolean(comp));
 }
 
 
 /** Execute function: Boolean <- Integer | Boolean */
 template <>
-RbObject* Func__or<Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__or<Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     bool val1 = (bool)(((Integer*)(args[0])->getValue())->getValue());
     bool val2 = ((Boolean*)(args[1])->getValue())->getValue();
     bool comp = (val1 || val2);
-    return new Boolean(comp);
+    return new ConstantNode( new Boolean(comp));
 }
 
 
 /** Execute function: Boolean <- Boolean | Integer */
 template <>
-RbObject* Func__or<Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__or<Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     bool val1 = ((Boolean*)(args[0])->getValue())->getValue();
     bool val2 = (bool)(((Integer*)(args[1])->getValue())->getValue());
     bool comp = (val1 || val2);
-    return new Boolean(comp);
+    return new ConstantNode( new Boolean(comp));
 }
 
 
 /** Execute function: Boolean <- Boolean | Boolean */
 template <>
-RbObject* Func__or<Real,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__or<Real,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
 
     bool val1 = ((Boolean*)(args[0])->getValue())->getValue();
     bool val2 = ((Boolean*)(args[1])->getValue())->getValue();
     bool comp = (val1 || val2);
-    return new Boolean(comp);
+    return new ConstantNode( new Boolean(comp));
 }
 
 

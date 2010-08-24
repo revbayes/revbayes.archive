@@ -17,6 +17,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Func__lookup.h"
@@ -40,12 +41,12 @@ Func_sqrt* Func_sqrt::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func_sqrt::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_sqrt::executeOperation(const std::vector<DAGNode*>& args) {
 
     double x = (((Real*) (args[0]->getValue())))->getValue();
 	if (x < 0.0)
 		throw (RbException("Square root of negative number. RevBayes does not (yet) support complex numbers"));
-    return new RealPos( sqrt(x) );
+    return new ConstantNode(new RealPos( sqrt(x) ));
 }
 
 

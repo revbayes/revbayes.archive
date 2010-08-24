@@ -39,7 +39,7 @@ class Func__add :  public RbFunction {
         const std::string&          getReturnType(void) const;                              //!< Get type of return value
 
 	protected:
-        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 };
 
 #endif
@@ -64,56 +64,56 @@ Func__add<firstValType, secondValType, sumType>* Func__add<firstValType, secondV
 
 /** Execute function: Integer <- Integer + Integer */
 template <>
-RbObject* Func__add<Integer,Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__add<Integer,Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
 
     int val1 = ((Integer*)(args[0])->getValue())->getValue();
     int val2 = ((Integer*)(args[1])->getValue())->getValue();
     int sum  = val1 + val2;
-    return new Integer(sum);
+    return new ConstantNode( new Integer(sum));
 }
 
 
 /** Execute function: Real <- Real + Real */
 template <>
-RbObject* Func__add<Real,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__add<Real,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = ((Real*)(args[0])->getValue())->getValue();
     double val2 = ((Real*)(args[1])->getValue())->getValue();
     double sum  = val1 + val2;
-    return new Real(sum);
+    return new ConstantNode( new Real(sum));
 }
 
 
 /** Execute function: Real <- Integer + Real */
 template <>
-RbObject* Func__add<Integer,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__add<Integer,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = (double)(((Integer*)(args[0])->getValue())->getValue());
     double val2 = ((Real*)(args[1])->getValue())->getValue();
     double sum  = val1 + val2;
-    return new Real(sum);
+    return new ConstantNode( new Real(sum));
 }
 
 
 /** Execute function: Real <- Real + Integer */
 template <>
-RbObject* Func__add<Real,Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__add<Real,Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = ((Real*)(args[0])->getValue())->getValue();
     double val2 = (double)(((Integer*)(args[1])->getValue())->getValue());
     double sum  = val1 + val2;
-    return new Real(sum);
+    return new ConstantNode( new Real(sum));
 }
 
 
 /** Execute function: RealMatrix <- RealMatrix + RealMatrix */
 template <>
-RbObject* Func__add<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__add<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
 
     MatrixReal val1 = ((MatrixReal*)(args[0])->getValue())->getValue();
     MatrixReal val2 = ((MatrixReal*)(args[1])->getValue())->getValue();
     MatrixReal sum  = val1 + val2;
-    return new MatrixReal(sum);
+    return new ConstantNode( new MatrixReal(sum));
 }
 
 

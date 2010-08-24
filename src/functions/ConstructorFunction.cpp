@@ -16,6 +16,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "ConstructorFunction.h"
 #include "DAGNode.h"
 #include "MemberObject.h"
@@ -46,7 +47,7 @@ bool ConstructorFunction::equals(const RbObject* x) const {
 
 
 /** Execute operation: we reset our template object here */
-RbObject* ConstructorFunction::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* ConstructorFunction::executeOperation(const std::vector<DAGNode*>& args) {
 
     const ArgumentRules&          argRules = getArgumentRules();
 
@@ -61,7 +62,7 @@ RbObject* ConstructorFunction::executeOperation(const std::vector<DAGNode*>& arg
             copy->setValue((*i)->getLabel(), (*j)->getValue()->clone());
     }
  
-    return copy;
+    return new ConstantNode(copy);
 }
 
 

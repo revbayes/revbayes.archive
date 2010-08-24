@@ -18,6 +18,7 @@
 
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DAGNodePlate.h"
 #include "DeterministicNode.h"
@@ -44,7 +45,7 @@ Func_v_vecrealvec* Func_v_vecrealvec::clone(void) const {
 
 
 /** Execute function */
-RbObject* Func_v_vecrealvec::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_v_vecrealvec::executeOperation(const std::vector<DAGNode*>& args) {
 
     // Get the dimensions
     int numCols = ((VectorReal*)(args[0]->getValue()))->size();
@@ -83,7 +84,7 @@ RbObject* Func_v_vecrealvec::executeOperation(const std::vector<DAGNode*>& args)
         }
         
     // Make and return the matrix
-    return new MatrixReal(tmpM);
+    return new ConstantNode(new MatrixReal(tmpM));
 }
 
 

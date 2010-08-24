@@ -16,6 +16,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DistributionFunction.h"
 #include "DAGNode.h"
 #include "Distribution.h"
@@ -39,12 +40,10 @@ DistributionFunction::DistributionFunction(Distribution* dist, FuncType funcType
     /* Set the function type */
     functionType = funcType;
 
-    /* Get the distribution parameter rules and set type to value argument except for rng */
+    /* Get the distribution parameter rules and set type to value argument */
     const ArgumentRules& memberRules = dist->getMemberRules();
     for (ArgumentRules::const_iterator i = memberRules.begin(); i!=memberRules.end(); i++) {
         argumentRules.push_back(new ArgumentRule(*(*i)));
-        if ((*i)->getLabel() != "rng")
-            argumentRules.back()->setWrapperRule(false);
     }
 
     /* Modify argument rules and set return type based on function type */
@@ -140,22 +139,22 @@ bool DistributionFunction::equals(const RbObject* x) const {
 
 
 /** Execute operation: switch based on type */
-RbObject* DistributionFunction::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* DistributionFunction::executeOperation(const std::vector<DAGNode*>& args) {
 
     if (functionType == DENSITY) {
         if (((Boolean*)(args.back()->getValue()))->getValue() == false)
-            return new Real(distribution->pdf(args[0]->getValue()));
+            return new ConstantNode(new Real(distribution->pdf(args[0]->getValue())));
         else
-            return new Real(distribution->lnPdf(args[0]->getValue()));
+            return new ConstantNode(new Real(distribution->lnPdf(args[0]->getValue())));
     }
     else if (functionType == RVALUE) {
-         return distribution->rv();
+         return new ConstantNode(distribution->rv());
     }
     else if (functionType == PROB) {
-        return new Real(((DistributionReal*)(distribution))->cdf(((Real*)(args[0]->getValue()))->getValue()));
+        return new ConstantNode(new Real(((DistributionReal*)(distribution))->cdf(((Real*)(args[0]->getValue()))->getValue())));
     }
     else if (functionType == QUANTILE) {
-        return new Real((((DistributionReal*)(distribution))->quantile(((Real*)(args[0]->getValue()))->getValue())));
+        return new ConstantNode(new Real((((DistributionReal*)(distribution))->quantile(((Real*)(args[0]->getValue()))->getValue()))));
     }
 
     throw ("Unrecognized distribution function");

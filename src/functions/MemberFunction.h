@@ -32,7 +32,8 @@ class VectorString;
 class MemberFunction :  public RbFunction {
 
     public:
-                                    MemberFunction(const std::string& retType, const ArgumentRules& argRules);  //!< Constructor
+                                    MemberFunction(const std::string& retType, const ArgumentRules& argRules);                 //!< Constructor
+                                    MemberFunction(const std::string& retType, const int d, const ArgumentRules& argRules);  //!< Constructor
 
         // Basic utility functions
         std::string                 briefInfo(void) const;                  //!< Brief info about object
@@ -44,12 +45,15 @@ class MemberFunction :  public RbFunction {
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
         const std::string&          getReturnType(void) const;              //!< Get type of return value
+        int                         getReturnDim(void) const { return dim; }                                              //!< Get dim of return value
 
 	protected:
-        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 
         std::string                 returnType;                             //!< Return type
         const ArgumentRules&        argumentRules;                          //!< Argument rules
+        
+        int                         dim;
 };
 
 #endif

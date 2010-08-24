@@ -39,7 +39,7 @@ class Func__sub :  public RbFunction {
         const std::string&          getReturnType(void) const;                              //!< Get type of return value
 
 	protected:
-        RbObject*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 };
 
 #endif
@@ -64,56 +64,56 @@ Func__sub<firstValType, secondValType, sumType>* Func__sub<firstValType, secondV
 
 /** Execute function: Integer <- Integer - Integer */
 template <>
-RbObject* Func__sub<Integer,Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__sub<Integer,Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
 
     int val1 = ((Integer*)(args[0])->getValue())->getValue();
     int val2 = ((Integer*)(args[1])->getValue())->getValue();
     int res  = val1 - val2;
-    return new Integer(res);
+    return new ConstantNode( new Integer(res));
 }
 
 
 /** Execute function: Real <- Real - Real */
 template <>
-RbObject* Func__sub<Real,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__sub<Real,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = ((Real*)(args[0])->getValue())->getValue();
     double val2 = ((Real*)(args[1])->getValue())->getValue();
     double res  = val1 - val2;
-    return new Real(res);
+    return new ConstantNode( new Real(res));
 }
 
 
 /** Execute function: Real <- Integer - Real */
 template <>
-RbObject* Func__sub<Integer,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__sub<Integer,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = (double)(((Integer*)(args[0])->getValue())->getValue());
     double val2 = ((Real*)(args[1])->getValue())->getValue();
     double res  = val1 - val2;
-    return new Real(res);
+    return new ConstantNode( new Real(res));
 }
 
 
 /** Execute function: Real <- Real - Integer */
 template <>
-RbObject* Func__sub<Real,Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__sub<Real,Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     double val1 = ((Real*)(args[0])->getValue())->getValue();
     double val2 = (double)(((Integer*)(args[1])->getValue())->getValue());
     double res  = val1 - val2;
-    return new Real(res);
+    return new ConstantNode( new Real(res));
 }
 
 
 /** Execute function: RealMatrix <- RealMatrix - RealMatrix */
 template <>
-RbObject* Func__sub<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__sub<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
 
     MatrixReal val1 = ((MatrixReal*)(args[0])->getValue())->getValue();
     MatrixReal val2 = ((MatrixReal*)(args[1])->getValue())->getValue();
     MatrixReal res  = val1 - val2;
-    return new MatrixReal(res);
+    return new ConstantNode( new MatrixReal(res));
 }
 
 
