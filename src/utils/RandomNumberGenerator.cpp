@@ -1,17 +1,29 @@
-
+/**
+ * @file
+ * This file contains the implementation of RandomNumberGenerator, which is
+ * used to generate uniform(0,1) random variables.
+ *
+ * @brief Declaration of RandomNumberGenerator
+ *
+ * (c) Copyright 2009-
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-11-20, version 1.0
+ *
+ * $Id$
+ */
 
 #include "RandomNumberGenerator.h"
-#include "RbComplex.h"
 #include "RbException.h"
-#include "RbObject.h"
-#include "RbNames.h"
 #include "VectorInteger.h"
 
 #include <ctime>
 
 
 /** Default constructor calling time to get the initial seeds */
-RandomNumberGenerator::RandomNumberGenerator(void) : RbComplex() {
+RandomNumberGenerator::RandomNumberGenerator(void) {
 
 	unsigned int x  = (unsigned int)( time(0) );
 	unsigned int s1 = x & 0xFFFF;
@@ -22,73 +34,11 @@ RandomNumberGenerator::RandomNumberGenerator(void) : RbComplex() {
 
 
 /** Constructor explicitly setting the seeds */
-RandomNumberGenerator::RandomNumberGenerator(std::vector<unsigned int> s) : RbComplex() {
+RandomNumberGenerator::RandomNumberGenerator(std::vector<unsigned int> s) {
 
-    if (s.size() != 2)
+    if ( s.size() != 2 )
         throw RbException("Two integer seeds required");
 	seed = s;
-}
-
-
-/** Clone function */
-RandomNumberGenerator* RandomNumberGenerator::clone(void) const {
-
-    return new RandomNumberGenerator(*this);
-}
-
-
-/** Convert to object of another class. The caller manages the object. */
-RbObject* RandomNumberGenerator::convertTo(const std::string& type) const {
-
-    throw (RbException("Conversion of " + getType() + " to " + type + " not supported"));
-    return NULL;
-}
-
-
-/** Pointer-based equals comparison */
-bool RandomNumberGenerator::equals(const RbObject* obj) const {
-
-    const RandomNumberGenerator* p = dynamic_cast<const RandomNumberGenerator*>(obj);
-    if (p == NULL)
-        return false;
-
-    if (seed != p->seed)
-        return false;
-
-    return true;
-}
-
-
-/** Get class vector describing type of object */
-const VectorString& RandomNumberGenerator::getClass(void) const { 
-
-    static VectorString rbClass = VectorString(RandomNumberGenerator_name) + RbComplex::getClass();
-	return rbClass;
-}
-
-
-/** Is convertible to type? */
-bool RandomNumberGenerator::isConvertibleTo(const std::string& type) const {
-
-    return false;
-}
-
-
-/** Print value for user */
-void RandomNumberGenerator::printValue(std::ostream& o) const {
-
-    o << "Random number generator (seed = " << VectorInteger(seed) << ")";
-}
-
-
-/** Get complete info about object */
-std::string RandomNumberGenerator::toString(void) const {
-
-    std::ostringstream o;
-    o << "Random Number Generator:" << std::endl;
-    o << "seed = " << VectorInteger(seed) << std::endl;
-
-    return o.str();
 }
 
 
@@ -97,7 +47,6 @@ void RandomNumberGenerator::setSeed(std::vector<unsigned int> s) {
 
     if (s.size() != 2)
         throw RbException("Two integer seeds required");
-
     seed = s;
 }
 

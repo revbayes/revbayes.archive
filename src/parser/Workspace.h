@@ -76,46 +76,39 @@ class Workspace : public Frame {
 
     public:
 
-        bool                    addDistribution(const std::string& name, Distribution* dist);       //!< Add distribution
-        bool                    addDistribution(const std::string& name, DistributionReal* dist);   //!< Add real-valued distribution
-        bool                    addFunction(const std::string& name, RbFunction* func);             //!< Add function
-        bool                    addType(const RbObject* exampleObj);                                //!< Add type
-        bool                    addTypeWithConstructor(const std::string& name, MemberObject* templ);   //!< Add type with constructor
-        const DAGNode*         executeFunction(const std::string& name,
-                                    const std::vector<Argument>& args) const;                       //!< Execute function
-        FunctionTable*          getFunctionTable() { return functionTable; }                        //!< Get function table
-        RbFunction*             getFunction(const std::string& name,
-                                    const std::vector<Argument>& args);                             //!< Get function copy
-        RbObject*               getFunctionValue(const std::string& name,
-                                    const std::vector<Argument>& args) const;                       //!< Get function value
-        RandomNumberGenerator*  get_rng(void);                                                      //!< Get default random number generator
-        void                    initializeGlobalWorkspace(void);                                    //!< Initialize global workspace
-
-        bool                    isXOfTypeY(const std::string& x, const std::string& y) const;       //!< Type checking
-        void                    printValue(std::ostream& c) const;                                  //!< Print workspace
-
-        /** Get global workspace */
-        static Workspace& globalWorkspace() {
-                static Workspace globalSpace = Workspace();
-                return globalSpace;
-        }
-
-        /** Get user workspace */
-        static Workspace& userWorkspace() {
-                static Workspace userSpace = Workspace(&globalWorkspace());
-                return userSpace;
-        }
+        bool                        addDistribution(const std::string& name, Distribution* dist);                        //!< Add distribution
+        bool                        addDistribution(const std::string& name, DistributionReal* dist);                    //!< Add real-valued distribution
+        bool                        addFunction(const std::string& name, RbFunction* func);                              //!< Add function
+        bool                        addType(const RbObject* exampleObj);                                                 //!< Add type
+        bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);                //!< Add type with constructor
+        const DAGNode*              executeFunction(const std::string& name, const std::vector<Argument>& args) const;   //!< Execute function
+        FunctionTable*              getFunctionTable(void) { return functionTable; }                                     //!< Get function table
+        RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);             //!< Get function copy
+        RbObject*                   getFunctionValue(const std::string& name, const std::vector<Argument>& args) const;  //!< Get function value
+        RandomNumberGenerator*      get_rng(void);                                                                       //!< Get default random number generator
+        void                        initializeGlobalWorkspace(void);                                                     //!< Initialize global workspace
+        bool                        isXOfTypeY(const std::string& x, const std::string& y) const;                        //!< Type checking
+        void                        printValue(std::ostream& c) const;                                                   //!< Print workspace
+        static Workspace&           globalWorkspace(void)                                                                //!< Get global workspace
+		                            {
+                                       static Workspace globalSpace = Workspace();
+                                       return globalSpace;
+                                       }
+        static Workspace&           userWorkspace(void)                                                                  //!< Get user workspace
+							 {
+							 static Workspace userSpace = Workspace(&globalWorkspace());
+						      return userSpace;
+							 }
  
     private:
-                                Workspace();                                //!< Workspace with NULL parent
-                                Workspace(Workspace* parentSpace);          //!< Workspace with parent
-                                Workspace(const Workspace& w) {}            //!< Prevent copy
-                               ~Workspace();                                //!< Delete function table
+                                    Workspace(void);                                                                     //!< Workspace with NULL parent
+                                    Workspace(Workspace* parentSpace);                                                   //!< Workspace with parent
+                                    Workspace(const Workspace& w) {}                                                     //!< Prevent copy
+                                   ~Workspace(void);                                                                     //!< Delete function table
+        Workspace&                  operator=(const Workspace& w);                                                       //! Prevent assignment
 
-        Workspace&              operator=(const Workspace& w);              //! Prevent assignment
-
-        FunctionTable*          functionTable;                              //!< Table holding functions
-        TypeTable               typeTable;                                  //!< Type table
+        FunctionTable*              functionTable;                                                                       //!< Table holding functions
+        TypeTable                   typeTable;                                                                           //!< Type table
 };
 
 #endif

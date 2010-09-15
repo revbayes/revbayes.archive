@@ -1,3 +1,23 @@
+/**
+ * @file
+ * This file contains the implementation of RandomNumberFactory, which is
+ * used to manage random number generating objects. The class has a pool
+ * of random number objects that it can hand off as needed. This singleton
+ * class has two seeds it manages: one is a global seed and the other is
+ * is a so called local seed.
+ *
+ * @brief Declaration of RandomNumberFactory
+ *
+ * (c) Copyright 2009-
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-11-20, version 1.0
+ *
+ * $Id$
+ */
+
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -6,6 +26,7 @@
 
 
 
+/** Default constructor */
 RandomNumberFactory::RandomNumberFactory(void) {
 
     setSeed();
@@ -15,6 +36,8 @@ RandomNumberFactory::RandomNumberFactory(void) {
     seedGenerator = new RandomNumberGenerator(s);
 }
 
+
+/** Destructor */
 RandomNumberFactory::~RandomNumberFactory(void) {
 
     delete seedGenerator;
@@ -22,12 +45,16 @@ RandomNumberFactory::~RandomNumberFactory(void) {
         delete (*p);
 }
 
+
+/** Delete a random number object (remove it from the pool too) */
 void RandomNumberFactory::deleteRandomNumberGenerator(RandomNumberGenerator* r) {
 
     allocatedRandomNumbers.erase( r );
     delete r;
 }
 
+
+/** Return a pointer to a random number object */
 RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(void) {
 
     unsigned int s1 = (unsigned int)(seedGenerator->uniform01()*UINT_MAX);
@@ -41,6 +68,8 @@ RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(void) {
     return r;
 }
 
+
+/** Return a pointer to a random number object with a specific set of seeds */
 RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(std::vector<unsigned int> s) {
 
     if (s.size() != 2)
@@ -50,6 +79,8 @@ RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(std::vector
     return r;
 }
 
+
+/** Set the seeds for the factory using the current time */
 void RandomNumberFactory::setSeed(void) {
 
     unsigned int x = (unsigned int)( time( 0 ) );
