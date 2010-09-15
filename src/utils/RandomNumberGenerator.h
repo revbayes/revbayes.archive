@@ -18,7 +18,6 @@
 #ifndef RandomNumberGenerator_H
 #define RandomNumberGenerator_H
 
-#include <string>
 #include <vector>
 
 class RandomNumberGenerator {
@@ -33,7 +32,6 @@ class RandomNumberGenerator {
 		double                      uniform01(void);                                      //!< Get a random [0,1) var
 
 	private:
-		std::string					name;											      //!< Name of selected random number generator
 		std::vector<unsigned int>	seed;											      //!< Vector of two seed values
 };
 
