@@ -42,8 +42,6 @@ class Vector : public RbComplex {
         virtual void                 clear(void) = 0;                                              //!< Clear
         bool                         getIsRowVector(void) const { return isRowVector; }            //!< Is the vector a row vector
         virtual void                 pop_back(void) = 0;                                           //!< Drop element
-        virtual void                 push_back(int x) = 0;                                         //!< Append element to end
-        virtual void                 push_front(int x) = 0;                                        //!< Add element in front
         virtual void                 resize(size_t n) = 0;                                         //!< Resize
         virtual size_t               size(void) const = 0;                                         //!< Get size
         void                         transpose(void);                                              //!< Transpose vector

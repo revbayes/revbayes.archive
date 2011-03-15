@@ -17,18 +17,21 @@
  * $Id: DeterministicNode.cpp 216 2009-12-29 23:19:25Z ronquist $
  */
 
+#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
 #include "VectorString.h"
+#include "Workspace.h"
 
 #include <algorithm>
+#include <cassert>
 
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode(const std::string& type) : VariableNode(type), changed(false), function(NULL), value(NULL), storedValue(NULL)  {
+DeterministicNode::DeterministicNode(const std::string& valType) : VariableNode(valType), changed(false), function(NULL), value(NULL), storedValue(NULL)  {
 	
 	isDagExposed = false;
 }
@@ -97,7 +100,8 @@ DeterministicNode::~DeterministicNode(void) {
             delete (*i);
     }
 
-    delete function;
+    if (function)
+        delete function;
     delete storedValue;
 }
 
@@ -119,11 +123,16 @@ DeterministicNode& DeterministicNode::operator=(const DeterministicNode& x) {
                 delete (*i);
         }
 
-        delete function;
-        function    = (RbFunction*)(x.function->clone());
+        if (function) {
+            delete function;
+            function = NULL;
+        }
+        if (x.function)
+            function    = (RbFunction*)(x.function->clone());
 
         delete storedValue;
-        storedValue = function->execute()->getValue()->clone();
+
+        storedValue = x.storedValue->clone();
         value       = storedValue;
 
         /* Set parents and add this node as a child node of these */
@@ -254,6 +263,54 @@ const RbObject* DeterministicNode::getValElement(const VectorInteger& index) con
 }
 
 
+/** Is it possible to mutate node to newNode? */
+bool DeterministicNode::isMutableTo(const DAGNode* newNode) const {
+
+    return false;
+}
+
+
+/** Is it possible to mutate node to contain newValue? */
+bool DeterministicNode::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
+
+    assert (!newValue->isType(Container_name));
+    
+    bool isMutable = false;
+
+    return isMutable;
+}
+
+
+/** Is it possible to change parent node oldNode to newNode? */
+bool DeterministicNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const {
+
+    // First find node among parents
+    if (parents.find(const_cast<DAGNode*>(oldNode)) == parents.end())
+        throw RbException("Node is not a parent");
+
+    // Now find node among parameters
+    std::vector<DAGNode*>& params = const_cast<std::vector<DAGNode*>& > (function->getProcessedArguments());
+    std::vector<DAGNode*>::iterator it = std::find(params.begin(), params.end(), oldNode);
+    if (it == params.end())
+        throw RbException("Node is not a parameter");
+
+    // Find the corresponding rule
+    const ArgumentRules& argRules = function->getArgumentRules();
+    size_t index = it - params.begin();
+    ArgumentRule* theRule;
+    if ( index >= argRules.size() )
+        theRule = argRules[argRules.size()-1];
+    else
+        theRule = argRules[index];
+
+    // See if the new node value is convertible to the required type
+    if ( Workspace::globalWorkspace().isXConvertibleToY(theRule->getValueType(), theRule->getDim(), newNode->getValueType(), newNode->getDim()) )
+        return true;
+    
+    return false;
+}
+
+
 /** Keep value of node and affected variable nodes */
 void DeterministicNode::keepAffected(void) {
 
@@ -265,6 +322,20 @@ void DeterministicNode::keepAffected(void) {
         }
     }
     touched = changed = false;
+}
+
+
+/** Mutate to newNode */
+void DeterministicNode::mutateTo(DAGNode* newNode) {
+    
+    throw RbException("Not implemented yet");
+}
+
+
+/* Mutate to contain newValue */
+DeterministicNode* DeterministicNode::mutateTo(const VectorInteger& index, RbObject* newValue) {
+
+    throw RbException("Not implemented yet");
 }
 
 

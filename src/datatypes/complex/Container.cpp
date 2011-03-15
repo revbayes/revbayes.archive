@@ -194,13 +194,6 @@ Container* Container::clone(void) const {
     return new Container(*this);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Container::convertTo(const std::string& type) const {
-
-    throw RbException("Cannot convert Container to " + type + ".");
-	
-	return NULL;
-}
 
 /** Pointer-based equals comparison */
 bool Container::equals(const RbObject* obj) const {
@@ -339,11 +332,14 @@ RbObject* Container::getElementPtr(const VectorInteger& index) {
         return ((Container*)(element))->getElementPtr(valueIndex);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool Container::isConvertibleTo(const std::string& type) const {
 
+/** Convert to object of another class. The caller manages the object. */
+bool Container::isConvertibleTo(const std::string& type, int dim) const {
+
+    // TODO: Fill in!!!!
     return false;
 }
+
 
 /** Set value element or elements from value */
 void Container::setElement(const VectorInteger& index, RbObject* val) {

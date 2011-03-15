@@ -37,29 +37,31 @@ class ConstantNode : public DAGNode {
         ConstantNode&           operator=(const ConstantNode& x);                              //!< Assignment operator
 
         // Basic utility functions
-        ConstantNode*           clone(void) const;                                             //!< Clone this object
-        const VectorString&     getClass(void) const;                                          //!< Get class vector
-        void                    printStruct(std::ostream& o) const;                            //!< Print struct for user
-        void                    printValue(std::ostream& o) const;                             //!< Print struct for user
-        std::string             toString(void) const;                                          //!< Complete info on object
+        ConstantNode*           clone(void) const;                                                  //!< Clone this object
+        const VectorString&     getClass(void) const;                                               //!< Get class vector
+        void                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
+        void                    printValue(std::ostream& o) const;                                  //!< Print struct for user
+        std::string             toString(void) const;                                               //!< Complete info on object
 
         // ConstantNode functions
-        const RbObject*         getStoredValue(void) { return value; }                         //!< Get stored value
-        const RbObject*         getValElement(const VectorInteger& index) const;                   //!< Get element of value    
-        const RbObject*         getValue(void) { return value; }                               //!< Get value
-        const RbObject*         getValue(void) const { return value; }                         //!< Get value (const)
-        void                    setElement(const VectorInteger& index, RbObject* val);             //!< Set element of value
-        void                    setValue(RbObject* val);                                       //!< Set value
+        const DAGNode*          getStoredValue(void) { return value; }                              //!< Get stored value
+        const DAGNode*          getValElement(const VectorInteger& index) const;                    //!< Get element of value    
+        const DAGNode*          getValue(void) { return value; }                                    //!< Get value
+        const DAGNode*          getValue(void) const { return value; }                              //!< Get value (const)
+        void                    setElement(const VectorInteger& index, RbObject* val);              //!< Set element of value
+        void                    setValue(RbObject* val);                                            //!< Set value
 
         // DAG functions
-        ConstantNode*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;        //!< Clone entire graph
-        void                    convertValueTo(const std::string& type);                       //!< Convert the the value to the specific type. Should only be allowed for constant nodes.
-        bool                    isTouched (void) const { return false; }                       //!< Touched by a move?
-        bool                    isValueConvertibleTo(const std::string& type) const;           //!< Can we convert the the value to the specific type? Should only be allowed for constant nodes.
-        void                    touchAffected(void);                                           //!< Tell affected nodes value is reset
+        ConstantNode*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
+        bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
+        bool                    isMutableTo(const VectorInteger& index, const RbObject* newValue) const;    //!< Is node mutable to contain newValue?
+        void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
+        ConstantNode*           mutateTo(const VectorInteger& index, RbObject* newValue);                   //!< Mutate to contain newValue
+        bool                    isTouched (void) const { return false; }                                    //!< Touched by a move?
+        void                    touchAffected(void);                                                        //!< Tell affected nodes value is reset
 
     protected:
-        RbObject*               value;                                                         //!< The constant value
+        DAGNode*                value;                                                              //!< The constant value
 };
 
 #endif

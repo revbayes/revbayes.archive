@@ -178,7 +178,7 @@ bool ArgumentRule::isArgValid(DAGNode* var) const {
     if (dim == var->getDim() && Workspace::userWorkspace().isXOfTypeY(var->getValueType(), valueType) == true)
         return true;
 
-    if (val->isConvertible(valueType) == true)
+    if (val->isConvertibleTo(valueType, dim) == true)
         return true;
 
     return false;

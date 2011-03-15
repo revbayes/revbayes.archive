@@ -16,7 +16,7 @@
 #define RbOptions_H
 
 /* Flag for generating debugging info */
-#undef DEBUG_PARSER
+// #undef DEBUG_PARSER -- set this in IDE preprocessor
 
 /* The magic PRINTF defines */
 #if defined (DEBUG_PARSER)

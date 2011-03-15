@@ -37,26 +37,30 @@ class VariableNode : public DAGNode {
         // Utility functions you have to override
         virtual VariableNode*           clone(void) const = 0;                                       //!< Clone this node
         virtual const VectorString&     getClass(void) const;                                        //!< Get class vector
-        virtual const RbObject*         getStoredValue(void) = 0;                                    //!< Get stored value
-        virtual const RbObject*         getValElement(const VectorInteger& index) const = 0;             //!< Get value element
-        virtual const RbObject*         getValue(void) = 0;                                          //!< Get value
-        //virtual bool                    isParentMutableTo(const DAGNode* node, const std::string& type, int dim);     //!< Is parent mutable to type and dim?
+        virtual const DAGNode*          getStoredValue(void) = 0;                                    //!< Get stored value
+        virtual const DAGNode*          getValElement(const VectorInteger& index) const = 0;         //!< Get value element
+        virtual const DAGNode*          getValue(void) = 0;                                          //!< Get value
         virtual void                    printStruct(std::ostream& o) const = 0;                      //!< Print struct for user
         virtual void                    printValue(std::ostream& o) const = 0;                       //!< Print value for user
-        virtual void                    setElement(const VectorInteger& index, RbObject* val) = 0;       //!< Set value element
+        virtual void                    setElement(const VectorInteger& index, RbObject* val) = 0;   //!< Set value element
         virtual void                    setValue(RbObject* val) = 0;                                 //!< Set value
         virtual std::string             toString(void) const = 0;                                    //!< Complete info about object
 
-        // DAG function you should not override
+        // DAG functions you should not override
         bool                            isTouched(void) const { return touched; }                    //!< Is node touched by move or parser?
 
-        // DAG function you have to override
-        VariableNode*                   cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;  //!< Clone entire graph
-        virtual void    	            getAffected(std::set<StochasticNode*>& affected) = 0;        //!< Mark and get affected nodes
-        virtual void    	            keepAffected(void) = 0;                                      //!< Keep value of affected nodes
-        virtual void                    restoreAffected(void) = 0;                                   //!< Restore value of affected nodes
-        virtual void                    swapParentNode(DAGNode* oldP, DAGNode* newP) = 0;            //!< Swap a parent node
-        virtual void                    touchAffected(void) = 0;                                     //!< Tell affected nodes value is reset
+        // DAG functions you have to override
+        VariableNode*                   cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;                     //!< Clone entire graph
+        virtual void    	            getAffected(std::set<StochasticNode*>& affected) = 0;                           //!< Mark and get affected nodes
+        virtual bool                    isMutableTo(const DAGNode* newNode) const = 0;                                  //!< Is node mutable to newNode?
+        virtual bool                    isMutableTo(const VectorInteger& index, const RbObject* newValue) const = 0;    //!< Is node mutable to contain newValue?
+        virtual bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const = 0;    //!< Is parent mutable to newNode?
+        virtual void    	            keepAffected(void) = 0;                                                         //!< Keep value of affected nodes
+        virtual void                    mutateTo(DAGNode* newNode) = 0;                                                 //!< Mutate to new node
+        virtual VariableNode*           mutateTo(const VectorInteger& index, RbObject* newValue) = 0;                   //!< Mutate to contain newValue
+        virtual void                    restoreAffected(void) = 0;                                                      //!< Restore value of affected nodes
+        virtual void                    swapParentNode(DAGNode* oldP, DAGNode* newP) = 0;                               //!< Swap a parent node
+        virtual void                    touchAffected(void) = 0;                                                        //!< Tell affected nodes value is reset
 
         // Default monitors and move functions
         std::vector<Monitor*>           getDefaultMonitors(void);                                    //!< Return default monitors

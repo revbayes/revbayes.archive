@@ -18,6 +18,7 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
+#include "RbNames.h"
 #include "RbObject.h"
 #include "VectorString.h"
 #include "SyntaxLabeledExpr.h"
@@ -49,6 +50,24 @@ SyntaxLabeledExpr::~SyntaxLabeledExpr() {
 }
 
 
+/** Assignment operator */
+SyntaxLabeledExpr& SyntaxLabeledExpr::operator=(const SyntaxLabeledExpr& x) {
+
+    if (&x != this) {
+
+        delete label;
+        delete expression;
+
+        SyntaxElement::operator=(x);
+
+        label      = new RbString(*(x.label));
+        expression = x.expression->clone();
+    }
+
+    return (*this);
+}
+
+
 /** Return brief info about object */
 std::string SyntaxLabeledExpr::briefInfo () const {
 
@@ -56,48 +75,39 @@ std::string SyntaxLabeledExpr::briefInfo () const {
 
     if (expression == NULL)
         o << "SyntaxLabeledExpr:  '" << std::string(*label) << "' = <empty>";
-    else if (expression->isConstExpr()) {
+    else {
         o << "SyntaxLabeledExpr:  '" << std::string(*label) << "' = ";
-        expression->getValue()->printValue(o);
+        o << expression->briefInfo();
     }
-    else
-        o << "SyntaxLabeledExpr:  '" << std::string(*label) << "' = <value>";
 
     return o.str();
 }
 
 
 /** Clone syntax element */
-SyntaxElement* SyntaxLabeledExpr::clone () const {
+SyntaxLabeledExpr* SyntaxLabeledExpr::clone () const {
 
-    return (SyntaxElement*)(new SyntaxLabeledExpr(*this));
+    return new SyntaxLabeledExpr(*this);
 }
 
 
-/** Equals comparison */
-bool SyntaxLabeledExpr::equals(const SyntaxElement* elem) const {
+/** Get class vector describing type of object */
+const VectorString& SyntaxLabeledExpr::getClass(void) const { 
 
-	const SyntaxLabeledExpr* p = dynamic_cast<const SyntaxLabeledExpr*>(elem);
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    result = result && label->equals(p->label);
-    result = result && expression->equals(p->expression);
-
-    return result;
+    static VectorString rbClass = VectorString(SyntaxLabeledExpr_name) + SyntaxElement::getClass();
+	return rbClass; 
 }
 
 
 /** Convert element to DAG node (not applicable so return NULL) */
-DAGNode* SyntaxLabeledExpr::getDAGNode(Frame* frame) const {
+DAGNode* SyntaxLabeledExpr::getDAGNodeExpr(Frame* frame) const {
 
     return NULL;
 }
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbObject* SyntaxLabeledExpr::getValue(Frame* frame) const {
+DAGNode* SyntaxLabeledExpr::getValue(Frame* frame) const {
 
     return NULL;
 }
@@ -106,9 +116,11 @@ RbObject* SyntaxLabeledExpr::getValue(Frame* frame) const {
 /** Print info about the syntax element */
 void SyntaxLabeledExpr::print(std::ostream& o) const {
 
-    o << "SyntaxLabeledExpr:" << std::endl;
+    o << "[" << this << "] SyntaxLabeledExpr:" << std::endl;
     o << "label      = " << label->toString() << std::endl;
-    o << "expression = " << expression->briefInfo() << std::endl;
-}
+    o << "expression = [" << expression << "]" << expression->briefInfo() << std::endl;
+    o << std::endl;
 
+    expression->print(o);
+}
 

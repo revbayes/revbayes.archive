@@ -26,7 +26,12 @@
 
 class VectorString;
 
-/** @note Some functions are virtual because RealPos is derived from double */
+/**
+ * Real is the class used to hold a real value. Internally, the real is represented by
+ * a double.
+ *
+ * @note Some functions are virtual because RealPos is derived from double
+ */
 class Real : public RbObject {
 
     public:
@@ -43,16 +48,16 @@ class Real : public RbObject {
         virtual std::string         toString(void) const;                            //!< Complete info about object
 
         // Type conversion
-                                    operator double(void) const { return value; }    //!< Type conversion to double
+        virtual RbObject*           convertTo(const std::string& type, int dim=0) const;                        //!< Convert to type and dim
+        virtual bool                isConvertibleTo(const std::string& type, int dim=0, bool once=false) const; //!< Is convertible to type and dim?
+                                    operator double(void) const { return value; }    //!< Type conversion to double for convenience
 
         // Getters and setters
         virtual void                setValue(double x) { value = x; }                //!< Set value
         double                      getValue(void) const { return value; }           //!< Get value
 
 	protected:
-        virtual RbObject*           convertTo(const std::string& type) const;        //!< Convert to type
-        virtual bool                isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
-		double                      value;                                           //!< Value member
+ 		double                      value;                                           //!< Value member
 };
 
 #endif

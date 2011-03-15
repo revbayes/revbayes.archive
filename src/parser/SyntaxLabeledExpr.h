@@ -27,25 +27,28 @@
 class SyntaxLabeledExpr : public SyntaxElement {
 
     public:
-            SyntaxLabeledExpr(RbString* id, SyntaxElement *expr);   //!< Constructor
-            SyntaxLabeledExpr(const SyntaxLabeledExpr& x);          //!< Copy constructor
-	        virtual ~SyntaxLabeledExpr();                           //!< Destructor
+                            SyntaxLabeledExpr(RbString* id, SyntaxElement *expr);   //!< Constructor
+                            SyntaxLabeledExpr(const SyntaxLabeledExpr& x);          //!< Copy constructor
+	    virtual            ~SyntaxLabeledExpr();                                    //!< Destructor
+
+        // Assignment operator
+        SyntaxLabeledExpr&  operator=(const SyntaxLabeledExpr& x);                  //!< Assignment operator
 
         // Basic utility functions
-        std::string     briefInfo() const;                          //!< Brief info about object
-        SyntaxElement*  clone() const;                              //!< Clone object
-        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
-        void            print(std::ostream& o) const;               //!< Print info about object
+        std::string         briefInfo() const;                                      //!< Brief info about object
+        SyntaxLabeledExpr*  clone() const;                                          //!< Clone object
+        const VectorString& getClass(void) const;                                   //!< Get class vector 
+        void                print(std::ostream& o) const;                           //!< Print info about object
 
         // Regular functions
-        SyntaxElement*  getExpression(void) { return expression; }  //!< Return expression
-        const RbString* getLabel() const { return label; }          //!< Return label    
-        DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
-        RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
+        SyntaxElement*      getExpression(void) { return expression; }              //!< Return expression
+        const RbString*     getLabel() const { return label; }                      //!< Return label    
+        DAGNode*            getDAGNodeExpr(Frame* frame=NULL) const;                //!< Convert to DAG node expression
+        DAGNode*            getValue(Frame* frame=NULL) const;                      //!< Get semantic value
 
     protected:
-        RbString*       label;          //!< The label of the argument
-        SyntaxElement*  expression;     //!< The expression for the argument value
+        RbString*           label;                                                  //!< The label of the argument
+        SyntaxElement*      expression;                                             //!< The expression for the argument value
 };
 
 #endif

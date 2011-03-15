@@ -59,10 +59,6 @@ class VectorString : public RbComplex {
         void                        setElement(const VectorInteger& index, RbObject* val);  //!< Set element
         void                        setLength(const VectorInteger& len);                    //!< Set length in each dimension
 
-	protected:
-        RbObject*                   convertTo(const std::string& type) const;                //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;          //!< Is convertible to type and dim?
-
     private:
 	    std::vector<std::string>    value;                                                   //!< Vector of values
 };

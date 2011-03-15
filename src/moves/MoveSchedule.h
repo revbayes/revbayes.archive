@@ -54,8 +54,6 @@ class MoveSchedule : public RbComplex {
         void                    setUpdateWeight(double weight);                     //!< Set node update weight
 
 	protected:
-        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
         VariableNode*           theNode;                        //!< The node to move
         std::vector<Move*>      schedule;                       //!< The move schedule
         double                  nodeUpdateWeight;               //!< Node update weight

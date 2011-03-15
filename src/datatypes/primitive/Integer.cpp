@@ -53,26 +53,27 @@ RbObject* Integer::clone(void) const {
 	return  (RbObject*)(new Integer(*this));
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Integer::convertTo(const std::string& type) const {
 
-    if (type == Boolean_name) 
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Integer::convertTo(const std::string& type, int dim) const {
+
+    if (type == Boolean_name && dim == 0) 
         return new Boolean(value == 0);
-    else if (type == Real_name)
+    if (type == Real_name && dim == 0)
         return new Real(value);
-    else if (type == RealPos_name && value > 0)
-        return new RealPos(value);
-    else if (type == RbString_name) 
-		{
+    if (type == RbString_name && dim == 0) {
         std::ostringstream o;
-        o << value;
+        printValue(o);
         return new RbString(o.str());
-		}
-    else if (type == VectorInteger_name)
+    }
+    if (type == VectorInteger_name && dim == 0)
         return new VectorInteger(value);
-    throw RbException("Cannot convert int to " + type + ".");
-    return NULL;
+    if (type == RealPos_name && dim == 0 && value > 0)
+        return new RealPos(value);
+
+    return RbObject::convertTo(type, dim);
 }
+
 
 /** Pointer-based equals comparison */
 bool Integer::equals(const RbObject* obj) const {
@@ -83,7 +84,7 @@ bool Integer::equals(const RbObject* obj) const {
         return value == p->value;
 
     // Try converting the object to an int
-    p = dynamic_cast<const Integer*>(obj->convert(Integer_name));
+    p = dynamic_cast<const Integer*>(obj->convertTo(Integer_name));
     if (p == NULL)
         return false;
 
@@ -93,6 +94,7 @@ bool Integer::equals(const RbObject* obj) const {
     return result;
 }
 
+
 /** Get class vector describing type of object */
 const VectorString& Integer::getClass() const {
 
@@ -100,21 +102,24 @@ const VectorString& Integer::getClass() const {
     return rbClass;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool Integer::isConvertibleTo(const std::string& type) const {
 
-    if (type == Boolean_name)
+/** Is convertible to type and dim? */
+bool Integer::isConvertibleTo(const std::string& type, int dim, bool once) const {
+
+    if (type == Boolean_name && dim == 0)
         return true;
-    else if (type == Real_name)
+    else if (type == Real_name && dim == 0)
         return true;
-    else if (type == RealPos_name && value > 0)
+    else if (type == RbString_name && dim == 0)
         return true;
-    else if (type == RbString_name)
+    else if (type == VectorInteger_name && dim == 0)
         return true;
-    else if (type == VectorInteger_name)
+    if (type == RealPos_name && dim == 0 && once == true && value > 0)
         return true;
-    return false;
+
+    return RbObject::isConvertibleTo(type, dim, once);
 }
+
 
 /** Print value for user */
 void Integer::printValue(std::ostream &o) const {

@@ -27,10 +27,30 @@
 #include "Workspace.h"
 
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <sstream>
 
 
+/** Construct plate from container (type conversion) */
+DAGNodePlate::DAGNodePlate(Container* x) : VariableNode(x->getElementType()) {
+
+    for (ContainerIterator i=x->begin(); i!=x->end(); i++) {
+        ConstantNode* temp = new ConstantNode(x->getElement(i)->clone());
+        nodes.push_back(temp);
+        parents.insert(temp);
+        temp->addChildNode(this);
+    }
+
+    changed      = false;
+    length       = x->getLength();
+    value        = x;
+    storedValue  = value->clone();
+    names        = NULL;
+	isDagExposed = true;
+}
+
+                                
 /** Construct vector with one node x */
 DAGNodePlate::DAGNodePlate(DAGNode* x) : VariableNode(x->getType()) {
 
@@ -531,6 +551,114 @@ DAGNode* DAGNodePlate::getVarElement(const VectorInteger& index) {
 }
 
 
+/** Is it possible to mutate to newNode? */
+bool DAGNodePlate::isMutableTo(const DAGNode* newNode) const {
+
+    return false;
+}
+
+
+/** Is it possible to mutate node to contain newValue? */
+bool DAGNodePlate::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
+
+    assert (!newValue->isType(Container_name));
+    
+    bool isMutable = false;
+
+    // Divide into plate index and value index
+    VectorInteger plateIndex;
+    VectorInteger valueIndex;
+    for (size_t i=0; i<index.size(); i++) {
+        if (i < (size_t)(getDim()))
+            plateIndex.push_back(index[i]);
+        else
+            valueIndex.push_back(index[i]);
+    }
+
+    // Create a temp plate for the dry run
+    DAGNodePlate* temp = NULL;
+
+    // Check whether it is a container conversion or a value conversion
+    if (plateIndex.size() < (size_t)(getDim())) {
+        
+        // Container conversion
+        VectorInteger newLen;
+        for (size_t i=0; i<plateIndex.size(); i++)
+            newLen.push_back(length[i]);
+        temp = new DAGNodePlate(newLen, newValue->getType());
+        isMutable = isMutableTo(temp);
+    }
+    else {
+    
+        // Value conversion
+        std::string refType;
+        std::string compType;
+        bool foundFirst = false;
+        isMutable = true;
+        for (std::vector<DAGNode*>::const_iterator i=nodes.begin(); i!=nodes.end(); i++) {
+            if ( (*i) == NULL || (*i)->getValue() == NULL )
+                continue;
+            if ( foundFirst == false ) {
+                if ( !(*i)->getValue()->isMutableTo(valueIndex, newValue, refType) ) {
+                    isMutable = false;
+                    break;
+                }
+                foundFirst = true;
+            }
+            else {
+                if ( !(*i)->getValue()->isMutableTo(valueIndex, newValue, compType) || compType != refType) {
+                    isMutable = true;
+                    break;
+                }
+            }
+        }
+        if (isMutable)
+            temp = new DAGNodePlate(length, refType);
+    }
+
+    // Finally ask children
+    if (isMutable) {
+        for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
+            if ( !(*i)->isParentMutableTo(this, temp) ) {
+                isMutable = false;
+                break;
+            }
+        }
+    }
+    
+    // Delete the temp plate
+    if (temp != NULL)
+        delete temp;
+    
+    return isMutable;
+}
+
+
+/** Is it possible to change parent node oldNode to newNode? */
+bool DAGNodePlate::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const {
+
+    // Check that all parents except the caller are convertible to the new type and dim
+    for (std::set<DAGNode*>::const_iterator i=parents.begin(); i!=parents.end(); i++) {
+        if ( (*i) != NULL && (*i) != const_cast<DAGNode*>(oldNode) ) {
+            if ( !(*i)->getValue()->isConvertibleTo(newNode->getValueType(), newNode->getDim()) )
+                return false;
+        }
+    }
+    
+    // Check that all children allow this node to permute to the new type and dim
+    DAGNodePlate* temp = new DAGNodePlate(length, newNode->getValueType());
+    for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
+        if ( !(*i)->isParentMutableTo(this, temp) ) {
+            delete temp;
+            return false;
+        }
+    }
+    delete temp;
+
+    return true;
+}
+
+
 /** Keep value of node and affected variable nodes */
 void DAGNodePlate::keepAffected(void) {
 
@@ -541,6 +669,21 @@ void DAGNodePlate::keepAffected(void) {
             (*i)->keepAffected();
     }
     touched = changed = false;
+}
+
+
+/** Mutate to newNode */
+void DAGNodePlate::mutateTo(DAGNode* newNode) {
+    
+    throw RbException("Not implemented yet");
+    
+}
+
+
+/* Mutate to contain newValue */
+DAGNodePlate* DAGNodePlate::mutateTo(const VectorInteger& index, RbObject* newValue) {
+
+    throw RbException("Not implemented yet");
 }
 
 

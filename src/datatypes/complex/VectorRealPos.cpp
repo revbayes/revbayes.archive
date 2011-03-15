@@ -79,14 +79,6 @@ VectorRealPos* VectorRealPos::clone(void) const {
 }
 
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* VectorRealPos::convertTo(const std::string& type) const {
-
-    throw RbException("Cannot convert VectorRealPos to " + type + ".");
-	return NULL;
-}
-
-
 /** Pointer-based equals comparison */
 bool VectorRealPos::equals(const RbObject* obj) const {
 
@@ -115,13 +107,6 @@ const std::string& VectorRealPos::getElementType(void) const {
 
     static std::string rbType = RealPos_name;
     return rbType;
-}
-
-
-/** Convert to object of another class. The caller manages the object. */
-bool VectorRealPos::isConvertibleTo(const std::string& type) const {
-
-    return false;
 }
 
 

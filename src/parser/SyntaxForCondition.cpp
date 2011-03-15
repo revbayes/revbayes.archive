@@ -13,7 +13,6 @@
  * $Id$
  */
 
-#include "ConstantNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
@@ -25,9 +24,10 @@
 
 /** Standard constructor */
 SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr)
-    : SyntaxElement(), varName(identifier), inExpression(inExpr), isLoopInitialized(false), vector(NULL) {
+    : SyntaxElement(), varName(identifier), inExpression(inExpr), vector(NULL),
+      wasLoopVariableReference(false), nextElement(-1) {
 
-    if (inExpression == NULL) {
+    if ( inExpression == NULL ) {
         delete varName;
         throw RbException("The 'in' expression of for loop is empty");
     }
@@ -38,10 +38,11 @@ SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inEx
 SyntaxForCondition::SyntaxForCondition(const SyntaxForCondition& x)
     : SyntaxElement(x) {
 
-    varName             = new RbString(*(x.varName));
-    inExpression        = x.inExpression->clone();
-    isLoopInitialized   = false;
-    vector              = NULL;
+    varName                  = new RbString(*(x.varName));
+    inExpression             = x.inExpression->clone();
+    vector                   = NULL;
+    wasLoopVariableReference = false;
+    nextElement              = -1;
 }
 
 
@@ -50,8 +51,31 @@ SyntaxForCondition::~SyntaxForCondition() {
     
     delete varName;
     delete inExpression;
-    if (isLoopInitialized)
+    if ( nextElement >= 0 )
         delete vector;
+}
+
+
+/** Assignment operator */
+SyntaxForCondition& SyntaxForCondition::operator=(const SyntaxForCondition& x) {
+
+    if (&x != this) {
+    
+        SyntaxElement::operator=(x);
+
+        delete varName;
+        delete inExpression;
+        if ( nextElement >= 0 )
+            delete vector;
+
+        varName                  = new RbString(*(x.varName));
+        inExpression             = x.inExpression->clone();
+        vector                   = NULL;
+        wasLoopVariableReference = false;
+        nextElement              = -1;
+    }
+
+    return *this;
 }
 
 
@@ -62,9 +86,7 @@ std::string SyntaxForCondition::briefInfo () const {
 
     o << "SyntaxForCondition: variable = '" << std::string(*varName);
     o << "', in expression = ";
-    RbObject* inValue = inExpression->getValue();
-    inValue->printValue(o);
-    delete inValue;
+    o << inExpression->briefInfo();
 
     return o.str();
 }
@@ -77,23 +99,49 @@ SyntaxElement* SyntaxForCondition::clone () const {
 }
 
 
-/** Equals comparison */
-bool SyntaxForCondition::equals(const SyntaxElement* elem) const {
+/** Finalize loop. */
+void SyntaxForCondition::finalizeLoop(Frame* frame) {
 
-	const SyntaxForCondition* p = dynamic_cast<const SyntaxForCondition*>(elem);
-    if (p == NULL)
-        return false;
+    if ( nextElement < 0 )
+        return;
 
-    bool result = true;
-    result = result && varName->equals(p->varName);
-    result = result && inExpression->equals(p->inExpression);
+    if ( !wasLoopVariableReference )
+        frame->getVariableSlot( *varName ).setReferenceFlag( false );
 
-    return result;
+    delete vector;
+    
+    wasLoopVariableReference = false;
+    nextElement = -1;
 }
 
 
 /** Convert element to DAG node (not applicable so return NULL) */
-DAGNode* SyntaxForCondition::getDAGNode(Frame* frame) const {
+DAGNode* SyntaxForCondition::getDAGNodeExpr(Frame* frame) const {
+
+    return NULL;
+}
+
+
+/** Get next loop state */
+bool SyntaxForCondition::getNextLoopState(Frame* frame) {
+
+    if ( nextElement < 0 )
+        initializeLoop(frame);
+    
+    if ( nextElement == vector->size() ) {
+        finalizeLoop( frame );
+        return false;
+    }
+
+    frame->getVariableSlot( *varName ).setReference( vector->getElement( nextElement )->clone() );
+    nextElement++;
+
+    return true;
+}
+
+
+/** Get semantic value (not applicable so return NULL) */
+DAGNode* SyntaxForCondition::getValue(Frame* frame) const {
 
     return NULL;
 }
@@ -102,63 +150,26 @@ DAGNode* SyntaxForCondition::getDAGNode(Frame* frame) const {
 /** Initialize loop state */
 void SyntaxForCondition::initializeLoop(Frame* frame) {
 
-    assert (!isLoopInitialized);
+    assert ( nextElement < 0 );
 
     // Evaluate expression and check that we get a vector
-    RbObject* value = inExpression->getValue(frame);
+    DAGNode* value = inExpression->getValue(frame);
 
-    // Check that it is a vector of Container type
-    vector = NULL;
-    intVector = NULL;
-    if ( value->getDim() != 1 )
+    // Check that it is a vector
+    if ( value->isType( DAGNodePlate_name ) == false || value->getDim() != 1 ) {
+        delete value;
         throw ( RbException("The 'in' expression does not evaluate to a vector") );
-    vector = dynamic_cast<Container*>(value);
-    if ( !vector ) {
-        // throw ( RbException("The 'in' expression does not evaluate to a container") );
-        intVector = dynamic_cast<VectorInteger*>(value);
-        if ( !intVector )
-            throw ( RbException("The 'in' expression does not evaluate to a container or int vector") );
     }
+    vector = dynamic_cast<DAGNodePlate*>(value);
 
     // Initialize nextValue
     nextElement = 0;
 
-    // Add loop variable to frame if it is not there already
-    if ( !frame->existsVariable( *varName ) ) {
-        if (vector != NULL)
-            frame->addVariable( *varName, vector->getElementType() );
-        else
-            frame->addVariable( *varName, intVector->getElementType() );
-    }
-
-    isLoopInitialized = true;
-}
-
-
-/** Get next loop state */
-bool SyntaxForCondition::getNextLoopState(Frame* frame) {
-
-    if (!isLoopInitialized)
-        initializeLoop(frame);
-    
-    if ( (vector != NULL && nextElement == vector->size()) || (intVector != NULL && nextElement == intVector->size()) )
-        return false;
-
-    if (vector != NULL)
-        frame->setVariable( *varName, new ConstantNode(vector->getElement(nextElement)->clone()) );
-    else if (intVector != NULL)
-        frame->setVariable( *varName, new ConstantNode(intVector->getElement(nextElement)->clone()) );
-
-    nextElement++;
-
-    return true;
-}
-
-
-/** Get semantic value (not applicable so return NULL) */
-RbObject* SyntaxForCondition::getValue(Frame* frame) const {
-
-    return NULL;
+    // Add loop variable to frame if it is not there already; make sure it is a reference variable
+    if ( frame->existsVariable( *varName ) )
+        frame->getVariableSlot( *varName ).setReferenceFlag( true );
+    else
+        frame->addReference( *varName, vector->getType(), vector->getDim() );
 }
 
 
@@ -167,11 +178,9 @@ void SyntaxForCondition::print(std::ostream& o) const {
 
     o << "SyntaxForCondition:" << std::endl;
     o << "varName      = " << std::string(*varName) << std::endl;
-    o << "inExpression = ";
-    RbObject* temp = inExpression->getValue();
-    temp->printValue(o);
-    delete temp;
+    o << "inExpression = " << inExpression;
     o << std::endl;
-}
 
+    inExpression->print(o);
+}
 

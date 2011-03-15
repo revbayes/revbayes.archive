@@ -28,38 +28,44 @@
  * This is the class used to hold variables in the syntax tree.
  *
  * We store the identifier, the index vector and the base variable
- * here so that we can wrap these things into a DAG node if needed.
+ * here so that we can wrap these things into a DAG node expression
+ * if needed.
  *
  */
 class SyntaxVariable : public SyntaxElement {
 
     public:
-            SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx);  //!< Global variable
-            SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx); //!< Member var. 
-            SyntaxVariable(const SyntaxVariable& sv);       //!< Copy constructor
-	        virtual ~SyntaxVariable();                      //!< Destructor deletes variable, identifier and index
+                                    SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx);                      //!< Global variable
+                                    SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx); //!< Member variable 
+                                    SyntaxVariable(const SyntaxVariable& x);                                            //!< Copy constructor
+	    virtual                    ~SyntaxVariable(void);                                                               //!< Destructor deletes variable, identifier and index
+
+        // Assignment operator
+        SyntaxVariable&             operator=(const SyntaxVariable& x);                                                 //!< Assignment operator
 
         // Basic utility functions
-        std::string         briefInfo() const;                          //!< Brief info about object
-        SyntaxElement*      clone() const;                              //!< Clone object
-        bool                equals(const SyntaxElement* elem) const;    //!< Equals comparison
-        const VectorString& getClass(void) const;                       //!< Get class vector 
-        void                print(std::ostream& o) const;               //!< Print info about object
+        std::string                 briefInfo(void) const;                                                              //!< Brief info about object
+        SyntaxVariable*             clone(void) const;                                                                  //!< Clone object
+        const VectorString&         getClass(void) const;                                                               //!< Get class vector 
+        void                        print(std::ostream& o) const;                                                       //!< Print info about object
 
         // Regular functions
-        DAGNode*            getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
-        const RbString*     getIdentifier() const;                      //!< Get identifier
-        VectorInteger           getIndex(Frame* frame) const;               //!< Get index
-        std::string         getFullName(Frame* frame) const;            //!< Get full name, with indices and base obj
-        RbObject*           getValue(Frame* frame=NULL) const;          //!< Get semantic value
-        const RbObject*     getValuePtr(Frame* frame) const;            //!< Get pointer to base object
-        SyntaxVariable*     getVariable(void) { return variable; }      //!< Get base variable
-        bool                isMember() const { return variable!=NULL; } //!< Is member variable?
+        SyntaxVariable*             getBaseVariable(void) { return baseVariable; }                                      //!< Get base variable
+        DAGNode*                    getDAGNodeExpr(Frame* frame) const;                                                 //!< Convert to DAG node expression
+        const RbString*             getIdentifier() const { return identifier; }                                        //!< Get identifier
+        VectorInteger               getIndex(Frame* frame) const;                                                       //!< Get index
+        std::string                 getFullName(Frame* frame) const;                                                    //!< Get full name, with indices and base obj
+        DAGNode*                    getValue(Frame* frame) const;                                                       //!< Get semantic value
 
     protected:
-        RbString*                       identifier;     //!< The name of the variable
-        std::list<SyntaxElement*>*      index;          //!< Vector of int indices to members
-        SyntaxVariable*                 variable;       //!< Base variable (pointing to a complex object)
+        RbString*                   identifier;                                                                         //!< The name of the variable
+        std::list<SyntaxElement*>*  index;                                                                              //!< Vector of int indices to variable element
+        SyntaxVariable*             baseVariable;                                                                       //!< Base variable (pointing to a composite node)
+
+    private:
+        Frame*                      getBaseFrame(Frame* frame) const;                                                   //!< Get base frame of variable
+        DAGNode*                    getVariableReference(Frame* frame) const;                                           //!< Get variable reference
+        Frame*                      getVariableMemberFrame(Frame* frame) const;                                         //!< Get member frame of variable itself
 };
 
 #endif

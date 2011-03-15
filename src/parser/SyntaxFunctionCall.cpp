@@ -61,42 +61,46 @@ SyntaxFunctionCall::~SyntaxFunctionCall() {
 }
 
 
+/** Assignment operator */
+SyntaxFunctionCall& SyntaxFunctionCall::operator=(const SyntaxFunctionCall& x) {
+
+    if (&x != this) {
+    
+        delete functionName;
+        delete variable;
+        for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
+            delete (*i);
+        delete arguments;
+
+        SyntaxElement::operator=(x);
+
+        functionName = new RbString(*functionName);
+        variable     = new SyntaxVariable(*x.variable);
+        for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
+            arguments->push_back(new SyntaxLabeledExpr(*(*i)));
+    }
+
+    return (*this);
+}
+
+
 /** Return brief info about object */
 std::string SyntaxFunctionCall::briefInfo () const {
 
     std::ostringstream   o;
     if (variable == NULL)
-        o << "SyntaxFunctionCall:  global call to " << std::string(*functionName) << "(?)";
+        o << "SyntaxFunctionCall:  global call to " << std::string(*functionName) << " with " << arguments->size() << " arguments";
     else
-        o << "SyntaxFunctionCall:  member call to " << std::string(*functionName) << "(?)";
+        o << "SyntaxFunctionCall:  member call to " << std::string(*functionName) << " with " << arguments->size() << " arguments";
 
     return o.str();
 }
 
 
 /** Clone syntax element */
-SyntaxElement* SyntaxFunctionCall::clone () const {
+SyntaxFunctionCall* SyntaxFunctionCall::clone () const {
 
-    return (SyntaxElement*)(new SyntaxFunctionCall(*this));
-}
-
-
-/** Equals comparison */
-bool SyntaxFunctionCall::equals(const SyntaxElement* elem) const {
-
-	const SyntaxFunctionCall* p = dynamic_cast<const SyntaxFunctionCall*>(elem);
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    result = result && functionName->equals(p->functionName);
-    result = result && variable->equals(p->variable);
-
-    std::list<SyntaxLabeledExpr*>::iterator i, j;
-    for (i=arguments->begin(), j=p->arguments->begin(); i!=arguments->end(); i++, j++)
-        result = result && (*i)->equals(*j);
-    
-    return result;
+    return new SyntaxFunctionCall(*this);
 }
 
 
@@ -108,17 +112,17 @@ const VectorString& SyntaxFunctionCall::getClass(void) const {
 }
 
 
-/** Convert element to DAG node */
-DAGNode* SyntaxFunctionCall::getDAGNode(Frame* frame) const {
+/** Convert element to a deterministic function node. */
+DAGNode* SyntaxFunctionCall::getDAGNodeExpr(Frame* frame) const {
 
     // Package arguments
     std::vector<Argument> args;
     if (variable != NULL) {
-        args.push_back(Argument("object", variable->getDAGNode()));
+        args.push_back(Argument("object", variable->getDAGNodeExpr(frame)));
         args.push_back(Argument("function", new ConstantNode(functionName)));
     }
     for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        args.push_back(Argument(*(*i)->getLabel(), (*i)->getExpression()->getDAGNode(frame)));    
+        args.push_back(Argument(*(*i)->getLabel(), (*i)->getExpression()->getDAGNodeExpr(frame)));    
 
     RbFunction* func;
     if (variable == NULL) {
@@ -135,39 +139,30 @@ DAGNode* SyntaxFunctionCall::getDAGNode(Frame* frame) const {
 
 
 /**
- * @brief Get semantic value
- *
- * We look up the function or member function and calculate the value.
- *
+ * Look up the function or member function and calculate the value. We cannot simply get the
+ * value of each argument because it could be a reference argument and we do not know whether
+ * it is before we have matched the arguments to a specific function call. Instead, we get the
+ * DAG node expression corresponding to the argument and dereference it if it turns out to
+ * match a reference argument.
  */
-RbObject* SyntaxFunctionCall::getValue(Frame* frame) const {
+DAGNode* SyntaxFunctionCall::getValue(Frame* frame) const {
 
     // Package arguments
     std::vector<Argument> args;
     for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        args.push_back(Argument(*(*i)->getLabel(), (*i)->getExpression()->getDAGNode(frame)));    
+        args.push_back(Argument(*(*i)->getLabel(), (*i)->getExpression()->getDAGNodeExpr(frame)));    
 
     // Get function pointer and execute function
-    RbObject* retVal;
+    DAGNode* retVal;
     if (variable == NULL) {
-        retVal = Workspace::userWorkspace().getFunctionValue(*functionName, args);
+        retVal = Workspace::userWorkspace().executeFunction(*functionName, args);
     }
     else {
         const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getValuePtr(frame));
         if (objectPtr == NULL)
             throw(RbException("Object does not have member functions"));
         RbComplex* theObject = const_cast<RbComplex*>(objectPtr);
-        const RbObject* retPtr = theObject->executeMethod(*functionName, args);
-        if (retPtr != NULL)
-            retVal = retPtr->clone();
-        else
-            retVal = NULL;
-    }
-
-    // Delete arguments
-    for (std::vector<Argument>::iterator i=args.begin(); i!=args.end(); i++) {
-        if ((*i).getVariable()->numRefs() == 0)
-            delete (*i).getVariable();
+        retVal = theObject->executeMethod(*functionName, args);
     }
 
     return retVal;
@@ -177,19 +172,26 @@ RbObject* SyntaxFunctionCall::getValue(Frame* frame) const {
 /** Print info about the syntax element */
 void SyntaxFunctionCall::print(std::ostream& o) const {
 
-    o << "SyntaxFunctionCall:" << std::endl;
+    o << "[" << this << "] SyntaxFunctionCall:" << std::endl;
     o << "functionName  = " << functionName << std::endl;
     o << "variable      = ";
     if (variable == NULL)
         o << "NULL" << std::endl;
     else
-        o << variable->briefInfo() << std::endl;
+        o << "[" << variable << "] " << variable->briefInfo() << std::endl;
     if (arguments->size() == 0)
         o << "arguments     = []";
     else {
         int index = 1;
         for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++, index++)
-            o << "arguments[" << index <<  "]  = " << (*i)->briefInfo() << std::endl;
+            o << "arguments[" << index <<  "]  = [" << (*i) << "] " << (*i)->briefInfo() << std::endl;
     }
+    o << std::endl;
+
+    if (variable != NULL)
+        variable->print(o);
+
+    for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
+        (*i)->print(o);
 }
 

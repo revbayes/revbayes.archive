@@ -53,11 +53,6 @@ Move_mmultinomial* Move_mmultinomial::clone(void) const {
     return new Move_mmultinomial(*this);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Move_mmultinomial::convertTo(const std::string& type) const {
-
-    return NULL;
-}
 
 /** Get class vector describing type of object */
 const VectorString& Move_mmultinomial::getClass() const {
@@ -87,11 +82,6 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
     return memberRules;
 }
 
-/** Is the object convertible to an object of another class type? */
-bool Move_mmultinomial::isConvertibleTo(const std::string& type) const {
-
-    return false;
-}
 
 /** Perform the move */
 double Move_mmultinomial::perform(std::set<StochasticNode*>& affectedNodes) {

@@ -60,8 +60,8 @@ class RbComplex : public RbObject {
         virtual void                 setVariable(const std::string& name, DAGNode* var);                     //!< Set member variable
 
         // Member method functions: override if object contains member functions
-        virtual const DAGNode*      executeMethod(const std::string& name, int funcId);                     //!< Execute method with preprocessed args
-        virtual const DAGNode*      executeMethod(const std::string& name, std::vector<Argument>& args);    //!< Execute method
+        virtual DAGNode*             executeMethod(const std::string& name, int funcId) const;               //!< Execute method with preprocessed args
+        virtual DAGNode*             executeMethod(const std::string& name, std::vector<Argument>& args);    //!< Execute method
         virtual const MethodTable&   getMethods(void) const;                                                 //!< Get method descriptions
         virtual int                  setArguments(const std::string& name, std::vector<Argument>& args);     //!< Set arguments of method 
 

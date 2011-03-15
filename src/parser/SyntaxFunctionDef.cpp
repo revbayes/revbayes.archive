@@ -31,10 +31,27 @@ SyntaxFunctionDef::SyntaxFunctionDef(   RbString* type,
                                         RbString* name,
                                         std::list<SyntaxFormal*>* formals,
                                         std::list<SyntaxElement*>* stmts)
-    : SyntaxElement(), returnType(type), functionName(name), formalArgs(formals), code(stmts) {
+    : SyntaxElement(), returnType(NULL), functionName(name), formalArgs(formals), code(stmts) {
 
     if (returnType == NULL)
-        returnType = new RbString(RbObject_name);
+        returnType = new TypeSpec(RbObject_name);
+    else {
+        const std::string   typeString  = *type;
+        int                 nDim        = 0;
+        bool                isRef       = false;
+        std::string         tpName      = std::string();
+        for (std::string::const_iterator i=typeString.begin(); i!=typeString.end(); i++) {
+            if ((*i) == '[')
+                nDim++;
+            else if ((*i) == '&')
+                isRef = true;
+            else if ((*i) != ']')
+                tpName += (*i);
+        }
+
+        // Create the type specification
+        returnType = new TypeSpec(Workspace::userWorkspace().getTypeNameRef(tpName), nDim, isRef);
+    }
 }
 
 
@@ -42,7 +59,7 @@ SyntaxFunctionDef::SyntaxFunctionDef(   RbString* type,
 SyntaxFunctionDef::SyntaxFunctionDef(const SyntaxFunctionDef& x)
     : SyntaxElement(x) {
 
-    returnType   = new RbString(*returnType);
+    returnType   = new TypeSpec(x.returnType->getType(), x.returnType->getDim(), x.returnType->isReference());
     functionName = new RbString(*functionName);
  
     for (std::list<SyntaxFormal*>::const_iterator i=x.formalArgs->begin(); i!=x.formalArgs->end(); i++)
@@ -69,6 +86,38 @@ SyntaxFunctionDef::~SyntaxFunctionDef() {
 }
 
 
+/** Assignment operator */
+SyntaxFunctionDef& SyntaxFunctionDef::operator=(const SyntaxFunctionDef& x) {
+
+    if (&x != this) {
+
+        delete returnType;
+        delete functionName;
+
+        for (std::list<SyntaxFormal*>::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
+            delete (*i);
+        delete formalArgs;
+
+        for (std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++)
+            delete (*i);
+        delete code;
+
+        SyntaxElement::operator=(x);
+
+        returnType   = new TypeSpec(x.returnType->getType(), x.returnType->getDim(), x.returnType->isReference());
+        functionName = new RbString(*functionName);
+     
+        for (std::list<SyntaxFormal*>::const_iterator i=x.formalArgs->begin(); i!=x.formalArgs->end(); i++)
+            formalArgs->push_back((SyntaxFormal*)((*i)->clone()));
+
+        for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
+            code->push_back((*i)->clone());
+    }
+
+    return (*this);
+}
+
+
 /** Return brief info about object */
 std::string SyntaxFunctionDef::briefInfo () const {
 
@@ -80,49 +129,29 @@ std::string SyntaxFunctionDef::briefInfo () const {
 
 
 /** Clone syntax element */
-SyntaxElement* SyntaxFunctionDef::clone () const {
+SyntaxFunctionDef* SyntaxFunctionDef::clone () const {
 
-    return (SyntaxElement*)(new SyntaxFunctionDef(*this));
+    return new SyntaxFunctionDef(*this);
 }
 
 
-/** Equals comparison */
-bool SyntaxFunctionDef::equals(const SyntaxElement* elem) const {
+/** Get class vector describing type of object */
+const VectorString& SyntaxFunctionDef::getClass(void) const { 
 
-	const SyntaxFunctionDef* p = dynamic_cast<const SyntaxFunctionDef*>(elem);
-    if (p == NULL)
-        return false;
-
-    if (formalArgs->size() != p->formalArgs->size())
-        return false;
-    if (code->size() != p->code->size())
-        return false;
-
-    bool result = true;
-    result = result && returnType->equals(p->returnType);
-    result = result && functionName->equals(p->functionName);
-
-    std::list<SyntaxFormal*>::iterator i1, j1;
-    for (i1=formalArgs->begin(), j1=p->formalArgs->begin(); i1!=formalArgs->end(); i1++, j1++)
-        result = result && (*i1)->equals(*j1);
-    
-    std::list<SyntaxElement*>::iterator i2, j2;
-    for (i2=code->begin(), j2=p->code->begin(); i2!=code->end(); i2++, j2++)
-        result = result && (*i2)->equals(*j2);
-    
-    return result;
+    static VectorString rbClass = VectorString(SyntaxFunctionDef_name) + SyntaxElement::getClass();
+	return rbClass; 
 }
 
 
 /** Convert element to DAG node; return NULL since it is not applicable */
-DAGNode* SyntaxFunctionDef::getDAGNode(Frame* formal) const {
+DAGNode* SyntaxFunctionDef::getDAGNodeExpr(Frame* formal) const {
 
     return NULL;
 }
 
 
 /** Get semantic value: insert a user-defined function in the user workspace */
-RbObject* SyntaxFunctionDef::getValue(Frame* frame) const {
+DAGNode* SyntaxFunctionDef::getValue(Frame* frame) const {
 
     // Get argument rules from the formals
     static ArgumentRules argRules;
@@ -136,10 +165,10 @@ RbObject* SyntaxFunctionDef::getValue(Frame* frame) const {
         stmts->push_back((*i)->clone());
 
     // Create copy of the environment in which the function was defined
-    Frame* defineEnvironment = frame->clone();  //TODO: make deep copy of entire environment
+    Frame* defineEnvironment = frame->cloneEnvironment();
 
     // Create the function
-    UserFunction* theFunction = new UserFunction(argRules, (*returnType), stmts, defineEnvironment);
+    UserFunction* theFunction = new UserFunction(argRules, returnType, stmts, defineEnvironment);
 
     // Insert in the user workspace
     Workspace::userWorkspace().addFunction(*functionName, theFunction);
@@ -153,14 +182,11 @@ RbObject* SyntaxFunctionDef::getValue(Frame* frame) const {
 void SyntaxFunctionDef::print(std::ostream& o) const {
 
     o << "SyntaxFunctionDef:" << std::endl;
-    o << "returnType   = ";
-    returnType->printValue(o);
-    o << std::endl;
+    o << "returnType   = " << returnType->toString() << std::endl;
     o << "functionName = ";
     functionName->printValue(o);
     o << std::endl;
     o << "formalArgs   = <" << formalArgs->size() << " formals (argument rules)>" << std::endl;
     o << "code         = <" << code->size() << " code statements>" << std::endl;
 }
-
 

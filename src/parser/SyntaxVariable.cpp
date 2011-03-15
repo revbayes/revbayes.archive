@@ -18,43 +18,35 @@
 #include <string>
 #include <sstream>
 
-#include "Argument.h"
-#include "ConstantNode.h"
-#include "DAGNode.h"
-#include "DAGNodePlate.h"
-#include "DeterministicNode.h"
-#include "Func__lookup.h"
-#include "VectorInteger.h"
-#include "MemberObject.h"
 #include "Integer.h"
-#include "RbNames.h"
+#include "LookupNode.h"
 #include "RbException.h"
+#include "RbNames.h"
+#include "VariableSlot.h"
+#include "VectorInteger.h"
 #include "VectorString.h"
 #include "SyntaxVariable.h"
-#include "Workspace.h"
 
 
 /** Construct from identifier and index */
 SyntaxVariable::SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx) :
-    SyntaxElement(), identifier(id), index(indx), variable(NULL) {
+    SyntaxElement(), identifier(id), index(indx), baseVariable(NULL) {
 }
 
 
-/** Construct from wrapping variable, identifier and index */
+/** Construct from base variable (composite node), identifier and index */
 SyntaxVariable::SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx) :
-    SyntaxElement(), identifier(id), index(indx), variable(var) {
+    SyntaxElement(), identifier(id), index(indx), baseVariable(var) {
 }
 
 
 /** Deep copy constructor */
-SyntaxVariable::SyntaxVariable(const SyntaxVariable& sv)
-    : SyntaxElement(sv) {
+SyntaxVariable::SyntaxVariable(const SyntaxVariable& x)
+    : SyntaxElement(x) {
 
-    identifier = new RbString(*sv.identifier);
-    variable   = new SyntaxVariable(*sv.variable);
-
-    // The following loop works because SyntaxElement is the base class
-    for (std::list<SyntaxElement*>::iterator i=(*sv.index).begin(); i!=(*sv.index).end(); i++) {
+    identifier      = new RbString(*x.identifier);
+    baseVariable    = new SyntaxVariable(*x.baseVariable);
+    for (std::list<SyntaxElement*>::iterator i=x.index->begin(); i!=x.index->end(); i++) {
         index->push_back((*i)->clone());
     }
 }
@@ -64,10 +56,34 @@ SyntaxVariable::SyntaxVariable(const SyntaxVariable& sv)
 SyntaxVariable::~SyntaxVariable() {
     
     delete identifier;
-    delete variable;
+    delete baseVariable;
     for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++)
         delete (*i);
     delete index;
+}
+
+
+/** Assignment operator */
+SyntaxVariable& SyntaxVariable::operator=(const SyntaxVariable& x) {
+
+    if (&x != this) {
+    
+        delete identifier;
+        delete baseVariable;
+        for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++)
+            delete (*i);
+        delete index;
+
+        SyntaxElement::operator=(x);
+
+        identifier      = new RbString(*x.identifier);
+        baseVariable    = new SyntaxVariable(*x.baseVariable);
+        for (std::list<SyntaxElement*>::iterator i=x.index->begin(); i!=x.index->end(); i++) {
+            index->push_back((*i)->clone());
+        }
+    }
+
+    return (*this);
 }
 
 
@@ -76,50 +92,22 @@ std::string SyntaxVariable::briefInfo () const {
 
     std::ostringstream   o;
 
-    if (variable == NULL)
-        o << "SyntaxVariable; id = " << std::string(*identifier) <<  " -- index = ";
+    if (baseVariable == NULL)
+        o << "SyntaxVariable: " << std::string(*identifier);
     else
-        o << "SyntaxVariable; <member> id = " << std::string(*identifier) <<  " -- index = ";
+        o << "SyntaxVariable: <base>." << std::string(*identifier);
 
-    o << "[";
-    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
-        if (i != (*index).begin())
-            o << ", ";
-        (*i)->getValue()->printValue(o);
-    }
-    o << "]";
+    for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++)
+        o << "[<" << (*i) << ">]";
 
     return o.str();
 }
 
 
 /** Clone syntax element */
-SyntaxElement* SyntaxVariable::clone () const {
+SyntaxVariable* SyntaxVariable::clone () const {
 
-    return (SyntaxElement*)(new SyntaxVariable(*this));
-}
-
-
-/** Equals comparison */
-bool SyntaxVariable::equals(const SyntaxElement* elem) const {
-
-	const SyntaxVariable* p = dynamic_cast<const SyntaxVariable*>(elem);
-
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    result = result && variable->equals(p->variable);
-    result = result && identifier->equals(p->identifier);
-
-    if (index->size() != p->index->size())
-        return false;
-    std::list<SyntaxElement*>::iterator i, j;
-    for (i=index->begin(), j=p->index->begin(); i!=index->end(); i++, j++) {
-        result = result && (*i)->equals(*j);
-    }
-
-    return result;
+    return new SyntaxVariable(*this);
 }
 
 
@@ -131,24 +119,19 @@ const VectorString& SyntaxVariable::getClass(void) const {
 }
 
 
-/** Convert element to DAG node */
-DAGNode* SyntaxVariable::getDAGNode(Frame* frame) const {
+/** Convert element to DAG node expression */
+DAGNode* SyntaxVariable::getDAGNodeExpr(Frame* frame) const {
 
-    if (variable == NULL) {
-        Func__lookup* lookup = new Func__lookup(frame->getType(*identifier), frame->getDim(*identifier));
-        DAGNode* theVar = frame->getVariable(*identifier);
-        std::vector<Argument> args;
-        args.push_back(Argument("", theVar));
-        for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++) {
-            args.push_back(Argument("", (*i)->getDAGNode(frame)));
-        }
-        lookup->processArguments(args);
-        return new DeterministicNode(lookup);
-    }
-    else {
-        // TODO: do this properly
-        return NULL;
-    }
+    /* Package index arguments */
+    std::vector<Argument> indexArgs;
+    for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++)
+        indexArgs.push_back(Argument("", (*i)->getDAGNodeExpr(frame)));
+
+    /* Return lookup node */
+    if (baseVariable == NULL)
+        return new LookupNode(frame->getVariableSlot(*identifier).getReference(), indexArgs);
+    else
+        return new LookupNode(baseVariable->getDAGNodeExpr(frame), identifier, indexArgs);
 }
 
 
@@ -156,8 +139,8 @@ DAGNode* SyntaxVariable::getDAGNode(Frame* frame) const {
 std::string SyntaxVariable::getFullName(Frame* frame) const {
 
     std::ostringstream theName;
-    if (variable != NULL)
-        theName << variable->getFullName(frame) << ".";
+    if (baseVariable != NULL)
+        theName << baseVariable->getFullName(frame) << ".";
 
     theName << std::string(*identifier);
 
@@ -169,38 +152,59 @@ std::string SyntaxVariable::getFullName(Frame* frame) const {
 }
 
 
-/** Get identifier */
-const RbString* SyntaxVariable::getIdentifier() const {
-
-    return identifier;
-}
-
-
 /** Get index */
 VectorInteger SyntaxVariable::getIndex(Frame* frame) const {
 
-    VectorInteger theIndex;
+    DAGNode*        theVariable = getVariableReference(frame);
+    VectorInteger   theIndex;
 
-    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
+    int count = 1;
+    for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++, count++) {
 
-        // Get index
-        RbObject* indexObj = (*i)->getValue(frame);
-        if (indexObj == NULL) {
-            throw (RbException("Erroneous index expression for " + std::string(*identifier)));
+        if ((*i) == NULL)
+            theIndex.push_back(-1);
+        else {
+
+            DAGNode* indexVar = (*i)->getValue(frame);
+            if (indexVar->isType(Integer_name)) {
+
+                // Calculate (or get) an integer index
+                int intIndex = ((Integer*)(indexVar))->getValue(); 
+                if (intIndex < 1) {
+                    std::ostringstream msg;
+                    msg << "Index " << count << " for ";
+                    if (baseVariable != NULL)
+                        msg << baseVariable->getFullName(frame) << ".";
+                    msg << *identifier;
+                    msg << " smaller than 1";
+                    throw RbException(msg);
+                }
+
+                // Get zero-based value corresponding to integer index
+                theIndex.push_back(intIndex-1);
+            }
+            else if (indexVar->isType(RbString_name)) {
+
+                // Use variable to convert string index to integer index
+                int intIndex = theVariable->getElementIndex((RbString*)(indexVar));
+
+                // If success, then we have a zero-based integer index
+                theIndex.push_back(intIndex);
+            }
+            else {
+                delete indexVar;
+                std::ostringstream msg;
+                msg << "Index " << count << " for ";
+                if (baseVariable != NULL)
+                    msg << baseVariable->getFullName(frame) << ".";
+                msg << *identifier;
+                msg << " of wrong type (neither " << Integer_name << " nor " << RbString_name << ")";
+                throw RbException(msg);
+            }
+
+            // Avoid memory leak
+            delete indexVar;
         }
-        Integer*  intIndex = dynamic_cast<Integer*>(indexObj);
-        if (indexObj == NULL) {
-            throw (RbException("Index expression for " + std::string(*identifier) + " does not evaluat to int"));
-        }
-        if (*intIndex < 1) {
-            throw (RbException("Index expression for " + std::string(*identifier) + " smaller than 1"));
-        }
-
-        // Get zero-based value corresponding to index
-        theIndex.push_back((*intIndex)-1);
-
-        // Delete the index object
-        delete indexObj;
     }
 
     // Return index
@@ -212,86 +216,105 @@ VectorInteger SyntaxVariable::getIndex(Frame* frame) const {
  * @brief Get semantic value
  *
  * The variable can either be a member or a base variable. In the latter
- * case, its "variable" member is NULL. If the element is a base variable,
+ * case, its "baseVariable" member is NULL. If the element is a base variable,
  * we get the semantic value of the element by looking it up in the frame.
- * If it is a member variable name, we try to find it as a member of the
- * complex language object found by another SyntaxVariable element.
+ * If it is a member variable name, we try to find it in the member variable
+ * frame of a composite variable found by another SyntaxVariable element.
  *
  */
-RbObject* SyntaxVariable::getValue(Frame* frame) const {
+DAGNode* SyntaxVariable::getValue(Frame* frame) const {
 
     /* Get subscript */
     VectorInteger theIndex = getIndex(frame);
 
+    /* Get base frame of variable */
+    Frame* varFrame = getBaseFrame(frame);
+
     /* Get value */
-    if (variable == NULL) 
-		{
-        if (theIndex.size() == 0)
-            return frame->getValue(*identifier)->clone();
-        else
-            return frame->getValElement(*identifier, theIndex)->clone();
-		}
-
-    const MemberObject* object = dynamic_cast<const MemberObject*>(variable->getValuePtr(frame));
-    if (object == NULL)
-        throw RbException("Object " + variable->getFullName(frame) + " does not have members");
-
     if (theIndex.size() == 0)
-        return object->getValue(*identifier)->clone();
-
-    const DAGNodePlate* container = dynamic_cast<const DAGNodePlate*>(object->getVariable(*identifier));
-    if (container == NULL)
-        throw RbException("Object " + variable->getFullName(frame) + "." + std::string(*identifier) + " does not have elements");
-
-    return container->getValElement(theIndex)->clone();
+        return varFrame->getVariableSlot(*identifier).getValue()->clone();
+    else
+        return varFrame->getVariableSlot(*identifier).getElement(theIndex)->clone();
 }
 
 
-/** Get pointer to variable value */
-const RbObject* SyntaxVariable::getValuePtr(Frame* frame) const {
+/** Return base frame of variable */
+Frame* SyntaxVariable::getBaseFrame(Frame *frame) const {
 
-    /* Get subscript */
-    VectorInteger theIndex = getIndex(frame);
+    if (baseVariable == NULL)
+        return frame;
+    else
+        return baseVariable->getVariableMemberFrame(frame);
+}
 
-    /* Get value */
-    if (variable == NULL) {
-        if (theIndex.size() == 0)
-            return frame->getValue(*identifier);
-        else
-            return frame->getValElement(*identifier, theIndex);
-    }
 
-    const MemberObject* object = dynamic_cast<const MemberObject*>(variable->getValuePtr(frame));
-    if (object == NULL)
-        throw RbException("Object " + variable->getFullName(frame) + " does not have members");
+/**
+ * Get pointer to member frame of variable. This evaluates the index and is appropriate
+ * only if appearing in an lhs or value expression, not in an equation expression, in
+ * which case the base variable needs to be represented by a lookup node, obtained
+ * through a call to getDAGNodeExpr(frame).
+ *
+ * @Note This function gets the member variable frame of the variable or variable
+ * element itself, so it should only be called on base variable syntax elements.
+ * Use getBaseFrame if you wish to get the base frame of the variable.
+ */
+Frame* SyntaxVariable::getVariableMemberFrame(Frame* frame) const {
 
-    if (theIndex.size() == 0)
-        return object->getValue(*identifier);
+    /* Get the base frame */
+    Frame* baseFrame;
+    if (baseVariable != NULL)
+        baseFrame = baseVariable->getVariableMemberFrame(frame);
+    else
+        baseFrame = frame;
 
-    const DAGNodePlate* container = dynamic_cast<const DAGNodePlate*>(object->getVariable(*identifier));
-    if (container == NULL)
-        throw RbException("Object " + variable->getFullName(frame) + "." + std::string(*identifier) + " does not have elements");
+    // Get index
+    VectorInteger intIndex = getIndex(frame);
 
-    return container->getValElement(theIndex);
+    // Get reference to the variable
+    DAGNode* theVariable;
+    if (index->size() == 0)
+        theVariable = baseFrame->getVariableSlot(*identifier).getReference();
+    else
+        theVariable = baseFrame->getVariableSlot(*identifier).getReference(intIndex);
+
+    // Test that it is a composite node
+    if (!theVariable->isType(CompositeNode_name))
+        throw RbException(getFullName(frame) + " does not have members");
+
+    // Return the frame
+    return ((CompositeNode*)(theVariable))->getMemberFrame();
+ }
+
+
+/** Get variable reference */
+DAGNode* SyntaxVariable::getVariableReference(Frame* frame) const {
+
+    /* Get the frame of the variable */
+    Frame* varFrame;
+    if (baseVariable == NULL)
+        varFrame = frame;
+    else
+        varFrame = baseVariable->getVariableMemberFrame(frame);
+    
+    /* Return the variable reference */
+    return varFrame->getVariableSlot(*identifier).getReference();
 }
 
 
 /** Print info about the syntax element */
 void SyntaxVariable::print(std::ostream& o) const {
 
-    o << "SyntaxVariable:" << std::endl;
-    o << "identifier = " << identifier->briefInfo() << std::endl;
-    if (variable == NULL)
-        o << "variable   = NULL" << std::endl;
-    else
-        o << "variable   = " << variable->briefInfo() << std::endl;
-    o << "index      = [";
-    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++) {
-        if (i != (*index).begin())
-            o << ", ";
-        (*i)->getValue()->printValue(o);
+    o << "<" << this << "> SyntaxVariable:" << std::endl;
+    o << "identifier = " << *identifier << std::endl;
+    if (baseVariable != NULL)
+        o << "base variable   = <" << baseVariable << "> " << baseVariable->briefInfo() << std::endl;
+    int count = 1;
+    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++, count++) {
+        o << "index " << count << " = <" << (*i) << "> " << (*i)->briefInfo();
     }
-    o << "]" << std::endl;
-}
+    o << std::endl;
 
+    for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++)
+        (*i)->print(o);
+}
 

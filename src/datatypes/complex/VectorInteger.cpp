@@ -100,13 +100,6 @@ VectorInteger* VectorInteger::clone() const {
 }
 
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* VectorInteger::convertTo(const std::string& type) const {
-
-    return NULL;
-}
-
-
 /** Pointer-based equals comparison */
 bool VectorInteger::equals(const RbObject* obj) const {
 
@@ -123,7 +116,7 @@ bool VectorInteger::equals(const RbObject* obj) const {
     }
 
     // Try converting the value to an int vector
-    p = dynamic_cast<const VectorInteger*> (obj->convert(getType()));
+    p = dynamic_cast<const VectorInteger*> (obj->convertTo(getType()));
     if (p == NULL)
         return false;
 
@@ -178,13 +171,6 @@ const VectorInteger& VectorInteger::getLength(void) const {
 
     length[0] = int(value.size());
     return length;
-}
-
-
-/** Convert to object of another class. The caller manages the object. */
-bool VectorInteger::isConvertibleTo(const std::string& type) const {
-
-    return false;
 }
 
 

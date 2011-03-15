@@ -48,7 +48,15 @@ class VectorInteger : public Vector {
         virtual void                printValue(std::ostream& o) const;                            //!< Print value (for user)
         virtual std::string         toString(void) const;                                         //!< Complete info about object
 
-        // Overloaded operators and built-in functions
+        // Element access functions for parser
+        virtual const std::string&  getElementType(void) const;                                   //!< Get element type
+        const RbObject*             getElement(const VectorInteger& index) const;                 //!< Get element (read-only)
+        const VectorInteger&        getLength(void) const;                                        //!< Get length in each dim
+        void                        resize(const VectorInteger& len);                             //!< Resize
+        void                        setElement(const VectorInteger& index, RbObject* val);        //!< Set element
+        void                        setLength(const VectorInteger& len);                          //!< Set length in each dim
+
+        // Regular functions, including STL-like functions
         void                        clear(void) { value.clear(); }                                //!< Clear
         const std::vector<int>&     getValue(void) const { return value; }                        //!< Get value
         void                        pop_back(void) { value.pop_back(); }                          //!< Drop element
@@ -58,18 +66,6 @@ class VectorInteger : public Vector {
         virtual void                setValue(const VectorInteger& x);                             //!< Set the value
         virtual void                setValue(const std::vector<int>& x) { value = x; }            //!< Set the value
         size_t                      size(void) const { return value.size(); }                     //!< Get size
-
-        // Element access functions for parser
-        virtual const std::string&  getElementType(void) const;                                   //!< Get element type
-        const RbObject*             getElement(const VectorInteger& index) const;                 //!< Get element (read-only)
-        const VectorInteger&        getLength(void) const;                                        //!< Get length in each dim
-        void                        resize(const VectorInteger& len);                             //!< Resize
-        void                        setElement(const VectorInteger& index, RbObject* val);        //!< Set element
-        void                        setLength(const VectorInteger& len);                          //!< Set length in each dim
-
-	protected:
-        RbObject*                   convertTo(const std::string& type) const;                     //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;               //!< Is convertible to type and dim?
 
     private:
         std::vector<int>            value;                                                        //!< Vector of values

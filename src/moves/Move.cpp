@@ -39,11 +39,6 @@ Move::Move(const MemberRules& memberRules)
     numTried    = 0;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Move::convertTo(const std::string& type) const {
-
-    return NULL;
-}
 
 /** Execute member method. We throw an error because there are no visible member methods */
 DAGNode* Move::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
@@ -99,11 +94,6 @@ double Move::getUpdateWeight(void) const {
     return ((Real*)(getValue("weight")))->getValue();
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool Move::isConvertibleTo(const std::string& type) const {
-
-    return false;
-}
 
 /** Reset counters (numTried, numAccepted) */
 void Move::resetCounters(void) {

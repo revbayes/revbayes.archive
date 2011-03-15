@@ -21,74 +21,81 @@
 
 
 /** Construct from value */
-SyntaxConstant::SyntaxConstant(RbObject* val) :
-    SyntaxElement(), value(val) {
+SyntaxConstant::SyntaxConstant(RbObject* val) : SyntaxElement(), value(val) {
 }
 
 
 /** Deep copy constructor */
-SyntaxConstant::SyntaxConstant(const SyntaxConstant& sc)
-    : SyntaxElement(sc), value(sc.value->clone()) {
+SyntaxConstant::SyntaxConstant(const SyntaxConstant& x) : SyntaxElement(x), value(NULL) {
+
+    if (value != NULL)
+        value = (x.value->clone());
 }
 
 
 /** Destructor deletes value */
-SyntaxConstant::~SyntaxConstant() {
-    delete value;
+SyntaxConstant::~SyntaxConstant(void) {
+    
+    if (value != NULL)
+        delete value;
+}
+
+
+/** Assignment operator deletes value and makes a clone of the value */
+SyntaxConstant& SyntaxConstant::operator=(const SyntaxConstant& x) {
+
+    if (this != &x) {
+
+        SyntaxElement::operator=(x);
+        
+        if (value != NULL) {
+            delete value;
+            value = NULL;
+        }
+
+        if (x.value != NULL)
+            value = x.value->clone();
+    }
+
+    return (*this);
 }
 
 
 /** Return brief info about object */
-std::string SyntaxConstant::briefInfo () const {
+std::string SyntaxConstant::briefInfo (void) const {
 
-    return "SyntaxConstant; value = " + value->briefInfo();
+    return "SyntaxConstant: value = " + value->briefInfo();
 }
 
 
 /** Clone syntax element */
-SyntaxElement* SyntaxConstant::clone () const {
+SyntaxConstant* SyntaxConstant::clone (void) const {
 
-    return (SyntaxElement*)(new SyntaxConstant(*this));
+    return new SyntaxConstant(*this);
 }
 
 
-/** Equals comparison */
-bool SyntaxConstant::equals(const SyntaxElement* elem) const {
+/** Convert element to DAG node expression */
+DAGNode* SyntaxConstant::getDAGNodeExpr(Frame* frame) const {
 
-	const SyntaxConstant* sc = dynamic_cast<const SyntaxConstant*>(elem);
-
-    if (sc == NULL)
-        return false;
-
-    return value->equals(sc->value);
-}
-
-
-/** Convert element to DAG node */
-DAGNode* SyntaxConstant::getDAGNode(Frame* frame) const {
-
-    return new ConstantNode(value->clone());
+    return getValue(frame);
 }
 
 
 /** Get semantic value of element */
-RbObject* SyntaxConstant::getValue(Frame* frame) const {
+DAGNode* SyntaxConstant::getValue(Frame* frame) const {
 
-    return value->clone();
+    // We return a clone in case this function is called repeatedly. The ConstantNode manages the clone.
+    if (value == NULL)
+        return new ConstantNode(NULL);
+    else
+        return new ConstantNode(value->clone());
 }
 
 
-/** Is this a constant expression? */
-bool SyntaxConstant::isConstExpr() const {
-
-    return true;
-}
-
- 
 /** Print info about the syntax element */
 void SyntaxConstant::print(std::ostream& o) const {
 
     o << "SyntaxConstant: value = " << value->briefInfo() << std::endl;
 }
-
 

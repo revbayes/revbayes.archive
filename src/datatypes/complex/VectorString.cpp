@@ -78,11 +78,6 @@ VectorString VectorString::operator+(const VectorString& x) const {
     return tempVec;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* VectorString::convertTo(const std::string& type) const {
-
-    return NULL;
-}
 
 /** Clone function */
 VectorString* VectorString::clone() const {
@@ -107,7 +102,7 @@ bool VectorString::equals(const RbObject* obj) const {
     }
 
     // Try converting the value to a string vector
-    p = dynamic_cast<const VectorString*> (obj->convert(getType()));
+    p = dynamic_cast<const VectorString*> (obj->convertTo(getType()));
     if (p == NULL)
         return false;
 
@@ -164,11 +159,6 @@ const VectorInteger& VectorString::getLength() const {
     return length;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool VectorString::isConvertibleTo(const std::string& type) const {
-
-    return false;
-}
 
 /** Allow parser to resize the string vector */
 void VectorString::resize(VectorInteger const& len) {

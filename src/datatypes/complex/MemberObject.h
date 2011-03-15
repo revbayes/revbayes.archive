@@ -61,8 +61,6 @@ class MemberObject: public RbComplex {
         int                         setArguments(const std::string& name, std::vector<Argument>& args);           //!< Set arguments of method
 
 	protected:
-        RbObject*                   convertTo(const std::string& type) const;                                     //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;                               //!< Is convertible to type and dim?
 									MemberObject(const MemberRules& memberRules, const MethodTable& methodInits); //!< Constructor
 
         // Protected functions

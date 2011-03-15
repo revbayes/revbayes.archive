@@ -25,6 +25,7 @@
 #include "VectorString.h"
 
 #include <algorithm>
+#include <cassert>
 
 
 /** Constructor of empty StochasticNode */
@@ -37,7 +38,7 @@ StochasticNode::StochasticNode(const std::string& type) : VariableNode(type), cl
 /**
  * Constructor from distribution.
  *
- * @note MemberTable is a typedef for std::map<std::string, DAGNode*> defined in RbComplex.h.
+ * @note MemberTable is a typedef for Frame defined in RbComplex.h.
  */
 StochasticNode::StochasticNode(Distribution* dist) : VariableNode(dist->getVariableType()) {
 
@@ -317,6 +318,49 @@ RbObject* StochasticNode::getValuePtr(std::set<StochasticNode*>& affected) {
 }
 
 
+/** Is it possible to mutate node to newNode? */
+bool StochasticNode::isMutableTo(const DAGNode* newNode) const {
+
+    return false;
+}
+
+
+/** Is it possible to mutate node to contain newValue? */
+bool StochasticNode::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
+
+    assert (!newValue->isType(Container_name));
+    
+    bool isMutable = false;
+
+    return isMutable;
+}
+
+
+/** Is it possible to change parent node oldNode to newNode? */
+bool StochasticNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const {
+
+    // First find the node among parent nodes
+    if (parents.find(const_cast<DAGNode*>(oldNode)) == parents.end())
+        throw RbException("Node is not a parent");
+
+    /* Then find the distribution variable */
+    const VariableTable& params = distribution->getMembers().getVariableTable();
+    VariableTable::const_iterator it;
+    for (it=params.begin(); it!=params.end(); it++) {
+        if ((*it).second.variable == oldNode)
+            break;
+    }
+    if (it == params.end())
+        throw RbException("Node is not a parameter");
+
+    // TODO: Replace with call to workspace function isXConvertibleToY
+    if ( newNode->getValue()->isConvertibleTo((*it).second.type, (*it).second.dim) )
+        return true;
+    
+    return false;
+}
+
+
 /** Keep the current value of the node and tell affected */
 void StochasticNode::keep() {
 
@@ -333,6 +377,20 @@ void StochasticNode::keep() {
 
 /** Tell affected variable nodes to keep the current value: stop the recursion here */
 void StochasticNode::keepAffected() {
+}
+
+
+/** Mutate to newNode */
+void StochasticNode::mutateTo(DAGNode* newNode) {
+    
+    throw RbException("Not implemented yet");
+}
+
+
+/* Mutate to contain newValue */
+StochasticNode* StochasticNode::mutateTo(const VectorInteger& index, RbObject* newValue) {
+
+    throw RbException("Not implemented yet");
 }
 
 

@@ -33,23 +33,26 @@ class VectorString;
 class SyntaxConstant : public SyntaxElement {
 
     public:
-            SyntaxConstant(RbObject* val);              //!< Constructor from value
-            SyntaxConstant(const SyntaxConstant& sc);   //!< Copy constructor
-	        virtual ~SyntaxConstant();                  //!< Destructor deletes value
+                        SyntaxConstant(RbObject* val);              //!< Constructor from value
+                        SyntaxConstant(const SyntaxConstant& sc);   //!< Copy constructor
+	    virtual        ~SyntaxConstant();                           //!< Destructor deletes value
+
+        // Assignment operator
+        SyntaxConstant& operator=(const SyntaxConstant& x);         //!< Assignment operator
 
         // Basic utility functions
-        std::string     briefInfo() const;                          //!< Brief info about object
-        SyntaxElement*  clone() const;                              //!< Clone object
+        std::string     briefInfo(void) const;                      //!< Brief info about object
+        SyntaxConstant* clone(void) const;                          //!< Clone object
         bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
         void            print(std::ostream& o) const;               //!< Print info about object
 
         // Regular functions
-        DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
-        RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
-        bool            isConstExpr() const;                        //!< Is subtree constant expr?
+        DAGNode*        getDAGNodeExpr(Frame* frame) const;         //!< Convert to DAG node expression
+        DAGNode*        getValue(Frame* frame) const;               //!< Get semantic value
+        bool            isConstExpr(void) const { return true; }    //!< Is subtree constant expr?
 
     protected:
-        RbObject*   value;      //!< The constant value
+        RbObject*       value;                                      //!< The constant value
 };
 
 #endif

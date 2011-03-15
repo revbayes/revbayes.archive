@@ -50,12 +50,10 @@ class Model : public RbComplex {
         std::vector<DAGNode*>&      getDAGNodes(void) { return dagNodes; }                                                                  //!< Return the DAGNodes in the model graph.
 
 	protected:
-        RbObject*                   convertTo(const std::string& type) const;                                                               //!< Convert the Model object to an object of type.
 		void                        getExposedChildren(DAGNode* p, std::set<VariableNode*>& ec, std::vector<DAGNode*>& nodeList) const;     //!< Make a list of the children of a DAGNode (p) that are exposed to the user.
 		void                        getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool exposeEverybody, bool usePlates) const; //!< Get a list of the DAGNodes that are exposed to the user.
 		void                        getExposedParents(DAGNode* p, std::set<DAGNode*>& ep, std::vector<DAGNode*>& nodeList) const;           //!< Make a list of the parents of a DAGNode (p) that are exposed to the user.
 		int                         getIndexForVector(const std::vector<DAGNode*>& v, const DAGNode* p) const;                              //!< Finds position of a DAGNode in a vector of DAGNodes
-        bool                        isConvertibleTo(const std::string& type) const;                                                         //!< Checks if the Model object can be converted to be an object of type.
         std::vector<DAGNode*>       dagNodes;                                                                                               //!< A vector containing the DAGNodes in the model graph.
         std::vector<bool>           maintainedHere;                                                                                         //!< True if the DAGNode is maintained by the Model object.
 };

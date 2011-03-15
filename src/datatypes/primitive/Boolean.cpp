@@ -42,24 +42,24 @@ RbObject* Boolean::clone(void) const {
 	return  (RbObject*)(new Boolean(*this));
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Boolean::convertTo(const std::string& type) const {
 
-    if (type == Integer_name) 
-		{
-        if (value) 
-			return new Integer(1);
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Boolean::convertTo(const std::string& type, int dim) const {
+
+    if (type == Integer_name && dim == 0) {
+        if (value)
+            return new Integer(1);
         else 
-			return new Integer(0);
-		}
-    else if (type == Real_name) 
-		{
-        if (value) 
-			return new Real(1.0);
+            return new Integer(0);
+    }
+    else if (type == Real_name && dim == 0) {
+        if (value)
+            return new Real(1.0);
         else 
-			return new Real(0.0);
-		}
-    return NULL;
+            return new Real(0.0);
+    }
+
+    return RbObject::convertTo(type, dim);
 }
 
 /** Pointer-based equals comparison */
@@ -71,7 +71,7 @@ bool Boolean::equals(const RbObject* obj) const {
         return value == p->value;
 
     // Try converting the object to a bool
-    p = dynamic_cast<const Boolean*>(obj->convert(Boolean_name));
+    p = dynamic_cast<const Boolean*>(obj->convertTo(Boolean_name));
     if (p == NULL)
         return false;
 
@@ -88,15 +88,18 @@ const VectorString& Boolean::getClass() const {
     return rbClass;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool Boolean::isConvertibleTo(const std::string& type) const {
 
-    if (type == Integer_name)
+/** Is convertible to type and dim? */
+bool Boolean::isConvertibleTo(const std::string& type, int dim, bool once) const {
+
+    if (type == Integer_name && dim == 0)
         return true;
-    else if (type == Real_name)
+    else if (type == Real_name && dim == 0)
         return true;
-    return false;
+
+    return RbObject::isConvertibleTo(type, dim);
 }
+
 
 /** Print value for user */
 void Boolean::printValue(std::ostream &o) const {

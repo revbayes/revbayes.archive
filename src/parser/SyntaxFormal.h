@@ -24,31 +24,33 @@
 
 class ArgumentRule;
 class RbString;
+class TypeSpec;
 
 class SyntaxFormal : public SyntaxElement {
 
     public:
-            SyntaxFormal(RbString* id, SyntaxElement* defaultVal);                      //!< Implicit type
-            SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defaultVal);  //!< Explicit type
-            SyntaxFormal(const SyntaxFormal& x);                                        //!< Copy constructor
-	        virtual ~SyntaxFormal();                                                    //!< Destructor
+                        SyntaxFormal(RbString* id, SyntaxElement* defaultVal);                      //!< Implicit type
+                        SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defaultVal);  //!< Explicit type
+                        SyntaxFormal(const SyntaxFormal& x);                                        //!< Copy constructor
+	    virtual        ~SyntaxFormal();                                                             //!< Destructor
+
+        // Assignment operator
+        SyntaxFormal&   operator=(const SyntaxFormal& x);                                           //!< Assignment operator
 
         // Basic utility functions
-        std::string     briefInfo() const;                          //!< Brief info about object
-        SyntaxElement*  clone() const;                              //!< Clone object
-        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
-        void            print(std::ostream& o) const;               //!< Print info about object
+        std::string     briefInfo() const;                                                          //!< Brief info about object
+        SyntaxFormal*   clone() const;                                                              //!< Clone object
+        void            print(std::ostream& o) const;                                               //!< Print info about object
 
         // Regular functions
-        ArgumentRule*   getArgumentRule(Frame* frame) const;        //!< Make an argument rule
-        DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
-        RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
+        ArgumentRule*   getArgumentRule(Frame* frame) const;                                        //!< Make an argument rule
+        DAGNode*        getDAGNodeExpr(Frame* frame) const;                                         //!< Convert to DAG node expression
+        DAGNode*        getValue(Frame* frame) const;                                               //!< Get semantic value
 
     protected:
-        RbString*       type;           //!< The type of the argument
-        RbString*       label;          //!< The label of the argument
-        SyntaxElement*  defaultExpr;    //!< The default value of the argument (a const expr)
+        TypeSpec*       type;                                                                       //!< The type of the argument
+        RbString*       label;                                                                      //!< The label of the argument
+        SyntaxElement*  defaultExpr;                                                                //!< Default value expression of argument
 };
 
 #endif
-

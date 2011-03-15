@@ -17,6 +17,7 @@
 #define SyntaxForCondition_H
 
 #include "Container.h"
+#include "DAGNodePlate.h"
 #include "VectorInteger.h"
 #include "SyntaxElement.h"
 
@@ -29,30 +30,32 @@ class RbString;
 class SyntaxForCondition : public SyntaxElement {
 
     public:
-            SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr);    //!< Standard constructor
-            SyntaxForCondition(const SyntaxForCondition& x);                    //!< Copy constructor
-	        virtual ~SyntaxForCondition();                                      //!< Destructor
+                                SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr);    //!< Standard constructor
+                                SyntaxForCondition(const SyntaxForCondition& x);                    //!< Copy constructor
+	    virtual                ~SyntaxForCondition();                                               //!< Destructor
 
+        // Assignment operator
+        SyntaxForCondition&     operator=(const SyntaxForCondition& x);                             //!< Assignment operator
+        
         // Basic utility functions
-        std::string     briefInfo() const;                          //!< Brief info about object
-        SyntaxElement*  clone() const;                              //!< Clone object
-        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
-        void            print(std::ostream& o) const;               //!< Print info about object
+        std::string             briefInfo() const;                                                  //!< Brief info about object
+        SyntaxElement*          clone() const;                                                      //!< Clone object
+        void                    print(std::ostream& o) const;                                       //!< Print info about object
 
         // Regular functions
-        DAGNode*        getDAGNode(Frame* frame=NULL) const;        //!< Convert to DAG node
-        bool            getNextLoopState(Frame* frame);             //!< Get next state of loop
-        RbObject*       getValue(Frame* frame=NULL) const;          //!< Get semantic value
+        void                    finalizeLoop(Frame* frame);                                         //!< Finalize loop
+        DAGNode*                getDAGNodeExpr(Frame* frame) const;                                 //!< Convert to DAG node expression
+        bool                    getNextLoopState(Frame* frame);                                     //!< Get next state of loop
+        DAGNode*                getValue(Frame* frame) const;                                       //!< Get semantic value
+        void                    initializeLoop(Frame* frame);                                       //!< Initialize loop
 
     protected:
-        RbString*       varName;                                    //!< The name of the variable
-        SyntaxElement*  inExpression;                               //!< The expression that should result in a vector of values
-        bool            isLoopInitialized;                          //!< Is loop state initialized?
-        Container*      vector;                                     //!< Vector result of 'in' expression
-        VectorInteger*      intVector;                                  //!< Vector result of 'in' expression
-        size_t          nextElement;                                //!< Next element in vector
+        RbString*               varName;                                                            //!< The name of the loop variable
+        SyntaxElement*          inExpression;                                                       //!< The in expression (a vector of values)
+        DAGNodePlate*           vector;                                                             //!< Vector result of 'in' expression
+        bool                    wasLoopVariableReference;                                           //!< Was loop variable reference before loop?
+        int                     nextElement;                                                        //!< Next element in vector
 
-        void            initializeLoop(Frame* frame);               //!< Initialize loop
 };
 
 #endif

@@ -51,12 +51,6 @@ RbObject* RealPos::clone(void) const {
 	return  (RbObject*)(new RealPos(*this));
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* RealPos::convertTo(const std::string& type) const {
-
-    if (type == Real_name)
-        return new Real(value);
-    return NULL;}
 
 /** Get class vector describing type of object */
 const VectorString& RealPos::getClass() const {
@@ -65,15 +59,6 @@ const VectorString& RealPos::getClass() const {
     return rbClass;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool RealPos::isConvertibleTo(const std::string& type) const {
-
-    if (type == RealPos_name)
-        return true;
-    else if (type == Real_name)
-        return true;
-    return false;
-}
 
 /** Set value */
 void RealPos::setValue(double x) {

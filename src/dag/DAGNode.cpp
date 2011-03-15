@@ -18,6 +18,7 @@
  */
 
 #include "DAGNode.h"
+#include "Frame.h"
 #include "VectorInteger.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -30,7 +31,7 @@
 
 
 /** Constructor: set value type */
-DAGNode::DAGNode(const std::string& valType) : children(), parents(), name(""), valueType(valType) {
+DAGNode::DAGNode(const std::string& valType) : children(), parents(), referringFrames(), name(""), valueType(valType) {
 
 }
 
@@ -43,7 +44,7 @@ DAGNode::DAGNode(const std::string& valType) : children(), parents(), name(""), 
  * dual copies of them (function arguments, distribution parameters,
  * or container elements).
  */
-DAGNode::DAGNode(const DAGNode& x) : children(), parents(), name(""), valueType(x.valueType) {
+DAGNode::DAGNode(const DAGNode& x) : children(), parents(), referringFrames(), name(""), valueType(x.valueType) {
 
 }
 
@@ -52,6 +53,33 @@ const VectorString& DAGNode::getClass() const {
 
     static VectorString rbClass = VectorString(DAGNode_name);
     return rbClass;
+}
+
+/** Get name of DAG node from its surrounding objects */
+std::string DAGNode::getName(void) const {
+
+    std::string name;
+
+    if (slot == NULL) {
+        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+            if ((*i)->isType(DAGNodePlate_name)) {
+                DAGNodePlate* thePlate = (DAGNodePlate*)(*i);
+                name = thePlate->getName();
+                VectorInteger index = thePlate->getIndex(*i);
+                for (size_t j=0; j<index.size(); j++)
+                    name += "[" + std::string(index[j] + 1) + "]";
+            }
+        }
+    }
+    else {
+        name = slot->getName();
+        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+            if ((*i)->isType(CompositeNode_name)) {
+                name = (*i)->getName() + "." + name;
+            }        
+        }
+    }
+    return name;
 }
 
 /** Get type of wrapper (first entry in class vector) */
@@ -92,13 +120,14 @@ bool DAGNode::isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const {
     return false;
 }
 
-/** Get number of references to the node from Frame and other DAG nodes */
+/** Get number of references to the node from Frame and other DAG nodes
+ *  This code relies on name being set if the node is owned by a frame */
 int DAGNode::numRefs(void) const {
 
-    if (name == "")
-        return numChildren();
+    if (frame == NULL)
+        return numChildren() + referringFrames.size();
     else
-        return numChildren() + 1;
+        return numChildren() + referringFrames.size() + 1;
 }
 
 /** Print children */
@@ -131,10 +160,24 @@ void DAGNode::printParents(std::ostream& o) const {
     }
 }
 
+
 /** Set element variable; default throws error, override if wrapper has variable elements */
 void DAGNode::setElement(const VectorInteger& index, DAGNode* var) {
 
     throw (RbException("No variable elements"));
 }
 
+
+/** Swap node in DAG to new node */
+void DAGNode::swapNodeTo(DAGNode* newNode) {
+    
+    // It is important to have a copy here as children will be changed in process
+    std::set<VariableNode*> oldChildren = getChildren();
+    for (std::set<VariableNode*>::iterator i=oldChildren.begin(); i!=oldChildren.end(); i++)
+            (*i)->swapParentNode(this, newNode);
+
+    // Update referring frames
+    for (std::set<Frame*>::iterator i=referringFrames.begin(); i!=referringFrames.end(); i++)
+        (*i)->swapReference(this, newNode);
+}
 

@@ -48,11 +48,6 @@ MemberObject::MemberObject(const MemberRules& memberRules, const MethodTable& me
     }
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* MemberObject::convertTo(const std::string& type) const {
-
-    return NULL;
-}
 
 /** Pointer-based equals comparison */
 bool MemberObject::equals(const RbObject* obj) const {
@@ -137,11 +132,6 @@ DAGNode* MemberObject::getVariable(const std::string& name) {
     return const_cast<DAGNode*>(members.getVariable(name));
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool MemberObject::isConvertibleTo(const std::string& type) const {
-
-    return false;
-}
 
 /** Print value for user */
 void MemberObject::printValue(std::ostream& o) const {

@@ -41,6 +41,8 @@ class Integer : public RbObject {
         std::string                 toString(void) const;                            //!< Complete info about object
 
         // Type conversion
+        RbObject*                   convertTo(const std::string& type, int dim=0) const;                        //!< Convert to type and dim
+        bool                        isConvertibleTo(const std::string& type, int dim=0, bool once=false) const; //!< Is convertible to type and dim?
                                     operator int(void) const { return value; }       //!< Type conversion to int
 
         // Getters and setters
@@ -48,8 +50,6 @@ class Integer : public RbObject {
         int                         getValue(void) const { return value; }           //!< Get value
 
 	protected:
-        RbObject*                   convertTo(const std::string& type) const;        //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;  //!< Is convertible to type and dim?
 
     private:
         int                         value;                                           //!< Value member

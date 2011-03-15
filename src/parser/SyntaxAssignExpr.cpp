@@ -101,13 +101,13 @@ const VectorString& SyntaxAssignExpr::getClass(void) const {
 
 
 /** Convert element to DAG node: insert symbol and return reference to it */
-DAGNode* SyntaxAssignExpr::getDAGNode(Frame* frame) const {
+DAGNode* SyntaxAssignExpr::getDAGNodeExpr(Frame* frame) const {
 
     // Insert symbol; discard the return value
     delete getValue(frame);
 
     // Return DAG node from variable
-    return variable->getDAGNode();
+    return variable->getDAGNodeExpr();
 }
 
 
@@ -116,60 +116,41 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
 
     PRINTF("Evaluating assign expression\n");
 
-    // Get variable identifier
-    RbString varName = *variable->getIdentifier();
+    // Get variable name, index and frame
+    RbString      varName  = *variable->getIdentifier();
+    VectorInteger index    = variable->getIndex(frame);
+    Frame*        varFrame = variable->getVariableFrame(frame);
 
-    // Get index
-    VectorInteger index = variable->getIndex(frame);
+    // Variable storing the value of the expression if an arrow assignment
+    RbObject* exprValue;
 
     // Deal with arrow assignments
-    if (opType == ArrowAssign) 
-		{
+    if (opType == ArrowAssign) {
         PRINTF("Arrow assignment\n");
-        // Calculate the value of the rhs expression
-        RbObject* exprValue = expression->getValue(frame);
 
-        // Does the variable exist? If not, add it - but only to workspace, not to complex objects
-        if (!variable->isMember()  && !frame->existsVariable(varName)) 
-			{
-            PRINTF ("Creating new variable\n");
-            // It does not exist - add it
+        // Calculate the value of the rhs expression
+        exprValue = expression->getValue(frame);
+
+        // Does the variable exist? If not, add it - but only if it lives in current workspace
+        if ( varFrame == frame  && !frame->existsVariable(varName)) {
+
+            // It does not exist - add it to current frame
+            PRINTF ("Creating new constant node %sthrough assignment\n", index.size()==0? "" : "element ");
             if (index.size() != 0)
                 frame->addVariable(varName, index, new ConstantNode(exprValue));
             else
                 frame->addVariable(varName, new ConstantNode(exprValue));
-			}
-        else 
-			{
-            // It exists - use the frame or a complex object to assign to it 
-            if (!variable->isMember()) 
-				{
-                PRINTF ("Assigning to existing simple variable\n");
-                if (index.size() != 0)
-                    frame->setValElement(varName, index, exprValue);
-                else
-                    frame->setValue(varName, exprValue);
-				}
-            else 
-				{
-                PRINTF ("Assigning to existing member variable\n");
-                const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getVariable()->getValuePtr(frame));
-                if (objectPtr == NULL)
-                    throw RbException("Variable " + variable->getVariable()->getFullName(frame) + " does not have members");
-                RbComplex* theObject = const_cast<RbComplex*>(objectPtr);
-                if (index.size() == 0)
-                    theObject->setValue(varName, exprValue);
-                else 
-					{
-                    const DAGNodePlate* containerPtr = dynamic_cast<const DAGNodePlate*>(theObject->getVariable(varName));
-                    if (containerPtr == NULL)
-                        throw RbException("Variable " + variable->getVariable()->getFullName(frame) + "." + std::string(varName) + " does not have elements");
-                    DAGNodePlate* container = const_cast<DAGNodePlate*>(containerPtr);
-                    container->setElement(index, exprValue);
-					}
-				}
-			}
 		}
+        else {
+
+            // It exists - use the variable frame to assign to it
+            PRINTF ("Replacing %s value %sthrough assignment\n", varFrame != frame ? "member" : "simple", index.size()==0 ? "" : "element ");
+            if (index.size() != 0)
+                varFrame->setValElement(varName, index, exprValue);
+            else
+                varFrame->setValue(varName, exprValue);
+		}
+    }
 
     // Deal with equation assignments
     else if (opType == EquationAssign) {
@@ -177,17 +158,18 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
         PRINTF("Equation assignment\n");
 
         // Get DAG node representation of expression
-        DAGNode* dag = expression->getDAGNode(frame);
+        DAGNode* dag = expression->getDAGNodeExpr(frame);
         DeterministicNode* node = dynamic_cast<DeterministicNode*>(dag);
         if (node == NULL) {
             delete dag;
-            throw (RbException("Righ-hand side is not a variable expression"));
+            throw (RbException("Right-hand side is not a variable expression"));
         }
 
         // Does the variable exist?
-        if (!variable->isMember() && !frame->existsVariable(varName)) {
+        if ( varFrame == frame && !frame->existsVariable(varName)) {
  
             // It does not exist - add it
+            PRINTF ("Creating new deterministic node %sthrough assignment\n", index.size()==0? "" : "element ");
             if (index.size() != 0)
                 frame->addVariable(varName, index, node);
             else
@@ -195,30 +177,12 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
         }
         else {
 
-            // It exists - use the frame or a complex object to assign to it
-            if (!variable->isMember()) {
-                if (index.size() != 0)
-                    frame->setVarElement(varName, index, node);
-                else
-                    frame->setVariable(varName, node);
-            }
-            else {
-
-                PRINTF ("Assigning equation to existing member variable\n");
-                const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getVariable()->getValuePtr(frame));
-                if (objectPtr == NULL)
-                    throw RbException("Variable " + variable->getVariable()->getFullName(frame) + " does not have members");
-                RbComplex* theObject = const_cast<RbComplex*>(objectPtr);
-                if (index.size() == 0)
-                    theObject->setVariable(varName, node);
-                else {
-                    const DAGNodePlate* containerPtr = dynamic_cast<const DAGNodePlate*>(theObject->getVariable(varName));
-                    if (containerPtr == NULL)
-                        throw RbException("Variable " + variable->getVariable()->getFullName(frame) + "." + std::string(varName) + " does not have elements");
-                    DAGNodePlate* container = const_cast<DAGNodePlate*>(containerPtr);
-                    container->setElement(index, node);
-                }
-            }
+            // It exists - use the variable frame to assign to it
+            PRINTF ("Replacing %s deterministic node %sthrough assignment\n", varFrame != frame ? "member" : "simple", index.size()==0 ? "" : "element ");
+            if (index.size() != 0)
+                varFrame->setVarElement(varName, index, node);
+            else
+                varFrame->setVariable(varName, node);
         }
     }
 
@@ -239,9 +203,10 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
         StochasticNode* node = new StochasticNode(dist);
 
         // Does the variable exist?
-        if (!variable->isMember() && !frame->existsVariable(varName)) {
+        if (varFrame == frame && !frame->existsVariable(varName)) {
  
             // It does not exist - add it
+            PRINTF ("Creating new stochastic node %sthrough assignment\n", index.size()==0? "" : "element ");
             if (index.size() != 0)
                 frame->addVariable(varName, index, node);
             else
@@ -249,35 +214,20 @@ RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
         }
         else {
 
-            // It exists - use the frame or a complex object to assign to it
-            if (!variable->isMember()) {
-                if (index.size() != 0)
-                    frame->setVarElement(varName, index, node);
-                else
-                    frame->setVariable(varName, node);
-            }
-            else {
-
-                PRINTF ("Assigning distribution to existing member variable\n");
-                const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getVariable()->getValuePtr(frame));
-                if (objectPtr == NULL)
-                    throw RbException("Variable " + variable->getVariable()->getFullName(frame) + " does not have members");
-                RbComplex* theObject = const_cast<RbComplex*>(objectPtr);
-                if (index.size() == 0)
-                    theObject->setVariable(varName, node);
-                else {
-                    const DAGNodePlate* containerPtr = dynamic_cast<const DAGNodePlate*>(theObject->getVariable(varName));
-                    if (containerPtr == NULL)
-                        throw RbException("Variable " + variable->getVariable()->getFullName(frame) + "." + std::string(varName) + " does not have elements");
-                    DAGNodePlate* container = const_cast<DAGNodePlate*>(containerPtr);
-                    container->setElement(index, node);
-                }
-            }
+            // It exists - use the variable frame to assign to it
+            PRINTF ("Replacing %s stochastic node %sthrough assignment\n", varFrame != frame ? "member" : "simple", index.size()==0 ? "" : "element ");
+            if (index.size() != 0)
+                varFrame->setVarElement(varName, index, node);
+            else
+                varFrame->setVariable(varName, node);
         }
     }
 
     // Return copy of the value of the rhs expression
-    return expression->getValue(frame);
+    if (opType == ArrowAssign)
+        return exprValue->clone();
+    else
+        return expression->getValue(frame);
 }
 
 

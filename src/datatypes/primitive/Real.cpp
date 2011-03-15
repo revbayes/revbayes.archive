@@ -19,6 +19,7 @@
 
 #include "Boolean.h"
 #include "Real.h"
+#include "RealPos.h"
 #include "RbNames.h"
 #include "VectorString.h"
 
@@ -59,13 +60,18 @@ RbObject* Real::clone(void) const {
 	return  (RbObject*)(new Real(*this));
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Real::convertTo(const std::string& type) const {
 
-    if (type == Boolean_name)
+/** Convert to object of another class. The caller manages the object. */
+RbObject* Real::convertTo(const std::string& type, int dim) const {
+
+    if (type == Boolean_name && dim == 0)
         return new Boolean(value == 0.0);
-	return NULL;
+    if (type == RealPos_name && dim == 0 && value > 0.0)
+        return new RealPos(value);
+
+    return RbObject::convertTo(type, dim);
 }
+
 
 /** Pointer-based equals comparison */
 bool Real::equals(const RbObject* obj) const {
@@ -76,7 +82,7 @@ bool Real::equals(const RbObject* obj) const {
         return value == p->value;
 
     // Try converting the object to a double
-    p = dynamic_cast<const Real*>(obj->convert(Real_name));
+    p = dynamic_cast<const Real*>(obj->convertTo(Real_name));
     if (p == NULL)
         return false;
 
@@ -94,13 +100,18 @@ const VectorString& Real::getClass() const {
     return rbClass;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool Real::isConvertibleTo(const std::string& type) const {
 
-    if (type == Boolean_name)
+/** Is convertible to type and dim? */
+bool Real::isConvertibleTo(const std::string& type, int dim, bool once) const {
+
+    if (type == Boolean_name && dim == 0)
         return true;
-	return false;
+    if (type == RealPos_name && dim == 0 && once == true && value > 0.0)
+        return true;
+
+    return RbObject::isConvertibleTo(type, dim, once);
 }
+
 
 /** Print value for user */
 void Real::printValue(std::ostream &o) const {

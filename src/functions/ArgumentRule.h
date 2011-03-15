@@ -29,16 +29,15 @@
 
 class DAGNode;
 class RbObject;
+class TypeSpec;
 class VectorString;
 
 class ArgumentRule : public RbInternal {
 
     public:
-                                    ArgumentRule(const std::string& argName, const std::string& valType, int varDim=0);                 //!< Constructor of rule without default value
-                                    ArgumentRule(const std::string& argName, const std::string& valType, int varDim, RbObject* defVal); //!< Constructor of rule with default value
-                                    ArgumentRule(const std::string& argName, RbObject* defVal);                                         //!< Constructor of rule with default value and implicit type and dim
-                                    ArgumentRule(const std::string& argName, DAGNode* defVar);                                          //!< Constructor of rule with default variable and implicit type and dim
-		                            ArgumentRule(const ArgumentRule& a);                                                                //!< Copy constructor
+                                    ArgumentRule(const std::string& argName, const TypeSpec& varType);                                  //!< Constructor of rule without default value
+                                    ArgumentRule(const std::string& argName, const TypeSpec& varType, DAGNode* defVal);                 //!< Constructor of rule with default value
+ 		                            ArgumentRule(const ArgumentRule& a);                                                                //!< Copy constructor
         virtual                    ~ArgumentRule(void);                                                                                 //!< Destructor
 
         // Assignment operator

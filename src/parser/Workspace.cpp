@@ -20,6 +20,7 @@
 // Regular include files
 #include "ConstantNode.h"
 #include "ConstructorFunction.h"
+#include "Container.h"
 #include "Distribution.h"
 #include "DistributionReal.h"
 #include "DistributionFunction.h"
@@ -100,6 +101,8 @@ Workspace::Workspace(Workspace* parentSpace) : Frame(parentSpace), functionTable
 Workspace::~Workspace() {
 
     delete functionTable;
+    for (TypeTable::iterator i=typeTable.begin(); i!=typeTable.end(); i++)
+        delete (*i).second;
 }
 
 
@@ -124,7 +127,7 @@ bool Workspace::addDistribution(const std::string& name, Distribution* dist) {
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, VectorString>(name, dist->getClass()));
+    typeTable.insert(std::pair<std::string, RbObject*>(name, dist->clone()));
 
     functionTable->addFunction(name, new ConstructorFunction(dist));
     functionTable->addFunction("d" + name, new DistributionFunction(dist, DistributionFunction::DENSITY));
@@ -142,7 +145,7 @@ bool Workspace::addDistribution(const std::string& name, DistributionReal* dist)
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, VectorString>(name, dist->getClass()));
+    typeTable.insert(std::pair<std::string, RbObject*>(name, dist->clone()));
 
     functionTable->addFunction(name, new ConstructorFunction(dist));
     functionTable->addFunction("d" + name, new DistributionFunction(dist, DistributionFunction::DENSITY));
@@ -169,7 +172,7 @@ bool Workspace::addFunction(const std::string& name, RbFunction* func) {
 
 
 /** Add type to the workspace */
-bool Workspace::addType(const RbObject* exampleObj) {
+bool Workspace::addType(RbObject* exampleObj) {
 
     PRINTF("Adding type %s to workspace\n", exampleObj->getType().c_str());
 
@@ -178,9 +181,7 @@ bool Workspace::addType(const RbObject* exampleObj) {
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, VectorString>(exampleObj->getType(), exampleObj->getClass()));
-
-    delete exampleObj;
+    typeTable.insert(std::pair<std::string, RbObject*>(exampleObj->getType(), exampleObj));
 
     return true;
 }
@@ -194,7 +195,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* te
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, VectorString>(name, templ->getClass()));
+    typeTable.insert(std::pair<std::string, RbObject*>(name, templ->clone()));
 
     functionTable->addFunction(name, new ConstructorFunction(templ));
 
@@ -380,7 +381,7 @@ bool Workspace::isXOfTypeY(const std::string& x, const std::string& y) const {
             return ((Workspace*)(parentFrame))->isXOfTypeY(x, y);
     }
 
-    const VectorString& xVec = (*typeTable.find(x)).second;
+    const VectorString& xVec = (*typeTable.find(x)).second->getClass();
     size_t i;
     for (i=0; i<xVec.size(); i++) {
         if (xVec[i] == y)
@@ -391,6 +392,31 @@ bool Workspace::isXOfTypeY(const std::string& x, const std::string& y) const {
         return false;
     else
         return true;
+}
+
+
+/** Is type x convertible to type y */
+bool Workspace::isXConvertibleToY(const std::string& xType, int xDim, const std::string& yType, int yDim) const {
+
+    bool retVal = false;
+    if (xDim > 0) {
+    
+        VectorInteger length = VectorInteger(xDim, 1);
+        Container* dummy = new Container(length, xType);
+
+        retVal = dummy->isConvertibleTo(yType, yDim);
+        delete dummy;
+    }
+    else if (xDim == 0) {
+
+        TypeTable::const_iterator i = typeTable.find(xType);
+        if (i == typeTable.end())
+            throw RbException("Unknown type named '" + xType + "'");
+        
+        retVal = (*i).second->isConvertibleTo(yType, yDim);
+    }
+
+    return retVal;
 }
 
 
@@ -406,9 +432,9 @@ void Workspace::printValue(std::ostream& o) const {
     o << std::endl;
 
     o << "Type table:" << std::endl;
-    std::map<std::string, VectorString>::const_iterator i;
+    std::map<std::string, RbObject*>::const_iterator i;
     for (i=typeTable.begin(); i!=typeTable.end(); i++) {
-        o << (*i).first << " = " << (*i).second << std::endl;
+        o << (*i).first << " = " << (*i).second->getClass() << std::endl;
     }
 }
 

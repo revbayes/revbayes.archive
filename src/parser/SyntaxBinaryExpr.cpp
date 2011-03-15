@@ -55,6 +55,25 @@ SyntaxBinaryExpr::~SyntaxBinaryExpr() {
 }
 
 
+/** Assignment operator */
+SyntaxBinaryExpr& SyntaxBinaryExpr::operator=(const SyntaxBinaryExpr& x) {
+
+    if (&x != this) {
+    
+        delete leftOperand;
+        delete rightOperand;
+
+        SyntaxElement::operator=(x);
+
+        leftOperand  = x.leftOperand->clone();
+        rightOperand = x.rightOperand->clone();
+        operation    = x.operation;
+    }
+
+    return *this;
+}
+
+
 /** Return brief info about object */
 std::string SyntaxBinaryExpr::briefInfo () const {
 
@@ -72,32 +91,19 @@ SyntaxElement* SyntaxBinaryExpr::clone () const {
 }
 
 
-/** Equals comparison */
-bool SyntaxBinaryExpr::equals(const SyntaxElement* elem) const {
-
-	const SyntaxBinaryExpr* p = dynamic_cast<const SyntaxBinaryExpr*>(elem);
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    result = result && leftOperand->equals(p->leftOperand);
-    result = result && rightOperand->equals(p->rightOperand);
-    result = result && (operation == p->operation);
-    
-    return result;
-}
-
-
 /** Convert element to DAG node */
-DAGNode* SyntaxBinaryExpr::getDAGNode(Frame* frame) const {
+DAGNode* SyntaxBinaryExpr::getDAGNodeExpr(Frame* frame) const {
 
+    // Package arguments
     std::vector<Argument> args;
-    args.push_back(Argument("x", leftOperand->getDAGNode(frame)));
-    args.push_back(Argument("y", rightOperand->getDAGNode(frame)));
+    args.push_back(Argument("", leftOperand->getDAGNodeExpr(frame)));
+    args.push_back(Argument("", rightOperand->getDAGNodeExpr(frame)));
 
+    // Get function
     std::string funcName = "." + opCode[operation];
     RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, args);
 
+    // Return new function node
     return new DeterministicNode(func);
 }
 
@@ -108,29 +114,29 @@ DAGNode* SyntaxBinaryExpr::getDAGNode(Frame* frame) const {
  * We simply look up the function and calculate the value.
  *
  */
-RbObject* SyntaxBinaryExpr::getValue(Frame* frame) const {
+DAGNode* SyntaxBinaryExpr::getValue(Frame* frame) const {
 
     // Package the arguments
     std::vector<Argument> args;
-    args.push_back(Argument("", leftOperand->getDAGNode(frame)));
-    args.push_back(Argument("", rightOperand->getDAGNode(frame)));
+    args.push_back(Argument("", leftOperand->getDAGNodeExpr(frame)));
+    args.push_back(Argument("", rightOperand->getDAGNodeExpr(frame)));
 
-    // Execute function
+    // Execute function and return value
     std::string funcName = "_" + opCode[operation];
-    const DAGNode* retVal = Workspace::globalWorkspace().executeFunction(funcName, args);
-
-    // Return value (we pass on management responsibility to caller)
-    return retVal->clone();
+    return Workspace::globalWorkspace().executeFunction(funcName, args);
 }
 
 
 /** Print info about the syntax element */
 void SyntaxBinaryExpr::print(std::ostream& o) const {
 
-    o << "SyntaxBinaryExpr:" << std::endl;
-    o << "left operand  = " << leftOperand->briefInfo() << std::endl;
-    o << "right operand = " << rightOperand->briefInfo() << std::endl;
+    o << "[" << this << "] SyntaxBinaryExpr:" << std::endl;
+    o << "left operand  = [" << leftOperand  << "]" << leftOperand->briefInfo()  << std::endl;
+    o << "right operand = [" << rightOperand << "]" << rightOperand->briefInfo() << std::endl;
     o << "operation     = " << opCode[operation];
-}
+    o << std::endl;
 
+    leftOperand->print(o);
+    rightOperand->print(o);
+}
 

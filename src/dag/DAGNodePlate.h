@@ -44,6 +44,7 @@ class DAGNodePlate : public VariableNode {
         friend class            Frame;                                                                  //!< Give Frame direct access
         friend class            Func__lookup;                                                           //!< Give Func__lookup direct access
 
+                                DAGNodePlate(Container* x);                                             //!< Vector with const vals from container
                                 DAGNodePlate(DAGNode* x);                                               //!< Vector with one node x
                                 DAGNodePlate(size_t n, DAGNode* x);                                     //!< Vector with n copies of x
                                 DAGNodePlate(size_t n, const std::string& valType);                     //!< Empty vector of length n
@@ -80,12 +81,17 @@ class DAGNodePlate : public VariableNode {
         std::string             toString(void) const;                                                   //!< Complete info about object
 
         // DAG functions
-        DAGNodePlate*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                 //!< Clone entire graph
-        void                    getAffected(std::set<StochasticNode*>& affected);                       //!< Mark and get affected nodes
-        void                    keepAffected(void);                                                     //!< Keep value of affected nodes
-        void                    restoreAffected(void);                                                  //!< Restore value of affected nodes
-        void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                           //!< Swap a parent node
-        void                    touchAffected(void);                                                    //!< Tell affected nodes value is reset
+        DAGNodePlate*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
+        void                    getAffected(std::set<StochasticNode*>& affected);                           //!< Mark and get affected nodes
+        bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
+        bool                    isMutableTo(const VectorInteger& index, const RbObject* newValue) const;    //!< Is node mutable to contain newValue?
+        bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
+        void                    keepAffected(void);                                                         //!< Keep value of affected nodes
+        void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to newNode
+        DAGNodePlate*           mutateTo(const VectorInteger& index, RbObject* newValue);                   //!< Mutate to contain newValue
+        void                    restoreAffected(void);                                                      //!< Restore value of affected nodes
+        void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
+        void                    touchAffected(void);                                                        //!< Tell affected nodes value is reset
 
         // Move function
         MoveSchedule*           getDefaultMoves(void) { return NULL; }                                   //!< Get default moves
@@ -95,10 +101,8 @@ class DAGNodePlate : public VariableNode {
         const VectorInteger&    getLength(void) const { return length; }                                //!< Get length in each dim
         std::string             getElementName(const VectorInteger& index) const;                       //!< Get name of element 
         DAGNodePlate*           getSubPlate(const VectorInteger& index) const;                          //!< Get subplate
-        const RbObject*         getValElement(const VectorInteger& index) const;                        //!< Get value element
-        const DAGNode*          getVarElement(const VectorInteger& index) const;                        //!< Get variable element
-        void                    setElement(const VectorInteger& index, RbObject* val);                  //!< Set value element
-        void                    setElement(const VectorInteger& index, DAGNode* var);                   //!< Set var element 
+        const DAGNode*          getElement(const VectorInteger& index) const;                           //!< Get variable element
+        void                    setElement(const VectorInteger& index, DAGNode* var);                   //!< Set element 
         void                    setElementName(const VectorInteger& index, const std::string& name);    //!< Set name of element 
         void                    setLength(const VectorInteger& len);                                    //!< Reorganize plate
 

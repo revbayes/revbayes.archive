@@ -193,7 +193,7 @@ RbObject* FunctionTable::getFunctionValue(const std::string& name, const std::ve
 
     RbFunction* theFunction = findFunction(name, args);
 
-    return theFunction->execute()->getValue();
+    return theFunction->execute()->getValue()->clone();
 }
 
 

@@ -60,6 +60,9 @@ class Container : public RbComplex {
         void                        printValue(std::ostream& o) const;                                //!< Print value for user
         std::string                 toString(void) const;                                             //!< Complete info about object
 
+        // Type conversion
+        bool                        isConvertibleTo(const std::string& type, int dim = 0) const;      //!< Is convertible to type and dim?
+
         // Element access functions
         int                         getDim(void) const { return int(length.size()); }                 //!< Get subscript dimensions
         const std::string&          getElementType(void) const { return elementType; }                //!< Get element type
@@ -69,9 +72,7 @@ class Container : public RbComplex {
         void                        setElement(const VectorInteger& index, RbObject* val);            //!< Set value element
         void                        setLength(const VectorInteger& len);                              //!< Reorganize container
 
-	protected:
-        RbObject*                   convertTo(const std::string& type) const;                         //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;                   //!< Is convertible to type?
+	private:
         size_t                      getOffset(const VectorInteger& index) const;                      //!< Get offset in element vector
         RbObject*                   getElementPtr(const VectorInteger& index);                        //!< Allow modify access to element
 

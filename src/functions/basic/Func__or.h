@@ -67,8 +67,8 @@ Func__or<firstValType, secondValType>* Func__or<firstValType, secondValType>::cl
 template <>
 DAGNode* Func__or<Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
 
-    bool val1 = (bool)(((Integer*)(args[0])->getValue())->getValue());
-    bool val2 = (bool)(((Integer*)(args[1])->getValue())->getValue());
+    bool val1 = ((((Integer*)(args[0])->getValue())->getValue()) != 0);
+    bool val2 = ((((Integer*)(args[1])->getValue())->getValue()) != 0);
     bool comp = (val1 || val2);
     return new ConstantNode( new Boolean(comp));
 }
@@ -78,7 +78,7 @@ DAGNode* Func__or<Integer,Integer>::executeOperation(const std::vector<DAGNode*>
 template <>
 DAGNode* Func__or<Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
-    bool val1 = (bool)(((Integer*)(args[0])->getValue())->getValue());
+    bool val1 = ((((Integer*)(args[0])->getValue())->getValue()) != 0);
     bool val2 = ((Boolean*)(args[1])->getValue())->getValue();
     bool comp = (val1 || val2);
     return new ConstantNode( new Boolean(comp));
@@ -90,7 +90,7 @@ template <>
 DAGNode* Func__or<Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
 
     bool val1 = ((Boolean*)(args[0])->getValue())->getValue();
-    bool val2 = (bool)(((Integer*)(args[1])->getValue())->getValue());
+    bool val2 = ((((Integer*)(args[1])->getValue())->getValue()) != 0);
     bool comp = (val1 || val2);
     return new ConstantNode( new Boolean(comp));
 }

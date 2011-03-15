@@ -24,6 +24,7 @@
 #include "StochasticNode.h"
 #include "VectorString.h"
 
+#include <cassert>
 #include <iostream>
 #include <string>
 #include <set>
@@ -116,17 +117,45 @@ const RbObject* ConstantNode::getValElement(const VectorInteger& index) const {
     return complexObject->getElement(index);
 }
 
-/** check if we can convert the value */
-bool ConstantNode::isValueConvertibleTo(const std::string& type) const {
 
-    return value->isConvertible(type);
+/** Is it possible to mutate node to newNode? */
+bool ConstantNode::isMutableTo(const DAGNode* newNode) const {
+
+    return false;
 }
+
+
+/** Is it possible to mutate node to contain newValue? */
+bool ConstantNode::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
+
+    assert (!newValue->isType(Container_name));
+    
+    bool isMutable = false;
+
+    return isMutable;
+}
+
+
+/** Mutate to newNode */
+void ConstantNode::mutateTo(DAGNode* newNode) {
+    
+    throw RbException("Not implemented yet");
+}
+
+
+/* Mutate to contain newValue */
+ConstantNode* ConstantNode::mutateTo(const VectorInteger& index, RbObject* newValue) {
+
+    throw RbException("Not implemented yet");
+}
+
 
 /** Print value for user */
 void ConstantNode::printValue(std::ostream& o) const {
 
     value->printValue(o);
 }
+
 
 /** Print struct for user */
 void ConstantNode::printStruct(std::ostream &o) const {
@@ -143,6 +172,7 @@ void ConstantNode::printStruct(std::ostream &o) const {
     o << std::endl;
 }
 
+
 /** Set Element */
 void ConstantNode::setElement(const VectorInteger& index, RbObject* val) {
 
@@ -154,6 +184,7 @@ void ConstantNode::setElement(const VectorInteger& index, RbObject* val) {
 
     touchAffected();
 }
+
 
 /** Set value */
 void ConstantNode::setValue(RbObject* val) {
@@ -168,6 +199,7 @@ void ConstantNode::setValue(RbObject* val) {
     touchAffected();
 }
 
+
 /** Complete info on object */
 std::string ConstantNode::toString(void) const {
 
@@ -177,6 +209,7 @@ std::string ConstantNode::toString(void) const {
 
     return o.str();
 }
+
 
 /** Touch affected: only needed if a set function is called */
 void ConstantNode::touchAffected(void) {

@@ -16,6 +16,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "Move_mscale.h"
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
@@ -49,11 +50,6 @@ Move_mscale* Move_mscale::clone(void) const {
     return new Move_mscale(*this);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Move_mscale::convertTo(const std::string& type) const {
-
-    return NULL;
-}
 
 /** Get class vector describing type of object */
 const VectorString& Move_mscale::getClass() const {
@@ -62,11 +58,6 @@ const VectorString& Move_mscale::getClass() const {
     return rbClass;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool Move_mscale::isConvertibleTo(const std::string& type) const {
-
-    return false;
-}
 
 /** Return member rules */
 const MemberRules& Move_mscale::getMemberRules(void) const {

@@ -66,10 +66,6 @@ class MatrixReal : public RbComplex {
         void                                       matrixMult(const MatrixReal& a, const MatrixReal& b);
         virtual void                               setValue(const std::vector<std::vector<double> >& x);                       //!< Set value directly
 
-	protected:
-        virtual RbObject*                          convertTo(const std::string& type) const;                                   //!< Convert to type
-        virtual bool                               isConvertibleTo(const std::string& type) const;                             //!< Is convertible to type and dim?
-
     private:
         // helper functions for this class
         bool                                       numFmt(int& numToLft, int& numToRht, std::string s) const;                  //!< Calculates the number of digits to the left and right of the decimal

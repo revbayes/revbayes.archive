@@ -35,14 +35,15 @@ std::string RbObject::briefInfo(void) const {
 
 
 /** Convert to type: throw an error */
-RbObject* RbObject::convert(const std::string& type) const {
+RbObject* RbObject::convertTo(const std::string& type, int dim) const {
 
-    if (getType() == type) {
-        return this->clone();
+    std::ostringstream msg;
+    msg << "Type conversion of '" << getType() << "' to '" << type;
+    for (int i=0; i<dim; i++) {
+        msg << "[]";
     }
-    else {
-        return convertTo(type);
-    }
+    msg << "' is not supported";
+    throw RbException(msg);
 }
 
 
@@ -53,6 +54,7 @@ const VectorString& RbObject::getClass(void) const {
 	return rbClass; 
 }
 
+
 /** Get type (first entry in class vector) */
 const std::string& RbObject::getType(void) const {
 
@@ -60,16 +62,26 @@ const std::string& RbObject::getType(void) const {
 }
 
 
-/** Is convertible to type? Default is false */
-bool RbObject::isConvertible(const std::string& type) const {
+/** Is always convertible to type? Default is false. */
+bool RbObject::isConvertibleTo(const std::string& type, int dim, bool once) const {
 
-    const std::string& myType = getType();
-
-    if (myType.compare(type) == 0)
-        true;
-    else
-        return isConvertibleTo(type);
 	return false;
+}
+
+
+/** Is element mutable to new value? */
+bool RbObject::isMutableTo(VectorInteger& index, const RbObject* newValue, std::string mutantType) const {
+
+    return false;    
+}
+
+
+/** Mutate element to new value */
+RbObject* RbObject::mutateTo(const VectorInteger& index, RbObject* newValue) const {
+
+    throw RbException("Mutation to type '" + newValue->getType() + "' not supported");
+
+    return NULL;
 }
 
 

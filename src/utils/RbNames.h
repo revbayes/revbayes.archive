@@ -1,26 +1,30 @@
 /*!
- * \file
- * This file contains commonly used statistics functions that are used
- * in REvBayes. The probability density (pdf), log of the probability
- * density (lnPdf), cumulative probability (cdf), and quantiles of
- * common probability distributions.
+ * @file
+ * This file contains const strings naming the DAGNode and RbObject types
+ * used in the program.
  *
- * \brief Namespace containing statistical functions
+ * @brief Names of variable types
  *
  * (c) Copyright 2009- under GPL version 3
- * \date Last modified: $Date: 2009-11-24 18:02:14 -0800 (Tue, 24 Nov 2009) $
- * \author Sebastian Hoehna (Department of Mathematics, Stockholm University)
- * \author John Huelsenbeck (Department of Integrative Biology, University of California, Berkeley)
- * \author Fredrik Ronquist (Department of Entomology, Swedish Museum of Natural History)
- * \license GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2010-09-09, version 1.0
  *
- * $Id: RbStatistics.h 100 2009-11-25 02:02:14Z jhuelsenbeck $
+ * $Id$
  */
+
 #ifndef RbNames_H
 #define RbNames_H
 
 #include <string>
 
+// Utility string constants
+const std::string EmptyString                                   = "";
+const std::string pad                                           = "   ";
+
+// Names of types (classes)
 const std::string AlignmentFileType_nexus                       = "Nexus";
 const std::string AlignmentFileType_phylip                      = "phylip";
 const std::string AlignmentFileType_fasta                       = "fasta";
@@ -30,12 +34,14 @@ const std::string AlignmentType_morph                           = "morphology";
 const std::string Argument_name                                 = "argument";
 const std::string ArgumentRule_name                             = "argument rule";
 const std::string Boolean_name                                  = "Bool";
+const std::string CompositeNode_name                            = "Composite Node";
 const std::string ConstantNode_name                             = "Constant Node";
 const std::string ConstructorFunction_name                      = "constructor function";
 const std::string Container_name                                = "container";
-const std::string DAGNode_name                                  = "DAG Vertex";
-const std::string DAGNodeContainer_name                         = "DAG Vertex Container";
-const std::string DeterministicNode_name                        = "Deterministic Vertex";
+const std::string ConverterNode_name                            = "Converter Node";
+const std::string DAGNode_name                                  = "DAG Node";
+const std::string DAGNodePlate_name                             = "DAG Node Plate";
+const std::string DeterministicNode_name                        = "Deterministic Node";
 const std::string Distribution_name                             = "Distribution";
 const std::string DistributionFunction_name                     = "Distribution Function";
 const std::string DistributionReal_name                         = "Distribution on Real Random Variable";
@@ -61,7 +67,9 @@ const std::string Func_sqrt_name                                = "Square root f
 const std::string Func_v_double_name                            = "Vector of reals constructor function";
 const std::string Func_v_int_name                               = "Vector of integers constructor function";
 const std::string Func_v_vecrealvec_name                        = "Matrix constructor function";
+const std::string FunctionNode_name                             = "Function Node";
 const std::string Integer_name                                  = "Integer";
+const std::string LookupNode_name                               = "Lookup Node";
 const std::string MatrixReal_name                               = "Matrix";
 const std::string Mcmc_name                                     = "MCMC";
 const std::string MemberObject_name                             = "member object";
@@ -76,7 +84,6 @@ const std::string Move_mscale_name                              = "mscale move";
 const std::string Move_mslide_name                              = "mslide move";
 const std::string Move_msimplex_name                            = "msimplex move";
 const std::string Node_name                                     = "Node";
-const std::string pad                                           = "   ";
 const std::string PosScalarRule_name                            = "posScalarRule";
 const std::string RandomNumberGenerator_name                    = "Random Number Generator";
 const std::string RbComplex_name                                = "complex";
@@ -119,8 +126,13 @@ const std::string RealPos_name                                  = "+Real";
 const std::string SimpleMove_name                               = "Simple move";
 const std::string Simplex_name                                  = "Simplex";
 const std::string SyntaxAssignExpr_name                         = "Assignment";
+const std::string SyntaxBinaryExpr_name                         = "Binary expression";
+const std::string SyntaxConstant_name                           = "Syntax element";
 const std::string SyntaxElement_name                            = "Syntax element";
 const std::string SyntaxFunctionCall_name                       = "Function call";
+const std::string SyntaxFunctionDef_name                        = "Function definition";
+const std::string SyntaxLabeledExpr_name                        = "Labeled expression";
+const std::string SyntaxUnaryExpr_name                          = "Unary expression";
 const std::string SyntaxVariable_name                           = "Variable";
 const std::string StochasticNode_name                           = "Stochastic node";
 const std::string Tree_name                                     = "Tree";

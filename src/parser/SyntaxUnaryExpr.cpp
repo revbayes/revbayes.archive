@@ -21,6 +21,7 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
+#include "RbNames.h"
 #include "VectorString.h"
 #include "SyntaxUnaryExpr.h"
 #include "Workspace.h"
@@ -52,6 +53,23 @@ SyntaxUnaryExpr::~SyntaxUnaryExpr() {
 }
 
 
+/** Assignment operator */
+SyntaxUnaryExpr& SyntaxUnaryExpr::operator=(const SyntaxUnaryExpr& x) {
+
+    if (&x != this) {
+
+        delete expression;
+
+        SyntaxElement::operator=(x);
+
+        expression  = x.expression->clone();
+        operation   = x.operation;
+    }
+
+    return (*this);
+}
+
+
 /** Return brief info about object */
 std::string SyntaxUnaryExpr::briefInfo () const {
 
@@ -63,67 +81,57 @@ std::string SyntaxUnaryExpr::briefInfo () const {
 
 
 /** Clone syntax element */
-SyntaxElement* SyntaxUnaryExpr::clone () const {
+SyntaxUnaryExpr* SyntaxUnaryExpr::clone () const {
 
-    return (SyntaxElement*)(new SyntaxUnaryExpr(*this));
+    return new SyntaxUnaryExpr(*this);
 }
 
 
-/** Equals comparison */
-bool SyntaxUnaryExpr::equals(const SyntaxElement* elem) const {
+/** Get class vector describing type of object */
+const VectorString& SyntaxUnaryExpr::getClass(void) const { 
 
-	const SyntaxUnaryExpr* p = dynamic_cast<const SyntaxUnaryExpr*>(elem);
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    result = result && expression->equals(p->expression);
-    result = result && (operation == p->operation);
-    
-    return result;
+    static VectorString rbClass = VectorString(SyntaxUnaryExpr_name) + SyntaxElement::getClass();
+	return rbClass; 
 }
 
 
-/** Convert element to DAG node */
-DAGNode* SyntaxUnaryExpr::getDAGNode(Frame* frame) const {
+/** Convert element to DAG node expression */
+DAGNode* SyntaxUnaryExpr::getDAGNodeExpr(Frame* frame) const {
 
+    // Package the argument
     std::vector<Argument> arg;
-    arg.push_back(Argument("x", expression->getDAGNode(frame)));
+    arg.push_back(Argument("", expression->getDAGNodeExpr(frame)));
 
-    std::string funcName = "." + opCode[operation];
+    // Find the function
+    std::string funcName = "_" + opCode[operation];
     RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, arg);
 
+    // Return new function node
     return new DeterministicNode(func);
 }
 
 
-/**
- * @brief Get semantic value
- *
- * We simply look up the function and calculate the value.
- *
- */
-RbObject* SyntaxUnaryExpr::getValue(Frame* frame) const {
+/** Look up the function and calculate the value. The argument is a value argument, so it is safe to get its value. */
+DAGNode* SyntaxUnaryExpr::getValue(Frame* frame) const {
 
     // Package the argument
     std::vector<Argument> arg;
-    arg.push_back(Argument("x", expression->getDAGNode(frame)));
+    arg.push_back(Argument("", expression->getValue(frame)));
 
-    // Execute function
-    std::string funcName = "." + opCode[operation];
-    const RbObject *retVal = Workspace::globalWorkspace().executeFunction(funcName, arg);
-
-    // Return value (we pass on management responsibility to caller)
-    return retVal->clone();
+    // Execute function and return value
+    std::string funcName = "_" + opCode[operation];
+    return Workspace::globalWorkspace().executeFunction(funcName, arg);
 }
 
 
 /** Print info about the syntax element */
 void SyntaxUnaryExpr::print(std::ostream& o) const {
 
-    o << "SyntaxUnaryExpr:" << std::endl;
-    o << "expression    = " << expression->briefInfo() << std::endl;
+    o << "[" << this << "] SyntaxUnaryExpr:" << std::endl;
+    o << "expression    = [" << expression << "] " << expression->briefInfo() << std::endl;
     o << "operation     = " << opCode[operation];
-}
+    o << std::endl;
 
+    expression->print(o);
+}
 

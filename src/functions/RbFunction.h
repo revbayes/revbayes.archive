@@ -82,10 +82,8 @@ class RbFunction :  public RbObject {
         RbFunction&                             operator=(const RbFunction& x);                                                     //!< Assignment operator
 
         // Regular utility functions
-        virtual RbObject*                       convertTo(const std::string& type) const;                                           //!< Convert to type
         void                                    deleteProcessedArguments(void);                                                     //!< Delete processed arguments
     	virtual DAGNode*                        executeOperation(std::vector<DAGNode*> const& args) = 0;                            //!< Execute operation
-        virtual bool                            isConvertibleTo(const std::string& type) const;                                     //!< Is convertible to type and dim?
 
         // Member variables
         std::vector<DAGNode*>                   processedArguments;                                                                 //!< Processed arguments

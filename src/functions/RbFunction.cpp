@@ -94,13 +94,6 @@ std::string RbFunction::briefInfo(void) const {
 }
 
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* RbFunction::convertTo(const std::string& type) const {
-
-    return NULL;
-}
-
-
 /** Pointer-based equals comparison */
 bool RbFunction::equals(const RbObject* x) const {
 
@@ -154,13 +147,6 @@ const VectorString& RbFunction::getClass(void) const {
 
     static VectorString rbClass = VectorString(RbFunction_name) + RbObject::getClass();
     return rbClass; 
-}
-
-
-/** Is object convertible to object of another class? */
-bool RbFunction::isConvertibleTo(const std::string& type) const {
-
-    return false;
 }
 
 

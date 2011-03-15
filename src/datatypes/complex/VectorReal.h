@@ -47,17 +47,6 @@ class VectorReal : public Vector {
         virtual void                printValue(std::ostream& o) const;                            //!< Print value (for user)
         virtual std::string         toString(void) const;                                         //!< Complete info about object
 
-        // Overloaded built-in functions
-        void                        clear(void) { value.clear(); }                                //!< Clear
-        const std::vector<double>&  getValue(void) const { return value; }                        //!< Get value
-        void                        pop_back(void) { value.pop_back(); }                          //!< Drop element
-        virtual void                push_back(int x) { value.push_back(x); }                      //!< Append element to end
-        virtual void                push_front(int x) { value.insert(value.begin(), x); }         //!< Add element in front
-        void                        resize(size_t n) { value.resize(n); }                         //!< Resize
-        virtual void                setValue(const VectorReal& x);                                //!< Set the value
-        virtual void                setValue(const std::vector<double>& x);                       //!< Set the value
-        size_t                      size(void) const { return value.size(); }                     //!< Get size
-
         // Element access functions for parser
         virtual const std::string&  getElementType(void) const;                                   //!< Get element type
         const RbObject*             getElement(const VectorInteger& index) const;                 //!< Get element (read-only)
@@ -66,10 +55,20 @@ class VectorReal : public Vector {
         virtual void                setElement(const VectorInteger& index, RbObject* val);        //!< Set element
         void                        setLength(const VectorInteger& len);                          //!< Set length in each dim
 
-	protected:
-        RbObject*                   convertTo(const std::string& type) const;                     //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;               //!< Is convertible to type and dim?
-        std::vector<double>         value;                                                        //!< Vector of values
+        // Regular functions, including STL-like functions
+        void                        clear(void) { value.clear(); }                                //!< Clear
+        const std::vector<double>&  getValue(void) const { return value; }                        //!< Get value
+        void                        pop_back(void) { value.pop_back(); }                          //!< Drop element
+        virtual void                push_back(double x) { value.push_back(x); }                   //!< Append element to end
+        virtual void                push_front(double x) { value.insert(value.begin(), x); }      //!< Add element in front
+        void                        resize(size_t n) { value.resize(n); }                         //!< Resize
+        virtual void                setValue(const VectorReal& x);                                //!< Set the value
+        virtual void                setValue(const std::vector<double>& x);                       //!< Set the value
+        size_t                      size(void) const { return value.size(); }                     //!< Get size
+
+    protected:
+        // Member variable protected so it can be accessed directly by derived members
+        std::vector<double>         value;                                                     //!< Vector of values
 };
 
 #endif

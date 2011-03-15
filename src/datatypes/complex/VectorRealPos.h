@@ -42,7 +42,7 @@ class VectorRealPos : public VectorReal {
         virtual const VectorString& getClass(void) const;                                         //!< Get class vector
         virtual std::string         toString(void) const;                                         //!< Complete info about object
 
-        // Overloaded built-in functions
+        // Regular functions, including STL-like functions
         void                        push_back(double x);                                          //!< Append element to end
         void                        push_front(double x);                                         //!< Add element in front
         void                        setValue(const VectorReal& x);                                //!< Set the value
@@ -52,10 +52,6 @@ class VectorRealPos : public VectorReal {
         // Element access functions for parser
         virtual const std::string&  getElementType(void) const;                                   //!< Get element type
         virtual void                setElement(const VectorInteger& index, RbObject* val);        //!< Set element
-
-	protected:
-        RbObject*                   convertTo(const std::string& type) const;                     //!< Convert to type
-        bool                        isConvertibleTo(const std::string& type) const;               //!< Is convertible to type and dim?
 };
 
 #endif

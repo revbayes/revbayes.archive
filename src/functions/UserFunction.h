@@ -38,7 +38,7 @@ class UserFunction :  public RbFunction {
 
     public:
                 UserFunction(   const ArgumentRules&        argRules,
-                                const std::string           retType,
+                                TypeSpec*                   retType,
                                 std::list<SyntaxElement*>*  stmts,
                                 Frame*                      defineEnv);     //!< Constructor
                 UserFunction(const UserFunction& x);                        //!< Copy constructor

@@ -13,10 +13,8 @@
  * $Id$
  */
 
-#include "DAGNode.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "RbObject.h"
 #include "VectorString.h"
 #include "SyntaxClassDef.h"
 #include "UserFunction.h"
@@ -39,6 +37,7 @@ SyntaxClassDef::SyntaxClassDef(const SyntaxClassDef& x)
 
     className   = new RbString(*className);
     baseClass   = new RbString(*baseClass);
+    definitions = new std::list<SyntaxElement*>();
  
     for (std::list<SyntaxElement*>::const_iterator i=x.definitions->begin(); i!=x.definitions->end(); i++)
         definitions->push_back((*i)->clone());
@@ -54,6 +53,32 @@ SyntaxClassDef::~SyntaxClassDef() {
     for (std::list<SyntaxElement*>::iterator i=definitions->begin(); i!=definitions->end(); i++)
         delete (*i);
     delete definitions;
+}
+
+
+/** Assignment operator */
+SyntaxClassDef& SyntaxClassDef::operator=(const SyntaxClassDef& x) {
+
+    if (&x != this) {
+    
+        SyntaxElement::operator=(x);
+
+        delete className;
+        delete baseClass;
+
+        for (std::list<SyntaxElement*>::iterator i=definitions->begin(); i!=definitions->end(); i++)
+            delete (*i);
+        delete definitions;
+
+        className   = new RbString(*className);
+        baseClass   = new RbString(*baseClass);
+        definitions = new std::list<SyntaxElement*>();
+     
+        for (std::list<SyntaxElement*>::const_iterator i=x.definitions->begin(); i!=x.definitions->end(); i++)
+            definitions->push_back((*i)->clone());
+    }
+
+    return *this;
 }
 
 
@@ -74,37 +99,15 @@ SyntaxElement* SyntaxClassDef::clone () const {
 }
 
 
-/** Equals comparison */
-bool SyntaxClassDef::equals(const SyntaxElement* elem) const {
-
-	const SyntaxClassDef* p = dynamic_cast<const SyntaxClassDef*>(elem);
-    if (p == NULL)
-        return false;
-
-    if (definitions->size() != p->definitions->size())
-        return false;
-
-    bool result = true;
-    result = result && className->equals(p->className);
-    result = result && baseClass->equals(p->baseClass);
-
-    std::list<SyntaxElement*>::iterator i, j;
-    for (i=definitions->begin(), j=p->definitions->begin(); i!=definitions->end(); i++, j++)
-        result = result && (*i)->equals(*j);
-    
-    return result;
-}
-
-
 /** Convert element to DAG node; return NULL since it is not applicable */
-DAGNode* SyntaxClassDef::getDAGNode(Frame* frame) const {
+DAGNode* SyntaxClassDef::getDAGNodeExpr(Frame* frame) const {
 
     return NULL;
 }
 
 
 /** Get semantic value: insert a user-defined class in the user workspace */
-RbObject* SyntaxClassDef::getValue(Frame* frame) const {
+DAGNode* SyntaxClassDef::getValue(Frame* frame) const {
 
     std::cerr << "Sorry, user-defined classes are not implemented yet" << std::endl;
 

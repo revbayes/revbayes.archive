@@ -62,20 +62,26 @@ class StochasticNode : public VariableNode {
         void                    unclamp(void);                                                 //!< Unclamp the node
         
         // DAG functions
-        StochasticNode*         cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;        //!< Clone entire graph
-        void                    getAffected(std::set<StochasticNode*>& affected);              //!< Mark and get affected nodes
-        RbObject*               getValuePtr(std::set<StochasticNode*>& affected);              //!< Get value ptr + affected nodes
-        void                    keep(void);                                                    //!< Keep value of this and affected nodes
-        void    	            keepAffected(void);                                            //!< Keep value of affected nodes recursively
-        void                    restore(void);                                                 //!< Restore value of this and affected nodes
-        void                    restoreAffected(void);                                         //!< Restore value of  affected nodes recursively
-        virtual void            swapParentNode(DAGNode* oldP, DAGNode* newP);                  //!< Swap a parent node
-        void                    touchAffected(void) {}                                         //!< Tell affected nodes value is reset
+        StochasticNode*         cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;         //!< Clone entire graph
+        void                    getAffected(std::set<StochasticNode*>& affected);               //!< Mark and get affected nodes
+        RbObject*               getValuePtr(std::set<StochasticNode*>& affected);               //!< Get value ptr + affected nodes
+        bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
+        bool                    isMutableTo(const VectorInteger& index, const RbObject* newValue) const;    //!< Is node mutable to contain newValue?
+        bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;  //!< Is parent mutable to newNode?
+        void                    keep(void);                                                     //!< Keep value of this and affected nodes
+        void    	            keepAffected(void);                                             //!< Keep value of affected nodes recursively
+        void                    mutateTo(DAGNode* newNode);                                     //!< Mutate to new node
+        StochasticNode*         mutateTo(const VectorInteger& index, RbObject* newValue);       //!< Mutate to contain newValue
+        void                    restore(void);                                                  //!< Restore value of this and affected nodes
+        void                    restoreAffected(void);                                          //!< Restore value of  affected nodes recursively
+        void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                   //!< Swap a parent node
+        void                    touchAffected(void) {}                                          //!< Tell affected nodes value is reset
 
         // Move function
-        MoveSchedule*           getDefaultMoves(void);                                         //!< Get default moves
+        MoveSchedule*           getDefaultMoves(void);                                          //!< Get default moves
 
     protected:
+        // Member variables
         bool                    clamped;                                                       //!< Is the node clamped with data?
         Distribution*           distribution;                                                  //!< Distribution (density functions, random draw function)
         RbObject*               value;                                                         //!< Current value

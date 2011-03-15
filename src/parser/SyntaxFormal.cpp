@@ -18,25 +18,43 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "SyntaxFormal.h"
+#include "TypeSpec.h"
+#include "Workspace.h"
 
 #include <sstream>
 
 
 /** Constructor with implicit type */
 SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal)
-    : SyntaxElement(), type(new RbString(RbObject_name)), label(id), defaultExpr(defaultVal) {
-
-    if (defaultExpr != NULL && !defaultExpr->isConstExpr())
-        throw(RbException("Default value is not a constant expression"));
+    : SyntaxElement(), type(new TypeSpec(RbObject_name)), label(id), defaultExpr(defaultVal) {
 }
 
 
 /** Constructor with explicit type */
 SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defaultVal)
-    : SyntaxElement(), type(typeSpec), label(id), defaultExpr(defaultVal) {
+: SyntaxElement(), type(NULL), label(id), defaultExpr(defaultVal) {
 
-    if (defaultExpr != NULL && !defaultExpr->isConstExpr())
-        throw(RbException("Default value is not a constant expression"));
+    // Convert to standard string
+    const std::string typeString = *typeSpec;
+
+    // Count dimensions and check if reference
+    int         nDim        = 0;
+    bool        isRef       = false;
+    std::string tpName      = std::string();
+    for (std::string::const_iterator i=typeString.begin(); i!=typeString.end(); i++) {
+        if ((*i) == '[')
+            nDim++;
+        else if ((*i) == '&')
+            isRef = true;
+        else if ((*i) != ']')
+            tpName += (*i);
+    }
+
+    // Create the type specification
+    type = new TypeSpec(Workspace::userWorkspace().getTypeNameRef(tpName), nDim, isRef);
+    
+    // Avoid memory leak
+    delete typeSpec;
 }
 
 
@@ -44,18 +62,38 @@ SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defa
 SyntaxFormal::SyntaxFormal(const SyntaxFormal& x)
     : SyntaxElement(x) {
 
-    type        = new RbString(*(x.type));
+    type        = new TypeSpec(x.type->getType(), x.type->getDim(), x.type->isReference());
     label       = new RbString(*(x.label));
     defaultExpr = x.defaultExpr->clone();
 }
 
 
-/** Destructor deletes members */
+/** Destructor deletes pointer members */
 SyntaxFormal::~SyntaxFormal() {
     
     delete type;
     delete label;
     delete defaultExpr;
+}
+
+
+/** Assignment operator */
+SyntaxFormal& SyntaxFormal::operator=(const SyntaxFormal& x) {
+
+    if (&x != this) {
+
+        delete type;
+        delete label;
+        delete defaultExpr;
+
+        SyntaxElement::operator=(x);
+
+        type        = new TypeSpec(x.type->getType(), x.type->getDim(), x.type->isReference());
+        label       = new RbString(*(x.label));
+        defaultExpr = x.defaultExpr->clone();
+    }
+
+    return (*this);
 }
 
 
@@ -65,61 +103,42 @@ std::string SyntaxFormal::briefInfo () const {
     std::ostringstream   o;
 
     if (defaultExpr == NULL)
-        o << "SyntaxFormal:  '" << std::string(*type) << " " << std::string(*label);
-    else if (defaultExpr->isConstExpr()) {
-        o << "SyntaxFormal:  '" << std::string(*type) << " " << std::string(*label) << " = ";
-        defaultExpr->getValue()->printValue(o);
+        o << "SyntaxFormal:  '" << type->toString() << " " << std::string(*label);
+    else {
+        o << "SyntaxFormal:  '" << type->toString() << " " << std::string(*label) << " = ";
+        o << defaultExpr->briefInfo();
     }
-    else
-        o << "SyntaxFormal:  '" << std::string(*type) << " " << std::string(*label) << " = <error>";
 
     return o.str();
 }
 
 
 /** Clone syntax element */
-SyntaxElement* SyntaxFormal::clone () const {
+SyntaxFormal* SyntaxFormal::clone () const {
 
-    return (SyntaxElement*)(new SyntaxFormal(*this));
-}
-
-
-/** Equals comparison */
-bool SyntaxFormal::equals(const SyntaxElement* elem) const {
-
-	const SyntaxFormal* p = dynamic_cast<const SyntaxFormal*>(elem);
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    result = result && type->equals(p->type);
-    result = result && label->equals(p->label);
-    result = result && defaultExpr->equals(p->defaultExpr);
-
-    return result;
+    return new SyntaxFormal(*this);
 }
 
 
 /** Make argument rule from element */
-// TODO: Add dimensions
 ArgumentRule* SyntaxFormal::getArgumentRule(Frame* frame) const {
 
     if (defaultExpr == NULL)
         return new ArgumentRule(*label, *type);
     else
-        return new ArgumentRule(*label, *type, 0, defaultExpr->getValue(frame));
+        return new ArgumentRule(*label, *type, defaultExpr->getValue(frame));
 }
 
 
 /** Convert element to DAG node (not applicable so return NULL) */
-DAGNode* SyntaxFormal::getDAGNode(Frame* frame) const {
+DAGNode* SyntaxFormal::getDAGNodeExpr(Frame* frame) const {
 
     return NULL;
 }
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbObject* SyntaxFormal::getValue(Frame* frame) const {
+DAGNode* SyntaxFormal::getValue(Frame* frame) const {
 
     return NULL;
 }

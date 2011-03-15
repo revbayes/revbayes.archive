@@ -53,11 +53,6 @@ Move_msimplex* Move_msimplex::clone(void) const {
     return new Move_msimplex(*this);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Move_msimplex::convertTo(const std::string& type) const {
-
-    return NULL;
-}
 
 /** Get class vector describing type of object */
 const VectorString& Move_msimplex::getClass() const {
@@ -87,11 +82,6 @@ const MemberRules& Move_msimplex::getMemberRules(void) const {
     return memberRules;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool Move_msimplex::isConvertibleTo(const std::string& type) const {
-
-    return false;
-}
 
 /** Perform the move */
 double Move_msimplex::perform(std::set<StochasticNode*>& affectedNodes) {

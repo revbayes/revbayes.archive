@@ -22,6 +22,7 @@
 #include "DeterministicNode.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "Signals.h"
 #include "VectorString.h"
 #include "SyntaxForCondition.h"
 #include "SyntaxStatement.h"
@@ -94,6 +95,40 @@ SyntaxStatement::~SyntaxStatement() {
 }
 
 
+/** Assignment operator */
+SyntaxStatement& SyntaxStatement::operator= (const SyntaxStatement& x) {
+
+    if (&x != this) {
+        delete expression;
+
+        if (statements1 != NULL) {
+            for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++)
+                delete (*i);
+            delete statements1;
+        }
+
+        if (statements2 != NULL) {
+            for (std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++)
+                delete (*i);
+            delete statements2;
+        }
+
+        SyntaxElement::operator=(x);
+
+        statementType   = x.statementType;
+        expression      = x.expression->clone();
+
+        for (std::list<SyntaxElement*>::iterator i=x.statements1->begin(); i!=x.statements1->end(); i++)
+            statements1->push_back((*i)->clone());
+
+        for (std::list<SyntaxElement*>::iterator i=x.statements2->begin(); i!=x.statements2->end(); i++)
+            statements2->push_back((*i)->clone());
+    }
+
+    return (*this);
+}
+
+
 /** Return brief info about object */
 std::string SyntaxStatement::briefInfo () const {
 
@@ -111,41 +146,15 @@ SyntaxElement* SyntaxStatement::clone () const {
 }
 
 
-/** Equals comparison */
-bool SyntaxStatement::equals(const SyntaxElement* x) const {
-
-	const SyntaxStatement* p = dynamic_cast<const SyntaxStatement*>(x);
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    result = result && expression->equals(p->expression);
- 
-    if (statements1 != NULL) {
-        std::list<SyntaxElement*>::const_iterator i, j;
-        for (i=statements1->begin(), j=p->statements1->begin(); i!=statements1->end(); ++i, ++j)
-            result = result && ((*i)->equals(*j));
-    }
-
-    if (statements2 != NULL) {
-        std::list<SyntaxElement*>::const_iterator i, j;
-        for (i=statements2->begin(), j=p->statements2->begin(); i!=statements2->end(); ++i, ++j)
-            result = result && ((*i)->equals(*j));
-    }
-
-    return result;
-}
-
-
 /** Convert element to DAG node; inapplicable, so return NULL */
-DAGNode* SyntaxStatement::getDAGNode(Frame* frame) const {
+DAGNode* SyntaxStatement::getDAGNodeExpr(Frame* frame) const {
 
     return NULL;
 }
 
 
 /** Get semantic value: it is here that we execute the statement */
-RbObject* SyntaxStatement::getValue(Frame* frame) const {
+DAGNode* SyntaxStatement::getValue(Frame* frame) const {
 
     if (statementType == For) {
 
@@ -153,34 +162,54 @@ RbObject* SyntaxStatement::getValue(Frame* frame) const {
         SyntaxForCondition* forCond = dynamic_cast<SyntaxForCondition*>(expression);
         assert (forCond != NULL);
 
+        // Initialize for loop
+        Signals::getSignals().clearFlags();
+        forCond->initializeLoop(frame);
+
         // Now loop over statements inside the for loop
         while (forCond->getNextLoopState(frame)) {
+
             for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
 
-                // Catch flow control statements first
-                SyntaxStatement* stmt = dynamic_cast<SyntaxStatement*>( *i );
-                if ( stmt != NULL ) {
-                    statementT stmtType = stmt->statementType;
-                    if ( stmtType == SyntaxStatement::Next )
-                        continue;
-                    if ( stmtType == SyntaxStatement::Break )
-                        return NULL;
-                }
-
                 // Execute statement
-                RbObject* result = (*i)->getValue(frame);
-				
-				if ( result != NULL && !(*i)->isType(SyntaxAssignExpr_name) )
-					{
-					std::ostringstream msg;
-					result->printValue(msg);
-					RBOUT(msg.str());
-					}
-					
+                DAGNode* result = (*i)->getValue(frame);
+
+                // These lines print the value of single-line expressions. This is not the behavior of R but John likes it. -- Fredrik
+                if ( result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
+                    std::ostringstream msg;
+                    result->printValue(msg);
+                    RBOUT(msg.str());
+                }
+                
+                // Free memory
 				if ( result != NULL )
 					delete result;  // discard result
+
+                // Catch signal
+                if ( Signals::getSignals().isGood() )
+                    break;
+            }
+
+            // Catch signals
+            if ( Signals::getSignals().isSet(Signals::BREAK) ) {
+                forCond->finalizeLoop(frame);   // We need to tell the for condition to finalize the loop
+                Signals::getSignals().clearFlags();
+                break;
+            }
+            else if ( Signals::getSignals().isSet(Signals::CONTINUE) ) {
+                Signals::getSignals().clearFlags();  // Just continue with next loop state
             }
         }
+    }
+    else if (statementType == Break) {
+    
+        // Set BREAK signal
+        Signals::getSignals().set(Signals::BREAK);
+    }
+    else if (statementType == Next) {
+    
+        // Set CONTINUE signal
+        Signals::getSignals().set(Signals::CONTINUE);
     }
     else {
         throw (RbException("Statement of type " + stmtName[statementType] + " not implemented yet"));
@@ -198,14 +227,38 @@ void SyntaxStatement::print(std::ostream& o) const {
     if (expression == NULL)
         o << "expression    = NULL" << std::endl;
     else
-        o << "expression    = " << expression->briefInfo() << std::endl;
+        o << "expression    = [" << expression << "] " << expression->briefInfo() << std::endl;
     if (statements1 == NULL)
         o << "statements1   = NULL" << std::endl;
-    else
+    else {
         o << "statements1   = <" << statements1->size() << " statements>" << std::endl;
+        int count=1;
+        for (std::list<SyntaxElement*>::const_iterator i=statements1->begin(); i!=statements1->end(); i++, count++) {
+            o << "   stmt " << count << " = [" << (*i) << "] " << (*i)->briefInfo() << std::endl;
+        }
+    }
     if (statements2 == NULL)
         o << "statements2   = NULL" << std::endl;
-    else
+    else {
         o << "statements2   = <" << statements2->size() << " statements>" << std::endl;
+        int count=1;
+        for (std::list<SyntaxElement*>::const_iterator i=statements2->begin(); i!=statements2->end(); i++, count++) {
+            o << "   stmt " << count << " = [" << (*i) << "] " << (*i)->briefInfo() << std::endl;
+        }
+    }
+    o << std::endl;
+
+    if (expression != NULL)
+        expression->print(o);
+    if (statements1 != NULL) {
+        for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
+            (*i)->print(o);
+        }
+    }
+    if (statements2 != NULL) {
+        for (std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++) {
+            (*i)->print(o);
+        }
+    }
 }
 

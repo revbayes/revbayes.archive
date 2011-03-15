@@ -75,14 +75,6 @@ VectorReal* VectorReal::clone(void) const {
 }
 
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* VectorReal::convertTo(const std::string& type) const {
-
-    throw RbException("Cannot convert VectorReal to " + type + ".");
-	return NULL;
-}
-
-
 /** Pointer-based equals comparison */
 bool VectorReal::equals(const RbObject* obj) const {
 
@@ -142,13 +134,6 @@ const VectorInteger& VectorReal::getLength(void) const {
 
     length[0] = int(value.size());
     return length;
-}
-
-
-/** Convert to object of another class. The caller manages the object. */
-bool VectorReal::isConvertibleTo(const std::string& type) const {
-
-    return false;
 }
 
 

@@ -33,7 +33,7 @@ class VectorString;
  *
  *  SyntaxElement is the base class for nodes in the syntax tree. The nodes either
  *  have one or more operands, which are themselves syntax elements, or they have
- *  no operands and simply a predefined result of type (pointer to) RbObject. In
+ *  no operands and simply a predefined result of type (pointer to) DAGNode. In
  *  the former case, the elements correspond to interior nodes in the syntax tree
  *  and in the latter case, they correspond to terminal nodes.
  *
@@ -48,43 +48,42 @@ class VectorString;
  *
  *  If syntax elements are part of equation expressions or expressions that are passed
  *  as arguments to a distribution function in a tilde statement, they are converted
- *  to DAG nodes to allow repeated evaluation during an MCMC run. All syntax elements
- *  that can be part of expressions need to be able to convert themselves to appropriate
- *  DAG nodes by implementing the getDAGNode() function.
+ *  to DAG node expressions to allow repeated evaluation during an MCMC run. All syntax
+ *  elements that can be part of expressions need to be able to convert themselves to
+ *  appropriate DAG nodes by implementing the getDAGNodeExpr() function.
  *
  *  Syntax elements also need to implement a function getReturnType(), which returns
- *  a string giving the type of the semantic value without executing the syntax element
+ *  the type specification of the semantic value without executing the syntax element
  *  to get its semantic value.
  *
  *  The destructor of syntax elements should delete the entire syntax tree rooted at the
- *  element. We accomplish this by calling delete on all the parent nodes in the destructor
- *  of the base class. Derived syntax elements simply need to store their parents in the
- *  vector of parent nodes.
+ *  element. This is accomplish by simply cycling through all syntax elements referenced
+ *  by the syntax element to be destroyed, calling the destructor of each element in turn.
+ *  The base class does not reference any other syntax elements and therefore has an empty
+ *  destructor.
  */
 class SyntaxElement {
 
     public:
-            virtual ~SyntaxElement() {}         //!< Destructor; delete syntax subtree
+        virtual                    ~SyntaxElement(void) {}                          //!< Destructor; delete syntax subtree
 
         // Basic utility functions you have to override
-        virtual std::string         briefInfo() const = 0;                      //!< Brief info about object
-        virtual SyntaxElement*      clone() const = 0;                          //!< Clone object
-        virtual bool                equals(const SyntaxElement* elem) const = 0;//!< Equals comparison
-        virtual const VectorString& getClass(void) const;                       //!< Get class vector 
-        virtual void                print(std::ostream& o) const = 0;           //!< Print info about object
+        virtual std::string         briefInfo(void) const = 0;                      //!< Brief info about object
+        virtual SyntaxElement*      clone(void) const = 0;                          //!< Clone object
+        virtual const VectorString& getClass(void) const;                           //!< Get class vector 
+        virtual void                print(std::ostream& o) const = 0;               //!< Print info about object
 
         // Basic utility functions you should not override
-        const std::string&          getType(void) const;                        //!< Get type
-        bool                        isType(const std::string& type) const;      //!< Is the element of type?
+        const std::string&          getType(void) const;                            //!< Get type
+        bool                        isType(const std::string& type) const;          //!< Is the element of type?
 
         // Regular functions
-        virtual DAGNode*            getDAGNode(Frame* frame=NULL) const = 0;    //!< Convert to DAG node
-        virtual RbObject*           getValue(Frame* frame=NULL) const = 0;      //!< Get semantic value
-        virtual bool                isConstExpr() const { return false; }       //!< Is subtree constant expr?
+        virtual DAGNode*            getDAGNodeExpr(Frame* frame) const = 0;         //!< Convert to DAG node expression
+        virtual DAGNode*            getValue(Frame* frame) const = 0;               //!< Get semantic value
+        virtual bool                isConstExpr(void) const { return false; }       //!< Is subtree constant expr?
 
     protected:
-            SyntaxElement() {}      //!< Protected constructor, no elements of this class
-
+                                    SyntaxElement(void) {}                          //!< Protected constructor, just in case
 };
 
 #endif

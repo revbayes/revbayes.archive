@@ -485,12 +485,6 @@ MatrixReal* MatrixReal::clone(void) const {
     return new MatrixReal(*this);
 }
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* MatrixReal::convertTo(const std::string& type) const {
-
-    throw RbException("Cannot convert MatrixReal to " + type + ".");
-	return NULL;
-}
 
 /** Pointer-based equals comparison */
 bool MatrixReal::equals(const RbObject* obj) const {
@@ -566,11 +560,6 @@ const VectorInteger& MatrixReal::getLength(void) const {
     return length;
 }
 
-/** Convert to object of another class. The caller manages the object. */
-bool MatrixReal::isConvertibleTo(const std::string& type) const {
-
-    return false;
-}
 
 /** Calculates the number of digits to the left and right of the decimal point */
 bool MatrixReal::numFmt(int& numToLft, int& numToRht, std::string s) const {

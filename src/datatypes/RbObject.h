@@ -20,6 +20,7 @@
 #include <ostream>
 #include <string>
 
+class VectorInteger;
 class VectorString;
 
 class RbObject {
@@ -36,8 +37,10 @@ class RbObject {
 
         // Basic utility functions you may want to override
         virtual std::string         briefInfo(void) const;                                          //!< Brief info about object
-        RbObject*                   convert(const std::string& type) const;                         //! Convert to type
-        bool                        isConvertible(const std::string& type) const;                   //! Is convertible to type?
+        virtual RbObject*           convertTo(const std::string& type, int dim=0) const;                            //! Convert to type and dim
+        virtual bool                isConvertibleTo(const std::string& type, int dim=0, bool once=false) const;     //! Is convertible to type and dim?
+        virtual bool                isMutableTo(VectorInteger& index, const RbObject* newValue, std::string mutantType) const;  //! Is mutable to new value
+        virtual RbObject*           mutateTo(const VectorInteger& index, RbObject* newValue) const;                 //! Mutate to new value
         
         // Subscript dimensions: override if object supports subscripting
         virtual int                 getDim(void) const { return 0; }                                //!< Get subscript dimensions
@@ -48,8 +51,6 @@ class RbObject {
         void                        print(std::ostream& o) const;                                   //!< Print complete object info
 
    protected:
-        virtual RbObject*           convertTo(const std::string& type) const = 0;                   //!< Convert to type
-        virtual bool                isConvertibleTo(const std::string& type) const = 0;             //!< Is convertible to type and dim?
 		                            RbObject(void) {}                                               //!< No objects of this class
 };
 

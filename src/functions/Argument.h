@@ -40,7 +40,7 @@ class Argument : public RbInternal {
         // Regular functions
         std::string             getLabel(void) const { return label; }              //!< Get label of argument
         DAGNode*                getVariable(void) const { return dagNodePtr; }      //!< Get argument variable
-        RbObject*               getValue(void) const { return dagNodePtr->getValue()->clone(); }    //!< Get argument value
+        DAGNode*                getValue(void) const { return dagNodePtr->getValue()->clone(); }    //!< Get argument value
 
     protected:
         std::string                 label;          //!< Label of argument
