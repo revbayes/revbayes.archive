@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The RevBayes core development team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-11-17, version 1.0
@@ -564,6 +564,23 @@ void Frame::setVarElement(const std::string& name, const VectorInteger& index, D
 
     /* Assignment: variable checks types */
     variable->setElement(index, var);
+}
+
+
+/** Swap reference to be a reference to another variable */
+void VariableSlot::swapReference(DAGNode* oldRef, DAGNode* newRef) {
+
+    // Find the variable (it is inefficient but this function is not used during the mcmc)
+    std::map<std::string, VariableSlot>::iterator i;
+    for ( i = variableTable.begin(); i != variableTable.end(); i++ ) {
+        if ( (*i).second.variable == oldRef )
+            break;
+    }
+    if ( i == variableTable.end() ) { 
+        throw ( RbException( "Variable reference does not exist in this frame" ) );
+    }
+
+    (*i).second.setReference( newRef );
 }
 
 

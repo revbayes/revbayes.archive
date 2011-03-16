@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2009-12-13 15:50:43 +0100 (Sön, 13 Dec 2009) $
- * @author The RevBayes development core team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @extends Frame
  * @package parser

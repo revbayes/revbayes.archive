@@ -9,7 +9,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2009-12-14 12:43:32 +0100 (Mån, 14 Dec 2009) $
- * @author The RevBayes core development team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-27, version 1.0
@@ -54,8 +54,8 @@ class MemberObject: public RbComplex {
         virtual void                setVariable(const std::string& name, DAGNode* var);                           //!< Set member variable
 
         // Member method functions
-        DAGNode*                   executeMethod(const std::string& name, int funcId);                           //!< Execute method with preprocessed args
-        DAGNode*                   executeMethod(const std::string& name, std::vector<Argument>& args);          //!< Execute method
+        DAGNode*                    executeMethod(const std::string& name, int funcId);                           //!< Execute method with preprocessed args
+        DAGNode*                    executeMethod(const std::string& name, std::vector<Argument>& args);          //!< Execute method
         virtual const MethodTable&  getMethodInits(void) const = 0;                                               //!< Get method specifications
         const MethodTable&          getMethods(void) const { return methods; }                                    //!< Get methods
         int                         setArguments(const std::string& name, std::vector<Argument>& args);           //!< Set arguments of method
@@ -64,7 +64,7 @@ class MemberObject: public RbComplex {
 									MemberObject(const MemberRules& memberRules, const MethodTable& methodInits); //!< Constructor
 
         // Protected functions
-        virtual DAGNode*           executeOperation(const std::string& name, std::vector<DAGNode*>& args) = 0;   //!< Execute method
+        virtual DAGNode*            executeOperation(const std::string& name, std::vector<DAGNode*>& args) = 0;   //!< Execute method
         DAGNode*                    getVariable(const std::string& name);                                         //!< Get member variable (non-const)
 
         // Members keep track of variables and functions belonging to the object

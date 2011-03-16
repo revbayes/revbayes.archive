@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
- * @author The RevBayes development core team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @extends Frame
  * @package parser
@@ -358,7 +358,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         RBOUT("Caught an exception while initializing the workspace. This is a");
         RBOUT("bug. If you are not a RevBayes developer, please report it to the");
-        RBOUT("RevBayes core development team.\n");
+        RBOUT("RevBayes Development Core Team.\n");
 
         RBOUT("Press any character to exit the program.");
         getchar();

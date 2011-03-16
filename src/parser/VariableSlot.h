@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The RevBayes core development team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2010-09-06, version 1.0
@@ -47,6 +47,7 @@ class VariableSlot {
         void                    setReference(DAGNode* ref);                                     //!< Set a slot with a reference
         void                    setReferenceFlag(bool refFlag=true);                            //!< Potentially switch between reference and value slot
         void                    setValue(DAGNode* value);                                       //!< Set a slot with a value
+        void                    swapReference(DAGNode* oldRef, DAGNode* newRef);                //!< Swap reference
 
     private:
         // Help function

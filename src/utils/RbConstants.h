@@ -1,7 +1,7 @@
 /*!
 * \file
 * This file contains commonly used statistics functions that are used
-* in REvBayes. The probability density (pdf), log of the probability
+* in RevBayes. The probability density (pdf), log of the probability
 * density (lnPdf), cumulative probability (cdf), and quantiles of
 * common probability distributions.
 *

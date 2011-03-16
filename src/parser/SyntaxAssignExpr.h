@@ -8,7 +8,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The RevBayes core development team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
  * $Id$

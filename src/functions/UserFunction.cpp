@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The RevBayes development core team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-11-21, version 1.0

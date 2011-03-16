@@ -1,13 +1,13 @@
 /**
  * @file
  * This file contains the declaration of RbString, which is
- * a REvBayes wrapper around a regular string.
+ * a RevBayes wrapper around a regular string.
  *
  * @brief Declaration of RbString
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
- * @author The REvBayes development core team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
  * $Id$

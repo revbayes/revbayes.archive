@@ -161,7 +161,7 @@
  * file of the R source code but deviates significantly in many respects, being
  * more similar to object-oriented languages like C++ or Java. EvoMoDeL itself
  * is inspired by the language used by BUGS to describe models. Unlike BUGS,
- * and similar programs such as JAGS, REvBayes allows models to be built in an
+ * and similar programs such as JAGS, RevBayes allows models to be built in an
  * interpreted (interactive) environment.
  *
  * @brief Grammar specification in bison format

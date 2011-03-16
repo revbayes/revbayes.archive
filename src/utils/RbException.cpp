@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2009-12-21 18:33:30 +0100 (Mån, 21 Dec 2009) $
- * @author The RevBayes core development team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
  * $Id: RbException.cpp 202 2009-12-21 17:33:30Z Hoehna $
