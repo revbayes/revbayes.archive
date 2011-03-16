@@ -15,13 +15,13 @@
  * $Id: DAGNode.cpp 188 2009-12-13 14:50:43Z ronquist $
  */
 
-#include "VectorInteger.h"
 #include "Monitor.h"
 #include "Move.h"
 #include "MoveSchedule.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "VectorInteger.h"
 #include "VectorString.h"
 #include "VariableNode.h"
 

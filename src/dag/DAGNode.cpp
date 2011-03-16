@@ -18,6 +18,7 @@
  */
 
 #include "DAGNode.h"
+#include "DAGNodePlate.h"
 #include "Frame.h"
 #include "VectorInteger.h"
 #include "RbException.h"
@@ -31,7 +32,7 @@
 
 
 /** Constructor: set value type */
-DAGNode::DAGNode(const std::string& valType) : children(), parents(), referringFrames(), name(""), valueType(valType) {
+DAGNode::DAGNode(const std::string& valType) : children(), parents(), slot(), referringSlots(), valueType(valType) {
 
 }
 
@@ -44,7 +45,7 @@ DAGNode::DAGNode(const std::string& valType) : children(), parents(), referringF
  * dual copies of them (function arguments, distribution parameters,
  * or container elements).
  */
-DAGNode::DAGNode(const DAGNode& x) : children(), parents(), referringFrames(), name(""), valueType(x.valueType) {
+DAGNode::DAGNode(const DAGNode& x) : children(), parents(), slot(), referringSlots(), valueType(x.valueType) {
 
 }
 
@@ -56,28 +57,32 @@ const VectorString& DAGNode::getClass() const {
 }
 
 /** Get name of DAG node from its surrounding objects */
-std::string DAGNode::getName(void) const {
+const std::string DAGNode::getName(void) const {
 
     std::string name;
 
     if (slot == NULL) {
-        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+        for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
             if ((*i)->isType(DAGNodePlate_name)) {
                 DAGNodePlate* thePlate = (DAGNodePlate*)(*i);
                 name = thePlate->getName();
                 VectorInteger index = thePlate->getIndex(*i);
                 for (size_t j=0; j<index.size(); j++)
-                    name += "[" + std::string(index[j] + 1) + "]";
+                    ; // name += "[" + RbString(index[j] + 1) + "]";
+                break;
             }
         }
     }
     else {
         name = slot->getName();
+        /* TODO: This info should be available to slot, no?
         for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-            if ((*i)->isType(CompositeNode_name)) {
+            if ((*i)->isType(MemberNode_name)) {
                 name = (*i)->getName() + "." + name;
-            }        
+            break;
+            }   
         }
+        */
     }
     return name;
 }
@@ -124,10 +129,10 @@ bool DAGNode::isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const {
  *  This code relies on name being set if the node is owned by a frame */
 int DAGNode::numRefs(void) const {
 
-    if (frame == NULL)
-        return numChildren() + referringFrames.size();
+    if (slot == NULL)
+        return numChildren() + referringSlots.size();
     else
-        return numChildren() + referringFrames.size() + 1;
+        return numChildren() + referringSlots.size() + 1;
 }
 
 /** Print children */
@@ -177,7 +182,7 @@ void DAGNode::swapNodeTo(DAGNode* newNode) {
             (*i)->swapParentNode(this, newNode);
 
     // Update referring frames
-    for (std::set<Frame*>::iterator i=referringFrames.begin(); i!=referringFrames.end(); i++)
+    for (std::set<VariableSlot*>::iterator i=referringSlots.begin(); i!=referringSlots.end(); i++)
         (*i)->swapReference(this, newNode);
 }
 

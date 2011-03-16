@@ -30,21 +30,21 @@
 class Argument : public RbInternal {
 
     public:
-                    Argument(const std::string& argLabel, DAGNode* arg);            //!< Constructor 
+                                Argument(const std::string& argLabel, DAGNode* arg);            //!< Constructor 
 
         // Basic utility functions
-        Argument*               clone(void) const { return new Argument (*this); }  //!< Clone object
-        const VectorString&     getClass(void) const;                               //!< Get class vector
-        std::string             toString(void) const;                               //!< Complete info about object
+        Argument*               clone(void) const { return new Argument (*this); }              //!< Clone object
+        const VectorString&     getClass(void) const;                                           //!< Get class vector
+        std::string             toString(void) const;                                           //!< Complete info about object
 
         // Regular functions
-        std::string             getLabel(void) const { return label; }              //!< Get label of argument
-        DAGNode*                getVariable(void) const { return dagNodePtr; }      //!< Get argument variable
-        DAGNode*                getValue(void) const { return dagNodePtr->getValue()->clone(); }    //!< Get argument value
+        std::string             getLabel(void) const { return label; }                              //!< Get label of argument
+        DAGNode*                getVariable(void) const { return dagNodePtr; }                      //!< Get argument variable
+        RbObject*               getValue(void) const { return dagNodePtr->getValue()->clone(); }    //!< Get argument value
 
     protected:
-        std::string                 label;          //!< Label of argument
-        DAGNode*                    dagNodePtr;     //!< Pointer to the DAG node wrapper of the argument value
+        std::string             label;          //!< Label of argument
+        DAGNode*                dagNodePtr;     //!< Pointer to the DAG node wrapper of the argument value
 };
 
 #endif

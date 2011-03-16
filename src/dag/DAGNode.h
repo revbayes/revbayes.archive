@@ -39,10 +39,10 @@ class DAGNode {
         // Functions you have to override
         virtual DAGNode*                clone(void) const = 0;                                              //!< Clone this node
         virtual const VectorString&     getClass(void) const;                                               //!< Get class vector
-        virtual const DAGNode*          getValElement(const VectorInteger& index) const = 0;                //!< Get value element
-        virtual const DAGNode*          getStoredValue(void) = 0;                                           //!< Get stored value
-        virtual const DAGNode*          getValue(void) = 0;                                                 //!< Get value
-        virtual const DAGNode*          getValue(void) const = 0;                                           //!< Get value (const)
+        virtual const RbObject*         getValElement(const VectorInteger& index) const = 0;                //!< Get value element
+        virtual const RbObject*         getStoredValue(void) = 0;                                           //!< Get stored value
+        virtual const RbObject*         getValue(void) = 0;                                                 //!< Get value
+        virtual const RbObject*         getValue(void) const = 0;                                           //!< Get value (const)
         virtual void                    printValue(std::ostream& o) const = 0;                              //!< Print value for user
         virtual void                    printStruct(std::ostream& o) const = 0;                             //!< Print struct for user
         virtual void                    setElement(const VectorInteger& index, RbObject*val) = 0;           //!< Set value element
@@ -54,7 +54,6 @@ class DAGNode {
         virtual void                    setElement(const VectorInteger& index, DAGNode* var);               //!< Set variable element
 
         // Functions you should not override
-		const bool                      getIsDagExposed(void) { return isDagExposed; }                      //!< Get DAG exposure
         const std::string               getName(void) const;                                                //!< Get name from slot and children
         const std::string&              getType(void) const;                                                //!< Get wrapper type
         const std::string&              getValueType(void) const { return valueType; }                      //!< Get value type
@@ -97,7 +96,6 @@ class DAGNode {
         VariableSlot*                   slot;                                                                   //!< Slot owning the node
         std::set<VariableSlot*>         referringSlots;                                                         //!< Set of slots referring to the node
         const std::string&              valueType;                                                              //!< Type of value
-		bool                            isDagExposed;                                                           //!< Flag indicating whether DAG should be exposed to user
 };
 
 #endif

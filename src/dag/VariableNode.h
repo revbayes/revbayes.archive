@@ -37,9 +37,9 @@ class VariableNode : public DAGNode {
         // Utility functions you have to override
         virtual VariableNode*           clone(void) const = 0;                                       //!< Clone this node
         virtual const VectorString&     getClass(void) const;                                        //!< Get class vector
-        virtual const DAGNode*          getStoredValue(void) = 0;                                    //!< Get stored value
-        virtual const DAGNode*          getValElement(const VectorInteger& index) const = 0;         //!< Get value element
-        virtual const DAGNode*          getValue(void) = 0;                                          //!< Get value
+        virtual const RbObject*         getStoredValue(void) = 0;                                    //!< Get stored value
+        virtual const RbObject*         getValElement(const VectorInteger& index) const = 0;         //!< Get value element
+        virtual const RbObject*         getValue(void) = 0;                                          //!< Get value
         virtual void                    printStruct(std::ostream& o) const = 0;                      //!< Print struct for user
         virtual void                    printValue(std::ostream& o) const = 0;                       //!< Print value for user
         virtual void                    setElement(const VectorInteger& index, RbObject* val) = 0;   //!< Set value element
