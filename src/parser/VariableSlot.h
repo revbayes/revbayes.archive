@@ -39,6 +39,7 @@ class VariableSlot {
 
         // Regular functions
         const std::string&      getName(void) const;                                            //!< Get name of slot
+        const DAGNode*          getReference(void) const;                                       //!< Get a const reference to the variable
         DAGNode*                getReference(void);                                             //!< Get a reference to the variable
         const TypeSpec&         getTypeSpec(void) const { return typeSpec; }                    //!< Return type specification for slot
         const DAGNode*          getValue(void) const;                                           //!< Get the value of the variable

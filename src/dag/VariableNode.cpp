@@ -29,7 +29,7 @@
 
 
 /** Constructor */
-VariableNode::VariableNode(const std::string& valType)
+VariableNode::VariableNode(const TypeSpec& valType)
     : DAGNode(valType) {
 
     touched      = false;

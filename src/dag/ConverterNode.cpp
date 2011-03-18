@@ -25,20 +25,14 @@
 
 
 /** Constructor of pristine converter node */
-ConverterNode::ConverterNode(const std::string& toType, int toDim) :
-    DeterministicNode(toType), valueDim(toDim) {
-
-    /* Set flag */
-    changed = false;
-
-    /* Set exposed flag */
-    isDagExposed = false;
+ConverterNode::ConverterNode(const TypeSpec& toType)
+    : DeterministicNode(toType) {
 }
 
 
 /** Basic constructor of converter node */
-ConverterNode::ConverterNode(DAGNode* origNode, const std::string& toType, int toDim) :
-    DeterministicNode(toType), valueDim(toDim) {
+ConverterNode::ConverterNode(DAGNode* origNode, const TypeSpec& toType)
+    : DeterministicNode(toType) {
 
     /* Check for cycles */
     std::list<DAGNode*> done;
@@ -49,15 +43,9 @@ ConverterNode::ConverterNode(DAGNode* origNode, const std::string& toType, int t
     parents.insert(origNode);
     origNode->addChildNode(this);
 
-    /* Set flag */
-    changed = false;
-
     /* Set value and stored value */
-    storedValue = origNode->getValue()->convertTo(valueType, valueDim);
-    value       = storedValue;
-
-    /* Set exposed flag */
-    isDagExposed = false;
+    value       = origNode->getValue()->convertTo(valueType.getType(), valueType.getDim());
+    storedValue = NULL;
 }
 
 
@@ -75,17 +63,17 @@ ConverterNode* ConverterNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) c
         return (ConverterNode*)(newNodes[(DAGNode*)(this)]);
 
     /* Get pristine copy */
-    ConverterNode* copy = new ConverterNode(valueType, valueDim);
+    ConverterNode* copy = new ConverterNode(valueType);
     newNodes[(DAGNode*)(this)] = copy;
 
     /* Clone parents */
-    copy->function = NULL;
-    copy->storedValue = storedValue->clone();   // Make sure we have a copy of the value
-    copy->value = copy->storedValue;
+    copy->value = copy->value->clone();
+    copy->storedValue = NULL;
     copy->touched = false;
     copy->changed = false;
     DAGNode* theParentClone = (*parents.begin())->cloneDAG(newNodes);
     copy->parents.insert(theParentClone);
+    theParentClone->addChildNode(copy);
 
     /* Make sure the children clone themselves */
     for(std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
@@ -130,7 +118,7 @@ bool ConverterNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* new
         throw RbException("Node is not a parent");
 
     // See if the new node value is convertible to the required type
-    if ( newNode->getValue()->isConvertibleTo(valueType, valueDim) )
+    if ( newNode->getValue()->isConvertibleTo(valueType.getType(), valueType.getDim()) )
         return true;
     
     return false;
@@ -203,11 +191,11 @@ std::string ConverterNode::toString(void) const {
 
     o << "ConverterNode:" << std::endl;
 
-    o << "name        = " << name << std::endl;
+    o << "name        = " << getName() << std::endl;
     o << "touched     = " << (touched ? "true" : "false") << std::endl;
     o << "changed     = " << (changed ? "true" : "false") << std::endl;
-    o << "valueType   = " << valueType << std::endl;
-    o << "valueDim    = " << valueDim << std::endl;
+    o << "valueType   = " << valueType.getType() << std::endl;
+    o << "valueDim    = " << valueType.getDim() << std::endl;
 
     o << "value       = ";
     value->printValue(o);
@@ -225,12 +213,10 @@ std::string ConverterNode::toString(void) const {
 void ConverterNode::update(void) {
 
     if (touched && !changed) {
-        if (value != storedValue) {
-            if (storedValue != NULL)
-                delete storedValue;
-            storedValue = value->clone();
-        }
-        value = (*parents.begin())->getValue()->convertTo(valueType, valueDim);
+        if (storedValue != NULL)
+            delete storedValue;
+        storedValue = value;
+        value = (*parents.begin())->getValue()->convertTo(valueType.getType(), valueType.getDim());
         changed = true;
     }
 }

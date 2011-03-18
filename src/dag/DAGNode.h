@@ -19,6 +19,7 @@
 #ifndef DAGNode_H
 #define DAGNode_H
 
+#include "TypeSpec.h"
 
 #include <list>
 #include <map>
@@ -56,7 +57,7 @@ class DAGNode {
         // Functions you should not override
         const std::string               getName(void) const;                                                //!< Get name from slot and children
         const std::string&              getType(void) const;                                                //!< Get wrapper type
-        const std::string&              getValueType(void) const { return valueType; }                      //!< Get value type
+        const TypeSpec&                 getValueType(void) const { return valueType; }                      //!< Get value type
         bool                            isType(const std::string& type) const;                              //!< Is wrapper of type?
 
         // DAG functions you should not override
@@ -88,14 +89,14 @@ class DAGNode {
         virtual void                    touchAffected(void) = 0;                                                //!< Tell affected nodes value is reset
 
     protected:
-                                        DAGNode(const std::string& valType);                                    //!< Constructor
+                                        DAGNode(const TypeSpec& valType);                                       //!< Constructor
                                         DAGNode(const DAGNode& x);                                              //!< Copy constructor
 
         std::set<VariableNode*>         children;                                                               //!< Set of children nodes
         std::set<DAGNode*>              parents;                                                                //!< Set of parent nodes
         VariableSlot*                   slot;                                                                   //!< Slot owning the node
         std::set<VariableSlot*>         referringSlots;                                                         //!< Set of slots referring to the node
-        const std::string&              valueType;                                                              //!< Type of value
+        TypeSpec                        valueType;                                                              //!< Type of value
 };
 
 #endif

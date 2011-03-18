@@ -50,7 +50,7 @@ class VariableNode : public DAGNode {
         bool                            isTouched(void) const { return touched; }                    //!< Is node touched by move or parser?
 
         // DAG functions you have to override
-        VariableNode*                   cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;                     //!< Clone entire graph
+        virtual VariableNode*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;                     //!< Clone entire graph
         virtual void    	            getAffected(std::set<StochasticNode*>& affected) = 0;                           //!< Mark and get affected nodes
         virtual bool                    isMutableTo(const DAGNode* newNode) const = 0;                                  //!< Is node mutable to newNode?
         virtual bool                    isMutableTo(const VectorInteger& index, const RbObject* newValue) const = 0;    //!< Is node mutable to contain newValue?
@@ -67,7 +67,7 @@ class VariableNode : public DAGNode {
         virtual MoveSchedule*           getDefaultMoves(void) = 0;                                   //!< Return default moves
 
     protected:
-                                        VariableNode(const std::string& valType);                    //!< Value class constructor
+                                        VariableNode(const TypeSpec& valType);                       //!< Value class constructor
 
         // Member variables
         bool                            touched;                                                     //!< Is touched by move?

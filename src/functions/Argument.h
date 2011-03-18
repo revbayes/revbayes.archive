@@ -30,12 +30,12 @@
 class Argument : public RbInternal {
 
     public:
-                                Argument(const std::string& argLabel, DAGNode* arg);            //!< Constructor 
+                                Argument(const std::string& argLabel, DAGNode* arg);                //!< Constructor 
 
         // Basic utility functions
-        Argument*               clone(void) const { return new Argument (*this); }              //!< Clone object
-        const VectorString&     getClass(void) const;                                           //!< Get class vector
-        std::string             toString(void) const;                                           //!< Complete info about object
+        Argument*               clone(void) const { return new Argument (*this); }                  //!< Clone object
+        const VectorString&     getClass(void) const;                                               //!< Get class vector
+        std::string             toString(void) const;                                               //!< Complete info about object
 
         // Regular functions
         std::string             getLabel(void) const { return label; }                              //!< Get label of argument

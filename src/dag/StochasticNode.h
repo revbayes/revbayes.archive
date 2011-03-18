@@ -29,37 +29,36 @@ class VectorString;
 class StochasticNode : public VariableNode {
 
     public:
-                                StochasticNode(const std::string& type);                       //!< Construct empty stochastic node
-                                StochasticNode(Distribution* d);                               //!< Construct from distribution
-                                StochasticNode(const StochasticNode& s);                       //!< Copy constructor
-							   ~StochasticNode(void);                                          //!< Destructor
+                                StochasticNode(const TypeSpec& type);                           //!< Construct empty stochastic node
+                                StochasticNode(Distribution* d);                                //!< Construct from distribution
+                                StochasticNode(const StochasticNode& s);                        //!< Copy constructor
+							   ~StochasticNode(void);                                           //!< Destructor
 
         // Assignment operator
-        StochasticNode&         operator=(const StochasticNode& x);                            //!< Assignment operator
+        StochasticNode&         operator=(const StochasticNode& x);                             //!< Assignment operator
 
         // Basic utility functions
-        StochasticNode*         clone(void) const;                                             //!< Clone the stochastic node
-        const VectorString&     getClass(void) const;                                          //!< Get class vector
-        const RbObject*         getStoredValue(void);                                          //!< Get stored value
-        const RbObject*         getValElement(const VectorInteger& index) const;                   //!< Get value element
-        const RbObject*         getValue(void);                                                //!< Get current value
-        const RbObject*         getValue(void) const;                                          //!< Get const value if possible
-        const VectorString&     getValueClass(void) const;                                     //!< Get value class
-        void                    printStruct(std::ostream& o) const;                            //!< Print struct for user
-        void                    printValue(std::ostream& o) const;                             //!< Print struct for user
-        void                    setElement(const VectorInteger& index, RbObject* value);           //!< Set value element
-        void                    setName(const std::string& name);                              //!< Set name
-        void                    setValue(RbObject* value);                                     //!< Set value
-        std::string             toString(void) const;                                          //!< Complete info about object
+        StochasticNode*         clone(void) const;                                              //!< Clone the stochastic node
+        const VectorString&     getClass(void) const;                                           //!< Get class vector
+        const RbObject*         getStoredValue(void);                                           //!< Get stored value
+        const RbObject*         getValElement(const VectorInteger& index) const;                //!< Get value element
+        const RbObject*         getValue(void);                                                 //!< Get current value
+        const RbObject*         getValue(void) const;                                           //!< Get const value if possible
+        void                    printStruct(std::ostream& o) const;                             //!< Print struct for user
+        void                    printValue(std::ostream& o) const;                              //!< Print struct for user
+        void                    setElement(const VectorInteger& index, RbObject* value);        //!< Set value element
+        void                    setName(const std::string& name);                               //!< Set name
+        void                    setValue(RbObject* value);                                      //!< Set value
+        std::string             toString(void) const;                                           //!< Complete info about object
 
         // StochasticNode functions
-        double                  calculateLnProbability(void);                                  //!< Calculate log conditional probability
-        void                    clamp(RbObject* observedVal);                                  //!< Clamp the node with an observed value
-        Distribution*           getDistribution(void) { return distribution; }                 //!< Get distribution
-        double                  getLnLikelihoodRatio(void);                                    //!< Get log likelihood ratio
-        double                  getLnPriorRatio(void);                                         //!< Get log prior ratio
-        bool                    isClamped(void) const { return clamped; }                      //!< Is the node clamped?
-        void                    unclamp(void);                                                 //!< Unclamp the node
+        double                  calculateLnProbability(void);                                   //!< Calculate log conditional probability
+        void                    clamp(RbObject* observedVal);                                   //!< Clamp the node with an observed value
+        Distribution*           getDistribution(void) { return distribution; }                  //!< Get distribution
+        double                  getLnLikelihoodRatio(void);                                     //!< Get log likelihood ratio
+        double                  getLnPriorRatio(void);                                          //!< Get log prior ratio
+        bool                    isClamped(void) const { return clamped; }                       //!< Is the node clamped?
+        void                    unclamp(void);                                                  //!< Unclamp the node
         
         // DAG functions
         StochasticNode*         cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;         //!< Clone entire graph

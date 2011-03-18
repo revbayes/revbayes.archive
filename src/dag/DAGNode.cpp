@@ -32,22 +32,36 @@
 
 
 /** Constructor: set value type */
-DAGNode::DAGNode(const std::string& valType) : children(), parents(), slot(), referringSlots(), valueType(valType) {
+DAGNode::DAGNode(const TypeSpec& valType) : children(), parents(), slot(), referringSlots(), valueType(valType) {
 
 }
 
 /**
  * Copy constructor should not copy children because it creates an
- * independent node. Name also needs to be reset for the same reason.
- * The new node is simply not used by any other objects at this point.
- * The parent nodes are left empty here because they are better dealt
- * with by the derived VariableNode classes, which have to maintain
+ * independent node. The new node is simply not used by any other objects
+ * at this point. The parent nodes are left empty here because they are better
+ * dealt with by the derived VariableNode classes, which have to maintain
  * dual copies of them (function arguments, distribution parameters,
  * or container elements).
  */
 DAGNode::DAGNode(const DAGNode& x) : children(), parents(), slot(), referringSlots(), valueType(x.valueType) {
 
 }
+
+/** Destructor */
+DAGNode::~DAGNode(void) {
+
+    if (numRefs() != 0)
+        throw RbException ("Cannot delete node with references");
+
+    /* Remove this node as a child node of parents and delete these if appropriate */
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
+        (*i)->removeChildNode(this);
+        if ((*i)->numRefs() == 0)
+            delete (*i);
+    }
+}
+
 
 /** Get class vector describing type of object */
 const VectorString& DAGNode::getClass() const {

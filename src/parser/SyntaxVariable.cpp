@@ -123,13 +123,13 @@ const VectorString& SyntaxVariable::getClass(void) const {
 DAGNode* SyntaxVariable::getDAGNodeExpr(Frame* frame) const {
 
     /* Package index arguments */
-    std::vector<Argument> indexArgs;
+    std::vector<DAGNode*> indexArgs;
     for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++)
-        indexArgs.push_back(Argument("", (*i)->getDAGNodeExpr(frame)));
+        indexArgs.push_back((*i)->getDAGNodeExpr(frame));
 
     /* Return lookup node */
     if (baseVariable == NULL)
-        return new LookupNode(frame->getVariableSlot(*identifier).getReference(), indexArgs);
+        return new LookupNode(frame->getVariable(*identifier), indexArgs);
     else
         return new LookupNode(baseVariable->getDAGNodeExpr(frame), identifier, indexArgs);
 }

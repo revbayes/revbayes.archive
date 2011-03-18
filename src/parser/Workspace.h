@@ -88,10 +88,9 @@ class Workspace : public Frame {
         const std::string&          getTypeNameRef(const std::string* name) const;                                       //!< Get reference to type name
         void                        initializeGlobalWorkspace(void);                                                     //!< Initialize global workspace
         bool                        isXOfTypeY(const std::string& x, const std::string& y) const;                        //!< Type checking
-
-        bool                        isXConvertibleToY(const std::string& xType, int xDim, const std::string& yType, int yDim) const;    //!< Type conversion checking
-        void                        printValue(std::ostream& c) const;                                                   //!< Print workspace
-        static Workspace&           globalWorkspace(void)                                                                //!< Get global workspace
+        bool                        isXConvertibleToY(const TypeSpec& x, const TypeSpec& y) const;                      //!< Type conversion checking
+        void                        printValue(std::ostream& c) const;                                                  //!< Print workspace
+        static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
                                     {
                                         static Workspace globalSpace = Workspace();
                                         return globalSpace;

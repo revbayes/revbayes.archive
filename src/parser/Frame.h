@@ -81,6 +81,7 @@ class Frame {
         const std::string&          getSlotName(const VariableSlot* slot) const;                                            //!< Get name of a slot
         const DAGNode*              getValue(const std::string& name) const;                                                //!< Get value
         VariableSlot&               getVariableSlot(const std::string& name);                                               //!< Get variable slot
+        const VariableSlot&         getVariableSlot(const std::string& name) const;                                         //!< Get variable slot (const)
         const VariableTable&        getVariableTable(void) const { return variableTable; }                                  //!< Return variable table
         void                        swapReference(DAGNode* oldRef, DAGNode* newRef);                                        //!< Swap a reference variable
 

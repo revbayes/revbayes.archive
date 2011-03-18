@@ -32,25 +32,16 @@
 
 /** Constructor from value */
 ConstantNode::ConstantNode(RbObject* val) : DAGNode(val->getType()), value(val) {
-
-	isDagExposed = true;
-	if ( value->getType() == RandomNumberGenerator_name )
-		isDagExposed = false;
 }
 
 /** Constructor from value class */
 ConstantNode::ConstantNode(const std::string& valType) : DAGNode(valType), value(NULL) {
-
-	isDagExposed = true;
-	if ( value->getType() == RandomNumberGenerator_name )
-		isDagExposed = false;
 }
 
 /** Copy constructor */
 ConstantNode::ConstantNode(const ConstantNode& x) : DAGNode(x) {
 
     value = x.value->clone();
-	isDagExposed = x.isDagExposed;
 }
 
 /** Destructor */
@@ -163,10 +154,8 @@ void ConstantNode::printStruct(std::ostream &o) const {
     o << "Wrapper:" << std::endl;
     o << "&.class   = " << getClass() << std::endl;
     o << "&.value   = " << value << std::endl;
-    o << "&.parents = " << std::endl;
-    printParents(o);
-    o << std::endl;
-    o << "&.children = " << std::endl;
+    o << "&.parents = NULL" << std::endl;
+    o << "&.children" << std::endl;
     printChildren(o);
     o << std::endl;
     o << std::endl;
@@ -189,7 +178,7 @@ void ConstantNode::setElement(const VectorInteger& index, RbObject* val) {
 /** Set value */
 void ConstantNode::setValue(RbObject* val) {
 
-    if (val != NULL && !val->isType(getValueType()))
+    if (val != NULL && (!val->isType(getValueType().getType()) || val->getDim() != getValueType().getDim()))
         throw RbException("Invalid assignment: type mismatch");
 
     if (value != NULL)

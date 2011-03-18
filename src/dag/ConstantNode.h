@@ -44,10 +44,10 @@ class ConstantNode : public DAGNode {
         std::string             toString(void) const;                                               //!< Complete info on object
 
         // ConstantNode functions
-        const DAGNode*          getStoredValue(void) { return value; }                              //!< Get stored value
-        const DAGNode*          getValElement(const VectorInteger& index) const;                    //!< Get element of value    
-        const DAGNode*          getValue(void) { return value; }                                    //!< Get value
-        const DAGNode*          getValue(void) const { return value; }                              //!< Get value (const)
+        const RbObject*         getStoredValue(void) { return value; }                              //!< Get stored value
+        const RbObject*         getValElement(const VectorInteger& index) const;                    //!< Get element of value    
+        const RbObject*         getValue(void) { return value; }                                    //!< Get value
+        const RbObject*         getValue(void) const { return value; }                              //!< Get value (const)
         void                    setElement(const VectorInteger& index, RbObject* val);              //!< Set element of value
         void                    setValue(RbObject* val);                                            //!< Set value
 
@@ -61,7 +61,7 @@ class ConstantNode : public DAGNode {
         void                    touchAffected(void);                                                        //!< Tell affected nodes value is reset
 
     protected:
-        DAGNode*                value;                                                              //!< The constant value
+        RbObject*               value;                                                                      //!< The constant value
 };
 
 #endif

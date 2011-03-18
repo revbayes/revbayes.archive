@@ -26,14 +26,16 @@ class TypeSpec {
                             TypeSpec(const std::string& elemType, bool ref=false);              //!< Type of single object/element
                             TypeSpec(const std::string& elemType, int elemDim, bool ref=false); //!< Type of plate/container
 
-        // Equals operator
+        // Operators
+        TypeSpec&           operator=(const TypeSpec& x);                                       //!< Assignment operator
         bool                operator==(const TypeSpec& x) const;                                //!< Equals operator
-        bool                operator!=(const TypeSpec& x) const { return operator==(x); }       //!< Not equals operator
+        bool                operator!=(const TypeSpec& x) const { return !operator==(x); }      //!< Not equals operator
 
         // Regular functions
         int                 getDim(void) const { return dim; }                                  //!< Get element dimensions
         const std::string&  getType(void) const { return type; }                                //!< Get element type
         bool                isReference(void) const { return reference; }                       //!< Is it a reference type?
+        void                setDim(int i) { if (i >= 0) dim = i; }                              //!< Set element dimensions
         void                setReference(bool refFlag) { reference = refFlag; }                 //!< Set or reset the reference flag
         std::string         toString(void) const;                                               //!< Express as a string
 

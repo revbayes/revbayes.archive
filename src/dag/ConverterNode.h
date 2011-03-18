@@ -29,38 +29,34 @@
  * @brief ConverterNode
  *
  * ConverterNode is a light-weight DAG node used to convert from one type to another. Unlike
- * a DeterministicNode, it is created internally by the parser and it does not use an RbFunction
- * call to calculate its value. Otherwise, it behaves much as a deterministic node.
+ * a FunctionNode, it is created internally by the parser and it does not use an RbFunction
+ * call to calculate its value.
  */
  class ConverterNode : public DeterministicNode {
 
     public:
-                                ConverterNode(const std::string& toType, int toDim);                    //!< Constructor of pristine node
-                                ConverterNode(DAGNode* origNode, const std::string& toType, int toDim); //!< Basic constructor
+                                ConverterNode(const TypeSpec& toType);                                      //!< Constructor of pristine node
+                                ConverterNode(DAGNode* origNode, const TypeSpec& toType);                   //!< Basic constructor
 
         // Basic utility functions
-        ConverterNode*          clone(void) const;                                                  //!< Clone the deterministic node
-        const VectorString&     getClass(void) const;                                               //!< Get class vector
-        void                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
-        void                    printValue(std::ostream& o) const;                                  //!< Print value for user
-        std::string             toString(void) const;                                               //!< Complete info about object
+        ConverterNode*          clone(void) const;                                                          //!< Clone the converter node
+        const VectorString&     getClass(void) const;                                                       //!< Get class vector
+        void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
+        std::string             toString(void) const;                                                       //!< Complete info about object
 
         // DAG functions
-        ConverterNode*          cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                 //!< Clone entire graph
-        virtual bool            isMutableTo(const DAGNode* newNode) const;                      //!< Is node mutable to newNode?
+        ConverterNode*          cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
+        virtual bool            isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
         virtual bool            isMutableTo(const VectorInteger& index, const RbObject* newValue) const;    //!< Is node mutable to contain newValue?
         virtual bool            isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
-        virtual void            mutateTo(DAGNode* newNode);                                     //!< Mutate to new node
-        ConverterNode*          mutateTo(const VectorInteger& index, RbObject* newValue);       //!< Mutate to contain newValue
-        void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                   //!< Swap a parent node
+        virtual void            mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
+        ConverterNode*          mutateTo(const VectorInteger& index, RbObject* newValue);                   //!< Mutate to contain newValue
+        void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
     protected:
         // Utility function
-        void                    update(void);                                                  //!< Update value and storedValue
-
-        // Member variable
-        int                     valueDim;                                                      //!< The resulting value dim
- };
+        void                    update(void);                                                               //!< Update value and storedValue
+};
 
 #endif
 

@@ -38,10 +38,15 @@ class MemberObject: public RbComplex {
 
         // Basic utility functions
         virtual MemberObject*       clone(void) const = 0;                                                        //!< Clone object
+        MemberObject*               cloneDAG();
         virtual bool                equals(const RbObject* x) const;                                              //!< Equals comparison
         virtual const VectorString& getClass(void) const;                                                         //!< Get class vector
         virtual void                printValue(std::ostream& o) const;                                            //!< Print value for user
         virtual std::string         toString(void) const;                                                         //!< Complete info
+
+        // DAG utility functions
+        MemberObject*               cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                       //!< Clone entire graph
+        MemberObject*               constantClone(void) const;                                                    //!< Make a constant clone
 
         // Member variable functions
         const MemberTable&          getMembers(void) const { return members; }                                    //!< Get members
@@ -67,7 +72,7 @@ class MemberObject: public RbComplex {
         virtual DAGNode*            executeOperation(const std::string& name, std::vector<DAGNode*>& args) = 0;   //!< Execute method
         DAGNode*                    getVariable(const std::string& name);                                         //!< Get member variable (non-const)
 
-        // Members keep track of variables and functions belonging to the object
+        // Members and methods keep track of variables and functions belonging to the object
         MemberTable                 members;                                                                      //!< Member variables
         MethodTable                 methods;                                                                      //!< Member methods
 

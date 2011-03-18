@@ -23,15 +23,14 @@
 #include "RbNames.h"
 #include "StochasticNode.h"
 #include "VectorString.h"
+#include "Workspace.h"
 
 #include <algorithm>
 #include <cassert>
 
 
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode(const std::string& type) : VariableNode(type), clamped(false), distribution(NULL), value(NULL), storedValue(NULL) {
-
-	isDagExposed = true;
+StochasticNode::StochasticNode(const TypeSpec& type) : VariableNode(type), clamped(false), distribution(NULL), value(NULL), storedValue(NULL) {
 }
 
 
@@ -43,20 +42,20 @@ StochasticNode::StochasticNode(const std::string& type) : VariableNode(type), cl
 StochasticNode::StochasticNode(Distribution* dist) : VariableNode(dist->getVariableType()) {
 
     /* Get distribution parameters */
-    const VariableTable& params = dist->getMembers().getVariableTable();
+    VariableTable& params = const_cast<VariableTable&>(dist->getMembers().getVariableTable());
 
     /* Check for cycles */
     std::list<DAGNode*> done;
-    for (VariableTable::const_iterator i=params.begin(); i!=params.end(); i++) {
+    for (VariableTable::iterator i=params.begin(); i!=params.end(); i++) {
         done.clear();
-        if ((*i).second.variable->isParentInDAG(this, done))
+        if ((*i).second.getReference()->isParentInDAG(this, done))
             throw RbException("Invalid assignment: Cycles in the DAG");
     }
 
     /* Set parent(s) and add myself as a child to these */
-    for (VariableTable::const_iterator i=params.begin(); i!=params.end(); i++) {
-        parents.insert((*i).second.variable);
-        (*i).second.variable->addChildNode(this);
+    for (VariableTable::iterator i=params.begin(); i!=params.end(); i++) {
+        parents.insert((*i).second.getReference());
+        (*i).second.getReference()->addChildNode(this);
     }
 
     clamped      = false;
@@ -64,8 +63,6 @@ StochasticNode::StochasticNode(Distribution* dist) : VariableNode(dist->getVaria
 
     value        = distribution->rv();
     storedValue  = value->clone();
-	
-	isDagExposed = true;
 }
 
 
@@ -76,17 +73,16 @@ StochasticNode::StochasticNode(const StochasticNode& x) : VariableNode(x) {
     distribution = (Distribution*)(x.distribution->clone());
 
     /* Get distribution parameters */
-    const VariableTable& params = distribution->getMembers().getVariableTable();
+    VariableTable& params = const_cast<VariableTable&>(distribution->getMembers().getVariableTable());
 
     /* Set parent(s) and add myself as a child to these */
-    for (VariableTable::const_iterator i=params.begin(); i!=params.end(); i++) {
-        parents.insert((*i).second.variable);
-        (*i).second.variable->addChildNode(this);
+    for (VariableTable::iterator i=params.begin(); i!=params.end(); i++) {
+        parents.insert((*i).second.getReference());
+        ((*i).second.getReference())->addChildNode(this);
     }
 
     clamped      = x.clamped;
     value        = x.value->clone();
-	isDagExposed = x.isDagExposed;
     if (clamped == false)
         storedValue  = value->clone();
     else
@@ -132,12 +128,12 @@ StochasticNode& StochasticNode::operator=(const StochasticNode& x) {
         distribution = (Distribution*)(x.distribution->clone());
 
         /* Get distribution parameters */
-        const VariableTable& params = distribution->getMembers().getVariableTable();
+        VariableTable& params = const_cast<VariableTable&>(distribution->getMembers().getVariableTable());
 
         /* Set parent(s) and add myself as a child to these */
-        for (VariableTable::const_iterator i=params.begin(); i!=params.end(); i++) {
-            parents.insert((*i).second.variable);
-            (*i).second.variable->addChildNode(this);
+        for (VariableTable::iterator i=params.begin(); i!=params.end(); i++) {
+            parents.insert((*i).second.getReference());
+            (*i).second.getReference()->addChildNode(this);
         }
 
         /* Set flags and value */
@@ -213,7 +209,7 @@ StochasticNode* StochasticNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes)
 
     /* Set the copy params to their matches in the new DAG */
     for (VariableTable::const_iterator i=params.begin(); i!=params.end(); i++) {
-        DAGNode* theParamClone = (*i).second.variable->cloneDAG(newNodes);
+        DAGNode* theParamClone = ((*i).second.getReference())->cloneDAG(newNodes);
         copy->distribution->setVariable((*i).first, theParamClone);
         copy->parents.insert(theParamClone);
         theParamClone->addChildNode(copy);
@@ -347,15 +343,15 @@ bool StochasticNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* ne
     const VariableTable& params = distribution->getMembers().getVariableTable();
     VariableTable::const_iterator it;
     for (it=params.begin(); it!=params.end(); it++) {
-        if ((*it).second.variable == oldNode)
+        if ((*it).second.getReference() == oldNode)
             break;
     }
     if (it == params.end())
         throw RbException("Node is not a parameter");
 
     // TODO: Replace with call to workspace function isXConvertibleToY
-    if ( newNode->getValue()->isConvertibleTo((*it).second.type, (*it).second.dim) )
-        return true;
+    //if ( newNode->getValue()->isConvertibleTo((*it).second.getType(), (*it).second.getDim()) )
+    //    return true;
     
     return false;
 }
@@ -461,15 +457,6 @@ void StochasticNode::setElement(const VectorInteger& index, RbObject* val) {
 }
 
 
-/** Set name of variable and distribution parameters */
-void StochasticNode::setName(const std::string& name) {
-
-    DAGNode::setName(name);
-
-    distribution->setName("&" + name + ".dist");
-}
-
-
 /** Set value: same as clamp, but do not clamp */
 void StochasticNode::setValue(RbObject* val) {
 
@@ -501,7 +488,7 @@ void StochasticNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
     const VariableTable& params = distribution->getMembers().getVariableTable();
     VariableTable::const_iterator it;
     for (it=params.begin(); it!=params.end(); it++) {
-        if ((*it).second.variable == oldNode)
+        if ((*it).second.getReference() == oldNode)
             break;
     }
     if (it == params.end())

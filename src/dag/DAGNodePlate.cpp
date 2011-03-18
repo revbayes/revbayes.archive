@@ -47,7 +47,6 @@ DAGNodePlate::DAGNodePlate(Container* x) : VariableNode(x->getElementType()) {
     value        = x;
     storedValue  = value->clone();
     names        = NULL;
-	isDagExposed = true;
 }
 
                                 
@@ -64,7 +63,6 @@ DAGNodePlate::DAGNodePlate(DAGNode* x) : VariableNode(x->getType()) {
     value        = new Container(x->getValue()->clone());
     storedValue  = value->clone();
     names        = NULL;
-	isDagExposed = true;
 }
 
 
@@ -85,7 +83,6 @@ DAGNodePlate::DAGNodePlate(size_t n, DAGNode* x) : VariableNode(x->getType()) {
     value        = new Container(n, x->getValue()->clone());
     storedValue  = value->clone();
     names        = NULL;
-	isDagExposed = true;
 }
 
 
@@ -101,7 +98,6 @@ DAGNodePlate::DAGNodePlate(size_t n, const std::string& valType)
     value        = new Container(length, valueType);
     storedValue  = value->clone();
     names        = NULL;
-	isDagExposed = true;
 }
 
 
@@ -133,7 +129,6 @@ DAGNodePlate::DAGNodePlate(const VectorInteger& len, DAGNode* x)
     value        = new Container(len, x->getValue()->clone());
     storedValue  = value->clone();
     names        = NULL;
-	isDagExposed = true;
 }
 
 
@@ -159,7 +154,6 @@ DAGNodePlate::DAGNodePlate(const VectorInteger& len, const std::string& valType)
     value       = new Container(len, valueType);
     storedValue = value->clone();
     names       = NULL;
-	isDagExposed = true;
 }
 
 /** Copy constructor needed to make sure nodes elements are independent */
@@ -182,7 +176,6 @@ DAGNodePlate::DAGNodePlate(const DAGNodePlate& x)
         names = NULL;
     else
         names = x.names->clone();
-	isDagExposed = true;
 }
 
 /** Destructor needed to destroy value, stored value and nodes */
@@ -221,7 +214,6 @@ DAGNodePlate& DAGNodePlate::operator=(const DAGNodePlate& x) {
             DAGNode* theNode = (*i);
             if (theNode != NULL) {
                 theNode->removeChildNode(this);
-                theNode->setName("");
                 if (theNode->numRefs() == 0)
                     delete theNode;
             }
@@ -302,7 +294,6 @@ void DAGNodePlate::clear(void) {
 
     for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
         (*i)->removeChildNode(this);
-        (*i)->setName("");
         if ((*i)->numRefs() == 0)
             delete(*i);
     }
@@ -393,7 +384,7 @@ void DAGNodePlate::getAffected(std::set<StochasticNode*>& affected) {
 /** Get class vector describing type of object */
 const VectorString& DAGNodePlate::getClass(void) const {
 
-    static VectorString rbClass = VectorString(DAGNodeContainer_name) + VariableNode::getClass();
+    static VectorString rbClass = VectorString(DAGNodePlate_name) + VariableNode::getClass();
     return rbClass;
 }
 
@@ -992,7 +983,6 @@ void DAGNodePlate::setElement(const VectorInteger& index, DAGNode* var) {
                 ((StochasticNode *)var)->setValue((*targetIt)->getValue()->clone());
             }
             (*targetIt)->removeChildNode(this);
-            (*targetIt)->setName("");
             if ((*targetIt)->numRefs() == 0)
                 delete (*targetIt);
             parents.erase(*targetIt);
@@ -1005,7 +995,6 @@ void DAGNodePlate::setElement(const VectorInteger& index, DAGNode* var) {
             varName << getName();
             for (size_t i=0; i<index.size(); i++)
                 varName << "[" << index[i]+1 << "]";
-            var->setName(varName.str());
             var->addChildNode(this);
             parents.insert(var);
         }
@@ -1017,16 +1006,6 @@ void DAGNodePlate::setElement(const VectorInteger& index, DAGNode* var) {
     touched = true;
     changed = false;
     touchAffected();
-}
-
-
-/** Set element name */
-void DAGNodePlate::setElementName(const VectorInteger& index, const std::string& name) {
-
-    if (names == NULL)
-        names = new VectorString(nodes.size());
-
-    (*names)[getOffset(index)] = RbString(name);
 }
 
 
@@ -1047,24 +1026,6 @@ void DAGNodePlate::setLength(const VectorInteger& len) {
         throw (RbException("Lengths do not match plate size"));
 
     length = len;
-}
-
-
-/** Set name of plate and all elements */
-void DAGNodePlate::setName(const std::string& name) {
-
-    DAGNode::setName(name);
-
-    std::vector<DAGNode*>::iterator i=nodes.begin();
-    for (ContainerIterator index=begin(); index!=end(); i++, index++) {
-        if ((*i) != NULL) {
-            std::ostringstream varName;
-            varName << name;
-            for (size_t k=0; k<index.size(); k++)
-                varName << "[" << index[k] + 1 << "]";
-            (*i)->setName(varName.str());
-        }
-    }
 }
 
 

@@ -15,166 +15,196 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
-#include "ConstantNode.h"
-#include "Frame.h"
-#include "MemberFunction.h"
 #include "MemberNode.h"
+#include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
-#include "VariableNode.h"
+
+#include <assert.h>
 
 
-/** Constructor: we set member variables here from member rules */
-MemberNode::MemberNode(const MemberRules& memberRules, const MethodTable& methodInits) : RbComplex(), members(), methods(methodInits) {
-
-    /* Fill member table (frame) based on member rules */
-    for (MemberRules::const_iterator i=memberRules.begin(); i!=memberRules.end(); i++) {
-
-        std::string name = (*i)->getLabel();
-        if ((*i)->isWrapperRule()) {
-            if ((*i)->hasDefault() == false)
-                members.addReference(name, (*i)->getValueType(), (*i)->getDim());
-            else
-                members.addReference(name, (*i)->getDefaultVariablePtr());
-        }
-        else {
-            if ((*i)->hasDefault() == false)
-                members.addVariable(name, (*i)->getValueType(), (*i)->getDim());
-            else
-                members.addVariable(name, (*i)->getDefaultVariable());
-        }
-    }
+/** Constructor of empty member node */
+MemberNode::MemberNode(const TypeSpec& toType)
+    : DeterministicNode(toType), memberObject(NULL) {
 }
 
 
-/** Pointer-based equals comparison */
-bool MemberNode::equals(const RbObject* obj) const {
+/** Basic constructor of member node */
+MemberNode::MemberNode(MemberObject* val)
+    : DeterministicNode(TypeSpec(val->getType(), val->getDim())), memberObject(val) {
 
-    if (this != obj) {
-
-        if (getType() != obj->getType())
-            return false;
-
-        MemberNode* p = (MemberNode*)(obj);
-
-        // It is impossible to look into the C++ code of methods, so return
-        // false if there are any methods
-        if (methods.size() != 0 || p->methods.size() != 0)
-            return false;
-
-        if (members != p->members)
-            return false;
+    /* Check for cycles */
+    std::list<DAGNode*> done;
+    const VariableTable& params = val->getMembers().getVariableTable();
+    for ( VariableTable::const_iterator i=params.begin(); i!=params.end(); i++ ) {
+        if ( (*i).second.getReference()->isParentInDAG( this, done ) )
+            throw RbException ("Invalid assignment: cycles in the DAG");
     }
 
-    return true;
+    /* Set parents and add this node as a child */
+    for ( VariableTable::const_iterator i=params.begin(); i!=params.end(); i++ ) {
+        DAGNode* theNode = const_cast<DAGNode*>( (*i).second.getReference() );
+        parents.insert( theNode );
+        theNode->addChildNode(this);
+    }
+
+    /* Set value and stored value */
+    value       = memberObject->constantClone();
+    storedValue = NULL;
+}
+
+
+/** Clone this object */
+MemberNode* MemberNode::clone(void) const {
+
+	return new MemberNode(*this);
+}
+
+
+/** Clone the entire graph: clone children, swap parent */
+MemberNode* MemberNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
+
+    if (newNodes.find((DAGNode*)(this)) != newNodes.end())
+        return (MemberNode*)(newNodes[(DAGNode*)(this)]);
+
+    /* Get pristine copy */
+    MemberNode* copy = new MemberNode(valueType);
+    newNodes[(DAGNode*)(this)] = copy;
+
+    /* Clone member object and value */
+    copy->memberObject = memberObject->cloneDAG(newNodes);
+    copy->value = copy->memberObject->constantClone();
+    copy->storedValue = NULL;
+    copy->touched = false;
+    copy->changed = false;
+
+    /* Set parents and add this node as a child */
+    const VariableTable& params = copy->memberObject->getMembers().getVariableTable();
+    for ( VariableTable::const_iterator i=params.begin(); i!=params.end(); i++ ) {
+        DAGNode* theNode = const_cast<DAGNode*>( (*i).second.getReference() );
+        copy->parents.insert( theNode );
+        theNode->addChildNode( copy );
+    }
+
+    /* Make sure the children clone themselves */
+    for(std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
+        (*i)->cloneDAG(newNodes);
+    }
+
+    return copy;
 }
 
 
 /** Get class vector describing type of object */
-const VectorString& MemberNode::getClass(void) const {
+const VectorString& MemberNode::getClass() const {
 
-    static VectorString rbClass = VectorString(MemberNode_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(MemberNode_name) + DeterministicNode::getClass();
     return rbClass;
 }
 
 
-/** Execute member function with preprocessed arguments */
-DAGNode* MemberNode::executeMethod(const std::string& name, int funcId) {
+/** Is it possible to mutate node to newNode? */
+bool MemberNode::isMutableTo(const DAGNode* newNode) const {
 
-    /* Get preprocessed arguments */
-    std::vector<DAGNode*> arguments = methods.getProcessedArguments(funcId);
-
-    /* Execute the operation */
-    return executeOperation(name, arguments);
+    return false;
 }
 
 
-/** Execute member function */
-DAGNode* MemberNode::executeMethod(const std::string& name, std::vector<Argument>& args) {
+/** Is it possible to mutate node to contain newValue? */
+bool MemberNode::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
 
-    /* Process the arguments */
-    int funcId = methods.processArguments(name, args);
+    assert (!newValue->isType(Container_name));
+    
+    bool isMutable = false;
 
-    /* Get the processed arguments */
-    std::vector<DAGNode*> arguments = methods.getProcessedArguments(funcId);
-
-    /* Execute the operation */
-    return executeOperation(name, arguments);
+    return isMutable;
 }
 
 
-/** Get value of a member variable */
-const RbObject* MemberNode::getValue(const std::string& name) {
+/** Is it possible to change parent node oldNode to newNode? */
+bool MemberNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const {
 
-    return members.getValue(name);
-}
+    // First find out if node is parent
+    if (*parents.begin() != const_cast<DAGNode*>(oldNode))
+        throw RbException("Node is not a parent");
 
-
-/** Get value of a member variable (const) */
-const RbObject* MemberNode::getValue(const std::string& name) const {
-
-    return members.getVariable(name)->getValue();
-}
-
-
-/** Get a member variable */
-const DAGNode* MemberNode::getVariable(const std::string& name) const {
-
-    return members.getVariable(name);
-}
-
-
-/** Get a member variable (non-const, for derived classes) */
-DAGNode* MemberNode::getVariable(const std::string& name) {
-
-    return const_cast<DAGNode*>(members.getVariable(name));
-}
-
-
-/** Print value for user */
-void MemberNode::printValue(std::ostream& o) const {
-
-    const VariableTable& varTable = members.getVariableTable();
-    for (VariableTable::const_iterator i=varTable.begin(); i!=varTable.end(); i++) {
-        o << "." << (*i).first << std::endl;
-        if ((*i).second.variable == NULL)
-            o << "NULL";
-        else
-            (*i).second.variable->printValue(o);
-        o << std::endl << std::endl;
+    /* Find member and see if it is mutable to newNode */
+    const VariableTable& members = memberObject->getMembers().getVariableTable();
+    VariableTable::const_iterator it;
+    for ( it=members.begin(); it!=members.end(); it++ ) {
+        if ( (*it).second.getReference() == oldNode )
+            break;
     }
+    if ( it == members.end() )
+        throw RbException("Node is not member variable");
+
+    return (*it).second.getReference()->isMutableTo(newNode);
 }
 
 
-/** Set arguments of a member function */
-int MemberNode::setArguments(const std::string& name, std::vector<Argument>& args) {
-
-    /* Process the arguments and return function id */
-    int funcId = methods.processArguments(name, args);
-    return funcId;
+/** Mutate to newNode */
+void MemberNode::mutateTo(DAGNode* newNode) {
+    
+    throw RbException("Not implemented yet");
 }
 
 
-/** Set base name of member variables */
-void MemberNode::setName(const std::string& name) {
+/* Mutate to contain newValue */
+MemberNode* MemberNode::mutateTo(const VectorInteger& index, RbObject* newValue) {
 
-    members.setFrameName(name);
+    throw RbException("Not implemented yet");
 }
 
 
-/** Set value of a member variable */
-void MemberNode::setValue(const std::string& name, RbObject* val) {
+/** Print struct for user */
+void MemberNode::printStruct(std::ostream& o) const {
 
-    members.setValue(name, val);
+    if (touched)
+        throw RbException("Cannot print struct while in touched state");
+
+    o << "DAGNode:" << std::endl;
+    o << "&.class    = " << getClass() << std::endl;
+    o << "&.value = " << std::endl;
+    value->printValue(o);
+    o << std::endl;
+    o << "&.parent   = " << std::endl;
+    printParents(o);
+    o << std::endl;
+    o << "&.children = " << std::endl;
+    printChildren(o);
+    o << std::endl;
+    o << std::endl;
 }
 
 
-/** Set a member variable */
-void MemberNode::setVariable(const std::string& name, DAGNode* var) {
+/** Swap parent node */
+void MemberNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
 
-    members.setVariable(name, var);
+    if (parents.find(oldNode) == parents.end())
+        throw RbException("Node is not parent");
+    
+    /* Set parents and add this node as a child */
+    const VariableTable& members = memberObject->getMembers().getVariableTable();
+    VariableTable::const_iterator it;
+    for ( it=members.begin(); it!=members.end(); it++ ) {
+        if ( (*it).second.getReference() == oldNode )
+            break;
+    }
+    if ( it == members.end() )
+        throw RbException("Node is not member variable");
+
+    memberObject->setVariable( (*it).first, newNode );
+
+    oldNode->removeChildNode(this);
+    newNode->addChildNode(this);
+    parents.erase(oldNode);
+    parents.insert(newNode);
+
+    touched = true;
+    changed = false;
+    touchAffected();
 }
 
 
@@ -182,9 +212,38 @@ void MemberNode::setVariable(const std::string& name, DAGNode* var) {
 std::string MemberNode::toString(void) const {
 
     std::ostringstream o;
-    o << getType() << ":" << std::endl;
-    printValue(o);
+
+    o << "MemberNode:" << std::endl;
+
+    o << "name        = " << getName() << std::endl;
+    o << "touched     = " << (touched ? "true" : "false") << std::endl;
+    o << "changed     = " << (changed ? "true" : "false") << std::endl;
+    o << "valueType   = " << valueType.getType() << std::endl;
+    o << "valueDim    = " << valueType.getDim() << std::endl;
+
+    o << "value = ";
+    value->printValue(o);
+    o << std::endl;
+
+    if ( storedValue ) {
+        o << "storedValue = ";
+        storedValue->printValue(o);
+        o << std::endl;
+    }
 
     return o.str();
+}
+
+
+/** Update value and stored value after node and its surroundings have been touched by a move */
+void MemberNode::update(void) {
+
+    if (touched && !changed) {
+        if (storedValue != NULL)
+            delete storedValue;
+        storedValue = value;
+        value = memberObject->constantClone();
+        changed = true;
+    }
 }
 
