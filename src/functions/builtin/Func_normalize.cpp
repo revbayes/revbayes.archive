@@ -29,7 +29,6 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RealPos.h"
-#include "ReferenceRule.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "VectorString.h"

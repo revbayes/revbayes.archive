@@ -22,12 +22,11 @@
 #include "Distribution.h"
 #include "MemberFunction.h"
 #include "RandomNumberGenerator.h"
-#include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "Real.h"
 #include "VectorString.h"
 #include "Workspace.h"
-#include "WrapperRule.h"
 
 
 /** Constructor with inheritance for member rules but not for method inits */

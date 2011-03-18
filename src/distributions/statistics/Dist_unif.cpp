@@ -22,12 +22,12 @@
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "Real.h"
+#include "ReferenceRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
-#include "WrapperRule.h"
 
 #include <cmath>
 #include <sstream>
@@ -113,8 +113,8 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new WrapperRule("min", Real_name));
-        memberRules.push_back(new WrapperRule("max", Real_name));
+        memberRules.push_back(new ReferenceRule("min", Real_name));
+        memberRules.push_back(new ReferenceRule("max", Real_name));
 
         const MemberRules& inheritedRules = Distribution::getMemberRules();
         memberRules.insert(memberRules.end(), inheritedRules.begin(), inheritedRules.end()); 

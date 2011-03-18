@@ -85,7 +85,7 @@ class Workspace : public Frame {
         FunctionTable*              getFunctionTable(void) { return functionTable; }                                    //!< Get function table
         RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
         RandomNumberGenerator*      get_rng(void);                                                                      //!< Get default random number generator
-        const std::string&          getTypeNameRef(const std::string* name) const;                                      //!< Get reference to type name
+        const std::string&          getTypeNameRef(const std::string& name) const;                                      //!< Get reference to type name
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
         bool                        isXOfTypeY(const std::string& x, const std::string& y) const;                       //!< Type checking
         bool                        isXConvertibleToY(const std::string& xType, int xDim,

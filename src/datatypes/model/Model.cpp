@@ -65,11 +65,11 @@ Model::Model(const std::vector<DAGNode*>& sinkNodes) : RbComplex(), dagNodes(), 
         if (theNode->getName() == "") {
             maintainedHere.push_back(true);
             if ((*i).first->getName() != "")
-                theNode->setName((*i).first->getName());
+                ; // theNode->setName((*i).first->getName());
             else {
                 std::ostringstream name;
                 name << "Unnamed node " << count++;
-                theNode->setName(name.str());
+                // theNode->setName(name.str());
             }
         }
         else
@@ -85,7 +85,7 @@ Model::~Model(void) {
     std::vector<bool>::iterator j;
     for (i=dagNodes.begin(), j=maintainedHere.begin(); i!=dagNodes.end(); i++, j++) {
         if ((*j) == true) {
-            (*i)->setName("");
+            // (*i)->setName("");
             if ((*i)->numRefs() == 0)
                 delete (*i);
         }
@@ -107,11 +107,11 @@ Model::Model(const Model& x) : RbComplex(), dagNodes(), maintainedHere() {
         if (theNode->getName() == "") {
             maintainedHere.push_back(true);
             if ((*i).first->getName() != "")
-                theNode->setName((*i).first->getName());
+                ; // theNode->setName((*i).first->getName());
             else {
                 std::ostringstream name;
                 name << "Unnamed node " << count++;
-                theNode->setName(name.str());
+                // theNode->setName(name.str());
             }
         }
         else
@@ -130,7 +130,7 @@ Model& Model::operator=(const Model& x) {
         std::vector<bool>::iterator j;
         for (i=dagNodes.begin(), j=maintainedHere.begin(); i!=dagNodes.end(); i++, j++) {
             if ((*j) == true) {
-                (*i)->setName("");
+                // (*i)->setName("");
                 if ((*i)->numRefs() == 0)
                     delete (*i);
             }
@@ -148,11 +148,11 @@ Model& Model::operator=(const Model& x) {
             if (theNode->getName() == "") {
                 maintainedHere.push_back(true);
                 if ((*i).first->getName() != "")
-                    theNode->setName((*i).first->getName());
+                    ; // theNode->setName((*i).first->getName());
                 else {
                     std::ostringstream name;
                     name << "Unnamed node " << count++;
-                    theNode->setName(name.str());
+                    // theNode->setName(name.str());
                 }
             }
             else

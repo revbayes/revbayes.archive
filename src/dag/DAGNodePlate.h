@@ -99,6 +99,7 @@ class DAGNodePlate : public VariableNode {
         int                     getDim(void) const { return int(length.size()); }                       //!< Get dimensions
         const VectorInteger&    getLength(void) const { return length; }                                //!< Get length in each dim
         std::string             getElementName(const VectorInteger& index) const;                       //!< Get name of element 
+        DAGNode*                getElementReference(const VectorInteger& index);                        //!< Get non-const pointer to variable element
         DAGNodePlate*           getSubPlate(const VectorInteger& index) const;                          //!< Get subplate
         const DAGNode*          getVarElement(const VectorInteger& index) const;                        //!< Get element
         const RbObject*         getValElement(const VectorInteger& index) const;                        //!< Get value of element
@@ -111,9 +112,6 @@ class DAGNodePlate : public VariableNode {
         // Utility functions
         size_t                  getOffset(const VectorInteger& index) const;                        //!< Get offset in nodes vector
         void                    update(void);                                                       //!< Update value
-
-        // Give friend class Frame access to elements
-        DAGNode*                getVarElement(const VectorInteger& index);                          //!< Get non-const pointer to variable element
 
         // Member variables
         bool                    changed;                                                            //!< Recalculated after touch?

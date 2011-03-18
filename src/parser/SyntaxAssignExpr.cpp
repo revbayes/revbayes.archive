@@ -76,22 +76,6 @@ SyntaxElement* SyntaxAssignExpr::clone () const {
 }
 
 
-/** Equals comparison */
-bool SyntaxAssignExpr::equals(const SyntaxElement* elem) const {
-
-	const SyntaxAssignExpr* p = dynamic_cast<const SyntaxAssignExpr*>(elem);
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    result = result && variable->equals(p->variable);
-    result = result && expression->equals(p->expression);
-    result = result && (opType == p->opType);
-    
-    return result;
-}
-
-
 /** Get class vector describing type of object */
 const VectorString& SyntaxAssignExpr::getClass(void) const { 
 
@@ -107,12 +91,12 @@ DAGNode* SyntaxAssignExpr::getDAGNodeExpr(Frame* frame) const {
     delete getValue(frame);
 
     // Return DAG node from variable
-    return variable->getDAGNodeExpr();
+    return variable->getDAGNodeExpr(frame);
 }
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbObject* SyntaxAssignExpr::getValue(Frame* frame) const {
+DAGNode* SyntaxAssignExpr::getValue(Frame* frame) const {
 
     PRINTF("Evaluating assign expression\n");
 

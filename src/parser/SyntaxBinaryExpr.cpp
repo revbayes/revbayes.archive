@@ -19,10 +19,10 @@
 
 #include "Argument.h"
 #include "DAGNode.h"
-#include "DeterministicNode.h"
+#include "FunctionNode.h"
 #include "RbException.h"
-#include "VectorString.h"
 #include "SyntaxBinaryExpr.h"
+#include "VectorString.h"
 #include "Workspace.h"
 
 
@@ -104,7 +104,7 @@ DAGNode* SyntaxBinaryExpr::getDAGNodeExpr(Frame* frame) const {
     RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, args);
 
     // Return new function node
-    return new DeterministicNode(func);
+    return new FunctionNode(func);
 }
 
 

@@ -88,6 +88,7 @@ class Frame {
         VariableSlot&               getVariableSlot(const std::string& name);                                               //!< Get variable slot
         const VariableSlot&         getVariableSlot(const std::string& name) const;                                         //!< Get variable slot (const)
         const VariableTable&        getVariableTable(void) const { return variableTable; }                                  //!< Return variable table
+        void                        setReference(const std::string& name, DAGNode* newRef);                                 //!< Set reference
         void                        setValue(const std::string& name, RbObject* newVal);                                    //!< Set value
         void                        setVariable(const std::string& name, DAGNode* newVar);                                  //!< Set variable
         void                        swapReference(DAGNode* oldRef, DAGNode* newRef);                                        //!< Swap a reference variable

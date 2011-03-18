@@ -133,7 +133,7 @@ bool SyntaxForCondition::getNextLoopState(Frame* frame) {
         return false;
     }
 
-    frame->getVariableSlot( *varName ).setReference( vector->getElement( nextElement )->clone() );
+    frame->setReference( *varName, vector->getElementReference( nextElement ) );
     nextElement++;
 
     return true;
@@ -156,7 +156,7 @@ void SyntaxForCondition::initializeLoop(Frame* frame) {
     DAGNode* value = inExpression->getValue(frame);
 
     // Check that it is a vector
-    if ( value->isType( DAGNodePlate_name ) == false || value->getDim() != 1 ) {
+    if ( value->isDAGType( DAGNodePlate_name ) == false || value->getDim() != 1 ) {
         delete value;
         throw ( RbException("The 'in' expression does not evaluate to a vector") );
     }
@@ -169,7 +169,7 @@ void SyntaxForCondition::initializeLoop(Frame* frame) {
     if ( frame->existsVariable( *varName ) )
         frame->getVariableSlot( *varName ).setReferenceFlag( true );
     else
-        frame->addReference( *varName, vector->getType(), vector->getDim() );
+        frame->addReference( *varName, vector->getValueType(), vector->getDim() );
 }
 
 

@@ -22,9 +22,9 @@
 #include "Model.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "ReferenceRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
-#include "WrapperRule.h"
 
 
 /** Clone object */
@@ -52,7 +52,7 @@ const ArgumentRules& Func_model::getArgumentRules(void) const {
 
     if (!rulesSet) {
 
-        argumentRules.push_back(new WrapperRule("sinknode", RbObject_name));
+        argumentRules.push_back(new ReferenceRule("sinknode", RbObject_name));
         rulesSet = true;
     }
 

@@ -21,11 +21,11 @@
 #include "Move_mscale.h"
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
-#include "Real.h"
 #include "RbNames.h"
+#include "Real.h"
+#include "ReferenceRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
-#include "WrapperRule.h"
 
 #include <cmath>
 #include <sstream>
@@ -93,7 +93,7 @@ const MemberRules& Dist_exp::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new WrapperRule("rate", RealPos_name));
+        memberRules.push_back(new ReferenceRule("rate", RealPos_name));
 
         /* Inherit rng from Distribution, put it at back */
         const MemberRules& inheritedRules = Distribution::getMemberRules();

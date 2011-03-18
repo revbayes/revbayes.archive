@@ -1,13 +1,13 @@
 /**
  * @file
  * This file contains the declaration of Func_transpose, which 
- * calculates the square root.
+ * is a templated class for matrix transpose functions.
  *
  * @brief Declaration of Func_transpose
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
- * @author The RevBayes core development team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  *

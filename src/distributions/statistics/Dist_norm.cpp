@@ -25,10 +25,10 @@
 #include "RbException.h"
 #include "RbMath.h"
 #include "RbNames.h"
+#include "ReferenceRule.h"
 #include "StochasticNode.h"
 #include "VectorString.h"
 #include "Workspace.h"
-#include "WrapperRule.h"
 
 #include <cmath>
 
@@ -137,8 +137,8 @@ const MemberRules& Dist_norm::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new WrapperRule("mean", Real_name));
-        memberRules.push_back(new WrapperRule("sd", RealPos_name));
+        memberRules.push_back(new ReferenceRule("mean", Real_name));
+        memberRules.push_back(new ReferenceRule("sd", RealPos_name));
 
         const MemberRules& inheritedRules = Distribution::getMemberRules();
         memberRules.insert(memberRules.end(), inheritedRules.begin(), inheritedRules.end()); 

@@ -16,7 +16,7 @@
 #include "Argument.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
-#include "DeterministicNode.h"
+#include "FunctionNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
@@ -134,7 +134,7 @@ DAGNode* SyntaxFunctionCall::getDAGNodeExpr(Frame* frame) const {
     else
         func = Workspace::globalWorkspace().getFunction("_memberCall", args);
 
-    return new DeterministicNode(func);
+    return new FunctionNode(func);
 }
 
 
@@ -158,7 +158,7 @@ DAGNode* SyntaxFunctionCall::getValue(Frame* frame) const {
         retVal = Workspace::userWorkspace().executeFunction(*functionName, args);
     }
     else {
-        const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getValuePtr(frame));
+        const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getValue(frame));
         if (objectPtr == NULL)
             throw(RbException("Object does not have member functions"));
         RbComplex* theObject = const_cast<RbComplex*>(objectPtr);

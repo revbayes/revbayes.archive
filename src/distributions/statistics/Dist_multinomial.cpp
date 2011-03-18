@@ -26,12 +26,12 @@
 #include "RbMath.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
+#include "ReferenceRule.h"
 #include "Simplex.h"
 #include "VectorInteger.h"
 #include "VectorReal.h"
 #include "VectorString.h"
 #include "Workspace.h"
-#include "WrapperRule.h"
 
 #include <cmath>
 #include <sstream>
@@ -83,7 +83,7 @@ const MemberRules& Dist_multinomial::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
-        memberRules.push_back(new WrapperRule("p", Simplex_name));
+        memberRules.push_back(new ReferenceRule("p", Simplex_name));
 
         /* Inherit rng from Distribution, put it at back */
         const MemberRules& inheritedRules = Distribution::getMemberRules();
