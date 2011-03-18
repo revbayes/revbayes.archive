@@ -56,10 +56,10 @@ DAGNode* ConstructorFunction::executeOperation(const std::vector<DAGNode*>& args
     ArgumentRules::const_iterator i;
     std::vector<DAGNode*>::const_iterator j;
     for (i=argRules.begin(), j=args.begin(); i!=argRules.end(); i++, j++) {
-        if ((*i)->isWrapperRule())
-            copy->setVariable((*i)->getLabel(), (*j));
+        if ((*i)->isReference())
+            copy->setVariable((*i)->getArgLabel(), (*j));
         else
-            copy->setValue((*i)->getLabel(), (*j)->getValue()->clone());
+            copy->setValue((*i)->getArgLabel(), (*j)->getValue()->clone());
     }
  
     return new ConstantNode(copy);

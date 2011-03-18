@@ -32,16 +32,16 @@ MemberObject::MemberObject(const MemberRules& memberRules, const MethodTable& me
     /* Fill member table (frame) based on member rules */
     for (MemberRules::const_iterator i=memberRules.begin(); i!=memberRules.end(); i++) {
 
-        std::string name = (*i)->getLabel();
-        if ((*i)->isWrapperRule()) {
+        std::string name = (*i)->getArgLabel();
+        if ((*i)->isReference()) {
             if ((*i)->hasDefault() == false)
-                members.addReference(name, (*i)->getValueType(), (*i)->getDim());
+                members.addReference(name, (*i)->getArgType(), (*i)->getArgDim());
             else
-                members.addReference(name, (*i)->getDefaultVariablePtr());
+                members.addReference(name, (*i)->getDefaultReference());
         }
         else {
             if ((*i)->hasDefault() == false)
-                members.addVariable(name, (*i)->getValueType(), (*i)->getDim());
+                members.addVariable(name, (*i)->getArgType(), (*i)->getArgDim());
             else
                 members.addVariable(name, (*i)->getDefaultVariable());
         }
@@ -115,7 +115,7 @@ const RbObject* MemberObject::getValue(const std::string& name) {
 /** Get value of a member variable (const) */
 const RbObject* MemberObject::getValue(const std::string& name) const {
 
-    return members.getVariable(name)->getValue();
+    return members.getValue(name);
 }
 
 
@@ -139,10 +139,10 @@ void MemberObject::printValue(std::ostream& o) const {
     const VariableTable& varTable = members.getVariableTable();
     for (VariableTable::const_iterator i=varTable.begin(); i!=varTable.end(); i++) {
         o << "." << (*i).first << std::endl;
-        if ((*i).second.variable == NULL)
+        if ((*i).second.getValue() == NULL)
             o << "NULL";
         else
-            (*i).second.variable->printValue(o);
+            (*i).second.getValue()->printValue(o);
         o << std::endl << std::endl;
     }
 }
@@ -154,13 +154,6 @@ int MemberObject::setArguments(const std::string& name, std::vector<Argument>& a
     /* Process the arguments and return function id */
     int funcId = methods.processArguments(name, args);
     return funcId;
-}
-
-
-/** Set base name of member variables */
-void MemberObject::setName(const std::string& name) {
-
-    members.setFrameName(name);
 }
 
 

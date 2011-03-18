@@ -91,10 +91,10 @@ ConstantNode* ConstantNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) con
     return copy;
 }
 
-/** Get class vector describing type of object */
-const VectorString& ConstantNode::getClass() const {
+/** Get class vector describing type of DAG node */
+const VectorString& ConstantNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(ConstantNode_name) + DAGNode::getClass();
+    static VectorString rbClass = VectorString(ConstantNode_name) + DAGNode::getDAGClass();
     return rbClass;
 }
 
@@ -152,7 +152,7 @@ void ConstantNode::printValue(std::ostream& o) const {
 void ConstantNode::printStruct(std::ostream &o) const {
 
     o << "Wrapper:" << std::endl;
-    o << "&.class   = " << getClass() << std::endl;
+    o << "&.class   = " << getDAGClass() << std::endl;
     o << "&.value   = " << value << std::endl;
     o << "&.parents = NULL" << std::endl;
     o << "&.children" << std::endl;
@@ -178,10 +178,10 @@ void ConstantNode::setElement(const VectorInteger& index, RbObject* val) {
 /** Set value */
 void ConstantNode::setValue(RbObject* val) {
 
-    if (val != NULL && (!val->isType(getValueType().getType()) || val->getDim() != getValueType().getDim()))
+    if ( val != NULL && !val->isType( getValueType() ) )
         throw RbException("Invalid assignment: type mismatch");
 
-    if (value != NULL)
+    if ( value != NULL )
         delete value;
     value = val;
 

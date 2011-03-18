@@ -25,14 +25,14 @@
 
 
 /** Constructor of pristine converter node */
-ConverterNode::ConverterNode(const TypeSpec& toType)
-    : DeterministicNode(toType) {
+ConverterNode::ConverterNode(const std::string& toType, int toDim)
+    : DeterministicNode(toType), valueDim(toDim) {
 }
 
 
 /** Basic constructor of converter node */
-ConverterNode::ConverterNode(DAGNode* origNode, const TypeSpec& toType)
-    : DeterministicNode(toType) {
+ConverterNode::ConverterNode(DAGNode* origNode, const std::string& toType, int toDim)
+    : DeterministicNode(toType), valueDim(toDim) {
 
     /* Check for cycles */
     std::list<DAGNode*> done;
@@ -44,7 +44,7 @@ ConverterNode::ConverterNode(DAGNode* origNode, const TypeSpec& toType)
     origNode->addChildNode(this);
 
     /* Set value and stored value */
-    value       = origNode->getValue()->convertTo(valueType.getType(), valueType.getDim());
+    value       = origNode->getValue()->convertTo(valueType, valueDim);
     storedValue = NULL;
 }
 
@@ -63,7 +63,7 @@ ConverterNode* ConverterNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) c
         return (ConverterNode*)(newNodes[(DAGNode*)(this)]);
 
     /* Get pristine copy */
-    ConverterNode* copy = new ConverterNode(valueType);
+    ConverterNode* copy = new ConverterNode(valueType, valueDim);
     newNodes[(DAGNode*)(this)] = copy;
 
     /* Clone parents */
@@ -84,10 +84,10 @@ ConverterNode* ConverterNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) c
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& ConverterNode::getClass() const {
+/** Get class vector describing type of DAG node */
+const VectorString& ConverterNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(ConverterNode_name) + DeterministicNode::getClass();
+    static VectorString rbClass = VectorString(ConverterNode_name) + DeterministicNode::getDAGClass();
     return rbClass;
 }
 
@@ -118,7 +118,7 @@ bool ConverterNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* new
         throw RbException("Node is not a parent");
 
     // See if the new node value is convertible to the required type
-    if ( newNode->getValue()->isConvertibleTo(valueType.getType(), valueType.getDim()) )
+    if ( newNode->getValue()->isConvertibleTo(valueType, valueDim) )
         return true;
     
     return false;
@@ -158,16 +158,6 @@ void ConverterNode::printStruct(std::ostream& o) const {
 }
 
 
-/** Print value for user */
-void ConverterNode::printValue(std::ostream& o) const {
-
-    if (touched && !changed)
-        throw RbException("Cannot print value while in touched state");
-
-    value->printValue(o);
-}
-
-
 /** Swap parent node */
 void ConverterNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
 
@@ -194,8 +184,8 @@ std::string ConverterNode::toString(void) const {
     o << "name        = " << getName() << std::endl;
     o << "touched     = " << (touched ? "true" : "false") << std::endl;
     o << "changed     = " << (changed ? "true" : "false") << std::endl;
-    o << "valueType   = " << valueType.getType() << std::endl;
-    o << "valueDim    = " << valueType.getDim() << std::endl;
+    o << "valueType   = " << valueType << std::endl;
+    o << "valueDim    = " << valueDim << std::endl;
 
     o << "value       = ";
     value->printValue(o);
@@ -216,7 +206,7 @@ void ConverterNode::update(void) {
         if (storedValue != NULL)
             delete storedValue;
         storedValue = value;
-        value = (*parents.begin())->getValue()->convertTo(valueType.getType(), valueType.getDim());
+        value = (*parents.begin())->getValue()->convertTo(valueType, valueDim);
         changed = true;
     }
 }

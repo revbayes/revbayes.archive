@@ -238,7 +238,7 @@ const std::string& Frame::getSlotName(const VariableSlot* theSlot) const {
 
 
 /** Get value */
-const DAGNode* Frame::getValue(const std::string& name) const {
+const RbObject* Frame::getValue(const std::string& name) const {
 
     PRINTF("Retrieving value of variable named '%s' from frame\n", name.c_str());
 

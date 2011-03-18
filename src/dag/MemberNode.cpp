@@ -56,6 +56,25 @@ MemberNode::MemberNode(MemberObject* val)
 }
 
 
+/** Destructor */
+MemberNode::~MemberNode(void) {
+
+    if (numRefs() != 0)
+        throw RbException ("Cannot delete node with references"); 
+
+    /* Remove parents first */
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
+        (*i)->removeChildNode(this);
+    parents.clear();
+
+    delete memberObject;    // This will delete any DAG nodes that need to be deleted
+
+    delete value;
+    if (storedValue)
+        delete storedValue;
+}
+
+
 /** Clone this object */
 MemberNode* MemberNode::clone(void) const {
 
@@ -97,10 +116,10 @@ MemberNode* MemberNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& MemberNode::getClass() const {
+/** Get class vector describing type of DAG node */
+const VectorString& MemberNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(MemberNode_name) + DeterministicNode::getClass();
+    static VectorString rbClass = VectorString(MemberNode_name) + DeterministicNode::getDAGClass();
     return rbClass;
 }
 
@@ -218,8 +237,7 @@ std::string MemberNode::toString(void) const {
     o << "name        = " << getName() << std::endl;
     o << "touched     = " << (touched ? "true" : "false") << std::endl;
     o << "changed     = " << (changed ? "true" : "false") << std::endl;
-    o << "valueType   = " << valueType.getType() << std::endl;
-    o << "valueDim    = " << valueType.getDim() << std::endl;
+    o << "valueType   = " << valueType << std::endl;
 
     o << "value = ";
     value->printValue(o);

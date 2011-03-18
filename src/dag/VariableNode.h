@@ -32,7 +32,7 @@ class VectorString;
 class VariableNode : public DAGNode {
 
     public:
-        virtual                        ~VariableNode(void) {}                                        //!< Destructor
+        virtual                        ~VariableNode(void) {}                                        //!< Virtual destructor
 
         // Utility functions you have to override
         virtual VariableNode*           clone(void) const = 0;                                       //!< Clone this node

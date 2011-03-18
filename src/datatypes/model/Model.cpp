@@ -21,6 +21,7 @@
 #include "DAGNodePlate.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
+#include "FunctionNode.h"
 #include "StochasticNode.h"
 #include "Model.h"
 #include "RbException.h"
@@ -192,7 +193,7 @@ void Model::getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool expo
 		{
 		if (usePlates == true)
 			{
-			if ( (*i)->getType() == DAGNodeContainer_name )
+			if ( (*i)->getDAGType() == DAGNodePlate_name )
 				{
 				std::set<DAGNode*>& parentNodes = (*i)->getParents();
 				for (std::set<DAGNode*>::iterator j=parentNodes.begin(); j != parentNodes.end(); j++) 
@@ -201,7 +202,7 @@ void Model::getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool expo
 			}
 		else 
 			{
-			if ( (*i)->getType() == DAGNodeContainer_name )
+			if ( (*i)->getDAGType() == DAGNodePlate_name )
 				excludedNodes.insert( (*i) );
 			}
 		}
@@ -220,8 +221,8 @@ void Model::getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool expo
 			}
 		else 
 			{
-			if ( (*i)->getIsDagExposed() == true && nodeIsExcluded == false )
-				exposedDagNodes.push_back( (*i) );
+			if ( !((*i)->isDAGType(LookupNode_name) || (*i)->isDAGType(ConverterNode_name)) )
+                exposedDagNodes.push_back( (*i) );
 			}
 		}
 }
@@ -314,28 +315,30 @@ void Model::printValue(std::ostream& o) const {
 		RBOUT(nameStr);
 		msg.str("");
 
-		if ( (*i)->getType() == ConstantNode_name )
+		if ( (*i)->getDAGType() == ConstantNode_name )
 			msg << "   Type         = Constant";
-		else if ( (*i)->getType() == StochasticNode_name )
+		else if ( (*i)->getDAGType() == StochasticNode_name )
 			msg << "   Type         = Stochastic";
-		else if ( (*i)->getType() == DAGNodeContainer_name )
+		else if ( (*i)->getDAGType() == DAGNodePlate_name )
 			msg << "   Type         = Plate";
+		else if ( (*i)->getDAGType() == MemberNode_name )
+			msg << "   Type         = Member object";
 		else 
 			msg << "   Type         = Deterministic";
 		RBOUT(msg.str());
 		msg.str("");
 		
-        if ((*i)->isType(DeterministicNode_name))
-            msg << "   Function     = " << ((DeterministicNode*)(*i))->getFunction()->getType();
-        else if ((*i)->isType(StochasticNode_name))
+        if ((*i)->isDAGType(FunctionNode_name))
+            msg << "   Function     = " << ((FunctionNode*)(*i))->getFunction()->getType();
+        else if ((*i)->isDAGType(StochasticNode_name))
             msg << "   Distribution = " << ((StochasticNode*)(*i))->getDistribution()->getType();
 		if ( msg.str() != "" )
 			RBOUT(msg.str());
 		msg.str("");
        
-		if ( (*i)->isType(ConstantNode_name) )
+		if ( (*i)->isDAGType(ConstantNode_name) )
             msg << "   Value        = " << ((ConstantNode*)(*i))->getValue()->toString();
-		else if ( (*i)->isType(StochasticNode_name) )
+		else if ( (*i)->isDAGType(StochasticNode_name) )
             msg << "   Value        = " << ((StochasticNode*)(*i))->getValue()->toString();
 		if ( msg.str() != "" )
 			RBOUT(msg.str());

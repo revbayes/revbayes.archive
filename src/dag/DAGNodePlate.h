@@ -42,7 +42,6 @@ class DAGNodePlate : public VariableNode {
 
     public:
         friend class            Frame;                                                                  //!< Give Frame direct access
-        friend class            Func__lookup;                                                           //!< Give Func__lookup direct access
 
                                 DAGNodePlate(Container* x);                                             //!< Vector with const vals from container
                                 DAGNodePlate(DAGNode* x);                                               //!< Vector with one node x
@@ -70,7 +69,7 @@ class DAGNodePlate : public VariableNode {
 
         // Basic utility functions
         DAGNodePlate*           clone(void) const;                                                      //!< Clone object
-        const VectorString&     getClass(void) const;                                                   //!< Get class
+        const VectorString&     getDAGClass(void) const;                                                //!< Get DAG node class
         const RbObject*         getStoredValue(void);                                                   //!< Get stored value
         const RbObject*         getValue(void);                                                         //!< Get value
         const RbObject*         getValue(void) const;                                                   //!< Get const value if poss.

@@ -44,5 +44,9 @@ class RbInternal {
 		                            RbInternal(void) {}                     //!< No objects of this class
 };
 
+
+/* Global functions using the class */
+std::ostream&   operator<<(std::ostream& o, const RbInternal& x);           //!< Overloaded output operator
+
 #endif
 

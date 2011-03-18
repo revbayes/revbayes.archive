@@ -32,9 +32,9 @@
 
 
 /** Constructor: set value type */
-DAGNode::DAGNode(const TypeSpec& valType) : children(), parents(), slot(), referringSlots(), valueType(valType) {
-
+DAGNode::DAGNode(const std::string& valType) : children(), parents(), slot(), referringSlots(), valueType(valType) {
 }
+
 
 /**
  * Copy constructor should not copy children because it creates an
@@ -48,23 +48,9 @@ DAGNode::DAGNode(const DAGNode& x) : children(), parents(), slot(), referringSlo
 
 }
 
-/** Destructor */
-DAGNode::~DAGNode(void) {
 
-    if (numRefs() != 0)
-        throw RbException ("Cannot delete node with references");
-
-    /* Remove this node as a child node of parents and delete these if appropriate */
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-        (*i)->removeChildNode(this);
-        if ((*i)->numRefs() == 0)
-            delete (*i);
-    }
-}
-
-
-/** Get class vector describing type of object */
-const VectorString& DAGNode::getClass() const {
+/** Get class vector describing type of DAG node */
+const VectorString& DAGNode::getDAGClass() const {
 
     static VectorString rbClass = VectorString(DAGNode_name);
     return rbClass;
@@ -77,7 +63,7 @@ const std::string DAGNode::getName(void) const {
 
     if (slot == NULL) {
         for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
-            if ((*i)->isType(DAGNodePlate_name)) {
+            if ((*i)->isDAGType(DAGNodePlate_name)) {
                 DAGNodePlate* thePlate = (DAGNodePlate*)(*i);
                 name = thePlate->getName();
                 VectorInteger index = thePlate->getIndex(*i);
@@ -101,10 +87,10 @@ const std::string DAGNode::getName(void) const {
     return name;
 }
 
-/** Get type of wrapper (first entry in class vector) */
-const std::string& DAGNode::getType(void) const { 
+/** Get type of DAG node (first entry in class vector) */
+const std::string& DAGNode::getDAGType(void) const { 
 
-    return getClass()[0];
+    return getDAGClass()[0];
 }
 
 /** Get element variable; default throws error, override if wrapper has variable elements */
@@ -113,10 +99,10 @@ const DAGNode* DAGNode::getVarElement(const VectorInteger& index) const {
     throw (RbException("No variable elements"));
 }
 
-/** Is wrapper of specified type? We need to check entire class vector in case we are derived from type. */
-bool DAGNode::isType(const std::string& type) const {
+/** Is DAG node of specified type? We need to check entire class vector in case we are derived from type. */
+bool DAGNode::isDAGType(const std::string& type) const {
 
-    const VectorString& classVec = getClass();
+    const VectorString& classVec = getDAGClass();
 
     for (size_t i=0; i<classVec.size(); i++) {
         if (type == classVec[i])
@@ -160,7 +146,7 @@ void DAGNode::printChildren(std::ostream& o) const {
     int count = 1;
     for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++, count++) {
         o << "children[" << count << "] = '" << (*i)->getName();
-        o << "' [" << (*i) << "] of type " << (*i)->getType() << std::endl;
+        o << "' [" << (*i) << "] of type " << (*i)->getDAGType() << std::endl;
     }
 }
 
@@ -175,7 +161,7 @@ void DAGNode::printParents(std::ostream& o) const {
     int count = 1;
     for (std::set<DAGNode*>::const_iterator i=parents.begin(); i != parents.end(); i++, count++) {
         o << "parents[" << count << "] = '" << (*i)->getName();
-        o << "' [" << (*i) << "] of type " << (*i)->getType() << std::endl;
+        o << "' [" << (*i) << "] of type " << (*i)->getDAGType() << std::endl;
     }
 }
 

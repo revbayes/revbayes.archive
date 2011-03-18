@@ -96,6 +96,7 @@ StochasticNode::~StochasticNode(void) {
     if (numRefs() != 0)
         throw RbException ("Cannot delete node with references"); 
 
+    /* Remove parents first */
     for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
         (*i)->removeChildNode(this);
     parents.clear();

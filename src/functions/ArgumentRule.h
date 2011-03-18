@@ -24,24 +24,22 @@
 #define ArgumentRule_H
 
 #include "RbInternal.h"
+#include "TypeSpec.h"
+#include "VariableSlot.h"
 
 #include <string>
 
 class DAGNode;
 class RbObject;
-class TypeSpec;
 class VectorString;
 
 class ArgumentRule : public RbInternal {
 
     public:
-                                    ArgumentRule(const std::string& argName, const TypeSpec& varType);                                  //!< Constructor of rule without default value
-                                    ArgumentRule(const std::string& argName, const TypeSpec& varType, DAGNode* defVal);                 //!< Constructor of rule with default value
- 		                            ArgumentRule(const ArgumentRule& a);                                                                //!< Copy constructor
-        virtual                    ~ArgumentRule(void);                                                                                 //!< Destructor
-
-        // Assignment operator
-        ArgumentRule&               operator=(const ArgumentRule& x);                                                                   //!< Assignment operator
+                                    ArgumentRule(const std::string& argName, RbObject* defValue);                                       //!< Constructor of rule from default value
+                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp);                                //!< Constructor of rule without default value
+                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbObject* defValue);            //!< Constructor of rule with default value
+                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable);          //!< Constructor of rule with default reference or default wrapped value
 
         // Basic utility functions
         virtual ArgumentRule*       clone(void) const { return new ArgumentRule(*this); }                                               //!< Clone object
@@ -51,22 +49,21 @@ class ArgumentRule : public RbInternal {
 
         // ArgumentRule functions
         RbObject*                   getDefaultValue(void) const;                                                                        //!< Get default val (copy)
-        DAGNode*                    getDefaultVariable(void) const;                                                                     //!< Get default node (copy)
-        DAGNode*                    getDefaultVariablePtr(void) const;                                                                  //!< Get default node (ptr)
-        int                         getDim(void) const { return dim; }                                                                  //!< Get argument dim
-        std::string                 getLabel(void) const { return label; }                                                              //!< Get label of argument
-        const std::string&          getValueType(void) const { return valueType; }                                                      //!< Get value type
-        bool                        hasDefault(void) const;                                                                             //!< Has default?
+        DAGNode*                    getDefaultVariable(void) const;                                                                     //!< Get default value wrapped as node (copy)
+        DAGNode*                    getDefaultReference(void);                                                                          //!< Get default reference (ptr)
+        int                         getArgDim(void) const { return argSlot.getTypeSpec().getDim(); }                                    //!< Get argument dim
+        std::string                 getArgLabel(void) const { return label; }                                                           //!< Get label of argument
+        const std::string&          getArgType(void) const { return argSlot.getTypeSpec().getType(); }                                  //!< Get argument type
+        const TypeSpec&             getArgTypeSpec(void) const { return argSlot.getTypeSpec(); }                                        //!< Get argument type spec
+        bool                        hasDefault(void) const { return hasDefaultVal; }                                                    //!< Has default?
         virtual bool                isArgValid(DAGNode* var) const;                                                                     //!< Is var valid argument?
-        bool                        isWrapperRule(void) const { return wrapperRule; }                                                   //!< Is '&' argument
-        void                        setWrapperRule(bool val) { wrapperRule = val; }                                                     //!< Set wrapperRule flag
+        bool                        isReference(void) const { return argSlot.getTypeSpec().isReference(); }                             //!< Is reference ('&') argument?
+        void                        setReference(bool flag) { argSlot.setReferenceFlag(flag); }                                         //!< Set reference flag
 
     protected:
         std::string                 label;                                                                                              //!< Label of argument
-        std::string                 valueType;                                                                                          //!< Type of argument value
-        int                         dim;                                                                                                //!< Dim of argument
-        DAGNode*                    defaultVariable;                                                                                    //!< Default variable
-        bool                        wrapperRule;                                                                                        //!< Is wrapper argument?
+        VariableSlot                argSlot;                                                                                            //!< Slot with typespec and possibly default value/ref
+        bool                        hasDefaultVal;                                                                                      //!< Has default (which can be NULL) ?
 };
 
 #endif

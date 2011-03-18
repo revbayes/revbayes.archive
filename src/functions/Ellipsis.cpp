@@ -19,6 +19,7 @@
 #include "Ellipsis.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 #include <sstream>
@@ -26,13 +27,13 @@
 
 /** Constructor allowing all types and dims */
 Ellipsis::Ellipsis(void)
-    : ArgumentRule("", "") {
+    : ArgumentRule("", TypeSpec("")) {
 }
 
 
 /** Constructor requiring a certain type and dim */
 Ellipsis::Ellipsis(const std::string& type, int dim)
-    : ArgumentRule("", type, dim) {
+    : ArgumentRule("", TypeSpec(type, dim)) {
 }
 
 
@@ -47,7 +48,7 @@ const VectorString& Ellipsis::getClass(void) const {
 /** Check validity of argument. Call it on a single argument if it is used! */
 bool Ellipsis::isArgValid(DAGNode* var) const {
 
-    if (!var->getValue()->isType(valueType))
+    if (!var->getValue()->isType(argSlot.getTypeSpec().getType()))
         return false;
 
     return true;

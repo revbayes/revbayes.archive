@@ -58,3 +58,11 @@ void RbInternal::print(std::ostream& o) const {
     o << toString() << std::endl;
 }
 
+
+/** Make sure we can print the value of the object easily */
+std::ostream& operator<<(std::ostream& o, const RbInternal& x) {
+
+    x.printValue(o);
+    return o;
+}
+

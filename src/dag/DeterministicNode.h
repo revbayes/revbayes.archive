@@ -31,25 +31,25 @@ class RbFunction;
 class DeterministicNode : public VariableNode {
 
     public:
-        virtual                        ~DeterministicNode(void);                                    //!< Destructor
+        virtual                        ~DeterministicNode(void);                                                    //!< Destructor
 
         // Utility functions implemented here
-        const RbObject*                 getStoredValue(void);                                       //!< Get stored value
-        const RbObject*                 getValue(void);                                             //!< Get value
-        const RbObject*                 getValue(void) const;                                       //!< Get const value (if possible)
-        const RbObject*                 getValElement(const VectorInteger& index) const;            //!< Get value element
-        void                            printValue(std::ostream& o) const;                          //!< Print value for user
-        void                            setElement(const VectorInteger& index, RbObject* val);      //!< Set value element (throw error)
-        void                            setValue(RbObject* val);                                    //!< Set value (throw error)
+        const RbObject*                 getStoredValue(void);                                                           //!< Get stored value
+        const RbObject*                 getValue(void);                                                                 //!< Get value
+        const RbObject*                 getValue(void) const;                                                           //!< Get const value (if possible)
+        const RbObject*                 getValElement(const VectorInteger& index) const;                                //!< Get value element
+        void                            printValue(std::ostream& o) const;                                              //!< Print value for user
+        void                            setElement(const VectorInteger& index, RbObject* val);                          //!< Set value element (throw error)
+        void                            setValue(RbObject* val);                                                        //!< Set value (throw error)
 
         // Utility functions you have to override
-        virtual DeterministicNode*      clone(void) const = 0;                                      //!< Clone this node
-        virtual const VectorString&     getClass(void) const;                                       //!< Get class vector
-        virtual void                    printStruct(std::ostream& o) const = 0;                     //!< Print struct for user
-        virtual std::string             toString(void) const = 0;                                   //!< Complete info about object
+        virtual DeterministicNode*      clone(void) const = 0;                                                          //!< Clone this node
+        virtual const VectorString&     getDAGClass(void) const;                                                        //!< Get DAG node class vector
+        virtual void                    printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
+        virtual std::string             toString(void) const = 0;                                                       //!< Complete info about object
 
         // DAG functions implemented here
-        void    	                    getAffected(std::set<StochasticNode*>& affected);           //!< Mark and get affected nodes
+        void    	                    getAffected(std::set<StochasticNode*>& affected);                               //!< Mark and get affected nodes
         void    	                    keepAffected(void);                                                             //!< Keep value of affected nodes
         void                            restoreAffected(void);                                                          //!< Restore value of affected nodes
         void                            touchAffected(void);                                                            //!< Tell affected nodes value is reset
@@ -70,12 +70,12 @@ class DeterministicNode : public VariableNode {
                                         DeterministicNode(const TypeSpec& valType);                                     //!< Constructor from type
 
         // Utility function you have to override
-        virtual void                    update(void) = 0;                                               //!< Update value and storedValue
+        virtual void                    update(void) = 0;                                                               //!< Update value and storedValue
 
         // Member variables
-        bool                            changed;                                                        //!< True when value updated after touch
-        RbObject*                       value;                                                          //!< Current value
-        RbObject*                       storedValue;                                                    //!< Stored value
+        bool                            changed;                                                                        //!< True when value updated after touch
+        RbObject*                       value;                                                                          //!< Current value
+        RbObject*                       storedValue;                                                                    //!< Stored value
 };
 
 #endif

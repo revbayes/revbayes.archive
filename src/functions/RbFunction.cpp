@@ -241,7 +241,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
     if ( nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) >= nRules ) {
 
         int numEllipsisArgs = int(args.size()) - nRules + 1;
-        DAGNodePlate* ellipsisArgs = new DAGNodePlate(numEllipsisArgs, theRules[nRules-1]->getValueType());
+        DAGNodePlate* ellipsisArgs = new DAGNodePlate(numEllipsisArgs, theRules[nRules-1]->getArgType());
         ContainerIterator ellipsisIt = ellipsisArgs->begin();
 
         for (size_t i=nRules-1; i<args.size(); i++) {
@@ -275,7 +275,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
         /* Check for matches in all rules (we assume that all labels are unique; this is checked by FunctionTable) */
         for (int j=0; j<numFinalArgs; j++) {
 
-            if ( args[i].getLabel() == theRules[j]->getLabel() ) {
+            if ( args[i].getLabel() == theRules[j]->getArgLabel() ) {
 
                 if ( theRules[j]->isArgValid(args[i].getVariable()) && processedArguments[j] == NULL ) {
                     taken[i] = true;
@@ -283,7 +283,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
                         processedArguments[j] = args[i].getVariable();
                     else
                         processedArguments[j] = args[i].getVariable();
-                    referenceArgument[j] = theRules[j]->isWrapperRule();
+                    referenceArgument[j] = theRules[j]->isReference();
                 }
                 else
                     return false;
@@ -313,7 +313,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
         for (int j=0; j<numFinalArgs; j++) {
 
             if ( processedArguments[j] == NULL &&
-                 theRules[j]->getLabel().compare(0, args[i].getLabel().size(), args[i].getLabel()) == 0 ) {
+                 theRules[j]->getArgLabel().compare(0, args[i].getLabel().size(), args[i].getLabel()) == 0 ) {
                 ++nMatches;
                 matchRule = j;
             }
@@ -328,7 +328,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
                 processedArguments[matchRule] = args[i].getVariable();
             else
                 processedArguments[matchRule] = args[i].getVariable();
-            referenceArgument[matchRule] = theRules[matchRule]->isWrapperRule();
+            referenceArgument[matchRule] = theRules[matchRule]->isReference();
         }
         else
             return false;
@@ -354,7 +354,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
                         processedArguments[j] = args[i].getVariable();
                     else
                         processedArguments[j] = args[i].getVariable();
-                    referenceArgument[j] = theRules[j]->isWrapperRule();
+                    referenceArgument[j] = theRules[j]->isReference();
                     break;
                 }
                 else
@@ -374,11 +374,11 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
         if ( !theRules[i]->hasDefault() )
             return false;
 
-        if ( theRules[i]->isWrapperRule() )
-            processedArguments[i] = theRules[i]->getDefaultVariablePtr();
+        if ( theRules[i]->isReference() )
+            processedArguments[i] = theRules[i]->getDefaultReference();
         else
             processedArguments[i] = new ConstantNode(theRules[i]->getDefaultValue());
-        referenceArgument[i] = theRules[i]->isWrapperRule();
+        referenceArgument[i] = theRules[i]->isReference();
     }
 
     /*********************  6. Count match score and return  **********************/
@@ -399,7 +399,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
         const VectorString& argClass = processedArguments[argIndex]->getValue()->getClass();
         size_t j;
         for (j=0; j<argClass.size(); j++)
-            if ( argClass[j] == theRules[argIndex]->getValueType() )
+            if ( argClass[j] == theRules[argIndex]->getArgType() )
                 break;
 
         matchScore->push_back(int(j));
@@ -415,7 +415,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
             const VectorString& argClass = container->getValElement(it)->getClass();
             size_t j;
             for (j=0; j<argClass.size(); j++)
-                if ( argClass[j] == theRules[argIndex]->getValueType() )
+                if ( argClass[j] == theRules[argIndex]->getArgType() )
                     break;
 
             matchScore->push_back(int(j));

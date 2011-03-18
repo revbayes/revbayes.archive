@@ -58,9 +58,13 @@ typedef std::map<std::string, VariableSlot> VariableTable;
 class Frame {
 
     public:
-                                    Frame(void);                                                                        //!< Constructor of frame with NULL parent
-                                    Frame(Frame* parentFr);                                                             //!< Constructor of frame with parent
-                                    Frame(const Frame& x);                                                              //!< Copy constructor: set frame of variable slots
+                                    Frame(void);                                                                            //!< Constructor of frame with NULL parent
+                                    Frame(Frame* parentFr);                                                                 //!< Constructor of frame with parent
+                                    Frame(const Frame& x);                                                                  //!< Copy constructor: set frame of variable slots
+
+        // Operators
+        bool                        operator==(const Frame& x) const;                                                       //!< Equals comparison
+        bool                        operator!=(const Frame& x) const { return !operator==(x); }                             //!< Not equals comparison
 
         // Basic utility functions
         virtual Frame*              clone(void) const { return new Frame(*this); }                                          //!< Clone frame
@@ -79,10 +83,13 @@ class Frame {
         Frame*                      getParentFrame(void) const { return parentFrame; }                                      //!< Get parent frame
         DAGNode*                    getReference(const std::string& name);                                                  //!< Get reference
         const std::string&          getSlotName(const VariableSlot* slot) const;                                            //!< Get name of a slot
-        const DAGNode*              getValue(const std::string& name) const;                                                //!< Get value
+        const RbObject*             getValue(const std::string& name) const;                                                //!< Get value
+        const DAGNode*              getVariable(const std::string& name) const;                                             //!< Get variable
         VariableSlot&               getVariableSlot(const std::string& name);                                               //!< Get variable slot
         const VariableSlot&         getVariableSlot(const std::string& name) const;                                         //!< Get variable slot (const)
         const VariableTable&        getVariableTable(void) const { return variableTable; }                                  //!< Return variable table
+        void                        setValue(const std::string& name, RbObject* newVal);                                    //!< Set value
+        void                        setVariable(const std::string& name, DAGNode* newVar);                                  //!< Set variable
         void                        swapReference(DAGNode* oldRef, DAGNode* newRef);                                        //!< Swap a reference variable
 
     protected:

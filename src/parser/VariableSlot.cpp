@@ -245,6 +245,40 @@ void VariableSlot::setValue(DAGNode* value) {
     variable->setSlot(this);
 }
 
+
+/** Set a value slot to a new variable value */
+void VariableSlot::setValue(RbObject* value) {
+
+    // Wrap the value appropriately and then set the slot
+    if ( value->isType(MemberObject_name) )
+        setVariable( new MemberNode( static_cast<MemberObject*>( value ) ) );
+    else if ( value->isType( Container_name ) )
+        setVariable( new DAGNodePlate( static_cast<Container*>( value ) ) );
+    else
+        setVariable( new ConstantNode( value ) );
+}
+
+
+/** Make sure we can print to stream using << operator */
+std::ostream& operator<<(std::ostream& o, const TypeSpec& x) {
+
+    o << "<" << typeSpec << ">";
+    if ( getName() != "" )
+        o << " " << getName();
+    o << " =";
+    if ( temp )
+        o << " [temp]"
+    if ( variable == NULL )
+        o << " NULL";
+    else {
+        o << " ";
+        variable->printValue(o);
+    }
+    return o;
+}
+
+
+#if 0
 /** Set value */
 void Frame::setValue(const std::string& name, RbObject* value) {
 
@@ -583,4 +617,4 @@ void VariableSlot::swapReference(DAGNode* oldRef, DAGNode* newRef) {
     (*i).second.setReference( newRef );
 }
 
-
+#endif

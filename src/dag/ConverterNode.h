@@ -35,12 +35,13 @@
  class ConverterNode : public DeterministicNode {
 
     public:
-                                ConverterNode(const TypeSpec& toType);                                      //!< Constructor of pristine node
-                                ConverterNode(DAGNode* origNode, const TypeSpec& toType);                   //!< Basic constructor
+                                ConverterNode(const std::string& toType, int toDim);                        //!< Constructor of pristine node
+                                ConverterNode(DAGNode* origNode, const std::string& toType, int toDim);     //!< Basic constructor
 
         // Basic utility functions
         ConverterNode*          clone(void) const;                                                          //!< Clone the converter node
-        const VectorString&     getClass(void) const;                                                       //!< Get class vector
+        const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
+        int                     getDim(void) const { return valueDim; }                                     //!< Get dim of converted value (0 for scalar, 1 for vector, etc)
         void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
         std::string             toString(void) const;                                                       //!< Complete info about object
 
@@ -56,6 +57,9 @@
     protected:
         // Utility function
         void                    update(void);                                                               //!< Update value and storedValue
+
+        // Member variables
+        int                     valueDim;                                                                   //!< Dimensions of converted value
 };
 
 #endif

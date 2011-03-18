@@ -22,6 +22,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 
+#include <ctime>
 #include <limits>
 
 

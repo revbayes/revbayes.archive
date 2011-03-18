@@ -28,28 +28,28 @@ class VectorString;
 class ConstantNode : public DAGNode {
 
     public:
-                                ConstantNode(RbObject* val);                                   //!< Constructor from value
-                                ConstantNode(const std::string& valType);                      //!< Constructor from value type
-                                ConstantNode(const ConstantNode& x);                           //!< Copy constructor
-							   ~ConstantNode(void);                                            //!< Destructor
+                                ConstantNode(RbObject* val);                                                //!< Constructor from value
+                                ConstantNode(const std::string& valType);                                   //!< Constructor from value type
+                                ConstantNode(const ConstantNode& x);                                        //!< Copy constructor
+							   ~ConstantNode(void);                                                         //!< Destructor
 
         // Assignment operator
-        ConstantNode&           operator=(const ConstantNode& x);                              //!< Assignment operator
+        ConstantNode&           operator=(const ConstantNode& x);                                           //!< Assignment operator
 
         // Basic utility functions
-        ConstantNode*           clone(void) const;                                                  //!< Clone this object
-        const VectorString&     getClass(void) const;                                               //!< Get class vector
-        void                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
-        void                    printValue(std::ostream& o) const;                                  //!< Print struct for user
-        std::string             toString(void) const;                                               //!< Complete info on object
+        ConstantNode*           clone(void) const;                                                          //!< Clone this object
+        const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
+        void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
+        void                    printValue(std::ostream& o) const;                                          //!< Print struct for user
+        std::string             toString(void) const;                                                       //!< Complete info on object
 
         // ConstantNode functions
-        const RbObject*         getStoredValue(void) { return value; }                              //!< Get stored value
-        const RbObject*         getValElement(const VectorInteger& index) const;                    //!< Get element of value    
-        const RbObject*         getValue(void) { return value; }                                    //!< Get value
-        const RbObject*         getValue(void) const { return value; }                              //!< Get value (const)
-        void                    setElement(const VectorInteger& index, RbObject* val);              //!< Set element of value
-        void                    setValue(RbObject* val);                                            //!< Set value
+        const RbObject*         getStoredValue(void) { return value; }                                      //!< Get stored value
+        const RbObject*         getValElement(const VectorInteger& index) const;                            //!< Get element of value    
+        const RbObject*         getValue(void) { return value; }                                            //!< Get value
+        const RbObject*         getValue(void) const { return value; }                                      //!< Get value (const)
+        void                    setElement(const VectorInteger& index, RbObject* val);                      //!< Set element of value
+        void                    setValue(RbObject* val);                                                    //!< Set value
 
         // DAG functions
         ConstantNode*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph

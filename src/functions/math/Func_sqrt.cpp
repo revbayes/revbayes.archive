@@ -20,7 +20,6 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
-#include "Func__lookup.h"
 #include "Func_sqrt.h"
 #include "RealPos.h"
 #include "Real.h"

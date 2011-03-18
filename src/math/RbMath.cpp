@@ -881,7 +881,7 @@ void RbMath::vectorMultiplication(const VectorReal& v1, const VectorReal& v2, Ma
 std::cout << "v1 : " << v1.getIsRowVector() << std::endl;
 std::cout << "v2 : " << v2.getIsRowVector() << std::endl;
 
-    int n = v1.size();
+    size_t n = v1.size();
     if ( v1.getIsRowVector() == true && v2.getIsRowVector() == false )
         {
         VectorInteger sizeVec(2);

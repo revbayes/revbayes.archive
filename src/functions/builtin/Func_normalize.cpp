@@ -23,7 +23,6 @@
 #include "DAGNodePlate.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
-#include "Func__lookup.h"
 #include "Func_normalize.h"
 #include "Integer.h"
 #include "RbMath.h"

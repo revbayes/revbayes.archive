@@ -116,7 +116,7 @@ void Move::setUpdateWeight(double weight) {
 /** Only allow constant values for member variables */
 void Move::setVariable(const std::string& name, DAGNode* var) {
 
-    if (!var->isType(ConstantNode_name))
+    if (!var->isDAGType(ConstantNode_name))
         throw RbException("Only constant values allowed for member variables");
 
     MemberObject::setVariable(name, var);

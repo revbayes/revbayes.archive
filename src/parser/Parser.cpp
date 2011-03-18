@@ -109,7 +109,7 @@ int Parser::execute(SyntaxElement *root) const {
 #	endif
 
     // Declare a variable for the result
-    RbObject *result;
+    DAGNode *result;
     
     //! Execute syntax tree
     try {

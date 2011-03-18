@@ -40,16 +40,16 @@ LookupNode::LookupNode(const TypeSpec& valType) :
 
 /** Construct lookup of regular variable */
 LookupNode::LookupNode(DAGNode* var, IndexArgs&  indxArgs) :
-    DeterministicNode(var->getValueType()), variable(var), baseVariable(NULL), memberName(), indexArgs(indxArgs) {
+    DeterministicNode(var->getValueType()), variable(var), baseVariable(NULL), memberName(), indexArgs(indxArgs), valueDim(0) {
 
     /* Check index arguments */
     for (IndexArgs::iterator i=indexArgs.begin(); i!=indexArgs.end(); i++) {
-        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getValueType(), Integer_name) )
+        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getValueType(), (*i)->getDim(), Integer_name, 0) )
             throw RbException ("Invalid type of index argument");
     }
         
-    /* Update type specification */
-    valueType.setDim(valueType.getDim() - indexArgs.size());
+    /* Update dimension variable to reflect result of lookup */
+    valueDim -= indexArgs.size();
         
     /* Check for cycles */
     std::list<DAGNode*> done;
@@ -57,6 +57,8 @@ LookupNode::LookupNode(DAGNode* var, IndexArgs&  indxArgs) :
         if ((*i)->isParentInDAG(this, done))
             throw RbException ("Invalid assignment: cycles in the DAG");
     }
+    if (variable->isParentInDAG(this, done))
+        throw RbException ("Invalid assignment: cycles in the DAG");
 
     /* Set parents and add this node as a child node of these */
     for (IndexArgs::iterator i=indexArgs.begin(); i!=indexArgs.end(); i++) {
@@ -74,17 +76,16 @@ LookupNode::LookupNode(DAGNode* var, IndexArgs&  indxArgs) :
 
 /** Construct lookup of member variable */
 LookupNode::LookupNode(LookupNode* baseVar, RbString* membrName, IndexArgs&  indxArgs) :
-    DeterministicNode(baseVar->getValueType()), variable(NULL), baseVariable(baseVar), memberName(membrName), indexArgs(indxArgs) {
+    DeterministicNode(baseVar->getMemberTypeSpec(membrName).getType()), variable(NULL), baseVariable(baseVar), memberName(membrName), indexArgs(indxArgs), valueDim(0) {
 
     /* Check index arguments */
     for (IndexArgs::iterator i=indexArgs.begin(); i!=indexArgs.end(); i++) {
-        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getValueType(), Integer_name) )
+        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getValueType(), (*i)->getDim(), Integer_name, 0) )
             throw RbException ("Invalid type of index argument");
     }
         
-    /* Update type specification */
-    valueType = baseVariable->getMemberType(memberName);
-    valueType.setDim(valueType.getDim() - indexArgs.size());
+    /* Update dimension variable to reflect result of lookup */
+    valueDim = baseVariable->getMemberTypeSpec(memberName).getDim() - indexArgs.size();
 
     /* Check for cycles */
     std::list<DAGNode*> done;
@@ -92,6 +93,8 @@ LookupNode::LookupNode(LookupNode* baseVar, RbString* membrName, IndexArgs&  ind
         if ((*i)->isParentInDAG(this, done))
             throw RbException ("Invalid assignment: cycles in the DAG");
     }
+    if (baseVariable->isParentInDAG(this, done))
+        throw RbException ("Invalid assignment: cycles in the DAG");
 
     /* Set parents and add this node as a child node of these */
     for (IndexArgs::iterator i=indexArgs.begin(); i!=indexArgs.end(); i++) {
@@ -132,18 +135,16 @@ LookupNode::LookupNode(const LookupNode& x) : DeterministicNode(x) {
 }
 
 
-/** Destructor */
+/**
+ * Destructor
+ *
+ * @note Parent nodes, including variable or baseVariable, destroyed
+ *       by DeterministicNode destructor
+ */
 LookupNode::~LookupNode(void) {
 
     if (numRefs() != 0)
         throw RbException ("Cannot delete lookup node with references");
-
-    /* Remove this node as a child node of parents and delete these if appropriate */
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-        (*i)->removeChildNode(this);
-        if ((*i)->numRefs() == 0)
-            delete (*i);
-    }
 
     delete memberName;
 }
@@ -247,16 +248,16 @@ LookupNode* LookupNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& LookupNode::getClass() const {
+/** Get class vector describing type of DAG node */
+const VectorString& LookupNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(LookupNode_name) + VariableNode::getClass();
+    static VectorString rbClass = VectorString(LookupNode_name) + VariableNode::getDAGClass();
     return rbClass;
 }
 
 
 /** Get type of a named member variable */
-const TypeSpec& LookupNode::getMemberType(const RbString* name) const {
+const TypeSpec& LookupNode::getMemberTypeSpec(const RbString* name) const {
 
     if ( baseVariable == NULL )
         throw RbException( "Not a member variable" );
@@ -331,13 +332,13 @@ bool LookupNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNod
 
     // Now find node among indexArgs or variable/baseVariable
     if (oldNode == variable) {
-        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getValueType(), variable->getValueType()) )
+        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getValueType(), newNode->getDim(), variable->getValueType(), variable->getDim()) )
             return true;
         else
             return false;
     }
     else if (oldNode == baseVariable) {
-        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getValueType(), baseVariable->getValueType()) )
+        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getValueType(), newNode->getDim(), baseVariable->getValueType(), baseVariable->getDim()) )
             return true;
         else
             return false;
@@ -346,7 +347,7 @@ bool LookupNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNod
         std::vector<DAGNode*>::const_iterator it = std::find(indexArgs.begin(), indexArgs.end(), oldNode);
         if (it == indexArgs.end())
             throw RbException("Node is not a parameter");
-        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getValueType(), Integer_name) )
+        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getValueType(), newNode->getDim(), Integer_name, 0) )
             return true;
         else
             return false;

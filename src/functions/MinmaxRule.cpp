@@ -31,7 +31,7 @@
 
 /** Construct rule without default value; use "" for no label. */
 MinmaxRule::MinmaxRule(const std::string& argName, const std::string& valType, RbObject* min, RbObject* max)
-    : ArgumentRule(argName, valType, 0) {
+    : ArgumentRule(argName, TypeSpec(valType)) {
 
     /* TODO: Does not work in gcc
     if (!Workspace::globalWorkspace().isXOfTypeY(valType, Real_name) &&
@@ -57,9 +57,9 @@ MinmaxRule::MinmaxRule(const std::string& argName, RbObject* defVal, RbObject* m
         !defVal->isType(Integer_name))
         throw RbException("Wrong type for argument rule with min and max");
 
-    if (min != NULL && !min->isType(valueType))
+    if (min != NULL && (!min->isType(argSlot.getTypeSpec().getType()) || min->getDim() != argSlot.getTypeSpec().getDim()))
         throw RbException("Wrong type for min value");
-    if (max != NULL && !max->isType(valueType))
+    if (max != NULL && (!max->isType(argSlot.getTypeSpec().getType()) || max->getDim() != argSlot.getTypeSpec().getDim()))
         throw RbException("Wrong type for max value");
 
     minVal = min;
@@ -194,16 +194,9 @@ std::string MinmaxRule::toString(void) const {
     std::ostringstream o;
 
     o << "MinmaxRule:" << std::endl;
-    o << "label = " << label << std::endl;
-    o << "valueType = "  << valueType << std::endl;
-    o << "dim  = "  << dim << std::endl;
-    o << "defaultVariable = ";
-    if (defaultVariable == NULL)
-        o << "NULL";
-    else
-        defaultVariable->printValue(o);
-    o << std::endl;
-    o << "wrapperRule = " << wrapperRule << std::endl;
+    o << "label         = " << label << std::endl;
+    o << "argSlot       = " << argSlot << std::endl;
+    o << "hasDefaultVal = " << hasDefaultVal << std::endl;
     o << "min         = ";
     if (minVal != NULL)
         minVal->printValue(o);
@@ -219,5 +212,4 @@ std::string MinmaxRule::toString(void) const {
 
     return o.str();
 }
-
 

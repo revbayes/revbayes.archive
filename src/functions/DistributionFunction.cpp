@@ -197,7 +197,7 @@ bool DistributionFunction::processArguments(const std::vector<Argument>& args, V
     }
 
     for (; i!=argumentRules.end(); i++, j++) {
-        std::string name = (*i)->getLabel();
+        std::string name = (*i)->getArgLabel();
         distribution->setVariable(name, (*j));
     }
 

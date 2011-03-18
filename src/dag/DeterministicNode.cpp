@@ -42,9 +42,15 @@ DeterministicNode::~DeterministicNode(void) {
     if (numRefs() != 0)
         throw RbException ("Cannot delete node with references");
 
+    /* Remove this node as a child node of parents and delete these if appropriate */
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
+        (*i)->removeChildNode(this);
+        if ((*i)->numRefs() == 0)
+            delete (*i);
+    }
+
     if (storedValue)
         delete storedValue;
-
     delete value;
 }
 
@@ -63,10 +69,10 @@ void DeterministicNode::getAffected(std::set<StochasticNode*>& affected) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& DeterministicNode::getClass() const {
+/** Get class vector describing type of DAG node */
+const VectorString& DeterministicNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(DeterministicNode_name) + VariableNode::getClass();
+    static VectorString rbClass = VectorString(DeterministicNode_name) + VariableNode::getDAGClass();
     return rbClass;
 }
 

@@ -51,7 +51,7 @@ DAGNodePlate::DAGNodePlate(Container* x) : VariableNode(x->getElementType()) {
 
                                 
 /** Construct vector with one node x */
-DAGNodePlate::DAGNodePlate(DAGNode* x) : VariableNode(x->getType()) {
+DAGNodePlate::DAGNodePlate(DAGNode* x) : VariableNode(x->getDAGType()) {
 
     nodes.push_back(x);
 
@@ -67,7 +67,7 @@ DAGNodePlate::DAGNodePlate(DAGNode* x) : VariableNode(x->getType()) {
 
 
 /** Construct vector with n copies of x */
-DAGNodePlate::DAGNodePlate(size_t n, DAGNode* x) : VariableNode(x->getType()) {
+DAGNodePlate::DAGNodePlate(size_t n, DAGNode* x) : VariableNode(x->getDAGType()) {
 
     nodes.push_back(x);
     for (size_t i=1; i<n; i++)
@@ -182,7 +182,7 @@ DAGNodePlate::DAGNodePlate(const DAGNodePlate& x)
 DAGNodePlate::~DAGNodePlate() {
 
     if (numRefs() != 0)
-        throw RbException ("Cannot delete node with references");
+        throw RbException ("Cannot delete DAGNodePlate '" + getName() + "' with references");
 
     for(std::vector<DAGNode*>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
         DAGNode* theNode = (*i);
@@ -381,10 +381,10 @@ void DAGNodePlate::getAffected(std::set<StochasticNode*>& affected) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& DAGNodePlate::getClass(void) const {
+/** Get class vector describing type of DAG node */
+const VectorString& DAGNodePlate::getDAGClass(void) const {
 
-    static VectorString rbClass = VectorString(DAGNodePlate_name) + VariableNode::getClass();
+    static VectorString rbClass = VectorString(DAGNodePlate_name) + VariableNode::getDAGClass();
     return rbClass;
 }
 
@@ -487,10 +487,10 @@ const RbObject* DAGNodePlate::getValElement(const VectorInteger& index) const {
         return element->getValue();
     else if (element->getValue() == NULL)
         return NULL;
-    else if (!element->isType(RbComplex_name))
+    else if (!(element->getDim() > 0))
         throw RbException("Object does not have elements");
     else
-        return ((RbComplex*)(element->getValue()))->getElement(valueIndex);
+        return (element->getValElement(valueIndex));
 }
 
 
@@ -843,7 +843,7 @@ void DAGNodePlate::setElement(const VectorInteger& index, RbObject* val) {
             // Do the assignment
             const RbObject* elem = source->getElement(i);
             if (elem->isType(getValueType())) {
-                if ((*targetIt) != NULL && (*targetIt)->isType(StochasticNode_name))
+                if ((*targetIt) != NULL && (*targetIt)->isDAGType(StochasticNode_name))
                     ((StochasticNode*)(*targetIt))->setValue(elem->clone());
                 else {
                     if ((*targetIt) != NULL) {
@@ -869,7 +869,7 @@ void DAGNodePlate::setElement(const VectorInteger& index, RbObject* val) {
 
     // Parser wants to set a single element
     if (val->isType(getValueType())) {
-        if ((*targetIt) != NULL && (*targetIt)->isType(StochasticNode_name)) {
+        if ((*targetIt) != NULL && (*targetIt)->isDAGType(StochasticNode_name)) {
             // We just set the value of the stochastic node
             ((StochasticNode*)(*targetIt))->setValue(val);
         }
@@ -950,7 +950,7 @@ void DAGNodePlate::setElement(const VectorInteger& index, DAGNode* var) {
 
             // Do the assignment
             const DAGNode* elem = (*source)[i];
-            if (Workspace::userWorkspace().isXOfTypeY(elem->getType(), valueType)) {
+            if (Workspace::userWorkspace().isXOfTypeY(elem->getValueType(), valueType)) {
                 if ((*targetIt) != NULL) {
                     (*targetIt)->removeChildNode(this);
                     if ((*targetIt)->numRefs() == 0)
@@ -976,8 +976,8 @@ void DAGNodePlate::setElement(const VectorInteger& index, DAGNode* var) {
     if (var == NULL || Workspace::userWorkspace().isXOfTypeY(var->getValueType(), valueType)) {
         if ((*targetIt) != NULL) {
             // If conversion of constant to stochastic node, save value
-            if ((*targetIt)->isType(ConstantNode_name) &&
-                var->isType(StochasticNode_name) &&
+            if ((*targetIt)->isDAGType(ConstantNode_name) &&
+                var->isDAGType(StochasticNode_name) &&
                 (*targetIt)->getValue() != NULL &&
                 (*targetIt)->getValue()->isType(var->getValueType())) {
                 ((StochasticNode *)var)->setValue((*targetIt)->getValue()->clone());

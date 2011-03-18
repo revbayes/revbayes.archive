@@ -76,19 +76,20 @@ class Workspace : public Frame {
 
     public:
 
-        bool                        addDistribution(const std::string& name, Distribution* dist);                        //!< Add distribution
-        bool                        addDistribution(const std::string& name, DistributionReal* dist);                    //!< Add real-valued distribution
-        bool                        addFunction(const std::string& name, RbFunction* func);                              //!< Add function
-        bool                        addType(RbObject* exampleObj);                                                       //!< Add type
-        bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);                //!< Add type with constructor
-        DAGNode*                    executeFunction(const std::string& name, const std::vector<Argument>& args) const;   //!< Execute function
-        FunctionTable*              getFunctionTable(void) { return functionTable; }                                     //!< Get function table
-        RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);             //!< Get function copy
-        RandomNumberGenerator*      get_rng(void);                                                                       //!< Get default random number generator
-        const std::string&          getTypeNameRef(const std::string* name) const;                                       //!< Get reference to type name
-        void                        initializeGlobalWorkspace(void);                                                     //!< Initialize global workspace
-        bool                        isXOfTypeY(const std::string& x, const std::string& y) const;                        //!< Type checking
-        bool                        isXConvertibleToY(const TypeSpec& x, const TypeSpec& y) const;                      //!< Type conversion checking
+        bool                        addDistribution(const std::string& name, Distribution* dist);                       //!< Add distribution
+        bool                        addDistribution(const std::string& name, DistributionReal* dist);                   //!< Add real-valued distribution
+        bool                        addFunction(const std::string& name, RbFunction* func);                             //!< Add function
+        bool                        addType(RbObject* exampleObj);                                                      //!< Add type
+        bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);               //!< Add type with constructor
+        DAGNode*                    executeFunction(const std::string& name, const std::vector<Argument>& args) const;  //!< Execute function
+        FunctionTable*              getFunctionTable(void) { return functionTable; }                                    //!< Get function table
+        RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
+        RandomNumberGenerator*      get_rng(void);                                                                      //!< Get default random number generator
+        const std::string&          getTypeNameRef(const std::string* name) const;                                      //!< Get reference to type name
+        void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
+        bool                        isXOfTypeY(const std::string& x, const std::string& y) const;                       //!< Type checking
+        bool                        isXConvertibleToY(const std::string& xType, int xDim,
+                                                      const std::string& yType, int yDim) const;                        //!< Type conversion checking
         void                        printValue(std::ostream& c) const;                                                  //!< Print workspace
         static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
                                     {

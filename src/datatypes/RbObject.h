@@ -54,6 +54,8 @@ class RbObject {
 		                            RbObject(void) {}                                               //!< No objects of this class
 };
 
-std::ostream& operator<<(std::ostream& o, const RbObject& x);                                       //!< Overloaded output operator
+
+/* Global functions using the class */
+std::ostream&   operator<<(std::ostream& o, const RbObject& x);         //!< Overloaded output operator
 
 #endif

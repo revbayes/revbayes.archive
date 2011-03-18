@@ -203,15 +203,15 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     /* Check that all labels are unique in both sets of argument rules */
     for (size_t i=0; i<x.size(); i++) {
         for (size_t j=i+1; j < y.size(); j++) {
-            if (x[i]->getLabel().size() != 0 && x[j]->getLabel().size() != 0)
-            if (x[i]->getLabel() == x[j]->getLabel())
+            if (x[i]->getArgLabel().size() != 0 && x[j]->getArgLabel().size() != 0)
+            if (x[i]->getArgLabel() == x[j]->getArgLabel())
                 return false;
         }
     }
     for (size_t i=0; i<y.size(); i++) {
         for (size_t j=i+1; j<y.size(); j++) {
-            if (y[i]->getLabel().size() != 0 && y[j]->getLabel().size() != 0)
-            if (y[i]->getLabel() == y[j]->getLabel())
+            if (y[i]->getArgLabel().size() != 0 && y[j]->getArgLabel().size() != 0)
+            if (y[i]->getArgLabel() == y[j]->getArgLabel())
                 return false;
         }
     }
@@ -219,13 +219,13 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     /* Check that the same labels are not used for different positions */
     for (size_t i=0; i<x.size(); i++) {
 
-        const std::string& xLabel = x[i]->getLabel();
+        const std::string& xLabel = x[i]->getArgLabel();
         if (xLabel.size() == 0)
             continue;
 
         for (size_t j=0; j<y.size(); j++) {
 
-            const std::string& yLabel = y[i]->getLabel();
+            const std::string& yLabel = y[i]->getArgLabel();
             if (yLabel.size() == 0)
                 continue;
 
@@ -241,7 +241,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
             y[i]->hasDefault() == false &&
             !x[i]->isType(Ellipsis_name) &&
             !y[i]->isType(Ellipsis_name) &&
-            (x[i]->getDim() != y[i]->getDim() || x[i]->getValueType() != y[i]->getValueType()))
+            (x[i]->getArgDim() != y[i]->getArgDim() || x[i]->getArgType() != y[i]->getArgType()))
             return true;
     }
     for (size_t j=i; j<x.size(); j++) {

@@ -82,7 +82,7 @@ void Monitor::printHeader(std::ofstream& o) const {
     if (theNode->getName() != "")
         o << theNode->getName();
     else
-        o << "Unnamed " << theNode->getType();
+        o << "Unnamed " << theNode->getDAGType();
 }
 
 

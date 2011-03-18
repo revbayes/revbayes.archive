@@ -131,7 +131,7 @@ const MethodTable& Mcmc::getMethodInits(void) const {
 /** Allow only constant member variables */
 void Mcmc::setVariable(const std::string& name, DAGNode* var) {
 
-    if (!var->isType(ConstantNode_name))
+    if (!var->isDAGType(ConstantNode_name))
         throw RbException("Only constant member values allowed");
 
     MemberObject::setVariable(name, var);
@@ -154,12 +154,12 @@ void Mcmc::update(void) {
     std::vector<VariableNode*>   variableNodes;
 
     for (std::vector<DAGNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
-        if ((*i)->isType(VariableNode_name)) {
+        if ((*i)->isDAGType(VariableNode_name)) {
 
             VariableNode*          theNode         = dynamic_cast<VariableNode*>(*i);
             std::vector<Monitor*>  theMonitors     = theNode->getDefaultMonitors();
             MoveSchedule*          theMoveSchedule;
-            if (theNode->isType(StochasticNode_name) && ((StochasticNode*)(theNode))->isClamped())
+            if (theNode->isDAGType(StochasticNode_name) && ((StochasticNode*)(theNode))->isClamped())
                 theMoveSchedule = NULL;
             else
                 theMoveSchedule = theNode->getDefaultMoves();
@@ -183,7 +183,7 @@ void Mcmc::update(void) {
             }
 
             variableNodes.push_back(theNode);
-            if (theNode->isType(StochasticNode_name)) {
+            if (theNode->isDAGType(StochasticNode_name)) {
                 stochasticNodes.push_back((StochasticNode*)(theNode));
             }
         }
@@ -215,7 +215,7 @@ void Mcmc::update(void) {
     for (std::vector<VariableNode*>::iterator i=variableNodes.begin(); i!=variableNodes.end(); i++) {
         outFile << "\t";
         if ((*i)->getName() == "")
-            outFile << "Unnamed " << (*i)->getType();
+            outFile << "Unnamed " << (*i)->getDAGType();
         else
             outFile << (*i)->getName();
     }

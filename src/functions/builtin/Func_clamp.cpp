@@ -19,13 +19,13 @@
 #include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
-#include "Func__lookup.h"
 #include "Func_clamp.h"
-#include "VectorInteger.h"
+#include "LookupNode.h"
 #include "Integer.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
+#include "VectorInteger.h"
 #include "VectorString.h"
 #include "WrapperRule.h"
 
@@ -42,11 +42,9 @@ Func_clamp* Func_clamp::clone(void) const {
 DAGNode* Func_clamp::executeOperation(const std::vector<DAGNode*>& args) {
 
     // Get the stochastic node from the variable lookup
-    const DeterministicNode* lookupNode = dynamic_cast<const DeterministicNode*>(args[0]);
+    LookupNode* lookupNode = dynamic_cast<LookupNode*>(args[0]);
     assert(lookupNode != NULL);
-    const Func__lookup* lookup = dynamic_cast<const Func__lookup*>(lookupNode->getFunction());
-    assert (lookup != NULL);
-    StochasticNode* theNode = dynamic_cast<StochasticNode*>(lookup->getVariable());
+    StochasticNode* theNode = dynamic_cast<StochasticNode*>(lookupNode->getVariable());
     if ( !theNode )
         throw ("The variable is not a stochastic node");
     

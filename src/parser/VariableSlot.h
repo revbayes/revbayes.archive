@@ -23,6 +23,7 @@
 #include <string>
 
 class DAGNode;
+class RbObject;
 
 class VariableSlot {
     
@@ -30,7 +31,8 @@ class VariableSlot {
         friend class            Frame;                                                          //!< Expose slot to frame
 
                                 VariableSlot(DAGNode* var, bool ref=false);                     //!< Constructor of filled slot
-                                VariableSlot(const std::string& type, int dim, bool ref=false); //!< Constructor of empty slot
+                                VariableSlot(const TypeSpec& typeSp);                           //!< Constructor of empty slot from type spec
+                                VariableSlot(const std::string& type, int dim, bool ref=false); //!< Constructor of empty slot from type spec elements
                                 VariableSlot(const VariableSlot& x);                            //!< Copy value or reference correctly
         virtual                ~VariableSlot(void);                                             //!< Manage variable (DAGNode) destruction
 
@@ -42,12 +44,14 @@ class VariableSlot {
         const DAGNode*          getReference(void) const;                                       //!< Get a const reference to the variable
         DAGNode*                getReference(void);                                             //!< Get a reference to the variable
         const TypeSpec&         getTypeSpec(void) const { return typeSpec; }                    //!< Return type specification for slot
-        const DAGNode*          getValue(void) const;                                           //!< Get the value of the variable
+        const DAGNode*          getVariable(void) const;                                        //!< Get the variable (ptr, not copy)
+        const RbObject*         getValue(void) const;                                           //!< Get the value of the variable (ptr, not copy)
         void                    printValue(std::ostream& o) const;                              //!< Print value of slot
         void                    setFrame(Frame* slotFrame) { frame=slotFrame; }                 //!< Set frame of slot
         void                    setReference(DAGNode* ref);                                     //!< Set a slot with a reference
         void                    setReferenceFlag(bool refFlag=true);                            //!< Potentially switch between reference and value slot
-        void                    setValue(DAGNode* value);                                       //!< Set a slot with a value
+        void                    setValue(RbObject* value);                                      //!< Set a slot with a value (naked value)
+        void                    setValue(DAGNode* value);                                       //!< Set a slot with a value (wrapped value)
         void                    swapReference(DAGNode* oldRef, DAGNode* newRef);                //!< Swap reference
 
     private:
@@ -57,8 +61,11 @@ class VariableSlot {
         // Member variables
         TypeSpec                typeSpec;                                       //!< The type specification for the slot
         bool                    temp;                                           //!< Flags whether a reference slot is used to hold a temp value
-        DAGNode*                variable;                                       //!< Pointer to the variable
+        DAGNode*                variable;                                       //!< Pointer to the variable (reference or not)
         Frame*                  frame;                                          //!< Pointer to the slot frame or NULL if none
 };
+
+/* Global functions using the class */
+std::ostream&   operator<<(std::ostream& o, const VariableSlot& x);           //!< Overloaded output operator
 
 #endif

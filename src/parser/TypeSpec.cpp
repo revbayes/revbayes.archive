@@ -18,13 +18,13 @@
 #include "TypeSpec.h"
 
 
-/** Constructor for single element (dim=0)*/
-TypeSpec::TypeSpec(const std::string& elemType, bool ref) : type(elemType), dim(0), reference(ref) {
+/** Constructor for single object (dim=0)*/
+TypeSpec::TypeSpec(const std::string& objType, bool ref) : type(objType), dim(0), reference(ref) {
 }
 
 
-/** Complete constructor */
-TypeSpec::TypeSpec(const std::string& elemType, int elemDim, bool ref) : type(elemType), dim(elemDim), reference(ref) {
+/** Complete constructor, also accommodating fields (plate/container) of objects */
+TypeSpec::TypeSpec(const std::string& objType, int objDim, bool ref) : type(objType), dim(objDim), reference(ref) {
 }
 
 
@@ -50,5 +50,13 @@ std::string TypeSpec::toString(void) const {
         typeDesc += "&";
 
     return typeDesc;
+}
+
+
+/** Make sure we can print to stream using << operator */
+std::ostream& operator<<(std::ostream& o, const TypeSpec& x) {
+
+    o << x.toString();
+    return o;
 }
 
