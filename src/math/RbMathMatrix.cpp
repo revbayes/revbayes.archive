@@ -1,11 +1,18 @@
-//
-//  RbMathMatrix.cpp
-//  revbayes_xcode
-//
-//  Created by Sebastian Hoehna on 3/17/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
-
+/**
+ * @file RbMathMatrix
+ * This file contains the math on matrices.
+ *
+ * @brief Implementation of matrix algebra.
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date$
+ * @author The RevBayes core development team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2011-03-17, version 1.0
+ *
+ * $Id$
+ */
 
 #include <cassert>
 #include <cmath>
