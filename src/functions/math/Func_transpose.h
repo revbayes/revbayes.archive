@@ -56,7 +56,6 @@ class Func_transpose :  public RbFunction {
 #include "VectorReal.h"
 #include "VectorRealPos.h"
 #include "VectorString.h"
-#include "WrapperRule.h"
 
 
 /** Clone object */
