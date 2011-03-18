@@ -22,11 +22,12 @@ namespace RbStatistics
     
 	namespace Binomial {
         
-        double                      pdf(double a, double b, double x);                                    /*!< Binomial(a,b) probability density */
-        double                      lnPdf(double a, double b, double x);                                  /*!< Binomial(a,b) log_e probability density */
-        double                      cdf(double a, double b, double x);                                    /*!< Binomial(a,b) cumulative probability */
-        double                      quantile(double a, double b, double p);                               /*!< Binomial(a,b) quantile */
-        double                      rv(double a, double b, RandomNumberGenerator* rng);                   /*!< Binomial(a,b) random variable */
+        double                      pdf(double n, double p, double x);                                    /*!< Binomial(n,p) probability density */
+        double                      pdf(double n, double p, double q, double x);                          /*!< Binomial(n,p) probability density */
+        double                      lnPdf(double a, double b, double x);                                  /*!< Binomial(n,p) log_e probability density */
+        double                      cdf(double a, double b, double x);                                    /*!< Binomial(n,p) cumulative probability */
+        double                      quantile(double a, double b, double p);                               /*!< Binomial(n,p) quantile */
+        double                      rv(double a, double b, RandomNumberGenerator* rng);                   /*!< Binomial(n,p) random variable */
 	}
     
 }

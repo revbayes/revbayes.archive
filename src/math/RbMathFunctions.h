@@ -21,6 +21,7 @@
 namespace RbMath {
     
     double                      beta(double a, double b);                                                       //!< Xxx 
+    double                      binomialDeviance(double x, double np);                                                             //!< Evaluates the Deviance part
     int                         chebyshev_init(double *dos, int nos, double eta);
     double                      chebyshev_eval(double x, const double *a, const int n);
     double                      gamma(double x);                                                                //!< Calculate the Gamma function 

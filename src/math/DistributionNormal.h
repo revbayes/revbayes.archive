@@ -29,6 +29,7 @@ namespace RbStatistics
         double                      cdf(double mu, double sigma, double x);                                 /*!< Normal(mu,sigma) cumulative probability */
         double                      quantile(double p);                                                     /*!< Normal(0,1) quantile */
         double                      quantile(double mu, double sigma, double p);                            /*!< Normal(mu,sigma) quantile */
+        double                      rv(RandomNumberGenerator* rng);                                         /*!< Normal(0,1) random variable */
         double                      rv(double mu, double sigma, RandomNumberGenerator* rng);                /*!< Normal(mu,sigma) random variable */
 	}
 

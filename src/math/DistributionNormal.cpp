@@ -22,6 +22,20 @@
 
 /*!
  * This function calculates the probability density 
+ * for a standard normally-distributed random variable.
+ *
+ * \brief Standard normal probability density.
+ * \param x is the normal random variable. 
+ * \return Returns the probability density.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Normal::pdf(double x) {
+    
+	return exp( -0.5 * x * x )  / RbConstants::SQRT_2PI;
+}
+
+/*!
+ * This function calculates the probability density 
  * for a normally-distributed random variable.
  *
  * \brief Normal probability density.
@@ -39,6 +53,20 @@ double RbStatistics::Normal::pdf(double mu, double sigma, double x) {
 
 /*!
  * This function calculates the natural log of the probability density 
+ * for a standard normally-distributed random variable.
+ *
+ * \brief Natural log of standard normal probability density.
+ * \param x is the normal random variable. 
+ * \return Returns the natural log of the probability density.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Normal::lnPdf(double x) {
+    
+	return -0.5 * RbConstants::LN_SQRT_2PI - 0.5 * x * x;
+}
+
+/*!
+ * This function calculates the natural log of the probability density 
  * for a normally-distributed random variable.
  *
  * \brief Natural log of normal probability density.
@@ -51,6 +79,68 @@ double RbStatistics::Normal::pdf(double mu, double sigma, double x) {
 double RbStatistics::Normal::lnPdf(double mu, double sigma, double x) {
     
 	return -0.5 * std::log(2.0 * RbConstants::PI * sigma) - 0.5 * (x - mu) * (x - mu) / (sigma * sigma);
+}
+
+/*!
+ * This function calculates the cumulative probability 
+ * for a standard normally-distributed random variable.
+ *
+ * \brief Standard normal cumulative probability.
+ * \param x is the normal random variable. 
+ * \return Returns the cumulative probability.
+ * \see Adams, A. G. 1969. Areas under the normal curve. Cojputer J. 12:197-198.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Normal::cdf(double x) {
+    
+	double cdf;
+	double q;
+    
+	/* |X| <= 1.28 */
+	if ( fabs(x) <= 1.28 )
+    {
+		double a1 = 0.398942280444;
+		double a2 = 0.399903438504;
+		double a3 = 5.75885480458;
+		double a4 = 29.8213557808;
+		double a5 = 2.62433121679;
+		double a6 = 48.6959930692;
+		double a7 = 5.92885724438;
+		double y = 0.5 * x * x;
+		q = 0.5 - fabs(x) * ( a1 - a2 * y / ( y + a3 - a4 / ( y + a5 + a6 / ( y + a7 ) ) ) );
+    }
+	else if ( fabs(x) <= 12.7 )
+    {
+		double b0 = 0.398942280385;
+		double b1 = 3.8052E-08;
+		double b2 = 1.00000615302;
+		double b3 = 3.98064794E-04;
+		double b4 = 1.98615381364;
+		double b5 = 0.151679116635;
+		double b6 = 5.29330324926;
+		double b7 = 4.8385912808;
+		double b8 = 15.1508972451;
+		double b9 = 0.742380924027;
+		double b10 = 30.789933034;
+		double b11 = 3.99019417011;
+		double y = 0.5 * x * x;
+		q = exp(-y) * b0 / (fabs(x) - b1 + b2 / (fabs(x) + b3 + b4 / (fabs(x) - b5 + b6 / (fabs(x) + b7 - b8 / (fabs(x) + b9 + b10 / (fabs(x) + b11))))));
+    }
+	else
+    {
+		q = 0.0;
+    }
+	if ( x < 0.0 )
+    {
+		/* negative x */
+		cdf = q;
+    }
+	else
+    {
+		/* positive x */
+		cdf = 1.0 - q;
+    }
+	return cdf;
 }
 
 /*!
@@ -168,6 +258,24 @@ double RbStatistics::Normal::quantile(double mu, double sigma, double p) {
 	double z = Normal::quantile(p);
 	double x = z * sigma + mu;
 	return x;
+}
+
+double RbStatistics::Normal::rv(RandomNumberGenerator* rng) {
+    
+	double v1 = 0.0;
+	double v2 = 0.0; // NOTE: We should eventually implement this so you generate and
+    // return the extra normal random variable that is generated
+	double rsq = 0.0;
+	do
+    {
+		v1 = 2.0 * rng->uniform01() - 1.0;
+		v2 = 2.0 * rng->uniform01() - 1.0;
+		rsq = v1 * v1 + v2 * v2;
+    } while ( rsq >= 1.0 || rsq == 0.0 );
+	double fac = sqrt(-2.0 * log(rsq)/rsq);
+	//extraNormalRv = v1 * fac;
+	//availableNormalRv = true;
+	return ( v2 * fac );
 }
 
 double RbStatistics::Normal::rv(double mu, double sigma, RandomNumberGenerator* rng) {
