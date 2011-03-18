@@ -14,4 +14,58 @@
  * $Id$
  */
 
+
+#include <cmath>
+
 #include "DistributionCauchy.h"
+#include "RbConstants.h"
+#include "RbException.h"
+#include "RbMathFunctions.h"
+#include "RbMathLogic.h"
+
+/*!
+ * This function calculates the probability density 
+ * for a Cauchy-distributed random variable.
+ *
+ * \brief Geometric probability density.
+ * \param n is the number of trials. 
+ * \param p is the success probability. 
+ * \param x is the number of successes. 
+ * \return Returns the probability density.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Cauchy::lnPdf(double location, double scale, double x) {
+    return pdf(location,scale,x,true);
+}
+
+/*!
+ * This function calculates the probability density 
+ * for a Cauchy-distributed random variable.
+ *
+ * \brief Geometric probability density.
+ * \param n is the number of trials. 
+ * \param p is the success probability. 
+ * \param x is the number of successes. 
+ * \return Returns the probability density.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Cauchy::pdf(double location, double scale, double x) {
+    return pdf(location,scale,x,false);
+}
+
+
+double RbStatistics::Cauchy::pdf(double location, double scale, double x, bool give_log)
+{
+    double y;
+    
+    if (scale <= 0) {
+        std::ostringstream s;
+        s << "Cannot compute pdf of the Cauchy distribution because scale = " << scale << " is negativ.";
+        throw (RbException(s));
+    }
+    
+    y = (x - location) / scale;
+    return give_log ?
+	- log(RbConstants::PI * scale * (1. + y * y)) :
+	1. / (RbConstants::PI * scale * (1. + y * y));
+}

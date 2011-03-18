@@ -19,6 +19,23 @@
 #include "DistributionExponential.h"
 #include "RandomNumberGenerator.h"
 
+
+/*!
+ * This function calculates the cumulative probability  
+ * for an exponentially-distributed random variable.
+ *
+ * \brief Exponential cumulative probability.
+ * \param lambda is the rate parameter of the exponential. 
+ * \param x is the exponential random variable. 
+ * \return Returns the cumulative probability.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Exponential::cdf(double lambda, double x) {
+    
+	return 1.0 - exp(-lambda * x);
+}
+
+
 /*!
  * This function calculates the probability density 
  * for an exponentially-distributed random variable.
@@ -47,21 +64,6 @@ double RbStatistics::Exponential::pdf(double lambda, double x) {
 double RbStatistics::Exponential::lnPdf(double lambda, double x) {
     
 	return (std::log(lambda) - lambda * x);
-}
-
-/*!
- * This function calculates the cumulative probability  
- * for an exponentially-distributed random variable.
- *
- * \brief Exponential cumulative probability.
- * \param lambda is the rate parameter of the exponential. 
- * \param x is the exponential random variable. 
- * \return Returns the cumulative probability.
- * \throws Does not throw an error.
- */
-double RbStatistics::Exponential::cdf(double lambda, double x) {
-    
-	return 1.0 - exp(-lambda * x);
 }
 
 /*!

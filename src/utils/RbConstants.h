@@ -25,8 +25,9 @@
 namespace RbConstants {
 
 	namespace Double {
-	const double    inf         = DBL_MAX;
-	const double    neginf      = DBL_MIN;
+        const double    inf         = DBL_MAX;
+        const double    max         = DBL_MAX;
+        const double    neginf      = DBL_MIN;
 	}
 
 	namespace Object {

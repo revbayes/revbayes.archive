@@ -68,10 +68,27 @@ double RbStatistics::Binomial::cdf(double n, double p, double x)
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
+double RbStatistics::Binomial::lnPdf(double n, double p, double x) {
+    double q = 1.0 - p;
+    
+    return pdf(n,p,q,x,true);
+}
+
+/*!
+ * This function calculates the probability density 
+ * for a binomially-distributed random variable.
+ *
+ * \brief Binomial probability density.
+ * \param n is the number of trials. 
+ * \param p is the success probability. 
+ * \param x is the number of successes. 
+ * \return Returns the probability density.
+ * \throws Does not throw an error.
+ */
 double RbStatistics::Binomial::pdf(double n, double p, double x) {
     double q = 1.0 - p;
     
-    return pdf(n,p,q,x);
+    return pdf(n,p,q,x,false);
 }
 
 /*!
@@ -95,7 +112,7 @@ double RbStatistics::Binomial::pdf(double n, double p, double x) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Binomial::pdf(double n, double p, double q, double x) {
+double RbStatistics::Binomial::pdf(double n, double p, double q, double x, bool asLog) {
     double lf, lc;
     
     if (p == 0) return((x == 0) ? 1.0 : 0.0);
@@ -104,11 +121,11 @@ double RbStatistics::Binomial::pdf(double n, double p, double q, double x) {
     if (x == 0) {
         if(n == 0) return 1.0;
         lc = (p < 0.1) ? -RbMath::binomialDeviance(n,n*q) - n*p : n*log(q);
-        return( exp(lc) );
+        return( (asLog ? lc : exp(lc)) );
     }
     if (x == n) {
         lc = (q < 0.1) ? -RbMath::binomialDeviance(n,n*p) - n*q : n*log(p);
-        return( exp(lc) );
+        return( (asLog ? lc : exp(lc) ) );
     }
     if (x < 0 || x > n) return( 0.0 );
     
@@ -122,7 +139,7 @@ double RbStatistics::Binomial::pdf(double n, double p, double q, double x) {
      * -- following is much better for  x << n : */
     lf = log(RbConstants::TwoPI) + log(x) + log1p(- x/n);
     
-    return exp(lc - 0.5*lf);
+               return (asLog ? (lc - 0.5*lf) : exp(lc - 0.5*lf));
 }
 
 

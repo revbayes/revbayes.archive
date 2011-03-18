@@ -1290,7 +1290,7 @@ double RbStatistics::Helper::rndGamma(double s, RandomNumberGenerator& rng) {
 	else if (s > 1.0)  
 		r = rndGamma2(s, rng);
 	else           
-		r =- log(rng.uniform01());
+		r = - log(rng.uniform01());
 	return (r);
 }
 
