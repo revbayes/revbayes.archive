@@ -35,7 +35,6 @@
 #include "VectorString.h"
 #include "VariableNode.h"
 #include "Workspace.h"
-#include "WrapperRule.h"
 
 #include <cmath>
 #include <fstream>

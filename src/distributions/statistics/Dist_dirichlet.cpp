@@ -21,16 +21,16 @@
 #include "Move_msimplex.h"
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
-#include "Real.h"
 #include "RbException.h"
 #include "RbMath.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
+#include "Real.h"
+#include "ReferenceRule.h"
 #include "Simplex.h"
 #include "VectorReal.h"
 #include "VectorString.h"
 #include "Workspace.h"
-#include "WrapperRule.h"
 
 #include <cmath>
 #include <sstream>
@@ -108,7 +108,7 @@ const MemberRules& Dist_dirichlet::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
-        memberRules.push_back(new WrapperRule("alpha", VectorReal_name));
+        memberRules.push_back(new ReferenceRule("alpha", VectorReal_name));
 
         /* Inherit rng from Distribution, put it at back */
         const MemberRules& inheritedRules = Distribution::getMemberRules();

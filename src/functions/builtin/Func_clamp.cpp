@@ -20,14 +20,14 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Func_clamp.h"
-#include "LookupNode.h"
 #include "Integer.h"
+#include "LookupNode.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "ReferenceRule.h"
 #include "StochasticNode.h"
 #include "VectorInteger.h"
 #include "VectorString.h"
-#include "WrapperRule.h"
 
 #include <cassert>
 
@@ -62,7 +62,7 @@ const ArgumentRules& Func_clamp::getArgumentRules(void) const {
 
     if (!rulesSet) {
 
-        argumentRules.push_back(new WrapperRule("var", RbObject_name));
+        argumentRules.push_back(new ReferenceRule("var", RbObject_name));
         argumentRules.push_back(new ArgumentRule("value", RbObject_name));
         rulesSet = true;
     }

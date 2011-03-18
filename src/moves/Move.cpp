@@ -24,7 +24,6 @@
 #include "RbNames.h"
 #include "VectorString.h"
 #include "Workspace.h"
-#include "WrapperRule.h"
 
 #include <iostream>
 #include <string>

@@ -122,6 +122,7 @@ const std::string RbUnrootedTopology_name                       = "Unrooted topo
 const std::string RetValFunction_name                           = "Return value function";
 const std::string Real_name                                     = "Real";
 const std::string RealPos_name                                  = "+Real";
+const std::string ReferenceRule_name                            = "reference rule";
 const std::string SimpleMove_name                               = "Simple move";
 const std::string Simplex_name                                  = "Simplex";
 const std::string SyntaxAssignExpr_name                         = "Assignment";
@@ -145,6 +146,5 @@ const std::string VectorReal_name                               = "Real vector";
 const std::string VectorRealPos_name                            = "+Real vector";
 const std::string VectorString_name                             = "String vector";
 const std::string UserFunction_name                             = "user function";
-const std::string WrapperRule_name                              = "wrapper rule";
 
 #endif

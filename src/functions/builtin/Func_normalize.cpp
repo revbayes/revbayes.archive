@@ -27,13 +27,13 @@
 #include "Integer.h"
 #include "RbMath.h"
 #include "RbException.h"
-#include "RealPos.h"
 #include "RbNames.h"
+#include "RealPos.h"
+#include "ReferenceRule.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "VectorString.h"
 #include "VectorReal.h"
-#include "WrapperRule.h"
 
 #include <cassert>
 #include <cmath>

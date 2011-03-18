@@ -32,7 +32,6 @@
 #include "StochasticNode.h"
 #include "VectorString.h"
 #include "VectorReal.h"
-#include "WrapperRule.h"
 
 #include <cassert>
 #include <cmath>

@@ -27,7 +27,6 @@
 #include "RbNames.h"
 #include "StochasticNode.h"
 #include "VectorString.h"
-#include "WrapperRule.h"
 
 #include <cassert>
 #include <cmath>
