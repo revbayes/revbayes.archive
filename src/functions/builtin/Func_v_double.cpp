@@ -28,6 +28,7 @@
 #include "Real.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 #include "VectorReal.h"
 
@@ -88,8 +89,8 @@ const VectorString& Func_v_double::getClass(void) const {
 
 
 /** Get return type */
-const std::string& Func_v_double::getReturnType(void) const {
+const TypeSpec Func_v_double::getReturnType(void) const {
 
-    return VectorReal_name;
+    return TypeSpec(VectorReal_name);
 }
 

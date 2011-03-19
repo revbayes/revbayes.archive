@@ -31,7 +31,7 @@
 
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode(const TypeSpec& valType) :
+DeterministicNode::DeterministicNode(const std::string& valType) :
     VariableNode(valType), changed(false), value(NULL), storedValue(NULL) {
 }
 

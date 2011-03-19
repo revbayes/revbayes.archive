@@ -23,6 +23,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "ReferenceRule.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -69,8 +70,8 @@ const VectorString& Func_model::getClass(void) const {
 
 
 /** Get return type */
-const std::string& Func_model::getReturnType(void) const {
+const TypeSpec Func_model::getReturnType(void) const {
 
-    return Model_name;
+    return TypeSpec(Model_name);
 }
 

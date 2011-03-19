@@ -49,17 +49,18 @@ class DistributionFunction :  public RbFunction {
     	const VectorString&         getClass(void) const;                       //!< Get class vector
 
         // DistributionFunction functions
-        const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
-        const std::string&          getReturnType(void) const;              //!< Get type of return value
+        const ArgumentRules&        getArgumentRules(void) const;               //!< Get argument rules
+        const TypeSpec              getReturnType(void) const;                  //!< Get type spec of return value
+
         bool                        processArguments(const std::vector<Argument>& args, VectorInteger* matchScore=NULL);    //!< Process args, set member variables of distribution
 
 	protected:
-        DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 
-        ArgumentRules               argumentRules;                          //!< Argument rules
-        std::string                 returnType;                             //!< Return type
-        Distribution*               distribution;                           //!< The distribution
-        FuncType                    functionType;                           //!< Function type
+        ArgumentRules               argumentRules;                              //!< Argument rules
+        TypeSpec                    returnType;                                 //!< Return type
+        Distribution*               distribution;                               //!< The distribution
+        FuncType                    functionType;                               //!< Function type
 };
 
 #endif

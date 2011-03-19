@@ -24,6 +24,7 @@
 #include "Integer.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 
@@ -73,16 +74,9 @@ const VectorString& Func__range::getClass(void) const {
 }
 
 
-/** Get return dimension */
-int Func__range::getReturnDim(void) const {
-
-    return 1;
-}
-
-
 /** Get return type */
-const std::string& Func__range::getReturnType(void) const {
+const TypeSpec Func__range::getReturnType(void) const {
 
-    return VectorInteger_name;
+    return TypeSpec(VectorInteger_name);
 }
 

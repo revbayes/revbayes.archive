@@ -67,8 +67,7 @@ class RbFunction :  public RbObject {
 
         // RbFunction functions
         virtual const ArgumentRules&            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
-        virtual int                             getReturnDim(void) const { return 0; }                                              //!< Get dim of return value
-        virtual const std::string&              getReturnType(void) const = 0;                                                      //!< Get type of return value
+        virtual const TypeSpec                  getReturnType(void) const = 0;                                                      //!< Get type of return value
         DAGNode*                                execute(void);                                                                      //!< Execute using processed args
         DAGNode*                                execute(const std::vector<Argument>& args);                                         //!< Execute function
         std::vector<DAGNode*> const&            getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments

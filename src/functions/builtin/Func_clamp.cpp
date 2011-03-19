@@ -26,6 +26,7 @@
 #include "RbNames.h"
 #include "ReferenceRule.h"
 #include "StochasticNode.h"
+#include "TypeSpec.h"
 #include "VectorInteger.h"
 #include "VectorString.h"
 
@@ -80,8 +81,8 @@ const VectorString& Func_clamp::getClass(void) const {
 
 
 /** Get return type */
-const std::string& Func_clamp::getReturnType(void) const {
+const TypeSpec Func_clamp::getReturnType(void) const {
 
-    return RbNULL_name;
+    return TypeSpec(RbNULL_name);
 }
 

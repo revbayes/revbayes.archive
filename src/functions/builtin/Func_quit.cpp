@@ -25,8 +25,9 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "VectorString.h"
+#include "TypeSpec.h"
 #include "UserInterface.h"
+#include "VectorString.h"
 
 #include <fstream>
 
@@ -69,8 +70,8 @@ const VectorString& Func_quit::getClass(void) const {
 
 
 /** Get return type */
-const std::string& Func_quit::getReturnType(void) const {
+const TypeSpec Func_quit::getReturnType(void) const {
 
-    return RbNULL_name;
+    return TypeSpec(RbNULL_name);
 }
 

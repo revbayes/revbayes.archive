@@ -23,23 +23,16 @@
 #include "RbException.h"
 #include "MemberFunction.h"
 #include "RbNames.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 #include <sstream>
 
 
 /** Constructor */
-MemberFunction::MemberFunction(const std::string& retType, const ArgumentRules& argRules)
+MemberFunction::MemberFunction(const TypeSpec& retType, const ArgumentRules& argRules)
     : RbFunction(), returnType(retType), argumentRules(argRules) {
-    dim = 0;
 }
-
-/** Constructor */
-MemberFunction::MemberFunction(const std::string& retType, const int d, const ArgumentRules& argRules)
-    : RbFunction(), returnType(retType), argumentRules(argRules) {
-    dim = d;
-}
-
 
 /** Brief info on the function */
 std::string MemberFunction::briefInfo(void) const {
@@ -89,10 +82,11 @@ const ArgumentRules& MemberFunction::getArgumentRules(void) const {
 
 
 /** Get return type */
-const std::string& MemberFunction::getReturnType(void) const {
+const TypeSpec MemberFunction::getReturnType(void) const {
 
     return returnType;
 }
+
 
 /** Complete info about object */
 std::string MemberFunction::toString(void) const {

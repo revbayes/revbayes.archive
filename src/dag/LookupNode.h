@@ -32,7 +32,7 @@ class VectorString;
 class LookupNode : public DeterministicNode {
 
     public: 
-                            LookupNode(const TypeSpec& valType);                                        //!< Constructor of empty node
+                            LookupNode(const std::string& valType);                                        //!< Constructor of empty node
                             LookupNode( DAGNode*    var,
                                         IndexArgs&  indxArgs);                                          //!< Lookup of regular variable
                             LookupNode( LookupNode* baseVar,
@@ -70,11 +70,11 @@ class LookupNode : public DeterministicNode {
         void                update(void);                                                               //!< Update value and storedValue
 
         // Member variables
-        int                 valueDim;                                                                   //!< Dimensions of lookup target value
         DAGNode*            variable;                                                                   //!< Ptr to variable (simple lookup)
         LookupNode*         baseVariable;                                                               //!< Ptr to base variable (member lookup)
         RbString*           memberName;                                                                 //!< Name if member variable
         IndexArgs           indexArgs;                                                                  //!< Vector of index arguments (vector<DAGNode*>)
+        int                 valueDim;                                                                   //!< Dimensions of lookup target value
 };
 
 #endif

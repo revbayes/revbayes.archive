@@ -36,8 +36,7 @@ class Func__gt :  public RbFunction {
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;                           //!< Get argument rules
-        int                         getReturnDim(void) const;                               //!< Get dim of return value
-        const std::string&          getReturnType(void) const;                              //!< Get type of return value
+        const TypeSpec              getReturnType(void) const;                              //!< Get type of return value
 
 	protected:
         DAGNode*                    executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
@@ -147,19 +146,10 @@ const VectorString& Func__gt<firstValType, secondValType>::getClass(void) const 
 }
 
 
-/** Get return dimension */
-template <typename firstValType, typename secondValType>
-int Func__gt<firstValType, secondValType>::getReturnDim(void) const {
-
-    return 1;
-}
-
-
 /** Get return type */
 template <typename firstValType, typename secondValType>
-const std::string& Func__gt<firstValType, secondValType>::getReturnType(void) const {
+const TypeSpec Func__gt<firstValType, secondValType>::getReturnType(void) const {
 
-    return Boolean_name;
+    return TypeSpec(Boolean_name);
 }
-
 

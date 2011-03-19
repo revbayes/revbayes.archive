@@ -44,14 +44,15 @@ class VariableSlot {
         const DAGNode*          getReference(void) const;                                       //!< Get a const reference to the variable
         DAGNode*                getReference(void);                                             //!< Get a reference to the variable
         const TypeSpec&         getTypeSpec(void) const { return typeSpec; }                    //!< Return type specification for slot
-        const DAGNode*          getVariable(void) const;                                        //!< Get the variable (ptr, not copy)
         const RbObject*         getValue(void) const;                                           //!< Get the value of the variable (ptr, not copy)
+        const DAGNode*          getVariable(void) const;                                        //!< Get the variable (ptr, not copy)
+        bool                    isTemp(void) const { return temp; }                             //!< Does slot contain temp value?
         void                    printValue(std::ostream& o) const;                              //!< Print value of slot
         void                    setFrame(Frame* slotFrame) { frame=slotFrame; }                 //!< Set frame of slot
         void                    setReference(DAGNode* ref);                                     //!< Set a slot with a reference
         void                    setReferenceFlag(bool refFlag=true);                            //!< Potentially switch between reference and value slot
-        void                    setValue(RbObject* value);                                      //!< Set a slot with a value (naked value)
-        void                    setValue(DAGNode* value);                                       //!< Set a slot with a value (wrapped value)
+        void                    setValue(RbObject* newVal);                                     //!< Set a slot with a value (naked value)
+        void                    setVariable(DAGNode* newVar);                                   //!< Set a slot with a value (wrapped value)
         void                    swapReference(DAGNode* oldRef, DAGNode* newRef);                //!< Swap reference
 
     private:

@@ -31,6 +31,7 @@
 #include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 #include "VectorReal.h"
 
@@ -84,8 +85,8 @@ const VectorString& Func_normalize::getClass(void) const {
 
 
 /** Get return type */
-const std::string& Func_normalize::getReturnType(void) const {
+const TypeSpec Func_normalize::getReturnType(void) const {
 
-    return Simplex_name;
+    return TypeSpec(Simplex_name);
 }
 

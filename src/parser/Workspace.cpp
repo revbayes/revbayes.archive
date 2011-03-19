@@ -204,7 +204,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* te
 
 
 /** Execute function */
-const DAGNode* Workspace::executeFunction(const std::string& name, const std::vector<Argument>& args) const {
+DAGNode* Workspace::executeFunction(const std::string& name, const std::vector<Argument>& args) const {
 
     return functionTable->executeFunction(name, args);
 }
@@ -214,13 +214,6 @@ const DAGNode* Workspace::executeFunction(const std::string& name, const std::ve
 RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Argument>& args) {
 
     return functionTable->getFunction(name, args);
-}
-
-
-/** Get function value */
-RbObject* Workspace::getFunctionValue(const std::string& name, const std::vector<Argument>& args) const {
-
-    return functionTable->getFunctionValue(name, args);
 }
 
 
@@ -247,7 +240,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new VectorInteger()       );
         addType( new VectorReal()          );
         addType( new VectorRealPos()       );
-        addType( new RandomNumberGenerator );
 
         /* Add member object types with auto-generated constructors */
         addTypeWithConstructor( "mcmc",         new Mcmc()              );

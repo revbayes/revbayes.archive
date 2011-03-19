@@ -25,6 +25,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -99,9 +100,9 @@ const VectorString& Func_source::getClass(void) const {
 
 
 /** Get return type */
-const std::string& Func_source::getReturnType(void) const {
+const TypeSpec Func_source::getReturnType(void) const {
 
-    return RbNULL_name;
+    return TypeSpec(RbNULL_name);
 }
 
 

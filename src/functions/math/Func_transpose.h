@@ -36,10 +36,10 @@ class Func_transpose :  public RbFunction {
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;                            //!< Get argument rules
-        const std::string&          getReturnType(void) const;                               //!< Get type of return value
+        const TypeSpec              getReturnType(void) const;                               //!< Get type of return value
 
 	protected:
-        DAGNode*                   executeOperation(const std::vector<DAGNode*> & args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<DAGNode*> & args);    //!< Execute operation
 };
 
 #endif
@@ -52,6 +52,7 @@ class Func_transpose :  public RbFunction {
 #include "RbMath.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
+#include "TypeSpec.h"
 #include "VectorInteger.h"
 #include "VectorReal.h"
 #include "VectorRealPos.h"
@@ -150,12 +151,12 @@ const VectorString& Func_transpose<valT, retT>::getClass(void) const {
 
 /** Get return type */
 template <typename valT, typename retT>
-const std::string& Func_transpose<valT, retT>::getReturnType(void) const {
+const TypeSpec Func_transpose<valT, retT>::getReturnType(void) const {
 
     retT* dummy  = new retT();
     static std::string retTypeStr = dummy->getType();
     delete dummy;
-    return retTypeStr;
+    return TypeSpec(retTypeStr);
 }
 
 

@@ -31,7 +31,7 @@ class Func_quit :  public RbFunction {
 
         // Func_quit functions
         const ArgumentRules&        getArgumentRules(void) const;                           //!< Get argument rules
-        const std::string&          getReturnType(void) const;                              //!< Get type of return val
+        const TypeSpec              getReturnType(void) const;                              //!< Get type of return val
 
 	protected:
     	DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute function

@@ -31,11 +31,9 @@ SyntaxFunctionDef::SyntaxFunctionDef(   RbString* type,
                                         RbString* name,
                                         std::list<SyntaxFormal*>* formals,
                                         std::list<SyntaxElement*>* stmts)
-    : SyntaxElement(), returnType(NULL), functionName(name), formalArgs(formals), code(stmts) {
+    : SyntaxElement(), returnType(new TypeSpec(RbObject_name)), functionName(name), formalArgs(formals), code(stmts) {
 
-    if (returnType == NULL)
-        returnType = new TypeSpec(RbObject_name);
-    else {
+    if (type != NULL) {
         const std::string   typeString  = *type;
         int                 nDim        = 0;
         bool                isRef       = false;
@@ -50,6 +48,7 @@ SyntaxFunctionDef::SyntaxFunctionDef(   RbString* type,
         }
 
         // Create the type specification
+        delete returnType;
         returnType = new TypeSpec(Workspace::userWorkspace().getTypeNameRef(tpName), nDim, isRef);
     }
 }
@@ -168,7 +167,7 @@ DAGNode* SyntaxFunctionDef::getValue(Frame* frame) const {
     Frame* defineEnvironment = frame->cloneEnvironment();
 
     // Create the function
-    UserFunction* theFunction = new UserFunction(argRules, returnType, stmts, defineEnvironment);
+    UserFunction* theFunction = new UserFunction(argRules, *returnType, stmts, defineEnvironment);
 
     // Insert in the user workspace
     Workspace::userWorkspace().addFunction(*functionName, theFunction);

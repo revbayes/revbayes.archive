@@ -26,6 +26,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 #include <cassert>
@@ -73,8 +74,8 @@ const VectorString& Func_sqrt::getClass(void) const {
 
 
 /** Get return type */
-const std::string& Func_sqrt::getReturnType(void) const {
+const TypeSpec Func_sqrt::getReturnType(void) const {
 
-    return RealPos_name;
+    return TypeSpec(RealPos_name);
 }
 

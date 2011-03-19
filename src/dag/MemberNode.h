@@ -27,7 +27,7 @@ class VectorString;
 class MemberNode : public DeterministicNode {
 
     public:
-                                MemberNode(const TypeSpec& valType);                                        //!< Constructor of empty member node
+                                MemberNode(const std::string& valType);                                     //!< Constructor of empty member node
                                 MemberNode(MemberObject* val);                                              //!< Constructor from member object
         virtual                ~MemberNode(void);                                                           //!< Destructor
 

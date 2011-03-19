@@ -26,14 +26,14 @@
 
 
 /** Constructor of empty member node */
-MemberNode::MemberNode(const TypeSpec& toType)
-    : DeterministicNode(toType), memberObject(NULL) {
+MemberNode::MemberNode(const std::string& valType)
+    : DeterministicNode(valType), memberObject(NULL) {
 }
 
 
 /** Basic constructor of member node */
 MemberNode::MemberNode(MemberObject* val)
-    : DeterministicNode(TypeSpec(val->getType(), val->getDim())), memberObject(val) {
+    : DeterministicNode(val->getType()), memberObject(val) {
 
     /* Check for cycles */
     std::list<DAGNode*> done;
@@ -184,7 +184,7 @@ void MemberNode::printStruct(std::ostream& o) const {
         throw RbException("Cannot print struct while in touched state");
 
     o << "DAGNode:" << std::endl;
-    o << "&.class    = " << getClass() << std::endl;
+    o << "&.class    = " << getDAGClass() << std::endl;
     o << "&.value = " << std::endl;
     value->printValue(o);
     o << std::endl;

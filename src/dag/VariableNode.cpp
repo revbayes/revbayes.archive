@@ -29,17 +29,17 @@
 
 
 /** Constructor */
-VariableNode::VariableNode(const TypeSpec& valType)
+VariableNode::VariableNode(const std::string& valType)
     : DAGNode(valType) {
 
     touched      = false;
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& VariableNode::getClass() const {
+/** Get class vector describing type of DAG node */
+const VectorString& VariableNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(VariableNode_name) + DAGNode::getClass();
+    static VectorString rbClass = VectorString(VariableNode_name) + DAGNode::getDAGClass();
     return rbClass;
 }
 

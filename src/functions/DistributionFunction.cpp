@@ -25,6 +25,7 @@
 #include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 #include <sstream>
@@ -32,7 +33,7 @@
 
 /** Constructor */
 DistributionFunction::DistributionFunction(Distribution* dist, FuncType funcType)
-    : RbFunction() {
+    : RbFunction(), returnType(Real_name) {
 
     /* Set the distribution */
     distribution = dist;
@@ -49,27 +50,26 @@ DistributionFunction::DistributionFunction(Distribution* dist, FuncType funcType
     /* Modify argument rules and set return type based on function type */
     if (functionType == DENSITY) {
         argumentRules.insert(argumentRules.begin(), new ArgumentRule("x", distribution->getVariableType()));
-        returnType = Real_name;
+        returnType = TypeSpec(Real_name);
     }
     else if (functionType == RVALUE) {
-        returnType = distribution->getVariableType();
+        returnType = TypeSpec(distribution->getVariableType());
     }
     else if (functionType == PROB) {
         argumentRules.insert(argumentRules.begin(), new ArgumentRule("q", distribution->getVariableType()));
-        returnType = Real_name;
+        returnType = TypeSpec(Real_name);
     }
     else if (functionType == QUANTILE) {
         argumentRules.insert(argumentRules.begin(), new ArgumentRule("p", Real_name));
-        returnType = distribution->getVariableType();
+        returnType = TypeSpec(distribution->getVariableType());
     }
 }
 
 
 /** Copy constructor */
-DistributionFunction::DistributionFunction(const DistributionFunction& x) {
+DistributionFunction::DistributionFunction(const DistributionFunction& x) : returnType(x.returnType) {
 
     argumentRules = x.argumentRules;
-    returnType    = x.returnType;
     distribution  = dynamic_cast<Distribution*>(x.distribution->clone());
     functionType  = x.functionType;
 
@@ -177,7 +177,7 @@ const VectorString& DistributionFunction::getClass(void) const {
 
 
 /** Get return type */
-const std::string& DistributionFunction::getReturnType(void) const {
+const TypeSpec DistributionFunction::getReturnType(void) const {
 
     return returnType;
 }

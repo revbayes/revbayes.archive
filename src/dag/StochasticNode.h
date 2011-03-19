@@ -29,7 +29,7 @@ class VectorString;
 class StochasticNode : public VariableNode {
 
     public:
-                                StochasticNode(const TypeSpec& type);                           //!< Construct empty stochastic node
+                                StochasticNode(const std::string& type);                        //!< Construct empty stochastic node
                                 StochasticNode(Distribution* d);                                //!< Construct from distribution
                                 StochasticNode(const StochasticNode& s);                        //!< Copy constructor
 							   ~StochasticNode(void);                                           //!< Destructor
@@ -39,7 +39,7 @@ class StochasticNode : public VariableNode {
 
         // Basic utility functions
         StochasticNode*         clone(void) const;                                              //!< Clone the stochastic node
-        const VectorString&     getClass(void) const;                                           //!< Get class vector
+        const VectorString&     getDAGClass(void) const;                                        //!< Get DAG node class vector
         const RbObject*         getStoredValue(void);                                           //!< Get stored value
         const RbObject*         getValElement(const VectorInteger& index) const;                //!< Get value element
         const RbObject*         getValue(void);                                                 //!< Get current value

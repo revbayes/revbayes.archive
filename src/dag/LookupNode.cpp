@@ -33,7 +33,7 @@
 
 
 /** Constructor of empty lookup node */
-LookupNode::LookupNode(const TypeSpec& valType) :
+LookupNode::LookupNode(const std::string& valType) :
     DeterministicNode(valType), variable(NULL), baseVariable(NULL), memberName(), indexArgs() {
 }
 

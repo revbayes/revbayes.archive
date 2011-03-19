@@ -27,6 +27,7 @@
 #include "Integer.h"
 #include "RbNames.h"
 #include "StochasticNode.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 #include <cassert>
@@ -87,8 +88,8 @@ const VectorString& Func_v_int::getClass(void) const {
 
 
 /** Get return type */
-const std::string& Func_v_int::getReturnType(void) const {
+const TypeSpec Func_v_int::getReturnType(void) const {
 
-    return VectorInteger_name;
+    return TypeSpec(VectorInteger_name);
 }
 

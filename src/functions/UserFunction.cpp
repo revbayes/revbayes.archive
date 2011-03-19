@@ -21,6 +21,7 @@
 #include "RbString.h"
 #include "VectorString.h"
 #include "SyntaxElement.h"
+#include "TypeSpec.h"
 #include "UserFunction.h"
 
 #include <list>
@@ -28,22 +29,17 @@
 
 /** Basic constructor */
 UserFunction::UserFunction( const ArgumentRules&        argRules,
-                            const std::string           retType,
+                            const TypeSpec&             retType,
                             std::list<SyntaxElement*>*  stmts,
                             Frame*                      defineEnv)
-    : RbFunction(), argumentRules(argRules) {
-
-    returnType          = retType;
-    code                = stmts;
-    defineEnvironment   = defineEnv;
+    : RbFunction(), argumentRules(argRules), returnType(retType), code(stmts), defineEnvironment(defineEnv) {
 }
 
 
 /** Copy constructor */
 UserFunction::UserFunction(const UserFunction &x)
-    : RbFunction(x), argumentRules(x.argumentRules) {
+    : RbFunction(x), argumentRules(x.argumentRules), returnType(x.returnType) {
 
-    returnType          = x.returnType;
     defineEnvironment   = x.defineEnvironment->clone();
     for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
         code->push_back((*i)->clone());
@@ -115,10 +111,11 @@ const VectorString& UserFunction::getClass() const {
 
 
 /** Get return type */
-const std::string& UserFunction::getReturnType() const {
+const TypeSpec UserFunction::getReturnType() const {
 
     return returnType;
 }
+
 
 /** Complete info about object */
 std::string UserFunction::toString() const {

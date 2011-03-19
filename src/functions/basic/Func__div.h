@@ -35,11 +35,10 @@ class Func__div :  public RbFunction {
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;                           //!< Get argument rules
-        int                         getReturnDim(void) const;                               //!< Get dim of return value
-        const std::string&          getReturnType(void) const;                              //!< Get type of return value
+        const TypeSpec              getReturnType(void) const;                              //!< Get type of return value
 
 	protected:
-        DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 };
 
 #endif
@@ -47,11 +46,12 @@ class Func__div :  public RbFunction {
 #include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Integer.h"
+#include "MatrixReal.h"
 #include "RbException.h"
 #include "RbMath.h"
 #include "RbNames.h"
 #include "Real.h"
-#include "MatrixReal.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 
@@ -161,22 +161,13 @@ const VectorString& Func__div<firstValType, secondValType, sumType>::getClass(vo
 }
 
 
-/** Get return dimension */
-template <typename firstValType, typename secondValType, typename sumType>
-int Func__div<firstValType, secondValType, sumType>::getReturnDim(void) const {
-
-    return 1;
-}
-
-
 /** Get return type */
 template <typename firstValType, typename secondValType, typename sumType>
-const std::string& Func__div<firstValType, secondValType, sumType>::getReturnType(void) const {
+const TypeSpec Func__div<firstValType, secondValType, sumType>::getReturnType(void) const {
 
     sumType* dummy  = new sumType();
     static std::string retTypeStr = dummy->getType();
     delete dummy;
-    return retTypeStr;
+    return TypeSpec(retTypeStr);
 }
-
 

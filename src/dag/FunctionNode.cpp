@@ -23,6 +23,7 @@
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -32,13 +33,13 @@
 
 /** Constructor of empty function node */
 FunctionNode::FunctionNode(const TypeSpec& valType) :
-    DeterministicNode(valType) {	
+    DeterministicNode(valType.getType()), valueDim(valType.getDim()) {	
 }
 
 
 /** Constructor from function: get parents from the function object */
 FunctionNode::FunctionNode(RbFunction* func) :
-    DeterministicNode(func->getReturnType())  {
+    DeterministicNode(func->getReturnType().getType()), valueDim(func->getReturnType().getDim())  {
 
     /* Check for cycles */
     const std::vector<DAGNode*>& arguments = func->getProcessedArguments();
@@ -64,7 +65,7 @@ FunctionNode::FunctionNode(RbFunction* func) :
 
 
 /** Copy constructor */
-FunctionNode::FunctionNode(const FunctionNode& x) : DeterministicNode(x) {
+FunctionNode::FunctionNode(const FunctionNode& x) : DeterministicNode(x), valueDim(x.valueDim) {
 
     function    = (RbFunction*)(x.function->clone());
     changed     = false;
@@ -240,7 +241,7 @@ void FunctionNode::printStruct(std::ostream& o) const {
         throw RbException("Cannot print struct while in touched state");
 
     o << "Wrapper:" << std::endl;
-    o << "&.class    = " << getClass() << std::endl;
+    o << "&.class    = " << getDAGClass() << std::endl;
     o << "&.function = " << function << std::endl;
     o << "&.value    = " << value << std::endl;
     o << "&.parents = " << std::endl;

@@ -146,7 +146,7 @@ void ConverterNode::printStruct(std::ostream& o) const {
         throw RbException("Cannot print struct while in touched state");
 
     o << "DAGNode:" << std::endl;
-    o << "&.class    = " << getClass() << std::endl;
+    o << "&.class    = " << getDAGClass() << std::endl;
     o << "&.value    = " << value << std::endl;
     o << "&.parent   = " << std::endl;
     printParents(o);

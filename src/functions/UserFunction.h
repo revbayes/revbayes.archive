@@ -31,6 +31,7 @@ class DAGNode;
 class Frame;
 class RbObject;
 class RbString;
+class TypeSpec;
 class VectorString;
 class SyntaxElement;
 
@@ -38,7 +39,7 @@ class UserFunction :  public RbFunction {
 
     public:
                 UserFunction(   const ArgumentRules&        argRules,
-                                TypeSpec*                   retType,
+                                const TypeSpec&             retType,
                                 std::list<SyntaxElement*>*  stmts,
                                 Frame*                      defineEnv);     //!< Constructor
                 UserFunction(const UserFunction& x);                        //!< Copy constructor
@@ -53,15 +54,15 @@ class UserFunction :  public RbFunction {
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;       //!< Get arg rules
-        const std::string&          getReturnType(void) const;          //!< Get return type
+        const TypeSpec              getReturnType(void) const;          //!< Get return type
 
 	protected:
         const ArgumentRules         argumentRules;      //!< The argument rules
-        std::string                 returnType;         //!< The return type
+        const TypeSpec              returnType;         //!< The return type (complete specification)
         std::list<SyntaxElement*>*  code;               //!< The code
         Frame*                      defineEnvironment;  //!< The definition environment
 
-		DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+		DAGNode*                    executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 };
 
 #endif

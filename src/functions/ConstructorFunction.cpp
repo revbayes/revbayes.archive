@@ -21,6 +21,7 @@
 #include "DAGNode.h"
 #include "MemberObject.h"
 #include "RbNames.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 #include <sstream>
@@ -82,8 +83,8 @@ const VectorString& ConstructorFunction::getClass(void) const {
 
 
 /** Get return type */
-const std::string& ConstructorFunction::getReturnType(void) const {
+const TypeSpec ConstructorFunction::getReturnType(void) const {
 
-    return templateObject->getType();
+    return TypeSpec(templateObject->getType(), templateObject->getDim());
 }
 

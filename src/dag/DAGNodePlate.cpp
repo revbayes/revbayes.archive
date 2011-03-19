@@ -527,8 +527,8 @@ const DAGNode* DAGNodePlate::getVarElement(const VectorInteger& index) const {
 }
 
 
-/** Get non-const variable element for friend class Frame */
-DAGNode* DAGNodePlate::getVarElement(const VectorInteger& index) {
+/** Get non-const reference to variable element */
+DAGNode* DAGNodePlate::getElementReference(const VectorInteger& index) {
 
     // Check that the index is to a variable element
     if (index.size() != length.size())
@@ -685,7 +685,7 @@ void DAGNodePlate::printStruct(std::ostream& o) const {
         throw RbException ("Cannot print value while in touched state");
 
     o << "Wrapper:" << std::endl;
-    o << "&.class  = " << getClass() << std::endl;
+    o << "&.class  = " << getDAGClass() << std::endl;
     o << "&.dim    = " << getDim() << std::endl;
     o << "&.length = " << getLength() << std::endl;
     o << "&.value  = " << value << std::endl;

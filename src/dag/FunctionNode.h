@@ -41,6 +41,7 @@ class FunctionNode : public DeterministicNode {
         // Basic utility functions
         virtual FunctionNode*       clone(void) const;                                                          //!< Clone the function node
         virtual const VectorString& getDAGClass(void) const;                                                    //!< Get DAG node class vector
+        int                         getDim(void) const { return valueDim; }                                     //!< Get dim of return value
         const RbFunction*           getFunction(void) const { return function; }                                //!< Get function
         virtual void                printStruct(std::ostream& o) const;                                         //!< Print struct for user
         virtual std::string         toString(void) const;                                                       //!< Complete info about object
@@ -60,6 +61,7 @@ class FunctionNode : public DeterministicNode {
 
         // Member variables
         RbFunction*                 function;                                                                   //!< True when value updated after touch
+        int                         valueDim;                                                                   //!< Dimensions of function return value (type in valueType)
 };
 
 #endif

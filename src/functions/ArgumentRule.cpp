@@ -54,7 +54,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
     if ( argSlot.getTypeSpec().isReference() )
         argSlot.setReference( defVariable );
     else
-        argSlot.setValue( defVariable );
+        argSlot.setVariable( defVariable );
 }
 
 

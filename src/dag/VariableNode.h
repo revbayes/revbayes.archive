@@ -36,7 +36,7 @@ class VariableNode : public DAGNode {
 
         // Utility functions you have to override
         virtual VariableNode*           clone(void) const = 0;                                       //!< Clone this node
-        virtual const VectorString&     getClass(void) const;                                        //!< Get class vector
+        virtual const VectorString&     getDAGClass(void) const;                                     //!< Get DAG node class vector
         virtual const RbObject*         getStoredValue(void) = 0;                                    //!< Get stored value
         virtual const RbObject*         getValElement(const VectorInteger& index) const = 0;         //!< Get value element
         virtual const RbObject*         getValue(void) = 0;                                          //!< Get value
@@ -67,7 +67,7 @@ class VariableNode : public DAGNode {
         virtual MoveSchedule*           getDefaultMoves(void) = 0;                                   //!< Return default moves
 
     protected:
-                                        VariableNode(const TypeSpec& valType);                       //!< Value class constructor
+                                        VariableNode(const std::string& valType);                    //!< Constructor of empty node
 
         // Member variables
         bool                            touched;                                                     //!< Is touched by move?

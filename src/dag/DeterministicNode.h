@@ -67,7 +67,7 @@ class DeterministicNode : public VariableNode {
         MoveSchedule*                   getDefaultMoves(void);                                                          //!< Return default moves
 
     protected:
-                                        DeterministicNode(const TypeSpec& valType);                                     //!< Constructor from type
+                                        DeterministicNode(const std::string& valType);                                     //!< Constructor from type
 
         // Utility function you have to override
         virtual void                    update(void) = 0;                                                               //!< Update value and storedValue

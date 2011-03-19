@@ -30,7 +30,7 @@
 
 
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode(const TypeSpec& type) : VariableNode(type), clamped(false), distribution(NULL), value(NULL), storedValue(NULL) {
+StochasticNode::StochasticNode(const std::string& type) : VariableNode(type), clamped(false), distribution(NULL), value(NULL), storedValue(NULL) {
 }
 
 
@@ -232,10 +232,10 @@ void StochasticNode::getAffected(std::set<StochasticNode*>& affected) {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& StochasticNode::getClass() const {
+/** Get class vector describing type of DAG node */
+const VectorString& StochasticNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(StochasticNode_name) + VariableNode::getClass();
+    static VectorString rbClass = VectorString(StochasticNode_name) + VariableNode::getDAGClass();
     return rbClass;
 }
 
@@ -398,7 +398,7 @@ void StochasticNode::printStruct(std::ostream& o) const {
         throw RbException("Cannot print struct while in touched state");
 
     o << "Wrapper:" << std::endl;
-    o << "&.class        = " << getClass() << std::endl;
+    o << "&.class        = " << getDAGClass() << std::endl;
     o << "&.distribution = " << distribution << std::endl;
     o << "&.value        = " << value << std::endl;
     o << "&.parents = " << std::endl;

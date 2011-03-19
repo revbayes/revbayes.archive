@@ -35,10 +35,10 @@ class Func_normalize :  public RbFunction {
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;                            //!< Get argument rules
-        const std::string&          getReturnType(void) const;                               //!< Get type of return value
+        const TypeSpec              getReturnType(void) const;                               //!< Get type of return value
 
 	protected:
-        DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);     //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<DAGNode*>& args);     //!< Execute operation
 };
 
 #endif

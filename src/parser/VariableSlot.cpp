@@ -15,10 +15,17 @@
  * $Id$
  */
 
+#include "ConstantNode.h"
+#include "Container.h"
 #include "DAGNode.h"
+#include "DAGNodePlate.h"
 #include "Frame.h"
+#include "LookupNode.h"
+#include "MemberNode.h"
+#include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "RbObject.h"
 #include "VariableSlot.h"
 
 #include <cassert>
@@ -26,7 +33,7 @@
 
 /** Constructor of filled slot. We get the type specification from the variable. */
 VariableSlot::VariableSlot(DAGNode* var, bool ref)
-: typeSpec(var->getType(), var->getDim(), ref), temp(false), variable(NULL), frame(NULL) {
+    : typeSpec(var->getValueType(), var->getDim(), ref), temp(false), variable(NULL), frame(NULL) {
 
     if (var->getSlot() == NULL && typeSpec.isReference())
         temp = true;
@@ -34,14 +41,14 @@ VariableSlot::VariableSlot(DAGNode* var, bool ref)
     if (typeSpec.isReference())
         setReference(var);
     else
-        setValue(var);
+        setVariable(var);
 
 }
 
 
 /** Constructor of empty slot based on type specification */
 VariableSlot::VariableSlot(const std::string& type, int dim, bool ref)
-: typeSpec(type, dim, ref), temp(false), variable(NULL), frame(NULL) {
+    : typeSpec(type, dim, ref), temp(false), variable(NULL), frame(NULL) {
 }
 
 
@@ -58,7 +65,7 @@ VariableSlot::VariableSlot(const VariableSlot& x) : typeSpec(x.getTypeSpec()), t
     else /* if (typeSpec.isReference()) */ {
          variable = x.variable;
          if (variable != NULL) {
-             if (variable->isType(LookupNode_name))
+             if (variable->isDAGType(LookupNode_name))
                  variable = variable->clone();
              variable->addReferringSlot(this);
          }
@@ -97,7 +104,7 @@ VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
         else /* if (typeSpec.isReference()) */ {
              variable = x.variable;
              if (variable != NULL) {
-                 if (variable->isType(LookupNode_name))
+                 if (variable->isDAGType(LookupNode_name))
                      variable = variable->clone();
                  variable->addReferringSlot(this);
              }
@@ -124,16 +131,14 @@ DAGNode* VariableSlot::getReference(void) {
     if (!typeSpec.isReference())
         throw RbException("Cannot get reference to variable in value slot");
     
-    return variable->getReference();
+    return variable;
 }
 
 
 /** Get the value of the variable */
-const DAGNode* VariableSlot::getValue(void) const {
+const RbObject* VariableSlot::getValue(void) const {
 
-    /* The DAGNode function getReference returns the variable itself if not a lookup node, in which case
-       the reference is the result of the lookup */
-    return variable->getReference();
+    return variable->getValue();
 }
 
 
@@ -152,7 +157,7 @@ void VariableSlot::removeVariable(void) {
     
     if (typeSpec.isReference() && temp == false) {
         // Indirect reference through lookup node; lookup node cannot have referring slots.
-        if (variable->isType(LookupNode_name)) {
+        if (variable->isDAGType(LookupNode_name)) {
             variable->setSlot(NULL);
             delete variable;
         }
@@ -196,7 +201,7 @@ void VariableSlot::setReference(DAGNode* ref) {
     variable = ref;
     if (variable != NULL) {
         if (variable->getSlot() == NULL) {
-            if (variable->isType(LookupNode_name))
+            if (variable->isDAGType(LookupNode_name))
                 temp = false;
             else
                 temp = true;
@@ -226,22 +231,22 @@ void VariableSlot::setReferenceFlag(bool refFlag) {
         }
         else {
             // Direct reference or indirect reference through lookup. The new value is a clone of the reference
-            setValue(variable->getReference()->clone());
+            setVariable(static_cast<LookupNode*>(variable)->getVariable());
         }
     }
 }
 
 
 /** Set a value slot to a new variable value */
-void VariableSlot::setValue(DAGNode* value) {
+void VariableSlot::setVariable(DAGNode* newVar) {
 
-    assert(value->getSlot() == NULL && value->getReferringSlots().size() == 0 && value->getName() == "");
+    assert(newVar->getSlot() == NULL && newVar->getReferringSlots().size() == 0 && newVar->getName() == "");
 
     removeVariable();
 
     if (typeSpec.isReference())
         temp = true;
-    variable = value;
+    variable = newVar;
     variable->setSlot(this);
 }
 
@@ -249,30 +254,32 @@ void VariableSlot::setValue(DAGNode* value) {
 /** Set a value slot to a new variable value */
 void VariableSlot::setValue(RbObject* value) {
 
+    removeVariable();
+
     // Wrap the value appropriately and then set the slot
-    if ( value->isType(MemberObject_name) )
-        setVariable( new MemberNode( static_cast<MemberObject*>( value ) ) );
+    if ( value->isType( MemberObject_name ) )
+        setVariable( new MemberNode( dynamic_cast<MemberObject*>( value ) ) );
     else if ( value->isType( Container_name ) )
-        setVariable( new DAGNodePlate( static_cast<Container*>( value ) ) );
+        setVariable( new DAGNodePlate( dynamic_cast<Container*>( value ) ) );
     else
         setVariable( new ConstantNode( value ) );
 }
 
 
 /** Make sure we can print to stream using << operator */
-std::ostream& operator<<(std::ostream& o, const TypeSpec& x) {
+std::ostream& operator<<(std::ostream& o, const VariableSlot& x) {
 
-    o << "<" << typeSpec << ">";
-    if ( getName() != "" )
-        o << " " << getName();
+    o << "<" << x.getTypeSpec() << ">";
+    if ( x.getName() != "" )
+        o << " " << x.getName();
     o << " =";
-    if ( temp )
-        o << " [temp]"
-    if ( variable == NULL )
+    if ( x.isTemp() )
+        o << " [temp]";
+    if ( x.getVariable() == NULL )
         o << " NULL";
     else {
         o << " ";
-        variable->printValue(o);
+        x.getVariable()->printValue(o);
     }
     return o;
 }

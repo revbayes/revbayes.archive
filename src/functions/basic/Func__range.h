@@ -35,11 +35,10 @@ class Func__range :  public RbFunction {
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;                           //!< Get argument rules
-        int                         getReturnDim(void) const;                               //!< Get dim of return value
-        const std::string&          getReturnType(void) const;                              //!< Get type of return value
+        const TypeSpec              getReturnType(void) const;                              //!< Get type of return value
 
 	protected:
-        DAGNode*                   executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
 };
 
 #endif

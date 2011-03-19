@@ -18,14 +18,15 @@
  */
 
 #include "ArgumentRule.h"
+#include "Boolean.h"
 #include "DAGNode.h"
 #include "Func_ls.h"
 #include "Model.h"
 #include "Parser.h"
-#include "Boolean.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -91,8 +92,8 @@ const VectorString& Func_ls::getClass(void) const {
 
 
 /** Get return type */
-const std::string& Func_ls::getReturnType(void) const {
+const TypeSpec Func_ls::getReturnType(void) const {
 
-    return RbNULL_name;
+    return TypeSpec(RbNULL_name);
 }
 

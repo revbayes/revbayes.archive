@@ -30,6 +30,7 @@
 #include "RbNames.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 #include "VectorReal.h"
 
@@ -88,8 +89,8 @@ const VectorString& Func_s_realvec::getClass(void) const {
 
 
 /** Get return type */
-const std::string& Func_s_realvec::getReturnType(void) const {
+const TypeSpec Func_s_realvec::getReturnType(void) const {
 
-    return Simplex_name;
+    return TypeSpec(Simplex_name);
 }
 
