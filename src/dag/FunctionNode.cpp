@@ -59,7 +59,9 @@ FunctionNode::FunctionNode(RbFunction* func) :
     function = func;
 
     /* Set value and stored value */
-    value       = function->execute()->getValue()->clone();
+    DAGNode* retVal = function->execute();
+    value = retVal->getValue()->clone();
+    delete retVal;
     storedValue = NULL;
 }
 
@@ -69,7 +71,9 @@ FunctionNode::FunctionNode(const FunctionNode& x) : DeterministicNode(x), valueD
 
     function    = (RbFunction*)(x.function->clone());
     changed     = false;
-    value       = function->execute()->getValue()->clone();
+    DAGNode* retVal = function->execute();
+    value = retVal->getValue()->clone();
+    delete retVal;
     storedValue = NULL;
 
     /* Set parents and add this node as a child node of these */
@@ -120,8 +124,10 @@ FunctionNode& FunctionNode::operator=(const FunctionNode& x) {
             delete storedValue;
         delete value;
 
+        DAGNode* retVal = function->execute();
+        value = retVal->getValue()->clone();
+        delete retVal;
         storedValue = NULL;
-        value       = function->execute()->getValue()->clone();
 
         /* Set parents and add this node as a child node of these */
         parents.clear();
@@ -158,7 +164,9 @@ FunctionNode* FunctionNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) con
     std::vector<DAGNode*>& params     = const_cast<std::vector<DAGNode*>& > (function->getProcessedArguments());
     std::vector<DAGNode*>& copyParams = const_cast<std::vector<DAGNode*>& > (copy->function->getProcessedArguments());
     copyParams.clear();
-    copy->value = function->execute()->getValue()->clone();   // Make sure we have a copy of the value
+    DAGNode* retVal = copy->function->execute();
+    copy->value = retVal->getValue()->clone();
+    delete retVal;
     copy->storedValue = NULL;
     copy->touched = false;
     copy->changed = false;
@@ -254,31 +262,8 @@ void FunctionNode::printStruct(std::ostream& o) const {
 }
 
 
-/** Swap parent node both in parents set and in processed arguments */
-void FunctionNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
-
-    if (parents.find(oldNode) == parents.end())
-        throw RbException("Node is not a parent");
-    oldNode->removeChildNode(this);
-    newNode->addChildNode(this);
-    parents.erase(oldNode);
-    parents.insert(newNode);
-
-    std::vector<DAGNode*>& params = const_cast<std::vector<DAGNode*>& > (function->getProcessedArguments());
-    std::vector<DAGNode*>::iterator it = std::find(params.begin(), params.end(), oldNode);
-    if (it == params.end())
-        throw RbException("Node is not a parameter");
-    it = params.erase(it);
-    params.insert(it, newNode);
-
-    touched = true;
-    changed = false;
-    touchAffected();
-}
-
-
 /** Complete info about object */
-std::string FunctionNode::toString(void) const {
+std::string FunctionNode::richInfo(void) const {
 
     std::ostringstream o;
 
@@ -304,6 +289,29 @@ std::string FunctionNode::toString(void) const {
 }
 
 
+/** Swap parent node both in parents set and in processed arguments */
+void FunctionNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
+
+    if (parents.find(oldNode) == parents.end())
+        throw RbException("Node is not a parent");
+    oldNode->removeChildNode(this);
+    newNode->addChildNode(this);
+    parents.erase(oldNode);
+    parents.insert(newNode);
+
+    std::vector<DAGNode*>& params = const_cast<std::vector<DAGNode*>& > (function->getProcessedArguments());
+    std::vector<DAGNode*>::iterator it = std::find(params.begin(), params.end(), oldNode);
+    if (it == params.end())
+        throw RbException("Node is not a parameter");
+    it = params.erase(it);
+    params.insert(it, newNode);
+
+    touched = true;
+    changed = false;
+    touchAffected();
+}
+
+
 /** Update value and stored value after node and its surroundings have been touched by a move */
 void FunctionNode::update(void) {
 
@@ -311,7 +319,9 @@ void FunctionNode::update(void) {
         if (storedValue != NULL)
             delete storedValue;
         storedValue = value;
-        value = function->execute()->getValue()->clone();
+        DAGNode* retVal = function->execute();
+        value = retVal->getValue()->clone();
+        delete retVal;
         changed = true;
     }
 }

@@ -44,11 +44,9 @@ RbFunction::RbFunction(const RbFunction &x) : RbObject(x) {
     argumentsProcessed = x.argumentsProcessed;
     if (x.argumentsProcessed == true) {
 
-        std::vector<bool>::const_iterator i;
-        std::vector<DAGNode*>::const_iterator j;
-        for (i=x.referenceArgument.begin(), j=x.processedArguments.begin(); i!=x.referenceArgument.end(); i++, j++) {
-            referenceArgument.push_back(*i);
-            processedArguments.push_back((*j));
+        std::vector<DAGNode*>::const_iterator i;
+        for (i=x.processedArguments.begin(); i!=x.processedArguments.end(); i++) {
+            processedArguments.push_back((*i));
         }
     }
 }
@@ -71,11 +69,9 @@ RbFunction& RbFunction::operator=(const RbFunction& x) {
         argumentsProcessed = x.argumentsProcessed;
         if (x.argumentsProcessed == true) {
 
-            std::vector<bool>::const_iterator i;
-            std::vector<DAGNode*>::const_iterator j;
-            for (i=x.referenceArgument.begin(), j=x.processedArguments.begin(); i!=x.referenceArgument.end(); i++, j++) {
-                referenceArgument.push_back(*i);
-                processedArguments.push_back((*j));
+            std::vector<DAGNode*>::const_iterator i;
+            for (i=x.processedArguments.begin(); i!=x.processedArguments.end(); i++) {
+                processedArguments.push_back((*i));
             }
         }
     }
@@ -101,21 +97,18 @@ bool RbFunction::equals(const RbObject* x) const {
 }
 
 
-/** Delete processed arguments if not reference arguments */
+/** Delete processed arguments */
 void RbFunction::deleteProcessedArguments(void) {
 
+    // @todo This does not work. Use variable slots to manage memory correctly.
     if (argumentsProcessed) {
-
-        std::vector<bool>::iterator i;
-        std::vector<DAGNode*>::iterator j;
-        for (i=referenceArgument.begin(), j=processedArguments.begin(); i!=referenceArgument.end(); i++, j++) {
-            /*
-            if ((*j)->numRefs() == 0)
-                delete (*j);
+        for ( std::vector<DAGNode*>::iterator i=processedArguments.begin(); i!=processedArguments.end(); i++ ) {
+            /* 
+            if ( (*i)->numRefs() == 0 )
+                delete ( (*i) );
             */
         }
     }
-    referenceArgument.clear();
     processedArguments.clear();
     argumentsProcessed = false;
 }
@@ -183,10 +176,13 @@ void RbFunction::printValue(std::ostream& o) const {
  * arguments because of the inheritance hierarchy. In these clases, the closest
  * match is chosen based on the first argument, then on the second, etc.
  *
- * @todo This function really needs to return a match score based on how closely
- *       the arguments match the rules, with 0 being perfect match, 1 being a
- *       match to an immediate base class type, 2 a match to a grandparent class,
- *       etc. Also, ellipsis arguments are not dealt with yet. -- Fredrik
+ * The function returns a match score based on how closely the arguments match the
+ * rules, with 0 being perfect match, 1 being a match to an immediate base class type,
+ * 2 a match to a grandparent class, etc. A large number is used for arguments that
+ * need type conversion
+ *
+ * @todo Ellipsis arguments are not quite dealt with properly yet; most importantly,
+ *       the labels are stripped off here although they should be kept.
  *
  * These are the argument matching rules:
  *
@@ -205,6 +201,9 @@ void RbFunction::printValue(std::ostream& o) const {
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
 bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInteger* matchScore) {
+
+    bool    needConversion;
+    int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
 
     /*********************  0. Initialization  **********************/
 
@@ -226,9 +225,8 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
     if ( (nRules == 0 || (nRules > 0 && !theRules[nRules-1]->isType(Ellipsis_name))) && int(args.size()) > numFinalArgs)
         return false;
 
-    /* Fill processedArguments with null arguments and resize referenceArgument */
+    /* Fill processedArguments with null arguments and resize convertedArgument */
     processedArguments.insert(processedArguments.begin(), numFinalArgs, (DAGNode*)(NULL));
-    referenceArgument.resize(numFinalArgs);
 
     /* Keep track of which arguments we have used */
     std::vector<bool> taken = std::vector<bool>(args.size(), false);
@@ -255,7 +253,6 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
             taken[i] = true;
         }
         processedArguments[numFinalArgs-1] = ellipsisArgs;
-        referenceArgument [numFinalArgs-1] = false;
     }
 
 
@@ -277,13 +274,12 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
 
             if ( args[i].getLabel() == theRules[j]->getArgLabel() ) {
 
-                if ( theRules[j]->isArgValid(args[i].getVariable()) && processedArguments[j] == NULL ) {
+                if ( theRules[j]->isArgValid(args[i].getVariable(), needConversion) && processedArguments[j] == NULL ) {
                     taken[i] = true;
-                    if (args[i].getVariable()->getName() == "")
-                        processedArguments[j] = args[i].getVariable();
+                    if ( needConversion )
+                        processedArguments[j] = theRules[j]->convert( args[i].getVariable() );
                     else
                         processedArguments[j] = args[i].getVariable();
-                    referenceArgument[j] = theRules[j]->isReference();
                 }
                 else
                     return false;
@@ -322,13 +318,12 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
         if (nMatches != 1)
             return false;
  
-        if ( theRules[matchRule]->isArgValid(args[i].getVariable()) ) {
+        if ( theRules[matchRule]->isArgValid(args[i].getVariable(), needConversion) ) {
             taken[i] = true;
-            if (args[i].getVariable()->getName() == "")
-                processedArguments[matchRule] = args[i].getVariable();
+            if ( needConversion )
+                processedArguments[matchRule] = theRules[matchRule]->convert( args[i].getVariable() );
             else
                 processedArguments[matchRule] = args[i].getVariable();
-            referenceArgument[matchRule] = theRules[matchRule]->isReference();
         }
         else
             return false;
@@ -348,13 +343,12 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
         for (int j=0; j<numFinalArgs; j++) {
 
             if ( processedArguments[j] == NULL ) {
-                if ( theRules[j]->isArgValid(args[i].getVariable()) ) {
+                if ( theRules[j]->isArgValid(args[i].getVariable(), needConversion) ) {
                     taken[i] = true;
-                    if (args[i].getVariable()->getName() == "")
-                        processedArguments[j] = args[i].getVariable();
+                    if ( needConversion )
+                        processedArguments[j] = theRules[j]->convert( args[i].getVariable() );
                     else
                         processedArguments[j] = args[i].getVariable();
-                    referenceArgument[j] = theRules[j]->isReference();
                     break;
                 }
                 else
@@ -377,8 +371,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
         if ( theRules[i]->isReference() )
             processedArguments[i] = theRules[i]->getDefaultReference();
         else
-            processedArguments[i] = new ConstantNode(theRules[i]->getDefaultValue());
-        referenceArgument[i] = theRules[i]->isReference();
+            processedArguments[i] = theRules[i]->getDefaultVariable();
     }
 
     /*********************  6. Count match score and return  **********************/
@@ -402,7 +395,10 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
             if ( argClass[j] == theRules[argIndex]->getArgType() )
                 break;
 
-        matchScore->push_back(int(j));
+        if ( j == argClass.size() )
+            matchScore->push_back(aLargeNumber);    // We needed type conversion for this argument
+        else
+            matchScore->push_back(int(j));          // No type conversion, score is distance in class vector
     }
 
     /* ... then for ellipsis arguments */
@@ -418,7 +414,10 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
                 if ( argClass[j] == theRules[argIndex]->getArgType() )
                     break;
 
-            matchScore->push_back(int(j));
+            if ( j == argClass.size() )
+                matchScore->push_back(aLargeNumber);    // We needed type conversion for this argument
+            else
+                matchScore->push_back(int(j));          // No type conversion, score is distance in class vector
         }
     }
 
@@ -427,7 +426,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
 
 
 /** Complete info about object */
-std::string RbFunction::toString(void) const {
+std::string RbFunction::richInfo(void) const {
 
     std::ostringstream o;
     o << getType() << ": " << (*this) << std::endl;

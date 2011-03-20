@@ -200,6 +200,17 @@ void VectorInteger::resize(const VectorInteger& len) {
 }
 
 
+/** Complete info about object */
+std::string VectorInteger::richInfo(void) const {
+
+    std::ostringstream o;
+    o <<  "VectorInteger: value = ";
+    printValue(o);
+
+    return o.str();
+}
+
+
 /** Allow parser to set an element (any type conversion is done by parser) */
 void VectorInteger::setElement(const VectorInteger& index, RbObject* val) {
 
@@ -239,15 +250,4 @@ void VectorInteger::setValue(const VectorInteger& x) {
     for (size_t i=0; i<x.size(); i++)    
         value[i] = x[i];
 }   
-
-
-/** Complete info about object */
-std::string VectorInteger::toString(void) const {
-
-    std::ostringstream o;
-    o <<  "VectorInteger: value = ";
-    printValue(o);
-
-    return o.str();
-}
 

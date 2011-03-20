@@ -133,18 +133,8 @@ void MoveSchedule::printValue(std::ostream& o) const {
 }
 
 
-/** Set update weight */
-void MoveSchedule::setUpdateWeight(double weight) {
-
-    if (weight < 0.0)
-        throw RbException("Invalid assignment: negative update weight");
-
-    nodeUpdateWeight = weight;
-}
-
-
 /** Complete info about object */
-std::string MoveSchedule::toString(void) const {
+std::string MoveSchedule::richInfo(void) const {
 
     std::ostringstream o;
     o << "MoveSchedule:" << std::endl;
@@ -154,5 +144,16 @@ std::string MoveSchedule::toString(void) const {
 
     return o.str();
 }
+
+
+/** Set update weight */
+void MoveSchedule::setUpdateWeight(double weight) {
+
+    if (weight < 0.0)
+        throw RbException("Invalid assignment: negative update weight");
+
+    nodeUpdateWeight = weight;
+}
+
 
 

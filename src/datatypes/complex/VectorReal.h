@@ -45,7 +45,7 @@ class VectorReal : public Vector {
         virtual bool                equals(const RbObject* obj) const;                            //!< Equals comparison
         virtual const VectorString& getClass(void) const;                                         //!< Get class
         virtual void                printValue(std::ostream& o) const;                            //!< Print value (for user)
-        virtual std::string         toString(void) const;                                         //!< Complete info about object
+        virtual std::string         richInfo(void) const;                                         //!< Complete info about object
 
         // Element access functions for parser
         virtual const std::string&  getElementType(void) const;                                   //!< Get element type

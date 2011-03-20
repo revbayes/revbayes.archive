@@ -39,7 +39,7 @@ class RbException : public RbInternal {
         RbException*        clone(void) const;                                      //!< Clone this object
         const VectorString& getClass() const;                                       //!< Get class vector
         void                printValue(std::ostream& o) const;                      //!< Print value (for user)
-        std::string         toString(void) const;                                   //!< General info on object
+        std::string         richInfo(void) const;                                   //!< General info on object
 
         // Regular functions
         exceptionT          getExceptionType(void) { return exceptionType; }        //!< Get exception type 

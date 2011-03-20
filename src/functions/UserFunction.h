@@ -50,7 +50,7 @@ class UserFunction :  public RbFunction {
         UserFunction*               clone() const;                      //!< Clone object
         bool                        equals(const RbObject* x) const;    //!< Equals comparison
         const VectorString&         getClass() const;                   //!< Get class vector
-        std::string                 toString() const;                   //!< Complete info about object
+        std::string                 richInfo() const;                   //!< Complete info about object
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;       //!< Get arg rules

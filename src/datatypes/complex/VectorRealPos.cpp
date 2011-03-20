@@ -130,6 +130,17 @@ void VectorRealPos::push_front(double x) {
 }
 
 
+/** Complete info about object */
+std::string VectorRealPos::richInfo(void) const {
+
+    std::ostringstream o;
+    o <<  "VectorRealPos: value = ";
+    printValue(o);
+
+    return o.str();
+}
+
+
 /** Allow parser to set an element (any type conversion is done by parser) */
 void VectorRealPos::setElement(const VectorInteger& index, RbObject* val) {
 
@@ -172,16 +183,5 @@ void VectorRealPos::setValue(const std::vector<double>& x) {
             throw RbException("Trying to set positive real matrix with negative value(s)");
     
     VectorReal::setValue(x);
-}
-
-
-/** Complete info about object */
-std::string VectorRealPos::toString(void) const {
-
-    std::ostringstream o;
-    o <<  "VectorRealPos: value = ";
-    printValue(o);
-
-    return o.str();
 }
 

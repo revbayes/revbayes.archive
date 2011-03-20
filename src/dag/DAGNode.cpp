@@ -56,6 +56,7 @@ const VectorString& DAGNode::getDAGClass() const {
     return rbClass;
 }
 
+
 /** Get name of DAG node from its surrounding objects */
 const std::string DAGNode::getName(void) const {
 
@@ -87,17 +88,41 @@ const std::string DAGNode::getName(void) const {
     return name;
 }
 
+
 /** Get type of DAG node (first entry in class vector) */
 const std::string& DAGNode::getDAGType(void) const { 
 
     return getDAGClass()[0];
 }
 
+
 /** Get element variable; default throws error, override if wrapper has variable elements */
 const DAGNode* DAGNode::getVarElement(const VectorInteger& index) const {
 
     throw (RbException("No variable elements"));
 }
+
+
+/**
+ * @brief Check if DAG is a constant expression
+ *
+ * Is DAG a truly constant expression? If so, it must be true that the user cannot change the expression later on.
+ * This can only be guaranteed if none of the nodes is visible to the user. Also, no node can be a stochastic node.
+ * Variables that do not belong to a slot cannot be accessed by the user, and are therefore safe.
+ *
+ */
+bool DAGNode::isConstExpr(void) const {
+
+    if ( getSlot() != NULL )
+        return false;
+
+    for (std::set<DAGNode*>::const_iterator i=parents.begin(); i!=parents.end(); i++)
+        if ( (*i)->getSlot() != NULL || (*i)->isDAGType( StochasticNode_name ) )
+            return false;
+
+    return true;
+}
+
 
 /** Is DAG node of specified type? We need to check entire class vector in case we are derived from type. */
 bool DAGNode::isDAGType(const std::string& type) const {
@@ -183,6 +208,6 @@ void DAGNode::swapNodeTo(DAGNode* newNode) {
 
     // Update referring frames
     for (std::set<VariableSlot*>::iterator i=referringSlots.begin(); i!=referringSlots.end(); i++)
-        (*i)->swapReference(this, newNode);
+        (*i)->setReference(newNode);
 }
 

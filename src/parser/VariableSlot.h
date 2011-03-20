@@ -53,7 +53,6 @@ class VariableSlot {
         void                    setReferenceFlag(bool refFlag=true);                            //!< Potentially switch between reference and value slot
         void                    setValue(RbObject* newVal);                                     //!< Set a slot with a value (naked value)
         void                    setVariable(DAGNode* newVar);                                   //!< Set a slot with a value (wrapped value)
-        void                    swapReference(DAGNode* oldRef, DAGNode* newRef);                //!< Swap reference
 
     private:
         // Help function

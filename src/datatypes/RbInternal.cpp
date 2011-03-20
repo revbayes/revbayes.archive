@@ -52,10 +52,10 @@ bool RbInternal::isType(const std::string& type) const {
 }
 
 
-/** Print info about object simply by using toString function */
+/** Print info about object simply by using richInfo function */
 void RbInternal::print(std::ostream& o) const {
 
-    o << toString() << std::endl;
+    o << richInfo() << std::endl;
 }
 
 

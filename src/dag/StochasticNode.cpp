@@ -441,6 +441,29 @@ void StochasticNode::restoreAffected() {
 }
 
 
+/** Complete info about object */
+std::string StochasticNode::richInfo(void) const {
+
+    std::ostringstream o;
+    o << "StochasticNode:" << std::endl;
+    o << "Clamped      = " << (clamped ? "true" : "false") << std::endl;
+    o << "Touched      = " << (touched ? "true" : "false") << std::endl;
+    o << "Distribution = ";
+    distribution->printValue(o);
+    o << std::endl;
+    o << "Value        = ";
+    value->printValue(o);
+    o << std::endl;
+    o << "Stored value = ";
+    if (storedValue == NULL)
+        o << "NULL";
+    else
+        storedValue->printValue(o);
+
+    return o.str();
+}
+
+
 /** Set element: set value element */
 void StochasticNode::setElement(const VectorInteger& index, RbObject* val) {
 
@@ -506,29 +529,6 @@ void StochasticNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
 
     for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++)
         (*i)->touchAffected();
-}
-
-
-/** Complete info about object */
-std::string StochasticNode::toString(void) const {
-
-    std::ostringstream o;
-    o << "StochasticNode:" << std::endl;
-    o << "Clamped      = " << (clamped ? "true" : "false") << std::endl;
-    o << "Touched      = " << (touched ? "true" : "false") << std::endl;
-    o << "Distribution = ";
-    distribution->printValue(o);
-    o << std::endl;
-    o << "Value        = ";
-    value->printValue(o);
-    o << std::endl;
-    o << "Stored value = ";
-    if (storedValue == NULL)
-        o << "NULL";
-    else
-        storedValue->printValue(o);
-
-    return o.str();
 }
 
 

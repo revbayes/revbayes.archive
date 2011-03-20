@@ -98,10 +98,10 @@ bool RbObject::isType(const std::string& type) const {
 	return false;
 }
 
-/** Print info about object simply by using toString function */
+/** Print info about object simply by using richInfo function */
 void RbObject::print(std::ostream& o) const {
 
-    o << toString() << std::endl;
+    o << richInfo() << std::endl;
 }
 
 /** Make sure we can print the value of the object easily */

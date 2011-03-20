@@ -34,7 +34,7 @@ class RbString : public RbComplex {
 	    bool                        equals(const RbObject* obj) const;               //!< Equals comparison
         const VectorString&         getClass(void) const;                            //!< Get class
         void                        printValue(std::ostream& o) const;               //!< Print value (for user)
-        std::string                 toString(void) const;                            //!< General info on object
+        std::string                 richInfo(void) const;                            //!< General info on object
 
         // Overloaded operators
         RbString                    operator+(const RbString& s) const;              //!< String concatenation

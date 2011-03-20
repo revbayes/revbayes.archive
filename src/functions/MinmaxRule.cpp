@@ -128,9 +128,12 @@ const VectorString& MinmaxRule::getClass(void) const {
 
 
 /** Test if argument is valid; we evaluate it here if not done previously */
-bool MinmaxRule::isArgValid(DAGNode* var) const {
+bool MinmaxRule::isArgValid(DAGNode* var, bool& convert) const {
 
-    if (!ArgumentRule::isArgValid(var))
+    /* We do not even try to convert */
+    convert = false;
+
+    if (!ArgumentRule::isArgValid(var, convert))
         return false;
 
     const RbObject* val = var->getValue();
@@ -189,7 +192,7 @@ void MinmaxRule::printValue(std::ostream& o) const {
 
 
 /** Provide complete information about object */
-std::string MinmaxRule::toString(void) const {
+std::string MinmaxRule::richInfo(void) const {
 
     std::ostringstream o;
 

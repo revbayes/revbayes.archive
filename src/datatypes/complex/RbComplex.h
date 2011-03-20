@@ -49,7 +49,7 @@ class RbComplex : public RbObject {
         virtual bool                 equals(const RbObject* obj) const = 0;                                  //!< Equals comparison
 		virtual const VectorString&  getClass(void) const;                                                   //!< Get class vector
 		virtual void                 printValue(std::ostream& o) const = 0;                                  //!< Print value for user
-		virtual std::string          toString(void) const = 0;                                               //!< Complete info 
+		virtual std::string          richInfo(void) const = 0;                                               //!< Complete info 
 
         // Member variable functions: override if object contains member variables
         virtual const MemberRules&   getMemberRules(void) const;                                             //!< Get member rules

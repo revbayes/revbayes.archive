@@ -127,7 +127,7 @@ void Real::printValue(std::ostream &o) const {
 
 
 /** Get complete info about object */
-std::string Real::toString(void) const {
+std::string Real::richInfo(void) const {
 
 	std::ostringstream o;
     o << "Real(";

@@ -40,7 +40,7 @@ class VectorString : public RbComplex {
         bool                        equals(const RbObject* obj) const;                      //!< Equals comparison
         const VectorString&         getClass(void) const;                                   //!< Get class
         void                        printValue(std::ostream& o) const;                      //!< Print value (for user)
-        std::string                 toString(void) const;                                   //!< Complete info about object
+        std::string                 richInfo(void) const;                                   //!< Complete info about object
 
         // Overloaded operators and built-in functions
 	    std::string&                operator[](size_t i) { return value[i]; }               //!< Index op allowing change

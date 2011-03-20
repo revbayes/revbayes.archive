@@ -17,7 +17,10 @@
  */
 
 #include "ArgumentRule.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
+#include "DAGNodePlate.h"
+#include "MemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
@@ -55,6 +58,23 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
         argSlot.setReference( defVariable );
     else
         argSlot.setVariable( defVariable );
+}
+
+
+/** Test if argument is valid; for consistency, we also evaluate the argument here */
+DAGNode* ArgumentRule::convert(DAGNode* arg) const {
+    
+    if ( arg == NULL )
+        return NULL;
+
+    RbObject* theConvertedValue = arg->getValue()->convertTo( argSlot.getTypeSpec().getType(), argSlot.getTypeSpec().getDim() );
+    
+    if ( theConvertedValue->isType( Container_name ) )
+        return new DAGNodePlate( (Container*)( theConvertedValue ) );
+    else if ( theConvertedValue->isType( MemberObject_name ) )
+        return new MemberNode( (MemberObject*)( theConvertedValue ) );
+    else
+        return new ConstantNode( theConvertedValue );
 }
 
 
@@ -105,7 +125,7 @@ DAGNode* ArgumentRule::getDefaultReference(void) {
 
 
 /** Test if argument is valid; for consistency, we also evaluate the argument here */
-bool ArgumentRule::isArgValid(DAGNode* var) const {
+bool ArgumentRule::isArgValid(DAGNode* var, bool& convert) const {
     
     if ( var == NULL )
         return true;
@@ -114,11 +134,15 @@ bool ArgumentRule::isArgValid(DAGNode* var) const {
     const RbObject* value = var->getValue();
 
     if ( Workspace::userWorkspace().isXOfTypeY( var->getValueType(), argSlot.getTypeSpec().getType() ) == true &&
-         var->getDim() == argSlot.getTypeSpec().getDim()  )
+        var->getDim() == argSlot.getTypeSpec().getDim()  ) {
+        convert = false;
         return true;
+    }
 
-    if ( value->isConvertibleTo( argSlot.getTypeSpec().getType(), argSlot.getTypeSpec().getDim() ) == true)
+    if ( value->isConvertibleTo( argSlot.getTypeSpec().getType(), argSlot.getTypeSpec().getDim() ) == true) {
+        convert = true;
         return true;
+    }
 
     return false;
 }
@@ -148,7 +172,7 @@ void ArgumentRule::printValue(std::ostream &o) const {
 
 
 /** Provide complete information about object */
-std::string ArgumentRule::toString(void) const {
+std::string ArgumentRule::richInfo(void) const {
 
     std::ostringstream o;
 

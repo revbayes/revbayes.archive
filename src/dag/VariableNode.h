@@ -44,7 +44,7 @@ class VariableNode : public DAGNode {
         virtual void                    printValue(std::ostream& o) const = 0;                       //!< Print value for user
         virtual void                    setElement(const VectorInteger& index, RbObject* val) = 0;   //!< Set value element
         virtual void                    setValue(RbObject* val) = 0;                                 //!< Set value
-        virtual std::string             toString(void) const = 0;                                    //!< Complete info about object
+        virtual std::string             richInfo(void) const = 0;                                    //!< Complete info about object
 
         // DAG functions you should not override
         bool                            isTouched(void) const { return touched; }                    //!< Is node touched by move or parser?

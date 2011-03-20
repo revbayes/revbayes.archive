@@ -41,7 +41,7 @@ class ConstantNode : public DAGNode {
         const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
         void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
         void                    printValue(std::ostream& o) const;                                          //!< Print struct for user
-        std::string             toString(void) const;                                                       //!< Complete info on object
+        std::string             richInfo(void) const;                                                       //!< Complete info on object
 
         // ConstantNode functions
         const RbObject*         getStoredValue(void) { return value; }                                      //!< Get stored value

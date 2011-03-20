@@ -788,6 +788,22 @@ void DAGNodePlate::restoreAffected(void) {
 }
 
 
+/** Get complete info about object */
+std::string DAGNodePlate::richInfo(void) const {
+
+    std::ostringstream o;
+
+    o << "DAGNode plate:" << std::endl;
+    o << "dim         = " << getDim() << std::endl; 
+    o << "length      = " << getLength() << std::endl;
+    o << "valueType   = " << valueType << std::endl;
+    o << "value       = " << value << std::endl;
+    o << "storedValue = " << storedValue;
+
+    return o.str();
+}
+
+
 /** Set value element or elements from value */
 void DAGNodePlate::setElement(const VectorInteger& index, RbObject* val) {
 
@@ -1055,22 +1071,6 @@ void DAGNodePlate::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
     touched = true;
     changed = false;
     touchAffected();
-}
-
-
-/** Get complete info about object */
-std::string DAGNodePlate::toString(void) const {
-
-    std::ostringstream o;
-
-    o << "DAGNode plate:" << std::endl;
-    o << "dim         = " << getDim() << std::endl; 
-    o << "length      = " << getLength() << std::endl;
-    o << "valueType   = " << valueType << std::endl;
-    o << "value       = " << value << std::endl;
-    o << "storedValue = " << storedValue;
-
-    return o.str();
 }
 
 

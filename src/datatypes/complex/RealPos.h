@@ -37,7 +37,7 @@ class RealPos : public Real {
         // Basic utility functions
         RbObject*                   clone(void) const;                               //!< Clone object
         const VectorString&         getClass(void) const;                            //!< Get class vector
-        std::string                 toString(void) const;                            //!< Complete info about object
+        std::string                 richInfo(void) const;                            //!< Complete info about object
 
         // Setter disallowing nonpositive values
         void                        setValue(double x);                              //!< Set value

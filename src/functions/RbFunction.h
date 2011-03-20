@@ -63,7 +63,7 @@ class RbFunction :  public RbObject {
     	virtual bool                            equals(const RbObject* obj) const;                                                  //!< Check that the functions are the same
     	virtual const VectorString&             getClass(void) const;                                                               //!< Get class vector
     	void                                    printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
-        virtual std::string                     toString(void) const;                                                               //!< Complete info about object
+        virtual std::string                     richInfo(void) const;                                                               //!< Complete info about object
 
         // RbFunction functions
         virtual const ArgumentRules&            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
@@ -71,7 +71,8 @@ class RbFunction :  public RbObject {
         DAGNode*                                execute(void);                                                                      //!< Execute using processed args
         DAGNode*                                execute(const std::vector<Argument>& args);                                         //!< Execute function
         std::vector<DAGNode*> const&            getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
-        virtual bool                            processArguments(const std::vector<Argument>& args, VectorInteger* matchScore=NULL);    //!< Process args, return a match score if pointer is not null
+        virtual bool                            processArguments(const std::vector<Argument>&    args,
+                                                                 VectorInteger*                  matchScore=NULL);                  //!< Process args, return a match score if pointer is not null
 
 	protected:
                                                 RbFunction(void);                                                                   //!< Basic constructor
@@ -86,7 +87,6 @@ class RbFunction :  public RbObject {
 
         // Member variables
         std::vector<DAGNode*>                   processedArguments;                                                                 //!< Processed arguments
-        std::vector<bool>                       referenceArgument;                                                                  //!< Is processed argument reference?
         bool                                    argumentsProcessed;                                                                 //!< Are arguments processed?
 };
 

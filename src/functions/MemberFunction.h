@@ -39,7 +39,7 @@ class MemberFunction :  public RbFunction {
         MemberFunction*             clone(void) const;                      //!< Clone the object
     	bool                        equals(const RbObject* obj) const;      //!< Equals comparison
     	const VectorString&         getClass(void) const;                   //!< Get class vector
-        std::string                 toString(void) const;                   //!< Complete info about object
+        std::string                 richInfo(void) const;                   //!< Complete info about object
 
         // Regular functions
         const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules

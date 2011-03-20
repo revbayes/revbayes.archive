@@ -39,7 +39,7 @@ class Monitor : public RbComplex {
         bool                        equals(const RbObject* obj) const;              //!< Equals comparison
         const VectorString&         getClass(void) const;                           //!< Get class
         void                        printValue(std::ostream& o) const;              //!< Print value (for user)
-        std::string                 toString(void) const;                           //!< Complete info about object
+        std::string                 richInfo(void) const;                           //!< Complete info about object
 
         // Monitor functions
         void                        monitor(std::ofstream& o) const;                //!< Monitor unconditionally

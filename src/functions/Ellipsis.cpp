@@ -62,7 +62,7 @@ void Ellipsis::printValue(std::ostream &o) const {
 }
 
 /** Provide complete information about object */
-std::string Ellipsis::toString(void) const {
+std::string Ellipsis::richInfo(void) const {
 
     std::ostringstream o;
 

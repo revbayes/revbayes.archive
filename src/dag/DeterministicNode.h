@@ -46,7 +46,7 @@ class DeterministicNode : public VariableNode {
         virtual DeterministicNode*      clone(void) const = 0;                                                          //!< Clone this node
         virtual const VectorString&     getDAGClass(void) const;                                                        //!< Get DAG node class vector
         virtual void                    printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
-        virtual std::string             toString(void) const = 0;                                                       //!< Complete info about object
+        virtual std::string             richInfo(void) const = 0;                                                       //!< Complete info about object
 
         // DAG functions implemented here
         void    	                    getAffected(std::set<StochasticNode*>& affected);                               //!< Mark and get affected nodes

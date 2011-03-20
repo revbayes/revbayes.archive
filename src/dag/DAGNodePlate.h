@@ -75,9 +75,9 @@ class DAGNodePlate : public VariableNode {
         const RbObject*         getValue(void) const;                                                   //!< Get const value if poss.
         void                    printStruct(std::ostream& o) const;                                     //!< Print struct for user
         void                    printValue(std::ostream& o) const;                                      //!< Print value for user
+        std::string             richInfo(void) const;                                                   //!< Complete info about object
         void                    setName(const std::string& name);                                       //!< Set name of plate and elements
         void                    setValue(RbObject* val);                                                //!< Set value
-        std::string             toString(void) const;                                                   //!< Complete info about object
 
         // DAG functions
         DAGNodePlate*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph

@@ -772,7 +772,7 @@ void MatrixReal::printValue(std::ostream& o) const {
 }
 
 /** Complete info about object */
-std::string MatrixReal::toString(void) const {
+std::string MatrixReal::richInfo(void) const {
 
     // TODO: Replace with something that makes sense
     std::ostringstream o;

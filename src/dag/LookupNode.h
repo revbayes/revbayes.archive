@@ -25,6 +25,7 @@
 
 typedef std::vector<DAGNode*> IndexArgs;
 
+class MemberNode;
 class RbString;
 class VectorString;
 
@@ -32,12 +33,15 @@ class VectorString;
 class LookupNode : public DeterministicNode {
 
     public: 
-                            LookupNode(const std::string& valType);                                        //!< Constructor of empty node
+                            LookupNode(const std::string& valType);                                     //!< Constructor of empty node
                             LookupNode( DAGNode*    var,
                                         IndexArgs&  indxArgs);                                          //!< Lookup of regular variable
-                            LookupNode( LookupNode* baseVar,
+                            LookupNode( MemberNode*    baseVar,
                                         RbString*   membrName,
                                         IndexArgs&  indxArgs);                                          //!< Lookup of member variable
+                            LookupNode( LookupNode*    baseVar,
+                                        RbString*   membrName,
+                                        IndexArgs&  indxArgs);                                          //!< Indirect lookup of member variable
                             LookupNode(const LookupNode& x);                                            //!< Copy constructor
         virtual            ~LookupNode(void);                                                           //!< Virtual destructor
 
@@ -48,8 +52,9 @@ class LookupNode : public DeterministicNode {
         LookupNode*         clone(void) const;                                                          //!< Clone the lookup node
         const VectorString& getDAGClass(void) const;                                                    //!< Get DAG node class vector
         int                 getDim(void) const { return valueDim; }                                     //!< Get dim of lookup target value (0 for scalar, 1 for vector, etc)
+        DAGNode*            getVariable(void) { return const_cast<DAGNode*>( lookup() ); }              //!< Look up the variable and get a reference to it
         void                printStruct(std::ostream& o) const;                                         //!< Print struct for user
-        std::string         toString(void) const;                                                       //!< Complete info about object
+        std::string         richInfo(void) const;                                                       //!< Complete info about object
 
         // DAG functions
         LookupNode*         cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
@@ -60,18 +65,17 @@ class LookupNode : public DeterministicNode {
         LookupNode*         mutateTo(const VectorInteger& index, RbObject* newValue);                   //!< Mutate to contain newValue
         void                swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
-        // LookupNode functions. This is the only DAGNode that returns a DAGNode when executed
-        DAGNode*            getVariable(void);                                                          //!< Look up the variable and get a reference to it
+        // LookupNode functions
+        const TypeSpec&     getMemberTypeSpec(const RbString& name) const;                              //!< Get type spec of a named member variable of lookup target
 
     protected:
         // Utility functions
-        const TypeSpec&     getMemberTypeSpec(const RbString* name) const;                              //!< Get type spec of a named member variable
-        RbObject*           lookup(void);                                                               //!< Look up the value
+        const DAGNode*      lookup(void);                                                               //!< Look up the variable
         void                update(void);                                                               //!< Update value and storedValue
 
         // Member variables
-        DAGNode*            variable;                                                                   //!< Ptr to variable (simple lookup)
-        LookupNode*         baseVariable;                                                               //!< Ptr to base variable (member lookup)
+        DAGNode*            baseVariable;                                                               //!< Ptr to base variable
+        LookupNode*         baseLookup;                                                                 //!< Ptr to lookup of base variable (member node)
         RbString*           memberName;                                                                 //!< Name if member variable
         IndexArgs           indexArgs;                                                                  //!< Vector of index arguments (vector<DAGNode*>)
         int                 valueDim;                                                                   //!< Dimensions of lookup target value

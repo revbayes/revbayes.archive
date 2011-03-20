@@ -15,10 +15,12 @@
  * $Id$
  */
 
+#include "Frame.h"
 #include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "RbString.h"
 #include "TypeSpec.h"
 #include "VectorString.h"
 
@@ -124,6 +126,13 @@ const VectorString& MemberNode::getDAGClass() const {
 }
 
 
+/** Get type of a named member variable */
+const TypeSpec& MemberNode::getMemberTypeSpec(const RbString& name) const {
+
+    return memberObject->getMembers().getVariableSlot( name ).getTypeSpec();
+}
+
+
 /** Is it possible to mutate node to newNode? */
 bool MemberNode::isMutableTo(const DAGNode* newNode) const {
 
@@ -198,6 +207,32 @@ void MemberNode::printStruct(std::ostream& o) const {
 }
 
 
+/** Complete info about object */
+std::string MemberNode::richInfo(void) const {
+
+    std::ostringstream o;
+
+    o << "MemberNode:" << std::endl;
+
+    o << "name        = " << getName() << std::endl;
+    o << "touched     = " << (touched ? "true" : "false") << std::endl;
+    o << "changed     = " << (changed ? "true" : "false") << std::endl;
+    o << "valueType   = " << valueType << std::endl;
+
+    o << "value = ";
+    value->printValue(o);
+    o << std::endl;
+
+    if ( storedValue ) {
+        o << "storedValue = ";
+        storedValue->printValue(o);
+        o << std::endl;
+    }
+
+    return o.str();
+}
+
+
 /** Swap parent node */
 void MemberNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
 
@@ -224,32 +259,6 @@ void MemberNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
     touched = true;
     changed = false;
     touchAffected();
-}
-
-
-/** Complete info about object */
-std::string MemberNode::toString(void) const {
-
-    std::ostringstream o;
-
-    o << "MemberNode:" << std::endl;
-
-    o << "name        = " << getName() << std::endl;
-    o << "touched     = " << (touched ? "true" : "false") << std::endl;
-    o << "changed     = " << (changed ? "true" : "false") << std::endl;
-    o << "valueType   = " << valueType << std::endl;
-
-    o << "value = ";
-    value->printValue(o);
-    o << std::endl;
-
-    if ( storedValue ) {
-        o << "storedValue = ";
-        storedValue->printValue(o);
-        o << std::endl;
-    }
-
-    return o.str();
 }
 
 

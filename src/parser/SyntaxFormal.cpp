@@ -103,9 +103,9 @@ std::string SyntaxFormal::briefInfo () const {
     std::ostringstream   o;
 
     if (defaultExpr == NULL)
-        o << "SyntaxFormal:  '" << type->toString() << " " << std::string(*label);
+        o << "SyntaxFormal:  '" << type->richInfo() << " " << std::string(*label);
     else {
-        o << "SyntaxFormal:  '" << type->toString() << " " << std::string(*label) << " = ";
+        o << "SyntaxFormal:  '" << type->richInfo() << " " << std::string(*label) << " = ";
         o << defaultExpr->briefInfo();
     }
 
@@ -148,8 +148,8 @@ DAGNode* SyntaxFormal::getValue(Frame* frame) const {
 void SyntaxFormal::print(std::ostream& o) const {
 
     o << "SyntaxFormal:" << std::endl;
-    o << "type        = " << type->toString() << std::endl;
-    o << "label       = " << label->toString() << std::endl;
+    o << "type        = " << type->richInfo() << std::endl;
+    o << "label       = " << label->richInfo() << std::endl;
     o << "defaultExpr = " << defaultExpr->briefInfo() << std::endl;
 }
 

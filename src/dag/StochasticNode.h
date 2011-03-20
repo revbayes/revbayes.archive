@@ -49,7 +49,7 @@ class StochasticNode : public VariableNode {
         void                    setElement(const VectorInteger& index, RbObject* value);        //!< Set value element
         void                    setName(const std::string& name);                               //!< Set name
         void                    setValue(RbObject* value);                                      //!< Set value
-        std::string             toString(void) const;                                           //!< Complete info about object
+        std::string             richInfo(void) const;                                           //!< Complete info about object
 
         // StochasticNode functions
         double                  calculateLnProbability(void);                                   //!< Calculate log conditional probability

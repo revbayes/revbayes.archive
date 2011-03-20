@@ -131,6 +131,17 @@ void Simplex::resize(const VectorInteger& len) {
 }
 
 
+/** Complete info about object */
+std::string Simplex::richInfo(void) const {
+
+    std::ostringstream o;
+    o <<  "Simplex: value = ";
+    printValue(o);
+
+    return o.str();
+}
+
+
 /** Allow parser to set an element (actually do not) */
 void Simplex::setElement(const VectorInteger& index, RbObject* val) {
 
@@ -158,16 +169,5 @@ void Simplex::setValue(const std::vector<double>& x) {
     value.clear();
     value = x;
     rescale();
-}
-
-
-/** Complete info about object */
-std::string Simplex::toString(void) const {
-
-    std::ostringstream o;
-    o <<  "Simplex: value = ";
-    printValue(o);
-
-    return o.str();
 }
 

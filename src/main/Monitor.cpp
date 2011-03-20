@@ -94,7 +94,7 @@ void Monitor::printValue(std::ostream& o) const {
 
 
 /** Complete info about object */
-std::string Monitor::toString(void) const {
+std::string Monitor::richInfo(void) const {
 
     std::ostringstream o;
     o << "Monitor: interval = " << samplingFrequency << "; node = '" << theNode->getName() << "'";

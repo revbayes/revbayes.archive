@@ -251,79 +251,32 @@ void VariableSlot::setVariable(DAGNode* newVar) {
 }
 
 
-/** Set a value slot to a new variable value */
+/** Set a slot to a new value */
 void VariableSlot::setValue(RbObject* value) {
 
-    removeVariable();
-
-    // Wrap the value appropriately and then set the slot
-    if ( value->isType( MemberObject_name ) )
-        setVariable( new MemberNode( dynamic_cast<MemberObject*>( value ) ) );
-    else if ( value->isType( Container_name ) )
-        setVariable( new DAGNodePlate( dynamic_cast<Container*>( value ) ) );
-    else
-        setVariable( new ConstantNode( value ) );
-}
-
-
-/** Make sure we can print to stream using << operator */
-std::ostream& operator<<(std::ostream& o, const VariableSlot& x) {
-
-    o << "<" << x.getTypeSpec() << ">";
-    if ( x.getName() != "" )
-        o << " " << x.getName();
-    o << " =";
-    if ( x.isTemp() )
-        o << " [temp]";
-    if ( x.getVariable() == NULL )
-        o << " NULL";
-    else {
-        o << " ";
-        x.getVariable()->printValue(o);
-    }
-    return o;
-}
-
-
-#if 0
-/** Set value */
-void Frame::setValue(const std::string& name, RbObject* value) {
-
-    // Find the variable
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentFrame != NULL)
-            parentFrame->setValue(name, value);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    // Get handy reference to slot
-    VariableSlot& slot = (*it).second;
-
     // Delegate to the owner if a reference variable
-    if ( slot.reference == true && slot.temp == false && slot.variable != NULL ) {
-        slot.variable->getFrame()->setValue(slot.variable->getName(), value);
+    if ( typeSpec.isReference() && !temp && variable != NULL ) {
+        variable->getSlot()->setValue( value );
         return;
     }
 
     // Note that we let the case of a reference variable, which is NULL or temp, being set by a
-    // value pass through. There is no owner frame to delegate to in this case, so use the
-    // standard code to deal with this case and set temp to true to indicate that the reference
-    // slot holds a temporary variable managed by the frame.
+    // value pass through. There is no owner to delegate to in this case, so use the standard
+    // code to deal with this case and set temp to true to indicate that the reference slot
+    // holds a temporary variable managed by the slot.
 
     // Do type conversion if necessary
     bool mutate = false;
     if ( value != NULL ) {
         bool typeMatch;
-        if (value->isType(Container_name)) {
-            Container* container = (Container*)(value);
-            typeMatch = Workspace::userWorkspace().isXOfTypeY(container->getElementType(), slot.type) && container->getDim() == slot.dim;
+        if ( value->isType( Container_name ) ) {
+            Container* container = (Container*)( value );
+            typeMatch = Workspace::userWorkspace().isXOfTypeY( container->getElementType(), typeSpec.getType() ) && container->getDim() == typeSpec.getDim();
         }
         else {
-            typeMatch = Workspace::userWorkspace().isXOfTypeY(value->getType(), slot.type) && slot.dim == 0;
+            typeMatch = Workspace::userWorkspace().isXOfTypeY( value->getType(), slot.type ) && slot.dim == 0;
         }
-        if (typeMatch == false) {
+        if ( typeMatch == false ) {
             if ( value->isConvertibleTo(slot.type, slot.dim) ) {
                 // We are golden, just convert to the right value type and delete old value
                 RbObject* oldValue = value;
@@ -398,230 +351,33 @@ void Frame::setValue(const std::string& name, RbObject* value) {
 }
 
 
-/** Set variable */
-void Frame::setVariable(const std::string& name, DAGNode* variable) {
+    removeVariable();
 
-    // Find the variable slot
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentFrame != NULL)
-            parentFrame->setVariable(name, variable);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    // Get handy reference to slot
-    VariableSlot& slot = (*it).second;
-
-    // Special case if new variable is NULL
-    if (variable == NULL) {
-        if (slot.variable != NULL)
-            removeOldVariable(slot);
-        slot.variable = NULL;
-        return;
-	}
-	
-    // Set a reference variable
-    if ( slot.reference == true ) {
-        if ( variable->getFrame() != NULL ) {
-            // We actually have been given a reference. We do not allow any type conversion in this case
-            if ( variable->getDim() == slot.dim && Workspace::globalWorkspace().isXOfTypeY(variable->getValueType(), slot.type) ) {
-                removeOldVariable(slot);
-                slot.variable = variable;
-                slot.temp = false;
-                slot.variable->addReferringFrame(this);
-                return;
-            }
-            else
-                throw RbException("Wrong type for setting variable reference");
-        }
-        else if ( variable->getFrame() == NULL && slot.variable != NULL && slot.temp == false ) {
-            // We are trying to set a value through a reference. Delegate to owner frame.
-            slot.variable->getFrame()->setVariable(name, variable);
-            return;
-        }
-    }
-    
-    // Note that we let the case of a reference variable, which is NULL or temp, being set by a
-    // non-reference DAG node (temp variable) pass through. There is no owner frame to delegate
-    // to in this case, so use the standard code to deal with this case and set temp to true to
-    // indicate that the reference slot holds a temporary variable managed by the frame.
-
-    // If conversion of constant to stochastic node, save value of old variable
-    if (slot.variable != NULL &&
-        slot.variable->isType(ConstantNode_name) &&
-        slot.variable->getValue() != NULL &&
-        variable->isType(StochasticNode_name)) {
-        
-        if ( slot.variable->getValue()->isType(variable->getValueType()) ) {
-            ((StochasticNode *)variable)->setValue(slot.variable->getValue()->clone());
-        }
-        else if ( slot.variable->getValue()->isConvertibleTo(variable->getValueType()) ) {
-            ((StochasticNode *)variable)->setValue(slot.variable->getValue()->convertTo(variable->getValueType()));   
-        }
-    }
-
-    // Do type conversion if necessary
-    bool mutate = false;
-    if ( !Workspace::userWorkspace().isXOfTypeY(variable->getValueType(), slot.type) || variable->getDim() != slot.dim ) {
-        if ( Workspace::userWorkspace().isXConvertibleToY(variable->getValueType(), variable->getDim(), slot.type, slot.dim) ) {
-            // We are golden, just insert a converter node to the right value type
-            ConverterNode* convNode = new ConverterNode(variable, slot.type, slot.dim);
-            variable = convNode;
-		}
-        else if ( slot.variable != NULL && slot.variable->isMutableTo(variable) ) {
-            // Set a flag that triggers mutation of the variable below
-            mutate = true;
-        }
-        else {
-            // No possibilities left
-            std::ostringstream msg;
-            msg << slot.type;
-            for (int i=0; i<slot.dim; i++)
-                msg << "[]";
-            if (slot.reference == true)
-                msg << "&";
-            msg << " variable does not take ";
-            msg << variable->getValueType();
-            for (int i=0; i<variable->getDim(); i++)
-                msg << "[]";
-            if (variable->getFrame() != NULL)
-                msg << "&";
-            msg << " value";
-            throw(RbException(msg.str()));
-		}
-    }
-
-    // Update DAG and referring frames if old variable is not NULL; delete old variable
-    if ( slot.variable != NULL ) {
-
-        // Update DAG and referring frames
-        if (mutate == true)
-            slot.variable->mutateTo(variable);
-        else
-            slot.variable->swapNodeTo(variable);
-        
-        /* Remove old variable */
-        removeOldVariable(slot);
-	}
-
-    /* Find name of new variable */
-    std::string varName;
-    if (frameName != "")
-        varName = frameName + "." + name;
+    // Wrap the value appropriately and then set the slot
+    if ( value->isType( MemberObject_name ) )
+        setVariable( new MemberNode( dynamic_cast<MemberObject*>( value ) ) );
+    else if ( value->isType( Container_name ) )
+        setVariable( new DAGNodePlate( dynamic_cast<Container*>( value ) ) );
     else
-        varName = name;
-
-    /* Set new variable */
-    if ( slot.reference == true )
-        slot.temp = true;
-    variable->setName(varName);
-    variable->setFrame(this);
-    slot.variable = variable;
+        setVariable( new ConstantNode( value ) );
 }
 
 
-/** Set element of variable with object */
-void Frame::setValElement(const std::string& name, const VectorInteger& index, RbObject* value) {
+/** Make sure we can print to stream using << operator */
+std::ostream& operator<<(std::ostream& o, const VariableSlot& x) {
 
-    /* Check for inadvertent calls */
-    if (index.size() == 0)
-        setValue(name, value);
- 
-    /* Find the variable */
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentFrame != NULL)
-            return parentFrame->setValElement(name, index, value);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
+    o << "<" << x.getTypeSpec() << ">";
+    if ( x.getName() != "" )
+        o << " " << x.getName();
+    o << " =";
+    if ( x.isTemp() )
+        o << " [temp]";
+    if ( x.getVariable() == NULL )
+        o << " NULL";
+    else {
+        o << " ";
+        x.getVariable()->printValue(o);
     }
-
-    /* Get handy reference to slot */
-    VariableSlot& slot = (*it).second;
-
-    /* Special case when slot.variable is NULL */
-    VectorInteger length = index;
-    for (size_t i=0; i<length.size(); i++)
-        length[i]++;
-    if (slot.variable ==  NULL) {
-        if ((value == NULL || value->isType(slot.type)) && int(index.size()) == slot.dim) {
-            DAGNodePlate* plate = new DAGNodePlate(length, slot.type);
-            if (value != NULL)
-                plate->setElement(index, value);
-            slot.variable = plate;
-            return;
-        }
-    }
-
-    /* Check dimension */
-    if (int(index.size()) < slot.variable->getDim() ||
-        (int(index.size()) > slot.variable->getDim() && !Workspace::userWorkspace().isXOfTypeY(slot.variable->getValueType(), RbComplex_name)))
-        throw (RbException("Subscript error"));
-
-    /* Element assignment: variable checks types */
-    slot.variable->setElement(index, value);
+    return o;
 }
 
-
-/** Set element of variable with DAG node */
-void Frame::setVarElement(const std::string& name, const VectorInteger& index, DAGNode* var) {
-
-     /* Check for inadvertent calls */
-    if (index.size() == 0)
-        setVariable(name, var);
- 
-    /* Find the variable */
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentFrame != NULL) {
-            parentFrame->setVarElement(name, index, var);
-            return;
-        }
-        else
-            throw (RbException("Variable " + name + " does not exist"));
-    }
-
-    /* We are responsible for setting it */
-    DAGNode* variable = (*it).second.variable;
-
-    /* Special case when variable is NULL */
-    if ((var == NULL || Workspace::userWorkspace().isXOfTypeY(var->getValueType(), (*it).second.type)) &&
-        int(index.size()) == (*it).second.dim && variable == NULL) {
-        if (var == NULL)
-            variable = (*it).second.variable = new DAGNodePlate(index, (*it).second.type);
-        else
-            variable = (*it).second.variable = new DAGNodePlate(index, var);
-        return;
-    }
-
-    /* Check index */
-    if (int(index.size()) != (*it).second.dim)
-        throw (RbException("Subscript error"));
-
-    /* Disallow container assignment */
-    if (var->getDim() > 0)
-        throw RbException("Invalid assignment of container to variable element");
-
-    /* Assignment: variable checks types */
-    variable->setElement(index, var);
-}
-
-
-/** Swap reference to be a reference to another variable */
-void VariableSlot::swapReference(DAGNode* oldRef, DAGNode* newRef) {
-
-    // Find the variable (it is inefficient but this function is not used during the mcmc)
-    std::map<std::string, VariableSlot>::iterator i;
-    for ( i = variableTable.begin(); i != variableTable.end(); i++ ) {
-        if ( (*i).second.variable == oldRef )
-            break;
-    }
-    if ( i == variableTable.end() ) { 
-        throw ( RbException( "Variable reference does not exist in this frame" ) );
-    }
-
-    (*i).second.setReference( newRef );
-}
-
-#endif

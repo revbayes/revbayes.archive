@@ -89,7 +89,7 @@ const TypeSpec MemberFunction::getReturnType(void) const {
 
 
 /** Complete info about object */
-std::string MemberFunction::toString(void) const {
+std::string MemberFunction::richInfo(void) const {
 
     std::ostringstream o;
     o << "MemberFunction: " << (*this) << std::endl;

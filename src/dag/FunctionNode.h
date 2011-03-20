@@ -21,11 +21,11 @@
 #define FunctionNode_H
 
 #include "DeterministicNode.h"
+#include "RbFunction.h"
 
 #include <string>
 #include <vector>
 
-class RbFunction;
 
 class FunctionNode : public DeterministicNode {
 
@@ -43,8 +43,9 @@ class FunctionNode : public DeterministicNode {
         virtual const VectorString& getDAGClass(void) const;                                                    //!< Get DAG node class vector
         int                         getDim(void) const { return valueDim; }                                     //!< Get dim of return value
         const RbFunction*           getFunction(void) const { return function; }                                //!< Get function
+        DAGNode*                    getVariable(void) { return function->execute(); }                           //!< Execute function and return variable
         virtual void                printStruct(std::ostream& o) const;                                         //!< Print struct for user
-        virtual std::string         toString(void) const;                                                       //!< Complete info about object
+        virtual std::string         richInfo(void) const;                                                       //!< Complete info about object
 
         // DAG functions
         FunctionNode*               cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph

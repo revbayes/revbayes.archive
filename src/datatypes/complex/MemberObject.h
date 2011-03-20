@@ -42,7 +42,7 @@ class MemberObject: public RbComplex {
         virtual bool                equals(const RbObject* x) const;                                              //!< Equals comparison
         virtual const VectorString& getClass(void) const;                                                         //!< Get class vector
         virtual void                printValue(std::ostream& o) const;                                            //!< Print value for user
-        virtual std::string         toString(void) const;                                                         //!< Complete info
+        virtual std::string         richInfo(void) const;                                                         //!< Complete info
 
         // DAG utility functions
         MemberObject*               cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                       //!< Clone entire graph

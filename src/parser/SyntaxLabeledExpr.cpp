@@ -117,7 +117,7 @@ DAGNode* SyntaxLabeledExpr::getValue(Frame* frame) const {
 void SyntaxLabeledExpr::print(std::ostream& o) const {
 
     o << "[" << this << "] SyntaxLabeledExpr:" << std::endl;
-    o << "label      = " << label->toString() << std::endl;
+    o << "label      = " << label->richInfo() << std::endl;
     o << "expression = [" << expression << "]" << expression->briefInfo() << std::endl;
     o << std::endl;
 

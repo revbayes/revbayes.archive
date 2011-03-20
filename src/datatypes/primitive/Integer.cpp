@@ -128,7 +128,7 @@ void Integer::printValue(std::ostream &o) const {
 }
 
 /** Get complete info about object */
-std::string Integer::toString(void) const {
+std::string Integer::richInfo(void) const {
 
 	std::ostringstream o;
     o << "Integer(";

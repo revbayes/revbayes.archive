@@ -39,7 +39,7 @@ bool TypeSpec::operator==(const TypeSpec& x) const {
 
 
 /** Convert to string */
-std::string TypeSpec::toString(void) const {
+std::string TypeSpec::richInfo(void) const {
 
     std::string typeDesc = type;
 
@@ -56,7 +56,7 @@ std::string TypeSpec::toString(void) const {
 /** Make sure we can print to stream using << operator */
 std::ostream& operator<<(std::ostream& o, const TypeSpec& x) {
 
-    o << x.toString();
+    o << x.richInfo();
     return o;
 }
 

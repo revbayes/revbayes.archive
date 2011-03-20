@@ -37,7 +37,7 @@ class Simplex : public VectorRealPos {
         Simplex*                    clone(void) const;                                     //!< Clone object
         bool                        equals(const RbObject* obj) const;                     //!< Equals comparison
         const VectorString&         getClass(void) const;                                  //!< Get class
-        std::string                 toString(void) const;                                  //!< Complete info about object
+        std::string                 richInfo(void) const;                                  //!< Complete info about object
 
         // Overloaded operators and built-in functions
         double&                     operator[](size_t i);                                   //!< Index op allowing change - throw error

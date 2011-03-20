@@ -39,7 +39,7 @@ class Ellipsis : public ArgumentRule {
         Ellipsis*           clone(void) const { return new Ellipsis(*this); }   //!< Clone object
         const VectorString& getClass(void) const;                               //!< Get class vector
         void                printValue(std::ostream& o) const;                  //!< Print value for user
-        std::string         toString(void) const;                               //!< Complete info 
+        std::string         richInfo(void) const;                               //!< Complete info 
 
         // Regular functions
         bool                isArgValid(DAGNode* var) const;                     //!< Check arg validity

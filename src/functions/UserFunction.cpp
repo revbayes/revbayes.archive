@@ -118,7 +118,7 @@ const TypeSpec UserFunction::getReturnType() const {
 
 
 /** Complete info about object */
-std::string UserFunction::toString() const {
+std::string UserFunction::richInfo() const {
 
     std::ostringstream o;
     o << "User-defined function:" << std::endl;

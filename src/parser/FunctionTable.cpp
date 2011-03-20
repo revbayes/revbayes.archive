@@ -272,7 +272,7 @@ void FunctionTable::printValue(std::ostream& o) const {
 
 
 /** Complete info about object */
-std::string FunctionTable::toString(void) const {
+std::string FunctionTable::richInfo(void) const {
 
     std::ostringstream o;
     if (table.size() == 0)

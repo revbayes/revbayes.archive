@@ -43,7 +43,7 @@
         const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
         int                     getDim(void) const { return valueDim; }                                     //!< Get dim of converted value (0 for scalar, 1 for vector, etc)
         void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
-        std::string             toString(void) const;                                                       //!< Complete info about object
+        std::string             richInfo(void) const;                                                       //!< Complete info about object
 
         // DAG functions
         ConverterNode*          cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph

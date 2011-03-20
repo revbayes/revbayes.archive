@@ -44,7 +44,7 @@ class MethodTable : public FunctionTable {
         // Basic utility functions
         std::string     briefInfo(void) const;                                  //!< Brief info to string
         MethodTable*    clone(void) const { return new MethodTable(*this); }    //!< Clone object
-        std::string     toString(void) const;                                   //!< Complete info to string
+        std::string     richInfo(void) const;                                   //!< Complete info to string
 
         // MethodTable functions
         void                            addFunction(const std::string name, RbFunction* func);                              //!< Add function, generate unique id

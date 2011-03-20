@@ -61,11 +61,6 @@ class SyntaxVariable : public SyntaxElement {
         RbString*                   identifier;                                                                         //!< The name of the variable
         std::list<SyntaxElement*>*  index;                                                                              //!< Vector of int indices to variable element
         SyntaxVariable*             baseVariable;                                                                       //!< Base variable (pointing to a composite node)
-
-    private:
-        Frame*                      getBaseFrame(Frame* frame) const;                                                   //!< Get base frame of variable
-        DAGNode*                    getVariableReference(Frame* frame) const;                                           //!< Get variable reference
-        Frame*                      getVariableMemberFrame(Frame* frame) const;                                         //!< Get member frame of variable itself
 };
 
 #endif

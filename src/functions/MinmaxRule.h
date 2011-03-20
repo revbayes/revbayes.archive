@@ -45,10 +45,10 @@ class MinmaxRule : public ArgumentRule {
         MinmaxRule*                 clone(void) const { return new MinmaxRule(*this); } //!< Clone object
         virtual const VectorString& getClass(void) const;                               //!< Get class vector
         void                        printValue(std::ostream& o) const;                  //!< Print value for user
-        std::string                 toString(void) const;                               //!< General info on object
+        std::string                 richInfo(void) const;                               //!< General info on object
 
         // MinmaxRule functions
-        virtual bool                isArgValid(DAGNode* var) const;                     //!< Is var valid argument?
+        virtual bool                isArgValid(DAGNode* var, bool& convert) const;      //!< Is var valid argument?
 
     protected:
         RbObject*                   minVal;                                             //!< Min value

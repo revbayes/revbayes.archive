@@ -108,7 +108,7 @@ void Boolean::printValue(std::ostream &o) const {
 }
 
 /** Get complete info about object */
-std::string Boolean::toString(void) const {
+std::string Boolean::richInfo(void) const {
 
 	std::ostringstream o;
     o << "Boolean: value = ";

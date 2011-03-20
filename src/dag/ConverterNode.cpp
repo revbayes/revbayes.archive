@@ -158,24 +158,8 @@ void ConverterNode::printStruct(std::ostream& o) const {
 }
 
 
-/** Swap parent node */
-void ConverterNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
-
-    if (parents.find(oldNode) == parents.end())
-        throw RbException("Node is not parent");
-    oldNode->removeChildNode(this);
-    newNode->addChildNode(this);
-    parents.erase(oldNode);
-    parents.insert(newNode);
-
-    touched = true;
-    changed = false;
-    touchAffected();
-}
-
-
 /** Complete info about object */
-std::string ConverterNode::toString(void) const {
+std::string ConverterNode::richInfo(void) const {
 
     std::ostringstream o;
 
@@ -196,6 +180,22 @@ std::string ConverterNode::toString(void) const {
     o << std::endl;
 
     return o.str();
+}
+
+
+/** Swap parent node */
+void ConverterNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
+
+    if (parents.find(oldNode) == parents.end())
+        throw RbException("Node is not parent");
+    oldNode->removeChildNode(this);
+    newNode->addChildNode(this);
+    parents.erase(oldNode);
+    parents.insert(newNode);
+
+    touched = true;
+    changed = false;
+    touchAffected();
 }
 
 

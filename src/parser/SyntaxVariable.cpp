@@ -20,6 +20,8 @@
 
 #include "Integer.h"
 #include "LookupNode.h"
+#include "MemberNode.h"
+#include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "VariableSlot.h"
@@ -127,11 +129,40 @@ DAGNode* SyntaxVariable::getDAGNodeExpr(Frame* frame) const {
     for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++)
         indexArgs.push_back((*i)->getDAGNodeExpr(frame));
 
-    /* Return lookup node */
-    if (baseVariable == NULL)
-        return new LookupNode(frame->getVariable(*identifier), indexArgs);
-    else
-        return new LookupNode(baseVariable->getDAGNodeExpr(frame), identifier, indexArgs);
+    /* Check whether it is safe to return the variable itself or whether we need a lookup node */
+    bool indexLookupNeeded = false;
+    for (std::vector<DAGNode*>::iterator i=indexArgs.begin(); i!=indexArgs.end(); i++) {
+        if ( !(*i)->isConstExpr() ) {
+            indexLookupNeeded = true;
+            break;
+        }
+    }
+
+    DAGNode* baseVarNode = NULL;
+    if ( baseVariable != NULL )
+        baseVarNode = baseVariable->getDAGNodeExpr( frame );
+
+    if ( indexLookupNeeded == false && ( baseVarNode == NULL || baseVarNode->isDAGType( MemberNode_name ) ) ) {
+        
+        /* Avoid memory leak by deleting the index arguments */
+        for (std::vector<DAGNode*>::iterator i=indexArgs.begin(); i!=indexArgs.end(); i++) {
+            if ( (*i)->numRefs() == 0 )
+                delete (*i);
+        }
+        if ( baseVarNode != NULL )
+            delete baseVarNode;
+
+        /* Return value, which is a direct reference to the variable */
+        return getValue( frame );
+    }
+    else {
+        if ( baseVarNode == NULL )
+            return new LookupNode(frame->getReference(*identifier), indexArgs);
+        else if ( !baseVarNode->isDAGType( LookupNode_name ) ) // In principle, this indirection is not needed but current code relies on it
+            return new LookupNode( new LookupNode( baseVarNode, std::vector<DAGNode*>() ), identifier, indexArgs );
+        else
+            return new LookupNode( (LookupNode *)(baseVarNode), identifier, indexArgs);
+    }
 }
 
 
@@ -155,7 +186,6 @@ std::string SyntaxVariable::getFullName(Frame* frame) const {
 /** Get index */
 VectorInteger SyntaxVariable::getIndex(Frame* frame) const {
 
-    DAGNode*        theVariable = getVariableReference(frame);
     VectorInteger   theIndex;
 
     int count = 1;
@@ -166,7 +196,7 @@ VectorInteger SyntaxVariable::getIndex(Frame* frame) const {
         else {
 
             DAGNode* indexVar = (*i)->getValue(frame);
-            if (indexVar->isType(Integer_name)) {
+            if (indexVar->getValue()->isType(Integer_name)) {
 
                 // Calculate (or get) an integer index
                 int intIndex = ((Integer*)(indexVar))->getValue(); 
@@ -183,13 +213,15 @@ VectorInteger SyntaxVariable::getIndex(Frame* frame) const {
                 // Get zero-based value corresponding to integer index
                 theIndex.push_back(intIndex-1);
             }
-            else if (indexVar->isType(RbString_name)) {
+            else if (indexVar->getValue()->isType(RbString_name)) {
 
+                throw RbException( "String index not implemented yet" );
+                
                 // Use variable to convert string index to integer index
-                int intIndex = theVariable->getElementIndex((RbString*)(indexVar));
+                // int intIndex = theVariable->getElementIndex((RbString*)(indexVar));
 
                 // If success, then we have a zero-based integer index
-                theIndex.push_back(intIndex);
+                // theIndex.push_back(intIndex);
             }
             else {
                 delete indexVar;
@@ -227,77 +259,27 @@ DAGNode* SyntaxVariable::getValue(Frame* frame) const {
     /* Get subscript */
     VectorInteger theIndex = getIndex(frame);
 
-    /* Get base frame of variable */
-    Frame* varFrame = getBaseFrame(frame);
+    /* Get base variable */
+    DAGNode* baseVar;
+    if ( baseVariable == NULL )
+        baseVar = frame->getVariableSlot(*identifier).getReference();
+    else {
+        DAGNode* theMemberNode = baseVariable->getValue(frame);
+
+        // Test that it is a member object
+        if ( !theMemberNode->isDAGType( MemberNode_name ) )
+            throw RbException( getFullName(frame) + " does not have members" );
+
+        // Find the member variable
+        const MemberObject* theMemberObject = const_cast<const MemberObject*>( ((MemberNode*)(theMemberNode))->getMemberObject() );
+        baseVar = const_cast<DAGNode*>( theMemberObject->getVariable(*identifier) );
+    }
 
     /* Get value */
     if (theIndex.size() == 0)
-        return varFrame->getVariableSlot(*identifier).getValue()->clone();
+        return baseVar;
     else
-        return varFrame->getVariableSlot(*identifier).getElement(theIndex)->clone();
-}
-
-
-/** Return base frame of variable */
-Frame* SyntaxVariable::getBaseFrame(Frame *frame) const {
-
-    if (baseVariable == NULL)
-        return frame;
-    else
-        return baseVariable->getVariableMemberFrame(frame);
-}
-
-
-/**
- * Get pointer to member frame of variable. This evaluates the index and is appropriate
- * only if appearing in an lhs or value expression, not in an equation expression, in
- * which case the base variable needs to be represented by a lookup node, obtained
- * through a call to getDAGNodeExpr(frame).
- *
- * @Note This function gets the member variable frame of the variable or variable
- * element itself, so it should only be called on base variable syntax elements.
- * Use getBaseFrame if you wish to get the base frame of the variable.
- */
-Frame* SyntaxVariable::getVariableMemberFrame(Frame* frame) const {
-
-    /* Get the base frame */
-    Frame* baseFrame;
-    if (baseVariable != NULL)
-        baseFrame = baseVariable->getVariableMemberFrame(frame);
-    else
-        baseFrame = frame;
-
-    // Get index
-    VectorInteger intIndex = getIndex(frame);
-
-    // Get reference to the variable
-    DAGNode* theVariable;
-    if (index->size() == 0)
-        theVariable = baseFrame->getVariableSlot(*identifier).getReference();
-    else
-        theVariable = baseFrame->getVariableSlot(*identifier).getReference(intIndex);
-
-    // Test that it is a composite node
-    if (!theVariable->isType(CompositeNode_name))
-        throw RbException(getFullName(frame) + " does not have members");
-
-    // Return the frame
-    return ((CompositeNode*)(theVariable))->getMemberFrame();
- }
-
-
-/** Get variable reference */
-DAGNode* SyntaxVariable::getVariableReference(Frame* frame) const {
-
-    /* Get the frame of the variable */
-    Frame* varFrame;
-    if (baseVariable == NULL)
-        varFrame = frame;
-    else
-        varFrame = baseVariable->getVariableMemberFrame(frame);
-    
-    /* Return the variable reference */
-    return varFrame->getVariableSlot(*identifier).getReference();
+        return const_cast<DAGNode*>( baseVar->getVarElement( theIndex ) );
 }
 
 

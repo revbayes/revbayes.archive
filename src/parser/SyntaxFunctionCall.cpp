@@ -138,19 +138,13 @@ DAGNode* SyntaxFunctionCall::getDAGNodeExpr(Frame* frame) const {
 }
 
 
-/**
- * Look up the function or member function and calculate the value. We cannot simply get the
- * value of each argument because it could be a reference argument and we do not know whether
- * it is before we have matched the arguments to a specific function call. Instead, we get the
- * DAG node expression corresponding to the argument and dereference it if it turns out to
- * match a reference argument.
- */
+/** Look up the function or member function and calculate the value. */
 DAGNode* SyntaxFunctionCall::getValue(Frame* frame) const {
 
     // Package arguments
     std::vector<Argument> args;
     for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        args.push_back(Argument(*(*i)->getLabel(), (*i)->getExpression()->getDAGNodeExpr(frame)));    
+        args.push_back(Argument(*(*i)->getLabel(), (*i)->getExpression()->getValue(frame)));    
 
     // Get function pointer and execute function
     DAGNode* retVal;

@@ -40,7 +40,7 @@ class VectorRealPos : public VectorReal {
         virtual VectorRealPos*      clone(void) const;                                            //!< Clone object
         virtual bool                equals(const RbObject* obj) const;                            //!< Equals comparison
         virtual const VectorString& getClass(void) const;                                         //!< Get class vector
-        virtual std::string         toString(void) const;                                         //!< Complete info about object
+        virtual std::string         richInfo(void) const;                                         //!< Complete info about object
 
         // Regular functions, including STL-like functions
         void                        push_back(double x);                                          //!< Append element to end

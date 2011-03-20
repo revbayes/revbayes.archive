@@ -38,7 +38,7 @@ class Boolean : public RbObject {
         bool                        equals(const RbObject* obj) const;               //!< Equals comparison
         const VectorString&         getClass(void) const;                            //!< Get class vector
         void                        printValue(std::ostream& o) const;               //!< Print value (for user)
-        std::string                 toString(void) const;                            //!< Complete info about object
+        std::string                 richInfo(void) const;                            //!< Complete info about object
 
         // Type conversion
         RbObject*                   convertTo(const std::string& type, int dim=0) const;                        //!< Convert to type and dim

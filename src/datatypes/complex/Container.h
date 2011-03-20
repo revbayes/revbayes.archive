@@ -58,7 +58,7 @@ class Container : public RbComplex {
         bool                        equals(const RbObject* x) const;                                  //!< Equals comparison
         const VectorString&         getClass(void) const;                                             //!< Get class
         void                        printValue(std::ostream& o) const;                                //!< Print value for user
-        std::string                 toString(void) const;                                             //!< Complete info about object
+        std::string                 richInfo(void) const;                                             //!< Complete info about object
 
         // Type conversion
         bool                        isConvertibleTo(const std::string& type, int dim = 0) const;      //!< Is convertible to type and dim?

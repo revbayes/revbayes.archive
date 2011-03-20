@@ -42,7 +42,7 @@ const VectorString& Argument::getClass(void) const {
 
 
 /** Complete info about object */
-std::string Argument::toString(void) const {
+std::string Argument::richInfo(void) const {
 
     std::ostringstream o;
     o << "Argument: label = \"" << label << "\", value = ";

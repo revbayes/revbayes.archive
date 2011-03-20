@@ -60,17 +60,8 @@ const VectorString& RealPos::getClass() const {
 }
 
 
-/** Set value */
-void RealPos::setValue(double x) {
-
-    if (x <= 0.0)
-        throw RbException("Nonpositive value for " + RealPos_name);
-
-    Real::setValue(x);
-}
-
 /** Get complete info about object */
-std::string RealPos::toString(void) const {
+std::string RealPos::richInfo(void) const {
 
 	std::ostringstream o;
     o << "+Real(";
@@ -78,5 +69,15 @@ std::string RealPos::toString(void) const {
 	o << ")";
 
     return o.str();
+}
+
+
+/** Set value */
+void RealPos::setValue(double x) {
+
+    if (x <= 0.0)
+        throw RbException("Nonpositive value for " + RealPos_name);
+
+    Real::setValue(x);
 }
 

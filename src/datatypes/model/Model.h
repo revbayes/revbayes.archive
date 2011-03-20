@@ -44,7 +44,7 @@ class Model : public RbComplex {
         bool                        equals(const RbObject* x) const;                                                                        //!< Compare two Models and return if they are equal to one another.
         const VectorString&         getClass(void) const;                                                                                   //!< Initialize the inheritance hierarchy for a Model object.
         void                        printValue(std::ostream& o) const;                                                                      //!< Print the Model for the user as a list of the DAGNodes in the model graph.
-        std::string                 toString(void) const;                                                                                   //!< Complete info
+        std::string                 richInfo(void) const;                                                                                   //!< Complete info
 
         // Model functions
         std::vector<DAGNode*>&      getDAGNodes(void) { return dagNodes; }                                                                  //!< Return the DAGNodes in the model graph.

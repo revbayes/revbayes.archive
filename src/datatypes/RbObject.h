@@ -33,7 +33,7 @@ class RbObject {
         virtual bool                equals(const RbObject* x) const = 0;                            //!< Equals comparison
         virtual const VectorString& getClass(void) const;                                           //!< Get class vector
         virtual void                printValue(std::ostream& o) const = 0;                          //!< Print value for user
-        virtual std::string         toString(void) const = 0;                                       //!< Complete info about object
+        virtual std::string         richInfo(void) const = 0;                                       //!< Complete info about object
 
         // Basic utility functions you may want to override
         virtual std::string         briefInfo(void) const;                                          //!< Brief info about object

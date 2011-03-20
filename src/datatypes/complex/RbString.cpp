@@ -73,7 +73,7 @@ void RbString::printValue(std::ostream& o) const {
 
 
 /** Complete info on object */
-std::string RbString::toString() const {
+std::string RbString::richInfo() const {
 
 	return "RbString; value = '" + value + "'";
 }

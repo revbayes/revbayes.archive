@@ -504,6 +504,20 @@ void Container::resize(const VectorInteger& len) {
 }
 
 
+/** Get complete info about object */
+std::string Container::richInfo(void) const {
+
+    std::ostringstream o;
+    o << "RbObject container:" << std::endl;
+    o << ".elementType = " << elementType << std::endl;
+    o << ".dim         = " << getDim() << std::endl; 
+    o << ".length      = " << length << std::endl;
+    o << ".value       = " << (*this) << std::endl;
+
+    return o.str();
+}
+
+
 /** Set length in each dimension: reorganize the content of the container */
 void Container::setLength(const VectorInteger& len) {
 
@@ -523,17 +537,4 @@ void Container::setLength(const VectorInteger& len) {
     length = len;
 }
 
-
-/** Get complete info about object */
-std::string Container::toString(void) const {
-
-    std::ostringstream o;
-    o << "RbObject container:" << std::endl;
-    o << ".elementType = " << elementType << std::endl;
-    o << ".dim         = " << getDim() << std::endl; 
-    o << ".length      = " << length << std::endl;
-    o << ".value       = " << (*this) << std::endl;
-
-    return o.str();
-}
 

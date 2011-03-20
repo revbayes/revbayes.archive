@@ -337,9 +337,9 @@ void Model::printValue(std::ostream& o) const {
 		msg.str("");
        
 		if ( (*i)->isDAGType(ConstantNode_name) )
-            msg << "   Value        = " << ((ConstantNode*)(*i))->getValue()->toString();
+            msg << "   Value        = " << ((ConstantNode*)(*i))->getValue()->richInfo();
 		else if ( (*i)->isDAGType(StochasticNode_name) )
-            msg << "   Value        = " << ((StochasticNode*)(*i))->getValue()->toString();
+            msg << "   Value        = " << ((StochasticNode*)(*i))->getValue()->richInfo();
 		if ( msg.str() != "" )
 			RBOUT(msg.str());
 		msg.str("");
@@ -374,7 +374,7 @@ void Model::printValue(std::ostream& o) const {
 }
 
 /** Complete info about object */
-std::string Model::toString(void) const {
+std::string Model::richInfo(void) const {
 
     std::ostringstream o;
     o << "Model:" << std::endl;

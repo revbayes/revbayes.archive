@@ -148,6 +148,17 @@ void MemberObject::printValue(std::ostream& o) const {
 }
 
 
+/** Complete info about object */
+std::string MemberObject::richInfo(void) const {
+
+    std::ostringstream o;
+    o << getType() << ":" << std::endl;
+    printValue(o);
+
+    return o.str();
+}
+
+
 /** Set arguments of a member function */
 int MemberObject::setArguments(const std::string& name, std::vector<Argument>& args) {
 
@@ -168,16 +179,5 @@ void MemberObject::setValue(const std::string& name, RbObject* val) {
 void MemberObject::setVariable(const std::string& name, DAGNode* var) {
 
     members.setVariable(name, var);
-}
-
-
-/** Complete info about object */
-std::string MemberObject::toString(void) const {
-
-    std::ostringstream o;
-    o << getType() << ":" << std::endl;
-    printValue(o);
-
-    return o.str();
 }
 

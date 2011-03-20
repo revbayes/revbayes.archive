@@ -70,7 +70,7 @@ class Frame {
         virtual Frame*              clone(void) const { return new Frame(*this); }                                          //!< Clone frame
         virtual Frame*              cloneEnvironment(void) const;                                                           //!< Clone environment
         virtual void                printValue(std::ostream& o) const;                                                      //!< Print table for user
-        virtual std::string         toString(void) const;                                                                   //!< Complete info to string
+        virtual std::string         richInfo(void) const;                                                                   //!< Complete info to string
 
         // Regular functions
 	    void                        addReference(const std::string& name, DAGNode* ref);                                    //!< Add a reference
@@ -91,6 +91,8 @@ class Frame {
         void                        setReference(const std::string& name, DAGNode* newRef);                                 //!< Set reference
         void                        setValue(const std::string& name, RbObject* newVal);                                    //!< Set value
         void                        setVariable(const std::string& name, DAGNode* newVar);                                  //!< Set variable
+        void                        setValElement(const std::string& name, RbObject* newVal);                               //!< Set value element
+        void                        setVarElement(const std::string& name, DAGNode* newVar);                                //!< Set variable element
         void                        swapReference(DAGNode* oldRef, DAGNode* newRef);                                        //!< Swap a reference variable
 
     protected:

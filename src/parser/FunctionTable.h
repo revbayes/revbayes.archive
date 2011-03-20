@@ -46,7 +46,7 @@ class FunctionTable : public RbInternal {
         // Basic utility functions
         std::string     briefInfo(void) const;                                  //!< Brief info to string
         FunctionTable*  clone(void) const { return new FunctionTable(*this); }  //!< Clone object
-        std::string     toString(void) const;                                   //!< Complete info to string
+        std::string     richInfo(void) const;                                   //!< Complete info to string
         void            printValue(std::ostream& o) const;                      //!< Print table for user
 
         // FunctionTable functions

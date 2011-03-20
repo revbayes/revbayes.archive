@@ -44,7 +44,7 @@ class MatrixReal : public RbComplex {
         virtual bool                               equals(const RbObject* obj) const;                                          //!< Equals comparison
         virtual const VectorString&                getClass(void) const;                                                       //!< Get class vector
         void                                       printValue(std::ostream& o) const;                                          //!< Print value for user
-        virtual std::string                        toString(void) const;                                                       //!< Complete info about object
+        virtual std::string                        richInfo(void) const;                                                       //!< Complete info about object
 
         // Element access functions for parser
 	    int                                        getDim(void) const { return 1; }                                            //!< Get subscript dimensions

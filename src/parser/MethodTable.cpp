@@ -98,7 +98,7 @@ int MethodTable::processArguments(const std::string& name, const std::vector<Arg
 
 
 /** Complete info about object */
-std::string MethodTable::toString(void) const {
+std::string MethodTable::richInfo(void) const {
 
     std::ostringstream o;
     if (table.size() == 0)

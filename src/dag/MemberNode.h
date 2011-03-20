@@ -21,6 +21,8 @@
 #include "DeterministicNode.h"
 
 class MemberObject;
+class RbString;
+class TypeSpec;
 class VectorString;
 
 
@@ -35,7 +37,7 @@ class MemberNode : public DeterministicNode {
         MemberNode*             clone(void) const;                                                          //!< Clone the member node
         const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
         void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
-        std::string             toString(void) const;                                                       //!< Complete info about object
+        std::string             richInfo(void) const;                                                       //!< Complete info about object
 
         // DAG functions
         MemberNode*             cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
@@ -45,6 +47,10 @@ class MemberNode : public DeterministicNode {
         virtual void            mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
         MemberNode*             mutateTo(const VectorInteger& index, RbObject* newValue);                   //!< Mutate to contain newValue
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
+
+        // MemberNode functions
+        const TypeSpec&         getMemberTypeSpec(const RbString& name) const;                              //!< Get type spec of a named member variable
+        MemberObject*           getMemberObject(void) { return memberObject; }                              //!< Get member object 
 
     protected:
         // Utility function

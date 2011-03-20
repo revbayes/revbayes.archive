@@ -171,6 +171,17 @@ void VectorReal::resize(const VectorInteger& len) {
 }
 
 
+/** Complete info about object */
+std::string VectorReal::richInfo(void) const {
+
+    std::ostringstream o;
+    o <<  "VectorReal: value = ";
+    printValue(o);
+
+    return o.str();
+}
+
+
 /** Allow parser to set an element (any type conversion is done by parser) */
 void VectorReal::setElement(const VectorInteger& index, RbObject* val) {
 
@@ -217,15 +228,4 @@ void VectorReal::setValue(const std::vector<double>& x) {
 
     value = x;
 }   
-
-
-/** Complete info about object */
-std::string VectorReal::toString(void) const {
-
-    std::ostringstream o;
-    o <<  "VectorReal: value = ";
-    printValue(o);
-
-    return o.str();
-}
 

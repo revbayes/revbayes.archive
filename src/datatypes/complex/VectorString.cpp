@@ -212,7 +212,7 @@ void VectorString::printValue(std::ostream& o) const {
 
 
 /** Complete info about object */
-std::string VectorString::toString(void) const {
+std::string VectorString::richInfo(void) const {
 
     std::ostringstream o;
     o << "VectorString: value = ";

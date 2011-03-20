@@ -162,6 +162,17 @@ void ConstantNode::printStruct(std::ostream &o) const {
 }
 
 
+/** Complete info on object */
+std::string ConstantNode::richInfo(void) const {
+
+    std::ostringstream o;
+    o << "ConstantNode: value = ";
+    value->printValue(o);
+
+    return o.str();
+}
+
+
 /** Set Element */
 void ConstantNode::setElement(const VectorInteger& index, RbObject* val) {
 
@@ -186,17 +197,6 @@ void ConstantNode::setValue(RbObject* val) {
     value = val;
 
     touchAffected();
-}
-
-
-/** Complete info on object */
-std::string ConstantNode::toString(void) const {
-
-    std::ostringstream o;
-    o << "ConstantNode: value = ";
-    value->printValue(o);
-
-    return o.str();
 }
 
 
