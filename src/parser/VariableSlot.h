@@ -23,6 +23,7 @@
 #include <string>
 
 class DAGNode;
+class Frame;
 class RbObject;
 
 class VariableSlot {
