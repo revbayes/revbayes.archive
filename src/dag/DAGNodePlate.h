@@ -83,11 +83,11 @@ class DAGNodePlate : public VariableNode {
         DAGNodePlate*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
         void                    getAffected(std::set<StochasticNode*>& affected);                           //!< Mark and get affected nodes
         bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
-        bool                    isMutableTo(const VectorInteger& index, const RbObject* newValue) const;    //!< Is node mutable to contain newValue?
+        bool                    isMutableTo(const TypeSpec& typeSpec) const;                                //!< Is node mutable to language type typeSpec?
         bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
         void                    keepAffected(void);                                                         //!< Keep value of affected nodes
         void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to newNode
-        DAGNodePlate*           mutateTo(const VectorInteger& index, RbObject* newValue);                   //!< Mutate to contain newValue
+        DAGNodePlate*           mutateTo(const TypeSpec& typeSpec);                                         //!< Mutate to language type typeSpec
         void                    restoreAffected(void);                                                      //!< Restore value of affected nodes
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
         void                    touchAffected(void);                                                        //!< Tell affected nodes value is reset

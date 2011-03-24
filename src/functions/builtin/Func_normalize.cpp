@@ -46,11 +46,11 @@ Func_normalize* Func_normalize::clone(void) const {
 
 
 /** Execute function */
-DAGNode* Func_normalize::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_normalize::executeOperation(const std::vector<VariableSlot>& args) {
 
     // Get first element
-    std::vector<double> tempVec    = ((VectorRealPos*)(args[0]->getValue()))->getValue();
-    double              desiredSum = ((RealPos*)(args[1]->getValue()))->getValue();
+    std::vector<double> tempVec    = ((VectorRealPos*)(args[0].getValue()))->getValue();
+    double              desiredSum = ((RealPos*)(args[1].getValue()))->getValue();
     
     // normalize the vector
     RbMath::normalize(tempVec, desiredSum);

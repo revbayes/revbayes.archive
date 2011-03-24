@@ -54,7 +54,7 @@ class Move : public MemberObject {
                                     Move(const MemberRules& memberRules);                                                       //!< Parser constructor
 
         // Member method call (throw an error: no member methods)
-        virtual DAGNode*            executeOperation(const std::string& name, std::vector<DAGNode*>& args);                     //!< Execute method
+        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args);           //!< Execute method
 
         // Hidden member variables (not visible to parser)
         int                         numAccepted;                                                                                //!< Number of times accepted

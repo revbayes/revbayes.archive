@@ -52,7 +52,7 @@ class Mcmc: public MemberObject {
         void                        update(void);                                                                      //!< Update the chain
 
 	protected:
-        DAGNode*                    executeOperation(const std::string& name, std::vector<DAGNode*>& args);            //!< Execute method
+        DAGNode*                    executeOperation(const std::string& name, const std::vector<VariableSlot>& args);  //!< Execute method
 };
 
 #endif

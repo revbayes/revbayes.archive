@@ -40,7 +40,7 @@ Move::Move(const MemberRules& memberRules)
 
 
 /** Execute member method. We throw an error because there are no visible member methods */
-DAGNode* Move::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
+DAGNode* Move::executeOperation(const std::string& name, const std::vector<VariableSlot>& args) {
 
     throw RbException ("Object does not have methods");
 }

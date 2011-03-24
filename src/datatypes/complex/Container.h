@@ -66,7 +66,7 @@ class Container : public RbComplex {
         // Element access functions
         int                         getDim(void) const { return int(length.size()); }                 //!< Get subscript dimensions
         const std::string&          getElementType(void) const { return elementType; }                //!< Get element type
-        const RbObject*             getElement(const VectorInteger& index) const;                     //!< Get element (read-only)
+        RbObject*                   getElement(const VectorInteger& index) const;                     //!< Get element (copy)
         const VectorInteger&        getLength(void) const { return length; }                          //!< Get length in each dim
         Container*                  getSubContainer(const VectorInteger& index) const;                //!< Get subcontainer
         void                        setElement(const VectorInteger& index, RbObject* val);            //!< Set value element
@@ -74,10 +74,10 @@ class Container : public RbComplex {
 
 	private:
         size_t                      getOffset(const VectorInteger& index) const;                      //!< Get offset in element vector
-        RbObject*                   getElementPtr(const VectorInteger& index);                        //!< Allow modify access to element
+        DAGNode*                    getElementRef(const VectorInteger& index);                        //!< Allow modify access to element
 
         // Member variables
-        const std::string&          elementType;                                                      //!< Element type (from value of first element)
+        const std::string&          elementType;                                                      //!< Element type
         VectorInteger               length;                                                           //!< Length in each dimension
 	    std::vector<RbObject*>      elements;                                                         //!< Vector of nodes
 };

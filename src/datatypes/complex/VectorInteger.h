@@ -50,7 +50,7 @@ class VectorInteger : public Vector {
 
         // Element access functions for parser
         virtual const std::string&  getElementType(void) const;                                   //!< Get element type
-        const RbObject*             getElement(const VectorInteger& index) const;                 //!< Get element (read-only)
+        RbObject*                   getElement(const VectorInteger& index) const;                 //!< Get element (copy)
         const VectorInteger&        getLength(void) const;                                        //!< Get length in each dim
         void                        resize(const VectorInteger& len);                             //!< Resize
         void                        setElement(const VectorInteger& index, RbObject* val);        //!< Set element

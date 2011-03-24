@@ -34,15 +34,15 @@ class Func__mul :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func__mul*                  clone(void) const;                                      //!< Clone the object
-    	const VectorString&         getClass(void) const;                                   //!< Get class vector
+        Func__mul*                  clone(void) const;                                          //!< Clone the object
+    	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                           //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                              //!< Get type of return value
+        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
+        const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
 	protected:
-        DAGNode*                    executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 };
 
 #endif
@@ -71,10 +71,10 @@ Func__mul<firstValType, secondValType, sumType>* Func__mul<firstValType, secondV
 
 /** Execute function: Integer <- Integer * Integer */
 template <>
-DAGNode* Func__mul<Integer,Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<Integer,Integer,Integer>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    int val1 = ((Integer*)(args[0])->getValue())->getValue();
-    int val2 = ((Integer*)(args[1])->getValue())->getValue();
+    int val1 = ((Integer*)(args[0].getValue()))->getValue();
+    int val2 = ((Integer*)(args[1].getValue()))->getValue();
     int prod = val1 * val2;
     return new ConstantNode( new Integer(prod));
 }
@@ -83,10 +83,10 @@ DAGNode* Func__mul<Integer,Integer,Integer>::executeOperation(const std::vector<
 
 /** Execute function: Real <- Real * Real */
 template <>
-DAGNode* Func__mul<Real,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<Real,Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    double val1 = ((Real*)(args[0])->getValue())->getValue();
-    double val2 = ((Real*)(args[1])->getValue())->getValue();
+    double val1 = ((Real*)(args[0].getValue()))->getValue();
+    double val2 = ((Real*)(args[1].getValue()))->getValue();
     double prod = val1 * val2;
     return new ConstantNode( new Real(prod));
 }
@@ -95,10 +95,10 @@ DAGNode* Func__mul<Real,Real,Real>::executeOperation(const std::vector<DAGNode*>
 
 /** Execute function: Real <- Integer * Real */
 template <>
-DAGNode* Func__mul<Integer,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<Integer,Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    double val1 = (double)(((Integer*)(args[0])->getValue())->getValue());
-    double val2 = ((Real*)(args[1])->getValue())->getValue();
+    double val1 = (double)(((Integer*)(args[0].getValue()))->getValue());
+    double val2 = ((Real*)(args[1].getValue()))->getValue();
     double prod = val1 * val2;
     return new ConstantNode( new Real(prod));
 }
@@ -107,10 +107,10 @@ DAGNode* Func__mul<Integer,Real,Real>::executeOperation(const std::vector<DAGNod
 
 /** Execute function: Real <- Real * Integer */
 template <>
-DAGNode* Func__mul<Real,Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<Real,Integer,Real>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    double val1 = ((Real*)(args[0])->getValue())->getValue();
-    double val2 = (double)(((Integer*)(args[1])->getValue())->getValue());
+    double val1 = ((Real*)(args[0].getValue()))->getValue();
+    double val2 = (double)(((Integer*)(args[1].getValue()))->getValue());
     double prod = val1 * val2;
     return new ConstantNode( new Real(prod));
 }
@@ -119,10 +119,10 @@ DAGNode* Func__mul<Real,Integer,Real>::executeOperation(const std::vector<DAGNod
 
 /** Execute function: MatrixReal <- MatrixReal * MatrixReal */
 template <>
-DAGNode* Func__mul<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    MatrixReal val1 = ((MatrixReal*)(args[0])->getValue())->getValue();
-    MatrixReal val2 = ((MatrixReal*)(args[1])->getValue())->getValue();
+    MatrixReal val1 = ((MatrixReal*)(args[0].getValue()))->getValue();
+    MatrixReal val2 = ((MatrixReal*)(args[1].getValue()))->getValue();
     MatrixReal prod = val1 * val2;
     return new ConstantNode( new MatrixReal(prod));
 }
@@ -131,10 +131,10 @@ DAGNode* Func__mul<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std
 
 /** Execute function: MatrixReal <- MatrixReal * Real */
 template <>
-DAGNode* Func__mul<MatrixReal,Real,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<MatrixReal,Real,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    MatrixReal val1 = ((MatrixReal*)(args[0])->getValue())->getValue();
-    double     val2 = ((Real*)(args[1])->getValue())->getValue();
+    MatrixReal val1 = ((MatrixReal*)(args[0].getValue()))->getValue();
+    double     val2 = ((Real*)(args[1].getValue()))->getValue();
     MatrixReal prod = val1 * val2;
     return new ConstantNode( new MatrixReal(prod));
 }
@@ -143,10 +143,10 @@ DAGNode* Func__mul<MatrixReal,Real,MatrixReal>::executeOperation(const std::vect
 
 /** Execute function: MatrixReal <- Real * MatrixReal */
 template <>
-DAGNode* Func__mul<Real,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<Real,MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    double     val1 = ((Real*)(args[0])->getValue())->getValue();
-    MatrixReal val2 = ((MatrixReal*)(args[1])->getValue())->getValue();
+    double     val1 = ((Real*)(args[0].getValue()))->getValue();
+    MatrixReal val2 = ((MatrixReal*)(args[1].getValue()))->getValue();
     MatrixReal prod = val1 * val2;
     return new ConstantNode( new MatrixReal(prod));
 }
@@ -155,10 +155,10 @@ DAGNode* Func__mul<Real,MatrixReal,MatrixReal>::executeOperation(const std::vect
 
 /** Execute function: MatrixReal <- VectorReal * VectorReal */
 template <>
-DAGNode* Func__mul<VectorReal,VectorReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<VectorReal,VectorReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    VectorReal val1 = ((VectorReal*)(args[0])->getValue())->getValue();
-    VectorReal val2 = ((VectorReal*)(args[1])->getValue())->getValue();
+    VectorReal val1 = ((VectorReal*)(args[0].getValue()))->getValue();
+    VectorReal val2 = ((VectorReal*)(args[1].getValue()))->getValue();
     MatrixReal prod;
     RbMath::vectorMultiplication( val1, val2, prod );
     return new ConstantNode( new MatrixReal(prod));
@@ -168,10 +168,10 @@ DAGNode* Func__mul<VectorReal,VectorReal,MatrixReal>::executeOperation(const std
 
 /** Execute function: MatrixReal <- VectorReal * MatrixReal */
 template <>
-DAGNode* Func__mul<VectorReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<VectorReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    const VectorReal* val1 = (VectorReal*)(args[0])->getValue();
-    const VectorReal* val2 = (VectorReal*)(args[1])->getValue();
+    const VectorReal* val1 = (VectorReal*)(args[0].getValue());
+    const VectorReal* val2 = (VectorReal*)(args[1].getValue());
     MatrixReal prod;
     RbMath::vectorMultiplication( *val1, *val2, prod );
     return new ConstantNode( new MatrixReal(prod));
@@ -181,10 +181,10 @@ DAGNode* Func__mul<VectorReal,MatrixReal,MatrixReal>::executeOperation(const std
 
 /** Execute function: MatrixReal <- MatrixReal * VectorReal */
 template <>
-DAGNode* Func__mul<MatrixReal,VectorReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<MatrixReal,VectorReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    VectorReal val1 = ((VectorReal*)(args[0])->getValue())->getValue();
-    VectorReal val2 = ((VectorReal*)(args[1])->getValue())->getValue();
+    VectorReal val1 = ((VectorReal*)(args[0].getValue()))->getValue();
+    VectorReal val2 = ((VectorReal*)(args[1].getValue()))->getValue();
     MatrixReal prod;
     RbMath::vectorMultiplication( val1, val2, prod );
     return new ConstantNode( new MatrixReal(prod));
@@ -194,10 +194,10 @@ DAGNode* Func__mul<MatrixReal,VectorReal,MatrixReal>::executeOperation(const std
 
 /** Execute function: MatrixReal <- VectorRealPos * MatrixReal */
 template <>
-DAGNode* Func__mul<VectorRealPos,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<VectorRealPos,MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    VectorRealPos val1 = ((VectorRealPos*)(args[0])->getValue())->getValue();
-    VectorRealPos val2 = ((VectorRealPos*)(args[1])->getValue())->getValue();
+    VectorRealPos val1 = ((VectorRealPos*)(args[0].getValue()))->getValue();
+    VectorRealPos val2 = ((VectorRealPos*)(args[1].getValue()))->getValue();
     MatrixReal prod;
     //RbMath::vectorMultiplication( val1, val2, prod );
     return new ConstantNode( new MatrixReal(prod));
@@ -207,10 +207,10 @@ DAGNode* Func__mul<VectorRealPos,MatrixReal,MatrixReal>::executeOperation(const 
 
 /** Execute function: MatrixReal <- RealMatrix * VectorRealPos */
 template <>
-DAGNode* Func__mul<MatrixReal,VectorRealPos,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<MatrixReal,VectorRealPos,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    VectorRealPos val1 = ((VectorRealPos*)(args[0])->getValue())->getValue();
-    VectorRealPos val2 = ((VectorRealPos*)(args[1])->getValue())->getValue();
+    VectorRealPos val1 = ((VectorRealPos*)(args[0].getValue()))->getValue();
+    VectorRealPos val2 = ((VectorRealPos*)(args[1].getValue()))->getValue();
     MatrixReal prod;
     //RbMath::vectorMultiplication( val1, val2, prod );
     return new ConstantNode( new MatrixReal(prod));
@@ -220,10 +220,10 @@ DAGNode* Func__mul<MatrixReal,VectorRealPos,MatrixReal>::executeOperation(const 
 
 /** Execute function: MatrixReal <- VectorRealPos * VectorRealPos */
 template <>
-DAGNode* Func__mul<VectorRealPos,VectorRealPos,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__mul<VectorRealPos,VectorRealPos,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    VectorRealPos val1 = ((VectorRealPos*)(args[0])->getValue())->getValue();
-    VectorRealPos val2 = ((VectorRealPos*)(args[1])->getValue())->getValue();
+    VectorRealPos val1 = ((VectorRealPos*)(args[0].getValue()))->getValue();
+    VectorRealPos val2 = ((VectorRealPos*)(args[1].getValue()))->getValue();
     MatrixReal prod;
     RbMath::vectorMultiplication( val1, val2, prod );
     return new ConstantNode( new MatrixReal(prod));

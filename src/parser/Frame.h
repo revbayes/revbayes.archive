@@ -81,18 +81,16 @@ class Frame {
         void                        eraseVariable(const std::string& name);                                                 //!< Erase a variable
         bool                        existsVariable(const std::string& name) const;                                          //!< Does variable exist?
         Frame*                      getParentFrame(void) const { return parentFrame; }                                      //!< Get parent frame
-        DAGNode*                    getReference(const std::string& name);                                                  //!< Get reference
+        DAGNode*                    getReference(const std::string& name) const;                                            //!< Get reference
         const std::string&          getSlotName(const VariableSlot* slot) const;                                            //!< Get name of a slot
         const RbObject*             getValue(const std::string& name) const;                                                //!< Get value
         const DAGNode*              getVariable(const std::string& name) const;                                             //!< Get variable
         VariableSlot&               getVariableSlot(const std::string& name);                                               //!< Get variable slot
-        const VariableSlot&         getVariableSlot(const std::string& name) const;                                         //!< Get variable slot (const)
         const VariableTable&        getVariableTable(void) const { return variableTable; }                                  //!< Return variable table
+        bool                        isReference(const std::string& name) const;                                             //!< Is the variable a reference variable?
         void                        setReference(const std::string& name, DAGNode* newRef);                                 //!< Set reference
         void                        setValue(const std::string& name, RbObject* newVal);                                    //!< Set value
         void                        setVariable(const std::string& name, DAGNode* newVar);                                  //!< Set variable
-        void                        setValElement(const std::string& name, RbObject* newVal);                               //!< Set value element
-        void                        setVarElement(const std::string& name, DAGNode* newVar);                                //!< Set variable element
         void                        swapReference(DAGNode* oldRef, DAGNode* newRef);                                        //!< Swap a reference variable
 
     protected:

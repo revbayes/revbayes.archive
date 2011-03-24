@@ -8,7 +8,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2010-01-12 21:51:54 +0100 (Tis, 12 Jan 2010) $
- * @author The RevBayes development core team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
@@ -35,8 +35,8 @@
  class ConverterNode : public DeterministicNode {
 
     public:
-                                ConverterNode(const std::string& toType, int toDim);                        //!< Constructor of pristine node
-                                ConverterNode(DAGNode* origNode, const std::string& toType, int toDim);     //!< Basic constructor
+                                ConverterNode(const TypeSpec& typeSpec);                                    //!< Constructor of pristine node
+                                ConverterNode(DAGNode* origNode, const TypeSpec& typeSpec);                 //!< Basic constructor
 
         // Basic utility functions
         ConverterNode*          clone(void) const;                                                          //!< Clone the converter node
@@ -47,11 +47,11 @@
 
         // DAG functions
         ConverterNode*          cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
-        virtual bool            isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
-        virtual bool            isMutableTo(const VectorInteger& index, const RbObject* newValue) const;    //!< Is node mutable to contain newValue?
-        virtual bool            isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
-        virtual void            mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
-        ConverterNode*          mutateTo(const VectorInteger& index, RbObject* newValue);                   //!< Mutate to contain newValue
+        bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
+        bool                    isMutableTo(const TypeSpec& typeSpec) const;                                //!< Is node mutable to language type typeSpec?
+        bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
+        void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
+        ConverterNode*          mutateTo(const TypeSpec& typeSpec);                                         //!< Mutate to language type typeSpec
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
     protected:

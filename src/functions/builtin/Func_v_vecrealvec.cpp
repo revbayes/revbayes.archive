@@ -19,8 +19,8 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
+#include "Container.h"
 #include "DAGNode.h"
-#include "DAGNodePlate.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
 #include "Func_v_vecrealvec.h"
@@ -44,13 +44,13 @@ Func_v_vecrealvec* Func_v_vecrealvec::clone(void) const {
 
 
 /** Execute function */
-DAGNode* Func_v_vecrealvec::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_v_vecrealvec::executeOperation(const std::vector<VariableSlot>& args) {
 
     // Get the dimensions
-    int numCols = ((VectorReal*)(args[0]->getValue()))->size();
+    int numCols = ((VectorReal*)(args[0].getValue()))->size();
     int numRows = 2;
     if ( args.size() > 2 ) 
-        numRows += dynamic_cast<DAGNodePlate*>(args[1])->size();
+        numRows += dynamic_cast<const Container*>(args[1].getValue())->size();
 
     // set up a double matrix
     std::vector<std::vector<double> > tmpM;
@@ -60,22 +60,22 @@ DAGNode* Func_v_vecrealvec::executeOperation(const std::vector<DAGNode*>& args) 
     std::vector<double> tmpV;
             
     // set the matrix, row-by-row
-    tmpV = ((VectorReal*)(args[0]->getValue()))->getValue();
+    tmpV = ((VectorReal*)(args[0].getValue()))->getValue();
     if (tmpV.size() != numCols)
         throw RbException("The number of entries in each row of the matrix must be equal");
     tmpM[0] = tmpV;
 
-    tmpV = ((VectorReal*)(args[1]->getValue()))->getValue();
+    tmpV = ((VectorReal*)(args[1].getValue()))->getValue();
     if (tmpV.size() != numCols)
         throw RbException("The number of entries in each row of the matrix must be equal");
     tmpM[1] = tmpV;
     
     if ( args.size() > 2 ) 
         {
-        DAGNodePlate* elements = dynamic_cast<DAGNodePlate*>(args[2]);
+        const Container* elements = dynamic_cast<const Container*>(args[2].getValue());
         for (size_t i=0; i<elements->size(); i++)
             {
-            tmpV = ((VectorReal*)(args[i]->getValue()))->getValue();
+            tmpV = ((VectorReal*)(elements->getElement(i)))->getValue();
             if (tmpV.size() != numCols)
                 throw RbException("The number of entries in each row of the matrix must be equal");
             tmpM[2+i] = tmpV;

@@ -46,11 +46,11 @@ Func_s_int* Func_s_int::clone(void) const {
 
 
 /** Execute function */
-DAGNode* Func_s_int::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_s_int::executeOperation(const std::vector<VariableSlot>& args) {
 
 
     // Get first element
-    int simplexSize = ((Integer*)(args[0]->getValue()))->getValue();
+    int simplexSize = ((Integer*)(args[0].getValue()))->getValue();
 
     // check that the size is at least 2
     if (simplexSize < 2)

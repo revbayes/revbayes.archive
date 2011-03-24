@@ -43,7 +43,9 @@ class FunctionNode : public DeterministicNode {
         virtual const VectorString& getDAGClass(void) const;                                                    //!< Get DAG node class vector
         int                         getDim(void) const { return valueDim; }                                     //!< Get dim of return value
         const RbFunction*           getFunction(void) const { return function; }                                //!< Get function
-        DAGNode*                    getVariable(void) { return function->execute(); }                           //!< Execute function and return variable
+        DAGNode*                    getReference(void);                                                         //!< Execute function and return reference
+        bool                        getIsValueReference(void) const { return isValueReference; }                //!< Is return value of function a reference?
+        DAGNode*                    getVariable(void);                                                          //!< Execute function and return variable
         virtual void                printStruct(std::ostream& o) const;                                         //!< Print struct for user
         virtual std::string         richInfo(void) const;                                                       //!< Complete info about object
 
@@ -63,6 +65,7 @@ class FunctionNode : public DeterministicNode {
         // Member variables
         RbFunction*                 function;                                                                   //!< True when value updated after touch
         int                         valueDim;                                                                   //!< Dimensions of function return value (type in valueType)
+        bool                        isValueReference;                                                           //!< Is return value of function a reference?
 };
 
 #endif

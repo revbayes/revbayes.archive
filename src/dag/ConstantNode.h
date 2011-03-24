@@ -2,13 +2,13 @@
  * @file
  * This file contains the declaration of ConstantNode, which is derived
  * from DAGNode. ConstantNode is used for DAG nodes holding constant
- * values.
+ * values in a model DAG.
  *
  * @brief Declaration of ConstantNode
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2009-11-19 17:29:33 +0100 (Tor, 19 Nov 2009) $
- * @author The RevBayes development core team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
@@ -28,8 +28,9 @@ class VectorString;
 class ConstantNode : public DAGNode {
 
     public:
+                                ConstantNode(void);                                                         //!< Constructor of NULL object
                                 ConstantNode(RbObject* val);                                                //!< Constructor from value
-                                ConstantNode(const std::string& valType);                                   //!< Constructor from value type
+                                ConstantNode(const TypeSpec& typeSpec);                                     //!< Constructor from language object type
                                 ConstantNode(const ConstantNode& x);                                        //!< Copy constructor
 							   ~ConstantNode(void);                                                         //!< Destructor
 
@@ -53,10 +54,11 @@ class ConstantNode : public DAGNode {
 
         // DAG functions
         ConstantNode*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
+        bool                    isConstExpr(void) const;                                                    //!< Is the node guaranteed to be a constant expression?
         bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
-        bool                    isMutableTo(const VectorInteger& index, const RbObject* newValue) const;    //!< Is node mutable to contain newValue?
+        bool                    isMutableTo(const TypeSpec& typeSpec) const;                                //!< Is node mutable to language type typeSpec?
         void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
-        ConstantNode*           mutateTo(const VectorInteger& index, RbObject* newValue);                   //!< Mutate to contain newValue
+        ConstantNode*           mutateTo(const TypeSpec& typeSpec);                                         //!< Mutate to language type typeSpec
         bool                    isTouched (void) const { return false; }                                    //!< Touched by a move?
         void                    touchAffected(void);                                                        //!< Tell affected nodes value is reset
 

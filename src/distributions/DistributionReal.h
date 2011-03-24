@@ -64,7 +64,7 @@ class DistributionReal: public Distribution {
                                     DistributionReal(const MemberRules& memberRules);                          //!< Constructor
 
         // Member method call
-        DAGNode*                    executeOperation(const std::string& name, std::vector<DAGNode*>& args);    //!< Execute method
+        DAGNode*                    executeOperation(const std::string& name, std::vector<VariableSlot>& args);    //!< Execute method
 };
 
 #endif

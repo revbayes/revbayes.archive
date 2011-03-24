@@ -116,17 +116,20 @@ void FunctionTable::eraseFunction(const std::string& name) {
 }
 
 
-/** Execute function */
+/** Execute function and get its variable value (evaluate once) */
 DAGNode* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) const {
 
-    RbFunction* theFunction = findFunction(name, args);
+    RbFunction* theFunction = findFunction(name, args, true);
+    DAGNode*    theValue    = theFunction->execute();
 
-    return theFunction->execute();
+    theFunction->deleteProcessedArguments();
+
+    return theValue;
 }
 
 
 /** Find function (also processes arguments) */
-RbFunction* FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args) const {
+RbFunction* FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args, bool evaluateOnce) const {
 
     std::pair<std::multimap<std::string, RbFunction*>::const_iterator,
               std::multimap<std::string, RbFunction*>::const_iterator> retVal;
@@ -134,13 +137,13 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
     size_t count = table.count(name);
     if (count == 0) {
         if (parentTable != NULL)
-            return parentTable->findFunction(name, args);
+            return parentTable->findFunction(name, args, evaluateOnce);
         else
             throw RbException("No function named '"+ name + "'");
     }
     retVal = table.equal_range(name);
     if (count == 1) {
-        if (retVal.first->second->processArguments(args) == false)
+        if (retVal.first->second->processArguments(args, evaluateOnce) == false)
             throw RbException("Argument mismatch for call to '" + name + "'");
         return retVal.first->second;
     }
@@ -148,52 +151,55 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
         VectorInteger matchScore, bestScore;
         RbFunction* bestMatch = NULL;
 
-        for (std::multimap<std::string, RbFunction*>::const_iterator i=retVal.first; i!=retVal.second; i++) {
-            if ( (*i).second->processArguments(args, &matchScore) == true ) {
+        std::multimap<std::string, RbFunction*>::const_iterator it;
+        for (it=retVal.first; it!=retVal.second; it++) {
+            if ( (*it).second->processArguments(args, evaluateOnce, &matchScore) == true ) {
                 if ( bestMatch == NULL ) {
                     bestScore = matchScore;
-                    bestMatch = i->second;
+                    bestMatch = it->second;
                 }
                 else {
                     size_t j;
                     for (j=0; j<matchScore.size() && j<bestScore.size(); j++) {
                         if (matchScore[j] < bestScore[j]) {
                             bestScore = matchScore;
-                            bestMatch = i->second;
+                            bestMatch = it->second;
                         }
                         else if (matchScore[j] > bestScore[j])
                             break;
                     }
-                    if (j==matchScore.size() || j==bestScore.size())
+                    if (j==matchScore.size() || j==bestScore.size()) {
+                        /* delete the processed arguments before returning */
+                        for ( std::multimap<std::string, RbFunction*>::const_iterator k = retVal.first; k != it; k++ )
+                            (*it).second->deleteProcessedArguments();
                         throw RbException("Ambiguous call to function '" + name + "'");
+                    }
                 }
             }
         }
         if ( bestMatch == NULL )
             throw RbException("No overloaded function '" + name + "' matches arguments");
-        else
+        else {
+            /* delete all processed arguments except those of the best matching function */
+            for ( std::multimap<std::string, RbFunction*>::const_iterator k = retVal.first; k != it; k++ ) {
+                if ( (*it).second != bestMatch )
+                    (*it).second->deleteProcessedArguments();
+            }
             return bestMatch;
+        }
     }
 }
 
 
-/** Get function */
+/** Get function copy (for repeated evaluation in a FunctionNode) */
 RbFunction* FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) const {
 
-    RbFunction* theFunction = (RbFunction*)(findFunction(name, args)->clone());
+    RbFunction* theFunction = findFunction(name, args, false);
+    RbFunction* copy        = theFunction->clone();
 
-    theFunction->processArguments(args);
+    theFunction->deleteProcessedArguments();
 
-    return theFunction;
-}
-
-
-/** Get function value */
-RbObject* FunctionTable::getFunctionValue(const std::string& name, const std::vector<Argument>& args) const {
-
-    RbFunction* theFunction = findFunction(name, args);
-
-    return theFunction->execute()->getValue()->clone();
+    return copy;
 }
 
 

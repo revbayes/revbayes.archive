@@ -56,6 +56,8 @@ class SyntaxVariable : public SyntaxElement {
         VectorInteger               getIndex(Frame* frame) const;                                                       //!< Get index
         std::string                 getFullName(Frame* frame) const;                                                    //!< Get full name, with indices and base obj
         DAGNode*                    getValue(Frame* frame) const;                                                       //!< Get semantic value
+        VariableSlot&               getVariableSlot(Frame* frame) const;                                                //!< Is the variable a reference?
+        void                        getVariableInfo(Frame* frame, VariableSlot* slot, VectorInteger* index) const;      //!< Get info about the variable (for SyntaxAssignExpr)
 
     protected:
         RbString*                   identifier;                                                                         //!< The name of the variable

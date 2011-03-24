@@ -18,8 +18,8 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
+#include "Container.h"
 #include "DAGNode.h"
-#include "DAGNodePlate.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
 #include "Func_v_int.h"
@@ -42,19 +42,19 @@ Func_v_int* Func_v_int::clone(void) const {
 
 
 /** Execute function */
-DAGNode* Func_v_int::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_v_int::executeOperation(const std::vector<VariableSlot>& args) {
 
     // Create temporary vector for the ints 
     std::vector<int>    tempVec;
 
     // Get first element
-    tempVec.push_back(((Integer*)(args[0]->getValue()))->getValue());
+    tempVec.push_back(((Integer*)(args[0].getValue()))->getValue());
 
     // Get following elements
     if (args.size() > 1) {
-        DAGNodePlate*   elements = dynamic_cast<DAGNodePlate*>(args[1]);
+        const Container*   elements = dynamic_cast<const Container*>(args[1].getValue());
         for (size_t i=0; i<elements->size(); i++) {
-            tempVec.push_back(((Integer*)(elements->getValElement(i)))->getValue());
+            tempVec.push_back(((Integer*)(elements->getElement(i)))->getValue());
         }
     }
 

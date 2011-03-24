@@ -33,10 +33,10 @@ class VectorString;
 class MinmaxRule : public ArgumentRule {
 
     public:
-                                    MinmaxRule(const std::string& argName, const std::string& valType, RbObject* min, RbObject* max);    //!< Constructor of rule without default value
+                                    MinmaxRule(const std::string& argName, const std::string& valType, RbObject* min, RbObject* max);   //!< Constructor of rule without default value
                                     MinmaxRule(const std::string& argName, RbObject* defVal, RbObject* min, RbObject* max);             //!< Constructor of rule with default value
-		                            MinmaxRule(const MinmaxRule& x);                    //!< Copy constructor
-        virtual                    ~MinmaxRule(void);                                   //!< Destructor
+		                            MinmaxRule(const MinmaxRule& x);                                                                    //!< Copy constructor
+        virtual                    ~MinmaxRule(void);                                                                                   //!< Destructor
 
         // Assignment operator
         MinmaxRule&                 operator=(const MinmaxRule& x);                     //!< Assignment operator
@@ -48,7 +48,7 @@ class MinmaxRule : public ArgumentRule {
         std::string                 richInfo(void) const;                               //!< General info on object
 
         // MinmaxRule functions
-        virtual bool                isArgValid(DAGNode* var, bool& convert) const;      //!< Is var valid argument?
+        virtual bool                isArgValid(const DAGNode* var, bool& needsConversion, bool once) const;     //!< Is var valid argument?
 
     protected:
         RbObject*                   minVal;                                             //!< Min value

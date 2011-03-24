@@ -7,7 +7,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2010-01-12 21:52:44 +0100 (Tis, 12 Jan 2010) $
- * @author The REvBayes development core team
+ * @author The REvBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
@@ -103,27 +103,6 @@ const DAGNode* DAGNode::getVarElement(const VectorInteger& index) const {
 }
 
 
-/**
- * @brief Check if DAG is a constant expression
- *
- * Is DAG a truly constant expression? If so, it must be true that the user cannot change the expression later on.
- * This can only be guaranteed if none of the nodes is visible to the user. Also, no node can be a stochastic node.
- * Variables that do not belong to a slot cannot be accessed by the user, and are therefore safe.
- *
- */
-bool DAGNode::isConstExpr(void) const {
-
-    if ( getSlot() != NULL )
-        return false;
-
-    for (std::set<DAGNode*>::const_iterator i=parents.begin(); i!=parents.end(); i++)
-        if ( (*i)->getSlot() != NULL || (*i)->isDAGType( StochasticNode_name ) )
-            return false;
-
-    return true;
-}
-
-
 /** Is DAG node of specified type? We need to check entire class vector in case we are derived from type. */
 bool DAGNode::isDAGType(const std::string& type) const {
 
@@ -191,10 +170,23 @@ void DAGNode::printParents(std::ostream& o) const {
 }
 
 
-/** Set element variable; default throws error, override if wrapper has variable elements */
-void DAGNode::setElement(const VectorInteger& index, DAGNode* var) {
+/** Remove a slot referring to the DAG node */
+void DAGNode::removeSlot(const VariableSlot* s) {
 
-    throw (RbException("No variable elements"));
+    if ( slot == s ) {
+        if ( referringSlots.size() == 0 )
+            slot = NULL;
+        else {
+            slot = *referringSlots.begin();
+            referringSlots.erase( referringSlots.begin() );
+        }
+    }
+    else {
+        std::set<VariableSlot*>::iterator i = std::find( referringSlots.begin(), referringSlots.end(), s );
+        if (i == referringSlots.end() )
+            throw RbException( "Variable '" + getName() + " not aware of the reference from slot '" + s->getName() + "'" );
+        referringSlots.erase( i );
+    }
 }
 
 

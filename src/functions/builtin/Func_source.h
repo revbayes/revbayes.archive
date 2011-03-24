@@ -26,7 +26,7 @@ class Func_source :  public RbFunction {
 
     public:
         // Basic utility functions
-        RbObject*               clone(void) const;                  //!< Clone object
+        Func_source*            clone(void) const;                  //!< Clone object
     	const VectorString&     getClass(void) const;               //!< Get class vector
 
         // Func_source functions
@@ -34,7 +34,7 @@ class Func_source :  public RbFunction {
         const TypeSpec          getReturnType(void) const;          //!< Get type of return val
 
 	protected:
-    	DAGNode*                executeOperation(const std::vector<DAGNode*>& args);    //!< Execute function
+    	DAGNode*                executeOperation(const std::vector<VariableSlot>& args);    //!< Execute function
 };
 
 #endif

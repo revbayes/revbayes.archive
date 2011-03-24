@@ -69,8 +69,8 @@ class RbComplex : public RbObject {
         ContainerIterator            begin(void) const;                                                      //!< Begin iterator
         ContainerIterator            end(void) const;                                                        //!< End iterator
         virtual int                  getDim(void) { return 0; }                                              //!< Get subscript dimensions
-        virtual const VectorString&  getElementClass(void) const { return getClass() ; }                     //!< Get element class
-        virtual const RbObject*      getElement(const VectorInteger& index) const;                           //!< Get element (read-only)
+        virtual RbObject*            getElement(const VectorInteger& index) const;                           //!< Get element (copy!)
+        virtual DAGNode*             getElementRef(const VectorInteger& index);                              //!< Get reference to element (for modifying value)
         virtual const VectorInteger& getLength(void) const;                                                  //!< Get length in each dim
         virtual void                 resize(const VectorInteger& len);                                       //!< Resize
         virtual void                 setElement(const VectorInteger& index, RbObject* val);                  //!< Set element

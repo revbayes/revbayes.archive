@@ -24,7 +24,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "Real.h"
+#include "RealPos.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -64,23 +64,19 @@ Distribution& Distribution::operator=(const Distribution& x) {
 
 
 /** Map calls to member methods */
-DAGNode* Distribution::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
+DAGNode* Distribution::executeOperation(const std::string& name, const std::vector<VariableSlot>& args) {
 
     if (name == "lnPdf") {
-        retDouble.setValue(lnPdf(args[0]->getValue()));
+        return new ConstantNode( new RealPos(lnPdf(args[0].getValue())) );
     }
     else if (name == "pdf") {
-        retDouble.setValue(pdf(args[0]->getValue()));
+        return new ConstantNode( new RealPos(pdf(args[0].getValue())) );
     }
     else if (name == "rv") {
-        delete retObject;
-        retObject = rv();
-        return new ConstantNode(retObject);
+        return new ConstantNode(rv());
     }
     else
         throw RbException("No member method called '" + name + "'");
-
-    return new ConstantNode(&retDouble);
 }
 
 

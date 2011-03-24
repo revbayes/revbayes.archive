@@ -51,6 +51,7 @@ class MemberObject: public RbComplex {
         // Member variable functions
         const MemberTable&          getMembers(void) const { return members; }                                    //!< Get members
         virtual const MemberRules&  getMemberRules(void) const = 0;                                               //!< Get member rules
+        const TypeSpec&             getMemberTypeSpec(const std::string& name) const;                             //!< Get type spec for a member variable
         const RbObject*             getValue(const std::string& name);                                            //!< Get member value
         const RbObject*             getValue(const std::string& name) const;                                      //!< Get member value (const)
         const DAGNode*              getVariable(const std::string& name) const;                                   //!< Get member variable
@@ -59,17 +60,16 @@ class MemberObject: public RbComplex {
         virtual void                setVariable(const std::string& name, DAGNode* var);                           //!< Set member variable
 
         // Member method functions
-        DAGNode*                    executeMethod(const std::string& name, int funcId);                           //!< Execute method with preprocessed args
-        DAGNode*                    executeMethod(const std::string& name, std::vector<Argument>& args);          //!< Execute method
+        DAGNode*                    executeMethod(const std::string& name, int funcId);                           //!< Execute method with preprocessed args (repeated evaluation)
+        DAGNode*                    executeMethod(const std::string& name, std::vector<Argument>& args);          //!< Execute method (evaluate once)
         virtual const MethodTable&  getMethodInits(void) const = 0;                                               //!< Get method specifications
         const MethodTable&          getMethods(void) const { return methods; }                                    //!< Get methods
-        int                         setArguments(const std::string& name, std::vector<Argument>& args);           //!< Set arguments of method
 
 	protected:
 									MemberObject(const MemberRules& memberRules, const MethodTable& methodInits); //!< Constructor
 
         // Protected functions
-        virtual DAGNode*            executeOperation(const std::string& name, std::vector<DAGNode*>& args) = 0;   //!< Execute method
+        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args) = 0;   //!< Execute method
         DAGNode*                    getVariable(const std::string& name);                                         //!< Get member variable (non-const)
 
         // Members and methods keep track of variables and functions belonging to the object

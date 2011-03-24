@@ -8,7 +8,7 @@
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2009-12-30 00:19:25 +0100 (Ons, 30 Dec 2009) $
- * @author The RevBayes development core team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
@@ -30,7 +30,8 @@ class StochasticNode : public VariableNode {
 
     public:
                                 StochasticNode(const std::string& type);                        //!< Construct empty stochastic node
-                                StochasticNode(Distribution* d);                                //!< Construct from distribution
+                                StochasticNode(Distribution* dist);                             //!< Construct from distribution (raw object)
+                                StochasticNode(MemberNode* dist);                               //!< Construct from distribution (complete variable)
                                 StochasticNode(const StochasticNode& s);                        //!< Copy constructor
 							   ~StochasticNode(void);                                           //!< Destructor
 
@@ -64,13 +65,13 @@ class StochasticNode : public VariableNode {
         StochasticNode*         cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;         //!< Clone entire graph
         void                    getAffected(std::set<StochasticNode*>& affected);               //!< Mark and get affected nodes
         RbObject*               getValuePtr(std::set<StochasticNode*>& affected);               //!< Get value ptr + affected nodes
-        bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
-        bool                    isMutableTo(const VectorInteger& index, const RbObject* newValue) const;    //!< Is node mutable to contain newValue?
+        bool                    isMutableTo(const DAGNode* newNode) const;                      //!< Is node mutable to newNode?
+        bool                    isMutableTo(const TypeSpec& typeSpec) const;                    //!< Is node mutable to language type typeSpec?
         bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;  //!< Is parent mutable to newNode?
         void                    keep(void);                                                     //!< Keep value of this and affected nodes
         void    	            keepAffected(void);                                             //!< Keep value of affected nodes recursively
         void                    mutateTo(DAGNode* newNode);                                     //!< Mutate to new node
-        StochasticNode*         mutateTo(const VectorInteger& index, RbObject* newValue);       //!< Mutate to contain newValue
+        StochasticNode*         mutateTo(const TypeSpec& typeSpec);                             //!< Mutate to language type typeSpec
         void                    restore(void);                                                  //!< Restore value of this and affected nodes
         void                    restoreAffected(void);                                          //!< Restore value of  affected nodes recursively
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                   //!< Swap a parent node

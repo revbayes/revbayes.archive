@@ -19,8 +19,8 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
+#include "Container.h"
 #include "DAGNode.h"
-#include "DAGNodePlate.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
 #include "Func_s_doublevec.h"
@@ -45,21 +45,21 @@ Func_s_doublevec* Func_s_doublevec::clone(void) const {
 
 
 /** Execute function */
-DAGNode* Func_s_doublevec::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_s_doublevec::executeOperation(const std::vector<VariableSlot>& args) {
 
-    // Create temporary vector for the ints 
+    // Create temporary vector
     std::vector<double>    tempVec;
 
     // Get first and second elements
-    tempVec.push_back( ((RealPos*)(args[0]->getValue()))->getValue() );
-    tempVec.push_back( ((RealPos*)(args[1]->getValue()))->getValue() );
+    tempVec.push_back( ((RealPos*)(args[0].getValue()))->getValue() );
+    tempVec.push_back( ((RealPos*)(args[1].getValue()))->getValue() );
 
     // Get following elements
     if ( args.size() > 1 ) 
         {
-        DAGNodePlate* elements = dynamic_cast<DAGNodePlate*>(args[2]);
+        const Container* elements = dynamic_cast<const Container*>(args[2].getValue());
         for (size_t i=0; i<elements->size(); i++) 
-            tempVec.push_back( ((RealPos*)(elements->getValElement(i)))->getValue() );
+            tempVec.push_back( ((RealPos*)(elements->getElement(i)))->getValue() );
         }
         
     // check that the elements sum to 1.0

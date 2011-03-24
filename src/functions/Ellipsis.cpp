@@ -25,15 +25,15 @@
 #include <sstream>
 
 
-/** Constructor allowing all types and dims */
+/** Constructor allowing all types; value argument assumed, dim assumed to be 0*/
 Ellipsis::Ellipsis(void)
-    : ArgumentRule("", TypeSpec("")) {
+    : ArgumentRule("", TypeSpec(RbObject_name)) {
 }
 
 
-/** Constructor requiring a certain type and dim */
-Ellipsis::Ellipsis(const std::string& type, int dim)
-    : ArgumentRule("", TypeSpec(type, dim)) {
+/** Constructor requiring a certain type specification */
+Ellipsis::Ellipsis(const TypeSpec& typeSp)
+    : ArgumentRule("", typeSp) {
 }
 
 
@@ -42,16 +42,6 @@ const VectorString& Ellipsis::getClass(void) const {
 
     static VectorString rbClass = VectorString(Ellipsis_name) + ArgumentRule::getClass();
     return rbClass;
-}
-
-
-/** Check validity of argument. Call it on a single argument if it is used! */
-bool Ellipsis::isArgValid(DAGNode* var) const {
-
-    if (!var->getValue()->isType(argSlot.getTypeSpec().getType()))
-        return false;
-
-    return true;
 }
 
 

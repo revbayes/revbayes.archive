@@ -38,48 +38,6 @@ RbFunction::RbFunction(void) : RbObject() {
 }
 
 
-/** Copy constructor */
-RbFunction::RbFunction(const RbFunction &x) : RbObject(x) {
-
-    argumentsProcessed = x.argumentsProcessed;
-    if (x.argumentsProcessed == true) {
-
-        std::vector<DAGNode*>::const_iterator i;
-        for (i=x.processedArguments.begin(); i!=x.processedArguments.end(); i++) {
-            processedArguments.push_back((*i));
-        }
-    }
-}
-
-
-/** Destructor: delete the processed arguments */
-RbFunction::~RbFunction(void) {
-
-    deleteProcessedArguments();
-}
-
-
-/** Assignment operator */
-RbFunction& RbFunction::operator=(const RbFunction& x) {
-
-    if (this != &x) {
-
-        deleteProcessedArguments();
-
-        argumentsProcessed = x.argumentsProcessed;
-        if (x.argumentsProcessed == true) {
-
-            std::vector<DAGNode*>::const_iterator i;
-            for (i=x.processedArguments.begin(); i!=x.processedArguments.end(); i++) {
-                processedArguments.push_back((*i));
-            }
-        }
-    }
-
-    return (*this);
-}
-
-
 /** Brief info: in case it is not overridden, print some useful info */
 std::string RbFunction::briefInfo(void) const {
 
@@ -90,6 +48,14 @@ std::string RbFunction::briefInfo(void) const {
 }
 
 
+/* Delete processed arguments */
+void RbFunction::deleteProcessedArguments(void) {
+
+    processedArguments.clear();
+    argumentsProcessed = false;
+}
+
+
 /** Pointer-based equals comparison */
 bool RbFunction::equals(const RbObject* x) const {
 
@@ -97,27 +63,10 @@ bool RbFunction::equals(const RbObject* x) const {
 }
 
 
-/** Delete processed arguments */
-void RbFunction::deleteProcessedArguments(void) {
-
-    // @todo This does not work. Use variable slots to manage memory correctly.
-    if (argumentsProcessed) {
-        for ( std::vector<DAGNode*>::iterator i=processedArguments.begin(); i!=processedArguments.end(); i++ ) {
-            /* 
-            if ( (*i)->numRefs() == 0 )
-                delete ( (*i) );
-            */
-        }
-    }
-    processedArguments.clear();
-    argumentsProcessed = false;
-}
-
-
 /** Execute function with arguments simply passed in as they are given */
 DAGNode* RbFunction::execute(const std::vector<Argument>& args) {
 
-    if (processArguments(args) == false)
+    if (processArguments(args, true) == false)
         throw RbException("Arguments do not match formals.");
 
     return executeOperation(processedArguments);
@@ -179,10 +128,14 @@ void RbFunction::printValue(std::ostream& o) const {
  * The function returns a match score based on how closely the arguments match the
  * rules, with 0 being perfect match, 1 being a match to an immediate base class type,
  * 2 a match to a grandparent class, etc. A large number is used for arguments that
- * need type conversion
+ * need type conversion.
  *
- * @todo Ellipsis arguments are not quite dealt with properly yet; most importantly,
- *       the labels are stripped off here although they should be kept.
+ * The evaluateOnce parameter signals whether the function is to be evaluated once,
+ * immediately after the call to processArguments, or whether the processed arguments
+ * will be used in repeated function calls in a function node. Argument matching is
+ * based on current values in the first case, but on the wrapper type in the second.
+ *
+ * @todo Labels need to be stored for ellipsis arguments.
  *
  * These are the argument matching rules:
  *
@@ -200,9 +153,9 @@ void RbFunction::printValue(std::ostream& o) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
-bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInteger* matchScore) {
+bool  RbFunction::processArguments(const std::vector<Argument>& args, bool evaluateOnce, VectorInteger* matchScore) {
 
-    bool    needConversion;
+    bool    conversionNeeded;
     int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
 
     /*********************  0. Initialization  **********************/
@@ -213,8 +166,8 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
     /* Get the number of argument rules */
     int nRules = int(theRules.size());
 
-    /* Delete previously processed arguments */
-    deleteProcessedArguments();
+    /* Clear previously processed arguments */
+    processedArguments.clear();
 
     /* Check the number of arguments and get the final number we expect */
     int numFinalArgs;
@@ -225,17 +178,20 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
     if ( (nRules == 0 || (nRules > 0 && !theRules[nRules-1]->isType(Ellipsis_name))) && int(args.size()) > numFinalArgs)
         return false;
 
-    /* Fill processedArguments with null arguments and resize convertedArgument */
-    processedArguments.insert(processedArguments.begin(), numFinalArgs, (DAGNode*)(NULL));
+    /* Fill processedArguments with empty variable slots */
+    for (int i=0; i<numFinalArgs; i++) {
+        processedArguments.push_back( VariableSlot( theRules[i]->getArgTypeSpec() ) );
+    }
 
-    /* Keep track of which arguments we have used */
-    std::vector<bool> taken = std::vector<bool>(args.size(), false);
+    /* Keep track of which arguments we have used, and which argument slots we have filled */
+    std::vector<bool> taken  = std::vector<bool>(args.size(), false);
+    std::vector<bool> filled = std::vector<bool>(numFinalArgs, false);
 
 
     /*********************  1. Deal with ellipsis  **********************/
 
     /* Wrap final args into one DAGNodePlate object.
-       TODO: Keep labels, discarded here. */
+       TODO: Keep labels, discarded here. We might want to keep arguments separate in the future */
     if ( nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) >= nRules ) {
 
         int numEllipsisArgs = int(args.size()) - nRules + 1;
@@ -247,12 +203,16 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
             const DAGNode* theDAGNode = args[i].getVariable();
             if ( theDAGNode == NULL )
                 return false;
-            if ( !Workspace::globalWorkspace().isXOfTypeY(theDAGNode->getValueType(), ellipsisArgs->getValueType()) )
+            if ( !theRules[nRules-1]->isArgValid( theDAGNode, conversionNeeded, evaluateOnce ) )
                 return false;
-            ellipsisArgs->setElement(ellipsisIt++, theDAGNode->clone());
+            if ( conversionNeeded )
+                ellipsisArgs->setElement( ellipsisIt++, theRules[nRules-1]->convert( theDAGNode->clone() ) );
+            else
+                ellipsisArgs->setElement( ellipsisIt++, theDAGNode->clone() );
             taken[i] = true;
         }
-        processedArguments[numFinalArgs-1] = ellipsisArgs;
+        processedArguments[numFinalArgs-1].setVariable( ellipsisArgs );
+        filled[numFinalArgs-1] = true;
     }
 
 
@@ -274,12 +234,13 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
 
             if ( args[i].getLabel() == theRules[j]->getArgLabel() ) {
 
-                if ( theRules[j]->isArgValid(args[i].getVariable(), needConversion) && processedArguments[j] == NULL ) {
-                    taken[i] = true;
-                    if ( needConversion )
-                        processedArguments[j] = theRules[j]->convert( args[i].getVariable() );
+                if ( theRules[j]->isArgValid(args[i].getVariable(), conversionNeeded, evaluateOnce) && !filled[j] ) {
+                    taken[i]  = true;
+                    filled[j] = true;
+                    if ( conversionNeeded )
+                        processedArguments[j].setVariable( theRules[j]->convert( args[i].getVariable() ) );
                     else
-                        processedArguments[j] = args[i].getVariable();
+                        processedArguments[j].setVariable( args[i].getVariable() );
                 }
                 else
                     return false;
@@ -308,8 +269,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
         /* Try all rules */
         for (int j=0; j<numFinalArgs; j++) {
 
-            if ( processedArguments[j] == NULL &&
-                 theRules[j]->getArgLabel().compare(0, args[i].getLabel().size(), args[i].getLabel()) == 0 ) {
+            if ( !filled[j] && theRules[j]->getArgLabel().compare(0, args[i].getLabel().size(), args[i].getLabel()) == 0 ) {
                 ++nMatches;
                 matchRule = j;
             }
@@ -318,9 +278,10 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
         if (nMatches != 1)
             return false;
  
-        if ( theRules[matchRule]->isArgValid(args[i].getVariable(), needConversion) ) {
-            taken[i] = true;
-            if ( needConversion )
+        if ( theRules[matchRule]->isArgValid(args[i].getVariable(), conversionNeeded, evaluateOnce) ) {
+            taken[i]          = true;
+            filled[matchRule] = true;
+            if ( conversionNeeded )
                 processedArguments[matchRule] = theRules[matchRule]->convert( args[i].getVariable() );
             else
                 processedArguments[matchRule] = args[i].getVariable();
@@ -342,10 +303,11 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
         /* Find first empty slot and try to fit argument there */
         for (int j=0; j<numFinalArgs; j++) {
 
-            if ( processedArguments[j] == NULL ) {
-                if ( theRules[j]->isArgValid(args[i].getVariable(), needConversion) ) {
-                    taken[i] = true;
-                    if ( needConversion )
+            if ( filled[j] == false ) {
+                if ( theRules[j]->isArgValid(args[i].getVariable(), conversionNeeded, evaluateOnce) ) {
+                    taken[i]  = true;
+                    filled[j] = true;
+                    if ( conversionNeeded )
                         processedArguments[j] = theRules[j]->convert( args[i].getVariable() );
                     else
                         processedArguments[j] = args[i].getVariable();
@@ -362,16 +324,16 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
     /* Fill in empty slots using default values */
     for(int i=0; i<numFinalArgs; i++) {
 
-        if ( processedArguments[i] != NULL )
+        if ( filled[i] == true )
             continue;
 
         if ( !theRules[i]->hasDefault() )
             return false;
 
         if ( theRules[i]->isReference() )
-            processedArguments[i] = theRules[i]->getDefaultReference();
+            processedArguments[i].setReference( theRules[i]->getDefaultReference() );
         else
-            processedArguments[i] = theRules[i]->getDefaultVariable();
+            processedArguments[i].setVariable( theRules[i]->getDefaultVariable() );
     }
 
     /*********************  6. Count match score and return  **********************/
@@ -389,7 +351,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
         if ( theRules[argIndex]->isType(Ellipsis_name) )
             break;
 
-        const VectorString& argClass = processedArguments[argIndex]->getValue()->getClass();
+        const VectorString& argClass = processedArguments[argIndex].getValue()->getClass();
         size_t j;
         for (j=0; j<argClass.size(); j++)
             if ( argClass[j] == theRules[argIndex]->getArgType() )
@@ -404,7 +366,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, VectorInte
     /* ... then for ellipsis arguments */
     if ( argIndex < numFinalArgs ) {
     
-        DAGNodePlate* container = (DAGNodePlate*)(processedArguments[argIndex]);
+        const DAGNodePlate* container = (const DAGNodePlate*)(processedArguments[argIndex].getVariable());
 
         for (ContainerIterator it=container->begin(); it!=container->end(); it++) {
 
@@ -437,10 +399,8 @@ std::string RbFunction::richInfo(void) const {
         o << "Arguments not processed; there are " << processedArguments.size() << " values." << std::endl;
     
     int index=1;
-    for (std::vector<DAGNode*>::const_iterator i=processedArguments.begin(); i!=processedArguments.end(); i++, index++) {
-        o << " processedArguments[" << index << "] = ";
-        (*i)->printValue(o);
-        o << std::endl;
+    for (std::vector<VariableSlot>::const_iterator i=processedArguments.begin(); i!=processedArguments.end(); i++, index++) {
+        o << " processedArguments[" << index << "] = " << (*i) << std::endl;
     }
 
     return o.str();

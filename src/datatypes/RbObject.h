@@ -20,6 +20,7 @@
 #include <ostream>
 #include <string>
 
+class TypeSpec;
 class VectorInteger;
 class VectorString;
 
@@ -36,18 +37,18 @@ class RbObject {
         virtual std::string         richInfo(void) const = 0;                                       //!< Complete info about object
 
         // Basic utility functions you may want to override
-        virtual std::string         briefInfo(void) const;                                          //!< Brief info about object
-        virtual RbObject*           convertTo(const std::string& type, int dim=0) const;                            //! Convert to type and dim
-        virtual bool                isConvertibleTo(const std::string& type, int dim=0, bool once=false) const;     //! Is convertible to type and dim?
-        virtual bool                isMutableTo(VectorInteger& index, const RbObject* newValue, std::string mutantType) const;  //! Is mutable to new value
-        virtual RbObject*           mutateTo(const VectorInteger& index, RbObject* newValue) const;                 //! Mutate to new value
+        virtual std::string         briefInfo(void) const;                                              //!< Brief info about object
+        virtual RbObject*           convertTo(const TypeSpec& typeSpec) const;                          //! Convert to language object of type typeSpec
+        virtual bool                isConvertibleTo(const TypeSpec& typeSpec, bool once=false) const;   //! Is convertible to language object of type typeSpec?
         
         // Subscript dimensions: override if object supports subscripting
         virtual int                 getDim(void) const { return 0; }                                //!< Get subscript dimensions
 
         // Basic utility functions you do not have to override
-        const std::string&          getType(void) const;                                            //!< Get type
-        bool                        isType(const std::string& type) const;                          //!< Is the object of class type?
+        const std::string&          getType(void) const;                                            //!< Get type of object
+        const TypeSpec              getTypeSpec(void) const;                                        //!< Get language type of the object
+        bool                        isType(const std::string& type) const;                          //!< Is the object of type (ignoring dimensions and element types, which influence language type)?
+        bool                        isType(const TypeSpec& typeSpec) const;                         //!< Does the language type of the object fit type specification typeSpec?
         void                        print(std::ostream& o) const;                                   //!< Print complete object info
 
    protected:

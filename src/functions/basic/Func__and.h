@@ -30,15 +30,15 @@ class Func__and :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func__and*                  clone(void) const;                                      //!< Clone the object
-    	const VectorString&         getClass(void) const;                                   //!< Get class vector
+        Func__and*                  clone(void) const;                                          //!< Clone the object
+    	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                           //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                              //!< Get type of return value
+        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
+        const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
 	protected:
-        DAGNode*                    executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 };
 
 #endif
@@ -65,10 +65,10 @@ Func__and<firstValType, secondValType>* Func__and<firstValType, secondValType>::
 
 /** Execute function: Boolean <- Integer & Integer */
 template <>
-DAGNode* Func__and<Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__and<Integer,Integer>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    bool val1 = ((((Integer*)(args[0])->getValue())->getValue()) != 0);
-    bool val2 = ((((Integer*)(args[1])->getValue())->getValue()) != 0);
+    bool val1 = ((((Integer*)(args[0].getValue()))->getValue()) != 0);
+    bool val2 = ((((Integer*)(args[1].getValue()))->getValue()) != 0);
     bool comp = (val1 && val2);
     return new ConstantNode( new Boolean(comp));
 }
@@ -76,10 +76,10 @@ DAGNode* Func__and<Integer,Integer>::executeOperation(const std::vector<DAGNode*
 
 /** Execute function: Boolean <- Integer & Boolean */
 template <>
-DAGNode* Func__and<Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__and<Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    bool val1 = (((Integer*)(args[0])->getValue())->getValue() != 0);
-    bool val2 = ((Boolean*)(args[1])->getValue())->getValue();
+    bool val1 = (((Integer*)(args[0].getValue()))->getValue() != 0);
+    bool val2 = ((Boolean*)(args[1].getValue()))->getValue();
     bool comp = (val1 && val2);
     return new ConstantNode( new Boolean(comp));
 }
@@ -87,10 +87,10 @@ DAGNode* Func__and<Real,Real>::executeOperation(const std::vector<DAGNode*>& arg
 
 /** Execute function: Boolean <- Boolean & Integer */
 template <>
-DAGNode* Func__and<Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__and<Integer,Real>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    bool val1 = ((Boolean*)(args[0])->getValue())->getValue();
-    bool val2 = ((((Integer*)(args[1])->getValue())->getValue()) != 0);
+    bool val1 = ((Boolean*)(args[0].getValue()))->getValue();
+    bool val2 = ((((Integer*)(args[1].getValue()))->getValue()) != 0);
     bool comp = (val1 && val2);
     return new ConstantNode( new Boolean(comp));
 }
@@ -98,10 +98,10 @@ DAGNode* Func__and<Integer,Real>::executeOperation(const std::vector<DAGNode*>& 
 
 /** Execute function: Boolean <- Boolean & Boolean */
 template <>
-DAGNode* Func__and<Real,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__and<Real,Integer>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    bool val1 = ((Boolean*)(args[0])->getValue())->getValue();
-    bool val2 = ((Boolean*)(args[1])->getValue())->getValue();
+    bool val1 = ((Boolean*)(args[0].getValue()))->getValue();
+    bool val2 = ((Boolean*)(args[1].getValue()))->getValue();
     bool comp = (val1 && val2);
     return new ConstantNode( new Boolean(comp));
 }

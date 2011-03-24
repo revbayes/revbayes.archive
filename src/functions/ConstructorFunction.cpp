@@ -48,19 +48,19 @@ bool ConstructorFunction::equals(const RbObject* x) const {
 
 
 /** Execute operation: we reset our template object here */
-DAGNode* ConstructorFunction::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* ConstructorFunction::executeOperation(const std::vector<VariableSlot>& args) {
 
-    const ArgumentRules&          argRules = getArgumentRules();
+    const ArgumentRules& argRules = getArgumentRules();
 
-    MemberObject* copy = (MemberObject*)(templateObject->clone());
+    MemberObject* copy = templateObject->clone();
 
     ArgumentRules::const_iterator i;
-    std::vector<DAGNode*>::const_iterator j;
+    std::vector<VariableSlot>::const_iterator j;
     for (i=argRules.begin(), j=args.begin(); i!=argRules.end(); i++, j++) {
-        if ((*i)->isReference())
-            copy->setVariable((*i)->getArgLabel(), (*j));
+        if (copy->getMemberTypeSpec((*i)->getArgLabel()).isReference())
+            copy->setVariable((*i)->getArgLabel(), (*j).getReference());
         else
-            copy->setValue((*i)->getArgLabel(), (*j)->getValue()->clone());
+            copy->setValue((*i)->getArgLabel(), (*j).getValue()->clone());
     }
  
     return new ConstantNode(copy);

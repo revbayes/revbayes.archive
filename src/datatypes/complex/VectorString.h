@@ -53,7 +53,7 @@ class VectorString : public RbComplex {
         // Element access functions for parser
         int                         getDim(void) const { return 1; }                        //!< Get subscript dimension
         const std::string&          getElementType(void) const;                             //!< Get element type
-        const RbObject*             getElement(const VectorInteger& index) const;           //!< Get element (a copy)
+        RbObject*                   getElement(const VectorInteger& index) const;           //!< Get element (copy)
         const VectorInteger&        getLength(void) const;                                  //!< Get length in each dimension
         void                        resize(const VectorInteger& len);                       //!< Resize
         void                        setElement(const VectorInteger& index, RbObject* val);  //!< Set element

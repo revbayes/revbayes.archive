@@ -29,19 +29,19 @@
 
 
 /** Clone object */
-RbObject* Func_model::clone(void) const {
+Func_model* Func_model::clone(void) const {
 
     return new Func_model(*this);
 }
 
 
 /** Execute function */
-DAGNode* Func_model::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_model::executeOperation(const std::vector<VariableSlot>& args) {
 
-    if (args[0]->numChildren() != 0)
+    if (args[0].getVariable()->numChildren() != 0)
         throw RbException("Node is not a sink node");
 
-    return new ConstantNode(new Model(args));
+    return new ConstantNode( new Model( std::vector<DAGNode*>( 1, args[0].getReference() ) ) );
 }
 
 

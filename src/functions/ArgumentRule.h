@@ -44,16 +44,16 @@ class ArgumentRule : public RbInternal {
         std::string                 richInfo(void) const;                                                                               //!< General info on object
 
         // ArgumentRule functions
-        DAGNode*                    convert(DAGNode* arg) const;                                                                        //!< Convert arg to conform to rule
-        RbObject*                   getDefaultValue(void) const;                                                                        //!< Get default val (copy)
-        DAGNode*                    getDefaultVariable(void) const;                                                                     //!< Get default value wrapped as node (copy)
-        DAGNode*                    getDefaultReference(void);                                                                          //!< Get default reference (ptr)
+        DAGNode*                    convert(const DAGNode* arg) const;                                                                  //!< Convert arg to conform to rule
         int                         getArgDim(void) const { return argSlot.getTypeSpec().getDim(); }                                    //!< Get argument dim
         std::string                 getArgLabel(void) const { return label; }                                                           //!< Get label of argument
         const std::string&          getArgType(void) const { return argSlot.getTypeSpec().getType(); }                                  //!< Get argument type
         const TypeSpec&             getArgTypeSpec(void) const { return argSlot.getTypeSpec(); }                                        //!< Get argument type spec
+        RbObject*                   getDefaultValue(void) const;                                                                        //!< Get default val (copy)
+        DAGNode*                    getDefaultVariable(void) const;                                                                     //!< Get default value wrapped as node (copy)
+        DAGNode*                    getDefaultReference(void);                                                                          //!< Get default reference (ptr)
         bool                        hasDefault(void) const { return hasDefaultVal; }                                                    //!< Has default?
-        virtual bool                isArgValid(DAGNode* var, bool& convert) const;                                                      //!< Is var valid argument?
+        virtual bool                isArgValid(const DAGNode* var, bool& needsConversion, bool once) const;                             //!< Is var valid argument?
         bool                        isReference(void) const { return argSlot.getTypeSpec().isReference(); }                             //!< Is reference ('&') argument?
         void                        setReference(bool flag) { argSlot.setReferenceFlag(flag); }                                         //!< Set reference flag
 

@@ -33,14 +33,14 @@
 
 
 /** Clone object */
-RbObject* Func_quit::clone(void) const {
+Func_quit* Func_quit::clone(void) const {
 
     return new Func_quit(*this);
 }
 
 
 /** Execute operation */
-DAGNode* Func_quit::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_quit::executeOperation(const std::vector<VariableSlot>& args) {
 
     /* Ask if user really wants to quit */
     //bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit"); // TEMP: Getting tired of typing 'y' (JPH)

@@ -52,15 +52,17 @@ class FunctionTable : public RbInternal {
         // FunctionTable functions
         virtual void    addFunction(const std::string name, RbFunction* func);  //!< Add function
         void            clear(void);                                            //!< Clear table
-        void            eraseFunction(const std::string& name);                 //!< Erase a function (all versions)
-        DAGNode*        executeFunction(const std::string& name, const std::vector<Argument>& args) const;  //!< Execute function
+        DAGNode*        executeFunction( const std::string&             name,
+                                         const std::vector<Argument>&   args) const;                        //!< Evaluate function (once)
+        void            eraseFunction(const std::string& name);                                             //!< Erase a function (all versions)
         RbFunction*     getFunction(const std::string& name, const std::vector<Argument>& args) const;      //!< Get function (a copy)
-        RbObject*       getFunctionValue(const std::string& name, const std::vector<Argument>& args) const; //!< Get function value
         bool            isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;             //!< Are formals unique?
         size_t          size(void) const { return table.size(); }                //!< Get size TODO: Include parent size?
 
     protected:
-        RbFunction*     findFunction(const std::string& name, const std::vector<Argument>& args) const;     //!< Find function, process args
+        RbFunction*     findFunction(   const std::string&              name,
+                                        const std::vector<Argument>&    args,
+                                        bool                            evaluateOnce) const;     //!< Find function, process args
         
         std::multimap<std::string, RbFunction*>     table;          //!< Table of functions
         FunctionTable*                              parentTable;    //!< Enclosing table

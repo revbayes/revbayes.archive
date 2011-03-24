@@ -40,16 +40,14 @@ Func_clamp* Func_clamp::clone(void) const {
 
 
 /** Execute function */
-DAGNode* Func_clamp::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_clamp::executeOperation(const std::vector<VariableSlot>& args) {
 
-    // Get the stochastic node from the variable lookup
-    LookupNode* lookupNode = dynamic_cast<LookupNode*>(args[0]);
-    assert(lookupNode != NULL);
-    StochasticNode* theNode = dynamic_cast<StochasticNode*>(lookupNode->getVariable());
+    // Get the stochastic node from the variable reference or lookup
+    StochasticNode* theNode = dynamic_cast<StochasticNode*>(args[0].getReference());
     if ( !theNode )
         throw ("The variable is not a stochastic node");
     
-    theNode->clamp(args[1]->getValue()->clone());
+    theNode->clamp(args[1].getValue()->clone());
 
     return NULL;
 }

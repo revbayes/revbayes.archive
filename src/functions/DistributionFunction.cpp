@@ -139,22 +139,22 @@ bool DistributionFunction::equals(const RbObject* x) const {
 
 
 /** Execute operation: switch based on type */
-DAGNode* DistributionFunction::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* DistributionFunction::executeOperation(const std::vector<VariableSlot>& args) {
 
     if (functionType == DENSITY) {
-        if (((Boolean*)(args.back()->getValue()))->getValue() == false)
-            return new ConstantNode(new Real(distribution->pdf(args[0]->getValue())));
+        if (((Boolean*)(args.back().getValue()))->getValue() == false)
+            return new ConstantNode(new Real(distribution->pdf(args[0].getValue())));
         else
-            return new ConstantNode(new Real(distribution->lnPdf(args[0]->getValue())));
+            return new ConstantNode(new Real(distribution->lnPdf(args[0].getValue())));
     }
     else if (functionType == RVALUE) {
          return new ConstantNode(distribution->rv());
     }
     else if (functionType == PROB) {
-        return new ConstantNode(new Real(((DistributionReal*)(distribution))->cdf(((Real*)(args[0]->getValue()))->getValue())));
+        return new ConstantNode(new Real(((DistributionReal*)(distribution))->cdf(((Real*)(args[0].getValue()))->getValue())));
     }
     else if (functionType == QUANTILE) {
-        return new ConstantNode(new Real((((DistributionReal*)(distribution))->quantile(((Real*)(args[0]->getValue()))->getValue()))));
+        return new ConstantNode(new Real((((DistributionReal*)(distribution))->quantile(((Real*)(args[0].getValue()))->getValue()))));
     }
 
     throw ("Unrecognized distribution function");
@@ -183,14 +183,14 @@ const TypeSpec DistributionFunction::getReturnType(void) const {
 }
 
 /** Process arguments */
-bool DistributionFunction::processArguments(const std::vector<Argument>& args, VectorInteger* matchScore) {
+bool DistributionFunction::processArguments(const std::vector<Argument>& args, bool evaluateOnce, VectorInteger* matchScore) {
 
-    if (!RbFunction::processArguments(args, matchScore))
+    if (!RbFunction::processArguments(args, evaluateOnce, matchScore))
         return false;
 
     /* Set member variables of the distribution */
     ArgumentRules::iterator i=argumentRules.begin();
-    std::vector<DAGNode*>::iterator j = processedArguments.begin();
+    std::vector<VariableSlot>::iterator j = processedArguments.begin();
     if (functionType != RVALUE) {
         i++;
         j++;
@@ -198,7 +198,9 @@ bool DistributionFunction::processArguments(const std::vector<Argument>& args, V
 
     for (; i!=argumentRules.end(); i++, j++) {
         std::string name = (*i)->getArgLabel();
-        distribution->setVariable(name, (*j));
+        /* All distribution variables are references but we have value arguments here
+           so a const cast is needed to deal with the mismatch */
+        distribution->setVariable( name, const_cast<DAGNode*>( (*j).getVariable() ) );
     }
 
     return true;

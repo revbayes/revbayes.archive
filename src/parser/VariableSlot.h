@@ -32,6 +32,7 @@ class VariableSlot {
         friend class            Frame;                                                          //!< Expose slot to frame
 
                                 VariableSlot(DAGNode* var, bool ref=false);                     //!< Constructor of filled slot
+                                VariableSlot(const TypeSpec& typeSp, DAGNode* var);             //!< Constructor of filled slot with type spec
                                 VariableSlot(const TypeSpec& typeSp);                           //!< Constructor of empty slot from type spec
                                 VariableSlot(const std::string& type, int dim, bool ref=false); //!< Constructor of empty slot from type spec elements
                                 VariableSlot(const VariableSlot& x);                            //!< Copy value or reference correctly
@@ -42,12 +43,14 @@ class VariableSlot {
 
         // Regular functions
         const std::string&      getName(void) const;                                            //!< Get name of slot
-        const DAGNode*          getReference(void) const;                                       //!< Get a const reference to the variable
-        DAGNode*                getReference(void);                                             //!< Get a reference to the variable
+        DAGNode*                getReference(void) const;                                       //!< Get a reference to the variable
+        int                     getDim(void) const { return typeSpec.getDim(); }                //!< Return dim of slot
+        const std::string&      getType(void) const { return typeSpec.getType(); }              //!< Return type of slot
         const TypeSpec&         getTypeSpec(void) const { return typeSpec; }                    //!< Return type specification for slot
         const RbObject*         getValue(void) const;                                           //!< Get the value of the variable (ptr, not copy)
         const DAGNode*          getVariable(void) const;                                        //!< Get the variable (ptr, not copy)
-        bool                    isTemp(void) const { return temp; }                             //!< Does slot contain temp value?
+        bool                    isValidVariable(DAGNode* newVariable ) const;                   //!< Is newVariable valid for the slot?
+        int                     isReference(void) const { return typeSpec.isReference(); }      //!< Is this a reference slot?
         void                    printValue(std::ostream& o) const;                              //!< Print value of slot
         void                    setFrame(Frame* slotFrame) { frame=slotFrame; }                 //!< Set frame of slot
         void                    setReference(DAGNode* ref);                                     //!< Set a slot with a reference
@@ -56,17 +59,17 @@ class VariableSlot {
         void                    setVariable(DAGNode* newVar);                                   //!< Set a slot with a value (wrapped value)
 
     private:
-        // Help function
-        void                    removeVariable(void);                           //!< Remove old variable from slot
+        // Help functions
+        DAGNode*                convertVariable( DAGNode* newVariable ) const;                  //!< Convert variable before using it
+        void                    removeVariable(void);                                           //!< Remove old variable from slot
 
         // Member variables
-        TypeSpec                typeSpec;                                       //!< The type specification for the slot
-        bool                    temp;                                           //!< Flags whether a reference slot is used to hold a temp value
-        DAGNode*                variable;                                       //!< Pointer to the variable (reference or not)
-        Frame*                  frame;                                          //!< Pointer to the slot frame or NULL if none
+        TypeSpec                typeSpec;                                                       //!< The type specification for the slot
+        DAGNode*                variable;                                                       //!< Pointer to the variable (reference or not)
+        Frame*                  frame;                                                          //!< Pointer to the slot frame or NULL if none
 };
 
 /* Global functions using the class */
-std::ostream&   operator<<(std::ostream& o, const VariableSlot& x);           //!< Overloaded output operator
+std::ostream&   operator<<(std::ostream& o, const VariableSlot& x);             //!< Overloaded output operator
 
 #endif

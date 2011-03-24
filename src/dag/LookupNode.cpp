@@ -34,7 +34,7 @@
 
 /** Constructor of empty lookup node */
 LookupNode::LookupNode(const std::string& valType) :
-    DeterministicNode(valType), baseVariable(NULL), baseLookup(NULL), memberName(), indexArgs() {
+    DeterministicNode(valType), baseVariable(NULL), baseLookup(NULL), memberName(), indexArgs(), valueDim(0) {
 }
 
 
@@ -266,7 +266,7 @@ const TypeSpec& LookupNode::getMemberTypeSpec(const RbString& name) const {
     if (theBaseObject == NULL)
         throw RbException( "Base variable does not have members");
 
-    return theBaseObject->getMembers().getVariableSlot(name).getTypeSpec();
+    return theBaseObject->getMemberTypeSpec( name );
 }
 
 

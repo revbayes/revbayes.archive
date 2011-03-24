@@ -31,15 +31,15 @@ class Func_transpose :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func_transpose*             clone(void) const;                                       //!< Clone the object
-    	const VectorString&         getClass(void) const;                                    //!< Get class vector
+        Func_transpose*             clone(void) const;                                          //!< Clone the object
+    	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                            //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                               //!< Get type of return value
+        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
+        const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
 	protected:
-        DAGNode*                    executeOperation(const std::vector<DAGNode*> & args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 };
 
 #endif
@@ -69,9 +69,9 @@ Func_transpose<valT, retT>* Func_transpose<valT, retT>::clone(void) const {
 
 /** Execute function: MatrixReal <- transpose(MatrixReal) */
 template <>
-DAGNode* Func_transpose<MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_transpose<MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    MatrixReal mat = (((MatrixReal*) (args[0]->getValue())))->getValue();
+    MatrixReal mat = (((MatrixReal*) (args[0].getValue())))->getValue();
     int n = mat.getNumRows();
     int m = mat.getNumCols();
     MatrixReal* matT = new MatrixReal(m, n, 0.0);
@@ -82,9 +82,9 @@ DAGNode* Func_transpose<MatrixReal,MatrixReal>::executeOperation(const std::vect
 
 /** Execute function: VectorInteger <- transpose(VectorInteger) */
 template <>
-DAGNode* Func_transpose<VectorInteger,VectorInteger>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_transpose<VectorInteger,VectorInteger>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    VectorInteger* vec  = (VectorInteger*) (args[0]->getValue());
+    VectorInteger* vec  = (VectorInteger*) (args[0].getValue());
     VectorInteger* vecT = new VectorInteger(*vec);
     vecT->transpose();
     return new ConstantNode( vecT );
@@ -93,9 +93,9 @@ DAGNode* Func_transpose<VectorInteger,VectorInteger>::executeOperation(const std
 
 /** Execute function: VectorReal <- transpose(VectorReal) */
 template <>
-DAGNode* Func_transpose<VectorReal,VectorReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_transpose<VectorReal,VectorReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    VectorReal  vec  = (((VectorReal*) (args[0]->getValue())))->getValue();
+    VectorReal  vec  = (((VectorReal*) (args[0].getValue())))->getValue();
     VectorReal* vecT = new VectorReal(vec);
     vecT->transpose();
     return new ConstantNode( vecT );
@@ -104,9 +104,9 @@ DAGNode* Func_transpose<VectorReal,VectorReal>::executeOperation(const std::vect
 
 /** Execute function: VectorRealPos <- transpose(VectorRealPos) */
 template <>
-DAGNode* Func_transpose<VectorRealPos,VectorRealPos>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_transpose<VectorRealPos,VectorRealPos>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    VectorRealPos  vec  = (((VectorRealPos*) (args[0]->getValue())))->getValue();
+    VectorRealPos  vec  = (((VectorRealPos*) (args[0].getValue())))->getValue();
     VectorRealPos* vecT = new VectorRealPos(vec);
     vecT->transpose();
     return new ConstantNode( vecT );

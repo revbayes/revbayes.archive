@@ -52,10 +52,12 @@ class DistributionFunction :  public RbFunction {
         const ArgumentRules&        getArgumentRules(void) const;               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                  //!< Get type spec of return value
 
-        bool                        processArguments(const std::vector<Argument>& args, VectorInteger* matchScore=NULL);    //!< Process args, set member variables of distribution
+        bool                        processArguments(   const std::vector<Argument>&    args,
+                                                        bool                            evaluateOnce,
+                                                        VectorInteger*                  matchScore=NULL);    //!< Process args, set member variables of distribution
 
 	protected:
-        DAGNode*                    executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 
         ArgumentRules               argumentRules;                              //!< Argument rules
         TypeSpec                    returnType;                                 //!< Return type

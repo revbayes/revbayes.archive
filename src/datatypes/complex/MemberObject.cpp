@@ -80,28 +80,34 @@ const VectorString& MemberObject::getClass(void) const {
 }
 
 
-/** Execute member function with preprocessed arguments */
+/** Execute member function with preprocessed arguments (repeated evaluation) */
 DAGNode* MemberObject::executeMethod(const std::string& name, int funcId) {
 
     /* Get preprocessed arguments */
-    std::vector<DAGNode*> arguments = methods.getProcessedArguments(funcId);
+    std::vector<VariableSlot> arguments = methods.getProcessedArguments(funcId);
 
     /* Execute the operation */
     return executeOperation(name, arguments);
 }
 
 
-/** Execute member function */
+/** Execute member function (evaluate it once) */
 DAGNode* MemberObject::executeMethod(const std::string& name, std::vector<Argument>& args) {
 
     /* Process the arguments */
     int funcId = methods.processArguments(name, args);
 
     /* Get the processed arguments */
-    std::vector<DAGNode*> arguments = methods.getProcessedArguments(funcId);
+    const std::vector<VariableSlot>& processedArguments = methods.getProcessedArguments(funcId);
 
     /* Execute the operation */
-    return executeOperation(name, arguments);
+    DAGNode* retVal = executeOperation(name, processedArguments);
+
+    /* Delete the processed arguments */
+    methods.deleteProcessedArguments(funcId);
+
+    /* Return the result */
+    return retVal;
 }
 
 
@@ -156,15 +162,6 @@ std::string MemberObject::richInfo(void) const {
     printValue(o);
 
     return o.str();
-}
-
-
-/** Set arguments of a member function */
-int MemberObject::setArguments(const std::string& name, std::vector<Argument>& args) {
-
-    /* Process the arguments and return function id */
-    int funcId = methods.processArguments(name, args);
-    return funcId;
 }
 
 

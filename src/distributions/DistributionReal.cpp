@@ -36,20 +36,20 @@ DistributionReal::DistributionReal(const MemberRules& memberRules)
 
 
 /** Map calls to member methods */
-DAGNode* DistributionReal::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
+DAGNode* DistributionReal::executeOperation(const std::string& name, std::vector<VariableSlot>& args) {
 
     /* Manage all calls here, for simplicity, instead of relying on inheritance */
     if (name == "cdf") {
-        retDouble.setValue(cdf(((Real*)(args[0]->getValue()))->getValue()));
+        retDouble.setValue(cdf(((Real*)(args[0].getValue()))->getValue()));
     }
     else if (name == "lnPdf") {
-        retDouble.setValue(lnPdf(args[0]->getValue()));
+        retDouble.setValue(lnPdf(args[0].getValue()));
     }
     else if (name == "pdf") {
-        retDouble.setValue(pdf(args[0]->getValue()));
+        retDouble.setValue(pdf(args[0].getValue()));
     }
     else if (name == "quantile") {
-        retDouble.setValue(quantile(((Real*)(args[0]->getValue()))->getValue()));
+        retDouble.setValue(quantile(((Real*)(args[0].getValue()))->getValue()));
     }
     else if (name == "rv") {
         if (getVariableType() == RealPos_name)

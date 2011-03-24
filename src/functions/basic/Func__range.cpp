@@ -36,10 +36,10 @@ Func__range* Func__range::clone(void) const {
 
 
 /** Execute function */
-DAGNode* Func__range::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__range::executeOperation(const std::vector<VariableSlot>& args) {
 
-    int first = ((Integer*)(args[0])->getValue())->getValue();
-    int last  = ((Integer*)(args[1])->getValue())->getValue();
+    int first = ((Integer*)(args[0].getValue()))->getValue();
+    int last  = ((Integer*)(args[1].getValue()))->getValue();
 
     std::vector<int> temp;
     for (int i=first; i<=last; i++)

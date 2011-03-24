@@ -129,7 +129,7 @@ const VectorString& MemberNode::getDAGClass() const {
 /** Get type of a named member variable */
 const TypeSpec& MemberNode::getMemberTypeSpec(const RbString& name) const {
 
-    return memberObject->getMembers().getVariableSlot( name ).getTypeSpec();
+    return memberObject->getMemberTypeSpec( name );
 }
 
 

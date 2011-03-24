@@ -52,7 +52,7 @@ class LookupNode : public DeterministicNode {
         LookupNode*         clone(void) const;                                                          //!< Clone the lookup node
         const VectorString& getDAGClass(void) const;                                                    //!< Get DAG node class vector
         int                 getDim(void) const { return valueDim; }                                     //!< Get dim of lookup target value (0 for scalar, 1 for vector, etc)
-        DAGNode*            getVariable(void) { return const_cast<DAGNode*>( lookup() ); }              //!< Look up the variable and get a reference to it
+        DAGNode*            getReference(void) { return const_cast<DAGNode*>( lookup() ); }             //!< Look up the variable and get a reference to it
         void                printStruct(std::ostream& o) const;                                         //!< Print struct for user
         std::string         richInfo(void) const;                                                       //!< Complete info about object
 

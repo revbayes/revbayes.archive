@@ -84,7 +84,7 @@ bool UserFunction::equals(const RbObject* x) const {
 
 
 /** Execute function */
-DAGNode* UserFunction::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* UserFunction::executeOperation(const std::vector<VariableSlot>& args) {
 
     std::cerr << "I am a user-defined function." << std::endl;
     std::cerr << "I know who I am but I do not know how to execute myself." << std::endl;

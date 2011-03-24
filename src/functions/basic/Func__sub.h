@@ -30,15 +30,15 @@ class Func__sub :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func__sub*                  clone(void) const;                                      //!< Clone the object
-    	const VectorString&         getClass(void) const;                                   //!< Get class vector
+        Func__sub*                  clone(void) const;                                          //!< Clone the object
+    	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                           //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                              //!< Get type of return value
+        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
+        const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
 	protected:
-        DAGNode*                    executeOperation(const std::vector<DAGNode*>& args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 };
 
 #endif
@@ -64,10 +64,10 @@ Func__sub<firstValType, secondValType, sumType>* Func__sub<firstValType, secondV
 
 /** Execute function: Integer <- Integer - Integer */
 template <>
-DAGNode* Func__sub<Integer,Integer,Integer>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__sub<Integer,Integer,Integer>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    int val1 = ((Integer*)(args[0])->getValue())->getValue();
-    int val2 = ((Integer*)(args[1])->getValue())->getValue();
+    int val1 = ((Integer*)(args[0].getValue()))->getValue();
+    int val2 = ((Integer*)(args[1].getValue()))->getValue();
     int res  = val1 - val2;
     return new ConstantNode( new Integer(res));
 }
@@ -75,10 +75,10 @@ DAGNode* Func__sub<Integer,Integer,Integer>::executeOperation(const std::vector<
 
 /** Execute function: Real <- Real - Real */
 template <>
-DAGNode* Func__sub<Real,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__sub<Real,Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    double val1 = ((Real*)(args[0])->getValue())->getValue();
-    double val2 = ((Real*)(args[1])->getValue())->getValue();
+    double val1 = ((Real*)(args[0].getValue()))->getValue();
+    double val2 = ((Real*)(args[1].getValue()))->getValue();
     double res  = val1 - val2;
     return new ConstantNode( new Real(res));
 }
@@ -86,10 +86,10 @@ DAGNode* Func__sub<Real,Real,Real>::executeOperation(const std::vector<DAGNode*>
 
 /** Execute function: Real <- Integer - Real */
 template <>
-DAGNode* Func__sub<Integer,Real,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__sub<Integer,Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    double val1 = (double)(((Integer*)(args[0])->getValue())->getValue());
-    double val2 = ((Real*)(args[1])->getValue())->getValue();
+    double val1 = (double)(((Integer*)(args[0].getValue()))->getValue());
+    double val2 = ((Real*)(args[1].getValue()))->getValue();
     double res  = val1 - val2;
     return new ConstantNode( new Real(res));
 }
@@ -97,10 +97,10 @@ DAGNode* Func__sub<Integer,Real,Real>::executeOperation(const std::vector<DAGNod
 
 /** Execute function: Real <- Real - Integer */
 template <>
-DAGNode* Func__sub<Real,Integer,Real>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__sub<Real,Integer,Real>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    double val1 = ((Real*)(args[0])->getValue())->getValue();
-    double val2 = (double)(((Integer*)(args[1])->getValue())->getValue());
+    double val1 = ((Real*)(args[0].getValue()))->getValue();
+    double val2 = (double)(((Integer*)(args[1].getValue()))->getValue());
     double res  = val1 - val2;
     return new ConstantNode( new Real(res));
 }
@@ -108,10 +108,10 @@ DAGNode* Func__sub<Real,Integer,Real>::executeOperation(const std::vector<DAGNod
 
 /** Execute function: RealMatrix <- RealMatrix - RealMatrix */
 template <>
-DAGNode* Func__sub<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func__sub<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    MatrixReal val1 = ((MatrixReal*)(args[0])->getValue())->getValue();
-    MatrixReal val2 = ((MatrixReal*)(args[1])->getValue())->getValue();
+    MatrixReal val1 = ((MatrixReal*)(args[0].getValue()))->getValue();
+    MatrixReal val2 = ((MatrixReal*)(args[1].getValue()))->getValue();
     MatrixReal res  = val1 - val2;
     return new ConstantNode( new MatrixReal(res));
 }

@@ -104,18 +104,15 @@ const VectorString& VectorReal::getClass(void) const {
 }
 
 
-/** Get element for parser (read-only) */
-const RbObject* VectorReal::getElement(const VectorInteger& index) const {
-
-    static Real x = Real(0.0);
+/** Get element for parser */
+RbObject* VectorReal::getElement(const VectorInteger& index) const {
 
     if (index.size() != 1)
         throw (RbException("Index error"));
     if (index[0] >= (double)value.size() || index[0] < 0)
         throw (RbException("Index out of bound"));
 
-    x.setValue(value[index[0]]);
-    return &x;
+    return new Real( value[ index[0] ] );
 }
 
 

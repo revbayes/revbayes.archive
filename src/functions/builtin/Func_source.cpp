@@ -33,17 +33,17 @@
 
 
 /** Clone object */
-RbObject* Func_source::clone(void) const {
+Func_source* Func_source::clone(void) const {
 
     return new Func_source(*this);
 }
 
 
 /** Execute function */
-DAGNode* Func_source::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_source::executeOperation(const std::vector<VariableSlot>& args) {
 
     /* Open file */
-    std::string filename = ((RbString*)(args[0]->getValue()))->getValue();
+    std::string filename = ((RbString*)(args[0].getValue()))->getValue();
     std::ifstream inFile(filename.c_str());
     
     if (!inFile)

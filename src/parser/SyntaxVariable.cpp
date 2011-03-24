@@ -283,6 +283,30 @@ DAGNode* SyntaxVariable::getValue(Frame* frame) const {
 }
 
 
+/** Get variable slot */
+VariableSlot& SyntaxVariable::getVariableSlot(Frame* frame) const {
+
+    const Frame& baseFrame;
+    if (baseVariable == NULL)
+        baseFrame = *frame;
+    else {
+        DAGNode*        theVar   = baseVariable->getValue(frame);
+        const RbObject* theValue = theVar->getValue();
+        if (theValue == NULL)
+            throw RbException( "Variable expression evaluates to NULL" );
+        const MemberObject* theMemberObject = dynamic_cast<const MemberObject*>(theValue);
+        if (theMemberObject == NULL)
+            throw RbException( "Variable '" + baseVariable->getFullName(frame) + "' does not have members" );
+        baseFrame = theMemberObject->getMembers();
+    }
+
+    if (!baseFrame.existsVariable(*identifier))
+        return NULL;
+    else
+        return baseFrame.getVariableSlot(*identifier);
+}
+
+
 /** Print info about the syntax element */
 void SyntaxVariable::print(std::ostream& o) const {
 

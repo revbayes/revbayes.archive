@@ -80,18 +80,27 @@ std::string MethodTable::briefInfo () const {
 }
 
 
+/** Find and execute operation based on function id; only safe version if there are overloaded member functions,
+    we cannot rely on the name without having access to some arguments to use for argument matching. */
+DAGNode* MethodTable::executeFunction(int funcId) const {
+
+    std::map<int, RbFunction*>::const_iterator it = funcs.find(funcId);
+    return (*it).second->executeOperation(getProcessedArguments(funcId));    
+}
+
+
 /** Get processed arguments */
-std::vector<DAGNode*> const& MethodTable::getProcessedArguments(int funcId) const {
+std::vector<VariableSlot> const& MethodTable::getProcessedArguments(int funcId) const {
 
     std::map<int, RbFunction*>::const_iterator it = funcs.find(funcId);
     return (*it).second->getProcessedArguments();
 }
 
 
-/** Process arguments */
+/** Process arguments (for repeated execution) */
 int MethodTable::processArguments(const std::string& name, const std::vector<Argument>& args) const {
 
-    RbFunction* theFunction = findFunction(name, args);
+    RbFunction* theFunction = findFunction(name, args, false);
 
     return ids.find(theFunction)->second;
 }

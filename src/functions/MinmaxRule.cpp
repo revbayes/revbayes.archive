@@ -128,18 +128,20 @@ const VectorString& MinmaxRule::getClass(void) const {
 
 
 /** Test if argument is valid; we evaluate it here if not done previously */
-bool MinmaxRule::isArgValid(DAGNode* var, bool& convert) const {
+bool MinmaxRule::isArgValid(const DAGNode* var, bool& needsConversion, bool once) const {
 
-    /* We do not even try to convert */
-    convert = false;
+    if (!ArgumentRule::isArgValid(var, needsConversion, once))
+        return false;
 
-    if (!ArgumentRule::isArgValid(var, convert))
+    if (var == NULL)
         return false;
 
     const RbObject* val = var->getValue();
     if (val == NULL)
         return false;
 
+    /** @todo We may want a more general mechanism involving all comparable data types, relying
+              on pointer-based comparison functions in the data types */
     if (val->isType(Real_name)) {
         double x = ((Real*)(val))->getValue();
         if (minVal != NULL) {

@@ -62,7 +62,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 
 
 /** Test if argument is valid; for consistency, we also evaluate the argument here */
-DAGNode* ArgumentRule::convert(DAGNode* arg) const {
+DAGNode* ArgumentRule::convert(const DAGNode* arg) const {
     
     if ( arg == NULL )
         return NULL;
@@ -104,7 +104,7 @@ RbObject* ArgumentRule::getDefaultValue(void) const {
 DAGNode* ArgumentRule::getDefaultVariable(void) const {
 
     if ( !hasDefault() )
-        throw RbException("Missing default value");
+        throw RbException("There is no default value for argument '" + label + "'");
 
     const DAGNode* defValue = argSlot.getVariable();
     if ( defValue == NULL )
@@ -118,30 +118,43 @@ DAGNode* ArgumentRule::getDefaultVariable(void) const {
 DAGNode* ArgumentRule::getDefaultReference(void) {
 
     if ( !hasDefault() )
-        throw RbException("Missing default value");
+        throw RbException("There is no default value for argument '" + label + "'");
 
     return argSlot.getReference();
 }
 
 
-/** Test if argument is valid; for consistency, we also evaluate the argument here */
-bool ArgumentRule::isArgValid(DAGNode* var, bool& convert) const {
+/** Test if argument is valid */
+bool ArgumentRule::isArgValid(const DAGNode* var, bool& needsConversion, bool once) const {
     
     if ( var == NULL )
         return true;
 
-    // This call causes the var to be evaluated, so it could have side effects
-    const RbObject* value = var->getValue();
+    if ( once ) {
+        /* We are executing once and match based on current value; error will be thrown if arguments have not been evaluated already */
+        const RbObject* value = var->getValue();
+        if ( value->isType( argSlot.getTypeSpec().getType() ) && value->getDim() == argSlot.getTypeSpec().getDim() ) {
+            needsConversion = false;
+            return true;
+        }
 
-    if ( Workspace::userWorkspace().isXOfTypeY( var->getValueType(), argSlot.getTypeSpec().getType() ) == true &&
-        var->getDim() == argSlot.getTypeSpec().getDim()  ) {
-        convert = false;
-        return true;
+        if ( value->isConvertibleTo( argSlot.getTypeSpec().getType(), argSlot.getTypeSpec().getDim(), once ) == true) {
+            needsConversion = true;
+            return true;
+        }
     }
+    else {
+        /* We need safe argument matching for repeated evaluation in a function node */
+        if ( Workspace::userWorkspace().isXOfTypeY( var->getValueType(), argSlot.getTypeSpec().getType() ) == true &&
+            var->getDim() == argSlot.getTypeSpec().getDim()  ) {
+            needsConversion = false;
+            return true;
+        }
 
-    if ( value->isConvertibleTo( argSlot.getTypeSpec().getType(), argSlot.getTypeSpec().getDim() ) == true) {
-        convert = true;
-        return true;
+        if ( Workspace::userWorkspace().isXConvertibleToY( var->getValueType(), var->getDim(), argSlot.getTypeSpec().getType(), argSlot.getTypeSpec().getDim() ) == true) {
+            needsConversion = true;
+            return true;
+        }
     }
 
     return false;
@@ -155,18 +168,10 @@ void ArgumentRule::printValue(std::ostream &o) const {
     o << " \"" << label << "\"";
     if ( hasDefaultVal ) {
         o << " = ";
-        if ( isReference() ) {
-            if ( argSlot.getReference() == NULL )
-                o << "NULL";
-            else
-                argSlot.getReference()->printValue( o );
-        }
-        else {
-            if ( argSlot.getVariable() == NULL )
-                o << "NULL";
-            else
-                argSlot.getVariable()->printValue( o );
-        }
+        if ( argSlot.getVariable() == NULL )
+            o << "NULL";
+        else
+            argSlot.getVariable()->printValue( o );
     }
 }
 

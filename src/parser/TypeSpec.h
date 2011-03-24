@@ -23,8 +23,8 @@
 class TypeSpec {
     
     public:
-                            TypeSpec(const std::string& objType, bool ref=false);               //!< Type of single object
-                            TypeSpec(const std::string& objType, int objDim, bool ref=false);   //!< Type of field (plate/container)
+                            TypeSpec(const std::string& objType);                               //!< Type of single object
+                            TypeSpec(const std::string& objType, int objDim, bool ref=false);   //!< Type of container object
 
         // Operators
         TypeSpec&           operator=(const TypeSpec& x);                                       //!< Assignment operator
@@ -48,6 +48,6 @@ class TypeSpec {
 
 
 /* Global functions using the class */
-std::ostream&   operator<<(std::ostream& o, const TypeSpec& x);           //!< Overloaded output operator
+std::ostream&   operator<<(std::ostream& o, const TypeSpec& x);             //!< Overloaded output operator
 
 #endif

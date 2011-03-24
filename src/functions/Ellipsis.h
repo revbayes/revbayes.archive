@@ -32,17 +32,14 @@ class VectorString;
 class Ellipsis : public ArgumentRule {
 
     public:
-                            Ellipsis(void);                                     //! No labels or types required
-                            Ellipsis(const std::string& type, int dim=0);       //! Type and dim required
+                            Ellipsis(void);                                     //! No labels or types required, value arguments assumed
+                            Ellipsis(const TypeSpec& typeSp);                   //! Some type specification needs to be met
 
         // Basic utility functions
         Ellipsis*           clone(void) const { return new Ellipsis(*this); }   //!< Clone object
         const VectorString& getClass(void) const;                               //!< Get class vector
         void                printValue(std::ostream& o) const;                  //!< Print value for user
         std::string         richInfo(void) const;                               //!< Complete info 
-
-        // Regular functions
-        bool                isArgValid(DAGNode* var) const;                     //!< Check arg validity
 };
 
 #endif

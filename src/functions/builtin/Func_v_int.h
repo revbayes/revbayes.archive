@@ -30,15 +30,15 @@ class Func_v_int :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func_v_int*                 clone(void) const;                                       //!< Clone the object
-    	const VectorString&         getClass(void) const;                                    //!< Get class vector
+        Func_v_int*                 clone(void) const;                                          //!< Clone the object
+    	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                            //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                               //!< Get type of return value
+        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
+        const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
 	protected:
-        DAGNode*                    executeOperation(const std::vector<DAGNode*> & args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 };
 
 #endif

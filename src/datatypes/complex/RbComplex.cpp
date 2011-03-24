@@ -75,7 +75,14 @@ const VectorString& RbComplex::getClass(void) const {
 
 
 /** Get element */
-const RbObject* RbComplex::getElement(const VectorInteger& index) const {
+RbObject* RbComplex::getElement(const VectorInteger& index) const {
+
+    throw (RbException("Object does not have elements"));
+}
+
+
+/** Get element reference */
+DAGNode* RbComplex::getElementRef(const VectorInteger& index) {
 
     throw (RbException("Object does not have elements"));
 }

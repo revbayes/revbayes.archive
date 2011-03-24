@@ -30,6 +30,7 @@
 
 class ArgumentRule;
 class DAGNode;
+class FunctionNode;
 class VectorInteger;
 class VectorString;
 
@@ -54,39 +55,47 @@ typedef std::vector<ArgumentRule*> ArgumentRules;
  */
 class RbFunction :  public RbObject {
 
-    public:
-		virtual                                ~RbFunction(void);                                                                   //!< Destructor
+    friend class                                FunctionNode;                                                                       //!< Give FunctionNode direct access to processed arguments
+    friend class                                MethodTable;                                                                        //!< Give MethodTable direct access to executeOperation
 
-        // Basic utility functions
-        virtual std::string                     briefInfo(void) const;                                                              //!< Brief info about object
-        virtual RbObject*                       clone(void) const = 0;                                                              //!< Clone object
-    	virtual bool                            equals(const RbObject* obj) const;                                                  //!< Check that the functions are the same
+    public:
+        virtual                                ~RbFunction(void) {}                                                                 //!< Destructor
+
+        // Basic utility functions you have to override
+        virtual RbFunction*                     clone(void) const = 0;                                                              //!< Clone object
     	virtual const VectorString&             getClass(void) const;                                                               //!< Get class vector
-    	void                                    printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
+
+        // Basic utility functions you may want to override
+        virtual std::string                     briefInfo(void) const;                                                              //!< Brief info about object
+    	virtual bool                            equals(const RbObject* obj) const;                                                  //!< Check that the functions are the same
         virtual std::string                     richInfo(void) const;                                                               //!< Complete info about object
 
-        // RbFunction functions
+        // Basic utility functions you should not have to override
+    	void                                    printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
+
+        // RbFunction functions you have to override
         virtual const ArgumentRules&            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec                  getReturnType(void) const = 0;                                                      //!< Get type of return value
+
+        // RbFunction function you may want to override 
+        virtual bool                            processArguments(const std::vector<Argument>&    args,
+                                                                 bool                            evaluateOnce,
+                                                                 VectorInteger*                  matchScore=NULL);                  //!< Process args, return a match score if pointer is not null
+
+        // RbFunction functions you should not override
+        void                                    deleteProcessedArguments(void);                                                     //!< Delete processed arguments
         DAGNode*                                execute(void);                                                                      //!< Execute using processed args
         DAGNode*                                execute(const std::vector<Argument>& args);                                         //!< Execute function
-        std::vector<DAGNode*> const&            getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
-        virtual bool                            processArguments(const std::vector<Argument>&    args,
-                                                                 VectorInteger*                  matchScore=NULL);                  //!< Process args, return a match score if pointer is not null
+        const std::vector<VariableSlot>&        getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
 
 	protected:
                                                 RbFunction(void);                                                                   //!< Basic constructor
-                                                RbFunction(const RbFunction& x);                                                    //!< Copy constructor
-
-        // Assignment operator
-        RbFunction&                             operator=(const RbFunction& x);                                                     //!< Assignment operator
 
         // Regular utility functions
-        void                                    deleteProcessedArguments(void);                                                     //!< Delete processed arguments
-    	virtual DAGNode*                        executeOperation(std::vector<DAGNode*> const& args) = 0;                            //!< Execute operation
+    	virtual DAGNode*                        executeOperation(const std::vector<VariableSlot>& args) = 0;                        //!< Execute operation
 
         // Member variables
-        std::vector<DAGNode*>                   processedArguments;                                                                 //!< Processed arguments
+        std::vector<VariableSlot>               processedArguments;                                                                 //!< Processed arguments
         bool                                    argumentsProcessed;                                                                 //!< Are arguments processed?
 };
 

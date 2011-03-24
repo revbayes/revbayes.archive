@@ -60,7 +60,7 @@ bool MemberFunction::equals(const RbObject* x) const {
 
 
 /** Execute operation: we rely on the object's own implementation, so we do nothing here */
-DAGNode* MemberFunction::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* MemberFunction::executeOperation(const std::vector<VariableSlot>& args) {
 
     return NULL;
 }
@@ -100,8 +100,8 @@ std::string MemberFunction::richInfo(void) const {
         o << "Arguments not processed; there are " << processedArguments.size() << " values." << std::endl;
     
     int index=1;
-    for (std::vector<DAGNode*>::const_iterator i=processedArguments.begin(); i!=processedArguments.end(); i++, index++) {
-        o << " processedArguments[" << index << "] = " << (*i)->getValue() << std::endl;
+    for (std::vector<VariableSlot>::const_iterator i=processedArguments.begin(); i!=processedArguments.end(); i++, index++) {
+        o << " processedArguments[" << index << "] = " << (*i).getValue() << std::endl;
     }
 
     return o.str();

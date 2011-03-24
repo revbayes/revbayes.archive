@@ -4,11 +4,11 @@
  * from ConstantNode. ConstantNode is used for DAG nodes holding constant
  * values, and generally for variables used in RevBayes.
  *
- * @brief Declaration of ConstantNode
+ * @brief Implementation of ConstantNode
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2009-11-19 17:29:33 +0100 (Tor, 19 Nov 2009) $
- * @author The RevBayes development core team
+ * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-16, version 1.0
@@ -106,6 +106,20 @@ const RbObject* ConstantNode::getValElement(const VectorInteger& index) const {
         throw RbException("Object does not have elements");
 
     return complexObject->getElement(index);
+}
+
+
+/**
+ * @brief Is the node a constant expression?
+ *
+ * We can only guarantee that the node is a constant expression if the
+ * node cannot be mutated; this is the case if the constant node does
+ * not belong to a variable slot.
+ *
+ */
+bool ConstantNode::isConstExpr(void) const {
+
+    return false;
 }
 
 

@@ -42,17 +42,20 @@ FunctionNode::FunctionNode(RbFunction* func) :
     DeterministicNode(func->getReturnType().getType()), valueDim(func->getReturnType().getDim())  {
 
     /* Check for cycles */
-    const std::vector<DAGNode*>& arguments = func->getProcessedArguments();
+    const std::vector<VariableSlot>& arguments = func->getProcessedArguments();
     std::list<DAGNode*> done;
-    for (std::vector<DAGNode*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
-        if ((*i)->isParentInDAG(this, done))
+    for (std::vector<VariableSlot>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
+        if ((*i).getVariable()->isParentInDAG(this, done))
             throw RbException ("Invalid assignment: cycles in the DAG");
     }
 
     /* Set parents and add this node as a child node of these */
-    for (std::vector<DAGNode*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
-        parents.insert(*i);
-        (*i)->addChildNode(this);
+    for (std::vector<VariableSlot>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
+        /* Const cast needed to give us unconditional access to the arguments. Let's hope we
+           know what we are doing in this class! */
+        DAGNode* theArgument = const_cast<DAGNode*>( (*i).getVariable() );
+        parents.insert( theArgument );
+        theArgument->addChildNode(this);
     }
 
     /* Set the function */
@@ -77,10 +80,11 @@ FunctionNode::FunctionNode(const FunctionNode& x) : DeterministicNode(x), valueD
     storedValue = NULL;
 
     /* Set parents and add this node as a child node of these */
-    const std::vector<DAGNode*>& arguments = function->getProcessedArguments();
-    for (std::vector<DAGNode*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
-        parents.insert(*i);
-        (*i)->addChildNode(this);
+    const std::vector<VariableSlot>& arguments = function->getProcessedArguments();
+    for (std::vector<VariableSlot>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
+        DAGNode* theArgument = const_cast<DAGNode*>( (*i).getVariable() );
+        parents.insert(theArgument);
+        theArgument->addChildNode(this);
     }
 }
 
@@ -131,10 +135,11 @@ FunctionNode& FunctionNode::operator=(const FunctionNode& x) {
 
         /* Set parents and add this node as a child node of these */
         parents.clear();
-        const std::vector<DAGNode*>& arguments = function->getProcessedArguments();
-        for (std::vector<DAGNode*>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
-            parents.insert(*i);
-            (*i)->addChildNode(this);
+        const std::vector<VariableSlot>& arguments = function->getProcessedArguments();
+        for (std::vector<VariableSlot>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
+            DAGNode* theArgument = const_cast<DAGNode*>( (*i).getVariable() );
+            parents.insert(theArgument);
+            (theArgument)->addChildNode(this);
         }
     }
 
@@ -161,21 +166,20 @@ FunctionNode* FunctionNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) con
 
     /* Clone parents */
     copy->function = (RbFunction*)(function->clone());
-    std::vector<DAGNode*>& params     = const_cast<std::vector<DAGNode*>& > (function->getProcessedArguments());
-    std::vector<DAGNode*>& copyParams = const_cast<std::vector<DAGNode*>& > (copy->function->getProcessedArguments());
-    copyParams.clear();
+    std::vector<VariableSlot>::iterator i, j;
+    for (i=function->processedArguments.begin(), j=copy->function->processedArguments.begin(); i!=function->processedArguments.end(); i++, j++) {
+        DAGNode* theParentClone = (*i).getVariable()->cloneDAG(newNodes);
+        (*j).setVariable(theParentClone);
+        copy->parents.insert(theParentClone);
+        theParentClone->addChildNode(copy);
+    }
+
     DAGNode* retVal = copy->function->execute();
     copy->value = retVal->getValue()->clone();
     delete retVal;
     copy->storedValue = NULL;
     copy->touched = false;
     copy->changed = false;
-    for (std::vector<DAGNode*>::iterator i=params.begin(); i!=params.end(); i++) {
-        DAGNode* theParentClone = (*i)->cloneDAG(newNodes);
-        copyParams.push_back(theParentClone);
-        copy->parents.insert(theParentClone);
-        theParentClone->addChildNode(copy);
-    }
 
     /* Make sure the children clone themselves */
     for(std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
@@ -191,6 +195,26 @@ const VectorString& FunctionNode::getDAGClass() const {
 
     static VectorString rbClass = VectorString(FunctionNode_name) + DeterministicNode::getDAGClass();
     return rbClass;
+}
+
+
+/** Execute function and get a reference */
+DAGNode* FunctionNode::getReference(void) {
+
+    if ( !isValueReference )
+        throw RbException( "Function does not return a reference" );
+
+    return function->execute();
+}
+
+
+/** Execute function and get a variable value */
+DAGNode* FunctionNode::getVariable(void) {
+
+    if ( isValueReference )
+        throw RbException( "Function does not return a variable value" );
+
+    return function->execute();
 }
 
 
@@ -220,8 +244,11 @@ bool FunctionNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newN
         throw RbException("Node is not a parent");
 
     // Now find node among parameters
-    std::vector<DAGNode*>& params = const_cast<std::vector<DAGNode*>& > (function->getProcessedArguments());
-    std::vector<DAGNode*>::iterator it = std::find(params.begin(), params.end(), oldNode);
+    std::vector<VariableSlot>& params = function->processedArguments;
+    std::vector<VariableSlot>::iterator it;
+    for (it=params.begin(); it!=params.end(); it++)
+        if ((*it).getVariable() == oldNode)
+            break;
     if (it == params.end())
         throw RbException("Node is not a parameter");
 
@@ -299,12 +326,14 @@ void FunctionNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
     parents.erase(oldNode);
     parents.insert(newNode);
 
-    std::vector<DAGNode*>& params = const_cast<std::vector<DAGNode*>& > (function->getProcessedArguments());
-    std::vector<DAGNode*>::iterator it = std::find(params.begin(), params.end(), oldNode);
+    std::vector<VariableSlot>& params = function->processedArguments;
+    std::vector<VariableSlot>::iterator it;
+    for (it=params.begin(); it!=params.end(); it++)
+        if ((*it).getVariable() == oldNode)
+            break;
     if (it == params.end())
         throw RbException("Node is not a parameter");
-    it = params.erase(it);
-    params.insert(it, newNode);
+    (*it).setVariable(newNode);
 
     touched = true;
     changed = false;

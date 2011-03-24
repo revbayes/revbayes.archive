@@ -45,17 +45,17 @@ Func_s_realvec* Func_s_realvec::clone(void) const {
 
 
 /** Execute function */
-DAGNode* Func_s_realvec::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_s_realvec::executeOperation(const std::vector<VariableSlot>& args) {
 
     // Get the vector of real numbers 
-    std::vector<double> tempVec = ((VectorRealPos*)(args[0]->getValue()))->getValue();
+    std::vector<double> tempVec = ((VectorRealPos*)(args[0].getValue()))->getValue();
         
     // check that the elements sum to 1.0
     double sum = 0.0;
     for (size_t i=0; i<tempVec.size(); i++)
         sum += tempVec[i];
     if ( RbMath::compApproximatelyEqual(sum, 1.0, 0.0000001) == false )
-		throw (RbException("The values for the simple do not sum to one"));
+		throw (RbException("The values for the simplex do not sum to one"));
         
     // renormalization, just to be really, really safe
     RbMath::normalize(tempVec, 1.0);

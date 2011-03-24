@@ -27,18 +27,18 @@ class Func_model :  public RbFunction {
 
     public:
         // Basic utility functions
-        RbObject*               clone(void) const;                                      //!< Clone object
-    	const VectorString&     getClass(void) const;                                   //!< Get class vector
+        Func_model*             clone(void) const;                                          //!< Clone object
+    	const VectorString&     getClass(void) const;                                       //!< Get class vector
 
         // Func_model functions
-        const ArgumentRules&    getArgumentRules(void) const;                           //!< Get argument rules
-        const TypeSpec          getReturnType(void) const;                              //!< Get type of return val
+        const ArgumentRules&    getArgumentRules(void) const;                               //!< Get argument rules
+        const TypeSpec          getReturnType(void) const;                                  //!< Get type of return val
 
         // New design
-        RbObject*               getValue(void);                                         //!< Get function value
+        RbObject*               getValue(void);                                             //!< Get function value
 
 	protected:
-    	DAGNode*                executeOperation(const std::vector<DAGNode*>& args);    //!< Execute function
+    	DAGNode*                executeOperation(const std::vector<VariableSlot>& args);    //!< Execute function
 };
 
 #endif

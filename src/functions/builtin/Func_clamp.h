@@ -38,7 +38,7 @@ class Func_clamp :  public RbFunction {
         const TypeSpec              getReturnType(void) const;              //!< Get type of return value
 
 	protected:
-        DAGNode*                    executeOperation(const std::vector<DAGNode*> & args);    //!< Execute operation
+        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 };
 
 #endif

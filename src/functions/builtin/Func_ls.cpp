@@ -34,17 +34,17 @@
 
 
 /** Clone object */
-RbObject* Func_ls::clone(void) const {
+Func_ls* Func_ls::clone(void) const {
 
     return new Func_ls(*this);
 }
 
 
 /** Execute function */
-DAGNode* Func_ls::executeOperation(const std::vector<DAGNode*>& args) {
+DAGNode* Func_ls::executeOperation(const std::vector<VariableSlot>& args) {
 
     /* Open file */
-    bool printAll = ((Boolean*) (args[0]->getValue()))->getValue();
+    bool printAll = ((Boolean*) (args[0].getValue()))->getValue();
     
     std::cout << "User workspace:" << std::endl;
     std::cout << "===============" << std::endl;

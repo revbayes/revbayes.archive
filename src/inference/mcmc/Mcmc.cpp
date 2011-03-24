@@ -68,7 +68,7 @@ Mcmc* Mcmc::clone(void) const {
 
 
 /** Map calls to member methods */
-DAGNode* Mcmc::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
+DAGNode* Mcmc::executeOperation(const std::string& name, const std::vector<VariableSlot>& args) {
 
     if (name == "update") {
        update();

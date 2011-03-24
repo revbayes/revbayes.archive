@@ -53,11 +53,11 @@ class VariableNode : public DAGNode {
         virtual VariableNode*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;                     //!< Clone entire graph
         virtual void    	            getAffected(std::set<StochasticNode*>& affected) = 0;                           //!< Mark and get affected nodes
         virtual bool                    isMutableTo(const DAGNode* newNode) const = 0;                                  //!< Is node mutable to newNode?
-        virtual bool                    isMutableTo(const VectorInteger& index, const RbObject* newValue) const = 0;    //!< Is node mutable to contain newValue?
+        virtual bool                    isMutableTo(const TypeSpec& typeSpec) const = 0;                                //!< Is node mutable to language type typeSpec?
         virtual bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const = 0;    //!< Is parent mutable to newNode?
         virtual void    	            keepAffected(void) = 0;                                                         //!< Keep value of affected nodes
         virtual void                    mutateTo(DAGNode* newNode) = 0;                                                 //!< Mutate to new node
-        virtual VariableNode*           mutateTo(const VectorInteger& index, RbObject* newValue) = 0;                   //!< Mutate to contain newValue
+        virtual VariableNode*           mutateTo(const TypeSpec& typeSpec) = 0;                                         //!< Mutate to language type typeSpec
         virtual void                    restoreAffected(void) = 0;                                                      //!< Restore value of affected nodes
         virtual void                    swapParentNode(DAGNode* oldP, DAGNode* newP) = 0;                               //!< Swap a parent node
         virtual void                    touchAffected(void) = 0;                                                        //!< Tell affected nodes value is reset

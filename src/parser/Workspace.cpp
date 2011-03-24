@@ -203,9 +203,11 @@ bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* te
 }
 
 
-/** Execute function */
+/** Execute function to get its value (workspaces only evaluate functions once) */
 DAGNode* Workspace::executeFunction(const std::string& name, const std::vector<Argument>& args) const {
 
+    /* Setting the last parameter to true indicates that we are only interested in
+       evaluating the function once */
     return functionTable->executeFunction(name, args);
 }
 

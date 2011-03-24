@@ -57,10 +57,10 @@ class DeterministicNode : public VariableNode {
         // DAG functions you have to override
         virtual DeterministicNode*      cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;                     //!< Clone entire graph
         virtual bool                    isMutableTo(const DAGNode* newNode) const = 0;                                  //!< Is node mutable to newNode?
-        virtual bool                    isMutableTo(const VectorInteger& index, const RbObject* newValue) const = 0;    //!< Is node mutable to contain newValue?
+        virtual bool                    isMutableTo(const TypeSpec& typeSpec) const = 0;                                //!< Is node mutable to language type typeSpec?
         virtual bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const = 0;    //!< Is parent mutable to newNode?
         virtual void                    mutateTo(DAGNode* newNode) = 0;                                                 //!< Mutate to new node
-        virtual DeterministicNode*      mutateTo(const VectorInteger& index, RbObject* newValue) = 0;                   //!< Mutate to contain newValue
+        virtual DeterministicNode*      mutateTo(const TypeSpec& typeSpec) = 0;                                         //!< Mutate to language type typeSpec
         virtual void                    swapParentNode(DAGNode* oldP, DAGNode* newP) = 0;                               //!< Swap a parent node
 
         // Get default moves

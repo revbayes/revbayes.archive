@@ -41,12 +41,13 @@ class MemberNode : public DeterministicNode {
 
         // DAG functions
         MemberNode*             cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
-        virtual bool            isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
-        virtual bool            isMutableTo(const VectorInteger& index, const RbObject* newValue) const;    //!< Is node mutable to contain newValue?
-        virtual bool            isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
-        virtual void            mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
-        MemberNode*             mutateTo(const VectorInteger& index, RbObject* newValue);                   //!< Mutate to contain newValue
+        bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
+        bool                    isMutableTo(const TypeSpec& typeSpec) const;                                //!< Is node mutable to language type typeSpec?
+        bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
+        void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
+        MemberNode*             mutateTo(const TypeSpec& typeSpec);                                         //!< Mutate to language type typeSpec
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
+
 
         // MemberNode functions
         const TypeSpec&         getMemberTypeSpec(const RbString& name) const;                              //!< Get type spec of a named member variable

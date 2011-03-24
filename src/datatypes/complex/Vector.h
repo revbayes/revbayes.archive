@@ -49,7 +49,7 @@ class Vector : public RbComplex {
         // Element access functions for parser to be implemented in the derived VectorXxx classes
         int                          getDim(void) const { return 1; }                              //!< Get subscript dimensions
         virtual const std::string&   getElementType(void) const = 0;                               //!< Get element type
-        virtual const RbObject*      getElement(const VectorInteger& index) const = 0;             //!< Get element (read-only)
+        virtual RbObject*            getElement(const VectorInteger& index) const = 0;             //!< Get element (copy)
         virtual const VectorInteger& getLength(void) const = 0;                                    //!< Get length in each dim
         virtual void                 resize(const VectorInteger& len) = 0;                         //!< Resize
         virtual void                 setElement(const VectorInteger& index, RbObject* val) = 0;    //!< Set element
