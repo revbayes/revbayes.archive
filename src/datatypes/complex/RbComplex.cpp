@@ -16,11 +16,11 @@
 
 #include "ContainerIterator.h"
 #include "DAGNode.h"
-#include "VectorInteger.h"
 #include "RbComplex.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "VectorInteger.h"
 #include "VectorString.h"
 
 #include <map>
@@ -75,21 +75,14 @@ const VectorString& RbComplex::getClass(void) const {
 
 
 /** Get element */
-RbObject* RbComplex::getElement(const VectorInteger& index) const {
+const RbObject* RbComplex::getElement(const VectorInteger& index) const {
 
     throw (RbException("Object does not have elements"));
 }
 
 
-/** Get element reference */
-DAGNode* RbComplex::getElementRef(const VectorInteger& index) {
-
-    throw (RbException("Object does not have elements"));
-}
-
-
-/** Get element length in each dimension */
-const VectorInteger& RbComplex::getLength() const {
+/** Get element type */
+const std::vector<int>& RbComplex::getLength(void) const {
 
     throw (RbException("Object does not have elements"));
 }
@@ -152,25 +145,10 @@ void RbComplex::setVariable(const std::string& name, DAGNode* var) {
 }
 
 
-/** Resize container */
-void RbComplex::resize(const VectorInteger& len) {
-
-    throw (RbException("Object does not have elements"));
-}
-
-
 /** Set element */
 void RbComplex::setElement(const VectorInteger& index, RbObject* val) {
 
     delete val;
     throw (RbException("Object does not have elements"));
 }
-
-
-/** Set element length */
-void RbComplex::setLength(const VectorInteger& len) {
-
-    throw (RbException("Object does not have elements"));
-}
-
 

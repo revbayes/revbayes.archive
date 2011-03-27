@@ -20,7 +20,6 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "Real.h"
-#include "Simplex.h"
 #include "VectorInteger.h"
 #include "VectorReal.h"
 #include "VectorString.h"
@@ -33,38 +32,74 @@
 
 
 /** Default constructor */
-VectorReal::VectorReal(void) : Vector() {
-
+VectorReal::VectorReal(void) : Vector(Real_name) {
 }
 
 
 /** Construct vector with one double x */
-VectorReal::VectorReal(const double x) : Vector() {
+VectorReal::VectorReal(const double x) : Vector(Real_name) {
 
-    value.push_back(x);
+    elements.push_back(new Real(x));
+    length[0] = 1;
 }
 
 
 /** Construct vector with n doubles x */
-VectorReal::VectorReal(const size_t n, const double x) : Vector() {
+VectorReal::VectorReal(const size_t n, const double x) : Vector(Real_name) {
 
     for (size_t i = 0; i < n; i++)
-        value.push_back(x);
+        elements.push_back(new Real(x));
+    length[0] = elements.size();
 }
 
 
 /** Constructor from double vector */
-VectorReal::VectorReal(const std::vector<double>& x) : Vector() {
+VectorReal::VectorReal(const std::vector<double>& x) : Vector(Real_name) {
 
-    value = x;
+    for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++)
+        elements.push_back(new Real(*i));
+    length[0] = elements.size();
 }
 
 
-/** Constructor from container iterator */
-VectorReal::VectorReal(const ContainerIterator& x) : Vector() {
+/** Subscript operator */
+double& VectorReal::operator[](size_t i) {
 
-    for (ContainerIterator::const_iterator i=x.begin(); i!=x.end(); i++)
-        value.push_back(*i);
+    if (i < 0 || i > int(elements.size()))
+        throw RbException("Index out of bounds");
+
+    return static_cast<Real*>(elements[i])->getValueRef();
+}
+
+
+/** Subscript const operator */
+const double& VectorReal::operator[](size_t i) const {
+
+    if (i < 0 || i > int(elements.size()))
+        throw RbException("Index out of bounds");
+    return static_cast<Real*>(elements[i])->getValueRef();
+}
+
+
+/** Equals comparison */
+bool VectorReal::operator==(const VectorReal& x) const {
+
+    if (size() != x.size())
+        return false;
+
+    for (size_t i=0; i<elements.size(); i++) {
+        if (operator[](i) != x[i])
+            return false;
+    }
+
+    return true;
+}
+
+
+/** Not equals comparison */
+bool VectorReal::operator!=(const VectorReal& x) const {
+
+    return !operator==(x);
 }
 
 
@@ -72,27 +107,6 @@ VectorReal::VectorReal(const ContainerIterator& x) : Vector() {
 VectorReal* VectorReal::clone(void) const {
 
     return new VectorReal(*this);
-}
-
-
-/** Pointer-based equals comparison */
-bool VectorReal::equals(const RbObject* obj) const {
-
-    // Check type first
-    if ( !obj->isType( VectorReal_name ) )
-        return false;
-
-    // Now go through all elements
-    const VectorReal& vec = *((VectorReal*)(obj));
-
-    if ( vec.size() != value.size() )
-        return false;
-
-    for ( size_t i=0; i<vec.size(); i++)
-        if ( vec[i] != value[i] )
-            return false;
-            
-    return true;
 }
 
 
@@ -104,33 +118,14 @@ const VectorString& VectorReal::getClass(void) const {
 }
 
 
-/** Get element for parser */
-RbObject* VectorReal::getElement(const VectorInteger& index) const {
+/** Export value as STL vector */
+std::vector<double> VectorReal::getValue(void) const {
 
-    if (index.size() != 1)
-        throw (RbException("Index error"));
-    if (index[0] >= (double)value.size() || index[0] < 0)
-        throw (RbException("Index out of bound"));
+    std::vector<double> temp;
+    for (size_t i=0; i<size(); i++)
+        temp.push_back(operator[](i));
 
-    return new Real( value[ index[0] ] );
-}
-
-
-/** Get element type */
-const std::string& VectorReal::getElementType(void) const {
-
-    static std::string rbType = Real_name;
-    return rbType;
-}
-
-
-/** Get element length for parser */
-const VectorInteger& VectorReal::getLength(void) const {
-
-    static VectorInteger length = VectorInteger(0);
-
-    length[0] = int(value.size());
-    return length;
+    return temp;
 }
 
 
@@ -143,11 +138,11 @@ void VectorReal::printValue(std::ostream& o) const {
     o << "[ ";
     o << std::fixed;
     o << std::setprecision(1);
-    for (std::vector<double>::const_iterator i = value.begin(); i!= value.end(); i++) 
+    for (std::vector<RbObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) 
         {
-        if (i != value.begin())
+        if (i != elements.begin())
             o << ", ";
-        o << (*i);
+        o << *(*i);
         }
     o <<  " ]";
     if (getIsRowVector() == false)
@@ -158,13 +153,19 @@ void VectorReal::printValue(std::ostream& o) const {
 }
 
 
-/** Allow the parser to resize the vector */
-void VectorReal::resize(const VectorInteger& len) {
+/** Append element to end of vector, updating length in process */
+void VectorReal::push_back(double x) {
 
-    if (len.size() != 1 || len[0] < 0)
-        throw (RbException("Length specification error"));
+    elements.push_back(new Real(x));
+    length[0]++;
+}
 
-    value.resize(len[0]);
+
+/** Add element in front of vector, updating length in process */
+void VectorReal::push_front(double x) {
+
+    elements.insert(elements.begin(), new Real(x));
+    length[0]++;
 }
 
 
@@ -179,50 +180,24 @@ std::string VectorReal::richInfo(void) const {
 }
 
 
-/** Allow parser to set an element (any type conversion is done by parser) */
-void VectorReal::setElement(const VectorInteger& index, RbObject* val) {
+/** Set value of vector using STL vector */
+void VectorReal::setValue(const std::vector<double>& x) {
 
-    if ( !val->isType(Real_name) )
-        throw (RbException("Type mismatch"));
-
-    if ( index.size() != 1 || index[0] < 1 )
-        throw (RbException("Index error"));
-
-    // Do we want to allow resize to fit the new element or throw an error?
-    // If we resize, then we have to fill in elements with some default value
-    // or alternatively, keep a vector of bools signifying which elements should
-    // be considered null elements. Here we use nan.
-    if ( index[0] >= int(value.size()) ) {
-        int oldLen = int(value.size());
-        resize(index[0]);
-        for (int i=oldLen; i<index[0]; i++)
-            value[i] = std::numeric_limits<double>::quiet_NaN();
+    clear();
+    for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++) {   
+        elements.push_back(new Real(*i));
+        length[0]++;
     }
-
-    value[index[0]] = ((Real*)(val))->getValue();
-}
-
-
-/** Allow parser to rearrange the container (actually do not allow it) */
-void VectorReal::setLength(const VectorInteger& len) {
-
-    if ( len.size() != 1 && len[0] != int(value.size()) )
-        throw (RbException("Length specification error"));
-}
+}   
 
 
 /** Set value of vector using VectorReal */
 void VectorReal::setValue(const VectorReal& x) {
 
-    value.resize(x.size());
-    for (size_t i=0; i<x.size(); i++)    
-        value[i] = x[i];
-}   
-
-
-/** Set value of vector using VectorReal */
-void VectorReal::setValue(const std::vector<double>& x) {
-
-    value = x;
+    clear();
+    for (size_t i=0; i<x.size(); i++) {   
+        elements.push_back(new Real(x[i]));
+        length[0]++;
+    }
 }   
 

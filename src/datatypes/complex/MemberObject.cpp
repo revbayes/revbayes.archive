@@ -49,34 +49,12 @@ MemberObject::MemberObject(const MemberRules& memberRules, const MethodTable& me
 }
 
 
-/** Pointer-based equals comparison */
-bool MemberObject::equals(const RbObject* obj) const {
+/** Convert to type: throw an error */
+MemberObject* MemberObject::convertTo(const std::string& type, int dim) const {
 
-    if (this != obj) {
-
-        if (getType() != obj->getType())
-            return false;
-
-        MemberObject* p = (MemberObject*)(obj);
-
-        // It is impossible to look into the C++ code of methods, so return
-        // false if there are any methods
-        if (methods.size() != 0 || p->methods.size() != 0)
-            return false;
-
-        if (members != p->members)
-            return false;
-    }
-
-    return true;
-}
-
-
-/** Get class vector describing type of object */
-const VectorString& MemberObject::getClass(void) const {
-
-    static VectorString rbClass = VectorString(MemberObject_name) + RbComplex::getClass();
-    return rbClass;
+    std::ostringstream msg;
+    msg << "Type conversion of " << getTypeSpec() << " to " << TypeSpec(type, dim) << " not supported (yet)";
+    throw RbException(msg);
 }
 
 
@@ -111,6 +89,14 @@ DAGNode* MemberObject::executeMethod(const std::string& name, std::vector<Argume
 }
 
 
+/** Get class vector describing type of object */
+const VectorString& MemberObject::getClass(void) const {
+
+    static VectorString rbClass = VectorString(MemberObject_name) + RbComplex::getClass();
+    return rbClass;
+}
+
+
 /** Get value of a member variable */
 const RbObject* MemberObject::getValue(const std::string& name) {
 
@@ -136,6 +122,13 @@ const DAGNode* MemberObject::getVariable(const std::string& name) const {
 DAGNode* MemberObject::getVariable(const std::string& name) {
 
     return const_cast<DAGNode*>(members.getVariable(name));
+}
+
+
+/** Is convertible to type? Default is false for member objects; override if you want to support type conversion */
+bool RbObject::isConvertibleTo(const std::string& type, int dim, bool once) const {
+
+	return false;
 }
 
 

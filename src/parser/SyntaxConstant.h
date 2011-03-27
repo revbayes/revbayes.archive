@@ -43,7 +43,6 @@ class SyntaxConstant : public SyntaxElement {
         // Basic utility functions
         std::string     briefInfo(void) const;                      //!< Brief info about object
         SyntaxConstant* clone(void) const;                          //!< Clone object
-        bool            equals(const SyntaxElement* elem) const;    //!< Equals comparison
         void            print(std::ostream& o) const;               //!< Print info about object
 
         // Regular functions

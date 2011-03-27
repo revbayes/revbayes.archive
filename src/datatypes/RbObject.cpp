@@ -19,6 +19,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 #include <sstream>
@@ -34,16 +35,19 @@ std::string RbObject::briefInfo(void) const {
 }
 
 
-/** Convert to type: throw an error */
+/** Convert to object of language type typeSpec. We simply pass this
+    through to the function that uses just the type and the dim.     */
+RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
+
+    return convertTo( typeSpec.getType(), typeSpec.getDim() );
+}
+
+
 RbObject* RbObject::convertTo(const std::string& type, int dim) const {
 
-    std::ostringstream msg;
-    msg << "Type conversion of '" << getType() << "' to '" << type;
-    for (int i=0; i<dim; i++) {
-        msg << "[]";
-    }
-    msg << "' is not supported";
-    throw RbException(msg);
+    std::ostringstream  msg;
+    msg << "Type conversion to " << TypeSpec(type, dim) << " not supported";
+    throw RbException( msg );
 }
 
 
@@ -55,37 +59,35 @@ const VectorString& RbObject::getClass(void) const {
 }
 
 
-/** Get type (first entry in class vector) */
+/** Get object type (first entry in class vector) */
 const std::string& RbObject::getType(void) const {
 
     return getClass()[0];
 }
 
 
-/** Is always convertible to type? Default is false. */
+/** Get language type spec for object */
+const TypeSpec RbObject::getTypeSpec(void) const {
+
+    return TypeSpec( getClass()[0], getDim() );
+}
+
+
+/** Is convertible to language object of type typeSpec? */
+bool RbObject::isConvertibleTo(const TypeSpec& typeSpec, bool once) const {
+
+    return isConvertibleTo( typeSpec.getType(), typeSpec.getDim(), once );
+}
+
+
+/** Is convertible to language object of type specification type and dim? */
 bool RbObject::isConvertibleTo(const std::string& type, int dim, bool once) const {
 
-	return false;
+    return false;
 }
 
 
-/** Is element mutable to new value? */
-bool RbObject::isMutableTo(VectorInteger& index, const RbObject* newValue, std::string mutantType) const {
-
-    return false;    
-}
-
-
-/** Mutate element to new value */
-RbObject* RbObject::mutateTo(const VectorInteger& index, RbObject* newValue) const {
-
-    throw RbException("Mutation to type '" + newValue->getType() + "' not supported");
-
-    return NULL;
-}
-
-
-/** Are we of specified type? We need to check entire class vector in case we are derived from type. */
+/** Are we of specified object type? We need to check entire class vector in case we are derived from type. */
 bool RbObject::isType(const std::string& type) const {
 
     const VectorString& classVec = getClass();
@@ -97,6 +99,14 @@ bool RbObject::isType(const std::string& type) const {
 
 	return false;
 }
+
+
+/** Are we of specified language type? */
+bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
+
+    return typeSpec == getTypeSpec();
+}
+
 
 /** Print info about object simply by using richInfo function */
 void RbObject::print(std::ostream& o) const {

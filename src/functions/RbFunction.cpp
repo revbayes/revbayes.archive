@@ -20,11 +20,12 @@
 #include "ConstantNode.h"
 #include "ContainerIterator.h"
 #include "DAGNode.h"
-#include "DAGNodePlate.h"
+#include "ContainerNode.h"
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
+#include "VectorInteger.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -53,13 +54,6 @@ void RbFunction::deleteProcessedArguments(void) {
 
     processedArguments.clear();
     argumentsProcessed = false;
-}
-
-
-/** Pointer-based equals comparison */
-bool RbFunction::equals(const RbObject* x) const {
-
-    return getClass() == x->getClass();
 }
 
 
@@ -141,7 +135,7 @@ void RbFunction::printValue(std::ostream& o) const {
  *
  *  1. If the last argument rule is an ellipsis, and it is the kth argument passed
  *     in, then all arguments passed in, from position k to the end, are wrapped
- *     in a single DAGNodePlate object. These arguments are not matched to any
+ *     in a single ContainerNode object. These arguments are not matched to any
  *     rules.
  *  2. The remaining arguments are matched to labels using exact matching. If the
  *     type does not match the type of the rule, it is an error.
@@ -190,12 +184,12 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, bool evalu
 
     /*********************  1. Deal with ellipsis  **********************/
 
-    /* Wrap final args into one DAGNodePlate object.
+    /* Wrap final args into one ContainerNode object.
        TODO: Keep labels, discarded here. We might want to keep arguments separate in the future */
     if ( nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) >= nRules ) {
 
         int numEllipsisArgs = int(args.size()) - nRules + 1;
-        DAGNodePlate* ellipsisArgs = new DAGNodePlate(numEllipsisArgs, theRules[nRules-1]->getArgType());
+        ContainerNode* ellipsisArgs = new VariableContainer(theRules[nRules-1]->getArgType(), numEllipsisArgs);
         ContainerIterator ellipsisIt = ellipsisArgs->begin();
 
         for (size_t i=nRules-1; i<args.size(); i++) {
@@ -366,7 +360,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, bool evalu
     /* ... then for ellipsis arguments */
     if ( argIndex < numFinalArgs ) {
     
-        const DAGNodePlate* container = (const DAGNodePlate*)(processedArguments[argIndex].getVariable());
+        const ContainerNode* container = (const ContainerNode*)(processedArguments[argIndex].getVariable());
 
         for (ContainerIterator it=container->begin(); it!=container->end(); it++) {
 

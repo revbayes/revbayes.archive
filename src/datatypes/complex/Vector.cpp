@@ -16,30 +16,54 @@
  * $Id$
  */
 
+#include "RbException.h"
 #include "RbNames.h"
+#include "TypeSpec.h"
 #include "Vector.h"
 #include "VectorString.h"
 
 
-
-/** Default constructor*/
-Vector::Vector(void) {
-
-    isRowVector = true;
+/** Set type of elements */
+Vector::Vector(const std::string& elemType)
+    : ValueContainer(TypeSpec(elemType, 1)), isRowVector(true) {
 }
+
 
 /** Get class vector describing type of object */
 const VectorString& Vector::getClass(void) const { 
 
-    static VectorString rbClass = VectorString(Vector_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(Vector_name) + Container::getClass();
 	return rbClass;
 }
 
+
+/** Pop element off of back of vector, updating length in process */
+void Vector::pop_back(void) {
+
+    delete elements.back();
+    elements.pop_back();
+    length[0]--;
+}
+
+
+/** Resize vector */
+void Vector::resize( size_t n ) {
+
+    if ( n < elements.size() )
+        throw RbException( "Invalid attempt to shrink vector" );
+
+    for ( size_t i = elements.size(); i < n; i++ )
+        elements.push_back( getDefaultElement() );
+    length[0] = elements.size();
+}
+
+
+/** Transpose the vector */
 void Vector::transpose(void) {
-std::cout << "Transposing vector isRowVector = " << isRowVector << "->";
+
     if (isRowVector == true)
         isRowVector = false;
     else 
         isRowVector = true;
-std::cout << isRowVector << std::endl;
 }
+

@@ -156,11 +156,11 @@ void SyntaxForCondition::initializeLoop(Frame* frame) {
     DAGNode* value = inExpression->getValue(frame);
 
     // Check that it is a vector
-    if ( value->isDAGType( DAGNodePlate_name ) == false || value->getDim() != 1 ) {
+    if ( value->isDAGType( ContainerNode_name ) == false || value->getDim() != 1 ) {
         delete value;
         throw ( RbException("The 'in' expression does not evaluate to a vector") );
     }
-    vector = dynamic_cast<DAGNodePlate*>(value);
+    vector = dynamic_cast<ContainerNode*>(value);
 
     // Initialize nextValue
     nextElement = 0;

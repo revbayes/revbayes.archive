@@ -19,79 +19,87 @@
 #ifndef MatrixReal_H
 #define MatrixReal_H
 
-#include "RbComplex.h"
-#include "VectorInteger.h"
+#include "Matrix.h"
+#include "VectorReal.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
 
+
 /**
- * @brief Real matrix (vector of vectors)
+ * @brief Real matrix
  *
- * This real matrix class is implemented as a vector of vectors.
- *
+ * MatrixReal is implemented as a container in
+ * RevBayes (like matrices in R). This means that
+ * we cannot give subscript operator access to
+ * the elements. Instead, use the getValue and
+ * setValue functions to translate to and from
+ * STL vectors of vectors, for fast calculations.
+ * If necessary, one could also add C-style pointer
+ * arrays to the interface.
  */
-class MatrixReal : public RbComplex {
+class MatrixReal : public Matrix {
 
     public:
-                                                   MatrixReal(void);                                                           //!< Default constructor (empty matrix)
-                                                   MatrixReal(const size_t nRows, const size_t nCols, const double x = 0.0);   //!< Construct matrix containing double x
-                                                   MatrixReal(const std::vector<std::vector<double> >& x);                     //!< Construct matrix from a two-dimensional set of STL vectors
+                                            MatrixReal(void);                                                           //!< Default constructor (empty matrix)
+                                            MatrixReal(const size_t nRows, const size_t nCols, double x = 0.0);         //!< Construct matrix containing double x
+                                            MatrixReal(const std::vector<std::vector<double> >& x);                     //!< Construct matrix from a two-dimensional set of STL vectors
+                                            MatrixReal(const std::vector<int>& length, const std::vector<double>& x);   //!< Construct matrix from length specification and vector of content
+
+        // Overoaded operators
+        const RbObject* const &             operator[](const VectorInteger& index) const;                               //!< Subscript container access (const)
+        RbObject*&                          operator[](const VectorInteger& index);                                     //!< Subscript container access (const)
+        VectorReal&                         operator[](size_t i);                                                       //!< Subscript operator
+        const VectorReal&                   operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
         // Basic utility functions
-        virtual MatrixReal*                        clone(void) const;                                                          //!< Clone object
-        virtual bool                               equals(const RbObject* obj) const;                                          //!< Equals comparison
-        virtual const VectorString&                getClass(void) const;                                                       //!< Get class vector
-        void                                       printValue(std::ostream& o) const;                                          //!< Print value for user
-        virtual std::string                        richInfo(void) const;                                                       //!< Complete info about object
+        MatrixReal*                         clone(void) const;                                                          //!< Clone object
+        const VectorString&                 getClass(void) const;                                                       //!< Get class vector
+        void                                printValue(std::ostream& o) const;                                          //!< Print value for user
+        std::string                         richInfo(void) const;                                                       //!< Complete info about object
 
-        // Element access functions for parser
-	    int                                        getDim(void) const { return 1; }                                            //!< Get subscript dimensions
-        virtual const std::string&                 getElementType(void) const;                                                 //!< Get element type
-        const RbObject*                            getElement(const VectorInteger& index) const;                               //!< Get element (read-only)
-        const VectorInteger&                       getLength(void) const;                                                      //!< Get length in each dim
-        virtual void                               resize(const VectorInteger& len);                                           //!< Resize
-        virtual void                               setElement(const VectorInteger& index, RbObject* val);                      //!< Set element
-        void                                       setLength(const VectorInteger& len);                                        //!< Set length in each dim
+        // Container functions
+        void                                clear(void);                                                                //!< Clear
+        const RbObject*                     getElement(const VectorInteger& index) const = 0;                           //!< Get element (read-only)
+        ValueContainer*                     getSubContainer(const VectorInteger& index) const = 0;                      //!< Get subcontainer
+        void                                resize(const std::vector<size_t>& len) = 0;                                 //!< Resize to new length vector
+        void                                setElement(const VectorInteger& index, RbObject* val) = 0;                  //!< Set value element
+        void                                setLength(const std::vector<size_t>& len) = 0;                              //!< Reorganize container
+        size_t                              size(void) const = 0;                                                       //!< Get total number of elements
 
-        // Overloaded operators and built-in functions
-        std::vector<double>&                       operator[](size_t i) { return value[i]; }                                   //!< Index op allowing change
-        const std::vector<double>&                 operator[](size_t i) const { return value[i]; }                             //!< Const index op
-        
-        // Regular functions
-        int                                        getNumRows(void) const { return numRows; }                                  //!< Get the number of rows in the matrix
-        int                                        getNumCols(void) const { return numCols; }                                  //!< Get the number of columns in the matrix
-        const std::vector<std::vector<double> >&   getValue(void) const { return value; }                                      //!< Get value directly
-        void                                       matrixMult(const MatrixReal& a, const MatrixReal& b);
-        virtual void                               setValue(const std::vector<std::vector<double> >& x);                       //!< Set value directly
+        // Matrix functions
+        std::vector<double>                 getContent(void) const;                                                     //!< Get content (all elements) in an STL vector
+        std::vector<std::vector<double> >   getValue(void) const;                                                       //!< Get value as STL vector<vector> of doubles
+        void                                setContent(const std::vector<double>& x);                                   //!< Set content using STL vector of doubles
+        void                                setValue(const std::vector<std::vector<double> >& x);                       //!< Set value using STL vector<vector> of doubles
 
     private:
-        // helper functions for this class
-        bool                                       numFmt(int& numToLft, int& numToRht, std::string s) const;                  //!< Calculates the number of digits to the left and right of the decimal
-        std::vector<std::vector<double> >          value;                                                                      //!< Vector of vector of values
-        size_t                                     numRows;                                                                    //!< Number of rows
-        size_t                                     numCols;                                                                    //!< Number of columns
+        RbObject*                           getDefaultElement(void) { return new Real(); }                              //!< Get default element for empty slots
+        bool                                numFmt(int& numToLft, int& numToRht, std::string s) const;                  //!< Calculates the number of digits to the left and right of the decimal
+        
+        std::vector<VectorReal>             matrix;                                                                     //!< We use vector of vectors instead of container internally
 };
 
+
         // operators defined outside of the class
-        MatrixReal                                 operator+(const MatrixReal& A, const MatrixReal& B);                        //!< operator + 
-        MatrixReal                                 operator-(const MatrixReal& A, const MatrixReal& B);                        //!< operator - 
-        MatrixReal                                 operator*(const MatrixReal& A, const MatrixReal& B);                        //!< operator * (matrix multiplication) 
-        MatrixReal&                                operator+=(MatrixReal& A, const MatrixReal& B);                             //!< operator += 
-        MatrixReal&                                operator-=(MatrixReal& A, const MatrixReal& B);                             //!< operator -= 
-        MatrixReal&                                operator*=(MatrixReal& A, const MatrixReal& B);                             //!< operator *= (matrix multiplication)
-        MatrixReal                                 operator+(const double &a, const MatrixReal& B);                            //!< operator + for scalar + matrix 
-        MatrixReal                                 operator-(const double &a, const MatrixReal& B);                            //!< operator - for scalar - matrix 
-        MatrixReal                                 operator*(const double &a, const MatrixReal& B);                            //!< operator * for scalar * matrix 
-        MatrixReal                                 operator/(const double &a, const MatrixReal& B);                            //!< operator / for scalar / matrix 
-        MatrixReal                                 operator+(const MatrixReal& A, const double& b);                            //!< operator + for matrix + scalar 
-        MatrixReal                                 operator-(const MatrixReal& A, const double& b);                            //!< operator - for matrix - scalar 
-        MatrixReal                                 operator*(const MatrixReal& A, const double& b);                            //!< operator * for matrix * scalar 
-        MatrixReal                                 operator/(const MatrixReal& A, const double& b);                            //!< operator / for matrix / scalar 
-        MatrixReal&                                operator+=(MatrixReal& A, const double& b);                                 //!< operator += for scalar 
-        MatrixReal&                                operator-=(MatrixReal& A, const double& b);                                 //!< operator -= for scalar 
-        MatrixReal&                                operator*=(MatrixReal& A, const double& b);                                 //!< operator *= for scalar 
-        MatrixReal&                                operator/=(MatrixReal& A, const double& b);                                 //!< operator /= for scalar 
+        MatrixReal                          operator+(const MatrixReal& A, const MatrixReal& B);                        //!< operator + 
+        MatrixReal                          operator-(const MatrixReal& A, const MatrixReal& B);                        //!< operator - 
+        MatrixReal                          operator*(const MatrixReal& A, const MatrixReal& B);                        //!< operator * (matrix multiplication) 
+        MatrixReal&                         operator+=(MatrixReal& A, const MatrixReal& B);                             //!< operator += 
+        MatrixReal&                         operator-=(MatrixReal& A, const MatrixReal& B);                             //!< operator -= 
+        MatrixReal&                         operator*=(MatrixReal& A, const MatrixReal& B);                             //!< operator *= (matrix multiplication)
+        MatrixReal                          operator+(const double &a, const MatrixReal& B);                            //!< operator + for scalar + matrix 
+        MatrixReal                          operator-(const double &a, const MatrixReal& B);                            //!< operator - for scalar - matrix 
+        MatrixReal                          operator*(const double &a, const MatrixReal& B);                            //!< operator * for scalar * matrix 
+        MatrixReal                          operator/(const double &a, const MatrixReal& B);                            //!< operator / for scalar / matrix 
+        MatrixReal                          operator+(const MatrixReal& A, const double& b);                            //!< operator + for matrix + scalar 
+        MatrixReal                          operator-(const MatrixReal& A, const double& b);                            //!< operator - for matrix - scalar 
+        MatrixReal                          operator*(const MatrixReal& A, const double& b);                            //!< operator * for matrix * scalar 
+        MatrixReal                          operator/(const MatrixReal& A, const double& b);                            //!< operator / for matrix / scalar 
+        MatrixReal&                         operator+=(MatrixReal& A, const double& b);                                 //!< operator += for scalar 
+        MatrixReal&                         operator-=(MatrixReal& A, const double& b);                                 //!< operator -= for scalar 
+        MatrixReal&                         operator*=(MatrixReal& A, const double& b);                                 //!< operator *= for scalar 
+        MatrixReal&                         operator/=(MatrixReal& A, const double& b);                                 //!< operator /= for scalar 
 
 #endif

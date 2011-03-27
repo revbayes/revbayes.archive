@@ -225,11 +225,9 @@ bool FunctionNode::isMutableTo(const DAGNode* newNode) const {
 }
 
 
-/** Is it possible to mutate node to contain newValue? */
-bool FunctionNode::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
+/** Is it possible to mutate node to be of language type typeSpec? */
+bool FunctionNode::isMutableTo(const TypeSpec& typeSpec) const {
 
-    assert (!newValue->isType(Container_name));
-    
     bool isMutable = false;
 
     return isMutable;
@@ -262,7 +260,7 @@ bool FunctionNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newN
         theRule = argRules[index];
 
     // See if the new node value is convertible to the required type
-    if ( Workspace::globalWorkspace().isXConvertibleToY( theRule->getArgType(), theRule->getArgDim(), newNode->getValueType(), newNode->getDim() ) )
+    if ( Workspace::globalWorkspace().isXConvertibleToY( theRule->getArgTypeSpec(), newNode->getTypeSpec() ) )
         return true;
     
     return false;

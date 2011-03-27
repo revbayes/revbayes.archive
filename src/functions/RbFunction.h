@@ -67,7 +67,6 @@ class RbFunction :  public RbObject {
 
         // Basic utility functions you may want to override
         virtual std::string                     briefInfo(void) const;                                                              //!< Brief info about object
-    	virtual bool                            equals(const RbObject* obj) const;                                                  //!< Check that the functions are the same
         virtual std::string                     richInfo(void) const;                                                               //!< Complete info about object
 
         // Basic utility functions you should not have to override

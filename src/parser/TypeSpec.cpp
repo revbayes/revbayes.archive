@@ -19,7 +19,7 @@
 
 
 /** Constructor for single object (dim=0)*/
-TypeSpec::TypeSpec(const std::string& objType, bool ref) : type(objType), dim(0), reference(ref) {
+TypeSpec::TypeSpec(const std::string& objType) : type(objType), dim(0), reference(ref) {
 }
 
 

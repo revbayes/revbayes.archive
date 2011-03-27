@@ -1,7 +1,7 @@
 /**
  * @file
- * This file contains the declaration of RealPos, which is
- * used to hold strictly positive scalar values.
+ * This file contains the declaration of RealPos, which
+ * is the primitive RevBayes type for positive real numbers.
  *
  * @brief Declaration of RealPos
  *
@@ -9,9 +9,6 @@
  * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
  *
  * $Id$
  */
@@ -29,18 +26,18 @@ class VectorString;
 class RealPos : public Real {
 
     public:
-                                    RealPos(void);                                  //!< Default constructor
-                                    RealPos(const double v);                        //!< Construct from double
-                                    RealPos(const int v);                           //!< Construct from int 
-                                    RealPos(const bool v);                          //!< Construct from bool
+                                RealPos(void);                          //!< Default constructor
+                                RealPos(double x);                      //!< Construct from double
+                                RealPos(int x);                         //!< Construct from int 
+                                RealPos(bool x);                        //!< Construct from bool
 
         // Basic utility functions
-        RbObject*                   clone(void) const;                               //!< Clone object
-        const VectorString&         getClass(void) const;                            //!< Get class vector
-        std::string                 richInfo(void) const;                            //!< Complete info about object
+        RealPos*                clone(void) const;                      //!< Clone object
+        const VectorString&     getClass(void) const;                   //!< Get class vector
+        std::string             richInfo(void) const;                   //!< Complete info about object
 
         // Setter disallowing nonpositive values
-        void                        setValue(double x);                              //!< Set value
+        void                    setValue(double x);                     //!< Set value
 };
 
 #endif

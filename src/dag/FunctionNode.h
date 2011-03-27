@@ -52,10 +52,10 @@ class FunctionNode : public DeterministicNode {
         // DAG functions
         FunctionNode*               cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
         bool                        isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
-        bool                        isMutableTo(const VectorInteger& index, const RbObject* newValue) const;    //!< Is node mutable to contain newValue?
+        bool                        isMutableTo(const TypeSpec& typeSpec) const;                                //!< Is node mutable to be of language type typeSpec?
         bool                        isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
         void                        mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
-        FunctionNode*               mutateTo(const VectorInteger& index, RbObject* newValue);                   //!< Mutate to contain newValue
+        FunctionNode*               mutateTo(const TypeSpec& typeSpec);                                         //!< Mutate to contain newValue
         void                        swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
     protected:

@@ -28,9 +28,8 @@ class VectorString;
 class ConstantNode : public DAGNode {
 
     public:
-                                ConstantNode(void);                                                         //!< Constructor of NULL object
                                 ConstantNode(RbObject* val);                                                //!< Constructor from value
-                                ConstantNode(const TypeSpec& typeSpec);                                     //!< Constructor from language object type
+                                ConstantNode(const std::string& typeSpec);                                  //!< Constructor from language object type
                                 ConstantNode(const ConstantNode& x);                                        //!< Copy constructor
 							   ~ConstantNode(void);                                                         //!< Destructor
 

@@ -83,6 +83,7 @@ class Workspace : public Frame {
         bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);               //!< Add type with constructor
         DAGNode*                    executeFunction(    const std::string&              name,
                                                         const std::vector<Argument>&    args) const;                    //!< Execute function
+        const VectorString&         getClassOfType(const std::string& type) const;                                      //!< Get reference to class vector of type
         FunctionTable*              getFunctionTable(void) { return functionTable; }                                    //!< Get function table
         RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
         RandomNumberGenerator*      get_rng(void);                                                                      //!< Get default random number generator

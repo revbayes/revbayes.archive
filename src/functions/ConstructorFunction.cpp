@@ -40,13 +40,6 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 }
 
 
-/** Pointer-based equals comparison */
-bool ConstructorFunction::equals(const RbObject* x) const {
-
-    return false;
-}
-
-
 /** Execute operation: we reset our template object here */
 DAGNode* ConstructorFunction::executeOperation(const std::vector<VariableSlot>& args) {
 

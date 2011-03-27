@@ -18,6 +18,7 @@
 #include "ConverterNode.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 #include <algorithm>
@@ -25,14 +26,14 @@
 
 
 /** Constructor of pristine converter node */
-ConverterNode::ConverterNode(const std::string& toType, int toDim)
-    : DeterministicNode(toType), valueDim(toDim) {
+ConverterNode::ConverterNode(const std::string& type, int dim)
+    : DeterministicNode(type), valueDim(dim) {
 }
 
 
 /** Basic constructor of converter node */
-ConverterNode::ConverterNode(DAGNode* origNode, const std::string& toType, int toDim)
-    : DeterministicNode(toType), valueDim(toDim) {
+ConverterNode::ConverterNode(DAGNode* origNode, const TypeSpec& typeSpec)
+    : DeterministicNode(typeSpec.getType()), valueDim(typeSpec.getDim()) {
 
     /* Check for cycles */
     std::list<DAGNode*> done;
@@ -100,10 +101,8 @@ bool ConverterNode::isMutableTo(const DAGNode* newNode) const {
 
 
 /** Is it possible to mutate node to contain newValue? */
-bool ConverterNode::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
+bool ConverterNode::isMutableTo(const TypeSpec& typeSpec) const {
 
-    assert (!newValue->isType(Container_name));
-    
     bool isMutable = false;
 
     return isMutable;
@@ -118,7 +117,7 @@ bool ConverterNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* new
         throw RbException("Node is not a parent");
 
     // See if the new node value is convertible to the required type
-    if ( newNode->getValue()->isConvertibleTo(valueType, valueDim) )
+    if ( newNode->getValue()->isConvertibleTo(valueType, valueDim, false) )
         return true;
     
     return false;
@@ -133,7 +132,7 @@ void ConverterNode::mutateTo(DAGNode* newNode) {
 
 
 /* Mutate to contain newValue */
-ConverterNode* ConverterNode::mutateTo(const VectorInteger& index, RbObject* newValue) {
+ConverterNode* ConverterNode::mutateTo(const TypeSpec& typeSpec) {
 
     throw RbException("Not implemented yet");
 }

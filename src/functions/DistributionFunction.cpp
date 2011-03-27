@@ -131,12 +131,6 @@ DistributionFunction* DistributionFunction::clone(void) const {
     return new DistributionFunction(*this);
 }
 
-/** Pointer-based equals comparison */
-bool DistributionFunction::equals(const RbObject* x) const {
-
-    return false;
-}
-
 
 /** Execute operation: switch based on type */
 DAGNode* DistributionFunction::executeOperation(const std::vector<VariableSlot>& args) {

@@ -1,7 +1,7 @@
 /**
  * @file
- * This file contains the declaration of VectorRealPos, a complex type
- * used to hold double vectors.
+ * This file contains the declaration of VectorRealPos,
+ * a vector type used to hold positive real numbers.
  *
  * @brief Declaration of VectorRealPos
  *
@@ -19,6 +19,7 @@
 #ifndef VectorRealPos_H
 #define VectorRealPos_H
 
+#include "RealPos.h"
 #include "VectorInteger.h"
 #include "VectorReal.h"
 
@@ -26,32 +27,43 @@
 #include <string>
 #include <vector>
 
-class VectorRealPos : public VectorReal {
+
+/**
+ * This class holds a vector of real positive numbers in a convenient
+ * way for use in the RevBayes source code.
+ */
+class VectorRealPos : public Vector {
 
     public:
-        // Constructors and destructor
-                                    VectorRealPos(void);                                          //!< Default constructor (empty vector)
-                                    VectorRealPos(double x);                                      //!< Construct vector with one double x
-                                    VectorRealPos(size_t n, double x);                            //!< Construct vector with n doubles x
-                                    VectorRealPos(const std::vector<double>& x);                  //!< Constructor from double vector
-                                    VectorRealPos(const ContainerIterator& x);                    //!< Constructor from container iterator
+                                    VectorRealPos(void);                                            //!< Default constructor (empty vector)
+                                    VectorRealPos(double x);                                        //!< Construct vector with one double x
+                                    VectorRealPos(size_t n, double x);                              //!< Construct vector with n doubles x
+                                    VectorRealPos(const std::vector<double>& x);                    //!< Constructor from double vector
 
+        // Overloaded operators
+        double                      operator[](size_t i) const;                                     //!< Index op (value, no reference - no modification)
+        bool                        operator==(const VectorRealPos& x) const;                       //!< Equals comparison
+        bool                        operator!=(const VectorRealPos& x) const;                       //!< Not equals comparison
+        
         // Basic utility functions, pure virtual in RbComplex and implemented here
-        virtual VectorRealPos*      clone(void) const;                                            //!< Clone object
-        virtual bool                equals(const RbObject* obj) const;                            //!< Equals comparison
-        virtual const VectorString& getClass(void) const;                                         //!< Get class vector
-        virtual std::string         richInfo(void) const;                                         //!< Complete info about object
+        VectorRealPos*              clone(void) const;                                              //!< Clone object
+        const VectorString&         getClass(void) const;                                           //!< Get class vector
+        void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
+        std::string                 richInfo(void) const;                                           //!< Complete info about object
 
-        // Regular functions, including STL-like functions
-        void                        push_back(double x);                                          //!< Append element to end
-        void                        push_front(double x);                                         //!< Add element in front
-        void                        setValue(const VectorReal& x);                                //!< Set the value
-        void                        setValue(const VectorRealPos& x);                             //!< Set the value
-        void                        setValue(const std::vector<double>& x);                       //!< Set the value
+        // Vector functions, including STL-like functions
+        std::vector<double>         getValue(void) const;                                           //!< Get value as STL double vector
+        void                        push_back(double x);                                            //!< Append element to end
+        void                        push_front(double x);                                           //!< Add element in front
+        void                        setValue(const std::vector<double>& x);                         //!< Set the value using STL vector of int
+        void                        setValue(const VectorInteger& x);                               //!< Set the value using VectorInteger
+        void                        setValue(const VectorNatural& x);                               //!< Set the value using VectorNatural
+        void                        setValue(const VectorReal& x);                                  //!< Set the value using VectorReal
+        void                        setValue(const VectorRealPos& x);                               //!< Set the value using VectorRealPos
 
-        // Element access functions for parser
-        virtual const std::string&  getElementType(void) const;                                   //!< Get element type
-        virtual void                setElement(const VectorInteger& index, RbObject* val);        //!< Set element
+    protected:
+        RbObject*                   getDefaultElement(void) const { return new RealPos(); }          //!< Get default element for empty slots
+
 };
 
 #endif

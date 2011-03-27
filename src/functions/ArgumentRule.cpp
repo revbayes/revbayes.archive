@@ -19,7 +19,7 @@
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
-#include "DAGNodePlate.h"
+#include "ContainerNode.h"
 #include "MemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -61,16 +61,16 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 }
 
 
-/** Test if argument is valid; for consistency, we also evaluate the argument here */
+/** Convert an argument to a variable that does fit the argument rule */
 DAGNode* ArgumentRule::convert(const DAGNode* arg) const {
     
     if ( arg == NULL )
         return NULL;
 
-    RbObject* theConvertedValue = arg->getValue()->convertTo( argSlot.getTypeSpec().getType(), argSlot.getTypeSpec().getDim() );
+    RbObject* theConvertedValue = arg->getValue()->convertTo( argSlot.getTypeSpec() );
     
     if ( theConvertedValue->isType( Container_name ) )
-        return new DAGNodePlate( (Container*)( theConvertedValue ) );
+        return new ContainerNode( (Container*)( theConvertedValue ) );
     else if ( theConvertedValue->isType( MemberObject_name ) )
         return new MemberNode( (MemberObject*)( theConvertedValue ) );
     else
@@ -138,7 +138,7 @@ bool ArgumentRule::isArgValid(const DAGNode* var, bool& needsConversion, bool on
             return true;
         }
 
-        if ( value->isConvertibleTo( argSlot.getTypeSpec().getType(), argSlot.getTypeSpec().getDim(), once ) == true) {
+        if ( value->isConvertibleTo( argSlot.getTypeSpec(), once ) == true) {
             needsConversion = true;
             return true;
         }
@@ -151,7 +151,7 @@ bool ArgumentRule::isArgValid(const DAGNode* var, bool& needsConversion, bool on
             return true;
         }
 
-        if ( Workspace::userWorkspace().isXConvertibleToY( var->getValueType(), var->getDim(), argSlot.getTypeSpec().getType(), argSlot.getTypeSpec().getDim() ) == true) {
+        if ( Workspace::userWorkspace().isXConvertibleToY( var->getTypeSpec(), argSlot.getTypeSpec() ) == true) {
             needsConversion = true;
             return true;
         }

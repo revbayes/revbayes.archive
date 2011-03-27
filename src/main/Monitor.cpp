@@ -37,21 +37,6 @@ Monitor* Monitor::clone(void) const {
 }
 
 
-/** Equals comparison */
-bool Monitor::equals(const RbObject* obj) const {
-
-    const Monitor* p = dynamic_cast<const Monitor*>(obj);
-    if (p == NULL)
-        return NULL;
-
-    bool result = true;
-    result = result && theNode == p->theNode;
-    result = result && samplingFrequency == p->samplingFrequency;
-
-    return result;
-}
-
-
 /** Get class vector describing type of object */
 const VectorString& Monitor::getClass() const {
 

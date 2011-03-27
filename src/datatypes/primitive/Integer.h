@@ -29,30 +29,32 @@ class VectorString;
 class Integer : public RbObject {
 
     public:
-                                    Integer(void);                                  //!< Default constructor
-                                    Integer(const int v);                           //!< Constructor from int
-                                    Integer(const bool v);                          //!< Constructor from bool
+        friend class            VectorInteger;                                                  //!< Give VectorInteger direct access to value
+
+                                Integer(void);                                                  //!< Default constructor
+                                Integer(const unsigned int v);                                  //!< Constructor from unsigned int
+                                Integer(const int v);                                           //!< Constructor from int
+                                Integer(const bool v);                                          //!< Constructor from bool
+
+        // Overloaded operator
+                                operator int(void) const { return value; }                      //!< Type conversion to int
 
         // Basic utility functions
-        RbObject*                   clone(void) const;                               //!< Clone object
-        bool                        equals(const RbObject* obj) const;               //!< Equals comparison
-        const VectorString&         getClass(void) const;                            //!< Get class vector
-        void                        printValue(std::ostream& o) const;               //!< Print value (for user)
-        std::string                 richInfo(void) const;                            //!< Complete info about object
-
-        // Type conversion
-        RbObject*                   convertTo(const std::string& type, int dim=0) const;                        //!< Convert to type and dim
-        bool                        isConvertibleTo(const std::string& type, int dim=0, bool once=false) const; //!< Is convertible to type and dim?
-                                    operator int(void) const { return value; }       //!< Type conversion to int
+        Integer*                clone(void) const;                                              //!< Clone object
+        RbObject*               convertTo(const std::string& type, int dim) const;              //!< Convert to language object of type and dim
+        const VectorString&     getClass(void) const;                                           //!< Get class vector
+        bool                    isConvertibleTo(const std::string& type, int dim, bool once) const;     //!< Is convertible to language object of type and dim?
+        void                    printValue(std::ostream& o) const;                              //!< Print value (for user)
+        std::string             richInfo(void) const;                                           //!< Complete info about object
 
         // Getters and setters
-        void                        setValue(int x) { value = x; }                   //!< Set value
-        int                         getValue(void) const { return value; }           //!< Get value
+        void                    setValue(int x) { value = x; }                                  //!< Set value
+        int                     getValue(void) const { return value; }                          //!< Get value
 
-	protected:
+    protected:
+        int&                    getValueRef(void) { return value; }                             //!< Get value reference for VectorInteger
 
-    private:
-        int                         value;                                           //!< Value member
+        int                     value;                                                          //!< Value member
 };
 
 #endif

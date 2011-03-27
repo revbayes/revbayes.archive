@@ -23,6 +23,7 @@
 #include "RbNames.h"
 #include "StochasticNode.h"
 #include "VectorString.h"
+#include "Workspace.h"
 
 #include <cassert>
 #include <iostream>
@@ -32,11 +33,19 @@
 
 /** Constructor from value */
 ConstantNode::ConstantNode(RbObject* val) : DAGNode(val->getType()), value(val) {
+
+    if ( val->getDim() > 0 )
+        throw RbException( "ConstantNode cannot hold container objects. Use a ContainerNode instead." );
 }
+
 
 /** Constructor from value class */
 ConstantNode::ConstantNode(const std::string& valType) : DAGNode(valType), value(NULL) {
+
+    if ( Workspace::userWorkspace().isXOfTypeY(valType, Container_name) )
+        throw RbException( "ConstantNode cannot hold container objects. Use a ContainerNode instead." );
 }
+
 
 /** Copy constructor */
 ConstantNode::ConstantNode(const ConstantNode& x) : DAGNode(x) {
@@ -131,9 +140,10 @@ bool ConstantNode::isMutableTo(const DAGNode* newNode) const {
 
 
 /** Is it possible to mutate node to contain newValue? */
-bool ConstantNode::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
+bool ConstantNode::isMutableTo(const TypeSpec& typeSpec) const {
 
-    assert (!newValue->isType(Container_name));
+    if ( typeSpec.getDim() > 0 )
+        return false;
     
     bool isMutable = false;
 
@@ -149,7 +159,7 @@ void ConstantNode::mutateTo(DAGNode* newNode) {
 
 
 /* Mutate to contain newValue */
-ConstantNode* ConstantNode::mutateTo(const VectorInteger& index, RbObject* newValue) {
+ConstantNode* ConstantNode::mutateTo(const TypeSpec& typeSpec) {
 
     throw RbException("Not implemented yet");
 }

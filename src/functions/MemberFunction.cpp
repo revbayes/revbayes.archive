@@ -18,7 +18,7 @@
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
-#include "DAGNodePlate.h"
+#include "ContainerNode.h"
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "MemberFunction.h"
@@ -48,14 +48,6 @@ std::string MemberFunction::briefInfo(void) const {
 MemberFunction* MemberFunction::clone(void) const {
 
     return new MemberFunction(*this);
-}
-
-
-/** Pointer-based equals comparison */
-bool MemberFunction::equals(const RbObject* x) const {
-
-    // TODO: Implement properly
-    return false;
 }
 
 

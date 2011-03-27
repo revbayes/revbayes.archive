@@ -25,19 +25,19 @@ class VectorInteger;
 class ContainerIterator : public std::vector<int> {
 
     public:
-                                ContainerIterator(const VectorInteger& index, const VectorInteger& len);     //!< Set value and length
+                                ContainerIterator(const VectorInteger& index, const VectorInteger& len);        //!< Set value and length
 
-        void                    printValue(std::ostream& o) const;                                   //!< Print value for user
-        ContainerIterator&      operator++(void);                                                    //!< Increment index (prefix)
-        ContainerIterator&      operator--(void);                                                    //!< Decrement index (prefix)
-        ContainerIterator       operator++(int dummy);                                               //!< Increment index (postfix)
-        ContainerIterator       operator--(int dummy);                                               //!< Decrement index (postfix)
-        bool                    operator==(const ContainerIterator& x) const;                        //!< Equals operator
-        bool                    operator<(const ContainerIterator& x) const;                         //!< Less than operator
-        void                    push_front(int x) { length.insert(begin(), x); }                     //!< Add element in front
+        void                    printValue(std::ostream& o) const;                                              //!< Print value for user
+        ContainerIterator&      operator++(void);                                                               //!< Increment index (prefix)
+        ContainerIterator&      operator--(void);                                                               //!< Decrement index (prefix)
+        ContainerIterator       operator++(int dummy);                                                          //!< Increment index (postfix)
+        ContainerIterator       operator--(int dummy);                                                          //!< Decrement index (postfix)
+        bool                    operator==(const ContainerIterator& x) const;                                   //!< Equals operator
+        bool                    operator<(const ContainerIterator& x) const;                                    //!< Less than operator
+        void                    push_front(int x) { length.insert(begin(), x); }                                //!< Add element in front
 
     private:
-        std::vector<int>        length;                                                              //!< Length in each dimension
+        std::vector<int>        length;                                                                         //!< Length in each dimension
 };
 
 #endif

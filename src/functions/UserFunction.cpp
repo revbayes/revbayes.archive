@@ -76,13 +76,6 @@ UserFunction* UserFunction::clone(void) const {
 }
 
 
-/** Equals comparison */
-bool UserFunction::equals(const RbObject* x) const {
-
-	return false;   // Close approximation to truth
-}
-
-
 /** Execute function */
 DAGNode* UserFunction::executeOperation(const std::vector<VariableSlot>& args) {
 

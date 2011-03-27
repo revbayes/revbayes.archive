@@ -97,24 +97,6 @@ const VectorString& MoveSchedule::getClass(void) const {
 }
 
 
-/** Pointer-based equals comparison */
-bool MoveSchedule::equals(const RbObject* obj) const {
-
-    const MoveSchedule* p = dynamic_cast<const MoveSchedule*>(obj);
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    result = result && theNode == p->theNode;
-    result = result && nodeUpdateWeight == p->nodeUpdateWeight;
-    std::vector<Move*>::const_iterator i, j;
-    for (i=schedule.begin(), j=p->schedule.begin(); i!=schedule.end(); i++, j++)
-        result = result && (*i)->equals(*j);
-
-    return result;
-}
-
-
 /** Erase move */
 void MoveSchedule::eraseMove(const Move* move) {
 

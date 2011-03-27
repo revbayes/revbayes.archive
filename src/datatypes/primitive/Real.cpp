@@ -1,7 +1,7 @@
 /**
  * @file
- * This file contains the implementation of Real, which is
- * a RevBayes wrapper around a regular double.
+ * This file contains the implementation of Real, which
+ * is the primitive RevBayes type for real numbers.
  *
  * @brief Implementation of Real
  *
@@ -21,6 +21,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RbNames.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 #include <iomanip>
@@ -29,25 +30,21 @@
 
 /** Default constructor */
 Real::Real(void) : RbObject(), value(0.0) {
-
 }
 
 
 /** Construct from double */
-Real::Real(const double v)
-    : RbObject(), value(v) {
+Real::Real(const double v) : RbObject(), value(v) {
 }
 
 
 /** Construct from int */
-Real::Real(const int v)
-    : RbObject(), value(v) {
+Real::Real(const int v) : RbObject(), value(v) {
 }
 
 
 /** Construct from bool */
-Real::Real(const bool v)
-    : RbObject() {
+Real::Real(const bool v) : RbObject() {
 
     if (v) value = 1.0;
     else value = 0.0;
@@ -55,41 +52,21 @@ Real::Real(const bool v)
 
 
 /** Clone object */
-RbObject* Real::clone(void) const {
+Real* Real::clone(void) const {
 
-	return  (RbObject*)(new Real(*this));
+	return  new Real(*this);
 }
 
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Real::convertTo(const std::string& type, int dim) const {
+/** Convert to object of language type typeSpec. The caller manages the object. */
+RbObject* Real::convertTo( const std::string& type, int dim ) const {
 
-    if (type == Boolean_name && dim == 0)
+    if ( type == Boolean_name && dim == 0 )
         return new Boolean(value == 0.0);
-    if (type == RealPos_name && dim == 0 && value > 0.0)
+    if ( type == RealPos_name && dim == 0 && value > 0.0)
         return new RealPos(value);
 
-    return RbObject::convertTo(type, dim);
-}
-
-
-/** Pointer-based equals comparison */
-bool Real::equals(const RbObject* obj) const {
-
-    // Use built-in fast down-casting first
-    const Real* p = dynamic_cast<const Real*>(obj);
-    if (p != NULL)
-        return value == p->value;
-
-    // Try converting the object to a double
-    p = dynamic_cast<const Real*>(obj->convertTo(Real_name));
-    if (p == NULL)
-        return false;
-
-    // Get result
-    bool result = (value == p->value);
-    delete p;
-    return result;
+    return RbObject::convertTo( type, dim );
 }
 
 
@@ -101,7 +78,7 @@ const VectorString& Real::getClass() const {
 }
 
 
-/** Is convertible to type and dim? */
+/** Is convertible to language object of type typeSpec? */
 bool Real::isConvertibleTo(const std::string& type, int dim, bool once) const {
 
     if (type == Boolean_name && dim == 0)

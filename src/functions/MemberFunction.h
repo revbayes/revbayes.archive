@@ -37,7 +37,6 @@ class MemberFunction :  public RbFunction {
         // Basic utility functions
         std::string                 briefInfo(void) const;                  //!< Brief info about object
         MemberFunction*             clone(void) const;                      //!< Clone the object
-    	bool                        equals(const RbObject* obj) const;      //!< Equals comparison
     	const VectorString&         getClass(void) const;                   //!< Get class vector
         std::string                 richInfo(void) const;                   //!< Complete info about object
 

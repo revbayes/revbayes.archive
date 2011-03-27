@@ -31,7 +31,7 @@ class RbFunction;
 class DeterministicNode : public VariableNode {
 
     public:
-        virtual                        ~DeterministicNode(void);                                                    //!< Destructor
+        virtual                        ~DeterministicNode(void);                                                        //!< Destructor
 
         // Utility functions implemented here
         const RbObject*                 getStoredValue(void);                                                           //!< Get stored value

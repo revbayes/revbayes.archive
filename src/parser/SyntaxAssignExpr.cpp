@@ -20,7 +20,7 @@
 #include "ConverterNode.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
-#include "DAGNodePlate.h"
+#include "ContainerNode.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
 #include "MemberNode.h"
@@ -198,7 +198,7 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
             StochasticNode* theStochasticNode = static_cast<StochasticNode*>( variableRef );
 
             const RbObject* theValue = exprValue->getValue();
-            if ( theValue->isType( theStochasticNode->getTypeSpec() ) ) {
+            if ( theValue->isType( theStochasticNode->getValueType() ) ) {
 
                 PRINTF ( "Setting the value of stochastic node %s %s through arrow assignment\n",
                     theStochasticNode->getTypeSpec(), theStochasticNode->getName() );
@@ -300,7 +300,7 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
         // We also allow constant expressions
         DAGNode* node = expression->getDAGNodeExpr(frame);
         if ( node == NULL )
-            node = new ConstantNode();      // NULL object
+            node = new ConstantNode( RbObject_name );      // NULL object
         else if ( node->isTemp() ) {
             if ( !node->isDAGType( LookupNode_name ) && !node->isDAGType( FunctionNode_name ) )
                 throw RbException( "Invalid equation assignment using temp variable" );

@@ -19,48 +19,41 @@
 #ifndef VectorString_H
 #define VectorString_H
 
-#include "RbComplex.h"
+#include "RbString.h"
+#include "Vector.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
 
-class VectorString : public RbComplex {
+
+class VectorString : public Vector {
 
     public:
-		// Constructors and destructor
-	                                VectorString(void) : RbComplex() {}                     //!< Default constructor (empty vector)
-	                                VectorString(const size_t n);                           //!< Construct vector of length n of empty strings
-                                    VectorString(const std::string& x);                     //!< Construct vector with one string x
-	                                VectorString(const size_t n, const std::string& x);     //!< Construct vector with n strings x
-	                                VectorString(const std::vector<std::string>& x);        //!< Constructor from string vector
+	                                VectorString(void);                                             //!< Default constructor (empty vector)
+                                    VectorString(const std::string& x);                             //!< Construct vector with one string x
+	                                VectorString(const std::vector<std::string>& x);                //!< Constructor from string vector
+
+        // Overloaded operators
+	    std::string&                operator[](size_t i);                                           //!< Index op allowing change
+	    const std::string&          operator[](size_t i) const;                                     //!< Const index op
+        bool                        operator==(const VectorString& x) const;                        //!< Equality
+        bool                        operator!=(const VectorString& x) const;                        //!< Inequality
+        VectorString                operator+(const VectorString& x) const;                         //!< Concatenate
 
         // Basic utility functions
-        VectorString*               clone(void) const;                                      //!< Clone object
-        bool                        equals(const RbObject* obj) const;                      //!< Equals comparison
-        const VectorString&         getClass(void) const;                                   //!< Get class
-        void                        printValue(std::ostream& o) const;                      //!< Print value (for user)
-        std::string                 richInfo(void) const;                                   //!< Complete info about object
+        VectorString*               clone(void) const;                                              //!< Clone object
+        const VectorString&         getClass(void) const;                                           //!< Get class
+        virtual void                printValue(std::ostream& o) const;                              //!< Print value for user
+        std::string                 richInfo(void) const;                                           //!< Complete info about object
+        
+        // Vector functions
+	    void                        push_back(std::string x);                                       //!< Add element
 
-        // Overloaded operators and built-in functions
-	    std::string&                operator[](size_t i) { return value[i]; }               //!< Index op allowing change
-	    const std::string&          operator[](size_t i) const { return value[i]; }         //!< Const index op
-        bool                        operator==(const VectorString& sv) const;               //!< Equality
-        VectorString                operator+(const VectorString& sv) const;                //!< Concatenate
-	    void                        push_back(std::string x) { value.push_back(x); }        //!< Add element
-	    size_t                      size(void) const { return value.size(); }               //!< Get size
+    protected:
+        RbObject*                   getDefaultElement(void) const { return new RbString(); }        //!< Get default element for empty slots
 
-        // Element access functions for parser
-        int                         getDim(void) const { return 1; }                        //!< Get subscript dimension
-        const std::string&          getElementType(void) const;                             //!< Get element type
-        RbObject*                   getElement(const VectorInteger& index) const;           //!< Get element (copy)
-        const VectorInteger&        getLength(void) const;                                  //!< Get length in each dimension
-        void                        resize(const VectorInteger& len);                       //!< Resize
-        void                        setElement(const VectorInteger& index, RbObject* val);  //!< Set element
-        void                        setLength(const VectorInteger& len);                    //!< Set length in each dimension
-
-    private:
-	    std::vector<std::string>    value;                                                   //!< Vector of values
 };
 
 #endif
+

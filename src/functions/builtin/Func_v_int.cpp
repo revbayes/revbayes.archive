@@ -28,6 +28,7 @@
 #include "RbNames.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
+#include "VectorInteger.h"
 #include "VectorString.h"
 
 #include <cassert>

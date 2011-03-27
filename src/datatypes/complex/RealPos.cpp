@@ -1,7 +1,8 @@
 /**
  * @file
- * This file contains the implementation of RealPos, which is
- * used to hold strictly positive scalar values.
+ * This file contains the implementation of RealPos, which
+ * is the primitive RevBayes type for positive real numbers.
+ *
  *
  * @brief Implementation of RealPos
  *
@@ -9,9 +10,6 @@
  * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
  *
  * $Id$
  */
@@ -25,47 +23,48 @@
 #include <sstream>
 
 
-
 /** Default constructor */
-RealPos::RealPos(void) : Real(1.0) {
-
+RealPos::RealPos( void ) : Real( 1.0 ) {
 }
+
 
 /** Construct from double */
-RealPos::RealPos(const double v) : Real(v) {
+RealPos::RealPos( double x ) : Real( x ) {
 
-    if (v <= 0.0)
-        throw RbException("Nonpositive value for " + RealPos_name);
+    if ( x <= 0.0 )
+        throw RbException( "Nonpositive value for " + RealPos_name );
 }
+
 
 /** Construct from int */
-RealPos::RealPos(const int v) : Real(v) {
+RealPos::RealPos( int x) : Real( x ) {
 
-    if (v <= 0)
-        throw RbException("Nonpositive value for " + RealPos_name);
+    if ( x <= 0 )
+        throw RbException( "Nonpositive value for " + RealPos_name );
 }
 
-/** Clone object */
-RbObject* RealPos::clone(void) const {
 
-	return  (RbObject*)(new RealPos(*this));
+/** Clone object */
+RealPos* RealPos::clone( void ) const {
+
+	return  new RealPos( *this );
 }
 
 
 /** Get class vector describing type of object */
 const VectorString& RealPos::getClass() const {
 
-    static VectorString rbClass = VectorString(RealPos_name) + Real::getClass();
+    static VectorString rbClass = VectorString( RealPos_name ) + Real::getClass();
     return rbClass;
 }
 
 
 /** Get complete info about object */
-std::string RealPos::richInfo(void) const {
+std::string RealPos::richInfo( void ) const {
 
 	std::ostringstream o;
     o << "+Real(";
-    printValue(o);
+    printValue( o );
 	o << ")";
 
     return o.str();
@@ -73,11 +72,11 @@ std::string RealPos::richInfo(void) const {
 
 
 /** Set value */
-void RealPos::setValue(double x) {
+void RealPos::setValue( double x ) {
 
-    if (x <= 0.0)
-        throw RbException("Nonpositive value for " + RealPos_name);
+    if ( x <= 0.0 )
+        throw RbException( "Nonpositive value for " + RealPos_name );
 
-    Real::setValue(x);
+    Real::setValue( x );
 }
 

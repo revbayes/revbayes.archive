@@ -141,10 +141,8 @@ bool MemberNode::isMutableTo(const DAGNode* newNode) const {
 
 
 /** Is it possible to mutate node to contain newValue? */
-bool MemberNode::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
+bool MemberNode::isMutableTo(const TypeSpec& typeSpec) const {
 
-    assert (!newValue->isType(Container_name));
-    
     bool isMutable = false;
 
     return isMutable;
@@ -180,7 +178,7 @@ void MemberNode::mutateTo(DAGNode* newNode) {
 
 
 /* Mutate to contain newValue */
-MemberNode* MemberNode::mutateTo(const VectorInteger& index, RbObject* newValue) {
+MemberNode* MemberNode::mutateTo(const TypeSpec& typeSpec) {
 
     throw RbException("Not implemented yet");
 }

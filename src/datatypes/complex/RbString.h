@@ -16,37 +16,38 @@
 #ifndef RbString_H
 #define RbString_H
 
-#include "RbComplex.h"
+#include "RbObject.h"
 
 #include <string>
 
-class RbDumpState;
 
-
-class RbString : public RbComplex {
+class RbString : public RbObject {
 
     public:
-                                    RbString(void) : RbComplex(), value() {}         //!< Default: empty string
+        friend class                VectorString;                                    //!< Give VectorString modify access to value
+
+                                    RbString(void) : RbObject(), value() {}          //!< Default: empty string
                                     RbString(const std::string& v);                  //!< Constructor from string
+
+        // Overloaded operators
+                                    operator std::string() const;                    //!< Type conversion
+        RbString                    operator+(const RbString& s) const;              //!< String concatenation
 
         // Basic utility functions
 	    RbString*                   clone(void) const;                               //!< Copy
-	    bool                        equals(const RbObject* obj) const;               //!< Equals comparison
         const VectorString&         getClass(void) const;                            //!< Get class
         void                        printValue(std::ostream& o) const;               //!< Print value (for user)
         std::string                 richInfo(void) const;                            //!< General info on object
 
-        // Overloaded operators
-        RbString                    operator+(const RbString& s) const;              //!< String concatenation
-                                    operator std::string() const;                    //!< Type conversion
-
-        // Regular functions
+        // RbString functions
         void                        append(const RbString& s) { value += s.value; }  //!< Append string
         void                        append(const char* s) { value += s; }            //!< Append C string
         std::string                 getValue(void) const { return value; }           //!< Get value
         void                        setValue(const std::string& x) { value = x; }    //!< Set value
 
     private:
+        std::string&                getValueRef(void) { return value; }              //!< Get value reference
+
         std::string                 value;                                           //!< Value member
 };
 

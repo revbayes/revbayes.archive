@@ -18,7 +18,7 @@
 #include "ConstantNode.h"
 #include "Container.h"
 #include "DAGNode.h"
-#include "DAGNodePlate.h"
+#include "ContainerNode.h"
 #include "Frame.h"
 #include "LookupNode.h"
 #include "MemberNode.h"
@@ -142,7 +142,7 @@ DAGNode* VariableSlot::convertVariable( DAGNode* newVariable ) const {
             if ( temp->isType( MemberObject_name ) )
                 return new MemberNode( static_cast<MemberObject*>( temp ) );
             else if ( temp->isType( Container_name ) )
-                return new DAGNodePlate( static_cast<Container*>( temp ) );
+                return new ContainerNode( static_cast<Container*>( temp ) );
             else
                 return new ConstantNode( temp );
         }
@@ -384,7 +384,7 @@ void VariableSlot::setValue(RbObject* newVal) {
     if ( newVal->isType( MemberObject_name ) )
         newVariable = new MemberNode( dynamic_cast<MemberObject*>( newVal ) );
     else if ( newVal->isType( Container_name ) )
-        newVariable = new DAGNodePlate( dynamic_cast<Container*>( newVal ) );
+        newVariable = new ContainerNode( dynamic_cast<Container*>( newVal ) );
     else
         newVariable = new ConstantNode( newVal );
 

@@ -322,11 +322,9 @@ bool StochasticNode::isMutableTo(const DAGNode* newNode) const {
 }
 
 
-/** Is it possible to mutate node to contain newValue? */
-bool StochasticNode::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
+/** Is it possible to mutate node to language type typeSpec? */
+bool StochasticNode::isMutableTo(const TypeSpec& typeSpec) const {
 
-    assert (!newValue->isType(Container_name));
-    
     bool isMutable = false;
 
     return isMutable;
@@ -385,7 +383,7 @@ void StochasticNode::mutateTo(DAGNode* newNode) {
 
 
 /* Mutate to contain newValue */
-StochasticNode* StochasticNode::mutateTo(const VectorInteger& index, RbObject* newValue) {
+StochasticNode* StochasticNode::mutateTo(const TypeSpec& typeSpec) {
 
     throw RbException("Not implemented yet");
 }

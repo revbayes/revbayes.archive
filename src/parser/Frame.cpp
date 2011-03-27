@@ -16,13 +16,14 @@
  * $Id$
  */
 
-#include "DAGNodePlate.h"
+#include "ContainerNode.h"
 #include "Frame.h"
 #include "VariableSlot.h"
 #include "VectorInteger.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbOptions.h"      // For PRINTF
+#include "VariableContainer.h"
 
 #include <sstream>
 
@@ -130,21 +131,18 @@ void Frame::addVariable(const std::string& name, const VectorInteger& index, DAG
         throw (RbException("Variable " + name + " already exists"));
 
     /* Create the container variable */
-    VectorInteger length = index;
-    for (size_t i=0; i<length.size(); i++)
-        length[i]++;
-    DAGNodePlate* plate = new DAGNodePlate(length, elemValue->getValueType());
-    plate->setElement(index, elemValue);
+    VariableContainer* container = new VariableContainer(TypeSpec(elemValue->getValueType(), index.size()));
+    container->setElement(index, elemValue);
 
     /* Create the slot */
-    VariableSlot slot(plate);
+    VariableSlot slot(new ContainerNode( container ));
     slot.setFrame(this);
 
     /* Insert new variable in variable table */
     variableTable.insert(std::pair<std::string, VariableSlot>(name, slot));
 
-    PRINTF("Inserted variable named '%s' of type '%s' and dim %d in frame\n",
-            name.c_str(), plate->getValueType().c_str(), plate->getDim());
+    PRINTF("Inserted variable %s %s in frame\n",
+            container->getTypeSpec(), name.c_str());
 }
 
 

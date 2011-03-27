@@ -22,6 +22,7 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "StochasticNode.h"
+#include "VariableContainer.h"
 #include "VectorInteger.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -32,318 +33,169 @@
 #include <sstream>
 
 
-/** Construct plate from container (type conversion) */
-ContainerNode::ContainerNode(Container* x) : VariableNode(x->getElementType()) {
-
-    for (ContainerIterator i=x->begin(); i!=x->end(); i++) {
-        ConstantNode* temp = new ConstantNode(x->getElement(i)->clone());
-        nodes.push_back(temp);
-        parents.insert(temp);
-        temp->addChildNode(this);
-    }
-
-    changed      = false;
-    length       = x->getLength();
-    value        = x;
-    storedValue  = value->clone();
-    names        = NULL;
+/** Construct empty container node */
+ContainerNode::ContainerNode( const std::string& valType, int dim )
+    : DeterministicNode( valType ), container( NULL ), valueDim( dim ) {
 }
 
-                                
-/** Construct vector with one node x */
-ContainerNode::ContainerNode(DAGNode* x) : VariableNode(x->getDAGType()) {
 
-    nodes.push_back(x);
+/** Construct container node from container */
+ContainerNode::ContainerNode( Container* val )
+    : DeterministicNode( val->getElementType() ), valueDim( val->getDim() ), container( NULL ) {
 
-    parents.insert(x);
-    x->addChildNode(this);
+    if ( val->isType( VariableContainer_name ) ) { 
+
+        /* Check for cycles */
+        container = static_cast<VariableContainer*>( val );
+        std::list<DAGNode*> done;
+        for ( size_t i = 0; i < container->size(); i++ ) {
+            if ( (*container)[i]->isParentInDAG( this, done ) )
+                throw RbException ( "Invalid assignment: cycles in the DAG" );
+        }
+
+        /* Set parents and add this node as a child */
+        for ( size_t i = 0; i < container->size(); i++ ) {
+            DAGNode* theNode = (*container)[i];
+            parents.insert( theNode );
+            theNode->addChildNode(this);
+        }
+
+        /* Set value and stored value */
+        value       = container->getConstValue();
+        storedValue = NULL;
+    }
+    else {
+
+        // We have a value container
+        value       = val;
+        storedValue = NULL;
+    }
+}
+
+
+/** Copy constructor needed to make sure containers are independent */
+ContainerNode::ContainerNode( const ContainerNode& x )
+    : DeterministicNode( x ) {
+
+    if ( x.container == NULL ) {
+
+        container = NULL;
+    }
+    else {
+
+        container = x.container->clone();
     
-    changed      = false;
-    length       = VectorInteger(1);
-    value        = new Container(x->getValue()->clone());
-    storedValue  = value->clone();
-    names        = NULL;
-}
-
-
-/** Construct vector with n copies of x */
-ContainerNode::ContainerNode(size_t n, DAGNode* x) : VariableNode(x->getDAGType()) {
-
-    nodes.push_back(x);
-    for (size_t i=1; i<n; i++)
-        nodes.push_back(x->clone());
-
-    for (std::vector<DAGNode*>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
-        parents.insert(*i);
-        (*i)->addChildNode(this);
-    }
-
-    changed      = false;
-    length       = VectorInteger(int(n));
-    value        = new Container(n, x->getValue()->clone());
-    storedValue  = value->clone();
-    names        = NULL;
-}
-
-
-/** Construct empty vector of length  n */
-ContainerNode::ContainerNode(size_t n, const std::string& valType)
-    : VariableNode(valType) {
-
-    for (size_t i=0; i<n; i++)
-        nodes.push_back(NULL);
-
-    changed      = false;
-    length       = VectorInteger(int(n));
-    value        = new Container(length, valueType);
-    storedValue  = value->clone();
-    names        = NULL;
-}
-
-
-/** Construct array of given dimensions containing copies of x */
-ContainerNode::ContainerNode(const VectorInteger& len, DAGNode* x)
-    : VariableNode(x->getValueType()) {
-
-    if (len.size() == 0)
-        throw (RbException("Length specification empty"));
-
-    int n = 1;
-    for (size_t i=0; i<len.size(); i++) {
-        if (len[i] <= 0)
-            throw (RbException("Nonpositive length"));
-        n *= len[i];
-    }
-
-    nodes.push_back(x);
-    for (int i=1; i<n; i++)
-        nodes.push_back(x->clone());
-
-    for (std::vector<DAGNode*>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
-        parents.insert(*i);
-        (*i)->addChildNode(this);
-    }
-
-    changed      = false;
-    length       = len;
-    value        = new Container(len, x->getValue()->clone());
-    storedValue  = value->clone();
-    names        = NULL;
-}
-
-
-/** Construct empty array of given dimensions */
-ContainerNode::ContainerNode(const VectorInteger& len, const std::string& valType)
-    : VariableNode(valType) {
-
-    if (len.size() == 0)
-        throw (RbException("Length specification empty"));
-
-    int n = 1;
-    for (size_t i=0; i<len.size(); i++) {
-        if (len[i] < 0)
-            throw (RbException("Negative length"));
-        n *= len[i];
-    }
-
-    for (int i=0; i<n; i++)
-        nodes.push_back(NULL);
-
-    changed     = false;
-    length      = len;
-    value       = new Container(len, valueType);
-    storedValue = value->clone();
-    names       = NULL;
-}
-
-/** Copy constructor needed to make sure nodes elements are independent */
-ContainerNode::ContainerNode(const ContainerNode& x)
-    : VariableNode(x) {
-
-    changed = x.changed;
-    length  = x.length;
-
-    for (std::vector<DAGNode*>::const_iterator i=x.nodes.begin(); i!=x.nodes.end(); i++) {
-        DAGNode* theNode = (*i)->clone();
-        nodes.push_back(theNode);
-        parents.insert(theNode);
-        theNode->addChildNode(this);
+        /* Set parents and add this node as a child */
+        for ( size_t i = 0; i < container->size(); i++ ) {
+            DAGNode* theNode = (*container)[i];
+            parents.insert( theNode );
+            theNode->addChildNode(this);
+        }
     }
 
     value       = x.value->clone();
-    storedValue = x.storedValue->clone();
-    if (x.names == NULL)
-        names = NULL;
-    else
-        names = x.names->clone();
+    storedValue = NULL;
+    touched     = false;
+    changed     = false;
 }
 
-/** Destructor needed to destroy value, stored value and nodes */
-ContainerNode::~ContainerNode() {
+
+/** Destructor */
+ContainerNode::~ContainerNode(void) {
 
     if (numRefs() != 0)
-        throw RbException ("Cannot delete ContainerNode '" + getName() + "' with references");
+        throw RbException ("Cannot delete container node with references"); 
 
-    for(std::vector<DAGNode*>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
-        DAGNode* theNode = (*i);
-        if (theNode != NULL) {
-            theNode->removeChildNode(this);
-            if (theNode->numRefs() == 0)
-                delete theNode;
-        }
-    }
+    /* Remove parents first */
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
+        (*i)->removeChildNode(this);
     parents.clear();
-    nodes.clear();
-    delete names;
+
+    delete container;    // This will delete any DAG nodes that need to be deleted
 
     delete value;
-    delete storedValue;
+    if (storedValue)
+        delete storedValue;
 }
 
 
 /** Assignment operator; make sure we get independent nodes */
-ContainerNode& ContainerNode::operator=(const ContainerNode& x) {
+ContainerNode& ContainerNode::operator=( const ContainerNode& x ) {
 
     if (this != &x) {
 
-        if (valueType != x.valueType || getDim() != x.getDim())
-            throw RbException("Type or dim mismatch");
+        if ( getTypeSpec() != x.getTypeSpec() )
+            throw RbException( "Type mismatch in container variable assignment" );
 
-        /* Remove nodes and parents */
-        for(std::vector<DAGNode*>::iterator i=nodes.begin(); i!=nodes.end(); i++) {
-            DAGNode* theNode = (*i);
-            if (theNode != NULL) {
-                theNode->removeChildNode(this);
-                if (theNode->numRefs() == 0)
-                    delete theNode;
-            }
-        }
+        /* Remove parents first */
+        for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
+            (*i)->removeChildNode(this);
         parents.clear();
-        nodes.clear();
-        delete names;
-        names = NULL;
 
-        changed = x.changed;
-        length  = x.length;
+        delete container;    // This will delete any DAG nodes that need to be deleted
 
-        /* Add nodes and parents */
-        for (std::vector<DAGNode*>::const_iterator i=x.nodes.begin(); i!=x.nodes.end(); i++) {
-            DAGNode* theNode = (*i)->clone();
-            nodes.push_back(theNode);
-            parents.insert(theNode);
-            theNode->addChildNode(this);
+        delete value;
+        if (storedValue)
+            delete storedValue;
+
+        if ( x.container == NULL ) {
+
+            container = NULL;
+        }
+        else {
+
+            container = x.container->clone();
+        
+            /* Set parents and add this node as a child */
+            for ( size_t i = 0; i < container->size(); i++ ) {
+                DAGNode* theNode = (*container)[i];
+                parents.insert( theNode );
+                theNode->addChildNode(this);
+            }
         }
 
         value       = x.value->clone();
-        storedValue = x.storedValue->clone();
-        if (x.names == NULL)
-            names = NULL;
-        else
-            names = x.names->clone();
+        storedValue = NULL;
+        touched     = false;
+        changed     = false;
     }
 
-    return (*this);
-}
-
-
-/** Subscript operator (vector index) */
-DAGNode*& ContainerNode::operator[](const VectorInteger& i) {
-
-    return nodes[getOffset(i)];
-}
-
-
-/** Subscript const operator (vector index) */
-DAGNode* const& ContainerNode::operator[](const VectorInteger& i) const {
-
-    return nodes[getOffset(i)];
-}
-
-
-/** Subscript operator */
-DAGNode*& ContainerNode::operator[](size_t i) {
-
-    if (i >= nodes.size())
-        throw RbException("Index out of bounds");
-    return nodes[i];
-}
-
-
-/** Subscript const operator */
-DAGNode* const& ContainerNode::operator[](size_t i) const {
-
-    if (i >= nodes.size())
-        throw RbException("Index out of bounds");
-    return nodes[i];
-}
-
-
-/** Return begin iterator */
-ContainerIterator ContainerNode::begin(void) const {
-
-    VectorInteger temp = getLength();
-    for (size_t i=0; i<temp.size(); i++)
-        temp[i] = 0;
-
-    return ContainerIterator(temp, getLength());
-}
-
-
-/** Clear plate */
-void ContainerNode::clear(void) {
-
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-        (*i)->removeChildNode(this);
-        if ((*i)->numRefs() == 0)
-            delete(*i);
-    }
-
-    for (size_t i=0; i<length.size(); i++)
-        length[i] = 0;
-
-    nodes.clear();
+    return ( *this );
 }
 
 
 /** Clone object */
 ContainerNode* ContainerNode::clone() const {
 
-    return new ContainerNode(*this);
+    return new ContainerNode( *this );
 }
 
 
 /** Clone entire graph */
 ContainerNode* ContainerNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
 
-    if (newNodes.find((ContainerNode*)(this)) != newNodes.end())
-        return (ContainerNode*)(newNodes[(DAGNode*)(this)]);
+    if ( newNodes.find( (ContainerNode*)(this) ) != newNodes.end() )
+        return (ContainerNode*)( newNodes[ (DAGNode*)(this) ] );
 
     /* Make pristine copy */
-    ContainerNode* copy = new ContainerNode(length, valueType);
-    newNodes[(DAGNode*)(this)] = copy;
+    ContainerNode* copy = new ContainerNode( valueType, valueDim );
+    newNodes[ (DAGNode*)(this) ] = copy;
 
     copy->touched     = true;
     copy->changed     = false;
-    copy->length      = length;
     copy->value       = value->clone();
-    copy->storedValue = copy->value->clone();
-    if (names == NULL)
-        copy->names = NULL;
-    else
-        copy->names = names->clone();
+    copy->storedValue = NULL;
 
-    /* Clone parents */
-    copy->nodes.clear();
-    for (std::vector<DAGNode*>::const_iterator i=nodes.begin(); i!= nodes.end(); i++) {
-        if ((*i) == NULL)
-            copy->nodes.push_back(NULL);
-        else {
-            DAGNode* theParentCopy = (*i)->cloneDAG(newNodes);
-            copy->parents.insert(theParentCopy);
-            copy->nodes.push_back(theParentCopy);
-            theParentCopy->addChildNode(copy);
-        }
+    /* Clone parents through container */
+    copy->container = container->clone();   // We get independent copies here, which is not right
+    copy->container->clear();
+    for ( size_t i=0; i<container->size(); i++ ) {
+        DAGNode* theParentCopy = (*container)[i]->cloneDAG(newNodes);
+        (*copy->container)[i] = theParentCopy;
+        copy->parents.insert( theParentCopy );
+        theParentCopy->addChildNode(copy);
     }
+
     copy->update();
     copy->keepAffected();
 
@@ -356,288 +208,59 @@ ContainerNode* ContainerNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) c
 }
 
 
-/** Return end iterator */
-ContainerIterator ContainerNode::end(void) const {
-
-    VectorInteger temp = getLength();
-    for (size_t i=0; i<temp.size(); i++)
-        temp[i]--;
-
-    ContainerIterator tempIt(temp, getLength());
-    return ++tempIt;
-}
-
-
-/** Get affected nodes: touch and pass through to next stochastic node */
-void ContainerNode::getAffected(std::set<StochasticNode*>& affected) {
-
-    /* If we have already touched this node, we are done; otherwise, get the affected children */
-    if (!touched) {
-        touched = true;
-        changed = false;
-        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++)
-            (*i)->getAffected(affected);
-    }
-}
-
-
 /** Get class vector describing type of DAG node */
 const VectorString& ContainerNode::getDAGClass(void) const {
 
-    static VectorString rbClass = VectorString(ContainerNode_name) + VariableNode::getDAGClass();
+    static VectorString rbClass = VectorString(ContainerNode_name) + DeterministicNode::getDAGClass();
     return rbClass;
 }
 
 
-/** Get element name */
-std::string ContainerNode::getElementName(const VectorInteger& index) const {
-
-    if (names == NULL)
-        return "";
-    else
-        return (*names)[getOffset(index)];
-}
-
-
-/** Get offset to element or subcontainer; also check index */
-size_t ContainerNode::getOffset(const VectorInteger& index) const {
-
-    if (index.size() > length.size())
-        throw (RbException("Too many indices"));
-    for (size_t i=0; i<index.size(); i++) {
-        if (index[i] < 0 || index[i] >= length[i])
-            throw (RbException("Index out of range"));
-    }
-
-    size_t offset = 0;
-    int numVals = 1;
-    int i;
-    for (i=int(length.size())-1; i>=int(index.size()); i--)
-         numVals *= length[i];
-    for (; i>=0; i--) {
-        offset += (index[i] * numVals);
-        numVals *= length[i];
-    }
- 
-    return offset;
-}
-
-
-/** Get stored value */
-const RbObject* ContainerNode::getStoredValue(void) {
-
-    if (!touched)
-        return value;
-
-    update();
-    return storedValue;
-}
-
-
-/** Get subcontainer */
-ContainerNode* ContainerNode::getSubPlate(const VectorInteger& index) const {
-
-    // Get offset; this throws an error if something wrong with index
-    size_t offset = getOffset(index);
-
-    // Create a new vector of the right size
-    VectorInteger tempLength;
-    for (size_t i=index.size(); i<length.size(); i++)
-        tempLength.push_back(length[i]);
-    ContainerNode* temp = new ContainerNode(tempLength, valueType);
-
-    // Fill it with content
-    int numSubvals = 1;
-    for (size_t i=length.size()-1; i>=index.size(); i--)
-        numSubvals *= length[i];
-
-    std::vector<DAGNode*>::iterator i = temp->nodes.begin();
-    std::vector<DAGNode*>::const_iterator j = nodes.begin() + offset;
-    for (; i!=temp->nodes.end(); i++, j++)
-        (*i) = (*j);
-
-    return temp;
-}
-
-
+#if 0
 /** Get value element */
-const RbObject* ContainerNode::getValElement(const VectorInteger& index) const {
+const RbObject* ContainerNode::getValElement( const VectorInteger& index ) const {
 
-    // Check that the index is to a value element
-    if (int(index.size()) < getDim())
-        throw (RbException("Index error: Not value element"));
-
-    // Split the index up
-    VectorInteger containerIndex = index;
-    containerIndex.resize(length.size());
-    VectorInteger valueIndex;
-    for (size_t i=length.size(); i<index.size(); i++)
-        valueIndex.push_back(length[i]);        
-
-    // Get offset; this throws an error if something wrong with index
-    size_t offset = getOffset(containerIndex);
-
-    // Get element
-    DAGNode* element = nodes[offset];
-
-    // Return value
-    if (element == NULL)
-        return NULL;
-    if (valueIndex.size() == 0)
-        return element->getValue();
-    else if (element->getValue() == NULL)
-        return NULL;
-    else if (!(element->getDim() > 0))
-        throw RbException("Object does not have elements");
-    else
-        return (element->getValElement(valueIndex));
-}
-
-
-/** Get value */
-const RbObject* ContainerNode::getValue(void) {
-
-    update();
-    return value;
-}
-
-
-/** Get const value if possible */
-const RbObject* ContainerNode::getValue(void) const {
-
-    if (touched && !changed)
-        throw RbException("Constant value not available");
-
-    return value;
+    return container->getElement( index );
 }
 
 
 /** Get variable element */
-const DAGNode* ContainerNode::getVarElement(const VectorInteger& index) const {
+const DAGNode* ContainerNode::getVarElement( const VectorInteger& index ) const {
 
-    // Check that the index is to a variable element
-    if (index.size() != length.size())
-        throw (RbException("Index error: Not index to variable"));
-
-    // Get offset; this throws an error if something wrong with index
-    size_t offset = getOffset(index);
-
-    // Return element
-    return nodes[offset];
+    return container[ index ];
 }
-
-
-/** Get non-const reference to variable element */
-DAGNode* ContainerNode::getElementReference(const VectorInteger& index) {
-
-    // Check that the index is to a variable element
-    if (index.size() != length.size())
-        throw (RbException("Index error: Not index to variable"));
-
-    // Get offset; this throws an error if something wrong with index
-    size_t offset = getOffset(index);
-
-    // Return element
-    return nodes[offset];
-}
+#endif
 
 
 /** Is it possible to mutate to newNode? */
-bool ContainerNode::isMutableTo(const DAGNode* newNode) const {
+bool ContainerNode::isMutableTo( const DAGNode* newNode ) const {
 
     return false;
 }
 
 
-/** Is it possible to mutate node to contain newValue? */
-bool ContainerNode::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
+/** Is it possible to mutate node to language type typeSpec? */
+bool ContainerNode::isMutableTo( const TypeSpec& typeSpec ) const {
 
-    assert (!newValue->isType(Container_name));
-    
     bool isMutable = false;
 
-    // Divide into plate index and value index
-    VectorInteger plateIndex;
-    VectorInteger valueIndex;
-    for (size_t i=0; i<index.size(); i++) {
-        if (i < (size_t)(getDim()))
-            plateIndex.push_back(index[i]);
-        else
-            valueIndex.push_back(index[i]);
-    }
-
-    // Create a temp plate for the dry run
-    ContainerNode* temp = NULL;
-
-    // Check whether it is a container conversion or a value conversion
-    if (plateIndex.size() < (size_t)(getDim())) {
-        
-        // Container conversion
-        VectorInteger newLen;
-        for (size_t i=0; i<plateIndex.size(); i++)
-            newLen.push_back(length[i]);
-        temp = new ContainerNode(newLen, newValue->getType());
-        isMutable = isMutableTo(temp);
-    }
-    else {
-    
-        // Value conversion
-        std::string refType;
-        std::string compType;
-        bool foundFirst = false;
-        isMutable = true;
-        for (std::vector<DAGNode*>::const_iterator i=nodes.begin(); i!=nodes.end(); i++) {
-            if ( (*i) == NULL || (*i)->getValue() == NULL )
-                continue;
-            if ( foundFirst == false ) {
-                if ( !(*i)->getValue()->isMutableTo(valueIndex, newValue, refType) ) {
-                    isMutable = false;
-                    break;
-                }
-                foundFirst = true;
-            }
-            else {
-                if ( !(*i)->getValue()->isMutableTo(valueIndex, newValue, compType) || compType != refType) {
-                    isMutable = true;
-                    break;
-                }
-            }
-        }
-        if (isMutable)
-            temp = new ContainerNode(length, refType);
-    }
-
-    // Finally ask children
-    if (isMutable) {
-        for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
-            if ( !(*i)->isParentMutableTo(this, temp) ) {
-                isMutable = false;
-                break;
-            }
-        }
-    }
-    
-    // Delete the temp plate
-    if (temp != NULL)
-        delete temp;
-    
     return isMutable;
 }
 
 
 /** Is it possible to change parent node oldNode to newNode? */
-bool ContainerNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const {
+bool ContainerNode::isParentMutableTo( const DAGNode* oldNode, const DAGNode* newNode ) const {
 
     // Check that all parents except the caller are convertible to the new type and dim
     for (std::set<DAGNode*>::const_iterator i=parents.begin(); i!=parents.end(); i++) {
         if ( (*i) != NULL && (*i) != const_cast<DAGNode*>(oldNode) ) {
-            if ( !(*i)->getValue()->isConvertibleTo(newNode->getValueType(), newNode->getDim()) )
+            if ( !(*i)->getValue()->isConvertibleTo( TypeSpec(newNode->getValueType(), newNode->getDim()), false ) )
                 return false;
         }
     }
     
     // Check that all children allow this node to permute to the new type and dim
-    ContainerNode* temp = new ContainerNode(length, newNode->getValueType());
+    ContainerNode* temp = new ContainerNode( newNode->getValueType(), valueDim );
     for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
         if ( !(*i)->isParentMutableTo(this, temp) ) {
             delete temp;
@@ -650,141 +273,39 @@ bool ContainerNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* new
 }
 
 
-/** Keep value of node and affected variable nodes */
-void ContainerNode::keepAffected(void) {
-
-    if (touched) {
-        if (!changed)
-            update();
-        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++)
-            (*i)->keepAffected();
-    }
-    touched = changed = false;
-}
-
-
 /** Mutate to newNode */
-void ContainerNode::mutateTo(DAGNode* newNode) {
+void ContainerNode::mutateTo( DAGNode* newNode ) {
     
     throw RbException("Not implemented yet");
     
 }
 
 
-/* Mutate to contain newValue */
-ContainerNode* ContainerNode::mutateTo(const VectorInteger& index, RbObject* newValue) {
+/* Mutate to new language type typeSpec */
+ContainerNode* ContainerNode::mutateTo( const TypeSpec& typeSpec ) {
 
     throw RbException("Not implemented yet");
 }
 
 
 /** Print struct for user */
-void ContainerNode::printStruct(std::ostream& o) const {
+void ContainerNode::printStruct( std::ostream& o ) const {
 
     if (touched && !changed)
         throw RbException ("Cannot print value while in touched state");
 
     o << "Wrapper:" << std::endl;
-    o << "&.class  = " << getDAGClass() << std::endl;
-    o << "&.dim    = " << getDim() << std::endl;
-    o << "&.length = " << getLength() << std::endl;
-    o << "&.value  = " << value << std::endl;
-    o << "&.parents = " << std::endl;
+    o << "$class  = " << getDAGClass() << std::endl;
+    o << "$dim    = " << getDim() << std::endl;
+    o << "$length = " << VectorInteger(container->getLength()) << std::endl;
+    o << "$value  = " << value << std::endl;
+    o << "$parents = " << std::endl;
     printParents(o);
     o << std::endl;
-    o << "&.children = " << std::endl;
+    o << "$children = " << std::endl;
     printChildren(o);
     o << std::endl;
     o << std::endl;
-}
-
-
-/** Print value for user */
-void ContainerNode::printValue(std::ostream& o) const {
-
-    if (touched && !changed)
-        throw RbException ("Cannot print value while in touched state");
-
-    value->printValue(o);
-}
-
-
-/** Reset plate length in different dimensions */
-void ContainerNode::resize(const VectorInteger& len) {
-
-    // Check if there is anything to do
-    if (len.equals(&length))
-        return;
-
-    // Check that new length specification has the right number of dimensions
-    if (len.size() != length.size())
-        throw (RbException("Cannot resize plate: dimensions do not match"));
-
-    // Calculate handy numbers
-    VectorInteger numValsSource = VectorInteger(len.size(), 0), numValsTarget = VectorInteger(len.size(), 0);
-    int numSourceVals = 1, numTargetVals = 1;
-    for (int i=int(len.size())-1; i>=0; i--) {
-        numSourceVals *= length[i];
-        numTargetVals *= len[i];
-        numValsSource[i] = numSourceVals;
-        numValsTarget[i] = numTargetVals;
-    }
-
-    // Create new empty nodes vector
-    VectorString* tempNames;
-    std::vector<DAGNode*> tempNodes = std::vector<DAGNode*>(numValsTarget[0]);
-    if (names != NULL)
-        tempNames = new VectorString(numValsTarget[0]);
-
-    // Reorganize content
-    if (nodes.size() > 0) {
-        int sourceIndex = 0, targetIndex = 0;
-        do {
-            for (int i=0; i<length[length.size()-1]; i++) {
-                tempNodes[targetIndex] = nodes[sourceIndex];
-                if (names != NULL)
-                    tempNames[targetIndex] = names[sourceIndex];
-                targetIndex++;
-                sourceIndex++;
-            }
-
-            for (int i=int(length.size())-1; i>=0; i--) {
-                if (sourceIndex % numValsSource[i] == 0) {
-                    targetIndex += numValsTarget[i] - (targetIndex % numValsTarget[i]);
-                }
-            }
-        } while (sourceIndex < (int)(nodes.size()) && targetIndex < numValsTarget[0]);
-    }
-
-    // Copy the new plate and length specification
-    nodes.clear();
-    nodes  = tempNodes;
-    length = len;
-    if (names != NULL) {
-        delete names;
-        names = tempNames;
-    }
-
-    // Resize value container
-    value->resize(length);
-    storedValue->resize(length);
-}
-
-
-/** Restore value of node and affected variable nodes */
-void ContainerNode::restoreAffected(void) {
-
-    if (touched) {
-        if (changed) {
-            Container* temp = value;
-            value = storedValue;
-            storedValue = temp;
-        }
-        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-            (*i)->restoreAffected();
-        }
-    }
-    touched = changed = false;
 }
 
 
@@ -795,15 +316,20 @@ std::string ContainerNode::richInfo(void) const {
 
     o << "DAGNode plate:" << std::endl;
     o << "dim         = " << getDim() << std::endl; 
-    o << "length      = " << getLength() << std::endl;
+    o << "length      = " << VectorInteger(container->getLength()) << std::endl;
     o << "valueType   = " << valueType << std::endl;
-    o << "value       = " << value << std::endl;
-    o << "storedValue = " << storedValue;
+    o << "container   = " << std::endl;
+    o << *container << std::endl;
+    o << "value       = " << std::endl;
+    o << value << std::endl;
+    o << "storedValue = " << std::endl;
+    o << storedValue;
 
     return o.str();
 }
 
 
+#if 0
 /** Set value element or elements from value */
 void ContainerNode::setElement(const VectorInteger& index, RbObject* val) {
 
@@ -1025,48 +551,30 @@ void ContainerNode::setElement(const VectorInteger& index, DAGNode* var) {
 }
 
 
-/** Set length in each dimension: reorganize the content of the plate */
-void ContainerNode::setLength(const VectorInteger& len) {
-
-    if (len.size() != length.size())
-        throw (RbException("Cannot change number of dimensions"));
-
-    int numVals = 1;
-    for (size_t i=0; i<len.size(); i++) {
-        if (len[i] <= 0)
-            throw (RbException("Nonpositive dimension length"));
-        numVals *= len[i];
-    }
-
-    if (numVals != (int)(nodes.size()))
-        throw (RbException("Lengths do not match plate size"));
-
-    length = len;
-}
-
-
 /** Set value of plate */
 void ContainerNode::setValue(RbObject* val) {
 
     throw RbException("Invalid assignment of value to node plate");
 }
 
+#endif
 
-/** Swap parent node in nodes and parents */
-void ContainerNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
 
-    if (parents.find(oldNode) == parents.end())
-        throw RbException("Node is not a parent");
-    oldNode->removeChildNode(this);
-    newNode->addChildNode(this);
-    parents.erase(oldNode);
-    parents.insert(newNode);
+/** Swap parent node in container and parents */
+void ContainerNode::swapParentNode( DAGNode* oldNode, DAGNode* newNode ) {
 
-    std::vector<DAGNode*>::iterator it = std::find(nodes.begin(), nodes.end(), oldNode);
-    if (it == nodes.end())
-        throw RbException("Node is not in plate");
-    it = nodes.erase(it);
-    nodes.insert(it, newNode);
+    if ( parents.find( oldNode ) == parents.end() )
+        throw RbException( "Node is not a parent" );
+    oldNode->removeChildNode( this );
+    newNode->addChildNode( this );
+    parents.erase( oldNode );
+    parents.insert( newNode );
+
+    std::vector<DAGNode*>::iterator it = std::find( container->elements.begin(), container->elements.end(), oldNode );
+    if ( it == container->elements.end() )
+        throw RbException( "Node is not in container" );
+    it = container->elements.erase( it );
+    container->elements.insert( it, newNode );
 
     touched = true;
     changed = false;
@@ -1074,31 +582,14 @@ void ContainerNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
 }
 
 
-/** Tell affected nodes that upstream value has been reset */
-void ContainerNode::touchAffected(void) {
-
-    touched = true;
-    changed = false;
-    for (std::set<VariableNode*>::iterator i=children.begin(); i!= children.end(); i++)
-        (*i)->touchAffected();
-}
-
-
-/** Update value and stored value */
+/** Update value and stored value after node and its surroundings have been touched by a move */
 void ContainerNode::update(void) {
 
     if (touched && !changed) {
-        Container* temp = storedValue;
+        if (storedValue != NULL)
+            delete storedValue;
         storedValue = value;
-        value = temp;
-        std::vector<DAGNode*>::iterator i = nodes.begin();
-        ContainerIterator j = value->begin();
-        for (; i!=nodes.end(); i++, j++) {
-            if ((*i) == NULL)
-                (*value)[j] = NULL;
-            else
-                (*value)[j] = (*i)->getValue()->clone();
-        }
+        value = container->getConstValue();
         changed = true;
     }
 }

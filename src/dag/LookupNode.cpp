@@ -44,7 +44,7 @@ LookupNode::LookupNode(DAGNode* var, IndexArgs&  indxArgs) :
 
     /* Check index arguments */
     for (IndexArgs::iterator i=indexArgs.begin(); i!=indexArgs.end(); i++) {
-        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getValueType(), (*i)->getDim(), Integer_name, 0) )
+        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getTypeSpec(), Integer_name) )
             throw RbException ("Invalid type of index argument");
     }
         
@@ -80,7 +80,7 @@ LookupNode::LookupNode(LookupNode* baseVar, RbString* membrName, IndexArgs&  ind
 
     /* Check index arguments */
     for (IndexArgs::iterator i=indexArgs.begin(); i!=indexArgs.end(); i++) {
-        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getValueType(), (*i)->getDim(), Integer_name, 0) )
+        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getTypeSpec(), Integer_name) )
             throw RbException ("Invalid type of index argument");
     }
         
@@ -278,10 +278,8 @@ bool LookupNode::isMutableTo(const DAGNode* newNode) const {
 
 
 /** Is it possible to mutate node to contain newValue? */
-bool LookupNode::isMutableTo(const VectorInteger& index, const RbObject* newValue) const {
+bool LookupNode::isMutableTo(const TypeSpec& typeSpec) const {
 
-    assert (!newValue->isType(Container_name));
-    
     bool isMutable = false;
 
     return isMutable;
@@ -297,13 +295,13 @@ bool LookupNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNod
 
     // Now find node among indexArgs or variable/baseVariable
     if (oldNode == baseVariable) {
-        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getValueType(), newNode->getDim(), baseVariable->getValueType(), baseVariable->getDim()) )
+        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getTypeSpec(), baseVariable->getTypeSpec()) )
             return true;
         else
             return false;
     }
     else if (oldNode == baseLookup) {
-        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getValueType(), newNode->getDim(), baseLookup->getValueType(), baseLookup->getDim()) )
+        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getTypeSpec(), baseLookup->getTypeSpec()) )
             return true;
         else
             return false;
@@ -312,7 +310,7 @@ bool LookupNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNod
         std::vector<DAGNode*>::const_iterator it = std::find(indexArgs.begin(), indexArgs.end(), oldNode);
         if (it == indexArgs.end())
             throw RbException("Node is not a parameter");
-        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getValueType(), newNode->getDim(), Integer_name, 0) )
+        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getTypeSpec(), Integer_name) )
             return true;
         else
             return false;
@@ -364,7 +362,7 @@ void LookupNode::mutateTo(DAGNode* newNode) {
 
 
 /* Mutate to contain newValue */
-LookupNode* LookupNode::mutateTo(const VectorInteger& index, RbObject* newValue) {
+LookupNode* LookupNode::mutateTo(const TypeSpec& typeSpec) {
 
     throw RbException("Not implemented yet");
 }

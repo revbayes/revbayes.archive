@@ -41,7 +41,6 @@ class MoveSchedule : public RbComplex {
 
         // Basic RbObject functions
         MoveSchedule*           clone() const;                                      //!< Clone object
-        bool                    equals(const RbObject* obj) const;                  //!< Equals comparison
  		const VectorString&     getClass(void) const;                               //!< Get class
         void                    printValue(std::ostream& o) const;                  //!< Print value (for user)
         std::string             richInfo(void) const;                               //!< General info on object

@@ -23,6 +23,7 @@
 #include "VariableNode.h"
 
 class Distribution;
+class MemberNode;
 class RbObject;
 class VectorString;
 

@@ -45,7 +45,6 @@ class DistributionFunction :  public RbFunction {
 
         // Basic utility functions
         DistributionFunction*       clone(void) const;                          //!< Clone object
-    	bool                        equals(const RbObject* obj) const;          //!< Equals comparison
     	const VectorString&         getClass(void) const;                       //!< Get class vector
 
         // DistributionFunction functions

@@ -35,7 +35,7 @@
  class ConverterNode : public DeterministicNode {
 
     public:
-                                ConverterNode(const TypeSpec& typeSpec);                                    //!< Constructor of pristine node
+                                ConverterNode(const std::string& type, int dim);                            //!< Constructor of pristine node
                                 ConverterNode(DAGNode* origNode, const TypeSpec& typeSpec);                 //!< Basic constructor
 
         // Basic utility functions

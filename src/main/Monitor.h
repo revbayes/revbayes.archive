@@ -36,7 +36,6 @@ class Monitor : public RbComplex {
 
         // Basic utility functions
         Monitor*                    clone(void) const;                              //!< Clone object
-        bool                        equals(const RbObject* obj) const;              //!< Equals comparison
         const VectorString&         getClass(void) const;                           //!< Get class
         void                        printValue(std::ostream& o) const;              //!< Print value (for user)
         std::string                 richInfo(void) const;                           //!< Complete info about object

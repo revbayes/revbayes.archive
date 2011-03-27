@@ -18,8 +18,6 @@
 #ifndef Container_H
 #define Container_H
 
-#include "ContainerIterator.h"
-#include "VectorInteger.h"
 #include "RbComplex.h"
 
 #include <ostream>
@@ -27,59 +25,80 @@
 #include <vector>
 
 class RbObject;
-class RbContainer;
+class VectorNatural;
+class VectorInteger;
 class VectorString;
 
+
+/**
+ * This class is used for all complex data types seen by the parser
+ * as being multidimensional. Unlike all other RbObject objects, 
+ * their object type does not correspond to their language type.
+ * Instead, their language type is the same as their dim and element
+ * type. This allows the parser to handle the container and its
+ * elements as one unit.
+ *
+ * For instance, the language type of a MatrixReal, which is a
+ * specialized type of Container, is Real[][] and not MatrixReal,
+ * its object type returned by the getType() function.
+ *
+ * The getTypeSpec() function should be used to get the language type
+ * of the object; for a MatrixReal, the getTypeSpec() function returns
+ * a TypeSpec object containing type Real and dim 2. For RbObject
+ * types other than Container types, the TypeSpec object returns the
+ * object type and dim 0 (a scalar). For instance, a Simplex object
+ * should have dim 0 and type Simplex, that is, in the language it
+ * has type Simplex. An object of dim 0 can still support subscripting
+ * by overriding the appropriate functions in RbComplex. The parser
+ * will then rely entirely on the object itself in getting and setting
+ * elements of the object. Such objects will typically not want the
+ * parser to directly mess with their elements (setElement should
+ * throw an error), while they should return the value of their elements
+ * through implementing the getElement function.
+ */
 class Container : public RbComplex {
 
     public:
-	                                Container(void);                                                  //!< Default constructor
-                                    Container(RbObject* x);                                           //!< Vector with one node x
-                                    Container(size_t n, RbObject* x);                                 //!< Vector with n copies of x
-                                    Container(const VectorInteger& len, RbObject* x);                 //!< Array of given dimensions with copies of x
-                                    Container(const VectorInteger& len, const std::string& elemType); //!< Empty array of given dimensions
-                                    Container(const Container& x);                                    //!< Copy constructor
-								   ~Container(void);                                                  //!< Destructor
+        virtual                        ~Container(void) {}                                                  //!< Virtual destructor
 
-        // Overloaded operators
-        Container&                  operator=(const Container& x);                                    //!< Assignment operator
-        RbObject*&                  operator[](const VectorInteger& i);                               //!< Element access
-        RbObject* const&            operator[](const VectorInteger& i) const;                         //!< Element const access
-        RbObject*&                  operator[](const size_t i);                                       //!< Element access
-        RbObject* const&            operator[](const size_t i) const;                                 //!< Element const access
+        // Basic utility functions you have to override (also getClass()!)
+        virtual Container*              clone(void) const = 0;                                              //!< Clone object
+        virtual const VectorString&     getClass(void) const;                                               //!< Get class
+        virtual void                    printValue(std::ostream& o) const = 0;                              //!< Print value for user
+        virtual std::string             richInfo(void) const = 0;                                           //!< Complete info about object
 
-        // Replicated vector functions
-        void                        resize(size_t n) { resize (VectorInteger(int(n))); }              //!< Resize vector
-        void                        resize(const VectorInteger& len);                                 //!< Resize container
-        size_t                      size(void) const { return elements.size(); }                      //!< Get number of elements
+        // Container functions and basic utility functions you should not have to override
+        int                             getDim(void) const { return length.size(); }                        //!< Get number of dimensions (1 for vector, 2 for matrix, etc)
+        const VectorString&             getElementClass(void) const;                                        //!< Get element class vector
+        const std::string&              getElementType(void) const { return elementType; }                  //!< Get element type
+        const std::vector<size_t>&      getLength(void) const { return length; }                            //!< Get length in each dim
+        const TypeSpec                  getTypeSpec(void) const;                                            //!< Get language type of the object
 
-        // Basic utility functions
-        Container*                  clone(void) const;                                                //!< Clone object
-        bool                        equals(const RbObject* x) const;                                  //!< Equals comparison
-        const VectorString&         getClass(void) const;                                             //!< Get class
-        void                        printValue(std::ostream& o) const;                                //!< Print value for user
-        std::string                 richInfo(void) const;                                             //!< Complete info about object
+        // Container function you may want to override
+        virtual void                    setLength(const std::vector<size_t>& len);                          //!< Reorganize container
 
-        // Type conversion
-        bool                        isConvertibleTo(const std::string& type, int dim = 0) const;      //!< Is convertible to type and dim?
+        // Container functions you have to override
+        virtual void                    clear(void) = 0;                                                    //!< Clear
+        virtual const RbObject*         getElement(const VectorInteger& index) const = 0;                   //!< Get element (read-only)
+        virtual const RbObject*         getElement(size_t i) const = 0;                                     //!< Get element from vector (read-only)
+        virtual Container*              getSubContainer(const VectorInteger& index) const = 0;              //!< Get subcontainer
+        virtual void                    resize(const std::vector<size_t>& len) = 0;                         //!< Resize
+        virtual void                    setElement(const VectorInteger& index, RbObject* val) = 0;          //!< Set value element
+        virtual size_t                  size(void) const = 0;                                               //!< Get number of elements
 
-        // Element access functions
-        int                         getDim(void) const { return int(length.size()); }                 //!< Get subscript dimensions
-        const std::string&          getElementType(void) const { return elementType; }                //!< Get element type
-        RbObject*                   getElement(const VectorInteger& index) const;                     //!< Get element (copy)
-        const VectorInteger&        getLength(void) const { return length; }                          //!< Get length in each dim
-        Container*                  getSubContainer(const VectorInteger& index) const;                //!< Get subcontainer
-        void                        setElement(const VectorInteger& index, RbObject* val);            //!< Set value element
-        void                        setLength(const VectorInteger& len);                              //!< Reorganize container
+	protected:
+                                        Container(const TypeSpec& typeSpec);                                //!< Default constructor (set type of elements and dim of container)
 
-	private:
-        size_t                      getOffset(const VectorInteger& index) const;                      //!< Get offset in element vector
-        DAGNode*                    getElementRef(const VectorInteger& index);                        //!< Allow modify access to element
+        Container&                      operator=(const Container& x);                                      //!< Assignment operator checks type and dimension (but length can differ)
+        void                            getContainerSubscriptIndices( const VectorInteger& index,
+                                                                            VectorInteger& containerIndex,
+                                                                            VectorInteger& subscriptIndex
+                                                                    ) const;                                //!< Divide up an index into container and subscript indices
+        size_t                          getOffset(const VectorInteger& index) const;                        //!< Get offset in elements vector
 
-        // Member variables
-        const std::string&          elementType;                                                      //!< Element type
-        VectorInteger               length;                                                           //!< Length in each dimension
-	    std::vector<RbObject*>      elements;                                                         //!< Vector of nodes
+
+        const std::string&              elementType;                                                        //!< Type of elements
+        std::vector<size_t>             length;                                                             //!< Length in each dimension
 };
 
 #endif

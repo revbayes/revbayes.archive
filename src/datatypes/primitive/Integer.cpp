@@ -24,6 +24,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
+#include "TypeSpec.h"
 #include "VectorInteger.h"
 #include "VectorString.h"
 
@@ -31,67 +32,52 @@
 
 /** Default constructor */
 Integer::Integer(void) : RbObject(), value(0) {
-
 }
 
 /** Construct from int */
-Integer::Integer(const int v)
-    : RbObject(), value(v) {
+Integer::Integer(const int v) : RbObject(), value(v) {
+}
+
+/** Construct from unsigned int (ambiguous between int and bool otherwise) */
+Integer::Integer(const unsigned int v) : RbObject(), value(v) {
 }
 
 /** Construct from bool */
-Integer::Integer(const bool v)
-    : RbObject() {
+Integer::Integer(const bool v) : RbObject() {
 
     if (v) value = 1;
     else value = 0;
 }
 
 /** Clone object */
-RbObject* Integer::clone(void) const {
+Integer* Integer::clone(void) const {
 
-	return  (RbObject*)(new Integer(*this));
+	return  new Integer(*this);
 }
 
 
-/** Convert to object of another class. The caller manages the object. */
-RbObject* Integer::convertTo(const std::string& type, int dim) const {
+/** Convert to object of language type typeSpec. The caller manages the object. */
+RbObject* Integer::convertTo( const std::string& type, int dim ) const {
 
-    if (type == Boolean_name && dim == 0) 
+    if ( type == Boolean_name && dim == 0 ) 
         return new Boolean(value == 0);
-    if (type == Real_name && dim == 0)
+
+    if ( type == Real_name && dim == 0 )
         return new Real(value);
-    if (type == RbString_name && dim == 0) {
+
+    if ( type == RbString_name && dim == 0 ) {
         std::ostringstream o;
         printValue(o);
         return new RbString(o.str());
     }
-    if (type == VectorInteger_name && dim == 0)
+
+    if ( type == VectorInteger_name && dim == 0 )
         return new VectorInteger(value);
-    if (type == RealPos_name && dim == 0 && value > 0)
+
+    if ( type == RealPos_name && dim == 0 && value > 0 )
         return new RealPos(value);
 
-    return RbObject::convertTo(type, dim);
-}
-
-
-/** Pointer-based equals comparison */
-bool Integer::equals(const RbObject* obj) const {
-
-    // Use built-in fast down-casting first
-    const Integer* p = dynamic_cast<const Integer*>(obj);
-    if (p != NULL)
-        return value == p->value;
-
-    // Try converting the object to an int
-    p = dynamic_cast<const Integer*>(obj->convertTo(Integer_name));
-    if (p == NULL)
-        return false;
-
-    // Get result
-    bool result = (value == p->value);
-    delete p;
-    return result;
+    return RbObject::convertTo( type, dim );
 }
 
 
@@ -103,17 +89,21 @@ const VectorString& Integer::getClass() const {
 }
 
 
-/** Is convertible to type and dim? */
+/** Is convertible to language object of type typeSpec? */
 bool Integer::isConvertibleTo(const std::string& type, int dim, bool once) const {
 
     if (type == Boolean_name && dim == 0)
         return true;
-    else if (type == Real_name && dim == 0)
+
+    if (type == Real_name && dim == 0)
         return true;
-    else if (type == RbString_name && dim == 0)
+
+    if (type == RbString_name && dim == 0)
         return true;
-    else if (type == VectorInteger_name && dim == 0)
+    
+    if (type == VectorInteger_name && dim == 0)
         return true;
+
     if (type == RealPos_name && dim == 0 && once == true && value > 0)
         return true;
 

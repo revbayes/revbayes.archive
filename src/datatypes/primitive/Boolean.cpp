@@ -21,6 +21,7 @@
 #include "Real.h"
 #include "Integer.h"
 #include "RbNames.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 #include <sstream>
@@ -37,13 +38,13 @@ Boolean::Boolean(const bool v) : RbObject(), value(v) {
 }
 
 /** Clone object */
-RbObject* Boolean::clone(void) const {
+Boolean* Boolean::clone(void) const {
 
-	return  (RbObject*)(new Boolean(*this));
+	return  new Boolean(*this);
 }
 
 
-/** Convert to object of another class. The caller manages the object. */
+/** Convert to object of language type typeSpec. The caller manages the object. */
 RbObject* Boolean::convertTo(const std::string& type, int dim) const {
 
     if (type == Integer_name && dim == 0) {
@@ -62,24 +63,6 @@ RbObject* Boolean::convertTo(const std::string& type, int dim) const {
     return RbObject::convertTo(type, dim);
 }
 
-/** Pointer-based equals comparison */
-bool Boolean::equals(const RbObject* obj) const {
-
-    // Use built-in fast down-casting first
-    const Boolean* p = dynamic_cast<const Boolean*>(obj);
-    if (p != NULL)
-        return value == p->value;
-
-    // Try converting the object to a bool
-    p = dynamic_cast<const Boolean*>(obj->convertTo(Boolean_name));
-    if (p == NULL)
-        return false;
-
-    // Get result
-    bool result = (value == p->value);
-    delete p;
-    return result;
-}
 
 /** Get class vector describing type of object */
 const VectorString& Boolean::getClass() const {
@@ -89,7 +72,7 @@ const VectorString& Boolean::getClass() const {
 }
 
 
-/** Is convertible to type and dim? */
+/** Is convertible to language object of type typeSpec? */
 bool Boolean::isConvertibleTo(const std::string& type, int dim, bool once) const {
 
     if (type == Integer_name && dim == 0)
@@ -97,7 +80,7 @@ bool Boolean::isConvertibleTo(const std::string& type, int dim, bool once) const
     else if (type == Real_name && dim == 0)
         return true;
 
-    return RbObject::isConvertibleTo(type, dim);
+    return RbObject::isConvertibleTo(type, dim, once);
 }
 
 

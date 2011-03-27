@@ -36,15 +36,17 @@ class MemberObject: public RbComplex {
     public:
         virtual                    ~MemberObject(void) {}                                                         //!< Destructor
 
-        // Basic utility functions
+        // Basic utility functions you have to override
         virtual MemberObject*       clone(void) const = 0;                                                        //!< Clone object
-        MemberObject*               cloneDAG();
-        virtual bool                equals(const RbObject* x) const;                                              //!< Equals comparison
         virtual const VectorString& getClass(void) const;                                                         //!< Get class vector
+        
+        // Basic utility functions you may want to override
+        virtual MemberObject*       convertTo(const std::string& type, int dim) const;                            //!< Convert to language object of type and dim (default throws an error)
+        virtual bool                isConvertibleTo(const std::string& type, int dim, bool once) const;           //!< Is convertible to language object of type and dim? (default false)
         virtual void                printValue(std::ostream& o) const;                                            //!< Print value for user
         virtual std::string         richInfo(void) const;                                                         //!< Complete info
 
-        // DAG utility functions
+        // DAG utility functions you do not have to override
         MemberObject*               cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                       //!< Clone entire graph
         MemberObject*               constantClone(void) const;                                                    //!< Make a constant clone
 
@@ -55,7 +57,6 @@ class MemberObject: public RbComplex {
         const RbObject*             getValue(const std::string& name);                                            //!< Get member value
         const RbObject*             getValue(const std::string& name) const;                                      //!< Get member value (const)
         const DAGNode*              getVariable(const std::string& name) const;                                   //!< Get member variable
-        void                        setName(const std::string& name);                                             //!< Set base name of variables
         void                        setValue(const std::string& name, RbObject* val);                             //!< Set member value
         virtual void                setVariable(const std::string& name, DAGNode* var);                           //!< Set member variable
 
@@ -70,7 +71,7 @@ class MemberObject: public RbComplex {
 
         // Protected functions
         virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args) = 0;   //!< Execute method
-        DAGNode*                    getVariable(const std::string& name);                                         //!< Get member variable (non-const)
+        DAGNode*                    getVariable(const std::string& name);                                         //!< Get member variable (non-const ptr)
 
         // Members and methods keep track of variables and functions belonging to the object
         MemberTable                 members;                                                                      //!< Member variables

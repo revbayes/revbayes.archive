@@ -713,7 +713,7 @@ void DAGNodePlate::printValue(std::ostream& o) const {
 void DAGNodePlate::resize(const VectorInteger& len) {
 
     // Check if there is anything to do
-    if (len.equals(&length))
+    if (len == length)
         return;
 
     // Check that new length specification has the right number of dimensions

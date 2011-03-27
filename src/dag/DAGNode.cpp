@@ -18,12 +18,13 @@
  */
 
 #include "DAGNode.h"
-#include "DAGNodePlate.h"
+#include "ContainerNode.h"
 #include "Frame.h"
 #include "VectorInteger.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "RbString.h"
 #include "VectorString.h"
 #include "VariableNode.h"
 
@@ -64,27 +65,20 @@ const std::string DAGNode::getName(void) const {
 
     if (slot == NULL) {
         for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
-            if ((*i)->isDAGType(DAGNodePlate_name)) {
-                DAGNodePlate* thePlate = (DAGNodePlate*)(*i);
-                name = thePlate->getName();
-                VectorInteger index = thePlate->getIndex(*i);
+            if ((*i)->isDAGType(ContainerNode_name)) {
+                ContainerNode* theContainer = (ContainerNode*)(*i);
+                name = theContainer->getName();
+                VectorInteger index = theContainer->getIndex(*i);
                 for (size_t j=0; j<index.size(); j++)
-                    ; // name += "[" + RbString(index[j] + 1) + "]";
+                    name += "[" + RbString(index[j] + 1) + "]";
                 break;
             }
         }
     }
     else {
         name = slot->getName();
-        /* TODO: This info should be available to slot, no?
-        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-            if ((*i)->isType(MemberNode_name)) {
-                name = (*i)->getName() + "." + name;
-            break;
-            }   
-        }
-        */
     }
+
     return name;
 }
 

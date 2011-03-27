@@ -23,43 +23,54 @@
 #include "VectorInteger.h"
 #include "VectorString.h"
 
-#include <sstream>
+#include <iomanip>
 
 
 /** Construct simplex of length (size) n */
-Simplex::Simplex(const size_t n) : VectorRealPos() {
+Simplex::Simplex(const size_t n) : RbComplex() {
+
+    if (n < 2)
+        throw RbException( "Simplex must have at least two elements" );
 
     for (size_t i=0; i<n; i++)
         value.push_back(1.0/n);
 }
 
 
-/** Construct simplex from double vector */
-Simplex::Simplex(const std::vector<double>& x) : VectorRealPos(x) {
+/** Construct simplex from STL vector */
+Simplex::Simplex(const std::vector<double>& x) : RbComplex() {
+
+    if (x.size() < 2)
+        throw RbException( "Simplex must have at least two elements" );
 
     for (size_t i=0; i<x.size(); i++)
         if (x[i] <= 0.0)
             throw (RbException("Cannot set simplex from nonpositive value"));
 
+    value = x;
     rescale();
 }
 
 
-/** Construct simplex from double vector */
-Simplex::Simplex(const VectorRealPos& x) : VectorRealPos(x) {
+/** Construct simplex from VectorRealPos, which is guaranteed to have real positive numbers */
+Simplex::Simplex(const VectorRealPos& x) : RbComplex() {
 
     for (size_t i=0; i<x.size(); i++)
         if (x[i] <= 0.0)
             throw (RbException("Cannot set simplex from nonpositive value"));
 
+    value = x.getValue();
     rescale();
 }
 
 
-/** Non-const subscript operator */
-double& Simplex::operator[](size_t i) {
+/** Const subscript operator allowing caller to see value but not to modify it */
+double Simplex::operator[](size_t i) const {
 
-    throw (RbException("Cannot grant non-const access to single value of simplex"));
+    if ( i<0 || i>value.size()  )
+        throw RbException( "Index out of bound" );
+
+    return value[i];
 }
 
 
@@ -70,44 +81,33 @@ Simplex* Simplex::clone() const {
 }
 
 
-/** Pointer-based equals comparison */
-bool Simplex::equals(const RbObject* obj) const {
-
-    // First check type
-    if ( !obj->isType(Simplex_name) )
-        return false;
-
-    // Then use parent's function
-    return VectorRealPos::equals(obj);
-}
-
-
 /** Get class vector describing type of object */
 const VectorString& Simplex::getClass() const {
 
-    static VectorString rbClass = VectorString(Simplex_name) + VectorRealPos::getClass();
+    static VectorString rbClass = VectorString(Simplex_name) + RbComplex::getClass();
     return rbClass;
 }
 
 
-/** Drop an element */
-void Simplex::pop_back(void) {
+/** Print value for user */
+void Simplex::printValue(std::ostream& o) const {
 
-    throw (RbException("Cannot resize simplex"));
-}
+    int previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
 
+    o << "[ ";
+    o << std::fixed;
+    o << std::setprecision(1);
+    for (std::vector<double>::const_iterator i = value.begin(); i!= value.end(); i++) 
+        {
+        if (i != value.begin())
+            o << ", ";
+        o << (*i);
+        }
+    o <<  " ]";
 
-/** Append an element */
-void Simplex::push_back(double x) {
-
-    throw (RbException("Cannot resize simplex"));
-}
-
-
-/** Add an element in front */
-void Simplex::push_front(double x) {
-
-    throw (RbException("Cannot resize simplex"));
+    o.setf(previousFlags);
+    o << std::setprecision(previousPrecision);
 }
 
 
@@ -124,13 +124,6 @@ void Simplex::rescale(void) {
 }
 
 
-/** Do not allow the parser to resize the simplex */
-void Simplex::resize(const VectorInteger& len) {
-
-    throw (RbException("Cannot resize simplex"));
-}
-
-
 /** Complete info about object */
 std::string Simplex::richInfo(void) const {
 
@@ -142,10 +135,10 @@ std::string Simplex::richInfo(void) const {
 }
 
 
-/** Allow parser to set an element (actually do not) */
+/** Give out a meaningful error message if parser tries to se an element */
 void Simplex::setElement(const VectorInteger& index, RbObject* val) {
 
-    throw (RbException("Cannot set single value of simplex"));
+    throw RbException( "Cannot set single value of simplex" );
 }
 
 

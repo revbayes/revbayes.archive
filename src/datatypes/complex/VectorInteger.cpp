@@ -17,10 +17,11 @@
  */
 
 #include "ContainerIterator.h"
-#include "VectorInteger.h"
-#include "RbException.h"
 #include "Integer.h"
+#include "RbException.h"
 #include "RbNames.h"
+#include "TypeSpec.h"
+#include "VectorInteger.h"
 #include "VectorString.h"
 
 #include <sstream>
@@ -28,46 +29,77 @@
 
 
 /** Default constructor */
-VectorInteger::VectorInteger(void) : Vector() {
-
+VectorInteger::VectorInteger(void)
+    : Vector(Integer_name) {
 }
 
 
 /** Construct vector with one int x */
-VectorInteger::VectorInteger(int x) : Vector() {
+VectorInteger::VectorInteger(int x)
+    : Vector(Integer_name) {
 
-    value.push_back(x);
+    elements.push_back(new Integer(x));
+    length[0]++;
 }
 
 
 /** Construct vector with n ints x */
-VectorInteger::VectorInteger(size_t n, int x) : Vector() {
+VectorInteger::VectorInteger(size_t n, int x)
+    : Vector(Integer_name) {
 
     for (size_t i = 0; i < n; i++)
-        value.push_back(x);
+        elements.push_back(new Integer(x));
+    length[0] = n;
 }
 
 
 /** Constructor from int vector */
-VectorInteger::VectorInteger(const std::vector<int>& x) : Vector() {
+VectorInteger::VectorInteger(const std::vector<int>& x)
+    : Vector(Integer_name) {
 
-    value = x;
+    for (size_t i=0; i<x.size(); i++) {
+        elements.push_back(new Integer(x[i]));
+        length[0]++;
+    }
 }
 
 
 /** Constructor from unsigned int vector */
-VectorInteger::VectorInteger(const std::vector<unsigned int>& x) : Vector() {
+VectorInteger::VectorInteger(const std::vector<unsigned int>& x)
+    : Vector(Integer_name) {
 
     for (std::vector<unsigned int>::const_iterator i=x.begin(); i!=x.end(); i++)
-        value.push_back(*i);
+        elements.push_back(new Integer(int(*i)));
+    length[0] = elements.size();
 }
 
 
 /** Constructor from container iterator */
-VectorInteger::VectorInteger(const ContainerIterator& x) : Vector() {
+VectorInteger::VectorInteger(const ContainerIterator& x)
+: Vector(Integer_name) {
 
     for (ContainerIterator::const_iterator i=x.begin(); i!=x.end(); i++)
-        value.push_back(*i);
+        elements.push_back(new Integer(*i));
+    length[0] = elements.size();
+}
+
+
+/** Subscript operator */
+int& VectorInteger::operator[](size_t i) {
+
+    if (i < 0 || i > int(elements.size()))
+        throw RbException("Index out of bounds");
+
+    return static_cast<Integer*>(elements[i])->getValueRef();
+}
+
+
+/** Subscript const operator */
+const int& VectorInteger::operator[](size_t i) const {
+
+    if (i < 0 || i > int(elements.size()))
+        throw RbException("Index out of bounds");
+    return static_cast<Integer*>(elements[i])->getValueRef();
 }
 
 
@@ -77,8 +109,8 @@ bool VectorInteger::operator==(const VectorInteger& x) const {
     if (size() != x.size())
         return false;
 
-    for (size_t i=0; i<value.size(); i++) {
-        if (value[i] != x.value[i])
+    for (size_t i=0; i<elements.size(); i++) {
+        if (operator[](i) != x[i])
             return false;
     }
 
@@ -100,39 +132,6 @@ VectorInteger* VectorInteger::clone() const {
 }
 
 
-/** Pointer-based equals comparison */
-bool VectorInteger::equals(const RbObject* obj) const {
-
-    // Use built-in fast down-casting first
-    const VectorInteger* p = dynamic_cast<const VectorInteger*> (obj);
-    if (p != NULL) {
-        if (value.size() != p->value.size())
-            return false;
-        for (size_t i = 0; i < value.size(); i++) {
-            if (value[i] != p->value[i])
-                return false;
-        }
-        return true;
-    }
-
-    // Try converting the value to an int vector
-    p = dynamic_cast<const VectorInteger*> (obj->convertTo(getType()));
-    if (p == NULL)
-        return false;
-
-    bool result = true;
-    if (value.size() == p->value.size()) {
-        for (size_t i = 0; i < value.size(); i++)
-            result = result && (value[i] == p->value[i]);
-    }
-    else
-        result = false;
-
-    delete p;
-    return result;
-}
-
-
 /** Get class vector describing type of object */
 const VectorString& VectorInteger::getClass() const {
 
@@ -141,36 +140,14 @@ const VectorString& VectorInteger::getClass() const {
 }
 
 
-/** Get element for parser (read-only) */
-const RbObject* VectorInteger::getElement(const VectorInteger& index) const {
+/** Export value as STL vector */
+std::vector<int> VectorInteger::getValue(void) const {
 
-    static Integer x = Integer(0);
+    std::vector<int> temp;
+    for (size_t i=0; i<size(); i++)
+        temp.push_back(operator[](i));
 
-    if (index.size() != 1)
-        throw (RbException("Index error"));
-    if (index[0] >= (int)value.size() || index[0] < 0)
-        throw (RbException("Index out of bound"));
-
-    x.setValue(value[index[0]]);
-    return &x;
-}
-
-
-/** Get element class */
-const std::string& VectorInteger::getElementType(void) const {
-
-    static std::string rbType = Integer_name;
-    return rbType;
-}
-
-
-/** Get element length for parser */
-const VectorInteger& VectorInteger::getLength(void) const {
-
-    static VectorInteger length = VectorInteger(0);
-
-    length[0] = int(value.size());
-    return length;
+    return temp;
 }
 
 
@@ -178,11 +155,11 @@ const VectorInteger& VectorInteger::getLength(void) const {
 void VectorInteger::printValue(std::ostream& o) const {
 
     o << "[ ";
-    for (std::vector<int>::const_iterator i = value.begin(); i!= value.end(); i++) 
+    for (std::vector<RbObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) 
         {
-        if (i != value.begin())
+        if (i != elements.begin())
             o << ", ";
-        o << (*i);
+        o << *(*i);
         }
     o <<  " ]";
     if (getIsRowVector() == false)
@@ -190,13 +167,19 @@ void VectorInteger::printValue(std::ostream& o) const {
 }
 
 
-/** Allow the parser to resize the vector */
-void VectorInteger::resize(const VectorInteger& len) {
+/** Append element to end of vector, updating length in process */
+void VectorInteger::push_back(int x) {
 
-    if (len.size() != 1 || len[0] < 0)
-        throw (RbException("Length specification error"));
+    elements.push_back(new Integer(x));
+    length[0]++;
+}
 
-    value.resize(len[0]);
+
+/** Add element in front of vector, updating length in process */
+void VectorInteger::push_front(int x) {
+
+    elements.insert(elements.begin(), new Integer(x));
+    length[0]++;
 }
 
 
@@ -211,43 +194,24 @@ std::string VectorInteger::richInfo(void) const {
 }
 
 
-/** Allow parser to set an element (any type conversion is done by parser) */
-void VectorInteger::setElement(const VectorInteger& index, RbObject* val) {
+/** Set value of vector using STL vector */
+void VectorInteger::setValue(const std::vector<int>& x) {
 
-    if ( !val->isType(Integer_name) )
-        throw (RbException("Type mismatch"));
-
-    if ( index.size() != 1 || index[0] < 1 )
-        throw (RbException("Index error"));
-
-    // Do we want to allow resize to fit the new element or throw an error?
-    // If we resize, then we have to fill in elements with some default value
-    // or alternatively, keep a vector of bools signifying which elements should
-    // be considered null elements. Maybe we could use nan.
-    if ( index[0] >= int(value.size()) ) {
-        int oldLen = int(value.size());
-        resize(index[0]);
-        for (int i=oldLen; i<index[0]; i++)
-            value[i] = 0;
+    clear();
+    for (std::vector<int>::const_iterator i=x.begin(); i!=x.end(); i++) {   
+        elements.push_back(new Integer(*i));
+        length[0]++;
     }
-
-    value[index[0]] = ((Integer*)(val))->getValue();
-}
+}   
 
 
-/** Allow parser to rearrange the container (actually do not allow it) */
-void VectorInteger::setLength(const VectorInteger& len) {
-
-    if ( len.size() != 1 && len[0] != int(value.size()) )
-        throw (RbException("Length specification error"));
-}
-
-
-/** Set value of vector using VectorReal */
+/** Set value of vector using VectorInteger */
 void VectorInteger::setValue(const VectorInteger& x) {
 
-    value.resize(x.size());
-    for (size_t i=0; i<x.size(); i++)    
-        value[i] = x[i];
+    clear();
+    for (size_t i=0; i<x.size(); i++) {   
+        elements[i] = new Integer(x[i]);
+        length[0]++;
+    }
 }   
 

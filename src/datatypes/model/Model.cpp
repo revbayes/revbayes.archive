@@ -18,7 +18,7 @@
 #include "ContainerIterator.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
-#include "DAGNodePlate.h"
+#include "ContainerNode.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
 #include "FunctionNode.h"
@@ -171,12 +171,6 @@ Model* Model::clone(void) const {
 }
 
 
-/** Pointer-based equals comparison */
-bool Model::equals(const RbObject* obj) const {
-
-    return false;
-}
-
 /** Get class vector describing object */
 const VectorString& Model::getClass(void) const {
 
@@ -193,7 +187,7 @@ void Model::getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool expo
 		{
 		if (usePlates == true)
 			{
-			if ( (*i)->getDAGType() == DAGNodePlate_name )
+			if ( (*i)->getDAGType() == ContainerNode_name )
 				{
 				std::set<DAGNode*>& parentNodes = (*i)->getParents();
 				for (std::set<DAGNode*>::iterator j=parentNodes.begin(); j != parentNodes.end(); j++) 
@@ -202,7 +196,7 @@ void Model::getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool expo
 			}
 		else 
 			{
-			if ( (*i)->getDAGType() == DAGNodePlate_name )
+			if ( (*i)->getDAGType() == ContainerNode_name )
 				excludedNodes.insert( (*i) );
 			}
 		}
@@ -319,7 +313,7 @@ void Model::printValue(std::ostream& o) const {
 			msg << "   Type         = Constant";
 		else if ( (*i)->getDAGType() == StochasticNode_name )
 			msg << "   Type         = Stochastic";
-		else if ( (*i)->getDAGType() == DAGNodePlate_name )
+		else if ( (*i)->getDAGType() == ContainerNode_name )
 			msg << "   Type         = Plate";
 		else if ( (*i)->getDAGType() == MemberNode_name )
 			msg << "   Type         = Member object";

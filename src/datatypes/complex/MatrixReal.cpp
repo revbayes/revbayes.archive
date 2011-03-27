@@ -9,9 +9,6 @@
  * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
- * @version 1.0
- * @since 2010-08-20, version 1.0
- * @extends RbComplex
  *
  * $Id$
  */
@@ -33,54 +30,426 @@
 #include <sstream>
 
 
-
-/** Default constructor for matrix */
-MatrixReal::MatrixReal(void) : RbComplex() {
-
-    numRows = 0;
-    numCols = 0;
+/** Default constructor resulting in an empty real matrix */
+MatrixReal::MatrixReal( void ) : Matrix( Real_name ) {
 }
 
-/** Construct matrix of specified dimensions, initialize it with double x (default 0.0) */
-MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, const double x) : RbComplex() {
 
-    if (numRows < 0 || numCols < 0)
-        throw RbException("Negative size of matrix");
+/** Construct matrix of specified dimensions (length), initialize it with double x (default 0.0) */
+MatrixReal::MatrixReal( const size_t nRows, const size_t nCols, double x) : Matrix( Real_name ) {
 
-    numRows = nRows;
-    numCols = nCols;
+    if ( nRows < 1 || nCols < 1 )
+        throw RbException( "Nonpositive length(s) for " + Real_name + "[][]" );
 
-    value.resize(numRows);
-    for (size_t i=0; i<numRows; i++)
-        value[i].resize(numCols);
+    length[0] = nRows;
+    length[1] = nCols;
 
-    for (size_t i=0; i<numRows; i++)
-        for (size_t j=0; j<numCols; j++)
-            value[i][j] = x;
+    for ( size_t i = 0; i < length[0]; i++ )
+        matrix.push_back( VectorReal( length[1], x ) );
 }
+
 
 /** Construct matrix from a two-dimensional set of STL vectors */
-MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : RbComplex() {
+MatrixReal::MatrixReal( const std::vector<std::vector<double> >& x ) : Matrix( Real_name ) {
 
-    value = x;
-    numRows = value.size();
-    numCols = value[0].size();
-    for (size_t i=0; i<value.size(); i++)
-        {
-        if (value[i].size() != numCols)
-            throw RbException("Attempted to initialize a matrix using a jagged matrix");
-        }
+    size_t numRows = x.size();
+    size_t numCols = x[0].size();
+    for ( size_t i = 1; i < x.size(); i++ ) {
+        if ( x[i].size() != numCols )
+            throw RbException( "Invalid attempt to initialize a matrix container using a jagged matrix" );
+    }
+
+    length[0] = numRows;
+    length[1] = numCols;
+
+    for ( size_t i = 0; i < length[0]; i++ )
+        matrix.push_back( VectorReal( x[i] ) );
 }
 
-/*!
+
+/** Construct matrix from a length specification [ nRows, nCols ] and a single vector of values */
+MatrixReal::MatrixReal( const std::vector<int>& len, const std::vector<double>& x ) : Matrix( Real_name ) {
+
+    if ( len[0] < 1 || len[1] < 1 )
+        throw RbException( "Nonpositive length(s) for " + Real_name + "[][]" );
+
+    length = len;
+
+    size_t index = 0;
+    for ( int i = 0; i < len[0]; i++ ) {
+        VectorReal y;
+        for ( int j=0; j < len[1]; j++ ) {
+            y.push_back( x[index++] );
+        }
+        matrix.push_back( y );
+    }
+}
+
+
+/** Overloaded container subscript operator (const) */
+const RbObject* const& MatrixReal::operator[]( const VectorInteger& index ) const {
+
+    if ( index.size() != 2 }
+        throw RbException( "Index to " + Real_name + "[][] of wrong dimension" );
+
+    if ( index[1] >= length[0] || index[2] >= length[1] )
+        throw RbException( "Index to " + Real_name + "[][] out of bounds" );
+
+    return matrix[index[1]][index[2]];
+}
+
+/** Overloaded container subscript operator */
+RbObject*& MatrixReal::operator[]( const VectorInteger& index ) {
+
+    if ( index.size() != 2 }
+        throw RbException( "Index to " + Real_name + "[][] of wrong dimension" );
+
+    if ( index[1] >= length[0] || index[2] >= length[1] )
+        throw RbException( "Index to " + Real_name + "[][] out of bounds" );
+
+    return matrix[index[1]][index[2]];
+}
+
+
+/** Subscript operator (const) */
+const VectorReal& MatrixReal::operator[]( const size_t i ) const {
+
+    if ( i >= length[0] )
+        throw RbException( "Index to " + Real_name + "[][] out of bounds" );
+
+    return matrix[i];
+}
+
+
+/** Subscript operator */
+VectorReal& MatrixReal::operator[]( const size_t i ) {
+
+    if ( i >= length[0] )
+        throw RbException( "Index to " + Real_name + "[][] out of bounds" );
+
+    return matrix[i];
+}
+
+
+/** Overloaded container clear function */
+void VectorReal::clear( void ) {
+
+    matrix.clear();
+    length[0] = 0;
+    length[1] = 0;
+}
+
+
+/** Clone function */
+MatrixReal* MatrixReal::clone(void) const {
+
+    return new MatrixReal(*this);
+}
+
+
+/** Get class vector describing type of object */
+const VectorString& MatrixReal::getClass(void) const {
+
+    static VectorString rbClass = VectorString(MatrixReal_name) + RbComplex::getClass();
+    return rbClass;
+}
+
+
+/** Get matrix content as an STL vector of doubles */
+std::vector<double> MatrixReal::getContent( void ) const {
+
+    std::vector<double> temp;
+
+    for ( int i = 0; i < length[0]; i++ )
+        temp.push_back( matrix[i].getValue() );
+
+    return temp;
+}
+
+/** Overloaded container get element method */
+const RbObject* VectorReal::getElement( const VectorInteger& index ) const {
+
+    if ( index.size() == 0 ) {
+
+        return this;
+    }
+
+    else if ( index.size() == 1 ) {
+
+        if ( index[0] < 0 || index[0] > length[0] )
+            throw RbException( "Index out of bound for " + Real_name + "[][]" );
+        return matrix[index[0]];
+    }
+        
+    else if ( index.size() == 2 ) {
+
+        if ( index[0] < 0 || index[0] > length[0] || index[1] < 0 || index[1] > length[1] )
+            throw RbException( "Index out of bound for " + Real_name + "[][]" );
+        return matrix[index[0]][index[1]];
+    }
+
+    else
+        throw RbException( "Too many indices for " + Real_name + "[][]" );
+}
+
+
+/** Overloaded container method to get subcontainer */
+ValueContainer* getSubContainer( const VectorInteger& index ) const {
+
+    if ( index.size() > 2 )
+        throw RbException( "Too many indices for " + Real_name + "[][] subcontainer" );
+
+    // Lose irrelevant negative value(s) at back of index
+    for ( size_t i = index.size() - 1; i >= 0; i-- ) {
+        if ( index[i] < 0 )
+            index.pop_back();
+    }
+
+    if ( index.size() == 0 ) {
+
+        return this->clone();
+    }
+
+    else if ( index.size() == 1 ) {
+
+        // Row submatrix, this is easy
+        if ( index[0] > length[0] )
+            throw RbException( "Index out of bound for " + Real_name + "[][]" );
+        return matrix[index[0]].clone();
+    }
+        
+    else if ( index.size() == 2 ) {
+
+        if ( index[0] < 0 ) {
+            
+            // We want a column submatrix, which is a little tricky
+            if ( index[0] > length[0] )
+                throw RbException( "Index out of bound for " + Real_name + "[][]" );
+            
+            VectorReal* temp = new VectorReal();
+            for ( int j = 0; j < length[1]; j++ )
+                temp->push_back( matrix[index[0]][j] );
+            return temp;
+        }
+    }
+
+    throw RbException( "Too many indices for " + Real_name + "[][] subcontainer" );
+}
+
+
+/** Get matrix value as an STL vector<vector> of doubles */
+std::vector<std::vector<double> > MatrixReal::getValue( void ) const {
+
+    std::vector<std::vector<double> > temp;
+
+    for ( int i = 0; i < length[0]; i++ )
+        temp.push_back( matrix[i].getValue() );
+
+    return temp;
+}
+
+
+/** Calculates the number of digits to the left and right of the decimal point */
+bool MatrixReal::numFmt(int& numToLft, int& numToRht, std::string s) const {
+
+    int ba = 0;
+    int n[2] = { 0, 0 };
+    bool foundDecimalPoint = false;
+    for (size_t i=0; i<s.size(); i++)
+        {
+        if ( isdigit(s[i]) != 0 )
+            n[ba]++;
+        else if (s[i] == '.')
+            {
+            ba = 1;
+            foundDecimalPoint = true;
+            }
+        }
+    numToLft = n[0];
+    numToRht = n[1];
+    return foundDecimalPoint;
+}
+
+
+/** Print value for user */
+void MatrixReal::printValue(std::ostream& o) const {
+
+    int previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    // find the maximum number of digits to the left and right of the decimal place
+    int maxToLft = 0, maxToRht = 0;
+    bool foundDecimalPoint = false;
+    for (int i=0; i<length[0]; i++)
+        {
+        for (int j=0; j<length[1]; j++)
+            {
+            std::ostringstream v;
+            v << matrix[i][j];
+            int numToLft, numToRht;
+            if (numFmt(numToLft, numToRht, v.str()) == true)
+                foundDecimalPoint = true;
+            if (numToLft > maxToLft)
+                maxToLft = numToLft;
+            if (numToRht > maxToRht)
+                maxToRht = numToRht;
+            }
+        }
+
+    // print the matrix with each column of equal width and each column centered on the decimal
+    for (int i=0; i<length[0]; i++)
+        {
+        std::string lineStr = "";
+        if (i == 0)
+            lineStr += "[[ ";
+        else 
+            lineStr += pad  + " [ ";
+        for (int j=0; j<length[1]; j++)
+            {
+            std::ostringstream v;
+            v << matrix[i][j];
+            int numToLft, numToRht;
+            numFmt(numToLft, numToRht, v.str());
+            for (int k=0; k<maxToLft-numToLft; k++)
+                lineStr += " ";
+            lineStr += v.str();
+            if (numToRht == 0 && foundDecimalPoint == true)
+                lineStr += ".";
+            for (int k=0; k<maxToRht-numToRht; k++)
+                lineStr += "0";
+            if (j+1 < length[1])
+                lineStr += ", ";
+            }
+        if (i == length[0]-1)
+            lineStr += " ]]";
+        else 
+            lineStr += " ],\n";
+
+        o << lineStr;
+        //RBOUT(lineStr);
+        }
+    
+    o.setf(previousFlags);
+    o << std::setprecision(previousPrecision);
+}
+
+
+/** Overloaded container resize method */
+void MatrixReal::resize( const std::vector<int>& len ) {
+
+    if ( len.size() != 2 )
+        throw RbException( "Invalid length specification in attempt to resize " + Real_name + "[][]" );
+
+    if ( len[0] < length[0] || len[1] < length[1] )
+        throw RbException( "Invalid attempt to shrink " + Real_name "[][]" );
+
+    // First add the new rows with the right number of columns
+    for ( int i = length[0]; i < len[0]; i++ )
+        matrix.push_back( VectorReal( len[1] );
+
+    // Now add columns to the old rows
+    for ( int i = 0; i < length[0]; i++ )
+        matrix[i].resize( len[1] );
+
+    // Set new length specification
+    length = len;
+}
+
+
+/** Complete info about object */
+std::string MatrixReal::richInfo(void) const {
+
+    // TODO: Replace with something that makes sense
+    std::ostringstream o;
+    o <<  "MatrixReal: value = " ;
+    printValue(o);
+
+    return o.str();
+}
+
+
+/** Set matrix value from an STL vector<vector> of doubles */
+void MatrixReal::setValue( const std::vector<std::vector<double> >& x ) {
+
+    if ( x.size() != length[0] )
+        throw RbException( "Wrong number of rows in setting value of " + Real_name + "[][]" );
+
+    for ( size_t i = 0; i < x.size(); i++ ) {
+        if ( x[i].size() != length[1] )
+            throw RbException( "Wrong number of columns in at least one row in setting value of " + Real_name + "[][]" );
+    }
+
+    matrix.clear();
+    for ( size_t i = 0; i < length[0]; i++ )
+        matrix.push_back( VectorReal( x[i] ) );
+}
+
+
+/** Set matrix content from single STL vector of doubles */
+void MatrixReal::setContent( const std::vector<double>& x ) {
+
+    if ( x.size() != length[0]*length[1] )
+        throw RbException( "Incorrect number of elements in setting " + Real_name + "[][]" );
+
+    matrix.clear();
+
+    size_t index = 0;
+    for ( int i = 0; i < len[0]; i++ ) {
+        VectorReal y;
+        for ( int j = 0; j < len[1]; j++ ) {
+            y.push_back( x[index++] );
+        }
+        matrix.push_back( y );
+    }
+}
+
+
+/** Overloaded container setElement method */
+void MatrixReal::setElement( const VectorInteger& index, RbObject* val ) {
+
+    if ( index.size() != 2 )
+        throw RbException ( "Wrong number of indices for " + Real_name + "[][]" );
+
+    if ( index[0] < 0 || index[0] >= length[0] || index[1] < 0 || index[1] >= length[1] )
+        throw RbException( "Index out of bounds for " + getTypeSpec() );
+
+    if ( val->isType( Real_name ) )
+        matrix[index[0]][index[1]] = static_cast<Real*>( val )->getValue();
+    else
+        matrix[index[0]][index[1]] = static_cast<Real*>( val->convertTo( Real_name ) )->getValue()
+}
+
+
+/** Overloaded container setLength method */
+void MatrixReal::setLength( const std::vector<size_t>& len) {
+
+    if ( len[0] * len[1] != size() )
+        throw RbException( "New length for " + Real_name + "[][] does not have the right number of elements" );
+
+    return MatrixReal(len, getContent() );
+}
+
+
+/** Overloaded container size method */
+size_t MatrixReal::size( void ) const {
+
+    return length[0] * length[1];
+}
+
+
+
+////////////////////////////////// Global Matrix operators ///////////////////////////////////
+
+
+/**
  * This function performs addition of a scalar to
  * each element of a matrix and returns the
  * resulting matrix.
  *
- * \brief operator+ (scalar)
- * \param A Matrix
- * \param b Scalar
- * \return A + b
+ * @brief operator+ (scalar)
+ * @param A Matrix
+ * @param b Scalar
+ * @return A + b
  */
 MatrixReal operator+(const MatrixReal& A, const double& b) {
 
@@ -88,19 +457,20 @@ MatrixReal operator+(const MatrixReal& A, const double& b) {
     B = A;
 	for (int i=0; i<B.getNumRows(); i++)
 		for (int j=0; j<B.getNumCols(); j++)
-			B[i][j] = A[i][j] + b;
+			B[i][j] = A[i][j] - b;
 	return B;
 }
 
-/*!
+
+/**
  * This function performs subtraction of a scalar from
  * each element of a matrix and returns the
  * resulting matrix.
  *
- * \brief operator- (scalar)
- * \param A Matrix
- * \param b Scalar
- * \return A - b
+ * @brief operator- (scalar)
+ * @param A Matrix
+ * @param b Scalar
+ * @return A - b
  */
 MatrixReal operator-(const MatrixReal& A, const double& b) {
 
@@ -112,15 +482,15 @@ MatrixReal operator-(const MatrixReal& A, const double& b) {
 	return B;
 }
 
-/*!
+/**
  * This function performs multiplication of a scalar to
  * each element of a matrix and returns the
  * resulting matrix.
  *
- * \brief operator* (scalar)
- * \param A Matrix
- * \param b Scalar
- * \return A * b
+ * @brief operator* (scalar)
+ * @param A Matrix
+ * @param b Scalar
+ * @return A * b
  */
 MatrixReal operator*(const MatrixReal& A, const double& b) {
 
@@ -132,15 +502,15 @@ MatrixReal operator*(const MatrixReal& A, const double& b) {
 	return B;
 }
 
-/*!
+/**
  * This function performs division with a scalar of
  * each element of a matrix and returns the
  * resulting matrix.
  *
- * \brief operator/ (scalar)
- * \param A Matrix
- * \param b Scalar
- * \return A / b
+ * @brief operator/ (scalar)
+ * @param A Matrix
+ * @param b Scalar
+ * @return A / b
  */
 MatrixReal operator/(const MatrixReal& A, const double& b) {
 
@@ -152,15 +522,15 @@ MatrixReal operator/(const MatrixReal& A, const double& b) {
 	return B;
 }
 
-/*!
+/**
  * This function performs addition of a scalar to
  * each element of a matrix and returns the
  * resulting matrix.
  *
- * \brief operator+ (scalar first)
- * \param a Scalar
- * \param B Matrix
- * \return a + B
+ * @brief operator+ (scalar first)
+ * @param a Scalar
+ * @param B Matrix
+ * @return a + B
  */
 MatrixReal operator+(const double& a, const MatrixReal& B) {
 
@@ -172,15 +542,15 @@ MatrixReal operator+(const double& a, const MatrixReal& B) {
 	return A;
 }
 
-/*!
+/**
  * This function subtracts each element of a
  * a matrix from a scalar and returns the
  * resulting matrix.
  *
- * \brief operator- (scalar first)
- * \param a Scalar
- * \param B Matrix
- * \return a - B
+ * @brief operator- (scalar first)
+ * @param a Scalar
+ * @param B Matrix
+ * @return a - B
  */
 MatrixReal operator-(const double& a, const MatrixReal& B) {
 
@@ -192,15 +562,15 @@ MatrixReal operator-(const double& a, const MatrixReal& B) {
 	return A;
 }
 
-/*!
+/**
  * This function performs multiplication of a scalar to
  * each element of a matrix and returns the
  * resulting matrix.
  *
- * \brief operator* (scalar first)
- * \param a Scalar
- * \param B Matrix
- * \return a * B
+ * @brief operator* (scalar first)
+ * @param a Scalar
+ * @param B Matrix
+ * @return a * B
  */
 MatrixReal operator*(const double& a, const MatrixReal& B) {
 
@@ -212,15 +582,15 @@ MatrixReal operator*(const double& a, const MatrixReal& B) {
 	return A;
 }
 
-/*!
+/**
  * This function performs division of a scalar by
  * each element of a matrix and returns the
  * resulting matrix.
  *
- * \brief operator/ (scalar first)
- * \param a Scalar
- * \param B Matrix
- * \return a / B
+ * @brief operator/ (scalar first)
+ * @param a Scalar
+ * @param B Matrix
+ * @return a / B
  */
 MatrixReal operator/(const double& a, const MatrixReal& B) {
 
@@ -232,15 +602,15 @@ MatrixReal operator/(const double& a, const MatrixReal& B) {
 	return A;
 }
 
-/*!
+/**
  * This function performs addition of a scalar to
  * each element of a matrix in place and returns the
  * resulting matrix.
  *
- * \brief operator+= (scalar)
- * \param A Matrix
- * \param b Scalar
- * \return A += b
+ * @brief operator+= (scalar)
+ * @param A Matrix
+ * @param b Scalar
+ * @return A += b
  */
 MatrixReal &operator+=(MatrixReal& A, const double& b) {
 
@@ -250,15 +620,15 @@ MatrixReal &operator+=(MatrixReal& A, const double& b) {
 	return A;
 }
 
-/*!
+/**
  * This function performs subtraction of a scalar from
  * each element of a matrix in place and returns the
  * resulting matrix.
  *
- * \brief operator-= (scalar)
- * \param A Matrix
- * \param b Scalar
- * \return A -= b
+ * @brief operator-= (scalar)
+ * @param A Matrix
+ * @param b Scalar
+ * @return A -= b
  */
 MatrixReal &operator-=(MatrixReal& A, const double& b) {
 
@@ -268,15 +638,15 @@ MatrixReal &operator-=(MatrixReal& A, const double& b) {
 	return A;
 }
 
-/*!
+/**
  * This function performs multiplication of a scalar to
  * each element of a matrix in place and returns the
  * resulting matrix.
  *
- * \brief operator*= (scalar)
- * \param A Matrix
- * \param b Scalar
- * \return A *= b
+ * @brief operator*= (scalar)
+ * @param A Matrix
+ * @param b Scalar
+ * @return A *= b
  */
 MatrixReal &operator*=(MatrixReal& A, const double& b) {
 
@@ -286,15 +656,15 @@ MatrixReal &operator*=(MatrixReal& A, const double& b) {
 	return A;
 }
 
-/*!
+/**
  * This function performs division with a scalar of
  * each element of a matrix in place and returns the
  * resulting matrix.
  *
- * \brief operator/= (scalar)
- * \param A Matrix
- * \param b Scalar
- * \return A /= b
+ * @brief operator/= (scalar)
+ * @param A Matrix
+ * @param b Scalar
+ * @return A /= b
  */
 MatrixReal &operator/=(MatrixReal& A, const double& b) {
 
@@ -304,15 +674,15 @@ MatrixReal &operator/=(MatrixReal& A, const double& b) {
 	return A;
 }
 
-/*!
+/**
  * This function performs elementwise addition of two
  * matrices and returns the resulting matrix. If the
  * matrices are not conformant, a null matrix is returned.
  *
- * \brief operator+
- * \param A Matrix 1
- * \param B Matrix 2
- * \return A + B, null matrix on failure
+ * @brief operator+
+ * @param A Matrix 1
+ * @param B Matrix 2
+ * @return A + B, null matrix on failure
  */
 MatrixReal operator+(const MatrixReal& A, const MatrixReal& B) {
 
@@ -332,15 +702,15 @@ MatrixReal operator+(const MatrixReal& A, const MatrixReal& B) {
         }
 }
 
-/*!
+/**
  * This function performs elementwise subtraction of two
  * matrices and returns the resulting matrix. If the
  * matrices are not conformant, a null matrix is returned.
  *
- * \brief operator-
- * \param A Matrix 1
- * \param B Matrix 2
- * \return A - B, null matrix on failure
+ * @brief operator-
+ * @param A Matrix 1
+ * @param B Matrix 2
+ * @return A - B, null matrix on failure
  */
 MatrixReal operator-(const MatrixReal& A, const MatrixReal& B) {
 
@@ -360,7 +730,7 @@ MatrixReal operator-(const MatrixReal& A, const MatrixReal& B) {
         }
 }
 
-/*!
+/**
  * Compute C = A*B, where C[i][j] is the dot-product of 
  * row i of A and column j of B. Note that this operator
  * does not perform elementwise multiplication. If the 
@@ -369,10 +739,10 @@ MatrixReal operator-(const MatrixReal& A, const MatrixReal& B) {
  * is different from the number of rows of B), the function
  * returns a null matrix.
  *
- * \brief Matrix multiplication
- * \param A An (m X n) matrix
- * \param B An (n X k) matrix
- * \return A * B, an (m X k) matrix, or null matrix on failure
+ * @brief Matrix multiplication
+ * @param A An (m X n) matrix
+ * @param B An (n X k) matrix
+ * @return A * B, an (m X k) matrix, or null matrix on failure
  */
 MatrixReal operator*(const MatrixReal& A, const MatrixReal& B) {
 
@@ -393,16 +763,16 @@ MatrixReal operator*(const MatrixReal& A, const MatrixReal& B) {
 	return C;
 }
 
-/*!
+/**
  * This function performs elementwise addition on two
  * matrices and puts the result in the first matrix.
  * If the two matrices are nonconformant, the first
  * matrix is left intact.
  *
- * \brief operator+=
- * \param A Matrix 1
- * \param B Matrix 2
- * \return A += B, A unmodified on failure
+ * @brief operator+=
+ * @param A Matrix 1
+ * @param B Matrix 2
+ * @return A += B, A unmodified on failure
  */
 MatrixReal&  operator+=(MatrixReal& A, const MatrixReal& B) {
 
@@ -419,16 +789,16 @@ MatrixReal&  operator+=(MatrixReal& A, const MatrixReal& B) {
 	return A;
 }
 
-/*!
+/**
  * This function performs elementwise subtraction on two
  * matrices and puts the result in the first matrix.
  * If the two matrices are nonconformant, the first
  * matrix is left intact.
  *
- * \brief operator-=
- * \param A Matrix 1
- * \param B Matrix 2
- * \return A -= B, A unmodified on failure
+ * @brief operator-=
+ * @param A Matrix 1
+ * @param B Matrix 2
+ * @return A -= B, A unmodified on failure
  */
 MatrixReal&  operator-=(MatrixReal& A, const MatrixReal& B) {
 
@@ -445,7 +815,7 @@ MatrixReal&  operator-=(MatrixReal& A, const MatrixReal& B) {
 	return A;
 }
 
-/*!
+/**
  * Compute C = A*B, where C[i][j] is the dot-product of 
  * row i of A and column j of B. Then assign the result to
  * A. Note that this operator does not perform elementwise
@@ -479,306 +849,4 @@ MatrixReal &operator*=(MatrixReal& A, const MatrixReal& B) {
 	return A;
 }
 
-/** Clone function */
-MatrixReal* MatrixReal::clone(void) const {
-
-    return new MatrixReal(*this);
-}
-
-
-/** Pointer-based equals comparison */
-bool MatrixReal::equals(const RbObject* obj) const {
-
-    // Check type first
-    if ( !obj->isType( MatrixReal_name ) )
-        return false;
-
-    // Now go through all elements
-    const MatrixReal& temp = *((MatrixReal*)(obj));
-
-    if ( temp.numRows != numRows || temp.numCols != numCols )
-        return false;
-
-    for ( size_t i=0; i<numRows; i++)
-        for ( size_t j=0; j<numCols; j++ )
-            if ( RbMath::compApproximatelyEqual(temp[i][j], value[i][j], 0.0000001) == false )
-                return false;
-            
-    return true;
-}
-
-/** Get class vector describing type of object */
-const VectorString& MatrixReal::getClass(void) const {
-
-    static VectorString rbClass = VectorString(MatrixReal_name) + RbComplex::getClass();
-    return rbClass;
-}
-
-/**
- * Get element for parser (read-only). Since MatrixReal is implemented as a vector
- * of vectors, the object returned should be a VectorReal.
- */
-const RbObject* MatrixReal::getElement(const VectorInteger& index) const {
-
-    static VectorReal x;
-    static Real y;
-
-    // The parser might want to access a row vector or a matrix element
-    if ( index.size() == 1 ) {
-        if ( index[0] < 0 || index[0] >= (int)numRows )
-            throw RbException("Row index out of bounds");
-        x = value[index[0]];
-        return &x;
-    }
-    else if ( index.size() == 2 ) {
-        if ( index[0] < 0 || index[0] >= (int)numRows )
-            throw RbException("Row index out of bounds");
-        if ( index[1] < 0 || index[1] >= (int)numCols )
-            throw RbException("Column index out of bounds");
-        y = value[index[0]][index[1]];
-        return &y;
-    }
-    else
-        throw (RbException("Index error in " + MatrixReal_name));
-
-    return NULL;
-}
-
-/** Get element type for parser */
-const std::string& MatrixReal::getElementType(void) const {
-
-    static std::string rbType = VectorReal_name;
-    return rbType;
-}
-
-/** Get element length for parser */
-const VectorInteger& MatrixReal::getLength(void) const {
-
-    static VectorInteger length = VectorInteger(0);
-
-    length[0] = int(value.size());
-    return length;
-}
-
-
-/** Calculates the number of digits to the left and right of the decimal point */
-bool MatrixReal::numFmt(int& numToLft, int& numToRht, std::string s) const {
-
-    int ba = 0;
-    int n[2] = { 0, 0 };
-    bool foundDecimalPoint = false;
-    for (size_t i=0; i<s.size(); i++)
-        {
-        if ( isdigit(s[i]) != 0 )
-            n[ba]++;
-        else if (s[i] == '.')
-            {
-            ba = 1;
-            foundDecimalPoint = true;
-            }
-        }
-    numToLft = n[0];
-    numToRht = n[1];
-    return foundDecimalPoint;
-}
-
-/** Allow the parser to resize the matrix */
-void MatrixReal::resize(const VectorInteger& len) {
-
-    // Catch errors
-    if (len.size() != 1 && len.size() != 2)
-        throw (RbException("Length specification error"));
-    for (size_t i=0; i<len.size(); i++)
-        if (len[i] < 0)
-            throw (RbException("Negative length specification"));
-
-    // Record old size
-    size_t oldNRows = numRows;
-    size_t oldNCols = numCols;
-
-    // Resize vectors
-    value.resize(len[0]);
-    if ( len.size() == 2 ) {
-        for ( size_t i=0; i<numCols; i++ )
-            value[i].resize(len[1]);
-    }
-    
-    // Record new size
-    numRows = len[0];
-    numCols = len[1];
-
-    // Fill new cells with NaN
-    for (size_t i=0; i<oldNRows; i++)
-        for (size_t j=oldNCols; j<numCols; j++)
-            value[i][j] = std::numeric_limits<double>::quiet_NaN();
-    for (size_t i=oldNRows; i<numRows; i++)
-        for (size_t j=0; j<numCols; j++)
-            value[i][j] = std::numeric_limits<double>::quiet_NaN();
-}
-
-/** Allow parser to set an element (any type conversion is done by parser) */
-void MatrixReal::setElement(const VectorInteger& index, RbObject* val) {
-
-    // Catch errors
-    if ( index.size() != 1 && index.size() != 2 )
-        throw (RbException("Index error"));
-    if ( index.size() == 1 && !val->isType(VectorReal_name) )
-        throw (RbException("Type mismatch"));
-    if ( index.size() == 2 && !val->isType(Real_name) )
-        throw (RbException("Type mismatch"));
-
-    // Resize if necessary
-    if ( index[0] >= (int)numRows || (index.size() == 2 && index[1] >= (int)numCols) ) {
-
-        VectorInteger newLen;
-        if (index[0] >= (int)numRows)
-            newLen.push_back(index[0] + 1);
-        else
-            newLen.push_back(numRows);
-
-        if (index.size() == 2 && index[1] >= (int)numCols)
-            newLen.push_back(index[1] + 1);
-        else
-            newLen.push_back(numCols);
-
-        resize(newLen);
-    }
-
-    // Parser may want to set a row vector or an element
-    if ( index.size() == 1 ) {
-        VectorReal* vec = dynamic_cast<VectorReal*>(val);
-        
-        if ( vec->size() != numCols )
-            throw RbException("Row vector has wrong number of elements");
-
-        for (size_t j=0; j<numCols; j++)
-            value[index[0]][j] = (*vec)[j];
-
-        delete val;
-    }
-    else if ( index.size() == 2 ) {
-        value[index[0]][index[1]] = ((Real*)(val))->getValue();
-        delete val;
-    }
-}
-
-/** Allow parser to rearrange the matrix */
-void MatrixReal::setLength(const VectorInteger& len) {
-
-    // If just one dimension, we don\t do anything
-    if ( len.size() == 1 && len[0] != numRows )
-        throw (RbException("Length specification error"));
-
-    // If two dimensions, we rearrange the matrix
-    if ( len.size() == 2 && (len[0] != numRows || len[1] != numCols) ) {
-
-        if ( len[0] * len[1] != numRows * numCols )
-            throw RbException("New length specification does not match number of elements");
-
-        // Create temp vector
-        std::vector<std::vector<double> >   temp;
-        temp.resize(len[0]);
-        for (int i=0; i<len[0]; i++)
-            temp[i].resize(len[1]);
-
-        // Set the temp vector
-        size_t index = 0;
-        for (int i=0; i<len[0]; i++) {
-            for (int j=0; j<len[1]; j++) {
-                temp[i][j] = value[index/numCols][index%numCols];
-                ++index;
-            }
-        }
-        // Reset the value
-        numRows = len[0];
-        numCols = len[1];
-        value = temp;
-    }
-}
-
-/** Set the value of the matrix */
-void MatrixReal::setValue(const std::vector<std::vector<double> >& x) { 
-
-    value = x; 
-    numRows = value.size();
-    numCols = value[0].size();
-    for (size_t i=0; i<value.size(); i++)
-        {
-        if (value[i].size() != numCols)
-            throw RbException("Attempted to initialize a matrix using a jagged matrix");
-        }
-}
-
-/** Print value for user */
-void MatrixReal::printValue(std::ostream& o) const {
-
-    int previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
-    
-    // find the maximum number of digits to the left and right of the decimal place
-    int maxToLft = 0, maxToRht = 0;
-    bool foundDecimalPoint = false;
-    for (size_t i=0; i<value.size(); i++)
-        {
-        for (size_t j=0; j<value[i].size(); j++)
-            {
-            std::ostringstream v;
-            v << value[i][j];
-            int numToLft, numToRht;
-            if (numFmt(numToLft, numToRht, v.str()) == true)
-                foundDecimalPoint = true;
-            if (numToLft > maxToLft)
-                maxToLft = numToLft;
-            if (numToRht > maxToRht)
-                maxToRht = numToRht;
-            }
-        }
-
-    // print the matrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i<value.size(); i++)
-        {
-        std::string lineStr = "";
-        if (i == 0)
-            lineStr += "[[ ";
-        else 
-            lineStr += pad  + " [ ";
-        for (size_t j=0; j<value[i].size(); j++)
-            {
-            std::ostringstream v;
-            v << value[i][j];
-            int numToLft, numToRht;
-            numFmt(numToLft, numToRht, v.str());
-            for (int k=0; k<maxToLft-numToLft; k++)
-                lineStr += " ";
-            lineStr += v.str();
-            if (numToRht == 0 && foundDecimalPoint == true)
-                lineStr += ".";
-            for (int k=0; k<maxToRht-numToRht; k++)
-                lineStr += "0";
-            if (j+1 < value[i].size())
-                lineStr += ", ";
-            }
-        if (i == value.size()-1)
-            lineStr += " ]]";
-        else 
-            lineStr += " ],\n";
-
-        o << lineStr;
-        //RBOUT(lineStr);
-        }
-    
-    o.setf(previousFlags);
-    o << std::setprecision(previousPrecision);
-}
-
-/** Complete info about object */
-std::string MatrixReal::richInfo(void) const {
-
-    // TODO: Replace with something that makes sense
-    std::ostringstream o;
-    o <<  "MatrixReal: value = " ;
-    printValue(o);
-
-    return o.str();
-}
-
+#endif

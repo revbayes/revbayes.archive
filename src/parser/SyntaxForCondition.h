@@ -17,7 +17,7 @@
 #define SyntaxForCondition_H
 
 #include "Container.h"
-#include "DAGNodePlate.h"
+#include "ContainerNode.h"
 #include "VectorInteger.h"
 #include "SyntaxElement.h"
 
@@ -52,7 +52,7 @@ class SyntaxForCondition : public SyntaxElement {
     protected:
         RbString*               varName;                                                            //!< The name of the loop variable
         SyntaxElement*          inExpression;                                                       //!< The in expression (a vector of values)
-        DAGNodePlate*           vector;                                                             //!< Vector result of 'in' expression
+        ContainerNode*          vector;                                                             //!< Vector result of 'in' expression
         bool                    wasLoopVariableReference;                                           //!< Was loop variable reference before loop?
         int                     nextElement;                                                        //!< Next element in vector
 

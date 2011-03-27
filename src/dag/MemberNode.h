@@ -48,7 +48,6 @@ class MemberNode : public DeterministicNode {
         MemberNode*             mutateTo(const TypeSpec& typeSpec);                                         //!< Mutate to language type typeSpec
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
-
         // MemberNode functions
         const TypeSpec&         getMemberTypeSpec(const RbString& name) const;                              //!< Get type spec of a named member variable
         MemberObject*           getMemberObject(void) { return memberObject; }                              //!< Get member object 

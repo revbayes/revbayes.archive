@@ -44,13 +44,14 @@ class DAGNode {
         const std::string               getName(void) const;                                                    //!< Get name from slot and children
         const std::string&              getDAGType(void) const;                                                 //!< Get DAG node type
         const std::string&              getValueType(void) const { return valueType; }                          //!< Get value type
-        const TypeSpec                  getTypeSpec(void) const;                                                //!< Get type specification for value
+        const TypeSpec                  getTypeSpec(void) const;                                                //!< Get language type specification for value
         bool                            isDAGType(const std::string& type) const;                               //!< Is DAG node of type?
         bool                            isTemp(void) const;                                                     //!< Is the node a temp variable?
 
         // Functions you may want to override
         virtual int                     getDim(void) const { return 0; }                                        //!< Get dim (0 for scalar, 1 for vector, etc)
         virtual DAGNode*                getReference(void) { return this; }                                     //!< Get reference to variable, override if lookup or fxn
+        virtual int                     getSize(void) const { return 1; }                                       //!< Total number of elements (default is 1, only different for ContainerNode)
         virtual const DAGNode*          getVarElement(const VectorInteger& index) const;                        //!< Get variable element
         virtual void                    setElement(const VectorInteger& index, DAGNode* var);                   //!< Set variable element
 

@@ -30,29 +30,30 @@ class VectorString;
 class Boolean : public RbObject {
 
     public:
-                                    Boolean(void);                                   //!< Default constructor
-                                    Boolean(const bool v);                           //!< Construct from bool
+        friend class            VectorBoolean;                                                  //!< Give VectorBoolean direct access to value
+
+                                Boolean(void);                                                  //!< Default constructor
+                                Boolean(const bool v);                                          //!< Construct from bool
+
+        // Operators
+                                operator bool(void) const { return value; }                     //!< Type conversion to bool
 
         // Basic utility functions
-        RbObject*                   clone(void) const;                               //!< Clone object
-        bool                        equals(const RbObject* obj) const;               //!< Equals comparison
-        const VectorString&         getClass(void) const;                            //!< Get class vector
-        void                        printValue(std::ostream& o) const;               //!< Print value (for user)
-        std::string                 richInfo(void) const;                            //!< Complete info about object
-
-        // Type conversion
-        RbObject*                   convertTo(const std::string& type, int dim=0) const;                        //!< Convert to type and dim
-        bool                        isConvertibleTo(const std::string& type, int dim=0, bool once=false) const; //!< Is convertible to type and dim?
-                                    operator bool(void) const { return value; }      //!< Type conversion to bool
+        Boolean*                clone(void) const;                                              //!< Clone object
+        RbObject*               convertTo(const std::string& type, int dim) const;              //!< Convert to language object of type and dim
+        const VectorString&     getClass(void) const;                                           //!< Get class vector
+        bool                    isConvertibleTo(const std::string& type, int dim, bool once) const;     //!< Is convertible to language object of type typeSpec?
+        void                    printValue(std::ostream& o) const;                              //!< Print value (for user)
+        std::string             richInfo(void) const;                                           //!< Complete info about object
 
         // Getters and setters
-        void                        setValue(bool x) { value = x; }                  //!< Set value
-        bool                        getValue(void) const { return value; }           //!< Get value
-
-	protected:
+        void                    setValue(bool x) { value = x; }                                 //!< Set value
+        bool                    getValue(void) const { return value; }                          //!< Get value
 
     private:
-        bool                        value;                                           //!< Value member
+        bool&                   getValueRef(void) { return value; }                             //!< Get value reference
+
+        bool                    value;                                                          //!< Value member
 };
 
 #endif

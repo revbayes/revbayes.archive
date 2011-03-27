@@ -20,8 +20,7 @@
 
 
 /** Constructor from string */
-RbString::RbString(const std::string& v) 
-    : RbComplex(), value(v) {
+RbString::RbString(const std::string& v) : RbObject() {
 }
 
 
@@ -46,21 +45,10 @@ RbString* RbString::clone() const {
 }
 
 
-/** Equals comparison */
-bool RbString::equals(const RbObject* obj) const {
-
-    const RbString* p = dynamic_cast<const RbString*>(obj);
-    if (p == NULL)
-        return false;
-
-	return (p->value == value);
-}
-
-
 /** Get class vector describing type of object */
 const VectorString& RbString::getClass() const {
 
-    static VectorString rbClass = VectorString(RbString_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(RbString_name) + RbObject::getClass();
     return rbClass;
 }
 
