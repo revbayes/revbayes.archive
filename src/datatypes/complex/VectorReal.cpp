@@ -22,6 +22,7 @@
 #include "Real.h"
 #include "VectorInteger.h"
 #include "VectorReal.h"
+#include "VectorRealPos.h"
 #include "VectorString.h"
 
 #include <cmath>
@@ -58,6 +59,15 @@ VectorReal::VectorReal(const std::vector<double>& x) : Vector(Real_name) {
 
     for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++)
         elements.push_back(new Real(*i));
+    length[0] = elements.size();
+}
+
+
+/** Constructor from VectorRealPos */
+VectorReal::VectorReal( const VectorRealPos& x ) : Vector( Real_name ) {
+
+    for ( size_t i = 0; i < x.size(); i++ )
+        elements.push_back( new Real( x[i] ) );
     length[0] = elements.size();
 }
 

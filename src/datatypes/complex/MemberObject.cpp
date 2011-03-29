@@ -97,6 +97,18 @@ const VectorString& MemberObject::getClass(void) const {
 }
 
 
+/**
+ * Get subscript element. We are responsible for finding element
+ * index[0] using our subscript operator. If there are more indices
+ * in the index array, we delegate the job to our subelement
+ * after removing index[0] from the index array.
+ */
+DAGNode* MemberObject::getSubelement( VectorInteger& index ) const {
+
+    throw RbException( "Object does not support subscripting" );
+}
+
+
 /** Get value of a member variable */
 const RbObject* MemberObject::getValue(const std::string& name) {
 

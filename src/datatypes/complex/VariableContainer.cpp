@@ -16,6 +16,7 @@
  */
 
 #include "ConstantNode.h"
+#include "ContainerNode.h"
 #include "Boolean.h"
 #include "Integer.H"
 #include "MatrixReal.h"
@@ -71,7 +72,7 @@ VariableContainer::VariableContainer( size_t n, DAGNode* x )
  * to flatten it out, which would violate the length specification,
  * among other problems.
  */
-VariableContainer::VariableContainer( const std::vector<int>& len, DAGNode* x )
+VariableContainer::VariableContainer( const std::vector<size_t>& len, DAGNode* x )
     : Container( TypeSpec( x->getValueType(), len.size() ) ) {
 
     // Check that length specification and input object are OK
@@ -110,7 +111,7 @@ VariableContainer::VariableContainer( const TypeSpec& typeSpec ) : Container( ty
  * will make sure the type is consistent, that is, that the caller does not
  * try to create a container of containers.
  */
-VariableContainer::VariableContainer( const TypeSpec& typeSpec , const std::vector<int>& len )
+VariableContainer::VariableContainer( const TypeSpec& typeSpec , const std::vector<size_t>& len )
     : Container( typeSpec ) {
 
     // Check that length specification is OK
@@ -215,7 +216,7 @@ void VariableContainer::clear(void) {
             delete elements[i];
     }
     elements.clear();
-    for ( std::vector<int>::iterator i = length.begin(); i != length.end(); i++ )
+    for ( std::vector<size_t>::iterator i = length.begin(); i != length.end(); i++ )
         (*i) = 0;
 }
 
@@ -292,265 +293,114 @@ ValueContainer* VariableContainer::getConstValue( void ) {
         return NULL;
     }
     else
-        return new ValueContainer( this );
-}
-
-
-/** Get element (read-only) */
-const RbObject* VariableContainer::getElement( const VectorInteger& index ) const {
-
-    // Check that the index is not to a subcontainer
-    if ( index.size() < length.size() )
-        throw RbException( "Invalid index to element" );
-
-    if ( index.size() == length.size() ) {
-    
-        // The index is to a variable, so it is easy
-        return elements[ getOffset( index ) ]->getValue();
-    }
-    else {
-    
-        // The index goes into the subscripts of a value
-        // so it is a little more involved to get the element
-
-        // First, split the index up
-        VectorInteger containerIndex;
-        VectorInteger subscriptIndex;
-        getContainerSubscriptIndices( index, containerIndex, subscriptIndex );
-
-        // Get the variable
-        DAGNode* theVariable = elements[ getOffset( containerIndex ) ];
-
-        // Ask the variable to give us the value element
-        return theVariable->getValElement( subscriptIndex );
-    }
-}
-
-
-/** Get element from vector of elements (read-only) */
-const RbObject* VariableContainer::getElement( size_t i ) const {
-
-    // Check that the index is within bounds
-    if ( i > elements.size() )
-        throw RbException( "Content element index out of bound" );
-
-    return elements[i]->getValue();
+        return new ValueContainer( *this );
 }
 
 
 /**
- * Get subcontainer corresponding to index, which can have fewer dimensions than
- * length. Also, the index can be negative for some of the dimensions, indicating
- * that all elements in that dimension should be included in the subcontainer.
+ * Get element or subcontainer corresponding to index, which can have fewer dimensions
+ * or more dimensions than length. Also, the index can be negative for some of the dimensions,
+ * indicating that all elements in that dimension should be included in the return variable,
+ * which is then itself a container.
  */
-VariableContainer* VariableContainer::getSubContainer( const VectorInteger& index ) const {
+DAGNode* VariableContainer::getElement( VectorInteger& index ) {
 
-    // Check that we have an index to a subcontainer
-    if ( index.size() == 0 )
-        throw RbException( "Index to subcontainer empty" );
-    if ( index.size() >= length.size() )
-        throw RbException( "Invalid index to subcontainer" );
-    for ( size_t i = 0; i < index.size(); i++ ) {
-        if ( index[i] >= length[i] )
-            throw RbException( "Subcontainer index out of bound" );
-    }
-
-    // Get the number of elements in the subcontainer and its length and dim
-    // Get the index to the first included element at the same time
-    std::vector<int>    tempLen;
-    VectorInteger       tempIndex;
-    size_t size = 1;
-    for ( size_t i = 0; i < length.size(); i++ ) {
-        
-        if ( ( i < index.size() && index[i] < 0 ) || ( i >= index.size() ) ) {
-            tempLen.push_back( length[i] );
-            size *= length[i];
-            tempIndex.push_back( 0 );           // An index we should vary
-        }
+    // Drop any negative indices at the end of the index vector because they do not matter.
+    // Also count number of negative indices that pertain to this container
+    for ( size_t i = index.size() - 1; i >= 0; i-- ) {
+        if ( index[i] < 0)
+            index.pop_back();
         else
-            tempIndex.push_back( index[i] );    // An index to keep fixed to index[i]
+            break;
+    }
+    size_t numNegativeIndices = 0;
+    for ( size_t i = 0; i < index.size(); i-- ) {
+        if ( index[i] < 0)
+            numNegativeIndices++;
     }
 
-    // Check that we have at least some elements in the subcontainer
-    if ( tempLen.size() == 0 || size == 1 )
-        throw RbException( "Empty subcontainer" );
+    // Check that all relevant indices are within bounds
+    size_t min = index.size() < length.size() ? index.size() : length.size();
+    for ( size_t i = 0; i < min; i++ ) {
     
-    // Create the subcontainer (empty at first is probably best option)
-    VariableContainer* temp = new VariableContainer( TypeSpec( elementType, tempLen.size() ) );
-
-    // Now extract the elements
-    size_t fromIndex = getOffset( tempIndex );
-    for ( ; ; ) {
-    
-        // Set toIndex to fromIndex, keep track of number of locked dimensions in tempIndex
-        size_t  toIndex     = fromIndex;
-        size_t  numLocks    = length.size() - tempLen.size(); 
-
-        // Increment tempIndex and toIndex until next nonincluded element or the end of the array
-        for ( toIndex = fromIndex; toIndex < elements.size(); toIndex++ ) {
-        
-            // Check if we are still inside the subcontainer
-            if ( numLocks < length.size() - tempLen.size() )
-                break;
-
-            size_t i;
-            for ( i = tempIndex.size() - 1; i >= 0; i-- ) {
-                
-                if ( i < index.size() && tempIndex[i] == index[i] )
-                    numLocks--;
-
-                tempIndex[i]++;
-                if ( tempIndex[i] == length[i] )
-                    tempIndex[i] = 0;
-
-                if ( tempIndex[i] != 0)
-                    break;
-            }
-        }
-        
-        // Add vector of elements from fromIndex to (but not including) toIndex
-        for ( size_t i = fromIndex; i < toIndex; i++ )
-            temp->elements.push_back( elements[i]->clone() );
-
-        // Increment tempIndex and fromIndex until next included element or the end of the array
-        for ( fromIndex = toIndex; fromIndex < elements.size(); fromIndex++ ) {
-        
-            // Check if we now have an included element
-            if ( numLocks == length.size() - tempLen.size() )
-                break;
-
-            size_t i;
-            for ( i = tempIndex.size() - 1; i >= 0; i-- ) {
-                
-                // Find out whether we will decrease the number of locks
-                if ( i < index.size() && tempIndex[i] == index[i] )
-                        numLocks--;
-
-                tempIndex[i]++;
-                if ( tempIndex[i] == length[i] )
-                    tempIndex[i] = 0;
-
-                // Find out whether we increased the number of locks
-                if ( i < index.size() && tempIndex[i] == index[i] )
-                        numLocks++;
-                
-                if ( tempIndex[i] != 0 )
-                    break;
-            }
-        }
+        if ( index[i] >= int( length[i] ) )
+            throw RbException( "Index out of bounds" );
     }
 
-    // Check that we have all elements
-    assert( temp->elements.size() == size );
+    // Branch out depending on the number of indices
+    if ( index.size() > length.size() ) {
 
-    // We now set length of the subcontainer, and then we are done
-    temp->length = tempLen;
-
-    return temp;
-}
-
-
-/** Set value element or elements from value */
-void VariableContainer::setElement( const VectorInteger& index, RbObject* val ) {
-
-    // Resize but only if it is an assignment to a container element
-    if ( index.size() == length.size() ) {
-
-        std::vector<int>    tempLen  = length;
-        bool                growSize = false;
-
-        for ( size_t i = 0; i < index.size(); i++ ) {
-            
-            if ( index[i] >= tempLen[i] ) {
-                tempLen[i] = index[i] + 1;
-                growSize = true;
+        // Index goes into elements; check that it actually points to an element
+        for ( size_t i = 0; i < length.size(); i++ ) {
+            if ( index[i] < 0 ) {
+                std::ostringstream msg;
+                msg << "Invalid index into subcontainer element of " << getTypeSpec();
+                throw RbException( msg );
             }
         }
 
-        if ( growSize )
-            resize( tempLen );
-    }
+        VectorNatural elemIndex  = index;
+        VectorNatural valueIndex;
+        size_t i = 0;
+        for ( i = index.size(); i < length.size(); i++ )
+            elemIndex.push_back( index[i] );
+        for ( ; i < index.size(); i++ )
+            valueIndex.push_back( index[i] );
 
-    // Get container and subscript indices
-    VectorInteger   containerIndex;
-    VectorInteger   subscriptIndex;
-    getContainerSubscriptIndices( index, containerIndex, subscriptIndex );
-
-    // Get offset; also checks for errors in index
-    size_t offset = getOffset( containerIndex );
-
-    // Branch depending on index of call
-    if ( containerIndex.size() < length.size() ) {
-
-        /* TODO: Do we want to allow this? See code below if we do */
-        throw RbException( "Invalid assignment to subcontainer" );
-
-        // Check that the source is a container
-        if ( !val->isType( RbComplex_name ) )
-            throw RbException( "Source does not have elements" );
-        RbComplex* source = dynamic_cast<RbComplex*>( val );
-    
-        // Count number of elements
-        const std::vector<int>& sourceLen           = source->getLength();
-        int                     numSourceElements   = 1;
-        int                     numTargetElements   = 1;
-
-        for ( size_t i = 0; i < sourceLen.size(); i++ )
-            numSourceElements *= sourceLen[i];
-
-        for ( size_t i = index.size(); i < length.size(); i++ )
-            numTargetElements *= length[i];
-
-        // Throw an error if a mismatch
-        if ( numSourceElements != numTargetElements )
-            throw RbException("Unequal source and target sizes");
-
-        // Cycle through assignments
-        for ( ContainerIterator i = source->begin(); i != source->end(); ++i ) {
-
-            // Do the assignment. Note that we want to do type checking
-            // here to allow assignment when the source elements have the
-            // right type regardless of what the general return type of
-            // the 'subscript operator' (getElement) of the source object might be
-            const RbObject* elem = source->getElement( i );
-            if ( elem == NULL || elem->isType( elementType ) ) {
-                delete elements[offset];
-                if ( elem == NULL )
-                    elements[offset] = new ConstantNode( elementType );
-                else if ( elem->isType( MemberObject_name ) )
-                    elements[offset] = new MemberNode( static_cast<MemberObject*>( elem->clone() ) );
-                else
-                    elements[offset] = new ConstantNode( elem->clone() );
-            }
-            else
-                throw RbException( "Incompatible types in subcontainer assignment" );
-
-            // Increase offset for target elements
-            offset++;
+        DAGNode* elemPtr = elements[ getOffset( elemIndex ) ];
+        if ( !elemPtr->isDAGType( MemberNode_name ) )
+            throw RbException( "Container element does not support subscripting" );
+        else {
+            // truncate index and delegate job to subelement
+            index = valueIndex;
+            return static_cast<const MemberObject*>( elemPtr->getValue() )->getSubelement( index );
         }
-
-        delete val;     // We are responsible for deleting the input container
     }
-    else if ( subscriptIndex.size() == 0 ) {
+    else if ( index.size() == 0 ) {
 
-        // Parser wants to set a single element
-        if ( val == NULL || val->isType( elementType ) ) {
+        // We want the entire container, easy
+        return new ContainerNode( this->clone() );
+    }
+    else if ( index.size() == length.size() && numNegativeIndices == 0 ) {
 
-            if ( val == NULL )
-                elements[offset] = new ConstantNode( elementType );
-            else if (val->isType( MemberObject_name ) )
-                elements[offset] = new MemberNode( static_cast<MemberObject*>( val ) );
-            else
-                elements[offset] = new ConstantNode( val );
-        }
-        else
-            throw RbException( "Incompatible types in container element assignment" );
+        // We want an element, easy
+        return elements[ getOffset( index ) ]->clone();
     }
     else {
 
-        // Parser wants to set a subscript element
-        // We delegate to the variable element
-        elements[offset]->setElement( subscriptIndex, val );
+        // We want a subcontainer
+
+        // Get the number of elements in the subcontainer and its length and dim
+        // Get the index to the first included element at the same time
+        std::vector<size_t> tempLen;
+        VectorInteger       tempIndex;      // VectorNatural does not trust us to get l-values so we can modify its content directly...
+        size_t size = 1;
+        for ( size_t i = 0; i < length.size(); i++ ) {
+            
+            if ( ( i < index.size() && index[i] < 0 ) || ( i >= index.size() ) ) {
+                tempLen.push_back( length[i] );
+                size *= length[i];
+                tempIndex.push_back( 0 );           // An index we should vary
+            }
+            else
+                tempIndex.push_back( index[i] );    // An index to keep fixed to index[i]
+        }
+
+        // Check that we have at least some elements in the subcontainer
+        if ( tempLen.size() == 0 || size == 1 )
+            throw RbException( "Empty subcontainer" );
+        
+        // Create the subcontainer (empty at first is probably best option)
+        // We cannot assign to a subcontainer using this mechanism so it makes
+        // no sense to create a variable container; instead we create a value
+        // container by calling getConstValue() and then wrap it in a ContainerNode
+        DAGNode* temp = getConstValue()->getElement( index );
+        if ( !temp->isDAGType( ContainerNode_name ) ) {
+            delete temp;
+            throw RbException( "Unexpected return type of subcontainer expression" );
+        }
+
+        return temp;
     }
 }
 
@@ -571,7 +421,7 @@ void VariableContainer::printValue( std::ostream& o ) const {
 
 
 /** Reset container length in different dimensions */
-void VariableContainer::resize( const std::vector<int>& len ) {
+void VariableContainer::resize( const std::vector<size_t>& len ) {
 
     // Check if there is anything to do
     if ( len == length )
@@ -606,7 +456,7 @@ void VariableContainer::resize( const std::vector<int>& len ) {
     size_t  sourceIndex  = 0;
     size_t  targetIndex  = 0;
     do {
-        for ( int i = 0; i < length[length.size()-1]; i++ )
+        for ( size_t i = 0; i < length[length.size()-1]; i++ )
             tempElements[targetIndex++] = elements[sourceIndex++];
 
         size_t lastIndex = targetIndex;

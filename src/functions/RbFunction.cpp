@@ -18,9 +18,7 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "ContainerIterator.h"
 #include "DAGNode.h"
-#include "ContainerNode.h"
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "RbFunction.h"
@@ -163,13 +161,24 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, bool evalu
     /* Clear previously processed arguments */
     processedArguments.clear();
 
-    /* Check the number of arguments and get the final number we expect */
+    /* Check the number of arguments and rules; get the final number of arguments
+       we expect and the number of non-ellipsis rules we have */
     int numFinalArgs;
-    if (nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) < nRules)
-        numFinalArgs = nRules - 1;
-    else
+    int numRegularRules;
+    if (nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name)) {
+        numRegularRules = nRules - 1;
+        if ( int(args.size()) < nRules )
+            numFinalArgs = nRules - 1;
+        else
+            numFinalArgs = args.size();
+    }
+    else {
+        numRegularRules = nRules;
         numFinalArgs = nRules;
-    if ( (nRules == 0 || (nRules > 0 && !theRules[nRules-1]->isType(Ellipsis_name))) && int(args.size()) > numFinalArgs)
+    }
+
+    /* Check if we have too many arguments */
+    if ( int(args.size()) > numFinalArgs )
         return false;
 
     /* Fill processedArguments with empty variable slots */
@@ -184,29 +193,25 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, bool evalu
 
     /*********************  1. Deal with ellipsis  **********************/
 
-    /* Wrap final args into one ContainerNode object.
-       TODO: Keep labels, discarded here. We might want to keep arguments separate in the future */
+    /* Process ellipsis arguments. If we have an ellipsis, all preceding arguments must be passed in;
+       no default values are allowed. Note that the argument labels are discarded here, which is not
+       correct. */
     if ( nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && int(args.size()) >= nRules ) {
-
-        int numEllipsisArgs = int(args.size()) - nRules + 1;
-        ContainerNode* ellipsisArgs = new VariableContainer(theRules[nRules-1]->getArgType(), numEllipsisArgs);
-        ContainerIterator ellipsisIt = ellipsisArgs->begin();
 
         for (size_t i=nRules-1; i<args.size(); i++) {
 
-            const DAGNode* theDAGNode = args[i].getVariable();
+            DAGNode* theDAGNode = args[i].getVariable();
             if ( theDAGNode == NULL )
-                return false;
+                return false;   // This should never happen
             if ( !theRules[nRules-1]->isArgValid( theDAGNode, conversionNeeded, evaluateOnce ) )
                 return false;
             if ( conversionNeeded )
-                ellipsisArgs->setElement( ellipsisIt++, theRules[nRules-1]->convert( theDAGNode->clone() ) );
+                processedArguments[i].setVariable( theRules[nRules-1]->convert( theDAGNode->clone() ) );
             else
-                ellipsisArgs->setElement( ellipsisIt++, theDAGNode->clone() );
+                processedArguments[i].setVariable( theDAGNode );
             taken[i] = true;
+            filled[i] = true;
         }
-        processedArguments[numFinalArgs-1].setVariable( ellipsisArgs );
-        filled[numFinalArgs-1] = true;
     }
 
 
@@ -223,8 +228,8 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, bool evalu
         if ( args[i].getLabel().size() == 0 )
             continue;
 
-        /* Check for matches in all rules (we assume that all labels are unique; this is checked by FunctionTable) */
-        for (int j=0; j<numFinalArgs; j++) {
+        /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
+        for (int j=0; j<numRegularRules; j++) {
 
             if ( args[i].getLabel() == theRules[j]->getArgLabel() ) {
 
@@ -261,7 +266,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, bool evalu
         int matchRule = -1;
 
         /* Try all rules */
-        for (int j=0; j<numFinalArgs; j++) {
+        for (int j=0; j<numRegularRules; j++) {
 
             if ( !filled[j] && theRules[j]->getArgLabel().compare(0, args[i].getLabel().size(), args[i].getLabel()) == 0 ) {
                 ++nMatches;
@@ -295,7 +300,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, bool evalu
             continue;
 
         /* Find first empty slot and try to fit argument there */
-        for (int j=0; j<numFinalArgs; j++) {
+        for (int j=0; j<numRegularRules; j++) {
 
             if ( filled[j] == false ) {
                 if ( theRules[j]->isArgValid(args[i].getVariable(), conversionNeeded, evaluateOnce) ) {
@@ -316,7 +321,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, bool evalu
     /*********************  5. Fill with default values  **********************/
 
     /* Fill in empty slots using default values */
-    for(int i=0; i<numFinalArgs; i++) {
+    for(int i=0; i<numRegularRules; i++) {
 
         if ( filled[i] == true )
             continue;
@@ -340,10 +345,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, bool evalu
     /* Now count the score, first for normal arguments */
     matchScore->clear();
     int argIndex;
-    for(argIndex=0; argIndex<numFinalArgs; argIndex++) {
-
-        if ( theRules[argIndex]->isType(Ellipsis_name) )
-            break;
+    for(argIndex=0; argIndex<numRegularRules; argIndex++) {
 
         const VectorString& argClass = processedArguments[argIndex].getValue()->getClass();
         size_t j;
@@ -358,23 +360,20 @@ bool  RbFunction::processArguments(const std::vector<Argument>& args, bool evalu
     }
 
     /* ... then for ellipsis arguments */
-    if ( argIndex < numFinalArgs ) {
+    for ( ; argIndex < numFinalArgs; argIndex++ ) {
     
-        const ContainerNode* container = (const ContainerNode*)(processedArguments[argIndex].getVariable());
+        
+        const VectorString& argClass = processedArguments[argIndex].getValue()->getClass();
+        size_t j;
+        for (j=0; j<argClass.size(); j++)
+            if ( argClass[j] == theRules[nRules-1]->getArgType() )
+                break;
 
-        for (ContainerIterator it=container->begin(); it!=container->end(); it++) {
+        if ( j == argClass.size() )
+            matchScore->push_back(aLargeNumber);    // We needed type conversion for this argument
+        else
+            matchScore->push_back(int(j));          // No type conversion, score is distance in class vector
 
-            const VectorString& argClass = container->getValElement(it)->getClass();
-            size_t j;
-            for (j=0; j<argClass.size(); j++)
-                if ( argClass[j] == theRules[argIndex]->getArgType() )
-                    break;
-
-            if ( j == argClass.size() )
-                matchScore->push_back(aLargeNumber);    // We needed type conversion for this argument
-            else
-                matchScore->push_back(int(j));          // No type conversion, score is distance in class vector
-        }
     }
 
     return true;

@@ -107,16 +107,6 @@ const VectorString& ConstantNode::getDAGClass() const {
     return rbClass;
 }
 
-/** Get value element */
-const RbObject* ConstantNode::getValElement(const VectorInteger& index) const {
-
-    RbComplex* complexObject = dynamic_cast<RbComplex*>(value);
-    if (complexObject == NULL)
-        throw RbException("Object does not have elements");
-
-    return complexObject->getElement(index);
-}
-
 
 /**
  * @brief Is the node a constant expression?
@@ -139,28 +129,9 @@ bool ConstantNode::isMutableTo(const DAGNode* newNode) const {
 }
 
 
-/** Is it possible to mutate node to contain newValue? */
-bool ConstantNode::isMutableTo(const TypeSpec& typeSpec) const {
-
-    if ( typeSpec.getDim() > 0 )
-        return false;
-    
-    bool isMutable = false;
-
-    return isMutable;
-}
-
-
 /** Mutate to newNode */
 void ConstantNode::mutateTo(DAGNode* newNode) {
     
-    throw RbException("Not implemented yet");
-}
-
-
-/* Mutate to contain newValue */
-ConstantNode* ConstantNode::mutateTo(const TypeSpec& typeSpec) {
-
     throw RbException("Not implemented yet");
 }
 
@@ -176,10 +147,10 @@ void ConstantNode::printValue(std::ostream& o) const {
 void ConstantNode::printStruct(std::ostream &o) const {
 
     o << "Wrapper:" << std::endl;
-    o << "&.class   = " << getDAGClass() << std::endl;
-    o << "&.value   = " << value << std::endl;
-    o << "&.parents = NULL" << std::endl;
-    o << "&.children" << std::endl;
+    o << "_class   = " << getDAGClass() << std::endl;
+    o << "_value   = " << value << std::endl;
+    o << "_parents = NULL" << std::endl;
+    o << "_children" << std::endl;
     printChildren(o);
     o << std::endl;
     o << std::endl;
@@ -194,33 +165,6 @@ std::string ConstantNode::richInfo(void) const {
     value->printValue(o);
 
     return o.str();
-}
-
-
-/** Set Element */
-void ConstantNode::setElement(const VectorInteger& index, RbObject* val) {
-
-    RbComplex* complexObject = dynamic_cast<RbComplex*>(value);
-    if (complexObject == NULL)
-        throw RbException("Object does not have elements");
-
-    complexObject->setElement(index, val);
-
-    touchAffected();
-}
-
-
-/** Set value */
-void ConstantNode::setValue(RbObject* val) {
-
-    if ( val != NULL && !val->isType( getValueType() ) )
-        throw RbException("Invalid assignment: type mismatch");
-
-    if ( value != NULL )
-        delete value;
-    value = val;
-
-    touchAffected();
 }
 
 

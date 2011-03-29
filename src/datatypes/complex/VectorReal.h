@@ -25,6 +25,8 @@
 #include <iostream>
 #include <vector>
 
+class VectorRealPos;
+
 
 /**
  * @brief Class used for real vectors.
@@ -41,6 +43,7 @@ class VectorReal : public Vector {
                                     VectorReal(double x);                                       //!< Construct vector with one double x
                                     VectorReal(size_t n, double x);                             //!< Construct vector with n doubles x
                                     VectorReal(const std::vector<double>& x);                   //!< Constructor from double vector
+                                    VectorReal(const VectorRealPos& x);                         //!< Constructor from VectorRealPos
 
         // Overloaded operators
         double&                     operator[](size_t i);                                       //!< Index op allowing change

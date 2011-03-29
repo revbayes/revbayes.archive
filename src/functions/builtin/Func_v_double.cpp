@@ -19,7 +19,6 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "Container.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
@@ -29,6 +28,7 @@
 #include "RbNames.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
+#include "VariableContainer.h"
 #include "VectorString.h"
 #include "VectorReal.h"
 
@@ -48,16 +48,9 @@ DAGNode* Func_v_double::executeOperation(const std::vector<VariableSlot>& args) 
     // Create temporary vector for the ints 
     std::vector<double>    tempVec;
 
-    // Get first element
-    tempVec.push_back(((Real*)(args[0].getValue()))->getValue());
-
-    // Get following elements
-    if ( args.size() > 1 ) {
-        const Container*   elements = dynamic_cast<const Container*>(args[1].getValue());
-        for (size_t i=0; i<elements->size(); i++) {
-            tempVec.push_back(((Real*)(elements->getElement(i)))->getValue());
-        }
-    }
+    // Get elements
+    for ( size_t i = 0; i < args.size(); i++ )
+        tempVec.push_back(((Real*)(args[i].getValue()))->getValue());
 
     return new ConstantNode(new VectorReal(tempVec));
 }

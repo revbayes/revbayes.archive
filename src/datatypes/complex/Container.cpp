@@ -20,6 +20,7 @@
 #include "RbNames.h"
 #include "TypeSpec.h"
 #include "VectorInteger.h"
+#include "VectorNatural.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -57,6 +58,29 @@ Container& Container::operator=( const Container& x) {
 }
 
 
+
+/** Return begin iterator */
+ContainerIterator Container::begin(void) const {
+
+    VectorInteger temp = getLength();
+    for (size_t i=0; i<temp.size(); i++)
+        temp[i] = 0;
+
+    return ContainerIterator(temp, getLength());
+}
+
+/** Return end iterator */
+ContainerIterator Container::end(void) const {
+
+    VectorInteger temp = getLength();
+    for (size_t i=0; i<temp.size(); i++)
+        temp[i]--;
+
+    ContainerIterator tempIt(temp, getLength());
+    return ++tempIt;
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& Container::getClass(void) const {
 
@@ -85,7 +109,7 @@ const VectorString& Container::getElementClass(void) const {
 
 
 /** Get offset to element or subcontainer; also check index */
-size_t Container::getOffset( const VectorInteger& index ) const {
+size_t Container::getOffset( const VectorNatural& index ) const {
 
     if ( index.size() > length.size() )
         throw RbException( "Container index has too many dimensions" );
@@ -124,7 +148,7 @@ const TypeSpec Container::getTypeSpec( void ) const {
  * will be used when reordering the elements in this function, which allows
  * us to leave the elemnts vector untouched.
  */
-void Container::setLength( const std::vector<int>& len ) {
+void Container::setLength( const std::vector<size_t>& len ) {
 
     if ( len.size() != length.size() )
         throw RbException( "Invalid attempt to change dimensions of container" );

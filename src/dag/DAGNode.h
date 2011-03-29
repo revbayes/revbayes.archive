@@ -41,33 +41,33 @@ class DAGNode {
         virtual                        ~DAGNode(void) {}                                                        //!< Virtual destructor
 
         // Functions you should not override
-        const std::string               getName(void) const;                                                    //!< Get name from slot and children
         const std::string&              getDAGType(void) const;                                                 //!< Get DAG node type
-        const std::string&              getValueType(void) const { return valueType; }                          //!< Get value type
+        const std::string               getName(void) const;                                                    //!< Get name from slot and children
         const TypeSpec                  getTypeSpec(void) const;                                                //!< Get language type specification for value
+        const std::string&              getValueType(void) const { return valueType; }                          //!< Get value type
         bool                            isDAGType(const std::string& type) const;                               //!< Is DAG node of type?
         bool                            isTemp(void) const;                                                     //!< Is the node a temp variable?
+        bool                            isTypeSpec(const TypeSpec& typeSp) const;                               //!< Is DAG node of language type typeSpec?
 
         // Functions you may want to override
         virtual int                     getDim(void) const { return 0; }                                        //!< Get dim (0 for scalar, 1 for vector, etc)
+        virtual DAGNode*                getElement(VectorInteger& index, std::ostringstream& msg) const;        //!< Give the parser an element
+        virtual DAGNode*                getElementRef(VectorInteger& index, std::ostringstream& msg) const;     //!< Give the parser an element reference for setting value
         virtual DAGNode*                getReference(void) { return this; }                                     //!< Get reference to variable, override if lookup or fxn
         virtual int                     getSize(void) const { return 1; }                                       //!< Total number of elements (default is 1, only different for ContainerNode)
-        virtual const DAGNode*          getVarElement(const VectorInteger& index) const;                        //!< Get variable element
-        virtual void                    setElement(const VectorInteger& index, DAGNode* var);                   //!< Set variable element
+        virtual void                    setElement(VectorInteger& index, DAGNode* var);                         //!< Set variable (or value) element
 
         // Functions you have to override
         virtual DAGNode*                clone(void) const = 0;                                                  //!< Clone this node
         virtual const VectorString&     getDAGClass(void) const;                                                //!< Get DAG node class vector
-        virtual const RbObject*         getValElement(const VectorInteger& index) const = 0;                    //!< Get value element
         virtual const RbObject*         getStoredValue(void) = 0;                                               //!< Get stored value
         virtual const RbObject*         getValue(void) = 0;                                                     //!< Get value
-        virtual const RbObject*         getValue(void) const = 0;                                               //!< Get value (const)
+        virtual const RbObject*         getValue(void) const = 0;                                               //!< Get const value; throw an error or warn if in transient state
         virtual void                    printValue(std::ostream& o) const = 0;                                  //!< Print value for user
         virtual void                    printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
         virtual std::string             richInfo(void) const = 0;                                               //!< Complete info about object
-        virtual void                    setElement(const VectorInteger& index, RbObject* val) = 0;              //!< Set value element
 
-        // DAG functions you should not override
+        // DAG functions you should not have to override
         void                            addChildNode(VariableNode* c) { children.insert(c); }                   //!< Add child node
         std::set<VariableNode*>&        getChildren(void) { return children; }                                  //!< Return children
 		VariableSlot*                   getSlot(void) const { return slot; }                                    //!< Return slot managing the variable
@@ -89,9 +89,7 @@ class DAGNode {
         // DAG functions you have to override
         virtual DAGNode*                cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;             //!< Clone graph
         virtual bool                    isMutableTo(const DAGNode* newNode) const = 0;                          //!< Is node mutable to newNode?
-        virtual bool                    isMutableTo(const TypeSpec& typeSpec) const = 0;                        //!< Is node mutable to language type typeSpec?
         virtual void                    mutateTo(DAGNode* newNode) = 0;                                         //!< Mutate to new node
-        virtual DAGNode*                mutateTo(const TypeSpec& typeSpec) = 0;                                 //!< Mutate to language type typeSpec
         virtual void                    touchAffected(void) = 0;                                                //!< Tell affected nodes value is reset
 
     protected:

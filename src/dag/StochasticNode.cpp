@@ -277,16 +277,6 @@ const RbObject* StochasticNode::getStoredValue(void) {
 }
 
 
-/** Get value element */
-const RbObject* StochasticNode::getValElement(const VectorInteger& index) const {
-
-    if (value->getDim() == 0)
-        throw RbException("Object does not have elements");
-
-    return ((RbComplex*)(value))->getElement(index);
-}
-
-
 /** Get value */
 const RbObject* StochasticNode::getValue(void) {
 
@@ -319,15 +309,6 @@ RbObject* StochasticNode::getValuePtr(std::set<StochasticNode*>& affected) {
 bool StochasticNode::isMutableTo(const DAGNode* newNode) const {
 
     return false;
-}
-
-
-/** Is it possible to mutate node to language type typeSpec? */
-bool StochasticNode::isMutableTo(const TypeSpec& typeSpec) const {
-
-    bool isMutable = false;
-
-    return isMutable;
 }
 
 
@@ -382,13 +363,6 @@ void StochasticNode::mutateTo(DAGNode* newNode) {
 }
 
 
-/* Mutate to contain newValue */
-StochasticNode* StochasticNode::mutateTo(const TypeSpec& typeSpec) {
-
-    throw RbException("Not implemented yet");
-}
-
-
 /** Print struct for user */
 void StochasticNode::printStruct(std::ostream& o) const {
 
@@ -396,13 +370,13 @@ void StochasticNode::printStruct(std::ostream& o) const {
         throw RbException("Cannot print struct while in touched state");
 
     o << "Wrapper:" << std::endl;
-    o << "&.class        = " << getDAGClass() << std::endl;
-    o << "&.distribution = " << distribution << std::endl;
-    o << "&.value        = " << value << std::endl;
-    o << "&.parents = " << std::endl;
+    o << "_class        = " << getDAGClass() << std::endl;
+    o << "_distribution = " << distribution << std::endl;
+    o << "_value        = " << value << std::endl;
+    o << "_parents = " << std::endl;
     printParents(o);
     o << std::endl;
-    o << "&.children = " << std::endl;
+    o << "_children = " << std::endl;
     printChildren(o);
     o << std::endl;
     o << std::endl;
@@ -459,23 +433,6 @@ std::string StochasticNode::richInfo(void) const {
         storedValue->printValue(o);
 
     return o.str();
-}
-
-
-/** Set element: set value element */
-void StochasticNode::setElement(const VectorInteger& index, RbObject* val) {
-
-    if (clamped)
-        throw RbException("Cannot set value element of clamped node");
-
-    if (value->getDim() == 0)
-        throw RbException("Object does not have elements");
-
-    ((RbComplex*)(value))->setElement(index, val);
-    storedValue = val->clone();
-
-    for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++)
-        (*i)->touchAffected();
 }
 
 

@@ -191,14 +191,14 @@ void MemberNode::printStruct(std::ostream& o) const {
         throw RbException("Cannot print struct while in touched state");
 
     o << "DAGNode:" << std::endl;
-    o << "&.class    = " << getDAGClass() << std::endl;
-    o << "&.value = " << std::endl;
+    o << "_class    = " << getDAGClass() << std::endl;
+    o << "_value = " << std::endl;
     value->printValue(o);
     o << std::endl;
-    o << "&.parent   = " << std::endl;
+    o << "_parent   = " << std::endl;
     printParents(o);
     o << std::endl;
-    o << "&.children = " << std::endl;
+    o << "_children = " << std::endl;
     printChildren(o);
     o << std::endl;
     o << std::endl;

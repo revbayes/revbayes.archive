@@ -32,6 +32,8 @@
 #include "RbObject.h"
 #include "RbOptions.h"         // For PRINTF
 #include "UserInterface.h"
+#include "ValueContainer.h"
+#include "VariableContainer.h"
 #include "Workspace.h"
 
 // Objects added to the workspace in initializeGlobalWorkspace()
@@ -350,9 +352,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         msg << std::endl;
         RBOUT(msg.str());
 
-        RBOUT("Caught an exception while initializing the workspace. This is a");
-        RBOUT("bug. If you are not a RevBayes developer, please report it to the");
-        RBOUT("RevBayes Development Core Team.\n");
+        RBOUT("Please report this bug to the RevBayes Development Core Team");
 
         RBOUT("Press any character to exit the program.");
         getchar();
@@ -361,53 +361,80 @@ void Workspace::initializeGlobalWorkspace(void) {
 }
 
 
-/** Type checking using type table */
-bool Workspace::isXOfTypeY(const std::string& x, const std::string& y) const {
+/** Type checking using type table and full type spec */
+bool Workspace::isXOfTypeY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) const {
+
+    if ( xTypeSp.getDim() != yTypeSp.getDim() )
+        return false;
+
+    return isXOfTypeY( xTypeSp.getType(), yTypeSp.getType() );
+}
+
+
+/** Type checking using type table and type names, assuming same dim */
+bool Workspace::isXOfTypeY( const std::string& xType, const std::string& yType ) const {
 
     /* Simplest case first */
-    if (x == y)
+    if ( xType == yType )
         return true;
 
-    if (typeTable.find(x) == typeTable.end()) {
-        if (parentFrame == NULL)
-            throw RbException("Unknown type named '" + x + "'");
+    if ( typeTable.find( xType ) == typeTable.end() ) {
+        if ( parentFrame == NULL )
+            throw RbException( "Unknown type named '" + xType + "'" );
         else
-            return ((Workspace*)(parentFrame))->isXOfTypeY(x, y);
+            return ( (Workspace*)(parentFrame) )->isXOfTypeY( xType, yType );
     }
 
-    const VectorString& xVec = (*typeTable.find(x)).second->getClass();
+    const VectorString& xTypeVec = typeTable.find( xType )->second->getClass();
     size_t i;
-    for (i=0; i<xVec.size(); i++) {
-        if (xVec[i] == y)
+    for ( i = 0; i < xTypeVec.size(); i++) {
+        if ( xTypeVec[i] == yType )
             break;
     }
 
-    if (i == xVec.size())
+    if ( i == xTypeVec.size() )
         return false;
     else
         return true;
 }
 
 
-/** Is type x convertible to type y */
-bool Workspace::isXConvertibleToY(const std::string& xType, int xDim, const std::string& yType, int yDim) const {
+/** Is type x convertible to type y using type names, assuming dim = 0 */
+bool Workspace::isXConvertibleToY( const std::string& xType, const std::string& yType ) const {
+
+    TypeSpec    xTypeSpec   = TypeSpec( xType, 0 );
+    TypeSpec    yTypeSpec   = TypeSpec( yType, 0 );
+
+    return isXConvertibleToY( xTypeSpec, yTypeSpec );
+}
+
+
+/** Is type x convertible to type y? */
+bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) const {
+
+    const std::string&  xType   = xTypeSp.getType();
+    const std::string&  yType   = yTypeSp.getType();
+    int                 xDim    = xTypeSp.getDim();
+    int                 yDim    = yTypeSp.getDim();
 
     bool retVal = false;
-    if (xDim > 0) {
+    if ( xDim > 0 ) {
     
-        VectorInteger length = VectorInteger(xDim, 1);
-        Container* dummy = new Container(length, xType);
+        VariableContainer* dummy    = new VariableContainer( xType );
+        ValueContainer*    dummyVal = dummy->getConstValue();
 
-        retVal = dummy->isConvertibleTo(yType, yDim);
+        retVal = dummy->isConvertibleTo( yType, yDim, false );
+
+        delete dummyVal;
         delete dummy;
     }
     else if (xDim == 0) {
 
-        TypeTable::const_iterator i = typeTable.find(xType);
-        if (i == typeTable.end())
+        TypeTable::const_iterator i = typeTable.find( xType );
+        if ( i == typeTable.end() )
             throw RbException("Unknown type named '" + xType + "'");
         
-        retVal = (*i).second->isConvertibleTo(yType, yDim);
+        retVal = (*i).second->isConvertibleTo( yType, yDim, false );
     }
 
     return retVal;

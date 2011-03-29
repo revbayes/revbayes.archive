@@ -18,8 +18,7 @@
 
 
 #include "ArgumentRule.h"
-#include "ConstantNode.h"
-#include "Container.h"
+#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
@@ -48,9 +47,7 @@ DAGNode* Func_v_vecrealvec::executeOperation(const std::vector<VariableSlot>& ar
 
     // Get the dimensions
     int numCols = ((VectorReal*)(args[0].getValue()))->size();
-    int numRows = 2;
-    if ( args.size() > 2 ) 
-        numRows += dynamic_cast<const Container*>(args[1].getValue())->size();
+    int numRows = args.size();
 
     // set up a double matrix
     std::vector<std::vector<double> > tmpM;
@@ -60,30 +57,18 @@ DAGNode* Func_v_vecrealvec::executeOperation(const std::vector<VariableSlot>& ar
     std::vector<double> tmpV;
             
     // set the matrix, row-by-row
-    tmpV = ((VectorReal*)(args[0].getValue()))->getValue();
-    if (tmpV.size() != numCols)
-        throw RbException("The number of entries in each row of the matrix must be equal");
-    tmpM[0] = tmpV;
-
-    tmpV = ((VectorReal*)(args[1].getValue()))->getValue();
-    if (tmpV.size() != numCols)
-        throw RbException("The number of entries in each row of the matrix must be equal");
-    tmpM[1] = tmpV;
-    
-    if ( args.size() > 2 ) 
-        {
-        const Container* elements = dynamic_cast<const Container*>(args[2].getValue());
-        for (size_t i=0; i<elements->size(); i++)
-            {
-            tmpV = ((VectorReal*)(elements->getElement(i)))->getValue();
-            if (tmpV.size() != numCols)
-                throw RbException("The number of entries in each row of the matrix must be equal");
-            tmpM[2+i] = tmpV;
-            }
-        }
+    for ( size_t i = 0; i < args.size(); i++ ) {
+        
+        tmpV = ((VectorReal*)(args[0].getValue()))->getValue();
+        
+        if (tmpV.size() != numCols)
+            throw RbException("The number of entries in each row of the matrix must be equal");
+        
+        tmpM[0] = tmpV;
+    }
         
     // Make and return the matrix
-    return new ConstantNode(new MatrixReal(tmpM));
+    return new ContainerNode(new MatrixReal(tmpM));
 }
 
 

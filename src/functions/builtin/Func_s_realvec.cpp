@@ -31,8 +31,9 @@
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
-#include "VectorString.h"
 #include "VectorReal.h"
+#include "VectorRealPos.h"
+#include "VectorString.h"
 
 #include <cassert>
 #include <cmath>

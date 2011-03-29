@@ -45,11 +45,12 @@ class VariableContainer : public Container {
     public:
         friend class                ValueContainer;                                                             //!< Give value container direct access to elements
         friend class                ContainerNode;                                                              //!< Give container node direct access to elements
+        friend class                Frame;                                                                      //!< Give container node direct access to elements
 
                                     VariableContainer(size_t n, DAGNode* x);                                    //!< Vector with n copies of x
-                                    VariableContainer(const std::vector<int>& len, DAGNode* x);                 //!< Array of given dimensions with copies of x
+                                    VariableContainer(const std::vector<size_t>& len, DAGNode* x);              //!< Array of given dimensions with copies of x
                                     VariableContainer(const TypeSpec& typeSpec);                                //!< Empty array
-                                    VariableContainer(const TypeSpec& typeSpec, const std::vector<int>& len);   //!< NULL variable array of given dimensions
+                                    VariableContainer(const TypeSpec& typeSpec, const std::vector<size_t>& len);//!< NULL variable array of given dimensions
                                     VariableContainer(const VariableContainer& x);                              //!< Copy constructor
         virtual                    ~VariableContainer(void);                                                    //!< Destructor
 
@@ -66,16 +67,13 @@ class VariableContainer : public Container {
         // Container functions
         void                        clear(void);                                                                //!< Clear container
         ValueContainer*             getConstValue(void);                                                        //!< Get constant value
-        const RbObject*             getElement(const VectorInteger& index) const;                               //!< Get element (read-only)
-        const RbObject*             getElement(size_t i) const;                                                 //!< Get element from vector (read-only)
-        VariableContainer*          getSubContainer(const VectorInteger& index) const;                          //!< Get subcontainer
-        void                        resize(const std::vector<int>& len);                                        //!< Resize container
-        void                        setElement(const VectorInteger& index, RbObject* newVal);                   //!< Set value element
-        void                        setElement(const VectorInteger& index, DAGNode* newVar);                    //!< Set variable element
+        void                        resize(const std::vector<size_t>& len);                                     //!< Resize container
         size_t                      size(void) const { return elements.size(); }                                //!< Get total number of elements
 
 	protected:
+        // Parser operator and help functions
         DAGNode*&                   operator[](const VectorInteger& i);                                         //!< Element modify access
+        DAGNode*                    getElement(VectorInteger& index);                                           //!< Get element or subcontainer for parser
 
         // Member variable
 	    std::vector<DAGNode*>       elements;                                                                   //!< Vector of variable elements

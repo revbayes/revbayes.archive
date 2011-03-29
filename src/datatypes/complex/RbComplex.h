@@ -33,12 +33,8 @@ class DeterministicNode;
 class Frame;
 class VectorInteger;
 class VectorNatural;
-class MethodTable;
 class MoveSchedule;
 class VectorString;
-
-typedef Frame                        MemberTable;                                                            //!< Member table type def, for convenience
-typedef std::vector<ArgumentRule*>   MemberRules;                                                            //!< Member rules type def, for convenience
 
 
 class RbComplex : public RbObject {
@@ -52,30 +48,7 @@ class RbComplex : public RbObject {
 		virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
 		virtual std::string                 richInfo(void) const = 0;                                               //!< Complete info 
         
-        // Member variable functions: override if object contains member variables
-        virtual const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
-        virtual const MemberTable&          getMembers(void) const;                                                 //!< Get members
-        virtual const RbObject*             getValue(const std::string& name) const;                                //!< Get member value
-        virtual const DAGNode*              getVariable(const std::string& name) const;                             //!< Get member variable
-        virtual void                        setValue(const std::string& name, RbObject* val);                       //!< Set member value
-        virtual void                        setVariable(const std::string& name, DAGNode* var);                     //!< Set member variable
-
-        // Member method functions: override if object contains member functions
-        virtual DAGNode*                    executeMethod(const std::string& name, int funcId);                     //!< Execute method with preprocessed args
-        virtual DAGNode*                    executeMethod(const std::string& name, std::vector<Argument>& args);    //!< Execute method
-        virtual const MethodTable&          getMethods(void) const;                                                 //!< Get method descriptions
-        virtual int                         setArguments(const std::string& name, std::vector<Argument>& args);     //!< Set arguments of method 
-
-        // Element access functions: override if object contains elements
-        ContainerIterator                   begin(void) const;                                                      //!< Begin iterator
-        ContainerIterator                   end(void) const;                                                        //!< End iterator
-        virtual int                         getDim(void) { return 0; }                                              //!< Get dimensions (in the language)
-        virtual const RbObject*             getElement(const VectorInteger& index) const;                           //!< Get element (read-only)
-        virtual const std::vector<size_t>&  getLength(void) const;                                                  //!< Get length in each dim or for each subscript
-        virtual void                        setElement(const VectorInteger& index, RbObject* val);                  //!< Set element
-        virtual bool                        supportsSubscripting(void) const { return false; }                      //!< Does object support subscripting?
-
-        // Default moves for types that contain sets of stochastic nodes
+        // Default moves for types that contain sets of stochastic nodes (member objects and 
         MoveSchedule*                       getDefaultMoves(DeterministicNode* node) const { return NULL; }         //!< Get block moves applicable to the complex datatype
 
 	protected:

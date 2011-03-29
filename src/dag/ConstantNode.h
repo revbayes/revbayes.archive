@@ -45,19 +45,14 @@ class ConstantNode : public DAGNode {
 
         // ConstantNode functions
         const RbObject*         getStoredValue(void) { return value; }                                      //!< Get stored value
-        const RbObject*         getValElement(const VectorInteger& index) const;                            //!< Get element of value    
         const RbObject*         getValue(void) { return value; }                                            //!< Get value
         const RbObject*         getValue(void) const { return value; }                                      //!< Get value (const)
-        void                    setElement(const VectorInteger& index, RbObject* val);                      //!< Set element of value
-        void                    setValue(RbObject* val);                                                    //!< Set value
 
         // DAG functions
         ConstantNode*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
         bool                    isConstExpr(void) const;                                                    //!< Is the node guaranteed to be a constant expression?
         bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
-        bool                    isMutableTo(const TypeSpec& typeSpec) const;                                //!< Is node mutable to language type typeSpec?
         void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
-        ConstantNode*           mutateTo(const TypeSpec& typeSpec);                                         //!< Mutate to language type typeSpec
         bool                    isTouched (void) const { return false; }                                    //!< Touched by a move?
         void                    touchAffected(void);                                                        //!< Tell affected nodes value is reset
 

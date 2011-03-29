@@ -6,7 +6,7 @@
 #include "RbException.h"
 #include "RbMath.h"
 #include "RbSettings.h"
-
+#include "VectorInteger.h"
 
 
 // Math Functions
@@ -884,7 +884,7 @@ std::cout << "v2 : " << v2.getIsRowVector() << std::endl;
     size_t n = v1.size();
     if ( v1.getIsRowVector() == true && v2.getIsRowVector() == false )
         {
-        VectorInteger sizeVec(2);
+        std::vector<size_t> sizeVec(2);
         sizeVec[0] = 1;
         sizeVec[1] = 1;
         p.resize(sizeVec);
@@ -896,7 +896,7 @@ std::cout << "v2 : " << v2.getIsRowVector() << std::endl;
         }
     else if ( v1.getIsRowVector() == false && v2.getIsRowVector() == true )
         {
-        VectorInteger sizeVec(2);
+        std::vector<size_t> sizeVec(2);
         sizeVec[0] = n;
         sizeVec[1] = n;
         p.resize(sizeVec);

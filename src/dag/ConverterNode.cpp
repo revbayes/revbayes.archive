@@ -100,15 +100,6 @@ bool ConverterNode::isMutableTo(const DAGNode* newNode) const {
 }
 
 
-/** Is it possible to mutate node to contain newValue? */
-bool ConverterNode::isMutableTo(const TypeSpec& typeSpec) const {
-
-    bool isMutable = false;
-
-    return isMutable;
-}
-
-
 /** Is it possible to change parent node oldNode to newNode? */
 bool ConverterNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const {
 
@@ -131,13 +122,6 @@ void ConverterNode::mutateTo(DAGNode* newNode) {
 }
 
 
-/* Mutate to contain newValue */
-ConverterNode* ConverterNode::mutateTo(const TypeSpec& typeSpec) {
-
-    throw RbException("Not implemented yet");
-}
-
-
 /** Print struct for user */
 void ConverterNode::printStruct(std::ostream& o) const {
 
@@ -145,12 +129,12 @@ void ConverterNode::printStruct(std::ostream& o) const {
         throw RbException("Cannot print struct while in touched state");
 
     o << "DAGNode:" << std::endl;
-    o << "&.class    = " << getDAGClass() << std::endl;
-    o << "&.value    = " << value << std::endl;
-    o << "&.parent   = " << std::endl;
+    o << "_class    = " << getDAGClass() << std::endl;
+    o << "_value    = " << value << std::endl;
+    o << "_parent   = " << std::endl;
     printParents(o);
     o << std::endl;
-    o << "&.children = " << std::endl;
+    o << "_children = " << std::endl;
     printChildren(o);
     o << std::endl;
     o << std::endl;

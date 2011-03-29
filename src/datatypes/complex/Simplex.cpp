@@ -9,25 +9,26 @@
  * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
- * @version 1.0
- * @since 2009-09-08, version 1.0
- * @extends RbComplex
  *
  * $Id$
  */
 
+
+#include "ConstantNode.h"
+#include "MemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "Real.h"
 #include "Simplex.h"
 #include "VectorInteger.h"
+#include "VectorRealPos.h"
 #include "VectorString.h"
 
 #include <iomanip>
 
 
 /** Construct simplex of length (size) n */
-Simplex::Simplex(const size_t n) : RbComplex() {
+Simplex::Simplex(const size_t n) : MemberObject() {
 
     if (n < 2)
         throw RbException( "Simplex must have at least two elements" );
@@ -38,7 +39,7 @@ Simplex::Simplex(const size_t n) : RbComplex() {
 
 
 /** Construct simplex from STL vector */
-Simplex::Simplex(const std::vector<double>& x) : RbComplex() {
+Simplex::Simplex(const std::vector<double>& x) : MemberObject() {
 
     if (x.size() < 2)
         throw RbException( "Simplex must have at least two elements" );
@@ -53,7 +54,7 @@ Simplex::Simplex(const std::vector<double>& x) : RbComplex() {
 
 
 /** Construct simplex from VectorRealPos, which is guaranteed to have real positive numbers */
-Simplex::Simplex(const VectorRealPos& x) : RbComplex() {
+Simplex::Simplex(const VectorRealPos& x) : MemberObject() {
 
     for (size_t i=0; i<x.size(); i++)
         if (x[i] <= 0.0)
@@ -84,8 +85,27 @@ Simplex* Simplex::clone() const {
 /** Get class vector describing type of object */
 const VectorString& Simplex::getClass() const {
 
-    static VectorString rbClass = VectorString(Simplex_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(Simplex_name) + MemberObject::getClass();
     return rbClass;
+}
+
+
+/**
+ * Get subscript element for parser. By giving back a temp variable rather than
+ * a reference, we ensure that the parser cannot set the element
+ */
+DAGNode* Simplex::getSubelement( VectorInteger& index ) const {
+
+    if ( index.size() != 1 )
+        throw RbException( "Wrong dimensions of index for " + Simplex_name );
+    if ( index[0] > int( value.size() ) )
+        throw RbException( "Index out of bounds for " + Simplex_name );
+
+    if ( index[0] < 0 )
+        return new MemberNode( this->clone() );
+
+    else
+        return new ConstantNode( new RealPos( value[index[0]] ) );
 }
 
 
@@ -132,13 +152,6 @@ std::string Simplex::richInfo(void) const {
     printValue(o);
 
     return o.str();
-}
-
-
-/** Give out a meaningful error message if parser tries to se an element */
-void Simplex::setElement(const VectorInteger& index, RbObject* val) {
-
-    throw RbException( "Cannot set single value of simplex" );
 }
 
 

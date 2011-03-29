@@ -22,6 +22,7 @@
 #include "RealPos.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
+#include "VectorReal.h"
 #include "VectorRealPos.h"
 #include "VectorString.h"
 
@@ -58,7 +59,22 @@ VectorRealPos::VectorRealPos( const std::vector<double>& x ) : Vector( RealPos_n
 
     for ( size_t i = 0; i < x.size(); i++ ) {
         if ( x[i] <= 0.0 )
-        throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
+            throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
+    }
+
+    for ( size_t i = 0; i < x.size(); i++ )
+        elements.push_back( new RealPos( x[i] ) );
+    length[0] = elements.size();
+
+}
+
+
+/** Constructor from VectorReal */
+VectorRealPos::VectorRealPos( const VectorReal& x ) : Vector( RealPos_name ) {
+
+    for ( size_t i = 0; i < x.size(); i++ ) {
+        if ( x[i] <= 0.0 )
+            throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
     }
 
     for ( size_t i = 0; i < x.size(); i++ )

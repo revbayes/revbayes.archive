@@ -17,6 +17,7 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "FunctionNode.h"
+#include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
@@ -152,10 +153,10 @@ DAGNode* SyntaxFunctionCall::getValue(Frame* frame) const {
         retVal = Workspace::userWorkspace().executeFunction(*functionName, args);
     }
     else {
-        const RbComplex* objectPtr = dynamic_cast<const RbComplex*>(variable->getValue(frame));
+        const MemberObject* objectPtr = dynamic_cast<const MemberObject*>(variable->getValue(frame));
         if (objectPtr == NULL)
             throw(RbException("Object does not have member functions"));
-        RbComplex* theObject = const_cast<RbComplex*>(objectPtr);
+        MemberObject* theObject = const_cast<MemberObject*>(objectPtr);
         retVal = theObject->executeMethod(*functionName, args);
     }
 

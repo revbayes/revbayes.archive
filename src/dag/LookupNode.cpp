@@ -44,7 +44,7 @@ LookupNode::LookupNode(DAGNode* var, IndexArgs&  indxArgs) :
 
     /* Check index arguments */
     for (IndexArgs::iterator i=indexArgs.begin(); i!=indexArgs.end(); i++) {
-        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getTypeSpec(), Integer_name) )
+        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getTypeSpec(), TypeSpec(Integer_name, 0)) )
             throw RbException ("Invalid type of index argument");
     }
         
@@ -80,7 +80,7 @@ LookupNode::LookupNode(LookupNode* baseVar, RbString* membrName, IndexArgs&  ind
 
     /* Check index arguments */
     for (IndexArgs::iterator i=indexArgs.begin(); i!=indexArgs.end(); i++) {
-        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getTypeSpec(), Integer_name) )
+        if ( !Workspace::userWorkspace().isXConvertibleToY((*i)->getTypeSpec(), TypeSpec(Integer_name, 0 )) )
             throw RbException ("Invalid type of index argument");
     }
         
@@ -310,7 +310,7 @@ bool LookupNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNod
         std::vector<DAGNode*>::const_iterator it = std::find(indexArgs.begin(), indexArgs.end(), oldNode);
         if (it == indexArgs.end())
             throw RbException("Node is not a parameter");
-        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getTypeSpec(), Integer_name) )
+        if ( Workspace::globalWorkspace().isXConvertibleToY(newNode->getTypeSpec(), TypeSpec(Integer_name, 0)) )
             return true;
         else
             return false;
@@ -342,13 +342,13 @@ const DAGNode* LookupNode::lookup(void) {
             index.push_back( ( (Integer*)( (*i)->getValue() ) )->getValue() - 1 );
 
         if ( baseVariable != NULL )
-            return  baseVariable->getVarElement( index );
+            ; // return  baseVariable->getVarElement( index );
         else {
             const MemberObject* theBaseObject = dynamic_cast<const MemberObject*>( baseLookup->getValue() );
             if ( theBaseObject == NULL )
                 throw RbException( "Base variable does not have members" );
 
-            return theBaseObject->getVariable( *memberName )->getVarElement( index );
+            return NULL; // theBaseObject->getVariable( *memberName )->getVarElement( index );
         }
     }
 }

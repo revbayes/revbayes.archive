@@ -29,7 +29,7 @@ class RbObject;
 class VariableSlot {
     
     public:
-        friend class            Frame;                                                          //!< Expose slot to frame
+        friend class            SyntaxVariable;                                                 //!< Give parser direct access to variable
 
                                 VariableSlot(DAGNode* var, bool ref=false);                     //!< Constructor of filled slot
                                 VariableSlot(const TypeSpec& typeSp, DAGNode* var);             //!< Constructor of filled slot with type spec
@@ -60,8 +60,12 @@ class VariableSlot {
 
     private:
         // Help functions
-        DAGNode*                convertVariable( DAGNode* newVariable ) const;                  //!< Convert variable before using it
+        // DAGNode*                convertVariable( DAGNode* newVariable ) const;                  //!< Convert variable before using it
         void                    removeVariable(void);                                           //!< Remove old variable from slot
+
+        // Parser access function
+        DAGNode*                getParserVariable(void);                                        //!< Give parser (SyntaxVariable) the variable reference or a temp
+        DAGNode*                getParserVariableRef(void);                                     //!< Give parser (SyntaxVariable) a variable reference
 
         // Member variables
         TypeSpec                typeSpec;                                                       //!< The type specification for the slot

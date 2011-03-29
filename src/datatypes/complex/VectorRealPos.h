@@ -39,6 +39,7 @@ class VectorRealPos : public Vector {
                                     VectorRealPos(double x);                                        //!< Construct vector with one double x
                                     VectorRealPos(size_t n, double x);                              //!< Construct vector with n doubles x
                                     VectorRealPos(const std::vector<double>& x);                    //!< Constructor from double vector
+                                    VectorRealPos(const VectorReal& x);                             //!< Constructor from VectorReal
 
         // Overloaded operators
         double                      operator[](size_t i) const;                                     //!< Index op (value, no reference - no modification)

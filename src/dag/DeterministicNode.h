@@ -37,10 +37,7 @@ class DeterministicNode : public VariableNode {
         const RbObject*                 getStoredValue(void);                                                           //!< Get stored value
         const RbObject*                 getValue(void);                                                                 //!< Get value
         const RbObject*                 getValue(void) const;                                                           //!< Get const value (if possible)
-        const RbObject*                 getValElement(const VectorInteger& index) const;                                //!< Get value element
         void                            printValue(std::ostream& o) const;                                              //!< Print value for user
-        void                            setElement(const VectorInteger& index, RbObject* val);                          //!< Set value element (throw error)
-        void                            setValue(RbObject* val);                                                        //!< Set value (throw error)
 
         // Utility functions you have to override
         virtual DeterministicNode*      clone(void) const = 0;                                                          //!< Clone this node
@@ -57,10 +54,8 @@ class DeterministicNode : public VariableNode {
         // DAG functions you have to override
         virtual DeterministicNode*      cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;                     //!< Clone entire graph
         virtual bool                    isMutableTo(const DAGNode* newNode) const = 0;                                  //!< Is node mutable to newNode?
-        virtual bool                    isMutableTo(const TypeSpec& typeSpec) const = 0;                                //!< Is node mutable to language type typeSpec?
         virtual bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const = 0;    //!< Is parent mutable to newNode?
         virtual void                    mutateTo(DAGNode* newNode) = 0;                                                 //!< Mutate to new node
-        virtual DeterministicNode*      mutateTo(const TypeSpec& typeSpec) = 0;                                         //!< Mutate to language type typeSpec
         virtual void                    swapParentNode(DAGNode* oldP, DAGNode* newP) = 0;                               //!< Swap a parent node
 
         // Get default moves

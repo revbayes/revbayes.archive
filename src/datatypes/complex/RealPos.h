@@ -29,6 +29,7 @@ class RealPos : public Real {
                                 RealPos(void);                          //!< Default constructor
                                 RealPos(double x);                      //!< Construct from double
                                 RealPos(int x);                         //!< Construct from int 
+                                RealPos(unsigned int x);                //!< Construct from unsigned int 
                                 RealPos(bool x);                        //!< Construct from bool
 
         // Basic utility functions

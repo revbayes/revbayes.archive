@@ -37,10 +37,15 @@ RealPos::RealPos( double x ) : Real( x ) {
 
 
 /** Construct from int */
-RealPos::RealPos( int x) : Real( x ) {
+RealPos::RealPos( int x ) : Real( x ) {
 
     if ( x <= 0 )
         throw RbException( "Nonpositive value for " + RealPos_name );
+}
+
+
+/** Construct from unsigned int */
+RealPos::RealPos( unsigned int x ) : Real( x ) {
 }
 
 

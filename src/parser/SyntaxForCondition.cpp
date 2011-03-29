@@ -17,6 +17,7 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "SyntaxForCondition.h"
+#include "VectorInteger.h"
 
 #include <cassert>
 #include <sstream>
@@ -126,14 +127,14 @@ DAGNode* SyntaxForCondition::getDAGNodeExpr(Frame* frame) const {
 bool SyntaxForCondition::getNextLoopState(Frame* frame) {
 
     if ( nextElement < 0 )
-        initializeLoop(frame);
+        initializeLoop( frame );
     
     if ( nextElement == vector->size() ) {
         finalizeLoop( frame );
         return false;
     }
 
-    frame->setReference( *varName, vector->getElementReference( nextElement ) );
+    frame->setReference( *varName, vector->getElement( nextElement ) );
     nextElement++;
 
     return true;

@@ -36,6 +36,7 @@ class MemberNode : public DeterministicNode {
         // Basic utility functions
         MemberNode*             clone(void) const;                                                          //!< Clone the member node
         const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
+        DAGNode*                getElement(VectorInteger& index) const;                                     //!< Get element
         void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
         std::string             richInfo(void) const;                                                       //!< Complete info about object
 

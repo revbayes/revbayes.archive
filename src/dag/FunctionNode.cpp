@@ -225,15 +225,6 @@ bool FunctionNode::isMutableTo(const DAGNode* newNode) const {
 }
 
 
-/** Is it possible to mutate node to be of language type typeSpec? */
-bool FunctionNode::isMutableTo(const TypeSpec& typeSpec) const {
-
-    bool isMutable = false;
-
-    return isMutable;
-}
-
-
 /** Is it possible to change parent node oldNode to newNode? */
 bool FunctionNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const {
 
@@ -274,13 +265,13 @@ void FunctionNode::printStruct(std::ostream& o) const {
         throw RbException("Cannot print struct while in touched state");
 
     o << "Wrapper:" << std::endl;
-    o << "&.class    = " << getDAGClass() << std::endl;
-    o << "&.function = " << function << std::endl;
-    o << "&.value    = " << value << std::endl;
-    o << "&.parents = " << std::endl;
+    o << "_class    = " << getDAGClass() << std::endl;
+    o << "_function = " << function << std::endl;
+    o << "_value    = " << value << std::endl;
+    o << "_parents = " << std::endl;
     printParents(o);
     o << std::endl;
-    o << "&.children = " << std::endl;
+    o << "_children = " << std::endl;
     printChildren(o);
     o << std::endl;
     o << std::endl;

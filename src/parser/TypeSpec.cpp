@@ -18,8 +18,8 @@
 #include "TypeSpec.h"
 
 
-/** Constructor for single object (dim=0)*/
-TypeSpec::TypeSpec(const std::string& objType) : type(objType), dim(0), reference(ref) {
+/** Constructor for single object (dim = 0, ref = false) */
+TypeSpec::TypeSpec(const std::string& objType) : type(objType), dim(0), reference(false) {
 }
 
 
@@ -38,8 +38,15 @@ bool TypeSpec::operator==(const TypeSpec& x) const {
 }
 
 
+/** Type conversion operator to std::string */
+TypeSpec::operator std::string( void ) const {
+
+    return toString();
+}
+
+
 /** Convert to string */
-std::string TypeSpec::richInfo(void) const {
+std::string TypeSpec::toString(void) const {
 
     std::string typeDesc = type;
 
@@ -56,7 +63,14 @@ std::string TypeSpec::richInfo(void) const {
 /** Make sure we can print to stream using << operator */
 std::ostream& operator<<(std::ostream& o, const TypeSpec& x) {
 
-    o << x.richInfo();
+    o << x.toString();
     return o;
+}
+
+
+/** String concatenation using operator + */
+std::string operator+(const std::string& s, const TypeSpec& x) {
+
+    return s + x.toString();
 }
 

@@ -26,6 +26,8 @@
 #include <string>
 #include <vector>
 
+class VectorNatural;
+
 
 /**
  * @brief Real matrix
@@ -45,11 +47,11 @@ class MatrixReal : public Matrix {
                                             MatrixReal(void);                                                           //!< Default constructor (empty matrix)
                                             MatrixReal(const size_t nRows, const size_t nCols, double x = 0.0);         //!< Construct matrix containing double x
                                             MatrixReal(const std::vector<std::vector<double> >& x);                     //!< Construct matrix from a two-dimensional set of STL vectors
-                                            MatrixReal(const std::vector<int>& length, const std::vector<double>& x);   //!< Construct matrix from length specification and vector of content
+                                            MatrixReal(const std::vector<size_t>& length, const std::vector<double>& x);//!< Construct matrix from length specification and vector of content
 
         // Overoaded operators
-        const RbObject* const &             operator[](const VectorInteger& index) const;                               //!< Subscript container access (const)
-        RbObject*&                          operator[](const VectorInteger& index);                                     //!< Subscript container access (const)
+        const RbObject* const &             operator[](const VectorNatural& index) const;                               //!< Subscript container access (const)
+        RbObject*&                          operator[](const VectorNatural& index);                                     //!< Subscript container access (const)
         VectorReal&                         operator[](size_t i);                                                       //!< Subscript operator
         const VectorReal&                   operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
@@ -61,23 +63,25 @@ class MatrixReal : public Matrix {
 
         // Container functions
         void                                clear(void);                                                                //!< Clear
-        const RbObject*                     getElement(const VectorInteger& index) const = 0;                           //!< Get element (read-only)
-        ValueContainer*                     getSubContainer(const VectorInteger& index) const = 0;                      //!< Get subcontainer
-        void                                resize(const std::vector<size_t>& len) = 0;                                 //!< Resize to new length vector
-        void                                setElement(const VectorInteger& index, RbObject* val) = 0;                  //!< Set value element
-        void                                setLength(const std::vector<size_t>& len) = 0;                              //!< Reorganize container
-        size_t                              size(void) const = 0;                                                       //!< Get total number of elements
+        void                                resize(const std::vector<size_t>& len);                                     //!< Resize to new length vector
+        void                                setLength(const std::vector<size_t>& len);                                  //!< Reorganize container
+        size_t                              size(void) const;                                                           //!< Get total number of elements
 
         // Matrix functions
         std::vector<double>                 getContent(void) const;                                                     //!< Get content (all elements) in an STL vector
         std::vector<std::vector<double> >   getValue(void) const;                                                       //!< Get value as STL vector<vector> of doubles
         void                                setContent(const std::vector<double>& x);                                   //!< Set content using STL vector of doubles
         void                                setValue(const std::vector<std::vector<double> >& x);                       //!< Set value using STL vector<vector> of doubles
+        void                                transpose(void);                                                            //!< Transpose the matrix
 
     private:
         RbObject*                           getDefaultElement(void) { return new Real(); }                              //!< Get default element for empty slots
         bool                                numFmt(int& numToLft, int& numToRht, std::string s) const;                  //!< Calculates the number of digits to the left and right of the decimal
         
+        // Parser help functions
+        DAGNode*                            getElement(const VectorInteger& index);                                     //!< Get element or subcontainer for parser
+        void                                setElement(const VectorNatural& index, DAGNode* var);                       //!< Allow parser to set element
+
         std::vector<VectorReal>             matrix;                                                                     //!< We use vector of vectors instead of container internally
 };
 

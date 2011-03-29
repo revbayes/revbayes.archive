@@ -38,12 +38,9 @@ class VariableNode : public DAGNode {
         virtual VariableNode*           clone(void) const = 0;                                       //!< Clone this node
         virtual const VectorString&     getDAGClass(void) const;                                     //!< Get DAG node class vector
         virtual const RbObject*         getStoredValue(void) = 0;                                    //!< Get stored value
-        virtual const RbObject*         getValElement(const VectorInteger& index) const = 0;         //!< Get value element
         virtual const RbObject*         getValue(void) = 0;                                          //!< Get value
         virtual void                    printStruct(std::ostream& o) const = 0;                      //!< Print struct for user
         virtual void                    printValue(std::ostream& o) const = 0;                       //!< Print value for user
-        virtual void                    setElement(const VectorInteger& index, RbObject* val) = 0;   //!< Set value element
-        virtual void                    setValue(RbObject* val) = 0;                                 //!< Set value
         virtual std::string             richInfo(void) const = 0;                                    //!< Complete info about object
 
         // DAG functions you should not override
@@ -53,24 +50,22 @@ class VariableNode : public DAGNode {
         virtual VariableNode*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;                     //!< Clone entire graph
         virtual void    	            getAffected(std::set<StochasticNode*>& affected) = 0;                           //!< Mark and get affected nodes
         virtual bool                    isMutableTo(const DAGNode* newNode) const = 0;                                  //!< Is node mutable to newNode?
-        virtual bool                    isMutableTo(const TypeSpec& typeSpec) const = 0;                                //!< Is node mutable to language type typeSpec?
         virtual bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const = 0;    //!< Is parent mutable to newNode?
         virtual void    	            keepAffected(void) = 0;                                                         //!< Keep value of affected nodes
         virtual void                    mutateTo(DAGNode* newNode) = 0;                                                 //!< Mutate to new node
-        virtual VariableNode*           mutateTo(const TypeSpec& typeSpec) = 0;                                         //!< Mutate to language type typeSpec
         virtual void                    restoreAffected(void) = 0;                                                      //!< Restore value of affected nodes
         virtual void                    swapParentNode(DAGNode* oldP, DAGNode* newP) = 0;                               //!< Swap a parent node
         virtual void                    touchAffected(void) = 0;                                                        //!< Tell affected nodes value is reset
 
         // Default monitors and move functions
-        std::vector<Monitor*>           getDefaultMonitors(void);                                    //!< Return default monitors
-        virtual MoveSchedule*           getDefaultMoves(void) = 0;                                   //!< Return default moves
+        std::vector<Monitor*>           getDefaultMonitors(void);                                                       //!< Return default monitors
+        virtual MoveSchedule*           getDefaultMoves(void) = 0;                                                      //!< Return default moves
 
     protected:
-                                        VariableNode(const std::string& valType);                    //!< Constructor of empty node
+                                        VariableNode(const std::string& valType);                                       //!< Constructor of empty node
 
         // Member variables
-        bool                            touched;                                                     //!< Is touched by move?
+        bool                            touched;                                                                        //!< Is touched by move?
 };
 
 #endif

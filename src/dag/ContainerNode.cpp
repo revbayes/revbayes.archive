@@ -239,15 +239,6 @@ bool ContainerNode::isMutableTo( const DAGNode* newNode ) const {
 }
 
 
-/** Is it possible to mutate node to language type typeSpec? */
-bool ContainerNode::isMutableTo( const TypeSpec& typeSpec ) const {
-
-    bool isMutable = false;
-
-    return isMutable;
-}
-
-
 /** Is it possible to change parent node oldNode to newNode? */
 bool ContainerNode::isParentMutableTo( const DAGNode* oldNode, const DAGNode* newNode ) const {
 
@@ -278,13 +269,6 @@ void ContainerNode::mutateTo( DAGNode* newNode ) {
     
     throw RbException("Not implemented yet");
     
-}
-
-
-/* Mutate to new language type typeSpec */
-ContainerNode* ContainerNode::mutateTo( const TypeSpec& typeSpec ) {
-
-    throw RbException("Not implemented yet");
 }
 
 

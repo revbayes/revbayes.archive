@@ -32,7 +32,6 @@ class StochasticNode : public VariableNode {
     public:
                                 StochasticNode(const std::string& type);                        //!< Construct empty stochastic node
                                 StochasticNode(Distribution* dist);                             //!< Construct from distribution (raw object)
-                                StochasticNode(MemberNode* dist);                               //!< Construct from distribution (complete variable)
                                 StochasticNode(const StochasticNode& s);                        //!< Copy constructor
 							   ~StochasticNode(void);                                           //!< Destructor
 
@@ -43,7 +42,6 @@ class StochasticNode : public VariableNode {
         StochasticNode*         clone(void) const;                                              //!< Clone the stochastic node
         const VectorString&     getDAGClass(void) const;                                        //!< Get DAG node class vector
         const RbObject*         getStoredValue(void);                                           //!< Get stored value
-        const RbObject*         getValElement(const VectorInteger& index) const;                //!< Get value element
         const RbObject*         getValue(void);                                                 //!< Get current value
         const RbObject*         getValue(void) const;                                           //!< Get const value if possible
         void                    printStruct(std::ostream& o) const;                             //!< Print struct for user
@@ -67,12 +65,10 @@ class StochasticNode : public VariableNode {
         void                    getAffected(std::set<StochasticNode*>& affected);               //!< Mark and get affected nodes
         RbObject*               getValuePtr(std::set<StochasticNode*>& affected);               //!< Get value ptr + affected nodes
         bool                    isMutableTo(const DAGNode* newNode) const;                      //!< Is node mutable to newNode?
-        bool                    isMutableTo(const TypeSpec& typeSpec) const;                    //!< Is node mutable to language type typeSpec?
         bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;  //!< Is parent mutable to newNode?
         void                    keep(void);                                                     //!< Keep value of this and affected nodes
         void    	            keepAffected(void);                                             //!< Keep value of affected nodes recursively
         void                    mutateTo(DAGNode* newNode);                                     //!< Mutate to new node
-        StochasticNode*         mutateTo(const TypeSpec& typeSpec);                             //!< Mutate to language type typeSpec
         void                    restore(void);                                                  //!< Restore value of this and affected nodes
         void                    restoreAffected(void);                                          //!< Restore value of  affected nodes recursively
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                   //!< Swap a parent node

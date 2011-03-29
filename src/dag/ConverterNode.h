@@ -48,10 +48,8 @@
         // DAG functions
         ConverterNode*          cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
         bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
-        bool                    isMutableTo(const TypeSpec& typeSpec) const;                                //!< Is node mutable to language type typeSpec?
         bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
         void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
-        ConverterNode*          mutateTo(const TypeSpec& typeSpec);                                         //!< Mutate to language type typeSpec
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
     protected:

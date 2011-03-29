@@ -89,8 +89,10 @@ class Workspace : public Frame {
         RandomNumberGenerator*      get_rng(void);                                                                      //!< Get default random number generator
         const std::string&          getTypeNameRef(const std::string& name) const;                                      //!< Get reference to type name
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
-        bool                        isXOfTypeY(const TypeSpec& x, const TypeSpec& y) const;                             //!< Type checking
-        bool                        isXConvertibleToY(const TypeSpec x, const TypeSpec& y) const;                       //!< Type conversion checking
+        bool                        isXOfTypeY(const std::string& xType, const std::string& yType) const;               //!< Type checking usng type names (assuming same dim)
+        bool                        isXOfTypeY(const TypeSpec& xTypeSp, const TypeSpec& yTypeSp) const;                 //!< Type checking using full type spec
+        bool                        isXConvertibleToY(const std::string& xType, const std::string& yType) const;        //!< Type conversion checking usng type names (assuming dim = 0)
+        bool                        isXConvertibleToY(const TypeSpec& xTypeSp, const TypeSpec& yTypeSp) const;          //!< Type conversion checking using full type spec
         void                        printValue(std::ostream& c) const;                                                  //!< Print workspace
         static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
                                     {

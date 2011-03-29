@@ -29,56 +29,67 @@
 
 class ArgumentRule;
 class DAGNode;
+class MethodTable;
 class VectorString;
+
+typedef Frame                        MemberTable;                                                            //!< Member table type def, for convenience
+typedef std::vector<ArgumentRule*>   MemberRules;                                                            //!< Member rules type def, for convenience
+
 
 class MemberObject: public RbComplex {
 
     public:
-        virtual                    ~MemberObject(void) {}                                                         //!< Destructor
+        virtual                    ~MemberObject(void) {}                                                               //!< Destructor
 
         // Basic utility functions you have to override
-        virtual MemberObject*       clone(void) const = 0;                                                        //!< Clone object
-        virtual const VectorString& getClass(void) const;                                                         //!< Get class vector
+        virtual MemberObject*       clone(void) const = 0;                                                              //!< Clone object
+        virtual const VectorString& getClass(void) const;                                                               //!< Get class vector
         
         // Basic utility functions you may want to override
-        virtual MemberObject*       convertTo(const std::string& type, int dim) const;                            //!< Convert to language object of type and dim (default throws an error)
-        virtual bool                isConvertibleTo(const std::string& type, int dim, bool once) const;           //!< Is convertible to language object of type and dim? (default false)
-        virtual void                printValue(std::ostream& o) const;                                            //!< Print value for user
-        virtual std::string         richInfo(void) const;                                                         //!< Complete info
+        virtual MemberObject*       convertTo(const std::string& type, int dim) const;                                  //!< Convert to language object of type and dim (default throws an error)
+        virtual bool                isConvertibleTo(const std::string& type, int dim, bool once) const;                 //!< Is convertible to language object of type and dim? (default false)
+        virtual void                printValue(std::ostream& o) const;                                                  //!< Print value for user
+        virtual std::string         richInfo(void) const;                                                               //!< Complete info
 
         // DAG utility functions you do not have to override
-        MemberObject*               cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                       //!< Clone entire graph
-        MemberObject*               constantClone(void) const;                                                    //!< Make a constant clone
+        MemberObject*               cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                             //!< Clone entire graph
+        MemberObject*               constantClone(void) const;                                                          //!< Make a constant clone
 
         // Member variable functions
-        const MemberTable&          getMembers(void) const { return members; }                                    //!< Get members
-        virtual const MemberRules&  getMemberRules(void) const = 0;                                               //!< Get member rules
-        const TypeSpec&             getMemberTypeSpec(const std::string& name) const;                             //!< Get type spec for a member variable
-        const RbObject*             getValue(const std::string& name);                                            //!< Get member value
-        const RbObject*             getValue(const std::string& name) const;                                      //!< Get member value (const)
-        const DAGNode*              getVariable(const std::string& name) const;                                   //!< Get member variable
-        void                        setValue(const std::string& name, RbObject* val);                             //!< Set member value
-        virtual void                setVariable(const std::string& name, DAGNode* var);                           //!< Set member variable
+        const MemberTable&          getMembers(void) const { return members; }                                          //!< Get members
+        virtual const MemberRules&  getMemberRules(void) const;                                                         //!< Get member rules
+        const TypeSpec&             getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
+        const RbObject*             getValue(const std::string& name);                                                  //!< Get member value
+        const RbObject*             getValue(const std::string& name) const;                                            //!< Get member value (const)
+        const DAGNode*              getVariable(const std::string& name) const;                                         //!< Get member variable
+        DAGNode*                    getVariable(const std::string& name);                                               //!< Get member variable (non-const ptr)
+        void                        setValue(const std::string& name, RbObject* val);                                   //!< Set member value
+        virtual void                setVariable(const std::string& name, DAGNode* var);                                 //!< Set member variable
 
         // Member method functions
-        DAGNode*                    executeMethod(const std::string& name, int funcId);                           //!< Execute method with preprocessed args (repeated evaluation)
-        DAGNode*                    executeMethod(const std::string& name, std::vector<Argument>& args);          //!< Execute method (evaluate once)
-        virtual const MethodTable&  getMethodInits(void) const = 0;                                               //!< Get method specifications
-        const MethodTable&          getMethods(void) const { return methods; }                                    //!< Get methods
+        DAGNode*                    executeMethod(const std::string& name, int funcId);                                 //!< Execute method with preprocessed args (repeated evaluation)
+        DAGNode*                    executeMethod(const std::string& name, std::vector<Argument>& args);                //!< Execute method (evaluate once)
+        virtual const MethodTable&  getMethodInits(void) const;                                                         //!< Get method specifications
+        const MethodTable&          getMethods(void) const { return methods; }                                          //!< Get methods
 
-	protected:
-									MemberObject(const MemberRules& memberRules, const MethodTable& methodInits); //!< Constructor
+        // Subscript operator functions
+        virtual bool                hasSubscript(void) { return false; }                                                //!< Does object support subscripting?
+        virtual DAGNode*            getSubelement(VectorInteger& index) const;                                          //!< Return subscript[](index) element
+        virtual size_t              getSubelementsSize(void) { return 0; }                                              //!< Number of subscript elements
+
+protected:
+									MemberObject(const MemberRules& memberRules, const MethodTable& methodInits);       //!< Standard constructor
+									MemberObject(void);                                                                 //!< Constructor of object without variables or methods
 
         // Protected functions
-        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args) = 0;   //!< Execute method
-        DAGNode*                    getVariable(const std::string& name);                                         //!< Get member variable (non-const ptr)
+        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args);   //!< Execute method
 
         // Members and methods keep track of variables and functions belonging to the object
-        MemberTable                 members;                                                                      //!< Member variables
-        MethodTable                 methods;                                                                      //!< Member methods
+        MemberTable                 members;                                                                            //!< Member variables
+        MethodTable                 methods;                                                                            //!< Member methods
 
         // Friend class
-        friend class                DistributionFunction;                                                         //!< Give distribution function access
+        friend class                DistributionFunction;                                                               //!< Give distribution function access
 };
 
 #endif

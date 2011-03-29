@@ -117,17 +117,6 @@ const RbObject* DeterministicNode::getValue(void) const {
 }
 
 
-/** Get value element */
-const RbObject* DeterministicNode::getValElement(const VectorInteger& index) const {
-
-    const RbComplex* complexObject = dynamic_cast<const RbComplex*>(value);
-    if (complexObject == NULL)
-        throw RbException("Object does not have elements");
-
-    return complexObject->getElement(index);
-}
-
-
 /** Keep value of node and affected variable nodes */
 void DeterministicNode::keepAffected(void) {
 
@@ -170,20 +159,6 @@ void DeterministicNode::restoreAffected(void) {
         }
     }
     touched = changed = false;
-}
-
-
-/** Set element: throw error */
-void DeterministicNode::setElement(const VectorInteger& index, RbObject* val) {
-
-    throw RbException("Cannot set element of deterministic DAG node");
-}
-
-
-/** Set value: throw error */
-void DeterministicNode::setValue(RbObject* val) {
-
-    throw RbException("Cannot set value of deterministic DAG node");
 }
 
 

@@ -117,7 +117,7 @@ void Frame::addVariable(const std::string& name, DAGNode* value) {
 }
 
 
-/** Add plate variable with initial element to frame */
+/** Add container variable with initial element to frame */
 void Frame::addVariable(const std::string& name, const VectorInteger& index, DAGNode* elemValue) {
 
     /* Throw an error if the variable is NULL */
@@ -132,7 +132,7 @@ void Frame::addVariable(const std::string& name, const VectorInteger& index, DAG
 
     /* Create the container variable */
     VariableContainer* container = new VariableContainer(TypeSpec(elemValue->getValueType(), index.size()));
-    container->setElement(index, elemValue);
+    (*container)[index] = elemValue;
 
     /* Create the slot */
     VariableSlot slot(new ContainerNode( container ));
@@ -359,22 +359,4 @@ void Frame::setReference(const std::string& name, DAGNode* newRef) {
     VariableSlot& slot = (*it).second;
     slot.setReference(newRef);
 }
-
-
-/** Swap reference to be a reference to another variable */
-void Frame::swapReference(DAGNode* oldRef, DAGNode* newRef) {
-
-    // Find the variable (it is inefficient but this function is not used during the mcmc)
-    std::map<std::string, VariableSlot>::iterator i;
-    for ( i = variableTable.begin(); i != variableTable.end(); i++ ) {
-        if ( (*i).second.variable == oldRef )
-            break;
-    }
-    if ( i == variableTable.end() ) { 
-        throw ( RbException( "Variable reference does not exist in this frame" ) );
-    }
-
-    (*i).second.setReference( newRef );
-}
-
 

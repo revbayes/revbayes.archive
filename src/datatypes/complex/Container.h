@@ -68,6 +68,8 @@ class Container : public RbComplex {
         virtual std::string             richInfo(void) const = 0;                                           //!< Complete info about object
 
         // Container functions and basic utility functions you should not have to override
+        ContainerIterator               begin(void) const;                                                  //!< Begin iterator
+        ContainerIterator               end(void) const;                                                    //!< End iterator
         int                             getDim(void) const { return length.size(); }                        //!< Get number of dimensions (1 for vector, 2 for matrix, etc)
         const VectorString&             getElementClass(void) const;                                        //!< Get element class vector
         const std::string&              getElementType(void) const { return elementType; }                  //!< Get element type
@@ -79,24 +81,24 @@ class Container : public RbComplex {
 
         // Container functions you have to override
         virtual void                    clear(void) = 0;                                                    //!< Clear
-        virtual const RbObject*         getElement(const VectorInteger& index) const = 0;                   //!< Get element (read-only)
-        virtual const RbObject*         getElement(size_t i) const = 0;                                     //!< Get element from vector (read-only)
-        virtual Container*              getSubContainer(const VectorInteger& index) const = 0;              //!< Get subcontainer
         virtual void                    resize(const std::vector<size_t>& len) = 0;                         //!< Resize
-        virtual void                    setElement(const VectorInteger& index, RbObject* val) = 0;          //!< Set value element
         virtual size_t                  size(void) const = 0;                                               //!< Get number of elements
 
 	protected:
                                         Container(const TypeSpec& typeSpec);                                //!< Default constructor (set type of elements and dim of container)
 
+        // Help functions you do not have to override
         Container&                      operator=(const Container& x);                                      //!< Assignment operator checks type and dimension (but length can differ)
         void                            getContainerSubscriptIndices( const VectorInteger& index,
                                                                             VectorInteger& containerIndex,
                                                                             VectorInteger& subscriptIndex
                                                                     ) const;                                //!< Divide up an index into container and subscript indices
-        size_t                          getOffset(const VectorInteger& index) const;                        //!< Get offset in elements vector
+        size_t                          getOffset(const VectorNatural& index) const;                        //!< Get offset in elements vector
 
+        // Parser help function you have to override
+        virtual DAGNode*                getElement(VectorInteger& index) = 0;                               //!< Get element or subcontainer for parser
 
+        // Member variables
         const std::string&              elementType;                                                        //!< Type of elements
         std::vector<size_t>             length;                                                             //!< Length in each dimension
 };

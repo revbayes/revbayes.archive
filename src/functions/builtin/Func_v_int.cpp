@@ -18,7 +18,6 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "Container.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
@@ -48,16 +47,9 @@ DAGNode* Func_v_int::executeOperation(const std::vector<VariableSlot>& args) {
     // Create temporary vector for the ints 
     std::vector<int>    tempVec;
 
-    // Get first element
-    tempVec.push_back(((Integer*)(args[0].getValue()))->getValue());
-
-    // Get following elements
-    if (args.size() > 1) {
-        const Container*   elements = dynamic_cast<const Container*>(args[1].getValue());
-        for (size_t i=0; i<elements->size(); i++) {
-            tempVec.push_back(((Integer*)(elements->getElement(i)))->getValue());
-        }
-    }
+    // Get elements
+    for ( size_t i = 0; i < args.size(); i++ )
+        tempVec.push_back(((Integer*)(args[i].getValue()))->getValue());
 
     return new ConstantNode(new VectorInteger(tempVec));
 }

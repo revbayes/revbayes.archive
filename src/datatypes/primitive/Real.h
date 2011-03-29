@@ -40,6 +40,7 @@ class Real : public RbObject {
                                     Real(void);                                                     //!< Default constructor (0.0)
                                     Real(const double v);                                           //!< Construct from double
                                     Real(const int v);                                              //!< Construct from int 
+                                    Real(const unsigned int v);                                     //!< Construct from unsigned int 
                                     Real(const bool v);                                             //!< Construct from bool
 
         // Overloaded operators

@@ -26,6 +26,7 @@
 #include "RbStatistics.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
+#include "VectorReal.h"
 #include "VectorString.h"
 #include "Workspace.h"
 

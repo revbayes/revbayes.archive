@@ -181,7 +181,7 @@ DAGNode* SyntaxFunctionDef::getValue(Frame* frame) const {
 void SyntaxFunctionDef::print(std::ostream& o) const {
 
     o << "SyntaxFunctionDef:" << std::endl;
-    o << "returnType   = " << returnType->richInfo() << std::endl;
+    o << "returnType   = " << returnType->toString() << std::endl;
     o << "functionName = ";
     functionName->printValue(o);
     o << std::endl;

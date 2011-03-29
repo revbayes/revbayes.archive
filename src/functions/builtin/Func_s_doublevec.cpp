@@ -19,7 +19,6 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "Container.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
@@ -31,6 +30,7 @@
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
+#include "VariableContainer.h"
 #include "VectorString.h"
 #include "VectorReal.h"
 
@@ -50,26 +50,18 @@ DAGNode* Func_s_doublevec::executeOperation(const std::vector<VariableSlot>& arg
     // Create temporary vector
     std::vector<double>    tempVec;
 
-    // Get first and second elements
-    tempVec.push_back( ((RealPos*)(args[0].getValue()))->getValue() );
-    tempVec.push_back( ((RealPos*)(args[1].getValue()))->getValue() );
-
-    // Get following elements
-    if ( args.size() > 1 ) 
-        {
-        const Container* elements = dynamic_cast<const Container*>(args[2].getValue());
-        for (size_t i=0; i<elements->size(); i++) 
-            tempVec.push_back( ((RealPos*)(elements->getElement(i)))->getValue() );
-        }
+    // Get elements
+    for ( size_t i = 0; i < args.size(); i++ )
+        tempVec.push_back( ((RealPos*)(args[i].getValue()))->getValue() );
         
-    // check that the elements sum to 1.0
+    // Check that the elements sum to 1.0
     double sum = 0.0;
     for (size_t i=0; i<tempVec.size(); i++)
         sum += tempVec[i];
     if ( RbMath::compApproximatelyEqual(sum, 1.0, 0.0000001) == false )
-		throw (RbException("The values for the simple do not sum to one"));
+		throw (RbException("The values for the simplex do not sum to one"));
         
-    // renormalization, just to be really, really safe
+    // Renormalization, just to be really, really safe
     RbMath::normalize(tempVec, 1.0);
 
     return new ConstantNode(new Simplex(tempVec));

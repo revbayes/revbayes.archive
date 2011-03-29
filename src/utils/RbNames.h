@@ -67,6 +67,7 @@ const std::string Func_v_int_name                               = "Vector of int
 const std::string Func_v_vecrealvec_name                        = "Matrix constructor function";
 const std::string FunctionNode_name                             = "Function Node";
 const std::string Integer_name                                  = "Integer";
+const std::string List_name                                     = "List";
 const std::string LookupNode_name                               = "Lookup Node";
 const std::string Matrix_name                                   = "Matrix";
 const std::string MatrixReal_name                               = "MatrixReal";

@@ -23,6 +23,8 @@
 #include <iostream>
 #include <list>
 
+class SyntaxFunctionCall;
+
 
 /**
  * This is the class used to hold variables in the syntax tree.
@@ -37,6 +39,7 @@ class SyntaxVariable : public SyntaxElement {
     public:
                                     SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx);                      //!< Global variable
                                     SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx); //!< Member variable 
+                                    SyntaxVariable(SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx);       //!< Global variable expression
                                     SyntaxVariable(const SyntaxVariable& x);                                            //!< Copy constructor
 	    virtual                    ~SyntaxVariable(void);                                                               //!< Destructor deletes variable, identifier and index
 
@@ -50,17 +53,16 @@ class SyntaxVariable : public SyntaxElement {
         void                        print(std::ostream& o) const;                                                       //!< Print info about object
 
         // Regular functions
-        SyntaxVariable*             getBaseVariable(void) { return baseVariable; }                                      //!< Get base variable
         DAGNode*                    getDAGNodeExpr(Frame* frame) const;                                                 //!< Convert to DAG node expression
-        const RbString*             getIdentifier() const { return identifier; }                                        //!< Get identifier
+        RbString*                   getIdentifier(void) { return identifier; }                                          //!< Get identifier
         VectorInteger               getIndex(Frame* frame) const;                                                       //!< Get index
         std::string                 getFullName(Frame* frame) const;                                                    //!< Get full name, with indices and base obj
+        DAGNode*                    getLValue(Frame* frame, VariableSlot*& theSlot, VectorInteger& index) const;        //!< Get semantic value
         DAGNode*                    getValue(Frame* frame) const;                                                       //!< Get semantic value
-        VariableSlot&               getVariableSlot(Frame* frame) const;                                                //!< Is the variable a reference?
-        void                        getVariableInfo(Frame* frame, VariableSlot* slot, VectorInteger* index) const;      //!< Get info about the variable (for SyntaxAssignExpr)
 
     protected:
-        RbString*                   identifier;                                                                         //!< The name of the variable
+        RbString*                   identifier;                                                                         //!< The name of the variable, if identified by name
+        SyntaxFunctionCall*         functionCall;                                                                       //!< Function call giving a reference to a variable (we hope)
         std::list<SyntaxElement*>*  index;                                                                              //!< Vector of int indices to variable element
         SyntaxVariable*             baseVariable;                                                                       //!< Base variable (pointing to a composite node)
 };

@@ -105,52 +105,16 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
     PRINTF( "Evaluating assign expression\n" );
 
     // Get variable info from lhs
-    VectorInteger       index;
-    VariableSlot*       slot = NULL;
-    std::string         varName;
-    variable->getVariableInfo( frame, slot, &index );
-    varName = *variable->getIdentifier();
+    VectorInteger       elemIndex;
+    VariableSlot*       slot        = NULL;
+    DAGNode*            theVariable = variable->getLValue( frame, slot, elemIndex );
+    RbString            varName;
+    if ( variable->getIdentifier() != NULL )
+        varName = *variable->getIdentifier();
+
+    if ( theVariable == NULL && slot != NULL )
+        throw RbException( "Unexpected l-value of assignment" );
     
-    // Get references to the variable and to the last addressable element
-    DAGNode*        variableRef  = NULL;
-    DAGNode*        lastVariable = NULL;
-    VectorInteger   lastIndex;
-    if ( slot != NULL ) {
-        variableRef = const_cast<DAGNode*>( slot->getVariable()->getVarElement(index) );
-        if ( variableRef != NULL ) {
-            lastVariable = variableRef;
-            // lastIndex should remain empty
-        }
-        else {
-            // Get last index and last variable
-            lastIndex = index;
-            lastVariable = variableRef;
-            for (;;) {
-                if ( (int) lastIndex.size() < lastVariable->getDim() )
-                    throw ( "Assignment to subcontainer not allowed (yet)" );
-
-                // Get index to element in current variable
-                VectorInteger tempIndex;
-                size_t i;
-                for ( i = 0; (int) i < lastVariable->getDim(); i++ ) {
-                    tempIndex.push_back( lastIndex[i] );
-                }
-
-                // Break if next variable is NULL
-                const DAGNode* temp = lastVariable->getVarElement( tempIndex );
-                if ( temp == NULL )
-                    break;
-
-                // Update lastIndex and lastVariable
-                tempIndex.clear();
-                for ( ; (int) i < lastIndex.getDim(); i++ )
-                    tempIndex.push_back( lastIndex[i] );
-                lastIndex    = tempIndex;
-                lastVariable = const_cast<DAGNode*>( temp );
-            }
-        }
-    }
-
     // Declare variable storing the return value of the assignment expression
     DAGNode* retValue;
 
@@ -160,145 +124,180 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
         PRINTF("Arrow assignment\n");
 
         // Calculate the value of the rhs expression; this can be a reference if the base element
-        // is a function or a variable but more often it is a value.
-        // If the rhs expression evaluates to a reference, it is important we not make a clone of it.
-        // If it is a value, we do not want to turn it into a reference, which would happen if we allowed
-        // the return value pointer to point to exprValue. Therefore we get a fresh clone in this case.
+        // is a function or a variable, but more often it is a temp variable value. If the rhs
+        // expression evaluates to a reference, it is important we not make a clone of it, or we will
+        // lose track of the original referenced variable. If it is a temp value, we do not want to
+        // turn it into a reference, which would happen if we allowed the return value pointer to
+        // point to exprValue, which will be transformed to a non-temp variable during the execution
+        // of the assignment expression. Therefore we get a fresh clone in this case and use that
+        // as the return value of the assign expression.
         DAGNode* exprValue = expression->getValue( frame );
+        if ( exprValue == NULL )
+            throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
+
         if ( exprValue->isTemp() )
             retValue = exprValue->clone();
         else
             retValue = exprValue;
 
+        // Get handy reference to the object value
+        const RbObject* theValue = exprValue->getValue();
+
         if ( slot == NULL ) {
 
             // The variable does not exist - add it to current frame
-            PRINTF ( "Creating variable %s %s with a constant node %sthrough arrow assignment\n",
-                TypeSpec( exprValue->getValueType(), index.size() ), varName, index.size() > 0 ? "element " : "" );
-            frame->addVariable( varName, index, exprValue );
+            // We make the new slot as generous as possible (type RbObject)
+            if ( elemIndex.size() > 0 && exprValue->getDim() > 0 )
+                throw RbException( "Invalid container to container assignment" );
+
+            PRINTF ( "Creating variable %s %s with a %s node %sthrough arrow assignment\n", TypeSpec( RbObject_name, elemIndex.size() ), varName, exprValue->getTypeSpec(), elemIndex.size() > 0 ? "element " : "" );
+            TypeSpec typeSpec( RbObject_name, elemIndex.size() );
+            frame->addVariable( varName, typeSpec, elemIndex, exprValue ); 
 		}
-        else if ( slot->isReference() && index.size() == 0 ) {
+        else if ( slot->isReference() && elemIndex.size() == 0 ) {
 
             // Assignment to a reference variable
-            if ( exprValue == NULL || exprValue->getValue() == NULL )
-                PRINTF ( "Setting reference variable %s to point to %s %s through arrow assignment\n",
-                    slot->getName(), slot->getTypeSpec(), "NULL" );
-            else if ( exprValue->isTemp() )
-                PRINTF ("Setting reference variable %s to point to %s <temp> through arrow assignment\n",
-                    slot->getName(), exprValue->getTypeSpec() );
+            if ( theValue == NULL ) {
+
+                PRINTF ( "Setting reference variable %s to point to %s %s through arrow assignment\n", slot->getName(), slot->getTypeSpec(), "NULL" );
+                slot->setReference( NULL );
+            }
+            else if ( exprValue->isTemp() ) {
+
+                if ( theValue->isTypeSpec( slot->getTypeSpec() ) ) {
+
+                    PRINTF ("Setting reference variable %s to point to %s <temp> through arrow assignment\n", slot->getName(), exprValue->getTypeSpec() );
+                    slot->setReference( exprValue );
+                }
+                else if ( theValue->isConvertibleTo( slot->getTypeSpec(), true ) ) {
+                
+                    PRINTF ("Setting reference variable %s to point to %s <temp> through arrow assignment with type conversion\n", slot->getName(), exprValue->getTypeSpec() );
+                    slot->setValue( theValue->convertTo( slot->getTypeSpec() ) );
+                    if ( exprValue->numRefs() == 0 )
+                        delete exprValue;
+                }
+            }
+            // Unlike the temp case, here we want to test the variable, not the value
+            else if ( exprValue->isTypeSpec( slot->getTypeSpec() ) ) {
+
+                PRINTF ("Setting reference variable %s to point to %s %s through arrow assignment\n", slot->getName(), exprValue->getTypeSpec(), exprValue->getName());
+                slot->setReference( exprValue );
+            }
             else
-                PRINTF ("Setting reference variable %s to point to %s %s through arrow assignment\n",
-                    slot->getName(), exprValue->getTypeSpec(), exprValue->getName());
-            slot->setReference( exprValue );
+                throw RbException( "Invalid assignment to reference variable " + slot->getTypeSpec() + " " + slot->getName() );
         }
-        else if ( variableRef != NULL && variableRef->isDAGType( StochasticNode_name ) &&
-                  exprValue != NULL && exprValue->getValue() != NULL ) {
+
+#if 0
+        // I think that allowing the setting of values of stochastic nodes through arrow assignment is a bad feature of the
+        // language because it makes it impossible for users to convert stochastic variables to constant variables without
+        // going over an equation assignment or calling a specialized function.
+        // It is better to implement clamp, unclamp, and setval functions for stochastic nodes.
+        else if ( theVariable->isDAGType( StochasticNode_name ) && theValue != NULL ) {
 
             // Setting value of existing stochastic node
-            StochasticNode* theStochasticNode = static_cast<StochasticNode*>( variableRef );
+            StochasticNode* theStochasticNode = static_cast<StochasticNode*>( theVariable );
 
-            const RbObject* theValue = exprValue->getValue();
-            if ( theValue->isType( theStochasticNode->getValueType() ) ) {
+            if ( theValue->isTypeSpec( theStochasticNode->getTypeSpec() ) ) {
 
-                PRINTF ( "Setting the value of stochastic node %s %s through arrow assignment\n",
-                    theStochasticNode->getTypeSpec(), theStochasticNode->getName() );
+                PRINTF ( "Setting the value of stochastic node %s %s through arrow assignment\n", theStochasticNode->getTypeSpec(), theStochasticNode->getName() );
                 theStochasticNode->setValue( theValue->clone() );
             }
             else if ( theValue->isConvertibleTo( theStochasticNode->getTypeSpec(), true ) ) {
 
-                PRINTF ( "Setting the value of stochastic node %s %s through arrow assignment with type conversion\n",
-                    theStochasticNode->getTypeSpec(), theStochasticNode->getName() );
-                theStochasticNode->setValue(exprValue->getValue()->convertTo( theStochasticNode->getValueType() ) );
+                PRINTF ( "Setting the value of stochastic node %s %s through arrow assignment with type conversion\n", theStochasticNode->getTypeSpec(), theStochasticNode->getName() );
+                theStochasticNode->setValue( theValue->convertTo( theStochasticNode->getTypeSpec() ) );
+                if ( exprValue->numRefs() == 0 )
+                    delete exprValue;
             }
             else {
+
                 std::ostringstream msg;
-                msg << "Invalid assignment of " << theValue->getTypeSpec() << " value  to ";
+                msg << "Invalid assignment of " << theValue->getTypeSpec() << " value  to stochastic node ";
                 msg << theStochasticNode->getTypeSpec() << " " << theStochasticNode->getName();
                 throw RbException( msg );
             }
         }
+#endif
         else {
 
-            // Regular assignment
+            // Regular assignment to an existing variable
 
             // Get the value; we really want a temp variable at this point, if not NULL
-            const RbObject* theValue = NULL;
-            if ( exprValue != NULL ) {
-                if ( !exprValue->isTemp() )
-                    exprValue = exprValue->clone();
+            if ( theValue != NULL && !exprValue->isTemp() ) {
+                exprValue = exprValue->clone();
                 theValue = exprValue->getValue();
             }
 
-            // It exists - assign to it using the variable reference or the last addressable variable
-            if ( variableRef != NULL ) {
+            if ( elemIndex.size() == 0 ) {
 
-                if ( theValue == NULL || theValue->isType( variableRef->getTypeSpec() ) ) {
+                if ( exprValue->isTypeSpec( theVariable->getTypeSpec() ) ) {
 
-                    PRINTF ( "Assigning a value to variable %s %s through arrow assignment\n",
-                        variableRef->getTypeSpec(), variableRef->getName() );
-                    variableRef->mutateTo( exprValue ); 
+                    PRINTF ( "Assigning a value to variable %s %s through arrow assignment\n", theVariable->getTypeSpec(), theVariable->getName() );
+                    theVariable->mutateTo( exprValue );
+                    if ( theVariable->numRefs() == 0 )
+                        delete theVariable;
                 }
-                else if ( variableRef->isMutableTo( exprValue ) ) {
+                else if ( theValue == NULL || theValue->isConvertibleTo( theVariable->getTypeSpec(), true ) ) {
+                    
+                    PRINTF ( "Assigning a value to variable %s %s through arrow assignment with type conversion\n", theVariable->getTypeSpec(), theVariable->getName() );
+                    
+                    DAGNode*  newNode;
+                    if ( theValue == NULL ) {
+                        if ( theVariable->getDim() > 0 )
+                            newNode = new ContainerNode( theVariable->getValueType(), theVariable->getDim() );
+                        else if ( theVariable->isDAGType( MemberObject_name ) )
+                            newNode = new MemberNode( theVariable->getValueType() );
+                        else
+                            newNode = new ConstantNode( theVariable->getValueType() );
+                    }
+                    else {
+                        RbObject* newVal = theValue->convertTo( theVariable->getTypeSpec() );
+                        if ( newVal->isType( Container_name ) )
+                            newNode = new ContainerNode( static_cast<Container*>( newVal ) );
+                        else if ( newVal->isType( MemberObject_name ) )
+                            newNode = new MemberNode( static_cast<MemberObject*>( newVal ) );
+                        else
+                            newNode = new ConstantNode( newVal );
+                    }
+                    theVariable->mutateTo( exprValue );
+                    if ( theVariable->numRefs() == 0 )
+                        delete theVariable;
+                    if ( exprValue->numRefs() == 0 )
+                        delete exprValue;
+                }
+                else if ( theVariable->isMutableTo( exprValue ) ) {
 
-                    PRINTF ( "Assigning a value to variable %s %s through arrow assignment with type conversion\n",
-                        variableRef->getTypeSpec(), variableRef->getName() );
-                    variableRef->mutateTo( exprValue );
-                    if ( variableRef->numRefs() == 0 )
-                        delete variableRef;
+                    PRINTF ( "Assigning a value to variable %s %s through arrow assignment with variable mutation\n", theVariable->getTypeSpec(), theVariable->getName() );
+                    theVariable->mutateTo( exprValue );
+                    if ( theVariable->numRefs() == 0 )
+                        delete theVariable;
                }
                else
-                    throw RbException( "Invalid assignment" );
+                   throw RbException( "Invalid assignment: conversion of source and mutation of target both failed" );
             }
             else {
                 
-                if ( theValue == NULL || ( lastIndex.size() == lastVariable->getDim() && theValue->isType( lastVariable->getValueType() ) ) ) {
-
-                    PRINTF ( "Assigning a value to variable %s %s %sthrough arrow assignment\n",
-                        lastVariable->getTypeSpec(), lastVariable->getName(), lastIndex.size() > 0 ? "element " : "" );
-                    variableRef->setElement( lastIndex, exprValue ); 
-                }
-                else if ( lastIndex.size() == lastVariable->getDim() && theValue->isConvertibleTo( lastVariable->getValueType(), true ) ) {
-
-                    PRINTF ( "Assigning a value to variable %s %s %sthrough arrow assignment with type conversion\n",
-                        lastVariable->getTypeSpec(), lastVariable->getName(), lastIndex.size() > 0 ? "element " : "" );
-                    variableRef->setElement( lastIndex, theValue->convertTo( lastVariable->getTypeSpec() ) );
-                    delete exprValue;
-                }
-                else if ( lastVariable->isMutableTo( TypeSpec( theValue->getType(), theValue->getDim() + lastIndex.size() ) ) ) {
-
-                    PRINTF ( "Assigning a value to variable %s %s element through arrow assignment with variable mutation\n",
-                        lastVariable->getTypeSpec(), lastVariable->getName() );
-                    DAGNode* newVar = lastVariable->mutateTo( TypeSpec( theValue->getType(), theValue->getDim() + lastIndex.size() ) );
-                    newVar->setElement( lastIndex, exprValue );
-                    if ( lastVariable->numRefs() == 0 )
-                        delete lastVariable;
-                }
-                else {
-
-                    // We give up and hope that lastVariable knows what to do
-                    lastVariable->setElement( lastIndex, exprValue );
-                }
+                // Assigning of a value to a container element
+                theVariable->setElement( elemIndex, exprValue );
             }
         }
     }
 
     // Deal with equation assignments
-    else if (opType == EquationAssign) {
+    else if ( opType == EquationAssign ) {
 
-        PRINTF("Equation assignment\n");
+        PRINTF( "Equation assignment\n" );
 
         // We do not allow equation assignment into a reference slot
         // We may want to reconsider this, since "raw" lookups are
         // essentially the same as making a value slot into a reference slot
-        if ( slot != NULL && slot->isReference() && index.size() == 0 ) {
-        
+        if ( slot != NULL && slot->isReference() && elemIndex.size() == 0 )
             throw RbException( "Assignment of temp deterministc node to reference variable not allowed" );
-        }
 
         // Get DAG node representation of expression
         // We allow direct references without lookup nodes
         // We also allow constant expressions
-        DAGNode* node = expression->getDAGNodeExpr(frame);
+        DAGNode* node = expression->getDAGNodeExpr( frame );
         if ( node == NULL )
             node = new ConstantNode( RbObject_name );      // NULL object
         else if ( node->isTemp() ) {
@@ -317,77 +316,55 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
         if ( slot == NULL ) {
  
             // It does not exist - add it
-            PRINTF ( "Creating variable %s %s with a dag expression %sthrough equation assignment\n",
-                TypeSpec( node->getValueType(), index.size() ), varName, index.size() > 0 ? "element " : "" );
-            frame->addVariable(varName, index, node);
+            // We make the new slot as generous as possible (type RbObject)
+            PRINTF ( "Creating variable %s %s with a dag expression %sthrough equation assignment\n", TypeSpec( node->getValueType(), elemIndex.size() ), varName, elemIndex.size() > 0 ? "element " : "" );
+            TypeSpec typeSpec( RbObject_name, elemIndex.size() );
+            frame->addVariable( varName, typeSpec, elemIndex, node );
         }
         else {
 
-            // It exists - assign to it using the variable reference or the last addressable variable
-            if ( variableRef != NULL ) {
+            // It exists - assign to it using the variable reference
+            if ( elemIndex.size() != NULL ) {
 
-                if ( Workspace::userWorkspace().isXOfTypeY( node->getTypeSpec(), variableRef->getTypeSpec() ) ) {
+                if ( Workspace::userWorkspace().isXOfTypeY( node->getTypeSpec(), theVariable->getTypeSpec() ) ) {
                     
-                    PRINTF ( "Assigning a dag expression to variable %s %s through equation assignment\n",
-                        variableRef->getTypeSpec(), variableRef->getName() );
-                    variableRef->mutateTo( node ); 
+                    PRINTF ( "Assigning a dag expression to variable %s %s through equation assignment\n", theVariable->getTypeSpec(), theVariable->getName() );
+                    theVariable->mutateTo( node );
                 }
-                else if ( Workspace::userWorkspace().isXConvertibleToY( node->getTypeSpec(), variableRef->getTypeSpec() ) ) {
+                else if ( Workspace::userWorkspace().isXConvertibleToY( node->getTypeSpec(), theVariable->getTypeSpec() ) ) {
                     
-                    PRINTF ( "Assigning a dag expression to variable %s %s through equation assignment with type conversion\n",
-                        variableRef->getTypeSpec(), variableRef->getName() );
-                    variableRef->mutateTo( new ConverterNode( node, variableRef->getTypeSpec() ) );
+                    PRINTF ( "Assigning a dag expression to variable %s %s through equation assignment with type conversion\n", theVariable->getTypeSpec(), theVariable->getName() );
+                    theVariable->mutateTo( new ConverterNode( node, theVariable->getTypeSpec() ) );
+                    if ( theVariable->numRefs() == 0 )
+                        delete theVariable;
                 }
-                else if ( variableRef->isMutableTo( node ) ) {
+                else if ( theVariable->isMutableTo( node ) ) {
 
-                    PRINTF ( "Assigning a dag expression to variable %s %s through equation assignment with variable mutation\n",
-                        variableRef->getTypeSpec(), variableRef->getName() );
-                    variableRef->mutateTo( node );
-                    if ( variableRef->numRefs() == 0 )
-                        delete variableRef;
-               }
-               else
-                    throw RbException( "Invalid assignment" );
+                    PRINTF ( "Assigning a dag expression to variable %s %s through equation assignment with variable mutation\n", theVariable->getTypeSpec(), theVariable->getName() );
+                    theVariable->mutateTo( node );
+                    if ( theVariable->numRefs() == 0 )
+                        delete theVariable;
+                }
+                else
+                    throw RbException( "Invalid assignment: conversion of source and mutation of target both failed" );
+                    
             }
             else {
                 
-                if ( lastIndex.size() == lastVariable->getDim() && Workspace::userWorkspace().isXOfTypeY( node->getTypeSpec(), lastVariable->getTypeSpec() ) ) {
-
-                    PRINTF ( "Assigning a dag expression to variable %s %s %sthrough equation assignment\n",
-                        lastVariable->getTypeSpec(), lastVariable->getName(), lastIndex.size() > 0 ? "element " : "" );
-                    variableRef->setElement( lastIndex, node );
-                }
-                else if ( lastIndex.size() == lastVariable->getDim() && Workspace::userWorkspace().isXConvertibleToY( node->getTypeSpec(), lastVariable->getTypeSpec() ) ) {
-
-                    PRINTF ( "Assigning a value to variable %s %s %sthrough equation assignment with type conversion\n",
-                        lastVariable->getTypeSpec(), lastVariable->getName(), lastIndex.size() > 0 ? "element " : "" );
-                    variableRef->setElement( lastIndex, new ConverterNode( node, lastVariable->getTypeSpec() ) );
-                }
-                else if ( lastVariable->isMutableTo( TypeSpec( node->getValueType(), node->getDim() + lastIndex.size() ) ) ) {
-
-                    PRINTF ( "Assigning a value to variable %s %s element through arrow assignment with variable mutation\n",
-                        lastVariable->getTypeSpec(), lastVariable->getName() );
-                    DAGNode* newVar = lastVariable->mutateTo( TypeSpec( node->getValueType(), node->getDim() + lastIndex.size() ) );
-                    newVar->setElement( lastIndex, node );
-                    if ( lastVariable->numRefs() == 0 )
-                        delete lastVariable;
-                }
-                else {
-
-                    // We give up and hope that lastVariable knows what to do
-                    lastVariable->setElement( lastIndex, node );
-                }
+                // Assignment of a deterministic node to a container element
+                // The DAG node in charge determines what to do
+                theVariable->setElement( elemIndex, node );
             }
         }
     }
 
     // Deal with tilde assignments
-    else if (opType == TildeAssign) {
+    else if ( opType == TildeAssign ) {
 
         PRINTF( "Tilde assignment\n" );
 
         // We do not allow tilde assignment into a reference slot
-        if ( slot->isReference() && index.size() == 0 ) {
+        if ( slot->isReference() && elemIndex.size() == 0 ) {
         
             throw RbException( "Assignment of temp stochastic node to reference variable not allowed" );
         }
@@ -400,10 +377,16 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
             throw RbException( "Distribution function returns NULL" );
         }
         MemberNode* dist = dynamic_cast<MemberNode*>( exprValue );
-        if ( dist == NULL || !Workspace::userWorkspace().isXOfTypeY( dist->getTypeSpec(), Distribution_name ) ) {
+        if ( dist == NULL || !Workspace::userWorkspace().isXOfTypeY( dist->getTypeSpec(), TypeSpec(Distribution_name) ) ) {
             delete exprValue;
             throw RbException( "Function does not return a distribution" );
         }
+        Distribution* distribution = static_cast<Distribution*>( dist->getMemberObject()->clone() );
+        if ( distribution == NULL ) {
+            delete exprValue;
+            throw RbException( "Function returns a NULL distribution" );
+        }
+        delete exprValue;
 
         // Set return value of the assignment expression
         // We return a fresh temp if we got a fresh distribution copy from the rhs
@@ -416,43 +399,46 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
             retValue = exprValue;
 
         // Create new stochastic node
-        StochasticNode* node = new StochasticNode( dist );
+        StochasticNode* node = new StochasticNode( distribution );
 
         // Does the variable exist?
         if ( slot == NULL ) {
  
             // It does not exist - add it
-            PRINTF ( "Creating variable %s %s with a stochastic node %sthrough tilde assignment\n",
-                TypeSpec( node->getValueType(), index.size() ), varName, index.size() > 0 ? "element " : "" );
-            frame->addVariable( varName, index, node );
+            // We make the new slot as generous as possible (type RbObject)
+            PRINTF ( "Creating variable %s %s with a stochastic node %sthrough tilde assignment\n", TypeSpec( node->getValueType(), elemIndex.size() ), varName, elemIndex.size() > 0 ? "element " : "" );
+            TypeSpec typeSpec( RbObject_name, elemIndex.size() );
+            frame->addVariable( varName, typeSpec, elemIndex, node ); 
         }
         else {
 
-            // It exists - assign to it using the variable reference or the last addressable variable
-            // Note that new type conversion is allowed here, only variable mutation
-            if ( variableRef != NULL ) {
+            // It exists - assign to it using the variable reference
+            // Note that no type conversion is allowed here, only variable mutation
+            if ( elemIndex.size() == 0 ) {
 
-                PRINTF ( "Assigning a stochastic node of value type %s to variable %s %s through tilde assignment\n",
-                    node->getValueType(), variableRef->getTypeSpec(), variableRef->getName() );
-                if ( variableRef->isMutableTo(node) ) {
-                    variableRef->mutateTo( node );
-                    if ( variableRef->numRefs() == 0 )
-                        delete variableRef;
+                if ( node->isTypeSpec( theVariable->getTypeSpec() ) ) {
+
+                    PRINTF ( "Assigning a stochastic node of value type %s to variable %s %s through tilde assignment\n", node->getValueType(), theVariable->getTypeSpec(), theVariable->getName() );
+                    theVariable->mutateTo( node );
+                    if ( theVariable->numRefs() == 0 )
+                        delete theVariable;
                 }
-                else
-                    throw RbException( "Invalid assignment" );
-            }
-            else if ( lastVariable->isMutableTo( TypeSpec( node->getValueType(), lastIndex.size()) ) ) {
+                else if ( theVariable->isMutableTo( node ) ) {
 
-                PRINTF ( "Assigning a stochastic node of value type %s to variable %s %s through tilde assignment\n",
-                    node->getValueType(), lastVariable->getTypeSpec(), lastVariable->getName() );
-                DAGNode* newVar = lastVariable->mutateTo( TypeSpec( node->getValueType(), lastIndex.size() ) );
-                newVar->setElement( lastIndex, node );
-                if ( lastVariable->numRefs() == 0 )
-                    delete lastVariable;
+                    PRINTF ( "Assigning a stochastic node of value type %s to variable %s %s through tilde assignment\n", node->getValueType(), theVariable->getTypeSpec(), theVariable->getName() );
+                    theVariable->mutateTo( node );
+                    if ( theVariable->numRefs() == 0 )
+                        delete theVariable;
+                else
+                    throw RbException( "Invalid assignment: conversion of source not allowed and mutation of target failed" );
+                }                    
             }
-            else
-                throw RbException( "Invalid assignment" );
+            else {
+                
+                // Assignment of a deterministic node to a container element
+                // The DAG node in charge determines what to do
+                theVariable->setElement( elemIndex, node );
+            }
         }
     }
 

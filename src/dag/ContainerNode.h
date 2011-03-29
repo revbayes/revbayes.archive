@@ -49,6 +49,7 @@ class ContainerNode : public DeterministicNode {
         // Basic utility functions
         ContainerNode*          clone(void) const;                                                          //!< Clone the member node
         const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
+        DAGNode*                getElement(VectorInteger& index) const;                                     //!< Get element
         int                     getDim() const { return valueDim; }                                         //!< Get dimensions of value
         void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
         std::string             richInfo(void) const;                                                       //!< Complete info about object
@@ -56,14 +57,14 @@ class ContainerNode : public DeterministicNode {
         // DAG functions
         ContainerNode*          cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
         bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
-        bool                    isMutableTo(const TypeSpec& typeSpec) const;                                //!< Is node mutable to language type typeSpec?
         bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
         void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
-        ContainerNode*          mutateTo(const TypeSpec& typeSpec);                                         //!< Mutate to language type typeSpec
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
         // Container functions
+        DAGNode*                getElement(const int i) const { return getElement( VectorInteger(i) ); }    //!< Convenient vector access
         int                     getIndex(const DAGNode* element) const;                                     //!< Get index of element
+        size_t                  size(void) const;                                                           //!< Return container size
 
     private:
         // Utility function

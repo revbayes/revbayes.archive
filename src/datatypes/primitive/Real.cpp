@@ -43,6 +43,11 @@ Real::Real(const int v) : RbObject(), value(v) {
 }
 
 
+/** Construct from unsigned int */
+Real::Real(const unsigned int v) : RbObject(), value(v) {
+}
+
+
 /** Construct from bool */
 Real::Real(const bool v) : RbObject() {
 

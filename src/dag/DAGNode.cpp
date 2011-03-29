@@ -90,13 +90,6 @@ const std::string& DAGNode::getDAGType(void) const {
 }
 
 
-/** Get element variable; default throws error, override if wrapper has variable elements */
-const DAGNode* DAGNode::getVarElement(const VectorInteger& index) const {
-
-    throw (RbException("No variable elements"));
-}
-
-
 /** Is DAG node of specified type? We need to check entire class vector in case we are derived from type. */
 bool DAGNode::isDAGType(const std::string& type) const {
 
