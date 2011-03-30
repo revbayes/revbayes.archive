@@ -136,22 +136,6 @@ std::vector<bool> VectorBoolean::getValue(void) const {
 }
 
 
-/** Print value for user */
-void VectorBoolean::printValue(std::ostream& o) const {
-
-    o << "[ ";
-    for (std::vector<RbObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) 
-        {
-        if (i != elements.begin())
-            o << ", ";
-        o << *(*i);
-        }
-    o <<  " ]";
-    if (getIsRowVector() == false)
-        o << "'";
-}
-
-
 /** Append element to end of vector, updating length in process */
 void VectorBoolean::push_back(bool x) {
 

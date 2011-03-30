@@ -188,8 +188,6 @@ DAGNode* SyntaxVariable::getDAGNodeExpr( Frame* frame ) const {
         return theVar;
 
     /* We need to either find the element or return a lookup node */
-    //! @note Any throw from getElement will result in a memory leak. Therefore
-    //        we use a message passing mechanism instead
     if ( !lookupNeeded ) {
 
         for ( std::vector<DAGNode*>::iterator i = indexArgs.begin(); i != indexArgs.end(); i++ ) {
@@ -198,15 +196,14 @@ DAGNode* SyntaxVariable::getDAGNodeExpr( Frame* frame ) const {
         }
         VectorInteger elemIndex = getIndex( frame );
 
-        std::ostringstream msg;
-        DAGNode* elem = theVar->getElement( elemIndex, msg );
+        /* We need to find the element. First ask if it exists to avoid a memory leak. */
+        if ( !theVar->existsElement( elemIndex ) )
+            throw RbException( getFullName( frame ) + " does not exist" );
+
+        DAGNode* elem = theVar->getElement( elemIndex );
         if ( theVar->numRefs() == 0 )
             delete theVar;
-
-        if ( elem == NULL )
-            throw RbException( msg );
-        else
-            return elem;
+        return elem;
     }
     else {
     
@@ -374,18 +371,14 @@ DAGNode* SyntaxVariable::getLValue(Frame* frame, VariableSlot*& theSlot, VectorI
     if ( elemIndex.size() == 0 || theVar == NULL )
         return theVar;
 
-    /* We need to find the element */
-    //! @note Any throw from getElementRef will result in a memory leak. Therefore
-    //        we use a message passing mechanism instead
-    std::ostringstream msg;
-    DAGNode* elem = theVar->getElementRef( elemIndex, msg );
+    /* We need to find the element. First ask if it exists to avoid a memory leak. */
+    if ( !theVar->existsElement( elemIndex ) )
+        throw RbException( getFullName( frame ) + " does not exist" );
+
+    DAGNode* elem = theVar->getElement( elemIndex );
     if ( theVar->numRefs() == 0 )
         delete theVar;
-
-    if ( elem == NULL )
-        throw RbException( msg );
-    else
-        return elem;
+    return elem;
 }
 
 
@@ -435,18 +428,14 @@ DAGNode* SyntaxVariable::getValue(Frame* frame) const {
     if ( elemIndex.size() == 0 )
         return theVar;
 
-    /* We need to find the element */
-    //! @note Any throw from getElement will result in a memory leak. Therefore
-    //        we use a message passing mechanism instead
-    std::ostringstream msg;
-    DAGNode* elem = theVar->getElement( elemIndex, msg );
+    /* We need to find the element. First ask if it exists to avoid a memory leak. */
+    if ( !theVar->existsElement( elemIndex ) )
+        throw RbException( getFullName( frame ) + " does not exist" );
+
+    DAGNode* elem = theVar->getElement( elemIndex );
     if ( theVar->numRefs() == 0 )
         delete theVar;
-
-    if ( elem == NULL )
-        throw RbException( msg );
-    else
-        return elem;
+    return elem;
 }
 
 

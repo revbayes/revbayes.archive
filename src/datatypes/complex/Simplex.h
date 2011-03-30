@@ -56,6 +56,12 @@ class Simplex : public MemberObject {
         void                    printValue(std::ostream& o) const;                                  //!< Print value for user
         std::string             richInfo(void) const;                                               //!< Complete info about object
 
+        // Member variable rules
+        const MemberRules&      getMemberRules(void) const;                                         //!< Get member rules (empty)
+
+        // Member method inits
+        const MethodTable&      getMethodInits(void) const;                                         //!< Get method inits (empty)
+
         // Subscript access functions
         bool                    hasSubscript(void) { return true; }                                 //!< We support subscripting
         DAGNode*                getSubelement(VectorInteger& index) const;                          //!< Return subscript[](index) element
@@ -67,6 +73,7 @@ class Simplex : public MemberObject {
         std::vector<double>     getValue(void) const { return value; }                              //!< Get value
 
     private:
+        DAGNode*                executeOperation(const std::string& name, const std::vector<VariableSlot>& args);   //!< Execute method
         void                    rescale(void);                                                      //!< Rescale the simplex
 
         std::vector<double>     value;                                                              //!< Vector containing values

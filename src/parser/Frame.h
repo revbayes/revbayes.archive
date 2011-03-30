@@ -78,15 +78,16 @@ class Frame {
         // Regular functions
 	    void                        addReference(const std::string& name, DAGNode* ref);                                    //!< Add a reference
         void                        addReference(const std::string& name, const std::string& type, int dim);                //!< Add empty reference slot
-        void                        addVariable(const std::string& name, const std::string& elemType, const VectorInteger& index, DAGNode* elemValue);  //!< Add a variable with type spec
 	    void                        addVariable(const std::string& name, DAGNode* value);                                   //!< Add a simple variable
-	    void                        addVariable(const std::string& name, const VectorInteger& index, DAGNode* elemValue);   //!< Add a plate variable
+	    void                        addVariable(const std::string& name, const VectorInteger& index, DAGNode* elemValue);   //!< Add a container variable
         void                        addVariable(const std::string& name, const std::string& type, int dim);                 //!< Add empty variable slot
+	    void                        addVariable(const std::string& name, const TypeSpec& typeSp, const VectorInteger& index, DAGNode* elemValue);   //!< Generic add function for parser
         void                        eraseVariable(const std::string& name);                                                 //!< Erase a variable
         bool                        existsVariable(const std::string& name) const;                                          //!< Does variable exist?
         Frame*                      getParentFrame(void) const { return parentFrame; }                                      //!< Get parent frame
         DAGNode*                    getReference(const std::string& name) const;                                            //!< Get reference
         const std::string&          getSlotName(const VariableSlot* slot) const;                                            //!< Get name of a slot
+        const TypeSpec&             getTypeSpec(const std::string& name) const;                                             //!< Get type spec of a named variable
         const RbObject*             getValue(const std::string& name) const;                                                //!< Get value
         const DAGNode*              getVariable(const std::string& name) const;                                             //!< Get variable
         const VariableTable&        getVariableTable(void) const { return variableTable; }                                  //!< Return variable table

@@ -87,7 +87,9 @@ class Workspace : public Frame {
         FunctionTable*              getFunctionTable(void) { return functionTable; }                                    //!< Get function table
         RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
         RandomNumberGenerator*      get_rng(void);                                                                      //!< Get default random number generator
-        const std::string&          getTypeNameRef(const std::string& name) const;                                      //!< Get reference to type name
+        const std::string&          getTypeNameRef(const std::string& name) const;                                      //!< Get a const reference to the type name
+        TypeSpec                    getTypeSpec(const std::string& name) const;                                         //!< Get reference to type specification for object type name 
+        TypeSpec                    getTypeSpec(const TypeSpec& typeSp) const;                                          //!< Check and get reference to correct type specification
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
         bool                        isXOfTypeY(const std::string& xType, const std::string& yType) const;               //!< Type checking usng type names (assuming same dim)
         bool                        isXOfTypeY(const TypeSpec& xTypeSp, const TypeSpec& yTypeSp) const;                 //!< Type checking using full type spec

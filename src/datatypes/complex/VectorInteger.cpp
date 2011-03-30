@@ -22,6 +22,7 @@
 #include "RbNames.h"
 #include "TypeSpec.h"
 #include "VectorInteger.h"
+#include "VectorNatural.h"
 #include "VectorString.h"
 
 #include <sstream>
@@ -55,6 +56,17 @@ VectorInteger::VectorInteger(size_t n, int x)
 
 /** Constructor from int vector */
 VectorInteger::VectorInteger(const std::vector<int>& x)
+    : Vector(Integer_name) {
+
+    for (size_t i=0; i<x.size(); i++) {
+        elements.push_back(new Integer(x[i]));
+        length[0]++;
+    }
+}
+
+
+/** Constructor from VectorInteger */
+VectorInteger::VectorInteger(const VectorNatural& x)
     : Vector(Integer_name) {
 
     for (size_t i=0; i<x.size(); i++) {
@@ -151,22 +163,6 @@ std::vector<int> VectorInteger::getValue(void) const {
 }
 
 
-/** Print value for user */
-void VectorInteger::printValue(std::ostream& o) const {
-
-    o << "[ ";
-    for (std::vector<RbObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) 
-        {
-        if (i != elements.begin())
-            o << ", ";
-        o << *(*i);
-        }
-    o <<  " ]";
-    if (getIsRowVector() == false)
-        o << "'";
-}
-
-
 /** Append element to end of vector, updating length in process */
 void VectorInteger::push_back(int x) {
 
@@ -189,6 +185,21 @@ std::string VectorInteger::richInfo(void) const {
     std::ostringstream o;
     o <<  "VectorInteger: value = ";
     printValue(o);
+
+    return o.str();
+}
+
+
+/** Convert to element index string for use in parser */
+std::string VectorInteger::toIndexString(void) const {
+
+    std::ostringstream o;
+    for ( size_t i = 0; i < elements.size(); i++ ) {
+        if ( operator[](i) < 0 )
+            o <<  "[]";
+        else
+            o << "[" << operator[](i) << "]";
+    }
 
     return o.str();
 }

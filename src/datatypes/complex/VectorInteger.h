@@ -45,17 +45,17 @@ class VectorInteger : public Vector {
         bool                        operator!=(const VectorInteger& x) const;                       //!< Not equals comparison
         
         // Basic utility functions
-        virtual VectorInteger*      clone(void) const;                                              //!< Clone object
-        virtual const VectorString& getClass(void) const;                                           //!< Get class
-        virtual void                printValue(std::ostream& o) const;                              //!< Print value (for user)
-        virtual std::string         richInfo(void) const;                                           //!< Complete info about object
+        VectorInteger*              clone(void) const;                                              //!< Clone object
+        const VectorString&         getClass(void) const;                                           //!< Get class
+        std::string                 richInfo(void) const;                                           //!< Complete info about object
+        std::string                 toIndexString(void) const;                                      //!< Convert to an element or subcontainer index string ([1][2], [][3] etc)
 
         // Vector functions, including STL-like functions
         std::vector<int>            getValue(void) const;                                           //!< Get value as STL int vector
         void                        push_back(int x);                                               //!< Append element to end
         void                        push_front(int x);                                              //!< Add element in front
-        virtual void                setValue(const VectorInteger& x);                               //!< Set the value
-        virtual void                setValue(const std::vector<int>& x);                            //!< Set the value
+        void                        setValue(const VectorInteger& x);                               //!< Set the value
+        void                        setValue(const std::vector<int>& x);                            //!< Set the value
 
     protected:
         RbObject*                   getDefaultElement(void) const { return new Integer(); }         //!< Get default element for empty slots

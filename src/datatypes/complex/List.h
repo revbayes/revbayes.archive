@@ -36,26 +36,34 @@ class VectorRealPos;
 class List : public MemberObject {
 
     public:
-                                List(void);                                               //!< Construct an empty list
+                                List(void);                                                 //!< Construct an empty list
 
         // Overloaded operators
         DAGNode*                operator[](size_t i) const;                                 //!< Index op to variables
 
         // Basic utility functions
-        List*                 clone(void) const;                                          //!< Clone object
+        List*                   clone(void) const;                                          //!< Clone object
         const VectorString&     getClass(void) const;                                       //!< Get class
         void                    printValue(std::ostream& o) const;                          //!< Print value for user
         std::string             richInfo(void) const;                                       //!< Complete info about object
 
+        // Member variable rules
+        const MemberRules&      getMemberRules(void) const;                                 //!< Get member rules
+
+        // Member method inits
+        const MethodTable&      getMethodInits(void) const;                                 //!< Get method inits
+
         // Subscript access functions
         bool                    hasSubscript(void) { return true; }                         //!< We support subscripting
-        DAGNode*                getSubelement(VectorInteger& index) const;                  //!< Return subscript[](index) element
+        DAGNode*                getSubelement(VectorInteger& index);                        //!< Return subscript[](index) element for parser
         size_t                  getSubelementsSize(void) { return variables.size(); }       //!< Number of subscript elements
 
         // List function
         void                    addVariable(DAGNode* var, const std::string& name = "");    //!< Add variable to list
 
     private:
+        DAGNode*                executeOperation(const std::string& name, const std::vector<VariableSlot>& args);   //!< Execute method
+
         std::vector<DAGNode*>   variables;                                                  //!< Store an extra copy of variables in subscript order
         VectorString            names;                                                      //!< Names of variables
 };

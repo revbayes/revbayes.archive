@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "ConstantNode.h"
 #include "ContainerNode.h"
 #include "Frame.h"
 #include "VariableSlot.h"
@@ -24,6 +25,7 @@
 #include "RbNames.h"
 #include "RbOptions.h"      // For PRINTF
 #include "VariableContainer.h"
+#include "Workspace.h"
 
 #include <sstream>
 
@@ -167,6 +169,56 @@ void Frame::addVariable(const std::string& name, const std::string& type, int di
 }
 
 
+/** Generic add variable function for parser (SyntaxAssignExpr) */
+void Frame::addVariable( const std::string& name, const TypeSpec& typeSp, const VectorInteger& index, DAGNode* variable ) {
+
+    /* Throw an error if the variable is NULL */
+    if ( variable == NULL )
+        variable = new ConstantNode( typeSp.getType() );
+
+    /* Check type match */
+    if ( variable->getDim() == 0 ) {
+        if ( !Workspace::userWorkspace().isXOfTypeY( variable->getValueType(), typeSp.getType() ) ||  typeSp.getDim() != index.size() )
+            throw RbException( "Type error when adding variable " + name + index.toIndexString() + " to frame" );
+        if ( Workspace::userWorkspace().isXOfTypeY( variable->getDAGType(), ContainerNode_name ) )
+            throw RbException( "Invalid attempt to add container of containers " + name + " to frame" );
+    }
+    else {
+        if ( !Workspace::userWorkspace().isXOfTypeY( variable->getTypeSpec(), typeSp ) || index.size() != 0 )
+            throw RbException( "Type error when adding variable " + variable->getTypeSpec().toString() + " " + name + " to frame" );
+    }
+
+    /* Check index */
+    for ( size_t i = 0; i < index.size(); i++ ) {
+        if ( index[i] < 0 )
+            throw RbException( "Index error when adding variable " + name + index.toIndexString() + " to frame" );
+    }
+
+    /* Throw an error if the variable exists. Note that we cannot use the function
+       existsVariable because that function looks recursively in parent frames, which
+       would make it impossible to hide global variables. */
+    if ( variableTable.find(name) != variableTable.end() )
+        throw RbException( "Variable " + name + " already exists in local frame" );
+
+    /* Embed the variable in a container if appropriate */
+    if ( index.size() > 0 ) {
+        VariableContainer* container = new VariableContainer( TypeSpec( variable->getValueType(), index.size() ) );
+        (*container)[index] = variable;    // This call will cause the container to resize itself
+        variable = new ContainerNode( container );
+    }
+
+    /* Create the slot */
+    VariableSlot slot( typeSp );
+    slot.setFrame( this );
+    slot.setVariable( variable );
+
+    /* Insert new variable in variable table */
+    variableTable.insert( std::pair<std::string, VariableSlot>(name, slot) );
+
+    PRINTF("Inserted variable %s %s in frame\n", variable->getTypeSpec(), name.c_str());
+}
+
+
 /** Clone entire environment, except base frame (it always stays the same) */
 Frame* Frame::cloneEnvironment(void) const {
 
@@ -235,6 +287,23 @@ const std::string& Frame::getSlotName(const VariableSlot* theSlot) const {
 }
 
 
+/** Get type specification for slot */
+const TypeSpec& Frame::getTypeSpec(const std::string& name) const {
+
+    PRINTF("Retrieving type specification for variable named '%s' from frame\n", name.c_str());
+
+    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
+    if (it == variableTable.end()) {
+        if (parentFrame != NULL)
+            return parentFrame->getTypeSpec(name);
+        else
+            throw (RbException("Variable '" + name + "' does not exist"));
+    }
+
+    return (*it).second.getTypeSpec();
+}
+
+
 /** Get value */
 const RbObject* Frame::getValue(const std::string& name) const {
 
@@ -249,6 +318,31 @@ const RbObject* Frame::getValue(const std::string& name) const {
     }
 
     return (*it).second.getValue();
+}
+
+
+/**
+ * Get variable. We only return a pointer to a const because the variable
+ * may or may not be a reference. Call getReference to get a true reference
+ * to the variable. The getVariable function is provided so that programmers
+ * can look into the structure of a value variable (or reference variable)
+ * should they be interested in doing so, without giving them the ability
+ * to change the value and possibly violate the logic of argument passing in
+ * the language.
+ */
+const DAGNode* Frame::getVariable(const std::string& name) const {
+
+    PRINTF("Retrieving variable named '%s' from frame\n", name.c_str());
+
+    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
+    if (it == variableTable.end()) {
+        if (parentFrame != NULL)
+            return parentFrame->getVariable(name);
+        else
+            throw (RbException("Variable '" + name + "' does not exist"));
+    }
+
+    return (*it).second.getVariable();
 }
 
 

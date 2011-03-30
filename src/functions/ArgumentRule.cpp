@@ -32,19 +32,28 @@
 
 /** Construct rule based on default value; use "" for no label. */
 ArgumentRule::ArgumentRule(const std::string& argName, RbObject* defVal)
-    : RbInternal(), label(argName), argSlot(defVal->getType(), defVal->getDim()), hasDefaultVal(true) {
+    : RbInternal(), label(argName), argSlot(defVal->getTypeSpec()), hasDefaultVal(true) {
+
+    argSlot.setValue( defVal );
 }
 
 
-/** Construct rule without default value; use "" for no label. */
+/**
+ * Construct rule without default value; use "" for no label. To make sure that the
+ * argument rule is set to the right language type specification, we call the work
+ * workspace to translate from object type to language type. This is important because
+ * otherwise calling the constructor with container types would result in argument
+ * rules that had a container type instead of the language type of the container, which
+ * is the element type and element dim of the container.
+ */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp)
-    : RbInternal(), label(argName), argSlot(argTypeSp), hasDefaultVal(false) {
+    : RbInternal(), label(argName), argSlot(Workspace::userWorkspace().getTypeSpec(argTypeSp)), hasDefaultVal(false) {
 }
 
 
-/** Construct rule with default value */
+/** Construct rule with default value. We rely on workspace to check the provided type specification. */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbObject* defValue)
-    : RbInternal(), label(argName), argSlot(argTypeSp), hasDefaultVal(true) {
+: RbInternal(), label(argName), argSlot(Workspace::userWorkspace().getTypeSpec(argTypeSp)), hasDefaultVal(true) {
 
     argSlot.setValue( defValue );
 }
@@ -52,7 +61,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 
 /** Construct rule with default reference or value variable. */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable)
-    : RbInternal(), label(argName), argSlot(argTypeSp), hasDefaultVal(true) {
+    : RbInternal(), label(argName), argSlot(Workspace::userWorkspace().getTypeSpec(argTypeSp)), hasDefaultVal(true) {
 
     if ( argSlot.getTypeSpec().isReference() )
         argSlot.setReference( defVariable );

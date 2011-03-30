@@ -25,7 +25,7 @@
 
 /** Set type of elements */
 Vector::Vector(const std::string& elemType)
-    : ValueContainer(TypeSpec(elemType, 1)), isRowVector(true) {
+    : ValueContainer(TypeSpec(elemType, 1)) {
 }
 
 
@@ -34,6 +34,15 @@ const VectorString& Vector::getClass(void) const {
 
     static VectorString rbClass = VectorString(Vector_name) + Container::getClass();
 	return rbClass;
+}
+
+
+/** Pop element off of front of vector, updating length in process */
+void Vector::pop_front(void) {
+
+    delete elements.front();
+    elements.erase(elements.begin());
+    length[0]--;
 }
 
 
@@ -55,15 +64,5 @@ void Vector::resize( size_t n ) {
     for ( size_t i = elements.size(); i < n; i++ )
         elements.push_back( getDefaultElement() );
     length[0] = elements.size();
-}
-
-
-/** Transpose the vector */
-void Vector::transpose(void) {
-
-    if (isRowVector == true)
-        isRowVector = false;
-    else 
-        isRowVector = true;
 }
 

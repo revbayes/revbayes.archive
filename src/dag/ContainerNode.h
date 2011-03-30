@@ -49,10 +49,14 @@ class ContainerNode : public DeterministicNode {
         // Basic utility functions
         ContainerNode*          clone(void) const;                                                          //!< Clone the member node
         const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
-        DAGNode*                getElement(VectorInteger& index) const;                                     //!< Get element
         int                     getDim() const { return valueDim; }                                         //!< Get dimensions of value
         void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
         std::string             richInfo(void) const;                                                       //!< Complete info about object
+
+        // Parser element access functions
+        bool                    existsElement(VectorInteger& index);                                        //!< Does element exist?
+        DAGNode*                getElement(VectorInteger& index);                                           //!< Get element
+        DAGNode*                getElementRef(VectorNatural& index);                                        //!< Get element reference for setting it
 
         // DAG functions
         ContainerNode*          cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
@@ -62,8 +66,8 @@ class ContainerNode : public DeterministicNode {
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
         // Container functions
-        DAGNode*                getElement(const int i) const { return getElement( VectorInteger(i) ); }    //!< Convenient vector access
-        int                     getIndex(const DAGNode* element) const;                                     //!< Get index of element
+        DAGNode*                getElement(const size_t i);                                                 //!< Convenient vector access
+        VectorNatural           getIndex(const DAGNode* element) const;                                     //!< Get index of element
         size_t                  size(void) const;                                                           //!< Return container size
 
     private:

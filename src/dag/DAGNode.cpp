@@ -25,8 +25,10 @@
 #include "RbNames.h"
 #include "RbObject.h"
 #include "RbString.h"
+#include "VectorNatural.h"
 #include "VectorString.h"
 #include "VariableNode.h"
+#include "Workspace.h"
 
 #include <algorithm>
 #include <iostream>
@@ -47,6 +49,16 @@ DAGNode::DAGNode(const std::string& valType) : children(), parents(), slot(), re
  */
 DAGNode::DAGNode(const DAGNode& x) : children(), parents(), slot(), referringSlots(), valueType(x.valueType) {
 
+}
+
+
+/** Tell parser if element exists */
+bool DAGNode::existsElement( VectorInteger& index ) {
+
+    if ( index.size() == 0 )
+        return true;
+    else
+        return false;
 }
 
 
@@ -90,6 +102,37 @@ const std::string& DAGNode::getDAGType(void) const {
 }
 
 
+/** Get element for parser */
+DAGNode* DAGNode::getElement( VectorInteger& index ) {
+
+    if ( index.size() == 0 )
+        return this;
+    else if ( index[0] < 0 )
+        throw RbException( getName() + index.toIndexString() + " is not a subcontainer" );
+    else
+        throw RbException( getName() + index.toIndexString() + " element does not exist" );
+}
+
+
+/** Get element reference for parser */
+DAGNode* DAGNode::getElementRef( VectorNatural& index ) {
+
+    if ( index.size() == 0 )
+        return this;
+    else if ( index[0] < 0 )
+        throw RbException( getName() + index.toIndexString() + " is not a subcontainer" );
+    else
+        throw RbException( getName() + index.toIndexString() + " element does not exist" );
+ }
+
+
+/** Get type spec of DAG node */
+const TypeSpec DAGNode::getTypeSpec(void) const { 
+
+    return TypeSpec( getValueType(), getDim() );
+}
+
+
 /** Is DAG node of specified type? We need to check entire class vector in case we are derived from type. */
 bool DAGNode::isDAGType(const std::string& type) const {
 
@@ -114,6 +157,12 @@ bool DAGNode::isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const {
     }
 
     return false;
+}
+
+/** Is the node of language type typeSpec? */
+bool DAGNode::isTypeSpec(const TypeSpec& typeSp) const {
+
+    return Workspace::userWorkspace().isXOfTypeY( getTypeSpec(), typeSp );
 }
 
 /** Get number of references to the node from Frame and other DAG nodes
@@ -174,6 +223,16 @@ void DAGNode::removeSlot(const VariableSlot* s) {
             throw RbException( "Variable '" + getName() + " not aware of the reference from slot '" + s->getName() + "'" );
         referringSlots.erase( i );
     }
+}
+
+
+/**
+ * Set element should not be called unless we are a ContainerNode or possibly
+ * a MemberNode that wants to set its subscript elements itself.
+ */
+void DAGNode::setElement( VectorNatural& index, DAGNode* var ) {
+
+    throw RbException( "Unexpected call to setElement of variable " + getName() );
 }
 
 

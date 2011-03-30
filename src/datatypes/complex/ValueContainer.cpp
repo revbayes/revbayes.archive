@@ -286,21 +286,33 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
             }
         }
 
-        VectorNatural elemIndex  = index;
-        VectorNatural valueIndex;
+        VectorNatural elemIndex;
+        VectorInteger valueIndex;
         size_t i = 0;
-        for ( i = index.size(); i < length.size(); i++ )
+        for ( ; i < length.size(); i++ )
             elemIndex.push_back( index[i] );
         for ( ; i < index.size(); i++ )
             valueIndex.push_back( index[i] );
 
-        const RbObject* elemPtr = elements[ getOffset( elemIndex ) ];
+        RbObject* elemPtr = elements[ getOffset( elemIndex ) ];
         if ( elemPtr == NULL )
             throw RbException( "Index goes into a NULL object" );
         if ( !elemPtr->isType( MemberObject_name ) )
             throw RbException( "Container element does not support subscripting" );
-        else
-            return static_cast<const MemberObject*>( elemPtr )->getSubelement( index );
+        else {
+            // Get member object pointer to the element
+            MemberObject* elem = static_cast<MemberObject*>( elemPtr );            
+
+            // Truncate index and delegate job to subelement
+            size_t subIndex = valueIndex[0];
+            valueIndex.pop_front();
+            index = valueIndex;
+            if ( index.size() == 0 )
+                return elem->getSubelement( subIndex );
+            else
+                return elem->getSubelement( subIndex )->getElement( index );
+
+        }
     }
     else if ( index.size() == 0 ) {
 

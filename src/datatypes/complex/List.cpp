@@ -27,7 +27,7 @@
 
 
 /** Construct empty list */
-List::List( void ) : MemberObject() {
+List::List( void ) : MemberObject(getMemberRules(), getMethodInits()) {
 }
 
 
@@ -59,6 +59,13 @@ List* List::clone() const {
 }
 
 
+/** Execute member method. We throw an error because there are no member methods (yet) */
+DAGNode* List::executeOperation(const std::string& name, const std::vector<VariableSlot>& args) {
+
+    throw RbException ("Object does not have methods");
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& List::getClass() const {
 
@@ -67,11 +74,27 @@ const VectorString& List::getClass() const {
 }
 
 
+/** Return member rules (no original members) */
+const MemberRules& List::getMemberRules(void) const {
+
+    static MemberRules memberRules;
+    return memberRules;
+}
+
+
+/** Get method specifications (no methods) */
+const MethodTable& List::getMethodInits(void) const {
+
+    static MethodTable   methodInits;
+    return methodInits;
+}
+
+
 /**
  * Get subscript element for parser. By giving back a temp variable rather than
  * a reference to a list element, we ensure that the parser cannot set the element
  */
-DAGNode* List::getSubelement( VectorInteger& index ) const {
+DAGNode* List::getSubelement( VectorInteger& index ) {
 
     if ( index.size() < 1 )
         throw RbException( "Subscript index empty for " + List_name );

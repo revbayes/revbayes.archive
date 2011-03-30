@@ -50,8 +50,6 @@ class MatrixReal : public Matrix {
                                             MatrixReal(const std::vector<size_t>& length, const std::vector<double>& x);//!< Construct matrix from length specification and vector of content
 
         // Overoaded operators
-        const RbObject* const &             operator[](const VectorNatural& index) const;                               //!< Subscript container access (const)
-        RbObject*&                          operator[](const VectorNatural& index);                                     //!< Subscript container access (const)
         VectorReal&                         operator[](size_t i);                                                       //!< Subscript operator
         const VectorReal&                   operator[](size_t i) const;                                                 //!< Subscript operator (const)
 

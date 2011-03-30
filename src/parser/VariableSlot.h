@@ -18,6 +18,7 @@
 #ifndef VariableSlot_H 
 #define VariableSlot_H
 
+#include "DAGNode.h"
 #include "TypeSpec.h"
 
 #include <string>
@@ -48,7 +49,7 @@ class VariableSlot {
         const std::string&      getType(void) const { return typeSpec.getType(); }              //!< Return type of slot
         const TypeSpec&         getTypeSpec(void) const { return typeSpec; }                    //!< Return type specification for slot
         const RbObject*         getValue(void) const;                                           //!< Get the value of the variable (ptr, not copy)
-        const DAGNode*          getVariable(void) const;                                        //!< Get the variable (ptr, not copy)
+        const DAGNode*          getVariable(void) const { return variable->getReference(); }    //!< Get the variable (ptr, not copy)
         bool                    isValidVariable(DAGNode* newVariable ) const;                   //!< Is newVariable valid for the slot?
         int                     isReference(void) const { return typeSpec.isReference(); }      //!< Is this a reference slot?
         void                    printValue(std::ostream& o) const;                              //!< Print value of slot

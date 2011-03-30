@@ -46,10 +46,11 @@ class StochasticNode : public VariableNode {
         const RbObject*         getValue(void) const;                                           //!< Get const value if possible
         void                    printStruct(std::ostream& o) const;                             //!< Print struct for user
         void                    printValue(std::ostream& o) const;                              //!< Print struct for user
-        void                    setElement(const VectorInteger& index, RbObject* value);        //!< Set value element
-        void                    setName(const std::string& name);                               //!< Set name
-        void                    setValue(RbObject* value);                                      //!< Set value
         std::string             richInfo(void) const;                                           //!< Complete info about object
+
+        // Functions for setting the value (for functions, not for use by the parser, which is not allowed to set the value of a stochastic node)
+        void                    setElement(const VectorInteger& index, RbObject* value);        //!< Set value element
+        void                    setValue(RbObject* value);                                      //!< Set value
 
         // StochasticNode functions
         double                  calculateLnProbability(void);                                   //!< Calculate log conditional probability
@@ -82,7 +83,7 @@ class StochasticNode : public VariableNode {
         bool                    clamped;                                                       //!< Is the node clamped with data?
         Distribution*           distribution;                                                  //!< Distribution (density functions, random draw function)
         RbObject*               value;                                                         //!< Current value
-        const RbObject*         storedValue;                                                   //!< Stored value
+        RbObject*               storedValue;                                                   //!< Stored value
 };
 
 #endif

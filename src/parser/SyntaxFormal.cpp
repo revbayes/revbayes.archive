@@ -51,7 +51,7 @@ SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defa
     }
 
     // Create the type specification
-    type = new TypeSpec(Workspace::userWorkspace().getTypeNameRef(tpName), nDim, isRef);
+    type = new TypeSpec(Workspace::userWorkspace().getTypeSpec(tpName), nDim, isRef);
     
     // Avoid memory leak
     delete typeSpec;

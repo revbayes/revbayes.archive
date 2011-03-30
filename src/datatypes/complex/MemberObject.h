@@ -51,13 +51,12 @@ class MemberObject: public RbComplex {
         virtual void                printValue(std::ostream& o) const;                                                  //!< Print value for user
         virtual std::string         richInfo(void) const;                                                               //!< Complete info
 
-        // DAG utility functions you do not have to override
-        MemberObject*               cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                             //!< Clone entire graph
-        MemberObject*               constantClone(void) const;                                                          //!< Make a constant clone
+        // DAG utility function you do not have to override
+        MemberObject*               getConstValue(void) const;                                                          //!< Make a constant clone
 
         // Member variable functions
         const MemberTable&          getMembers(void) const { return members; }                                          //!< Get members
-        virtual const MemberRules&  getMemberRules(void) const;                                                         //!< Get member rules
+        virtual const MemberRules&  getMemberRules(void) const = 0;                                                     //!< Get member rules
         const TypeSpec&             getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
         const RbObject*             getValue(const std::string& name);                                                  //!< Get member value
         const RbObject*             getValue(const std::string& name) const;                                            //!< Get member value (const)
@@ -69,20 +68,20 @@ class MemberObject: public RbComplex {
         // Member method functions
         DAGNode*                    executeMethod(const std::string& name, int funcId);                                 //!< Execute method with preprocessed args (repeated evaluation)
         DAGNode*                    executeMethod(const std::string& name, std::vector<Argument>& args);                //!< Execute method (evaluate once)
-        virtual const MethodTable&  getMethodInits(void) const;                                                         //!< Get method specifications
+        virtual const MethodTable&  getMethodInits(void) const = 0;                                                     //!< Get method specifications
         const MethodTable&          getMethods(void) const { return methods; }                                          //!< Get methods
 
         // Subscript operator functions
         virtual bool                hasSubscript(void) { return false; }                                                //!< Does object support subscripting?
-        virtual DAGNode*            getSubelement(VectorInteger& index) const;                                          //!< Return subscript[](index) element
+        virtual DAGNode*            getSubelement(const size_t i);                                                      //!< Return subscript[](index) element
         virtual size_t              getSubelementsSize(void) { return 0; }                                              //!< Number of subscript elements
+        virtual void                setElement(VectorNatural& index, DAGNode* var);                                     //!< Set subelement, or elements of a subelement; only override if you want full control
 
-protected:
+    protected:
 									MemberObject(const MemberRules& memberRules, const MethodTable& methodInits);       //!< Standard constructor
-									MemberObject(void);                                                                 //!< Constructor of object without variables or methods
 
         // Protected functions
-        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args);   //!< Execute method
+        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args) = 0;   //!< Execute method
 
         // Members and methods keep track of variables and functions belonging to the object
         MemberTable                 members;                                                                            //!< Member variables

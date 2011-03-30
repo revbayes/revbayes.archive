@@ -51,6 +51,7 @@ class VariableContainer : public Container {
                                     VariableContainer(const std::vector<size_t>& len, DAGNode* x);              //!< Array of given dimensions with copies of x
                                     VariableContainer(const TypeSpec& typeSpec);                                //!< Empty array
                                     VariableContainer(const TypeSpec& typeSpec, const std::vector<size_t>& len);//!< NULL variable array of given dimensions
+                                    VariableContainer(const ValueContainer& x);                                 //!< Construct from value container
                                     VariableContainer(const VariableContainer& x);                              //!< Copy constructor
         virtual                    ~VariableContainer(void);                                                    //!< Destructor
 
@@ -67,6 +68,7 @@ class VariableContainer : public Container {
         // Container functions
         void                        clear(void);                                                                //!< Clear container
         ValueContainer*             getConstValue(void);                                                        //!< Get constant value
+        VectorNatural               getIndex(const DAGNode* elem) const;                                        //!< Get index of an element
         void                        resize(const std::vector<size_t>& len);                                     //!< Resize container
         size_t                      size(void) const { return elements.size(); }                                //!< Get total number of elements
 

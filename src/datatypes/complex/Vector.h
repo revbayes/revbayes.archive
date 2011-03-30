@@ -34,14 +34,12 @@ class Vector : public ValueContainer {
         virtual const VectorString&     getClass(void) const;                                               //!< Get class
 
         // Vector functions you do not have to override
-        bool                            getIsRowVector(void) const { return isRowVector; }                  //!< Is the vector a row vector
-        void                            pop_back(void);                                                     //!< Drop element
+        void                            pop_back(void);                                                     //!< Drop element at back
+        void                            pop_front(void);                                                    //!< Drop element from front
         void                            resize(size_t n);                                                   //!< Resize to new vector of length n
-        void                            transpose(void);                                                    //!< Transpose vector
 
     protected:
                                         Vector(const std::string& elemType);                                //!< Set type spec of container from type of elements
-        bool                            isRowVector;                                                        //!< Indicates whether the vector is a row vector (true) or a column vector (false)
 };
 
 #endif

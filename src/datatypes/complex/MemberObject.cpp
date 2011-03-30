@@ -97,13 +97,36 @@ const VectorString& MemberObject::getClass(void) const {
 }
 
 
+/** Get constant value (evaluate all member variables and replace with constants) of member object */
+MemberObject* MemberObject::getConstValue( void ) const {
+
+    MemberObject* temp = clone();
+
+    const VariableTable& tempMemberTable = temp->members.getVariableTable();
+    for ( VariableTable::const_iterator i = tempMemberTable.begin(); i != tempMemberTable.end(); i++ ) {
+    
+        RbObject* constValue = temp->members.getValue( (*i).first )->clone();
+        temp->members.setValue( (*i).first, constValue );
+    }
+
+    return temp;
+}
+
+
+/** Get type specification for a member variable */
+const TypeSpec& MemberObject::getMemberTypeSpec(const std::string& name) const {
+
+    return members.getTypeSpec( name );
+}
+
+
 /**
  * Get subscript element. We are responsible for finding element
  * index[0] using our subscript operator. If there are more indices
  * in the index array, we delegate the job to our subelement
  * after removing index[0] from the index array.
  */
-DAGNode* MemberObject::getSubelement( VectorInteger& index ) const {
+DAGNode* MemberObject::getSubelement( size_t i ) {
 
     throw RbException( "Object does not support subscripting" );
 }
@@ -138,7 +161,7 @@ DAGNode* MemberObject::getVariable(const std::string& name) {
 
 
 /** Is convertible to type? Default is false for member objects; override if you want to support type conversion */
-bool RbObject::isConvertibleTo(const std::string& type, int dim, bool once) const {
+bool MemberObject::isConvertibleTo(const std::string& type, int dim, bool once) const {
 
 	return false;
 }
@@ -167,6 +190,13 @@ std::string MemberObject::richInfo(void) const {
     printValue(o);
 
     return o.str();
+}
+
+
+/** Set subscript element, or element of subscript element */
+void MemberObject::setElement( VectorNatural& index, DAGNode* var ) {
+
+    throw RbException( "Unexpected call to setElement for a " + getTypeSpec().toString() + " value" );
 }
 
 

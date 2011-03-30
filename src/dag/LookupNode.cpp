@@ -248,11 +248,32 @@ LookupNode* LookupNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
 }
 
 
+/** Does element exist ? */
+bool LookupNode::existsElement( VectorInteger& index ) {
+
+    return getReference()->existsElement( index );
+}
+
+
 /** Get class vector describing type of DAG node */
 const VectorString& LookupNode::getDAGClass() const {
 
     static VectorString rbClass = VectorString(LookupNode_name) + VariableNode::getDAGClass();
     return rbClass;
+}
+
+
+/** Get element for parser */
+DAGNode* LookupNode::getElement( VectorInteger& index ) {
+
+    return getReference()->getElement( index );
+}
+
+
+/** Get element reference for modification by parser */
+DAGNode* LookupNode::getElementRef( VectorNatural& index) {
+
+    return getReference()->getElementRef( index );
 }
 
 
@@ -274,15 +295,6 @@ const TypeSpec& LookupNode::getMemberTypeSpec(const RbString& name) const {
 bool LookupNode::isMutableTo(const DAGNode* newNode) const {
 
     return false;
-}
-
-
-/** Is it possible to mutate node to contain newValue? */
-bool LookupNode::isMutableTo(const TypeSpec& typeSpec) const {
-
-    bool isMutable = false;
-
-    return isMutable;
 }
 
 
@@ -321,8 +333,12 @@ bool LookupNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNod
 
 
 /** Look up the variable */
-const DAGNode* LookupNode::lookup(void) {
+DAGNode* LookupNode::lookup(void) {
     
+    // Invalidate current value
+    touched = true;
+    changed = false;
+
     // Look up variable
     if ( indexArgs.size() == 0 ) {
         if ( baseVariable != NULL )
@@ -332,7 +348,7 @@ const DAGNode* LookupNode::lookup(void) {
             if ( theBaseObject == NULL )
                 throw RbException( "Base variable does not have members");
 
-            return theBaseObject->getVariable( *memberName );
+            return const_cast<DAGNode*>( theBaseObject->getVariable( *memberName ) );
         }
     }
     else {
@@ -341,14 +357,15 @@ const DAGNode* LookupNode::lookup(void) {
         for ( IndexArgs::iterator i = indexArgs.begin(); i != indexArgs.end(); i++ )
             index.push_back( ( (Integer*)( (*i)->getValue() ) )->getValue() - 1 );
 
+        std::ostringstream  msg;
         if ( baseVariable != NULL )
-            ; // return  baseVariable->getVarElement( index );
+            return baseVariable->getElement( index );
         else {
             const MemberObject* theBaseObject = dynamic_cast<const MemberObject*>( baseLookup->getValue() );
             if ( theBaseObject == NULL )
                 throw RbException( "Base variable does not have members" );
 
-            return NULL; // theBaseObject->getVariable( *memberName )->getVarElement( index );
+            return const_cast<DAGNode*>( theBaseObject->getVariable( *memberName ) )->getElement( index );
         }
     }
 }
@@ -357,13 +374,6 @@ const DAGNode* LookupNode::lookup(void) {
 /** Mutate to newNode */
 void LookupNode::mutateTo(DAGNode* newNode) {
     
-    throw RbException("Not implemented yet");
-}
-
-
-/* Mutate to contain newValue */
-LookupNode* LookupNode::mutateTo(const TypeSpec& typeSpec) {
-
     throw RbException("Not implemented yet");
 }
 
@@ -407,6 +417,13 @@ std::string LookupNode::richInfo(void) const {
     o << std::endl;
 
     return o.str();
+}
+
+
+/** Allow parser to set element */
+void LookupNode::setElement( VectorNatural& index, DAGNode* var ) {
+
+    getReference()->setElement( index, var );
 }
 
 

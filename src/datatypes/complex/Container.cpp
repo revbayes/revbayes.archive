@@ -101,13 +101,6 @@ void Container::getContainerSubscriptIndices( const VectorInteger& index, Vector
 }
 
 
-/** Get element class vector from environment */
-const VectorString& Container::getElementClass(void) const {
-
-    return Workspace::userWorkspace().getClassOfType( elementType );
-}
-
-
 /** Get offset to element or subcontainer; also check index */
 size_t Container::getOffset( const VectorNatural& index ) const {
 

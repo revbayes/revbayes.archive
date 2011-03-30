@@ -44,9 +44,27 @@ VariableSlot::VariableSlot(DAGNode* var, bool ref)
 }
 
 
+/** Constructor of filled slot with type specification. */
+VariableSlot::VariableSlot(const TypeSpec& typeSp, DAGNode* var)
+    : typeSpec(typeSp), variable(NULL), frame(NULL) {
+
+    if (typeSpec.isReference())
+        setReference(var);
+    else
+        setVariable(var);
+
+}
+
+
 /** Constructor of empty slot based on type specification */
 VariableSlot::VariableSlot(const std::string& type, int dim, bool ref)
     : typeSpec(type, dim, ref), variable(NULL), frame(NULL) {
+}
+
+
+/** Constructor of empty slot based on type specification */
+VariableSlot::VariableSlot(const TypeSpec& typeSp)
+    : typeSpec(typeSp), variable(NULL), frame(NULL) {
 }
 
 

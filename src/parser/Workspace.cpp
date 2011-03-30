@@ -176,7 +176,7 @@ bool Workspace::addFunction(const std::string& name, RbFunction* func) {
 /** Add type to the workspace */
 bool Workspace::addType(RbObject* exampleObj) {
 
-    PRINTF("Adding type %s to workspace\n", exampleObj->getType().c_str());
+    PRINTF("Adding type %s to workspace\n", exampleObj->getTypeSpec().toString().c_str());
 
     std::string name = exampleObj->getType();
 
@@ -208,7 +208,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* te
 /** Execute function to get its value (workspaces only evaluate functions once) */
 DAGNode* Workspace::executeFunction(const std::string& name, const std::vector<Argument>& args) const {
 
-    /* Setting the last parameter to true indicates that we are only interested in
+    /* Using this calling convention indicates that we are only interested in
        evaluating the function once */
     return functionTable->executeFunction(name, args);
 }
@@ -218,6 +218,49 @@ DAGNode* Workspace::executeFunction(const std::string& name, const std::vector<A
 RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Argument>& args) {
 
     return functionTable->getFunction(name, args);
+}
+
+
+/** Check and get reference to the type name of an object type */
+const std::string& Workspace::getTypeNameRef( const std::string& name ) const {
+
+    return getTypeSpec( name ).getType();
+}
+
+
+/** Check and get type specification for a named object type */
+TypeSpec Workspace::getTypeSpec( const std::string& name ) const {
+
+    if ( name == ValueContainer_name || name == VariableContainer_name ) {
+        
+        // We cannot rely on the type spec provided by generic container type dummies in the type table
+        // because they do not know the relevant element dimensions. There should not be such dummies
+        // in the type table anyway, but we add an extra check here just to make sure
+        throw RbException( "Invalid attempt to convert a generic container type to valid type specification" );
+    }
+
+    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
+    if ( it == typeTable.end() )
+        throw RbException( "No object class with name " + name );
+    return (*it).second->getTypeSpec();
+}
+
+
+/** Check and get type specification for a named object type */
+TypeSpec Workspace::getTypeSpec( const TypeSpec& typeSp ) const {
+
+    if ( typeSp.getType() == ValueContainer_name || typeSp.getType() == VariableContainer_name ) {
+        
+        // We cannot rely on the type spec provided by generic container type dummies in the type table
+        // because they do not know the relevant element dimensions. There should not be such dummies
+        // in the type table anyway, but we add an extra check here just to make sure
+        throw RbException( "Invalid attempt to convert a generic container type to valid type specification" );
+    }
+
+    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( typeSp.getType() );
+    if ( it == typeTable.end() )
+        throw RbException( "No object class with name " + typeSp.getType() );
+    return (*it).second->getTypeSpec();
 }
 
 
@@ -233,8 +276,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 
     try 
         {
-        /* Add types: add a dummy variable which will be deleted. We only do
-           this to get the inheritance hierarchy. */
+        /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
         addType( new Boolean()             );
         addType( new Integer()             );
         addType( new MatrixReal()          );
@@ -280,12 +322,14 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_mul",      new Func__mul<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<         MatrixReal,           Real, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<               Real,     MatrixReal, MatrixReal >() );
+#if 0
         addFunction( "_mul",      new Func__mul<          VectorReal,    VectorReal, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<          VectorReal,    MatrixReal, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<          MatrixReal,    VectorReal, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<       VectorRealPos,    MatrixReal, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<          MatrixReal, VectorRealPos, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<       VectorRealPos, VectorRealPos, MatrixReal >() );
+#endif
         addFunction( "_sub",      new Func__sub<            Integer,        Integer,    Integer >() );
         addFunction( "_sub",      new Func__sub<               Real,           Real,       Real >() );
         addFunction( "_sub",      new Func__sub<            Integer,           Real,       Real >() );
@@ -324,9 +368,11 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_or",       new Func__or<             Integer,           Real >()             );
         addFunction( "_or",       new Func__or<                Real,        Integer >()             );
         addFunction( "transpose", new Func_transpose<    MatrixReal,     MatrixReal >()             );
+#if 0
         addFunction( "transpose", new Func_transpose< VectorInteger,  VectorInteger >()             );
         addFunction( "transpose", new Func_transpose<    VectorReal,     VectorReal >()             );
         addFunction( "transpose", new Func_transpose< VectorRealPos,  VectorRealPos >()             );
+#endif
 
         /* Add regular functions */
         addFunction( "clamp",     new Func_clamp()        ); 
@@ -346,7 +392,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         }
     catch(RbException& rbException) 
         {
-        PRINTF("Caught an exception while initializing the workspace\n");
+        RBOUT("Caught an exception while initializing the workspace\n");
         std::ostringstream msg;
         rbException.printValue(msg);
         msg << std::endl;

@@ -49,6 +49,12 @@ class FunctionNode : public DeterministicNode {
         virtual void                printStruct(std::ostream& o) const;                                         //!< Print struct for user
         virtual std::string         richInfo(void) const;                                                       //!< Complete info about object
 
+        // Parser element access functions
+        bool                        existsElement(VectorInteger& index);                                        //!< Does element exist?
+        DAGNode*                    getElement(VectorInteger& index);                                           //!< Get element
+        DAGNode*                    getElementRef(VectorNatural& index);                                        //!< Get element reference for setting it
+        void                        setElement(VectorNatural& index, DAGNode* var);                             //!< Set element for parser if member object requests such a call
+
         // DAG functions
         FunctionNode*               cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
         bool                        isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?

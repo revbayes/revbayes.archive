@@ -54,7 +54,6 @@ class Matrix : public ValueContainer {
         virtual std::string             richInfo(void) const = 0;                                           //!< Complete info about object
 
         // Container functions you have to override to allow vector of vectors representation
-        virtual const RbObject* const&  operator[](const VectorNatural& index) const = 0;                   //!< Subscript container access (const)
         virtual void                    clear(void) = 0;                                                    //!< Clear
         virtual void                    resize(const std::vector<size_t>& len) = 0;                         //!< Resize to new length vector
         virtual void                    setLength(const std::vector<size_t>& len) = 0;                      //!< Reorganize container
@@ -69,8 +68,6 @@ class Matrix : public ValueContainer {
 
     protected:
                                         Matrix(const std::string& elemType);                                //!< Set type of elements
-
-        virtual RbObject*&              operator[](const VectorNatural& index) = 0;                         //!< Subscript container access (modify)
 
         // Parser help functions you have to override
         virtual DAGNode*                getElement(const VectorInteger& index) = 0;                         //!< Get element or subcontainer for parser

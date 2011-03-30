@@ -155,8 +155,6 @@ void VectorReal::printValue(std::ostream& o) const {
         o << *(*i);
         }
     o <<  " ]";
-    if (getIsRowVector() == false)
-        o << "'";
 
     o.setf(previousFlags);
     o << std::setprecision(previousPrecision);

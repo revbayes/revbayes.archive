@@ -22,6 +22,8 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "TypeSpec.h"
+#include "VectorInteger.h"
+#include "VectorNatural.h"
 #include "VectorString.h"
 
 #include <assert.h>
@@ -53,7 +55,7 @@ MemberNode::MemberNode(MemberObject* val)
     }
 
     /* Set value and stored value */
-    value       = memberObject->constantClone();
+    value       = memberObject->getConstValue();
     storedValue = NULL;
 }
 
@@ -95,8 +97,8 @@ MemberNode* MemberNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
     newNodes[(DAGNode*)(this)] = copy;
 
     /* Clone member object and value */
-    copy->memberObject = memberObject->cloneDAG(newNodes);
-    copy->value = copy->memberObject->constantClone();
+    //copy->memberObject = memberObject->cloneDAG(newNodes);
+    copy->value = copy->memberObject->getConstValue();
     copy->storedValue = NULL;
     copy->touched = false;
     copy->changed = false;
@@ -118,11 +120,82 @@ MemberNode* MemberNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
 }
 
 
+/** Does element referred to by index exist? */
+bool MemberNode::existsElement( VectorInteger& index ) {
+
+    if ( index.size() == 0 )
+        return true;
+    
+    if ( index[0] < 0 )
+        return false;
+    
+    if ( size_t( index[0] ) >= memberObject->getSubelementsSize() )
+        return false;
+
+    // Pop one index and delegate to subscript element
+    size_t i = index[0];
+    index.pop_front();
+    return memberObject->getSubelement( i )->existsElement( index );
+}
+
+
 /** Get class vector describing type of DAG node */
 const VectorString& MemberNode::getDAGClass() const {
 
     static VectorString rbClass = VectorString(MemberNode_name) + DeterministicNode::getDAGClass();
     return rbClass;
+}
+
+
+/** Get element for parser */
+DAGNode* MemberNode::getElement( VectorInteger& index ) {
+
+    if ( index.size() == 0 )
+        return this;
+    
+    if ( index[0] < 0 )
+        throw RbException( getName() + index.toIndexString() + " is not a subcontainer" );
+    
+    if ( size_t( index[0] ) >= memberObject->getSubelementsSize() )
+        throw RbException ( "Index out of bound for " + getName() );
+
+    // Pop one index and delegate to subscript element
+    size_t i = index[0];
+    index.pop_front();
+    return memberObject->getSubelement( i )->getElement( index );
+}
+
+
+/** Get element reference for parser */
+DAGNode* MemberNode::getElementRef( VectorNatural& index ) {
+
+    // Invalidate current value
+    touched = true;
+    changed = false;
+
+    // Get reference to the element
+    if ( index.size() == 0 )
+        return this;
+    
+    if ( index[0] >= memberObject->getSubelementsSize() )
+        throw RbException ( "Index out of bound for " + getName() );
+
+    // Pop one index and delegate to subscript element
+    // if permitted by our member object
+    DAGNode* subElement = memberObject->getSubelement( index[0] );
+    if ( subElement->isTemp() ) {
+
+        // Not permitted by the member object
+        delete subElement;
+        return this;
+    }
+    else {
+
+        // Permitted by the member object
+        size_t i = index[0];
+        index.pop_front();
+        return subElement->getElementRef( index );
+    }
 }
 
 
@@ -137,15 +210,6 @@ const TypeSpec& MemberNode::getMemberTypeSpec(const RbString& name) const {
 bool MemberNode::isMutableTo(const DAGNode* newNode) const {
 
     return false;
-}
-
-
-/** Is it possible to mutate node to contain newValue? */
-bool MemberNode::isMutableTo(const TypeSpec& typeSpec) const {
-
-    bool isMutable = false;
-
-    return isMutable;
 }
 
 
@@ -173,13 +237,6 @@ bool MemberNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNod
 /** Mutate to newNode */
 void MemberNode::mutateTo(DAGNode* newNode) {
     
-    throw RbException("Not implemented yet");
-}
-
-
-/* Mutate to contain newValue */
-MemberNode* MemberNode::mutateTo(const TypeSpec& typeSpec) {
-
     throw RbException("Not implemented yet");
 }
 
@@ -231,6 +288,22 @@ std::string MemberNode::richInfo(void) const {
 }
 
 
+/** Set element for parser, if our member object wants this (see getElementRef) */
+void MemberNode::setElement( VectorNatural& index, DAGNode* var ) {
+
+    if ( index.size() == 0 )
+        throw RbException( "Unexpected call to setElement of variable " + getName() );
+
+    if ( index[0] >= memberObject->getSubelementsSize() )
+        throw RbException( "Index out of bound for " + getName() );
+
+    // Invalid current value and then set element
+    touched = true;
+    changed = false;
+    memberObject->setElement( index, var );
+}
+
+
 /** Swap parent node */
 void MemberNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
 
@@ -267,7 +340,7 @@ void MemberNode::update(void) {
         if (storedValue != NULL)
             delete storedValue;
         storedValue = value;
-        value = memberObject->constantClone();
+        value = memberObject->getConstValue();
         changed = true;
     }
 }

@@ -30,6 +30,7 @@ class RbObject;
 class VariableNode;
 class VariableSlot;
 class VectorInteger;
+class VectorNatural;
 class VectorString;
 
 
@@ -44,18 +45,25 @@ class DAGNode {
         const std::string&              getDAGType(void) const;                                                 //!< Get DAG node type
         const std::string               getName(void) const;                                                    //!< Get name from slot and children
         const TypeSpec                  getTypeSpec(void) const;                                                //!< Get language type specification for value
+        std::set<VariableSlot*>&        getReferringSlots(void) { return referringSlots; }                      //!< Return referring slots
+		VariableSlot*                   getSlot(void) const { return slot; }                                    //!< Return slot managing the variable
         const std::string&              getValueType(void) const { return valueType; }                          //!< Get value type
         bool                            isDAGType(const std::string& type) const;                               //!< Is DAG node of type?
-        bool                            isTemp(void) const;                                                     //!< Is the node a temp variable?
+        bool                            isTemp(void) const { return numRefs() == 0; }                           //!< Is the node a temp variable?
         bool                            isTypeSpec(const TypeSpec& typeSp) const;                               //!< Is DAG node of language type typeSpec?
+        int                             numReferringSlots(void) const { return int(referringSlots.size()); }    //!< Number of referring slots
+        int                             numRefs(void) const;                                                    //!< Number of references
 
         // Functions you may want to override
         virtual int                     getDim(void) const { return 0; }                                        //!< Get dim (0 for scalar, 1 for vector, etc)
-        virtual DAGNode*                getElement(VectorInteger& index, std::ostringstream& msg) const;        //!< Give the parser an element
-        virtual DAGNode*                getElementRef(VectorInteger& index, std::ostringstream& msg) const;     //!< Give the parser an element reference for setting value
         virtual DAGNode*                getReference(void) { return this; }                                     //!< Get reference to variable, override if lookup or fxn
         virtual int                     getSize(void) const { return 1; }                                       //!< Total number of elements (default is 1, only different for ContainerNode)
-        virtual void                    setElement(VectorInteger& index, DAGNode* var);                         //!< Set variable (or value) element
+
+        // Parser set and get functions you may want to override
+        virtual bool                    existsElement(VectorInteger& index);                                    //!< Does element exist?
+        virtual DAGNode*                getElement(VectorInteger& index);                                       //!< Give the parser an element
+        virtual DAGNode*                getElementRef(VectorNatural& index);                                    //!< Give the parser an element reference for setting value
+        virtual void                    setElement(VectorNatural& index, DAGNode* var);                         //!< Set variable (or value) element
 
         // Functions you have to override
         virtual DAGNode*                clone(void) const = 0;                                                  //!< Clone this node
@@ -70,14 +78,10 @@ class DAGNode {
         // DAG functions you should not have to override
         void                            addChildNode(VariableNode* c) { children.insert(c); }                   //!< Add child node
         std::set<VariableNode*>&        getChildren(void) { return children; }                                  //!< Return children
-		VariableSlot*                   getSlot(void) const { return slot; }                                    //!< Return slot managing the variable
 		std::set<DAGNode*>&             getParents(void) { return parents; }                                    //!< Return parents
-        std::set<VariableSlot*>&        getReferringSlots(void) { return referringSlots; }                      //!< Return referring slots
         bool                            isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const;       //!< Is node x a parent of the caller in the DAG?
         int                             numChildren(void) const { return int(children.size()); }                //!< Number of children
         int                             numParents(void) const { return int(parents.size()); }                  //!< Number of parents
-        int                             numReferringSlots(void) const { return int(referringSlots.size()); }    //!< Number of referring slots
-        int                             numRefs(void) const;                                                    //!< Number of references
         void                            printChildren(std::ostream& o) const;                                   //!< Print children DAG nodes
         void                            printParents(std::ostream& o) const;                                    //!< Print children DAG nodes
         void                            removeChildNode(VariableNode* c) { children.erase(c); }                 //!< Remove a child node

@@ -37,7 +37,8 @@ namespace RbMath {
         void                        normalize(std::vector<double>& x, double sum);                                    //!< Normalize a vector so that its sum is sum
 		double                      rbEpsilon(void);                                                                  //!< Xxx 
 		int                         transposeMatrix(const MatrixReal& a, MatrixReal& t);                              //!< Transpose a matrix 
-        void                        vectorMultiplication(const VectorReal& v1, const VectorReal& v2, MatrixReal& p);  //!< Vector multiplication
+        void                        vectorMultiplicationColByRow(const VectorReal& v1, const VectorReal& v2, MatrixReal& p);    //!< Vector multiplication col by row
+        void                        vectorMultiplicationRowByCol(const VectorReal& v1, const VectorReal& v2, Real& p);          //!< Vector multiplication row by col
 }
 
 #endif

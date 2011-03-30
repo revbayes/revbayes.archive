@@ -110,6 +110,20 @@ VectorNatural::VectorNatural( const VectorInteger& x ) : Vector( Natural_name ) 
 }
 
 
+/** Constructor from ContainerIterator, which is a std::vector<int> */
+VectorNatural::VectorNatural( const ContainerIterator& x ) : Vector( Natural_name ) {
+
+    for ( size_t i = 0; i < x.size(); i++ ) {
+        if ( x[i] < 0 )
+            throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
+    }
+
+    for ( size_t i = 0; i < x.size(); i++ )
+        elements.push_back( new Natural( x[i] ) );
+    length[0] = elements.size();
+}
+
+
 /**
  * Subscript operator. By only implementing a value
  * subscript operator, we can prevent users of the class from
@@ -309,3 +323,13 @@ void VectorNatural::setValue( const VectorInteger& x ) {
     }
 }
 
+
+/** Convert to element index string for use in parser */
+std::string VectorNatural::toIndexString(void) const {
+
+    std::ostringstream o;
+    for ( size_t i = 0; i < elements.size(); i++ ) 
+        o << "[" << operator[](i) << "]";
+
+    return o.str();
+}

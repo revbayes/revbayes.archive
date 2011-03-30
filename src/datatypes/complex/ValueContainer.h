@@ -53,6 +53,7 @@ class ValueContainer : public Container {
 
     public:
         friend class                    VariableContainer;                                                          //!< Give friend class access to elements
+        friend class                    ContainerNode;                                                              //!< Give friend class access to elements
 
                                         ValueContainer(size_t n, RbObject* x);                                      //!< Vector with n copies of x
                                         ValueContainer(const std::vector<size_t>& len, RbObject* x);                //!< Array of given dimensions with copies of x

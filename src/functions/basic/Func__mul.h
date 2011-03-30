@@ -151,6 +151,7 @@ DAGNode* Func__mul<Real,MatrixReal,MatrixReal>::executeOperation(const std::vect
     return new ConstantNode( new MatrixReal(prod));
 }
 
+#if 0
 #pragma mark V(Real) * V(Real) = M(Real)
 
 /** Execute function: MatrixReal <- VectorReal * VectorReal */
@@ -228,6 +229,7 @@ DAGNode* Func__mul<VectorRealPos,VectorRealPos,MatrixReal>::executeOperation(con
     RbMath::vectorMultiplication( val1, val2, prod );
     return new ConstantNode( new MatrixReal(prod));
 }
+#endif
 
 
 /** Get argument rules */

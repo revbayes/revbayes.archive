@@ -51,8 +51,8 @@ class VectorNatural : public Vector {
         // Basic utility functions
         VectorNatural*              clone(void) const;                                              //!< Clone object
         const VectorString&         getClass(void) const;                                           //!< Get class
-        void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
         std::string                 richInfo(void) const;                                           //!< Complete info about object
+        std::string                 toIndexString(void) const;                                      //!< Convert to an element index string ([1], [3][1] etc)
 
         // Vector functions, including STL-like functions
         std::vector<int>            getValue(void) const;                                           //!< Get value as STL int vector

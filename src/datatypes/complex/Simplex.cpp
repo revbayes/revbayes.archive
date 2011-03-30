@@ -28,7 +28,7 @@
 
 
 /** Construct simplex of length (size) n */
-Simplex::Simplex(const size_t n) : MemberObject() {
+Simplex::Simplex(const size_t n) : MemberObject(getMemberRules(), getMethodInits()) {
 
     if (n < 2)
         throw RbException( "Simplex must have at least two elements" );
@@ -39,7 +39,7 @@ Simplex::Simplex(const size_t n) : MemberObject() {
 
 
 /** Construct simplex from STL vector */
-Simplex::Simplex(const std::vector<double>& x) : MemberObject() {
+Simplex::Simplex(const std::vector<double>& x) : MemberObject(getMemberRules(), getMethodInits()) {
 
     if (x.size() < 2)
         throw RbException( "Simplex must have at least two elements" );
@@ -54,7 +54,7 @@ Simplex::Simplex(const std::vector<double>& x) : MemberObject() {
 
 
 /** Construct simplex from VectorRealPos, which is guaranteed to have real positive numbers */
-Simplex::Simplex(const VectorRealPos& x) : MemberObject() {
+Simplex::Simplex(const VectorRealPos& x) : MemberObject(getMemberRules(), getMethodInits()) {
 
     for (size_t i=0; i<x.size(); i++)
         if (x[i] <= 0.0)
@@ -82,11 +82,32 @@ Simplex* Simplex::clone() const {
 }
 
 
+/** Execute member method. We throw an error because there are no member methods (yet) */
+DAGNode* Simplex::executeOperation(const std::string& name, const std::vector<VariableSlot>& args) {
+
+    throw RbException ("Object does not have methods");
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& Simplex::getClass() const {
 
     static VectorString rbClass = VectorString(Simplex_name) + MemberObject::getClass();
     return rbClass;
+}
+
+
+/** Return member rules (no members) */
+const MemberRules& Simplex::getMemberRules(void) const {
+
+    throw RbException( "Simplex does not have members" );
+}
+
+
+/** Get method specifications (no methods) */
+const MethodTable& Simplex::getMethodInits(void) const {
+
+    throw RbException( "Simplex does not have methods" );
 }
 
 

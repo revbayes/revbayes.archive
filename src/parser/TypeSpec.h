@@ -27,7 +27,6 @@ class TypeSpec {
                             TypeSpec(const std::string& objType, int objDim, bool ref=false);   //!< Type of container object
 
         // Operators
-        TypeSpec&           operator=(const TypeSpec& x);                                       //!< Assignment operator
         bool                operator==(const TypeSpec& x) const;                                //!< Equals operator
         bool                operator!=(const TypeSpec& x) const { return !operator==(x); }      //!< Not equals operator
                             operator std::string(void) const;                                   //!< Type conversion to string

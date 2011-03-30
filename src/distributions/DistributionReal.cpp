@@ -89,13 +89,6 @@ const Real* DistributionReal::getMin(void) {
 }
 
 
-/** Get variable type */
-const std::string& DistributionReal::getVariableType(void) const {
-
-    return Real_name;
-}
-
-
 /** Get method specifications */
 const MethodTable& DistributionReal::getMethodInits(void) const {
 
@@ -119,6 +112,13 @@ const MethodTable& DistributionReal::getMethodInits(void) const {
     }
 
     return methodInits;
+}
+
+
+/** Get variable type */
+const std::string& DistributionReal::getVariableType(void) const {
+
+    return Real_name;
 }
 
 

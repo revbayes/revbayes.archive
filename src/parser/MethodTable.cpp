@@ -15,6 +15,7 @@
 
 #include "ArgumentRule.h"
 #include "MethodTable.h"
+#include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
 
@@ -80,11 +81,23 @@ std::string MethodTable::briefInfo () const {
 }
 
 
+/** Delete processed arguments to avoid the argument DAG nodes to remain hooked up to functions that are only called once */
+void MethodTable::deleteProcessedArguments(int funcId) const {
+
+    std::map<int, RbFunction*>::const_iterator it = funcs.find(funcId);
+    if ( it == funcs.end() )
+        throw RbException( "Invalid function id when processing member method" );
+    (*it).second->deleteProcessedArguments();
+}
+
+
 /** Find and execute operation based on function id; only safe version if there are overloaded member functions,
     we cannot rely on the name without having access to some arguments to use for argument matching. */
 DAGNode* MethodTable::executeFunction(int funcId) const {
 
     std::map<int, RbFunction*>::const_iterator it = funcs.find(funcId);
+    if ( it == funcs.end() )
+        throw RbException( "Invalid function id when calling member method" );
     return (*it).second->executeOperation(getProcessedArguments(funcId));    
 }
 

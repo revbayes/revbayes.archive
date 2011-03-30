@@ -24,6 +24,7 @@
 #include "StochasticNode.h"
 #include "VariableContainer.h"
 #include "VectorInteger.h"
+#include "VectorNatural.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -208,6 +209,51 @@ ContainerNode* ContainerNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) c
 }
 
 
+/** Does element referred to by index exist? */
+bool ContainerNode::existsElement( VectorInteger& index ) {
+
+    // Check for silly references to ourself
+    if ( index.size() == 0 )
+        return true;
+
+    if ( index.size() > size_t( getDim() ) ) {
+        
+        // If value container, the element does not exist
+        if ( container == NULL )
+            return false;
+
+        // Check that references that go beyond the container
+        // actually point to an element of the container
+        for ( size_t i = 0; i < size_t( getDim() ) ; i++ ) {
+            if ( index[i] < 0 )
+                return false;
+        }
+
+        // Pop off container index and delegate to container element
+        VectorInteger containerIndex;
+        for ( size_t i = 0; i < size_t( getDim() ); i++ )
+            containerIndex = index[i];
+        for ( size_t i = 0; i < size_t( getDim() ); i++ )
+            index.pop_front();
+
+        return container->getElement( containerIndex )->existsElement( index );
+    }
+
+    // If all indices are negative or within bounds, we should be safe
+    std::vector<size_t> len;
+    if ( container != NULL )
+        len = container->getLength();
+    else
+        static_cast<ValueContainer*>( value )->getLength();
+
+    for ( size_t i = 0; i < index.size(); i++ )
+        if ( size_t( index[i]) >= len[i] )
+            return false;
+
+    return true;
+}
+
+
 /** Get class vector describing type of DAG node */
 const VectorString& ContainerNode::getDAGClass(void) const {
 
@@ -216,20 +262,105 @@ const VectorString& ContainerNode::getDAGClass(void) const {
 }
 
 
-#if 0
-/** Get value element */
-const RbObject* ContainerNode::getValElement( const VectorInteger& index ) const {
+/** Convenient vector access */
+DAGNode* ContainerNode::getElement( size_t i ) {
 
-    return container->getElement( index );
+    return getElement( VectorInteger( i ) );
 }
 
 
-/** Get variable element */
-const DAGNode* ContainerNode::getVarElement( const VectorInteger& index ) const {
+/** Get element for parser */
+DAGNode* ContainerNode::getElement( VectorInteger& index ) {
 
-    return container[ index ];
+    // Check for silly references to ourself
+    if ( index.size() == 0 )
+        return this;
+
+    if ( index.size() > size_t( getDim() ) ) {
+        
+        // If value container, the element does not exist
+        if ( container == NULL )
+            throw RbException( getName() + index.toIndexString() + " does not exist" );
+
+        // Check that references that go beyond the container
+        // actually point to an element of the container
+        for ( size_t i = 0; i < size_t( getDim() ); i++ ) {
+            if ( index[i] < 0 )
+                throw RbException( getName() + index.toIndexString() + " is not a valid container" );
+        }
+
+        // Delegate to container element
+        return container->getElement( index );
+    }
+
+    if ( container != NULL )
+        return container->getElement( index );
+    else
+        return static_cast<ValueContainer*>( value )->getElement( index );
 }
-#endif
+
+
+/**
+ * Get element reference for parser, so that it can set the element value or
+ * mutate it. This type of request cannot be addressed by a value container,
+ * so we need to change ourselves into a variable container if we are currently
+ * a constant value container.
+ */
+DAGNode* ContainerNode::getElementRef( VectorNatural& index ) {
+
+    // Invalidate current value, since it is likely to change
+    touched = true;
+    changed = false;
+
+    // Check for silly references to ourself
+    if ( index.size() == 0 )
+        return this;
+
+    if ( index.size() < size_t( getDim() ) )
+            throw RbException( getName() + index.toIndexString() + " is a temp variable" );
+
+    if ( index.size() > size_t( getDim() ) ) {
+        
+        // If value container, the element does not exist
+        if ( container == NULL )
+            throw RbException( getName() + index.toIndexString() + " does not exist" );
+
+        // Delegate to container element
+        touched = true;
+        changed = false;
+        VectorInteger containerIndex;
+        for ( size_t i = 0; i < size_t( getDim() ); i++ )
+            containerIndex.push_back( index[i] );
+        for ( size_t i = 0; i < size_t( getDim() ); i++)
+            index.pop_front();
+
+        return container->getElement( containerIndex )->getElementRef( index );
+    }
+
+    if ( container != NULL ) {
+        VectorInteger containerIndex = index;
+        index.clear();
+        return container->getElement( containerIndex );
+    }
+
+    // We transform ourselves into a variable container
+    container = new VariableContainer( static_cast<ValueContainer&>( *value ) );
+    touched = true;
+    changed = false;
+    VectorInteger containerIndex = index;
+    index.clear();
+    return container->getElement( containerIndex );
+}
+
+
+/** Get index of specified element */
+VectorNatural ContainerNode::getIndex(const DAGNode* element) const {
+
+    if ( container == NULL )
+        throw RbException( element->getName() + " is not an element of " + getName() );
+    
+    return container->getIndex( element );
+}
 
 
 /** Is it possible to mutate to newNode? */
@@ -313,235 +444,14 @@ std::string ContainerNode::richInfo(void) const {
 }
 
 
-#if 0
-/** Set value element or elements from value */
-void ContainerNode::setElement(const VectorInteger& index, RbObject* val) {
+/** Get total number of elements of container */
+size_t ContainerNode::size( void ) const {
 
-    // Resize if necessary
-    if (index.size() == length.size()) {
-        VectorInteger tempLen  = length;
-        bool      growSize = false;
-        for (size_t i=0; i<index.size(); i++) {
-            if (index[i] >= tempLen[i]) {
-                tempLen[i] = index[i] + 1;
-                growSize = true;
-            }
-            else if (index[i] < 0)
-                throw (RbException("Nonpositive index"));
-        }
-        if (growSize)
-            resize(tempLen);
-    }
-
-    // Get offset; also checks for errors in index
-    size_t offset = getOffset(index);
-
-    // Find target node
-    std::vector<DAGNode*>::iterator targetIt = nodes.begin() + offset;
-
-    // Check if parser wants to set multiple elements
-    if (index.size() < length.size()) {
-
-        /* TODO: Do we want to allow this? See code below if we do */
-        throw(RbException("Invalid assignment: Container to subcontainer"));
-
-        // Check that the source is a container
-        RbComplex* source = dynamic_cast<RbComplex*>(val);
-        if (source == NULL || source->getDim() == 0)
-            throw RbException("Source does not have elements");
-    
-        // Count number of elements
-        const VectorInteger& sourceLen = source->getLength();
-        int numSourceElements = 1;
-        for (size_t i=0; i<sourceLen.size(); i++)
-            numSourceElements *= sourceLen[i];
-        int numTargetElements = 1;
-        for (size_t i=index.size(); i<length.size(); i++)
-            numTargetElements *= length[i];
-
-        // Throw an error if a mismatch
-        if (numSourceElements != numTargetElements)
-            throw RbException("Unequal source and target sizes");
-
-        // Cycle through assignments
-        for (ContainerIterator i=source->begin(); i!=source->end(); ++i) {
-
-            // Do the assignment
-            const RbObject* elem = source->getElement(i);
-            if (elem->isType(getValueType())) {
-                if ((*targetIt) != NULL && (*targetIt)->isDAGType(StochasticNode_name))
-                    ((StochasticNode*)(*targetIt))->setValue(elem->clone());
-                else {
-                    if ((*targetIt) != NULL) {
-                        (*targetIt)->removeChildNode(this);
-                        if ((*targetIt)->numRefs() == 0)
-                            delete (*targetIt);
-                        parents.erase(*targetIt);
-                    }
-                    (*targetIt) = new ConstantNode(elem->clone());
-                    (*targetIt)->addChildNode(this);
-                    parents.insert(*targetIt);
-                }
-            }
-            else
-                throw (RbException("Incompatible types"));
-
-            // Increase target iterator
-            targetIt++;
-        }
-        delete val;     // We are responsible for deleting the useless container
-        return;
-    }
-
-    // Parser wants to set a single element
-    if (val->isType(getValueType())) {
-        if ((*targetIt) != NULL && (*targetIt)->isDAGType(StochasticNode_name)) {
-            // We just set the value of the stochastic node
-            ((StochasticNode*)(*targetIt))->setValue(val);
-        }
-        else {
-            // We replace the node with a constant node
-            if ((*targetIt) != NULL) {
-                (*targetIt)->removeChildNode(this);
-                if ((*targetIt)->numRefs() == 0)
-                    delete (*targetIt);
-                parents.erase(*targetIt);
-            }
-            (*targetIt) = new ConstantNode(val);
-            (*targetIt)->addChildNode(this);
-            parents.insert(*targetIt);
-        }
-    }
+    if ( container != NULL )
+        return container->size();
     else
-        throw (RbException("Incompatible types"));
-
-    touched = true;
-    changed = false;
-    touchAffected();
+        return static_cast<Container*>( value )->size();
 }
-
-
-/** Set element from DAG node */
-void ContainerNode::setElement(const VectorInteger& index, DAGNode* var) {
-
-    // Resize if necessary
-    if (index.size() == length.size()) {
-        VectorInteger tempLen  = length;
-        bool      growSize = false;
-        for (size_t i=0; i<index.size(); i++) {
-            if (index[i] >= tempLen[i]) {
-                tempLen[i] = index[i] + 1;
-                growSize = true;
-            }
-            else if (index[i] < 0)
-                throw (RbException("Nonpositive index"));
-        }
-        if (growSize)
-            resize(tempLen);
-    }
-
-    // Get offset; also checks for errors in index
-    size_t offset = getOffset(index);
-
-    // Get target iterator
-    std::vector<DAGNode*>::iterator targetIt = nodes.begin() + offset;
-
-    // Check if parser wants to set multiple elements
-    if (index.size() < length.size()) {
-
-        /* TODO: Do we want to allow this? See code below if we do */
-        throw(RbException("Invalid assignment"));
-
-        // Check that the source is a plate
-        if (var->getDim() == 0)
-            throw (RbException("Source does not have elements"));
-
-        ContainerNode* source = dynamic_cast<ContainerNode*>(var);
-    
-        // Count number of elements
-        const VectorInteger& sourceLen = source->getLength();
-        int numSourceElements = 1;
-        for (size_t i=0; i<sourceLen.size(); i++)
-            numSourceElements *= sourceLen[i];
-        int numTargetElements = 1;
-        for (size_t i=index.size(); i<length.size(); i++)
-            numTargetElements *= length[i];
-
-        // Throw an error if a mismatch
-        if (numSourceElements != numTargetElements)
-            throw (RbException("Unequal source and target sizes"));
-
-        // Cycle through assignments
-        for (ContainerIterator i=source->begin(); i!=source->end(); ++i) {
-
-            // Do the assignment
-            const DAGNode* elem = (*source)[i];
-            if (Workspace::userWorkspace().isXOfTypeY(elem->getValueType(), valueType)) {
-                if ((*targetIt) != NULL) {
-                    (*targetIt)->removeChildNode(this);
-                    if ((*targetIt)->numRefs() == 0)
-                        delete (*targetIt);
-                    parents.erase(*targetIt);
-                }
-                (*targetIt) = elem->clone();
-                (*targetIt)->addChildNode(this);
-                parents.insert(*targetIt);
-            }
-            else
-                throw (RbException("Incompatible types"));
-
-            // Increase target iterator
-            targetIt++;
-        }
-        if (var->numRefs() == 0)
-            delete var;     // We are responsible for deleting the useless plate
-        return;
-    }
-
-    // Parser wants to set a single element
-    if (var == NULL || Workspace::userWorkspace().isXOfTypeY(var->getValueType(), valueType)) {
-        if ((*targetIt) != NULL) {
-            // If conversion of constant to stochastic node, save value
-            if ((*targetIt)->isDAGType(ConstantNode_name) &&
-                var->isDAGType(StochasticNode_name) &&
-                (*targetIt)->getValue() != NULL &&
-                (*targetIt)->getValue()->isType(var->getValueType())) {
-                ((StochasticNode *)var)->setValue((*targetIt)->getValue()->clone());
-            }
-            (*targetIt)->removeChildNode(this);
-            if ((*targetIt)->numRefs() == 0)
-                delete (*targetIt);
-            parents.erase(*targetIt);
-        }
-        (*targetIt) = NULL;
-        if (var != NULL) {
-            if (var->getName() != "")
-                throw RbException("Cannot use reference in setting element of DAG node plate");
-            std::ostringstream varName;
-            varName << getName();
-            for (size_t i=0; i<index.size(); i++)
-                varName << "[" << index[i]+1 << "]";
-            var->addChildNode(this);
-            parents.insert(var);
-        }
-        (*targetIt) = var;
-    }
-    else
-        throw (RbException("Incompatible types"));
-
-    touched = true;
-    changed = false;
-    touchAffected();
-}
-
-
-/** Set value of plate */
-void ContainerNode::setValue(RbObject* val) {
-
-    throw RbException("Invalid assignment of value to node plate");
-}
-
-#endif
 
 
 /** Swap parent node in container and parents */

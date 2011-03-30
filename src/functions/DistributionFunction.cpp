@@ -33,7 +33,7 @@
 
 /** Constructor */
 DistributionFunction::DistributionFunction(Distribution* dist, FuncType funcType)
-    : RbFunction(), returnType(Real_name) {
+    : RbFunction(), returnType(funcType == DENSITY || funcType == PROB ? Real_name : dist->getVariableType()) {
 
     /* Set the distribution */
     distribution = dist;
@@ -50,18 +50,18 @@ DistributionFunction::DistributionFunction(Distribution* dist, FuncType funcType
     /* Modify argument rules and set return type based on function type */
     if (functionType == DENSITY) {
         argumentRules.insert(argumentRules.begin(), new ArgumentRule("x", distribution->getVariableType()));
-        returnType = TypeSpec(Real_name);
+//        returnType = TypeSpec(Real_name);
     }
     else if (functionType == RVALUE) {
-        returnType = TypeSpec(distribution->getVariableType());
+//        returnType = TypeSpec(distribution->getVariableType());
     }
     else if (functionType == PROB) {
         argumentRules.insert(argumentRules.begin(), new ArgumentRule("q", distribution->getVariableType()));
-        returnType = TypeSpec(Real_name);
+//        returnType = TypeSpec(Real_name);
     }
     else if (functionType == QUANTILE) {
         argumentRules.insert(argumentRules.begin(), new ArgumentRule("p", Real_name));
-        returnType = TypeSpec(distribution->getVariableType());
+//        returnType = TypeSpec(distribution->getVariableType());
     }
 }
 
@@ -100,10 +100,12 @@ DistributionFunction& DistributionFunction::operator=(const DistributionFunction
 
     if (this != &x) {
         
+        if ( returnType != x.returnType )
+            throw RbException( "Invalid assignment involving distributions on different types of random variables" );
+        
         delete distribution;
 
         argumentRules = x.argumentRules;
-        returnType    = x.returnType;
         distribution  = dynamic_cast<Distribution*>(x.distribution->clone());
         functionType  = x.functionType;
 

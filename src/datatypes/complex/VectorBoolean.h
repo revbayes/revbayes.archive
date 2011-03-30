@@ -44,7 +44,6 @@ class VectorBoolean : public Vector {
         // Basic utility functions
         VectorBoolean*              clone(void) const;                                              //!< Clone object
         const VectorString&         getClass(void) const;                                           //!< Get class
-        void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
         std::string                 richInfo(void) const;                                           //!< Complete info about object
 
         // Vector functions, including STL-like functions

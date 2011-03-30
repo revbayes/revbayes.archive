@@ -46,10 +46,10 @@ class VectorString;
  * of the object; for a MatrixReal, the getTypeSpec() function returns
  * a TypeSpec object containing type Real and dim 2. For RbObject
  * types other than Container types, the TypeSpec object returns the
- * object type and dim 0 (a scalar). For instance, a Simplex object
- * should have dim 0 and type Simplex, that is, in the language it
+ * object type and dim 0. For instance, a Simplex object, which is a member
+ * object, should have dim 0 and type Simplex, that is, in the language it
  * has type Simplex. An object of dim 0 can still support subscripting
- * by overriding the appropriate functions in RbComplex. The parser
+ * by overriding the appropriate functions in MemberObject. The parser
  * will then rely entirely on the object itself in getting and setting
  * elements of the object. Such objects will typically not want the
  * parser to directly mess with their elements (setElement should
@@ -71,7 +71,6 @@ class Container : public RbComplex {
         ContainerIterator               begin(void) const;                                                  //!< Begin iterator
         ContainerIterator               end(void) const;                                                    //!< End iterator
         int                             getDim(void) const { return length.size(); }                        //!< Get number of dimensions (1 for vector, 2 for matrix, etc)
-        const VectorString&             getElementClass(void) const;                                        //!< Get element class vector
         const std::string&              getElementType(void) const { return elementType; }                  //!< Get element type
         const std::vector<size_t>&      getLength(void) const { return length; }                            //!< Get length in each dim
         const TypeSpec                  getTypeSpec(void) const;                                            //!< Get language type of the object
@@ -96,7 +95,7 @@ class Container : public RbComplex {
         size_t                          getOffset(const VectorNatural& index) const;                        //!< Get offset in elements vector
 
         // Parser help function you have to override
-        virtual DAGNode*                getElement(VectorInteger& index) = 0;                               //!< Get element or subcontainer for parser
+        virtual DAGNode*                getElement(VectorInteger& index) = 0;                               //!< Get element or subcontainer for parser (do not worry about returning temps)
 
         // Member variables
         const std::string&              elementType;                                                        //!< Type of elements

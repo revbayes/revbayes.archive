@@ -28,6 +28,7 @@
 #include "RbNames.h"
 #include "RbOptions.h"
 #include "StochasticNode.h"
+#include "VectorNatural.h"
 #include "VectorString.h"
 #include "SyntaxAssignExpr.h"
 #include "Workspace.h"
@@ -277,8 +278,9 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
             }
             else {
                 
-                // Assigning of a value to a container element
-                theVariable->setElement( elemIndex, exprValue );
+                // Assigning of a value to a member object that wants to the job itself
+                VectorNatural index = elemIndex;
+                theVariable->setElement( index, exprValue );
             }
         }
     }
@@ -351,9 +353,9 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
             }
             else {
                 
-                // Assignment of a deterministic node to a container element
-                // The DAG node in charge determines what to do
-                theVariable->setElement( elemIndex, node );
+                // Assignment of a deterministic node to a member object that wants to do the job itself
+                VectorNatural index = elemIndex;
+                theVariable->setElement( index, node );
             }
         }
     }
@@ -435,9 +437,9 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
             }
             else {
                 
-                // Assignment of a deterministic node to a container element
-                // The DAG node in charge determines what to do
-                theVariable->setElement( elemIndex, node );
+                // Assignment of a deterministic node to a member object that wants to do the job itself
+                VectorNatural index = elemIndex;
+                theVariable->setElement( index, node );
             }
         }
     }

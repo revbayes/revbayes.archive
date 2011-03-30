@@ -34,17 +34,17 @@ class RbObject;
 class MethodTable : public FunctionTable {
 
     public:
-                        MethodTable(MethodTable* parent=NULL);      //!< Empty table
-                        MethodTable(const MethodTable& x);          //!< Copy constructor
-                        ~MethodTable() {}                           //!< Destructor doesn't need to do anything
+                                            MethodTable(MethodTable* parent=NULL);                                      //!< Empty table
+                                            MethodTable(const MethodTable& x);                                          //!< Copy constructor
+                                           ~MethodTable() {}                                                            //!< Destructor doesn't need to do anything
 
         // Assignment operator
-        MethodTable&    operator=(const MethodTable& x);          //!< Assignment operator 
+        MethodTable&    operator=(const MethodTable& x);                                                                //!< Assignment operator 
 
         // Basic utility functions
-        std::string     briefInfo(void) const;                                  //!< Brief info to string
-        MethodTable*    clone(void) const { return new MethodTable(*this); }    //!< Clone object
-        std::string     richInfo(void) const;                                   //!< Complete info to string
+        std::string                         briefInfo(void) const;                                                      //!< Brief info to string
+        MethodTable*                        clone(void) const { return new MethodTable(*this); }                        //!< Clone object
+        std::string                         richInfo(void) const;                                                       //!< Complete info to string
 
         // MethodTable functions
         void                                addFunction(const std::string name, RbFunction* func);                      //!< Add function, generate unique id
@@ -55,8 +55,8 @@ class MethodTable : public FunctionTable {
                                                                 const std::vector<Argument>&    args) const;            //!< Process arguments
 
     protected:
-        std::map<int, RbFunction*>  funcs;       //!< Map from function id to function
-        std::map<RbFunction*, int>  ids;         //!< Map from function to function id
+        std::map<int, RbFunction*>          funcs;                                                                      //!< Map from function id to function
+        std::map<RbFunction*, int>          ids;                                                                        //!< Map from function to function id
 };
 
 #endif

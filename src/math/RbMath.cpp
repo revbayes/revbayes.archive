@@ -873,45 +873,33 @@ int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
 	return (0);
 }
 
-void RbMath::vectorMultiplication(const VectorReal& v1, const VectorReal& v2, MatrixReal& p) {
+void RbMath::vectorMultiplicationColByRow(const VectorReal& v1, const VectorReal& v2, MatrixReal& p) {
 
     if ( v1.size() != v2.size() )
         throw (RbException("Cannot multiply two vectors of different dimensions"));
         
-std::cout << "v1 : " << v1.getIsRowVector() << std::endl;
-std::cout << "v2 : " << v2.getIsRowVector() << std::endl;
-
     size_t n = v1.size();
-    if ( v1.getIsRowVector() == true && v2.getIsRowVector() == false )
-        {
-        std::vector<size_t> sizeVec(2);
-        sizeVec[0] = 1;
-        sizeVec[1] = 1;
-        p.resize(sizeVec);
+    std::vector<size_t> sizeVec(2);
+    sizeVec[0] = n;
+    sizeVec[1] = n;
+    p.resize(sizeVec);
+    
+    for (size_t i=0; i<n; i++)
+        for (size_t j=0; j<n; j++)
+            p[i][j] = v1[i] * v2[j];
 
-        double sum = 0.0;
-        for (size_t i=0; i<n; i++)
-            sum += v1[i] * v2[i];
-        p[0][0] = sum;
-        }
-    else if ( v1.getIsRowVector() == false && v2.getIsRowVector() == true )
-        {
-        std::vector<size_t> sizeVec(2);
-        sizeVec[0] = n;
-        sizeVec[1] = n;
-        p.resize(sizeVec);
+}
+
+void RbMath::vectorMultiplicationRowByCol(const VectorReal& v1, const VectorReal& v2, Real& p) {
+
+    if ( v1.size() != v2.size() )
+        throw (RbException("Cannot multiply two vectors of different dimensions"));
         
-        for (size_t i=0; i<n; i++)
-            for (size_t j=0; j<n; j++)
-                p[i][j] = v1[i] * v2[j];
-        }
-    else if ( v1.getIsRowVector() == false && v2.getIsRowVector() == false )
-        {
-        throw (RbException("Cannot multiply two column vectors"));
-        }
-    else 
-        {
-        throw (RbException("Cannot multiply two row vectors"));
-        }
+    size_t n = v1.size();
+
+    double sum = 0.0;
+    for (size_t i=0; i<n; i++)
+        sum += v1[i] * v2[i];
+    p = sum;
 }
 

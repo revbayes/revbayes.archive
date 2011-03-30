@@ -80,39 +80,6 @@ DAGNode* Func_transpose<MatrixReal,MatrixReal>::executeOperation(const std::vect
 }
 
 
-/** Execute function: VectorInteger <- transpose(VectorInteger) */
-template <>
-DAGNode* Func_transpose<VectorInteger,VectorInteger>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    VectorInteger* vec  = (VectorInteger*) (args[0].getValue());
-    VectorInteger* vecT = new VectorInteger(*vec);
-    vecT->transpose();
-    return new ConstantNode( vecT );
-}
-
-
-/** Execute function: VectorReal <- transpose(VectorReal) */
-template <>
-DAGNode* Func_transpose<VectorReal,VectorReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    VectorReal  vec  = (((VectorReal*) (args[0].getValue())))->getValue();
-    VectorReal* vecT = new VectorReal(vec);
-    vecT->transpose();
-    return new ConstantNode( vecT );
-}
-
-
-/** Execute function: VectorRealPos <- transpose(VectorRealPos) */
-template <>
-DAGNode* Func_transpose<VectorRealPos,VectorRealPos>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    VectorRealPos  vec  = (((VectorRealPos*) (args[0].getValue())))->getValue();
-    VectorRealPos* vecT = new VectorRealPos(vec);
-    vecT->transpose();
-    return new ConstantNode( vecT );
-}
-
-
 /** Get argument rules */
 template <typename valT, typename retT>
 const ArgumentRules& Func_transpose<valT, retT>::getArgumentRules(void) const {

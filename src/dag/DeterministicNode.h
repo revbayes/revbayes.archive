@@ -67,10 +67,8 @@ class DeterministicNode : public VariableNode {
         // Utility function you have to override
         virtual void                    update(void) = 0;                                                               //!< Update value and storedValue
 
-        // Member variables
+        // Member variable
         bool                            changed;                                                                        //!< True when value updated after touch
-        RbObject*                       value;                                                                          //!< Current value
-        RbObject*                       storedValue;                                                                    //!< Stored value
 };
 
 #endif

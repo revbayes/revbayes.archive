@@ -38,6 +38,7 @@
 #include "VectorRealPos.h"
 #include "VectorString.h"
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <sstream>
@@ -132,6 +133,26 @@ VariableContainer::VariableContainer( const TypeSpec& typeSpec , const std::vect
     for ( int i = 0; i < size; i++ )
         elements.push_back( new ConstantNode( NULL ) );
     length = len;
+}
+
+
+/**
+ * Construct variable container from value container.
+ */
+VariableContainer::VariableContainer( const ValueContainer& x )
+    : Container( x.getTypeSpec() ) {
+
+    // Set length
+    length = x.getLength();
+    
+    // Calculate size
+    size_t size = 1;
+    for ( size_t i = 0; i < length.size(); i++ )
+        size *= length[i];
+
+    // Fill the container
+    for ( size_t i = 0; i < size; i++ )
+        elements.push_back( new ConstantNode( x.elements[i] ) );
 }
 
 
@@ -297,6 +318,23 @@ ValueContainer* VariableContainer::getConstValue( void ) {
 }
 
 
+/** Get the index of a variable element */
+VectorNatural VariableContainer::getIndex(const DAGNode* elem) const {
+
+    std::vector<DAGNode*>::const_iterator it;
+    it = std::find( elements.begin(), elements.end(), elem );
+
+    if ( it == elements.end() )
+        throw RbException( elem->getName() + " is not an element" );
+
+    ContainerIterator contIt = begin();
+    for ( std::vector<DAGNode*>::const_iterator i = elements.begin(); i != it; i++ )
+        ;
+
+    return VectorNatural( contIt );
+}
+
+
 /**
  * Get element or subcontainer corresponding to index, which can have fewer dimensions
  * or more dimensions than length. Also, the index can be negative for some of the dimensions,
@@ -339,10 +377,10 @@ DAGNode* VariableContainer::getElement( VectorInteger& index ) {
             }
         }
 
-        VectorNatural elemIndex  = index;
-        VectorNatural valueIndex;
+        VectorNatural elemIndex;
+        VectorInteger valueIndex;
         size_t i = 0;
-        for ( i = index.size(); i < length.size(); i++ )
+        for ( ; i < length.size(); i++ )
             elemIndex.push_back( index[i] );
         for ( ; i < index.size(); i++ )
             valueIndex.push_back( index[i] );
@@ -351,9 +389,17 @@ DAGNode* VariableContainer::getElement( VectorInteger& index ) {
         if ( !elemPtr->isDAGType( MemberNode_name ) )
             throw RbException( "Container element does not support subscripting" );
         else {
-            // truncate index and delegate job to subelement
+            // Get member object pointer to the value
+            MemberObject* elem = static_cast<MemberNode*>( elemPtr )->getMemberObject();            
+
+            // Truncate index and delegate job to subelement
+            size_t subIndex = valueIndex[0];
+            valueIndex.pop_front();
             index = valueIndex;
-            return static_cast<const MemberObject*>( elemPtr->getValue() )->getSubelement( index );
+            if ( index.size() == 0 )
+                return elem->getSubelement( subIndex );
+            else
+                return elem->getSubelement( subIndex )->getElement( index );
         }
     }
     else if ( index.size() == 0 ) {

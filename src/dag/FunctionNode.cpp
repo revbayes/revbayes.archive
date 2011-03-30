@@ -190,11 +190,32 @@ FunctionNode* FunctionNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) con
 }
 
 
+/** Does element exist ? */
+bool FunctionNode::existsElement( VectorInteger& index ) {
+
+    return getReference()->existsElement( index );
+}
+
+
 /** Get class vector describing type of DAG node */
 const VectorString& FunctionNode::getDAGClass() const {
 
     static VectorString rbClass = VectorString(FunctionNode_name) + DeterministicNode::getDAGClass();
     return rbClass;
+}
+
+
+/** Get element for parser */
+DAGNode* FunctionNode::getElement( VectorInteger& index ) {
+
+    return getReference()->getElement( index );
+}
+
+
+/** Get element reference for modification by parser */
+DAGNode* FunctionNode::getElementRef( VectorNatural& index) {
+
+    return getReference()->getElementRef( index );
 }
 
 
@@ -204,6 +225,8 @@ DAGNode* FunctionNode::getReference(void) {
     if ( !isValueReference )
         throw RbException( "Function does not return a reference" );
 
+    touched = true;
+    changed = false;
     return function->execute();
 }
 
@@ -258,6 +281,13 @@ bool FunctionNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newN
 }
 
 
+/** Mutate to newNode */
+void FunctionNode::mutateTo(DAGNode* newNode) {
+    
+    throw RbException("Mutation of function node not implemented yet");
+}
+
+
 /** Print struct for user */
 void FunctionNode::printStruct(std::ostream& o) const {
 
@@ -302,6 +332,13 @@ std::string FunctionNode::richInfo(void) const {
     o << std::endl;
 
     return o.str();
+}
+
+
+/** Allow parser to set element */
+void FunctionNode::setElement( VectorNatural& index, DAGNode* var ) {
+
+    getReference()->setElement( index, var );
 }
 
 

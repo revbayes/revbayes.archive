@@ -52,7 +52,7 @@ class LookupNode : public DeterministicNode {
         LookupNode*         clone(void) const;                                                          //!< Clone the lookup node
         const VectorString& getDAGClass(void) const;                                                    //!< Get DAG node class vector
         int                 getDim(void) const { return valueDim; }                                     //!< Get dim of lookup target value (0 for scalar, 1 for vector, etc)
-        DAGNode*            getReference(void) { return const_cast<DAGNode*>( lookup() ); }             //!< Look up the variable and get a reference to it
+        DAGNode*            getReference(void) { return lookup(); }                                     //!< Look up the variable and get a reference to it
         void                printStruct(std::ostream& o) const;                                         //!< Print struct for user
         std::string         richInfo(void) const;                                                       //!< Complete info about object
 
@@ -63,12 +63,18 @@ class LookupNode : public DeterministicNode {
         void                mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
         void                swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
+        // Parser element access functions
+        bool                existsElement(VectorInteger& index);                                        //!< Does element exist?
+        DAGNode*            getElement(VectorInteger& index);                                           //!< Get element
+        DAGNode*            getElementRef(VectorNatural& index);                                        //!< Get element reference for setting it
+        void                setElement(VectorNatural& index, DAGNode* var);                             //!< Set element
+
         // LookupNode functions
         const TypeSpec&     getMemberTypeSpec(const RbString& name) const;                              //!< Get type spec of a named member variable of lookup target
 
     protected:
         // Utility functions
-        const DAGNode*      lookup(void);                                                               //!< Look up the variable
+        DAGNode*            lookup(void);                                                               //!< Look up the variable
         void                update(void);                                                               //!< Update value and storedValue
 
         // Member variables
