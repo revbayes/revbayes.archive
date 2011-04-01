@@ -66,7 +66,6 @@ class VariableNode : public DAGNode {
 
         // Member variables
         bool                            touched;                                                                        //!< Is touched by move?
-        RbObject*                       value;                                                                          //!< Current value
         RbObject*                       storedValue;                                                                    //!< Stored value
 };
 

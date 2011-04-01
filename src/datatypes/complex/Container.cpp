@@ -31,7 +31,8 @@
 Container::Container(const TypeSpec& typeSpec)
     : RbComplex(), elementType(typeSpec.getType()), length(typeSpec.getDim(),0) {
 
-    if ( Workspace::userWorkspace().isXOfTypeY( elementType, Container_name ) )
+    // If the workspace has been initialized, we use it to test whether we have a container
+    if ( Workspace::userWorkspace().areTypesInitialized() && Workspace::userWorkspace().isXOfTypeY( elementType, Container_name ) )
         throw RbException( "Cannot create container of containers" );
 
     // Check that length specification is OK

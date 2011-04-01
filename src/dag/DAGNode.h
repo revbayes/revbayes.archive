@@ -111,6 +111,7 @@ class DAGNode {
         VariableSlot*                   slot;                                                                   //!< Slot owning the node
         std::set<VariableSlot*>         referringSlots;                                                         //!< Set of slots referring to the node
         const std::string&              valueType;                                                              //!< Type of value
+        RbObject*                       value;                                                                  //!< Value
 };
 
 #endif

@@ -32,15 +32,16 @@
 
 
 /** Constructor from value */
-ConstantNode::ConstantNode(RbObject* val) : DAGNode(val->getType()), value(val) {
+ConstantNode::ConstantNode(RbObject* val) : DAGNode(val->getType()) {
 
+    value = val;
     if ( val->getDim() > 0 )
         throw RbException( "ConstantNode cannot hold container objects. Use a ContainerNode instead." );
 }
 
 
 /** Constructor from value class */
-ConstantNode::ConstantNode(const std::string& valType) : DAGNode(valType), value(NULL) {
+ConstantNode::ConstantNode(const std::string& valType) : DAGNode(valType) {
 
     if ( Workspace::userWorkspace().isXOfTypeY(valType, Container_name) )
         throw RbException( "ConstantNode cannot hold container objects. Use a ContainerNode instead." );

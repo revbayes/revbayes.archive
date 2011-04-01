@@ -38,6 +38,12 @@ ArgumentRule::ArgumentRule(const std::string& argName, RbObject* defVal)
 }
 
 
+/** Construct rule based on dummy object, which is used to get the type specification; use "" for no label. */
+ArgumentRule::ArgumentRule(const std::string& argName, const RbObject& dummy)
+    : RbInternal(), label(argName), argSlot(Workspace::userWorkspace().getTypeSpec(dummy.getTypeSpec())), hasDefaultVal(false) {
+}
+
+
 /**
  * Construct rule without default value; use "" for no label. To make sure that the
  * argument rule is set to the right language type specification, we call the work

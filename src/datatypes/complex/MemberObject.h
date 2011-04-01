@@ -54,9 +54,9 @@ class MemberObject: public RbComplex {
         // DAG utility function you do not have to override
         MemberObject*               getConstValue(void) const;                                                          //!< Make a constant clone
 
-        // Member variable functions
+        // Member variable functions; override getMemberRules to add member variables
         const MemberTable&          getMembers(void) const { return members; }                                          //!< Get members
-        virtual const MemberRules&  getMemberRules(void) const = 0;                                                     //!< Get member rules
+        virtual const MemberRules&  getMemberRules(void) const;                                                         //!< Get member rules
         const TypeSpec&             getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
         const RbObject*             getValue(const std::string& name);                                                  //!< Get member value
         const RbObject*             getValue(const std::string& name) const;                                            //!< Get member value (const)
@@ -68,7 +68,7 @@ class MemberObject: public RbComplex {
         // Member method functions
         DAGNode*                    executeMethod(const std::string& name, int funcId);                                 //!< Execute method with preprocessed args (repeated evaluation)
         DAGNode*                    executeMethod(const std::string& name, std::vector<Argument>& args);                //!< Execute method (evaluate once)
-        virtual const MethodTable&  getMethodInits(void) const = 0;                                                     //!< Get method specifications
+        virtual const MethodTable&  getMethodInits(void) const;                                                         //!< Get method specifications
         const MethodTable&          getMethods(void) const { return methods; }                                          //!< Get methods
 
         // Subscript operator functions
@@ -79,9 +79,9 @@ class MemberObject: public RbComplex {
 
     protected:
 									MemberObject(const MemberRules& memberRules, const MethodTable& methodInits);       //!< Standard constructor
-
+                                    MemberObject(void){}                                                                //!< Default constructor; no members or methods
         // Protected functions
-        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args) = 0;   //!< Execute method
+        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args);   //!< Execute method
 
         // Members and methods keep track of variables and functions belonging to the object
         MemberTable                 members;                                                                            //!< Member variables

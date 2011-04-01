@@ -82,8 +82,6 @@ class StochasticNode : public VariableNode {
         // Member variables
         bool                    clamped;                                                       //!< Is the node clamped with data?
         Distribution*           distribution;                                                  //!< Distribution (density functions, random draw function)
-        RbObject*               value;                                                         //!< Current value
-        RbObject*               storedValue;                                                   //!< Stored value
 };
 
 #endif

@@ -30,7 +30,7 @@
 
 
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode(const std::string& type) : VariableNode(type), clamped(false), distribution(NULL), value(NULL), storedValue(NULL) {
+StochasticNode::StochasticNode(const std::string& type) : VariableNode(type), clamped(false), distribution(NULL) {
 }
 
 

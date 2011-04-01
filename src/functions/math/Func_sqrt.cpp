@@ -42,10 +42,12 @@ Func_sqrt* Func_sqrt::clone(void) const {
 /** Execute function */
 DAGNode* Func_sqrt::executeOperation(const std::vector<VariableSlot>& args) {
 
-    double x = (((Real*) (args[0].getValue())))->getValue();
-	if (x < 0.0)
+    const Real* x = static_cast<const Real*>( args[0].getValue() );
+
+    if ( *x < 0.0 )
 		throw (RbException("Square root of negative number. RevBayes does not (yet) support complex numbers"));
-    return new ConstantNode(new RealPos( sqrt(x) ));
+
+    return new ConstantNode( new RealPos( sqrt( *x ) ) );
 }
 
 

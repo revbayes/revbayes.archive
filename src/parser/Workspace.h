@@ -81,8 +81,10 @@ class Workspace : public Frame {
         bool                        addFunction(const std::string& name, RbFunction* func);                             //!< Add function
         bool                        addType(RbObject* exampleObj);                                                      //!< Add type
         bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);               //!< Add type with constructor
+        bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
         DAGNode*                    executeFunction(    const std::string&              name,
                                                         const std::vector<Argument>&    args) const;                    //!< Execute function
+        bool                        existsType(const std::string& name) const;                                          //!< Does the type exist in the type table?
         const VectorString&         getClassOfType(const std::string& type) const;                                      //!< Get reference to class vector of type
         FunctionTable*              getFunctionTable(void) { return functionTable; }                                    //!< Get function table
         RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
@@ -116,6 +118,8 @@ class Workspace : public Frame {
 
         FunctionTable*              functionTable;                                                                       //!< Table holding functions
         TypeTable                   typeTable;                                                                           //!< Type table
+
+        bool                        typesInitialized;                                                                    //!< Is type table initialized? Before then, we can't perform type checking.
 };
 
 #endif

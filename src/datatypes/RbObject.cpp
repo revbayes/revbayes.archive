@@ -21,6 +21,7 @@
 #include "RbObject.h"
 #include "TypeSpec.h"
 #include "VectorString.h"
+#include "Workspace.h"
 
 #include <sstream>
 
@@ -101,10 +102,15 @@ bool RbObject::isType(const std::string& type) const {
 }
 
 
-/** Are we of specified language type? */
+/**
+ * Are we of specified language type? In the general case we need
+ * to resort to the workspace because we could be a container type
+ * without information about the class vector of our elements, which
+ * could be absent or NULL at the time.
+ */
 bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
 
-    return typeSpec == getTypeSpec();
+    return Workspace::userWorkspace().isXOfTypeY( getTypeSpec(), typeSpec );
 }
 
 

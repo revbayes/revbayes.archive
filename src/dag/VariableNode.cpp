@@ -30,9 +30,7 @@
 
 /** Constructor */
 VariableNode::VariableNode(const std::string& valType)
-    : DAGNode(valType), value(NULL), storedValue(NULL) {
-
-    touched      = false;
+    : DAGNode(valType), touched(false), storedValue(NULL) {
 }
 
 

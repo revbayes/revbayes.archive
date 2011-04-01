@@ -35,7 +35,7 @@
 
 
 /** Constructor: set value type */
-DAGNode::DAGNode(const std::string& valType) : children(), parents(), slot(), referringSlots(), valueType(valType) {
+DAGNode::DAGNode(const std::string& valType) : children(), parents(), slot(), referringSlots(), valueType(valType), value(NULL) {
 }
 
 
@@ -47,7 +47,7 @@ DAGNode::DAGNode(const std::string& valType) : children(), parents(), slot(), re
  * dual copies of them (function arguments, distribution parameters,
  * or container elements).
  */
-DAGNode::DAGNode(const DAGNode& x) : children(), parents(), slot(), referringSlots(), valueType(x.valueType) {
+DAGNode::DAGNode(const DAGNode& x) : children(), parents(), slot(), referringSlots(), valueType(x.valueType), value(NULL) {
 
 }
 

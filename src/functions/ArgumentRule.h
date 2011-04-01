@@ -33,6 +33,7 @@ class ArgumentRule : public RbInternal {
 
     public:
                                     ArgumentRule(const std::string& argName, RbObject* defValue);                                       //!< Constructor of rule from default value
+                                    ArgumentRule(const std::string& argName, const RbObject& dummy);                                          //!< Constructor of rule from dummy value
                                     ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp);                                //!< Constructor of rule without default value
                                     ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbObject* defValue);            //!< Constructor of rule with default value
                                     ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable);          //!< Constructor of rule with default reference or default wrapped value

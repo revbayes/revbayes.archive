@@ -17,6 +17,7 @@
 #ifndef Func__add_H
 #define Func__add_H
 
+#include "ContainerNode.h"
 #include "RbFunction.h"
 
 #include <map>
@@ -88,8 +89,8 @@ DAGNode* Func__add<Real,Real,Real>::executeOperation(const std::vector<VariableS
 template <>
 DAGNode* Func__add<Integer,Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
 
-    double val1 = (double)(((Integer*)(args[0].getValue()))->getValue());
-    double val2 = ((Real*)(args[1].getValue()))->getValue();
+    int    val1 = static_cast<const Integer*>( args[0].getValue() )->getValue();
+    double val2 = static_cast<const Real*>   ( args[1].getValue() )->getValue();
     double sum  = val1 + val2;
     return new ConstantNode( new Real(sum));
 }
@@ -100,7 +101,7 @@ template <>
 DAGNode* Func__add<Real,Integer,Real>::executeOperation(const std::vector<VariableSlot>& args) {
 
     double val1 = ((Real*)(args[0].getValue()))->getValue();
-    double val2 = (double)(((Integer*)(args[1].getValue()))->getValue());
+    int    val2 = ((Integer*)(args[1].getValue()))->getValue();
     double sum  = val1 + val2;
     return new ConstantNode( new Real(sum));
 }
@@ -113,7 +114,7 @@ DAGNode* Func__add<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std
     MatrixReal val1 = ((MatrixReal*)(args[0].getValue()))->getValue();
     MatrixReal val2 = ((MatrixReal*)(args[1].getValue()))->getValue();
     MatrixReal sum  = val1 + val2;
-    return new ConstantNode( new MatrixReal(sum));
+    return new ContainerNode( new MatrixReal(sum));
 }
 
 
@@ -126,13 +127,9 @@ const ArgumentRules& Func__add<firstValType, secondValType, sumType>::getArgumen
 
     if (!rulesSet) 
         {
-        firstValType*  dummy1 = new firstValType();
-        secondValType* dummy2 = new secondValType();
-        argumentRules.push_back(new ArgumentRule("", dummy1->getType()));
-        argumentRules.push_back(new ArgumentRule("", dummy2->getType()));
+        argumentRules.push_back(new ArgumentRule("", firstValType() ));
+        argumentRules.push_back(new ArgumentRule("", secondValType()));
         rulesSet = true;
-        delete dummy1;
-        delete dummy2;
         }
 
     return argumentRules;
@@ -143,16 +140,8 @@ const ArgumentRules& Func__add<firstValType, secondValType, sumType>::getArgumen
 template <typename firstValType, typename secondValType, typename sumType>
 const VectorString& Func__add<firstValType, secondValType, sumType>::getClass(void) const {
 
-    firstValType*  dummy1 = new firstValType();
-    secondValType* dummy2 = new secondValType();
-    sumType*       dummy3 = new sumType();
-    
-    std::string funcAddName = "Func__add<" + dummy1->getType() + "," + dummy2->getType() + "," + dummy3->getType() + ">"; 
-    static VectorString rbClass = VectorString(funcAddName) + RbFunction::getClass();
-    
-    delete dummy1;
-    delete dummy2;
-    delete dummy3;
+    static std::string  rbName  = "Func__add<" + firstValType().getType() + "," + secondValType().getType() + "," + sumType().getType() + ">"; 
+    static VectorString rbClass = VectorString(rbName) + RbFunction::getClass();
     
     return rbClass;
 }
@@ -162,10 +151,6 @@ const VectorString& Func__add<firstValType, secondValType, sumType>::getClass(vo
 template <typename firstValType, typename secondValType, typename sumType>
 const TypeSpec Func__add<firstValType, secondValType, sumType>::getReturnType(void) const {
 
-    sumType* dummy  = new sumType();
-    static std::string retTypeStr = dummy->getType();
-    delete dummy;
-    return TypeSpec(retTypeStr);
+    return sumType().getTypeSpec();
 }
-
 

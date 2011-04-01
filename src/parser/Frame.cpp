@@ -180,8 +180,6 @@ void Frame::addVariable( const std::string& name, const TypeSpec& typeSp, const 
     if ( variable->getDim() == 0 ) {
         if ( !Workspace::userWorkspace().isXOfTypeY( variable->getValueType(), typeSp.getType() ) ||  typeSp.getDim() != index.size() )
             throw RbException( "Type error when adding variable " + name + index.toIndexString() + " to frame" );
-        if ( Workspace::userWorkspace().isXOfTypeY( variable->getDAGType(), ContainerNode_name ) )
-            throw RbException( "Invalid attempt to add container of containers " + name + " to frame" );
     }
     else {
         if ( !Workspace::userWorkspace().isXOfTypeY( variable->getTypeSpec(), typeSp ) || index.size() != 0 )
@@ -215,7 +213,7 @@ void Frame::addVariable( const std::string& name, const TypeSpec& typeSp, const 
     /* Insert new variable in variable table */
     variableTable.insert( std::pair<std::string, VariableSlot>(name, slot) );
 
-    PRINTF("Inserted variable %s %s in frame\n", variable->getTypeSpec(), name.c_str());
+    PRINTF("Inserted variable %s %s in frame\n", variable->getTypeSpec().toString().c_str(), name.c_str());
 }
 
 

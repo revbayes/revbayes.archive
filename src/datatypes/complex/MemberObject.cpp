@@ -89,6 +89,13 @@ DAGNode* MemberObject::executeMethod(const std::string& name, std::vector<Argume
 }
 
 
+/** Execute member method. We throw an error because there are no member methods unless this function is overridden */
+DAGNode* MemberObject::executeOperation(const std::string& name, const std::vector<VariableSlot>& args) {
+
+    throw RbException ("Object does not have methods");
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& MemberObject::getClass(void) const {
 
@@ -113,10 +120,24 @@ MemberObject* MemberObject::getConstValue( void ) const {
 }
 
 
+/** Return member rules (no members) */
+const MemberRules& MemberObject::getMemberRules(void) const {
+
+    throw RbException( "Object does not have members" );
+}
+
+
 /** Get type specification for a member variable */
 const TypeSpec& MemberObject::getMemberTypeSpec(const std::string& name) const {
 
     return members.getTypeSpec( name );
+}
+
+
+/** Get method specifications (no methods) */
+const MethodTable& MemberObject::getMethodInits(void) const {
+
+    throw RbException( "Object does not have methods" );
 }
 
 

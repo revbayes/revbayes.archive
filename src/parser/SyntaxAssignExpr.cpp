@@ -151,7 +151,7 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
             if ( elemIndex.size() > 0 && exprValue->getDim() > 0 )
                 throw RbException( "Invalid container to container assignment" );
 
-            PRINTF ( "Creating variable %s %s with a %s node %sthrough arrow assignment\n", TypeSpec( RbObject_name, elemIndex.size() ), varName, exprValue->getTypeSpec(), elemIndex.size() > 0 ? "element " : "" );
+            PRINTF ( "Creating variable %s %s with a %s node %sthrough arrow assignment\n", TypeSpec( RbObject_name, elemIndex.size() ).toString().c_str(), varName.c_str(), exprValue->getTypeSpec().toString().c_str(), elemIndex.size() > 0 ? "element " : "" );
             TypeSpec typeSpec( RbObject_name, elemIndex.size() );
             frame->addVariable( varName, typeSpec, elemIndex, exprValue ); 
 		}

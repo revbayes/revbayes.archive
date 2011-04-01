@@ -70,16 +70,21 @@
 #include "Func_v_int.h"
 #include "Func_v_double.h"
 #include "Func_v_vecrealvec.h"
+#include "Integer.h"
+#include "List.h"
 #include "MatrixReal.h"
 #include "Mcmc.h"
+#include "Model.h"
 #include "Move_mmultinomial.h"
 #include "Move_mscale.h"
 #include "Move_msimplex.h"
 #include "Move_mslide.h"
+#include "Natural.h"
 #include "RealPos.h"
-#include "Integer.h"
 #include "Real.h"
 #include "Simplex.h"
+#include "VectorBoolean.h"
+#include "VectorNatural.h"
 #include "VectorReal.h"
 #include "VectorRealPos.h"
 
@@ -88,13 +93,14 @@
 
 
 /** Constructor of global workspace */
-Workspace::Workspace() : Frame(), functionTable(new FunctionTable()) {
+Workspace::Workspace() : Frame(), functionTable(new FunctionTable()), typesInitialized(false) {
 
 }
 
 
 /** Constructor of user workspace */
-Workspace::Workspace(Workspace* parentSpace) : Frame(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())) {
+Workspace::Workspace(Workspace* parentSpace)
+    : Frame(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())), typesInitialized(false) {
 
 }
 
@@ -214,6 +220,24 @@ DAGNode* Workspace::executeFunction(const std::string& name, const std::vector<A
 }
 
 
+/** Is the type added to the workspace? */
+bool Workspace::existsType( const std::string& name ) const {
+
+    if ( typesInitialized == false )
+        return true;    // Cannot provide this service if type table is not filled
+    
+    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
+    if ( it == typeTable.end() ) {
+        if ( parentFrame != NULL )
+            return static_cast<Workspace*>( parentFrame )->existsType( name );
+        else
+            return false;
+    }
+    else
+        return true;
+}
+
+
 /** Get function */
 RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Argument>& args) {
 
@@ -231,6 +255,13 @@ const std::string& Workspace::getTypeNameRef( const std::string& name ) const {
 /** Check and get type specification for a named object type */
 TypeSpec Workspace::getTypeSpec( const std::string& name ) const {
 
+    if ( typesInitialized == false )
+        return TypeSpec( name, 0 );    // Cannot provide this service if type table is not filled
+
+    //! @todo We probably need to catch the abstract types in a more general way
+    if ( name == RbObject_name )
+        return TypeSpec( RbObject_name, 0 );
+
     if ( name == ValueContainer_name || name == VariableContainer_name ) {
         
         // We cannot rely on the type spec provided by generic container type dummies in the type table
@@ -240,14 +271,25 @@ TypeSpec Workspace::getTypeSpec( const std::string& name ) const {
     }
 
     std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
-    if ( it == typeTable.end() )
-        throw RbException( "No object class with name " + name );
+    if ( it == typeTable.end() ) {
+        if ( parentFrame != NULL )
+            return static_cast<Workspace*>( parentFrame )->getTypeSpec( name );
+        else
+            throw RbException( "No object class with name " + name );
+    }
     return (*it).second->getTypeSpec();
 }
 
 
 /** Check and get type specification for a named object type */
 TypeSpec Workspace::getTypeSpec( const TypeSpec& typeSp ) const {
+
+    if ( typesInitialized == false )
+        return TypeSpec( typeSp );    // Cannot provide this service if type table is not filled
+
+    //! @todo We probably need to catch the abstract types in a more general way
+    if ( typeSp.getType() == RbObject_name && typeSp.getDim() == 0 )
+        return TypeSpec( typeSp );
 
     if ( typeSp.getType() == ValueContainer_name || typeSp.getType() == VariableContainer_name ) {
         
@@ -258,8 +300,12 @@ TypeSpec Workspace::getTypeSpec( const TypeSpec& typeSp ) const {
     }
 
     std::map<std::string, RbObject*>::const_iterator it = typeTable.find( typeSp.getType() );
-    if ( it == typeTable.end() )
-        throw RbException( "No object class with name " + typeSp.getType() );
+    if ( it == typeTable.end() ) {
+        if ( parentFrame != NULL )
+            return static_cast<Workspace*>( parentFrame )->getTypeSpec( typeSp );
+        else
+            throw RbException( "No object class with name " + typeSp.getType() );
+    }
     return (*it).second->getTypeSpec();
 }
 
@@ -274,34 +320,50 @@ RandomNumberGenerator* Workspace::get_rng(void) {
 /** Initialize global workspace */
 void Workspace::initializeGlobalWorkspace(void) {
 
-    try 
-        {
+    try {
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
+
+        /* Add primitive types (alphabetic order) */
         addType( new Boolean()             );
         addType( new Integer()             );
-        addType( new MatrixReal()          );
+        addType( new Natural()             );
+        addType( new RbString()            );
         addType( new Real()                );
         addType( new RealPos()             );
-        addType( new Simplex()             );
+
+        /* Add container types (alphabetic order) */
+        addType( new MatrixReal()          );
+        addType( new VectorBoolean()       );
         addType( new VectorInteger()       );
+        addType( new VectorNatural()       );
         addType( new VectorReal()          );
         addType( new VectorRealPos()       );
+        addType( new VectorString()        );
 
-        /* Add member object types with auto-generated constructors */
+        /* Add member objects without auto-generated constructors (alphabetic order) */
+        addType( new List()                );
+        addType( new Model()               );
+        addType( new Simplex()             );
+
+        /* Add member object types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "mcmc",         new Mcmc()              );
         addTypeWithConstructor( "mmultinomial", new Move_mmultinomial() );
         addTypeWithConstructor( "mslide",       new Move_mslide()       );
         addTypeWithConstructor( "mscale",       new Move_mscale()       );
         addTypeWithConstructor( "msimplex",     new Move_msimplex()     );
 
-        /* Add distributions with distribution constructors and distribution functions*/
+        /* Add distributions with distribution constructors and distribution functions (alphabetic order) */
         addDistribution( "dirichlet",   new Dist_dirichlet()   );
         addDistribution( "exp",         new Dist_exp()         );
         addDistribution( "multinomial", new Dist_multinomial() );
         addDistribution( "norm",        new Dist_norm()        );
         addDistribution( "unif",        new Dist_unif()        );
 
-        /* Add basic internal functions */
+        /* Now we have added all primitive and complex data types and can start type checking */
+        Workspace::globalWorkspace().typesInitialized = true;
+        Workspace::userWorkspace().typesInitialized   = true;
+
+        /* Add basic internal functions (alphabetic order) */
         addFunction( "_range",    new Func__range()       );
        
         /* Add basic arithmetic/logic templated functions */
@@ -322,14 +384,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_mul",      new Func__mul<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<         MatrixReal,           Real, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<               Real,     MatrixReal, MatrixReal >() );
-#if 0
-        addFunction( "_mul",      new Func__mul<          VectorReal,    VectorReal, MatrixReal >() );
-        addFunction( "_mul",      new Func__mul<          VectorReal,    MatrixReal, MatrixReal >() );
-        addFunction( "_mul",      new Func__mul<          MatrixReal,    VectorReal, MatrixReal >() );
-        addFunction( "_mul",      new Func__mul<       VectorRealPos,    MatrixReal, MatrixReal >() );
-        addFunction( "_mul",      new Func__mul<          MatrixReal, VectorRealPos, MatrixReal >() );
-        addFunction( "_mul",      new Func__mul<       VectorRealPos, VectorRealPos, MatrixReal >() );
-#endif
         addFunction( "_sub",      new Func__sub<            Integer,        Integer,    Integer >() );
         addFunction( "_sub",      new Func__sub<               Real,           Real,       Real >() );
         addFunction( "_sub",      new Func__sub<            Integer,           Real,       Real >() );
@@ -367,14 +421,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_or",       new Func__or<                Real,           Real >()             );
         addFunction( "_or",       new Func__or<             Integer,           Real >()             );
         addFunction( "_or",       new Func__or<                Real,        Integer >()             );
-        addFunction( "transpose", new Func_transpose<    MatrixReal,     MatrixReal >()             );
-#if 0
-        addFunction( "transpose", new Func_transpose< VectorInteger,  VectorInteger >()             );
-        addFunction( "transpose", new Func_transpose<    VectorReal,     VectorReal >()             );
-        addFunction( "transpose", new Func_transpose< VectorRealPos,  VectorRealPos >()             );
-#endif
 
-        /* Add regular functions */
+        /* Add regular functions (alphabetical order) */
         addFunction( "clamp",     new Func_clamp()        ); 
         addFunction( "ls",        new Func_ls()           );
         addFunction( "model",     new Func_model()        );
@@ -389,6 +437,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "s",         new Func_s_doublevec()  );
         addFunction( "s",         new Func_s_int()        );
         addFunction( "s",         new Func_s_realvec()    );
+        addFunction( "transpose", new Func_transpose<    MatrixReal,     MatrixReal >()             );
         }
     catch(RbException& rbException) 
         {
@@ -402,8 +451,8 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         RBOUT("Press any character to exit the program.");
         getchar();
-        exit(0);
-        }
+        exit(1);
+    }
 }
 
 
@@ -419,6 +468,13 @@ bool Workspace::isXOfTypeY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) c
 
 /** Type checking using type table and type names, assuming same dim */
 bool Workspace::isXOfTypeY( const std::string& xType, const std::string& yType ) const {
+
+    if ( typesInitialized == false )
+        return true;    // Cannot provide this service if type table is not filled
+
+    //! @todo We probably need to handle the abstract types in a more general way
+    if ( yType == RbObject_name && existsType( xType ) )
+        return true;
 
     /* Simplest case first */
     if ( xType == yType )
@@ -458,10 +514,17 @@ bool Workspace::isXConvertibleToY( const std::string& xType, const std::string& 
 /** Is type x convertible to type y? */
 bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) const {
 
+    if ( typesInitialized == false )
+        return true;    // Cannot provide this service if type table is not filled
+
     const std::string&  xType   = xTypeSp.getType();
     const std::string&  yType   = yTypeSp.getType();
     int                 xDim    = xTypeSp.getDim();
     int                 yDim    = yTypeSp.getDim();
+
+    //! @todo We probably need to handle the abstract types in a more general way
+    if ( yType == RbObject_name && existsType( xType ) && xDim == yDim )
+        return true;
 
     bool retVal = false;
     if ( xDim > 0 ) {
