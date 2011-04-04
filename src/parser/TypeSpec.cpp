@@ -15,11 +15,20 @@
  * $Id$
  */
 
+#include "RbException.h"
+#include "RbNames.h"
 #include "TypeSpec.h"
+#include "Workspace.h"
 
 
-/** Constructor for single object (dim = 0, ref = false) */
-TypeSpec::TypeSpec(const std::string& objType) : type(objType), dim(0), reference(false) {
+/** Constructor for single object (dim = 0, ref = false; if container type, we translate it) */
+TypeSpec::TypeSpec(const std::string& objType)
+    : type(Workspace::userWorkspace().getTypeSpec(objType).getType()),
+      dim (Workspace::userWorkspace().getTypeSpec(objType).getDim()),
+      reference(false) {
+
+    if ( Workspace::userWorkspace().areTypesInitialized() && Workspace::userWorkspace().isXOfTypeY( type, Container_name ) )
+        throw RbException( "Cannot convert container type name to language type specification" );
 }
 
 

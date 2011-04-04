@@ -15,7 +15,7 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
+#include "ValueRule.h"
 #include "Frame.h"
 #include "RbNames.h"
 #include "RbString.h"

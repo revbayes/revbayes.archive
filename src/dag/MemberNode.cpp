@@ -64,18 +64,14 @@ MemberNode::MemberNode(MemberObject* val)
 MemberNode::~MemberNode(void) {
 
     if (numRefs() != 0)
-        throw RbException ("Cannot delete node with references"); 
+        throw RbException ("Cannot delete MemberNode with references"); 
 
-    /* Remove parents first */
+    /* Remove parents first so that DeterministicNode destructor does not get in the way */
     for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
         (*i)->removeChildNode(this);
     parents.clear();
 
     delete memberObject;    // This will delete any DAG nodes that need to be deleted
-
-    delete value;
-    if (storedValue)
-        delete storedValue;
 }
 
 

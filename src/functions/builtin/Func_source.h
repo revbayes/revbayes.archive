@@ -30,11 +30,11 @@ class Func_source :  public RbFunction {
     	const VectorString&     getClass(void) const;               //!< Get class vector
 
         // Func_source functions
+    	DAGNode*                executeFunction(void);              //!< Execute function
         const ArgumentRules&    getArgumentRules(void) const;       //!< Get argument rules
         const TypeSpec          getReturnType(void) const;          //!< Get type of return val
+        bool                    throws(void) { return true; }       //!< Function may throw exceptions
 
-	protected:
-    	DAGNode*                executeOperation(const std::vector<VariableSlot>& args);    //!< Execute function
 };
 
 #endif

@@ -28,7 +28,7 @@
 
 
 /** Static vector of strings giving names of operator types */
-std::string SyntaxUnaryExpr::opCode[] = { "UMINUS", "UPLUS", "UNOT" }; 
+std::string SyntaxUnaryExpr::opCode[] = { "uminus", "uplus", "unot" };
 
 
 /** Construct from operator type and operands */

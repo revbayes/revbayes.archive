@@ -29,31 +29,31 @@
 
 
 /** Clone object */
-Func_model* Func_model::clone(void) const {
+Func_model* Func_model::clone( void ) const {
 
-    return new Func_model(*this);
+    return new Func_model( *this );
 }
 
 
 /** Execute function */
-DAGNode* Func_model::executeOperation(const std::vector<VariableSlot>& args) {
+DAGNode* Func_model::executeOperation( const std::vector<VariableSlot>& args ) {
 
-    if (args[0].getVariable()->numChildren() != 0)
-        throw RbException("Node is not a sink node");
+    if ( args[0].getVariable()->numChildren() != 0 )
+        throw RbException( "Node is not a sink node" );
 
-    return new ConstantNode( new Model( std::vector<DAGNode*>( 1, args[0].getReference() ) ) );
+    return new MemberNode( new Model( std::vector<DAGNode*>( 1, args[0].getReference() ) ) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_model::getArgumentRules(void) const {
+const ArgumentRules& Func_model::getArgumentRules( void ) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
-    if (!rulesSet) {
+    if ( !rulesSet ) {
 
-        argumentRules.push_back(new ReferenceRule("sinknode", RbObject_name));
+        argumentRules.push_back( new ReferenceRule( "sinknode", RbObject_name ) );
         rulesSet = true;
     }
 
@@ -62,16 +62,16 @@ const ArgumentRules& Func_model::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Func_model::getClass(void) const {
+const VectorString& Func_model::getClass( void ) const {
 
-    static VectorString rbClass = VectorString(Func_model_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString( Func_model_name ) + RbFunction::getClass();
     return rbClass;
 }
 
 
 /** Get return type */
-const TypeSpec Func_model::getReturnType(void) const {
+const TypeSpec Func_model::getReturnType( void ) const {
 
-    return TypeSpec(Model_name);
+    return TypeSpec( Model_name );
 }
 

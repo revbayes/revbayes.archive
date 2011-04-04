@@ -117,19 +117,6 @@ const VectorString& VectorString::getClass() const {
 }
 
 
-/** Print value for user */
-void VectorString::printValue(std::ostream& o) const {
-
-    o << "[ ";
-    for (std::vector<RbObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) {
-        if (i != elements.begin())
-            o << ", ";
-        o << "\"" << *(*i) << "\"";
-    }
-    o <<  " ]";
-}
-
-
 /** Append string element to end of vector, updating length in process */
 void VectorString::push_back(std::string x) {
 

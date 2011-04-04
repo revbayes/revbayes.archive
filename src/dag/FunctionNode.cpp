@@ -90,14 +90,18 @@ FunctionNode::FunctionNode(const FunctionNode& x) : DeterministicNode(x), valueD
 
 
 /** Destructor */
-FunctionNode::~FunctionNode(void) {
+FunctionNode::~FunctionNode( void ) {
 
-    if (numRefs() != 0)
-        throw RbException ("Cannot delete node with references");
+    if ( numRefs() != 0 )
+        throw RbException ( "Cannot delete FunctionNode with references" );
 
-    /* Function does not delete processed arguments (otherwise there
-       would be problems with DeterministicNode destructor) */
-    if (function)
+    /* Remove parents first so that DeterministicNode destructor does not get in the way */
+    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
+        (*i)->removeChildNode(this);
+    parents.clear();
+
+    /* Deleting the function will remove all the parent nodes when appropriate */
+    if ( function )
         delete function;
 }
 

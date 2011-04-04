@@ -46,9 +46,10 @@ class Dist_dirichlet: public Distribution {
         double                      cdf(const double q);                                                //!< Cumulative density
         Move*                       getDefaultMove(StochasticNode* node);                               //!< Get default move
         const Real*                 getMin(void);                                                       //!< Get min value
-        double                      lnLikelihoodRatio(const RbObject* value);                           //!< Ln likelihood ratio
+        double                      lnLikelihoodRatio(const RbObject* value);                           //!< Ln prob ratio of A | B when only B is touched
         double                      lnPdf(const RbObject* value);                                       //!< Ln probability density
-        double                      lnPriorRatio(const RbObject* newVal, const RbObject* oldVal);       //!< Ln prior ratio
+        double                      lnPriorRatio(const RbObject* newVal, const RbObject* oldVal);       //!< Ln prob ratio of A | B when only A is touched
+        double                      lnProbabilityRatio(const RbObject* newVal, const RbObject* oldVal); //!< Ln prob ratio of A | B when both A and B are touched
         double                      pdf(const RbObject* value);                                         //!< Probability density
         double                      quantile(const double p);                                           //!< Quantile
         RbObject*                   rv(void);                                                           //!< Generate random variable

@@ -102,21 +102,18 @@ ContainerNode::ContainerNode( const ContainerNode& x )
 
 
 /** Destructor */
-ContainerNode::~ContainerNode(void) {
+ContainerNode::~ContainerNode( void ) {
 
-    if (numRefs() != 0)
-        throw RbException ("Cannot delete container node with references"); 
+    if ( numRefs() != 0 )
+        throw RbException ( "Cannot delete ContainerNode with references" ); 
 
-    /* Remove parents first */
+    /* Remove parents first so that DeterministicNode destructor does not get in the way */
     for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
         (*i)->removeChildNode(this);
     parents.clear();
 
-    delete container;    // This will delete any DAG nodes that need to be deleted
-
-    delete value;
-    if (storedValue)
-        delete storedValue;
+    if ( container != NULL )
+        delete container;    // This will delete any DAG nodes that need to be deleted
 }
 
 

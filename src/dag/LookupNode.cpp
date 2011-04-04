@@ -141,10 +141,10 @@ LookupNode::LookupNode(const LookupNode& x) : DeterministicNode(x) {
  * @note Parent nodes, including baseVariable or baseLookup, destroyed
  *       by DeterministicNode destructor
  */
-LookupNode::~LookupNode(void) {
+LookupNode::~LookupNode( void ) {
 
-    if (numRefs() != 0)
-        throw RbException ("Cannot delete lookup node with references");
+    if ( numRefs() != 0 )
+        throw RbException ( "Cannot delete LookupNode with references" );
 
     delete memberName;
 }

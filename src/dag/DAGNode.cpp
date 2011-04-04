@@ -52,6 +52,14 @@ DAGNode::DAGNode(const DAGNode& x) : children(), parents(), slot(), referringSlo
 }
 
 
+/** Destructor deletes value */
+DAGNode::~DAGNode( void ) {
+
+    if ( value )
+        delete value;
+}
+
+
 /** Tell parser if element exists */
 bool DAGNode::existsElement( VectorInteger& index ) {
 

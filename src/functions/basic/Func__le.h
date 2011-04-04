@@ -1,10 +1,11 @@
 /**
  * @file
- * This file contains the declaration of Func__le, which is used
- * to compare two variables, and determine if the first is less than 
- * or equal to the second.
+ * This file contains the declaration and implementation
+ * of the templated Func__le, which is used to determine
+ * whether the first variable is less than or equal to
+ * the second.
  *
- * @brief Declaration of Func__le
+ * @brief Declaration and implementof Func__le
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -35,76 +36,41 @@ class Func__le :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
+    	DAGNode*                    executeFunction(void);                                      //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
-	protected:
-        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 };
 
 #endif
 
-#include "ArgumentRule.h"
 #include "Boolean.h"
 #include "DAGNode.h"
 #include "Integer.h"
+#include "MatrixReal.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "Real.h"
 #include "TypeSpec.h"
-#include "MatrixReal.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 
 
 /** Clone object */
 template <typename firstValType, typename secondValType>
-Func__le<firstValType, secondValType>* Func__le<firstValType, secondValType>::clone(void) const {
+Func__le<firstValType, secondValType>* Func__le<firstValType, secondValType>::clone( void ) const {
 
-    return new Func__le(*this);
+    return new Func__le( *this );
 }
 
 
-/** Execute function: Bool <- Integer < Integer */
-template <>
-DAGNode* Func__le<Integer,Integer>::executeOperation(const std::vector<VariableSlot>& args) {
+/** Execute function: We rely on operator overloading to provide the functionality */
+template <typename firstValType, typename secondValType>
+DAGNode* Func__le<firstValType,secondValType>::executeFunction( void ) {
 
-    int val1  = ((Integer*)(args[0].getValue()))->getValue();
-    int val2  = ((Integer*)(args[1].getValue()))->getValue();
-    bool comp = (val1 <= val2);
-    return new ConstantNode( new Boolean(comp));
-}
-
-
-/** Execute function: Bool <- Real < Real */
-template <>
-DAGNode* Func__le<Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    double val1 = ((Real*)(args[0].getValue()))->getValue();
-    double val2 = ((Real*)(args[1].getValue()))->getValue();
-    bool comp   = ( RbMath::compApproximatelyEqual(val1, val2, 0.00001) || val1 < val2 );
-    return new ConstantNode( new Boolean(comp));
-}
-
-
-/** Execute function: Bool <- Integer < Real */
-template <>
-DAGNode* Func__le<Integer,Real>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    double val1 = (double)(((Integer*)(args[0].getValue()))->getValue());
-    double val2 = ((Real*)(args[1].getValue()))->getValue();
-    bool comp   = ( RbMath::compApproximatelyEqual(val1, val2, 0.00001) || val1 < val2 );
-    return new ConstantNode( new Boolean(comp));
-}
-
-
-/** Execute function: Bool <- Real < Integer */
-template <>
-DAGNode* Func__le<Real,Integer>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    double val1 = ((Real*)(args[0].getValue()))->getValue();
-    double val2 = (double)(((Integer*)(args[1].getValue()))->getValue());
-    bool comp   = ( RbMath::compApproximatelyEqual(val1, val2, 0.00001) || val1 < val2 );
-    return new ConstantNode( new Boolean(comp));
+    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
+    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
+    return new ConstantNode( new Boolean( *val1 <= *val2 ) );
 }
 
 
@@ -115,16 +81,11 @@ const ArgumentRules& Func__le<firstValType, secondValType>::getArgumentRules(voi
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
-    if (!rulesSet) 
-        {
-        firstValType*  dummy1 = new firstValType();
-        secondValType* dummy2 = new secondValType();
-        argumentRules.push_back(new ArgumentRule("", dummy1->getType()));
-        argumentRules.push_back(new ArgumentRule("", dummy2->getType()));
+    if ( !rulesSet ) {
+        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() );
+        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() );
         rulesSet = true;
-        delete dummy1;
-        delete dummy2;
-        }
+    }
 
     return argumentRules;
 }
@@ -132,16 +93,10 @@ const ArgumentRules& Func__le<firstValType, secondValType>::getArgumentRules(voi
 
 /** Get class vector describing type of object */
 template <typename firstValType, typename secondValType>
-const VectorString& Func__le<firstValType, secondValType>::getClass(void) const {
+const VectorString& Func__le<firstValType, secondValType>::getClass( void ) const {
 
-    firstValType*  dummy1 = new firstValType();
-    secondValType* dummy2 = new secondValType();
-    
-    std::string funcAddName = "Func__le<" + dummy1->getType() + "," + dummy2->getType() + ">"; 
-    static VectorString rbClass = VectorString(funcAddName) + RbFunction::getClass();
-    
-    delete dummy1;
-    delete dummy2;
+    static std::string  rbName  = "Func__le<" + firstValType().getType() + "," + secondValType().getType() + ">"; 
+    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
     
     return rbClass;
 }
@@ -149,8 +104,8 @@ const VectorString& Func__le<firstValType, secondValType>::getClass(void) const 
 
 /** Get return type */
 template <typename firstValType, typename secondValType>
-const TypeSpec Func__le<firstValType, secondValType>::getReturnType(void) const {
+const TypeSpec Func__le<firstValType, secondValType>::getReturnType( void ) const {
 
-    return TypeSpec(Boolean_name);
+    return TypeSpec( Boolean_name );
 }
 

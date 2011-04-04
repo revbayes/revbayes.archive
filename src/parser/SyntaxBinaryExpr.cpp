@@ -28,7 +28,7 @@
 
 /** Static vector of strings giving names of operator types */
 std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", "exp", "lt", "le",
-                                           "eq", "ne", "ge", "gt", "and", "or", "and2", "or2"};
+                                           "eq", "ne", "ge", "gt", "and", "or", "and", "or"};
 
 
 /** Construct from operator type and operands */

@@ -24,7 +24,7 @@
 #include <iostream>
 #include <list>
 
-class ArgumentRule;
+class ValueRule;
 class RbString;
 
 class SyntaxForCondition : public SyntaxElement {

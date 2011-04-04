@@ -17,7 +17,6 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
 #include "Boolean.h"
 #include "DAGNode.h"
 #include "Func_ls.h"
@@ -27,6 +26,7 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -34,32 +34,32 @@
 
 
 /** Clone object */
-Func_ls* Func_ls::clone(void) const {
+Func_ls* Func_ls::clone( void ) const {
 
-    return new Func_ls(*this);
+    return new Func_ls( *this );
 }
 
 
 /** Execute function */
-DAGNode* Func_ls::executeOperation(const std::vector<VariableSlot>& args) {
+DAGNode* Func_ls::executeFunction( void ) {
 
     /* Open file */
-    bool printAll = ((Boolean*) (args[0].getValue()))->getValue();
+    const Boolean *printAll = static_cast<const Boolean*>( args[0].getValue() );
     
     std::cout << "User workspace:" << std::endl;
     std::cout << "===============" << std::endl;
     std::cout << std::endl;
 
-    Workspace::userWorkspace().printValue(std::cout);
+    Workspace::userWorkspace().printValue( std::cout );
     std::cout << std::endl;
     
-    if (printAll == true) {
+    if ( *printAll == true ) {
         
         std::cout << "Global workspace:" << std::endl;
         std::cout << "===============" << std::endl;
         std::cout << std::endl;
 
-        Workspace::globalWorkspace().printValue(std::cout);
+        Workspace::globalWorkspace().printValue( std::cout );
         std::cout << std::endl;
     }
 
@@ -68,14 +68,14 @@ DAGNode* Func_ls::executeOperation(const std::vector<VariableSlot>& args) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_ls::getArgumentRules(void) const {
+const ArgumentRules& Func_ls::getArgumentRules( void ) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
-    if (!rulesSet) {
+    if ( !rulesSet ) {
 
-        argumentRules.push_back(new ArgumentRule("all", new Boolean(false)));
+        argumentRules.push_back( new ValueRule( "all", new Boolean( false ) ) );
         rulesSet = true;
     }
 
@@ -84,16 +84,16 @@ const ArgumentRules& Func_ls::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Func_ls::getClass(void) const {
+const VectorString& Func_ls::getClass( void ) const {
 
-    static VectorString rbClass = VectorString(Func_ls_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString( Func_ls_name ) + RbFunction::getClass();
     return rbClass;
 }
 
 
 /** Get return type */
-const TypeSpec Func_ls::getReturnType(void) const {
+const TypeSpec Func_ls::getReturnType( void ) const {
 
-    return TypeSpec(RbNULL_name);
+    return TypeSpec( RbVoid_name );
 }
 

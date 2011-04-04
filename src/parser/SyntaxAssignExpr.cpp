@@ -366,7 +366,7 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
         PRINTF( "Tilde assignment\n" );
 
         // We do not allow tilde assignment into a reference slot
-        if ( slot->isReference() && elemIndex.size() == 0 ) {
+        if ( slot != NULL && slot->isReference() && elemIndex.size() == 0 ) {
         
             throw RbException( "Assignment of temp stochastic node to reference variable not allowed" );
         }
@@ -379,7 +379,7 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
             throw RbException( "Distribution function returns NULL" );
         }
         MemberNode* dist = dynamic_cast<MemberNode*>( exprValue );
-        if ( dist == NULL || !Workspace::userWorkspace().isXOfTypeY( dist->getTypeSpec(), TypeSpec(Distribution_name) ) ) {
+        if ( dist == NULL || dist->getValue() == NULL || !dist->getValue()->isType( Distribution_name ) ) {
             delete exprValue;
             throw RbException( "Function does not return a distribution" );
         }

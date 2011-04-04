@@ -50,6 +50,14 @@ ConverterNode::ConverterNode(DAGNode* origNode, const TypeSpec& typeSpec)
 }
 
 
+/** Destructor throws an appropriate message */
+ConverterNode::~ConverterNode( void ) {
+
+    if ( numRefs() != 0 )
+        throw RbException ( "Cannot delete ConverterNode with references" );
+}
+
+
 /** Clone this object */
 ConverterNode* ConverterNode::clone(void) const {
 

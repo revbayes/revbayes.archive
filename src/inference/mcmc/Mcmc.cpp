@@ -96,11 +96,11 @@ const MemberRules& Mcmc::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new ArgumentRule("model",      Model_name));
+        memberRules.push_back(new ValueRule("model",      Model_name));
         memberRules.push_back(new MinmaxRule(  "ngen",       Integer_name, new Integer(1), NULL));
         memberRules.push_back(new MinmaxRule(  "printfreq",  Integer_name, new Integer(1), NULL));
         memberRules.push_back(new MinmaxRule(  "samplefreq", Integer_name, new Integer(1), NULL));
-        memberRules.push_back(new ArgumentRule("filename",   new RbString("out")));
+        memberRules.push_back(new ValueRule("filename",   new RbString("out")));
 
         rulesSet = true;
     }
@@ -224,8 +224,9 @@ void Mcmc::update(void) {
     double lnProbability = 0.0;
     std::vector<double> initProb;
     for (std::vector<StochasticNode*>::iterator i=stochasticNodes.begin(); i!=stochasticNodes.end(); i++) {
-        lnProbability += (*i)->calculateLnProbability();
-        initProb.push_back((*i)->calculateLnProbability());
+        double lnProb = (*i)->getLnProbability();
+        lnProbability += lnProb;
+        initProb.push_back(lnProb);
     }
     std::cerr << "Initial lnProbability = " << lnProbability << std::endl;
 
@@ -282,8 +283,9 @@ void Mcmc::update(void) {
             double curLnProb = 0.0;
             std::vector<double> lnRatio;
             for (std::vector<StochasticNode*>::iterator i=stochasticNodes.begin(); i!=stochasticNodes.end(); i++) {
-                 curLnProb += (*i)->calculateLnProbability();
-                 lnRatio.push_back(initProb[i-stochasticNodes.begin()] - (*i)->calculateLnProbability());
+                 double lnProb = (*i)->getLnProbability();
+                 curLnProb += lnProb;
+                 lnRatio.push_back(initProb[i-stochasticNodes.begin()] - lnProb);
             }
             if (fabs(lnProbability - curLnProb) > 1E-8)
                 throw RbException("Error in ln probability calculation shortcuts");

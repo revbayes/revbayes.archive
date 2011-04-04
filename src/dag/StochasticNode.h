@@ -48,17 +48,13 @@ class StochasticNode : public VariableNode {
         void                    printValue(std::ostream& o) const;                              //!< Print struct for user
         std::string             richInfo(void) const;                                           //!< Complete info about object
 
-        // Functions for setting the value (for functions, not for use by the parser, which is not allowed to set the value of a stochastic node)
-        void                    setElement(const VectorInteger& index, RbObject* value);        //!< Set value element
-        void                    setValue(RbObject* value);                                      //!< Set value
-
         // StochasticNode functions
         double                  calculateLnProbability(void);                                   //!< Calculate log conditional probability
         void                    clamp(RbObject* observedVal);                                   //!< Clamp the node with an observed value
         Distribution*           getDistribution(void) { return distribution; }                  //!< Get distribution
-        double                  getLnLikelihoodRatio(void);                                     //!< Get log likelihood ratio
-        double                  getLnPriorRatio(void);                                          //!< Get log prior ratio
+        double                  getLnProbabilityRatio(void);                                    //!< Get log probability ratio
         bool                    isClamped(void) const { return clamped; }                       //!< Is the node clamped?
+        void                    setValue(RbObject* value);                                      //!< Set value but do not clamp
         void                    unclamp(void);                                                  //!< Unclamp the node
         
         // DAG functions
@@ -79,9 +75,12 @@ class StochasticNode : public VariableNode {
         MoveSchedule*           getDefaultMoves(void);                                          //!< Get default moves
 
     protected:
+        // Help function
+        bool                    areParentsTouched() const;                                      //!< Is any parent touched? Important in calculating prob ratio
+
         // Member variables
-        bool                    clamped;                                                       //!< Is the node clamped with data?
-        Distribution*           distribution;                                                  //!< Distribution (density functions, random draw function)
+        bool                    clamped;                                                        //!< Is the node clamped with data?
+        Distribution*           distribution;                                                   //!< Distribution (density functions, random draw function)
 };
 
 #endif

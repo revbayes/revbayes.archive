@@ -73,11 +73,10 @@ void FunctionTable::addFunction(const std::string name, RbFunction* func) {
     for (std::multimap<std::string, RbFunction*>::iterator i=retVal.first; i!=retVal.second; i++) {
         if (!isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules())) {
             std::ostringstream msg;
-            msg << "'";
+            msg << name << " =  ";
             i->second->printValue(msg);
-            msg << "' cannot overload '";
+            msg << " cannot overload " << name << " = ";
             func->printValue(msg);
-            msg << "'";
             throw RbException(msg.str());
         }
     }

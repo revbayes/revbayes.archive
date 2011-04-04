@@ -16,7 +16,6 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Func__range.h"
@@ -25,40 +24,41 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 
 
 /** Clone object */
-Func__range* Func__range::clone(void) const {
+Func__range* Func__range::clone( void ) const {
 
-    return new Func__range(*this);
+    return new Func__range( *this );
 }
 
 
 /** Execute function */
-DAGNode* Func__range::executeOperation(const std::vector<VariableSlot>& args) {
+DAGNode* Func__range::executeFunction( void ) {
 
-    int first = ((Integer*)(args[0].getValue()))->getValue();
-    int last  = ((Integer*)(args[1].getValue()))->getValue();
+    int first = static_cast<const Integer*>( args[0].getValue() )->getValue();
+    int last  = static_cast<const Integer*>( args[1].getValue() )->getValue();
 
     std::vector<int> temp;
-    for (int i=first; i<=last; i++)
+    for ( int i = first; i <= last; i++ )
         temp.push_back(i);
 
-    return new ConstantNode(new VectorInteger(temp));
+    return new ContainerNode( new VectorInteger(temp) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func__range::getArgumentRules(void) const {
+const ArgumentRules& Func__range::getArgumentRules( void ) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
     if (!rulesSet) {
 
-        argumentRules.push_back(new ArgumentRule("", Integer_name));
-        argumentRules.push_back(new ArgumentRule("", Integer_name));
+        argumentRules.push_back( new ValueRule( "", Integer_name ) );
+        argumentRules.push_back( new ValueRule( "", Integer_name ) );
         rulesSet = true;
     }
 
@@ -67,16 +67,16 @@ const ArgumentRules& Func__range::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Func__range::getClass(void) const {
+const VectorString& Func__range::getClass( void ) const {
 
-    static VectorString rbClass = VectorString(Func__range_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString( Func__range_name ) + RbFunction::getClass();
     return rbClass;
 }
 
 
 /** Get return type */
-const TypeSpec Func__range::getReturnType(void) const {
+const TypeSpec Func__range::getReturnType( void ) const {
 
-    return TypeSpec(VectorInteger_name);
+    return TypeSpec( Integer_name, 1 );
 }
 

@@ -15,7 +15,7 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
+#include "ValueRule.h"
 #include "Distribution.h"
 #include "Move_mmultinomial.h"
 #include "RealPos.h"
@@ -70,8 +70,8 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
-        memberRules.push_back(new ArgumentRule("tuning", RealPos_name));
-        memberRules.push_back(new ArgumentRule("num_cats", Integer_name));
+        memberRules.push_back(new ValueRule("tuning", RealPos_name));
+        memberRules.push_back(new ValueRule("num_cats", Integer_name));
 
         /* Inherit weight and rng from Move, put it at back */
         const MemberRules& inheritedRules = Move::getMemberRules();

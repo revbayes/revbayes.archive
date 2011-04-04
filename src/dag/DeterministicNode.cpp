@@ -40,18 +40,14 @@ DeterministicNode::DeterministicNode(const std::string& valType) :
 DeterministicNode::~DeterministicNode(void) {
 
     if (numRefs() != 0)
-        throw RbException ("Cannot delete node with references");
+        throw RbException ("Cannot delete DeterministicNode with references");
 
     /* Remove this node as a child node of parents and delete these if appropriate */
     for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
         (*i)->removeChildNode(this);
-        if ((*i)->numRefs() == 0)
+        if ((*i)->isTemp())
             delete (*i);
     }
-
-    if (storedValue)
-        delete storedValue;
-    delete value;
 }
 
 

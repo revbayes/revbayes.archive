@@ -15,7 +15,6 @@
  * $Id: MemberObject.h 194 2009-12-14 11:43:32Z ronquist $
  */
 
-#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Dist_dirichlet.h"
 #include "Move_msimplex.h"
@@ -28,6 +27,7 @@
 #include "Real.h"
 #include "ReferenceRule.h"
 #include "Simplex.h"
+#include "ValueRule.h"
 #include "VectorReal.h"
 #include "VectorString.h"
 #include "Workspace.h"

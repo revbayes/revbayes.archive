@@ -1,9 +1,10 @@
 /**
  * @file
- * This file contains the declaration of Func__div, which is used
- * to divide two variables.
+ * This file contains the declaration and implementation
+ * of the templated Func__div, which is used to divide
+ * two variables.
  *
- * @brief Declaration of Func__div
+ * @brief Declaration and implementation of Func__div
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -25,7 +26,7 @@
 class DAGNode;
 class VectorString;
 
-template <typename firstValType, typename secondValType, typename sumType>
+template <typename firstValType, typename secondValType, typename retType>
 class Func__div :  public RbFunction {
 
     public:
@@ -34,108 +35,69 @@ class Func__div :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
+    	DAGNode*                    executeFunction(void);                                      //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
-	protected:
-        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 };
 
 #endif
 
-#include "ArgumentRule.h"
+#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "Integer.h"
 #include "MatrixReal.h"
 #include "RbException.h"
-#include "RbMath.h"
 #include "RbNames.h"
 #include "Real.h"
 #include "TypeSpec.h"
+#include "ValueContainer.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 
 
 /** Clone object */
-template <typename firstValType, typename secondValType, typename sumType>
-Func__div<firstValType, secondValType, sumType>* Func__div<firstValType, secondValType, sumType>::clone(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+Func__div<firstValType, secondValType, retType>* Func__div<firstValType, secondValType, retType>::clone( void ) const {
 
-    return new Func__div(*this);
+    return new Func__div( *this );
 }
 
 
-/** Execute function: Integer <- Integer / Integer */
-template <>
-DAGNode* Func__div<Integer,Integer,Real>::executeOperation(const std::vector<VariableSlot>& args) {
+/** Execute function: We rely on operator overloading to provide the necessary functionality */
+template <typename firstValType, typename secondValType, typename retType>
+DAGNode* Func__div<firstValType,secondValType,retType>::executeFunction( void ) {
 
-    double val1 = (double)(((Integer*)(args[0].getValue()))->getValue());
-    double val2 = (double)(((Integer*)(args[1].getValue()))->getValue());
-    double quot = val1 / val2;
-    return new ConstantNode( new Real(quot));
+    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
+    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
+    retType              quot = *val1 / *val2;
+    return new ConstantNode( quot.clone() );
 }
 
 
-/** Execute function: Real <- Real / Real */
-template <>
-DAGNode* Func__div<Real,Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
+/** Execute function: We need partial specialization for value containers to get te right return variable */
+template <firstValType, secondValType>
+DAGNode* Func__div<firstValType,secondValType,ValueContainer>::executeFunction( void ) {
 
-    double val1 = ((Real*)(args[0].getValue()))->getValue();
-    double val2 = ((Real*)(args[1].getValue()))->getValue();
-    double quot = val1 / val2;
-    return new ConstantNode( new Real(quot));
-}
-
-
-/** Execute function: Real <- Integer / Real */
-template <>
-DAGNode* Func__div<Integer,Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    double val1 = (double)(((Integer*)(args[0].getValue()))->getValue());
-    double val2 = ((Real*)(args[1].getValue()))->getValue();
-    double quot = val1 / val2;
-    return new ConstantNode( new Real(quot));
-}
-
-
-/** Execute function: Real <- Real / Integer */
-template <>
-DAGNode* Func__div<Real,Integer,Real>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    double val1 = ((Real*)(args[0].getValue()))->getValue();
-    double val2 = (double)(((Integer*)(args[1].getValue()))->getValue());
-    double quot = val1 / val2;
-    return new ConstantNode( new Real(quot));
-}
-
-
-/** Execute function: MatrixReal <- MatrixReal / MatrixReal */
-template <>
-DAGNode* Func__div<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    MatrixReal val1 = ((MatrixReal*)(args[0].getValue()))->getValue();
-    MatrixReal val2 = ((MatrixReal*)(args[1].getValue()))->getValue();
-    MatrixReal val2Inv(val2);
-    RbMath::matrixInverse(val2, val2Inv);
-    MatrixReal quot = val1 * val2Inv;
-    return new ConstantNode( new MatrixReal(quot));
+    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
+    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
+    retType              quot = *val1 / *val2;
+    return new ContainerNode( quot.clone() );
 }
 
 
 /** Get argument rules */
-template <typename firstValType, typename secondValType, typename sumType>
-const ArgumentRules& Func__div<firstValType, secondValType, sumType>::getArgumentRules(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+const ArgumentRules& Func__div<firstValType, secondValType, retType>::getArgumentRules( void ) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
-    if (!rulesSet) 
+    if ( !rulesSet ) 
         {
-        firstValType*  dummy1 = new firstValType();
-        secondValType* dummy2 = new secondValType();
-        argumentRules.push_back(new ArgumentRule("", dummy1->getType()));
-        argumentRules.push_back(new ArgumentRule("", dummy2->getType()));
+        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
         rulesSet = true;
-        delete dummy1;
-        delete dummy2;
         }
 
     return argumentRules;
@@ -143,31 +105,20 @@ const ArgumentRules& Func__div<firstValType, secondValType, sumType>::getArgumen
 
 
 /** Get class vector describing type of object */
-template <typename firstValType, typename secondValType, typename sumType>
-const VectorString& Func__div<firstValType, secondValType, sumType>::getClass(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+const VectorString& Func__div<firstValType, secondValType, retType>::getClass(void) const {
 
-    firstValType*  dummy1 = new firstValType();
-    secondValType* dummy2 = new secondValType();
-    sumType*       dummy3 = new sumType();
-    
-    std::string funcAddName = "Func__div<" + dummy1->getType() + "," + dummy2->getType() + "," + dummy3->getType() + ">"; 
-    static VectorString rbClass = VectorString(funcAddName) + RbFunction::getClass();
-    
-    delete dummy1;
-    delete dummy2;
-    delete dummy3;
+    static std::string  rbName  = "Func__div<" + firstValType().getType() + "," + secondValType().getType() + "," + retType().getType() + ">"; 
+    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
     
     return rbClass;
 }
 
 
 /** Get return type */
-template <typename firstValType, typename secondValType, typename sumType>
-const TypeSpec Func__div<firstValType, secondValType, sumType>::getReturnType(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+const TypeSpec Func__div<firstValType, secondValType, retType>::getReturnType(void) const {
 
-    sumType* dummy  = new sumType();
-    static std::string retTypeStr = dummy->getType();
-    delete dummy;
-    return TypeSpec(retTypeStr);
+    return retType().getTypeSpec();
 }
 

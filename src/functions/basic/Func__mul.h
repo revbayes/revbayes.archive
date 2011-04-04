@@ -1,9 +1,10 @@
 /**
  * @file
- * This file contains the declaration of Func__mul, which is used
- * to multiply two variables.
+ * This file contains the declaration and implementation
+ * of the templated Func__mul, which is used to multiply
+ * two variables.
  *
- * @brief Declaration of Func__mul
+ * @brief Declaration and implementation of Func__mul
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -17,19 +18,15 @@
 #ifndef Func__mul_H
 #define Func__mul_H
 
-#pragma warning (disable: 4068)
-
 #include "RbFunction.h"
 
 #include <map>
 #include <string>
 
-#pragma mark Class Definition
-
 class DAGNode;
 class VectorString;
 
-template <typename firstValType, typename secondValType, typename sumType>
+template <typename firstValType, typename secondValType, typename retType>
 class Func__mul :  public RbFunction {
 
     public:
@@ -38,16 +35,15 @@ class Func__mul :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
+    	DAGNode*                    executeFunction(void);                                      //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
-	protected:
-        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 };
 
 #endif
 
-#include "ArgumentRule.h"
+#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "Integer.h"
 #include "MatrixReal.h"
@@ -55,199 +51,53 @@ class Func__mul :  public RbFunction {
 #include "RbNames.h"
 #include "Real.h"
 #include "TypeSpec.h"
-#include "VectorReal.h"
-#include "VectorRealPos.h"
+#include "ValueContainer.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 
 
 /** Clone object */
-template <typename firstValType, typename secondValType, typename sumType>
-Func__mul<firstValType, secondValType, sumType>* Func__mul<firstValType, secondValType, sumType>::clone(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+Func__mul<firstValType, secondValType, retType>* Func__mul<firstValType, secondValType, retType>::clone( void ) const {
 
-    return new Func__mul(*this);
+    return new Func__mul( *this );
 }
 
-#pragma mark Integer * Integer = Integer
 
-/** Execute function: Integer <- Integer * Integer */
-template <>
-DAGNode* Func__mul<Integer,Integer,Integer>::executeOperation(const std::vector<VariableSlot>& args) {
+/** Execute function: We rely on operator overloading to provide the necessary functionality */
+template <typename firstValType, typename secondValType, typename retType>
+DAGNode* Func__mul<firstValType,secondValType,retType>::executeFunction( void ) {
 
-    int val1 = ((Integer*)(args[0].getValue()))->getValue();
-    int val2 = ((Integer*)(args[1].getValue()))->getValue();
-    int prod = val1 * val2;
-    return new ConstantNode( new Integer(prod));
+    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
+    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
+    retType              prod = *val1 * *val2;
+    return new ConstantNode( prod.clone() );
 }
 
-#pragma mark Real * Real = Real
 
-/** Execute function: Real <- Real * Real */
-template <>
-DAGNode* Func__mul<Real,Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
+/** Execute function: We need partial specialization for value containers to get te right return variable */
+template <firstValType, secondValType>
+DAGNode* Func__mul<firstValType,secondValType,ValueContainer>::executeFunction( void ) {
 
-    double val1 = ((Real*)(args[0].getValue()))->getValue();
-    double val2 = ((Real*)(args[1].getValue()))->getValue();
-    double prod = val1 * val2;
-    return new ConstantNode( new Real(prod));
+    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
+    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
+    retType              prod = *val1 * *val2;
+    return new ContainerNode( prod.clone() );
 }
-
-#pragma mark Integer * Real = Real
-
-/** Execute function: Real <- Integer * Real */
-template <>
-DAGNode* Func__mul<Integer,Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    double val1 = (double)(((Integer*)(args[0].getValue()))->getValue());
-    double val2 = ((Real*)(args[1].getValue()))->getValue();
-    double prod = val1 * val2;
-    return new ConstantNode( new Real(prod));
-}
-
-#pragma mark Real * Integer = Real
-
-/** Execute function: Real <- Real * Integer */
-template <>
-DAGNode* Func__mul<Real,Integer,Real>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    double val1 = ((Real*)(args[0].getValue()))->getValue();
-    double val2 = (double)(((Integer*)(args[1].getValue()))->getValue());
-    double prod = val1 * val2;
-    return new ConstantNode( new Real(prod));
-}
-
-#pragma mark M(Real) * M(Real) = M(Real)
-
-/** Execute function: MatrixReal <- MatrixReal * MatrixReal */
-template <>
-DAGNode* Func__mul<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    MatrixReal val1 = ((MatrixReal*)(args[0].getValue()))->getValue();
-    MatrixReal val2 = ((MatrixReal*)(args[1].getValue()))->getValue();
-    MatrixReal prod = val1 * val2;
-    return new ConstantNode( new MatrixReal(prod));
-}
-
-#pragma mark M(Real) * Real = M(Real)
-
-/** Execute function: MatrixReal <- MatrixReal * Real */
-template <>
-DAGNode* Func__mul<MatrixReal,Real,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    MatrixReal val1 = ((MatrixReal*)(args[0].getValue()))->getValue();
-    double     val2 = ((Real*)(args[1].getValue()))->getValue();
-    MatrixReal prod = val1 * val2;
-    return new ConstantNode( new MatrixReal(prod));
-}
-
-#pragma mark Real * M(Real) = M(Real)
-
-/** Execute function: MatrixReal <- Real * MatrixReal */
-template <>
-DAGNode* Func__mul<Real,MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    double     val1 = ((Real*)(args[0].getValue()))->getValue();
-    MatrixReal val2 = ((MatrixReal*)(args[1].getValue()))->getValue();
-    MatrixReal prod = val1 * val2;
-    return new ConstantNode( new MatrixReal(prod));
-}
-
-#if 0
-#pragma mark V(Real) * V(Real) = M(Real)
-
-/** Execute function: MatrixReal <- VectorReal * VectorReal */
-template <>
-DAGNode* Func__mul<VectorReal,VectorReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    VectorReal val1 = ((VectorReal*)(args[0].getValue()))->getValue();
-    VectorReal val2 = ((VectorReal*)(args[1].getValue()))->getValue();
-    MatrixReal prod;
-    RbMath::vectorMultiplication( val1, val2, prod );
-    return new ConstantNode( new MatrixReal(prod));
-}
-
-#pragma mark V(Real) * M(Real) = M(Real)
-
-/** Execute function: MatrixReal <- VectorReal * MatrixReal */
-template <>
-DAGNode* Func__mul<VectorReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    const VectorReal* val1 = (VectorReal*)(args[0].getValue());
-    const VectorReal* val2 = (VectorReal*)(args[1].getValue());
-    MatrixReal prod;
-    RbMath::vectorMultiplication( *val1, *val2, prod );
-    return new ConstantNode( new MatrixReal(prod));
-}
-
-#pragma mark M(Real) * V(Real) = M(Real)
-
-/** Execute function: MatrixReal <- MatrixReal * VectorReal */
-template <>
-DAGNode* Func__mul<MatrixReal,VectorReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    VectorReal val1 = ((VectorReal*)(args[0].getValue()))->getValue();
-    VectorReal val2 = ((VectorReal*)(args[1].getValue()))->getValue();
-    MatrixReal prod;
-    RbMath::vectorMultiplication( val1, val2, prod );
-    return new ConstantNode( new MatrixReal(prod));
-}
-
-#pragma mark V(Real+) * M(Real) = M(Real)
-
-/** Execute function: MatrixReal <- VectorRealPos * MatrixReal */
-template <>
-DAGNode* Func__mul<VectorRealPos,MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    VectorRealPos val1 = ((VectorRealPos*)(args[0].getValue()))->getValue();
-    VectorRealPos val2 = ((VectorRealPos*)(args[1].getValue()))->getValue();
-    MatrixReal prod;
-    //RbMath::vectorMultiplication( val1, val2, prod );
-    return new ConstantNode( new MatrixReal(prod));
-}
-
-#pragma mark M(Real) * V(Real+) = M(Real)
-
-/** Execute function: MatrixReal <- RealMatrix * VectorRealPos */
-template <>
-DAGNode* Func__mul<MatrixReal,VectorRealPos,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    VectorRealPos val1 = ((VectorRealPos*)(args[0].getValue()))->getValue();
-    VectorRealPos val2 = ((VectorRealPos*)(args[1].getValue()))->getValue();
-    MatrixReal prod;
-    //RbMath::vectorMultiplication( val1, val2, prod );
-    return new ConstantNode( new MatrixReal(prod));
-}
-
-#pragma mark V(Real+) * V(Real+) = M(Real)
-
-/** Execute function: MatrixReal <- VectorRealPos * VectorRealPos */
-template <>
-DAGNode* Func__mul<VectorRealPos,VectorRealPos,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    VectorRealPos val1 = ((VectorRealPos*)(args[0].getValue()))->getValue();
-    VectorRealPos val2 = ((VectorRealPos*)(args[1].getValue()))->getValue();
-    MatrixReal prod;
-    RbMath::vectorMultiplication( val1, val2, prod );
-    return new ConstantNode( new MatrixReal(prod));
-}
-#endif
 
 
 /** Get argument rules */
-template <typename firstValType, typename secondValType, typename sumType>
-const ArgumentRules& Func__mul<firstValType, secondValType, sumType>::getArgumentRules(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+const ArgumentRules& Func__mul<firstValType, secondValType, retType>::getArgumentRules( void ) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
-    if (!rulesSet) 
+    if ( !rulesSet ) 
         {
-        firstValType*  dummy1 = new firstValType();
-        secondValType* dummy2 = new secondValType();
-        argumentRules.push_back(new ArgumentRule("", dummy1->getType()));
-        argumentRules.push_back(new ArgumentRule("", dummy2->getType()));
+        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
         rulesSet = true;
-        delete dummy1;
-        delete dummy2;
         }
 
     return argumentRules;
@@ -255,31 +105,20 @@ const ArgumentRules& Func__mul<firstValType, secondValType, sumType>::getArgumen
 
 
 /** Get class vector describing type of object */
-template <typename firstValType, typename secondValType, typename sumType>
-const VectorString& Func__mul<firstValType, secondValType, sumType>::getClass(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+const VectorString& Func__mul<firstValType, secondValType, retType>::getClass(void) const {
 
-    firstValType*  dummy1 = new firstValType();
-    secondValType* dummy2 = new secondValType();
-    sumType*       dummy3 = new sumType();
-    
-    std::string funcAddName = "Func__mul<" + dummy1->getType() + "," + dummy2->getType() + "," + dummy3->getType() + ">"; 
-    static VectorString rbClass = VectorString(funcAddName) + RbFunction::getClass();
-    
-    delete dummy1;
-    delete dummy2;
-    delete dummy3;
+    static std::string  rbName  = "Func__mul<" + firstValType().getType() + "," + secondValType().getType() + "," + retType().getType() + ">"; 
+    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
     
     return rbClass;
 }
 
 
 /** Get return type */
-template <typename firstValType, typename secondValType, typename sumType>
-const TypeSpec Func__mul<firstValType, secondValType, sumType>::getReturnType(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+const TypeSpec Func__mul<firstValType, secondValType, retType>::getReturnType(void) const {
 
-    sumType* dummy  = new sumType();
-    static std::string retTypeStr = dummy->getType();
-    delete dummy;
-    return TypeSpec(retTypeStr);
+    return retType().getTypeSpec();
 }
 

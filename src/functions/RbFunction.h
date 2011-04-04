@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "Argument.h"
-#include "RbObject.h"
+#include "ArgumentFrame.h"
 
 class ArgumentRule;
 class DAGNode;
@@ -55,8 +55,7 @@ typedef std::vector<ArgumentRule*> ArgumentRules;
  */
 class RbFunction :  public RbObject {
 
-    friend class                                FunctionNode;                                                                       //!< Give FunctionNode direct access to processed arguments
-    friend class                                MethodTable;                                                                        //!< Give MethodTable direct access to executeOperation
+    friend class                                FunctionNode;                                                                       //!< Give FunctionNode direct access to function frame
 
     public:
         virtual                                ~RbFunction(void) {}                                                                 //!< Destructor
@@ -75,27 +74,24 @@ class RbFunction :  public RbObject {
         // RbFunction functions you have to override
         virtual const ArgumentRules&            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec                  getReturnType(void) const = 0;                                                      //!< Get type of return value
+        virtual DAGNode*                        executeFunction(void) = 0;                                                          //!< Execute function
 
-        // RbFunction function you may want to override 
-        virtual bool                            processArguments(const std::vector<Argument>&    args,
+        // RbFunction function you may want to override
+        virtual bool                            processArguments(const std::vector<Argument>&    passedArgs,
                                                                  bool                            evaluateOnce,
                                                                  VectorInteger*                  matchScore=NULL);                  //!< Process args, return a match score if pointer is not null
+        virtual bool                            throws(void) { return false; }                                                      //!< Does the function throw exceptions?
 
         // RbFunction functions you should not override
-        void                                    deleteProcessedArguments(void);                                                     //!< Delete processed arguments
-        DAGNode*                                execute(void);                                                                      //!< Execute using processed args
-        DAGNode*                                execute(const std::vector<Argument>& args);                                         //!< Execute function
-        const std::vector<VariableSlot>&        getProcessedArguments(void) const { return processedArguments; }                    //!< Get processed arguments
+        void                                    clearArgs(void);                                                                    //!< Clear argument frame "args"
+        const ArgumentFrame&                    getArgs(void) const { return args; }                                                //!< Get processed arguments in argument frame "args"
 
 	protected:
                                                 RbFunction(void);                                                                   //!< Basic constructor
 
-        // Regular utility functions
-    	virtual DAGNode*                        executeOperation(const std::vector<VariableSlot>& args) = 0;                        //!< Execute operation
-
         // Member variables
-        std::vector<VariableSlot>               processedArguments;                                                                 //!< Processed arguments
-        bool                                    argumentsProcessed;                                                                 //!< Are arguments processed?
+        ArgumentFrame                           args;                                                                               //!< Frame for passed arguments
+        bool                                    argsProcessed;                                                                      //!< Are arguments processed?
 };
 
 #endif

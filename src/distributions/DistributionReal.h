@@ -53,9 +53,10 @@ class DistributionReal: public Distribution {
         virtual Move*               getDefaultMove(StochasticNode* node) = 0;                                  //!< Get default move
         virtual const Real*         getMax(void);                                                              //!< Get max value
         virtual const Real*         getMin(void);                                                              //!< Get min value
-        virtual double              lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) = 0;          //!< Ln prior ratio
+        virtual double              lnLikelihoodRatio(const RbObject* value) = 0;                              //!< Ln prob ratio of A | B when only B is touched
         virtual double              lnPdf(const RbObject* value) = 0;                                          //!< Ln probability density
-        virtual double              lnLikelihoodRatio(const RbObject* value) = 0;                              //!< Ln likelihood ratio
+        virtual double              lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) = 0;          //!< Ln prob ratio of A | B when only A is touched
+        virtual double              lnProbabilityRatio(const RbObject* newVal, const RbObject* oldVal) = 0;    //!< Ln prob ratio of A | B when both A and B are touched
         virtual double              pdf(const RbObject* value) = 0;                                            //!< Probability density
         virtual double              quantile(const double p) = 0;                                              //!< Quantile
         virtual Real*               rv(void) = 0;                                                              //!< Generate a random draw

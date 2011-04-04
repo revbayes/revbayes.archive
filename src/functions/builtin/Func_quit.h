@@ -30,11 +30,10 @@ class Func_quit :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Func_quit functions
+    	DAGNode*                    executeFunction(void);                                      //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return val
 
-	protected:
-    	DAGNode*                   executeOperation(const std::vector<VariableSlot>& args);     //!< Execute function
 };
 
 #endif

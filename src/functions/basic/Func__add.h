@@ -1,9 +1,10 @@
 /**
  * @file
- * This file contains the declaration of Func__add, which is used
- * to add two variables.
+ * This file contains the declaration and implementation
+ * of the templated Func__add, which is used to add two
+ * variables.
  *
- * @brief Declaration of Func__add
+ * @brief Declaration and implementation of Func__add
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -17,7 +18,6 @@
 #ifndef Func__add_H
 #define Func__add_H
 
-#include "ContainerNode.h"
 #include "RbFunction.h"
 
 #include <map>
@@ -26,7 +26,7 @@
 class DAGNode;
 class VectorString;
 
-template <typename firstValType, typename secondValType, typename sumType>
+template <typename firstValType, typename secondValType, typename retType>
 class Func__add :  public RbFunction {
 
     public:
@@ -35,16 +35,15 @@ class Func__add :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
+    	DAGNode*                    executeFunction(void);                                      //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
-	protected:
-        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 };
 
 #endif
 
-#include "ArgumentRule.h"
+#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "Integer.h"
 #include "MatrixReal.h"
@@ -52,83 +51,52 @@ class Func__add :  public RbFunction {
 #include "RbNames.h"
 #include "Real.h"
 #include "TypeSpec.h"
+#include "ValueContainer.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 
 
 /** Clone object */
-template <typename firstValType, typename secondValType, typename sumType>
-Func__add<firstValType, secondValType, sumType>* Func__add<firstValType, secondValType, sumType>::clone(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+Func__add<firstValType, secondValType, retType>* Func__add<firstValType, secondValType, retType>::clone( void ) const {
 
-    return new Func__add(*this);
+    return new Func__add( *this );
 }
 
 
-/** Execute function: Integer <- Integer + Integer */
-template <>
-DAGNode* Func__add<Integer,Integer,Integer>::executeOperation(const std::vector<VariableSlot>& args) {
+/** Execute function: We rely on operator overloading to provide the necessary functionality */
+template <typename firstValType, typename secondValType, typename retType>
+DAGNode* Func__add<firstValType,secondValType,retType>::executeFunction( void ) {
 
-    int val1 = ((Integer*)(args[0].getValue()))->getValue();
-    int val2 = ((Integer*)(args[1].getValue()))->getValue();
-    int sum  = val1 + val2;
-    return new ConstantNode( new Integer(sum));
+    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
+    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
+    retType              sum  = *val1 + *val2;
+    return new ConstantNode( sum.clone() );
 }
 
 
-/** Execute function: Real <- Real + Real */
-template <>
-DAGNode* Func__add<Real,Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
+/** Execute function: We need partial specialization for value containers to get te right return variable */
+template <firstValType, secondValType>
+DAGNode* Func__add<firstValType,secondValType,ValueContainer>::executeFunction( void ) {
 
-    double val1 = ((Real*)(args[0].getValue()))->getValue();
-    double val2 = ((Real*)(args[1].getValue()))->getValue();
-    double sum  = val1 + val2;
-    return new ConstantNode( new Real(sum));
-}
-
-
-/** Execute function: Real <- Integer + Real */
-template <>
-DAGNode* Func__add<Integer,Real,Real>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    int    val1 = static_cast<const Integer*>( args[0].getValue() )->getValue();
-    double val2 = static_cast<const Real*>   ( args[1].getValue() )->getValue();
-    double sum  = val1 + val2;
-    return new ConstantNode( new Real(sum));
-}
-
-
-/** Execute function: Real <- Real + Integer */
-template <>
-DAGNode* Func__add<Real,Integer,Real>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    double val1 = ((Real*)(args[0].getValue()))->getValue();
-    int    val2 = ((Integer*)(args[1].getValue()))->getValue();
-    double sum  = val1 + val2;
-    return new ConstantNode( new Real(sum));
-}
-
-
-/** Execute function: RealMatrix <- RealMatrix + RealMatrix */
-template <>
-DAGNode* Func__add<MatrixReal,MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
-
-    MatrixReal val1 = ((MatrixReal*)(args[0].getValue()))->getValue();
-    MatrixReal val2 = ((MatrixReal*)(args[1].getValue()))->getValue();
-    MatrixReal sum  = val1 + val2;
-    return new ContainerNode( new MatrixReal(sum));
+    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
+    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
+    retType              sum  = *val1 + *val2;
+    return new ContainerNode( sum.clone() );
 }
 
 
 /** Get argument rules */
-template <typename firstValType, typename secondValType, typename sumType>
-const ArgumentRules& Func__add<firstValType, secondValType, sumType>::getArgumentRules(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+const ArgumentRules& Func__add<firstValType, secondValType, retType>::getArgumentRules( void ) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
-    if (!rulesSet) 
+    if ( !rulesSet ) 
         {
-        argumentRules.push_back(new ArgumentRule("", firstValType() ));
-        argumentRules.push_back(new ArgumentRule("", secondValType()));
+        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
         rulesSet = true;
         }
 
@@ -137,20 +105,20 @@ const ArgumentRules& Func__add<firstValType, secondValType, sumType>::getArgumen
 
 
 /** Get class vector describing type of object */
-template <typename firstValType, typename secondValType, typename sumType>
-const VectorString& Func__add<firstValType, secondValType, sumType>::getClass(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+const VectorString& Func__add<firstValType, secondValType, retType>::getClass( void ) const {
 
-    static std::string  rbName  = "Func__add<" + firstValType().getType() + "," + secondValType().getType() + "," + sumType().getType() + ">"; 
-    static VectorString rbClass = VectorString(rbName) + RbFunction::getClass();
+    static std::string  rbName  = "Func__add<" + firstValType().getType() + "," + secondValType().getType() + "," + retType().getType() + ">"; 
+    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
     
     return rbClass;
 }
 
 
 /** Get return type */
-template <typename firstValType, typename secondValType, typename sumType>
-const TypeSpec Func__add<firstValType, secondValType, sumType>::getReturnType(void) const {
+template <typename firstValType, typename secondValType, typename retType>
+const TypeSpec Func__add<firstValType, secondValType, retType>::getReturnType( void ) const {
 
-    return sumType().getTypeSpec();
+    return retType().getTypeSpec();
 }
 

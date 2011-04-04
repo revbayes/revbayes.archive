@@ -94,7 +94,7 @@ StochasticNode::StochasticNode(const StochasticNode& x) : VariableNode(x) {
 StochasticNode::~StochasticNode(void) {
 
     if (numRefs() != 0)
-        throw RbException ("Cannot delete node with references"); 
+        throw RbException ("Cannot delete StochasticNode with references"); 
 
     /* Remove parents first */
     for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
@@ -102,9 +102,6 @@ StochasticNode::~StochasticNode(void) {
     parents.clear();
 
     delete distribution;    // This will delete any DAG nodes that need to be deleted
-    delete value;
-    if (storedValue != NULL)
-        delete storedValue;
 }
 
 
@@ -150,12 +147,17 @@ StochasticNode& StochasticNode::operator=(const StochasticNode& x) {
 }
 
 
-/** Calculate the conditional probability of the node, do not rely on stored values */
-double StochasticNode::calculateLnProbability(void) {
+/** Are parents touched? Cycle through parents and check if any one is touched */
+bool StochasticNode::areParentsTouched( void ) const {
 
-	return (distribution->lnPdf(value));
+    for ( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
+    
+        if ( (*i)->isDAGType( VariableNode_name ) && static_cast<VariableNode*>( (*i) )->isTouched() )
+            return true;
+    }
+
+    return false;
 }
-
 
 
 /** Clamp the node to an observed value */
@@ -250,10 +252,32 @@ MoveSchedule* StochasticNode::getDefaultMoves(void) {
 }
 
 
-/** Get the ln likelihood ratio of this node: delegate to distribution */
-double StochasticNode::getLnLikelihoodRatio(void) {
+/** Get the conditional ln probability of the node; do not rely on stored values */
+double StochasticNode::getLnProbability(void) {
 
-    return distribution->lnLikelihoodRatio(value);
+	return (distribution->getLnProbability(this));
+}
+
+
+/** Get the ln probability ratio of this node */
+double StochasticNode::getLnProbabilityRatio(void) {
+
+    if ( !isTouched() && !areParentsTouched() ) {
+
+        return 0.0;
+    }
+    else if ( isTouched() && !areParentsTouced() ) {
+
+        return distribution->lnPriorRatio( value, storedValue );
+    }
+    else if ( !isTouched() && areParentsTouched() ) {
+
+        return distribution->lnLikelihoodRatio( value );
+    }
+    else /* if ( isTouched() && areParentsTouched() ) */ {
+
+        return distribution->lnProbabilityRatio( value, storedValue );
+    }
 }
 
 

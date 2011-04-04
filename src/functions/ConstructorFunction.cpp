@@ -16,9 +16,9 @@
  */
 
 #include "ArgumentRule.h"
-#include "ConstantNode.h"
 #include "ConstructorFunction.h"
 #include "DAGNode.h"
+#include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbNames.h"
 #include "TypeSpec.h"
@@ -56,7 +56,7 @@ DAGNode* ConstructorFunction::executeOperation(const std::vector<VariableSlot>& 
             copy->setValue((*i)->getArgLabel(), (*j).getValue()->clone());
     }
  
-    return new ConstantNode(copy);
+    return new MemberNode(copy);
 }
 
 
@@ -78,6 +78,6 @@ const VectorString& ConstructorFunction::getClass(void) const {
 /** Get return type */
 const TypeSpec ConstructorFunction::getReturnType(void) const {
 
-    return TypeSpec(templateObject->getType(), templateObject->getDim());
+    return templateObject->getTypeSpec();
 }
 

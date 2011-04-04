@@ -17,7 +17,6 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Func_quit.h"
 #include "Model.h"
@@ -27,34 +26,35 @@
 #include "RbString.h"
 #include "TypeSpec.h"
 #include "UserInterface.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 
 #include <fstream>
 
 
 /** Clone object */
-Func_quit* Func_quit::clone(void) const {
+Func_quit* Func_quit::clone( void ) const {
 
-    return new Func_quit(*this);
+    return new Func_quit( *this );
 }
 
 
 /** Execute operation */
-DAGNode* Func_quit::executeOperation(const std::vector<VariableSlot>& args) {
+DAGNode* Func_quit::executeFunction( const std::vector<VariableSlot>& args ) {
 
     /* Ask if user really wants to quit */
-    //bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit"); // TEMP: Getting tired of typing 'y' (JPH)
+    // bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit"); // TEMP: Getting tired of typing 'y' (JPH)
     bool wantToQuit = true;
 	
-    if (wantToQuit)
-        throw RbException(RbException::QUIT);
+    if ( wantToQuit )
+        throw RbException( RbException::QUIT );
 
     return NULL;
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_quit::getArgumentRules(void) const {
+const ArgumentRules& Func_quit::getArgumentRules( void ) const {
 
     static ArgumentRules argumentRules;
     return argumentRules;
@@ -62,16 +62,16 @@ const ArgumentRules& Func_quit::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Func_quit::getClass(void) const {
+const VectorString& Func_quit::getClass( void ) const {
 
-    static VectorString rbClass = VectorString(Func_quit_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString( Func_quit_name ) + RbFunction::getClass();
     return rbClass;
 }
 
 
 /** Get return type */
-const TypeSpec Func_quit::getReturnType(void) const {
+const TypeSpec Func_quit::getReturnType( void ) const {
 
-    return TypeSpec(RbNULL_name);
+    return TypeSpec(RbVoid_name);
 }
 

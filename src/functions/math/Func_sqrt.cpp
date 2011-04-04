@@ -16,7 +16,6 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
@@ -27,39 +26,40 @@
 #include "RbNames.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 
 #include <cassert>
 #include <cmath>
 
 /** Clone object */
-Func_sqrt* Func_sqrt::clone(void) const {
+Func_sqrt* Func_sqrt::clone( void ) const {
 
-    return new Func_sqrt(*this);
+    return new Func_sqrt( *this );
 }
 
 
 /** Execute function */
-DAGNode* Func_sqrt::executeOperation(const std::vector<VariableSlot>& args) {
+DAGNode* Func_sqrt::executeFunction( void ) {
 
     const Real* x = static_cast<const Real*>( args[0].getValue() );
 
     if ( *x < 0.0 )
-		throw (RbException("Square root of negative number. RevBayes does not (yet) support complex numbers"));
+		throw RbException( "Square root of negative number. RevBayes does not (yet) support complex numbers" );
 
     return new ConstantNode( new RealPos( sqrt( *x ) ) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_sqrt::getArgumentRules(void) const {
+const ArgumentRules& Func_sqrt::getArgumentRules( void ) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
     if (!rulesSet) 
 		{
-        argumentRules.push_back(new ArgumentRule("x", RbObject_name));
+        argumentRules.push_back( new ValueRule( "x", Real_name ) );
         rulesSet = true;
 		}
 
@@ -68,16 +68,16 @@ const ArgumentRules& Func_sqrt::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Func_sqrt::getClass(void) const {
+const VectorString& Func_sqrt::getClass( void ) const {
 
-    static VectorString rbClass = VectorString(Func_sqrt_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString( Func_sqrt_name ) + RbFunction::getClass();
     return rbClass;
 }
 
 
 /** Get return type */
-const TypeSpec Func_sqrt::getReturnType(void) const {
+const TypeSpec Func_sqrt::getReturnType( void ) const {
 
-    return TypeSpec(RealPos_name);
+    return TypeSpec( RealPos_name );
 }
 

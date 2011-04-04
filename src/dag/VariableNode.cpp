@@ -34,6 +34,17 @@ VariableNode::VariableNode(const std::string& valType)
 }
 
 
+/** Destructor */
+VariableNode::~VariableNode( void ) {
+
+    if ( numRefs() != 0 )
+        throw RbException( "Cannot delete VariableNode with references" );
+
+    if ( storedValue )
+        delete storedValue;
+}
+
+
 /** Get class vector describing type of DAG node */
 const VectorString& VariableNode::getDAGClass() const {
 

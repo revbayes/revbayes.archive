@@ -17,7 +17,6 @@
  */
 
 
-#include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "ContainerNode.h"
@@ -32,6 +31,7 @@
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
 #include "VectorReal.h"
 #include "VectorRealPos.h"
 #include "VectorString.h"
@@ -40,36 +40,36 @@
 #include <cmath>
 
 /** Clone object */
-Func_normalize* Func_normalize::clone(void) const {
+Func_normalize* Func_normalize::clone( void ) const {
 
-    return new Func_normalize(*this);
+    return new Func_normalize( *this );
 }
 
 
 /** Execute function */
-DAGNode* Func_normalize::executeOperation(const std::vector<VariableSlot>& args) {
+DAGNode* Func_normalize::executeFunction( void ) {
 
     // Get first element
-    std::vector<double> tempVec    = ((VectorRealPos*)(args[0].getValue()))->getValue();
-    double              desiredSum = ((RealPos*)(args[1].getValue()))->getValue();
+    std::vector<double> tempVec    = static_cast<const VectorRealPos*>( args[0].getValue() )->getValue();
+    double              desiredSum = static_cast<const RealPos*      >( args[1].getValue() )->getValue();
     
     // normalize the vector
     RbMath::normalize(tempVec, desiredSum);
         
-    return new ConstantNode(new Simplex(tempVec));
+    return new MemberNode( new Simplex( tempVec ) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_normalize::getArgumentRules(void) const {
+const ArgumentRules& Func_normalize::getArgumentRules( void ) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
-    if (!rulesSet) 
+    if (!rulesSet)
 		{
-        argumentRules.push_back(new ArgumentRule("", VectorRealPos_name));
-        argumentRules.push_back(new ArgumentRule("", new RealPos(1.0)));
+        argumentRules.push_back( new ValueRule( "", VectorRealPos_name ) );
+        argumentRules.push_back( new ValueRule( "", new RealPos( 1.0 ) ) );
         rulesSet = true;
 		}
 
@@ -78,16 +78,16 @@ const ArgumentRules& Func_normalize::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Func_normalize::getClass(void) const {
+const VectorString& Func_normalize::getClass( void ) const {
 
-    static VectorString rbClass = VectorString(Func_normalize_name) + RbFunction::getClass();
+    static VectorString rbClass = VectorString( Func_normalize_name ) + RbFunction::getClass();
     return rbClass;
 }
 
 
 /** Get return type */
-const TypeSpec Func_normalize::getReturnType(void) const {
+const TypeSpec Func_normalize::getReturnType( void ) const {
 
-    return TypeSpec(Simplex_name);
+    return TypeSpec( Simplex_name );
 }
 

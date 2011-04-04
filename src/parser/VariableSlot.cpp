@@ -446,7 +446,7 @@ void VariableSlot::setVariable( DAGNode* newVariable ) {
 
         // If we have a true reference and are sent NULL or a temp variable,
         // we delegate to the owner (we set the value of the slot we point to)
-        if ( newVariable->isTemp() && variable->getSlot() != this ) {
+        if ( newVariable->isTemp() && variable != NULL && variable->getSlot() != this ) {
             variable->getSlot()->setVariable( newVariable );
             return;
         }

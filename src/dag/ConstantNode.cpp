@@ -54,13 +54,14 @@ ConstantNode::ConstantNode(const ConstantNode& x) : DAGNode(x) {
     value = x.value->clone();
 }
 
-/** Destructor */
-ConstantNode::~ConstantNode(void) {
 
-    if (numRefs() != 0)
-        throw RbException ("Cannot delete node with references"); 
-    delete value;
+/** Destructor */
+ConstantNode::~ConstantNode( void ) {
+
+    if ( numRefs() != 0 )
+        throw RbException ( "Cannot delete ConstantNode with references" ); 
 }
+
 
 /** Assignment operator */
 ConstantNode& ConstantNode::operator=(const ConstantNode& x) {

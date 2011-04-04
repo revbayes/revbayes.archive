@@ -32,19 +32,19 @@ class VectorString;
 class VariableNode : public DAGNode {
 
     public:
-        virtual                        ~VariableNode(void) {}                                        //!< Virtual destructor
+        virtual                        ~VariableNode(void) {}                                                           //!< Virtual destructor
 
         // Utility functions you have to override
-        virtual VariableNode*           clone(void) const = 0;                                       //!< Clone this node
-        virtual const VectorString&     getDAGClass(void) const;                                     //!< Get DAG node class vector
-        virtual const RbObject*         getStoredValue(void) = 0;                                    //!< Get stored value
-        virtual const RbObject*         getValue(void) = 0;                                          //!< Get value
-        virtual void                    printStruct(std::ostream& o) const = 0;                      //!< Print struct for user
-        virtual void                    printValue(std::ostream& o) const = 0;                       //!< Print value for user
-        virtual std::string             richInfo(void) const = 0;                                    //!< Complete info about object
+        virtual VariableNode*           clone(void) const = 0;                                                          //!< Clone this node
+        virtual const VectorString&     getDAGClass(void) const;                                                        //!< Get DAG node class vector
+        virtual const RbObject*         getStoredValue(void) = 0;                                                       //!< Get stored value
+        virtual const RbObject*         getValue(void) = 0;                                                             //!< Get value
+        virtual void                    printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
+        virtual void                    printValue(std::ostream& o) const = 0;                                          //!< Print value for user
+        virtual std::string             richInfo(void) const = 0;                                                       //!< Complete info about object
 
         // DAG functions you should not override
-        bool                            isTouched(void) const { return touched; }                    //!< Is node touched by move or parser?
+        bool                            isTouched(void) const { return touched; }                                       //!< Is node touched by move or parser?
 
         // DAG functions you have to override
         virtual VariableNode*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;                     //!< Clone entire graph

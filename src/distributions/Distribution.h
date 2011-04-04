@@ -54,9 +54,10 @@ class Distribution: public MemberObject {
         virtual Move*               getDefaultMove(StochasticNode* node) = 0;                                       //!< Get default move
         virtual const RbObject*     getMax(void) { return NULL; }                                                   //!< Max value
         virtual const RbObject*     getMin(void) { return NULL; }                                                   //!< Min value
-        virtual double              lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) = 0;               //!< Ln prior ratio
-        virtual double              lnPdf(const RbObject* value) = 0;                                               //!< Ln probability density function
-        virtual double              lnLikelihoodRatio(const RbObject* value) = 0;                                   //!< Ln likelihood ratio
+        virtual double              lnLikelihoodRatio(const RbObject* value) = 0;                                   //!< Ln prob ratio of A | B when only B is touched
+        virtual double              lnPdf(const RbObject* value) = 0;                                               //!< Ln probability density
+        virtual double              lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) = 0;               //!< Ln prob ratio of A | B when only A is touched
+        virtual double              lnProbabilityRatio(const RbObject* newVal, const RbObject* oldVal) = 0;         //!< Ln prob ratio of A | B when both A and B are touched
         virtual double              pdf(const RbObject* value) = 0;                                                 //!< Probability density function
         virtual RbObject*           rv(void) = 0;                                                                   //!< Generate a random draw
 
@@ -69,7 +70,7 @@ class Distribution: public MemberObject {
         Distribution&               operator=(const Distribution& x);                                               //!< Assignment operator
 
         // Member method call
-        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args);       //!< Execute method
+        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args);   //!< Execute method
 
         // Workspace variables
         Real                        retDouble;                                                                      //!< Return double

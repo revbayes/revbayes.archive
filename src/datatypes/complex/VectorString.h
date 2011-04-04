@@ -44,7 +44,6 @@ class VectorString : public Vector {
         // Basic utility functions
         VectorString*               clone(void) const;                                              //!< Clone object
         const VectorString&         getClass(void) const;                                           //!< Get class
-        virtual void                printValue(std::ostream& o) const;                              //!< Print value for user
         std::string                 richInfo(void) const;                                           //!< Complete info about object
         
         // Vector functions

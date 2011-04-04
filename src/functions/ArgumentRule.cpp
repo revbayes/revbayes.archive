@@ -38,19 +38,13 @@ ArgumentRule::ArgumentRule(const std::string& argName, RbObject* defVal)
 }
 
 
-/** Construct rule based on dummy object, which is used to get the type specification; use "" for no label. */
-ArgumentRule::ArgumentRule(const std::string& argName, const RbObject& dummy)
-    : RbInternal(), label(argName), argSlot(Workspace::userWorkspace().getTypeSpec(dummy.getTypeSpec())), hasDefaultVal(false) {
-}
-
-
 /**
  * Construct rule without default value; use "" for no label. To make sure that the
- * argument rule is set to the right language type specification, we call the work
- * workspace to translate from object type to language type. This is important because
+ * argument rule is set to the right language type specification, we call the workspace
+ * to translate from object type to language type. This is important because
  * otherwise calling the constructor with container types would result in argument
  * rules that had a container type instead of the language type of the container, which
- * is the element type and element dim of the container.
+ * would make the rule worthless.
  */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp)
     : RbInternal(), label(argName), argSlot(Workspace::userWorkspace().getTypeSpec(argTypeSp)), hasDefaultVal(false) {
@@ -179,7 +173,7 @@ bool ArgumentRule::isArgValid(const DAGNode* var, bool& needsConversion, bool on
 /** Print value for user (in descriptions of functions, for instance) */
 void ArgumentRule::printValue(std::ostream &o) const {
 
-    o << "<" << argSlot.getTypeSpec() << ">";
+    o << argSlot.getTypeSpec().toString();
     o << " \"" << label << "\"";
     if ( hasDefaultVal ) {
         o << " = ";

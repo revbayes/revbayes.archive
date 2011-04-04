@@ -37,6 +37,7 @@
     public:
                                 ConverterNode(const std::string& type, int dim);                            //!< Constructor of pristine node
                                 ConverterNode(DAGNode* origNode, const TypeSpec& typeSpec);                 //!< Basic constructor
+        virtual                ~ConverterNode(void);                                                        //!< Virtual destructor
 
         // Basic utility functions
         ConverterNode*          clone(void) const;                                                          //!< Clone the converter node

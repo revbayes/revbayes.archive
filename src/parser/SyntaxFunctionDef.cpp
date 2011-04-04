@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
+#include "ValueRule.h"
 #include "DAGNode.h"
 #include "RbException.h"
 #include "RbNames.h"
