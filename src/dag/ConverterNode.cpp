@@ -115,7 +115,7 @@ bool ConverterNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* new
     if (*parents.begin() != const_cast<DAGNode*>(oldNode))
         throw RbException("Node is not a parent");
 
-    // See if the new node value is convertible to the required type
+    // See if the new node value is convertible to the required type and dim
     if ( newNode->getValue()->isConvertibleTo(valueType, valueDim, false) )
         return true;
     

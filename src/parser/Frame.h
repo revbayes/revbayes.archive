@@ -1,12 +1,13 @@
 /**
  * @file
  * This file contains the declaration of Frame, which is
- * used to hold information about an evaluation or execution
- * frame. Each frame has a pointer to the enclosing (parent)
- * frame. A frame and its parents constitute an evaluation
- * environment. The base environment is the global workspace.
- * It is a special type of frame, which is described in the
- * class Workspace, derived from Frame through VariableFrame.
+ * the abstract base class for classes that are used to hold
+ * information about an evaluation or execution frame.
+ * Each frame has a pointer to the enclosing (parent) frame.
+ * A frame and its parents constitute an evaluation environment.
+ * The base environment is the global workspace. It is a
+ * special type of frame, which is described in the class
+ * Workspace, derived from Frame through VariableFrame.
  *
  * A frame essentially consists of a table (map) or vector of
  * variables, which may or may not be labeled. The workspace
@@ -30,6 +31,8 @@
 #include <map>
 #include <string>
 
+class DAGNode;
+class RbObject;
 class VariableSlot;
 
 
@@ -54,26 +57,28 @@ class VariableSlot;
 class Frame {
 
     public:
-                                        Frame(void);                                                                            //!< Constructor of frame with NULL parent
-                                        Frame(Frame* parentFr);                                                                 //!< Constructor of frame with parent
-                                        Frame(const Frame& x);                                                                  //!< Copy constructor: set frame of variable slots
-
         // Operators
-        virtual VariableSlot&           operator[](const std::string& name);                                                    //!< Get named variable slot reference
-        virtual const VariableSlot&     operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
-        bool                            operator==(const Frame& x) const;                                                       //!< Equals comparison
-        bool                            operator!=(const Frame& x) const { return !operator==(x); }                             //!< Not equals comparison
+        virtual VariableSlot&           operator[](const std::string& name) = 0;                                                //!< Get named variable slot reference
+        virtual const VariableSlot&     operator[](const std::string& name) const = 0;                                          //!< Get named variable slot const reference
 
         // Basic utility functions
-        virtual Frame*                  clone(void) const { return new Frame(*this); }                                          //!< Clone frame
-        virtual Frame*                  cloneEnvironment(void) const;                                                           //!< Clone environment
-        virtual void                    printValue(std::ostream& o) const;                                                      //!< Print table for user
-        virtual std::string             richInfo(void) const;                                                                   //!< Complete info to string
+        virtual Frame*                  clone(void) const = 0;                                                                  //!< Clone frame
+        virtual void                    printValue(std::ostream& o) const = 0;                                                  //!< Print table for user
+        virtual std::string             richInfo(void) const = 0;                                                               //!< Complete info to string
 
-        // Frame functions
+        // Frame functions you have to override
+        virtual DAGNode*                getReference(const std::string& name) const = 0;                                        //!< Get reference
+        virtual const RbObject*         getValue(const std::string& name) const = 0;                                            //!< Get value
+        virtual const DAGNode*          getVariable(const std::string& name) const = 0;                                         //!< Get variable
+
+        // Frame functions you do not have to override
+        Frame*                          cloneEnvironment(void) const;                                                           //!< Clone environment
         Frame*                          getParentFrame(void) { return parentFrame; }                                            //!< Get parent frame ptr
 
     protected:
+                                        Frame(void);                                                                            //!< Constructor of frame with NULL parent
+                                        Frame(Frame* parentFr);                                                                 //!< Constructor of frame with parent
+
         Frame*                          parentFrame;                                                                            //!< Pointer to enclosing frame
 };
 

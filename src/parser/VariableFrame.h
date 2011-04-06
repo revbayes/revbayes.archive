@@ -1,17 +1,17 @@
 /**
  * @file
- * This file contains the declaration of Frame, which is
+ * This file contains the declaration of VariableFrame, which is
  * used to hold information about an evaluation or execution
  * frame. Each frame has a pointer to the enclosing (parent)
  * frame. A frame and its parents constitute an evaluation
  * environment. The base environment is the global workspace.
  * It is a special type of frame, which is described in the
- * class Workspace, derived from Frame.
+ * class Workspace, derived from VariableVariableFrame.
  *
  * A frame essentially consists of a variable table. The workspace
  * also contains a function table, and a class (type) table.
  *
- * @brief Declaration of Frame
+ * @brief Declaration of VariableFrame
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -23,8 +23,8 @@
  * $Id$
  */
 
-#ifndef Frame_H 
-#define Frame_H
+#ifndef VariableFrame_H 
+#define VariableFrame_H
 
 #include "VariableSlot.h"
 
@@ -38,40 +38,43 @@ class RbObject;
 typedef std::map<std::string, VariableSlot> VariableTable;
 
 /**
- * @brief Execution or evaluation frame
+ * @brief Execution or evaluation variable frame
  *
- * Frame is used to hold information about an evaluation or
- * execution frame. Each frame has a pointer to the enclosing
+ * VariableVariableFrame is used to hold information about an evaluation
+ * or execution frame. Each frame has a pointer to the enclosing
  * (parent) frame. A frame and its parents together constitute
  * an evaluation environment. The base environment is the global
  * workspace. It is a special type of frame, which is described
- * in the class Workspace, derived from Frame. The global work-
- * space contains the user workspace, which is a workspace hold-
- * ing user-defined types and functions. The user workspace, in
- * turn, contains the nested regular frames, which are created
+ * in the class Workspace, derived from VariableVariableFrame. The global
+ * workspace contains the user workspace, which is a workspace
+ * holding user-defined types and functions. The user workspace,
+ * in turn, contains the nested regular frames, which are created
  * during execution or evaluation of code.
  *
- * A frame essentially consists of a variable table. The workspace
- * also contains a function table, and a class (type) table.
+ * A frame essentially consists of a variable table or vector. The
+ * workspace also contains a function table, and a class (type) table.
+ *
+ * A special simplified type of frame is ArgumentVariableFrame, which is used
+ * in passing arguments to functions. It contains a vector rather
+ * than a table of variables, and its interface is much simpler.
  *
  */
-class Frame {
+class VariableVariableFrame {
 
     public:
-        friend class                SyntaxForCondition;                                                                     //!< Give for condition possibility to modify referenc flag
+        friend class                SyntaxForCondition;                                                                     //!< Give for condition possibility to modify reference flag
         friend class                SyntaxVariable;                                                                         //!< Give parser direct access to variable slots
 
-                                    Frame(void);                                                                            //!< Constructor of frame with NULL parent
-                                    Frame(Frame* parentFr);                                                                 //!< Constructor of frame with parent
-                                    Frame(const Frame& x);                                                                  //!< Copy constructor: set frame of variable slots
+                                    VariableFrame(void);                                                                    //!< Constructor of variable frame with NULL parent
+                                    VariableFrame(VariableFrame* parentFr);                                                 //!< Constructor of variable frame with parent
+                                    VariableFrame(const VariableFrame& x);                                                  //!< Copy constructor: set frame of variable slots
 
         // Operators
-        bool                        operator==(const Frame& x) const;                                                       //!< Equals comparison
-        bool                        operator!=(const Frame& x) const { return !operator==(x); }                             //!< Not equals comparison
+        bool                        operator==(const VariableFrame& x) const;                                               //!< Equals comparison
+        bool                        operator!=(const VariableFrame& x) const { return !operator==(x); }                     //!< Not equals comparison
 
         // Basic utility functions
-        virtual Frame*              clone(void) const { return new Frame(*this); }                                          //!< Clone frame
-        virtual Frame*              cloneEnvironment(void) const;                                                           //!< Clone environment
+        virtual VariableFrame*      clone(void) const { return new VariableFrame(*this); }                                  //!< Clone variable frame
         virtual void                printValue(std::ostream& o) const;                                                      //!< Print table for user
         virtual std::string         richInfo(void) const;                                                                   //!< Complete info to string
 
@@ -84,7 +87,7 @@ class Frame {
 	    void                        addVariable(const std::string& name, const TypeSpec& typeSp, const VectorInteger& index, DAGNode* elemValue);   //!< Generic add function for parser
         void                        eraseVariable(const std::string& name);                                                 //!< Erase a variable
         bool                        existsVariable(const std::string& name) const;                                          //!< Does variable exist?
-        Frame*                      getParentFrame(void) const { return parentFrame; }                                      //!< Get parent frame
+        VariableFrame*              getParentFrame(void) const { return parentFrame; }                                      //!< Get parent frame
         DAGNode*                    getReference(const std::string& name) const;                                            //!< Get reference
         const std::string&          getSlotName(const VariableSlot* slot) const;                                            //!< Get name of a slot
         const TypeSpec&             getTypeSpec(const std::string& name) const;                                             //!< Get type spec of a named variable
@@ -99,7 +102,7 @@ class Frame {
     protected:
         VariableSlot&               getVariableSlot(const std::string& name);                                               //!< Give parser access to variable slot
 
-        Frame*                      parentFrame;                                                                            //!< Pointer to enclosing frame
+        VariableFrame*              parentFrame;                                                                            //!< Pointer to enclosing frame
         VariableTable               variableTable;                                                                          //!< Variable table
 };
 

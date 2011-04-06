@@ -27,13 +27,13 @@
 #include <set>
 #include <string>
 
+class ArgumentFrame;
 class ArgumentRule;
 class DAGNode;
 class MethodTable;
 class VectorString;
 
-typedef Frame                        MemberTable;                                                            //!< Member table type def, for convenience
-typedef std::vector<ArgumentRule*>   MemberRules;                                                            //!< Member rules type def, for convenience
+typedef std::vector<ArgumentRule*>   MemberRules;                                                                       //!< Member rules type def, for convenience
 
 
 class MemberObject: public RbComplex {
@@ -46,8 +46,8 @@ class MemberObject: public RbComplex {
         virtual const VectorString& getClass(void) const;                                                               //!< Get class vector
         
         // Basic utility functions you may want to override
-        virtual MemberObject*       convertTo(const std::string& type, int dim) const;                                  //!< Convert to language object of type and dim (default throws an error)
-        virtual bool                isConvertibleTo(const std::string& type, int dim, bool once) const;                 //!< Is convertible to language object of type and dim? (default false)
+        virtual MemberObject*       convertTo(const std::string& type, int dim) const;                                  //!< Convert to type and dim (default throws an error)
+        virtual bool                isConvertibleTo(const std::string& type, int dim, bool once) const;                 //!< Is convertible to type and dim? (default false)
         virtual void                printValue(std::ostream& o) const;                                                  //!< Print value for user
         virtual std::string         richInfo(void) const;                                                               //!< Complete info
 
@@ -66,26 +66,22 @@ class MemberObject: public RbComplex {
         virtual void                setVariable(const std::string& name, DAGNode* var);                                 //!< Set member variable
 
         // Member method functions
-        DAGNode*                    executeMethod(const std::string& name, int funcId);                                 //!< Execute method with preprocessed args (repeated evaluation)
-        DAGNode*                    executeMethod(const std::string& name, std::vector<Argument>& args);                //!< Execute method (evaluate once)
-        virtual const MethodTable&  getMethodInits(void) const;                                                         //!< Get method specifications
-        const MethodTable&          getMethods(void) const { return methods; }                                          //!< Get methods
+        virtual DAGNode*            executeMethod(const std::string& name, ArgumentFrame& args);                        //!< Direct call of member method
+        virtual const MethodTable&  getMethods(void) const;                                                             //!< Get member methods
 
         // Subscript operator functions
         virtual bool                hasSubscript(void) { return false; }                                                //!< Does object support subscripting?
         virtual DAGNode*            getSubelement(const size_t i);                                                      //!< Return subscript[](index) element
-        virtual size_t              getSubelementsSize(void) { return 0; }                                              //!< Number of subscript elements
+        virtual size_t              getSubelementsSize(void) const { return 0; }                                        //!< Number of subscript elements
         virtual void                setElement(VectorNatural& index, DAGNode* var);                                     //!< Set subelement, or elements of a subelement; only override if you want full control
 
     protected:
-									MemberObject(const MemberRules& memberRules, const MethodTable& methodInits);       //!< Standard constructor
+									MemberObject(const MemberRules& memberRules);                                       //!< Standard constructor
                                     MemberObject(void){}                                                                //!< Default constructor; no members or methods
         // Protected functions
-        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args);   //!< Execute method
 
-        // Members and methods keep track of variables and functions belonging to the object
-        MemberTable                 members;                                                                            //!< Member variables
-        MethodTable                 methods;                                                                            //!< Member methods
+        // Members is the variable frame that stores member variables
+        VariableFrame               members;                                                                            //!< Member variables
 
         // Friend class
         friend class                DistributionFunction;                                                               //!< Give distribution function access

@@ -34,34 +34,32 @@ class VectorString;
 class DistributionFunction :  public RbFunction {
 
     public:
-        enum FuncType { DENSITY, RVALUE, PROB, QUANTILE };                  //!< Enum specifying function type
+        enum FuncType { DENSITY, RVALUE, PROB, QUANTILE };                                                  //!< Enum specifying function type
 
-                                    DistributionFunction(Distribution* dist, FuncType funcType);//!< Constructor
-                                    DistributionFunction(const DistributionFunction& x);        //!< Copy constructor
-                                    ~DistributionFunction(void);                                //!< Destructor
+                                    DistributionFunction(Distribution* dist, FuncType funcType);            //!< Constructor
+                                    DistributionFunction(const DistributionFunction& x);                    //!< Copy constructor
+                                   ~DistributionFunction(void);                                             //!< Destructor
 
         // Assignment operator
-        DistributionFunction&       operator=(const DistributionFunction& x);   //!< Assignment operator
+        DistributionFunction&       operator=(const DistributionFunction& x);                               //!< Assignment operator
 
         // Basic utility functions
-        DistributionFunction*       clone(void) const;                          //!< Clone object
-    	const VectorString&         getClass(void) const;                       //!< Get class vector
+        DistributionFunction*       clone(void) const;                                                      //!< Clone object
+    	const VectorString&         getClass(void) const;                                                   //!< Get class vector
 
         // DistributionFunction functions
-        const ArgumentRules&        getArgumentRules(void) const;               //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                  //!< Get type spec of return value
-
+        DAGNode*                    executeFunction(void);                                                  //!< Execute function
+        const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
+        const TypeSpec              getReturnType(void) const;                                              //!< Get type spec of return value
         bool                        processArguments(   const std::vector<Argument>&    args,
                                                         bool                            evaluateOnce,
-                                                        VectorInteger*                  matchScore=NULL);    //!< Process args, set member variables of distribution
+                                                        VectorInteger*                  matchScore=NULL);   //!< Process args, set member variables of distribution
 
 	protected:
-        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
-
-        ArgumentRules               argumentRules;                              //!< Argument rules
-        TypeSpec                    returnType;                                 //!< Return type
-        Distribution*               distribution;                               //!< The distribution
-        FuncType                    functionType;                               //!< Function type
+        ArgumentRules               argumentRules;                                                          //!< Argument rules
+        TypeSpec                    returnType;                                                             //!< Return type
+        Distribution*               distribution;                                                           //!< The distribution
+        FuncType                    functionType;                                                           //!< Function type
 };
 
 #endif

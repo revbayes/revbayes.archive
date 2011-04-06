@@ -34,17 +34,16 @@ class ConstructorFunction :  public RbFunction {
                                     ConstructorFunction(MemberObject* obj);     //!< Object constructor
 
         // Basic utility functions
-        ConstructorFunction*        clone(void) const;                      //!< Clone the object
-    	const VectorString&         getClass(void) const;                   //!< Get class vector
+        ConstructorFunction*        clone(void) const;                          //!< Clone the object
+    	const VectorString&         getClass(void) const;                       //!< Get class vector
 
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;              //!< Get type of return value
+        DAGNode*                    executeFunction(void);                      //!< Execute function
+        const ArgumentRules&        getArgumentRules(void) const;               //!< Get argument rules
+        const TypeSpec              getReturnType(void) const;                  //!< Get type of return value
 
 	protected:
-        DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
-
-        MemberObject*               templateObject;                         //!< The template object
+        MemberObject*               templateObject;                             //!< The template object
 };
 
 #endif

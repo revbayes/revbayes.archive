@@ -40,8 +40,8 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 }
 
 
-/** Execute operation: we reset our template object here */
-DAGNode* ConstructorFunction::executeOperation(const std::vector<VariableSlot>& args) {
+/** Execute function: we reset our template object here and give out a copy */
+DAGNode* ConstructorFunction::executeFunction(void) {
 
     const ArgumentRules& argRules = getArgumentRules();
 
@@ -49,11 +49,11 @@ DAGNode* ConstructorFunction::executeOperation(const std::vector<VariableSlot>& 
 
     ArgumentRules::const_iterator i;
     std::vector<VariableSlot>::const_iterator j;
-    for (i=argRules.begin(), j=args.begin(); i!=argRules.end(); i++, j++) {
-        if (copy->getMemberTypeSpec((*i)->getArgLabel()).isReference())
-            copy->setVariable((*i)->getArgLabel(), (*j).getReference());
+    for ( size_t i = 0; i < args.size(); i++ ) {
+        if ( argRules[i]->isReference() )
+            copy->setVariable( args.getLabel(i), args[i].getReference() );
         else
-            copy->setValue((*i)->getArgLabel(), (*j).getValue()->clone());
+            copy->setValue   ( args.getLabel(i), args[i].getValue()->clone() );
     }
  
     return new MemberNode(copy);

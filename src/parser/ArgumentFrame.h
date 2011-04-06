@@ -44,13 +44,16 @@ class ArgumentFrame : public Frame {
 
         // Basic utility functions
         virtual ArgumentFrame*      clone(void) const;                                                                      //!< Clone object
-        virtual ArgumentFrame*      cloneEnvironment(void) const;                                                           //!< Clone environment
         virtual void                printValue(std::ostream& o) const;                                                      //!< Print table for user
         virtual std::string         richInfo(void) const;                                                                   //!< Complete info to string
 
         // Regular functions
         void                        clear(void);                                                                            //!< Clear the frame
         size_t                      getIndex(const std::string& name) const;                                                //!< Get index of a named variable
+        const std::string&          getLabel(size_t i) const { return arguments[i].first; }                                 //!< Get index of a named variable
+        DAGNode*                    getReference(const std::string& name) const;                                            //!< Get reference
+        const RbObject*             getValue(const std::string& name) const;                                                //!< Get value
+        const DAGNode*              getVariable(const std::string& name) const;                                             //!< Get variable
         size_t                      size(void) const { return arguments.size(); }                                           //!< Get size of frame           
 
     protected:

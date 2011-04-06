@@ -277,7 +277,7 @@ bool FunctionNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newN
     else
         theRule = argRules[index];
 
-    // See if the new node value is convertible to the required type
+    // See if the new node value is convertible to the required type spec
     if ( Workspace::globalWorkspace().isXConvertibleToY( theRule->getArgTypeSpec(), newNode->getTypeSpec() ) )
         return true;
     

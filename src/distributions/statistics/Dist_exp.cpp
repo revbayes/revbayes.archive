@@ -15,7 +15,6 @@
  * $Id: MemberObject.h 194 2009-12-14 11:43:32Z ronquist $
  */
 
-#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Dist_exp.h"
 #include "Move_mscale.h"
@@ -32,13 +31,13 @@
 
 
 /** Default constructor for parser use */
-Dist_exp::Dist_exp( void ) : DistributionReal( getMemberRules() ) {
+Dist_exp::Dist_exp( void ) : DistributionInterval( getMemberRules() ) {
 
 }
 
 
 /** Constructor for internal use */
-Dist_exp::Dist_exp( double rate ) : DistributionReal( getMemberRules() ) {
+Dist_exp::Dist_exp( double rate ) : DistributionInterval( getMemberRules() ) {
 
     setValue( "rate", new Real(rate) );
 }
@@ -54,11 +53,12 @@ Dist_exp::Dist_exp( double rate ) : DistributionReal( getMemberRules() ) {
  * @return      Cumulative probability
  *
  */
-double Dist_exp::cdf( double q ) {
+double Dist_exp::cdf( const RbObject* value ) {
 
-    double lambda = ((Real*) getValue("rate"))->getValue();
+    const RealPos* lambda = static_cast<const RealPos*>( getValue("rate") );
+    const RealPos* q      = static_cast<const RealPos*>( value            );
 
-    return 1.0 - std::exp( -lambda * q );
+    return 1.0 - std::exp( - (*lambda) * (*q) );
 }
 
 
@@ -72,7 +72,7 @@ Dist_exp* Dist_exp::clone( void ) const {
 /** Get class vector showing type of object */
 const VectorString& Dist_exp::getClass( void ) const {
 
-    static VectorString rbClass = VectorString( Dist_exp_name ) + DistributionReal::getClass();
+    static VectorString rbClass = VectorString( Dist_exp_name ) + DistributionInterval::getClass();
     return rbClass;
 }
 
@@ -80,15 +80,7 @@ const VectorString& Dist_exp::getClass( void ) const {
 /** Get default move */
 Move* Dist_exp::getDefaultMove( StochasticNode* node ) {
 
-    return new Move_mscale( node, 2.0*std::log(1.5), 1.0 );
-}
-
-
-/** Get min value of distribution */
-const Real* Dist_exp::getMin( void ) {
-
-    static Real rbZero = Real( 0.0 );
-    return &rbZero;
+    return new Move_mscale( node, 2.0 * std::log( 1.5 ), 1.0 );
 }
 
 
@@ -102,10 +94,6 @@ const MemberRules& Dist_exp::getMemberRules( void ) const {
 
         memberRules.push_back( new ReferenceRule( "rate", RealPos_name ) );
 
-        /* Inherit member variables from Distribution, if any */
-        const MemberRules& inheritedRules = Distribution::getMemberRules();
-        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
-
         rulesSet = true;
     }
 
@@ -114,7 +102,7 @@ const MemberRules& Dist_exp::getMemberRules( void ) const {
 
 
 /** Get random variable type */
-const TypeSpec& Dist_exp::getVariableType( void ) const {
+const TypeSpec Dist_exp::getVariableType( void ) const {
 
     return TypeSpec( RealPos_name );
 }
@@ -132,9 +120,9 @@ const TypeSpec& Dist_exp::getVariableType( void ) const {
  */
 double Dist_exp::lnLikelihoodRatio( const RbObject* value ) {
 
-    double lambdaNew = static_cast<const Real*>( members["rate"]->getValue()       )->getValue();
-    double lambdaOld = static_cast<const Real*>( members["rate"]->getStoredValue() )->getValue();
-    double x         = static_cast<const Real*>( value                             )->getValue();
+    double lambdaNew = static_cast<const RealPos*>( getVariable( "rate" )->getValue()       )->getValue();
+    double lambdaOld = static_cast<const RealPos*>( getVariable( "rate" )->getStoredValue() )->getValue();
+    double x         = static_cast<const RealPos*>( value                                   )->getValue();
 
     return std::log( lambdaNew ) - std::log( lambdaOld ) + ( lambdaOld - lambdaNew ) * x;
 }
@@ -151,8 +139,8 @@ double Dist_exp::lnLikelihoodRatio( const RbObject* value ) {
  */
 double Dist_exp::lnPdf( const RbObject* value ) {
 
-    double lambda = static_cast<const Real*>( getValue( "rate" ) )->getValue();
-    double x      = static_cast<const Real*>( value              )->getValue();
+    double lambda = static_cast<const RealPos*>( getValue( "rate" ) )->getValue();
+    double x      = static_cast<const RealPos*>( value              )->getValue();
 
     return std::log(lambda) -lambda * x;
 }
@@ -171,35 +159,11 @@ double Dist_exp::lnPdf( const RbObject* value ) {
  */
 double Dist_exp::lnPriorRatio( const RbObject* newVal, const RbObject* oldVal ) {
 
-    double lambdaNew = static_cast<const Real*>( members["rate"]->getValue()       )->getValue();
-    double lambdaOld = static_cast<const Real*>( members["rate"]->getStoredValue() )->getValue();
-    double xNew      = static_cast<const Real*>( newVal                            )->getValue();
-    double xOld      = static_cast<const Real*>( oldVal                            )->getValue();
+    const RealPos* lambda = static_cast<const RealPos*>( getValue( "rate" ) );
+    const RealPos* xNew   = static_cast<const RealPos*>( newVal             );
+    const RealPos* xOld   = static_cast<const RealPos*>( oldVal             );
 
-    return std::log(lambda) -lambda * x;
-    return std::log( lambdaNew / lambdaOld ) - lambdaNew * xNew + lambdaOld * xOld;
-}
-
-
-/**
- * This function calculates the natural log of the probability
- * density ratio for two exponentially-distributed random variables
- * with different distribution parameters.
- *
- * @brief Natural log of exponential probability density ratio (prior ratio)
- *
- * @param newX      Value in numerator
- * @param oldX      Value in denominator
- * @return          Natural log of the (prior) probability density ratio
- */
-double Dist_exp::lnProbabilityRatio( const RbObject* newVal, const RbObject* oldVal ) {
-
-    double newlambda = static_cast<const Real*>( members["rate"]->getValue()       )->getValue();
-    double oldLambda = static_cast<const Real*>( members["rate"]->getStoredValue() )->getValue();
-    double newX      = static_cast<const Real*>( newVal                            )->getValue();
-    double oldX      = static_cast<const Real*>( oldVal                            )->getValue();
-
-    return lambda * ( oldX - newX );
+    return (*lambda) * ( (*xOld) - (*xNew) );
 }
 
 
@@ -214,11 +178,12 @@ double Dist_exp::lnProbabilityRatio( const RbObject* newVal, const RbObject* old
  */
 double Dist_exp::pdf( const RbObject* value ) {
 
-    double lambda = static_cast<const Real*>( members["rate"] )->getValue();
-    double x      = static_cast<const Real*>( value           )->getValue();
+    double lambda = static_cast<const RealPos*>( getValue( "rate" ) )->getValue();
+    double x      = static_cast<const RealPos*>( value              )->getValue();
 
     return lambda * std::exp( -lambda * x );
 }
+
 
 /**
  * This function calculates the quantile for an
@@ -230,11 +195,11 @@ double Dist_exp::pdf( const RbObject* value ) {
  * @return      Quantile
  *
  */
-double Dist_exp::quantile(const double p) {
+RealPos* Dist_exp::quantile(const double p) {
 
-    double lambda = static_cast<const Real*>( getValue( "rate" )->getValue() )->getValue();
+    const RealPos* lambda = static_cast<const RealPos*>( getValue( "rate" ) );
 
-    return -( 1.0 / lambda ) * std::log( 1.0 - p );
+    return new RealPos( -( 1.0 / (*lambda) ) * std::log( 1.0 - p ) );
 }
 
 
@@ -248,11 +213,11 @@ double Dist_exp::quantile(const double p) {
  */
 RealPos* Dist_exp::rv( void ) {
 
-    double                 lambda = static_cast<const Real*>( getValue("rate") )->getValue();
+    const RealPos*         lambda = static_cast<const RealPos*>( getValue("rate") );
     RandomNumberGenerator* rng    = GLOBAL_RNG;
 
     double u = rng->uniform01();
 
-    return new RealPos( -( 1.0 / lambda ) * std::log( u ) );
+    return new RealPos( -( 1.0 / (*lambda) ) * std::log( u ) );
 }
 

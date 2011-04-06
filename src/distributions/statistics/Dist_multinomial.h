@@ -18,7 +18,8 @@
 #ifndef Dist_multinomial_H
 #define Dist_multinomial_H
 
-#include "Distribution.h"
+#include "DistributionInterval.h"
+#include "VectorNatural.h"
 
 #include <ostream>
 #include <string>
@@ -28,7 +29,7 @@ class Real;
 class StochasticNode;
 class VectorString;
 
-class Dist_multinomial: public Distribution {
+class Dist_multinomial: public DistributionInterval {
 
     public:
                                     Dist_multinomial(void);                                               //!< Parser constructor
@@ -40,18 +41,17 @@ class Dist_multinomial: public Distribution {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        const std::string&          getVariableType(void) const;                                        //!< Get random variable type (RealPos)
 
-        // Real-valued distribution functions
+        // Multinomial distribution functions
+        double                      cdf(const RbObject* value);                                         //!< Cumulative density
         Move*                       getDefaultMove(StochasticNode* node);                               //!< Get default move
-        const Real*                 getMin(void);                                                       //!< Get min value
+        const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (VectorNatural)
         double                      lnLikelihoodRatio(const RbObject* value);                           //!< Ln prob ratio of A | B when only B is touched
         double                      lnPdf(const RbObject* value);                                       //!< Ln probability density
         double                      lnPriorRatio(const RbObject* newVal, const RbObject* oldVal);       //!< Ln prob ratio of A | B when only A is touched
-        double                      lnProbabilityRatio(const RbObject* newVal, const RbObject* oldVal); //!< Ln prob ratio of A | B when both A and B are touched
         double                      pdf(const RbObject* value);                                         //!< Probability density
-        double                      quantile(const double p);                                           //!< Quantile
-        RbObject*                   rv(void);                                                           //!< Generate random variable
+        VectorNatural*              quantile(const double p);                                           //!< Quantile
+        VectorNatural*              rv(void);                                                           //!< Generate random variable
 };
 
 #endif

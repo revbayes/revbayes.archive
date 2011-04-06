@@ -44,7 +44,7 @@ Boolean* Boolean::clone(void) const {
 }
 
 
-/** Convert to object of language type typeSpec. The caller manages the object. */
+/** Convert to type and dim. The caller manages the returned object. */
 RbObject* Boolean::convertTo(const std::string& type, int dim) const {
 
     if (type == Integer_name && dim == 0) {
@@ -72,7 +72,7 @@ const VectorString& Boolean::getClass() const {
 }
 
 
-/** Is convertible to language object of type typeSpec? */
+/** Is convertible to type and dim? */
 bool Boolean::isConvertibleTo(const std::string& type, int dim, bool once) const {
 
     if (type == Integer_name && dim == 0)

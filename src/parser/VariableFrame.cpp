@@ -1,10 +1,10 @@
 /**
  * @file
- * This file contains the implementation of Frame, which
+ * This file contains the implementation of VariableFrame, which
  * is used to hold information about an evaluation or
  * execution frame.
  *
- * @brief Implementation of Frame
+ * @brief Implementation of VariableFrame
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -18,7 +18,7 @@
 
 #include "ConstantNode.h"
 #include "ContainerNode.h"
-#include "Frame.h"
+#include "VariableFrame.h"
 #include "VariableSlot.h"
 #include "VectorInteger.h"
 #include "RbException.h"
@@ -31,25 +31,25 @@
 
 
 /** Construct frame with NULL parent */
-Frame::Frame(void) : parentFrame(NULL), variableTable() {
+VariableFrame::VariableFrame(void) : parentVariableFrame(NULL), variableTable() {
 }
 
 
 /** Construct frame with parent */
-Frame::Frame(Frame* parentFr) : parentFrame(parentFr), variableTable() {
+VariableFrame::VariableFrame(VariableFrame* parentFr) : parentVariableFrame(parentFr), variableTable() {
 }
 
 
 /** Copy constructor. We need to set the frame of the variable slots. */
-Frame::Frame(const Frame& x) :  parentFrame(x.parentFrame), variableTable(x.variableTable) {
+VariableFrame::VariableFrame(const VariableFrame& x) :  parentVariableFrame(x.parentVariableFrame), variableTable(x.variableTable) {
 
     for (VariableTable::iterator i=variableTable.begin(); i!=variableTable.end(); i++)
-        (*i).second.setFrame(this);
+        (*i).second.setVariableFrame(this);
 }
     
 
 /** Add reference variable to frame */
-void Frame::addReference(const std::string& name, DAGNode* ref) {
+void VariableFrame::addReference(const std::string& name, DAGNode* ref) {
 
     /* Throw an error if the ref is NULL */
     if (ref == NULL)
@@ -63,7 +63,7 @@ void Frame::addReference(const std::string& name, DAGNode* ref) {
 
     /* Create the slot */
     VariableSlot slot(ref, true);
-    slot.setFrame(this);
+    slot.setVariableFrame(this);
 
     /* Insert new reference variable in variable table */
     variableTable.insert(std::pair<std::string, VariableSlot>(name, slot));
@@ -74,7 +74,7 @@ void Frame::addReference(const std::string& name, DAGNode* ref) {
 
 
 /** Add declared but empty reference slot to frame */
-void Frame::addReference(const std::string& name, const std::string& type, int dim) {
+void VariableFrame::addReference(const std::string& name, const std::string& type, int dim) {
 
     /* Throw an error if the variable exists. Note that we cannot use the function
        existsVariable because that function looks recursively in parent frames, which
@@ -84,7 +84,7 @@ void Frame::addReference(const std::string& name, const std::string& type, int d
 
     /* Create the slot */
     VariableSlot slot(type, dim, true);
-    slot.setFrame(this);
+    slot.setVariableFrame(this);
 
     /* Insert empty slot in variable table */
     variableTable.insert(std::pair<std::string, VariableSlot>(name, slot));
@@ -95,7 +95,7 @@ void Frame::addReference(const std::string& name, const std::string& type, int d
 
 
 /** Add simple variable to frame */
-void Frame::addVariable(const std::string& name, DAGNode* value) {
+void VariableFrame::addVariable(const std::string& name, DAGNode* value) {
 
     /* Throw an error if the value is NULL */
     if (value == NULL)
@@ -109,7 +109,7 @@ void Frame::addVariable(const std::string& name, DAGNode* value) {
 
     /* Create the slot */
     VariableSlot slot(value);
-    slot.setFrame(this);
+    slot.setVariableFrame(this);
 
     /* Insert new variable in variable table */
     variableTable.insert(std::pair<std::string, VariableSlot>(name, slot));
@@ -120,7 +120,7 @@ void Frame::addVariable(const std::string& name, DAGNode* value) {
 
 
 /** Add container variable with initial element to frame */
-void Frame::addVariable(const std::string& name, const VectorInteger& index, DAGNode* elemValue) {
+void VariableFrame::addVariable(const std::string& name, const VectorInteger& index, DAGNode* elemValue) {
 
     /* Throw an error if the variable is NULL */
     if (elemValue == NULL)
@@ -138,7 +138,7 @@ void Frame::addVariable(const std::string& name, const VectorInteger& index, DAG
 
     /* Create the slot */
     VariableSlot slot(new ContainerNode( container ));
-    slot.setFrame(this);
+    slot.setVariableFrame(this);
 
     /* Insert new variable in variable table */
     variableTable.insert(std::pair<std::string, VariableSlot>(name, slot));
@@ -149,7 +149,7 @@ void Frame::addVariable(const std::string& name, const VectorInteger& index, DAG
 
 
 /** Add declared but empty variable slot to frame */
-void Frame::addVariable(const std::string& name, const std::string& type, int dim) {
+void VariableFrame::addVariable(const std::string& name, const std::string& type, int dim) {
 
     /* Throw an error if the variable exists. Note that we cannot use the function
        existsVariable because that function looks recursively in parent frames, which
@@ -159,7 +159,7 @@ void Frame::addVariable(const std::string& name, const std::string& type, int di
 
     /* Create the slot */
     VariableSlot slot(type, dim);
-    slot.setFrame(this);
+    slot.setVariableFrame(this);
 
     /* Insert new variable in variable table */
     variableTable.insert(std::pair<std::string, VariableSlot>(name, slot));
@@ -170,7 +170,7 @@ void Frame::addVariable(const std::string& name, const std::string& type, int di
 
 
 /** Generic add variable function for parser (SyntaxAssignExpr) */
-void Frame::addVariable( const std::string& name, const TypeSpec& typeSp, const VectorInteger& index, DAGNode* variable ) {
+void VariableFrame::addVariable( const std::string& name, const TypeSpec& typeSp, const VectorInteger& index, DAGNode* variable ) {
 
     /* Throw an error if the variable is NULL */
     if ( variable == NULL )
@@ -207,7 +207,7 @@ void Frame::addVariable( const std::string& name, const TypeSpec& typeSp, const 
 
     /* Create the slot */
     VariableSlot slot( typeSp );
-    slot.setFrame( this );
+    slot.setVariableFrame( this );
     slot.setVariable( variable );
 
     /* Insert new variable in variable table */
@@ -218,18 +218,18 @@ void Frame::addVariable( const std::string& name, const TypeSpec& typeSp, const 
 
 
 /** Clone entire environment, except base frame (it always stays the same) */
-Frame* Frame::cloneEnvironment(void) const {
+VariableFrame* VariableFrame::cloneEnvironment(void) const {
 
-    Frame* newEnv = clone();
-    if (newEnv->parentFrame != NULL && newEnv->parentFrame->getParentFrame() != NULL)
-        newEnv->parentFrame = newEnv->parentFrame->cloneEnvironment();
+    VariableFrame* newEnv = clone();
+    if (newEnv->parentVariableFrame != NULL && newEnv->parentVariableFrame->getParentVariableFrame() != NULL)
+        newEnv->parentVariableFrame = newEnv->parentVariableFrame->cloneEnvironment();
 
     return newEnv;
 }
 
 
 /** Erase variable */
-void Frame::eraseVariable(const std::string& name) {
+void VariableFrame::eraseVariable(const std::string& name) {
 
     std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
     if (it == variableTable.end())
@@ -242,11 +242,11 @@ void Frame::eraseVariable(const std::string& name) {
 
 
 /** Does variable exist in the environment (current frame and enclosing frames)? */
-bool Frame::existsVariable(const std::string& name) const {
+bool VariableFrame::existsVariable(const std::string& name) const {
 
     if (variableTable.find(name) == variableTable.end()) {
-        if (parentFrame != NULL)
-            return parentFrame->existsVariable(name);
+        if (parentVariableFrame != NULL)
+            return parentVariableFrame->existsVariable(name);
         else
             return false;
     }
@@ -256,14 +256,14 @@ bool Frame::existsVariable(const std::string& name) const {
 
 
 /** Get reference */
-DAGNode* Frame::getReference(const std::string& name) const {
+DAGNode* VariableFrame::getReference(const std::string& name) const {
 
     PRINTF("Retrieving variable reference named '%s' from frame\n", name.c_str());
 
     std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
-        if (parentFrame != NULL)
-            return parentFrame->getReference(name);
+        if (parentVariableFrame != NULL)
+            return parentVariableFrame->getReference(name);
         else
             throw (RbException("Variable '" + name + "' does not exist"));
     }
@@ -273,7 +273,7 @@ DAGNode* Frame::getReference(const std::string& name) const {
 
 
 /** Get slot name */
-const std::string& Frame::getSlotName(const VariableSlot* theSlot) const {
+const std::string& VariableFrame::getSlotName(const VariableSlot* theSlot) const {
 
     for (VariableTable::const_iterator i=variableTable.begin(); i!=variableTable.end(); i++) {
     
@@ -286,14 +286,14 @@ const std::string& Frame::getSlotName(const VariableSlot* theSlot) const {
 
 
 /** Get type specification for slot */
-const TypeSpec& Frame::getTypeSpec(const std::string& name) const {
+const TypeSpec& VariableFrame::getTypeSpec(const std::string& name) const {
 
     PRINTF("Retrieving type specification for variable named '%s' from frame\n", name.c_str());
 
     std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
-        if (parentFrame != NULL)
-            return parentFrame->getTypeSpec(name);
+        if (parentVariableFrame != NULL)
+            return parentVariableFrame->getTypeSpec(name);
         else
             throw (RbException("Variable '" + name + "' does not exist"));
     }
@@ -303,14 +303,14 @@ const TypeSpec& Frame::getTypeSpec(const std::string& name) const {
 
 
 /** Get value */
-const RbObject* Frame::getValue(const std::string& name) const {
+const RbObject* VariableFrame::getValue(const std::string& name) const {
 
     PRINTF("Retrieving value of variable named '%s' from frame\n", name.c_str());
 
     std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
-        if (parentFrame != NULL)
-            return parentFrame->getValue(name);
+        if (parentVariableFrame != NULL)
+            return parentVariableFrame->getValue(name);
         else
             throw (RbException("Variable '" + name + "' does not exist"));
     }
@@ -328,14 +328,14 @@ const RbObject* Frame::getValue(const std::string& name) const {
  * to change the value and possibly violate the logic of argument passing in
  * the language.
  */
-const DAGNode* Frame::getVariable(const std::string& name) const {
+const DAGNode* VariableFrame::getVariable(const std::string& name) const {
 
     PRINTF("Retrieving variable named '%s' from frame\n", name.c_str());
 
     std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
-        if (parentFrame != NULL)
-            return parentFrame->getVariable(name);
+        if (parentVariableFrame != NULL)
+            return parentVariableFrame->getVariable(name);
         else
             throw (RbException("Variable '" + name + "' does not exist"));
     }
@@ -345,14 +345,14 @@ const DAGNode* Frame::getVariable(const std::string& name) const {
 
 
 /** Get variable slot */
-VariableSlot& Frame::getVariableSlot(const std::string& name) {
+VariableSlot& VariableFrame::getVariableSlot(const std::string& name) {
 
     PRINTF("Retrieving variable slot named '%s' from frame\n", name.c_str());
 
     std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
     if (variableTable.find(name) == variableTable.end()) {
-        if (parentFrame != NULL)
-            return parentFrame->getVariableSlot(name);
+        if (parentVariableFrame != NULL)
+            return parentVariableFrame->getVariableSlot(name);
         else
             throw (RbException("Variable slot '" + name + "' does not exist"));
     }
@@ -362,12 +362,12 @@ VariableSlot& Frame::getVariableSlot(const std::string& name) {
 
 
 /** Is the named variable a reference variable? */
-bool Frame::isReference(const std::string& name) const {
+bool VariableFrame::isReference(const std::string& name) const {
 
     std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
     if (variableTable.find(name) == variableTable.end()) {
-        if (parentFrame != NULL)
-            return parentFrame->isReference(name);
+        if (parentVariableFrame != NULL)
+            return parentVariableFrame->isReference(name);
         else
             throw (RbException("Variable '" + name + "' does not exist"));
     }
@@ -377,7 +377,7 @@ bool Frame::isReference(const std::string& name) const {
 
 
 /** Print value for user */
-void Frame::printValue(std::ostream& o) const {
+void VariableFrame::printValue(std::ostream& o) const {
 
     VariableTable::const_iterator i;
     for (i=variableTable.begin(); i!=variableTable.end(); i++) {
@@ -389,10 +389,10 @@ void Frame::printValue(std::ostream& o) const {
 
 
 /** Complete info about object to string */
-std::string Frame::richInfo(void) const {
+std::string VariableFrame::richInfo(void) const {
 
     std::ostringstream o;
-    o << "Frame:" << std::endl;
+    o << "VariableFrame:" << std::endl;
     printValue(o);
 
     return o.str();
@@ -400,13 +400,13 @@ std::string Frame::richInfo(void) const {
 
 
 /** Set value */
-void Frame::setValue(const std::string& name, RbObject* newVal) {
+void VariableFrame::setValue(const std::string& name, RbObject* newVal) {
 
     // Find the variable
     std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
-        if (parentFrame != NULL)
-            parentFrame->setValue(name, newVal);
+        if (parentVariableFrame != NULL)
+            parentVariableFrame->setValue(name, newVal);
         else
             throw (RbException("Variable '" + name + "' does not exist"));
     }
@@ -418,13 +418,13 @@ void Frame::setValue(const std::string& name, RbObject* newVal) {
 
 
 /** Set variable */
-void Frame::setVariable(const std::string& name, DAGNode* newVar) {
+void VariableFrame::setVariable(const std::string& name, DAGNode* newVar) {
 
     // Find the variable slot
     std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
-        if (parentFrame != NULL)
-            parentFrame->setVariable(name, newVar);
+        if (parentVariableFrame != NULL)
+            parentVariableFrame->setVariable(name, newVar);
         else
             throw (RbException("Variable '" + name + "' does not exist"));
     }
@@ -436,13 +436,13 @@ void Frame::setVariable(const std::string& name, DAGNode* newVar) {
 
 
 /** Set reference */
-void Frame::setReference(const std::string& name, DAGNode* newRef) {
+void VariableFrame::setReference(const std::string& name, DAGNode* newRef) {
 
     // Find the variable slot
     std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
     if (it == variableTable.end()) {
-        if (parentFrame != NULL)
-            parentFrame->setReference(name, newRef);
+        if (parentVariableFrame != NULL)
+            parentVariableFrame->setReference(name, newRef);
         else
             throw (RbException("Variable '" + name + "' does not exist"));
     }

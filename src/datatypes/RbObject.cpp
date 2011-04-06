@@ -44,6 +44,7 @@ RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 }
 
 
+/** Convert to type and dim. The caller manages the returned object. */
 RbObject* RbObject::convertTo(const std::string& type, int dim) const {
 
     std::ostringstream  msg;
@@ -74,14 +75,14 @@ const TypeSpec RbObject::getTypeSpec(void) const {
 }
 
 
-/** Is convertible to language object of type typeSpec? */
+/** Is convertible to type and dim? */
 bool RbObject::isConvertibleTo(const TypeSpec& typeSpec, bool once) const {
 
     return isConvertibleTo( typeSpec.getType(), typeSpec.getDim(), once );
 }
 
 
-/** Is convertible to language object of type specification type and dim? */
+/** Is convertible to type and dim? */
 bool RbObject::isConvertibleTo(const std::string& type, int dim, bool once) const {
 
     return false;

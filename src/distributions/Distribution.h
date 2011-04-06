@@ -34,47 +34,35 @@ class RandomNumberGenerator;
 class StochasticNode;
 class VectorString;
 
-/** @note Constructor adds random number generator to argument rules */
+
 class Distribution: public MemberObject {
 
     public:
-        virtual                    ~Distribution(void);                                                             //!< Destructor
+        virtual                    ~Distribution(void) {}                                                           //!< Destructor
 
         // Basic utility functions
+        virtual Distribution*       clone(void) const = 0;                                                          //!< Clone object
         virtual const VectorString& getClass(void) const;                                                           //!< Get class vector   
 
-        // Member variable rules and random variable type
-        virtual const MemberRules&  getMemberRules(void) const;                                                     //!< Get member rules
-        virtual const std::string&  getVariableType(void) const = 0;                                                //!< Get random variable type
+        // Member object function you have to override
+        virtual const MemberRules&  getMemberRules(void) const = 0;                                                 //!< Get member rules
 
-        // Member method inits
-        virtual const MethodTable&  getMethodInits(void) const;                                                     //!< Get method inits
-        
-        // Distribution functions
+        // Member object functions you may want to override
+        virtual const MethodTable&  getMethods(void) const;                                                         //!< Get member methods
+        virtual DAGNode*            executeMethod(const std::string& name, ArgumentFrame& args);                    //!< Direct call of member method
+
+        // Distribution functions you have to override
         virtual Move*               getDefaultMove(StochasticNode* node) = 0;                                       //!< Get default move
-        virtual const RbObject*     getMax(void) { return NULL; }                                                   //!< Max value
-        virtual const RbObject*     getMin(void) { return NULL; }                                                   //!< Min value
-        virtual double              lnLikelihoodRatio(const RbObject* value) = 0;                                   //!< Ln prob ratio of A | B when only B is touched
+        virtual const TypeSpec      getVariableType(void) const = 0;                                                //!< Get random variable type
+        virtual double              lnLikelihoodRatio(const RbObject* value) = 0;                                   //!< Ln prob ratio of A | B when B is touched
         virtual double              lnPdf(const RbObject* value) = 0;                                               //!< Ln probability density
-        virtual double              lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) = 0;               //!< Ln prob ratio of A | B when only A is touched
-        virtual double              lnProbabilityRatio(const RbObject* newVal, const RbObject* oldVal) = 0;         //!< Ln prob ratio of A | B when both A and B are touched
+        virtual double              lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) = 0;               //!< Ln prob ratio of A | B when A is touched
         virtual double              pdf(const RbObject* value) = 0;                                                 //!< Probability density function
         virtual RbObject*           rv(void) = 0;                                                                   //!< Generate a random draw
 
     protected:
 									Distribution(const MemberRules& memberRules);                                   //!< Simple constructor
-									Distribution(const MemberRules& memberRules, const MethodTable& methodInits);   //!< Inheritance constructor
-									Distribution(const Distribution& x);                                            //!< Copy constructor
 
-        // Assignment operator
-        Distribution&               operator=(const Distribution& x);                                               //!< Assignment operator
-
-        // Member method call
-        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args);   //!< Execute method
-
-        // Workspace variables
-        Real                        retDouble;                                                                      //!< Return double
-        RbObject*					retObject;                                                                      //!< Return object
 };
 
 #endif

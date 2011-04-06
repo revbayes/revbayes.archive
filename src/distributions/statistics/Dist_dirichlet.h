@@ -18,17 +18,19 @@
 #ifndef Dist_dirichlet_H
 #define Dist_dirichlet_H
 
-#include "Distribution.h"
+#include "DistributionInterval.h"
+#include "Simplex.h"
 
 #include <ostream>
 #include <string>
 
 class DAGNode;
 class Real;
+class Simplex;
 class StochasticNode;
 class VectorString;
 
-class Dist_dirichlet: public Distribution {
+class Dist_dirichlet: public DistributionInterval {
 
     public:
                                     Dist_dirichlet(void);                                               //!< Parser constructor
@@ -40,19 +42,17 @@ class Dist_dirichlet: public Distribution {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        const std::string&          getVariableType(void) const;                                        //!< Get random variable type (RealPos)
 
         // Real-valued distribution functions
-        double                      cdf(const double q);                                                //!< Cumulative density
+        double                      cdf(const RbObject* value);                                         //!< Cumulative density
         Move*                       getDefaultMove(StochasticNode* node);                               //!< Get default move
-        const Real*                 getMin(void);                                                       //!< Get min value
+        const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Simplex)
         double                      lnLikelihoodRatio(const RbObject* value);                           //!< Ln prob ratio of A | B when only B is touched
         double                      lnPdf(const RbObject* value);                                       //!< Ln probability density
         double                      lnPriorRatio(const RbObject* newVal, const RbObject* oldVal);       //!< Ln prob ratio of A | B when only A is touched
-        double                      lnProbabilityRatio(const RbObject* newVal, const RbObject* oldVal); //!< Ln prob ratio of A | B when both A and B are touched
         double                      pdf(const RbObject* value);                                         //!< Probability density
-        double                      quantile(const double p);                                           //!< Quantile
-        RbObject*                   rv(void);                                                           //!< Generate random variable
+        Simplex*                    quantile(const double p);                                           //!< Quantile
+        Simplex*                    rv(void);                                                           //!< Generate random variable
 };
 
 #endif

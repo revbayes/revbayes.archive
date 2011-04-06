@@ -52,7 +52,7 @@ class StochasticNode : public VariableNode {
         double                  calculateLnProbability(void);                                   //!< Calculate log conditional probability
         void                    clamp(RbObject* observedVal);                                   //!< Clamp the node with an observed value
         Distribution*           getDistribution(void) { return distribution; }                  //!< Get distribution
-        double                  getLnProbabilityRatio(void);                                    //!< Get log probability ratio
+        double                  getLnProbabilityRatio(void);                                    //!< Get log probability ratio of new to stored state
         bool                    isClamped(void) const { return clamped; }                       //!< Is the node clamped?
         void                    setValue(RbObject* value);                                      //!< Set value but do not clamp
         void                    unclamp(void);                                                  //!< Unclamp the node

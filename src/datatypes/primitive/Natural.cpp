@@ -95,7 +95,7 @@ Natural* Natural::clone( void ) const {
 }
 
 
-/** Convert to object of language type typeSpec. The caller manages the object. */
+/** Convert to type and dim. The caller manages the returned object. */
 RbObject* Natural::convertTo( const std::string& type, int dim ) const {
 
     if ( type == Boolean_name && dim == 0 ) 
@@ -141,7 +141,7 @@ const VectorString& Natural::getClass() const {
 }
 
 
-/** Is convertible to language object of type typeSpec? */
+/** Is convertible to type and dim? */
 bool Natural::isConvertibleTo( const std::string& type, int dim, bool once ) const {
 
     if ( type == Boolean_name && dim == 0 ) 

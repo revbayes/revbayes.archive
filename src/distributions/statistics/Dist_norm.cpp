@@ -15,7 +15,6 @@
  * $Id: MemberObject.h 194 2009-12-14 11:43:32Z ronquist $
  */
 
-#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Dist_norm.h"
 #include "Move_mslide.h"
@@ -34,16 +33,16 @@
 
 
 /** Constructor for parser use */
-Dist_norm::Dist_norm(void) : DistributionReal(getMemberRules()) {
+Dist_norm::Dist_norm( void ) : DistributionInterval( getMemberRules() ) {
 
 }
 
 
 /** Constructor for internal use */
-Dist_norm::Dist_norm(double mu, double sigma) : DistributionReal(getMemberRules()) {
+Dist_norm::Dist_norm( double mu, double sigma ) : DistributionInterval( getMemberRules() ) {
 
-    setValue("mean",  new Real(mu));
-    setValue("sigma", new Real(sigma));
+    setValue( "mean",  new Real   ( mu    ) );
+    setValue( "sigma", new RealPos( sigma ) );
 }
 
 
@@ -58,13 +57,14 @@ Dist_norm::Dist_norm(double mu, double sigma) : DistributionReal(getMemberRules(
  *
  * @see Adams, A. G. 1969. Areas under the normal curve. Computer J. 12:197-198.
  */
-double Dist_norm::cdf(double q) {
+double Dist_norm::cdf( const RbObject* value ) {
 
-    double mu    = ((Real*) getValue("mean"))->getValue();
-    double sigma = ((Real*) getValue("sd"))->getValue();
+    const Real*    mu    = static_cast<const Real*   >( getValue("mean") );
+    const RealPos* sigma = static_cast<const RealPos*>( getValue("sd"  ) );
+    const Real*    q     = static_cast<const Real*   >( value            );
 
     double p;
-    double z = (q - mu) / sigma;
+    double z = ( (*q) - (*mu) ) / (*sigma);
 
     /* |X| <= 1.28 */
     if ( fabs(z) <= 1.28 ) {
@@ -106,47 +106,51 @@ double Dist_norm::cdf(double q) {
 
 
 /** Clone this object */
-Dist_norm* Dist_norm::clone(void) const {
+Dist_norm* Dist_norm::clone( void ) const {
 
-    return new Dist_norm(*this);
+    return new Dist_norm( *this );
 }
 
 
 /** Get class vector showing type of object */
-const VectorString& Dist_norm::getClass(void) const {
+const VectorString& Dist_norm::getClass( void ) const {
 
-    static VectorString rbClass = VectorString(Dist_norm_name) + DistributionReal::getClass();
+    static VectorString rbClass = VectorString( Dist_norm_name ) + DistributionInterval::getClass();
     return rbClass;
 }
 
 
 /** Get default move; TODO: Normal move is more natural default move */
-Move* Dist_norm::getDefaultMove(StochasticNode* node) {
+Move* Dist_norm::getDefaultMove( StochasticNode* node ) {
 
-    double sd = ((Real*) (getValue("sd")))->getValue();
+    const RealPos* sd = static_cast<const RealPos*>( getValue("sd") );
 
-    return new Move_mslide(node, sd/100.0, 1.0);
+    return new Move_mslide( node, (*sd) / 100.0, 1.0 );
 }
 
 
 /** Get member variable rules */
-const MemberRules& Dist_norm::getMemberRules(void) const {
+const MemberRules& Dist_norm::getMemberRules( void ) const {
 
     static MemberRules memberRules;
     static bool        rulesSet = false;
 
-    if (!rulesSet) {
+    if ( !rulesSet ) {
 
-        memberRules.push_back(new ReferenceRule("mean", Real_name));
-        memberRules.push_back(new ReferenceRule("sd", RealPos_name));
-
-        const MemberRules& inheritedRules = Distribution::getMemberRules();
-        memberRules.insert(memberRules.end(), inheritedRules.begin(), inheritedRules.end()); 
+        memberRules.push_back( new ReferenceRule( "mean", Real_name    ) );
+        memberRules.push_back( new ReferenceRule( "sd"  , RealPos_name ) );
 
         rulesSet = true;
     }
 
     return memberRules;
+}
+
+
+/** Get random variable type */
+const TypeSpec Dist_norm::getVariableType( void ) const {
+
+    return TypeSpec( Real_name );
 }
 
 
@@ -160,20 +164,20 @@ const MemberRules& Dist_norm::getMemberRules(void) const {
  * @param value     Value of random variable
  * @return          Natural log of the likelihood ratio
  */
-double Dist_norm::lnLikelihoodRatio(const RbObject* value) {
+double Dist_norm::lnLikelihoodRatio( const RbObject* value ) {
 
-    double muNew    = ((Real*) (getVariable("mean")->getValue      ()))->getValue();
-    double muOld    = ((Real*) (getVariable("mean")->getStoredValue()))->getValue();
-    double sigmaNew = ((Real*) (getVariable("sd"  )->getValue      ()))->getValue();
-    double sigmaOld = ((Real*) (getVariable("sd"  )->getStoredValue()))->getValue();
-    double x        = ((Real*) value)->getValue();
+    double muNew    = static_cast<const Real*   >( getVariable("mean")->getValue()       )->getValue();
+    double muOld    = static_cast<const Real*   >( getVariable("mean")->getStoredValue() )->getValue();
+    double sigmaNew = static_cast<const RealPos*>( getVariable("sd"  )->getValue()       )->getValue();
+    double sigmaOld = static_cast<const RealPos*>( getVariable("sd"  )->getStoredValue() )->getValue();
+    double x        = static_cast<const Real*   >( value                                 )->getValue();
 
     double newZ = ( x - muNew ) / sigmaNew;
     double oldZ = ( x - muOld ) / sigmaOld;
 
     double fullRatio = 0.0;
-    fullRatio += ( -0.5 * newZ * newZ ) - 0.5 * std::log ( 2.0 * PI * sigmaNew );
-    fullRatio -= ( -0.5 * oldZ * oldZ ) - 0.5 * std::log ( 2.0 * PI * sigmaOld );
+    fullRatio += ( -0.5 * newZ * newZ ) - 0.5 * std::log( 2.0 * PI * sigmaNew );
+    fullRatio -= ( -0.5 * oldZ * oldZ ) - 0.5 * std::log( 2.0 * PI * sigmaOld );
 
     double quickRatio = 0.5 * ( std::log( sigmaOld / sigmaNew ) ) + 0.5 * ( oldZ * oldZ - newZ * newZ );
 
@@ -192,9 +196,9 @@ double Dist_norm::lnLikelihoodRatio(const RbObject* value) {
  */
 double Dist_norm::lnPdf(const RbObject* value) {
 
-    double mu    = ((Real*) getValue("mean"))->getValue();
-    double sigma = ((Real*) getValue("sd"))->getValue();
-    double x     = ((Real*) value)->getValue();
+    double mu    = static_cast<const Real*   >( getValue( "mean" ) )->getValue();
+    double sigma = static_cast<const RealPos*>( getValue( "sd"   ) )->getValue();
+    double x     = static_cast<const Real*   >( value              )->getValue();
 
     double z = ( x - mu ) / sigma;
 
@@ -212,12 +216,12 @@ double Dist_norm::lnPdf(const RbObject* value) {
  * @param oldX      Value in denominator
  * @return          Natural log of the probability density ratio
  */
-double Dist_norm::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
+double Dist_norm::lnPriorRatio( const RbObject* newVal, const RbObject* oldVal ) {
 
-    double mu    = ((Real*) getValue("mean"))->getValue();
-    double sigma = ((Real*) getValue("sd"))->getValue();
-    double newX = ((Real*) newVal)->getValue();
-    double oldX = ((Real*) oldVal)->getValue();
+    double mu    = static_cast<const Real*   >( getValue( "mean" ) )->getValue();
+    double sigma = static_cast<const RealPos*>( getValue( "sd"   ) )->getValue();
+    double newX  = static_cast<const Real*   >( newVal             )->getValue();
+    double oldX  = static_cast<const Real*   >( oldVal             )->getValue();
 
     double newZ = ( newX - mu ) / sigma;
     double oldZ = ( oldX - mu ) / sigma;
@@ -235,11 +239,11 @@ double Dist_norm::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_norm::pdf(const RbObject* value) {
+double Dist_norm::pdf( const RbObject* value ) {
 
-    double mu    = ((Real*) getValue("mean"))->getValue();
-    double sigma = ((Real*) getValue("sd"))->getValue();
-    double x     = ((Real*) value)->getValue();
+    double mu    = static_cast<const Real*   >( getValue( "mean" ) )->getValue();
+    double sigma = static_cast<const RealPos*>( getValue( "sd"   ) )->getValue();
+    double x     = static_cast<const Real*   >( value              )->getValue();
 
     double z = (x - mu) / sigma;
 
@@ -263,10 +267,10 @@ double Dist_norm::pdf(const RbObject* value) {
  * @see Beasley, JD & S. G. Springer. 1977. Algorithm AS 111: The percentage
  *      points of the normal distribution. 26:118-121.
  */
-double Dist_norm::quantile(const double p) {
+Real* Dist_norm::quantile( const double p) {
 
-    double mu    = ((Real*) getValue("mean"))->getValue();
-    double sigma = ((Real*) getValue("sd"))->getValue();
+    double mu    = static_cast<const Real*   >( getValue( "mean" ) )->getValue();
+    double sigma = static_cast<const RealPos*>( getValue( "sd"   ) )->getValue();
 
     double a0 = -0.322232431088;
     double a1 = -1.0;
@@ -280,16 +284,16 @@ double Dist_norm::quantile(const double p) {
     double b4 = 0.0038560700634;
 
     double p1 = ( p < 0.5 ? p : 1.0 - p);
-    if (p1 < 1e-20) 
-       throw RbException("Probability of normal quantile out of range");
+    if ( p1 < 1e-20 ) 
+       throw RbException( "Probability of normal quantile out of range" );
 
     double y = sqrt( log(1.0/(p1*p1)) );   
     double z = y + ((((y*a4+a3)*y+a2)*y+a1)*y+a0) / ((((y*b4+b3)*y+b2)*y+b1)*y+b0);
 
-    if (p < 0.5)
+    if ( p < 0.5 )
         z = -z;
 
-    return z * sigma + mu;
+    return new Real( z * sigma + mu );
 }
 
 
@@ -307,16 +311,16 @@ double Dist_norm::quantile(const double p) {
  */
 Real* Dist_norm::rv(void) {
 
-    static bool availableNormalRv = false;
+    static bool   availableNormalRv = false;
     static double extraNormalRv;
 
-    if (availableNormalRv) {
+    if ( availableNormalRv ) {
         availableNormalRv = false;
         return new Real( extraNormalRv );
     }
 
-    double mu    = ((Real*) getValue("mean"))->getValue();
-    double sigma = ((Real*) getValue("sd"))->getValue();
+    double mu    = static_cast<const Real*   >( getValue( "mean" ) )->getValue();
+    double sigma = static_cast<const RealPos*>( getValue( "sd"   ) )->getValue();
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
@@ -329,7 +333,7 @@ Real* Dist_norm::rv(void) {
         rsq = v1 * v1 + v2 * v2;
     } while ( rsq >= 1.0 || rsq == 0.0 );
 
-    double fac = sqrt(-2.0 * log(rsq)/rsq);
+    double fac = sqrt( -2.0 * log( rsq ) / rsq );
 
     extraNormalRv = ( mu + sigma * ( v1 * fac ) );
     availableNormalRv = true;

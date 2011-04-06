@@ -59,7 +59,7 @@ class Simplex : public MemberObject {
         // Subscript access functions
         bool                    hasSubscript(void) { return true; }                                 //!< We support subscripting
         DAGNode*                getSubelement(VectorInteger& index) const;                          //!< Return subscript[](index) element
-        size_t                  getSubelementsSize(void) { return value.size(); }                   //!< Number of subscript elements
+        size_t                  getSubelementsSize(void) const { return value.size(); }             //!< Number of subscript elements
 
         // Simplex functions
         void                    setValue(const VectorRealPos& x);                                   //!< Set value from VectorRealPos & rescale

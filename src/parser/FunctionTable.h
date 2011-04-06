@@ -57,7 +57,6 @@ class FunctionTable : public RbInternal {
         void            eraseFunction(const std::string& name);                                             //!< Erase a function (all versions)
         RbFunction*     getFunction(const std::string& name, const std::vector<Argument>& args) const;      //!< Get function (a copy)
         bool            isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;             //!< Are formals unique?
-        size_t          size(void) const { return table.size(); }                //!< Get size TODO: Include parent size?
 
     protected:
         RbFunction*     findFunction(   const std::string&              name,

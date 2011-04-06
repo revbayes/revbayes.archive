@@ -16,24 +16,27 @@
  */
 
 #include "ArgumentRule.h"
+#include "Boolean.h"
 #include "ConstantNode.h"
-#include "DistributionFunction.h"
+#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "Distribution.h"
-#include "DistributionReal.h"
-#include "Boolean.h"
-#include "Real.h"
+#include "DistributionFunction.h"
+#include "DistributionInterval.h"
+#include "MemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "RealPos.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 
 #include <sstream>
 
 
 /** Constructor */
-DistributionFunction::DistributionFunction(Distribution* dist, FuncType funcType)
-    : RbFunction(), returnType(funcType == DENSITY || funcType == PROB ? Real_name : dist->getVariableType()) {
+DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcType )
+    : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? RealPos_name : dist->getVariableType() ) {
 
     /* Set the distribution */
     distribution = dist;
@@ -43,47 +46,55 @@ DistributionFunction::DistributionFunction(Distribution* dist, FuncType funcType
 
     /* Get the distribution parameter rules and set type to value argument */
     const ArgumentRules& memberRules = dist->getMemberRules();
-    for (ArgumentRules::const_iterator i = memberRules.begin(); i!=memberRules.end(); i++) {
-        argumentRules.push_back(new ArgumentRule(*(*i)));
+    for ( ArgumentRules::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
+        argumentRules.push_back( new ValueRule( (*i)->getArgLabel(), (*i)->getArgTypeSpec() ) );
     }
 
-    /* Modify argument rules and set return type based on function type */
+    /* Modify argument rules based on function type */
     if (functionType == DENSITY) {
-        argumentRules.insert(argumentRules.begin(), new ArgumentRule("x", distribution->getVariableType()));
-//        returnType = TypeSpec(Real_name);
+
+        argumentRules.insert( argumentRules.begin(), new ValueRule( "x"  , distribution->getVariableType() ) );
+        argumentRules.push_back(                     new ValueRule( "log", new Boolean(true)               ) );
     }
     else if (functionType == RVALUE) {
-//        returnType = TypeSpec(distribution->getVariableType());
+
+        // Nothing to do
     }
     else if (functionType == PROB) {
-        argumentRules.insert(argumentRules.begin(), new ArgumentRule("q", distribution->getVariableType()));
-//        returnType = TypeSpec(Real_name);
+
+        argumentRules.insert( argumentRules.begin(), new ValueRule( "q"  , distribution->getVariableType() ) );
     }
     else if (functionType == QUANTILE) {
-        argumentRules.insert(argumentRules.begin(), new ArgumentRule("p", Real_name));
-//        returnType = TypeSpec(distribution->getVariableType());
+
+        argumentRules.insert( argumentRules.begin(), new ValueRule( "p"  , RealPos_name                    ) );
     }
 }
 
 
 /** Copy constructor */
-DistributionFunction::DistributionFunction(const DistributionFunction& x) : returnType(x.returnType) {
+DistributionFunction::DistributionFunction( const DistributionFunction& x ) : returnType( x.returnType ) {
 
     argumentRules = x.argumentRules;
-    distribution  = dynamic_cast<Distribution*>(x.distribution->clone());
+    distribution  = x.distribution->clone();
     functionType  = x.functionType;
 
     /* Modify argument rules based on function type */
     if (functionType == DENSITY) {
-        argumentRules.insert(argumentRules.begin(), new ArgumentRule("x", distribution->getVariableType()));
+
+        argumentRules.insert( argumentRules.begin(), new ValueRule( "x"  , distribution->getVariableType() ) );
+        argumentRules.push_back(                     new ValueRule( "log", new Boolean(true)             ) );
     }
     else if (functionType == RVALUE) {
+    
+        // No modification needed
     }
     else if (functionType == PROB) {
-        argumentRules.insert(argumentRules.begin(), new ArgumentRule("q", distribution->getVariableType()));
+        
+        argumentRules.insert( argumentRules.begin(), new ValueRule( "q"  , distribution->getVariableType() ) );
     }
     else if (functionType == QUANTILE) {
-        argumentRules.insert(argumentRules.begin(), new ArgumentRule("p", Real_name));
+        
+        argumentRules.insert( argumentRules.begin(), new ValueRule( "p"  , RealPos_name) );
     }
 }
 
@@ -96,7 +107,7 @@ DistributionFunction::~DistributionFunction(void) {
 
 
 /** Assignment operator */
-DistributionFunction& DistributionFunction::operator=(const DistributionFunction& x) {
+DistributionFunction& DistributionFunction::operator=( const DistributionFunction& x ) {
 
     if (this != &x) {
         
@@ -106,20 +117,26 @@ DistributionFunction& DistributionFunction::operator=(const DistributionFunction
         delete distribution;
 
         argumentRules = x.argumentRules;
-        distribution  = dynamic_cast<Distribution*>(x.distribution->clone());
+        distribution  = x.distribution->clone();
         functionType  = x.functionType;
 
         /* Modify argument rules based on function type */
         if (functionType == DENSITY) {
-            argumentRules.insert(argumentRules.begin(), new ArgumentRule("x", distribution->getVariableType()));
+
+            argumentRules.insert( argumentRules.begin(), new ValueRule( "x", distribution->getVariableType() ) );
+            argumentRules.push_back(                     new ValueRule( "log", new Boolean(true)             ) );
         }
         else if (functionType == RVALUE) {
+        
+            // No modification needed
         }
         else if (functionType == PROB) {
-            argumentRules.insert(argumentRules.begin(), new ArgumentRule("q", distribution->getVariableType()));
+            
+            argumentRules.insert( argumentRules.begin(), new ValueRule( "q", distribution->getVariableType() ) );
         }
         else if (functionType == QUANTILE) {
-            argumentRules.insert(argumentRules.begin(), new ArgumentRule("p", Real_name));
+            
+            argumentRules.insert( argumentRules.begin(), new ValueRule( "p", RealPos_name) );
         }
     }
 
@@ -128,32 +145,51 @@ DistributionFunction& DistributionFunction::operator=(const DistributionFunction
 
 
 /** Clone object */
-DistributionFunction* DistributionFunction::clone(void) const {
+DistributionFunction* DistributionFunction::clone( void ) const {
 
     return new DistributionFunction(*this);
 }
 
 
 /** Execute operation: switch based on type */
-DAGNode* DistributionFunction::executeOperation(const std::vector<VariableSlot>& args) {
+DAGNode* DistributionFunction::executeFunction( void ) {
 
-    if (functionType == DENSITY) {
-        if (((Boolean*)(args.back().getValue()))->getValue() == false)
-            return new ConstantNode(new Real(distribution->pdf(args[0].getValue())));
+    if ( functionType == DENSITY ) {
+
+        if ( static_cast<const Boolean*>( args["log"].getValue() )->getValue() == false )
+            return new ConstantNode( new RealPos( distribution->pdf  ( args[0].getValue() ) ) );
         else
-            return new ConstantNode(new Real(distribution->lnPdf(args[0].getValue())));
+            return new ConstantNode( new RealPos( distribution->lnPdf( args[0].getValue() ) ) );
     }
     else if (functionType == RVALUE) {
-         return new ConstantNode(distribution->rv());
+
+        RbObject* draw = distribution->rv();
+        
+        if ( draw->isType( Container_name ) )
+            return new ContainerNode( static_cast<Container*   >( draw ) );
+        else if ( draw->isType( MemberObject_name ) )
+            return new MemberNode   ( static_cast<MemberObject*>( draw ) );
+        else
+            return new ConstantNode( draw );
     }
     else if (functionType == PROB) {
-        return new ConstantNode(new Real(((DistributionReal*)(distribution))->cdf(((Real*)(args[0].getValue()))->getValue())));
+
+        return new ConstantNode( new RealPos( static_cast<DistributionInterval*>( distribution )->cdf( args[0].getValue() ) ) );
     }
     else if (functionType == QUANTILE) {
-        return new ConstantNode(new Real((((DistributionReal*)(distribution))->quantile(((Real*)(args[0].getValue()))->getValue()))));
+
+        double    prob  = static_cast<const RealPos*>( args[0].getValue() )->getValue();
+        RbObject* quant = static_cast<DistributionInterval*>( distribution )->quantile( prob );
+        
+        if ( quant->isType( Container_name ) )
+            return new ContainerNode( static_cast<Container*   >( quant ) );
+        else if ( quant->isType( MemberObject_name ) )
+            return new MemberNode   ( static_cast<MemberObject*>( quant ) );
+        else
+            return new ConstantNode( quant );
     }
 
-    throw ("Unrecognized distribution function");
+    throw RbException( "Unrecognized distribution function" );
 }
 
 
@@ -179,24 +215,23 @@ const TypeSpec DistributionFunction::getReturnType(void) const {
 }
 
 /** Process arguments */
-bool DistributionFunction::processArguments(const std::vector<Argument>& args, bool evaluateOnce, VectorInteger* matchScore) {
+bool DistributionFunction::processArguments( const std::vector<Argument>& args, bool evaluateOnce, VectorInteger* matchScore ) {
 
-    if (!RbFunction::processArguments(args, evaluateOnce, matchScore))
+    if ( !RbFunction::processArguments( args, evaluateOnce, matchScore ) )
         return false;
 
     /* Set member variables of the distribution */
-    ArgumentRules::iterator i=argumentRules.begin();
-    std::vector<VariableSlot>::iterator j = processedArguments.begin();
-    if (functionType != RVALUE) {
+    size_t i = 0;
+    if ( functionType != RVALUE )
         i++;
-        j++;
-    }
 
-    for (; i!=argumentRules.end(); i++, j++) {
-        std::string name = (*i)->getArgLabel();
+    for ( ; i < argumentRules.size(); i++ ) {
+
+        std::string name = argumentRules[i]->getArgLabel();
+
         /* All distribution variables are references but we have value arguments here
            so a const cast is needed to deal with the mismatch */
-        distribution->setVariable( name, const_cast<DAGNode*>( (*j).getVariable() ) );
+        distribution->setVariable( name, args[i].getVariable() );
     }
 
     return true;

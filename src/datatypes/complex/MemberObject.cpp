@@ -27,7 +27,7 @@
 
 
 /** Constructor: we set member variables here from member rules */
-MemberObject::MemberObject(const MemberRules& memberRules, const MethodTable& methodInits) : RbComplex(), members(), methods(methodInits) {
+MemberObject::MemberObject(const MemberRules& memberRules) : RbComplex(), members() {
 
     /* Fill member table (frame) based on member rules */
     for (MemberRules::const_iterator i=memberRules.begin(); i!=memberRules.end(); i++) {
@@ -181,7 +181,7 @@ DAGNode* MemberObject::getVariable(const std::string& name) {
 }
 
 
-/** Is convertible to type? Default is false for member objects; override if you want to support type conversion */
+/** Is convertible to type and dim? Default is false for member objects; override if you want to support type conversion */
 bool MemberObject::isConvertibleTo(const std::string& type, int dim, bool once) const {
 
 	return false;

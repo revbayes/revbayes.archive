@@ -28,7 +28,7 @@
 #include "ReferenceRule.h"
 #include "Simplex.h"
 #include "ValueRule.h"
-#include "VectorReal.h"
+#include "VectorRealPos.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -38,15 +38,17 @@
 
 
 /** Default constructor for parser use */
-Dist_dirichlet::Dist_dirichlet(void) : Distribution(getMemberRules()) {
+Dist_dirichlet::Dist_dirichlet( void ) : DistributionInterval( getMemberRules() ) {
 
 }
+
 
 /** Constructor for internal use */
-Dist_dirichlet::Dist_dirichlet(std::vector<double> a) : Distribution(getMemberRules()) {
+Dist_dirichlet::Dist_dirichlet( std::vector<double> a ) : DistributionInterval( getMemberRules() ) {
 
-    setValue("alpha", new VectorReal(a));
+    setValue( "alpha", new VectorRealPos(a) );
 }
+
 
 /**
  * This function calculates the cumulative probability for
@@ -58,7 +60,7 @@ Dist_dirichlet::Dist_dirichlet(std::vector<double> a) : Distribution(getMemberRu
  * @return      Cumulative probability
  *
  */
-double Dist_dirichlet::cdf(double q) {
+double Dist_dirichlet::cdf( const RbObject* value ) {
 
 	/* TO DO: We should implement the cumulative probability for the Dirichlet. The most recent
 	   algorithms are discussed in:
@@ -71,48 +73,43 @@ double Dist_dirichlet::cdf(double q) {
        and the pure virtual base class definition only takes in a single double. To properly 
        implement the cdf of the Dirichlet, however, you need to pass in a vector (a simplex)
        of values. */
-    return 0.0;
+
+    throw RbException( "Cdf function of Dirichlet distribution not implemented yet" );
 }
+
 
 /** Clone this object */
-Dist_dirichlet* Dist_dirichlet::clone(void) const {
+Dist_dirichlet* Dist_dirichlet::clone( void ) const {
 
-    return new Dist_dirichlet(*this);
+    return new Dist_dirichlet( *this );
 }
 
-/** Get class vector showing type of object */
-const VectorString& Dist_dirichlet::getClass(void) const {
 
-    static VectorString rbClass = VectorString(Dist_dirichlet_name) + Distribution::getClass();
+/** Get class vector showing type of object */
+const VectorString& Dist_dirichlet::getClass( void ) const {
+
+    static VectorString rbClass = VectorString( Dist_dirichlet_name ) + DistributionInterval::getClass();
     return rbClass;
 }
 
+
 /** Get default move */
-Move* Dist_dirichlet::getDefaultMove(StochasticNode* node) {
+Move* Dist_dirichlet::getDefaultMove( StochasticNode* node ) {
 
-	// default move for a stochastic node having a Dirichlet distribution
-    return new Move_msimplex(node, 300.0, 4, 1.0);
+	// Default move for a stochastic node having a Dirichlet distribution
+    return new Move_msimplex( node, 300.0, 4, 1.0 );
 }
 
-/** Get min value of distribution */
-const Real* Dist_dirichlet::getMin(void) {
-
-    return NULL;
-}
 
 /** Get member variable rules */
-const MemberRules& Dist_dirichlet::getMemberRules(void) const {
+const MemberRules& Dist_dirichlet::getMemberRules( void ) const {
 
     static MemberRules memberRules;
     static bool        rulesSet = false;
 
-    if (!rulesSet) 
+    if ( !rulesSet )
 		{
-        memberRules.push_back(new ReferenceRule("alpha", VectorReal_name));
-
-        /* Inherit rng from Distribution, put it at back */
-        const MemberRules& inheritedRules = Distribution::getMemberRules();
-        memberRules.insert(memberRules.end(), inheritedRules.begin(), inheritedRules.end()); 
+        memberRules.push_back( new ReferenceRule( "alpha", VectorRealPos_name ) );
 
         rulesSet = true;
 		}
@@ -120,10 +117,11 @@ const MemberRules& Dist_dirichlet::getMemberRules(void) const {
     return memberRules;
 }
 
-/** Get random variable type */
-const std::string& Dist_dirichlet::getVariableType(void) const {
 
-    return Simplex_name;
+/** Get random variable type */
+const TypeSpec Dist_dirichlet::getVariableType( void ) const {
+
+    return TypeSpec( Simplex_name );
 }
 
 /**
@@ -136,28 +134,27 @@ const std::string& Dist_dirichlet::getVariableType(void) const {
  * @param value     Value of random variable
  * @return          Natural log of the likelihood ratio
  */
-double Dist_dirichlet::lnLikelihoodRatio(const RbObject* value) {
+double Dist_dirichlet::lnLikelihoodRatio( const RbObject* value ) {
 
-	// get the value and the parameters of the Dirichlet
-    std::vector<double> aNew = ((VectorReal*) (getVariable("alpha")->getValue      ()))->getValue();
-    std::vector<double> aOld = ((VectorReal*) (getVariable("alpha")->getStoredValue()))->getValue();
-    std::vector<double> x    = ((VectorReal*) value)->getValue();
+	// Get the value and the parameters of the Dirichlet
+    std::vector<double> aNew = static_cast<const VectorReal*>( getVariable("alpha")->getValue()      )->getValue();
+    std::vector<double> aOld = static_cast<const VectorReal*>( getVariable("alpha")->getStoredValue())->getValue();
+    std::vector<double> x    = static_cast<const Simplex*   >( value                                 )->getValue();
 	
-	// check that the vectors are all the same size
+	// Check that the vectors are all the same size
 	if ( aNew.size() != aOld.size() || aNew.size() != x.size() )
-		throw (RbException("Inconsistent size of vectors when calculating Dirichlet likelihood ratio"));
+		throw RbException( "Inconsistent size of vectors when calculating Dirichlet likelihood ratio" );
 	
-	// calculate the likelihood ratio for the two values of the Dirichlet parameters
-	int n = aNew.size();
+	// Calculate the likelihood ratio for the two values of the Dirichlet parameters
+	size_t n = aNew.size();
 	double alpha0New = 0.0, alpha0Old = 0.0;
-	for (int i=0; i<n; i++)
-		{
+	for ( size_t i = 0; i < n; i++ ) {
 		alpha0New += aNew[i];
 		alpha0Old += aOld[i];
-		}
-	double lnP = RbMath::lnGamma(alpha0New) - RbMath::lnGamma(alpha0Old);
-	for (int i=0; i<n; i++)
-		lnP += ( RbMath::lnGamma(aOld[i]) - RbMath::lnGamma(aNew[i]) ) + ( (aNew[i] - aOld[i]) * std::log(x[i]) );
+	}
+	double lnP = RbMath::lnGamma( alpha0New ) - RbMath::lnGamma( alpha0Old );
+	for ( size_t i = 0; i < n; i++ )
+		lnP += ( RbMath::lnGamma( aOld[i] ) - RbMath::lnGamma( aNew[i] ) ) + ( ( aNew[i] - aOld[i] ) * std::log( x[i] ) );
 	return lnP;	
 }
 
@@ -170,15 +167,15 @@ double Dist_dirichlet::lnLikelihoodRatio(const RbObject* value) {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_dirichlet::lnPdf(const RbObject* value) {
+double Dist_dirichlet::lnPdf( const RbObject* value ) {
 
-	// get the value and the parameters of the Dirichlet
-    std::vector<double> a = ((VectorReal*) getValue("alpha"))->getValue();
-    std::vector<double> x = ((VectorReal*) value)->getValue();
+	// Get the value and the parameters of the Dirichlet
+    std::vector<double> a = static_cast<const VectorReal*>( getValue("alpha") )->getValue();
+    std::vector<double> x = static_cast<const Simplex*   >( value             )->getValue();
 
-	// check that the vectors are both the same size
+	// Check that the vectors are both the same size
 	if ( a.size() != x.size() )
-		throw (RbException("Inconsistent size of vectors when calculating Dirichlet log probability density"));
+		throw RbException( "Inconsistent size of vectors when calculating Dirichlet log probability density" );
 
 	return RbStatistics::Dirichlet::lnPdf( a, x );
 }
@@ -193,22 +190,22 @@ double Dist_dirichlet::lnPdf(const RbObject* value) {
  * @param oldX      Value in denominator
  * @return          Natural log of the probability density ratio
  */
-double Dist_dirichlet::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
+double Dist_dirichlet::lnPriorRatio( const RbObject* newVal, const RbObject* oldVal ) {
 
-	// get the values and the parameters of the Dirichlet
-    std::vector<double> a    = ((VectorReal*) getValue("rate"))->getValue();
-    std::vector<double> newX = ((VectorReal*) newVal)->getValue();
-    std::vector<double> oldX = ((VectorReal*) oldVal)->getValue();
+	// Get the values and the parameters of the Dirichlet
+    std::vector<double> a    = static_cast<const VectorReal*>( getValue("alpha") )->getValue();
+    std::vector<double> newX = static_cast<const Simplex*   >( newVal            )->getValue();
+    std::vector<double> oldX = static_cast<const Simplex*   >( oldVal            )->getValue();
 
-	// check that the vectors are all the same size
+	// Check that the vectors are all the same size
 	if ( a.size() != newX.size() || a.size() != oldX.size() )
-		throw (RbException("Inconsistent size of vectors when calculating Dirichlet prior ratio"));
+		throw RbException( "Inconsistent size of vectors when calculating Dirichlet prior ratio" );
 
 	// calculate the log prior ratio
-	int n = a.size();
+	size_t n = a.size();
 	double lnP = 0.0;
-	for (int i=0; i<n; i++)
-		lnP += (a[i] - 1.0) * (std::log(newX[i]) - std::log(oldX[i]));
+	for ( size_t i = 0; i < n; i++ )
+		lnP += ( a[i] - 1.0 ) * ( std::log( newX[i] ) - std::log( oldX[i] ) );
     return lnP;
 }
 
@@ -221,15 +218,15 @@ double Dist_dirichlet::lnPriorRatio(const RbObject* newVal, const RbObject* oldV
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_dirichlet::pdf(const RbObject* value) {
+double Dist_dirichlet::pdf( const RbObject* value ) {
 
-	// get the value and the parameters of the Dirichlet
-    std::vector<double> a = ((VectorReal*) getValue("alpha"))->getValue();
-    std::vector<double> x = ((Simplex*) value)->getValue();
+	// Get the value and the parameters of the Dirichlet
+    std::vector<double> a = static_cast<const VectorReal*>( getValue( "alpha" ) )->getValue();
+    std::vector<double> x = static_cast<const Simplex*   >( value               )->getValue();
 
-	// check that the vectors are both the same size
+	// Check that the vectors are both the same size
 	if ( a.size() != x.size() )
-		throw (RbException("Inconsistent size of vectors when calculating Dirichlet log probability density"));
+		throw RbException( "Inconsistent size of vectors when calculating Dirichlet log probability density" );
 
 	return RbStatistics::Dirichlet::pdf( a, x );
 }
@@ -244,30 +241,28 @@ double Dist_dirichlet::pdf(const RbObject* value) {
  * @return      Quantile
  *
  */
-double Dist_dirichlet::quantile(const double p) {
+Simplex* Dist_dirichlet::quantile( const double p ) {
 
-    /* TO DO: I don't know if this can be sensibly implemented. See notes
-       (above) on the cdf function for a Dirichlet rv. */
-	throw (RbException("Cannot calculate the quantiles of a Dirichlet"));
-    return 0.0;
+    /* TO DO: See notes (above) on the cdf function for a Dirichlet rv. */
+    throw RbException( "Quantile function of Dirichlet distribution not implemented yet" );
 }
 
+
 /**
- * This function generates an Dirichlet-distributed
+ * This function generates a Dirichlet-distributed
  * random variable.
  *
  * @brief Random draw from Dirichlet distribution
  *
  * @return      Random draw from Dirichlet distribution
  */
-RbObject* Dist_dirichlet::rv(void) {
+Simplex* Dist_dirichlet::rv( void ) {
 
-    std::vector<double> a      = ((VectorReal*) getValue("alpha"))->getValue();
+    std::vector<double> a      = static_cast<const VectorReal*>( getValue("alpha") )->getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector<double> r(a.size());
 
-	r = RbStatistics::Dirichlet::rv(a, rng);
+	r = RbStatistics::Dirichlet::rv( a, rng );
     return new Simplex( r );
 }
-
 

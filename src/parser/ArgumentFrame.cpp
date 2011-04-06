@@ -18,9 +18,12 @@
 
 #include "ArgumentFrame.h"
 #include "RbException.h"
+#include "RbOptions.h"      // For PRINTF
 #include "VariableSlot.h"
 
 #include <sstream>
+#include <string>
+#include <utility>
 
 
 /** Construct empty argument frame with NULL parent */
@@ -36,9 +39,10 @@ ArgumentFrame::ArgumentFrame( Frame* parentFr ) : Frame( parentFr ), arguments()
 /** Copy constructor. We need to set the frame of the variable slots. */
 ArgumentFrame::ArgumentFrame( const ArgumentFrame& x ) :  Frame( x ), arguments( x.arguments ) {
 
-
+#if 0
     for ( std::vector<std::pair<std::string, VariableSlot> >::iterator i = arguments.begin(); i ! = arguments.end(); i++ )
-       (*i).second.setFrame( this );
+        (*i).second.setFrame( this );
+#endif
 }
 
 
@@ -124,17 +128,6 @@ ArgumentFrame* ArgumentFrame::clone( void ) const {
 }
 
 
-/** Clone entire environment, except base frame (it always stays the same) */
-ArgumentFrame* ArgumentFrame::cloneEnvironment( void ) const {
-
-    ArgumentFrame* newEnv = clone();
-    if ( newEnv->parentFrame != NULL && newEnv->parentFrame->getParentFrame() != NULL )
-        newEnv->parentFrame = newEnv->parentFrame->cloneEnvironment();
-
-    return newEnv;
-}
-
-
 /** Get index of named argument */
 size_t ArgumentFrame::getIndex( const std::string& name ) const {
 
@@ -150,6 +143,62 @@ size_t ArgumentFrame::getIndex( const std::string& name ) const {
     return it - arguments.begin();
 }
 
+
+/** Get reference */
+DAGNode* ArgumentFrame::getReference(const std::string& name) const {
+
+    PRINTF("Retrieving variable reference named '%s' from argument frame\n", name.c_str());
+
+#if 0
+    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
+    if (it == variableTable.end()) {
+        if (parentVariableFrame != NULL)
+            return parentVariableFrame->getReference(name);
+        else
+            throw (RbException("Variable '" + name + "' does not exist"));
+    }
+
+    return (*it).second.getReference();
+#endif
+}
+
+
+/** Get value */
+const RbObject* ArgumentFrame::getValue(const std::string& name) const {
+
+    PRINTF("Retrieving value of variable named '%s' from frame\n", name.c_str());
+
+#if 0
+    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
+    if (it == variableTable.end()) {
+        if (parentVariableFrame != NULL)
+            return parentVariableFrame->getValue(name);
+        else
+            throw (RbException("Variable '" + name + "' does not exist"));
+    }
+
+    return (*it).second.getValue();
+#endif
+}
+
+
+/** Get variable */
+const DAGNode* ArgumentFrame::getVariable(const std::string& name) const {
+
+    PRINTF("Retrieving variable named '%s' from argument frame\n", name.c_str());
+
+#if 0
+    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
+    if (it == variableTable.end()) {
+        if (parentVariableFrame != NULL)
+            return parentVariableFrame->getVariable(name);
+        else
+            throw (RbException("Variable '" + name + "' does not exist"));
+    }
+
+    return (*it).second.getVariable();
+#endif
+}
 
 /** Push back argument slot without name onto frame */
 void ArgumentFrame::push_back( VariableSlot& slot ) {

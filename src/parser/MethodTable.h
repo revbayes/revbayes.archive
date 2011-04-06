@@ -53,6 +53,7 @@ class MethodTable : public FunctionTable {
         const std::vector<VariableSlot>&    getProcessedArguments(int funcId) const;                                    //!< Get processed arguments
         int                                 processArguments(   const std::string&              name,
                                                                 const std::vector<Argument>&    args) const;            //!< Process arguments
+        void                                setParentTable(FunctionTable* table) { parentTable = table; }               //!< Set parent table
 
     protected:
         std::map<int, RbFunction*>          funcs;                                                                      //!< Map from function id to function

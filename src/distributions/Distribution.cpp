@@ -16,115 +16,85 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
+#include "ArgumentFrame.h"
 #include "ConstantNode.h"
-#include "DAGNode.h"
+#include "ContainerNode.h"
 #include "Distribution.h"
 #include "MemberFunction.h"
-#include "RandomNumberGenerator.h"
+#include "MemberNode.h"
+#include "MethodTable.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RealPos.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
 
-/** Constructor with inheritance for member rules but not for method inits */
-Distribution::Distribution(const  MemberRules& memberRules) : MemberObject(memberRules, getMethodInits()), retObject(NULL) {
-
+/** Constructor with inheritance for member rules */
+Distribution::Distribution( const MemberRules& memberRules ) : MemberObject( memberRules ) {
 }
 
 
-/** Constructor with inheritance both for member rules and method inits */
-Distribution::Distribution(const  MemberRules& memberRules, const MethodTable& methodInits) : MemberObject(memberRules, methodInits), retObject(NULL) {
+/** Map direct method calls to internal class methods. */
+DAGNode* Distribution::executeMethod( const std::string& name, ArgumentFrame& args ) {
 
-}
+    if ( name == "lnPdf" ) {
 
-
-/** Copy constructor */
-Distribution::Distribution(const Distribution& x) : MemberObject(x), retObject(NULL) {
-
-}
-
-
-/** Destructor */
-Distribution::~Distribution(void) {
-
-    if (retObject != NULL)
-        delete retObject;
-}
-
-
-/** Assignment operator */
-Distribution& Distribution::operator=(const Distribution& x) {
-
-    /* Do not copy retObject; keep our own workspace */
-    return (*this);
-}
-
-
-/** Map calls to member methods */
-DAGNode* Distribution::executeOperation(const std::string& name, const std::vector<VariableSlot>& args) {
-
-    if (name == "lnPdf") {
-        return new ConstantNode( new RealPos(lnPdf(args[0].getValue())) );
+        return new ConstantNode( new RealPos( lnPdf( args[0].getValue() ) ) );
     }
-    else if (name == "pdf") {
-        return new ConstantNode( new RealPos(pdf(args[0].getValue())) );
+    else if ( name == "pdf" ) {
+
+        return new ConstantNode( new RealPos( pdf  ( args[0].getValue() ) ) );
     }
-    else if (name == "rv") {
-        return new ConstantNode(rv());
+    else if ( name == "rv" ) {
+
+        RbObject* draw = rv();
+
+        if ( draw->isType( Container_name ) )
+            return new ContainerNode( static_cast<Container*>( draw ) );
+        else if ( draw->isType( MemberObject_name ) )
+            return new MemberNode( static_cast<MemberObject*>( draw ) );
+        else
+            return new ConstantNode( draw );
     }
     else
-        throw RbException("No member method called '" + name + "'");
+        return MemberObject::executeMethod( name, args );
 }
 
 
 /** Get class vector describing type of object */
-const VectorString& Distribution::getClass(void) const {
+const VectorString& Distribution::getClass( void ) const {
 
-    static VectorString rbClass = VectorString(Distribution_name) + MemberObject::getClass();
+    static VectorString rbClass = VectorString( Distribution_name ) + MemberObject::getClass();
     return rbClass;
 }
 
 
-/** Get member rules */
-const MemberRules& Distribution::getMemberRules(void) const {
+/** Get methods */
+const MethodTable& Distribution::getMethods( void ) const {
 
-    static MemberRules memberRules;
-    static bool        rulesSet = false;
-
-    if (!rulesSet) {
-
-        rulesSet = true;
-    }
-
-    return memberRules;
-}
-
-
-/** Get method specifications */
-const MethodTable& Distribution::getMethodInits(void) const {
-
-    static MethodTable      methodInits;
+    static MethodTable      methods;
     static ArgumentRules    lnPdfArgRules;
     static ArgumentRules    pdfArgRules;
     static ArgumentRules    rvArgRules;
-    static bool             initsSet = false;
+    static bool             methodsSet = false;
 
-    if (!initsSet) {
+    if ( !methodsSet ) {
 
-        lnPdfArgRules.push_back(new ArgumentRule("x", RbObject_name));
-        methodInits.addFunction("lnPdf", new MemberFunction(Real_name, lnPdfArgRules));
+        lnPdfArgRules.push_back( new ValueRule( "x", RbObject_name ) );
 
-        pdfArgRules.push_back(new ArgumentRule("x", RbObject_name));
-        methodInits.addFunction("pdf",   new MemberFunction(Real_name, pdfArgRules));
+        pdfArgRules.push_back  ( new ValueRule( "x", RbObject_name ) );
 
-        methodInits.addFunction("rv",    new MemberFunction(RbObject_name, ArgumentRules()));
+        methods.addFunction( "lnPdf", new MemberFunction( Real_name    , lnPdfArgRules  ) );
+        methods.addFunction( "pdf",   new MemberFunction( Real_name    , pdfArgRules    ) );
+        methods.addFunction( "rv",    new MemberFunction( RbObject_name, ArgumentRules() ) );
 
-        initsSet = true;
+        methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
+
+        methodsSet = true;
     }
 
-    return methodInits;
+    return methods;
 }
 

@@ -253,9 +253,9 @@ MoveSchedule* StochasticNode::getDefaultMoves(void) {
 
 
 /** Get the conditional ln probability of the node; do not rely on stored values */
-double StochasticNode::getLnProbability(void) {
+double StochasticNode::calculateLnProbability(void) {
 
-	return (distribution->getLnProbability(this));
+	return distribution->lnPdf( value );
 }
 
 
@@ -276,7 +276,7 @@ double StochasticNode::getLnProbabilityRatio(void) {
     }
     else /* if ( isTouched() && areParentsTouched() ) */ {
 
-        return distribution->lnProbabilityRatio( value, storedValue );
+        return distribution->lnPdf( value) - distribution->lnPdf( storedValue );
     }
 }
 

@@ -48,9 +48,9 @@ class Real : public RbObject {
         
         // Basic utility functions
         virtual Real*               clone(void) const;                                              //!< Clone object
-        RbObject*                   convertTo(const std::string& type, int dim) const;              //!< Convert to language object of type typeSpec
+        RbObject*                   convertTo(const std::string& type, int dim) const;              //!< Convert to type and dim
         virtual const VectorString& getClass(void) const;                                           //!< Get class vector
-        bool                        isConvertibleTo(const std::string& type, int dim, bool once) const;     //!< Is convertible to language object of type typeSpec?
+        bool                        isConvertibleTo(const std::string& type, int dim, bool once) const;     //!< Is convertible to type and dim?
         void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
         virtual std::string         richInfo(void) const;                                           //!< Complete info about object
 

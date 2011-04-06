@@ -38,10 +38,10 @@ class RbObject {
         // Basic utility functions you may want to override
         virtual std::string         briefInfo(void) const;                                              //!< Brief info about object
         RbObject*                   convertTo(const TypeSpec& typeSpec) const;                          //!< Convert to language object of type typeSpec
-        virtual RbObject*           convertTo(const std::string& type, int dim) const;                  //!< Convert to language object of type and dim
+        virtual RbObject*           convertTo(const std::string& type, int dim) const;                  //!< Convert to type and dim
         virtual const TypeSpec      getTypeSpec(void) const;                                            //!< Get language type of the object
-        bool                        isConvertibleTo(const TypeSpec& typeSpec, bool once) const;         //!< Is convertible to language object of type typeSpec?
-        virtual bool                isConvertibleTo(const std::string& type, int dim, bool once) const; //!< Is convertible to language object of type typeSpec?
+        bool                        isConvertibleTo(const TypeSpec& typeSpec, bool once) const;         //!< Is convertible to type and dim?
+        virtual bool                isConvertibleTo(const std::string& type, int dim, bool once) const; //!< Is convertible to type and dim?
         virtual bool                supportsSubscripting(void) const { return false; }                  //!< Does object support subscripting?
         
         // Subscript dimensions: override if object supports subscripting
