@@ -35,7 +35,7 @@ class Func__or :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-    	DAGNode*                    executeFunction(void);                                      //!< Execute function
+    	DAGNode*                    execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
@@ -66,7 +66,7 @@ Func__or<firstValType, secondValType>* Func__or<firstValType, secondValType>::cl
 
 /** Execute function: We rely on operator overloading to provide the functionality */
 template <typename firstValType, typename secondValType>
-DAGNode* Func__or<firstValType,secondValType>::executeFunction( void ) {
+DAGNode* Func__or<firstValType,secondValType>::execute( void ) {
 
     bool val1 = static_cast<const firstValType*> ( args[0].getValue() );
     bool val2 = static_cast<const secondValType*>( args[1].getValue() );

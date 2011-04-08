@@ -1,8 +1,9 @@
 /**
  * @file
  * This file contains the implementation of ConstantNode, which is derived
- * from ConstantNode. ConstantNode is used for DAG nodes holding constant
- * values, and generally for variables used in RevBayes.
+ * from DAGNode. ConstantNode is used for DAG nodes holding constant
+ * values other than containers or member objects (which may or may not
+ * be constant).
  *
  * @brief Implementation of ConstantNode
  *
@@ -32,80 +33,51 @@
 
 
 /** Constructor from value */
-ConstantNode::ConstantNode(RbObject* val) : DAGNode(val->getType()) {
+ConstantNode::ConstantNode( RbObject* val ) : DAGNode( val ) {
 
-    value = val;
     if ( val->getDim() > 0 )
-        throw RbException( "ConstantNode cannot hold container objects. Use a ContainerNode instead." );
+        throw RbException( "Invalid attempt to create ConstantNode with container value" );
 }
 
 
 /** Constructor from value class */
-ConstantNode::ConstantNode(const std::string& valType) : DAGNode(valType) {
+ConstantNode::ConstantNode( const std::string& valType ) : DAGNode( valType ) {
 
-    if ( Workspace::userWorkspace().isXOfTypeY(valType, Container_name) )
-        throw RbException( "ConstantNode cannot hold container objects. Use a ContainerNode instead." );
+    if ( Workspace::userWorkspace().isXOfTypeY( valType, Container_name ) )
+        throw RbException( "Invalid attempt to create ConstantNode with container value" );
 }
 
-
-/** Copy constructor */
-ConstantNode::ConstantNode(const ConstantNode& x) : DAGNode(x) {
-
-    value = x.value->clone();
-}
-
-
-/** Destructor */
-ConstantNode::~ConstantNode( void ) {
-
-    if ( numRefs() != 0 )
-        throw RbException ( "Cannot delete ConstantNode with references" ); 
-}
-
-
-/** Assignment operator */
-ConstantNode& ConstantNode::operator=(const ConstantNode& x) {
-
-    if (this != &x) {
-
-        if (valueType != x.valueType)
-            throw RbException("Type mismatch");
-
-        delete value;
-        value = x.value->clone();
-    }
-
-    return (*this);
-}
 
 /** Clone this object */
-ConstantNode* ConstantNode::clone(void) const {
+ConstantNode* ConstantNode::clone( void ) const {
 
-    return new ConstantNode(*this);
+    return new ConstantNode( *this );
 }
 
-/** Cloning the entire graph only involves children for a constant node */
-ConstantNode* ConstantNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
 
-    if (newNodes.find((DAGNode*)(this)) != newNodes.end())
-        return (ConstantNode*)(newNodes[(DAGNode*)(this)]);
+/** Cloning the entire graph only involves children for a constant node */
+ConstantNode* ConstantNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes ) const {
+
+    if ( newNodes.find( this ) != newNodes.end() )
+        return static_cast<ConstantNode*>( newNodes[ this ] );
 
     /* Make pristine copy */
     ConstantNode* copy = clone();
-    newNodes[(DAGNode*)(this)] = copy;
+    newNodes[ this ] = copy;
 
     /* Make sure the children clone themselves */
-    for(std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
-        (*i)->cloneDAG(newNodes);
+    for( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
+        (*i)->cloneDAG( newNodes );
     }
  
     return copy;
 }
 
+
 /** Get class vector describing type of DAG node */
 const VectorString& ConstantNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(ConstantNode_name) + DAGNode::getDAGClass();
+    static VectorString rbClass = VectorString( ConstantNode_name ) + DAGNode::getDAGClass();
     return rbClass;
 }
 
@@ -115,31 +87,24 @@ const VectorString& ConstantNode::getDAGClass() const {
  *
  * We can only guarantee that the node is a constant expression if the
  * node cannot be mutated; this is the case if the constant node does
- * not belong to a variable slot.
+ * not belong to a variable slot but to a reference slot, or if it is
+ * a temp. If it sits in a container, you can use the container to
+ * mutate it.
  *
  */
-bool ConstantNode::isConstExpr(void) const {
+bool ConstantNode::isConstExpr( void ) const {
+
+    if ( isTemp() )
+        return true;
+    else if ( slot != NULL && slot->isReference() )
+        return true;
 
     return false;
-}
-
-
-/** Is it possible to mutate node to newNode? */
-bool ConstantNode::isMutableTo(const DAGNode* newNode) const {
-
-    return false;
-}
-
-
-/** Mutate to newNode */
-void ConstantNode::mutateTo(DAGNode* newNode) {
-    
-    throw RbException("Not implemented yet");
 }
 
 
 /** Print value for user */
-void ConstantNode::printValue(std::ostream& o) const {
+void ConstantNode::printValue( std::ostream& o ) const {
 
     value->printValue(o);
 }
@@ -148,32 +113,29 @@ void ConstantNode::printValue(std::ostream& o) const {
 /** Print struct for user */
 void ConstantNode::printStruct(std::ostream &o) const {
 
-    o << "Wrapper:" << std::endl;
-    o << "_class   = " << getDAGClass() << std::endl;
-    o << "_value   = " << value << std::endl;
-    o << "_parents = NULL" << std::endl;
-    o << "_children" << std::endl;
+    o << "_DAGClass     = " << getDAGClass() << std::endl;
+    o << "_valueType    = " << valueType << std::endl;
+    o << "_dim          = " << getDim() << std::endl;
+    o << "_value        = " << value->briefInfo() << std::endl;
+
+    o << "_parents      = ";
+    printParents(o);
+    o << std::endl;
+
+    o << "_children     = ";
     printChildren(o);
     o << std::endl;
+
     o << std::endl;
 }
 
 
 /** Complete info on object */
-std::string ConstantNode::richInfo(void) const {
+std::string ConstantNode::richInfo( void ) const {
 
     std::ostringstream o;
-    o << "ConstantNode: value = ";
-    value->printValue(o);
+    o << "ConstantNode: value = " << value->briefInfo();
 
     return o.str();
-}
-
-
-/** Touch affected: only needed if a set function is called */
-void ConstantNode::touchAffected(void) {
-
-    for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++)
-        (*i)->touchAffected();
 }
 

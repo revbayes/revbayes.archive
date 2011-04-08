@@ -41,7 +41,7 @@ class MemberFunction :  public RbFunction {
         std::string                 richInfo(void) const;                   //!< Complete info about object
 
         // Regular functions
-        DAGNode*                    executeFunction(void);                  //!< Execute function
+        DAGNode*                    execute(void);                          //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
         const TypeSpec              getReturnType(void) const;              //!< Get type of return value
 

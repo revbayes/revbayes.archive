@@ -56,10 +56,8 @@ class FunctionNode : public DeterministicNode {
         void                        setElement(VectorNatural& index, DAGNode* var);                             //!< Set element for parser if member object requests such a call
 
         // DAG functions
-        FunctionNode*               cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
-        bool                        isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
+        FunctionNode*               cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
         bool                        isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
-        void                        mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
         void                        swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
     protected:

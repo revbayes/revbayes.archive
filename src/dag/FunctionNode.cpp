@@ -17,7 +17,9 @@
  * $Id: FunctionNode.cpp 216 2009-12-29 23:19:25Z ronquist $
  */
 
+#include "ArgumentFrame.h"
 #include "ArgumentRule.h"
+#include "Boolean.h"
 #include "DAGNode.h"
 #include "FunctionNode.h"
 #include "RbException.h"
@@ -32,30 +34,29 @@
 
 
 /** Constructor of empty function node */
-FunctionNode::FunctionNode(const TypeSpec& valType) :
-    DeterministicNode(valType.getType()), valueDim(valType.getDim()) {	
+FunctionNode::FunctionNode( const TypeSpec& valType )
+    : DeterministicNode( valType.getType() ), valueDim( valType.getDim() ) {	
 }
 
 
 /** Constructor from function: get parents from the function object */
-FunctionNode::FunctionNode(RbFunction* func) :
-    DeterministicNode(func->getReturnType().getType()), valueDim(func->getReturnType().getDim())  {
+FunctionNode::FunctionNode( RbFunction* func )
+    : DeterministicNode( func->getReturnType().getType() ), valueDim( func->getReturnType().getDim() )  {
 
     /* Check for cycles */
-    const std::vector<VariableSlot>& arguments = func->getProcessedArguments();
+    const ArgumentFrame& arguments = func->getArgs();
     std::list<DAGNode*> done;
-    for (std::vector<VariableSlot>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
-        if ((*i).getVariable()->isParentInDAG(this, done))
-            throw RbException ("Invalid assignment: cycles in the DAG");
+    for ( size_t i = 0; i < arguments.size(); i++ ) {
+        if ( arguments[i].getVariable()->isParentInDAG( this, done ) )
+            throw RbException( "Invalid assignment: cycles in the DAG" );
     }
 
     /* Set parents and add this node as a child node of these */
-    for (std::vector<VariableSlot>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
-        /* Const cast needed to give us unconditional access to the arguments. Let's hope we
-           know what we are doing in this class! */
-        DAGNode* theArgument = const_cast<DAGNode*>( (*i).getVariable() );
+    for ( size_t i = 0; i < arguments.size(); i++ ) {
+
+        DAGNode* theArgument = const_cast<DAGNode*>( arguments[i].getVariable() );
         parents.insert( theArgument );
-        theArgument->addChildNode(this);
+        theArgument->addChildNode( this );
     }
 
     /* Set the function */
@@ -63,28 +64,31 @@ FunctionNode::FunctionNode(RbFunction* func) :
 
     /* Set value and stored value */
     DAGNode* retVal = function->execute();
-    value = retVal->getValue()->clone();
+    value           = retVal->getValue()->clone();
+    storedValue     = NULL;
     delete retVal;
-    storedValue = NULL;
 }
 
 
 /** Copy constructor */
-FunctionNode::FunctionNode(const FunctionNode& x) : DeterministicNode(x), valueDim(x.valueDim) {
+FunctionNode::FunctionNode( const FunctionNode& x ) : DeterministicNode( x ), valueDim( x.valueDim ) {
 
-    function    = (RbFunction*)(x.function->clone());
-    changed     = false;
-    DAGNode* retVal = function->execute();
-    value = retVal->getValue()->clone();
-    delete retVal;
-    storedValue = NULL;
+    function        = x.function->clone();
+    touched         = x.touched;
+    changed         = x.changed;
+    value           = x.value->clone();
+    if ( x.storedValue != NULL )
+        storedValue = x.storedValue->clone();
+    else
+        storedValue = NULL;
 
     /* Set parents and add this node as a child node of these */
-    const std::vector<VariableSlot>& arguments = function->getProcessedArguments();
-    for (std::vector<VariableSlot>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
-        DAGNode* theArgument = const_cast<DAGNode*>( (*i).getVariable() );
-        parents.insert(theArgument);
-        theArgument->addChildNode(this);
+    const ArgumentFrame& args = function->getArgs();
+    for ( size_t i = 0; i < args.size(); i++ ) {
+
+        DAGNode* theArgument = const_cast<DAGNode*>( args[i].getVariable() );
+        parents.insert( theArgument );
+        theArgument->addChildNode( this );
     }
 }
 
@@ -95,8 +99,8 @@ FunctionNode::~FunctionNode( void ) {
     if ( numRefs() != 0 )
         throw RbException ( "Cannot delete FunctionNode with references" );
 
-    /* Remove parents first so that DeterministicNode destructor does not get in the way */
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
+    /* Remove parents first so that VariableNode destructor does not get in the way */
+    for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ )
         (*i)->removeChildNode(this);
     parents.clear();
 
@@ -107,87 +111,96 @@ FunctionNode::~FunctionNode( void ) {
 
 
 /** Assignment operator */
-FunctionNode& FunctionNode::operator=(const FunctionNode& x) {
+FunctionNode& FunctionNode::operator=( const FunctionNode& x ) {
 
-    if (this != &x) {
+    if ( this != &x ) {
 
         if (valueType != x.valueType)
-            throw RbException("Type mismatch");
+            throw RbException( "Type mismatch in FunctionNode assignment" );
         
-        /* Remove this node as a child node of parents */
-        for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-            (*i)->removeChildNode(this);
-            if ((*i)->numRefs() == 0)
-                delete (*i);
-        }
+        /* Remove parents first */
+        for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ )
+            (*i)->removeChildNode( this );
+        parents.clear();
 
-        if (function) {
-            delete function;
-            function = NULL;
-        }
-        if (x.function)
-            function    = (RbFunction*)(x.function->clone());
-
-        if (storedValue != NULL)
-            delete storedValue;
         delete value;
+        if ( storedValue )
+            delete storedValue;
+        delete function;    // This will delete any DAG nodes that need to be deleted
 
-        DAGNode* retVal = function->execute();
-        value = retVal->getValue()->clone();
-        delete retVal;
-        storedValue = NULL;
+        function        = x.function->clone();
+        touched         = x.touched;
+        changed         = x.changed;
+        value           = x.value->clone();
+        if ( x.storedValue != NULL )
+            storedValue = x.storedValue->clone();
+        else
+            storedValue = NULL;
 
         /* Set parents and add this node as a child node of these */
-        parents.clear();
-        const std::vector<VariableSlot>& arguments = function->getProcessedArguments();
-        for (std::vector<VariableSlot>::const_iterator i=arguments.begin(); i!=arguments.end(); i++) {
-            DAGNode* theArgument = const_cast<DAGNode*>( (*i).getVariable() );
-            parents.insert(theArgument);
-            (theArgument)->addChildNode(this);
+        const ArgumentFrame& args = function->getArgs();
+        for ( size_t i = 0; i < args.size(); i++ ) {
+
+            DAGNode* theArgument = const_cast<DAGNode*>( args[i].getVariable() );
+            parents.insert( theArgument );
+            theArgument->addChildNode( this );
         }
     }
 
-    return (*this);
+    return ( *this );
 }
 
 
 /** Clone this object */
-FunctionNode* FunctionNode::clone(void) const {
+FunctionNode* FunctionNode::clone( void ) const {
 
-	return new FunctionNode(*this);
+	return new FunctionNode( *this );
 }
 
 
 /** Clone the entire graph: clone children, swap parents */
-FunctionNode* FunctionNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
+FunctionNode* FunctionNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes ) const {
 
-    if (newNodes.find((DAGNode*)(this)) != newNodes.end())
-        return (FunctionNode*)(newNodes[(DAGNode*)(this)]);
+    if ( newNodes.find( this ) != newNodes.end() )
+        return static_cast<FunctionNode*>( newNodes[ this ] );
 
     /* Get pristine copy */
-    FunctionNode* copy = new FunctionNode(valueType);
-    newNodes[(DAGNode*)(this)] = copy;
+    FunctionNode* copy = new FunctionNode( valueType );
+    newNodes[ this ] = copy;
 
-    /* Clone parents */
-    copy->function = (RbFunction*)(function->clone());
-    std::vector<VariableSlot>::iterator i, j;
-    for (i=function->processedArguments.begin(), j=copy->function->processedArguments.begin(); i!=function->processedArguments.end(); i++, j++) {
-        DAGNode* theParentClone = (*i).getVariable()->cloneDAG(newNodes);
-        (*j).setVariable(theParentClone);
-        copy->parents.insert(theParentClone);
-        theParentClone->addChildNode(copy);
+    /* Set the copy member variables */
+    copy->function = function->clone();
+    copy->touched  = touched;
+    copy->changed  = changed;
+    copy->value    = value->clone();
+    if (storedValue == NULL)
+        copy->storedValue = NULL;
+    else
+        copy->storedValue = storedValue->clone();
+
+    /* Set the copy arguments to their matches in the new DAG */
+    const ArgumentFrame& args     = function->getArgs();
+    ArgumentFrame&       copyArgs = const_cast<ArgumentFrame&>( copy->function->getArgs() );
+
+    for ( size_t i = 0; i < args.size(); i++ ) {
+
+        DAGNode* theArgClone = args[i].getVariable()->cloneDAG( newNodes );
+        copyArgs[i].setVariable( theArgClone );
+
+        copy->parents.insert( theArgClone );
+        theArgClone->addChildNode( copy );
     }
 
-    DAGNode* retVal = copy->function->execute();
-    copy->value = retVal->getValue()->clone();
-    delete retVal;
+    DAGNode* retVal   = copy->function->execute();
+    copy->value       = retVal->getValue()->clone();
     copy->storedValue = NULL;
-    copy->touched = false;
-    copy->changed = false;
+    copy->touched     = false;
+    copy->changed     = false;
+    delete retVal;
 
     /* Make sure the children clone themselves */
-    for(std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
-        (*i)->cloneDAG(newNodes);
+    for( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
+        (*i)->cloneDAG( newNodes );
     }
 
     return copy;
@@ -204,7 +217,7 @@ bool FunctionNode::existsElement( VectorInteger& index ) {
 /** Get class vector describing type of DAG node */
 const VectorString& FunctionNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(FunctionNode_name) + DeterministicNode::getDAGClass();
+    static VectorString rbClass = VectorString( FunctionNode_name ) + DeterministicNode::getDAGClass();
     return rbClass;
 }
 
@@ -245,75 +258,33 @@ DAGNode* FunctionNode::getVariable(void) {
 }
 
 
-/** Is it possible to mutate node to newNode? */
-bool FunctionNode::isMutableTo(const DAGNode* newNode) const {
-
-    return false;
-}
-
-
-/** Is it possible to change parent node oldNode to newNode? */
-bool FunctionNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const {
-
-    // First find node among parents
-    if (parents.find(const_cast<DAGNode*>(oldNode)) == parents.end())
-        throw RbException("Node is not a parent");
-
-    // Now find node among parameters
-    std::vector<VariableSlot>& params = function->processedArguments;
-    std::vector<VariableSlot>::iterator it;
-    for (it=params.begin(); it!=params.end(); it++)
-        if ((*it).getVariable() == oldNode)
-            break;
-    if (it == params.end())
-        throw RbException("Node is not a parameter");
-
-    // Find the corresponding rule
-    const ArgumentRules& argRules = function->getArgumentRules();
-    size_t index = it - params.begin();
-    ArgumentRule* theRule;
-    if ( index >= argRules.size() )
-        theRule = argRules[argRules.size()-1];
-    else
-        theRule = argRules[index];
-
-    // See if the new node value is convertible to the required type spec
-    if ( Workspace::globalWorkspace().isXConvertibleToY( theRule->getArgTypeSpec(), newNode->getTypeSpec() ) )
-        return true;
-    
-    return false;
-}
-
-
-/** Mutate to newNode */
-void FunctionNode::mutateTo(DAGNode* newNode) {
-    
-    throw RbException("Mutation of function node not implemented yet");
-}
-
-
 /** Print struct for user */
-void FunctionNode::printStruct(std::ostream& o) const {
+void FunctionNode::printStruct( std::ostream& o ) const {
 
-    if (touched)
-        throw RbException("Cannot print struct while in touched state");
+    o << "_DAGClass    = " << getDAGClass() << std::endl;
+    o << "_valueType   = " << valueType << std::endl;
+    o << "_dim         = " << getDim() << std::endl;
+    o << "_function    = " << function << std::endl;
+    o << "_touched     = " << ( touched ? Boolean( true ) : Boolean( false ) ) << std::endl;
+    o << "_changed     = " << ( changed ? Boolean( true ) : Boolean( false ) ) << std::endl;
+    o << "_value       = " << value->briefInfo() << std::endl;
+    if ( touched && changed )
+        o << "_storedValue = " << storedValue->briefInfo() << std::endl;
 
-    o << "Wrapper:" << std::endl;
-    o << "_class    = " << getDAGClass() << std::endl;
-    o << "_function = " << function << std::endl;
-    o << "_value    = " << value << std::endl;
-    o << "_parents = " << std::endl;
+    o << "_parents     = ";
     printParents(o);
     o << std::endl;
-    o << "_children = " << std::endl;
+
+    o << "_children    = ";
     printChildren(o);
     o << std::endl;
+
     o << std::endl;
 }
 
 
 /** Complete info about object */
-std::string FunctionNode::richInfo(void) const {
+std::string FunctionNode::richInfo( void ) const {
 
     std::ostringstream o;
 
@@ -346,42 +317,20 @@ void FunctionNode::setElement( VectorNatural& index, DAGNode* var ) {
 }
 
 
-/** Swap parent node both in parents set and in processed arguments */
-void FunctionNode::swapParentNode(DAGNode* oldNode, DAGNode* newNode) {
-
-    if (parents.find(oldNode) == parents.end())
-        throw RbException("Node is not a parent");
-    oldNode->removeChildNode(this);
-    newNode->addChildNode(this);
-    parents.erase(oldNode);
-    parents.insert(newNode);
-
-    std::vector<VariableSlot>& params = function->processedArguments;
-    std::vector<VariableSlot>::iterator it;
-    for (it=params.begin(); it!=params.end(); it++)
-        if ((*it).getVariable() == oldNode)
-            break;
-    if (it == params.end())
-        throw RbException("Node is not a parameter");
-    (*it).setVariable(newNode);
-
-    touched = true;
-    changed = false;
-    touchAffected();
-}
-
-
 /** Update value and stored value after node and its surroundings have been touched by a move */
-void FunctionNode::update(void) {
+void FunctionNode::update( void ) {
 
-    if (touched && !changed) {
-        if (storedValue != NULL)
-            delete storedValue;
-        storedValue = value;
+    if ( touched && !changed ) {
+
+        assert( storedValue == NULL );
+        
         DAGNode* retVal = function->execute();
-        value = retVal->getValue()->clone();
+
+        storedValue     = value;
+        value           = retVal->getValue()->clone();
+        changed         = true;
+
         delete retVal;
-        changed = true;
     }
 }
 

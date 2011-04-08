@@ -16,8 +16,7 @@
  */
 
 #include "Frame.h"
-
-#include <sstream>
+#include "VariableSlot.h"
 
 
 /** Construct frame with NULL parent */
@@ -38,5 +37,26 @@ Frame* Frame::cloneEnvironment( void ) const {
         newEnv->parentFrame = newEnv->parentFrame->cloneEnvironment();
 
     return newEnv;
+}
+
+
+/** Get reference, alternative method */
+DAGNode* Frame::getReference( const std::string& name ) const {
+
+    return operator[]( name ).getReference();
+}
+
+
+//!< Get value, alternative method */
+const RbObject* Frame::getValue( const std::string& name ) const {
+
+    return operator[]( name ).getValue();
+}
+
+
+//!< Get variable, alternative method */
+const DAGNode* Frame::getVariable( const std::string& name ) const {
+
+    return operator[]( name ).getVariable();
 }
 

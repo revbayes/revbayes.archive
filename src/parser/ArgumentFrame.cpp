@@ -39,10 +39,9 @@ ArgumentFrame::ArgumentFrame( Frame* parentFr ) : Frame( parentFr ), arguments()
 /** Copy constructor. We need to set the frame of the variable slots. */
 ArgumentFrame::ArgumentFrame( const ArgumentFrame& x ) :  Frame( x ), arguments( x.arguments ) {
 
-#if 0
-    for ( std::vector<std::pair<std::string, VariableSlot> >::iterator i = arguments.begin(); i ! = arguments.end(); i++ )
-        (*i).second.setFrame( this );
-#endif
+    std::vector<std::pair<std::string, VariableSlot> >::iterator it;
+    for ( it = arguments.begin(); it != arguments.end(); it++ )
+        (*it).second.setFrame( this );
 }
 
 
@@ -98,20 +97,6 @@ const VariableSlot& ArgumentFrame::operator[]( const std::string& name ) const {
 }
 
 
-/** Add argument slot without name to frame */
-void ArgumentFrame::addArgumentSlot( VariableSlot& slot ) {
-
-    arguments.push_back( std::pair<std::string, VariableSlot>( "", slot ) );
-}
-
-
-/** Add argument slot with name to frame */
-void ArgumentFrame::addArgumentSlot( const std::string& name, VariableSlot& slot ) {
-
-    arguments.push_back( std::pair<std::string, VariableSlot>( name, slot ) );
-}
-
-
 /** Clear arguments */
 void ArgumentFrame::clear( void ) {
 
@@ -119,12 +104,30 @@ void ArgumentFrame::clear( void ) {
 }
 
 
-
-
 /** Clone this frame */
 ArgumentFrame* ArgumentFrame::clone( void ) const {
 
     return new ArgumentFrame( *this );
+}
+
+
+/** Does variable exist? */
+bool ArgumentFrame::existsVariable( const std::string& name ) const {
+
+    std::vector<std::pair<std::string, VariableSlot> >::const_iterator it;
+    for ( it = arguments.begin(); it != arguments.end(); it++ ) {
+        if ( (*it).first == name )
+            break;
+    }
+
+    if ( it == arguments.end() ) {
+        if ( parentFrame != NULL )
+            return parentFrame->existsVariable( name );
+        else
+            return false;
+    }
+
+    return true;
 }
 
 
@@ -144,61 +147,21 @@ size_t ArgumentFrame::getIndex( const std::string& name ) const {
 }
 
 
-/** Get reference */
-DAGNode* ArgumentFrame::getReference(const std::string& name) const {
+/** Find slot and return its name */
+const std::string& ArgumentFrame::getSlotName(const VariableSlot* slot) const {
 
-    PRINTF("Retrieving variable reference named '%s' from argument frame\n", name.c_str());
-
-#if 0
-    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            return parentVariableFrame->getReference(name);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
+    std::vector<std::pair<std::string, VariableSlot> >::const_iterator it;
+    for ( it = arguments.begin(); it != arguments.end(); it++ ) {
+        if ( &(*it).second == slot )
+            break;
     }
 
-    return (*it).second.getReference();
-#endif
+    if ( it == arguments.end() )
+        throw RbException( "Slot does not exist in the argument frame" );
+
+    return (*it).first;
 }
 
-
-/** Get value */
-const RbObject* ArgumentFrame::getValue(const std::string& name) const {
-
-    PRINTF("Retrieving value of variable named '%s' from frame\n", name.c_str());
-
-#if 0
-    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            return parentVariableFrame->getValue(name);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    return (*it).second.getValue();
-#endif
-}
-
-
-/** Get variable */
-const DAGNode* ArgumentFrame::getVariable(const std::string& name) const {
-
-    PRINTF("Retrieving variable named '%s' from argument frame\n", name.c_str());
-
-#if 0
-    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            return parentVariableFrame->getVariable(name);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    return (*it).second.getVariable();
-#endif
-}
 
 /** Push back argument slot without name onto frame */
 void ArgumentFrame::push_back( VariableSlot& slot ) {

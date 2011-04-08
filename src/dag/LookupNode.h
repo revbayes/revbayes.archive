@@ -36,12 +36,12 @@ class LookupNode : public DeterministicNode {
                             LookupNode(const std::string& valType);                                     //!< Constructor of empty node
                             LookupNode( DAGNode*    var,
                                         IndexArgs&  indxArgs);                                          //!< Lookup of regular variable
-                            LookupNode( MemberNode*    baseVar,
-                                        RbString*   membrName,
-                                        IndexArgs&  indxArgs);                                          //!< Lookup of member variable
-                            LookupNode( LookupNode*    baseVar,
-                                        RbString*   membrName,
-                                        IndexArgs&  indxArgs);                                          //!< Indirect lookup of member variable
+                            LookupNode( MemberNode*     baseVar,
+                                        RbString*       membrName,
+                                        IndexArgs&      indxArgs);                                      //!< Lookup of member variable
+                            LookupNode( LookupNode*     lookup,
+                                        RbString*       membrName,
+                                        IndexArgs&      indxArgs);                                      //!< Indirect lookup of member variable
                             LookupNode(const LookupNode& x);                                            //!< Copy constructor
         virtual            ~LookupNode(void);                                                           //!< Virtual destructor
 
@@ -57,10 +57,8 @@ class LookupNode : public DeterministicNode {
         std::string         richInfo(void) const;                                                       //!< Complete info about object
 
         // DAG functions
-        LookupNode*         cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
-        bool                isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
+        LookupNode*         cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
         bool                isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
-        void                mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
         void                swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
         // Parser element access functions

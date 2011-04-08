@@ -34,7 +34,7 @@ class Func_clamp :  public RbFunction {
     	const VectorString&         getClass(void) const;                   //!< Get class vector
 
         // Regular functions
-        DAGNode*                    executeFunction(void);                  //!< Execute operation
+        DAGNode*                    execute(void);                          //!< Execute operation
         const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
         const TypeSpec              getReturnType(void) const;              //!< Get type of return value
 

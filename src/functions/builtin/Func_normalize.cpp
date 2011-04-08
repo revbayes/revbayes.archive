@@ -47,7 +47,7 @@ Func_normalize* Func_normalize::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_normalize::executeFunction( void ) {
+DAGNode* Func_normalize::execute( void ) {
 
     // Get first element
     std::vector<double> tempVec    = static_cast<const VectorRealPos*>( args[0].getValue() )->getValue();

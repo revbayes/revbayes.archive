@@ -32,10 +32,16 @@
 
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 
 
-/** Constructor: set value type */
+/** Constructor of empty node */
 DAGNode::DAGNode(const std::string& valType) : children(), parents(), slot(), referringSlots(), valueType(valType), value(NULL) {
+}
+
+
+/** Constructor of filled node */
+DAGNode::DAGNode(RbObject* val) : children(), parents(), slot(), referringSlots(), valueType(val->getType()), value(val) {
 }
 
 
@@ -47,16 +53,37 @@ DAGNode::DAGNode(const std::string& valType) : children(), parents(), slot(), re
  * dual copies of them (function arguments, distribution parameters,
  * or container elements).
  */
-DAGNode::DAGNode(const DAGNode& x) : children(), parents(), slot(), referringSlots(), valueType(x.valueType), value(NULL) {
+DAGNode::DAGNode( const DAGNode& x )
+    : children(), parents(), slot(), referringSlots(), valueType( x.valueType ), value( NULL ) {
 
 }
 
 
-/** Destructor deletes value */
+/** Destructor deletes value if not NULL */
 DAGNode::~DAGNode( void ) {
+
+    if ( numRefs() != 0 )
+        throw RbException( "Cannot delete DAGNode with references" );
 
     if ( value )
         delete value;
+}
+
+
+/** Return brief info about variable */
+std::string DAGNode::briefInfo( void ) const {
+
+    std::ostringstream o;
+
+    if ( value == NULL )
+        o << "NULL";
+    else
+        value->printValue( o );
+
+    if ( o.str().size() > 10 )
+        return value->briefInfo();
+    else
+        return o.str();
 }
 
 
@@ -73,24 +100,24 @@ bool DAGNode::existsElement( VectorInteger& index ) {
 /** Get class vector describing type of DAG node */
 const VectorString& DAGNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(DAGNode_name);
+    static VectorString rbClass = VectorString( DAGNode_name );
     return rbClass;
 }
 
 
 /** Get name of DAG node from its surrounding objects */
-const std::string DAGNode::getName(void) const {
+const std::string DAGNode::getName( void ) const {
 
     std::string name;
 
-    if (slot == NULL) {
-        for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
-            if ((*i)->isDAGType(ContainerNode_name)) {
-                ContainerNode* theContainer = (ContainerNode*)(*i);
+    if ( slot == NULL ) {
+        for ( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
+            if ( (*i)->isDAGType( ContainerNode_name ) ) {
+                ContainerNode* theContainer = static_cast<ContainerNode*>( *i );
                 name = theContainer->getName();
-                VectorInteger index = theContainer->getIndex(*i);
-                for (size_t j=0; j<index.size(); j++)
-                    name += "[" + RbString(index[j] + 1) + "]";
+                VectorInteger index = theContainer->getIndex( *i );
+                for ( size_t j = 0; j < index.size(); j++ )
+                    name += "[" + RbString( index[j] + 1 ) + "]";
                 break;
             }
         }
@@ -104,7 +131,7 @@ const std::string DAGNode::getName(void) const {
 
 
 /** Get type of DAG node (first entry in class vector) */
-const std::string& DAGNode::getDAGType(void) const { 
+const std::string& DAGNode::getDAGType( void ) const { 
 
     return getDAGClass()[0];
 }
@@ -135,31 +162,53 @@ DAGNode* DAGNode::getElementRef( VectorNatural& index ) {
 
 
 /** Get type spec of DAG node */
-const TypeSpec DAGNode::getTypeSpec(void) const { 
+const TypeSpec DAGNode::getTypeSpec( void ) const { 
 
     return TypeSpec( getValueType(), getDim() );
 }
 
 
 /** Is DAG node of specified type? We need to check entire class vector in case we are derived from type. */
-bool DAGNode::isDAGType(const std::string& type) const {
+bool DAGNode::isDAGType( const std::string& type ) const {
 
     const VectorString& classVec = getDAGClass();
 
-    for (size_t i=0; i<classVec.size(); i++) {
-        if (type == classVec[i])
+    for ( size_t i = 0; i < classVec.size(); i++ ) {
+        if ( type == classVec[i] )
             return true;
     }
 
     return false;
 }
 
-/** Check if node is a parent of node x in the DAG: needed to check for cycles in the DAG */
-bool DAGNode::isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const {
 
-    for(std::set<DAGNode*>::const_iterator i=parents.begin(); i!=parents.end(); i++) {
-        if (find(done.begin(), done.end(), (*i)) == done.end()) {
-            if ((*i)->isParentInDAG(x, done))
+/** Is it possible to mutate node to newNode? */
+bool DAGNode::isMutableTo( DAGNode* newNode ) const {
+
+    for ( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
+        if ( !(*i)->isParentMutableTo( this, newNode ) )
+            return false;
+    }
+
+    if ( slot != NULL && !slot->isValidVariable( newNode ) )
+        return false;
+
+    for ( std::set<VariableSlot*>::const_iterator i = referringSlots.begin(); i != referringSlots.end(); i++ ) {
+        if ( ! (*i)->isValidVariable( newNode ) )
+            return false;
+    }
+
+    return true;
+}
+
+
+/** Check if node is a parent of node x in the DAG: needed to check for cycles in the DAG */
+bool DAGNode::isParentInDAG( const DAGNode* x, std::list<DAGNode*>& done ) const {
+
+    for( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
+
+        if ( std::find( done.begin(), done.end(), (*i) ) == done.end() ) {
+            if ( (*i)->isParentInDAG( x, done ) )
                 return true;
         }
     }
@@ -167,55 +216,81 @@ bool DAGNode::isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const {
     return false;
 }
 
+
 /** Is the node of language type typeSpec? */
-bool DAGNode::isTypeSpec(const TypeSpec& typeSp) const {
+bool DAGNode::isTypeSpec( const TypeSpec& typeSp ) const {
 
     return Workspace::userWorkspace().isXOfTypeY( getTypeSpec(), typeSp );
 }
 
-/** Get number of references to the node from Frame and other DAG nodes
- *  This code relies on name being set if the node is owned by a frame */
-int DAGNode::numRefs(void) const {
 
-    if (slot == NULL)
+/** Mutate to newNode */
+void DAGNode::mutateTo( DAGNode* newNode ) {
+    
+    // Throw an error if not possible
+    if ( !isMutableTo( newNode ) )
+        throw RbException( "Invalid attempt to mutate variable" );
+
+    // We need a temp vector because we will lose the children during the process
+    std::set<VariableNode*> oldChildren = children;
+    for ( std::set<VariableNode*>::iterator i = oldChildren.begin(); i != oldChildren.end(); i++ )
+        (*i)->swapParentNode( this, newNode );
+
+    // We need a temp vector because we will lose our referring slots during the process
+    std::set<VariableSlot*> oldSlots = referringSlots;
+    for ( std::set<VariableSlot*>::iterator i = oldSlots.begin(); i != oldSlots.end(); i++ )
+        (*i)->setReference( newNode );
+
+    // Now it is up to the slot to delete us
+}
+
+
+/** Get number of references to the node from variable slots and other DAG nodes */
+int DAGNode::numRefs( void ) const {
+
+    if ( slot == NULL )
         return numChildren() + referringSlots.size();
     else
         return numChildren() + referringSlots.size() + 1;
 }
 
+
 /** Print children */
-void DAGNode::printChildren(std::ostream& o) const {
+void DAGNode::printChildren( std::ostream& o ) const {
 
-    if ( children.empty() ) {
-        o << "No children" << std::endl;
-        return;
-    }
+    o << "[ ";
 
-    int count = 1;
-    for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++, count++) {
-        o << "children[" << count << "] = '" << (*i)->getName();
-        o << "' [" << (*i) << "] of type " << (*i)->getDAGType() << std::endl;
+    for ( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++) {
+        if ( i != children.begin() )
+            o << ", ";
+        if ( getName() == "" )
+            o << "<" << (*i)->briefInfo() << ">";
+        else
+            o << (*i)->getName();
     }
+    o << " ]";
 }
 
+
 /** Print parents */
-void DAGNode::printParents(std::ostream& o) const {
+void DAGNode::printParents( std::ostream& o ) const {
 
-    if ( parents.empty() ) {
-        o << "No parents" << std::endl;
-        return;
-    }
+    o << "[ ";
 
-    int count = 1;
-    for (std::set<DAGNode*>::const_iterator i=parents.begin(); i != parents.end(); i++, count++) {
-        o << "parents[" << count << "] = '" << (*i)->getName();
-        o << "' [" << (*i) << "] of type " << (*i)->getDAGType() << std::endl;
+    for ( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
+        if ( i != parents.begin() )
+            o << ", ";
+        if ( getName() == "" )
+            o << "<" << (*i)->briefInfo() << ">";
+        else
+            o << (*i)->getName();
     }
+    o << " ]";
 }
 
 
 /** Remove a slot referring to the DAG node */
-void DAGNode::removeSlot(const VariableSlot* s) {
+void DAGNode::removeSlot( const VariableSlot* s ) {
 
     if ( slot == s ) {
         if ( referringSlots.size() == 0 )
@@ -227,8 +302,8 @@ void DAGNode::removeSlot(const VariableSlot* s) {
     }
     else {
         std::set<VariableSlot*>::iterator i = std::find( referringSlots.begin(), referringSlots.end(), s );
-        if (i == referringSlots.end() )
-            throw RbException( "Variable '" + getName() + " not aware of the reference from slot '" + s->getName() + "'" );
+        if ( i == referringSlots.end() )
+            throw RbException( "Variable " + getName() + " not aware of the reference from slot " + s->getName() );
         referringSlots.erase( i );
     }
 }
@@ -241,19 +316,5 @@ void DAGNode::removeSlot(const VariableSlot* s) {
 void DAGNode::setElement( VectorNatural& index, DAGNode* var ) {
 
     throw RbException( "Unexpected call to setElement of variable " + getName() );
-}
-
-
-/** Swap node in DAG to new node */
-void DAGNode::swapNodeTo(DAGNode* newNode) {
-    
-    // It is important to have a copy here as children will be changed in process
-    std::set<VariableNode*> oldChildren = getChildren();
-    for (std::set<VariableNode*>::iterator i=oldChildren.begin(); i!=oldChildren.end(); i++)
-            (*i)->swapParentNode(this, newNode);
-
-    // Update referring frames
-    for (std::set<VariableSlot*>::iterator i=referringSlots.begin(); i!=referringSlots.end(); i++)
-        (*i)->setReference(newNode);
 }
 

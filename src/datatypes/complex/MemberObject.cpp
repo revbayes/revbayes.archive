@@ -30,21 +30,10 @@
 MemberObject::MemberObject(const MemberRules& memberRules) : RbComplex(), members() {
 
     /* Fill member table (frame) based on member rules */
-    for (MemberRules::const_iterator i=memberRules.begin(); i!=memberRules.end(); i++) {
+    for ( MemberRules::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
 
-        std::string name = (*i)->getArgLabel();
-        if ((*i)->isReference()) {
-            if ((*i)->hasDefault() == false)
-                members.addReference(name, (*i)->getArgType(), (*i)->getArgDim());
-            else
-                members.addReference(name, (*i)->getDefaultReference());
-        }
-        else {
-            if ((*i)->hasDefault() == false)
-                members.addVariable(name, (*i)->getArgType(), (*i)->getArgDim());
-            else
-                members.addVariable(name, (*i)->getDefaultVariable());
-        }
+        members.push_back( *i );
+        
     }
 }
 

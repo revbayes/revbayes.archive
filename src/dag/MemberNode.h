@@ -45,12 +45,8 @@ class MemberNode : public DeterministicNode {
         DAGNode*                getElementRef(VectorNatural& index);                                        //!< Get element reference for setting it
         void                    setElement(VectorNatural& index, DAGNode* var);                             //!< Set element for parser if member object requests such a call
 
-        // DAG functions
-        MemberNode*             cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
-        bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
-        bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
-        void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
-        void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
+        // DAG function
+        MemberNode*             cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
 
         // MemberNode functions
         const TypeSpec&         getMemberTypeSpec(const RbString& name) const;                              //!< Get type spec of a named member variable

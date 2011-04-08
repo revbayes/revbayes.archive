@@ -67,13 +67,15 @@ class Frame {
         virtual std::string             richInfo(void) const = 0;                                                               //!< Complete info to string
 
         // Frame functions you have to override
-        virtual DAGNode*                getReference(const std::string& name) const = 0;                                        //!< Get reference
-        virtual const RbObject*         getValue(const std::string& name) const = 0;                                            //!< Get value
-        virtual const DAGNode*          getVariable(const std::string& name) const = 0;                                         //!< Get variable
+        virtual bool                    existsVariable(const std::string& name) const = 0;                                      //!< Does variable exist?
+        virtual const std::string&      getSlotName(const VariableSlot* slot) const = 0;                                        //!< Get name of a slot
 
         // Frame functions you do not have to override
         Frame*                          cloneEnvironment(void) const;                                                           //!< Clone environment
         Frame*                          getParentFrame(void) { return parentFrame; }                                            //!< Get parent frame ptr
+        DAGNode*                        getReference(const std::string& name) const;                                            //!< Convenient alternative for [name]->getValue()
+        const RbObject*                 getValue(const std::string& name) const;                                                //!< Convenient alternative for [name]->getValue()
+        const DAGNode*                  getVariable(const std::string& name) const;                                             //!< Convenient alternative for [name]->getValue()
 
     protected:
                                         Frame(void);                                                                            //!< Constructor of frame with NULL parent

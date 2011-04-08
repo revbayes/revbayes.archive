@@ -40,7 +40,7 @@ Func_sqrt* Func_sqrt::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_sqrt::executeFunction( void ) {
+DAGNode* Func_sqrt::execute( void ) {
 
     const Real* x = static_cast<const Real*>( args[0].getValue() );
 

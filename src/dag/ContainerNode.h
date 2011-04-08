@@ -59,11 +59,11 @@ class ContainerNode : public DeterministicNode {
         DAGNode*                getElementRef(VectorNatural& index);                                        //!< Get element reference for setting it
 
         // DAG functions
-        ContainerNode*          cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
-        bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
+        ContainerNode*          cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
+        bool                    isMutableTo(const std::string& valType, int dim) const;                     //!< Is node mutable to dim and valType?
         bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
-        void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
-        void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
+        ContainerNode*          mutateTo(const std::string& valType, int dim) const;                        //!< Mutate to dim and valType
+        void                    swapParentNode(DAGNode* oldNode, DAGNode* newNode);                         //!< Swap a parent node
 
         // Container functions
         DAGNode*                getElement(const size_t i);                                                 //!< Convenient vector access

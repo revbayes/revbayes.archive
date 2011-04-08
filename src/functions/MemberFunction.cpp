@@ -51,8 +51,8 @@ MemberFunction* MemberFunction::clone(void) const {
 }
 
 
-/** Execute operation: we rely on the object's own implementation, so we just throw an error here */
-DAGNode* MemberFunction::executeFunction( void ) {
+/** Execute function: we rely on the object's own implementation, so we just throw an error here */
+DAGNode* MemberFunction::execute( void ) {
 
     throw RbException( "Unexpected call to void execute function in MemberFunction" );
 }

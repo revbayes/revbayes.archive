@@ -15,9 +15,12 @@
  * $Id$
  */
 
+
+#include "Boolean.h"
 #include "ConstantNode.h"
 #include "Container.h"
 #include "ContainerNode.h"
+#include "ConverterNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
@@ -71,6 +74,9 @@ ContainerNode::ContainerNode( Container* val )
         value       = val;
         storedValue = NULL;
     }
+
+    touched = false;
+    changed = false;
 }
 
 
@@ -90,12 +96,15 @@ ContainerNode::ContainerNode( const ContainerNode& x )
         for ( size_t i = 0; i < container->size(); i++ ) {
             DAGNode* theNode = (*container)[i];
             parents.insert( theNode );
-            theNode->addChildNode(this);
+            theNode->addChildNode( this );
         }
     }
 
     value       = x.value->clone();
-    storedValue = NULL;
+    if ( x.storedValue != NULL )
+        storedValue = x.storedValue->clone();
+    else
+        storedValue = NULL;
     touched     = false;
     changed     = false;
 }
@@ -108,8 +117,8 @@ ContainerNode::~ContainerNode( void ) {
         throw RbException ( "Cannot delete ContainerNode with references" ); 
 
     /* Remove parents first so that DeterministicNode destructor does not get in the way */
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
-        (*i)->removeChildNode(this);
+    for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ )
+        (*i)->removeChildNode( this );
     parents.clear();
 
     if ( container != NULL )
@@ -120,20 +129,20 @@ ContainerNode::~ContainerNode( void ) {
 /** Assignment operator; make sure we get independent nodes */
 ContainerNode& ContainerNode::operator=( const ContainerNode& x ) {
 
-    if (this != &x) {
+    if ( this != &x ) {
 
         if ( getTypeSpec() != x.getTypeSpec() )
             throw RbException( "Type mismatch in container variable assignment" );
 
         /* Remove parents first */
-        for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++)
-            (*i)->removeChildNode(this);
+        for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ )
+            (*i)->removeChildNode( this );
         parents.clear();
 
         delete container;    // This will delete any DAG nodes that need to be deleted
 
         delete value;
-        if (storedValue)
+        if ( storedValue )
             delete storedValue;
 
         if ( x.container == NULL ) {
@@ -148,14 +157,17 @@ ContainerNode& ContainerNode::operator=( const ContainerNode& x ) {
             for ( size_t i = 0; i < container->size(); i++ ) {
                 DAGNode* theNode = (*container)[i];
                 parents.insert( theNode );
-                theNode->addChildNode(this);
+                theNode->addChildNode( this );
             }
         }
 
         value       = x.value->clone();
-        storedValue = NULL;
-        touched     = false;
-        changed     = false;
+        if ( x.storedValue != NULL )
+            storedValue = x.storedValue->clone();
+        else
+            storedValue = NULL;
+        touched     = x.touched;
+        changed     = x.changed;
     }
 
     return ( *this );
@@ -170,36 +182,38 @@ ContainerNode* ContainerNode::clone() const {
 
 
 /** Clone entire graph */
-ContainerNode* ContainerNode::cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const {
+ContainerNode* ContainerNode::cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const {
 
-    if ( newNodes.find( (ContainerNode*)(this) ) != newNodes.end() )
-        return (ContainerNode*)( newNodes[ (DAGNode*)(this) ] );
+    if ( newNodes.find( this ) != newNodes.end() )
+        return static_cast<ContainerNode*>( newNodes[ this ] );
 
     /* Make pristine copy */
     ContainerNode* copy = new ContainerNode( valueType, valueDim );
-    newNodes[ (DAGNode*)(this) ] = copy;
+    newNodes[ this ] = copy;
 
-    copy->touched     = true;
-    copy->changed     = false;
+    copy->touched     = touched;
+    copy->changed     = changed;
     copy->value       = value->clone();
-    copy->storedValue = NULL;
+    if ( storedValue != NULL )
+        copy->storedValue = storedValue->clone();
+    else
+        copy->storedValue = NULL;
 
     /* Clone parents through container */
     copy->container = container->clone();   // We get independent copies here, which is not right
     copy->container->clear();
-    for ( size_t i=0; i<container->size(); i++ ) {
-        DAGNode* theParentCopy = (*container)[i]->cloneDAG(newNodes);
-        (*copy->container)[i] = theParentCopy;
-        copy->parents.insert( theParentCopy );
-        theParentCopy->addChildNode(copy);
+    for ( size_t i = 0; i < container->size(); i++ ) {
+
+        DAGNode* theParentClone = (*container)[i]->cloneDAG(newNodes);
+        (*copy->container)[i] = theParentClone;
+
+        copy->parents.insert( theParentClone );
+        theParentClone->addChildNode( copy );
     }
 
-    copy->update();
-    copy->keepAffected();
-
     /* Make sure the children clone themselves */
-    for(std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
-        (*i)->cloneDAG(newNodes);
+    for( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
+        (*i)->cloneDAG( newNodes );
     }
 
     return copy;
@@ -252,9 +266,9 @@ bool ContainerNode::existsElement( VectorInteger& index ) {
 
 
 /** Get class vector describing type of DAG node */
-const VectorString& ContainerNode::getDAGClass(void) const {
+const VectorString& ContainerNode::getDAGClass( void ) const {
 
-    static VectorString rbClass = VectorString(ContainerNode_name) + DeterministicNode::getDAGClass();
+    static VectorString rbClass = VectorString( ContainerNode_name ) + DeterministicNode::getDAGClass();
     return rbClass;
 }
 
@@ -351,7 +365,7 @@ DAGNode* ContainerNode::getElementRef( VectorNatural& index ) {
 
 
 /** Get index of specified element */
-VectorNatural ContainerNode::getIndex(const DAGNode* element) const {
+VectorNatural ContainerNode::getIndex( const DAGNode* element ) const {
 
     if ( container == NULL )
         throw RbException( element->getName() + " is not an element of " + getName() );
@@ -360,63 +374,107 @@ VectorNatural ContainerNode::getIndex(const DAGNode* element) const {
 }
 
 
-/** Is it possible to mutate to newNode? */
-bool ContainerNode::isMutableTo( const DAGNode* newNode ) const {
+/** Is it possible to mutate to type and dim? */
+bool ContainerNode::isMutableTo( const std::string& valType, int dim ) const {
 
-    return false;
+    // First check whether our slots and children allow it
+    ContainerNode* dummy = new ContainerNode( valType, dim );
+    bool           ok    = DeterministicNode::isMutableTo( dummy );
+    if ( !ok )
+        return false;
+
+    // Refuse to change dimensionality
+    if ( dim != getDim() )
+        return false;
+
+    // Now check that all parents are OK with it
+    if ( container == NULL ) {
+
+        ValueContainer* valContainer = static_cast<ValueContainer*>( value );
+        for ( size_t i = 0; i < valContainer->size(); i++ ) {
+        
+            const RbObject * theElem = valContainer->elements[i];
+            if ( theElem != NULL && !theElem->isConvertibleTo( valType, false ) )
+                return false;
+        }
+    }
+    else {
+        for ( size_t i = 0; i < container->size(); i++ ) {
+        
+            const RbObject * theElem = (*container)[i]->getValue();
+            if ( theElem != NULL && !theElem->isConvertibleTo( valType, false ) )
+                return false;
+        }
+    }
+
+    return true;
 }
 
 
 /** Is it possible to change parent node oldNode to newNode? */
 bool ContainerNode::isParentMutableTo( const DAGNode* oldNode, const DAGNode* newNode ) const {
 
-    // Check that all parents except the caller are convertible to the new type and dim
-    for (std::set<DAGNode*>::const_iterator i=parents.begin(); i!=parents.end(); i++) {
-        if ( (*i) != NULL && (*i) != const_cast<DAGNode*>(oldNode) ) {
-            if ( !(*i)->getValue()->isConvertibleTo( TypeSpec(newNode->getValueType(), newNode->getDim()), false ) )
-                return false;
-        }
-    }
-    
-    // Check that all children allow this node to permute to the new type and dim
-    ContainerNode* temp = new ContainerNode( newNode->getValueType(), valueDim );
-    for (std::set<VariableNode*>::const_iterator i=children.begin(); i!=children.end(); i++) {
-        if ( !(*i)->isParentMutableTo(this, temp) ) {
-            delete temp;
-            return false;
-        }
-    }
-    delete temp;
+    // Check that old node is among parents
+    if ( parents.find( const_cast<DAGNode*>( oldNode ) ) == parents.end() )
+        throw RbException( "Node is not an element" );
 
-    return true;
+    // Check that new node is of value type
+    if ( Workspace::userWorkspace().isXOfTypeY( newNode->getValueType(), valueType ) )
+        return true;
+
+    return false;
 }
 
 
-/** Mutate to newNode */
-void ContainerNode::mutateTo( DAGNode* newNode ) {
+/** Mutate to type and dim */
+ContainerNode* ContainerNode::mutateTo( const std::string& valType, int dim ) const {
+
+    // This call will convert us to a variable container, if we are a simple value container
+    if ( !isMutableTo( valType, dim ) )
+        throw RbException( "Invalid container type conversion" );
+
+    // Refuse to modify dimensionality if not caught by isMutableTo
+    assert( dim == getDim() );
+
+    // Now create and fill the mutant
+    VariableContainer* temp = new VariableContainer( TypeSpec( valType, dim ), container->getLength() );
+    ContainerNode*     copy = new ContainerNode( temp );
+    for ( size_t i = 0; i < container->size(); i++ ) {
     
-    throw RbException("Not implemented yet");
-    
+        const RbObject * theElem = (*container)[i]->getValue();
+        if ( theElem != NULL ) {
+            if ( theElem->isType( valType ) )
+                (*copy->container)[i] = (*container)[i];
+            else
+                (*copy->container)[i] = new ConverterNode( (*container)[i], valType, 0 );
+        }
+    }
+
+    return copy;
 }
 
 
 /** Print struct for user */
 void ContainerNode::printStruct( std::ostream& o ) const {
 
-    if (touched && !changed)
-        throw RbException ("Cannot print value while in touched state");
+    o << "_DAGClass    = " << getDAGClass() << std::endl;
+    o << "_valueType   = " << valueType << std::endl;
+    o << "_dim         = " << getDim() << std::endl;
+    o << "_length      = " << VectorInteger( container->getLength() ) << std::endl;
+    o << "_touched     = " << ( touched ? Boolean( true ) : Boolean( false ) ) << std::endl;
+    o << "_changed     = " << ( changed ? Boolean( true ) : Boolean( false ) ) << std::endl;
+    o << "_value       = " << value->briefInfo() << std::endl;
+    if ( touched && changed )
+        o << "_storedValue = " << storedValue->briefInfo() << std::endl;
 
-    o << "Wrapper:" << std::endl;
-    o << "$class  = " << getDAGClass() << std::endl;
-    o << "$dim    = " << getDim() << std::endl;
-    o << "$length = " << VectorInteger(container->getLength()) << std::endl;
-    o << "$value  = " << value << std::endl;
-    o << "$parents = " << std::endl;
+    o << "_parent      = ";
     printParents(o);
     o << std::endl;
-    o << "$children = " << std::endl;
+
+    o << "_children    = ";
     printChildren(o);
     o << std::endl;
+
     o << std::endl;
 }
 
@@ -426,16 +484,26 @@ std::string ContainerNode::richInfo(void) const {
 
     std::ostringstream o;
 
-    o << "DAGNode plate:" << std::endl;
+    o << "Container node:" << std::endl;
     o << "dim         = " << getDim() << std::endl; 
     o << "length      = " << VectorInteger(container->getLength()) << std::endl;
     o << "valueType   = " << valueType << std::endl;
     o << "container   = " << std::endl;
-    o << *container << std::endl;
+    if ( container == NULL )
+        o << "container   = NULL" << std::endl;
+    else {
+        o << "container   = " << std::endl;
+        o << *container << std::endl;
+    }
     o << "value       = " << std::endl;
     o << value << std::endl;
-    o << "storedValue = " << std::endl;
-    o << storedValue;
+
+    if ( storedValue == NULL )
+        o << "storedValue = NULL" << std::endl;
+    else {
+        o << "storedValue = " << std::endl;
+        o << storedValue << std::endl;
+    }
 
     return o.str();
 }
@@ -456,8 +524,10 @@ void ContainerNode::swapParentNode( DAGNode* oldNode, DAGNode* newNode ) {
 
     if ( parents.find( oldNode ) == parents.end() )
         throw RbException( "Node is not a parent" );
+
     oldNode->removeChildNode( this );
     newNode->addChildNode( this );
+
     parents.erase( oldNode );
     parents.insert( newNode );
 
@@ -469,16 +539,18 @@ void ContainerNode::swapParentNode( DAGNode* oldNode, DAGNode* newNode ) {
 
     touched = true;
     changed = false;
+
     touchAffected();
 }
 
 
 /** Update value and stored value after node and its surroundings have been touched by a move */
-void ContainerNode::update(void) {
+void ContainerNode::update( void ) {
 
-    if (touched && !changed) {
-        if (storedValue != NULL)
-            delete storedValue;
+    if ( touched && !changed ) {
+        
+        assert( storedValue == NULL );
+
         storedValue = value;
         value = container->getConstValue();
         changed = true;

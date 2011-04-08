@@ -152,7 +152,7 @@ DistributionFunction* DistributionFunction::clone( void ) const {
 
 
 /** Execute operation: switch based on type */
-DAGNode* DistributionFunction::executeFunction( void ) {
+DAGNode* DistributionFunction::execute( void ) {
 
     if ( functionType == DENSITY ) {
 

@@ -35,7 +35,7 @@ class Func__div :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-    	DAGNode*                    executeFunction(void);                                      //!< Execute function
+    	DAGNode*                    execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
@@ -66,7 +66,7 @@ Func__div<firstValType, secondValType, retType>* Func__div<firstValType, secondV
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename firstValType, typename secondValType, typename retType>
-DAGNode* Func__div<firstValType,secondValType,retType>::executeFunction( void ) {
+DAGNode* Func__div<firstValType,secondValType,retType>::execute( void ) {
 
     const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
     const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );

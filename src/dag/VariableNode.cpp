@@ -29,8 +29,8 @@
 
 
 /** Constructor */
-VariableNode::VariableNode(const std::string& valType)
-    : DAGNode(valType), touched(false), storedValue(NULL) {
+VariableNode::VariableNode( const std::string& valType )
+    : DAGNode( valType ), touched( false ), storedValue( NULL ) {
 }
 
 
@@ -42,23 +42,42 @@ VariableNode::~VariableNode( void ) {
 
     if ( storedValue )
         delete storedValue;
+
+    /* Remove this node as a child node of parents and delete these if appropriate */
+    for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ ) {
+        (*i)->removeChildNode( this );
+        if ( (*i)->isTemp() )
+            delete (*i);
+    }
 }
 
 
 /** Get class vector describing type of DAG node */
 const VectorString& VariableNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(VariableNode_name) + DAGNode::getDAGClass();
+    static VectorString rbClass = VectorString( VariableNode_name ) + DAGNode::getDAGClass();
     return rbClass;
 }
 
 
 /** Get default monitors */
-std::vector<Monitor*> VariableNode::getDefaultMonitors(void) {
+std::vector<Monitor*> VariableNode::getDefaultMonitors( void ) {
 
     std::vector<Monitor*>   monitors;
-    monitors.push_back(new Monitor(this, 100));
+    monitors.push_back( new Monitor( this, 100 ) );
 
     return monitors;
+}
+
+
+/** Is it possible to change parent node oldNode to newNode? */
+bool VariableNode::isParentMutableTo( const DAGNode* oldNode, const DAGNode* newNode ) const {
+
+    // Find node among parents
+    if ( parents.find( const_cast<DAGNode*>( oldNode ) ) == parents.end() )
+        throw RbException( "Node is not a parent" );
+   
+    // If all parents are in variable slots, answer is yes (given that the parent node itself is mutable)
+    return true;
 }
 

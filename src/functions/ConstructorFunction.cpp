@@ -41,7 +41,7 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-DAGNode* ConstructorFunction::executeFunction(void) {
+DAGNode* ConstructorFunction::execute(void) {
 
     const ArgumentRules& argRules = getArgumentRules();
 

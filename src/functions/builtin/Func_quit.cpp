@@ -40,7 +40,7 @@ Func_quit* Func_quit::clone( void ) const {
 
 
 /** Execute operation */
-DAGNode* Func_quit::executeFunction( const std::vector<VariableSlot>& args ) {
+DAGNode* Func_quit::execute( const std::vector<VariableSlot>& args ) {
 
     /* Ask if user really wants to quit */
     // bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit"); // TEMP: Getting tired of typing 'y' (JPH)

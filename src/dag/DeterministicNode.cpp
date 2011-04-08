@@ -23,6 +23,7 @@
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
+#include "UserInterface.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -31,35 +32,28 @@
 
 
 /** Constructor of empty deterministic node */
-DeterministicNode::DeterministicNode(const std::string& valType) :
-    VariableNode(valType), changed(false) {
+DeterministicNode::DeterministicNode( const std::string& valType ) :
+    VariableNode( valType ), changed( false ) {
 }
 
 
 /** Destructor */
-DeterministicNode::~DeterministicNode(void) {
+DeterministicNode::~DeterministicNode( void ) {
 
-    if (numRefs() != 0)
-        throw RbException ("Cannot delete DeterministicNode with references");
-
-    /* Remove this node as a child node of parents and delete these if appropriate */
-    for (std::set<DAGNode*>::iterator i=parents.begin(); i!=parents.end(); i++) {
-        (*i)->removeChildNode(this);
-        if ((*i)->isTemp())
-            delete (*i);
-    }
+    if ( numRefs() != 0 )
+        throw RbException ( "Cannot delete DeterministicNode with references" );
 }
 
 
 /** Get affected nodes: touch and pass through to next stochastic node */
-void DeterministicNode::getAffected(std::set<StochasticNode*>& affected) {
+void DeterministicNode::getAffected( std::set<StochasticNode*>& affected ) {
 
     /* If we have already touched this node, we are done; otherwise, get the affected children */
-    if (!touched) {
+    if ( !touched ) {
         touched = true;
         changed = false;
-        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
-            (*i)->getAffected(affected);
+        for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
+            (*i)->getAffected( affected );
         }
     }
 }
@@ -68,26 +62,26 @@ void DeterministicNode::getAffected(std::set<StochasticNode*>& affected) {
 /** Get class vector describing type of DAG node */
 const VectorString& DeterministicNode::getDAGClass() const {
 
-    static VectorString rbClass = VectorString(DeterministicNode_name) + VariableNode::getDAGClass();
+    static VectorString rbClass = VectorString( DeterministicNode_name ) + VariableNode::getDAGClass();
     return rbClass;
 }
 
 
 /* Get default moves, if any */
-MoveSchedule* DeterministicNode::getDefaultMoves(void) {
+MoveSchedule* DeterministicNode::getDefaultMoves( void ) {
 
-    const RbComplex* complexValue = dynamic_cast<const RbComplex*>(value);
-    if (complexValue != NULL)
-        return complexValue->getDefaultMoves(this);
+    const RbComplex* complexValue = dynamic_cast<const RbComplex*>( value );
+    if ( complexValue != NULL )
+        return complexValue->getDefaultMoves( this );
     else
         return NULL;
 }
 
 
 /** Get stored value intelligently */
-const RbObject* DeterministicNode::getStoredValue(void) {
+const RbObject* DeterministicNode::getStoredValue( void ) {
 
-    if (!touched)
+    if ( !touched )
         return value;
 
     update();
@@ -96,7 +90,7 @@ const RbObject* DeterministicNode::getStoredValue(void) {
 
 
 /** Get value intelligently */
-const RbObject* DeterministicNode::getValue(void) {
+const RbObject* DeterministicNode::getValue( void ) {
 
     update();
     return value;
@@ -104,26 +98,26 @@ const RbObject* DeterministicNode::getValue(void) {
 
 
 /** Get const value if possible */
-const RbObject* DeterministicNode::getValue(void) const {
+const RbObject* DeterministicNode::getValue( void ) const {
 
     if (touched && !changed)
-        throw RbException("Const value not available");
+        throw RbException( "Invalid attempt to retrieve value from a const variable that is in volatile state" );
 
     return value;
 }
 
 
 /** Keep value of node and affected variable nodes */
-void DeterministicNode::keepAffected(void) {
+void DeterministicNode::keepAffected( void ) {
 
-    if (touched) {
-        if (!changed)
+    if ( touched ) {
+        if ( !changed )
             update();
-        if (storedValue) {
+        if ( storedValue ) {
             delete storedValue;
             storedValue = NULL;
         }
-        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+        for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
             (*i)->keepAffected();
         }
     }
@@ -132,25 +126,25 @@ void DeterministicNode::keepAffected(void) {
 
 
 /** Print value for user */
-void DeterministicNode::printValue(std::ostream& o) const {
+void DeterministicNode::printValue( std::ostream& o ) const {
 
-    if (touched && !changed)
-        throw RbException("Cannot print value while in touched state");
+    if ( touched )
+        RBOUT( "Warning: Variable in volatile state so value is unreliable" );
 
     value->printValue(o);
 }
 
 
 /** Restore value of node and affected variable nodes */
-void DeterministicNode::restoreAffected(void) {
+void DeterministicNode::restoreAffected( void ) {
 
-    if (touched) {
-        if (changed) {
+    if ( touched ) {
+        if ( changed ) {
          	delete value;
-            value = storedValue;
+            value       = storedValue;
             storedValue = NULL;
         }
-        for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++) {
+        for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
             (*i)->restoreAffected();
         }
     }
@@ -158,12 +152,29 @@ void DeterministicNode::restoreAffected(void) {
 }
 
 
-/** Tell affected nodes that upstream value has been reset */
-void DeterministicNode::touchAffected(void) {
+/** Swap parent node */
+void DeterministicNode::swapParentNode( DAGNode* oldNode, DAGNode* newNode ) {
+
+    if ( parents.find( oldNode ) == parents.end() )
+        throw RbException( "Node is not a parent" );
+
+    oldNode->removeChildNode( this );
+    newNode->addChildNode   ( this );
+    parents.erase ( oldNode );
+    parents.insert( newNode );
 
     touched = true;
     changed = false;
-    for (std::set<VariableNode*>::iterator i=children.begin(); i!=children.end(); i++)
+    touchAffected();
+}
+
+
+/** Tell affected nodes that upstream value has been reset */
+void DeterministicNode::touchAffected( void ) {
+
+    touched = true;
+    changed = false;
+    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
         (*i)->touchAffected();
 }
 

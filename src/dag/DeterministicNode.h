@@ -49,20 +49,17 @@ class DeterministicNode : public VariableNode {
         void    	                    getAffected(std::set<StochasticNode*>& affected);                               //!< Mark and get affected nodes
         void    	                    keepAffected(void);                                                             //!< Keep value of affected nodes
         void                            restoreAffected(void);                                                          //!< Restore value of affected nodes
+        void                            swapParentNode(DAGNode* oldP, DAGNode* newP);                                   //!< Swap a parent node
         void                            touchAffected(void);                                                            //!< Tell affected nodes value is reset
 
-        // DAG functions you have to override
-        virtual DeterministicNode*      cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const = 0;                     //!< Clone entire graph
-        virtual bool                    isMutableTo(const DAGNode* newNode) const = 0;                                  //!< Is node mutable to newNode?
-        virtual bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const = 0;    //!< Is parent mutable to newNode?
-        virtual void                    mutateTo(DAGNode* newNode) = 0;                                                 //!< Mutate to new node
-        virtual void                    swapParentNode(DAGNode* oldP, DAGNode* newP) = 0;                               //!< Swap a parent node
-
+        // DAG function you have to override
+        virtual DeterministicNode*      cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const = 0;               //!< Clone entire graph
+ 
         // Get default moves
         MoveSchedule*                   getDefaultMoves(void);                                                          //!< Return default moves
 
     protected:
-                                        DeterministicNode(const std::string& valType);                                     //!< Constructor from type
+                                        DeterministicNode(const std::string& valType);                                  //!< Constructor from type
 
         // Utility function you have to override
         virtual void                    update(void) = 0;                                                               //!< Update value and storedValue

@@ -49,15 +49,9 @@ class ConstantNode : public DAGNode {
         const RbObject*         getValue(void) const { return value; }                                      //!< Get value (const)
 
         // DAG functions
-        ConstantNode*           cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
+        ConstantNode*           cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
         bool                    isConstExpr(void) const;                                                    //!< Is the node guaranteed to be a constant expression?
-        bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
-        void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
         bool                    isTouched (void) const { return false; }                                    //!< Touched by a move?
-        void                    touchAffected(void);                                                        //!< Tell affected nodes value is reset
-
-    protected:
-        RbObject*               value;                                                                      //!< The constant value
 };
 
 #endif

@@ -31,222 +31,136 @@
 
 
 /** Construct frame with NULL parent */
-VariableFrame::VariableFrame(void) : parentVariableFrame(NULL), variableTable() {
+VariableFrame::VariableFrame( void ) : Frame( NULL ), variableTable() {
 }
 
 
 /** Construct frame with parent */
-VariableFrame::VariableFrame(VariableFrame* parentFr) : parentVariableFrame(parentFr), variableTable() {
+VariableFrame::VariableFrame( Frame* parentFr ) : Frame( parentFr ), variableTable() {
 }
 
 
 /** Copy constructor. We need to set the frame of the variable slots. */
-VariableFrame::VariableFrame(const VariableFrame& x) :  parentVariableFrame(x.parentVariableFrame), variableTable(x.variableTable) {
+VariableFrame::VariableFrame( const VariableFrame& x ) :  Frame( x ), variableTable( x.variableTable ) {
 
-    for (VariableTable::iterator i=variableTable.begin(); i!=variableTable.end(); i++)
-        (*i).second.setVariableFrame(this);
+    for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ )
+        (*i).second.setFrame( this );
 }
     
 
-/** Add reference variable to frame */
-void VariableFrame::addReference(const std::string& name, DAGNode* ref) {
+/** Index operator to variable slot from string */
+VariableSlot& VariableFrame::operator[]( const std::string& name ) {
 
-    /* Throw an error if the ref is NULL */
-    if (ref == NULL)
-        throw RbException("Cannot insert reference variable in variable table based on NULL pointer");
-
-    /* Throw an error if the variable exists. Note that we cannot use the function
-       existsVariable because that function looks recursively in parent frames, which
-       would make it impossible to hide global variables. */
-    if (variableTable.find(name) != variableTable.end())
-        throw RbException("Variable " + name + " already exists");
-
-    /* Create the slot */
-    VariableSlot slot(ref, true);
-    slot.setVariableFrame(this);
-
-    /* Insert new reference variable in variable table */
-    variableTable.insert(std::pair<std::string, VariableSlot>(name, slot));
-
-    PRINTF("Inserted  variable reference named '%s' of type '%s' and dim %d in frame\n",
-            name.c_str(), ref->getValueType().c_str(), ref->getDim());
-}
-
-
-/** Add declared but empty reference slot to frame */
-void VariableFrame::addReference(const std::string& name, const std::string& type, int dim) {
-
-    /* Throw an error if the variable exists. Note that we cannot use the function
-       existsVariable because that function looks recursively in parent frames, which
-       would make it impossible to hide global variables. */
-    if (variableTable.find(name) != variableTable.end())
-        throw (RbException("Variable " + name + " already exists"));
-
-    /* Create the slot */
-    VariableSlot slot(type, dim, true);
-    slot.setVariableFrame(this);
-
-    /* Insert empty slot in variable table */
-    variableTable.insert(std::pair<std::string, VariableSlot>(name, slot));
-
-    PRINTF("Inserted null variable reference named '%s' of type '%s' and dim %d in frame\n",
-        name.c_str(), type.c_str(), dim);
-}
-
-
-/** Add simple variable to frame */
-void VariableFrame::addVariable(const std::string& name, DAGNode* value) {
-
-    /* Throw an error if the value is NULL */
-    if (value == NULL)
-        throw RbException("Cannot insert variable in variable table based on NULL value.");
-
-    /* Throw an error if the variable exists. Note that we cannot use the function
-       existsVariable because that function looks recursively in parent frames, which
-       would make it impossible to hide global variables. */
-    if (variableTable.find(name) != variableTable.end())
-        throw (RbException("Variable " + name + " already exists"));
-
-    /* Create the slot */
-    VariableSlot slot(value);
-    slot.setVariableFrame(this);
-
-    /* Insert new variable in variable table */
-    variableTable.insert(std::pair<std::string, VariableSlot>(name, slot));
-
-    PRINTF("Inserted variable named '%s' of type '%s' and dim %d in frame\n",
-            name.c_str(), value->getValueType().c_str(), value->getDim());
-}
-
-
-/** Add container variable with initial element to frame */
-void VariableFrame::addVariable(const std::string& name, const VectorInteger& index, DAGNode* elemValue) {
-
-    /* Throw an error if the variable is NULL */
-    if (elemValue == NULL)
-        throw RbException("Cannot insert null variable container without type in variable table.");
-
-    /* Throw an error if the variable exists. Note that we cannot use the function
-       existsVariable because that function looks recursively in parent frames, which
-       would make it impossible to hide global variables. */
-    if (variableTable.find(name) != variableTable.end())
-        throw (RbException("Variable " + name + " already exists"));
-
-    /* Create the container variable */
-    VariableContainer* container = new VariableContainer(TypeSpec(elemValue->getValueType(), index.size()));
-    (*container)[index] = elemValue;
-
-    /* Create the slot */
-    VariableSlot slot(new ContainerNode( container ));
-    slot.setVariableFrame(this);
-
-    /* Insert new variable in variable table */
-    variableTable.insert(std::pair<std::string, VariableSlot>(name, slot));
-
-    PRINTF("Inserted variable %s %s in frame\n",
-            container->getTypeSpec(), name.c_str());
-}
-
-
-/** Add declared but empty variable slot to frame */
-void VariableFrame::addVariable(const std::string& name, const std::string& type, int dim) {
-
-    /* Throw an error if the variable exists. Note that we cannot use the function
-       existsVariable because that function looks recursively in parent frames, which
-       would make it impossible to hide global variables. */
-    if (variableTable.find(name) != variableTable.end())
-        throw (RbException("Variable " + name + " already exists"));
-
-    /* Create the slot */
-    VariableSlot slot(type, dim);
-    slot.setVariableFrame(this);
-
-    /* Insert new variable in variable table */
-    variableTable.insert(std::pair<std::string, VariableSlot>(name, slot));
-
-    PRINTF("Inserted null variable named '%s' of type '%s' and dim %d in frame\n",
-        name.c_str(), type.c_str(), dim);
-}
-
-
-/** Generic add variable function for parser (SyntaxAssignExpr) */
-void VariableFrame::addVariable( const std::string& name, const TypeSpec& typeSp, const VectorInteger& index, DAGNode* variable ) {
-
-    /* Throw an error if the variable is NULL */
-    if ( variable == NULL )
-        variable = new ConstantNode( typeSp.getType() );
-
-    /* Check type match */
-    if ( variable->getDim() == 0 ) {
-        if ( !Workspace::userWorkspace().isXOfTypeY( variable->getValueType(), typeSp.getType() ) ||  typeSp.getDim() != index.size() )
-            throw RbException( "Type error when adding variable " + name + index.toIndexString() + " to frame" );
-    }
-    else {
-        if ( !Workspace::userWorkspace().isXOfTypeY( variable->getTypeSpec(), typeSp ) || index.size() != 0 )
-            throw RbException( "Type error when adding variable " + variable->getTypeSpec().toString() + " " + name + " to frame" );
+    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
+    if ( variableTable.find(name) == variableTable.end() ) {
+        if ( parentFrame != NULL )
+            return parentFrame->operator []( name );
+        else
+            throw RbException( "Variable slot " + name + " does not exist" );
     }
 
-    /* Check index */
-    for ( size_t i = 0; i < index.size(); i++ ) {
-        if ( index[i] < 0 )
-            throw RbException( "Index error when adding variable " + name + index.toIndexString() + " to frame" );
+    PRINTF( "Retrieving %s %s from frame\n", name.c_str(), it->second.getTypeSpec().toString().c_str() );
+
+    return (*it).second;
+}
+
+
+/** Index operator (const) to variable slot from string */
+const VariableSlot& VariableFrame::operator[]( const std::string& name ) const {
+
+    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find( name );
+    if ( variableTable.find(name) == variableTable.end() ) {
+        if ( parentFrame != NULL )
+            return parentFrame->operator []( name );
+        else
+            throw RbException( "Variable slot " + name + " does not exist" );
     }
+
+    PRINTF( "Retrieving %s %s from frame\n", name.c_str(), it->second.getTypeSpec().toString().c_str() );
+
+    return (*it).second;
+}
+
+
+/** Add constant to frame */
+void VariableFrame::addConstant( const std::string& name, const TypeSpec& typeSp, DAGNode* variable ) {
 
     /* Throw an error if the variable exists. Note that we cannot use the function
        existsVariable because that function looks recursively in parent frames, which
        would make it impossible to hide global variables. */
-    if ( variableTable.find(name) != variableTable.end() )
-        throw RbException( "Variable " + name + " already exists in local frame" );
+    if ( variableTable.find( name ) != variableTable.end() )
+        throw RbException( "Variable " + name + " already exists in frame" );
 
-    /* Embed the variable in a container if appropriate */
-    if ( index.size() > 0 ) {
-        VariableContainer* container = new VariableContainer( TypeSpec( variable->getValueType(), index.size() ) );
-        (*container)[index] = variable;    // This call will cause the container to resize itself
-        variable = new ContainerNode( container );
-    }
+    /* Create the slot */
+    VariableSlot slot( typeSp, variable, true );
+    slot.setFrame( this );
+
+    /* Insert new slot in variable table */
+    variableTable.insert( std::pair<std::string, VariableSlot>( name, slot ) );
+
+    PRINTF( "Inserted const %s %s = %s in frame\n", name.c_str(), slot.getTypeSpec().toString().c_str(), variable->briefInfo().c_str() );
+}
+
+
+/** Add variable to frame */
+void VariableFrame::addVariable( const std::string& name, const TypeSpec& typeSp, DAGNode* variable ) {
+
+    /* Throw an error if the variable exists. Note that we cannot use the function
+       existsVariable because that function looks recursively in parent frames, which
+       would make it impossible to hide global variables. */
+    if ( variableTable.find( name ) != variableTable.end() )
+        throw RbException( "Variable " + name + " already exists in frame" );
+
+    /* Create the slot */
+    VariableSlot slot( typeSp, variable );
+    slot.setFrame( this );
+
+    /* Insert new slot in variable table */
+    variableTable.insert( std::pair<std::string, VariableSlot>( name, slot ) );
+
+    PRINTF( "Inserted %s %s in frame\n", name.c_str(), slot.getTypeSpec().toString().c_str() );
+}
+
+
+/** Add variable slot to frame */
+void VariableFrame::addVariableSlot( const std::string& name, const TypeSpec& typeSp ) {
+
+    /* Throw an error if the variable exists. Note that we cannot use the function
+       existsVariable because that function looks recursively in parent frames, which
+       would make it impossible to hide global variables. */
+    if ( variableTable.find( name ) != variableTable.end() )
+        throw RbException( "Variable " + name + " already exists in frame" );
 
     /* Create the slot */
     VariableSlot slot( typeSp );
-    slot.setVariableFrame( this );
-    slot.setVariable( variable );
+    slot.setFrame( this );
 
-    /* Insert new variable in variable table */
-    variableTable.insert( std::pair<std::string, VariableSlot>(name, slot) );
+    /* Insert new slot in variable table */
+    variableTable.insert( std::pair<std::string, VariableSlot>( name, slot ) );
 
-    PRINTF("Inserted variable %s %s in frame\n", variable->getTypeSpec().toString().c_str(), name.c_str());
-}
-
-
-/** Clone entire environment, except base frame (it always stays the same) */
-VariableFrame* VariableFrame::cloneEnvironment(void) const {
-
-    VariableFrame* newEnv = clone();
-    if (newEnv->parentVariableFrame != NULL && newEnv->parentVariableFrame->getParentVariableFrame() != NULL)
-        newEnv->parentVariableFrame = newEnv->parentVariableFrame->cloneEnvironment();
-
-    return newEnv;
+    PRINTF( "Inserted %s %s in frame\n", name.c_str(), slot.getTypeSpec().toString().c_str() );
 }
 
 
 /** Erase variable */
-void VariableFrame::eraseVariable(const std::string& name) {
+void VariableFrame::eraseVariable( const std::string& name ) {
 
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
-    if (it == variableTable.end())
-        throw (RbException("Variable " + name + " does not exist"));
+    std::map<std::string, VariableSlot>::iterator it = variableTable.find( name );
+    if ( it == variableTable.end() )
+        throw RbException( "Variable " + name + " does not exist in frame" );
 
-    variableTable.erase(it);
+    PRINTF( "Erasing %s %s from frame\n", name.c_str(), it->second.getTypeSpec().toString().c_str() );
 
-    PRINTF("Erased variable slot named '%s' in frame\n", name.c_str());
+    variableTable.erase( it );
 }
 
 
 /** Does variable exist in the environment (current frame and enclosing frames)? */
-bool VariableFrame::existsVariable(const std::string& name) const {
+bool VariableFrame::existsVariable( const std::string& name ) const {
 
-    if (variableTable.find(name) == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            return parentVariableFrame->existsVariable(name);
+    if ( variableTable.find(name) == variableTable.end() ) {
+        if ( parentFrame != NULL )
+            return parentFrame->existsVariable( name );
         else
             return false;
     }
@@ -255,200 +169,38 @@ bool VariableFrame::existsVariable(const std::string& name) const {
 }
 
 
-/** Get reference */
-DAGNode* VariableFrame::getReference(const std::string& name) const {
-
-    PRINTF("Retrieving variable reference named '%s' from frame\n", name.c_str());
-
-    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            return parentVariableFrame->getReference(name);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    return (*it).second.getReference();
-}
-
-
 /** Get slot name */
-const std::string& VariableFrame::getSlotName(const VariableSlot* theSlot) const {
+const std::string& VariableFrame::getSlotName( const VariableSlot* theSlot ) const {
 
-    for (VariableTable::const_iterator i=variableTable.begin(); i!=variableTable.end(); i++) {
+    for ( VariableTable::const_iterator i = variableTable.begin(); i != variableTable.end(); i++) {
     
-        if (&((*i).second) == theSlot)
+        if ( &((*i).second) == theSlot )
             return (*i).first;
     }
 
-    throw RbException("Specified variable slot does not exist in frame");
-}
-
-
-/** Get type specification for slot */
-const TypeSpec& VariableFrame::getTypeSpec(const std::string& name) const {
-
-    PRINTF("Retrieving type specification for variable named '%s' from frame\n", name.c_str());
-
-    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            return parentVariableFrame->getTypeSpec(name);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    return (*it).second.getTypeSpec();
-}
-
-
-/** Get value */
-const RbObject* VariableFrame::getValue(const std::string& name) const {
-
-    PRINTF("Retrieving value of variable named '%s' from frame\n", name.c_str());
-
-    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            return parentVariableFrame->getValue(name);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    return (*it).second.getValue();
-}
-
-
-/**
- * Get variable. We only return a pointer to a const because the variable
- * may or may not be a reference. Call getReference to get a true reference
- * to the variable. The getVariable function is provided so that programmers
- * can look into the structure of a value variable (or reference variable)
- * should they be interested in doing so, without giving them the ability
- * to change the value and possibly violate the logic of argument passing in
- * the language.
- */
-const DAGNode* VariableFrame::getVariable(const std::string& name) const {
-
-    PRINTF("Retrieving variable named '%s' from frame\n", name.c_str());
-
-    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            return parentVariableFrame->getVariable(name);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    return (*it).second.getVariable();
-}
-
-
-/** Get variable slot */
-VariableSlot& VariableFrame::getVariableSlot(const std::string& name) {
-
-    PRINTF("Retrieving variable slot named '%s' from frame\n", name.c_str());
-
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
-    if (variableTable.find(name) == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            return parentVariableFrame->getVariableSlot(name);
-        else
-            throw (RbException("Variable slot '" + name + "' does not exist"));
-    }
-
-    return (*it).second;
-}
-
-
-/** Is the named variable a reference variable? */
-bool VariableFrame::isReference(const std::string& name) const {
-
-    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find(name);
-    if (variableTable.find(name) == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            return parentVariableFrame->isReference(name);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    return (*it).second.getTypeSpec().isReference();
+    throw RbException( "Specified variable slot does not exist in frame" );
 }
 
 
 /** Print value for user */
-void VariableFrame::printValue(std::ostream& o) const {
+void VariableFrame::printValue( std::ostream& o ) const {
 
-    VariableTable::const_iterator i;
-    for (i=variableTable.begin(); i!=variableTable.end(); i++) {
-        o << (*i).first << " = ";
-        (*i).second.printValue(o);
+    VariableTable::const_iterator it;
+    for ( it = variableTable.begin(); it != variableTable.end(); it++) {
+        o << (*it).first << " = ";
+        (*it).second.printValue( o );
         o << std::endl;
     }
 }
 
 
 /** Complete info about object to string */
-std::string VariableFrame::richInfo(void) const {
+std::string VariableFrame::richInfo( void ) const {
 
     std::ostringstream o;
     o << "VariableFrame:" << std::endl;
-    printValue(o);
+    printValue( o );
 
     return o.str();
-}
-
-
-/** Set value */
-void VariableFrame::setValue(const std::string& name, RbObject* newVal) {
-
-    // Find the variable
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            parentVariableFrame->setValue(name, newVal);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    // Delegate to slot
-    VariableSlot& slot = (*it).second;
-    slot.setValue(newVal);
-}
-
-
-/** Set variable */
-void VariableFrame::setVariable(const std::string& name, DAGNode* newVar) {
-
-    // Find the variable slot
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            parentVariableFrame->setVariable(name, newVar);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    // Delegate to slot
-    VariableSlot& slot = (*it).second;
-    slot.setVariable(newVar);
-}
-
-
-/** Set reference */
-void VariableFrame::setReference(const std::string& name, DAGNode* newRef) {
-
-    // Find the variable slot
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
-    if (it == variableTable.end()) {
-        if (parentVariableFrame != NULL)
-            parentVariableFrame->setReference(name, newRef);
-        else
-            throw (RbException("Variable '" + name + "' does not exist"));
-    }
-
-    // Delegate to slot
-    VariableSlot& slot = (*it).second;
-    slot.setReference(newRef);
 }
 

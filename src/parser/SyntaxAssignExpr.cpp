@@ -187,38 +187,6 @@ DAGNode* SyntaxAssignExpr::getValue( Frame* frame ) const {
             else
                 throw RbException( "Invalid assignment to reference variable " + slot->getTypeSpec() + " " + slot->getName() );
         }
-
-#if 0
-        // I think that allowing the setting of values of stochastic nodes through arrow assignment is a bad feature of the
-        // language because it makes it impossible for users to convert stochastic variables to constant variables without
-        // going over an equation assignment or calling a specialized function.
-        // It is better to implement clamp, unclamp, and setval functions for stochastic nodes.
-        else if ( theVariable->isDAGType( StochasticNode_name ) && theValue != NULL ) {
-
-            // Setting value of existing stochastic node
-            StochasticNode* theStochasticNode = static_cast<StochasticNode*>( theVariable );
-
-            if ( theValue->isTypeSpec( theStochasticNode->getTypeSpec() ) ) {
-
-                PRINTF ( "Setting the value of stochastic node %s %s through arrow assignment\n", theStochasticNode->getTypeSpec(), theStochasticNode->getName() );
-                theStochasticNode->setValue( theValue->clone() );
-            }
-            else if ( theValue->isConvertibleTo( theStochasticNode->getTypeSpec(), true ) ) {
-
-                PRINTF ( "Setting the value of stochastic node %s %s through arrow assignment with type conversion\n", theStochasticNode->getTypeSpec(), theStochasticNode->getName() );
-                theStochasticNode->setValue( theValue->convertTo( theStochasticNode->getTypeSpec() ) );
-                if ( exprValue->numRefs() == 0 )
-                    delete exprValue;
-            }
-            else {
-
-                std::ostringstream msg;
-                msg << "Invalid assignment of " << theValue->getTypeSpec() << " value  to stochastic node ";
-                msg << theStochasticNode->getTypeSpec() << " " << theStochasticNode->getName();
-                throw RbException( msg );
-            }
-        }
-#endif
         else {
 
             // Regular assignment to an existing variable

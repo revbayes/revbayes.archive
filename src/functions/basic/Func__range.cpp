@@ -36,7 +36,7 @@ Func__range* Func__range::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func__range::executeFunction( void ) {
+DAGNode* Func__range::execute( void ) {
 
     int first = static_cast<const Integer*>( args[0].getValue() )->getValue();
     int last  = static_cast<const Integer*>( args[1].getValue() )->getValue();

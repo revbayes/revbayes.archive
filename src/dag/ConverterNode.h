@@ -36,7 +36,7 @@
 
     public:
                                 ConverterNode(const std::string& type, int dim);                            //!< Constructor of pristine node
-                                ConverterNode(DAGNode* origNode, const TypeSpec& typeSpec);                 //!< Basic constructor
+                                ConverterNode(DAGNode* origNode, const std::string& type, int dim);         //!< Basic constructor
         virtual                ~ConverterNode(void);                                                        //!< Virtual destructor
 
         // Basic utility functions
@@ -47,11 +47,8 @@
         std::string             richInfo(void) const;                                                       //!< Complete info about object
 
         // DAG functions
-        ConverterNode*          cloneDAG(std::map<DAGNode*, DAGNode*>& newNodes) const;                     //!< Clone entire graph
-        bool                    isMutableTo(const DAGNode* newNode) const;                                  //!< Is node mutable to newNode?
+        ConverterNode*          cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
         bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
-        void                    mutateTo(DAGNode* newNode);                                                 //!< Mutate to new node
-        void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
     protected:
         // Utility function

@@ -35,7 +35,7 @@ class Func_s :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-    	DAGNode*                    executeFunction(void);                                      //!< Execute function
+    	DAGNode*                    execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
         bool                        throws(void) const;                                         //!< One variant needs to throw
@@ -66,7 +66,7 @@ Func_s<valType>* Func_s<valType>::clone( void ) const {
 
 /** Execute function: Simplex <- ( Integer ) */
 template <>
-DAGNode* Func_s<Integer>::executeFunction( void ) {
+DAGNode* Func_s<Integer>::execute( void ) {
 
     int size = static_cast<const Integer*>( args[0]->getValue() )->getValue();
 
@@ -80,7 +80,7 @@ DAGNode* Func_s<Integer>::executeFunction( void ) {
 
 /** Execute function: Simplex <- ( VectorRealPos ) */
 template <>
-DAGNode* Func_s<VectorRealPos>::executeFunction( void ) {
+DAGNode* Func_s<VectorRealPos>::execute( void ) {
 
     const VectorRealPos* tempVec = static_cast<const VectorRealPos*>( args[0]->getValue() );
 
@@ -92,7 +92,7 @@ DAGNode* Func_s<VectorRealPos>::executeFunction( void ) {
 
 /** Execute function: Simplex <- ( RealPos, RealPos, ... ) */
 template <>
-DAGNode* Func_s<RealPos>::executeFunction( void ) {
+DAGNode* Func_s<RealPos>::execute( void ) {
 
     VectorReal  tempVec;
     for ( size_t i = 0; i < args.size(); i++ )

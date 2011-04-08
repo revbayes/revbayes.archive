@@ -23,8 +23,8 @@
 #ifndef Workspace_H
 #define Workspace_H
 
-#include "Frame.h"
 #include "FunctionTable.h"
+#include "VariableFrame.h"
 #include "VectorString.h"
 
 #include <map>
@@ -72,7 +72,7 @@ typedef std::map<std::string, RbObject*> TypeTable;
  * to the function table.
  *
  */
-class Workspace : public Frame {
+class Workspace : public VariableFrame {
 
     public:
 

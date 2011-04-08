@@ -35,7 +35,7 @@ class Func_v :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-    	DAGNode*                    executeFunction(void);                                      //!< Execute function
+    	DAGNode*                    execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
@@ -61,27 +61,13 @@ Func_v<valType, retType>* Func_v<valType, retType>::clone( void ) const {
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType, typename retType>
-DAGNode* Func_v<valType, retType>::executeFunction( void ) {
+DAGNode* Func_v<valType, retType>::execute( void ) {
 
     retType*    tempVec = new retType();
     for ( size_t i = 0; i < args.size(); i++ )
         tempVec->push_back( static_cast<const valType*>( args[i].getValue() )->clone() );
 
     return new ContainerNode( tempVec );
-}
-
-
-/** Execute function */
-DAGNode* Func_v_double::executeFunction( void ) {
-
-    // Create temporary vector for the ints 
-    std::vector<double>    tempVec;
-
-    // Get elements
-    for ( size_t i = 0; i < args.size(); i++ )
-        tempVec.push_back( static_cast<const Real*>( args[i].getValue() )->getValue();
-
-    return new ContainerNode( new VectorReal( tempVec ) );
 }
 
 

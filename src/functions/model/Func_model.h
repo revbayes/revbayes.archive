@@ -31,7 +31,7 @@ class Func_model :  public RbFunction {
     	const VectorString&     getClass(void) const;                                       //!< Get class vector
 
         // Func_model functions
-    	DAGNode*                executeFunction(void);                                      //!< Execute function
+    	DAGNode*                execute(void);                                              //!< Execute function
         const ArgumentRules&    getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec          getReturnType(void) const;                                  //!< Get type of return val
 

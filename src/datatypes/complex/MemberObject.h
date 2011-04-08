@@ -20,7 +20,7 @@
 #ifndef MemberObject_H
 #define MemberObject_H
 
-#include "Frame.h"
+#include "MemberFrame.h"
 #include "MethodTable.h"
 #include "RbComplex.h"
 
@@ -55,7 +55,7 @@ class MemberObject: public RbComplex {
         MemberObject*               getConstValue(void) const;                                                          //!< Make a constant clone
 
         // Member variable functions; override getMemberRules to add member variables
-        const MemberTable&          getMembers(void) const { return members; }                                          //!< Get members
+        const MemberFrame&          getMembers(void) const { return members; }                                          //!< Get members
         virtual const MemberRules&  getMemberRules(void) const;                                                         //!< Get member rules
         const TypeSpec&             getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
         const RbObject*             getValue(const std::string& name);                                                  //!< Get member value
@@ -78,10 +78,9 @@ class MemberObject: public RbComplex {
     protected:
 									MemberObject(const MemberRules& memberRules);                                       //!< Standard constructor
                                     MemberObject(void){}                                                                //!< Default constructor; no members or methods
-        // Protected functions
 
         // Members is the variable frame that stores member variables
-        VariableFrame               members;                                                                            //!< Member variables
+        MemberFrame                 members;                                                                            //!< Member variables
 
         // Friend class
         friend class                DistributionFunction;                                                               //!< Give distribution function access

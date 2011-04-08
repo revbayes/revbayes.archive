@@ -32,11 +32,6 @@ class VectorString;
 class ArgumentRule : public RbInternal {
 
     public:
-                                    ArgumentRule(const std::string& argName, RbObject* defValue);                                       //!< Constructor of rule from default value
-                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp);                                //!< Constructor of rule without default value
-                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbObject* defValue);            //!< Constructor of rule with default value
-                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable);          //!< Constructor of rule with default reference or default wrapped value
-
         // Basic utility functions
         virtual ArgumentRule*       clone(void) const { return new ArgumentRule(*this); }                                               //!< Clone object
         virtual const VectorString& getClass(void) const;                                                                               //!< Get class vector
@@ -58,6 +53,11 @@ class ArgumentRule : public RbInternal {
         void                        setReference(bool flag) { argSlot.setReferenceFlag(flag); }                                         //!< Set reference flag
 
     protected:
+                                    ArgumentRule(const std::string& argName, RbObject* defValue);                                       //!< Constructor of rule from default value
+                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp);                                //!< Constructor of rule without default value
+                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbObject* defValue);            //!< Constructor of rule with default value
+                                    ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable);          //!< Constructor of rule with default reference or default wrapped value
+
         std::string                 label;                                                                                              //!< Label of argument
         VariableSlot                argSlot;                                                                                            //!< Slot with typespec and possibly default value/ref
         bool                        hasDefaultVal;                                                                                      //!< Has default (which can be NULL) ?

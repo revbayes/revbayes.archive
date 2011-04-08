@@ -40,7 +40,7 @@ Func_clamp* Func_clamp::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_clamp::executeFunction( void ) {
+DAGNode* Func_clamp::execute( void ) {
 
     // Get the stochastic node from the variable reference or lookup
     StochasticNode* theNode = dynamic_cast<StochasticNode*>( args[0].getReference() );

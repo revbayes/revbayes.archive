@@ -26,6 +26,7 @@
 #ifndef VariableFrame_H 
 #define VariableFrame_H
 
+#include "Frame.h"
 #include "VariableSlot.h"
 
 #include <map>
@@ -35,7 +36,7 @@ class DAGNode;
 class VectorInteger;
 class RbObject;
 
-typedef std::map<std::string, VariableSlot> VariableTable;
+typedef std::map<std::string, VariableSlot> VariableTable;          //!< Typedef for convenience
 
 /**
  * @brief Execution or evaluation variable frame
@@ -59,50 +60,34 @@ typedef std::map<std::string, VariableSlot> VariableTable;
  * than a table of variables, and its interface is much simpler.
  *
  */
-class VariableVariableFrame {
+class VariableFrame : public Frame {
 
     public:
         friend class                SyntaxForCondition;                                                                     //!< Give for condition possibility to modify reference flag
         friend class                SyntaxVariable;                                                                         //!< Give parser direct access to variable slots
 
                                     VariableFrame(void);                                                                    //!< Constructor of variable frame with NULL parent
-                                    VariableFrame(VariableFrame* parentFr);                                                 //!< Constructor of variable frame with parent
+                                    VariableFrame(Frame* parentFr);                                                         //!< Constructor of variable frame with parent
                                     VariableFrame(const VariableFrame& x);                                                  //!< Copy constructor: set frame of variable slots
 
         // Operators
-        bool                        operator==(const VariableFrame& x) const;                                               //!< Equals comparison
-        bool                        operator!=(const VariableFrame& x) const { return !operator==(x); }                     //!< Not equals comparison
+        VariableSlot&               operator[](const std::string& name);                                                    //!< Get named variable slot reference
+        const VariableSlot&         operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
 
         // Basic utility functions
         virtual VariableFrame*      clone(void) const { return new VariableFrame(*this); }                                  //!< Clone variable frame
-        virtual void                printValue(std::ostream& o) const;                                                      //!< Print table for user
+        void                        printValue(std::ostream& o) const;                                                      //!< Print table for user
         virtual std::string         richInfo(void) const;                                                                   //!< Complete info to string
 
         // Regular functions
-	    void                        addReference(const std::string& name, DAGNode* ref);                                    //!< Add a reference
-        void                        addReference(const std::string& name, const std::string& type, int dim);                //!< Add empty reference slot
-	    void                        addVariable(const std::string& name, DAGNode* value);                                   //!< Add a simple variable
-	    void                        addVariable(const std::string& name, const VectorInteger& index, DAGNode* elemValue);   //!< Add a container variable
-        void                        addVariable(const std::string& name, const std::string& type, int dim);                 //!< Add empty variable slot
-	    void                        addVariable(const std::string& name, const TypeSpec& typeSp, const VectorInteger& index, DAGNode* elemValue);   //!< Generic add function for parser
-        void                        eraseVariable(const std::string& name);                                                 //!< Erase a variable
+        virtual void                addConstant(const std::string& name, const TypeSpec& typeSp, DAGNode* variable);        //!< Add constant
+        virtual void                addVariable(const std::string& name, const TypeSpec& typeSp, DAGNode* variable);        //!< Add variable
+        virtual void                addVariableSlot(const std::string& name, const TypeSpec& typeSp);                       //!< Add empty slot
+        virtual void                eraseVariable(const std::string& name);                                                 //!< Erase a variable
         bool                        existsVariable(const std::string& name) const;                                          //!< Does variable exist?
-        VariableFrame*              getParentFrame(void) const { return parentFrame; }                                      //!< Get parent frame
-        DAGNode*                    getReference(const std::string& name) const;                                            //!< Get reference
         const std::string&          getSlotName(const VariableSlot* slot) const;                                            //!< Get name of a slot
-        const TypeSpec&             getTypeSpec(const std::string& name) const;                                             //!< Get type spec of a named variable
-        const RbObject*             getValue(const std::string& name) const;                                                //!< Get value
-        const DAGNode*              getVariable(const std::string& name) const;                                             //!< Get variable
-        const VariableTable&        getVariableTable(void) const { return variableTable; }                                  //!< Return variable table
-        bool                        isReference(const std::string& name) const;                                             //!< Is the variable a reference variable?
-        void                        setReference(const std::string& name, DAGNode* newRef);                                 //!< Set reference
-        void                        setValue(const std::string& name, RbObject* newVal);                                    //!< Set value
-        void                        setVariable(const std::string& name, DAGNode* newVar);                                  //!< Set variable
 
     protected:
-        VariableSlot&               getVariableSlot(const std::string& name);                                               //!< Give parser access to variable slot
-
-        VariableFrame*              parentFrame;                                                                            //!< Pointer to enclosing frame
         VariableTable               variableTable;                                                                          //!< Variable table
 };
 

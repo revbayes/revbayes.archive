@@ -72,9 +72,9 @@ class RbFunction :  public RbObject {
     	void                                    printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
 
         // RbFunction functions you have to override
+        virtual DAGNode*                        execute(void) = 0;                                                                  //!< Execute function
         virtual const ArgumentRules&            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec                  getReturnType(void) const = 0;                                                      //!< Get type of return value
-        virtual DAGNode*                        executeFunction(void) = 0;                                                          //!< Execute function
 
         // RbFunction function you may want to override
         virtual bool                            processArguments(const std::vector<Argument>&    passedArgs,

@@ -40,7 +40,7 @@ Func_source* Func_source::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_source::executeFunction( void ) {
+DAGNode* Func_source::execute( void ) {
 
     /* Open file */
     std::string filename = static_cast<const RbString*>( args[0].getValue() )->getValue();
