@@ -25,7 +25,6 @@
 #include "RbNames.h"
 #include "RbStatistics.h"
 #include "Real.h"
-#include "ReferenceRule.h"
 #include "Simplex.h"
 #include "ValueRule.h"
 #include "VectorRealPos.h"
@@ -80,8 +79,8 @@ const MemberRules& Dist_cat::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ReferenceRule( "m"    , Simplex_name ) );
-        memberRules.push_back( new ReferenceRule( "dummy", Categorical_name ) );
+        memberRules.push_back( new ValueRule( "m"    , Simplex_name ) );
+        memberRules.push_back( new ValueRule( "dummy", Categorical_name ) );
 
         rulesSet = true;
 		}
@@ -112,35 +111,6 @@ const TypeSpec Dist_cat::getVariableType( void ) const {
 
 
 /**
- * This function calculates the natural log of the likelihood
- * ratio for a categorical random variable under two
- * different values of the distribution parameter.
- *
- * @brief Natural log of Categorical likelihood ratio
- *
- * @param value     Value of random variable
- * @return          Natural log of the likelihood ratio
- */
-double Dist_cat::lnLikelihoodRatio( const RbObject* value ) {
-
-	// Get the value and the parameters of the categorical distribution
-    std::vector<double> mNew = static_cast<const Simplex*    >( getVariable("m")->getValue()      )->getValue();
-    std::vector<double> mOld = static_cast<const Simplex*    >( getVariable("m")->getStoredValue())->getValue();
-    int                 x    = static_cast<const Categorical*>( value                             )->getValue();
-	
-	// Calculate the likelihood ratio for the two values
-    if ( x < 0 ) {
-
-        return 0.0;     // NA, so probability is 1.0 for both prior parameter values
-    }
-    else {
-
-        return std::log( mNew[x] / mOld[x] );
-    }
-}
-
-
-/**
  * This function calculates the natural log of the probability
  * density for a categorical random variable.
  *
@@ -159,35 +129,6 @@ double Dist_cat::lnPdf( const RbObject* value ) {
         return 0.0;
     else
         return std::log( m[x] );
-}
-
-
-/**
- * This function calculates the natural log of the probability
- * density ratio for two categorical random variables.
- *
- * @brief Natural log of Categorical probability density ratio
- *
- * @param newX      Value in numerator
- * @param oldX      Value in denominator
- * @return          Natural log of the probability density ratio
- */
-double Dist_cat::lnPriorRatio( const RbObject* newVal, const RbObject* oldVal ) {
-
-	// Get the values and the parameters of the categorical distribution
-    std::vector<double> m    = static_cast<const Simplex*    >( getValue("m") )->getValue();
-    int                 newX = static_cast<const Categorical*>( newVal        )->getValue();
-    int                 oldX = static_cast<const Categorical*>( oldVal        )->getValue();
-
-	// Calculate the log prior ratio
-    if ( newX < 0 && oldX < 0 )
-        return 0.0;
-    else if ( newX >= 0 && oldX >= 0 )
-        return std::log( m[newX] / m[oldX] );
-    else if ( newX < 0 )
-        return std::log( 1.0 / m[oldX] );
-    else
-        return std::log( m[newX] / 1.0 );
 }
 
 

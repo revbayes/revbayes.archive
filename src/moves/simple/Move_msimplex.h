@@ -22,13 +22,13 @@
 #include <set>
 #include <string>
 
+#include "MoveSimple.h"
 #include "RandomNumberFactory.h"
-#include "SimpleMove.h"
 
 class Real;
 class RbObject;
 
-class Move_msimplex : public SimpleMove {
+class Move_msimplex : public MoveSimple {
 
     public:
                                     Move_msimplex(void);                                                             //!< Parser constructor

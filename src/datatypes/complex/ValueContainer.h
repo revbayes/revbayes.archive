@@ -78,6 +78,7 @@ class ValueContainer : public Container {
         // Container functions you may want to override
         virtual void                    clear(void);                                                                //!< Clear
         virtual void                    resize(const std::vector<size_t>& len);                                     //!< Resize to new length vector
+        virtual void                    setElement(const VectorNatural& index, DAGNode* var);                       //!< Allow parser to set element (or not)
         virtual size_t                  size(void) const { return elements.size(); }                                //!< Get total number of elements
 
     protected:
@@ -86,7 +87,6 @@ class ValueContainer : public Container {
 
         // Parser help functions you may want to override
         virtual DAGNode*                getElement(VectorInteger& index);                                           //!< Get element or subcontainer for parser
-        virtual void                    setElement(const VectorNatural& index, DAGNode* var);                       //!< Allow parser to set element (or not)
 
         // Member variable
 	    std::vector<RbObject*>          elements;                                                                   //!< Vector of values

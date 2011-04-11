@@ -31,6 +31,7 @@
 #include "Workspace.h"
 
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <sstream>
 
@@ -231,6 +232,8 @@ void DAGNode::mutateTo( DAGNode* newNode ) {
     if ( !isMutableTo( newNode ) )
         throw RbException( "Invalid attempt to mutate variable" );
 
+    assert( newNode->getSlot() != NULL );
+
     // We need a temp vector because we will lose the children during the process
     std::set<VariableNode*> oldChildren = children;
     for ( std::set<VariableNode*>::iterator i = oldChildren.begin(); i != oldChildren.end(); i++ )
@@ -239,7 +242,7 @@ void DAGNode::mutateTo( DAGNode* newNode ) {
     // We need a temp vector because we will lose our referring slots during the process
     std::set<VariableSlot*> oldSlots = referringSlots;
     for ( std::set<VariableSlot*>::iterator i = oldSlots.begin(); i != oldSlots.end(); i++ )
-        (*i)->setReference( newNode );
+        (*i)->setVariable( newNode );
 
     // Now it is up to the slot to delete us
 }

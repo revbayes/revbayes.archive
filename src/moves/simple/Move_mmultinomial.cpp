@@ -15,17 +15,17 @@
  * $Id$
  */
 
-#include "ValueRule.h"
 #include "Distribution.h"
 #include "Move_mmultinomial.h"
-#include "RealPos.h"
+#include "Natural.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "Integer.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
+#include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
+#include "ValueRule.h"
 #include "VectorReal.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -34,15 +34,15 @@
 
 
 /** Constructor for parser */
-Move_mmultinomial::Move_mmultinomial(void) : SimpleMove(getMemberRules()) {
+Move_mmultinomial::Move_mmultinomial(void) : MoveSimple(getMemberRules()) {
 
 }
 
 /** Constructor for internal use */
-Move_mmultinomial::Move_mmultinomial(StochasticNode* node, double tuning, int nc, double weight) : SimpleMove(getMemberRules()) {
+Move_mmultinomial::Move_mmultinomial(StochasticNode* node, double tuning, int nc, double weight) : MoveSimple(getMemberRules()) {
 
     setValue("tuning",   new RealPos(tuning));
-    setValue("num_cats", new Integer(nc));
+    setValue("num_cats", new Natural(nc));
     setValue("weight",   new RealPos(weight));
 
     setNodePtr(node);
@@ -85,21 +85,25 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 
 
 /** Perform the move */
-double Move_mmultinomial::perform(std::set<StochasticNode*>& affectedNodes) {
+double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
 
-    VectorReal*            valPtr  = (VectorReal*)(nodePtr->getValuePtr(affectedNodes));
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
-    double                 alpha0  = ((Real*)(getValue("tuning")))->getValue();
-    int                    k       = ((Integer*)(getValue("num_cats")))->getValue();
-	int                    n       = valPtr->getValue().size();
+    // Get affected nodes
+    nodePtr->getAffected( affectedNodes );
 
-	std::vector<double> curVal = valPtr->getValue();
+    // Get relevant values
+    const VectorReal*       valPtr  = static_cast<const VectorReal*>( nodePtr->getValue() );
+    RandomNumberGenerator*  rng     = GLOBAL_RNG;
+    double                  alpha0  = static_cast<const RealPos*>( getValue("tuning")   )->getValue();
+    int                     k       = static_cast<const Integer*>( getValue("num_cats") )->getValue();
+	int                     n       = valPtr->size();
+
+    std::vector<double> curVal = valPtr->getValue();
     double sum = 0.0;
-    for (int i=0; i<n; i++)
+    for ( size_t i = 0; i < curVal.size(); i++ )
         sum += curVal[i];
-     for (int i=0; i<n; i++)
+    for ( size_t i = 0; i < curVal.size(); i++ )
         curVal[i] /= sum;
-	std::vector<double> newVal = curVal;
+    std::vector<double> newVal = curVal;
 
 	/* We update the simplex values by proposing new values from a Dirichlet centered
 	   on the current values. The i-th parameter of the Dirichlet is the i-th value
@@ -197,10 +201,10 @@ double Move_mmultinomial::perform(std::set<StochasticNode*>& affectedNodes) {
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
 		}
         
-    for (int i=0; i<n; i++)
+    for ( size_t i = 0; i < valPtr->size(); i++ )
         newVal[i] *= sum;
 		
-    valPtr->setValue(newVal);
+    nodePtr->setValue( new VectorReal( newVal ) );
 	
     return lnProposalRatio;
 }

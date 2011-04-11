@@ -23,6 +23,7 @@
 #include "RbObject.h"
 #include "VectorString.h"
 #include "SyntaxFunctionCall.h"
+#include "VariableFrame.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -114,7 +115,7 @@ const VectorString& SyntaxFunctionCall::getClass(void) const {
 
 
 /** Convert element to a deterministic function node. */
-DAGNode* SyntaxFunctionCall::getDAGNodeExpr(Frame* frame) const {
+DAGNode* SyntaxFunctionCall::getDAGNodeExpr(VariableFrame* frame) const {
 
     // Package arguments
     std::vector<Argument> args;
@@ -140,7 +141,7 @@ DAGNode* SyntaxFunctionCall::getDAGNodeExpr(Frame* frame) const {
 
 
 /** Look up the function or member function and calculate the value. */
-DAGNode* SyntaxFunctionCall::getValue(Frame* frame) const {
+DAGNode* SyntaxFunctionCall::getValue(VariableFrame* frame) const {
 
     // Package arguments
     std::vector<Argument> args;
@@ -157,7 +158,7 @@ DAGNode* SyntaxFunctionCall::getValue(Frame* frame) const {
         if (objectPtr == NULL)
             throw(RbException("Object does not have member functions"));
         MemberObject* theObject = const_cast<MemberObject*>(objectPtr);
-        retVal = theObject->executeMethod(*functionName, args);
+        retVal = NULL; //TODO: Fix this! retVal = theObject->executeMethod(*functionName, args);
     }
 
     return retVal;

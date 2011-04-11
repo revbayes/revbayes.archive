@@ -63,10 +63,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable)
     : RbInternal(), label(argName), argSlot(Workspace::userWorkspace().getTypeSpec(argTypeSp)), hasDefaultVal(true) {
 
-    if ( argSlot.getTypeSpec().isReference() )
-        argSlot.setReference( defVariable );
-    else
-        argSlot.setVariable( defVariable );
+    argSlot.setVariable( defVariable );
 }
 
 

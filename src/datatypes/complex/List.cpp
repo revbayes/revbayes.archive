@@ -27,7 +27,7 @@
 
 
 /** Construct empty list */
-List::List( void ) : MemberObject(getMemberRules(), getMethodInits()) {
+List::List( void ) : MemberObject(getMemberRules()) {
 }
 
 
@@ -46,10 +46,10 @@ DAGNode* List::operator[](size_t i) const {
 /** Add variable to list */
 void List::addVariable( DAGNode* var, const std::string& name ) {
 
-    members.addVariable( name, var );
+    members.addVariable( name, TypeSpec(RbObject_name, var->getDim() ), var );
     names.push_back( name );
     variables.push_back( var );
-}   
+}
 
 
 /** Clone function */

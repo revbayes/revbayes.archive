@@ -52,8 +52,8 @@ class SyntaxStatement : public SyntaxElement {
         void                        print(std::ostream& o) const;                                   //!< Print info about object
 
         // Regular functions
-        DAGNode*                    getDAGNodeExpr(Frame* frame) const;                             //!< Convert to DAG node expression
-        DAGNode*                    getValue(Frame* frame) const;                                   //!< Get semantic value
+        DAGNode*                    getDAGNodeExpr(VariableFrame* frame) const;                     //!< Convert to DAG node expression
+        DAGNode*                    getValue(VariableFrame* frame) const;                           //!< Get semantic value
 
     protected:
         enum statementT             statementType;                                                  //!< The type of statement

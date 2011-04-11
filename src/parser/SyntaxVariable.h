@@ -16,9 +16,9 @@
 #ifndef SyntaxVariable_H
 #define SyntaxVariable_H
 
-#include "VectorInteger.h"
 #include "RbString.h"
 #include "SyntaxElement.h"
+#include "VectorInteger.h"
 
 #include <iostream>
 #include <list>
@@ -37,34 +37,34 @@ class SyntaxFunctionCall;
 class SyntaxVariable : public SyntaxElement {
 
     public:
-                                    SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx);                      //!< Global variable
-                                    SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx); //!< Member variable 
-                                    SyntaxVariable(SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx);       //!< Global variable expression
-                                    SyntaxVariable(const SyntaxVariable& x);                                            //!< Copy constructor
-	    virtual                    ~SyntaxVariable(void);                                                               //!< Destructor deletes variable, identifier and index
+                                    SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx);                          //!< Global variable
+                                    SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx);     //!< Member variable 
+                                    SyntaxVariable(SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx);           //!< Global variable expression
+                                    SyntaxVariable(const SyntaxVariable& x);                                                //!< Copy constructor
+	    virtual                    ~SyntaxVariable(void);                                                                   //!< Destructor deletes variable, identifier and index
 
         // Assignment operator
-        SyntaxVariable&             operator=(const SyntaxVariable& x);                                                 //!< Assignment operator
+        SyntaxVariable&             operator=(const SyntaxVariable& x);                                                     //!< Assignment operator
 
         // Basic utility functions
-        std::string                 briefInfo(void) const;                                                              //!< Brief info about object
-        SyntaxVariable*             clone(void) const;                                                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                                               //!< Get class vector 
-        void                        print(std::ostream& o) const;                                                       //!< Print info about object
+        std::string                 briefInfo(void) const;                                                                  //!< Brief info about object
+        SyntaxVariable*             clone(void) const;                                                                      //!< Clone object
+        const VectorString&         getClass(void) const;                                                                   //!< Get class vector 
+        void                        print(std::ostream& o) const;                                                           //!< Print info about object
 
         // Regular functions
-        DAGNode*                    getDAGNodeExpr(Frame* frame) const;                                                 //!< Convert to DAG node expression
-        RbString*                   getIdentifier(void) { return identifier; }                                          //!< Get identifier
-        VectorInteger               getIndex(Frame* frame) const;                                                       //!< Get index
-        std::string                 getFullName(Frame* frame) const;                                                    //!< Get full name, with indices and base obj
-        DAGNode*                    getLValue(Frame* frame, VariableSlot*& theSlot, VectorInteger& index) const;        //!< Get semantic value
-        DAGNode*                    getValue(Frame* frame) const;                                                       //!< Get semantic value
+        DAGNode*                    getDAGNodeExpr(VariableFrame* frame) const;                                             //!< Convert to DAG node expression
+        RbString*                   getIdentifier(void) { return identifier; }                                              //!< Get identifier
+        VectorInteger               getIndex(VariableFrame* frame) const;                                                   //!< Get index
+        std::string                 getFullName(VariableFrame* frame) const;                                                //!< Get full name, with indices and base obj
+        DAGNode*                    getLValue(VariableFrame* frame, VariableSlot*& theSlot, VectorInteger& index) const;    //!< Get semantic value
+        DAGNode*                    getValue(VariableFrame* frame) const;                                                   //!< Get semantic value
 
     protected:
-        RbString*                   identifier;                                                                         //!< The name of the variable, if identified by name
-        SyntaxFunctionCall*         functionCall;                                                                       //!< Function call giving a reference to a variable (we hope)
-        std::list<SyntaxElement*>*  index;                                                                              //!< Vector of int indices to variable element
-        SyntaxVariable*             baseVariable;                                                                       //!< Base variable (pointing to a composite node)
+        RbString*                   identifier;                                                                             //!< The name of the variable, if identified by name
+        SyntaxFunctionCall*         functionCall;                                                                           //!< Function call giving a reference to a variable (we hope)
+        std::list<SyntaxElement*>*  index;                                                                                  //!< Vector of int indices to variable element
+        SyntaxVariable*             baseVariable;                                                                           //!< Base variable (pointing to a composite node)
 };
 
 #endif

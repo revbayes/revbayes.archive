@@ -47,16 +47,14 @@ class DistributionInterval: public Distribution {
         DAGNode*                        executeMethod(const std::string& name, ArgumentFrame& args);                //!< Direct call of member method
 
         // Interval distribution functions you probably want to override
-        virtual const RbObject*         getMax(void);                                                               //!< Get max value of coverage
-        virtual const RbObject*         getMin(void);                                                               //!< Get min value of coverage
+        virtual const RbObject*         getMax(void) const;                                                         //!< Get max value of coverage
+        virtual const RbObject*         getMin(void) const;                                                         //!< Get min value of coverage
 
         // Interval distribution functions you have to override
         virtual double                  cdf(const RbObject* value) = 0;                                             //!< Cumulative probability
         virtual Move*                   getDefaultMove(StochasticNode* node) = 0;                                   //!< Get default move
         virtual const TypeSpec          getVariableType(void) const = 0;                                            //!< Get random variable type spec
-        virtual double                  lnLikelihoodRatio(const RbObject* value) = 0;                               //!< Ln prob ratio of A | B when B is touched
         virtual double                  lnPdf(const RbObject* value) = 0;                                           //!< Ln probability density
-        virtual double                  lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) = 0;           //!< Ln prob ratio of A | B when A is touched
         virtual double                  pdf(const RbObject* value) = 0;                                             //!< Probability density
         virtual RbObject*               quantile(const double p) = 0;                                               //!< Quantile
         virtual RbObject*               rv(void) = 0;                                                               //!< Generate a random draw

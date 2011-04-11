@@ -22,13 +22,13 @@
 #include <set>
 #include <string>
 
+#include "MoveSimple.h"
 #include "RandomNumberFactory.h"
-#include "SimpleMove.h"
 
 class Real;
 class RbObject;
 
-class Move_mslide : public SimpleMove {
+class Move_mslide : public MoveSimple {
 
     public:
                                     Move_mslide(void);                                                      //!< Parser constructor

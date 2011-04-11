@@ -50,9 +50,7 @@ class DistributionCategorical: public Distribution {
         virtual int                         getNumStates(void) const = 0;                                               //!< Get number of states
         virtual const Simplex*              getProbabilityMassVector(void) = 0;                                         //!< Get probability mass vector
         virtual const TypeSpec              getVariableType(void) const = 0;                                            //!< Get random variable type spec
-        virtual double                      lnLikelihoodRatio(const RbObject* value) = 0;                               //!< Ln prob ratio of A | B when B is touched
         virtual double                      lnPdf(const RbObject* value) = 0;                                           //!< Ln probability density
-        virtual double                      lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) = 0;           //!< Ln prob ratio of A | B when A is touched
         virtual double                      pdf(const RbObject* value) = 0;                                             //!< Probability density
         virtual RbObject*                   rv(void) = 0;                                                               //!< Generate a random draw
 

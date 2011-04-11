@@ -16,12 +16,12 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "Move.h"
 #include "RealPos.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -32,17 +32,10 @@
 
 /** Constructor for parser use */
 Move::Move(const MemberRules& memberRules)
-    : MemberObject(memberRules, MethodTable()) {
+    : MemberObject(memberRules) {
 
     numAccepted = 0;
     numTried    = 0;
-}
-
-
-/** Execute member method. We throw an error because there are no visible member methods */
-DAGNode* Move::executeOperation(const std::string& name, const std::vector<VariableSlot>& args) {
-
-    throw RbException ("Object does not have methods");
 }
 
 
@@ -61,7 +54,7 @@ const MemberRules& Move::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new ArgumentRule("weight", new RealPos(1.0)));
+        memberRules.push_back(new ValueRule("weight", new RealPos(1.0)));
 
         rulesSet = true;
     }
@@ -78,19 +71,19 @@ const VectorString& Move::getClass(void) const {
 }
 
 
-/** Get method inits */
-const MethodTable& Move::getMethodInits(void) const {
+/** Get methods */
+const MethodTable& Move::getMethods(void) const {
 
-    static MethodTable methodInits = MethodTable();
+    static MethodTable methods = MethodTable( const_cast<MethodTable*>( &(MemberObject::getMethods()) ) );
 
-    return methodInits;
+    return methods;
 }
 
 
 /** Get update weight */
 double Move::getUpdateWeight(void) const {
 
-    return ((Real*)(getValue("weight")))->getValue();
+    return static_cast<const Real*>( getValue("weight") )->getValue();
 }
 
 

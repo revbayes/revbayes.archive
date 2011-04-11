@@ -121,7 +121,7 @@ DAGNode* FunctionTable::executeFunction(const std::string& name, const std::vect
     RbFunction* theFunction = findFunction(name, args, true);
     DAGNode*    theValue    = theFunction->execute();
 
-    theFunction->deleteProcessedArguments();
+    theFunction->clearArgs();
 
     return theValue;
 }
@@ -170,7 +170,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
                     if (j==matchScore.size() || j==bestScore.size()) {
                         /* delete the processed arguments before returning */
                         for ( std::multimap<std::string, RbFunction*>::const_iterator k = retVal.first; k != it; k++ )
-                            (*it).second->deleteProcessedArguments();
+                            (*it).second->clearArgs();
                         throw RbException("Ambiguous call to function '" + name + "'");
                     }
                 }
@@ -182,7 +182,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
             /* delete all processed arguments except those of the best matching function */
             for ( std::multimap<std::string, RbFunction*>::const_iterator k = retVal.first; k != it; k++ ) {
                 if ( (*it).second != bestMatch )
-                    (*it).second->deleteProcessedArguments();
+                    (*it).second->clearArgs();
             }
             return bestMatch;
         }
@@ -196,7 +196,7 @@ RbFunction* FunctionTable::getFunction(const std::string& name, const std::vecto
     RbFunction* theFunction = findFunction(name, args, false);
     RbFunction* copy        = theFunction->clone();
 
-    theFunction->deleteProcessedArguments();
+    theFunction->clearArgs();
 
     return copy;
 }

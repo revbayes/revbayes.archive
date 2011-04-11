@@ -20,8 +20,9 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "VectorString.h"
 #include "SyntaxLabeledExpr.h"
+#include "VariableFrame.h"
+#include "VectorString.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -100,14 +101,14 @@ const VectorString& SyntaxLabeledExpr::getClass(void) const {
 
 
 /** Convert element to DAG node (not applicable so return NULL) */
-DAGNode* SyntaxLabeledExpr::getDAGNodeExpr(Frame* frame) const {
+DAGNode* SyntaxLabeledExpr::getDAGNodeExpr(VariableFrame* frame) const {
 
     return NULL;
 }
 
 
 /** Get semantic value (not applicable so return NULL) */
-DAGNode* SyntaxLabeledExpr::getValue(Frame* frame) const {
+DAGNode* SyntaxLabeledExpr::getValue(VariableFrame* frame) const {
 
     return NULL;
 }

@@ -70,6 +70,7 @@ class VariableContainer : public Container {
         ValueContainer*             getConstValue(void);                                                        //!< Get constant value
         VectorNatural               getIndex(const DAGNode* elem) const;                                        //!< Get index of an element
         void                        resize(const std::vector<size_t>& len);                                     //!< Resize container
+        void                        setElement(const VectorNatural& index, DAGNode* elem);                      //!< Set element
         size_t                      size(void) const { return elements.size(); }                                //!< Get total number of elements
 
 	protected:

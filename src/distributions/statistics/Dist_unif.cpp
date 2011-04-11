@@ -25,7 +25,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "Real.h"
-#include "ReferenceRule.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -34,16 +34,16 @@
 
 
 /** Default constructor for parser use */
-Dist_unif::Dist_unif(void) : DistributionReal(getMemberRules()) {
+Dist_unif::Dist_unif(void) : DistributionInterval(getMemberRules()) {
 
 }
 
 
 /** Constructor for test use */
-Dist_unif::Dist_unif(double min, double max) : DistributionReal(getMemberRules()) {
+Dist_unif::Dist_unif(double min, double max) : DistributionInterval(getMemberRules()) {
 
-    setValue("min", new Real(min));
-    setValue("max", new Real(max));
+    setValue( "min", new Real(min) );
+    setValue( "max", new Real(max) );
 }
 
 
@@ -57,10 +57,11 @@ Dist_unif::Dist_unif(double min, double max) : DistributionReal(getMemberRules()
  * @return      Cumulative probability
  *
  */
-double Dist_unif::cdf(double q) {
+double Dist_unif::cdf(const RbObject* value) {
 
-    double min = ((Real*) getValue("min"))->getValue();
-    double max = ((Real*) getValue("max"))->getValue();
+    double min = static_cast<const Real*>( getValue("min") )->getValue();
+    double max = static_cast<const Real*>( getValue("max") )->getValue();
+    double q   = static_cast<const Real*>( value           )->getValue();
 
     if ( q < min )
         return 0.0;
@@ -81,7 +82,7 @@ Dist_unif* Dist_unif::clone(void) const {
 /** Get class vector showing type of object */
 const VectorString& Dist_unif::getClass(void) const {
 
-    static VectorString rbClass = VectorString(Dist_unif_name) + DistributionReal::getClass();
+    static VectorString rbClass = VectorString(Dist_unif_name) + DistributionInterval::getClass();
     return rbClass;
 }
 
@@ -99,9 +100,9 @@ Move* Dist_unif::getDefaultMove(StochasticNode* node) {
 
 
 /** Get max value of distribution */
-const Real* Dist_unif::getMax(void) {
+const Real* Dist_unif::getMax( void ) const {
 
-    return (Real*)(getValue("max"));
+    return static_cast<const Real*>( getValue("max") );
 }
 
 
@@ -113,8 +114,8 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new ReferenceRule("min", Real_name));
-        memberRules.push_back(new ReferenceRule("max", Real_name));
+        memberRules.push_back(new ValueRule("min", Real_name));
+        memberRules.push_back(new ValueRule("max", Real_name));
 
         const MemberRules& inheritedRules = Distribution::getMemberRules();
         memberRules.insert(memberRules.end(), inheritedRules.begin(), inheritedRules.end()); 
@@ -127,37 +128,16 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
 
 
 /** Get min value of distribution */
-const Real* Dist_unif::getMin(void) {
+const Real* Dist_unif::getMin( void ) const {
 
-    return (Real*)(getValue("min"));
+    return static_cast<const Real*>( getValue("min") );
 }
 
 
-/**
- * This function calculates the natural log of the likelihood
- * ratio for a uniformly-distributed random variable under
- * two different values of the distribution parameter.
- *
- * @brief Natural log of uniform likelihood ratio
- *
- * @param value     Value of random variable
- * @return          Natural log of the likelihood ratio
- */
-double Dist_unif::lnLikelihoodRatio(const RbObject* value) {
+/** Get random variable type */
+const TypeSpec Dist_unif::getVariableType( void ) const {
 
-    double minNew = ((Real*) (getVariable("min")->getValue      ()))->getValue();
-    double minOld = ((Real*) (getVariable("min")->getStoredValue()))->getValue();
-    double maxNew = ((Real*) (getVariable("max")->getValue      ()))->getValue();
-    double maxOld = ((Real*) (getVariable("max")->getStoredValue()))->getValue();
-    double x      = ((Real*) value)->getValue();
-
-    if ( x < minOld || x > maxOld )
-        throw RbException("nan");
-
-    if ( x < minNew || x > maxNew )
-        return RbConstants::Double::neginf;
-
-    return std::log( maxOld - minOld ) - std::log( maxNew - minNew );
+    return TypeSpec( Real_name );
 }
 
 
@@ -180,22 +160,6 @@ double Dist_unif::lnPdf(const RbObject* value) {
         return RbConstants::Double::neginf;
 
     return -std::log( max - min );
-}
-
-
-/**
- * This function calculates the natural log of the probability
- * density ratio for two uniformly-distributed random variables.
- *
- * @brief Natural log of uniform probability density ratio
- *
- * @param newX      Value in numerator
- * @param oldX      Value in denominator
- * @return          Natural log of the probability density ratio
- */
-double Dist_unif::lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) {
-
-    return 0.0;
 }
 
 
@@ -231,12 +195,12 @@ double Dist_unif::pdf(const RbObject* value) {
  * @return      Quantile
  *
  */
-double Dist_unif::quantile(const double p) {
+Real* Dist_unif::quantile(const double p) {
 
-    double min = ((Real*) getValue("min"))->getValue();
-    double max = ((Real*) getValue("max"))->getValue();
+    double min = static_cast<const Real*>( getValue("min") )->getValue();
+    double max = static_cast<const Real*>( getValue("max") )->getValue();
 
-    return min + ( max - min ) * p;
+    return new Real( min + ( max - min ) * p );
 }
 
 
@@ -256,7 +220,7 @@ Real* Dist_unif::rv(void) {
 
     double u = rng->uniform01();
 
-    return new Real(min + ( max - min ) * u);
+    return new Real( min + ( max - min ) * u );
 }
 
 

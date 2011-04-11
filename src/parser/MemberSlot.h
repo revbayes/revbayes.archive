@@ -30,15 +30,14 @@ class RbObject;
 class MemberSlot : public VariableSlot {
     
     public:
-                                MemberSlot(const ArgumentRule* argRule, const TypeSpec& typeSp, DAGNode* var);      //!< Constructor of filled slot
-                                MemberSlot(const ArgumentRule* argRule, const TypeSpec& typeSp);                    //!< Constructor of empty slot
+                                MemberSlot(ArgumentRule* argRule);                              //!< Constructor from argument rule
 
         // Regular functions
-        bool                    isValidVariable(DAGNode* newVariable ) const;                           //!< Is newVariable valid for the slot?
+        bool                    isValidVariable(DAGNode* newVariable) const;                    //!< Is newVariable valid for the slot?
 
     private:
         // Member variables
-        const ArgumentRule*     memberRule;                                                                         //!< The rule for the member
+        const ArgumentRule*     memberRule;                                                     //!< The rule for the member
 };
 
 #endif

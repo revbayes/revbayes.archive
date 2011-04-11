@@ -13,18 +13,19 @@
  * $Id$
  */
 
-#include <iostream>
-#include <vector>
-#include <sstream>
-
 #include "Argument.h"
 #include "DAGNode.h"
 #include "FunctionNode.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "VectorString.h"
 #include "SyntaxUnaryExpr.h"
+#include "VariableFrame.h"
+#include "VectorString.h"
 #include "Workspace.h"
+
+#include <iostream>
+#include <vector>
+#include <sstream>
 
 
 /** Static vector of strings giving names of operator types */
@@ -96,7 +97,7 @@ const VectorString& SyntaxUnaryExpr::getClass(void) const {
 
 
 /** Convert element to DAG node expression */
-DAGNode* SyntaxUnaryExpr::getDAGNodeExpr(Frame* frame) const {
+DAGNode* SyntaxUnaryExpr::getDAGNodeExpr(VariableFrame* frame) const {
 
     // Package the argument
     std::vector<Argument> arg;
@@ -112,7 +113,7 @@ DAGNode* SyntaxUnaryExpr::getDAGNodeExpr(Frame* frame) const {
 
 
 /** Look up the function and calculate the value. The argument is a value argument, so it is safe to get its value. */
-DAGNode* SyntaxUnaryExpr::getValue(Frame* frame) const {
+DAGNode* SyntaxUnaryExpr::getValue(VariableFrame* frame) const {
 
     // Package the argument
     std::vector<Argument> arg;

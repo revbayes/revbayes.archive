@@ -32,6 +32,7 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "StochasticNode.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 #include "VariableNode.h"
 #include "Workspace.h"
@@ -44,13 +45,13 @@
 
 /** Constructor passes member rules and method inits to base class */
 Mcmc::Mcmc(void)
-    : MemberObject(getMemberRules(), getMethodInits()) {
+    : MemberObject(getMemberRules()) {
 }
 
 
 /** Constructor for internal use */
 Mcmc::Mcmc(Model* model, int ngen, int printfreq, int samplefreq, std::string filename)
-    : MemberObject(getMemberRules(), getMethodInits()) {
+    : MemberObject(getMemberRules()) {
 
     setValue("model",      model);
     setValue("ngen",       new Integer(ngen));
@@ -96,11 +97,11 @@ const MemberRules& Mcmc::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new ValueRule("model",      Model_name));
-        memberRules.push_back(new MinmaxRule(  "ngen",       Integer_name, new Integer(1), NULL));
-        memberRules.push_back(new MinmaxRule(  "printfreq",  Integer_name, new Integer(1), NULL));
-        memberRules.push_back(new MinmaxRule(  "samplefreq", Integer_name, new Integer(1), NULL));
-        memberRules.push_back(new ValueRule("filename",   new RbString("out")));
+        memberRules.push_back( new ValueRule ( "model"     , Model_name                         ) );
+        memberRules.push_back( new MinmaxRule( "ngen"      , Integer_name, new Integer(1), NULL ) );
+        memberRules.push_back( new MinmaxRule( "printfreq" , Integer_name, new Integer(1), NULL ) );
+        memberRules.push_back( new MinmaxRule( "samplefreq", Integer_name, new Integer(1), NULL ) );
+        memberRules.push_back( new ValueRule ( "filename"  , new RbString( "out" )              ) );
 
         rulesSet = true;
     }
@@ -224,7 +225,7 @@ void Mcmc::update(void) {
     double lnProbability = 0.0;
     std::vector<double> initProb;
     for (std::vector<StochasticNode*>::iterator i=stochasticNodes.begin(); i!=stochasticNodes.end(); i++) {
-        double lnProb = (*i)->getLnProbability();
+        double lnProb = (*i)->calculateLnProbability();
         lnProbability += lnProb;
         initProb.push_back(lnProb);
     }
@@ -244,11 +245,11 @@ void Mcmc::update(void) {
         Move* theMove = (*it).second;
 
         /* Propose a new value */
-        double lnPriorRatio, lnLikelihoodRatio, lnHastingsRatio;
-        theMove->performMove(lnPriorRatio, lnLikelihoodRatio, lnHastingsRatio);
+        double lnProbabilityRatio, lnHastingsRatio;
+        theMove->performMove(lnProbabilityRatio, lnHastingsRatio);
 
         /* Calculate acceptance ratio */
-        double lnR = lnPriorRatio + lnLikelihoodRatio + lnHastingsRatio;
+        double lnR = lnProbabilityRatio + lnHastingsRatio;
         double r;
         if (lnR > 0.0)
             r = 1.0;
@@ -261,7 +262,7 @@ void Mcmc::update(void) {
         u = rng->uniform01();
         if (u < r) {
             theMove->acceptMove();
-            lnProbability += lnPriorRatio + lnLikelihoodRatio;
+            lnProbability += lnProbabilityRatio;
         }
         else {
             theMove->rejectMove();
@@ -283,7 +284,7 @@ void Mcmc::update(void) {
             double curLnProb = 0.0;
             std::vector<double> lnRatio;
             for (std::vector<StochasticNode*>::iterator i=stochasticNodes.begin(); i!=stochasticNodes.end(); i++) {
-                 double lnProb = (*i)->getLnProbability();
+                 double lnProb = (*i)->calculateLnProbability();
                  curLnProb += lnProb;
                  lnRatio.push_back(initProb[i-stochasticNodes.begin()] - lnProb);
             }

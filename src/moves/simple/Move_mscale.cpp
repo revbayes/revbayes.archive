@@ -15,13 +15,13 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "Move_mscale.h"
-#include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbNames.h"
+#include "RealPos.h"
 #include "StochasticNode.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -29,49 +29,49 @@
 
 
 /** Constructor for parser */
-Move_mscale::Move_mscale(void)
-    : SimpleMove(getMemberRules()) {
+Move_mscale::Move_mscale( void )
+    : MoveSimple( getMemberRules() ) {
 }
 
 
 /** Constructor for internal use */
-Move_mscale::Move_mscale(StochasticNode* node, double lambda, double weight) : SimpleMove(getMemberRules()) {
+Move_mscale::Move_mscale( StochasticNode* node, double lambda, double weight ) : MoveSimple( getMemberRules() ) {
 
-    setValue("lambda", new RealPos(lambda));
-    setValue("weight", new RealPos(weight));
+    setValue( "lambda", new RealPos(lambda) );
+    setValue( "weight", new RealPos(weight) );
 
-    setNodePtr(node);
+    setNodePtr( node );
 }
 
 
 /** Clone object */
-Move_mscale* Move_mscale::clone(void) const {
+Move_mscale* Move_mscale::clone( void ) const {
 
-    return new Move_mscale(*this);
+    return new Move_mscale( *this );
 }
 
 
 /** Get class vector describing type of object */
 const VectorString& Move_mscale::getClass() const {
 
-    static VectorString rbClass = VectorString(Move_mscale_name) + Move::getClass();
+    static VectorString rbClass = VectorString( Move_mscale_name ) + Move::getClass();
     return rbClass;
 }
 
 
 /** Return member rules */
-const MemberRules& Move_mscale::getMemberRules(void) const {
+const MemberRules& Move_mscale::getMemberRules( void ) const {
 
     static MemberRules memberRules;
     static bool        rulesSet = false;
 
-    if (!rulesSet) {
+    if ( !rulesSet ) {
 
-        memberRules.push_back(new ArgumentRule("lambda", RealPos_name));
+        memberRules.push_back( new ValueRule( "lambda", RealPos_name ) );
 
-        /* Inherit weight and rng from Move, put it at back */
+        /* Inherit weight from Move, put it at back */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        memberRules.insert(memberRules.end(), inheritedRules.begin(), inheritedRules.end()); 
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
         rulesSet = true;
     }
@@ -81,19 +81,25 @@ const MemberRules& Move_mscale::getMemberRules(void) const {
 
 
 /** Perform the move */
-double Move_mscale::perform(std::set<StochasticNode*>& affectedNodes) {
+double Move_mscale::perform( std::set<StochasticNode*>& affectedNodes ) {
 
-    Real*              valPtr = (Real*)(nodePtr->getValuePtr(affectedNodes));
+    // Get the affected nodes
+    nodePtr->getAffected( affectedNodes );
+
+    // Get the relevant values
     RandomNumberGenerator* rng    = GLOBAL_RNG;
-    double                 lambda = ((Real*)(getValue("lambda")))->getValue();
+    const RealPos          lambda = *( static_cast<const RealPos*>( getValue("lambda")  ) );
+    const RealPos          curVal = *( static_cast<const RealPos*>( nodePtr->getValue() ) );
 
-    double curVal = valPtr->getValue();
-    double u      = rng->uniform01();
-    double newVal = curVal * std::exp(lambda*(u-0.5));
+    // Generate new value
+    RealPos u      = rng->uniform01();
+    RealPos newVal = curVal * std::exp( lambda * ( u - 0.5 ) );
 
-    valPtr->setValue(newVal);
-	
-    return log(newVal/curVal);
+    // Propose new value
+    nodePtr->setValue( newVal.clone() );
+
+    // Return Hastings ratio
+    return log( newVal / curVal );
 }
 
 

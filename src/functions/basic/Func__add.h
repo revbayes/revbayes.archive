@@ -19,6 +19,7 @@
 #define Func__add_H
 
 #include "RbFunction.h"
+#include "ValueContainer.h"
 
 #include <map>
 #include <string>
@@ -75,15 +76,17 @@ DAGNode* Func__add<firstValType,secondValType,retType>::execute( void ) {
 }
 
 
+#if 0
 /** Execute function: We need partial specialization for value containers to get te right return variable */
-template <firstValType, secondValType>
+template <typename firstValType, typename secondValType>
 DAGNode* Func__add<firstValType,secondValType,ValueContainer>::execute( void ) {
 
     const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
     const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
-    retType              sum  = *val1 + *val2;
+    ValueContainer       sum  = *val1 + *val2;
     return new ContainerNode( sum.clone() );
 }
+#endif
 
 
 /** Get argument rules */

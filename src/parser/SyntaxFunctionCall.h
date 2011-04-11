@@ -52,8 +52,8 @@ class SyntaxFunctionCall : public SyntaxElement {
 
         // Regular functions
         const RbString*                 getFunctionName(void) const { return functionName; }                    //!< Get function name
-        DAGNode*                        getDAGNodeExpr(Frame* frame) const;                                     //!< Convert to DAG node expression
-        DAGNode*                        getValue(Frame* frame) const;                                           //!< Get semantic value
+        DAGNode*                        getDAGNodeExpr(VariableFrame* frame) const;                             //!< Convert to DAG node expression
+        DAGNode*                        getValue(VariableFrame* frame) const;                                   //!< Get semantic value
 
     protected:
         std::list<SyntaxLabeledExpr*>*  arguments;                                                              //!< The arguments passed to the function

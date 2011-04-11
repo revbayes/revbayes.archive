@@ -23,12 +23,12 @@
 #include <string>
 
 #include "RandomNumberFactory.h"
-#include "SimpleMove.h"
+#include "MoveSimple.h"
 
 class Real;
 class RbObject;
 
-class Move_mscale : public SimpleMove {
+class Move_mscale : public MoveSimple {
 
     public:
                                     Move_mscale(void);                                                      //!< Parser constructor

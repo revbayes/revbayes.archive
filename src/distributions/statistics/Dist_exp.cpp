@@ -22,7 +22,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbNames.h"
 #include "Real.h"
-#include "ReferenceRule.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -92,7 +92,7 @@ const MemberRules& Dist_exp::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
 
-        memberRules.push_back( new ReferenceRule( "rate", RealPos_name ) );
+        memberRules.push_back( new ValueRule( "rate", RealPos_name ) );
 
         rulesSet = true;
     }
@@ -105,26 +105,6 @@ const MemberRules& Dist_exp::getMemberRules( void ) const {
 const TypeSpec Dist_exp::getVariableType( void ) const {
 
     return TypeSpec( RealPos_name );
-}
-
-
-/**
- * This function calculates the natural log of the likelihood
- * ratio for an exponentially-distributed random variable under
- * two different values of the distribution parameter.
- *
- * @brief Natural log of exponential likelihood ratio
- *
- * @param value     Value of random variable
- * @return          Natural log of the likelihood ratio
- */
-double Dist_exp::lnLikelihoodRatio( const RbObject* value ) {
-
-    double lambdaNew = static_cast<const RealPos*>( getVariable( "rate" )->getValue()       )->getValue();
-    double lambdaOld = static_cast<const RealPos*>( getVariable( "rate" )->getStoredValue() )->getValue();
-    double x         = static_cast<const RealPos*>( value                                   )->getValue();
-
-    return std::log( lambdaNew ) - std::log( lambdaOld ) + ( lambdaOld - lambdaNew ) * x;
 }
 
 
@@ -143,27 +123,6 @@ double Dist_exp::lnPdf( const RbObject* value ) {
     double x      = static_cast<const RealPos*>( value              )->getValue();
 
     return std::log(lambda) -lambda * x;
-}
-
-
-/**
- * This function calculates the natural log of the probability
- * density ratio for two exponentially-distributed random variables
- * with the same distribution parameter.
- *
- * @brief Natural log of exponential probability density ratio (prior ratio)
- *
- * @param newX      Value in numerator
- * @param oldX      Value in denominator
- * @return          Natural log of the (prior) probability density ratio
- */
-double Dist_exp::lnPriorRatio( const RbObject* newVal, const RbObject* oldVal ) {
-
-    const RealPos* lambda = static_cast<const RealPos*>( getValue( "rate" ) );
-    const RealPos* xNew   = static_cast<const RealPos*>( newVal             );
-    const RealPos* xOld   = static_cast<const RealPos*>( oldVal             );
-
-    return (*lambda) * ( (*xOld) - (*xNew) );
 }
 
 

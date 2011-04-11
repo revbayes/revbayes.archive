@@ -39,20 +39,20 @@ Model::Model(void) : dagNodes(), maintainedHere() {
 }
 
 /** Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. */
-Model::Model(const std::vector<DAGNode*>& sinkNodes) : RbComplex(), dagNodes(), maintainedHere() {
+Model::Model(const std::vector<DAGNode*>& sinkNodes) : MemberObject(), dagNodes(), maintainedHere() {
 
     /* Check to see that we have at least one DAG node */
     if (sinkNodes.empty())
         throw RbException("No sink nodes specified");
 
     /* Make copy of DAG: pulling from first sink node is sufficient */
-    std::map<DAGNode*, DAGNode*> newNodes;
+    std::map<const DAGNode*, DAGNode*> newNodes;
     sinkNodes.front()->cloneDAG(newNodes);
 
     /* Check that all sink nodes are included */
     for (std::vector<DAGNode*>::const_iterator i=sinkNodes.begin(); i!=sinkNodes.end(); i++) {
         if (newNodes.find(*i) == newNodes.end()) {
-            for (std::map<DAGNode*, DAGNode*>::iterator j=newNodes.begin(); j!=newNodes.end(); j++)
+            for (std::map<const DAGNode*, DAGNode*>::iterator j=newNodes.begin(); j!=newNodes.end(); j++)
                 delete (*j).second;
             throw RbException("All sink nodes are not connected to the same DAG");
         }
@@ -60,7 +60,7 @@ Model::Model(const std::vector<DAGNode*>& sinkNodes) : RbComplex(), dagNodes(), 
 
     /* Insert new nodes in dagNodes member variable */
     int count = 1;
-    for (std::map<DAGNode*, DAGNode*>::iterator i=newNodes.begin(); i!=newNodes.end(); i++) {
+    for (std::map<const DAGNode*, DAGNode*>::iterator i=newNodes.begin(); i!=newNodes.end(); i++) {
         DAGNode* theNode = (*i).second;
         if (theNode->getName() == "") {
             maintainedHere.push_back(true);
@@ -93,16 +93,16 @@ Model::~Model(void) {
 }
 
 /** Copy constructor */
-Model::Model(const Model& x) : RbComplex(), dagNodes(), maintainedHere() {
+Model::Model(const Model& x) : MemberObject(), dagNodes(), maintainedHere() {
 
     /* Make copy of DAG by pulling from first node in x */
-    std::map<DAGNode*, DAGNode*> newNodes;
+    std::map<const DAGNode*, DAGNode*> newNodes;
     if (x.dagNodes.size() > 0)
         x.dagNodes[0]->cloneDAG(newNodes);
 
     /* Insert new nodes in dagNodes member variable */
     int count = 1;
-    for (std::map<DAGNode*, DAGNode*>::iterator i=newNodes.begin(); i!=newNodes.end(); i++) {
+    for (std::map<const DAGNode*, DAGNode*>::iterator i=newNodes.begin(); i!=newNodes.end(); i++) {
         DAGNode* theNode = (*i).second;
         if (theNode->getName() == "") {
             maintainedHere.push_back(true);
@@ -137,13 +137,13 @@ Model& Model::operator=(const Model& x) {
         }
 
         /* Make copy of DAG by pulling from first node in x */
-        std::map<DAGNode*, DAGNode*> newNodes;
+        std::map<const DAGNode*, DAGNode*> newNodes;
         if (x.dagNodes.size() > 0)
             x.dagNodes[0]->cloneDAG(newNodes);
 
         /* Insert new nodes in dagNodes member variable */
         int count = 1;
-        for (std::map<DAGNode*, DAGNode*>::iterator i=newNodes.begin(); i!=newNodes.end(); i++) {
+        for (std::map<const DAGNode*, DAGNode*>::iterator i=newNodes.begin(); i!=newNodes.end(); i++) {
             DAGNode* theNode = (*i).second;
             if (theNode->getName() == "") {
                 maintainedHere.push_back(true);

@@ -63,6 +63,7 @@ class Frame {
 
         // Basic utility functions
         virtual Frame*                  clone(void) const = 0;                                                                  //!< Clone frame
+        virtual Frame*                  cloneEnvironment(void) const = 0;                                                       //!< Clone environment
         virtual void                    printValue(std::ostream& o) const = 0;                                                  //!< Print table for user
         virtual std::string             richInfo(void) const = 0;                                                               //!< Complete info to string
 
@@ -71,7 +72,6 @@ class Frame {
         virtual const std::string&      getSlotName(const VariableSlot* slot) const = 0;                                        //!< Get name of a slot
 
         // Frame functions you do not have to override
-        Frame*                          cloneEnvironment(void) const;                                                           //!< Clone environment
         Frame*                          getParentFrame(void) { return parentFrame; }                                            //!< Get parent frame ptr
         DAGNode*                        getReference(const std::string& name) const;                                            //!< Convenient alternative for [name]->getValue()
         const RbObject*                 getValue(const std::string& name) const;                                                //!< Convenient alternative for [name]->getValue()

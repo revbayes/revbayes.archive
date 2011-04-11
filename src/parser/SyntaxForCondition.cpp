@@ -18,6 +18,7 @@
 #include "RbString.h"
 #include "SyntaxForCondition.h"
 #include "VectorInteger.h"
+#include "VariableFrame.h"
 
 #include <cassert>
 #include <sstream>
@@ -101,13 +102,13 @@ SyntaxElement* SyntaxForCondition::clone () const {
 
 
 /** Finalize loop. */
-void SyntaxForCondition::finalizeLoop(Frame* frame) {
+void SyntaxForCondition::finalizeLoop(VariableFrame* frame) {
 
     if ( nextElement < 0 )
         return;
 
     if ( !wasLoopVariableReference )
-        frame->getVariableSlot( *varName ).setReferenceFlag( false );
+        (*frame)[ *varName ].setReferenceFlag( false );
 
     delete vector;
     
@@ -117,14 +118,14 @@ void SyntaxForCondition::finalizeLoop(Frame* frame) {
 
 
 /** Convert element to DAG node (not applicable so return NULL) */
-DAGNode* SyntaxForCondition::getDAGNodeExpr(Frame* frame) const {
+DAGNode* SyntaxForCondition::getDAGNodeExpr(VariableFrame* frame) const {
 
     return NULL;
 }
 
 
 /** Get next loop state */
-bool SyntaxForCondition::getNextLoopState(Frame* frame) {
+bool SyntaxForCondition::getNextLoopState(VariableFrame* frame) {
 
     if ( nextElement < 0 )
         initializeLoop( frame );
@@ -134,7 +135,7 @@ bool SyntaxForCondition::getNextLoopState(Frame* frame) {
         return false;
     }
 
-    frame->setReference( *varName, vector->getElement( nextElement ) );
+    (*frame)[ *varName ].setVariable( vector->getElement( nextElement ) );
     nextElement++;
 
     return true;
@@ -142,14 +143,14 @@ bool SyntaxForCondition::getNextLoopState(Frame* frame) {
 
 
 /** Get semantic value (not applicable so return NULL) */
-DAGNode* SyntaxForCondition::getValue(Frame* frame) const {
+DAGNode* SyntaxForCondition::getValue(VariableFrame* frame) const {
 
     return NULL;
 }
 
 
 /** Initialize loop state */
-void SyntaxForCondition::initializeLoop(Frame* frame) {
+void SyntaxForCondition::initializeLoop(VariableFrame* frame) {
 
     assert ( nextElement < 0 );
 
@@ -168,9 +169,9 @@ void SyntaxForCondition::initializeLoop(Frame* frame) {
 
     // Add loop variable to frame if it is not there already; make sure it is a reference variable
     if ( frame->existsVariable( *varName ) )
-        frame->getVariableSlot( *varName ).setReferenceFlag( true );
+        (*frame)[ *varName ].setReferenceFlag( true );
     else
-        frame->addReference( *varName, vector->getValueType(), vector->getDim() );
+        frame->addVariableSlot( *varName, TypeSpec( vector->getValueType(), 0, true ) );
 }
 
 

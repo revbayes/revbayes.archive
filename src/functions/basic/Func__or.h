@@ -68,8 +68,8 @@ Func__or<firstValType, secondValType>* Func__or<firstValType, secondValType>::cl
 template <typename firstValType, typename secondValType>
 DAGNode* Func__or<firstValType,secondValType>::execute( void ) {
 
-    bool val1 = static_cast<const firstValType*> ( args[0].getValue() );
-    bool val2 = static_cast<const secondValType*>( args[1].getValue() );
+    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
+    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
     return new ConstantNode( new Boolean( *val1 || *val2 ) );
 }
 
@@ -83,8 +83,8 @@ const ArgumentRules& Func__or<firstValType, secondValType>::getArgumentRules( vo
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() );
-        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() );
+        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
         rulesSet = true;
         }
 

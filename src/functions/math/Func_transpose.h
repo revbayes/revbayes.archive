@@ -43,7 +43,6 @@ class Func_transpose :  public RbFunction {
 
 #endif
 
-#include "ArgumentRule.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "MatrixReal.h"
@@ -52,6 +51,7 @@ class Func_transpose :  public RbFunction {
 #include "RbNames.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
 #include "VectorInteger.h"
 #include "VectorReal.h"
 #include "VectorRealPos.h"
@@ -68,7 +68,7 @@ Func_transpose<valT, retT>* Func_transpose<valT, retT>::clone(void) const {
 
 /** Execute function: MatrixReal <- transpose(MatrixReal) */
 template <>
-DAGNode* Func_transpose<MatrixReal,MatrixReal>::executeOperation(const std::vector<VariableSlot>& args) {
+DAGNode* Func_transpose<MatrixReal,MatrixReal>::execute( void ) {
 
     MatrixReal mat = (((MatrixReal*) (args[0].getValue())))->getValue();
     int n = mat.getNumRows();
@@ -86,13 +86,12 @@ const ArgumentRules& Func_transpose<valT, retT>::getArgumentRules(void) const {
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
-    if (!rulesSet) 
-        {
-        valT* dummy = new valT();
-        argumentRules.push_back(new ArgumentRule("", dummy->getType()));
+    if (!rulesSet) {
+
+        argumentRules.push_back(new ValueRule("", valT().getType()));
+
         rulesSet = true;
-        delete dummy;
-        }
+    }
 
     return argumentRules;
 }

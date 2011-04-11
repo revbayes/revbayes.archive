@@ -18,6 +18,7 @@
 #include "ConstantNode.h"
 #include "RbObject.h"
 #include "SyntaxConstant.h"
+#include "VariableFrame.h"
 
 
 /** Construct from value */
@@ -76,14 +77,14 @@ SyntaxConstant* SyntaxConstant::clone (void) const {
 
 
 /** Convert element to DAG node expression */
-DAGNode* SyntaxConstant::getDAGNodeExpr(Frame* frame) const {
+DAGNode* SyntaxConstant::getDAGNodeExpr(VariableFrame* frame) const {
 
     return getValue(frame);
 }
 
 
 /** Get semantic value of element */
-DAGNode* SyntaxConstant::getValue(Frame* frame) const {
+DAGNode* SyntaxConstant::getValue(VariableFrame* frame) const {
 
     // We return a clone in case this function is called repeatedly. The ConstantNode manages the clone.
     if (value == NULL)

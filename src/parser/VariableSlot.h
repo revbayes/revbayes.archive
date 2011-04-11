@@ -34,11 +34,6 @@ class VariableSlot {
 
                                 VariableSlot(const TypeSpec& typeSp, DAGNode* var);                     //!< Constructor of filled slot
                                 VariableSlot(const TypeSpec& typeSp);                                   //!< Constructor of empty slot
-
-                                // TODO: Delete these
-                                VariableSlot(DAGNode* var, bool ref=false);                             //!< Constructor of filled slot
-                                VariableSlot(const std::string& type, int dim, bool ref=false);         //!< Constructor of empty slot from type spec elements
-
                                 VariableSlot(const VariableSlot& x);                                    //!< Copy value or reference correctly
         virtual                ~VariableSlot(void);                                                     //!< Manage variable (DAGNode) destruction
 
@@ -46,28 +41,30 @@ class VariableSlot {
         VariableSlot&           operator=(const VariableSlot& x);                                       //!< Assignment
 
         // Regular functions
+        int                     getDim(void) const { return typeSpec.getDim(); }                        //!< Return dim of slot
         const std::string&      getName(void) const;                                                    //!< Get name of slot
         DAGNode*                getReference(void) const;                                               //!< Get a reference to the variable
-        int                     getDim(void) const { return typeSpec.getDim(); }                        //!< Return dim of slot
-        const std::string&      getType(void) const { return typeSpec.getType(); }                      //!< Return type of slot
-        const TypeSpec&         getTypeSpec(void) const { return typeSpec; }                            //!< Return type specification for slot
+        const std::string&      getType(void) const { return typeSpec.getType(); }                      //!< Type of slot
+        const TypeSpec&         getTypeSpec(void) const { return typeSpec; }                            //!< Type specification for slot
         const RbObject*         getValue(void) const;                                                   //!< Get the value of the variable (ptr, not copy)
         const DAGNode*          getVariable(void) const { return variable->getReference(); }            //!< Get the variable (ptr, not copy)
-        bool                    isValidVariable(DAGNode* newVariable ) const;                           //!< Is newVariable valid for the slot?
-        int                     isConstant(void) const { return typeSpec.isConstant(); }                //!< Is this a constant slot?
-        int                     isReference(void) const { return typeSpec.isReference(); }              //!< Is this a reference slot?
+        virtual bool            isValidVariable(DAGNode* newVariable ) const;                           //!< Is newVariable valid for the slot?
+        bool                    isReference(void) const { return typeSpec.isReference(); }              //!< Is this a reference slot?
         void                    printValue(std::ostream& o) const;                                      //!< Print value of slot
-        void                    replaceVariable(DAGNode* newVar);                                       //!< Replace variable (variable mutation)
+        void                    resetVariable(DAGNode* newVar);                                         //!< Clear a slot and then set it with a variable (no mutation of old variable)
+        void                    setElement(VectorNatural& index, DAGNode* newVar, bool convert=true);   //!< Set a slot variable element
         void                    setFrame(Frame* slotFrame) { frame=slotFrame; }                         //!< Set frame of slot
-        void                    setReference(DAGNode* ref);                                             //!< Set a slot with a reference
         void                    setReferenceFlag(bool refFlag=true);                                    //!< Potentially switch between reference and value slot
-        void                    setValue(RbObject* newVal);                                             //!< Set a slot with a value (naked value)
-        void                    setVariable(DAGNode* newVar);                                           //!< Set a slot with a variable (no mutation of old variable)
+        void                    setValue(RbObject* newVal);                                             //!< Set a slot variable or the variable the slot refers to with a value
+        void                    setVariable(DAGNode* newVar, bool convert=true);                        //!< Set a slot with a variable
 
     private:
         // Help functions
-        // DAGNode*                convertVariable( DAGNode* newVariable ) const;                       //!< Convert variable before using it
+        RbObject*               convertValue(RbObject* newValue) const;                                 //!< Convert value
+        DAGNode*                convertVariable(DAGNode* newVariable) const;                            //!< Convert variable
+        DAGNode*                nullVariable(const TypeSpec& typeSp);                                   //!< Make a NULL variable of specified type
         void                    removeVariable(void);                                                   //!< Remove old variable from slot
+        DAGNode*                wrapValue(RbObject* value) const;                                       //!< Wrap value into appropriate variable
 
         // Parser access function
         DAGNode*                getParserVariable(void);                                                //!< Give parser (SyntaxVariable) the variable reference or a temp

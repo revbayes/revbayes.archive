@@ -22,6 +22,7 @@
 #include "FunctionNode.h"
 #include "RbException.h"
 #include "SyntaxBinaryExpr.h"
+#include "VariableFrame.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -92,7 +93,7 @@ SyntaxElement* SyntaxBinaryExpr::clone () const {
 
 
 /** Convert element to DAG node */
-DAGNode* SyntaxBinaryExpr::getDAGNodeExpr(Frame* frame) const {
+DAGNode* SyntaxBinaryExpr::getDAGNodeExpr(VariableFrame* frame) const {
 
     // Package arguments
     std::vector<Argument> args;
@@ -114,7 +115,7 @@ DAGNode* SyntaxBinaryExpr::getDAGNodeExpr(Frame* frame) const {
  * We simply look up the function and calculate the value.
  *
  */
-DAGNode* SyntaxBinaryExpr::getValue(Frame* frame) const {
+DAGNode* SyntaxBinaryExpr::getValue(VariableFrame* frame) const {
 
     // Package the arguments
     std::vector<Argument> args;

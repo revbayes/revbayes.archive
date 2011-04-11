@@ -18,6 +18,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "VariableFrame.h"
 #include "VectorString.h"
 #include "SyntaxFunctionDef.h"
 #include "UserFunction.h"
@@ -143,14 +144,14 @@ const VectorString& SyntaxFunctionDef::getClass(void) const {
 
 
 /** Convert element to DAG node; return NULL since it is not applicable */
-DAGNode* SyntaxFunctionDef::getDAGNodeExpr(Frame* formal) const {
+DAGNode* SyntaxFunctionDef::getDAGNodeExpr(VariableFrame* formal) const {
 
     return NULL;
 }
 
 
 /** Get semantic value: insert a user-defined function in the user workspace */
-DAGNode* SyntaxFunctionDef::getValue(Frame* frame) const {
+DAGNode* SyntaxFunctionDef::getValue(VariableFrame* frame) const {
 
     // Get argument rules from the formals
     static ArgumentRules argRules;
@@ -164,7 +165,7 @@ DAGNode* SyntaxFunctionDef::getValue(Frame* frame) const {
         stmts->push_back((*i)->clone());
 
     // Create copy of the environment in which the function was defined
-    Frame* defineEnvironment = frame->cloneEnvironment();
+    VariableFrame* defineEnvironment = frame->cloneEnvironment();
 
     // Create the function
     UserFunction* theFunction = new UserFunction(argRules, *returnType, stmts, defineEnvironment);

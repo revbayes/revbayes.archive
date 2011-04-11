@@ -48,7 +48,7 @@ std::string RbFunction::briefInfo(void) const {
 
 
 /* Delete processed args */
-void RbFunction::clearFrame(void) {
+void RbFunction::clearArgs(void) {
 
     args.clear();
     argsProcessed = false;
@@ -315,7 +315,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             return false;
 
         if ( theRules[i]->isReference() )
-            args[i].setReference( theRules[i]->getDefaultReference() );
+            args[i].setVariable( theRules[i]->getDefaultReference() );
         else
             args[i].setVariable( theRules[i]->getDefaultVariable() );
     }

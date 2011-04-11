@@ -20,13 +20,16 @@
 
 #include "Integer.h"
 #include "LookupNode.h"
+#include "MemberFrame.h"
 #include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "SyntaxFunctionCall.h"
+#include "VariableFrame.h"
 #include "VariableSlot.h"
 #include "VectorInteger.h"
+#include "VectorNatural.h"
 #include "VectorString.h"
 #include "SyntaxVariable.h"
 
@@ -142,7 +145,7 @@ const VectorString& SyntaxVariable::getClass(void) const {
  * can be the result of a lookup or a function call. See VariableSlot
  * for more detail; the functinality is in its getVariableRef function.
  */
-DAGNode* SyntaxVariable::getDAGNodeExpr( Frame* frame ) const {
+DAGNode* SyntaxVariable::getDAGNodeExpr( VariableFrame* frame ) const {
 
     /* Package index arguments */
     std::vector<DAGNode*> indexArgs;
@@ -163,7 +166,7 @@ DAGNode* SyntaxVariable::getDAGNodeExpr( Frame* frame ) const {
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL )
-            theVar = frame->getVariableSlot( *identifier ).getParserVariableRef();
+            theVar = (*frame)[ (*identifier) ].getParserVariableRef();
         else
             theVar = functionCall->getValue( frame );
     }
@@ -179,8 +182,8 @@ DAGNode* SyntaxVariable::getDAGNodeExpr( Frame* frame ) const {
             throw RbException( "Member variable identifier missing" );
 
         MemberObject* theMemberObject = static_cast<MemberNode*>( baseVar )->getMemberObject();
-        Frame& members = const_cast<Frame&>( theMemberObject->getMembers() );
-        theVar = members.getVariableSlot( *identifier ).getParserVariableRef();
+        MemberFrame& members = const_cast<MemberFrame&>( theMemberObject->getMembers() );
+        theVar = members[ (*identifier) ].getParserVariableRef();
     }
 
     /* Find return value; easy if not an element */
@@ -213,7 +216,7 @@ DAGNode* SyntaxVariable::getDAGNodeExpr( Frame* frame ) const {
 
 
 /** Return nice representation of the syntax element */
-std::string SyntaxVariable::getFullName(Frame* frame) const {
+std::string SyntaxVariable::getFullName(VariableFrame* frame) const {
 
     std::ostringstream theName;
     if (baseVariable != NULL)
@@ -230,7 +233,7 @@ std::string SyntaxVariable::getFullName(Frame* frame) const {
 
 
 /** Get index */
-VectorInteger SyntaxVariable::getIndex(Frame* frame) const {
+VectorInteger SyntaxVariable::getIndex(VariableFrame* frame) const {
 
     VectorInteger   theIndex;
 
@@ -319,7 +322,7 @@ VectorInteger SyntaxVariable::getIndex(Frame* frame) const {
  * it can never be valid for a reference assignment. We also set the
  * slot to NULL in these cases.
  */
-DAGNode* SyntaxVariable::getLValue(Frame* frame, VariableSlot*& theSlot, VectorInteger& elemIndex) const {
+DAGNode* SyntaxVariable::getLValue(VariableFrame* frame, VariableSlot*& theSlot, VectorInteger& elemIndex) const {
 
     /* Get index */
     elemIndex = getIndex(frame);
@@ -337,14 +340,14 @@ DAGNode* SyntaxVariable::getLValue(Frame* frame, VariableSlot*& theSlot, VectorI
             }
             else {
                 
-                theSlot = &frame->getVariableSlot( *identifier );
+                theSlot = &( (*frame)[ (*identifier) ] );
                 theVar  = theSlot->getParserVariable();
             }
         }
         else {
 
-            theSlot = NULL;
             theVar  = functionCall->getValue( frame );
+            theSlot = theVar->getSlot();
         }
     }
     else {
@@ -362,8 +365,8 @@ DAGNode* SyntaxVariable::getLValue(Frame* frame, VariableSlot*& theSlot, VectorI
         if ( !theMemberObject->getMembers().existsVariable( *identifier ) )
             throw RbException( "Variable " + baseVariable->getFullName( frame ) + " does not have a member called '" + *identifier + "'" );       
 
-        Frame& members = const_cast<Frame&>( theMemberObject->getMembers() );
-        theSlot = &members.getVariableSlot( *identifier );
+        MemberFrame& members = const_cast<MemberFrame&>( theMemberObject->getMembers() );
+        theSlot = &members[ (*identifier) ];
         theVar  = theSlot->getParserVariable();
     }
 
@@ -371,13 +374,10 @@ DAGNode* SyntaxVariable::getLValue(Frame* frame, VariableSlot*& theSlot, VectorI
     if ( elemIndex.size() == 0 || theVar == NULL )
         return theVar;
 
-    /* We need to find the element. First ask if it exists to avoid a memory leak. */
-    if ( !theVar->existsElement( elemIndex ) )
-        throw RbException( getFullName( frame ) + " does not exist" );
+    /* We need to find the element */
+    DAGNode* elem = theVar->getElementRef( VectorNatural( elemIndex ) );
+    elemIndex.clear();
 
-    DAGNode* elem = theVar->getElement( elemIndex );
-    if ( theVar->numRefs() == 0 )
-        delete theVar;
     return elem;
 }
 
@@ -394,7 +394,7 @@ DAGNode* SyntaxVariable::getLValue(Frame* frame, VariableSlot*& theSlot, VectorI
  * The function call is NULL unless we have a base variable, in which case
  * the function call can replace the identifier.
  */
-DAGNode* SyntaxVariable::getValue(Frame* frame) const {
+DAGNode* SyntaxVariable::getValue(VariableFrame* frame) const {
 
     /* Get index */
     VectorInteger elemIndex = getIndex(frame);
@@ -404,7 +404,7 @@ DAGNode* SyntaxVariable::getValue(Frame* frame) const {
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL )
-            theVar = frame->getVariableSlot( *identifier ).getParserVariable();
+            theVar = (*frame)[ (*identifier) ].getParserVariable();
         else
             theVar = functionCall->getValue( frame );
     }
@@ -420,8 +420,8 @@ DAGNode* SyntaxVariable::getValue(Frame* frame) const {
             throw RbException( "Member variable identifier missing" );
 
         MemberObject* theMemberObject = static_cast<MemberNode*>( baseVar )->getMemberObject();
-        Frame& members = const_cast<Frame&>( theMemberObject->getMembers() );
-        theVar = members.getVariableSlot( *identifier ).getParserVariable();
+        MemberFrame& members = const_cast<MemberFrame&>( theMemberObject->getMembers() );
+        theVar = members[ (*identifier) ].getParserVariable();
     }
 
     /* Find return value; easy if not an element */

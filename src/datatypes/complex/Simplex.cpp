@@ -39,7 +39,7 @@ Simplex::Simplex(const size_t n) : MemberObject() {
 
 
 /** Construct simplex from STL vector */
-Simplex::Simplex(const std::vector<double>& x) : MemberObject(getMemberRules(), getMethodInits()) {
+Simplex::Simplex(const std::vector<double>& x) : MemberObject(getMemberRules()) {
 
     if (x.size() < 2)
         throw RbException( "Simplex must have at least two elements" );
@@ -54,7 +54,7 @@ Simplex::Simplex(const std::vector<double>& x) : MemberObject(getMemberRules(), 
 
 
 /** Construct simplex from VectorRealPos, which is guaranteed to have real positive numbers */
-Simplex::Simplex(const VectorRealPos& x) : MemberObject(getMemberRules(), getMethodInits()) {
+Simplex::Simplex(const VectorRealPos& x) : MemberObject(getMemberRules()) {
 
     for (size_t i=0; i<x.size(); i++)
         if (x[i] <= 0.0)

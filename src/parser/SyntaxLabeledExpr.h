@@ -17,8 +17,8 @@
 #ifndef SyntaxLabeledExpr_H
 #define SyntaxLabeledExpr_H
 
-#include "SyntaxElement.h"
 #include "RbString.h"
+#include "SyntaxElement.h"
 
 #include <iostream>
 #include <list>
@@ -43,8 +43,8 @@ class SyntaxLabeledExpr : public SyntaxElement {
         // Regular functions
         SyntaxElement*      getExpression(void) { return expression; }              //!< Return expression
         const RbString*     getLabel() const { return label; }                      //!< Return label    
-        DAGNode*            getDAGNodeExpr(Frame* frame) const;                     //!< Convert to DAG node expression
-        DAGNode*            getValue(Frame* frame) const;                           //!< Get semantic value
+        DAGNode*            getDAGNodeExpr(VariableFrame* frame) const;             //!< Convert to DAG node expression
+        DAGNode*            getValue(VariableFrame* frame) const;                   //!< Get semantic value
 
     protected:
         RbString*           label;                                                  //!< The label of the argument

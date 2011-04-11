@@ -47,7 +47,7 @@ DAGNode* Func_source::execute( void ) {
     std::ifstream inFile( filename.c_str() );
     
     if ( !inFile )
-        throw RbException( "Could not open file \"" + *filename + "\"" );
+        throw RbException( "Could not open file \"" + filename + "\"" );
 
     /* Initialize */
     std::string commandLine;

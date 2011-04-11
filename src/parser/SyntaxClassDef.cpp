@@ -15,9 +15,10 @@
 
 #include "RbException.h"
 #include "RbNames.h"
-#include "VectorString.h"
 #include "SyntaxClassDef.h"
 #include "UserFunction.h"
+#include "VariableFrame.h"
+#include "VectorString.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -100,14 +101,14 @@ SyntaxElement* SyntaxClassDef::clone () const {
 
 
 /** Convert element to DAG node; return NULL since it is not applicable */
-DAGNode* SyntaxClassDef::getDAGNodeExpr(Frame* frame) const {
+DAGNode* SyntaxClassDef::getDAGNodeExpr(VariableFrame* frame) const {
 
     return NULL;
 }
 
 
 /** Get semantic value: insert a user-defined class in the user workspace */
-DAGNode* SyntaxClassDef::getValue(Frame* frame) const {
+DAGNode* SyntaxClassDef::getValue(VariableFrame* frame) const {
 
     std::cerr << "Sorry, user-defined classes are not implemented yet" << std::endl;
 

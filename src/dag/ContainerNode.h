@@ -60,9 +60,9 @@ class ContainerNode : public DeterministicNode {
 
         // DAG functions
         ContainerNode*          cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
-        bool                    isMutableTo(const std::string& valType, int dim) const;                     //!< Is node mutable to dim and valType?
+        bool                    isMutableTo(const std::string& valType, int dim) const;                     //!< Is node mutable to valType and dim?
         bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
-        ContainerNode*          mutateTo(const std::string& valType, int dim) const;                        //!< Mutate to dim and valType
+        ContainerNode*          mutateTo(const std::string& valType, int dim) const;                        //!< Mutate to valType and dim
         void                    swapParentNode(DAGNode* oldNode, DAGNode* newNode);                         //!< Swap a parent node
 
         // Container functions

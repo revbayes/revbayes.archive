@@ -34,7 +34,7 @@
 class ConstantNode;
 class DAGNode;
 class Distribution;
-class DistributionReal;
+class DistributionInterval;
 class MemberObject;
 class RandomNumberGenerator;
 class RbFunction;
@@ -77,7 +77,7 @@ class Workspace : public VariableFrame {
     public:
 
         bool                        addDistribution(const std::string& name, Distribution* dist);                       //!< Add distribution
-        bool                        addDistribution(const std::string& name, DistributionReal* dist);                   //!< Add real-valued distribution
+        bool                        addDistribution(const std::string& name, DistributionInterval* dist);               //!< Add distribution on interval variable
         bool                        addFunction(const std::string& name, RbFunction* func);                             //!< Add function
         bool                        addType(RbObject* exampleObj);                                                      //!< Add type
         bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);               //!< Add type with constructor

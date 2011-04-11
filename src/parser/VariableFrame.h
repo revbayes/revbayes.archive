@@ -76,11 +76,11 @@ class VariableFrame : public Frame {
 
         // Basic utility functions
         virtual VariableFrame*      clone(void) const { return new VariableFrame(*this); }                                  //!< Clone variable frame
+        virtual VariableFrame*      cloneEnvironment(void) const;                                                           //!< Clone environment
         void                        printValue(std::ostream& o) const;                                                      //!< Print table for user
         virtual std::string         richInfo(void) const;                                                                   //!< Complete info to string
 
         // Regular functions
-        virtual void                addConstant(const std::string& name, const TypeSpec& typeSp, DAGNode* variable);        //!< Add constant
         virtual void                addVariable(const std::string& name, const TypeSpec& typeSp, DAGNode* variable);        //!< Add variable
         virtual void                addVariableSlot(const std::string& name, const TypeSpec& typeSp);                       //!< Add empty slot
         virtual void                eraseVariable(const std::string& name);                                                 //!< Erase a variable

@@ -75,8 +75,9 @@ DAGNode* Func__mul<firstValType,secondValType,retType>::execute( void ) {
 }
 
 
+#if 0
 /** Execute function: We need partial specialization for value containers to get te right return variable */
-template <firstValType, secondValType>
+template <typename firstValType, typename secondValType>
 DAGNode* Func__mul<firstValType,secondValType,ValueContainer>::execute( void ) {
 
     const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
@@ -84,6 +85,7 @@ DAGNode* Func__mul<firstValType,secondValType,ValueContainer>::execute( void ) {
     retType              prod = *val1 * *val2;
     return new ContainerNode( prod.clone() );
 }
+#endif
 
 
 /** Get argument rules */

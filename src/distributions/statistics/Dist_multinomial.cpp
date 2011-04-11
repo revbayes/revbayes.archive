@@ -26,8 +26,8 @@
 #include "RbMath.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
-#include "ReferenceRule.h"
 #include "Simplex.h"
+#include "ValueRule.h"
 #include "VectorInteger.h"
 #include "VectorReal.h"
 #include "VectorString.h"
@@ -88,7 +88,7 @@ const MemberRules& Dist_multinomial::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ReferenceRule( "p", Simplex_name ) );
+        memberRules.push_back( new ValueRule( "p", Simplex_name ) );
 
         rulesSet = true;
 		}
@@ -101,35 +101,6 @@ const MemberRules& Dist_multinomial::getMemberRules( void ) const {
 const TypeSpec Dist_multinomial::getVariableType( void ) const {
 
     return TypeSpec( Natural_name, 1 );
-}
-
-
-/**
- * This function calculates the natural log of the likelihood
- * ratio for a multinomially-distributed random variable under
- * two different values of the distribution parameter.
- *
- * @brief Natural log of multinomial likelihood ratio
- *
- * @param value     Value of random variable
- * @return          Natural log of the likelihood ratio
- */
-double Dist_multinomial::lnLikelihoodRatio( const RbObject* value ) {
-
-	// Get the value and the parameters of the Multinomial
-    std::vector<double> pNew = static_cast<const Simplex*      >( getVariable("p")->getValue()       )->getValue();
-    std::vector<double> pOld = static_cast<const Simplex*      >( getVariable("p")->getStoredValue() )->getValue();
-    std::vector<int   > x    = static_cast<const VectorNatural*>( value                              )->getValue();
-	
-	// Check that the vectors are all the same size
-	if ( pNew.size() != pOld.size() || pNew.size() != x.size() )
-		throw RbException( "Inconsistent size of vectors when calculating Multinomial likelihood ratio" );
-	
-	// Calculate the likelihood ratio for the two values of the Multinomial parameters
-	double lnP = 0.0;
-	for ( size_t i = 0; i < x.size(); i++)
-        lnP += x[i] * ( std::log( pNew[i] ) - std::log( pOld[i] ) );
-	return lnP;	
 }
 
 
@@ -153,33 +124,6 @@ double Dist_multinomial::lnPdf( const RbObject* value ) {
 		throw RbException( "Inconsistent size of vectors when calculating Dirichlet log probability density" );
 
 	return RbStatistics::Multinomial::lnPdf( p, x );
-}
-
-
-/**
- * This function calculates the natural log of the probability
- * density ratio for two exponentially-distributed random variables.
- *
- * @brief Natural log of exponential probability density ratio
- *
- * @param newX      Value in numerator
- * @param oldX      Value in denominator
- * @return          Natural log of the probability density ratio
- */
-double Dist_multinomial::lnPriorRatio( const RbObject* newVal, const RbObject* oldVal ) {
-
-	// Get the values and the parameters of the Dirichlet
-    std::vector<double> p    = static_cast<const Simplex*      >( getValue( "p" ) )->getValue();
-    std::vector<int   > newX = static_cast<const VectorNatural*>( newVal          )->getValue();
-    std::vector<int   > oldX = static_cast<const VectorNatural*>( oldVal          )->getValue();
-
-	// Check that the vectors are all the same size
-	if ( p.size() != newX.size() || p.size() != oldX.size() )
-		throw RbException( "Inconsistent size of vectors when calculating Dirichlet prior ratio" );
-
-	// Calculate the log prior ratio
-	double lnP = RbStatistics::Multinomial::lnPdf( p, newX ) - RbStatistics::Multinomial::lnPdf( p, oldX );
-    return lnP;
 }
 
 

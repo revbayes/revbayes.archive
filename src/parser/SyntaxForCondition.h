@@ -43,11 +43,11 @@ class SyntaxForCondition : public SyntaxElement {
         void                    print(std::ostream& o) const;                                       //!< Print info about object
 
         // Regular functions
-        void                    finalizeLoop(Frame* frame);                                         //!< Finalize loop
-        DAGNode*                getDAGNodeExpr(Frame* frame) const;                                 //!< Convert to DAG node expression
-        bool                    getNextLoopState(Frame* frame);                                     //!< Get next state of loop
-        DAGNode*                getValue(Frame* frame) const;                                       //!< Get semantic value
-        void                    initializeLoop(Frame* frame);                                       //!< Initialize loop
+        void                    finalizeLoop(VariableFrame* frame);                                 //!< Finalize loop
+        DAGNode*                getDAGNodeExpr(VariableFrame* frame) const;                         //!< Convert to DAG node expression
+        bool                    getNextLoopState(VariableFrame* frame);                             //!< Get next state of loop
+        DAGNode*                getValue(VariableFrame* frame) const;                               //!< Get semantic value
+        void                    initializeLoop(VariableFrame* frame);                               //!< Initialize loop
 
     protected:
         RbString*               varName;                                                            //!< The name of the loop variable

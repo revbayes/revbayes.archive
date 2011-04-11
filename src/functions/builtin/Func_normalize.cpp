@@ -24,6 +24,7 @@
 #include "Ellipsis.h"
 #include "Func_normalize.h"
 #include "Integer.h"
+#include "MemberNode.h"
 #include "RbMath.h"
 #include "RbException.h"
 #include "RbNames.h"

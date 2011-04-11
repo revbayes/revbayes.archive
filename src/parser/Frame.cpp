@@ -29,17 +29,6 @@ Frame::Frame(Frame* parentFr) : parentFrame(parentFr) {
 }
 
 
-/** Clone entire environment, except base frame (it always stays the same) */
-Frame* Frame::cloneEnvironment( void ) const {
-
-    Frame* newEnv = clone();
-    if ( newEnv->parentFrame != NULL && newEnv->parentFrame->getParentFrame() != NULL )
-        newEnv->parentFrame = newEnv->parentFrame->cloneEnvironment();
-
-    return newEnv;
-}
-
-
 /** Get reference, alternative method */
 DAGNode* Frame::getReference( const std::string& name ) const {
 

@@ -82,8 +82,8 @@ const ArgumentRules& Func__le<firstValType, secondValType>::getArgumentRules(voi
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
-        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() );
-        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() );
+        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
         rulesSet = true;
     }
 

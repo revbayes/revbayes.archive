@@ -15,6 +15,7 @@
  * $Id$
  */
 
+#include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "ContainerNode.h"
 #include "MemberFrame.h"
@@ -88,22 +89,11 @@ void MemberFrame::eraseVariable( const std::string& name ) {
 
 
 /** Push back new member based on argument rule */
-void MemberFrame::push_back( const ArgumentRule& rule ) {
+void MemberFrame::push_back( const std::string& name, VariableSlot slot ) {
 
-    std::string name = (*i)->getArgLabel();
+    variableTable.insert( std::pair<std::string, VariableSlot>( name, slot ) );
+    members.push_back( name );
 
-    if ( (*i)->isConstant() ) {
-        
-        addConstant( name, (*i)->getArgTypeSpec(), (*i)->getVariable() );
-    }
-    else if ( (*i)->hasDefault() ) {
-    
-        addVariable( name, (*i)->getArgTypeSpec(), (*i)->getDefault() );
-    }
-    else {
-
-        addVariableSlot( name, (*i)->getArgTypeSpec() );
-    }
 }
 
 

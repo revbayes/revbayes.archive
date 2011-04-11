@@ -25,7 +25,6 @@
 #include "RbNames.h"
 #include "RbStatistics.h"
 #include "Real.h"
-#include "ReferenceRule.h"
 #include "Simplex.h"
 #include "ValueRule.h"
 #include "VectorRealPos.h"
@@ -109,7 +108,7 @@ const MemberRules& Dist_dirichlet::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ReferenceRule( "alpha", VectorRealPos_name ) );
+        memberRules.push_back( new ValueRule( "alpha", VectorRealPos_name ) );
 
         rulesSet = true;
 		}
@@ -122,40 +121,6 @@ const MemberRules& Dist_dirichlet::getMemberRules( void ) const {
 const TypeSpec Dist_dirichlet::getVariableType( void ) const {
 
     return TypeSpec( Simplex_name );
-}
-
-/**
- * This function calculates the natural log of the likelihood
- * ratio for an Dirichlet-distributed random variable under
- * two different values of the distribution parameter.
- *
- * @brief Natural log of Dirichlet likelihood ratio
- *
- * @param value     Value of random variable
- * @return          Natural log of the likelihood ratio
- */
-double Dist_dirichlet::lnLikelihoodRatio( const RbObject* value ) {
-
-	// Get the value and the parameters of the Dirichlet
-    std::vector<double> aNew = static_cast<const VectorReal*>( getVariable("alpha")->getValue()      )->getValue();
-    std::vector<double> aOld = static_cast<const VectorReal*>( getVariable("alpha")->getStoredValue())->getValue();
-    std::vector<double> x    = static_cast<const Simplex*   >( value                                 )->getValue();
-	
-	// Check that the vectors are all the same size
-	if ( aNew.size() != aOld.size() || aNew.size() != x.size() )
-		throw RbException( "Inconsistent size of vectors when calculating Dirichlet likelihood ratio" );
-	
-	// Calculate the likelihood ratio for the two values of the Dirichlet parameters
-	size_t n = aNew.size();
-	double alpha0New = 0.0, alpha0Old = 0.0;
-	for ( size_t i = 0; i < n; i++ ) {
-		alpha0New += aNew[i];
-		alpha0Old += aOld[i];
-	}
-	double lnP = RbMath::lnGamma( alpha0New ) - RbMath::lnGamma( alpha0Old );
-	for ( size_t i = 0; i < n; i++ )
-		lnP += ( RbMath::lnGamma( aOld[i] ) - RbMath::lnGamma( aNew[i] ) ) + ( ( aNew[i] - aOld[i] ) * std::log( x[i] ) );
-	return lnP;	
 }
 
 /**
@@ -178,35 +143,6 @@ double Dist_dirichlet::lnPdf( const RbObject* value ) {
 		throw RbException( "Inconsistent size of vectors when calculating Dirichlet log probability density" );
 
 	return RbStatistics::Dirichlet::lnPdf( a, x );
-}
-
-/**
- * This function calculates the natural log of the probability
- * density ratio for two Dirichlet-distributed random variables.
- *
- * @brief Natural log of Dirichlet probability density ratio
- *
- * @param newX      Value in numerator
- * @param oldX      Value in denominator
- * @return          Natural log of the probability density ratio
- */
-double Dist_dirichlet::lnPriorRatio( const RbObject* newVal, const RbObject* oldVal ) {
-
-	// Get the values and the parameters of the Dirichlet
-    std::vector<double> a    = static_cast<const VectorReal*>( getValue("alpha") )->getValue();
-    std::vector<double> newX = static_cast<const Simplex*   >( newVal            )->getValue();
-    std::vector<double> oldX = static_cast<const Simplex*   >( oldVal            )->getValue();
-
-	// Check that the vectors are all the same size
-	if ( a.size() != newX.size() || a.size() != oldX.size() )
-		throw RbException( "Inconsistent size of vectors when calculating Dirichlet prior ratio" );
-
-	// calculate the log prior ratio
-	size_t n = a.size();
-	double lnP = 0.0;
-	for ( size_t i = 0; i < n; i++ )
-		lnP += ( a[i] - 1.0 ) * ( std::log( newX[i] ) - std::log( oldX[i] ) );
-    return lnP;
 }
 
 /**

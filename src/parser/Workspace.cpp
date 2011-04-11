@@ -22,8 +22,8 @@
 #include "ConstructorFunction.h"
 #include "Container.h"
 #include "Distribution.h"
-#include "DistributionReal.h"
 #include "DistributionFunction.h"
+#include "DistributionInterval.h"
 #include "FunctionTable.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -42,14 +42,14 @@
 
 
 /** Constructor of global workspace */
-Workspace::Workspace() : Frame(), functionTable(new FunctionTable()), typesInitialized(false) {
+Workspace::Workspace() : VariableFrame(), functionTable(new FunctionTable()), typesInitialized(false) {
 
 }
 
 
 /** Constructor of user workspace */
 Workspace::Workspace(Workspace* parentSpace)
-    : Frame(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())), typesInitialized(false) {
+    : VariableFrame(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())), typesInitialized(false) {
 
 }
 
@@ -96,7 +96,7 @@ bool Workspace::addDistribution(const std::string& name, Distribution* dist) {
 
 
 /** Add real-valued distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, DistributionReal* dist) {
+bool Workspace::addDistribution(const std::string& name, DistributionInterval* dist) {
 
     PRINTF("Adding real-valued distribution %s to workspace\n", name.c_str());
 

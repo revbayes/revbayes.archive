@@ -66,10 +66,10 @@ Func__and<firstValType, secondValType>* Func__and<firstValType, secondValType>::
 
 /** Execute function: We rely on operator overloading to provide the functionality */
 template <typename firstValType, typename secondValType>
-DAGNode* Func__and<Integer,Integer>::execute( void ) {
+DAGNode* Func__and<firstValType,secondValType>::execute( void ) {
 
-    bool val1 = static_cast<const firstValType*> ( args[0].getValue() );
-    bool val2 = static_cast<const secondValType*>( args[1].getValue() );
+    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
+    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
     return new ConstantNode( new Boolean( *val1 && *val2 ) );
 }
 
@@ -83,8 +83,8 @@ const ArgumentRules& Func__and<firstValType, secondValType>::getArgumentRules( v
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() );
-        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() );
+        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
         rulesSet = true;
         }
 

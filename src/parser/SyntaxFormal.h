@@ -43,9 +43,9 @@ class SyntaxFormal : public SyntaxElement {
         void            print(std::ostream& o) const;                                               //!< Print info about object
 
         // Regular functions
-        ArgumentRule*   getArgumentRule(Frame* frame) const;                                        //!< Make an argument rule
-        DAGNode*        getDAGNodeExpr(Frame* frame) const;                                         //!< Convert to DAG node expression
-        DAGNode*        getValue(Frame* frame) const;                                               //!< Get semantic value
+        ArgumentRule*   getArgumentRule(VariableFrame* frame) const;                                //!< Make an argument rule
+        DAGNode*        getDAGNodeExpr(VariableFrame* frame) const;                                 //!< Convert to DAG node expression
+        DAGNode*        getValue(VariableFrame* frame) const;                                       //!< Get semantic value
 
     protected:
         TypeSpec*       type;                                                                       //!< The type of the argument

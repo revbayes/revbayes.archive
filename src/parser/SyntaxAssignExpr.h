@@ -45,10 +45,14 @@ class SyntaxAssignExpr : public SyntaxElement {
         void                print(std::ostream& o) const;                   //!< Print info about object
 
         // Regular functions
-        DAGNode*            getDAGNodeExpr(Frame* frame) const;             //!< Convert to DAG node expression
-        DAGNode*            getValue(Frame* frame) const;                   //!< Get semantic value
+        DAGNode*            getDAGNodeExpr(VariableFrame* frame) const;     //!< Convert to DAG node expression
+        DAGNode*            getValue(VariableFrame* frame) const;           //!< Get semantic value
+        ContainerNode*      makeContainer(const VectorNatural& index, RbObject* elem) const;    //!< Make value container
+        ContainerNode*      makeContainer(const VectorNatural& index, DAGNode* elem) const;     //!< Make variable container
 
     protected:
+        DAGNode*            wrapValue(RbObject* value) const;               //!< Wrap value into appropriate variable
+
         SyntaxVariable*             variable;                               //!< The variable to receive the value
         SyntaxElement*              expression;                             //!< The expression or function call on the righ-hand side
         SyntaxAssignExpr::operatorT opType;                                 //!< The type of assignment

@@ -48,9 +48,9 @@ class MethodTable : public FunctionTable {
 
         // MethodTable functions
         void                                addFunction(const std::string name, RbFunction* func);                      //!< Add function, generate unique id
-        void                                deleteProcessedArguments(int funcId) const;                                 //!< Delete processed arguments
+        void                                clearArgs(int funcId) const;                                                //!< Delete processed arguments
         DAGNode*                            executeFunction(int funcId) const;                                          //!< Evaluate function (for repeated calls)
-        const std::vector<VariableSlot>&    getProcessedArguments(int funcId) const;                                    //!< Get processed arguments
+        const ArgumentFrame&                getArgs(int funcId) const;                                                  //!< Get processed arguments
         int                                 processArguments(   const std::string&              name,
                                                                 const std::vector<Argument>&    args) const;            //!< Process arguments
         void                                setParentTable(FunctionTable* table) { parentTable = table; }               //!< Set parent table

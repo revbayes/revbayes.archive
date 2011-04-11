@@ -61,6 +61,9 @@ StochasticNode::StochasticNode( Distribution* dist )
 
     /* We use a random draw as the initial value */
     value = distribution->rv();
+
+    /* Get initial probability */
+    lnProb = calculateLnProbability();
 }
 
 
@@ -87,6 +90,8 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
         storedValue  = x.storedValue->clone();
     else
         storedValue = NULL;
+    lnProb       = x.lnProb;
+    storedLnProb = x.storedLnProb;
 }
 
 
@@ -140,18 +145,25 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
             storedValue  = x.storedValue->clone();
         else
             storedValue = NULL;
+        lnProb       = x.lnProb;
+        storedLnProb = x.storedLnProb;
     }
 
     return ( *this );
 }
 
 
-/** Are parents touched? Cycle through parents and check if any one is touched */
-bool StochasticNode::areParentsTouched( void ) const {
+/** Are any distribution params touched? Get distribution params and check if any one is touched */
+bool StochasticNode::areDistributionParamsTouched( void ) const {
 
-    for ( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
-    
-        if ( (*i)->isDAGType( VariableNode_name ) && static_cast<VariableNode*>( (*i) )->isTouched() )
+    const MemberFrame& params = distribution->getMembers();
+
+    for ( size_t i = 0; i < params.size(); i++ ) {
+
+        if ( !params[i].getVariable()->isDAGType( VariableNode_name ) )
+            continue;
+
+        if ( static_cast<const VariableNode*>( params[i].getVariable() )->isTouched() )
             return true;
     }
 
@@ -168,6 +180,7 @@ void StochasticNode::clamp( RbObject* observedVal ) {
     delete value;
     value   = observedVal;
     clamped = true;
+    lnProb  = calculateLnProbability();
 
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++)
         (*i)->touchAffected();
@@ -200,6 +213,8 @@ StochasticNode* StochasticNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& ne
         copy->storedValue = NULL;
     else
         copy->storedValue = storedValue->clone();
+    copy->lnProb       = lnProb;
+    copy->storedLnProb = storedLnProb;
 
     /* Set the copy params to their matches in the new DAG */
     const MemberFrame& params     = distribution->getMembers();
@@ -208,7 +223,7 @@ StochasticNode* StochasticNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& ne
     for ( size_t i = 0; i < params.size(); i++ ) {
 
         DAGNode* theParamClone = params[i].getVariable()->cloneDAG( newNodes );
-        copyParams[i].setVariable( theParamClone );
+        copyParams[i].resetVariable( theParamClone );
 
         copy->parents.insert( theParamClone );
         theParamClone->addChildNode( copy );
@@ -258,19 +273,19 @@ double StochasticNode::calculateLnProbability( void ) {
 /** Get the ln probability ratio of this node */
 double StochasticNode::getLnProbabilityRatio( void ) {
 
-    if ( !isTouched() && !areParentsTouched() ) {
+    if ( !isTouched() && !areDistributionParamsTouched() ) {
 
         return 0.0;
     }
-    else if ( isTouched() && !areParentsTouched() ) {
+    else if ( isTouched() && !areDistributionParamsTouched() ) {
 
         return distribution->lnPdf( value ) - storedLnProb;
     }
-    else if ( !isTouched() && areParentsTouched() ) {
+    else if ( !isTouched() && areDistributionParamsTouched() ) {
 
-        return distribution->lnLikelihoodRatio( value );
+        return distribution->lnPdf( value) - lnProb;
     }
-    else /* if ( isTouched() && areParentsTouched() ) */ {
+    else /* if ( isTouched() && areDistributionParamsTouched() ) */ {
 
         return distribution->lnPdf( value ) - storedLnProb;
     }
@@ -294,33 +309,41 @@ const RbObject* StochasticNode::getValue( void ) {
 }
 
 
-/** Get const value if possible */
+/** Get const value; we always know our value. */
 const RbObject* StochasticNode::getValue( void ) const {
-
-    if ( touched )
-        throw RbException( "Invalid attempt to get value from constant instance of volatile variable" );
 
     return value;
 }
 
 
-/** Keep the current value of the node and tell affected */
+/**
+ * Keep the current value of the node and tell affected. At this point,
+ * we also need to make sure we update the stored ln probability.
+ */
 void StochasticNode::keep() {
 
     if ( touched ) {
+
         delete storedValue;
         storedValue = NULL;
         storedLnProb = 1.0E6;       // An almost impossible value for the density
+        lnProb = calculateLnProbability();
     }
 
     touched = false;
+
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
         (*i)->keepAffected();
 }
 
 
-/** Tell affected variable nodes to keep the current value: stop the recursion here */
+/**
+ * Tell affected variable nodes to keep the current value: stop the recursion here.
+ * We also need to update our probability.
+ */
 void StochasticNode::keepAffected() {
+
+    lnProb = calculateLnProbability();
 }
 
 
@@ -332,6 +355,7 @@ void StochasticNode::printStruct( std::ostream& o ) const {
     o << "_dim          = " << getDim() << std::endl;
     o << "_distribution = " << distribution->briefInfo() << std::endl;
     o << "_touched      = " << ( touched ? Boolean( true ) : Boolean( false ) ) << std::endl;
+    o << "_clamped      = " << ( clamped ? Boolean( true ) : Boolean( false ) ) << std::endl;
     o << "_value        = " << value->briefInfo() << std::endl;
     if ( touched )
         o << "_storedValue  = " << storedValue->briefInfo() << std::endl;
@@ -365,6 +389,7 @@ void StochasticNode::printValue( std::ostream& o ) const {
 void StochasticNode::restore() {
 
     if ( touched ) {
+
         delete value;
         value           = storedValue;
         storedValue     = NULL;
@@ -433,6 +458,8 @@ void StochasticNode::setValue( RbObject* val ) {
 /**
  * Swap parent node. Note that this function will be called by the tree plate
  * when the topology is changed. It is also used by the parser.
+ * This function should be called from the mutateTo function, otherwise it
+ * is dangerous because the distribution parameters will not be accommodated.
  */
 void StochasticNode::swapParentNode( DAGNode* oldNode, DAGNode* newNode ) {
 
@@ -453,12 +480,7 @@ void StochasticNode::swapParentNode( DAGNode* oldNode, DAGNode* newNode ) {
         }
 
         // We keep the current value; delegate moves can later change the value
-        // if they are interested. However, we need to update the probability
-        lnProb = distribution->lnPdf( value );
-    }
-    else /* if ( clamped == true ) */ {
-    
-        lnProb = distribution->lnPdf( value );
+        // if they are interested.
     }
 
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )

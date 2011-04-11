@@ -75,8 +75,9 @@ DAGNode* Func__sub<firstValType,secondValType,retType>::execute( void ) {
 }
 
 
+#if 0
 /** Execute function: We need partial specialization for value containers to get te right return variable */
-template <firstValType, secondValType>
+template <typename firstValType, typename secondValType>
 DAGNode* Func__sub<firstValType,secondValType,ValueContainer>::execute( void ) {
 
     const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
@@ -84,6 +85,7 @@ DAGNode* Func__sub<firstValType,secondValType,ValueContainer>::execute( void ) {
     retType              diff = *val1 - *val2;
     return new ContainerNode( diff.clone() );
 }
+#endif
 
 
 /** Get argument rules */

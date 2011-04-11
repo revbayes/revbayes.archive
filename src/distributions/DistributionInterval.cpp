@@ -69,14 +69,14 @@ const VectorString& DistributionInterval::getClass( void ) const {
 
 
 /** Get max value of distribution */
-const RbObject* DistributionInterval::getMax( void ) {
+const RbObject* DistributionInterval::getMax( void ) const {
 
     throw RbException( "DistributionInterval getMax not implemented" );
 }
 
 
 /** Get min value of distribution */
-const RbObject* DistributionInterval::getMin( void ) {
+const RbObject* DistributionInterval::getMin( void ) const {
 
     throw RbException( "DistributionInterval getMin not implemented" );
 }

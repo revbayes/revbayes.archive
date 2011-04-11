@@ -37,11 +37,11 @@ class Move : public MemberObject {
         void                        setVariable(const std::string& name, DAGNode* var);                                         //!< Only allow constants
 
         // Member method inits
-        virtual const MethodTable&  getMethodInits(void) const;                                                                 //!< Get method inits
+        virtual const MethodTable&  getMethods(void) const;                                                                     //!< Get methods
 
         // Move functions you have to override
         virtual void                acceptMove(void) = 0;                                                                       //!< Accept the move
-        virtual void                performMove(double& lnPriorRatio, double& lnLikelihoodRatio, double& lnHastingsRatio) = 0;  //!< Perform the move
+        virtual void                performMove(double& lnProbabilityRatio, double& lnHastingsRatio) = 0;                       //!< Perform the move
         virtual void                rejectMove(void) = 0;                                                                       //!< Reject the move
 
         // Move functions you should not override
@@ -52,9 +52,6 @@ class Move : public MemberObject {
 
 	protected:
                                     Move(const MemberRules& memberRules);                                                       //!< Parser constructor
-
-        // Member method call (throw an error: no member methods)
-        virtual DAGNode*            executeOperation(const std::string& name, const std::vector<VariableSlot>& args);           //!< Execute method
 
         // Hidden member variables (not visible to parser)
         int                         numAccepted;                                                                                //!< Number of times accepted

@@ -18,7 +18,7 @@
 #ifndef Model_H
 #define Model_H
 
-#include "RbComplex.h"
+#include "MemberObject.h"
 
 #include <ostream>
 #include <string>
@@ -28,7 +28,7 @@ class ArgumentRule;
 class DAGNode;
 class VectorString;
 
-class Model : public RbComplex {
+class Model : public MemberObject {
 
     public:
                                     Model(void);                                                                                            //!< Default constructor for a Model object

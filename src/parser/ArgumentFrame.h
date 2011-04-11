@@ -43,9 +43,10 @@ class ArgumentFrame : public Frame {
         const VariableSlot&         operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
 
         // Basic utility functions
-        virtual ArgumentFrame*      clone(void) const;                                                                      //!< Clone object
-        virtual void                printValue(std::ostream& o) const;                                                      //!< Print table for user
-        virtual std::string         richInfo(void) const;                                                                   //!< Complete info to string
+        ArgumentFrame*              clone(void) const;                                                                      //!< Clone object
+        ArgumentFrame*              cloneEnvironment(void) const;                                                           //!< Clone environment
+        void                        printValue(std::ostream& o) const;                                                      //!< Print table for user
+        std::string                 richInfo(void) const;                                                                   //!< Complete info to string
 
         // Frame functions
         void                        clear(void);                                                                            //!< Clear the frame

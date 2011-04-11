@@ -77,7 +77,7 @@ UserFunction* UserFunction::clone(void) const {
 
 
 /** Execute function */
-DAGNode* UserFunction::executeOperation(const std::vector<VariableSlot>& args) {
+DAGNode* UserFunction::execute( void ) {
 
     std::cerr << "I am a user-defined function." << std::endl;
     std::cerr << "I know who I am but I do not know how to execute myself." << std::endl;

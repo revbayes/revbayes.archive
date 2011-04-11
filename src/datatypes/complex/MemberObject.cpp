@@ -20,6 +20,7 @@
 #include "Frame.h"
 #include "MemberFunction.h"
 #include "MemberObject.h"
+#include "MemberSlot.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "VectorString.h"
@@ -32,8 +33,7 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbComplex(), member
     /* Fill member table (frame) based on member rules */
     for ( MemberRules::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
 
-        members.push_back( *i );
-        
+        members.push_back( (*i)->getArgLabel(), MemberSlot( *i ) );
     }
 }
 
@@ -47,41 +47,10 @@ MemberObject* MemberObject::convertTo(const std::string& type, int dim) const {
 }
 
 
-/** Execute member function with preprocessed arguments (repeated evaluation) */
-DAGNode* MemberObject::executeMethod(const std::string& name, int funcId) {
-
-    /* Get preprocessed arguments */
-    std::vector<VariableSlot> arguments = methods.getProcessedArguments(funcId);
-
-    /* Execute the operation */
-    return executeOperation(name, arguments);
-}
-
-
-/** Execute member function (evaluate it once) */
-DAGNode* MemberObject::executeMethod(const std::string& name, std::vector<Argument>& args) {
-
-    /* Process the arguments */
-    int funcId = methods.processArguments(name, args);
-
-    /* Get the processed arguments */
-    const std::vector<VariableSlot>& processedArguments = methods.getProcessedArguments(funcId);
-
-    /* Execute the operation */
-    DAGNode* retVal = executeOperation(name, processedArguments);
-
-    /* Delete the processed arguments */
-    methods.deleteProcessedArguments(funcId);
-
-    /* Return the result */
-    return retVal;
-}
-
-
 /** Execute member method. We throw an error because there are no member methods unless this function is overridden */
-DAGNode* MemberObject::executeOperation(const std::string& name, const std::vector<VariableSlot>& args) {
+DAGNode* MemberObject::executeMethod(const std::string& name, ArgumentFrame& args) {
 
-    throw RbException ("Object does not have methods");
+    throw RbException( "Object does not have methods" );
 }
 
 
@@ -98,11 +67,11 @@ MemberObject* MemberObject::getConstValue( void ) const {
 
     MemberObject* temp = clone();
 
-    const VariableTable& tempMemberTable = temp->members.getVariableTable();
-    for ( VariableTable::const_iterator i = tempMemberTable.begin(); i != tempMemberTable.end(); i++ ) {
+    const MemberFrame& tempMembers = temp->getMembers();
+    for ( size_t i = 0; i < tempMembers.size(); i++ ) {
     
-        RbObject* constValue = temp->members.getValue( (*i).first )->clone();
-        temp->members.setValue( (*i).first, constValue );
+        RbObject* constValue = tempMembers[i].getValue()->clone();
+        temp->setValue( tempMembers[i].getName(), constValue );
     }
 
     return temp;
@@ -119,14 +88,16 @@ const MemberRules& MemberObject::getMemberRules(void) const {
 /** Get type specification for a member variable */
 const TypeSpec& MemberObject::getMemberTypeSpec(const std::string& name) const {
 
-    return members.getTypeSpec( name );
+    return members[name].getTypeSpec();
 }
 
 
 /** Get method specifications (no methods) */
-const MethodTable& MemberObject::getMethodInits(void) const {
+const MethodTable& MemberObject::getMethods(void) const {
 
-    throw RbException( "Object does not have methods" );
+    static MethodTable methods;
+    
+    return methods;
 }
 
 
@@ -180,13 +151,13 @@ bool MemberObject::isConvertibleTo(const std::string& type, int dim, bool once) 
 /** Print value for user */
 void MemberObject::printValue(std::ostream& o) const {
 
-    const VariableTable& varTable = members.getVariableTable();
-    for (VariableTable::const_iterator i=varTable.begin(); i!=varTable.end(); i++) {
-        o << "." << (*i).first << std::endl;
-        if ((*i).second.getValue() == NULL)
+    for ( size_t i = 0; i < members.size(); i++ ) {
+
+        o << "." << members[i].getName() << std::endl;
+        if ( members[i].getValue() == NULL)
             o << "NULL";
         else
-            (*i).second.getValue()->printValue(o);
+            members[i].getValue()->printValue(o);
         o << std::endl << std::endl;
     }
 }
@@ -213,13 +184,13 @@ void MemberObject::setElement( VectorNatural& index, DAGNode* var ) {
 /** Set value of a member variable */
 void MemberObject::setValue(const std::string& name, RbObject* val) {
 
-    members.setValue(name, val);
+    members[name].setValue(val);
 }
 
 
 /** Set a member variable */
 void MemberObject::setVariable(const std::string& name, DAGNode* var) {
 
-    members.setVariable(name, var);
+    members[name].setVariable(var);
 }
 

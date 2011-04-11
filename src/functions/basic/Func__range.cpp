@@ -17,6 +17,7 @@
  */
 
 #include "ConstantNode.h"
+#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "Func__range.h"
 #include "VectorInteger.h"

@@ -33,6 +33,8 @@ class MemberFrame : public VariableFrame {
                                     MemberFrame(const MemberFrame& x);                                              //!< Copy constructor: set frame of variable slots
 
         // Operators
+        VariableSlot&               operator[](const std::string& name);                                            //!< Get named variable slot reference
+        const VariableSlot&         operator[](const std::string& name) const;                                      //!< Get named variable slot const reference
         VariableSlot&               operator[](const size_t i);                                                     //!< Get slot by index
         const VariableSlot&         operator[](const size_t i) const;                                               //!< Get slot by index (const)
 
@@ -43,6 +45,7 @@ class MemberFrame : public VariableFrame {
         // Regular functions
         void                        addVariableSlot(const std::string& name, const TypeSpec& typeSp);               //!< Add empty slot
         void                        eraseVariable(const std::string& name);                                         //!< Erase a variable
+        void                        push_back(const std::string& name, VariableSlot slot);                          //!< Add member variable slot
         size_t                      size(void) const { return members.size(); }                                     //!< Number of members
 
     protected:

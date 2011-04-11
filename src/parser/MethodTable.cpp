@@ -82,12 +82,12 @@ std::string MethodTable::briefInfo () const {
 
 
 /** Delete processed arguments to avoid the argument DAG nodes to remain hooked up to functions that are only called once */
-void MethodTable::deleteProcessedArguments(int funcId) const {
+void MethodTable::clearArgs(int funcId) const {
 
     std::map<int, RbFunction*>::const_iterator it = funcs.find(funcId);
     if ( it == funcs.end() )
         throw RbException( "Invalid function id when processing member method" );
-    (*it).second->deleteProcessedArguments();
+    (*it).second->clearArgs();
 }
 
 
@@ -98,15 +98,15 @@ DAGNode* MethodTable::executeFunction(int funcId) const {
     std::map<int, RbFunction*>::const_iterator it = funcs.find(funcId);
     if ( it == funcs.end() )
         throw RbException( "Invalid function id when calling member method" );
-    return (*it).second->executeOperation(getProcessedArguments(funcId));    
+    return (*it).second->execute();
 }
 
 
 /** Get processed arguments */
-std::vector<VariableSlot> const& MethodTable::getProcessedArguments(int funcId) const {
+const ArgumentFrame& MethodTable::getArgs(int funcId) const {
 
     std::map<int, RbFunction*>::const_iterator it = funcs.find(funcId);
-    return (*it).second->getProcessedArguments();
+    return (*it).second->getArgs();
 }
 
 

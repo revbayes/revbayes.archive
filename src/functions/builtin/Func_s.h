@@ -68,12 +68,12 @@ Func_s<valType>* Func_s<valType>::clone( void ) const {
 template <>
 DAGNode* Func_s<Integer>::execute( void ) {
 
-    int size = static_cast<const Integer*>( args[0]->getValue() )->getValue();
+    int size = static_cast<const Integer*>( args[0].getValue() )->getValue();
 
     if ( size < 2 )
         throw RbException( "Simplex size must be at least 2" );
 
-    Simplex* temp = new Simplex( *( ) );
+    Simplex* temp = new Simplex( size );
     return new MemberNode( temp );
 }
 
@@ -82,7 +82,7 @@ DAGNode* Func_s<Integer>::execute( void ) {
 template <>
 DAGNode* Func_s<VectorRealPos>::execute( void ) {
 
-    const VectorRealPos* tempVec = static_cast<const VectorRealPos*>( args[0]->getValue() );
+    const VectorRealPos* tempVec = static_cast<const VectorRealPos*>( args[0].getValue() );
 
     Simplex* temp = new Simplex( *tempVec );
 
@@ -96,7 +96,7 @@ DAGNode* Func_s<RealPos>::execute( void ) {
 
     VectorReal  tempVec;
     for ( size_t i = 0; i < args.size(); i++ )
-        tempVec.push_back( static_cast<const RealPos*>( args[i].getValue() )->clone() );
+        tempVec.push_back( *( static_cast<const RealPos*>( args[i].getValue() )->clone() ) );
 
     // Normalization is done by the Simplex constructor
     return new MemberNode( new Simplex( tempVec ) );

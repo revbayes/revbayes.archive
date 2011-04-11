@@ -13,11 +13,6 @@
  * $Id$
  */
 
-#include <cassert>
-#include <iostream>
-#include <list>
-#include <sstream>
-
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
@@ -27,7 +22,13 @@
 #include "SyntaxForCondition.h"
 #include "SyntaxStatement.h"
 #include "UserInterface.h"
+#include "VariableFrame.h"
 #include "Workspace.h"
+
+#include <cassert>
+#include <iostream>
+#include <list>
+#include <sstream>
 
 
 /** Static vector of strings giving names of statement types */
@@ -147,14 +148,14 @@ SyntaxElement* SyntaxStatement::clone () const {
 
 
 /** Convert element to DAG node; inapplicable, so return NULL */
-DAGNode* SyntaxStatement::getDAGNodeExpr(Frame* frame) const {
+DAGNode* SyntaxStatement::getDAGNodeExpr(VariableFrame* frame) const {
 
     return NULL;
 }
 
 
 /** Get semantic value: it is here that we execute the statement */
-DAGNode* SyntaxStatement::getValue(Frame* frame) const {
+DAGNode* SyntaxStatement::getValue(VariableFrame* frame) const {
 
     if (statementType == For) {
 

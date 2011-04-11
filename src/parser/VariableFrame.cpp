@@ -82,26 +82,6 @@ const VariableSlot& VariableFrame::operator[]( const std::string& name ) const {
 }
 
 
-/** Add constant to frame */
-void VariableFrame::addConstant( const std::string& name, const TypeSpec& typeSp, DAGNode* variable ) {
-
-    /* Throw an error if the variable exists. Note that we cannot use the function
-       existsVariable because that function looks recursively in parent frames, which
-       would make it impossible to hide global variables. */
-    if ( variableTable.find( name ) != variableTable.end() )
-        throw RbException( "Variable " + name + " already exists in frame" );
-
-    /* Create the slot */
-    VariableSlot slot( typeSp, variable, true );
-    slot.setFrame( this );
-
-    /* Insert new slot in variable table */
-    variableTable.insert( std::pair<std::string, VariableSlot>( name, slot ) );
-
-    PRINTF( "Inserted const %s %s = %s in frame\n", name.c_str(), slot.getTypeSpec().toString().c_str(), variable->briefInfo().c_str() );
-}
-
-
 /** Add variable to frame */
 void VariableFrame::addVariable( const std::string& name, const TypeSpec& typeSp, DAGNode* variable ) {
 
@@ -139,6 +119,17 @@ void VariableFrame::addVariableSlot( const std::string& name, const TypeSpec& ty
     variableTable.insert( std::pair<std::string, VariableSlot>( name, slot ) );
 
     PRINTF( "Inserted %s %s in frame\n", name.c_str(), slot.getTypeSpec().toString().c_str() );
+}
+
+
+/** Clone entire environment, except base frame (it always stays the same) */
+VariableFrame* VariableFrame::cloneEnvironment( void ) const {
+
+    VariableFrame* newEnv = clone();
+    if ( newEnv->parentFrame != NULL && newEnv->parentFrame->getParentFrame() != NULL )
+        newEnv->parentFrame = newEnv->parentFrame->cloneEnvironment();
+
+    return newEnv;
 }
 
 

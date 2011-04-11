@@ -25,7 +25,7 @@
 #include <string>
 
 /* Forward declarations */
-class Frame;
+class VariableFrame;
 class VectorString;
 
 /**
@@ -65,25 +65,25 @@ class VectorString;
 class SyntaxElement {
 
     public:
-        virtual                    ~SyntaxElement(void) {}                          //!< Destructor; delete syntax subtree
+        virtual                    ~SyntaxElement(void) {}                              //!< Destructor; delete syntax subtree
 
         // Basic utility functions you have to override
-        virtual std::string         briefInfo(void) const = 0;                      //!< Brief info about object
-        virtual SyntaxElement*      clone(void) const = 0;                          //!< Clone object
-        virtual const VectorString& getClass(void) const;                           //!< Get class vector 
-        virtual void                print(std::ostream& o) const = 0;               //!< Print info about object
+        virtual std::string         briefInfo(void) const = 0;                          //!< Brief info about object
+        virtual SyntaxElement*      clone(void) const = 0;                              //!< Clone object
+        virtual const VectorString& getClass(void) const;                               //!< Get class vector 
+        virtual void                print(std::ostream& o) const = 0;                   //!< Print info about object
 
         // Basic utility functions you should not override
-        const std::string&          getType(void) const;                            //!< Get type
-        bool                        isType(const std::string& type) const;          //!< Is the element of type?
+        const std::string&          getType(void) const;                                //!< Get type
+        bool                        isType(const std::string& type) const;              //!< Is the element of type?
 
         // Regular functions
-        virtual DAGNode*            getDAGNodeExpr(Frame* frame) const = 0;         //!< Convert to DAG node expression
-        virtual DAGNode*            getValue(Frame* frame) const = 0;               //!< Get semantic value
-        virtual bool                isConstExpr(void) const { return false; }       //!< Is subtree constant expr?
+        virtual DAGNode*            getDAGNodeExpr(VariableFrame* frame) const = 0;     //!< Convert to DAG node expression
+        virtual DAGNode*            getValue(VariableFrame* frame) const = 0;           //!< Get semantic value
+        virtual bool                isConstExpr(void) const { return false; }           //!< Is subtree constant expr?
 
     protected:
-                                    SyntaxElement(void) {}                          //!< Protected constructor, just in case
+                                    SyntaxElement(void) {}                              //!< Protected constructor, just in case
 };
 
 #endif

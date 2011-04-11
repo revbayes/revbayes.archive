@@ -54,9 +54,7 @@ class Distribution: public MemberObject {
         // Distribution functions you have to override
         virtual Move*               getDefaultMove(StochasticNode* node) = 0;                                       //!< Get default move
         virtual const TypeSpec      getVariableType(void) const = 0;                                                //!< Get random variable type
-        virtual double              lnLikelihoodRatio(const RbObject* value) = 0;                                   //!< Ln prob ratio of A | B when B is touched
         virtual double              lnPdf(const RbObject* value) = 0;                                               //!< Ln probability density
-        virtual double              lnPriorRatio(const RbObject* newVal, const RbObject* oldVal) = 0;               //!< Ln prob ratio of A | B when A is touched
         virtual double              pdf(const RbObject* value) = 0;                                                 //!< Probability density function
         virtual RbObject*           rv(void) = 0;                                                                   //!< Generate a random draw
 

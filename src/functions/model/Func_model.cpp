@@ -19,6 +19,7 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Func_model.h"
+#include "MemberNode.h"
 #include "Model.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -36,7 +37,7 @@ Func_model* Func_model::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_model::executeOperation( const std::vector<VariableSlot>& args ) {
+DAGNode* Func_model::execute( void ) {
 
     if ( args[0].getVariable()->numChildren() != 0 )
         throw RbException( "Node is not a sink node" );

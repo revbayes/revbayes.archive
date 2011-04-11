@@ -15,17 +15,17 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
 #include "Distribution.h"
 #include "Move_msimplex.h"
-#include "RealPos.h"
+#include "Natural.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "Integer.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
+#include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -33,48 +33,47 @@
 
 
 /** Constructor for parser */
-Move_msimplex::Move_msimplex(void) : SimpleMove(getMemberRules()) {
-
+Move_msimplex::Move_msimplex( void ) : MoveSimple( getMemberRules() ) {
 }
 
 /** Constructor for internal use */
-Move_msimplex::Move_msimplex(StochasticNode* node, double tuning, int nc, double weight) : SimpleMove(getMemberRules()) {
+Move_msimplex::Move_msimplex( StochasticNode* node, double tuning, int nc, double weight ) : MoveSimple( getMemberRules() ) {
 
-    setValue("tuning", new RealPos(tuning));
-    setValue("num_cats", new Integer(nc));
-    setValue("weight", new RealPos(weight));
+    setValue( "tuning", new RealPos(tuning) );
+    setValue( "num_cats", new Integer(nc) );
+    setValue( "weight", new RealPos(weight) );
 
-    setNodePtr(node);
+    setNodePtr( node );
 }
 
 /** Clone object */
-Move_msimplex* Move_msimplex::clone(void) const {
+Move_msimplex* Move_msimplex::clone( void ) const {
 
-    return new Move_msimplex(*this);
+    return new Move_msimplex( *this );
 }
 
 
 /** Get class vector describing type of object */
 const VectorString& Move_msimplex::getClass() const {
 
-    static VectorString rbClass = VectorString(Move_mslide_name) + Move::getClass();
+    static VectorString rbClass = VectorString( Move_mslide_name ) + Move::getClass();
     return rbClass;
 }
 
 /** Return member rules */
-const MemberRules& Move_msimplex::getMemberRules(void) const {
+const MemberRules& Move_msimplex::getMemberRules( void ) const {
 
     static MemberRules memberRules;
     static bool        rulesSet = false;
 
     if (!rulesSet) 
 		{
-        memberRules.push_back(new ArgumentRule("tuning", RealPos_name));
-        memberRules.push_back(new ArgumentRule("num_cats", Integer_name));
+        memberRules.push_back(new ValueRule( "tuning"  , RealPos_name ) );
+        memberRules.push_back(new ValueRule( "num_cats", Natural_name ) );
 
         /* Inherit weight and rng from Move, put it at back */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        memberRules.insert(memberRules.end(), inheritedRules.begin(), inheritedRules.end()); 
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
         rulesSet = true;
 		}
@@ -84,13 +83,17 @@ const MemberRules& Move_msimplex::getMemberRules(void) const {
 
 
 /** Perform the move */
-double Move_msimplex::perform(std::set<StochasticNode*>& affectedNodes) {
+double Move_msimplex::perform( std::set<StochasticNode*>& affectedNodes ) {
 
-    Simplex*               valPtr  = (Simplex*)(nodePtr->getValuePtr(affectedNodes));
+    // Get affected nodes
+    nodePtr->getAffected( affectedNodes );
+
+    // Get relevant values
+    const Simplex*         valPtr  = static_cast<const Simplex*>( nodePtr->getValue()  );
     RandomNumberGenerator* rng     = GLOBAL_RNG;
-    double                 alpha0  = ((Real*)(getValue("tuning")))->getValue();
-    int                    k       = ((Integer*)(getValue("num_cats")))->getValue();
-	int                    n       = valPtr->getValue().size();
+    double                 alpha0  = static_cast<const RealPos*>( getValue("tuning")   )->getValue();
+    int                    k       = static_cast<const Natural*>( getValue("num_cats") )->getValue();
+    int                    n       = valPtr->getSubelementsSize();
 
 	std::vector<double> curVal = valPtr->getValue();
 	std::vector<double> newVal = curVal;
@@ -111,13 +114,13 @@ double Move_msimplex::perform(std::set<StochasticNode*>& affectedNodes) {
 	double lnProposalRatio = 0.0;
 	if ( k > n )
 		{
-		// we can't update more elements that there are elements in the simplex
-		throw (RbException("Attempting to update too many simplex variables"));
+		// we can't update more elements than there are elements in the simplex
+		throw RbException( "Attempting to update too many simplex variables" );
 		}
 	else if ( k < 1 )
 		{
 		// we also can't update 0 or a negative number of elements
-		throw (RbException("Attempting to update too few simplex variables"));
+		throw RbException( "Attempting to update too few simplex variables" );
 		}
 	else if ( k < n )
 		{
@@ -191,9 +194,8 @@ double Move_msimplex::perform(std::set<StochasticNode*>& affectedNodes) {
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
 		}
 		
-    valPtr->setValue(newVal);
+    nodePtr->setValue( new Simplex( newVal ) );
 	
     return lnProposalRatio;
 }
-
 

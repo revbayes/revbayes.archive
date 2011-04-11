@@ -13,12 +13,13 @@
  * $Id$
  */
 
-#include "ArgumentRule.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "SyntaxFormal.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
+#include "VariableFrame.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -121,24 +122,25 @@ SyntaxFormal* SyntaxFormal::clone () const {
 
 
 /** Make argument rule from element */
-ArgumentRule* SyntaxFormal::getArgumentRule(Frame* frame) const {
+ArgumentRule* SyntaxFormal::getArgumentRule(VariableFrame* frame) const {
 
+    // TODO: Deal with reference argument rules correctly
     if (defaultExpr == NULL)
-        return new ArgumentRule(*label, *type);
+        return new ValueRule(*label, *type);
     else
-        return new ArgumentRule(*label, *type, defaultExpr->getValue(frame));
+        return new ValueRule(*label, *type, defaultExpr->getValue(frame));
 }
 
 
 /** Convert element to DAG node (not applicable so return NULL) */
-DAGNode* SyntaxFormal::getDAGNodeExpr(Frame* frame) const {
+DAGNode* SyntaxFormal::getDAGNodeExpr(VariableFrame* frame) const {
 
     return NULL;
 }
 
 
 /** Get semantic value (not applicable so return NULL) */
-DAGNode* SyntaxFormal::getValue(Frame* frame) const {
+DAGNode* SyntaxFormal::getValue(VariableFrame* frame) const {
 
     return NULL;
 }

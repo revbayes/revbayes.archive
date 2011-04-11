@@ -22,8 +22,8 @@
 #include "ConstructorFunction.h"
 #include "Container.h"
 #include "Distribution.h"
-#include "DistributionReal.h"
 #include "DistributionFunction.h"
+#include "DistributionInterval.h"
 #include "FunctionTable.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -96,14 +96,10 @@
 #include "Func_model.h"
 #include "Func_normalize.h"
 #include "Func_quit.h"
-#include "Func_s_doublevec.h"
-#include "Func_s_int.h"
-#include "Func_s_realvec.h"
+#include "Func_s.h"
 #include "Func_source.h"
 #include "Func_sqrt.h"
-#include "Func_v_int.h"
-#include "Func_v_double.h"
-#include "Func_v_vecrealvec.h"
+#include "Func_v.h"
 
 /* Regular templated functions */
 #include "Func_transpose.h"
@@ -166,24 +162,24 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_add",      new Func__add<               Real,           Real,       Real >() );
         addFunction( "_add",      new Func__add<            Integer,           Real,       Real >() );
         addFunction( "_add",      new Func__add<               Real,        Integer,       Real >() );
-        addFunction( "_add",      new Func__add<         MatrixReal,     MatrixReal, MatrixReal >() );
+        //addFunction( "_add",      new Func__add<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_div",      new Func__div<            Integer,        Integer,       Real >() );
         addFunction( "_div",      new Func__div<               Real,           Real,       Real >() );
         addFunction( "_div",      new Func__div<            Integer,           Real,       Real >() );
         addFunction( "_div",      new Func__div<               Real,        Integer,       Real >() );
-        addFunction( "_div",      new Func__div<         MatrixReal,     MatrixReal, MatrixReal >() );
+        //addFunction( "_div",      new Func__div<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<            Integer,        Integer,    Integer >() );
         addFunction( "_mul",      new Func__mul<               Real,           Real,       Real >() );
         addFunction( "_mul",      new Func__mul<            Integer,           Real,       Real >() );
         addFunction( "_mul",      new Func__mul<               Real,        Integer,       Real >() );
-        addFunction( "_mul",      new Func__mul<         MatrixReal,     MatrixReal, MatrixReal >() );
+        //addFunction( "_mul",      new Func__mul<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<         MatrixReal,           Real, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<               Real,     MatrixReal, MatrixReal >() );
         addFunction( "_sub",      new Func__sub<            Integer,        Integer,    Integer >() );
         addFunction( "_sub",      new Func__sub<               Real,           Real,       Real >() );
         addFunction( "_sub",      new Func__sub<            Integer,           Real,       Real >() );
         addFunction( "_sub",      new Func__sub<               Real,        Integer,       Real >() );
-        addFunction( "_sub",      new Func__sub<         MatrixReal,     MatrixReal, MatrixReal >() );
+        //addFunction( "_sub",      new Func__sub<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_and",      new Func__and<            Integer,        Integer >()             );
         addFunction( "_and",      new Func__and<               Real,           Real >()             );
         addFunction( "_and",      new Func__and<            Integer,           Real >()             );
@@ -226,14 +222,10 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "quit",      new Func_quit()         );
         addFunction( "source",    new Func_source()       );
         addFunction( "sqrt",      new Func_sqrt()         );
-        addFunction( "v",         new Func_v_int()        );
-        addFunction( "v",         new Func_v_double()     );
-        addFunction( "v",         new Func_v_vecrealvec() );
-        addFunction( "s",         new Func_s_doublevec()  );
-        addFunction( "s",         new Func_s_int()        );
-        addFunction( "s",         new Func_s_realvec()    );
 
         /* Add regular templated functions (alphabetic order) */
+        // TODO: Add v and s functions
+        // TODO: Transpose function should not be templated
         addFunction( "transpose", new Func_transpose<    MatrixReal,     MatrixReal >()             );
 
     }

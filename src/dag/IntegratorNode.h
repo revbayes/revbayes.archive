@@ -1,10 +1,11 @@
 /**
  * @file
- * This file contains the declaration of StochasticNode, which is derived
- * from VariableNode. StochasticNode is used for DAG nodes holding stochastic
- * variables with an associated distribution object.
+ * This file contains the declaration of IntegratorNode, which is derived
+ * from StochasticNode. IntegratorNode is used for DAG nodes integrating
+ * out probabilities over a conditional likelihood vector, given the probability
+ * mass vector from an appropriate categorical distribution.
  *
- * @brief Declaration of StochasticNode
+ * @brief Declaration of IntegratorNode
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2009-12-30 00:19:25 +0100 (Ons, 30 Dec 2009) $
@@ -14,13 +15,13 @@
  * @since 2009-08-16, version 1.0
  * @extends DAGNode
  *
- * $Id: StochasticNode.h 216 2009-12-29 23:19:25Z ronquist $
+ * $Id: IntegratorNode.h 216 2009-12-29 23:19:25Z ronquist $
  */
 
-#ifndef StochasticNode_H
-#define StochasticNode_H
+#ifndef IntegratorNode_H
+#define IntegratorNode_H
 
-#include "VariableNode.h"
+#include "StochasticNode.h"
 
 class Distribution;
 class MemberNode;
@@ -28,19 +29,19 @@ class RbObject;
 class VectorString;
 
 
-class StochasticNode : public VariableNode {
+class IntegratorNode : public StochasticNode {
 
     public:
-                                StochasticNode(const TypeSpec& type);                               //!< Construct empty stochastic node
-                                StochasticNode(Distribution* dist);                                 //!< Construct from distribution (raw object)
-                                StochasticNode(const StochasticNode& x);                            //!< Copy constructor
-							   ~StochasticNode(void);                                               //!< Destructor
+                                IntegratorNode(void);                                               //!< Construct empty integrator node
+                                IntegratorNode(MemberNode* condLikeVec, Distribution* dist);        //!< Construct from cond like vector and distribution
+                                IntegratorNode(const IntegratorNode& x);                            //!< Copy constructor
+							   ~IntegratorNode(void);                                               //!< Destructor
 
         // Assignment operator
-        StochasticNode&         operator=(const StochasticNode& x);                                 //!< Assignment operator
+        IntegratorNode&         operator=(const IntegratorNode& x);                                 //!< Assignment operator
 
         // Basic utility functions
-        StochasticNode*         clone(void) const;                                                  //!< Clone the stochastic node
+        IntegratorNode*         clone(void) const;                                                  //!< Clone the stochastic node
 
         const VectorString&     getDAGClass(void) const;                                            //!< Get DAG node class vector
         int                     getDim(void) const { return valueDim; }                             //!< Get dim (0 for scalar, 1 for vector, etc)
@@ -51,7 +52,7 @@ class StochasticNode : public VariableNode {
         void                    printValue(std::ostream& o) const;                                  //!< Print struct for user
         std::string             richInfo(void) const;                                               //!< Complete info about object
 
-        // StochasticNode functions
+        // IntegratorNode functions
         double                  calculateLnProbability(void);                                       //!< Calculate log conditional probability
         void                    clamp(RbObject* observedVal);                                       //!< Clamp the node with an observed value
         const Distribution*     getDistribution(void) const { return distribution; }                //!< Get distribution
@@ -61,8 +62,8 @@ class StochasticNode : public VariableNode {
         void                    unclamp(void);                                                      //!< Unclamp the node
         
         // DAG functions
-        StochasticNode*         cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;       //!< Clone entire graph
-        void                    getAffected(std::set<StochasticNode*>& affected);                   //!< Mark and get affected nodes
+        IntegratorNode*         cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;       //!< Clone entire graph
+        void                    getAffected(std::set<IntegratorNode*>& affected);                   //!< Mark and get affected nodes
         void                    keep(void);                                                         //!< Keep value of this and affected nodes
         void    	            keepAffected(void);                                                 //!< Keep value of affected nodes recursively
         void                    restore(void);                                                      //!< Restore value of this and affected nodes
@@ -74,15 +75,7 @@ class StochasticNode : public VariableNode {
         MoveSchedule*           getDefaultMoves(void);                                              //!< Get default moves
 
     protected:
-        // Help function
-        virtual bool            areDistributionParamsTouched() const;                               //!< Are any distribution params touched? Important in calculating prob ratio
-
-        // Member variables
-        int                     valueDim;                                                           //!< Dimensions of value
-        bool                    clamped;                                                            //!< Is the node clamped with data?
-        Distribution*           distribution;                                                       //!< Distribution (density functions, random draw function)
-        double                  lnProb;                                                             //!< Current log probability
-        double                  storedLnProb;                                                       //!< Stored log probability
+        MemberNode*             condLikes;                                                          //!< Cond likes
 };
 
 #endif

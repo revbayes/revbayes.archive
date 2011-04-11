@@ -26,6 +26,7 @@
 #include "RbNames.h"
 #include "ReferenceRule.h"
 #include "StochasticNode.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -137,8 +138,8 @@ const MemberRules& Dist_norm::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
 
-        memberRules.push_back( new ReferenceRule( "mean", Real_name    ) );
-        memberRules.push_back( new ReferenceRule( "sd"  , RealPos_name ) );
+        memberRules.push_back( new ValueRule( "mean", Real_name    ) );
+        memberRules.push_back( new ValueRule( "sd"  , RealPos_name ) );
 
         rulesSet = true;
     }
@@ -151,37 +152,6 @@ const MemberRules& Dist_norm::getMemberRules( void ) const {
 const TypeSpec Dist_norm::getVariableType( void ) const {
 
     return TypeSpec( Real_name );
-}
-
-
-/**
- * This function calculates the natural log of the likelihood
- * ratio for a normally-distributed random variable under two
- * different values of the distribution parameters.
- *
- * @brief Natural log of normal likelihood ratio
- *
- * @param value     Value of random variable
- * @return          Natural log of the likelihood ratio
- */
-double Dist_norm::lnLikelihoodRatio( const RbObject* value ) {
-
-    double muNew    = static_cast<const Real*   >( getVariable("mean")->getValue()       )->getValue();
-    double muOld    = static_cast<const Real*   >( getVariable("mean")->getStoredValue() )->getValue();
-    double sigmaNew = static_cast<const RealPos*>( getVariable("sd"  )->getValue()       )->getValue();
-    double sigmaOld = static_cast<const RealPos*>( getVariable("sd"  )->getStoredValue() )->getValue();
-    double x        = static_cast<const Real*   >( value                                 )->getValue();
-
-    double newZ = ( x - muNew ) / sigmaNew;
-    double oldZ = ( x - muOld ) / sigmaOld;
-
-    double fullRatio = 0.0;
-    fullRatio += ( -0.5 * newZ * newZ ) - 0.5 * std::log( 2.0 * PI * sigmaNew );
-    fullRatio -= ( -0.5 * oldZ * oldZ ) - 0.5 * std::log( 2.0 * PI * sigmaOld );
-
-    double quickRatio = 0.5 * ( std::log( sigmaOld / sigmaNew ) ) + 0.5 * ( oldZ * oldZ - newZ * newZ );
-
-    return quickRatio;
 }
 
 
@@ -203,30 +173,6 @@ double Dist_norm::lnPdf(const RbObject* value) {
     double z = ( x - mu ) / sigma;
 
     return ( -0.5 * z * z ) - 0.5 * std::log ( 2.0 * PI * sigma );
-}
-
-
-/**
- * This function calculates the natural log of the probability
- * density ratio for two normally-distributed random variables.
- *
- * @brief Natural log of normal probability density ratio
- *
- * @param newX      Value in numerator
- * @param oldX      Value in denominator
- * @return          Natural log of the probability density ratio
- */
-double Dist_norm::lnPriorRatio( const RbObject* newVal, const RbObject* oldVal ) {
-
-    double mu    = static_cast<const Real*   >( getValue( "mean" ) )->getValue();
-    double sigma = static_cast<const RealPos*>( getValue( "sd"   ) )->getValue();
-    double newX  = static_cast<const Real*   >( newVal             )->getValue();
-    double oldX  = static_cast<const Real*   >( oldVal             )->getValue();
-
-    double newZ = ( newX - mu ) / sigma;
-    double oldZ = ( oldX - mu ) / sigma;
-
-    return 0.5 * ( oldZ * oldZ - newZ * newZ );
 }
 
 

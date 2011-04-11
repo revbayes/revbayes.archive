@@ -52,6 +52,7 @@ class UserFunction :  public RbFunction {
         std::string                 richInfo() const;                   //!< Complete info about object
 
         // Regular functions
+		DAGNode*                    execute(void);                      //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;       //!< Get arg rules
         const TypeSpec              getReturnType(void) const;          //!< Get return type
 
@@ -61,7 +62,6 @@ class UserFunction :  public RbFunction {
         std::list<SyntaxElement*>*  code;               //!< The code
         Frame*                      defineEnvironment;  //!< The definition environment
 
-		DAGNode*                    executeOperation(const std::vector<VariableSlot>& args);    //!< Execute operation
 };
 
 #endif
