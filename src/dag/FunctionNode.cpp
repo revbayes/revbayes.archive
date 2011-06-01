@@ -230,9 +230,9 @@ DAGNode* FunctionNode::getElement( VectorInteger& index ) {
 
 
 /** Get element reference for modification by parser */
-DAGNode* FunctionNode::getElementRef( VectorNatural& index) {
+DAGNode* FunctionNode::getElementOwner( VectorInteger& index) {
 
-    return getReference()->getElementRef( index );
+    return getReference()->getElementOwner( index );
 }
 
 
@@ -311,9 +311,9 @@ std::string FunctionNode::richInfo( void ) const {
 
 
 /** Allow parser to set element */
-void FunctionNode::setElement( VectorNatural& index, DAGNode* var ) {
+void FunctionNode::setElement( const VectorNatural& index, DAGNode* var, bool convert ) {
 
-    getReference()->setElement( index, var );
+    getReference()->setElement( index, var, convert );
 }
 
 

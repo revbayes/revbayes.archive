@@ -91,12 +91,35 @@ bool VectorString::operator!=(const VectorString& x) const {
 }
 
 
-/** Concatenation with operator+ */
-VectorString VectorString::operator+(const VectorString& x) const {
+/** Concatenation with operator+ (RbString) */
+VectorString VectorString::operator+( const RbString& x ) const {
 
     VectorString tempVec = *this;
-    for (size_t i = 0; i < x.elements.size(); i++)
-        tempVec.push_back(x[i]);
+
+    tempVec.push_back( x.getValue() );
+
+    return tempVec;
+}
+
+
+/** Concatenation with operator+ (VectorString) */
+VectorString VectorString::operator+( const VectorString& x ) const {
+
+    VectorString tempVec = *this;
+
+    for ( size_t i = 0; i < x.elements.size(); i++ )
+        tempVec.push_back( x[i] );
+
+    return tempVec;
+}
+
+
+/** Concatenation with operator+ (std::string) */
+VectorString VectorString::operator+( const std::string& x ) const {
+
+    VectorString tempVec = *this;
+
+    tempVec.push_back( x );
 
     return tempVec;
 }

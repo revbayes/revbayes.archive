@@ -52,13 +52,11 @@ class FunctionNode : public DeterministicNode {
         // Parser element access functions
         bool                        existsElement(VectorInteger& index);                                        //!< Does element exist?
         DAGNode*                    getElement(VectorInteger& index);                                           //!< Get element
-        DAGNode*                    getElementRef(VectorNatural& index);                                        //!< Get element reference for setting it
-        void                        setElement(VectorNatural& index, DAGNode* var);                             //!< Set element for parser if member object requests such a call
+        DAGNode*                    getElementOwner(VectorInteger& index);                                      //!< Get element owner
+        void                        setElement(const VectorNatural& index, DAGNode* var, bool convert=true);    //!< Set element for parser if member object requests such a call
 
         // DAG functions
         FunctionNode*               cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
-        bool                        isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
-        void                        swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
     protected:
         // Utility function

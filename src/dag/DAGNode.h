@@ -26,6 +26,7 @@
 #include <set>
 #include <string>
 
+class ContainerNode;
 class RbObject;
 class VariableNode;
 class VariableSlot;
@@ -43,6 +44,7 @@ class DAGNode {
 
         // Basic utility functions you should not override
         std::string                     briefInfo(void) const;                                                  //!< Brief info about object
+        ContainerNode*                  getContainer(void) const;                                               //!< Get container if container element
         const std::string&              getDAGType(void) const;                                                 //!< Get DAG node type
         const std::string               getName(void) const;                                                    //!< Get name from slot and children
         const TypeSpec                  getTypeSpec(void) const;                                                //!< Get language type specification for value
@@ -50,21 +52,23 @@ class DAGNode {
 		VariableSlot*                   getSlot(void) const { return slot; }                                    //!< Return slot managing the variable
         const std::string&              getValueType(void) const { return valueType; }                          //!< Get value type
         bool                            isDAGType(const std::string& type) const;                               //!< Is DAG node of type?
+        bool                            isImmutable(void) const;                                                //!< Is DAG node immutable?
         bool                            isTemp(void) const { return numRefs() == 0; }                           //!< Is the node a temp variable?
         bool                            isTypeSpec(const TypeSpec& typeSp) const;                               //!< Is DAG node of language type typeSpec?
         int                             numReferringSlots(void) const { return int(referringSlots.size()); }    //!< Number of referring slots
         int                             numRefs(void) const;                                                    //!< Number of references
 
         // Basic utility functions you may want to override
-        virtual int                     getDim(void) const { return 0; }                                        //!< Get dim (0 for scalar, 1 for vector, etc)
         virtual DAGNode*                getReference(void) { return this; }                                     //!< Get reference to variable, override if lookup or fxn
         virtual int                     getSize(void) const { return 1; }                                       //!< Total number of elements (default is 1, only different for ContainerNode)
+        virtual int                     getDim(void) const { return 0; }                                        //!< Get dim (0 for scalar, 1 for vector, etc)
+        virtual bool                    isConst(void) const;                                                    //!< Is DAG node const value?
 
-        // Parser set and get functions you may want to override
+        // Element set and get functions you may want to override
         virtual bool                    existsElement(VectorInteger& index);                                    //!< Does element exist?
         virtual DAGNode*                getElement(VectorInteger& index);                                       //!< Give the parser an element
-        virtual DAGNode*                getElementRef(VectorNatural& index);                                    //!< Give the parser an element reference for setting value
-        virtual void                    setElement(VectorNatural& index, DAGNode* var);                         //!< Set variable (or value) element
+        virtual DAGNode*                getElementOwner(VectorInteger& index);                                  //!< Give the parser the element owner
+        virtual void                    setElement(const VectorNatural& index, DAGNode* var, bool convert=true);//!< Set element
 
         // Basic utility functions you have to override
         virtual DAGNode*                clone(void) const = 0;                                                  //!< Clone this node
@@ -88,7 +92,6 @@ class DAGNode {
         void                            removeChildNode(VariableNode* c) { children.erase(c); }                 //!< Remove a child node
 
         // DAG function you may want to override
-        virtual bool                    isConstExpr(void) const { return false; }                               //!< Is DAG constant expression?
 
         // DAG function you have to override
         virtual DAGNode*                cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const = 0;       //!< Clone graph

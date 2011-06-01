@@ -26,6 +26,7 @@
 #include "Model.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "VariableSlot.h"
 #include "VectorString.h"
 #include "UserInterface.h"
 
@@ -34,135 +35,134 @@
 
 
 /** Default constructor for a Model object. */
-Model::Model(void) : dagNodes(), maintainedHere() {
-	
+Model::Model( void ) : MemberObject() {
 }
 
+
 /** Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. */
-Model::Model(const std::vector<DAGNode*>& sinkNodes) : MemberObject(), dagNodes(), maintainedHere() {
+Model::Model( const std::vector<DAGNode*>& sinkNodes ) : MemberObject() {
 
     /* Check to see that we have at least one DAG node */
-    if (sinkNodes.empty())
-        throw RbException("No sink nodes specified");
+    if ( sinkNodes.empty() )
+        throw RbException( "No sink nodes specified" );
 
     /* Make copy of DAG: pulling from first sink node is sufficient */
     std::map<const DAGNode*, DAGNode*> newNodes;
-    sinkNodes.front()->cloneDAG(newNodes);
+    sinkNodes.front()->cloneDAG( newNodes );
 
     /* Check that all sink nodes are included */
-    for (std::vector<DAGNode*>::const_iterator i=sinkNodes.begin(); i!=sinkNodes.end(); i++) {
-        if (newNodes.find(*i) == newNodes.end()) {
-            for (std::map<const DAGNode*, DAGNode*>::iterator j=newNodes.begin(); j!=newNodes.end(); j++)
+    for ( std::vector<DAGNode*>::const_iterator i = sinkNodes.begin(); i != sinkNodes.end(); i++ ) {
+        if ( newNodes.find(*i) == newNodes.end() ) {
+            for ( std::map<const DAGNode*, DAGNode*>::iterator j = newNodes.begin(); j != newNodes.end(); j++ )
                 delete (*j).second;
-            throw RbException("All sink nodes are not connected to the same DAG");
+            throw RbException( "All sink nodes are not connected to the same DAG" );
         }
     }
 
-    /* Insert new nodes in dagNodes member variable */
+    /* Insert new nodes in dagNodes member frame and direct access vector */
     int count = 1;
-    for (std::map<const DAGNode*, DAGNode*>::iterator i=newNodes.begin(); i!=newNodes.end(); i++) {
-        DAGNode* theNode = (*i).second;
-        if (theNode->getName() == "") {
-            maintainedHere.push_back(true);
-            if ((*i).first->getName() != "")
-                ; // theNode->setName((*i).first->getName());
-            else {
-                std::ostringstream name;
-                name << "Unnamed node " << count++;
-                // theNode->setName(name.str());
-            }
+    for ( std::map<const DAGNode*, DAGNode*>::iterator i = newNodes.begin(); i != newNodes.end(); i++ ) {
+
+        const DAGNode* theOldNode = (*i).first;
+        DAGNode*       theNewNode = (*i).second;
+
+        if ( theOldNode->getSlot() != NULL ) {
+
+            // Create new variable slot from old slot if old node was in a slot
+            const VariableSlot* oldSlot = theOldNode->getSlot();
+            dagNodeMembers.addVariable( oldSlot->getName(), oldSlot->getTypeSpec(), theNewNode );
         }
-        else
-            maintainedHere.push_back(false);
-        dagNodes.push_back(theNode);
+        else {
+
+            // Create unnamed slot if old variable was not in slot
+            std::ostringstream name;
+            name << "Unnamed node " << count++;
+            dagNodeMembers.addVariable( name.str(), theNewNode->getTypeSpec(), theNewNode );        
+        }
+
+        // Insert in direct access vector
+        dagNodes.push_back( theNewNode );
     }
 }
 
-/** Destructor */
-Model::~Model(void) {
-
-    std::vector<DAGNode*>::iterator i;
-    std::vector<bool>::iterator j;
-    for (i=dagNodes.begin(), j=maintainedHere.begin(); i!=dagNodes.end(); i++, j++) {
-        if ((*j) == true) {
-            // (*i)->setName("");
-            if ((*i)->numRefs() == 0)
-                delete (*i);
-        }
-    }
-}
 
 /** Copy constructor */
-Model::Model(const Model& x) : MemberObject(), dagNodes(), maintainedHere() {
+Model::Model( const Model& x) : MemberObject() {
 
     /* Make copy of DAG by pulling from first node in x */
     std::map<const DAGNode*, DAGNode*> newNodes;
-    if (x.dagNodes.size() > 0)
-        x.dagNodes[0]->cloneDAG(newNodes);
+    if ( x.dagNodes.size() > 0 )
+        x.dagNodes[0]->cloneDAG( newNodes );
 
-    /* Insert new nodes in dagNodes member variable */
+    /* Insert new nodes in dagNodes member frame and direct access vector */
     int count = 1;
-    for (std::map<const DAGNode*, DAGNode*>::iterator i=newNodes.begin(); i!=newNodes.end(); i++) {
-        DAGNode* theNode = (*i).second;
-        if (theNode->getName() == "") {
-            maintainedHere.push_back(true);
-            if ((*i).first->getName() != "")
-                ; // theNode->setName((*i).first->getName());
-            else {
-                std::ostringstream name;
-                name << "Unnamed node " << count++;
-                // theNode->setName(name.str());
-            }
+    for ( std::map<const DAGNode*, DAGNode*>::iterator i = newNodes.begin(); i != newNodes.end(); i++ ) {
+
+        const DAGNode* theOldNode = (*i).first;
+        DAGNode*       theNewNode = (*i).second;
+
+        if ( theOldNode->getSlot() != NULL ) {
+
+            // Create new variable slot from old slot if old node was in a slot
+            const VariableSlot* oldSlot = theOldNode->getSlot();
+            dagNodeMembers.addVariable( oldSlot->getName(), oldSlot->getTypeSpec(), theNewNode );
         }
-        else
-            maintainedHere.push_back(false);
-        dagNodes.push_back(theNode);
+        else {
+
+            // Create unnamed slot if old variable was not in slot
+            std::ostringstream name;
+            name << "Unnamed node " << count++;
+            dagNodeMembers.addVariable( name.str(), theNewNode->getTypeSpec(), theNewNode );        
+        }
+
+        // Insert in direct access vector
+        dagNodes.push_back( theNewNode );
     }
 }
 
 /** Assignment operator */
-Model& Model::operator=(const Model& x) {
+Model& Model::operator=( const Model& x ) {
 
-    if (this != &x) {
+    if ( this != &x ) {
 
         /* Free old model */
-        std::vector<DAGNode*>::iterator i;
-        std::vector<bool>::iterator j;
-        for (i=dagNodes.begin(), j=maintainedHere.begin(); i!=dagNodes.end(); i++, j++) {
-            if ((*j) == true) {
-                // (*i)->setName("");
-                if ((*i)->numRefs() == 0)
-                    delete (*i);
-            }
-        }
-
+        dagNodeMembers.clear();
+        dagNodes.clear();
+        
         /* Make copy of DAG by pulling from first node in x */
         std::map<const DAGNode*, DAGNode*> newNodes;
-        if (x.dagNodes.size() > 0)
-            x.dagNodes[0]->cloneDAG(newNodes);
+        if ( x.dagNodes.size() > 0 )
+            x.dagNodes[0]->cloneDAG( newNodes );
 
-        /* Insert new nodes in dagNodes member variable */
+        /* Insert new nodes in dagNodes member frame and direct access vector */
         int count = 1;
-        for (std::map<const DAGNode*, DAGNode*>::iterator i=newNodes.begin(); i!=newNodes.end(); i++) {
-            DAGNode* theNode = (*i).second;
-            if (theNode->getName() == "") {
-                maintainedHere.push_back(true);
-                if ((*i).first->getName() != "")
-                    ; // theNode->setName((*i).first->getName());
-                else {
-                    std::ostringstream name;
-                    name << "Unnamed node " << count++;
-                    // theNode->setName(name.str());
-                }
+        for ( std::map<const DAGNode*, DAGNode*>::iterator i = newNodes.begin(); i != newNodes.end(); i++ ) {
+
+            const DAGNode* theOldNode = (*i).first;
+            DAGNode*       theNewNode = (*i).second;
+
+            if ( theOldNode->getSlot() != NULL ) {
+
+                // Create new variable slot from old slot if old node was in a slot
+                const VariableSlot* oldSlot = theOldNode->getSlot();
+                dagNodeMembers.addVariable( oldSlot->getName(), oldSlot->getTypeSpec(), theNewNode );
             }
-            else
-                maintainedHere.push_back(false);
-            dagNodes.push_back(theNode);
+            else {
+
+                // Create unnamed slot if old variable was not in slot
+                std::ostringstream name;
+                name << "Unnamed node " << count++;
+                dagNodeMembers.addVariable( name.str(), theNewNode->getTypeSpec(), theNewNode );        
+            }
+
+            // Insert in direct access vector
+            dagNodes.push_back( theNewNode );
         }
     }
 
     return (*this);
 }
+
 
 /** Clone the object */
 Model* Model::clone(void) const {
@@ -174,9 +174,10 @@ Model* Model::clone(void) const {
 /** Get class vector describing object */
 const VectorString& Model::getClass(void) const {
 
-    static VectorString rbClass = VectorString(Model_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(Model_name) + MemberObject::getClass();
     return rbClass;
 }
+
 
 /** Get a list of the nodes in dagNodes that are exposed. */
 void Model::getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool exposeEverybody, bool usePlates) const {
@@ -221,6 +222,7 @@ void Model::getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool expo
 		}
 }
 
+
 /** Get a list of the DAG nodes that are children of p and in the list nodeList. */
 void Model::getExposedChildren(DAGNode* p, std::set<VariableNode*>& ec, std::vector<DAGNode*>& nodeList) const {
 
@@ -247,6 +249,7 @@ void Model::getExposedChildren(DAGNode* p, std::set<VariableNode*>& ec, std::vec
 		}
 }
 
+
 /** Get a list of the DAG nodes that are parents of p and in the list nodeList. */
 void Model::getExposedParents(DAGNode* p, std::set<DAGNode*>& ep, std::vector<DAGNode*>& nodeList) const {
 
@@ -264,6 +267,7 @@ void Model::getExposedParents(DAGNode* p, std::set<DAGNode*>& ep, std::vector<DA
 			getExposedParents( (*i), ep, nodeList );
 		}
 }
+
 
 /** Find the offset of the node p in the vector v. */
 int Model::getIndexForVector(const std::vector<DAGNode*>& v, const DAGNode* p) const {
@@ -366,6 +370,7 @@ void Model::printValue(std::ostream& o) const {
 		}
 	RBOUT("-------------------------------------");
 }
+
 
 /** Complete info about object */
 std::string Model::richInfo(void) const {

@@ -49,6 +49,40 @@ MemberFrame::MemberFrame( const MemberFrame& x ) :  VariableFrame( x ), members(
 }
 
 
+/** Index operator to variable slot from string */
+VariableSlot& MemberFrame::operator[]( const std::string& name ) {
+
+    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
+    if ( variableTable.find(name) == variableTable.end() ) {
+        if ( parentFrame != NULL )
+            return parentFrame->operator []( name );
+        else
+            throw RbException( "Variable slot " + name + " does not exist" );
+    }
+
+    PRINTF( "Retrieving %s %s from frame\n", name.c_str(), it->second.getTypeSpec().toString().c_str() );
+
+    return (*it).second;
+}
+
+
+/** Index operator (const) to variable slot from string */
+const VariableSlot& MemberFrame::operator[]( const std::string& name ) const {
+
+    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find( name );
+    if ( variableTable.find(name) == variableTable.end() ) {
+        if ( parentFrame != NULL )
+            return parentFrame->operator []( name );
+        else
+            throw RbException( "Variable slot " + name + " does not exist" );
+    }
+
+    PRINTF( "Retrieving %s %s from frame\n", name.c_str(), it->second.getTypeSpec().toString().c_str() );
+
+    return (*it).second;
+}
+
+
 /** Index access to variable slot based on adding sequence */
 VariableSlot& MemberFrame::operator[]( const size_t i ) {
 
@@ -85,6 +119,14 @@ void MemberFrame::eraseVariable( const std::string& name ) {
     
     members.erase( std::find(members.begin(), members.end(), name ) );
 
+}
+
+
+/** Clear member frame */
+void MemberFrame::clear( void ) {
+
+    variableTable.clear();
+    members.clear();
 }
 
 

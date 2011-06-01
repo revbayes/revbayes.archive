@@ -43,6 +43,7 @@ class ConstructorFunction :  public RbFunction {
         const TypeSpec              getReturnType(void) const;                  //!< Get type of return value
 
 	protected:
+        ArgumentRules               argRules;                                   //!< Member rules converted to reference rules
         MemberObject*               templateObject;                             //!< The template object
 };
 

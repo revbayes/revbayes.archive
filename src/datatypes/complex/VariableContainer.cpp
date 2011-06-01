@@ -17,6 +17,7 @@
 
 #include "ConstantNode.h"
 #include "ContainerNode.h"
+#include "ConverterNode.h"
 #include "Boolean.h"
 #include "Integer.H"
 #include "MatrixReal.h"
@@ -37,6 +38,7 @@
 #include "VectorReal.h"
 #include "VectorRealPos.h"
 #include "VectorString.h"
+#include "Workspace.h"
 
 #include <algorithm>
 #include <cassert>
@@ -451,6 +453,18 @@ DAGNode* VariableContainer::getElement( VectorInteger& index ) {
 }
 
 
+/** Are all elements constants? */
+bool VariableContainer::isConstant( void ) const {
+
+    for ( size_t i = 0; i < elements.size(); i++ ) {
+        if ( !elements[i]->isConst() )
+            return false;
+    }
+
+    return true;
+}
+
+
 /**
  * Print value for user. Since this function is unlikely to be
  * critical for performance, we simply get the value container
@@ -536,5 +550,61 @@ std::string VariableContainer::richInfo( void ) const {
     o << std::endl;
 
     return o.str();
+}
+
+
+/** Set element, with type conversion if requested */
+void VariableContainer::setElement( const VectorNatural& index, DAGNode* var, bool convert ) {
+
+    if ( index.size() != length.size() ) {
+    
+        if ( var->isTemp() )
+            delete var;
+        throw RbException( "Invalid index to element of " + getTypeSpec().toString() );
+    }
+
+    // Check type
+    if ( !(    Workspace::userWorkspace().isXOfTypeY       ( var->getValueType(), elementType )
+            || ( convert == true && Workspace::userWorkspace().isXConvertibleToY( var->getValueType(), elementType ) ) ) ) {
+        
+        if ( var->isTemp() )
+            delete var;
+        throw RbException( "Invalid type when setting element of " + getTypeSpec().toString() );
+    }
+
+    // Check indices and resize if necessary
+    bool grow = false;
+    std::vector<size_t> newSize;
+    for ( size_t i = 0; i < index.size(); i++ ) {
+
+        if ( index[i] >= length[i] ) {
+            newSize[i] = index[i] + 1;
+            grow = true;
+        }
+        else
+            newSize[i] = length[i];
+    }
+    if ( grow == true )
+        resize( newSize );
+
+    // Set the element, with type conversion if necessary
+    if ( Workspace::userWorkspace().isXOfTypeY( var->getValueType(), elementType ) ) {
+
+        // Delete the old element
+        size_t offset = getOffset( index );
+        if ( elements[offset]->isTemp() )
+            delete elements[offset];
+    
+        elements[offset] = var;
+    }
+    else if ( convert == true && Workspace::userWorkspace().isXConvertibleToY( var->getValueType(), elementType ) ) {
+
+        // Delete the old element
+        size_t offset = getOffset( index );
+        if ( elements[offset]->isTemp() )
+            delete elements[offset];
+    
+        elements[offset] = new ConverterNode( var, elementType, 0 );
+    }
 }
 

@@ -45,9 +45,6 @@ class IntegratorNode : public StochasticNode {
 
         const VectorString&     getDAGClass(void) const;                                            //!< Get DAG node class vector
         int                     getDim(void) const { return valueDim; }                             //!< Get dim (0 for scalar, 1 for vector, etc)
-        const RbObject*         getStoredValue(void);                                               //!< Get stored value
-        const RbObject*         getValue(void);                                                     //!< Get current value
-        const RbObject*         getValue(void) const;                                               //!< Get const value if possible
         void                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
         void                    printValue(std::ostream& o) const;                                  //!< Print struct for user
         std::string             richInfo(void) const;                                               //!< Complete info about object
@@ -63,11 +60,8 @@ class IntegratorNode : public StochasticNode {
         
         // DAG functions
         IntegratorNode*         cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;       //!< Clone entire graph
-        void                    getAffected(std::set<IntegratorNode*>& affected);                   //!< Mark and get affected nodes
         void                    keep(void);                                                         //!< Keep value of this and affected nodes
-        void    	            keepAffected(void);                                                 //!< Keep value of affected nodes recursively
         void                    restore(void);                                                      //!< Restore value of this and affected nodes
-        void                    restoreAffected(void);                                              //!< Restore value of  affected nodes recursively
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                       //!< Swap a parent node
         void                    touchAffected(void) {}                                              //!< Tell affected nodes value is reset
 

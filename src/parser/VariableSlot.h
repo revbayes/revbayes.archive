@@ -52,7 +52,8 @@ class VariableSlot {
         bool                    isReference(void) const { return typeSpec.isReference(); }              //!< Is this a reference slot?
         void                    printValue(std::ostream& o) const;                                      //!< Print value of slot
         void                    resetVariable(DAGNode* newVar);                                         //!< Clear a slot and then set it with a variable (no mutation of old variable)
-        void                    setElement(VectorNatural& index, DAGNode* newVar, bool convert=true);   //!< Set a slot variable element
+        void                    setElement(VectorInteger& index, DAGNode* newVar, bool convert=true);   //!< Set a slot variable element
+        void                    setElement(VectorInteger& index, RbObject* newVal);                     //!< Set a slot value element
         void                    setFrame(Frame* slotFrame) { frame=slotFrame; }                         //!< Set frame of slot
         void                    setReferenceFlag(bool refFlag=true);                                    //!< Potentially switch between reference and value slot
         void                    setValue(RbObject* newVal);                                             //!< Set a slot variable or the variable the slot refers to with a value

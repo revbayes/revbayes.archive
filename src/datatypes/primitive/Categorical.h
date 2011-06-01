@@ -37,8 +37,10 @@ class Categorical : public RbObject {
         virtual std::string             richInfo(void) const = 0;                                           //!< Complete info about object
 
         // Categorical functions you do not have to override
+        int                             convertSymbolToState(char c) const;                                 //!< Convert symbol to state code
         int                             getNumStates(void) { return int( getStateLabels().size() ); }       //!< Get number of states
         int                             getValue(void) const { return value; }                              //!< Get value as an int
+        bool                            isValidState(int x) const;                                          //!< Is valid state value?
         void                            setValue(int x);                                                    //!< Set value from int
 
         // Categorical functions you have to override

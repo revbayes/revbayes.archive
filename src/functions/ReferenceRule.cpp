@@ -19,20 +19,23 @@
 #include "DAGNode.h"
 #include "RbNames.h"
 #include "ReferenceRule.h"
+#include "TypeSpec.h"
 #include "VectorString.h"
 
 #include <string>
 
 
 /** Constructor without default value */
-ReferenceRule::ReferenceRule(const std::string& argName, const std::string& valType, int valDim)
+ReferenceRule::ReferenceRule( const std::string& argName, const std::string& valType, int valDim)
     : ArgumentRule(argName, TypeSpec(valType, valDim, true)) {
 }
-        
+
+
 /** Constructor with default value */
-ReferenceRule::ReferenceRule(const std::string& argName, DAGNode* defVar)
-    : ArgumentRule(argName, TypeSpec(defVar->getValueType(), defVar->getDim(), true), defVar) {
+ReferenceRule::ReferenceRule(const std::string& argName, const std::string& valType, DAGNode* defVar)
+    : ArgumentRule(argName, TypeSpec(valType, defVar->getDim(), true), defVar) {
 }
+
 
 /** Get class vector describing type of object */
 const VectorString& ReferenceRule::getClass(void) const {

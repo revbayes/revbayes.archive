@@ -117,9 +117,6 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
         memberRules.push_back(new ValueRule("min", Real_name));
         memberRules.push_back(new ValueRule("max", Real_name));
 
-        const MemberRules& inheritedRules = Distribution::getMemberRules();
-        memberRules.insert(memberRules.end(), inheritedRules.begin(), inheritedRules.end()); 
-
         rulesSet = true;
     }
 

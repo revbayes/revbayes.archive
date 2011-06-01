@@ -57,6 +57,8 @@ DAGNode::DAGNode(RbObject* val) : children(), parents(), slot(), referringSlots(
 DAGNode::DAGNode( const DAGNode& x )
     : children(), parents(), slot(), referringSlots(), valueType( x.valueType ), value( NULL ) {
 
+    if ( x.value != NULL )
+        value = x.value->clone();
 }
 
 
@@ -98,11 +100,50 @@ bool DAGNode::existsElement( VectorInteger& index ) {
 }
 
 
+/** Get container of which this node is an element */
+ContainerNode* DAGNode::getContainer( void ) const {
+
+    for ( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
+        if ( (*i)->isDAGType( ContainerNode_name ) )
+            return static_cast<ContainerNode*>( (*i) );
+    }
+
+    return NULL;
+}
+
+
 /** Get class vector describing type of DAG node */
 const VectorString& DAGNode::getDAGClass() const {
 
     static VectorString rbClass = VectorString( DAGNode_name );
     return rbClass;
+}
+
+
+/** Get type of DAG node (first entry in class vector) */
+const std::string& DAGNode::getDAGType( void ) const { 
+
+    return getDAGClass()[0];
+}
+
+
+/** Get (make) element */
+DAGNode* DAGNode::getElement( VectorInteger& index ) {
+
+    if ( index.size() == 0 )
+        return this;
+    else
+        throw RbException( getName() + index.toIndexString() + " does not exist" );
+}
+
+
+/** Get element owner */
+DAGNode* DAGNode::getElementOwner( VectorInteger& index ) {
+
+    if ( index.size() == 0 )
+        return this;
+    else
+        throw RbException( getName() + index.toIndexString() + " does not exist" );
 }
 
 
@@ -131,41 +172,20 @@ const std::string DAGNode::getName( void ) const {
 }
 
 
-/** Get type of DAG node (first entry in class vector) */
-const std::string& DAGNode::getDAGType( void ) const { 
-
-    return getDAGClass()[0];
-}
-
-
-/** Get element for parser */
-DAGNode* DAGNode::getElement( VectorInteger& index ) {
-
-    if ( index.size() == 0 )
-        return this;
-    else if ( index[0] < 0 )
-        throw RbException( getName() + index.toIndexString() + " is not a subcontainer" );
-    else
-        throw RbException( getName() + index.toIndexString() + " element does not exist" );
-}
-
-
-/** Get element reference for parser */
-DAGNode* DAGNode::getElementRef( VectorNatural& index ) {
-
-    if ( index.size() == 0 )
-        return this;
-    else if ( index[0] < 0 )
-        throw RbException( getName() + index.toIndexString() + " is not a subcontainer" );
-    else
-        throw RbException( getName() + index.toIndexString() + " element does not exist" );
- }
-
-
 /** Get type spec of DAG node */
 const TypeSpec DAGNode::getTypeSpec( void ) const { 
 
     return TypeSpec( getValueType(), getDim() );
+}
+
+
+/** Does the variable contain a constant value? */
+bool DAGNode::isConst( void ) const {
+
+    if ( value == NULL || value->isConstant() )
+        return true;
+
+    return false;
 }
 
 
@@ -178,6 +198,28 @@ bool DAGNode::isDAGType( const std::string& type ) const {
         if ( type == classVec[i] )
             return true;
     }
+
+    return false;
+}
+
+
+/** Is it possible for someone to mutate this variable? */
+bool DAGNode::isImmutable( void ) const {
+
+    if ( slot != NULL || referringSlots.size() != 0 )
+        return false;
+
+    for ( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
+        if ( !(*i)-isImmutable() )
+            return false;
+    }
+
+    ContainerNode* container = getContainer();
+    if ( container == NULL )
+        return true;
+
+    if ( container->getSlot() == NULL && container->getReferringSlots().size() == 0 )
+        return true;
 
     return false;
 }
@@ -312,12 +354,9 @@ void DAGNode::removeSlot( const VariableSlot* s ) {
 }
 
 
-/**
- * Set element should not be called unless we are a ContainerNode or possibly
- * a MemberNode that wants to set its subscript elements itself.
- */
-void DAGNode::setElement( VectorNatural& index, DAGNode* var ) {
+/** Set element: throw an appropriate exception */
+void DAGNode::setElement( const VectorNatural& index, DAGNode* var, bool convert ) {
 
-    throw RbException( "Unexpected call to setElement of variable " + getName() );
+    throw RbException( "Variable " + getName() + " does not have elemments" );
 }
 

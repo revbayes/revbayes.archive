@@ -174,35 +174,37 @@ DAGNode* MemberNode::getElement( VectorInteger& index ) {
 }
 
 
-/** Get element reference for parser */
-DAGNode* MemberNode::getElementRef( VectorNatural& index ) {
+/** Get element owner for parser */
+DAGNode* MemberNode::getElementOwner( VectorInteger& index ) {
 
-    // Invalidate current value
-    touched = true;
-    changed = false;
-
-    // Get reference to the element
+    // Check for erroneous call
     if ( index.size() == 0 )
-        return this;
-    
-    if ( index[0] >= memberObject->getSubelementsSize() )
-        throw RbException ( "Index out of bound for " + getName() );
+        throw RbException( "Unexpected call to getElementOwner with empty index" );
 
-    // Pop one index and delegate to subscript element
-    // if permitted by our member object
+    // Return this if we are the owner
+    if ( index.size() == 1 ) {
+
+        if ( index[0] >= int( memberObject->getSubelementsSize() ) )
+            throw RbException ( "Index out of bound for " + getName() + index.toIndexString() );
+
+        if ( index[0] < 0 )
+            throw RbException( getName() + "[] is not a subcontainer" );
+
+        return this;
+    }
+    
+    // Pop one index and delegate to subscript element if allowed by member object
     DAGNode* subElement = memberObject->getSubelement( index[0] );
     if ( subElement->isTemp() ) {
 
         // Not permitted by the member object
-        delete subElement;
-        return this;
+        throw RbException( getName() + index.toIndexString() + " index goes into a temp variable" ) ;
     }
     else {
 
         // Permitted by the member object
-        size_t i = index[0];
         index.pop_front();
-        return subElement->getElementRef( index );
+        return subElement->getElementOwner( index );
     }
 }
 
@@ -211,6 +213,16 @@ DAGNode* MemberNode::getElementRef( VectorNatural& index ) {
 const TypeSpec& MemberNode::getMemberTypeSpec( const RbString& name ) const {
 
     return memberObject->getMemberTypeSpec( name );
+}
+
+
+/** Is node a constant value? */
+bool MemberNode::isConst( void ) const {
+
+    if ( memberObject == NULL )
+        return true;
+    else
+        return memberObject->isConstant();
 }
 
 
@@ -264,19 +276,19 @@ std::string MemberNode::richInfo(void) const {
 }
 
 
-/** Set element for parser, if our member object wants this (see getElementRef) */
-void MemberNode::setElement( VectorNatural& index, DAGNode* var ) {
+/** Set element for parser, if our member object wants this (see getElementOwner) */
+void MemberNode::setElement( size_t index, DAGNode* var, bool convert ) {
 
-    if ( index.size() == 0 )
-        throw RbException( "Unexpected call to setElement of variable " + getName() );
+    if ( index >= memberObject->getSubelementsSize() ) {
+        std::ostringstream msg;
+        msg << "Index out of bound for " << getName() << index;
+        throw RbException( msg );
+    }
 
-    if ( index[0] >= memberObject->getSubelementsSize() )
-        throw RbException( "Index out of bound for " + getName() );
-
-    // Invalid current value and then set element
+    // Invalidate current value and then set element
     touched = true;
     changed = false;
-    memberObject->setElement( index, var );
+    memberObject->setSubelement( index, var, convert );
 }
 
 

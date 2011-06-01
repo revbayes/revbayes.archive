@@ -29,15 +29,18 @@ Categorical::Categorical( void ) : RbObject(), value( -1 ) {
 
 /** Constructor from int value: check that the value is valid */
 Categorical::Categorical( int x ) : RbObject(), value( x ) {
-
-    if ( x >= int( getStateLabels().size() ) || x < int( getNALabels().size() ) )
-        throw RbException( "Invalid state of categorical value" );
 }
 
 
 /** Construct from char value, taken to be a valid state symbol or NA symbol */
 Categorical::Categorical( char c ) : value(-1) {
+}
 
+
+/** Translate character symbol to state */
+int Categorical::convertSymbolToState( char c ) const {
+
+    int stateValue;
     const std::string& stateLabels = getStateLabels();
     const std::string& NALabels    = getNALabels();
 
@@ -45,7 +48,7 @@ Categorical::Categorical( char c ) : value(-1) {
 
     for ( size_t i = 0; i < stateLabels.size(); i++ ) {
         if ( c == stateLabels[i] ) {
-            value = int( i );
+            stateValue = int( i );
             foundMatch = true;
             break;
         }
@@ -54,7 +57,7 @@ Categorical::Categorical( char c ) : value(-1) {
     if ( foundMatch == false ) {
         for ( size_t i = 0; i < NALabels.size(); i++ ) {
             if ( c == NALabels[i] ) {
-                value = -1 - i;
+                stateValue = -1 - i;
                 foundMatch = true;
                 break;
             }
@@ -62,7 +65,9 @@ Categorical::Categorical( char c ) : value(-1) {
     }
 
     if ( foundMatch == false )
-        throw RbException( "Invalid " + getType() + " character state '" + c + "'" );
+        return stateValue;
+    else
+        return stateLabels.size();
 }
 
 
@@ -71,6 +76,16 @@ const VectorString& Categorical::getClass() const {
 
     static VectorString rbClass = VectorString( Categorical_name ) + RbObject::getClass();
     return rbClass;
+}
+
+
+/** Check if character code is valid */
+bool Categorical::isValidState( int x ) const {
+
+    if ( x >= int( getStateLabels().size() ) || x < int( getNALabels().size() ) )
+        return false;
+
+    return true;
 }
 
 
@@ -87,7 +102,7 @@ void Categorical::printValue( std::ostream& o ) const {
 /** Set value from int */
 void Categorical::setValue( int x ) {
 
-    if ( x >= int( getStateLabels().size() ) || x < int( getNALabels().size() ) )
+    if ( !isValidState( x ) )
         throw RbException( "Invalid state of categorical value" );
 
     value = x;

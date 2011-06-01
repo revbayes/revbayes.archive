@@ -16,6 +16,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
+#include "ReferenceRule.h"
 #include "SyntaxFormal.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
@@ -124,11 +125,20 @@ SyntaxFormal* SyntaxFormal::clone () const {
 /** Make argument rule from element */
 ArgumentRule* SyntaxFormal::getArgumentRule(VariableFrame* frame) const {
 
-    // TODO: Deal with reference argument rules correctly
-    if (defaultExpr == NULL)
-        return new ValueRule(*label, *type);
-    else
-        return new ValueRule(*label, *type, defaultExpr->getValue(frame));
+    if ( type->isReference() ) {
+    
+        if ( defaultExpr == NULL )
+            return new ReferenceRule( *label, type->getType(), type->getDim() );
+        else
+            return new ReferenceRule( *label, type->getType(), defaultExpr->getValue( frame ) );
+    }
+    else {
+
+        if (defaultExpr == NULL)
+            return new ValueRule(*label, *type);
+        else
+            return new ValueRule(*label, *type, defaultExpr->getValue(frame));
+    }
 }
 
 

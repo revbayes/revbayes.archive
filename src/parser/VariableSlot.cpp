@@ -43,7 +43,7 @@
 VariableSlot::VariableSlot(const TypeSpec& typeSp, DAGNode* var)
     : typeSpec(typeSp), variable(NULL), frame(NULL) {
 
-    setVariable(var);
+    setVariable( var );
 }
 
 
@@ -51,7 +51,7 @@ VariableSlot::VariableSlot(const TypeSpec& typeSp, DAGNode* var)
 VariableSlot::VariableSlot(const TypeSpec& typeSp)
     : typeSpec(typeSp), variable(NULL), frame(NULL) {
 
-    variable = nullVariable( typeSpec );
+    setVariable( nullVariable( typeSpec ), false );
 }
 
 
@@ -235,7 +235,9 @@ DAGNode* VariableSlot::getReference( void ) const {
     if ( !typeSpec.isReference() )
         throw RbException( "Cannot get reference to variable in value slot" );
     
-    return variable->getReference();
+    // We do not want to compute the reference here by calling variable->getReference()
+    // This should be done only when we set the reference slot
+    return variable;
 }
 
 
@@ -296,6 +298,86 @@ void VariableSlot::resetVariable( DAGNode* newVariable ) {
 }
 
 
+/** Set value element */
+void VariableSlot::setElement( VectorInteger& index, RbObject* newVal ) {
+
+    setElement( index, wrapValue( newVal ), true );
+}
+
+
+/** Set variable element */
+void VariableSlot::setElement( VectorInteger& index, DAGNode* newVar, bool convert ) {
+
+    // Check for silly call
+    if ( index.size() == 0 )
+        setVariable( newVar, convert );
+    
+    // Check against attempt to set element to NULL
+    if ( newVar == NULL )
+        throw RbException( "Invalid attempt to set variable element to NULL" );
+
+    // Delegate call
+    if ( variable->isDAGType( ContainerNode_name ) ) {
+    
+        // Catch superfluous indices
+        if ( index.size() > size_t( variable->getDim() ) ) {
+        
+            delete newVar;
+            throw RbException( "Too many indices in setting " + variable->getName() + index.toIndexString() );
+        }
+    
+        // Check number of indices
+        size_t emptyDim = variable->getDim();
+        for ( size_t i=0; i<index.size(); i++ ) {
+            if ( index[i] >= 0 )
+                emptyDim--;
+        }
+
+        // Get pointer to container
+        ContainerNode* containerVar = static_cast<ContainerNode*>( variable );
+
+        // Check if valid element
+        if ( containerVar->isValidElement( emptyDim, newVar, convert ) ) {
+        
+            containerVar->setElement( index, newVar, convert );
+            return;
+        }
+
+        // Attempt container mutation otherwise
+        if ( containerVar->isMutableTo( newVar->getValueType(), containerVar->getDim() - emptyDim ) ) {
+
+            ContainerNode* newContainer = containerVar->mutateTo( newVar->getValueType(), containerVar->getDim() - emptyDim );
+            newContainer->setElement( index, newVar, false );
+            setVariable( newContainer );
+            return;
+        }
+        else {
+
+            delete newVar;
+            throw RbException( "Type mismatch when setting " + variable->getName() + index.toIndexString() );
+        }
+    }
+    else if ( variable->isDAGType( MemberNode_name ) ) {
+
+        if ( index.size() != 1 ) {
+        
+            delete newVar;
+            throw RbException( "Too many indices in setting " + variable->getName() + index.toIndexString() );
+        }
+
+        // No variable mutation so simply delegate this to the member node
+        if ( index[0] < 0 ) {
+        
+            delete newVar;
+            throw RbException( variable->getName() + index.toIndexString() + " is not a subcontainer" );
+        }
+
+        size_t indx = size_t( index[0] );
+        static_cast<MemberNode*>( variable )->setElement( indx, newVar, convert );
+    }
+}
+
+
 /** Set reference flag of slot */
 void VariableSlot::setReferenceFlag(bool refFlag) {
 
@@ -339,6 +421,9 @@ void VariableSlot::setValue( RbObject* newValue ) {
 
     // Make sure we have a constant value
     if ( !newValue->isConstant() ) {
+
+        PRINTF( "Demoting variable value to constant value" );
+
         if ( newValue->isType( MemberObject_name ) ) {
             RbObject* temp = static_cast<MemberObject*>( newValue )->getConstValue();
             delete newValue;
@@ -359,7 +444,7 @@ void VariableSlot::setValue( RbObject* newValue ) {
     if ( newValue == NULL )
         newVariable = nullVariable( typeSpec );
     else
-        newVariable  = wrapValue( newValue );
+        newVariable = wrapValue( newValue );
 
     // Make additional valitidy check
     if ( !isValidVariable( newVariable ) ) {
@@ -373,7 +458,7 @@ void VariableSlot::setValue( RbObject* newValue ) {
     // we are a reference slot or a value slot
     newVariable->setSlot( this );
     if ( variable!= NULL ) {
-        variable->mutateTo( newVariable );
+        variable->mutateTo( newVariable );  // This will throw error if variable mutation is not possible
         removeVariable();
     }
     variable = newVariable;
@@ -387,7 +472,8 @@ void VariableSlot::setVariable( DAGNode* newVariable, bool convert ) {
     if ( newVariable == NULL )
         throw RbException( "Invalid attempt to set variable slot to NULL" );
 
-    // If we have a reference slot, we get the reference from the newVariable
+    // If we have a reference slot, we get the reference from the newVariable,
+    // that is, we compute the reference before we fill the slot
     if ( isReference() ) {
         DAGNode* temp = newVariable->getReference();
         if ( temp != newVariable && newVariable->isTemp() )
@@ -423,39 +509,6 @@ void VariableSlot::setVariable( DAGNode* newVariable, bool convert ) {
     variable = newVariable;
 }
 
-
-/** Set variable element */
-void VariableSlot::setElement( VectorNatural& index, DAGNode* newVariable, bool convert ) {
-
-    // Check against attempt to set element to NULL
-    if ( newVariable == NULL )
-        throw RbException( "Invalid attempt to set variable element to NULL" );
-
-    // Check that index is to an element
-    if ( index.size() != getDim() )
-        throw RbException( "Invalid attempt to set variable element: index is wrong" );
-
-    // First try element mutation directly
-    // TODO: Add variable conversion
-    ContainerNode*  container = static_cast<ContainerNode*>( variable );
-    DAGNode*        elem      = container->getElementRef( index );
-    if ( elem->isMutableTo( newVariable ) ) {
-    
-        PRINTF( "Using element mutation\n" );
-        elem->mutateTo( newVariable );
-        if ( elem->isTemp() )
-            delete elem;
-        return;
-    }
-
-    // Now try container mutation
-    PRINTF( "Using container mutation\n" );
-    ContainerNode* temp = container->mutateTo( newVariable->getValueType(), typeSpec.getDim() );
-    temp->setElement( index, newVariable );
-    if ( container->isTemp() )
-        delete container;
-}
-    
 
 /** Wrap value appropriately to get a variable */
 DAGNode* VariableSlot::wrapValue( RbObject* value ) const {

@@ -30,8 +30,6 @@ class ConstantNode : public DAGNode {
     public:
                                 ConstantNode(RbObject* val);                                                //!< Constructor from value
                                 ConstantNode(const std::string& typeSpec);                                  //!< Constructor from language object type
-                                ConstantNode(const ConstantNode& x);                                        //!< Copy constructor
-							   ~ConstantNode(void);                                                         //!< Destructor
 
         // Assignment operator
         ConstantNode&           operator=(const ConstantNode& x);                                           //!< Assignment operator
@@ -50,7 +48,6 @@ class ConstantNode : public DAGNode {
 
         // DAG functions
         ConstantNode*           cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
-        bool                    isConstExpr(void) const;                                                    //!< Is the node guaranteed to be a constant expression?
         bool                    isTouched (void) const { return false; }                                    //!< Touched by a move?
 };
 

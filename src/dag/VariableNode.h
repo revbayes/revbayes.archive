@@ -46,7 +46,8 @@ class VariableNode : public DAGNode {
         // DAG function you should not override
         bool                            isTouched(void) const { return touched; }                                       //!< Is node touched by move or parser?
 
-        // DAG function you may want to override
+        // DAG functions you may want to override
+        virtual bool                    isConst(void) const { return false; }                                           //!< Is DAG node const value?
         virtual bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;        //!< Is parent mutable to newNode?
 
         // DAG functions you have to override

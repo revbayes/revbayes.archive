@@ -50,13 +50,19 @@ class ContainerNode : public DeterministicNode {
         ContainerNode*          clone(void) const;                                                          //!< Clone the member node
         const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
         int                     getDim() const { return valueDim; }                                         //!< Get dimensions of value
+        bool                    isConst(void) const;                                                        //!< Is this node a const value?
         void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
         std::string             richInfo(void) const;                                                       //!< Complete info about object
 
-        // Parser element access functions
-        bool                    existsElement(VectorInteger& index);                                        //!< Does element exist?
-        DAGNode*                getElement(VectorInteger& index);                                           //!< Get element
-        DAGNode*                getElementRef(VectorNatural& index);                                        //!< Get element reference for setting it
+        // Parser element access, test and convert functions
+        RbObject*               convertValElement(const VectorInteger& index, RbObject* val ) const;                    //!< Convert value element
+        DAGNode*                convertVarElement(const VectorInteger& index, DAGNode* var, bool convert=true ) const;  //!< Convert value element
+        bool                    existsElement(VectorInteger& index);                                                    //!< Does element exist?
+        DAGNode*                getElement(VectorInteger& index);                                                       //!< Get element
+        DAGNode*                getElementOwner(VectorInteger& index);                                                  //!< Get element owner
+        bool                    isValidElement(const VectorInteger& index, const DAGNode* var, bool convert) const;     //!< Check validity of variable element
+        bool                    isValidElement(const VectorInteger& index, const RbObject* val) const;                  //!< Check validity of value element
+        void                    setElement(const VectorInteger& index, DAGNode* var, bool convert=true);                //!< Set element
 
         // DAG functions
         ContainerNode*          cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph

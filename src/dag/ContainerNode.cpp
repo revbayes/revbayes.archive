@@ -21,6 +21,8 @@
 #include "Container.h"
 #include "ContainerNode.h"
 #include "ConverterNode.h"
+#include "MemberNode.h"
+#include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
@@ -220,6 +222,69 @@ ContainerNode* ContainerNode::cloneDAG(std::map<const DAGNode*, DAGNode*>& newNo
 }
 
 
+/** Convert candidate value element(s) */
+RbObject* ContainerNode::convertValElement( const VectorInteger& index, RbObject* val ) const {
+
+    if ( index.size() > size_t( getDim() ) ) {
+        delete val;
+        throw RbException( "Too many indices when setting element of " + getName() + index.toIndexString() );
+    }
+
+    int emptyDim = getDim();
+    for ( size_t i=0; i<index.size(); i++ ) {
+        if ( index[i] >= 0 )
+            emptyDim--;
+    }
+
+    if ( val->isTypeSpec( TypeSpec( valueType, emptyDim ) ) )
+        return val;
+
+    if ( val->isConvertibleTo( valueType, emptyDim, true ) ) {
+        RbObject* temp = val->convertTo( valueType, emptyDim );
+        delete val;
+        return temp;
+    }
+
+    delete val;
+    throw RbException( "Type mismatch when setting " + getName() + index.toIndexString() );
+}
+
+
+/** Convert candidate variable element(s) */
+DAGNode* ContainerNode::convertVarElement( const VectorInteger& index, DAGNode* var, bool convert ) const {
+
+    if ( index.size() > size_t( getDim() ) ) {
+        delete var;
+        throw RbException( "Too many indices when setting element of " + getName() + index.toIndexString() );
+    }
+
+    int emptyDim = getDim();
+    for ( size_t i=0; i<index.size(); i++ ) {
+        if ( index[i] >= 0 )
+            emptyDim--;
+    }
+
+    if ( Workspace::userWorkspace().isXOfTypeY( var->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) )
+        return var;
+
+    if ( convert == true && Workspace::userWorkspace().isXConvertibleToY( var->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) ) {
+
+        RbObject* temp = var->getValue()->convertTo( valueType, emptyDim );
+        delete var;
+        if ( temp->isType( Container_name ) )
+            return new ContainerNode( static_cast<Container*>( temp ) );
+        else if ( temp->isType( MemberObject_name ) )
+            return new MemberNode( static_cast<MemberObject*>( temp ) );
+        else
+            return new ConstantNode( temp );
+    }
+    
+    if ( var->isTemp() )
+        delete var;
+    throw RbException( "Type mismatch when setting " + getName() + index.toIndexString() );
+}
+
+
 /** Does element referred to by index exist? */
 bool ContainerNode::existsElement( VectorInteger& index ) {
 
@@ -311,24 +376,8 @@ DAGNode* ContainerNode::getElement( VectorInteger& index ) {
 }
 
 
-/**
- * Get element reference for parser, so that it can set the element value or
- * mutate it. This type of request cannot be addressed by a value container,
- * so we need to change ourselves into a variable container if we are currently
- * a constant value container.
- */
-DAGNode* ContainerNode::getElementRef( VectorNatural& index ) {
-
-    // Invalidate current value, since it is likely to change
-    touched = true;
-    changed = false;
-
-    // Check for silly references to ourself
-    if ( index.size() == 0 )
-        return this;
-
-    if ( index.size() < size_t( getDim() ) )
-            throw RbException( getName() + index.toIndexString() + " is a temp variable" );
+/** Get element owner for parser */
+DAGNode* ContainerNode::getElementOwner( VectorInteger& index ) {
 
     if ( index.size() > size_t( getDim() ) ) {
         
@@ -336,31 +385,23 @@ DAGNode* ContainerNode::getElementRef( VectorNatural& index ) {
         if ( container == NULL )
             throw RbException( getName() + index.toIndexString() + " does not exist" );
 
-        // Delegate to container element
-        touched = true;
-        changed = false;
-        VectorInteger containerIndex;
-        for ( size_t i = 0; i < size_t( getDim() ); i++ )
-            containerIndex.push_back( index[i] );
-        for ( size_t i = 0; i < size_t( getDim() ); i++)
-            index.pop_front();
+        // Check that references that go beyond the container
+        // actually point to an element of the container
+        for ( size_t i = 0; i < size_t( getDim() ); i++ ) {
+            if ( index[i] < 0 )
+                throw RbException( getName() + index.toIndexString() + " is not a valid container or subcontainer" );
+        }
 
-        return container->getElement( containerIndex )->getElementRef( index );
+        // Get element
+        MemberNode* elem = dynamic_cast<MemberNode*>( container->getElement( index ) );
+        if ( elem == NULL )
+            throw RbException( getName() + index.toIndexString() + " does not exist" );
+
+        // Delegate to element
+        return elem->getElementOwner( index );
     }
 
-    if ( container != NULL ) {
-        VectorInteger containerIndex = index;
-        index.clear();
-        return container->getElement( containerIndex );
-    }
-
-    // We transform ourselves into a variable container
-    container = new VariableContainer( static_cast<ValueContainer&>( *value ) );
-    touched = true;
-    changed = false;
-    VectorInteger containerIndex = index;
-    index.clear();
-    return container->getElement( containerIndex );
+    return this;
 }
 
 
@@ -371,6 +412,16 @@ VectorNatural ContainerNode::getIndex( const DAGNode* element ) const {
         throw RbException( element->getName() + " is not an element of " + getName() );
     
     return container->getIndex( element );
+}
+
+
+/** Is node a constant value? */
+bool ContainerNode::isConst( void ) const {
+
+    if ( container == NULL )
+        return true;
+    else
+        return container->isConstant();
 }
 
 
@@ -394,7 +445,7 @@ bool ContainerNode::isMutableTo( const std::string& valType, int dim ) const {
         for ( size_t i = 0; i < valContainer->size(); i++ ) {
         
             const RbObject * theElem = valContainer->elements[i];
-            if ( theElem != NULL && !theElem->isConvertibleTo( valType, false ) )
+            if ( theElem != NULL && !theElem->isConvertibleTo( valType, true ) )
                 return false;
         }
     }
@@ -420,6 +471,50 @@ bool ContainerNode::isParentMutableTo( const DAGNode* oldNode, const DAGNode* ne
 
     // Check that new node is of value type
     if ( Workspace::userWorkspace().isXOfTypeY( newNode->getValueType(), valueType ) )
+        return true;
+
+    return false;
+}
+
+
+/** Check if a candidate value element is valid */
+bool ContainerNode::isValidElement( const VectorInteger& index, const RbObject* val ) const {
+
+    int emptyDim = getDim();
+    for ( size_t i=0; i<index.size(); i++ ) {
+        if ( index[i] >= 0 )
+            emptyDim--;
+    }
+
+    if ( val == NULL && val->getDim() == emptyDim )
+        return true;
+
+    if ( val->isTypeSpec( TypeSpec( valueType, emptyDim ) ) )
+        return true;
+
+    if ( val->isConvertibleTo( valueType, emptyDim, true ) )
+        return true;
+
+    return false;
+}
+
+
+/** Check if a candidate variable element is valid */
+bool ContainerNode::isValidElement( const VectorInteger& index, const DAGNode* var, bool convert ) const {
+
+    if ( var->isImmutable() )
+        return isValidElement( index, var->getValue() );
+
+    int emptyDim = getDim();
+    for ( size_t i=0; i<index.size(); i++ ) {
+        if ( index[i] >= 0 )
+            emptyDim--;
+    }
+
+    if ( Workspace::userWorkspace().isXOfTypeY( var->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) )
+        return true;
+
+    if ( convert == true && Workspace::userWorkspace().isXConvertibleToY( var->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) )
         return true;
 
     return false;
@@ -506,6 +601,124 @@ std::string ContainerNode::richInfo(void) const {
     }
 
     return o.str();
+}
+
+
+/** Set variable element */
+void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool convert ) {
+
+    // Catch empty index
+    if ( index.size() == 0 ) {
+
+        if ( var->isTemp() )
+            delete var;
+        throw RbException( "Empty index when assigning to element of " + getName() );
+    }
+
+    // Catch superfluous indices
+    if ( index.size() > size_t( getDim() ) ) {
+
+        if ( var->isTemp() )
+            delete var;
+        throw RbException( "Too many indices when assigning to element of " + getName() );
+    }
+
+    // Calculate empty dim
+    int emptyDim = getDim();
+    for ( size_t i=0; i<index.size(); i++ ) {
+        if ( index[i] >= 0 )
+            emptyDim--;
+    }
+
+    // Convert element container or element; throws an error if conversion not possible
+    var = convertVarElement( index, var, convert );
+
+    // Transform ourselves into a variable container if need be
+    if ( container == NULL && ( convert == false || var->isImmutable() == false ) ) {
+    
+        container = new VariableContainer( static_cast<ValueContainer&>( *value ) );
+    }
+
+    // Check indices and see if we need to resize
+    bool grow = false;
+    std::vector<size_t> containerLen = static_cast<ValueContainer*>( value )->getLength();
+    std::vector<size_t> newLen       = containerLen;
+    for ( size_t i = 0; i < index.size(); i++ ) {
+
+        if ( index[i] >= int( containerLen[i] ) ) {
+            newLen[i] = index[i] + 1;
+            grow = true;
+        }
+    }
+
+    // Set the element with iteration if necessary
+    touched = true;
+    touchAffected();
+    changed = false;
+    if ( emptyDim == 0 ) {
+
+        // Get element index
+        VectorNatural elemIndex;
+        for ( size_t i=0; i<index.size(); i++ )
+            elemIndex.push_back( index[i] );
+        
+        // Set single element; grow if necessary
+        if ( container != NULL ) {
+            if ( grow )
+                container->resize( newLen );
+            container->setElement( elemIndex, var, convert );
+        }
+        else {
+            ValueContainer* valContainer = static_cast<ValueContainer*>( value );
+            if ( grow )
+                valContainer->resize( newLen );
+            static_cast<ValueContainer*>( value )->setElement( elemIndex, var );
+        }
+    }
+    else {
+        
+        // Get handy pointer to source elements
+        assert( var->isDAGType( ContainerNode_name ) );
+        ContainerNode* elemVar = static_cast<ContainerNode*>( var );
+
+        // Use iteration to do subcontainer assignment
+        if ( container != NULL ) {
+
+            if ( grow )
+                container->resize( newLen );
+            ContainerIterator it2 = static_cast<const ValueContainer*>( elemVar->getValue() )->begin();
+            for ( ContainerIterator it1 = container->begin(); it1 != container->end(); it1++ ) {
+            
+                size_t i;
+                for ( i=0; i<index.size(); i++ ) {
+                    if ( index[i] >= 0 && it1[i] != index[i] )
+                        break;
+                }
+
+                if ( i == index.size() )
+                    container->setElement( it1, var->getElement( VectorInteger( it2++ ) ), false );
+            }
+        }
+        else {
+
+            ValueContainer* containerVar = static_cast<ValueContainer*>( value );
+            if ( grow )
+                containerVar->resize( newLen );
+            ContainerIterator it2 = static_cast<const ValueContainer*>( elemVar->getValue() )->begin();
+            for ( ContainerIterator it1 = containerVar->begin(); it1 != containerVar->end(); it1++ ) {
+            
+                size_t i;
+                for ( i=0; i<index.size(); i++ ) {
+                    if ( index[i] >= 0 && it1[i] != index[i] )
+                        break;
+                }
+
+                if ( i == index.size() )
+                    containerVar->setElement( it1, elemVar->getElement( VectorInteger( it2++ ) ) );
+            }
+
+        }
+    }
 }
 
 

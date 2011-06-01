@@ -313,9 +313,9 @@ DAGNode* LookupNode::getElement( VectorInteger& index ) {
 
 
 /** Get element reference for modification by parser */
-DAGNode* LookupNode::getElementRef( VectorNatural& index) {
+DAGNode* LookupNode::getElementOwner( VectorInteger& index) {
 
-    return getReference()->getElementRef( index );
+    return getReference()->getElementOwner( index );
 }
 
 
@@ -471,9 +471,9 @@ std::string LookupNode::richInfo( void ) const {
 
 
 /** Allow parser to set element */
-void LookupNode::setElement( VectorNatural& index, DAGNode* var ) {
+void LookupNode::setElement( const VectorNatural& index, DAGNode* var, bool convert ) {
 
-    getReference()->setElement( index, var );
+    getReference()->setElement( index, var, convert );
 }
 
 

@@ -39,7 +39,9 @@ class VectorString : public Vector {
 	    const std::string&          operator[](size_t i) const;                                     //!< Const index op
         bool                        operator==(const VectorString& x) const;                        //!< Equality
         bool                        operator!=(const VectorString& x) const;                        //!< Inequality
+        VectorString                operator+(const RbString& x) const;                             //!< Concatenate
         VectorString                operator+(const VectorString& x) const;                         //!< Concatenate
+        VectorString                operator+(const std::string& x) const;                          //!< Concatenate
 
         // Basic utility functions
         VectorString*               clone(void) const;                                              //!< Clone object

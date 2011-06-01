@@ -36,7 +36,7 @@
 
 /** Constructor */
 DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcType )
-    : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? RealPos_name : dist->getVariableType() ) {
+    : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? TypeSpec( RealPos_name ) : dist->getVariableType() ) {
 
     /* Set the distribution */
     distribution = dist;

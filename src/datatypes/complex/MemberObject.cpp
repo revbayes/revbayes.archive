@@ -141,6 +141,18 @@ DAGNode* MemberObject::getVariable(const std::string& name) {
 }
 
 
+/** Is the object constant? */
+bool MemberObject::isConstant( void ) const {
+
+    for ( size_t i = 0; i < members.size(); i++ ) {
+        if ( !members[i].getValue()->isConstant() )
+            return false;
+    }
+
+    return true;
+}
+
+
 /** Is convertible to type and dim? Default is false for member objects; override if you want to support type conversion */
 bool MemberObject::isConvertibleTo(const std::string& type, int dim, bool once) const {
 
@@ -175,9 +187,16 @@ std::string MemberObject::richInfo(void) const {
 
 
 /** Set subscript element, or element of subscript element */
-void MemberObject::setElement( VectorNatural& index, DAGNode* var ) {
+void MemberObject::setElement( VectorNatural& index, DAGNode* var, bool convert ) {
 
     throw RbException( "Unexpected call to setElement for a " + getTypeSpec().toString() + " value" );
+}
+
+
+/** Set subscript element, or element of subscript element */
+void MemberObject::setSubelement( size_t index, DAGNode* var, bool convert ) {
+
+    throw RbException( "Unexpected call to setSubelement for a " + getTypeSpec().toString() + " value" );
 }
 
 

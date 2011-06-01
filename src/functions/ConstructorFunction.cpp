@@ -30,6 +30,10 @@
 /** Constructor */
 ConstructorFunction::ConstructorFunction(MemberObject* obj) 
     : RbFunction(), templateObject(obj) {
+
+    argRules = templateObject->getMemberRules();
+    for ( size_t i = 0; i < argRules.size(); i++ )
+        argRules[i]->setReference( true );
 }
 
 
@@ -49,12 +53,8 @@ DAGNode* ConstructorFunction::execute(void) {
 
     ArgumentRules::const_iterator i;
     std::vector<VariableSlot>::const_iterator j;
-    for ( size_t i = 0; i < args.size(); i++ ) {
-        if ( argRules[i]->isReference() )
-            copy->setVariable( args.getLabel(i), args[i].getReference() );
-        else
-            copy->setValue   ( args.getLabel(i), args[i].getValue()->clone() );
-    }
+    for ( size_t i = 0; i < args.size(); i++ )
+        copy->setVariable( args.getLabel(i), args[i].getReference() );
  
     return new MemberNode(copy);
 }
@@ -63,7 +63,7 @@ DAGNode* ConstructorFunction::execute(void) {
 /** Get argument rules */
 const ArgumentRules& ConstructorFunction::getArgumentRules(void) const {
 
-    return templateObject->getMemberRules();
+    return argRules;
 }
 
 

@@ -431,36 +431,44 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
 }
 
 
-/**
- * This method should only be called by the parser when it wants to
- * allow the value container to manage the setting of a single element.
- * If the container has member objects with subscripts, or the parser is
- * dealing with a subcontainer assignment, it will not use this function.
- */
+/** Set element of container with type conversion */
 void ValueContainer::setElement( const VectorNatural& index, DAGNode* var ) {
 
-    // Get value
+    // Disallow subcontainer assignment (implict loop) for now
+    if ( index.size() != length.size() ) {
+    
+        if ( var->isTemp() )
+            delete var;
+        throw RbException( "Invalid index to element" );
+    }
+
+    // Get value and check type
     RbObject* value = var->getValue()->clone();
-    if ( var->numRefs() == 0 )
+    if ( var->isTemp() )
         delete var;
 
-    // Check the index
-    if ( index.size() != length.size() ) {
-        delete value;   // Avoid memory leak
-        std::ostringstream msg;
-        msg << "Invalid index when setting element of " << getTypeSpec();
-        throw RbException( msg );
-    }
-    for ( size_t i = 0; i < index.size(); i++ ) {
-        if ( index[i] >= length[i] ) {
-            delete value;   // Avoid memory leak
-            std::ostringstream msg;
-            msg << "Index out of bounds when setting element of " << getTypeSpec();
-            throw RbException( msg );
-        }
+    if ( !( value->isType( elementType ) || value->isConvertibleTo( elementType, 0, true ) ) ) {
+
+        delete value;
+        throw RbException( "Invalid type when setting element of " + getTypeSpec().toString() );
     }
 
-    // Check if the new value is the right type
+    // Check indices and resize if necessary
+    bool grow = false;
+    std::vector<size_t> newSize;
+    for ( size_t i = 0; i < index.size(); i++ ) {
+
+        if ( index[i] >= length[i] ) {
+            newSize[i] = index[i] + 1;
+            grow = true;
+        }
+        else
+            newSize[i] = length[i];
+    }
+    if ( grow == true )
+        resize( newSize );
+
+    // Set the element, with type conversion if necessary
     if ( value == NULL || value->isType( elementType ) ) {
 
         // Delete the old element
@@ -479,13 +487,6 @@ void ValueContainer::setElement( const VectorNatural& index, DAGNode* var ) {
     
         elements[offset] = value->convertTo( elementType, 0 );
         delete value;
-    }
-    else {
-    
-        delete value;
-        std::ostringstream msg;
-        msg << "Invalid type when setting element of " << getTypeSpec();
-        throw RbException( msg );
     }
 }
 

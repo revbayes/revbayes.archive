@@ -31,11 +31,17 @@ RNA::RNA( void ) : Nucleotide() {
 
 /** Construct from int value. */
 RNA::RNA( int x ) : Nucleotide( x ) {
+
+    if ( !isValidState( value ) )
+        throw RbException( "Invalid RNA state code '" + RbString( x ) + "'" );
 }
 
 
 /** Construct from char value (= character code: A, C, G, U, -, ?, X) */
-RNA::RNA( char c ) : Nucleotide( c ) {
+RNA::RNA( char c ) : Nucleotide( convertSymbolToState( c ) ) {
+
+    if ( !isValidState( value ) )
+        throw RbException( "Invalid RNA state '" + RbString( c ) + "'" );
 }
 
 

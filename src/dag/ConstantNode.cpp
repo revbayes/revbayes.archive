@@ -82,31 +82,13 @@ const VectorString& ConstantNode::getDAGClass() const {
 }
 
 
-/**
- * @brief Is the node a constant expression?
- *
- * We can only guarantee that the node is a constant expression if the
- * node cannot be mutated; this is the case if the constant node does
- * not belong to a variable slot but to a reference slot, or if it is
- * a temp. If it sits in a container, you can use the container to
- * mutate it.
- *
- */
-bool ConstantNode::isConstExpr( void ) const {
-
-    if ( isTemp() )
-        return true;
-    else if ( slot != NULL && slot->isReference() )
-        return true;
-
-    return false;
-}
-
-
 /** Print value for user */
 void ConstantNode::printValue( std::ostream& o ) const {
 
-    value->printValue(o);
+    if ( value )
+        value->printValue(o);
+    else  /* NULL value */
+        o << "NA";
 }
 
 

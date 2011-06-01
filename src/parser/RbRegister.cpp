@@ -225,8 +225,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add regular templated functions (alphabetic order) */
         // TODO: Add v and s functions
-        // TODO: Transpose function should not be templated
-        addFunction( "transpose", new Func_transpose<    MatrixReal,     MatrixReal >()             );
+        addFunction( "transpose", new Func_transpose< MatrixReal >()             );
 
     }
     catch(RbException& rbException) {

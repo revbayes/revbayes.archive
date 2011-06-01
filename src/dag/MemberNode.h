@@ -36,14 +36,15 @@ class MemberNode : public DeterministicNode {
         // Basic utility functions
         MemberNode*             clone(void) const;                                                          //!< Clone the member node
         const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
+        bool                    isConst(void) const;                                                        //!< Is this node a const value?
         void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
         std::string             richInfo(void) const;                                                       //!< Complete info about object
 
         // Parser element access functions
         bool                    existsElement(VectorInteger& index);                                        //!< Does element exist?
         DAGNode*                getElement(VectorInteger& index);                                           //!< Get element
-        DAGNode*                getElementRef(VectorNatural& index);                                        //!< Get element reference for setting it
-        void                    setElement(VectorNatural& index, DAGNode* var);                             //!< Set element for parser if member object requests such a call
+        DAGNode*                getElementOwner(VectorInteger& index);                                      //!< Get element owner
+        void                    setElement(size_t index, DAGNode* var, bool convert=true);                  //!< Set element
 
         // DAG function
         MemberNode*             cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph

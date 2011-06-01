@@ -64,8 +64,8 @@ class LookupNode : public DeterministicNode {
         // Parser element access functions
         bool                existsElement(VectorInteger& index);                                        //!< Does element exist?
         DAGNode*            getElement(VectorInteger& index);                                           //!< Get element
-        DAGNode*            getElementRef(VectorNatural& index);                                        //!< Get element reference for setting it
-        void                setElement(VectorNatural& index, DAGNode* var);                             //!< Set element
+        DAGNode*            getElementOwner(VectorInteger& index);                                      //!< Get element owner
+        void                setElement(const VectorNatural& index, DAGNode* var, bool convert=true);    //!< Set element
 
         // LookupNode functions
         const TypeSpec&     getMemberTypeSpec(const RbString& name) const;                              //!< Get type spec of a named member variable of lookup target

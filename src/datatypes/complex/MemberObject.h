@@ -51,8 +51,9 @@ class MemberObject: public RbComplex {
         virtual void                printValue(std::ostream& o) const;                                                  //!< Print value for user
         virtual std::string         richInfo(void) const;                                                               //!< Complete info
 
-        // DAG utility function you do not have to override
+        // Basic utility functions you do not have to override
         MemberObject*               getConstValue(void) const;                                                          //!< Make a constant clone
+        bool                        isConstant(void) const;                                                             //!< Are all members constant?
 
         // Member variable functions; override getMemberRules to add member variables
         const MemberFrame&          getMembers(void) const { return members; }                                          //!< Get members
@@ -73,7 +74,8 @@ class MemberObject: public RbComplex {
         virtual bool                hasSubscript(void) { return false; }                                                //!< Does object support subscripting?
         virtual DAGNode*            getSubelement(const size_t i);                                                      //!< Return subscript[](index) element
         virtual size_t              getSubelementsSize(void) const { return 0; }                                        //!< Number of subscript elements
-        virtual void                setElement(VectorNatural& index, DAGNode* var);                                     //!< Set subelement, or elements of a subelement; only override if you want full control
+        virtual void                setElement(VectorNatural& index, DAGNode* var, bool convert=true);                  //!< Set subelement
+        virtual void                setSubelement(size_t index, DAGNode* var, bool convert=true);                       //!< Set subelement
 
     protected:
 									MemberObject(const MemberRules& memberRules);                                       //!< Standard constructor

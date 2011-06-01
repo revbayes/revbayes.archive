@@ -78,7 +78,7 @@ class ValueContainer : public Container {
         // Container functions you may want to override
         virtual void                    clear(void);                                                                //!< Clear
         virtual void                    resize(const std::vector<size_t>& len);                                     //!< Resize to new length vector
-        virtual void                    setElement(const VectorNatural& index, DAGNode* var);                       //!< Allow parser to set element (or not)
+        virtual void                    setElement(const VectorNatural& index, DAGNode* var);                       //!< Set element with type conversion
         virtual size_t                  size(void) const { return elements.size(); }                                //!< Get total number of elements
 
     protected:

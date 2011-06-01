@@ -19,16 +19,16 @@
 
 #include "ConstantNode.h"
 #include "ContainerIterator.h"
+#include "Integer.h"
 #include "Mcmc.h"
 #include "MemberFunction.h"
-#include "MinmaxRule.h"
 #include "Model.h"
 #include "Move.h"
 #include "MoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "Integer.h"
+#include "RangeRule.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "StochasticNode.h"
@@ -97,11 +97,11 @@ const MemberRules& Mcmc::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back( new ValueRule ( "model"     , Model_name                         ) );
-        memberRules.push_back( new MinmaxRule( "ngen"      , Integer_name, new Integer(1), NULL ) );
-        memberRules.push_back( new MinmaxRule( "printfreq" , Integer_name, new Integer(1), NULL ) );
-        memberRules.push_back( new MinmaxRule( "samplefreq", Integer_name, new Integer(1), NULL ) );
-        memberRules.push_back( new ValueRule ( "filename"  , new RbString( "out" )              ) );
+        memberRules.push_back( new ValueRule         ( "model"     , Model_name                         ) );
+        memberRules.push_back( new RangeRule<Integer>( "ngen"      , new Integer(1), Integer(1), Integer(INT_MAX) ) );
+        memberRules.push_back( new RangeRule<Integer>( "printfreq" , new Integer(1), Integer(1), Integer(INT_MAX) ) );
+        memberRules.push_back( new RangeRule<Integer>( "samplefreq", new Integer(1), Integer(1), Integer(INT_MAX) ) );
+        memberRules.push_back( new ValueRule         ( "filename"  , new RbString( "out" )              ) );
 
         rulesSet = true;
     }

@@ -26,7 +26,7 @@
 class DAGNode;
 class VectorString;
 
-template <typename valT, typename retT>
+template <typename matrixType>
 class Func_transpose :  public RbFunction {
 
     public:
@@ -43,52 +43,46 @@ class Func_transpose :  public RbFunction {
 
 #endif
 
-#include "DAGNode.h"
-#include "DeterministicNode.h"
-#include "MatrixReal.h"
-#include "RbException.h"
-#include "RbMath.h"
-#include "RbNames.h"
-#include "StochasticNode.h"
+#include "ContainerNode.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VectorInteger.h"
-#include "VectorReal.h"
-#include "VectorRealPos.h"
 #include "VectorString.h"
 
 
 /** Clone object */
-template <typename valT, typename retT>
-Func_transpose<valT, retT>* Func_transpose<valT, retT>::clone(void) const {
+template <typename matrixType>
+Func_transpose<matrixType>* Func_transpose<matrixType>::clone( void ) const {
 
-    return new Func_transpose(*this);
+    return new Func_transpose( *this );
 }
 
 
-/** Execute function: MatrixReal <- transpose(MatrixReal) */
-template <>
-DAGNode* Func_transpose<MatrixReal,MatrixReal>::execute( void ) {
+/** Execute function by simply rearranging elements in new matrix of same type */
+template <typename matrixType>
+DAGNode* Func_transpose<matrixType>::execute( void ) {
 
-    MatrixReal mat = (((MatrixReal*) (args[0].getValue())))->getValue();
-    int n = mat.getNumRows();
-    int m = mat.getNumCols();
-    MatrixReal* matT = new MatrixReal(m, n, 0.0);
-    RbMath::transposeMatrix(mat, *matT);
-    return new ConstantNode( matT );
+    const matrixType* mat = static_cast<const matrixType*>( args[0].getValue() );
+
+    matrixType* matT = new matrixType( mat->getNumCols(), mat->getNumRows() );
+    
+    for ( size_t i = 0; i < mat->getNumRows(); i++ )
+        for ( size_t j = 0; j < mat->getNumCols(); j++ )
+            (*matT)[j][i] = (*mat)[i][j];
+
+    return new ContainerNode( matT );
 }
 
 
 /** Get argument rules */
-template <typename valT, typename retT>
-const ArgumentRules& Func_transpose<valT, retT>::getArgumentRules(void) const {
+template <typename matrixType>
+const ArgumentRules& Func_transpose<matrixType>::getArgumentRules( void ) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
     if (!rulesSet) {
 
-        argumentRules.push_back(new ValueRule("", valT().getType()));
+        argumentRules.push_back( new ValueRule( "", matrixType().getType() ) );
 
         rulesSet = true;
     }
@@ -98,30 +92,20 @@ const ArgumentRules& Func_transpose<valT, retT>::getArgumentRules(void) const {
 
 
 /** Get class vector describing type of object */
-template <typename valT, typename retT>
-const VectorString& Func_transpose<valT, retT>::getClass(void) const {
+template <typename matrixType>
+const VectorString& Func_transpose<matrixType>::getClass( void ) const {
 
-    valT* dummy1 = new valT();
-    retT* dummy2 = new retT();
-    
-    std::string funcName = "Func__transpose<" + dummy1->getType() + "," + dummy2->getType() + ">"; 
-    static VectorString rbClass = VectorString(funcName) + RbFunction::getClass();
-    
-    delete dummy1;
-    delete dummy2;
+    std::string         funcName = "Func_transpose<" + matrixType().getType() + ">"; 
+    static VectorString rbClass  = VectorString( funcName ) + RbFunction::getClass();
     
     return rbClass;
 }
 
 
 /** Get return type */
-template <typename valT, typename retT>
-const TypeSpec Func_transpose<valT, retT>::getReturnType(void) const {
+template <typename matrixType>
+const TypeSpec Func_transpose<matrixType>::getReturnType( void ) const {
 
-    retT* dummy  = new retT();
-    static std::string retTypeStr = dummy->getType();
-    delete dummy;
-    return TypeSpec(retTypeStr);
+    return matrixType().getTypeSpec();
 }
-
 

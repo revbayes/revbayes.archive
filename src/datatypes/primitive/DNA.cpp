@@ -31,11 +31,17 @@ DNA::DNA( void ) : Nucleotide() {
 
 /** Construct from int value. */
 DNA::DNA( int x ) : Nucleotide( x ) {
+
+    if ( !isValidState( value ) )
+        throw RbException( "Invalid DNA state code '" + RbString( x ) + "'" );
 }
 
 
 /** Construct from char value (= character code: A, C, G, T, -, ?, X) */
 DNA::DNA( char c ) : Nucleotide( c ) {
+
+    if ( !isValidState( value ) )
+        throw RbException( "Invalid DNA state '" + RbString( c ) + "'" );
 }
 
 

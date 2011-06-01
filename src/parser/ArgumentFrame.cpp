@@ -111,6 +111,17 @@ ArgumentFrame* ArgumentFrame::clone( void ) const {
 }
 
 
+/** Clone entire environment, except base frame (it always stays the same) */
+ArgumentFrame* ArgumentFrame::cloneEnvironment( void ) const {
+
+    ArgumentFrame* newEnv = clone();
+    if ( newEnv->parentFrame != NULL && newEnv->parentFrame->getParentFrame() != NULL )
+        newEnv->parentFrame = newEnv->parentFrame->cloneEnvironment();
+
+    return newEnv;
+}
+
+
 /** Does variable exist? */
 bool ArgumentFrame::existsVariable( const std::string& name ) const {
 

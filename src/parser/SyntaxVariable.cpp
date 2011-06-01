@@ -155,7 +155,7 @@ DAGNode* SyntaxVariable::getDAGNodeExpr( VariableFrame* frame ) const {
     /* Check whether it is safe to return the variable itself or whether we need a lookup node */
     bool lookupNeeded = false;
     for ( std::vector<DAGNode*>::iterator i = indexArgs.begin(); i != indexArgs.end(); i++ ) {
-        if ( !(*i)->isConstExpr() ) {
+        if ( !(*i)->isImmutable() || !(*i)->isConst()  ) {
             lookupNeeded = true;
             break;
         }
@@ -301,26 +301,11 @@ VectorInteger SyntaxVariable::getIndex(VariableFrame* frame) const {
 /**
  * @brief Get semantic value (l-value)
  *
- * This function is similar to getValue(), but it is used
- * when the variable expression is on the lhs of an assignment
- * expression. An important difference is in the retrieval of
- * element variables, where we do not go into the last container.
- * The reason is that we may want to do container or subcontainer
- * assignment, and we may want give the container a chance to mutate
- * from a value to a variable container (or in the other direction).
- * During the retrieval of an element, the elemIndex is updated to
- * reflect the appropriate index into the returned variable.
- *
- * Another difference is that we do not throw an error if the
- * variable does not exist in the frame; instead, we return a NULL
- * pointer and set theSlot pointer to NULL as well. If the variable
- * exists in a workspace or a member variable frame, and we retrieve
- * it through an identifier, theSlot pointer is set to the slot from
- * which we retrieve the variable. This is important in determining
- * whether the lhs of an assignment expression is valid for a reference
- * assignment. If we retrieve the variable through a function call,
- * it can never be valid for a reference assignment. We also set the
- * slot to NULL in these cases.
+ * This function is similar to getValue(), but we only get the
+ * slot and index of the variable. Another difference is that we
+ * do not throw an error if the variable does not exist in the
+ * frame; instead, we return a NULL pointer and set theSlot pointer
+ * to NULL as well.
  */
 DAGNode* SyntaxVariable::getLValue(VariableFrame* frame, VariableSlot*& theSlot, VectorInteger& elemIndex) const {
 
@@ -370,15 +355,14 @@ DAGNode* SyntaxVariable::getLValue(VariableFrame* frame, VariableSlot*& theSlot,
         theVar  = theSlot->getParserVariable();
     }
 
-    /* Find return value; easy if not an element or if a new variable */
-    if ( elemIndex.size() == 0 || theVar == NULL )
-        return theVar;
+    /* Get element owner */
+    if ( elemIndex.size() > 0 ) {
+    
+        theVar  = theVar->getElementOwner( elemIndex );
+        theSlot = theVar->getSlot();
+    }
 
-    /* We need to find the element */
-    DAGNode* elem = theVar->getElementRef( VectorNatural( elemIndex ) );
-    elemIndex.clear();
-
-    return elem;
+    return theVar;
 }
 
 

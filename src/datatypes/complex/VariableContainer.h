@@ -45,7 +45,7 @@ class VariableContainer : public Container {
     public:
         friend class                ValueContainer;                                                             //!< Give value container direct access to elements
         friend class                ContainerNode;                                                              //!< Give container node direct access to elements
-        friend class                Frame;                                                                      //!< Give container node direct access to elements
+        friend class                Frame;                                                                      //!< Give frame direct access to elements
 
                                     VariableContainer(size_t n, DAGNode* x);                                    //!< Vector with n copies of x
                                     VariableContainer(const std::vector<size_t>& len, DAGNode* x);              //!< Array of given dimensions with copies of x
@@ -62,6 +62,7 @@ class VariableContainer : public Container {
         // Basic utility functions
         VariableContainer*          clone(void) const;                                                          //!< Clone object
         const VectorString&         getClass(void) const;                                                       //!< Get class
+        bool                        isConstant(void) const;                                                     //!< Are all elements constants?
         void                        printValue(std::ostream& o) const;                                          //!< Print value for user
         std::string                 richInfo(void) const;                                                       //!< Complete info about object
 
@@ -70,7 +71,7 @@ class VariableContainer : public Container {
         ValueContainer*             getConstValue(void);                                                        //!< Get constant value
         VectorNatural               getIndex(const DAGNode* elem) const;                                        //!< Get index of an element
         void                        resize(const std::vector<size_t>& len);                                     //!< Resize container
-        void                        setElement(const VectorNatural& index, DAGNode* elem);                      //!< Set element
+        void                        setElement(const VectorNatural& index, DAGNode* var, bool convert=true);    //!< Set element
         size_t                      size(void) const { return elements.size(); }                                //!< Get total number of elements
 
 	protected:

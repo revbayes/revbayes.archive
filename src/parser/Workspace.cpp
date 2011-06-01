@@ -379,7 +379,7 @@ bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTyp
 void Workspace::printValue(std::ostream& o) const {
 
     o << "Variable table:" << std::endl;
-    Frame::printValue(o);
+    VariableFrame::printValue(o);
     o << std::endl;
 
     o << "Function table:" << std::endl;

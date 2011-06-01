@@ -44,6 +44,7 @@ class MemberFrame : public VariableFrame {
 
         // Regular functions
         void                        addVariableSlot(const std::string& name, const TypeSpec& typeSp);               //!< Add empty slot
+        void                        clear(void);                                                                    //!< Clear frame
         void                        eraseVariable(const std::string& name);                                         //!< Erase a variable
         void                        push_back(const std::string& name, VariableSlot slot);                          //!< Add member variable slot
         size_t                      size(void) const { return members.size(); }                                     //!< Number of members

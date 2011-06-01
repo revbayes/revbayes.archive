@@ -301,6 +301,36 @@ void IntegratorNode::keep() {
 }
 
 
+/** Print struct for user */
+void IntegratorNode::printStruct( std::ostream& o ) const {
+
+    o << "_DAGClass     = " << getDAGClass() << std::endl;
+    o << "_distribution = " << distribution->briefInfo() << std::endl;
+    o << "_touched      = " << ( touched ? Boolean( true ) : Boolean( false ) ) << std::endl;
+    o << "_value        = NA" << std::endl;
+    o << "_lnProb       = " << value->briefInfo() << std::endl;
+    if ( touched )
+        o << "_storedLnProb = " << storedValue->briefInfo() << std::endl;    
+
+    o << "_parents      = ";
+    printParents(o);
+    o << std::endl;
+
+    o << "_children     = ";
+    printChildren(o);
+    o << std::endl;
+
+    o << std::endl;
+}
+
+
+/** Print value for user */
+void IntegratorNode::printValue( std::ostream& o ) const {
+
+    o << "NA";
+}
+
+
 /** Complete info about object */
 std::string IntegratorNode::richInfo(void) const {
 

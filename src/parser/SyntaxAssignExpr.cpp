@@ -150,27 +150,17 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
                 frame->addVariable( varName, typeSpec, makeContainer( elemIndex, value ) );
             }
         }
-        else if ( elemIndex.size() == 0 && theVariable->getSlot() != NULL ) {
+        else if ( elemIndex.size() == 0 ) {
 
             // Assigning to an existing regular variable
             PRINTF ( "Assigning a value to %s %s through arrow assignment\n", theVariable->getTypeSpec(), theVariable->getName() );
-            theVariable->getSlot()->setValue( value );
-        }
-        else if ( elemIndex.size() == 0 && theVariable->getSlot() == NULL ) {
-
-            /*
-            // Assigning to a container element
-            PRINTF ( "Assigning a value to %s %s through arrow assignment\n", theVariable->getTypeSpec(), theVariable->getName() );
-            ContainerNode* container = theVariable->getContainer();
-            container->getSlot()->setElement( container->getIndex( node ), node, true );
-            */
+            slot->setValue( value );
         }
         else /* if ( elemIndex.size() > 0 ) */ {
 
-            // Assigning of a value element to a member object that wants to do the job itself
-            PRINTF ( "Assigning a value to %s %s element through arrow assignment\n", theVariable->getTypeSpec(), theVariable->getName() );
-            VectorNatural index = elemIndex;
-            theVariable->setElement( index, wrapValue( value ) );
+            // Assigning to a container element or member object element
+            PRINTF ( "Assigning a value to %s %s%s through arrow assignment\n", theVariable->getTypeSpec(), theVariable->getName(), elemIndex.toIndexString() );
+            slot->setElement( elemIndex, value );
         }
     }
 
@@ -208,27 +198,17 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
                 frame->addVariable( varName, typeSpec, makeContainer( elemIndex, node ) );
             }
         }
-        else if ( elemIndex.size() == 0 && theVariable->getSlot() != NULL ) {
+        else if ( elemIndex.size() == 0 ) {
 
             // It exists - replace it
-            PRINTF ( "Assigning a dag expression to variable %s %s through equation assignment\n", theVariable->getTypeSpec(), theVariable->getName() );
-            theVariable->getSlot()->setVariable( node );
+            PRINTF ( "Assigning a dag expression to %s %s through equation assignment\n", theVariable->getTypeSpec(), theVariable->getName() );
+            slot->setVariable( node );
         }
-        else if ( elemIndex.size() == 0 && theVariable->getSlot() == NULL ) {
+        else /* if ( elemIndex.size() > 0 ) */ {
 
-            /*
-            // Assigning to a container element
-            PRINTF ( "Assigning a dag expression to %s %s through arrow assignment\n", theVariable->getTypeSpec(), theVariable->getName() );
-            ContainerNode* container = theVariable->getContainer();
-            container->getSlot()->setElement( container->getIndex( node ), node, true );
-            */
-        }
-        else /* if ( elemIndex.size() > 0 ) ) */ {
-
-            // Assigning to an element of a member object that wants to do the job itself
-            PRINTF ( "Assigning a dag expression to %s %s element through arrow assignment\n", theVariable->getTypeSpec(), theVariable->getName() );
-            VectorNatural index = elemIndex;
-            theVariable->setElement( index, node );
+            // Equation assignment to a container element or member object element
+            PRINTF ( "Assigning a dag expression to %s %s%s through equation assignment\n", theVariable->getTypeSpec(), theVariable->getName(), elemIndex.toIndexString() );
+            slot->setElement( elemIndex, node );
         }
     }
 
@@ -272,27 +252,17 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
                 frame->addVariable( varName, typeSpec, makeContainer( elemIndex, node ) );
             }
         }
-        else if ( elemIndex.size() == 0 && theVariable->getSlot() != NULL ) {
+        else if ( elemIndex.size() == 0 ) {
 
-            // It exists - replace it
+            // It exists - replace it without type conversion
             PRINTF ( "Assigning a stochastic node of value type %s to %s %s through tilde assignment\n", node->getValueType(), theVariable->getTypeSpec(), theVariable->getName() );
-            theVariable->getSlot()->setVariable( node, false );
-        }
-        else if ( elemIndex.size() == 0 && theVariable->getSlot() == NULL ) {
-
-            /*
-            // Assigning to a container element
-            PRINTF ( "Assigning a stochastic node of value type %s to %s %s through tilde assignment\n", node->getValueType(), theVariable->getTypeSpec(), theVariable->getName() );
-            ContainerNode* container = theVariable->getContainer();
-            container->getSlot()->setElement( container->getIndex( node ), node, false );
-            */
+            slot->setVariable( node, false );
         }
         else /* if ( elemIndex.size() > 0 ) */ {
 
-            // Assigning of a stochastic node element to a member object that wants to do the job itself
-            PRINTF ( "Assigning a stochastic node of value type %s to %s %s element through tilde assignment\n", node->getValueType(), theVariable->getTypeSpec(), theVariable->getName() );
-            VectorNatural index = elemIndex;
-            theVariable->setElement( index, node );
+            // Equation assignment to a container element or member object element without type conversion
+            PRINTF ( "Assigning a stochastic node of value type %s to %s %s%s through tilde assignment\n", node->getValueType(), theVariable->getTypeSpec(), theVariable->getName(), elemIndex.toIndexString() );
+            slot->setElement( elemIndex, node, false );
         }
     }
 
