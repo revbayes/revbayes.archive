@@ -98,7 +98,7 @@ void VariableFrame::addVariable( const std::string& name, const TypeSpec& typeSp
     /* Insert new slot in variable table */
     variableTable.insert( std::pair<std::string, VariableSlot>( name, slot ) );
 
-    PRINTF( "Inserted %s %s in frame\n", name.c_str(), slot.getTypeSpec().toString().c_str() );
+    PRINTF( "Inserted %s %s in frame\n", slot.getTypeSpec().toString().c_str(), name.c_str() );
 }
 
 
@@ -118,7 +118,7 @@ void VariableFrame::addVariableSlot( const std::string& name, const TypeSpec& ty
     /* Insert new slot in variable table */
     variableTable.insert( std::pair<std::string, VariableSlot>( name, slot ) );
 
-    PRINTF( "Inserted %s %s in frame\n", name.c_str(), slot.getTypeSpec().toString().c_str() );
+    PRINTF( "Inserted %s %s in frame\n", slot.getTypeSpec().toString().c_str(), name.c_str() );
 }
 
 

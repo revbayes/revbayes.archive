@@ -115,12 +115,12 @@ size_t Container::getOffset( const VectorNatural& index ) const {
 
     size_t  offset  = 0;
     size_t  numVals = 1;
-    size_t  i;
-    for ( i = length.size()-1; i >= index.size(); i--)
-         numVals *= length[i];
-    for ( ; i >= 0; i--) {
-        offset += ( index[i] * numVals );
-        numVals *= length[i];
+    int     k       = length.size() - 1;
+    for ( ; k >= int( index.size() ); k--)
+         numVals *= length[k];
+    for ( ; k >= 0; k--) {
+        offset += ( index[k] * numVals );
+        numVals *= length[k];
     }
  
     return offset;

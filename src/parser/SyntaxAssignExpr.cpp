@@ -238,12 +238,16 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
         // Create new stochastic node
         StochasticNode* node = new StochasticNode( distribution );
 
+        // Set return value of the assignment expression
+        // We return the stochastic node itself
+        retValue = node;
+
         // Does the variable exist?
         if ( slot == NULL ) {
  
             // It does not exist - add it
             // We make the new slot as generous as possible (type RbObject)
-            PRINTF ( "Creating variable %s %s with a stochastic node %sthrough tilde assignment\n", TypeSpec( node->getValueType(), elemIndex.size() ), varName, elemIndex.size() > 0 ? "element " : "" );
+            PRINTF ( "Creating variable %s %s with a stochastic node %sthrough tilde assignment\n", TypeSpec( node->getValueType(), elemIndex.size() ).toString().c_str(), varName, elemIndex.size() > 0 ? "element " : "" );
             TypeSpec typeSpec( RbObject_name, elemIndex.size() );
             if ( elemIndex.size() == 0 )
                 frame->addVariable( varName, typeSpec, node );
