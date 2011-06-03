@@ -142,7 +142,7 @@ int Parser::execute(SyntaxElement *root) const {
 		}
 
     // Delete syntax tree and result
-    if ( result->numRefs() == 0 )
+    if ( result != NULL && result->isTemp() )
         delete result;
     delete root;
 

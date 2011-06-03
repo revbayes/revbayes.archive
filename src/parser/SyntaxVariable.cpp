@@ -248,7 +248,7 @@ VectorInteger SyntaxVariable::getIndex(VariableFrame* frame) const {
             if (indexVar->getValue()->isType(Integer_name)) {
 
                 // Calculate (or get) an integer index
-                int intIndex = ((Integer*)(indexVar))->getValue(); 
+                int intIndex = static_cast<const Integer*>( indexVar->getValue() )->getValue(); 
                 if (intIndex < 1) {
                     std::ostringstream msg;
                     msg << "Index " << count << " for ";
@@ -356,7 +356,7 @@ DAGNode* SyntaxVariable::getLValue(VariableFrame* frame, VariableSlot*& theSlot,
     }
 
     /* Get element owner */
-    if ( elemIndex.size() > 0 ) {
+    if ( elemIndex.size() > 0 && theVar != NULL ) {
     
         theVar  = theVar->getElementOwner( elemIndex );
         theSlot = theVar->getSlot();

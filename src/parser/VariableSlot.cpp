@@ -138,7 +138,7 @@ RbObject* VariableSlot::convertValue( RbObject* newValue ) const {
         return temp;
     }
 
-    PRINTF( "Relying on variable mutation" );
+    PRINTF( "Relying on variable mutation\n" );
     return newValue;
 }
 
@@ -159,7 +159,7 @@ DAGNode* VariableSlot::convertVariable( DAGNode* newVariable ) const {
         return new ConverterNode( newVariable, theTypeSpec.getType(), theTypeSpec.getDim() );
     }
 
-    PRINTF( "Relying on variable mutation" );
+    PRINTF( "Relying on variable mutation\n" );
 
     return newVariable;
 }

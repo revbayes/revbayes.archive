@@ -133,7 +133,7 @@ VariableContainer::VariableContainer( const TypeSpec& typeSpec , const std::vect
 
     // Fill the container
     for ( int i = 0; i < size; i++ )
-        elements.push_back( new ConstantNode( NULL ) );
+        elements.push_back( new ConstantNode( typeSpec.getType() ) );
     length = len;
 }
 
@@ -574,15 +574,13 @@ void VariableContainer::setElement( const VectorNatural& index, DAGNode* var, bo
 
     // Check indices and resize if necessary
     bool grow = false;
-    std::vector<size_t> newSize;
+    std::vector<size_t> newSize = length;
     for ( size_t i = 0; i < index.size(); i++ ) {
 
         if ( index[i] >= length[i] ) {
             newSize[i] = index[i] + 1;
             grow = true;
         }
-        else
-            newSize[i] = length[i];
     }
     if ( grow == true )
         resize( newSize );

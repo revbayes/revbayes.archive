@@ -59,7 +59,7 @@ VariableSlot& VariableFrame::operator[]( const std::string& name ) {
             throw RbException( "Variable slot " + name + " does not exist" );
     }
 
-    PRINTF( "Retrieving %s %s from frame\n", name.c_str(), it->second.getTypeSpec().toString().c_str() );
+    PRINTF( "Retrieving %s %s from frame\n", it->second.getTypeSpec().toString().c_str(), name.c_str() );
 
     return (*it).second;
 }
@@ -76,7 +76,7 @@ const VariableSlot& VariableFrame::operator[]( const std::string& name ) const {
             throw RbException( "Variable slot " + name + " does not exist" );
     }
 
-    PRINTF( "Retrieving %s %s from frame\n", name.c_str(), it->second.getTypeSpec().toString().c_str() );
+    PRINTF( "Retrieving %s %s from frame\n", it->second.getTypeSpec().toString().c_str(), name.c_str() );
 
     return (*it).second;
 }

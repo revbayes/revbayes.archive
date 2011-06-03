@@ -183,7 +183,7 @@ DAGNode* SyntaxStatement::getValue(VariableFrame* frame) const {
                 }
                 
                 // Free memory
-				if ( result != NULL )
+				if ( result != NULL && result->isTemp() )
 					delete result;  // discard result
 
                 // Catch signal
