@@ -181,8 +181,8 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
         }
 
         // Set return value of the assignment expression
-        // We return the root DAG node itself
-        retValue = node;
+        // We return a clone of the root DAG node itself
+        retValue = node->clone();
 
         // Does the variable exist?
         if ( slot == NULL ) {
@@ -201,7 +201,7 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
         else if ( elemIndex.size() == 0 ) {
 
             // It exists - replace it
-            PRINTF ( "Assigning a dag expression to %s %s through equation assignment\n", theVariable->getTypeSpec(), theVariable->getName() );
+            PRINTF ( "Assigning a dag expression to %s %s through equation assignment\n", theVariable->getTypeSpec(), theVariable->getName().c_str() );
             slot->setVariable( node );
         }
         else /* if ( elemIndex.size() > 0 ) */ {
@@ -239,8 +239,8 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
         StochasticNode* node = new StochasticNode( distribution );
 
         // Set return value of the assignment expression
-        // We return the stochastic node itself
-        retValue = node;
+        // We return a clone of the stochastic node itself
+        retValue = node->clone();
 
         // Does the variable exist?
         if ( slot == NULL ) {

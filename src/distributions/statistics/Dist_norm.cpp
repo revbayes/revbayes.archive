@@ -138,8 +138,8 @@ const MemberRules& Dist_norm::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
 
-        memberRules.push_back( new ValueRule( "mean", Real_name    ) );
-        memberRules.push_back( new ValueRule( "sd"  , RealPos_name ) );
+        memberRules.push_back( new ReferenceRule( "mean", Real_name    ) );
+        memberRules.push_back( new ReferenceRule( "sd"  , RealPos_name ) );
 
         rulesSet = true;
     }

@@ -284,7 +284,7 @@ void DAGNode::mutateTo( DAGNode* newNode ) {
     // We need a temp vector because we will lose our referring slots during the process
     std::set<VariableSlot*> oldSlots = referringSlots;
     for ( std::set<VariableSlot*>::iterator i = oldSlots.begin(); i != oldSlots.end(); i++ )
-        (*i)->setVariable( newNode );
+        (*i)->resetVariable( newNode );
 
     // Now it is up to the slot to delete us
 }

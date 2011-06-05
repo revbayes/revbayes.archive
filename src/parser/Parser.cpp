@@ -229,7 +229,7 @@ int Parser::processCommand(std::string& command) {
         return 1;
     }
     else {
-        PRINTF("Syntax error\n");
+        PRINTF("Some error occurred in parsing or executing the statement\n");
         rrcommand.str("");
         while (foundNewline == false)
             yyparse();

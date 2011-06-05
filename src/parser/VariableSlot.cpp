@@ -56,8 +56,8 @@ VariableSlot::VariableSlot(const TypeSpec& typeSp)
 
 
 /** Copy constructor. We need to copy intelligently based on whether the value is a reference, a temp reference or a regular value.
-    We do not copy frame because the copy is likely to be inserted into a different frame (or none at all). */
-VariableSlot::VariableSlot(const VariableSlot& x) : typeSpec(x.getTypeSpec()), variable(NULL), frame(NULL) {
+    We copy frame to simplify insertion calls; set to NULL if slot does not have a frame. */
+VariableSlot::VariableSlot(const VariableSlot& x) : typeSpec(x.getTypeSpec()), variable(NULL), frame(x.frame) {
 
     if ( !typeSpec.isReference() ) {
         if ( x.variable != NULL ) {
@@ -97,7 +97,8 @@ VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
         // Remove old variable
         removeVariable();
         
-        // The frame of the slot does not copy over
+        // Copy frame
+        frame = x.frame;
 
         // Copy the new variable
         if ( !typeSpec.isReference() ) {
@@ -183,24 +184,15 @@ const std::string& VariableSlot::getName( void ) const {
  * needs assistance from the slot in interpreting how
  * a variable should be accessed.
  *
- * The basic logic is to issue the variable if the slot is a
- * value slot or a reference slot set to hold a const
- * value. Otherwise, we issue a reference to the correct
- * variable, which may not be the variable in the slot. By
- * calling the variable's function getReference(), we
+ * By calling the variable's function getReference(), we
  * ensure that a lookup node or function node will return
  * the reference and not the lookup node or function node.
+ * At this point, we do not know whether the parser needs
+ * a reference to or a copy of the variable.
  */
 DAGNode* VariableSlot::getParserVariable( void ) {
 
-    if ( !isReference() )
-        return variable->clone();
-    else {
-        if ( variable->getReference()->getSlot() == this )
-            return variable->clone();
-        else
-            return variable->getReference();
-    }
+        return variable->getReference();
 }
 
 

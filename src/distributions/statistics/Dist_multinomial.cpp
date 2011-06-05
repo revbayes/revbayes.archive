@@ -26,8 +26,8 @@
 #include "RbMath.h"
 #include "RbNames.h"
 #include "RbStatistics.h"
+#include "ReferenceRule.h"
 #include "Simplex.h"
-#include "ValueRule.h"
 #include "VectorInteger.h"
 #include "VectorReal.h"
 #include "VectorString.h"
@@ -88,7 +88,7 @@ const MemberRules& Dist_multinomial::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ValueRule( "p", Simplex_name ) );
+        memberRules.push_back( new ReferenceRule( "p", Simplex_name ) );
 
         rulesSet = true;
 		}

@@ -22,7 +22,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbNames.h"
 #include "Real.h"
-#include "ValueRule.h"
+#include "ReferenceRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -92,7 +92,7 @@ const MemberRules& Dist_exp::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
 
-        memberRules.push_back( new ValueRule( "rate", RealPos_name ) );
+        memberRules.push_back( new ReferenceRule( "rate", RealPos_name ) );
 
         rulesSet = true;
     }

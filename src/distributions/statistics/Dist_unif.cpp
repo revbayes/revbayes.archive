@@ -25,7 +25,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "Real.h"
-#include "ValueRule.h"
+#include "ReferenceRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -114,8 +114,8 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back(new ValueRule("min", Real_name));
-        memberRules.push_back(new ValueRule("max", Real_name));
+        memberRules.push_back(new ReferenceRule("min", Real_name));
+        memberRules.push_back(new ReferenceRule("max", Real_name));
 
         rulesSet = true;
     }

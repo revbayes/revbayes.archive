@@ -25,8 +25,8 @@
 #include "RbNames.h"
 #include "RbStatistics.h"
 #include "Real.h"
+#include "ReferenceRule.h"
 #include "Simplex.h"
-#include "ValueRule.h"
 #include "VectorRealPos.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -108,7 +108,7 @@ const MemberRules& Dist_dirichlet::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ValueRule( "alpha", VectorRealPos_name ) );
+        memberRules.push_back( new ReferenceRule( "alpha", VectorRealPos_name ) );
 
         rulesSet = true;
 		}

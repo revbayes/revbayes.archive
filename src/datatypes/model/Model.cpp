@@ -76,7 +76,7 @@ Model::Model( const std::vector<DAGNode*>& sinkNodes ) : MemberObject() {
 
             // Create unnamed slot if old variable was not in slot
             std::ostringstream name;
-            name << "Unnamed node " << count++;
+            name << "Unnamed" << count++;
             dagNodeMembers.addVariable( name.str(), theNewNode->getTypeSpec(), theNewNode );        
         }
 

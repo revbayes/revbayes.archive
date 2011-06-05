@@ -67,11 +67,11 @@ MemberObject* MemberObject::getConstValue( void ) const {
 
     MemberObject* temp = clone();
 
-    const MemberFrame& tempMembers = temp->getMembers();
-    for ( size_t i = 0; i < tempMembers.size(); i++ ) {
+    for ( size_t i = 0; i < temp->members.size(); i++ ) {
     
-        RbObject* constValue = tempMembers[i].getValue()->clone();
-        temp->setValue( tempMembers[i].getName(), constValue );
+        RbObject* constValue = temp->members[i].getValue()->clone();
+        temp->members[i].setReferenceFlag( false );
+        temp->setValue( temp->members[i].getName(), constValue );
     }
 
     return temp;
