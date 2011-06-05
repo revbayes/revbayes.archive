@@ -39,9 +39,6 @@ Func_model* Func_model::clone( void ) const {
 /** Execute function */
 DAGNode* Func_model::execute( void ) {
 
-    if ( args[0].getVariable()->numChildren() != 0 )
-        throw RbException( "Node is not a sink node" );
-
     return new MemberNode( new Model( std::vector<DAGNode*>( 1, args[0].getReference() ) ) );
 }
 
