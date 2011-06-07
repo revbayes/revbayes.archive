@@ -149,7 +149,7 @@ double RbMath::lfastchoose(double n, double k)
 double RbMath::lfastchoose2(double n, double k, int *s_choose)
 {
     double r;
-    r = lgammafn_sign(n - k + 1., s_choose);
+    r = lnGamma_sign(n - k + 1., s_choose);
     return RbMath::lnGamma(n + 1.) - RbMath::lnGamma(k + 1.) - r;
 }
 

@@ -15,6 +15,7 @@
  */
 
 #include <cmath>
+#include <iostream>
 
 #include "RbMathCombinatorialFunctions.h"
 #include "DistributionPoisson.h"
@@ -121,6 +122,7 @@ int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator* rng) {
         {
 			if (lambda == 0.0) 
 				return 0;
+            
 			if (lambda < 0.0)
             {
 				/* there should be an error here */
@@ -130,12 +132,14 @@ int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator* rng) {
 			/* For extremely small lambda we calculate the probabilities of x = 1
              and x = 2 (ignoring higher x). The reason for using this 
              method is to prevent numerical inaccuracies in other methods. */
-			return RbStatistics::Helper::poissonLow(lambda, *rng);
+            //			return RbStatistics::Helper::poissonLow(lambda, *rng);
+            return 1;
         }
 		else 
         {
 			/* use the inversion method */
-			return RbStatistics::Helper::poissonInver(lambda, *rng);
+//			return RbStatistics::Helper::poissonInver(lambda, *rng);
+            return 1;
         }
     }
 	else 
@@ -146,6 +150,10 @@ int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator* rng) {
 			std::cout << "Parameter too big in poisson function" << std::endl;
         }
 		/* use the ratio-of-uniforms method */
-		return RbStatistics::Helper::poissonRatioUniforms(lambda, *rng);
+        //		return RbStatistics::Helper::poissonRatioUniforms(lambda, *rng);
+        
+        return 1;
     }
 }
+}
+

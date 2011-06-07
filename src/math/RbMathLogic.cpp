@@ -87,10 +87,18 @@ bool RbMath::compDefinitelyLessThan(double a, double b, double epsilon)
     return (b - a) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
 }
 
+bool RbMath::isFinite(double x) {
+    return isFinite(x);
+}
+
 bool RbMath::isInt(double x)
 {
     double int_part;
     return ( modf ( x, &int_part ) == 0.0 );
+}
+
+bool RbMath::isNan(double x) {
+    return x != x;
 }
 
 double RbMath::max(double x, double y)

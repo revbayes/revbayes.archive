@@ -16,12 +16,13 @@
  */
 
 #include "Distribution.h"
+#include "DistributionDirichlet.h"
 #include "Move_mmultinomial.h"
 #include "Natural.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "RbStatistics.h"
+#include "RbStatisticsHelper.h"
 #include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"

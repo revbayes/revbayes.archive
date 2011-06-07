@@ -18,7 +18,7 @@
 #include "RbMathGaussianElimination.h"
 
 #include "RbException.h"
-#include "RbMath.h"
+#include "RbMathMatrix.h"
 #include "RbSettings.h"
 
 

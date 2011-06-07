@@ -20,8 +20,9 @@
 #include <vector>
 
 #include "RbException.h"
-#include "RbMath.h"
 #include "RbMathMatrix.h"
+#include "RbMathCombinatorialFunctions.h"
+#include "RbMathGaussianElimination.h"
 #include "RbSettings.h"
 
 

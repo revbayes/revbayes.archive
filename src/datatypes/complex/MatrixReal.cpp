@@ -18,7 +18,6 @@
 #include "ContainerNode.h"
 #include "MatrixReal.h"
 #include "RbException.h"
-#include "RbMath.h"
 #include "RbNames.h"
 #include "Real.h"
 #include "Simplex.h"

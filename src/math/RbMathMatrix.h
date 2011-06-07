@@ -17,7 +17,6 @@
 
 
 #include "MatrixReal.h"
-#include "RbMath.h"
 
 namespace RbMath {
     

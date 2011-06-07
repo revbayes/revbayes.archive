@@ -99,7 +99,7 @@ std::vector<double> RbStatistics::Dirichlet::rv(const std::vector<double> &a, Ra
 	double sum = 0.0;
 	for(int i=0; i<n; i++)
     {
-		z[i] = RbStatistics::Helper::rndGamma(a[i], *rng);
+//		z[i] = RbStatistics::Helper::rndGamma(a[i], *rng);
 		sum += z[i];
     }
 	for(int i=0; i<n; i++)

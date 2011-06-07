@@ -21,8 +21,8 @@
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "Real.h"
+#include "RbConstants.h"
 #include "RbException.h"
-#include "RbMath.h"
 #include "RbNames.h"
 #include "ReferenceRule.h"
 #include "StochasticNode.h"
@@ -172,7 +172,7 @@ double Dist_norm::lnPdf(const RbObject* value) {
 
     double z = ( x - mu ) / sigma;
 
-    return ( -0.5 * z * z ) - 0.5 * std::log ( 2.0 * PI * sigma );
+    return ( -0.5 * z * z ) - 0.5 * std::log ( 2.0 * RbConstants::PI * sigma );
 }
 
 
@@ -193,7 +193,7 @@ double Dist_norm::pdf( const RbObject* value ) {
 
     double z = (x - mu) / sigma;
 
-    return exp( -0.5 * z * z ) / ( sigma * sqrt ( 2.0 * PI ) );
+    return exp( -0.5 * z * z ) / ( sigma * sqrt ( 2.0 * RbConstants::PI ) );
 }
 
 
