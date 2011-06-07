@@ -1,0 +1,82 @@
+#import <Cocoa/Cocoa.h>
+#import "RbItem.h"
+@class ParmPlate;
+@class ParmPlateTree;
+@class ToolModel;
+
+
+
+@interface Parm : RbItem <NSCoding> {
+
+    NSMutableArray*           parents;           // the parents of this parameter
+    NSMutableArray*           children;          // the children of this parameter
+    NSString*                 parmName;          // the parameter name
+    int                       parmType;          // the parameter type
+    int                       domain;            // the domain of the parameter (e.g., real numbers, integers, etc.)
+	ToolModel*                myModel;           // a pointer to the model tool
+	NSMutableArray*           containingPlates;  // the plates that this parameter sits on
+	NSWindow*                 parmsWindow;       // a pointer to the window the parameter lives on
+    int                       drawingIndex;
+    BOOL                      isConstant;        // is the parameter a constant
+    BOOL                      isVector;
+    int                       dimensions;
+
+	IBOutlet NSButton*        cancelButton;
+	IBOutlet NSButton*        helpButton;
+	IBOutlet NSTextField*     nameField;
+	IBOutlet NSTextField*     nameLabel;
+	IBOutlet NSButton*        okButton;
+}
+
+@property (readwrite)        int          domain;
+@property (readwrite)        int          drawingIndex;
+@property (retain)           NSString*    parmName;
+@property (readwrite)        int          parmType;
+@property (readwrite,assign) NSWindow*    parmsWindow;
+@property (readwrite,assign) ToolModel*   myModel;
+@property (readwrite)        BOOL         isConstant;
+@property (assign)           NSTextField* nameField;
+@property (assign)           NSTextField* nameLabel;
+@property (readwrite)        BOOL         isVector;
+@property (readwrite)        int          dimensions;
+
+- (void)addChild:(Parm*)p;
+- (void)addParent:(Parm*)p;
+- (void)addToPlate:(ParmPlate*)p;
+- (ParmPlateTree*)assignedTreePlate;
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)changeName:(id)sender;
+- (void)closeControlPanel;
+- (void)encodeWithCoder:(NSCoder*)aCoder;
+- (Parm*)getChildIndexed:(int)x;
+- (Parm*)getParentIndexed:(int)x;
+- (Parm*)getParentWithName:(NSString*)str;
+- (ParmPlate*)getPlateIndexed:(int)x;
+- (IBAction)helpAction:(id)sender;
+- (void)initializeImage;
+- (id)initWithCoder:(NSCoder*)aDecoder;
+- (id)initWithScaleFactor:(float)sf andTool:(ToolModel*)t;
+- (BOOL)isAssignedToPlate:(ParmPlate*)p;
+- (ParmPlate*)isOnPlateWithIndexSource:(int)src;
+- (int)numAssignedPlates;
+- (int)numChildren;
+- (int)numParents;
+- (int)numAttachedMatrices;
+- (int)numCharactersForMatrix:(int)idx;
+- (int)numExcludedCharactersForMatrix:(int)idx;
+- (int)numExcludedTaxaForMatrix:(int)idx;
+- (int)numTaxaForMatrix:(int)idx;
+- (IBAction)okAction:(id)sender;
+- (NSPoint)originForControlWindow:(NSWindow*)win;
+- (void)refreshWindow;
+- (void)removeAllConnections;
+- (void)removeChild:(Parm*)c;
+- (void)removeFromAllPlates;
+- (void)removeFromPlate:(ParmPlate*)p;
+- (void)removeParent:(Parm*)p;
+- (void)resizeWindowTo:(float)h;
+- (void)setImageWithSize:(NSSize)s;
+- (void)showControlPanel;
+- (void)updateChildren;
+
+@end
