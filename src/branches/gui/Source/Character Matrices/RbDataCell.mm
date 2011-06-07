@@ -1,0 +1,220 @@
+#import "RbDataCell.h"
+
+
+
+@implementation RbDataCell
+
+@synthesize isDiscrete;
+@synthesize isAmbig;
+@synthesize row;
+@synthesize column;
+@synthesize dataType;
+@synthesize numStates;
+@synthesize val;
+
+- (void)dealloc {
+
+	[super dealloc];
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+
+	[aCoder encodeBool:isDiscrete forKey:@"isDiscrete"];
+	[aCoder encodeBool:isAmbig    forKey:@"isAmbig"];
+	[aCoder encodeInt:row         forKey:@"row"];
+	[aCoder encodeInt:column      forKey:@"column"];
+	[aCoder encodeInt:dataType    forKey:@"dataType"];
+	[aCoder encodeInt:numStates   forKey:@"numStates"];
+	[aCoder encodeObject:val      forKey:@"val"];
+}
+
+- (float)getContinuousState {
+
+	if (isDiscrete == NO)
+		{
+		NSNumber* n = [self val];
+		float x = [n floatValue];
+		return x;
+		}
+	return 0.0;
+}
+
+- (char)getDiscreteState {
+
+	if (isDiscrete == YES)
+		{
+		NSNumber* n = [self val];
+		unsigned int x = [n unsignedIntValue];
+		if (dataType == DNA)
+			{
+			return [self interpretAsDna:x];
+			}
+		else if (dataType == RNA)
+			{
+			char v = [self interpretAsDna:x];
+			if (v == 'T')
+				v = 'U';
+			return v;
+			}
+		else if (dataType == AA)
+			{
+			return [self interpretAsAminoAcid:x];
+			}
+		else if (dataType == STANDARD)
+			{
+			return [self interpretAsStandard:x];
+			}
+		return '*';
+		}
+	return '*';
+}
+
+- (char)interpretAsAminoAcid:(unsigned)x {
+
+	char aaCode[20] = { 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V' };
+	char v;
+	int nOn = 0;
+	for (int i=0; i<20; i++)
+		{
+		unsigned mask = 1 << i ;
+		if ( (x & mask) != 0 )
+			{
+			v = aaCode[i];
+			nOn++;
+			}
+		}
+	if (nOn > 1)
+		return 'N';
+	return v;
+}
+
+- (char)interpretAsDna:(unsigned)x {
+
+	if (x == 1)
+		return 'A';
+	else if (x == 2)
+		return 'C';
+	else if (x == 3)
+		return 'M';
+	else if (x == 4)
+		return 'G';
+	else if (x == 5)
+		return 'R';
+	else if (x == 6)
+		return 'S';
+	else if (x == 7)
+		return 'V';
+	else if (x == 8)
+		return 'T';
+	else if (x == 9)
+		return 'W';
+	else if (x == 10)
+		return 'Y';
+	else if (x == 11)
+		return 'H';
+	else if (x == 12)
+		return 'K';
+	else if (x == 13)
+		return 'D';
+	else if (x == 14)
+		return 'B';
+	else if (x == 15)
+		return 'N';
+	return '*';
+}
+
+- (char)interpretAsStandard:(unsigned)x {
+
+	char stCode[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+	char v;
+	int nOn = 0;
+	for (int i=0; i<10; i++)
+		{
+		unsigned mask = 1 << i ;
+		if ( (x & mask) != 0 )
+			{
+			v = stCode[i];
+			nOn++;
+			}
+		}
+	if (nOn > 1)
+		{
+		return 'N';
+		}
+	return v;
+}
+
+- (id)init {
+
+    if ( (self = [super init]) ) 
+		{
+		val = nil;
+        
+        // initialize some variables
+		isDiscrete  = YES;
+		row         = 0;
+		column      = 0;
+		dataType    = DNA;
+		numStates   = 4;
+		isAmbig     = NO;
+		}
+    return self;
+}
+
+- (id)initWithCell:(RbDataCell*)c {
+
+    if ( (self = [super init]) ) 
+		{
+		val = nil;
+        
+        // initialize some variables
+		isDiscrete  = YES;
+		row         = 0;
+		column      = 0;
+		dataType    = DNA;
+		numStates   = 4;
+		isAmbig     = NO;
+
+		// copy information from the other RbDataCell object
+		if (c != nil)
+			{
+			isDiscrete = [c isDiscrete];
+			row        = [c row];
+			column     = [c column];
+			dataType   = [c dataType];
+			numStates  = [c numStates];
+			isAmbig    = [c isAmbig];
+			if (isDiscrete == YES)
+				{
+				unsigned x = [[c val] unsignedIntValue];
+				NSNumber* n = [NSNumber numberWithUnsignedInt:x];
+				[self setVal:n];
+				}
+			else 
+				{
+				double x = [[c val] doubleValue];
+				NSNumber* n = [NSNumber numberWithDouble:x];
+				[self setVal:n];
+				}
+			}
+		}
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+
+    if ( (self = [super init]) ) 
+		{
+		isDiscrete = [aDecoder decodeBoolForKey:@"isDiscrete"];
+		isAmbig    = [aDecoder decodeBoolForKey:@"isAmbig"];
+		row        = [aDecoder decodeIntForKey:@"row"];
+		column     = [aDecoder decodeIntForKey:@"column"];
+		dataType   = [aDecoder decodeIntForKey:@"dataType"];
+		numStates  = [aDecoder decodeIntForKey:@"numStates"];
+		val        = [aDecoder decodeObjectForKey:@"val"];
+		[val retain];
+		}
+	return self;
+}
+
+@end
