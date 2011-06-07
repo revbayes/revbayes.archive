@@ -162,7 +162,8 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
 
     /* Fill processedArguments with empty variable slots */
     for (int i=0; i<numFinalArgs; i++) {
-        args.push_back( VariableSlot( theRules[i]->getArgTypeSpec() ) );
+        VariableSlot vs( theRules[i]->getArgTypeSpec() );
+        args.push_back( vs );
         if ( theRules[i]->getArgLabel() != "" )
             args.setArgumentLabel( i, theRules[i]->getArgLabel() );
     }

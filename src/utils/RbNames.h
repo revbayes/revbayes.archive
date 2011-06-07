@@ -47,6 +47,7 @@ const std::string Distribution_name                             = "Distribution"
 const std::string DistributionCategorical_name                  = "Distribution on Categorical Random Variable";
 const std::string DistributionFunction_name                     = "Distribution Function";
 const std::string DistributionInterval_name                     = "Distribution on Interval Random Variable";
+const std::string DistributionReal_name                         = "Distribution on Real Random Variable";
 const std::string Dist_cat_name                                 = "Dist_cat";
 const std::string Dist_dirichlet_name                           = "Dist_dirichlet";
 const std::string Dist_exp_name                                 = "Dist_exp";

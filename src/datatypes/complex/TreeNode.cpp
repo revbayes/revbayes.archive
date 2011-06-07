@@ -19,6 +19,7 @@
 #include "Boolean.h"
 #include "ConstantNode.h"
 #include "MemberFunction.h"
+#include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "VectorString.h"
@@ -29,7 +30,7 @@
 
 
 /** Default constructor */
-TreeNode::TreeNode(void) : MemberObject( getMemberRules(), getMethodInits() ) {
+TreeNode::TreeNode(void) : MemberObject( getMemberRules() ) {
 
 }
 
@@ -107,9 +108,9 @@ const MemberRules& TreeNode::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
-        memberRules.push_back(new ArgumentRule("index", Integer_name));
-        memberRules.push_back(new ArgumentRule("brlen", RealPos_name));
-        memberRules.push_back(new ArgumentRule("time", RealPos_name));
+//        memberRules.push_back(new ArgumentRule("index", Integer_name));
+//        memberRules.push_back(new ArgumentRule("brlen", RealPos_name));
+//        memberRules.push_back(new ArgumentRule("time", RealPos_name));
 
         rulesSet = true;
 		}

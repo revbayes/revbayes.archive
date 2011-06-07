@@ -63,7 +63,7 @@ class Tree : public MemberObject {
         void                          allocateNodes(int nNodes);
         void                          deleteNodes(void);
                                       Tree(void);
-                                      Tree(const MemberRules& memberRules, const MethodTable& methodInits);
+                                      Tree(const MemberRules& memberRules);
         std::string                   newick;                                                                       //!< The newick string, should be recalculated each time the tree has changed
         std::vector<TreeNode*>        nodes;
         int                           numberOfTips;

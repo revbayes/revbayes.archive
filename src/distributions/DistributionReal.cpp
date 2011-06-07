@@ -31,7 +31,7 @@
 
 /** Constructor passes member rules and method inits to base class */
 DistributionReal::DistributionReal(const MemberRules& memberRules)
-    : Distribution(memberRules, getMethodInits()) {
+    : Distribution(memberRules) {
 }
 
 
@@ -100,12 +100,12 @@ const MethodTable& DistributionReal::getMethodInits(void) const {
     if (!initsSet) {
 
         /* We inherit lnPdf, pdf and rv functions */
-        methodInits = Distribution::getMethodInits();
+//        methodInits = Distribution::getMethodInits();
         
-        cdfArgRules.push_back(new ArgumentRule("q", RealPos_name));
+//        cdfArgRules.push_back(new ArgumentRule("q", RealPos_name));
         methodInits.addFunction("cdf", new MemberFunction(Real_name, cdfArgRules));
 
-        quantileArgRules.push_back(new ArgumentRule("p", RealPos_name));
+//        quantileArgRules.push_back(new ArgumentRule("p", RealPos_name));
         methodInits.addFunction("quantile", new MemberFunction(Real_name, quantileArgRules));
 
         initsSet = true;
@@ -116,9 +116,9 @@ const MethodTable& DistributionReal::getMethodInits(void) const {
 
 
 /** Get variable type */
-const std::string& DistributionReal::getVariableType(void) const {
-
-    return Real_name;
+const TypeSpec DistributionReal::getVariableType(void) const {
+    
+    return TypeSpec( Real_name );
 }
 
 

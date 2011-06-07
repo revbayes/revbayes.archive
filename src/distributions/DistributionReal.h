@@ -43,7 +43,7 @@ class DistributionReal: public Distribution {
 
         // Member variable rules and random variable type
         virtual const MemberRules&  getMemberRules(void) const = 0;                                            //!< Get member rules
-        virtual const std::string&  getVariableType(void) const;                                               //!< Get random variable type
+        virtual const TypeSpec      getVariableType(void) const;                                           //!< Get random variable type
 
         // Member method inits
         const MethodTable&			getMethodInits(void) const;                                                //!< Get method inits
@@ -66,6 +66,8 @@ class DistributionReal: public Distribution {
 
         // Member method call
         DAGNode*                    executeOperation(const std::string& name, std::vector<VariableSlot>& args);    //!< Execute method
+    
+        Real                    retDouble;
 };
 
 #endif

@@ -17,15 +17,15 @@
 
 
 
-TreeUnrooted::TreeUnrooted(void) : Tree( getMemberRules(), getMethodInits() ) {
+TreeUnrooted::TreeUnrooted(void) : Tree( getMemberRules() ) {
 
 }
 
-TreeUnrooted::TreeUnrooted(const TreeUnrooted& ut) : Tree( getMemberRules(), getMethodInits() ) {
+TreeUnrooted::TreeUnrooted(const TreeUnrooted& ut) : Tree( getMemberRules() ) {
 
 }
 
-TreeUnrooted::TreeUnrooted(std::vector<std::string> names) : Tree( getMemberRules(), getMethodInits() ) {
+TreeUnrooted::TreeUnrooted(std::vector<std::string> names) : Tree( getMemberRules() ) {
 
     // initialize the number of tips in the tree
     setNumberOfTips(names.size());
@@ -38,11 +38,11 @@ TreeUnrooted::TreeUnrooted(std::vector<std::string> names) : Tree( getMemberRule
     buildRandomTree(nNodes, GLOBAL_RNG);
 }
 
-TreeUnrooted::TreeUnrooted(std::string newickStr) : Tree( getMemberRules(), getMethodInits() ) {
+TreeUnrooted::TreeUnrooted(std::string newickStr) : Tree( getMemberRules() ) {
 
 }
 
-TreeUnrooted::TreeUnrooted(int nTips) : Tree( getMemberRules(), getMethodInits() ) {
+TreeUnrooted::TreeUnrooted(int nTips) : Tree( getMemberRules() ) {
 
 }
 

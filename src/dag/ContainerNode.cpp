@@ -339,9 +339,10 @@ const VectorString& ContainerNode::getDAGClass( void ) const {
 
 
 /** Convenient vector access */
-DAGNode* ContainerNode::getElement( size_t i ) {
+DAGNode* ContainerNode::getElement(const size_t i ) {
+    VectorInteger vi(i);
 
-    return getElement( VectorInteger( i ) );
+    return getElement( vi );
 }
 
 
@@ -695,8 +696,10 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
                         break;
                 }
 
-                if ( i == index.size() )
-                    container->setElement( it1, var->getElement( VectorInteger( it2++ ) ), false );
+                if ( i == index.size() ) {
+                    VectorInteger vi(it2++);
+                    container->setElement( it1, var->getElement( vi ), false );
+                }
             }
         }
         else {
@@ -713,8 +716,10 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
                         break;
                 }
 
-                if ( i == index.size() )
-                    containerVar->setElement( it1, elemVar->getElement( VectorInteger( it2++ ) ) );
+                if ( i == index.size() ) {
+                    VectorInteger vi(it2++);
+                    containerVar->setElement( it1, elemVar->getElement( vi ) );
+                }
             }
 
         }

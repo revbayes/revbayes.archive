@@ -26,10 +26,10 @@
 #define Parser_H
 
 
-#include <sstream>
-#include <string>
-
 #include "RbOptions.h"
+
+#include <string>
+#include <sstream>
 
 class RbString;
 class SyntaxElement;

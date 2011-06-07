@@ -34,6 +34,7 @@ class VectorInteger : public Vector {
                                     VectorInteger(int x);                                           //!< Construct vector with one int x
                                     VectorInteger(size_t n, int x);                                 //!< Construct vector with n ints x
                                     VectorInteger(const std::vector<int>& x);                       //!< Constructor from int vector
+                                    VectorInteger(const std::vector<size_t>& x);                    //!< Constructor from size_t vector
                                     VectorInteger(const std::vector<unsigned int>& x);              //!< Constructor from unsigned int vector
                                     VectorInteger(const VectorNatural& x);                          //!< Constructor from vector of natural numbers
                                     VectorInteger(const ContainerIterator& x);                      //!< Constructor from container iterator
