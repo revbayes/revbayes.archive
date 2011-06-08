@@ -80,7 +80,7 @@ VectorInteger::VectorInteger(const VectorNatural& x)
 VectorInteger::VectorInteger(const std::vector<size_t>& x)
     : Vector(Integer_name) {
 
-    for (std::vector<unsigned int>::const_iterator i=x.begin(); i!=x.end(); i++)
+    for (std::vector<size_t>::const_iterator i=x.begin(); i!=x.end(); i++)
         elements.push_back(new Integer(int(*i)));
     length[0] = elements.size();
 }

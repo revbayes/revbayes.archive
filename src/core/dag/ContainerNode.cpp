@@ -341,7 +341,8 @@ const VectorString& ContainerNode::getDAGClass( void ) const {
 /** Convenient vector access */
 DAGNode* ContainerNode::getElement( size_t i ) {
 
-    return getElement( VectorInteger( i ) );
+    VectorInteger vi(i);
+    return getElement( vi );
 }
 
 
@@ -720,7 +721,8 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
                     parents.erase( container->elements[offset] );
 
                     // Set the new element
-                    DAGNode* elem = var->getElement( VectorInteger( it2++ ) );
+                    VectorInteger vi(it2++);
+                    DAGNode* elem = var->getElement( vi );
                     container->elements[offset] = elem;
                     elem->addChildNode( this );
                     parents.insert( elem );
@@ -741,8 +743,10 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
                         break;
                 }
 
-                if ( i == index.size() )
-                    containerVar->setElement( it1, elemVar->getElement( VectorInteger( it2++ ) ) );
+                if ( i == index.size() ) {
+                    VectorInteger vi( it2++ );
+                    containerVar->setElement( it1, elemVar->getElement( vi ) );
+                }
             }
         }
     }
