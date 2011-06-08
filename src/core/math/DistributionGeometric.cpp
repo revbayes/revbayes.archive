@@ -50,9 +50,9 @@ double RbStatistics::Geometric::cdf(int n, double p)
     if(p == 1.) { /* we cannot assume IEEE */
         return n;
     }
-    n = log1p(-p) * (n + 1);
+    n = int( RbMath::log1p(-p) * (n + 1) );
         
-    return -expm1(n);
+    return -RbMath::expm1(n);
 }
 
 /*!
@@ -145,6 +145,6 @@ double RbStatistics::Geometric::quantile(double q, double p) {
     if (p == 1) return(0);
     
     /* add a fuzz to ensure left continuity */
-    return ceil(log(q) / log1p(- p) - 1 - 1e-7);
+    return ceil(log(q) / RbMath::log1p(- p) - 1 - 1e-7);
 }
 

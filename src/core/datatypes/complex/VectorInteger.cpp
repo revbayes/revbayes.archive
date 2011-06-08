@@ -87,16 +87,6 @@ VectorInteger::VectorInteger(const VectorNatural& x)
 }
 
 
-/** Constructor from unsigned int vector */
-VectorInteger::VectorInteger(const std::vector<unsigned int>& x)
-    : Vector(Integer_name) {
-
-    for (std::vector<unsigned int>::const_iterator i=x.begin(); i!=x.end(); i++)
-        elements.push_back(new Integer(int(*i)));
-    length[0] = elements.size();
-}
-
-
 /** Constructor from container iterator */
 VectorInteger::VectorInteger(const ContainerIterator& x)
 : Vector(Integer_name) {

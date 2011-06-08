@@ -137,7 +137,7 @@ double RbStatistics::Binomial::pdf(double n, double p, double q, double x, bool 
     /* Upto R 2.7.1:
      * lf = log(M_2PI) + log(x) + log(n-x) - log(n);
      * -- following is much better for  x << n : */
-    lf = log(RbConstants::TwoPI) + log(x) + log1p(- x/n);
+    lf = log(RbConstants::TwoPI) + log(x) + RbMath::log1p(- x/n);
     
                return (asLog ? (lc - 0.5*lf) : exp(lc - 0.5*lf));
 }

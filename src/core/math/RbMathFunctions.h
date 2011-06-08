@@ -24,6 +24,7 @@ namespace RbMath {
     double                      binomialDeviance(double x, double np);                                                             //!< Evaluates the Deviance part
     int                         chebyshev_init(double *dos, int nos, double eta);
     double                      chebyshev_eval(double x, const double *a, const int n);
+    double                      expm1(double x);                                                                //!< Compute exp(x) - 1 for small x
     double                      gamma(double x);                                                                //!< Calculate the Gamma function 
     double                      gamma_old(double x);                                                                //!< Calculate the Gamma function 
     double                      incompleteBeta(double a, double b, double x);                                   //!< Xxx 
@@ -34,6 +35,8 @@ namespace RbMath {
     double                      lnGamma_old(double a);                                                          //!< Calculate the log of the Gamma function
     double                      lnGammacor(double x);
     double                      lnBeta(double a, double b);                                                     //!< Calculate the log of the Beta function 
+    double                      log1p(double x);                                                                //!< Compute log(1+x) for small x
     double                      rbEpsilon(void);                                                                //!< Xxx 
     double                      stirlerr(double n);
+    double                      trunc(double x);                                                                //!< Truncate x
 }

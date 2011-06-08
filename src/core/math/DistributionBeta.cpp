@@ -160,24 +160,6 @@ double RbStatistics::Beta::quantile(double a, double b, double p) {
 	return x;
 }
 
-/*!
- * This function generates a Beta-distributed random variable.
- *
- * \brief Beta random variable.
- * \param a parameter of the Beta. 
- * \param b parameter of the Beta. 
- * \param rng is a pointer to a random number object. 
- * \return Returns the random variable.
- * \throws Does not throw an error.
- */
-double RbStatistics::Beta::rv_old(double a, double b, RandomNumberGenerator* rng) {
-    
-//	double z0 = RbStatistics::Gamma::rv( a, *rng );
-//	double z1 = RbStatistics::Gamma::rv( b, *rng );
-//	double sum = z0 + z1;
-//	double x = z0 / sum;
-//	return x;
-}
 
 /* Reference:
  * R. C. H. Cheng (1978).
@@ -185,7 +167,7 @@ double RbStatistics::Beta::rv_old(double a, double b, RandomNumberGenerator* rng
  * Communications of the ACM 21, 317-322.
  * (Algorithms BB and BC)
  */
-#define expmax	(DBL_MAX_EXP * M_LN2)/* = log(DBL_MAX) */
+#define expmax	(DBL_MAX_EXP * RbConstants::LN2)/* = log(DBL_MAX) */
 
 double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator* rng) {
     double a, b, alpha;
@@ -200,7 +182,7 @@ double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator* rng) 
     
     if (aa <= 0. || bb <= 0. || (!RbMath::isFinite(aa) && !RbMath::isFinite(bb))) {
         std::ostringstream s;
-        s << "Cannot draw random variable from beta distribution for a = " << a << " and b = " << b;
+        s << "Cannot draw random variable from beta distribution for a = " << aa << " and b = " << bb;
         throw (RbException(s));
     }
     

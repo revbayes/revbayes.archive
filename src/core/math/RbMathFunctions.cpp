@@ -156,6 +156,19 @@ double RbMath::chebyshev_eval(double x, const double *a, const int n)
     return (b0 - b2) * 0.5;
 }
 
+/**
+ * C++ version of the expm1 function. We provide our own, since this
+ * function is not available in the Microsoft cmath header
+ *
+ * Compute exp(x) - 1 without loss of precision for small values of x.
+ */
+double RbMath::expm1(double x)
+{
+    if (fabs(x) < 1e-5)
+        return x + 0.5*x*x;
+    else
+        return exp(x) - 1.0;
+}
 
 /*!
  * This function calculates the gamma function for real x.
@@ -246,7 +259,7 @@ double RbMath::gamma(double x)
          * Reduce the interval and find gamma(1 + y) for 0 <= y < 1
          * first of all. */
         
-        n = x;
+        n = int(x);
         if(x < 0) --n;
         y = x - n;/* n = floor(x)  ==>	y in [ 0, 1 ) */
         --n;
@@ -326,14 +339,14 @@ double RbMath::gamma(double x)
             throw (RbException(s));
         }
         
-        sinpiy = sin(M_PI * y);
+        sinpiy = sin(RbConstants::PI * y);
         if (sinpiy == 0) {		/* Negative integer arg - overflow */
             std::ostringstream s;
             s << "Cannot compute gamma function for x = " << x;
             throw (RbException(s));
         }
         
-        return -M_PI / (y * sinpiy * value);
+        return -RbConstants::PI / (y * sinpiy * value);
     }
 
 }
@@ -800,13 +813,13 @@ double RbMath::lnBeta(double a, double b)
         /* p and q are big. */
         corr = lnGammacor(p) + lnGammacor(q) - lnGammacor(p + q);
         return log(q) * -0.5 + RbConstants::LN_SQRT_2PI + corr
-        + (p - 0.5) * log(p / (p + q)) + q * log1p(-p / (p + q));
+            + (p - 0.5) * log(p / (p + q)) + q * RbMath::log1p(-p / (p + q));
     }
     else if (q >= 10) {
         /* p is small, but q is big. */
         corr = lnGammacor(q) - lnGammacor(p + q);
         return lnGammacor(p) + corr + p - p * log(p + q)
-        + (q - 0.5) * log1p(-p / (p + q));
+            + (q - 0.5) * RbMath::log1p(-p / (p + q));
     }
     else
         /* p and q are small: p <= q < 10. */
@@ -859,6 +872,7 @@ double RbMath::lnGamma_sign(double x, int *sgn)
      xmax  = DBL_MAX / log(DBL_MAX) = 2^1024 / (1024 * log(2)) = 2^1014 / log(2)
      dxrel = sqrt(DBL_EPSILON) = 2^-26 = 5^26 * 1e-26 (is *exact* below !)
      */
+#undef xmax
 #define xmax  2.5327372760800758e+305
 #define dxrel 1.490116119384765696e-8
 #endif
@@ -868,7 +882,7 @@ double RbMath::lnGamma_sign(double x, int *sgn)
     if (x < 0 && fmod(floor(-x), 2.) == 0)
         if (sgn != NULL) *sgn = -1;
     
-    if (x <= 0 && x == trunc(x)) { /* Negative integer argument */
+    if (x <= 0 && x == RbMath::trunc(x)) { /* Negative integer argument */
         std::ostringstream s;
         s << "Cannot compute log-gamma function for x = " << x;
         throw (RbException(s));
@@ -898,11 +912,11 @@ double RbMath::lnGamma_sign(double x, int *sgn)
             return RbConstants::LN_SQRT_2PI + (x - 0.5) * log(x) - x + lnGammacor(x);
     }
     /* else: x < -10; y = -x */
-    sinpiy = fabs(sin(M_PI * y));
+    sinpiy = fabs(sin(RbConstants::PI * y));
     
     ans = RbConstants::LN_SQRT_PId2 + (x - 0.5) * log(y) - x - log(sinpiy) - lnGammacor(y);
     
-    if(fabs((x - trunc(x - 0.5)) * ans / x) < dxrel) {
+    if(fabs((x - RbMath::trunc(x - 0.5)) * ans / x) < dxrel) {
         
         /* The answer is less than half precision because
          * the argument is too near a negative integer. */
@@ -984,6 +998,7 @@ double RbMath::lnGammacor(double x)
      *   xmax = DBL_MAX / 48 =  2^1020 / 3 */
 #define nalgm 5
 #define xbig  94906265.62425156
+#undef  xmax
 #define xmax  3.745194030963158e306
     
     if (x < 10)
@@ -1005,6 +1020,33 @@ double RbMath::lnGammacor(double x)
     return 1 / (x * 12);
 }
 
+/**
+ * C++ version of the log1p function. We provide our own, since this
+ * function is not available in the Microsoft cmath header
+ *
+ * Compute log(1+x) without losing precision for small values of x
+ */
+double RbMath::log1p(double x)
+{
+    if (x <= -1.0)
+    {
+        std::stringstream os;
+        os << "Invalid input argument (" << x 
+           << ") for log1p; must be greater than -1.0";
+        throw RbException( os.str() );
+    }
+
+    if (fabs(x) > 1e-4)
+    {
+        // x is large enough that the obvious evaluation is OK
+        return log(1.0 + x);
+    }
+
+    // Use Taylor approx. log(1 + x) = x - x^2/2 with error roughly x^3/3
+    // Since |x| < 10^-4, |x|^3 < 10^-12, relative error less than 10^-8
+
+    return (-0.5*x + 1.0)*x;
+}
 
 /*!
  * This function returns the round off unit for floating point arithmetic.
@@ -1089,6 +1131,17 @@ double RbMath::stirlerr(double n)
     if (n> 35) return((S0-(S1-(S2-S3/nn)/nn)/nn)/n);
     /* 15 < n <= 35 : */
     return((S0-(S1-(S2-(S3-S4/nn)/nn)/nn)/nn)/n);
+}
+
+/**
+ * C++ version of the trunc function. We provide our own, since this
+ * function is not available in the Microsoft cmath header
+ *
+ * Truncate a floating-point value.
+ */
+double RbMath::trunc(double x)
+{
+    return double( int( x ) );
 }
 
 

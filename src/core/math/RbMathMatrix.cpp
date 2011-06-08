@@ -266,4 +266,3 @@ int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
 	return (0);
 }
 
-
