@@ -56,7 +56,7 @@ VariableSlot::VariableSlot(const TypeSpec& typeSp)
 
 
 /** Copy constructor. We need to copy intelligently based on whether the value is a reference, a temp reference or a regular value.
-    We copy frame to simplify insertion calls; set to NULL if slot does not have a frame. */
+    We copy frame here and let caller worry about setting it to something appropriate. */
 VariableSlot::VariableSlot(const VariableSlot& x) : typeSpec(x.getTypeSpec()), variable(NULL), frame(x.frame) {
 
     if ( !typeSpec.isReference() ) {

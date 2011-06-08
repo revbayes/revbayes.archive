@@ -34,9 +34,13 @@ class ArgumentFrame : public Frame {
 
                                     ArgumentFrame(void);                                                                    //!< Constructor of frame with NULL parent
                                     ArgumentFrame(Frame* parentFr);                                                         //!< Constructor of frame with parent
-                                    ArgumentFrame(const ArgumentFrame& x);                                                  //!< Copy constructor: set frame of variable slots
+                                    ArgumentFrame(const ArgumentFrame& x);                                                  //!< Copy constructor
+        virtual                    ~ArgumentFrame(void);                                                                    //!< Destructor
+
+        // Operators
 
         // Overloaded operators
+        ArgumentFrame&              operator=(const ArgumentFrame& x);                                                      //!< Assignment operator
         VariableSlot&               operator[](size_t i);                                                                   //!< Get variable slot reference
         const VariableSlot&         operator[](size_t i) const;                                                             //!< Get variable slot const reference
         VariableSlot&               operator[](const std::string& name);                                                    //!< Get named variable slot reference
@@ -57,11 +61,11 @@ class ArgumentFrame : public Frame {
         size_t                      size(void) const { return arguments.size(); }                                           //!< Get size of frame           
 
     protected:
-        void                        push_back(VariableSlot& slot);                                                          //!< Add argument slot without label
-        void                        push_back(const std::string& name, VariableSlot& slot);                                 //!< Add argument slot with label
+        void                        push_back(VariableSlot* slot);                                                          //!< Add argument slot without label
+        void                        push_back(const std::string& name, VariableSlot* slot);                                 //!< Add argument slot with label
         void                        setArgumentLabel(size_t i, const std::string& name);                                    //!< Set argument name
 
-        std::vector<std::pair<std::string, VariableSlot> >  arguments;                                                      //!< The arguments
+        std::vector<std::pair<std::string, VariableSlot*> >  arguments;                                                      //!< The arguments
 };
 
 #endif

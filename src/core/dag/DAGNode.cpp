@@ -210,7 +210,7 @@ bool DAGNode::isImmutable( void ) const {
         return false;
 
     for ( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
-        if ( !(*i)-isImmutable() )
+        if ( !(*i)->isImmutable() )
             return false;
     }
 
@@ -274,7 +274,7 @@ void DAGNode::mutateTo( DAGNode* newNode ) {
     if ( !isMutableTo( newNode ) )
         throw RbException( "Invalid attempt to mutate variable" );
 
-    assert( newNode->getSlot() != NULL );
+    assert( !(newNode->getSlot() == NULL && newNode->getContainer() == NULL ) );
 
     // We need a temp vector because we will lose the children during the process
     std::set<VariableNode*> oldChildren = children;

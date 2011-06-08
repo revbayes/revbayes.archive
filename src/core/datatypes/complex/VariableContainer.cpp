@@ -407,12 +407,12 @@ DAGNode* VariableContainer::getElement( VectorInteger& index ) {
     else if ( index.size() == 0 ) {
 
         // We want the entire container, easy
-        return new ContainerNode( this->clone() );
+        return new ContainerNode( this );
     }
     else if ( index.size() == length.size() && numNegativeIndices == 0 ) {
 
         // We want an element, easy
-        return elements[ getOffset( index ) ]->clone();
+        return elements[ getOffset( index ) ];
     }
     else {
 
@@ -502,7 +502,7 @@ void VariableContainer::resize( const std::vector<size_t>& len ) {
     VectorInteger   numValsTarget   = VectorInteger(len.size(), 0);
     int             numSourceVals   = 1;
     int             numTargetVals   = 1;
-    for ( size_t i = len.size() - 1; i >= 0; i-- ) {
+    for ( int i = len.size() - 1; i >= 0; i-- ) {
         numSourceVals *= length[i];
         numTargetVals *= len[i];
         numValsSource[i] = numSourceVals;
@@ -521,7 +521,7 @@ void VariableContainer::resize( const std::vector<size_t>& len ) {
 
         size_t lastIndex = targetIndex;
 
-        for ( size_t i = length.size()-1; i >= 0; i-- ) {
+        for ( int i = length.size()-1; i >= 0; i-- ) {
             if ( sourceIndex % numValsSource[i] == 0 ) {
                 targetIndex += numValsTarget[i] - ( targetIndex % numValsTarget[i] );
             }

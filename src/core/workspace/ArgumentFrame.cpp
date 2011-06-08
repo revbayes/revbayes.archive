@@ -36,12 +36,46 @@ ArgumentFrame::ArgumentFrame( Frame* parentFr ) : Frame( parentFr ), arguments()
 }
 
 
-/** Copy constructor. We need to set the frame of the variable slots. */
+/** Copy constructor. We need to copy the slots and set the frame of the copies. */
 ArgumentFrame::ArgumentFrame( const ArgumentFrame& x ) :  Frame( x ), arguments( x.arguments ) {
 
-    std::vector<std::pair<std::string, VariableSlot> >::iterator it;
+    std::vector<std::pair<std::string, VariableSlot*> >::iterator it;
+    for ( it = arguments.begin(); it != arguments.end(); it++ ) {
+        (*it).second = (*it).second->clone();
+        (*it).second->setFrame( this );
+    }
+}
+
+
+/** Destructor */
+ArgumentFrame::~ArgumentFrame( void ) {
+
+    std::vector<std::pair<std::string, VariableSlot*> >::iterator it;
     for ( it = arguments.begin(); it != arguments.end(); it++ )
-        (*it).second.setFrame( this );
+        delete (*it).second;
+}
+
+
+/** Assignment operator */
+ArgumentFrame& ArgumentFrame::operator=( const ArgumentFrame& x ) {
+
+    if ( this != &x ) {
+    
+        std::vector<std::pair<std::string, VariableSlot*> >::iterator it;
+        for ( it = arguments.begin(); it != arguments.end(); it++ )
+            delete (*it).second;
+        
+        Frame::operator=( x );
+        arguments = x.arguments;
+
+        for ( it = arguments.begin(); it != arguments.end(); it++ ) {
+            (*it).second = (*it).second->clone();
+            (*it).second->setFrame( this );
+        }
+        
+    }
+
+    return (*this);
 }
 
 
@@ -51,7 +85,7 @@ VariableSlot& ArgumentFrame::operator[]( size_t i ) {
     if ( i > arguments.size() )
         throw RbException( "Argument index out of range" );
 
-    return arguments[i].second;
+    return *arguments[i].second;
 }
 
 
@@ -61,14 +95,14 @@ const VariableSlot& ArgumentFrame::operator[]( size_t i ) const {
     if ( i > arguments.size() )
         throw RbException( "Argument index out of range" );
 
-    return arguments[i].second;
+    return *arguments[i].second;
 }
 
 
 /** String index operator with bound checking */
 VariableSlot& ArgumentFrame::operator[]( const std::string& name ) {
 
-    std::vector<std::pair<std::string, VariableSlot> >::iterator it;
+    std::vector<std::pair<std::string, VariableSlot*> >::iterator it;
     for ( it = arguments.begin(); it != arguments.end(); it++ ) {
         if ( (*it).first == name )
             break;
@@ -77,14 +111,14 @@ VariableSlot& ArgumentFrame::operator[]( const std::string& name ) {
     if ( it == arguments.end() )
         throw RbException( "Argument " + name + " does not exist" );
 
-    return (*it).second;
+    return *(*it).second;
 }
 
 
 /** String index operator (const) with bound checking */
 const VariableSlot& ArgumentFrame::operator[]( const std::string& name ) const {
 
-    std::vector<std::pair<std::string, VariableSlot> >::const_iterator it;
+    std::vector<std::pair<std::string, VariableSlot*> >::const_iterator it;
     for ( it = arguments.begin(); it != arguments.end(); it++ ) {
         if ( (*it).first == name )
             break;
@@ -93,7 +127,7 @@ const VariableSlot& ArgumentFrame::operator[]( const std::string& name ) const {
     if ( it == arguments.end() )
         throw RbException( "Argument " + name + " does not exist" );
 
-    return (*it).second;
+    return *(*it).second;
 }
 
 
@@ -125,7 +159,7 @@ ArgumentFrame* ArgumentFrame::cloneEnvironment( void ) const {
 /** Does variable exist? */
 bool ArgumentFrame::existsVariable( const std::string& name ) const {
 
-    std::vector<std::pair<std::string, VariableSlot> >::const_iterator it;
+    std::vector<std::pair<std::string, VariableSlot*> >::const_iterator it;
     for ( it = arguments.begin(); it != arguments.end(); it++ ) {
         if ( (*it).first == name )
             break;
@@ -145,7 +179,7 @@ bool ArgumentFrame::existsVariable( const std::string& name ) const {
 /** Get index of named argument */
 size_t ArgumentFrame::getIndex( const std::string& name ) const {
 
-    std::vector<std::pair<std::string, VariableSlot> >::const_iterator it;
+    std::vector<std::pair<std::string, VariableSlot*> >::const_iterator it;
     for ( it = arguments.begin(); it != arguments.end(); it++ ) {
         if ( (*it).first == name )
             break;
@@ -161,9 +195,9 @@ size_t ArgumentFrame::getIndex( const std::string& name ) const {
 /** Find slot and return its name */
 const std::string& ArgumentFrame::getSlotName(const VariableSlot* slot) const {
 
-    std::vector<std::pair<std::string, VariableSlot> >::const_iterator it;
+    std::vector<std::pair<std::string, VariableSlot*> >::const_iterator it;
     for ( it = arguments.begin(); it != arguments.end(); it++ ) {
-        if ( &(*it).second == slot )
+        if ( (*it).second == slot )
             break;
     }
 
@@ -175,16 +209,16 @@ const std::string& ArgumentFrame::getSlotName(const VariableSlot* slot) const {
 
 
 /** Push back argument slot without name onto frame */
-void ArgumentFrame::push_back( VariableSlot& slot ) {
+void ArgumentFrame::push_back( VariableSlot* slot ) {
 
-    arguments.push_back( std::pair<std::string, VariableSlot>( "", slot ) );
+    arguments.push_back( std::pair<std::string, VariableSlot*>( "", slot ) );
 }
 
 
 /** Push back argument slot with name onto frame */
-void ArgumentFrame::push_back( const std::string& name, VariableSlot& slot ) {
+void ArgumentFrame::push_back( const std::string& name, VariableSlot* slot ) {
 
-    arguments.push_back( std::pair<std::string, VariableSlot>( name, slot ) );
+    arguments.push_back( std::pair<std::string, VariableSlot*>( name, slot ) );
 }
 
 
@@ -201,10 +235,10 @@ void ArgumentFrame::setArgumentLabel( size_t i, const std::string& name ) {
 /** Print value for user */
 void ArgumentFrame::printValue(std::ostream& o) const {
 
-    std::vector<std::pair<std::string, VariableSlot> >::const_iterator i;
+    std::vector<std::pair<std::string, VariableSlot*> >::const_iterator i;
     for ( i = arguments.begin(); i != arguments.end(); i++ ) {
         o << (*i).first << " = ";
-        (*i).second.printValue(o);
+        (*i).second->printValue(o);
         o << std::endl;
     }
 }

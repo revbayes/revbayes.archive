@@ -88,7 +88,10 @@ bool RbMath::compDefinitelyLessThan(double a, double b, double epsilon)
 }
 
 bool RbMath::isFinite(double x) {
-    return isFinite(x);
+    
+    // TODO: No isfinite function in Microsoft math; isFinite leads to infinite recursion
+    // return isFinite(x);
+    return false;
 }
 
 bool RbMath::isInt(double x)

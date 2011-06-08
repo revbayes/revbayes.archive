@@ -203,10 +203,10 @@ ContainerNode* ContainerNode::cloneDAG(std::map<const DAGNode*, DAGNode*>& newNo
 
     /* Clone parents through container */
     copy->container = container->clone();   // We get independent copies here, which is not right
-    copy->container->clear();
     for ( size_t i = 0; i < container->size(); i++ ) {
 
         DAGNode* theParentClone = (*container)[i]->cloneDAG(newNodes);
+        delete (*copy->container)[i];
         (*copy->container)[i] = theParentClone;
 
         copy->parents.insert( theParentClone );
@@ -339,10 +339,9 @@ const VectorString& ContainerNode::getDAGClass( void ) const {
 
 
 /** Convenient vector access */
-DAGNode* ContainerNode::getElement(const size_t i ) {
-    VectorInteger vi(i);
+DAGNode* ContainerNode::getElement( size_t i ) {
 
-    return getElement( vi );
+    return getElement( VectorInteger( i ) );
 }
 
 
@@ -665,9 +664,22 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
         
         // Set single element; grow if necessary
         if ( container != NULL ) {
+
+            // Grow if necessary
             if ( grow )
                 container->resize( newLen );
-            container->setElement( elemIndex, var, convert );
+
+            // Delete the old element
+            size_t offset = container->getOffset( index );
+            container->elements[offset]->removeChildNode( this );
+            if ( container->elements[offset]->isTemp() )
+                delete container->elements[offset];
+            parents.erase( container->elements[offset] );
+
+            // Set the new element
+            container->elements[offset] = var;
+            var->addChildNode( this );
+            parents.insert( var );
         }
         else {
             ValueContainer* valContainer = static_cast<ValueContainer*>( value );
@@ -685,8 +697,10 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
         // Use iteration to do subcontainer assignment
         if ( container != NULL ) {
 
+            // Grow if necessary
             if ( grow )
                 container->resize( newLen );
+
             ContainerIterator it2 = static_cast<const ValueContainer*>( elemVar->getValue() )->begin();
             for ( ContainerIterator it1 = container->begin(); it1 != container->end(); it1++ ) {
             
@@ -697,8 +711,19 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
                 }
 
                 if ( i == index.size() ) {
-                    VectorInteger vi(it2++);
-                    container->setElement( it1, var->getElement( vi ), false );
+
+                    // Delete the old element
+                    size_t offset = container->getOffset( it1 );
+                    container->elements[offset]->removeChildNode( this );
+                    if ( container->elements[offset]->isTemp() )
+                        delete container->elements[offset];
+                    parents.erase( container->elements[offset] );
+
+                    // Set the new element
+                    DAGNode* elem = var->getElement( VectorInteger( it2++ ) );
+                    container->elements[offset] = elem;
+                    elem->addChildNode( this );
+                    parents.insert( elem );
                 }
             }
         }
@@ -716,12 +741,9 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
                         break;
                 }
 
-                if ( i == index.size() ) {
-                    VectorInteger vi(it2++);
-                    containerVar->setElement( it1, elemVar->getElement( vi ) );
-                }
+                if ( i == index.size() )
+                    containerVar->setElement( it1, elemVar->getElement( VectorInteger( it2++ ) ) );
             }
-
         }
     }
 }

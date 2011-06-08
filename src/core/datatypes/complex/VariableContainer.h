@@ -45,7 +45,6 @@ class VariableContainer : public Container {
     public:
         friend class                ValueContainer;                                                             //!< Give value container direct access to elements
         friend class                ContainerNode;                                                              //!< Give container node direct access to elements
-        friend class                Frame;                                                                      //!< Give frame direct access to elements
 
                                     VariableContainer(size_t n, DAGNode* x);                                    //!< Vector with n copies of x
                                     VariableContainer(const std::vector<size_t>& len, DAGNode* x);              //!< Array of given dimensions with copies of x

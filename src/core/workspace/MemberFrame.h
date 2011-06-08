@@ -30,7 +30,6 @@ class MemberFrame : public VariableFrame {
     public:
                                     MemberFrame(void);                                                              //!< Constructor of variable frame with NULL parent
                                     MemberFrame(Frame* parentFr);                                                   //!< Constructor of variable frame with parent
-                                    MemberFrame(const MemberFrame& x);                                              //!< Copy constructor: set frame of variable slots
 
         // Operators
         VariableSlot&               operator[](const std::string& name);                                            //!< Get named variable slot reference
@@ -46,7 +45,7 @@ class MemberFrame : public VariableFrame {
         void                        addVariableSlot(const std::string& name, const TypeSpec& typeSp);               //!< Add empty slot
         void                        clear(void);                                                                    //!< Clear frame
         void                        eraseVariable(const std::string& name);                                         //!< Erase a variable
-        void                        push_back(const std::string& name, VariableSlot slot);                          //!< Add member variable slot
+        void                        push_back(const std::string& name, VariableSlot* slot);                         //!< Add member variable slot
         size_t                      size(void) const { return members.size(); }                                     //!< Number of members
 
     protected:

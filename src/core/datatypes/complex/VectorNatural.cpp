@@ -329,7 +329,7 @@ std::string VectorNatural::toIndexString(void) const {
 
     std::ostringstream o;
     for ( size_t i = 0; i < elements.size(); i++ ) 
-        o << "[" << operator[](i) << "]";
+        o << "[" << operator[](i) + 1 << "]";
 
     return o.str();
 }

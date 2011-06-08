@@ -33,6 +33,7 @@ class MemberSlot : public VariableSlot {
                                 MemberSlot(ArgumentRule* argRule);                              //!< Constructor from argument rule
 
         // Regular functions
+        MemberSlot*             clone(void) const { return new MemberSlot(*this); }             //!< Clone slot
         bool                    isValidVariable(DAGNode* newVariable) const;                    //!< Is newVariable valid for the slot?
 
     private:

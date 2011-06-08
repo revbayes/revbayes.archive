@@ -34,7 +34,7 @@ class StochasticNode : public VariableNode {
                                 StochasticNode(const TypeSpec& type);                               //!< Construct empty stochastic node
                                 StochasticNode(Distribution* dist);                                 //!< Construct from distribution (raw object)
                                 StochasticNode(const StochasticNode& x);                            //!< Copy constructor
-							   ~StochasticNode(void);                                               //!< Destructor
+        virtual	               ~StochasticNode(void);                                               //!< Destructor
 
         // Assignment operator
         StochasticNode&         operator=(const StochasticNode& x);                                 //!< Assignment operator

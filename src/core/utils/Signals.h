@@ -27,7 +27,7 @@ class Signals {
         void                    set(const long flag) { flags |= flag; }                         //!< Set a flag
         void                    clearFlags(void) { flags = 0L; }                                //!< Clear flags
         bool                    isGood(void) const { return flags == 0; }                       //!< Test all flags
-        bool                    isSet(const long flag) const { return (flags & flag) == 0; }    //!< Test a flag
+        bool                    isSet(const long flag) const { return (flags & flag) != 0; }    //!< Test a flag
 
         /** Get unique signals instance */
         static Signals& getSignals() {

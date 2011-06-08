@@ -33,7 +33,7 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbComplex(), member
     /* Fill member table (frame) based on member rules */
     for ( MemberRules::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
 
-        members.push_back( (*i)->getArgLabel(), MemberSlot( *i ) );
+        members.push_back( (*i)->getArgLabel(), new MemberSlot( *i ) );
     }
 }
 

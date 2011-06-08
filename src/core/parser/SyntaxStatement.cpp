@@ -187,7 +187,7 @@ DAGNode* SyntaxStatement::getValue(VariableFrame* frame) const {
 					delete result;  // discard result
 
                 // Catch signal
-                if ( Signals::getSignals().isGood() )
+                if ( !Signals::getSignals().isGood() )
                     break;
             }
 

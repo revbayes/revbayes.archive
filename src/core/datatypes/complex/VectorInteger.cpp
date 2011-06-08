@@ -64,17 +64,6 @@ VectorInteger::VectorInteger(const std::vector<int>& x)
     }
 }
 
-/** Constructor from size_t vector */
-VectorInteger::VectorInteger(const std::vector<size_t>& x)
-: Vector(Integer_name) {
-    
-    for (size_t i=0; i<x.size(); i++) {
-        int tmp = x[i];
-        elements.push_back(new Integer(tmp));
-        length[0]++;
-    }
-}
-
 
 /** Constructor from VectorInteger */
 VectorInteger::VectorInteger(const VectorNatural& x)
@@ -84,6 +73,16 @@ VectorInteger::VectorInteger(const VectorNatural& x)
         elements.push_back(new Integer(x[i]));
         length[0]++;
     }
+}
+
+
+/** Constructor from size_t vector */
+VectorInteger::VectorInteger(const std::vector<size_t>& x)
+    : Vector(Integer_name) {
+
+    for (std::vector<unsigned int>::const_iterator i=x.begin(); i!=x.end(); i++)
+        elements.push_back(new Integer(int(*i)));
+    length[0] = elements.size();
 }
 
 
@@ -199,7 +198,7 @@ std::string VectorInteger::toIndexString(void) const {
         if ( operator[](i) < 0 )
             o <<  "[]";
         else
-            o << "[" << operator[](i) << "]";
+            o << "[" << operator[](i) + 1 << "]";
     }
 
     return o.str();

@@ -40,18 +40,50 @@ VariableFrame::VariableFrame( Frame* parentFr ) : Frame( parentFr ), variableTab
 }
 
 
-/** Copy constructor. We need to set the frame of the variable slots. */
+/** Copy constructor. We need to copy the slots and set the frame of the copies. */
 VariableFrame::VariableFrame( const VariableFrame& x ) :  Frame( x ), variableTable( x.variableTable ) {
 
-    for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ )
-        (*i).second.setFrame( this );
+    for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ ) {
+        (*i).second = (*i).second->clone();
+        (*i).second->setFrame( this );
+    }
 }
+
+
+/** Destructor */
+VariableFrame::~VariableFrame( void ) {
+
+    for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ )
+        delete (*i).second;
+}
+
+
+/** Assignment operator */
+VariableFrame& VariableFrame::operator=( const VariableFrame& x ) {
+
+    if ( this != &x ) {
     
+        for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ )
+            delete (*i).second;
+        
+        Frame::operator=( x );
+        variableTable = x.variableTable;
+
+        for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ ) {
+            (*i).second = (*i).second->clone();
+            (*i).second->setFrame( this );
+        }
+        
+    }
+
+    return (*this);
+}
+
 
 /** Index operator to variable slot from string */
 VariableSlot& VariableFrame::operator[]( const std::string& name ) {
 
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
+    std::map<std::string, VariableSlot*>::iterator it = variableTable.find(name);
     if ( variableTable.find(name) == variableTable.end() ) {
         if ( parentFrame != NULL )
             return parentFrame->operator []( name );
@@ -59,16 +91,16 @@ VariableSlot& VariableFrame::operator[]( const std::string& name ) {
             throw RbException( "Variable slot " + name + " does not exist" );
     }
 
-    PRINTF( "Retrieving %s %s from frame\n", it->second.getTypeSpec().toString().c_str(), name.c_str() );
+    PRINTF( "Retrieving %s %s from frame\n", it->second->getTypeSpec().toString().c_str(), name.c_str() );
 
-    return (*it).second;
+    return *(*it).second;
 }
 
 
 /** Index operator (const) to variable slot from string */
 const VariableSlot& VariableFrame::operator[]( const std::string& name ) const {
 
-    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find( name );
+    std::map<std::string, VariableSlot*>::const_iterator it = variableTable.find( name );
     if ( variableTable.find(name) == variableTable.end() ) {
         if ( parentFrame != NULL )
             return parentFrame->operator []( name );
@@ -76,9 +108,9 @@ const VariableSlot& VariableFrame::operator[]( const std::string& name ) const {
             throw RbException( "Variable slot " + name + " does not exist" );
     }
 
-    PRINTF( "Retrieving %s %s from frame\n", it->second.getTypeSpec().toString().c_str(), name.c_str() );
+    PRINTF( "Retrieving %s %s from frame\n", it->second->getTypeSpec().toString().c_str(), name.c_str() );
 
-    return (*it).second;
+    return *(*it).second;
 }
 
 
@@ -92,13 +124,13 @@ void VariableFrame::addVariable( const std::string& name, const TypeSpec& typeSp
         throw RbException( "Variable " + name + " already exists in frame" );
 
     /* Create the slot */
-    VariableSlot slot( typeSp, variable );
-    slot.setFrame( this );
+    VariableSlot* theSlot = new VariableSlot( typeSp, variable );
+    theSlot->setFrame( this );
 
     /* Insert new slot in variable table */
-    variableTable.insert( std::pair<std::string, VariableSlot>( name, slot ) );
+    variableTable.insert( std::pair<std::string, VariableSlot*>( name, theSlot ) );
 
-    PRINTF( "Inserted %s %s in frame\n", slot.getTypeSpec().toString().c_str(), name.c_str() );
+    PRINTF( "Inserted %s %s in frame\n", theSlot->getTypeSpec().toString().c_str(), name.c_str() );
 }
 
 
@@ -112,13 +144,13 @@ void VariableFrame::addVariableSlot( const std::string& name, const TypeSpec& ty
         throw RbException( "Variable " + name + " already exists in frame" );
 
     /* Create the slot */
-    VariableSlot slot( typeSp );
-    slot.setFrame( this );
+    VariableSlot* theSlot = new VariableSlot( typeSp );
+    theSlot->setFrame( this );
 
     /* Insert new slot in variable table */
-    variableTable.insert( std::pair<std::string, VariableSlot>( name, slot ) );
+    variableTable.insert( std::pair<std::string, VariableSlot*>( name, theSlot ) );
 
-    PRINTF( "Inserted %s %s in frame\n", slot.getTypeSpec().toString().c_str(), name.c_str() );
+    PRINTF( "Inserted %s %s in frame\n", theSlot->getTypeSpec().toString().c_str(), name.c_str() );
 }
 
 
@@ -136,12 +168,13 @@ VariableFrame* VariableFrame::cloneEnvironment( void ) const {
 /** Erase variable */
 void VariableFrame::eraseVariable( const std::string& name ) {
 
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find( name );
+    std::map<std::string, VariableSlot*>::iterator it = variableTable.find( name );
     if ( it == variableTable.end() )
         throw RbException( "Variable " + name + " does not exist in frame" );
 
-    PRINTF( "Erasing %s %s from frame\n", name.c_str(), it->second.getTypeSpec().toString().c_str() );
+    PRINTF( "Erasing %s %s from frame\n", name.c_str(), it->second->getTypeSpec().toString().c_str() );
 
+    delete ( (*it).second );
     variableTable.erase( it );
 }
 
@@ -165,7 +198,7 @@ const std::string& VariableFrame::getSlotName( const VariableSlot* theSlot ) con
 
     for ( VariableTable::const_iterator i = variableTable.begin(); i != variableTable.end(); i++) {
     
-        if ( &((*i).second) == theSlot )
+        if ( (*i).second == theSlot )
             return (*i).first;
     }
 
@@ -179,7 +212,7 @@ void VariableFrame::printValue( std::ostream& o ) const {
     VariableTable::const_iterator it;
     for ( it = variableTable.begin(); it != variableTable.end(); it++) {
         o << (*it).first << " = ";
-        (*it).second.printValue( o );
+        (*it).second->printValue( o );
         o << std::endl;
     }
 }

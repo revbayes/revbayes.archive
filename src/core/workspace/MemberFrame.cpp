@@ -41,18 +41,10 @@ MemberFrame::MemberFrame( Frame* parentFr ) : VariableFrame( parentFr ), members
 }
 
 
-/** Copy constructor. We need to set the frame of the variable slots. */
-MemberFrame::MemberFrame( const MemberFrame& x ) :  VariableFrame( x ), members( x.members ) {
-
-    for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ )
-        (*i).second.setFrame( this );
-}
-
-
 /** Index operator to variable slot from string */
 VariableSlot& MemberFrame::operator[]( const std::string& name ) {
 
-    std::map<std::string, VariableSlot>::iterator it = variableTable.find(name);
+    std::map<std::string, VariableSlot*>::iterator it = variableTable.find(name);
     if ( variableTable.find(name) == variableTable.end() ) {
         if ( parentFrame != NULL )
             return parentFrame->operator []( name );
@@ -60,16 +52,16 @@ VariableSlot& MemberFrame::operator[]( const std::string& name ) {
             throw RbException( "Variable slot " + name + " does not exist" );
     }
 
-    PRINTF( "Retrieving %s %s from frame\n", it->second.getTypeSpec().toString().c_str(), name.c_str() );
+    PRINTF( "Retrieving %s %s from frame\n", it->second->getTypeSpec().toString().c_str(), name.c_str() );
 
-    return (*it).second;
+    return *(*it).second;
 }
 
 
 /** Index operator (const) to variable slot from string */
 const VariableSlot& MemberFrame::operator[]( const std::string& name ) const {
 
-    std::map<std::string, VariableSlot>::const_iterator it = variableTable.find( name );
+    std::map<std::string, VariableSlot*>::const_iterator it = variableTable.find( name );
     if ( variableTable.find(name) == variableTable.end() ) {
         if ( parentFrame != NULL )
             return parentFrame->operator []( name );
@@ -77,9 +69,9 @@ const VariableSlot& MemberFrame::operator[]( const std::string& name ) const {
             throw RbException( "Variable slot " + name + " does not exist" );
     }
 
-    PRINTF( "Retrieving %s %s from frame\n", it->second.getTypeSpec().toString().c_str(), name.c_str() );
+    PRINTF( "Retrieving %s %s from frame\n", it->second->getTypeSpec().toString().c_str(), name.c_str() );
 
-    return (*it).second;
+    return *(*it).second;
 }
 
 
@@ -125,15 +117,17 @@ void MemberFrame::eraseVariable( const std::string& name ) {
 /** Clear member frame */
 void MemberFrame::clear( void ) {
 
+    for ( VariableTable::iterator i=variableTable.begin(); i!=variableTable.end(); i++ )
+        delete ( i->second );
     variableTable.clear();
     members.clear();
 }
 
 
 /** Push back new member based on argument rule */
-void MemberFrame::push_back( const std::string& name, VariableSlot slot ) {
+void MemberFrame::push_back( const std::string& name, VariableSlot* slot ) {
 
-    variableTable.insert( std::pair<std::string, VariableSlot>( name, slot ) );
+    variableTable.insert( std::pair<std::string, VariableSlot*>( name, slot ) );
     members.push_back( name );
 
 }

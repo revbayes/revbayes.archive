@@ -60,24 +60,17 @@ Model::Model( const std::vector<DAGNode*>& sinkNodes ) : MemberObject() {
     }
 
     /* Insert new nodes in dagNodes member frame and direct access vector */
-    int count = 1;
     for ( std::map<const DAGNode*, DAGNode*>::iterator i = newNodes.begin(); i != newNodes.end(); i++ ) {
 
         const DAGNode* theOldNode = (*i).first;
         DAGNode*       theNewNode = (*i).second;
 
+        // Insert named nodes into hidden variable frame
         if ( theOldNode->getSlot() != NULL ) {
 
             // Create new variable slot from old slot if old node was in a slot
             const VariableSlot* oldSlot = theOldNode->getSlot();
             dagNodeMembers.addVariable( oldSlot->getName(), oldSlot->getTypeSpec(), theNewNode );
-        }
-        else {
-
-            // Create unnamed slot if old variable was not in slot
-            std::ostringstream name;
-            name << "Unnamed" << count++;
-            dagNodeMembers.addVariable( name.str(), theNewNode->getTypeSpec(), theNewNode );        
         }
 
         // Insert in direct access vector
@@ -106,13 +99,6 @@ Model::Model( const Model& x) : MemberObject() {
             // Create new variable slot from old slot if old node was in a slot
             const VariableSlot* oldSlot = theOldNode->getSlot();
             dagNodeMembers.addVariable( oldSlot->getName(), oldSlot->getTypeSpec(), theNewNode );
-        }
-        else {
-
-            // Create unnamed slot if old variable was not in slot
-            std::ostringstream name;
-            name << "Unnamed node " << count++;
-            dagNodeMembers.addVariable( name.str(), theNewNode->getTypeSpec(), theNewNode );        
         }
 
         // Insert in direct access vector
@@ -146,13 +132,6 @@ Model& Model::operator=( const Model& x ) {
                 // Create new variable slot from old slot if old node was in a slot
                 const VariableSlot* oldSlot = theOldNode->getSlot();
                 dagNodeMembers.addVariable( oldSlot->getName(), oldSlot->getTypeSpec(), theNewNode );
-            }
-            else {
-
-                // Create unnamed slot if old variable was not in slot
-                std::ostringstream name;
-                name << "Unnamed node " << count++;
-                dagNodeMembers.addVariable( name.str(), theNewNode->getTypeSpec(), theNewNode );        
             }
 
             // Insert in direct access vector

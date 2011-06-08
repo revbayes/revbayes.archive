@@ -189,7 +189,7 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
  
             // It does not exist - add it
             // We make the new slot as generous as possible (type RbObject)
-            PRINTF ( "Creating variable %s %s with a dag expression %sthrough equation assignment\n", TypeSpec( node->getValueType(), elemIndex.size() ), varName, elemIndex.size() > 0 ? "element " : "" );
+            PRINTF ( "Creating variable %s %s with a dag expression %sthrough equation assignment\n", TypeSpec( node->getValueType(), elemIndex.size() ).toString().c_str(), varName.c_str(), elemIndex.size() > 0 ? "element " : "" );
             TypeSpec typeSpec( RbObject_name, elemIndex.size() );
             if ( elemIndex.size() == 0 )
                 frame->addVariable( varName, typeSpec, node );
@@ -229,7 +229,10 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
             delete exprValue;
             throw RbException( "Function does not return a distribution" );
         }
+
+        // Make an independent copy of the distribution and delete the exprVal
         Distribution* distribution = static_cast<Distribution*>( dist->getMemberObject()->clone() );
+        delete exprValue;
         if ( distribution == NULL ) {
             delete exprValue;
             throw RbException( "Function returns a NULL distribution" );
@@ -247,7 +250,7 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
  
             // It does not exist - add it
             // We make the new slot as generous as possible (type RbObject)
-            PRINTF ( "Creating variable %s %s with a stochastic node %sthrough tilde assignment\n", TypeSpec( node->getValueType(), elemIndex.size() ).toString().c_str(), varName, elemIndex.size() > 0 ? "element " : "" );
+            PRINTF ( "Creating variable %s %s with a stochastic node %sthrough tilde assignment\n", TypeSpec( node->getValueType(), elemIndex.size() ).toString().c_str(), varName.c_str(), elemIndex.size() > 0 ? "element " : "" );
             TypeSpec typeSpec( RbObject_name, elemIndex.size() );
             if ( elemIndex.size() == 0 )
                 frame->addVariable( varName, typeSpec, node );
@@ -259,13 +262,13 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
         else if ( elemIndex.size() == 0 ) {
 
             // It exists - replace it without type conversion
-            PRINTF ( "Assigning a stochastic node of value type %s to %s %s through tilde assignment\n", node->getValueType(), theVariable->getTypeSpec(), theVariable->getName() );
+            PRINTF ( "Assigning a stochastic node of value type %s to %s %s through tilde assignment\n", node->getValueType().c_str(), theVariable->getTypeSpec().toString().c_str(), theVariable->getName().c_str() );
             slot->setVariable( node, false );
         }
         else /* if ( elemIndex.size() > 0 ) */ {
 
-            // Equation assignment to a container element or member object element without type conversion
-            PRINTF ( "Assigning a stochastic node of value type %s to %s %s%s through tilde assignment\n", node->getValueType(), theVariable->getTypeSpec(), theVariable->getName(), elemIndex.toIndexString() );
+            // Tilde assignment to a container element or member object element without type conversion
+            PRINTF ( "Assigning a stochastic node of value type %s to %s %s%s through tilde assignment\n", node->getValueType().c_str(), theVariable->getTypeSpec().toString().c_str(), theVariable->getName().c_str(), elemIndex.toIndexString().c_str() );
             slot->setElement( elemIndex, node, false );
         }
     }

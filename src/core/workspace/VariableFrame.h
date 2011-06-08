@@ -36,12 +36,12 @@ class DAGNode;
 class VectorInteger;
 class RbObject;
 
-typedef std::map<std::string, VariableSlot> VariableTable;          //!< Typedef for convenience
+typedef std::map<std::string, VariableSlot*> VariableTable;         //!< Typedef for convenience
 
 /**
  * @brief Execution or evaluation variable frame
  *
- * VariableVariableFrame is used to hold information about an evaluation
+ * VariableFrame is used to hold information about an evaluation
  * or execution frame. Each frame has a pointer to the enclosing
  * (parent) frame. A frame and its parents together constitute
  * an evaluation environment. The base environment is the global
@@ -69,8 +69,10 @@ class VariableFrame : public Frame {
                                     VariableFrame(void);                                                                    //!< Constructor of variable frame with NULL parent
                                     VariableFrame(Frame* parentFr);                                                         //!< Constructor of variable frame with parent
                                     VariableFrame(const VariableFrame& x);                                                  //!< Copy constructor: set frame of variable slots
+        virtual                    ~VariableFrame(void);                                                                    //!< Destructor to deal with slot pointers in variable table
 
         // Operators
+        VariableFrame&              operator=(const VariableFrame& x);                                                      //!< Assignment operator
         VariableSlot&               operator[](const std::string& name);                                                    //!< Get named variable slot reference
         const VariableSlot&         operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
 

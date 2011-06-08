@@ -83,6 +83,7 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
         theParam->addChildNode(this);
     }
 
+    valueDim     = x.valueDim;
     clamped      = x.clamped;
     value        = x.value->clone();
     touched      = x.touched;
@@ -115,7 +116,7 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 
     if ( this != &x ) {
 
-        if ( valueType != x.valueType )
+        if ( valueType != x.valueType || valueDim != x.valueDim )
             throw RbException( "Type mismatch in StochasticNode assignment" );
         
         /* Remove parents first */
