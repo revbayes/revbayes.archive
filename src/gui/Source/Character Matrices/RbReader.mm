@@ -505,12 +505,12 @@ std::vector<Tree*>* RbReader::convertTreeFromNcl() {
 
 Tree* RbReader::translateNclSimpleTreeToTree(NxsSimpleTree &nTree){
 	
-	Tree *myTreeFromNcl = new Tree();
+//	Tree *myTreeFromNcl = new Tree();
 	std::vector<const NxsSimpleNode *> nodes = nTree.GetPreorderTraversal();
 	for (std::vector<const NxsSimpleNode *>::const_iterator nodeIt = nodes.begin(); nodeIt != nodes.end(); ++nodeIt) {
 		
 		const NxsSimpleNode & nd = **nodeIt;
 		// Translate to non-existent tree data structure
 	}
-	return myTreeFromNcl;
+	return NULL;
 }
