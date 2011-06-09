@@ -8,7 +8,7 @@
 
 #include "TraceAnalysisCategorical.h"
 
-#include "DistNormal.h"
+#include "DistributionNormal.h"
 #include "RbConstants.h"
 
 #include <cmath>
