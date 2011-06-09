@@ -7,7 +7,7 @@
 //
 
 #include "GelmanRubinTest.h"
-#include "DistNormal.h"
+#include "DistributionNormal.h"
 
 #include <cmath>
 
