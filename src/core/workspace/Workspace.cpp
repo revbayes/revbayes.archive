@@ -153,7 +153,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* te
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, RbObject*>(name, templ->clone()));
+    typeTable.insert(std::pair<std::string, RbObject*>(templ->getType(), templ->clone()));
 
     functionTable->addFunction(name, new ConstructorFunction(templ));
 
@@ -309,7 +309,7 @@ bool Workspace::isXOfTypeY( const std::string& xType, const std::string& yType )
         if ( parentFrame == NULL )
             throw RbException( "Unknown type named '" + xType + "'" );
         else
-            return ( (Workspace*)(parentFrame) )->isXOfTypeY( xType, yType );
+            return ( static_cast<Workspace*>( parentFrame ) )->isXOfTypeY( xType, yType );
     }
 
     const VectorString& xTypeVec = typeTable.find( xType )->second->getClass();

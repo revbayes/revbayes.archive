@@ -27,6 +27,7 @@
 #include <string>
 
 class ContainerNode;
+class Frame;
 class RbObject;
 class VariableNode;
 class VariableSlot;
@@ -53,7 +54,7 @@ class DAGNode {
         const std::string&              getValueType(void) const { return valueType; }                          //!< Get value type
         bool                            isDAGType(const std::string& type) const;                               //!< Is DAG node of type?
         bool                            isImmutable(void) const;                                                //!< Is DAG node immutable?
-        bool                            isTemp(void) const { return numRefs() == 0; }                           //!< Is the node a temp variable?
+        bool                            isPermanent(Frame* frame) const;                                        //!< Is the node a permanent variable in frame?
         bool                            isTypeSpec(const TypeSpec& typeSp) const;                               //!< Is DAG node of language type typeSpec?
         int                             numReferringSlots(void) const { return int(referringSlots.size()); }    //!< Number of referring slots
         int                             numRefs(void) const;                                                    //!< Number of references

@@ -30,10 +30,11 @@
 #include <sstream>
 
 
-/** Basic constructor */
+/** Basic constructor. By default, we put the function in the user work space; override if something else is needed. */
 RbFunction::RbFunction(void) : RbObject() {
 
     argsProcessed = false;
+    args.setParentFrame( &Workspace::userWorkspace() );
 }
 
 

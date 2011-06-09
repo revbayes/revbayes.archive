@@ -133,6 +133,7 @@ DAGNode* ArgumentRule::getDefaultReference(void) {
 /** Test if argument is valid */
 bool ArgumentRule::isArgValid(const DAGNode* var, bool& needsConversion, bool once) const {
     
+    needsConversion = false;
     if ( var == NULL )
         return true;
 

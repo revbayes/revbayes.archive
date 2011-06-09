@@ -84,8 +84,9 @@ class MemberObject: public RbComplex {
         // Members is the variable frame that stores member variables
         MemberFrame                 members;                                                                            //!< Member variables
 
-        // Friend class
-        friend class                DistributionFunction;                                                               //!< Give distribution function access
+        // Friend classes
+        friend class                DistributionFunction;                                                               //!< Give DistributionFunction access
+        friend class                MemberNode;                                                                         //!< Give MemberNode access
 };
 
 #endif

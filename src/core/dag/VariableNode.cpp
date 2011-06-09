@@ -46,7 +46,7 @@ VariableNode::~VariableNode( void ) {
     /* Remove this node as a child node of parents and delete these if appropriate */
     for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ ) {
         (*i)->removeChildNode( this );
-        if ( (*i)->isTemp() )
+        if ( (*i)->numRefs() == 0 )
             delete (*i);
     }
 }

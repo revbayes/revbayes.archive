@@ -36,16 +36,34 @@ DAGNode* Frame::getReference( const std::string& name ) const {
 }
 
 
-//!< Get value, alternative method */
+/** Get value, alternative method */
 const RbObject* Frame::getValue( const std::string& name ) const {
 
     return operator[]( name ).getValue();
 }
 
 
-//!< Get variable, alternative method */
+/** Get variable, alternative method */
 const DAGNode* Frame::getVariable( const std::string& name ) const {
 
     return operator[]( name ).getVariable();
 }
 
+
+/** 
+ * Is frame same or parent of otherFrame? We use this function
+ * to decide when a reference from otherFrame to a variable in this
+ * frame is safe, and when it is not. The only time we know for sure
+ * that it is safe is when this frame is identical to, or a parent of,
+ * otherFrame.
+ */
+bool Frame::isSameOrParentOf( Frame* otherFrame ) const {
+
+    if ( this == otherFrame )
+        return true;
+
+    if ( otherFrame->parentFrame == NULL )
+        return false;
+
+    return isSameOrParentOf( otherFrame->parentFrame );
+}

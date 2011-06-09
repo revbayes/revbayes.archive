@@ -65,10 +65,13 @@ Model::Model( const std::vector<DAGNode*>& sinkNodes ) : MemberObject() {
         const DAGNode* theOldNode = (*i).first;
         DAGNode*       theNewNode = (*i).second;
 
-        // Insert named nodes into hidden variable frame
-        if ( theOldNode->getSlot() != NULL ) {
+        // Insert nodes from frames outside the DAG into hidden model variable frame
+        // The cloneDAG functions will leave slot empty if the node does not live in a
+        // slot in the DAG. The old node will have the slot filled if it did live in a slot
+        // (not all nodes do; in particular, container elements do not).
+        if ( theNewNode->getSlot() == NULL && theOldNode->getSlot() != NULL ) {
 
-            // Create new variable slot from old slot if old node was in a slot
+            // Create new variable slot from old slot
             const VariableSlot* oldSlot = theOldNode->getSlot();
             dagNodeMembers.addVariable( oldSlot->getName(), oldSlot->getTypeSpec(), theNewNode );
         }
@@ -80,21 +83,27 @@ Model::Model( const std::vector<DAGNode*>& sinkNodes ) : MemberObject() {
 
 
 /** Copy constructor */
-Model::Model( const Model& x) : MemberObject() {
+Model::Model( const Model& x ) : MemberObject( x ) {
 
     /* Make copy of DAG by pulling from first node in x */
     std::map<const DAGNode*, DAGNode*> newNodes;
     if ( x.dagNodes.size() > 0 )
         x.dagNodes[0]->cloneDAG( newNodes );
 
+    if ( newNodes.size() != 8 )
+        getchar();
+
     /* Insert new nodes in dagNodes member frame and direct access vector */
-    int count = 1;
     for ( std::map<const DAGNode*, DAGNode*>::iterator i = newNodes.begin(); i != newNodes.end(); i++ ) {
 
         const DAGNode* theOldNode = (*i).first;
         DAGNode*       theNewNode = (*i).second;
 
-        if ( theOldNode->getSlot() != NULL ) {
+        // Insert nodes from frames outside the DAG into hidden model variable frame
+        // The cloneDAG functions will leave slot empty if the node does not live in a
+        // slot in the DAG. The old node will have the slot filled if it did live in a slot
+        // (not all nodes do; in particular, container elements do not).
+        if ( theNewNode->getSlot() == NULL && theOldNode->getSlot() != NULL ) {
 
             // Create new variable slot from old slot if old node was in a slot
             const VariableSlot* oldSlot = theOldNode->getSlot();

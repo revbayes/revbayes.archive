@@ -260,6 +260,19 @@ bool DAGNode::isParentInDAG( const DAGNode* x, std::list<DAGNode*>& done ) const
 }
 
 
+/** Is variable permanent in frame? */
+bool DAGNode::isPermanent( Frame* frame ) const {
+
+    if ( slot != NULL )
+        return slot->isPermanent( frame );
+    
+    if ( getContainer() != NULL )
+        return getContainer()->isPermanent( frame );
+
+    return false;
+}
+
+
 /** Is the node of language type typeSpec? */
 bool DAGNode::isTypeSpec( const TypeSpec& typeSp ) const {
 
@@ -284,7 +297,7 @@ void DAGNode::mutateTo( DAGNode* newNode ) {
     // We need a temp vector because we will lose our referring slots during the process
     std::set<VariableSlot*> oldSlots = referringSlots;
     for ( std::set<VariableSlot*>::iterator i = oldSlots.begin(); i != oldSlots.end(); i++ )
-        (*i)->resetVariable( newNode );
+        (*i)->replaceVariable( newNode );
 
     // Now it is up to the slot to delete us
 }

@@ -56,8 +56,8 @@ VariableSlot::VariableSlot(const TypeSpec& typeSp)
 
 
 /** Copy constructor. We need to copy intelligently based on whether the value is a reference, a temp reference or a regular value.
-    We copy frame here and let caller worry about setting it to something appropriate. */
-VariableSlot::VariableSlot(const VariableSlot& x) : typeSpec(x.getTypeSpec()), variable(NULL), frame(x.frame) {
+    We set frame to NULL here and let caller worry about setting it to something appropriate. */
+VariableSlot::VariableSlot(const VariableSlot& x) : typeSpec(x.getTypeSpec()), variable(NULL), frame(NULL) {
 
     if ( !typeSpec.isReference() ) {
         if ( x.variable != NULL ) {
@@ -72,7 +72,7 @@ VariableSlot::VariableSlot(const VariableSlot& x) : typeSpec(x.getTypeSpec()), v
         }
         else {
             variable = x.variable;
-         variable->addReferringSlot( this );
+            variable->addReferringSlot( this );
         }
     }
 }
@@ -97,8 +97,8 @@ VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
         // Remove old variable
         removeVariable();
         
-        // Copy frame
-        frame = x.frame;
+        // Set frame to NULL
+        frame = NULL;
 
         // Copy the new variable
         if ( !typeSpec.isReference() ) {
@@ -240,6 +240,26 @@ const RbObject* VariableSlot::getValue( void ) const {
 }
 
 
+/**
+ *  Is variable slot guaranteed to be permanent in otherFrame? This is
+ *  true only if it sits in a frame that is the same or ancestral to
+ *  otherFrame. By returning true directly for workspaces, we can
+ *  rely on the function even for temporary frames before they have
+ *  been put inside an environment, since everything sitting in
+ *  any of these workspaces is safe everywhere.
+ */
+bool VariableSlot::isPermanent( Frame* otherFrame ) const {
+
+    if ( frame == NULL )
+        return false;
+
+    if ( frame == &Workspace::userWorkspace() || frame == &Workspace::globalWorkspace() )
+        return true;
+
+    return frame->isSameOrParentOf( otherFrame );
+}
+
+
 /** Is variable valid for the slot? Additional type checking here */
 bool VariableSlot::isValidVariable( DAGNode* newVariable ) const {
 
@@ -282,11 +302,25 @@ void VariableSlot::removeVariable( void ) {
 }
 
 
-/** Reset variable */
-void VariableSlot::resetVariable( DAGNode* newVariable ) {
+/** Replace variable without mutating old variable or doing any type conversion; used in cloning a DAG */
+void VariableSlot::replaceVariable( DAGNode* newVariable ) {
 
-    removeVariable();
-    setVariable( newVariable );
+    if ( variable == NULL || newVariable->getTypeSpec() != variable->getTypeSpec() || newVariable->getDAGType() != variable->getDAGType() )
+        throw RbException( "Invalid attempt to replace a slot variable" );
+
+    if ( variable->getSlot() == this ) {
+
+        assert ( newVariable->getSlot() == NULL );
+        removeVariable();
+        variable = newVariable;
+        variable->setSlot( this );
+    }
+    else {
+
+        removeVariable();
+        variable = newVariable;
+        variable->addReferringSlot( this );
+    }
 }
 
 
@@ -391,7 +425,7 @@ void VariableSlot::setReferenceFlag(bool refFlag) {
             if ( temp != variable ) {
                 temp->addReferringSlot( this );
                 variable->removeSlot( this );
-                if ( variable->isTemp() )
+                if ( variable->numRefs() == 0 )
                     delete variable;
                 variable = temp;
             }
@@ -468,7 +502,7 @@ void VariableSlot::setVariable( DAGNode* newVariable, bool convert ) {
     // that is, we compute the reference before we fill the slot
     if ( isReference() ) {
         DAGNode* temp = newVariable->getReference();
-        if ( temp != newVariable && newVariable->isTemp() )
+        if ( temp != newVariable && newVariable->numRefs() == 0 )
             delete newVariable;
         newVariable = temp;
     }
@@ -477,11 +511,15 @@ void VariableSlot::setVariable( DAGNode* newVariable, bool convert ) {
     if ( convert == true )
         newVariable = convertVariable( newVariable );
 
-    // Clone the variable if it is a reference and we are a value slot
-    if ( !isReference() && !newVariable->isTemp() )
+    // Clone the variable if it lives somewhere else and we are a value slot
+    if ( !isReference() && newVariable->getSlot() != NULL )
         newVariable = newVariable->clone();
 
-    // Make additional valitidy check
+    // Clone the variable if it is not a safe reference
+    if ( isReference() && !newVariable->isPermanent( frame ) )
+        newVariable = newVariable->clone();
+
+    // Make additional validity check
     if ( !isValidVariable( newVariable ) ) {
 
         delete newVariable;
@@ -489,7 +527,7 @@ void VariableSlot::setVariable( DAGNode* newVariable, bool convert ) {
     }
 
     // Replace the variable
-    if ( isReference() && !newVariable->isTemp() )
+    if ( isReference() && newVariable->getSlot() != NULL )
         newVariable->addReferringSlot( this );
     else
         newVariable->setSlot( this );

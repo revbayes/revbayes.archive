@@ -86,6 +86,7 @@ const VectorString& RangeRule<valType>::getClass( void ) const {
 template <typename valType>
 bool RangeRule<valType>::isArgValid( const DAGNode* var, bool& needsConversion, bool once ) const {
 
+    needsConversion = false;
     if ( !var->isDAGType( ConstantNode_name ) )
         return false;
 

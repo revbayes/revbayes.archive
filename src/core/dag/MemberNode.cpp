@@ -56,11 +56,63 @@ MemberNode::MemberNode( MemberObject* val )
         theNode->addChildNode( this );
     }
 
+    /* Anchor member object frame */
+    memberObject->members.setOwner( this );
+
     /* Set value and stored value */
     touched     = false;
     changed     = false;
     value       = memberObject->getConstValue();
     storedValue = NULL;
+
+    /* Anchor value member object frame */
+    static_cast<MemberObject*>( value )->members.setOwner( this );
+}
+
+
+/** Copy constructor */
+MemberNode::MemberNode( const MemberNode& x )
+    : DeterministicNode( x ), memberObject( NULL ) {
+
+    if ( x.memberObject != NULL ) {
+
+        memberObject = x.memberObject->clone();
+
+        /* Check for cycles */
+        std::list<DAGNode*> done;
+        const MemberFrame& members = memberObject->getMembers();
+        for ( size_t i = 0; i < members.size(); i++ ) {
+            if ( members[i].getVariable()->isParentInDAG( this, done ) )
+                throw RbException( "Invalid assignment: cycles in the DAG" );
+        }
+
+        /* Set parents and add this node as a child */
+        for ( size_t i = 0; i < members.size(); i++ ) {
+            DAGNode* theNode = const_cast<DAGNode*>( members[i].getVariable() );
+            parents.insert( theNode );
+            theNode->addChildNode( this );
+        }
+
+        /* Anchor member object frame */
+        memberObject->members.setOwner( this );
+
+        /* Set value and stored value */
+        touched     = false;
+        changed     = false;
+        value       = memberObject->getConstValue();
+        storedValue = NULL;
+
+        /* Anchor value member object frame */
+        static_cast<MemberObject*>( value )->members.setOwner( this );
+    }
+    else {
+
+        /* Set value and stored value */
+        touched     = false;
+        changed     = false;
+        value       = NULL;
+        storedValue = NULL;
+    }
 }
 
 
@@ -76,6 +128,55 @@ MemberNode::~MemberNode( void ) {
     parents.clear();
 
     delete memberObject;    // This will delete any DAG nodes that need to be deleted
+}
+
+
+/** Assignment operator */
+MemberNode& MemberNode::operator=( const MemberNode& x ) {
+
+    if ( this != &x ) {
+        
+        /* Check for type compatibility */
+        if ( x.memberObject == NULL || !x.memberObject->isType( getValueType() ) )
+            throw RbException( "Invalid assignment: type mismatch in member object" );
+
+        /* Remove parents first */
+        for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ )
+            (*i)->removeChildNode( this );
+        parents.clear();
+
+        delete memberObject;    // This will delete any DAG nodes that need to be deleted
+        delete value;
+        memberObject = NULL;
+        value        = NULL;
+
+        /* Clone member object */
+        memberObject = x.memberObject->clone();
+
+        /* Extract reference to new members */
+        const MemberFrame& members = memberObject->getMembers();
+
+        /* Set parents and add this node as a child */
+        for ( size_t i = 0; i < members.size(); i++ ) {
+            DAGNode* theNode = const_cast<DAGNode*>( members[i].getVariable() );
+            parents.insert( theNode );
+            theNode->addChildNode( this );
+        }
+
+        /* Anchor member object frame */
+        memberObject->members.setOwner( this );
+
+        /* Set value and stored value */
+        touched     = false;
+        changed     = false;
+        value       = memberObject->getConstValue();
+        storedValue = NULL;
+
+        /* Anchor value member object frame */
+        static_cast<MemberObject*>( value )->members.setOwner( this );
+    }
+
+    return (*this);
 }
 
 
@@ -113,7 +214,7 @@ MemberNode* MemberNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes )
     for ( size_t i = 0; i < members.size(); i++ ) {
 
         DAGNode* theMemberClone = members[i].getVariable()->cloneDAG( newNodes );
-        copyMembers[i].resetVariable( theMemberClone );
+        copyMembers[i].replaceVariable( theMemberClone );
 
         copy->parents.insert( theMemberClone );
         theMemberClone->addChildNode( copy );
@@ -195,7 +296,7 @@ DAGNode* MemberNode::getElementOwner( VectorInteger& index ) {
     
     // Pop one index and delegate to subscript element if allowed by member object
     DAGNode* subElement = memberObject->getSubelement( index[0] );
-    if ( subElement->isTemp() ) {
+    if ( subElement->getSlot() == NULL ) {
 
         // Not permitted by the member object
         throw RbException( getName() + index.toIndexString() + " index goes into a temp variable" ) ;

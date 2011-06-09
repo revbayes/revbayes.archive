@@ -49,8 +49,12 @@ DAGNode* ConstructorFunction::execute(void) {
 
     MemberObject* copy = templateObject->clone();
 
-    for ( size_t i = 0; i < args.size(); i++ )
-        copy->setVariable( args.getLabel(i), args[i].getReference() );
+    for ( size_t i = 0; i < args.size(); i++ ) {
+        if ( args[i].isReference() )
+            copy->setVariable( args.getLabel(i), args[i].getReference() );
+        else
+            copy->setVariable( args.getLabel(i), args[i].getVariable()->clone() );
+    }
  
     return new MemberNode(copy);
 }

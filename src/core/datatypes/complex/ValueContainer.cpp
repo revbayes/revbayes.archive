@@ -437,14 +437,14 @@ void ValueContainer::setElement( const VectorNatural& index, DAGNode* var ) {
     // Disallow subcontainer assignment (implict loop) for now
     if ( index.size() != length.size() ) {
     
-        if ( var->isTemp() )
+        if ( var->numRefs() == 0 )
             delete var;
         throw RbException( "Invalid index to element" );
     }
 
     // Get value and check type
     RbObject* value = var->getValue()->clone();
-    if ( var->isTemp() )
+    if ( var->numRefs() == 0 )
         delete var;
 
     if ( !( value->isType( elementType ) || value->isConvertibleTo( elementType, 0, true ) ) ) {

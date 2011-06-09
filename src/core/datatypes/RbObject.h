@@ -37,7 +37,9 @@ class RbObject {
         virtual const VectorString& getClass(void) const;                                               //!< Get class vector
         virtual void                printValue(std::ostream& o) const = 0;                              //!< Print value for user
         virtual std::string         richInfo(void) const = 0;                                           //!< Complete info about object
-        virtual const XmlElement*     encode(XmlDocument* doc, const std::string& name);                //!< function to encode this object into an XML string
+
+//!       @todo  Sebastian: implement this function or remove it       
+//        virtual const XmlElement*     encode(XmlDocument* doc, const std::string& name);                //!< function to encode this object into an XML string
 
         // Basic utility functions you may want to override
         virtual std::string         briefInfo(void) const;                                              //!< Brief info about object

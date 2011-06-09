@@ -32,12 +32,12 @@
 
 
 /** Construct frame with NULL parent */
-MemberFrame::MemberFrame( void ) : VariableFrame( NULL ), members() {
+MemberFrame::MemberFrame( void ) : VariableFrame( NULL ), members(), owner( NULL ) {
 }
 
 
 /** Construct frame with parent */
-MemberFrame::MemberFrame( Frame* parentFr ) : VariableFrame( parentFr ), members() {
+MemberFrame::MemberFrame( Frame* parentFr ) : VariableFrame( parentFr ), members(), owner( NULL ) {
 }
 
 
@@ -121,6 +121,28 @@ void MemberFrame::clear( void ) {
         delete ( i->second );
     variableTable.clear();
     members.clear();
+}
+
+/**
+ * Is member frame same or parent of otherFrame? We use this function
+ * to decide when a reference from a slot in otherFrame to a variable in
+ * this member frame is safe, and when it is not. The only time we know for
+ * sure that it is safe is when this frame is identical to, or a parent of,
+ * the otherFrame. Unlike a regular frame, we need to ask the owner if
+ * we are at the base of a potential stack of member frames.
+ */
+bool MemberFrame::isSameOrParentOf( Frame* otherFrame ) const {
+
+    if ( this == otherFrame )
+        return true;
+
+    if ( parentFrame != NULL )
+        return parentFrame->isSameOrParentOf( otherFrame );
+
+    if ( owner != NULL )
+        return owner->isPermanent( otherFrame );
+
+    return true;
 }
 
 

@@ -31,7 +31,11 @@ class MemberNode : public DeterministicNode {
     public:
                                 MemberNode(const std::string& valType);                                     //!< Constructor of empty member node
                                 MemberNode(MemberObject* val);                                              //!< Constructor from member object
-        virtual                ~MemberNode(void);                                                           //!< Destructor
+                                MemberNode(const MemberNode& x);                                            //!< Copy constructor (for member object)
+        virtual                ~MemberNode(void);                                                           //!< Destructor (member object)
+
+        // Assignment operator
+        MemberNode&             operator=(const MemberNode& x);                                             //!< Assignment operator
 
         // Basic utility functions
         MemberNode*             clone(void) const;                                                          //!< Clone the member node

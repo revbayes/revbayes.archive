@@ -40,7 +40,7 @@ VariableFrame::VariableFrame( Frame* parentFr ) : Frame( parentFr ), variableTab
 }
 
 
-/** Copy constructor. We need to copy the slots and set the frame of the copies. */
+/** Copy constructor. We need to clone the slots and set the frame of the clones. */
 VariableFrame::VariableFrame( const VariableFrame& x ) :  Frame( x ), variableTable( x.variableTable ) {
 
     for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ ) {

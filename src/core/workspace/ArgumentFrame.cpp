@@ -134,6 +134,9 @@ const VariableSlot& ArgumentFrame::operator[]( const std::string& name ) const {
 /** Clear arguments */
 void ArgumentFrame::clear( void ) {
 
+    std::vector<std::pair<std::string, VariableSlot*> >::const_iterator it;
+    for ( it = arguments.begin(); it != arguments.end(); it++ )
+        delete it->second;
     arguments.clear();
 }
 
@@ -208,30 +211,6 @@ const std::string& ArgumentFrame::getSlotName(const VariableSlot* slot) const {
 }
 
 
-/** Push back argument slot without name onto frame */
-void ArgumentFrame::push_back( VariableSlot* slot ) {
-
-    arguments.push_back( std::pair<std::string, VariableSlot*>( "", slot ) );
-}
-
-
-/** Push back argument slot with name onto frame */
-void ArgumentFrame::push_back( const std::string& name, VariableSlot* slot ) {
-
-    arguments.push_back( std::pair<std::string, VariableSlot*>( name, slot ) );
-}
-
-
-/** Set label of argument i */
-void ArgumentFrame::setArgumentLabel( size_t i, const std::string& name ) {
-
-    if ( i > arguments.size() )
-        throw RbException( "Argument index out of range" );
-
-    arguments[i].first = name;
-}
-
-
 /** Print value for user */
 void ArgumentFrame::printValue(std::ostream& o) const {
 
@@ -244,6 +223,22 @@ void ArgumentFrame::printValue(std::ostream& o) const {
 }
 
 
+/** Push back argument slot without name onto frame */
+void ArgumentFrame::push_back( VariableSlot* slot ) {
+
+    arguments.push_back( std::pair<std::string, VariableSlot*>( "", slot ) );
+    slot->setFrame( this );
+}
+
+
+/** Push back argument slot with name onto frame */
+void ArgumentFrame::push_back( const std::string& name, VariableSlot* slot ) {
+
+    arguments.push_back( std::pair<std::string, VariableSlot*>( name, slot ) );
+    slot->setFrame( this );
+}
+
+
 /** Complete info about object to string */
 std::string ArgumentFrame::richInfo( void ) const {
 
@@ -253,4 +248,15 @@ std::string ArgumentFrame::richInfo( void ) const {
 
     return o.str();
 }
+
+
+/** Set label of argument i */
+void ArgumentFrame::setArgumentLabel( size_t i, const std::string& name ) {
+
+    if ( i > arguments.size() )
+        throw RbException( "Argument index out of range" );
+
+    arguments[i].first = name;
+}
+
 

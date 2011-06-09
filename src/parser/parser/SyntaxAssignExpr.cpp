@@ -175,7 +175,7 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
         DAGNode* node = expression->getDAGNodeExpr( frame );
         if ( node == NULL )
             node = new ConstantNode( RbObject_name );      // NULL object
-        else if ( node->isTemp() ) {
+        else if ( !node->isPermanent( frame ) ) {
             if ( !node->isDAGType( LookupNode_name ) && !node->isDAGType( FunctionNode_name ) )
                 throw RbException( "Invalid equation assignment using temp variable" );
         }

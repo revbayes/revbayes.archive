@@ -76,6 +76,8 @@ class Frame {
         DAGNode*                        getReference(const std::string& name) const;                                            //!< Convenient alternative for [name]->getValue()
         const RbObject*                 getValue(const std::string& name) const;                                                //!< Convenient alternative for [name]->getValue()
         const DAGNode*                  getVariable(const std::string& name) const;                                             //!< Convenient alternative for [name]->getValue()
+        virtual bool                    isSameOrParentOf(Frame* otherFrame) const;                                              //!< Is the frame same or parent of otherFrame?
+        void                            setParentFrame(Frame* newFrame) { parentFrame = newFrame; }                             //!< Set parent frame
 
     protected:
                                         Frame(void);                                                                            //!< Constructor of frame with NULL parent

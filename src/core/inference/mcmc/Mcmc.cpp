@@ -131,8 +131,11 @@ const MethodTable& Mcmc::getMethodInits(void) const {
 /** Allow only constant member variables */
 void Mcmc::setVariable(const std::string& name, DAGNode* var) {
 
-    if (!var->isDAGType(ConstantNode_name))
-        throw RbException("Only constant member values allowed");
+    if ( name != "model" && !var->isDAGType( ConstantNode_name ) )
+        throw RbException( "Only constant member values allowed" );
+
+    if ( name == "model" && members["model"].getVariable()->getValue() != NULL )
+        throw RbException( "Cannot reset model" );
 
     MemberObject::setVariable(name, var);
 }

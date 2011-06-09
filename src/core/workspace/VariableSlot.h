@@ -49,10 +49,11 @@ class VariableSlot {
         const TypeSpec&         getTypeSpec(void) const { return typeSpec; }                            //!< Type specification for slot
         const RbObject*         getValue(void) const;                                                   //!< Get the value of the variable (ptr, not copy)
         const DAGNode*          getVariable(void) const { return variable->getReference(); }            //!< Get the variable (ptr, not copy)
+        bool                    isPermanent(Frame* otherFrame) const;                                   //!< Is slot permanent with respect to otherFrame?
         virtual bool            isValidVariable(DAGNode* newVariable ) const;                           //!< Is newVariable valid for the slot?
         bool                    isReference(void) const { return typeSpec.isReference(); }              //!< Is this a reference slot?
         void                    printValue(std::ostream& o) const;                                      //!< Print value of slot
-        void                    resetVariable(DAGNode* newVar);                                         //!< Clear a slot and then set it with a variable (no mutation of old variable)
+        void                    replaceVariable(DAGNode* newVar);                                       //!< Clear slot and replace variable
         void                    setElement(VectorInteger& index, DAGNode* newVar, bool convert=true);   //!< Set a slot variable element
         void                    setElement(VectorInteger& index, RbObject* newVal);                     //!< Set a slot value element
         void                    setFrame(Frame* slotFrame) { frame=slotFrame; }                         //!< Set frame of slot

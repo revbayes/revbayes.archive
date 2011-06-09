@@ -279,7 +279,7 @@ DAGNode* ContainerNode::convertVarElement( const VectorInteger& index, DAGNode* 
             return new ConstantNode( temp );
     }
     
-    if ( var->isTemp() )
+    if ( var->numRefs() == 0 )
         delete var;
     throw RbException( "Type mismatch when setting " + getName() + index.toIndexString() );
 }
@@ -611,7 +611,7 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
     // Catch empty index
     if ( index.size() == 0 ) {
 
-        if ( var->isTemp() )
+        if ( var->numRefs() == 0 )
             delete var;
         throw RbException( "Empty index when assigning to element of " + getName() );
     }
@@ -619,7 +619,7 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
     // Catch superfluous indices
     if ( index.size() > size_t( getDim() ) ) {
 
-        if ( var->isTemp() )
+        if ( var->numRefs() == 0 )
             delete var;
         throw RbException( "Too many indices when assigning to element of " + getName() );
     }
@@ -673,7 +673,7 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
             // Delete the old element
             size_t offset = container->getOffset( index );
             container->elements[offset]->removeChildNode( this );
-            if ( container->elements[offset]->isTemp() )
+            if ( container->elements[offset]->numRefs() == 0 )
                 delete container->elements[offset];
             parents.erase( container->elements[offset] );
 
@@ -716,7 +716,7 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
                     // Delete the old element
                     size_t offset = container->getOffset( it1 );
                     container->elements[offset]->removeChildNode( this );
-                    if ( container->elements[offset]->isTemp() )
+                    if ( container->elements[offset]->numRefs() == 0 )
                         delete container->elements[offset];
                     parents.erase( container->elements[offset] );
 
