@@ -1,9 +1,9 @@
-#import "Distribution.h"
+#import "DistributionGui.h"
 #import "Parameter.h"
 
 
 
-@implementation Distribution
+@implementation DistributionGui
 
 @synthesize distributionName;
 @synthesize distributionDescription;

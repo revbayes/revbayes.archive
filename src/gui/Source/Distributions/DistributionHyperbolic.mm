@@ -6,7 +6,7 @@
 
 @implementation DistributionHyperbolic
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionHyperbolic alloc] initWithDist:self];
 }

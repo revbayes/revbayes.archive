@@ -6,7 +6,7 @@
 
 @implementation DistributionNeg
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionNeg alloc] initWithDist:self];
 }

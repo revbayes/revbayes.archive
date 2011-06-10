@@ -6,7 +6,7 @@
 
 @implementation DistributionExponential
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionExponential alloc] initWithDist:self];
 }

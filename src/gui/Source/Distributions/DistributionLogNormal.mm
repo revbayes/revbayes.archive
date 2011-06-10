@@ -6,7 +6,7 @@
 
 @implementation DistributionLogNormal
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionLogNormal alloc] initWithDist:self];
 }

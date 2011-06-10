@@ -6,7 +6,7 @@
 
 @implementation DistributionSkewNormal
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionSkewNormal alloc] initWithDist:self];
 }

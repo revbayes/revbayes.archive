@@ -6,7 +6,7 @@
 
 @implementation DistributionLogistic
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionLogistic alloc] initWithDist:self];
 }

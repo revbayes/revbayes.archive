@@ -6,7 +6,7 @@
 
 @implementation DistributionCauchy
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionCauchy alloc] initWithDist:self];
 }

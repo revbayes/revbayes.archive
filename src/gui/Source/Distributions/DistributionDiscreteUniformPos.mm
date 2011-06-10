@@ -6,7 +6,7 @@
 
 @implementation DistributionDiscreteUniformPos
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionDiscreteUniformPos alloc] initWithDist:self];
 }

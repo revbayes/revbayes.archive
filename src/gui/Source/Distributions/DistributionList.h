@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-@class Distribution;
+@class DistributionGui;
 @class Parm;
 
 
@@ -9,9 +9,9 @@
     NSMutableArray*          distributionList;
 }
 
-- (Distribution*)getDistributionWithIndex:(int)idx;
+- (DistributionGui*)getDistributionWithIndex:(int)idx;
 - (void)initializeDistributionList;
-- (Distribution*)newDistributionWithName:(NSString*)distName andParm:(Parm*)prm;
+- (DistributionGui*)newDistributionWithName:(NSString*)distName andParm:(Parm*)prm;
 - (int)numDistributions;
 
 @end

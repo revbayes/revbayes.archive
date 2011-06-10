@@ -220,7 +220,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "normalize", new Func_normalize()    );
         addFunction( "q",         new Func_quit()         );
         addFunction( "quit",      new Func_quit()         );
-        addFunction( "source",    new Func_source()       );
+//        addFunction( "source",    new Func_source()       );
         addFunction( "sqrt",      new Func_sqrt()         );
 
         /* Add regular templated functions (alphabetic order) */

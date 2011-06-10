@@ -6,7 +6,7 @@
 
 @implementation DistributionChiSquare
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionChiSquare alloc] initWithDist:self];
 }

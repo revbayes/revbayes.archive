@@ -6,7 +6,7 @@
 
 @implementation DistributionMultinomial
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
     
     return [[DistributionMultinomial alloc] initWithDist:self];
 }

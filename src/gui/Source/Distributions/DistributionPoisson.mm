@@ -6,7 +6,7 @@
 
 @implementation DistributionPoisson
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionPoisson alloc] initWithDist:self];
 }

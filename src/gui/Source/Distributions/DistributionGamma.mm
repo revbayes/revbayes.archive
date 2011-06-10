@@ -6,7 +6,7 @@
 
 @implementation DistributionGamma
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionGamma alloc] initWithDist:self];
 }

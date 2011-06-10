@@ -6,7 +6,7 @@
 
 @implementation DistributionBinomial
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionBinomial alloc] initWithDist:self];
 }

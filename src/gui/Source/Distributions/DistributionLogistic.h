@@ -1,9 +1,9 @@
 #import <Cocoa/Cocoa.h>
-#import "Distribution.h"
+#import "DistributionGui.h"
 
 
 
-@interface DistributionLogistic : Distribution <NSCoding> {
+@interface DistributionLogistic : DistributionGui <NSCoding> {
 
 }
 

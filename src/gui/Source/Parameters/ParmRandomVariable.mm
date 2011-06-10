@@ -1,4 +1,4 @@
-#import "Distribution.h"
+#import "DistributionGui.h"
 #import "DistributionList.h"
 #import "Parameter.h"
 #import "ParmRandomVariable.h"
@@ -34,7 +34,7 @@
         {
         // change the distribution for a parameter
         [probabilityModel removeAllObjects];
-        Distribution* d = [distList newDistributionWithName:userSelectionName andParm:self];
+        DistributionGui* d = [distList newDistributionWithName:userSelectionName andParm:self];
         if (d != nil)
             [probabilityModel addObject:d];
         }
@@ -44,9 +44,9 @@
         PartitionModel* pm = [probabilityModel objectAtIndex:indexOfSelectedPartitionModel];
         if ( pm == nil )
             return;
-        Distribution* d = [distList newDistributionWithName:userSelectionName andParm:self];
+        DistributionGui* d = [distList newDistributionWithName:userSelectionName andParm:self];
         if (d != nil)
-            [pm setDistribution:d];
+            [pm setDistributionGui:d];
         else
             [pm setDistribution:nil];
         }
@@ -412,7 +412,7 @@
         [distributionSelector addItemWithTitle:@""];
         for (int i=0; i<[distList numDistributions]; i++)
             {
-            Distribution* d = [distList getDistributionWithIndex:i];
+            DistributionGui* d = [distList getDistributionWithIndex:i];
             BOOL displayDist = NO;
             if ( ((unsigned)[self domain] & (unsigned)[d distributionDomain]) != 0 )
                 displayDist = YES;
@@ -508,7 +508,7 @@
             [distributionSelector addItemWithTitle:@""];
             for (int i=0; i<[distList numDistributions]; i++)
                 {
-                Distribution* d = [distList getDistributionWithIndex:i];
+                DistributionGui* d = [distList getDistributionWithIndex:i];
                 BOOL displayDist = NO;
                 if ( ((unsigned)[self domain] & (unsigned)[d distributionDomain]) != 0 )
                     displayDist = YES;

@@ -6,7 +6,7 @@
 
 @implementation DistributionDirichlet
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
     
     return [[DistributionDirichlet alloc] initWithDist:self];
 }

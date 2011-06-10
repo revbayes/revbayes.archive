@@ -6,7 +6,7 @@
 
 @implementation DistributionBirthDeath
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionBirthDeath alloc] initWithDist:self];
 }

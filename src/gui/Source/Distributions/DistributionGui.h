@@ -4,7 +4,7 @@
 
 
 
-@interface Distribution : NSObject <NSCoding> {
+@interface DistributionGui : NSObject <NSCoding> {
 
 	NSString*                distributionName;
 	NSString*                distributionDescription;
@@ -28,9 +28,9 @@
 @property (readwrite) BOOL appliesExclusivelyToNodesOfRootedTrees;
 @property (readwrite) BOOL appliesExclusivelyToBranchsOfRootedTrees;
 
-- (Distribution*)clone;
+- (DistributionGui*)clone;
 - (Parameter*)getParameterIndexed:(int)idx;
-- (id)initWithDist:(Distribution*)d;
+- (id)initWithDist:(DistributionGui*)d;
 - (id)initWithParm:(Parm*)p;
 - (int)numParameters;
 

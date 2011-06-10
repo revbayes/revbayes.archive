@@ -1,9 +1,9 @@
 #import <Foundation/Foundation.h>
-#import "Distribution.h"
+#import "DistributionGui.h"
 
 
 
-@interface DistributionMultinomial : Distribution <NSCoding> {
+@interface DistributionMultinomial : DistributionGui <NSCoding> {
     
 }
 

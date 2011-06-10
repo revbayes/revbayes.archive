@@ -32,7 +32,7 @@
     [super dealloc];
 }
 
-- (Distribution*)getDistributionWithIndex:(int)idx {
+- (DistributionGui*)getDistributionWithIndex:(int)idx {
 
     if ( (idx + 1) > [distributionList count] || idx < 0 )
         return nil;
@@ -75,14 +75,14 @@
     [distributionList addObject:[[DistributionUniformPos         alloc] initWithParm:nil]];
 }
 
-- (Distribution*)newDistributionWithName:(NSString*)distName andParm:(Parm*)prm {
+- (DistributionGui*)newDistributionWithName:(NSString*)distName andParm:(Parm*)prm {
     
     for (int i=0; i<[distributionList count]; i++)
         {
-        Distribution* d = [distributionList objectAtIndex:i];
+        DistributionGui* d = [distributionList objectAtIndex:i];
         if ( [[d distributionName] isEqualToString:distName] == YES )
             {
-            Distribution* newDist = [d clone];
+            DistributionGui* newDist = [d clone];
             [newDist setMyParm:prm];
             [newDist autorelease];
             return newDist;

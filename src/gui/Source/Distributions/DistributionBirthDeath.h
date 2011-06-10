@@ -1,9 +1,9 @@
 #import <Foundation/Foundation.h>
-#import "Distribution.h"
+#import "DistributionGui.h"
 
 
 
-@interface DistributionBirthDeath : Distribution <NSCoding> {
+@interface DistributionBirthDeath : DistributionGui <NSCoding> {
     
 }
 

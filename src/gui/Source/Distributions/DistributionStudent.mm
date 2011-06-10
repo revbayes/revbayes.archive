@@ -5,7 +5,7 @@
 
 @implementation DistributionStudent
 
-- (Distribution*)clone {
+- (DistributionGui*)clone {
 
     return [[DistributionStudent alloc] initWithDist:self];
 }
