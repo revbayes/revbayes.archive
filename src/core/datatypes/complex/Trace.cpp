@@ -8,6 +8,8 @@
 
 #include "Trace.h"
 
+#include "RbNames.h"
+#include "VectorString.h"
 #include "XmlElementReference.h"
 #include "XmlElementInstance.h"
 
@@ -77,6 +79,21 @@ void Trace::addObject(double d)
     // invalidate for recalculation of meta data
     invalidate();
 }
+
+/** Clone function */
+MemberObject* Trace::clone() const {
+    
+    return new Trace(*this);
+}
+
+
+/** Get class vector describing type of object */
+const VectorString& Trace::getClass() const {
+    
+    static VectorString rbClass = VectorString(Trace_name) + MemberObject::getClass();
+    return rbClass;
+}
+
 
 const XmlElement* Trace::encode(XmlDocument *doc, const std::string& name) {    
     // check if the document already contains this trace

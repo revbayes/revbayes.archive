@@ -131,6 +131,7 @@ const std::string SyntaxLabeledExpr_name                        = "Labeled expre
 const std::string SyntaxUnaryExpr_name                          = "Unary expression";
 const std::string SyntaxVariable_name                           = "Variable";
 const std::string StochasticNode_name                           = "Stochastic node";
+const std::string Trace_name                                    = "Trace";
 const std::string Tree_name                                     = "Tree";
 const std::string TreeNode_name                                 = "Tree node";
 const std::string TreeUnrooted_name                             = "Unrooted tree";

@@ -11,7 +11,7 @@
 #ifndef Trace_H
 #define Trace_H
 
-#include "RbObject.h"
+#include "MemberObject.h"
 #include "XmlElementAttributed.h"
 
 #include <string>
@@ -21,7 +21,7 @@
 #define PASSED 1
 #define NOT_CHECKED 2
 
-class Trace : public RbObject {
+class Trace : public MemberObject {
     public:
     
     Trace(void);
@@ -31,6 +31,10 @@ class Trace : public RbObject {
     ~Trace();
     
     // overloaded functions from RbObject
+    MemberObject*           clone(void) const;                                              //!< Clone object
+    const VectorString&     getClass(void) const;                                           //!< Get class vector
+    void                    printValue(std::ostream& o) const;                              //!< Print value for user
+    std::string             richInfo(void) const;                                           //!< Complete info about object
     const XmlElement*       encode(XmlDocument* doc, const std::string& name);
     
     void                    addObject(double d);
