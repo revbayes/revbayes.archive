@@ -52,6 +52,15 @@ RbObject* RbObject::convertTo(const std::string& type, int dim) const {
     throw RbException( msg );
 }
 
+/** encode the object into a serializable xml-object */
+const XmlElement* RbObject::encode(XmlDocument *doc, const std::string& name) {    
+    // dummy function
+    
+    //TODO basic implementation which should return an empty xml object with only the name
+    
+    return NULL;
+}
+
 
 /** Get class vector describing type of object */
 const VectorString& RbObject::getClass(void) const { 
