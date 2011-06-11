@@ -14,6 +14,7 @@
 #include "XmlElementReference.h"
 #include "XmlElementInstance.h"
 
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -147,6 +148,12 @@ void Trace::invalidate() {
     
 }
 
+/** Print value for user */
+void Trace::printValue(std::ostream &o) const {
+    
+    o << "Trace values to be printed ...";
+}
+
 
 void Trace::removeObjectAtIndex (int index)
 {
@@ -170,5 +177,16 @@ void Trace::removeLastObject()
     
     // invalidate for recalculation of meta data
     invalidate();
+}
+
+
+/** Complete info about object */
+std::string Trace::richInfo(void) const {
+    
+    std::ostringstream o;
+    o <<  "Trace: value = ";
+    printValue(o);
+    
+    return o.str();
 }
 
