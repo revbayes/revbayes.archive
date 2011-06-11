@@ -10,6 +10,7 @@
 
 #include "RbNames.h"
 #include "VectorString.h"
+#include "XmlDocument.h"
 #include "XmlElementReference.h"
 #include "XmlElementInstance.h"
 
@@ -26,7 +27,7 @@ Trace::Trace()
  * Copy constructor
  *
  */
-Trace::Trace(Trace& t) {
+Trace::Trace(const Trace& t) {
     burnin                          = t.burnin;
     ess                             = t.ess;
     mean                            = t.mean;
