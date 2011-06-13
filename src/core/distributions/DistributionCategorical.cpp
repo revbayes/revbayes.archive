@@ -25,6 +25,7 @@
 #include "Natural.h"
 #include "RbException.h"
 #include "RealPos.h"
+#include "ReferenceRule.h"
 #include "RbNames.h"
 #include "Simplex.h"
 #include "ValueRule.h"
@@ -40,7 +41,7 @@ DistributionCategorical::DistributionCategorical( const MemberRules& memberRules
 
 
 /** Map direct method calls to internal class methods. */
-DAGNode* DistributionCategorical::executeMethod( const std::string& name, ArgumentFrame& args ) {
+DAGNode* DistributionCategorical::executeOperation( const std::string& name, ArgumentFrame& args ) {
 
     if ( name == "probMassVector" ) {
 
@@ -51,7 +52,7 @@ DAGNode* DistributionCategorical::executeMethod( const std::string& name, Argume
         return new ConstantNode( new Natural( getNumStates() ) );
     }
 
-    return Distribution::executeMethod( name, args );
+    return Distribution::executeOperation( name, args );
 }
 
 
@@ -73,8 +74,12 @@ const MethodTable& DistributionCategorical::getMethods( void ) const {
 
     if ( !methodsSet ) {
 
-        methods.addFunction( "probMassVector", new MemberFunction( Simplex_name, ArgumentRules() ) );
-        methods.addFunction( "numStates"     , new MemberFunction( Natural_name, ArgumentRules() ) );
+        probMassVectorArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
+
+        numStatesArgRules.push_back     ( new ReferenceRule( "", MemberObject_name ) );
+
+        methods.addFunction( "probMassVector", new MemberFunction( Simplex_name, probMassVectorArgRules ) );
+        methods.addFunction( "numStates",      new MemberFunction( Natural_name, numStatesArgRules ) );
 
         methods.setParentTable( const_cast<MethodTable*>( &Distribution::getMethods() ) );
 

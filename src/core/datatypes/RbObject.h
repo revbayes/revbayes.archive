@@ -38,7 +38,7 @@ class RbObject {
         virtual void                printValue(std::ostream& o) const = 0;                              //!< Print value for user
         virtual std::string         richInfo(void) const = 0;                                           //!< Complete info about object
 
-        virtual const XmlElement*   encode(XmlDocument* doc, const std::string& name);                  //!< function to encode this object into an XML string
+        virtual const XmlElement*     encode(XmlDocument* doc, const std::string& name);                //!< function to encode this object into an XML string
 
         // Basic utility functions you may want to override
         virtual std::string         briefInfo(void) const;                                              //!< Brief info about object
@@ -46,10 +46,10 @@ class RbObject {
         virtual const TypeSpec      getTypeSpec(void) const;                                            //!< Get language type of the object
         virtual bool                isConstant(void) const { return true; }                             //!< Is value a constant or does it include variables?
         virtual bool                isConvertibleTo(const std::string& type, int dim, bool once) const; //!< Is convertible to type and dim?
-        virtual bool                supportsSubscripting(void) const { return false; }                  //!< Does object support subscripting?
+        virtual bool                supportsSubscripting(void) const { return false; }                  //!< Does object support subscripting (without being a container)?
         
-        // Subscript dimensions: override if object supports subscripting
-        virtual int                 getDim(void) const { return 0; }                                    //!< Get subscript dimensions
+        // Dimensions of object: override only if object is a container with dimensions exposed to language / parser
+        virtual int                 getDim(void) const { return 0; }                                    //!< Get container dimensions
 
         // Basic utility functions you should not have to override
         RbObject*                   convertTo(const TypeSpec& typeSpec) const;                          //!< Convert to language object of type typeSpec

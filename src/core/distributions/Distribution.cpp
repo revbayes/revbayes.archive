@@ -26,6 +26,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RealPos.h"
+#include "ReferenceRule.h"
 #include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -37,7 +38,7 @@ Distribution::Distribution( const MemberRules& memberRules ) : MemberObject( mem
 
 
 /** Map direct method calls to internal class methods. */
-DAGNode* Distribution::executeMethod( const std::string& name, ArgumentFrame& args ) {
+DAGNode* Distribution::executeOperation( const std::string& name, ArgumentFrame& args ) {
 
     if ( name == "lnPdf" ) {
 
@@ -59,7 +60,7 @@ DAGNode* Distribution::executeMethod( const std::string& name, ArgumentFrame& ar
             return new ConstantNode( draw );
     }
     else
-        return MemberObject::executeMethod( name, args );
+        return MemberObject::executeOperation( name, args );
 }
 
 
@@ -82,13 +83,17 @@ const MethodTable& Distribution::getMethods( void ) const {
 
     if ( !methodsSet ) {
 
-        lnPdfArgRules.push_back( new ValueRule( "x", RbObject_name ) );
+        lnPdfArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
+        lnPdfArgRules.push_back( new ValueRule    ( "x", RbObject_name    ) );
 
-        pdfArgRules.push_back  ( new ValueRule( "x", RbObject_name ) );
+        pdfArgRules.push_back  ( new ReferenceRule( "",  MemberObject_name ) );
+        pdfArgRules.push_back  ( new ValueRule    ( "x", RbObject_name     ) );
 
-        methods.addFunction( "lnPdf", new MemberFunction( Real_name    , lnPdfArgRules  ) );
-        methods.addFunction( "pdf",   new MemberFunction( Real_name    , pdfArgRules    ) );
-        methods.addFunction( "rv",    new MemberFunction( RbObject_name, ArgumentRules() ) );
+        rvArgRules.push_back   ( new ReferenceRule( "",  MemberObject_name ) );
+
+        methods.addFunction( "lnPdf", new MemberFunction( Real_name    , lnPdfArgRules ) );
+        methods.addFunction( "pdf",   new MemberFunction( Real_name    , pdfArgRules   ) );
+        methods.addFunction( "rv",    new MemberFunction( RbObject_name, rvArgRules    ) );
 
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
 

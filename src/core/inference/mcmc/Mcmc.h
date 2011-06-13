@@ -46,13 +46,13 @@ class Mcmc: public MemberObject {
         void                        setVariable(const std::string& name, DAGNode* var);                                //!< Only constants allowed
 
         // Member method inits
-        const MethodTable&          getMethodInits(void) const;                                                        //!< Get method inits
+        const MethodTable&          getMethods(void) const;                                                            //!< Get methods
         
         // Mcmc functions
         void                        update(void);                                                                      //!< Update the chain
 
 	protected:
-        DAGNode*                    executeOperation(const std::string& name, const std::vector<VariableSlot>& args);  //!< Execute method
+        DAGNode*                    executeOperation(const std::string& name, ArgumentFrame& args);                     //!< Execute method
 };
 
 #endif

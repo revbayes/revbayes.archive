@@ -44,7 +44,6 @@ class DistributionInterval: public Distribution {
 
         // Member object functions you should not have to override
         const MethodTable&              getMethods(void) const;                                                     //!< Get member methods
-        DAGNode*                        executeMethod(const std::string& name, ArgumentFrame& args);                //!< Direct call of member method
 
         // Interval distribution functions you probably want to override
         virtual const RbObject*         getMax(void) const;                                                         //!< Get max value of coverage
@@ -60,6 +59,8 @@ class DistributionInterval: public Distribution {
         virtual RbObject*               rv(void) = 0;                                                               //!< Generate a random draw
 
     protected:
+        DAGNode*                        executeOperation(const std::string& name, ArgumentFrame& args);             //!< Direct call of member method
+
                                         DistributionInterval(const MemberRules& memberRules);                       //!< Constructor
 
 };

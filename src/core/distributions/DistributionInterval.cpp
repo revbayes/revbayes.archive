@@ -24,6 +24,7 @@
 #include "MemberNode.h"
 #include "RbException.h"
 #include "RealPos.h"
+#include "ReferenceRule.h"
 #include "RbNames.h"
 #include "ValueRule.h"
 #include "VectorString.h"
@@ -38,7 +39,7 @@ DistributionInterval::DistributionInterval( const MemberRules& memberRules )
 
 
 /** Map direct method calls to internal class methods. */
-DAGNode* DistributionInterval::executeMethod( const std::string& name, ArgumentFrame& args ) {
+DAGNode* DistributionInterval::executeOperation( const std::string& name, ArgumentFrame& args ) {
 
     if ( name == "cdf" ) {
 
@@ -56,7 +57,7 @@ DAGNode* DistributionInterval::executeMethod( const std::string& name, ArgumentF
             return new ConstantNode( quant );
     }
 
-    return Distribution::executeMethod( name, args );
+    return Distribution::executeOperation( name, args );
 }
 
 
@@ -92,11 +93,13 @@ const MethodTable& DistributionInterval::getMethods( void ) const {
 
     if ( !methodsSet ) {
 
-        cdfArgRules.push_back(      new ValueRule( "q", RealPos_name ) );
+        cdfArgRules.push_back     ( new ReferenceRule( "",  MemberObject_name ) );
+        cdfArgRules.push_back     ( new ValueRule    ( "q", RealPos_name      ) );
 
-        quantileArgRules.push_back( new ValueRule( "p", RealPos_name ) );
+        quantileArgRules.push_back( new ReferenceRule( "",  MemberObject_name ) );
+        quantileArgRules.push_back( new ValueRule    ( "p", RealPos_name      ) );
 
-        methods.addFunction( "cdf"     , new MemberFunction( Real_name, cdfArgRules      ) );
+        methods.addFunction( "cdf",      new MemberFunction( Real_name, cdfArgRules      ) );
         methods.addFunction( "quantile", new MemberFunction( Real_name, quantileArgRules ) );
 
         methods.setParentTable( const_cast<MethodTable*>( &Distribution::getMethods() ) );

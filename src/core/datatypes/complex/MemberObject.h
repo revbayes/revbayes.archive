@@ -67,7 +67,7 @@ class MemberObject: public RbComplex {
         virtual void                setVariable(const std::string& name, DAGNode* var);                                 //!< Set member variable
 
         // Member method functions
-        virtual DAGNode*            executeMethod(const std::string& name, ArgumentFrame& args);                        //!< Direct call of member method
+        DAGNode*                    executeMethod(const std::string& name, const std::vector<Argument>& args);          //!< Direct call of member method
         virtual const MethodTable&  getMethods(void) const;                                                             //!< Get member methods
 
         // Subscript operator functions
@@ -80,12 +80,16 @@ class MemberObject: public RbComplex {
     protected:
 									MemberObject(const MemberRules& memberRules);                                       //!< Standard constructor
                                     MemberObject(void){}                                                                //!< Default constructor; no members or methods
+ 
+        // Override this function to map member method calls to internal functions
+        virtual DAGNode*            executeOperation(const std::string& name, ArgumentFrame& args);                     //!< Map member methods to internal functions
 
         // Members is the variable frame that stores member variables
         MemberFrame                 members;                                                                            //!< Member variables
 
         // Friend classes
         friend class                DistributionFunction;                                                               //!< Give DistributionFunction access
+        friend class                MemberFunction;                                                                     //!< Member functino needs access to executeOperation
         friend class                MemberNode;                                                                         //!< Give MemberNode access
 };
 

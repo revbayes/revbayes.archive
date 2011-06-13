@@ -239,10 +239,18 @@ StochasticNode* StochasticNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& ne
 }
 
 
-/** Get affected nodes: insert this node but stop recursion here */
+/** Get affected nodes: insert this node but stop recursion here unless touched */
 void StochasticNode::getAffected( std::set<StochasticNode*>& affected ) {
 
-    affected.insert( this );
+    if ( touched ) {
+    
+        for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
+            (*i)->getAffected(affected);
+    }
+    else {
+
+        affected.insert( this );
+    }
 }
 
 
@@ -443,13 +451,19 @@ void StochasticNode::setValue( RbObject* val ) {
         throw RbException( "Cannot change value of clamped node" );
 
     if ( !touched ) {
+
+        // Store the current value and replace with val
         touched      = true;
         storedValue  = value;
         storedLnProb = lnProb;
+        value        = val;
     }
+    else /* if ( touched ) */ {
 
-    delete value;
-    value = val;
+        // Keep the old storedValue and storedLnProb but delete the current value
+        delete value;
+        value        = val;
+    }
 
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
         (*i)->touchAffected();

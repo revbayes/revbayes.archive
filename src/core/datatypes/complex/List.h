@@ -51,7 +51,7 @@ class List : public MemberObject {
         const MemberRules&      getMemberRules(void) const;                                 //!< Get member rules
 
         // Member method inits
-        const MethodTable&      getMethodInits(void) const;                                 //!< Get method inits
+        const MethodTable&      getMethods(void) const;                                     //!< Get methods
 
         // Subscript access functions
         bool                    hasSubscript(void) { return true; }                         //!< We support subscripting
@@ -62,7 +62,7 @@ class List : public MemberObject {
         void                    addVariable(DAGNode* var, const std::string& name = "");    //!< Add variable to list
 
     private:
-        DAGNode*                executeOperation(const std::string& name, const std::vector<VariableSlot>& args);   //!< Execute method
+        DAGNode*                executeOperation(const std::string& name, ArgumentFrame& args);     //!< Execute method
 
         std::vector<DAGNode*>   variables;                                                  //!< Store an extra copy of variables in subscript order
         VectorString            names;                                                      //!< Names of variables

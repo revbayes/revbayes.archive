@@ -29,6 +29,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RangeRule.h"
+#include "ReferenceRule.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "StochasticNode.h"
@@ -69,15 +70,14 @@ Mcmc* Mcmc::clone(void) const {
 
 
 /** Map calls to member methods */
-DAGNode* Mcmc::executeOperation(const std::string& name, const std::vector<VariableSlot>& args) {
+DAGNode* Mcmc::executeOperation(const std::string& name, ArgumentFrame& args) {
 
     if (name == "update") {
        update();
+       return NULL;
     }
-    else
-        throw RbException("No member method called '" + name + "'");
 
-    return NULL;
+    return MemberObject::executeOperation( name, args );
 }
 
 
@@ -110,21 +110,23 @@ const MemberRules& Mcmc::getMemberRules(void) const {
 }
 
 
-/** Get method specifications */
-const MethodTable& Mcmc::getMethodInits(void) const {
+/** Get methods */
+const MethodTable& Mcmc::getMethods(void) const {
 
-    static MethodTable   methodInits;
+    static MethodTable   methods;
     static ArgumentRules updateArgRules;
-    static bool          initsSet = false;
+    static bool          methodsSet = false;
 
-    if (!initsSet) {
+    if (!methodsSet) {
 
-        methodInits.addFunction("update", new MemberFunction(RbNULL_name, updateArgRules));
+        updateArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
+        methods.addFunction("update", new MemberFunction(RbNULL_name, updateArgRules));
 
-        initsSet = true;
+        methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
+        methodsSet = true;
     }
 
-    return methodInits;
+    return methods;
 }
 
 
@@ -224,6 +226,12 @@ void Mcmc::update(void) {
     }
     outFile << std::endl;
 
+    /* Print starting values to outfile */
+    for (std::vector<VariableNode*>::iterator i=variableNodes.begin(); i!=variableNodes.end(); i++) {
+        (*i)->printValue(outFile);
+        outFile << std::endl;
+    }
+
     /* Get initial lnProbability of model */
     double lnProbability = 0.0;
     std::vector<double> initProb;
@@ -271,10 +279,13 @@ void Mcmc::update(void) {
             theMove->rejectMove();
         }
 
-        /* Monitor; TODO: Just printing all variable nodes for now */
-        if (gen % samplefreq == 0)
-        for (std::vector<VariableNode*>::iterator i=variableNodes.begin(); i!=variableNodes.end(); i++) {
-            (*i)->printValue(outFile);
+        /* Monitor */
+        //! @todo : Do appropriate monitoring; just printing all variable nodes for now */
+        if (gen % samplefreq == 0) {
+            for (std::vector<VariableNode*>::iterator i=variableNodes.begin(); i!=variableNodes.end(); i++) {
+                (*i)->printValue(outFile);
+            }
+            outFile << std::endl;
         }
 
         /* Print to screen */

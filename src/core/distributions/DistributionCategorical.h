@@ -43,7 +43,6 @@ class DistributionCategorical: public Distribution {
 
         // Member object functions you should not have to override
         const MethodTable&                  getMethods(void) const;                                                     //!< Get member methods
-        DAGNode*                            executeMethod(const std::string& name, ArgumentFrame& args);                //!< Direct call of member method
 
         // Categorical distribution functions you have to override
         virtual Move*                       getDefaultMove(StochasticNode* node) = 0;                                   //!< Get default move
@@ -55,6 +54,8 @@ class DistributionCategorical: public Distribution {
         virtual RbObject*                   rv(void) = 0;                                                               //!< Generate a random draw
 
     protected:
+        DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);             //!< Direct call of member method
+
                                             DistributionCategorical(const MemberRules& memberRules);                    //!< Constructor
 
 };

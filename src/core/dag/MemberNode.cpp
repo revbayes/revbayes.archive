@@ -229,6 +229,15 @@ MemberNode* MemberNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes )
 }
 
 
+/** Execute function to get its value */
+DAGNode* MemberNode::executeMethod(const std::string& name, const std::vector<Argument>& args) const {
+
+    /* Using this calling convention indicates that we are only interested in
+       evaluating the function once */
+    return memberObject->executeMethod(name, args);
+}
+
+
 /** Does element referred to by index exist? */
 bool MemberNode::existsElement( VectorInteger& index ) {
 

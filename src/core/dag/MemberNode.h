@@ -54,6 +54,8 @@ class MemberNode : public DeterministicNode {
         MemberNode*             cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
 
         // MemberNode functions
+        DAGNode*                executeMethod(  const std::string&              name,
+                                                const std::vector<Argument>&    args) const;                //!< Execute member method
         const TypeSpec&         getMemberTypeSpec(const RbString& name) const;                              //!< Get type spec of a named member variable
         MemberObject*           getMemberObject(void) { return memberObject; }                              //!< Get member object 
 

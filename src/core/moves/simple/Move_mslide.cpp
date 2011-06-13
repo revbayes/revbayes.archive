@@ -85,9 +85,6 @@ const MemberRules& Move_mslide::getMemberRules( void ) const {
 /** Perform the move */
 double Move_mslide::perform( std::set<StochasticNode*>& affectedNodes ) {
 
-    // Get affected nodes
-    nodePtr->getAffected( affectedNodes );
-
     // Get relevant values
     const Real              curVal = *( static_cast<const Real*   >( nodePtr->getValue() ) );
     RandomNumberGenerator*  rng    = GLOBAL_RNG;
@@ -110,6 +107,9 @@ double Move_mslide::perform( std::set<StochasticNode*>& affectedNodes ) {
 
     nodePtr->setValue( newVal.clone() );
 	
+    // Get affected nodes
+    nodePtr->getAffected( affectedNodes );
+
     return 0.0;
 }
 

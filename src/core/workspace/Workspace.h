@@ -80,6 +80,7 @@ class Workspace : public VariableFrame {
         bool                        addDistribution(const std::string& name, DistributionInterval* dist);               //!< Add distribution on interval variable
         bool                        addFunction(const std::string& name, RbFunction* func);                             //!< Add function
         bool                        addType(RbObject* exampleObj);                                                      //!< Add type
+        bool                        addType(const std::string& name);                                                   //!< Add abstract type
         bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);               //!< Add type with constructor
         bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
         DAGNode*                    executeFunction(    const std::string&              name,

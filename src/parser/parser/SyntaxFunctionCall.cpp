@@ -142,24 +142,24 @@ DAGNode* SyntaxFunctionCall::getDAGNodeExpr(VariableFrame* frame) const {
 
 
 /** Look up the function or member function and calculate the value. */
-DAGNode* SyntaxFunctionCall::getValue(VariableFrame* frame) const {
+DAGNode* SyntaxFunctionCall::getValue( VariableFrame* frame ) const {
 
     // Package arguments
     std::vector<Argument> args;
-    for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        args.push_back(Argument(*(*i)->getLabel(), (*i)->getExpression()->getValue(frame)));    
+    for ( std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++ )
+        args.push_back( Argument( *(*i)->getLabel(), (*i)->getExpression()->getValue( frame ) ) );    
 
     // Get function pointer and execute function
     DAGNode* retVal;
-    if (variable == NULL) {
-        retVal = Workspace::userWorkspace().executeFunction(*functionName, args);
+    if ( variable == NULL ) {
+        retVal = Workspace::userWorkspace().executeFunction( *functionName, args );
     }
     else {
         MemberNode* memberNode = dynamic_cast<MemberNode*>( variable->getValue( frame ) );
         if ( memberNode == NULL )
             throw RbException( "Variable does not have member functions" );
-        MemberObject* theObject = const_cast<MemberObject*>( memberNode->getMemberObject() );
-        retVal = NULL; // theObject->executeMethod(*functionName, args);
+        args.insert( args.begin(), Argument( "", memberNode ) );
+        retVal = memberNode->executeMethod( *functionName, args);
     }
 
     return retVal;

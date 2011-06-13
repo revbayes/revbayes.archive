@@ -59,10 +59,10 @@ List* List::clone() const {
 }
 
 
-/** Execute member method. We throw an error because there are no member methods (yet) */
-DAGNode* List::executeOperation(const std::string& name, const std::vector<VariableSlot>& args) {
+/** Map member methods to internal function calls */
+DAGNode* List::executeOperation(const std::string& name, ArgumentFrame& args) {
 
-    throw RbException ("Object does not have methods");
+    return MemberObject::executeOperation( name, args );
 }
 
 
@@ -82,11 +82,11 @@ const MemberRules& List::getMemberRules(void) const {
 }
 
 
-/** Get method specifications (no methods) */
-const MethodTable& List::getMethodInits(void) const {
+/** Get methods (no methods) */
+const MethodTable& List::getMethods(void) const {
 
-    static MethodTable   methodInits;
-    return methodInits;
+    static MethodTable   methods;
+    return methods;
 }
 
 

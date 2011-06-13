@@ -157,7 +157,7 @@ const std::string DAGNode::getName( void ) const {
             if ( (*i)->isDAGType( ContainerNode_name ) ) {
                 ContainerNode* theContainer = static_cast<ContainerNode*>( *i );
                 name = theContainer->getName();
-                VectorInteger index = theContainer->getIndex( *i );
+                VectorInteger index = theContainer->getIndex( this );
                 for ( size_t j = 0; j < index.size(); j++ )
                     name += "[" + RbString( index[j] + 1 ) + "]";
                 break;

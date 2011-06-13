@@ -1,7 +1,11 @@
 /**
  * @file
  * This file contains the implementation of MemberFunction, which is used
- * for member functions (methods) of complex objects with methods.
+ * to map member function calls (member method calls) of complex objects
+ * to internal functions instead of providing regular RbFunction objects
+ * implementing the member functions. Note that the first argument passed
+ * in a member function call is a pointer to the MemberNode of the calling
+ * object (like a this pointer).
  *
  * @brief Implementation of MemberFunction
  *
@@ -17,11 +21,13 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "DAGNode.h"
 #include "ContainerNode.h"
+#include "DAGNode.h"
 #include "Ellipsis.h"
-#include "RbException.h"
 #include "MemberFunction.h"
+#include "MemberNode.h"
+#include "MemberObject.h"
+#include "RbException.h"
 #include "RbNames.h"
 #include "TypeSpec.h"
 #include "VectorString.h"
@@ -32,6 +38,12 @@
 /** Constructor */
 MemberFunction::MemberFunction(const TypeSpec retType, const ArgumentRules& argRules)
     : RbFunction(), returnType(retType), argumentRules(argRules) {
+
+    if ( argumentRules[0]->getArgTypeSpec() != TypeSpec( MemberObject_name, 0, true ) )
+        throw RbException( "First argument rule to a member function must be a reference to the member object" );
+    
+    if ( argumentRules[0]->hasDefault() )
+        throw RbException( "First argument rule to a member function is not allowed to have a default" );
 }
 
 /** Brief info on the function */
@@ -51,10 +63,12 @@ MemberFunction* MemberFunction::clone(void) const {
 }
 
 
-/** Execute function: we rely on the object's own implementation, so we just throw an error here */
+/** Execute function: call the object's internal implementation through executeOperation */
 DAGNode* MemberFunction::execute( void ) {
 
-    throw RbException( "Unexpected call to void execute function in MemberFunction" );
+    MemberNode* memberNode = static_cast<MemberNode*>( args[0].getReference() );
+
+    return memberNode->getMemberObject()->executeOperation( funcName, args );
 }
 
 

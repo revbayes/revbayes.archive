@@ -145,6 +145,20 @@ bool Workspace::addType(RbObject* exampleObj) {
 }
 
 
+/** Add abstract type to the workspace */
+bool Workspace::addType(const std::string& name) {
+
+    PRINTF("Adding abstract type %s to workspace\n", name.c_str());
+
+    if (typeTable.find(name) != typeTable.end())
+        throw RbException("There is already a type named '" + name + "' in the workspace");
+
+    typeTable.insert(std::pair<std::string, RbObject*>( name, NULL));
+
+    return true;
+}
+
+
 /** Add type with constructor to the workspace */
 bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* templ) {
 
@@ -389,7 +403,10 @@ void Workspace::printValue(std::ostream& o) const {
     o << "Type table:" << std::endl;
     std::map<std::string, RbObject*>::const_iterator i;
     for (i=typeTable.begin(); i!=typeTable.end(); i++) {
-        o << (*i).first << " = " << (*i).second->getClass() << std::endl;
+        if ( (*i).second != NULL )
+            o << (*i).first << " = " << (*i).second->getClass() << std::endl;
+        else
+            o << (*i).first << " = " << "unknown class vector" << std::endl;
     }
 }
 

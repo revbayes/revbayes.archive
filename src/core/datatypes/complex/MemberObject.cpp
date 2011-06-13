@@ -22,6 +22,7 @@
 #include "MemberObject.h"
 #include "MemberSlot.h"
 #include "RbException.h"
+#include "RbFunction.h"
 #include "RbNames.h"
 #include "VectorString.h"
 #include "VariableNode.h"
@@ -47,10 +48,19 @@ MemberObject* MemberObject::convertTo(const std::string& type, int dim) const {
 }
 
 
-/** Execute member method. We throw an error because there are no member methods unless this function is overridden */
-DAGNode* MemberObject::executeMethod(const std::string& name, ArgumentFrame& args) {
+/** Execute member method: delegate to method table. */
+DAGNode* MemberObject::executeMethod(const std::string& name, const std::vector<Argument>& args) {
 
-    throw RbException( "Object does not have methods" );
+    return getMethods().executeFunction(name, args);
+}
+
+
+/** Map member method call to internal function call. This is used as an alternative mechanism to providing a complete
+ *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
+ *  is used without the appropriate mapping to internal function calls being present. */
+DAGNode* MemberObject::executeOperation(const std::string& name, ArgumentFrame& args) {
+
+    throw RbException( "No mapping from member method " + name + " to internal function call provided" );
 }
 
 
