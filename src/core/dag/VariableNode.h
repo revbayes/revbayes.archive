@@ -53,6 +53,7 @@ class VariableNode : public DAGNode {
         // DAG functions you have to override
         virtual VariableNode*           cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const = 0;               //!< Clone entire graph
         virtual void    	            getAffected(std::set<StochasticNode*>& affected) = 0;                           //!< Mark and get affected nodes
+        virtual void                    keep(void) = 0;                                                                 //!< Keep current state
         virtual void    	            keepAffected(void) = 0;                                                         //!< Keep value of affected nodes
         virtual void                    restoreAffected(void) = 0;                                                      //!< Restore value of affected nodes
         virtual void                    swapParentNode(DAGNode* oldP, DAGNode* newP) = 0;                               //!< Swap a parent node

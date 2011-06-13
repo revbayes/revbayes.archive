@@ -170,7 +170,7 @@ void Mcmc::update(void) {
                 theMoveSchedule = theNode->getDefaultMoves();
 
             /* Update value of all variable nodes in case the parser left them in 'dirty' state */
-            theNode->getValue();
+            theNode->keep();
 
             /* Get monitor */
             for (std::vector<Monitor*>::iterator j=theMonitors.begin(); j!=theMonitors.end(); j++)

@@ -108,6 +108,13 @@ const RbObject* DeterministicNode::getValue( void ) const {
 
 
 /** Keep value of node and affected variable nodes */
+void DeterministicNode::keep( void ) {
+
+    keepAffected();
+}
+
+
+/** Keep value of node and affected variable nodes */
 void DeterministicNode::keepAffected( void ) {
 
     if ( touched ) {

@@ -47,6 +47,7 @@ class DeterministicNode : public VariableNode {
 
         // DAG functions implemented here
         void    	                    getAffected(std::set<StochasticNode*>& affected);                               //!< Mark and get affected nodes
+        void                            keep(void);                                                                     //!< Update and then keep current value
         void    	                    keepAffected(void);                                                             //!< Keep value of affected nodes
         void                            restoreAffected(void);                                                          //!< Restore value of affected nodes
         void                            swapParentNode(DAGNode* oldP, DAGNode* newP);                                   //!< Swap a parent node

@@ -86,9 +86,6 @@ const MemberRules& Move_msimplex::getMemberRules( void ) const {
 /** Perform the move */
 double Move_msimplex::perform( std::set<StochasticNode*>& affectedNodes ) {
 
-    // Get affected nodes
-    nodePtr->getAffected( affectedNodes );
-
     // Get relevant values
     const Simplex*         valPtr  = static_cast<const Simplex*>( nodePtr->getValue()  );
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -197,6 +194,9 @@ double Move_msimplex::perform( std::set<StochasticNode*>& affectedNodes ) {
 		
     nodePtr->setValue( new Simplex( newVal ) );
 	
+    // Get affected nodes
+    nodePtr->getAffected( affectedNodes );
+
     return lnProposalRatio;
 }
 

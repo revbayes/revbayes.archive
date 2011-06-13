@@ -83,9 +83,6 @@ const MemberRules& Move_mscale::getMemberRules( void ) const {
 /** Perform the move */
 double Move_mscale::perform( std::set<StochasticNode*>& affectedNodes ) {
 
-    // Get the affected nodes
-    nodePtr->getAffected( affectedNodes );
-
     // Get the relevant values
     RandomNumberGenerator* rng    = GLOBAL_RNG;
     const RealPos          lambda = *( static_cast<const RealPos*>( getValue("lambda")  ) );
@@ -97,6 +94,9 @@ double Move_mscale::perform( std::set<StochasticNode*>& affectedNodes ) {
 
     // Propose new value
     nodePtr->setValue( newVal.clone() );
+
+    // Get the affected nodes
+    nodePtr->getAffected( affectedNodes );
 
     // Return Hastings ratio
     return log( newVal / curVal );

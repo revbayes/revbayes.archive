@@ -88,9 +88,6 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 /** Perform the move */
 double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
 
-    // Get affected nodes
-    nodePtr->getAffected( affectedNodes );
-
     // Get relevant values
     const VectorReal*       valPtr  = static_cast<const VectorReal*>( nodePtr->getValue() );
     RandomNumberGenerator*  rng     = GLOBAL_RNG;
@@ -207,6 +204,9 @@ double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
 		
     nodePtr->setValue( new VectorReal( newVal ) );
 	
+    // Get affected nodes
+    nodePtr->getAffected( affectedNodes );
+
     return lnProposalRatio;
 }
 
