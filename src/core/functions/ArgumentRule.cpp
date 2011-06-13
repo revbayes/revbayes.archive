@@ -20,7 +20,7 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "ContainerNode.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
@@ -78,7 +78,7 @@ DAGNode* ArgumentRule::convert(const DAGNode* arg) const {
     if ( theConvertedValue->isType( Container_name ) )
         return new ContainerNode( (Container*)( theConvertedValue ) );
     else if ( theConvertedValue->isType( MemberObject_name ) )
-        return new MemberNode( (MemberObject*)( theConvertedValue ) );
+        return new DeterministicMemberNode( (MemberObject*)( theConvertedValue ) );
     else
         return new ConstantNode( theConvertedValue );
 }

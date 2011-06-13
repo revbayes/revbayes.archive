@@ -28,6 +28,22 @@ MethodTable::MethodTable(MethodTable* parent)
     : FunctionTable(parent) {
 }
 
+/** Assignment operator */
+MethodTable& MethodTable::operator=(const MethodTable& x) {
+    
+    if (this != &x) {
+        
+        table.clear();
+        for (std::multimap<std::string, RbFunction*>::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
+            table.insert(std::pair<std::string, RbFunction*>((*i).first, (RbFunction*)((*i).second->clone())));
+        
+        parentTable = x.parentTable;
+    }
+    
+    return (*this);
+}
+
+
 
 /** Add function to table */
 void MethodTable::addFunction( const std::string name, RbFunction* func ) {

@@ -21,7 +21,7 @@
 #include "Boolean.h"
 #include "Integer.H"
 #include "MatrixReal.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "MemberObject.h"
 #include "Natural.h"
 #include "Real.h"
@@ -392,7 +392,7 @@ DAGNode* VariableContainer::getElement( VectorInteger& index ) {
             throw RbException( "Container element does not support subscripting" );
         else {
             // Get member object pointer to the value
-            MemberObject* elem = static_cast<MemberNode*>( elemPtr )->getMemberObject();            
+            MemberObject* elem = static_cast<DeterministicMemberNode*>( elemPtr )->getMemberObject();            
 
             // Truncate index and delegate job to subelement
             size_t subIndex = valueIndex[0];

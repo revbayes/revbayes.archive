@@ -70,7 +70,7 @@ class Container : public RbComplex {
         // Container functions and basic utility functions you should not have to override
         ContainerIterator               begin(void) const;                                                  //!< Begin iterator
         ContainerIterator               end(void) const;                                                    //!< End iterator
-        int                             getDim(void) const { return length.size(); }                        //!< Get number of dimensions (1 for vector, 2 for matrix, etc)
+        int                             getDim(void) const { return int(length.size()); }                        //!< Get number of dimensions (1 for vector, 2 for matrix, etc)
         const std::string&              getElementType(void) const { return elementType; }                  //!< Get element type
         const std::vector<size_t>&      getLength(void) const { return length; }                            //!< Get length in each dim
         const TypeSpec                  getTypeSpec(void) const;                                            //!< Get language type of the object

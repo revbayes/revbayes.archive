@@ -21,7 +21,7 @@
 #include "Boolean.h"
 #include "DistributionCategorical.h"
 #include "IntegratorNode.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "MoveSchedule.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -42,7 +42,7 @@ IntegratorNode::IntegratorNode( void )
 
 
 /** Constructor from cond likes and distribution */
-IntegratorNode::IntegratorNode( MemberNode* condLikeVec, Distribution* dist )
+IntegratorNode::IntegratorNode( DeterministicMemberNode* condLikeVec, Distribution* dist )
     : StochasticNode( RbVoid_name ), condLikes( condLikeVec ) {
 
     /* Set distribution here so we avoid inappropriate type for IntegratorNode. Also check type */
@@ -221,7 +221,7 @@ IntegratorNode* IntegratorNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& ne
     copy->storedLnProb = storedLnProb;
 
     /* Set the copy cond likes node to its match in the new DAG */
-    MemberNode* theCondLikesClone = condLikes->cloneDAG( newNodes );
+    DeterministicMemberNode* theCondLikesClone = condLikes->cloneDAG( newNodes );
     copy->condLikes = theCondLikesClone;
     copy->parents.insert( theCondLikesClone );
     theCondLikesClone->addChildNode( copy );
@@ -394,7 +394,7 @@ void IntegratorNode::swapParentNode( DAGNode* oldNode, DAGNode* newNode ) {
     parents.insert( newNode );
 
     if ( oldNode == condLikes )
-        condLikes = static_cast<MemberNode*>( newNode );
+        condLikes = static_cast<DeterministicMemberNode*>( newNode );
 
     if ( !touched ) {
 

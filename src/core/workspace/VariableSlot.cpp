@@ -23,7 +23,7 @@
 #include "ContainerNode.h"
 #include "Frame.h"
 #include "LookupNode.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -271,7 +271,7 @@ bool VariableSlot::isValidVariable( DAGNode* newVariable ) const {
 DAGNode* VariableSlot::nullVariable( const TypeSpec& typeSp ) {
 
     if ( Workspace::userWorkspace().isXOfTypeY( typeSp.getType(), MemberObject_name ) )
-        return new MemberNode( typeSp.getType() );
+        return new DeterministicMemberNode( typeSp.getType() );
     else if ( typeSpec.getDim() > 0 )
         return new ContainerNode( new ValueContainer( typeSp ) );
     else
@@ -399,7 +399,7 @@ void VariableSlot::setElement( VectorInteger& index, DAGNode* newVar, bool conve
         }
 
         size_t indx = size_t( index[0] );
-        static_cast<MemberNode*>( variable )->setElement( indx, newVar, convert );
+        static_cast<DeterministicMemberNode*>( variable )->setElement( indx, newVar, convert );
     }
 }
 
@@ -544,7 +544,7 @@ void VariableSlot::setVariable( DAGNode* newVariable, bool convert ) {
 DAGNode* VariableSlot::wrapValue( RbObject* value ) const {
 
     if ( value->isType( MemberObject_name ) )
-        return new MemberNode( static_cast<MemberObject*>( value ) );
+        return new DeterministicMemberNode( static_cast<MemberObject*>( value ) );
     else if ( value->isType( Container_name ) )
         return new ContainerNode( static_cast<Container*>( value ) );
     else

@@ -90,7 +90,7 @@ class MemberObject: public RbComplex {
         // Friend classes
         friend class                DistributionFunction;                                                               //!< Give DistributionFunction access
         friend class                MemberFunction;                                                                     //!< Member functino needs access to executeOperation
-        friend class                MemberNode;                                                                         //!< Give MemberNode access
+        friend class                DeterministicMemberNode;                                                                         //!< Give MemberNode access
 };
 
 #endif

@@ -24,7 +24,7 @@
 #include "Ellipsis.h"
 #include "Func_normalize.h"
 #include "Integer.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "RbException.h"
 #include "RbMathVector.h"
 #include "RbNames.h"
@@ -57,7 +57,7 @@ DAGNode* Func_normalize::execute( void ) {
     // normalize the vector
     RbMath::normalize(tempVec, desiredSum);
         
-    return new MemberNode( new Simplex( tempVec ) );
+    return new DeterministicMemberNode( new Simplex( tempVec ) );
 }
 
 

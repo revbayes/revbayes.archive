@@ -15,7 +15,7 @@
 
 
 #include "ConstantNode.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "Real.h"
@@ -102,7 +102,7 @@ DAGNode* Simplex::getSubelement( VectorInteger& index ) const {
         throw RbException( "Index out of bounds for " + Simplex_name );
 
     if ( index[0] < 0 )
-        return new MemberNode( this->clone() );
+        return new DeterministicMemberNode( this->clone() );
 
     else
         return new ConstantNode( new RealPos( value[index[0]] ) );

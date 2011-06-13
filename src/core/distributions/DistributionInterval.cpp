@@ -21,7 +21,7 @@
 #include "DAGNode.h"
 #include "DistributionInterval.h"
 #include "MemberFunction.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "ReferenceRule.h"
@@ -52,7 +52,7 @@ DAGNode* DistributionInterval::executeOperation( const std::string& name, Argume
         if ( quant->isType( Container_name ) )
             return new ContainerNode( static_cast<Container*>( quant ) );
         else if ( quant->isType( MemberObject_name ) )
-            return new MemberNode( static_cast<MemberObject*>( quant ) );
+            return new DeterministicMemberNode( static_cast<MemberObject*>( quant ) );
         else
             return new ConstantNode( quant );
     }

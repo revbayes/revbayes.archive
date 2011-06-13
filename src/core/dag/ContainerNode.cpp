@@ -21,7 +21,7 @@
 #include "Container.h"
 #include "ContainerNode.h"
 #include "ConverterNode.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -274,7 +274,7 @@ DAGNode* ContainerNode::convertVarElement( const VectorInteger& index, DAGNode* 
         if ( temp->isType( Container_name ) )
             return new ContainerNode( static_cast<Container*>( temp ) );
         else if ( temp->isType( MemberObject_name ) )
-            return new MemberNode( static_cast<MemberObject*>( temp ) );
+            return new DeterministicMemberNode( static_cast<MemberObject*>( temp ) );
         else
             return new ConstantNode( temp );
     }
@@ -394,7 +394,7 @@ DAGNode* ContainerNode::getElementOwner( VectorInteger& index ) {
         }
 
         // Get element
-        MemberNode* elem = dynamic_cast<MemberNode*>( container->getElement( index ) );
+        DeterministicMemberNode* elem = dynamic_cast<DeterministicMemberNode*>( container->getElement( index ) );
         if ( elem == NULL )
             throw RbException( getName() + index.toIndexString() + " does not exist" );
 

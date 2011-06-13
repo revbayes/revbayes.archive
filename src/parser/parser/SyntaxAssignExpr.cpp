@@ -19,7 +19,7 @@
 #include "ContainerNode.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbOptions.h"
@@ -224,7 +224,7 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
         if ( exprValue == NULL ) {
             throw RbException( "Distribution function returns NULL" );
         }
-        MemberNode* dist = dynamic_cast<MemberNode*>( exprValue );
+        DeterministicMemberNode* dist = dynamic_cast<DeterministicMemberNode*>( exprValue );
         if ( dist == NULL || dist->getValue() == NULL || !dist->getValue()->isType( Distribution_name ) ) {
             delete exprValue;
             throw RbException( "Function does not return a distribution" );
@@ -326,7 +326,7 @@ void SyntaxAssignExpr::print(std::ostream& o) const {
 DAGNode* SyntaxAssignExpr::wrapValue( RbObject* value ) const {
 
     if ( value->isType( MemberObject_name ) )
-        return new MemberNode( static_cast<MemberObject*>( value ) );
+        return new DeterministicMemberNode( static_cast<MemberObject*>( value ) );
     else if ( value->isType( Container_name ) )
         return new ContainerNode( static_cast<Container*>( value ) );
     else

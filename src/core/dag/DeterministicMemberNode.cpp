@@ -18,7 +18,7 @@
 
 #include "Boolean.h"
 #include "MemberFrame.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -32,13 +32,13 @@
 
 
 /** Constructor of empty member node */
-MemberNode::MemberNode( const std::string& valType )
+DeterministicMemberNode::DeterministicMemberNode( const std::string& valType )
     : DeterministicNode( valType ), memberObject( NULL ) {
 }
 
 
 /** Basic constructor of member node */
-MemberNode::MemberNode( MemberObject* val )
+DeterministicMemberNode::DeterministicMemberNode( MemberObject* val )
     : DeterministicNode( val->getType() ), memberObject( val ) {
 
     /* Check for cycles */
@@ -71,7 +71,7 @@ MemberNode::MemberNode( MemberObject* val )
 
 
 /** Copy constructor */
-MemberNode::MemberNode( const MemberNode& x )
+DeterministicMemberNode::DeterministicMemberNode( const DeterministicMemberNode& x )
     : DeterministicNode( x ), memberObject( NULL ) {
 
     if ( x.memberObject != NULL ) {
@@ -117,7 +117,7 @@ MemberNode::MemberNode( const MemberNode& x )
 
 
 /** Destructor */
-MemberNode::~MemberNode( void ) {
+DeterministicMemberNode::~DeterministicMemberNode( void ) {
 
     if ( numRefs() != 0 )
         throw RbException( "Cannot delete MemberNode with references" ); 
@@ -132,7 +132,7 @@ MemberNode::~MemberNode( void ) {
 
 
 /** Assignment operator */
-MemberNode& MemberNode::operator=( const MemberNode& x ) {
+DeterministicMemberNode& DeterministicMemberNode::operator=( const DeterministicMemberNode& x ) {
 
     if ( this != &x ) {
         
@@ -181,20 +181,20 @@ MemberNode& MemberNode::operator=( const MemberNode& x ) {
 
 
 /** Clone this object */
-MemberNode* MemberNode::clone( void ) const {
+DeterministicMemberNode* DeterministicMemberNode::clone( void ) const {
 
-	return new MemberNode( *this );
+	return new DeterministicMemberNode( *this );
 }
 
 
 /** Clone the entire graph: clone children, swap parent */
-MemberNode* MemberNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes ) const {
+DeterministicMemberNode* DeterministicMemberNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes ) const {
 
     if ( newNodes.find( this ) != newNodes.end() )
-        return static_cast<MemberNode*>( newNodes[ this ] );
+        return static_cast<DeterministicMemberNode*>( newNodes[ this ] );
 
     /* Get pristine copy */
-    MemberNode* copy = new MemberNode( valueType );
+    DeterministicMemberNode* copy = new DeterministicMemberNode( valueType );
     newNodes[ this ] = copy;
 
     /* Clone member object and value */
@@ -230,7 +230,7 @@ MemberNode* MemberNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes )
 
 
 /** Execute function to get its value */
-DAGNode* MemberNode::executeMethod(const std::string& name, const std::vector<Argument>& args) const {
+DAGNode* DeterministicMemberNode::executeMethod(const std::string& name, const std::vector<Argument>& args) const {
 
     /* Using this calling convention indicates that we are only interested in
        evaluating the function once */
@@ -239,7 +239,7 @@ DAGNode* MemberNode::executeMethod(const std::string& name, const std::vector<Ar
 
 
 /** Does element referred to by index exist? */
-bool MemberNode::existsElement( VectorInteger& index ) {
+bool DeterministicMemberNode::existsElement( VectorInteger& index ) {
 
     if ( index.size() == 0 )
         return true;
@@ -258,7 +258,7 @@ bool MemberNode::existsElement( VectorInteger& index ) {
 
 
 /** Get class vector describing type of DAG node */
-const VectorString& MemberNode::getDAGClass() const {
+const VectorString& DeterministicMemberNode::getDAGClass() const {
 
     static VectorString rbClass = VectorString( MemberNode_name ) + DeterministicNode::getDAGClass();
     return rbClass;
@@ -266,7 +266,7 @@ const VectorString& MemberNode::getDAGClass() const {
 
 
 /** Get element for parser */
-DAGNode* MemberNode::getElement( VectorInteger& index ) {
+DAGNode* DeterministicMemberNode::getElement( VectorInteger& index ) {
 
     if ( index.size() == 0 )
         return this;
@@ -285,7 +285,7 @@ DAGNode* MemberNode::getElement( VectorInteger& index ) {
 
 
 /** Get element owner for parser */
-DAGNode* MemberNode::getElementOwner( VectorInteger& index ) {
+DAGNode* DeterministicMemberNode::getElementOwner( VectorInteger& index ) {
 
     // Check for erroneous call
     if ( index.size() == 0 )
@@ -320,14 +320,14 @@ DAGNode* MemberNode::getElementOwner( VectorInteger& index ) {
 
 
 /** Get type of a named member variable */
-const TypeSpec& MemberNode::getMemberTypeSpec( const RbString& name ) const {
+const TypeSpec& DeterministicMemberNode::getMemberTypeSpec( const RbString& name ) const {
 
     return memberObject->getMemberTypeSpec( name );
 }
 
 
 /** Is node a constant value? */
-bool MemberNode::isConst( void ) const {
+bool DeterministicMemberNode::isConst( void ) const {
 
     if ( memberObject == NULL )
         return true;
@@ -337,7 +337,7 @@ bool MemberNode::isConst( void ) const {
 
 
 /** Print struct for user */
-void MemberNode::printStruct(std::ostream& o) const {
+void DeterministicMemberNode::printStruct(std::ostream& o) const {
 
     o << "_DAGClass    = " << getDAGClass() << std::endl;
     o << "_valueType   = " << valueType << std::endl;
@@ -361,7 +361,7 @@ void MemberNode::printStruct(std::ostream& o) const {
 
 
 /** Complete info about object */
-std::string MemberNode::richInfo(void) const {
+std::string DeterministicMemberNode::richInfo(void) const {
 
     std::ostringstream o;
 
@@ -387,7 +387,7 @@ std::string MemberNode::richInfo(void) const {
 
 
 /** Set element for parser, if our member object wants this (see getElementOwner) */
-void MemberNode::setElement( size_t index, DAGNode* var, bool convert ) {
+void DeterministicMemberNode::setElement( size_t index, DAGNode* var, bool convert ) {
 
     if ( index >= memberObject->getSubelementsSize() ) {
         std::ostringstream msg;
@@ -403,7 +403,7 @@ void MemberNode::setElement( size_t index, DAGNode* var, bool convert ) {
 
 
 /** Update value and stored value after node and its surroundings have been touched by a move */
-void MemberNode::update(void) {
+void DeterministicMemberNode::update(void) {
 
     if (touched && !changed) {
 

@@ -19,7 +19,7 @@
 #include "ContainerNode.h"
 #include "ContainerIterator.h"
 #include "DAGNode.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -326,7 +326,7 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
         if ( elemPtr == NULL )
             return new ConstantNode( elementType );
         else if ( elemPtr->isType( MemberObject_name ) )
-            return new MemberNode( static_cast<MemberObject*>( elemPtr->clone() ) );
+            return new DeterministicMemberNode( static_cast<MemberObject*>( elemPtr->clone() ) );
         else
             return new ConstantNode( elemPtr->clone() );
     }

@@ -23,7 +23,7 @@
 #include "Distribution.h"
 #include "DistributionFunction.h"
 #include "DistributionInterval.h"
-#include "MemberNode.h"
+#include "DeterministicMemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RealPos.h"
@@ -168,7 +168,7 @@ DAGNode* DistributionFunction::execute( void ) {
         if ( draw->isType( Container_name ) )
             return new ContainerNode( static_cast<Container*   >( draw ) );
         else if ( draw->isType( MemberObject_name ) )
-            return new MemberNode   ( static_cast<MemberObject*>( draw ) );
+            return new DeterministicMemberNode   ( static_cast<MemberObject*>( draw ) );
         else
             return new ConstantNode( draw );
     }
@@ -184,7 +184,7 @@ DAGNode* DistributionFunction::execute( void ) {
         if ( quant->isType( Container_name ) )
             return new ContainerNode( static_cast<Container*   >( quant ) );
         else if ( quant->isType( MemberObject_name ) )
-            return new MemberNode   ( static_cast<MemberObject*>( quant ) );
+            return new DeterministicMemberNode   ( static_cast<MemberObject*>( quant ) );
         else
             return new ConstantNode( quant );
     }
