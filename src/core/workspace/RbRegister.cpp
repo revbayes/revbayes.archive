@@ -27,6 +27,7 @@
 #include "FunctionTable.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbAbstract.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbObject.h"
@@ -97,7 +98,6 @@
 #include "Func_normalize.h"
 #include "Func_quit.h"
 #include "Func_s.h"
-//#include "Func_source.h"
 #include "Func_sqrt.h"
 #include "Func_v.h"
 
@@ -113,6 +113,10 @@ void Workspace::initializeGlobalWorkspace(void) {
 
     try {
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
+
+        /* Add abstract types */
+        addType( new RbAbstract( VectorString(RbObject_name) ) );
+        addType( new RbAbstract( VectorString(MemberObject_name) + RbString(RbComplex_name) + RbString(RbObject_name) ) );
 
         /* Add primitive types (alphabetic order) */
         addType( new Boolean()             );
@@ -220,8 +224,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "normalize", new Func_normalize()    );
         addFunction( "q",         new Func_quit()         );
         addFunction( "quit",      new Func_quit()         );
-// TODO: @Fredrik the source function uses files from the parser. However, if we want to have the core working with the gui and without the parser, no core file should depend or include any parser (or gui) class       
-//        addFunction( "source",    new Func_source()       );
         addFunction( "sqrt",      new Func_sqrt()         );
 
         /* Add regular templated functions (alphabetic order) */

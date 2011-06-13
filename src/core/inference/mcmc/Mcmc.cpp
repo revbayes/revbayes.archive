@@ -227,10 +227,13 @@ void Mcmc::update(void) {
     outFile << std::endl;
 
     /* Print starting values to outfile */
+    outFile << std::fixed;
     for (std::vector<VariableNode*>::iterator i=variableNodes.begin(); i!=variableNodes.end(); i++) {
+        if ( i != variableNodes.begin() )
+            outFile << "\t";
         (*i)->printValue(outFile);
-        outFile << std::endl;
     }
+    outFile << std::endl;
 
     /* Get initial lnProbability of model */
     double lnProbability = 0.0;
@@ -248,7 +251,7 @@ void Mcmc::update(void) {
     std::cout << std::endl;
     std::cout << "Gen\tlnProbability" << std::endl;
 
-    for (int gen=1; gen<ngen; gen++) {
+    for (int gen=1; gen<=ngen; gen++) {
 
         /* Get the move */
         double u = rng->uniform01();
@@ -283,6 +286,8 @@ void Mcmc::update(void) {
         //! @todo : Do appropriate monitoring; just printing all variable nodes for now */
         if (gen % samplefreq == 0) {
             for (std::vector<VariableNode*>::iterator i=variableNodes.begin(); i!=variableNodes.end(); i++) {
+                if ( i != variableNodes.begin() )
+                    outFile << "\t";
                 (*i)->printValue(outFile);
             }
             outFile << std::endl;

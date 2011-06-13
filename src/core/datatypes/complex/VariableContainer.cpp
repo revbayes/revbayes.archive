@@ -331,7 +331,7 @@ VectorNatural VariableContainer::getIndex(const DAGNode* elem) const {
 
     ContainerIterator contIt = begin();
     for ( std::vector<DAGNode*>::const_iterator i = elements.begin(); i != it; i++ )
-        ;
+        contIt++;
 
     return VectorNatural( contIt );
 }

@@ -6,16 +6,17 @@
 
 #include <iostream>
 
+#include "Func_source.h"
 #include "Parser.h"
 #include "RbSettings.h"
 #include "Workspace.h"
 #include "UserInterface.h"
 
 
-
 int main(int argc, char **argv) {
 
     // Print a nifty message
+	RBOUT("\n\n");
 	RBOUT("                             RevBayes\n");
 	RBOUT("          An R-like environment for phylogenetic analysis");
 	RBOUT("                     using Bayesian inference\n");
@@ -23,6 +24,9 @@ int main(int argc, char **argv) {
 
     RbSettings::userSettings().initializeUserSettings();
     Workspace::globalWorkspace().initializeGlobalWorkspace();
+
+    /* Add stuff that Sebastian does not want to have in the core */
+    Workspace::globalWorkspace().addFunction( "source", new Func_source() ); 
 
 #	if defined DEBUG_PARSER
     std::cerr << "Global workspace after initialization:" << std::endl;
