@@ -98,8 +98,15 @@
 #include "Func_normalize.h"
 #include "Func_quit.h"
 #include "Func_s.h"
-#include "Func_sqrt.h"
 #include "Func_v.h"
+
+/* Math functions */
+#include "Func_exp.h"
+#include "Func_ln.h"
+#include "Func_log.h"
+#include "Func_power.h"
+#include "Func_sin.h"
+#include "Func_sqrt.h"
 
 /* Regular templated functions */
 #include "Func_transpose.h"
@@ -224,7 +231,14 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "normalize", new Func_normalize()    );
         addFunction( "q",         new Func_quit()         );
         addFunction( "quit",      new Func_quit()         );
-        addFunction( "sqrt",      new Func_sqrt()         );
+        
+        /* Add math functions (alphabetical order) */ 
+        addFunction( "exp",         new Func_exp()          );
+        addFunction( "ln",          new Func_ln()           );
+        addFunction( "log",         new Func_log()          );
+        addFunction( "power",       new Func_power()        );
+        addFunction( "sin",         new Func_sin()          );
+        addFunction( "sqrt",        new Func_sqrt()         );
 
         /* Add regular templated functions (alphabetic order) */
         // TODO: Add v and s functions

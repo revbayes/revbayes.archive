@@ -59,6 +59,9 @@ const DAGNode* Frame::getVariable( const std::string& name ) const {
  */
 bool Frame::isSameOrParentOf( Frame* otherFrame ) const {
 
+    if (otherFrame == NULL) 
+        return false;
+    
     if ( this == otherFrame )
         return true;
 

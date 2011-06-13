@@ -1,7 +1,6 @@
 /**
  * @file
- * This file contains the implementation of Func_sqrt, which 
- * calculates the square root of a number.
+ * This file contains the implementation of Func_exp.
  *
  * @brief Implementation of Func_sqrt
  *
@@ -19,7 +18,7 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
-#include "Func_sqrt.h"
+#include "Func_exp.h"
 #include "RealPos.h"
 #include "Real.h"
 #include "RbException.h"
@@ -33,51 +32,48 @@
 #include <cmath>
 
 /** Clone object */
-Func_sqrt* Func_sqrt::clone( void ) const {
-
-    return new Func_sqrt( *this );
+Func_exp* Func_exp::clone( void ) const {
+    
+    return new Func_exp( *this );
 }
 
 
 /** Execute function */
-DAGNode* Func_sqrt::execute( void ) {
-
-    const Real* x = static_cast<const Real*>( args[0].getValue() );
-
-    if ( *x < 0.0 )
-		throw RbException( "Square root of negative number. RevBayes does not (yet) support complex numbers" );
-
-    return new ConstantNode( new RealPos( sqrt( *x ) ) );
+DAGNode* Func_exp::execute( void ) {
+    
+    const Real* a = static_cast<const Real*>( args[0].getValue() );
+    
+    return new ConstantNode( new RealPos( exp(a->getValue()) ) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_sqrt::getArgumentRules( void ) const {
-
+const ArgumentRules& Func_exp::getArgumentRules( void ) const {
+    
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
-
+    
     if (!rulesSet) 
-		{
-        argumentRules.push_back( new ValueRule( "x", RealPos_name ) );
+    {
+        argumentRules.push_back( new ValueRule( "x", Real_name ) );
         rulesSet = true;
-		}
-
+    }
+    
     return argumentRules;
 }
 
 
 /** Get class vector describing type of object */
-const VectorString& Func_sqrt::getClass( void ) const {
-
-    static VectorString rbClass = VectorString( Func_sqrt_name ) + RbFunction::getClass();
+const VectorString& Func_exp::getClass( void ) const {
+    
+    static VectorString rbClass = VectorString( Func_exp_name ) + RbFunction::getClass();
     return rbClass;
 }
 
 
 /** Get return type */
-const TypeSpec Func_sqrt::getReturnType( void ) const {
-
+const TypeSpec Func_exp::getReturnType( void ) const {
+    
     return TypeSpec( RealPos_name );
 }
 
