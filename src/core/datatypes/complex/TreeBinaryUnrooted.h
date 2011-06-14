@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of Vector, a complex type
- * that acts as a base class for all vectors.
+ * This file contains the declaration of TreeBinaryUnrooted, a member type
+ * for an unrooted, binary tree.
  *
- * @brief Declaration of Vector
+ * @brief Declaration of TreeBinaryUnrooted
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -16,8 +16,8 @@
  * $Id$
  */
 
-#ifndef TreeUnrooted_H
-#define TreeUnrooted_H
+#ifndef TreeBinaryUnrooted_H
+#define TreeBinaryUnrooted_H
 
 #include <string>
 #include <vector>
@@ -27,26 +27,26 @@
 class RandomNumberGenerator;
 
 
-class TreeUnrooted : public Tree {
+class TreeBinaryUnrooted : public Tree {
     
 public:
-    TreeUnrooted(void);
-    TreeUnrooted(const TreeUnrooted& ut);
-    TreeUnrooted(std::vector<std::string> names);
-    TreeUnrooted(std::string newickStr);
-    TreeUnrooted(int nTips);
-    ~TreeUnrooted(void);
+    TreeBinaryUnrooted(void);
+    TreeBinaryUnrooted(const TreeBinaryUnrooted& ut);
+    TreeBinaryUnrooted(std::vector<std::string> names);
+    TreeBinaryUnrooted(std::string newickStr);
+    TreeBinaryUnrooted(int nTips);
+    ~TreeBinaryUnrooted(void);
     
     
     // Basic utility functions
-    TreeUnrooted*                 clone(void) const;                                                            //!< Clone object
+    TreeBinaryUnrooted*           clone(void) const;                                                            //!< Clone object
     bool                          equals(const RbObject* x) const;                                              //!< Equals comparison
     const VectorString&           getClass(void) const;                                                         //!< Get class vector
     void                          printValue(std::ostream& o) const;                                            //!< Print value for user
     std::string                   toString(void) const { return getNewickTree(); }                              //!< Complete info
     
     // Member variable functions
-    const MemberRules&            getMemberRules(void) const;                                                  //!< Get member rules
+    const MemberRules&            getMemberRules(void) const;                                                   //!< Get member rules
     void                          setVariable(const std::string& name, DAGNode* var);                           //!< Set member variable
     void                          setValue(const std::string& name, RbObject* val);                             //!< Set member variable
     

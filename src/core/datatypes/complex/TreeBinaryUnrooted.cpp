@@ -1,5 +1,5 @@
 /*
- *  TreeUnrooted.cpp
+ *  TreeBinaryUnrooted.cpp
  *  revbayes_xcode
  *
  *  Created by John Huelsenbeck on 8/24/10.
@@ -12,20 +12,20 @@
 #include "RbNames.h"
 #include "ReferenceRule.h"
 #include "Tree.h"
-#include "TreeUnrooted.h"
+#include "TreeBinaryUnrooted.h"
 #include "VectorString.h"
 
 
 
-TreeUnrooted::TreeUnrooted(void) : Tree( getMemberRules() ) {
+TreeBinaryUnrooted::TreeBinaryUnrooted(void) : Tree( getMemberRules() ) {
     
 }
 
-TreeUnrooted::TreeUnrooted(const TreeUnrooted& ut) : Tree( getMemberRules() ) {
+TreeBinaryUnrooted::TreeBinaryUnrooted(const TreeBinaryUnrooted& ut) : Tree( getMemberRules() ) {
     
 }
 
-TreeUnrooted::TreeUnrooted(std::vector<std::string> names) : Tree( getMemberRules() ) {
+TreeBinaryUnrooted::TreeBinaryUnrooted(std::vector<std::string> names) : Tree( getMemberRules() ) {
     
     // initialize the number of tips in the tree
     setNumberOfTips( int(names.size()) );
@@ -38,40 +38,40 @@ TreeUnrooted::TreeUnrooted(std::vector<std::string> names) : Tree( getMemberRule
     buildRandomTree(nNodes, GLOBAL_RNG);
 }
 
-TreeUnrooted::TreeUnrooted(std::string newickStr) : Tree( getMemberRules() ) {
+TreeBinaryUnrooted::TreeBinaryUnrooted(std::string newickStr) : Tree( getMemberRules() ) {
     
 }
 
-TreeUnrooted::TreeUnrooted(int nTips) : Tree( getMemberRules() ) {
+TreeBinaryUnrooted::TreeBinaryUnrooted(int nTips) : Tree( getMemberRules() ) {
     
 }
 
-TreeUnrooted::~TreeUnrooted(void) {
+TreeBinaryUnrooted::~TreeBinaryUnrooted(void) {
     
     deleteNodes();
 }
 
 /* Clone this tree */
-TreeUnrooted* TreeUnrooted::clone(void) const {
-    return new TreeUnrooted(*this);
+TreeBinaryUnrooted* TreeBinaryUnrooted::clone(void) const {
+    return new TreeBinaryUnrooted(*this);
 }
 
 /* Equals comparison */
-bool TreeUnrooted::equals(const RbObject* x) const {
+bool TreeBinaryUnrooted::equals(const RbObject* x) const {
     return x == this;
 }
 
-const VectorString& TreeUnrooted::getClass(void) const {
+const VectorString& TreeBinaryUnrooted::getClass(void) const {
     
-    static VectorString rbClass = VectorString(TreeUnrooted_name) + Tree::getClass();
+    static VectorString rbClass = VectorString(TreeBinaryUnrooted_name) + Tree::getClass();
     return rbClass;
 }
 
-void TreeUnrooted::printValue(std::ostream& o) const {
+void TreeBinaryUnrooted::printValue(std::ostream& o) const {
     o << newick << std::endl;
 }
 
-const MemberRules& TreeUnrooted::getMemberRules(void) const {
+const MemberRules& TreeBinaryUnrooted::getMemberRules(void) const {
     
     static MemberRules memberRules;
     static bool        rulesSet = false;
@@ -93,7 +93,7 @@ const MemberRules& TreeUnrooted::getMemberRules(void) const {
 }
 
 /** Map calls to member methods */
-DAGNode* TreeUnrooted::executeOperation(const std::string& name, ArgumentFrame& args) {
+DAGNode* TreeBinaryUnrooted::executeOperation(const std::string& name, ArgumentFrame& args) {
     
     if (false) 
     {
@@ -105,7 +105,7 @@ DAGNode* TreeUnrooted::executeOperation(const std::string& name, ArgumentFrame& 
 }
 
 /** Do not allow the user to set the index */
-void TreeUnrooted::setValue(const std::string& name, RbObject* val) {
+void TreeBinaryUnrooted::setValue(const std::string& name, RbObject* val) {
     
     //    if (name == "index")
     //        throw RbException("Cannot change index of a tree node");
@@ -113,7 +113,7 @@ void TreeUnrooted::setValue(const std::string& name, RbObject* val) {
 }
 
 /** Do not allow the user to set the index */
-void TreeUnrooted::setVariable(const std::string& name, DAGNode* var) {
+void TreeBinaryUnrooted::setVariable(const std::string& name, DAGNode* var) {
     
     //    if (name == "index")
     //        throw RbException("Cannot change index of a tree node");
@@ -121,7 +121,7 @@ void TreeUnrooted::setVariable(const std::string& name, DAGNode* var) {
 }
 
 /** Get method specifications */
-const MethodTable& TreeUnrooted::getMethods(void) const {
+const MethodTable& TreeBinaryUnrooted::getMethods(void) const {
     
     static MethodTable      methodInits;
     static ArgumentRules    isTipRules;
@@ -140,7 +140,7 @@ const MethodTable& TreeUnrooted::getMethods(void) const {
     return methodInits;
 }
 
-void TreeUnrooted::buildRandomTree(int nTips, RandomNumberGenerator* rng) {
+void TreeBinaryUnrooted::buildRandomTree(int nTips, RandomNumberGenerator* rng) {
     
 }
 
