@@ -39,28 +39,35 @@ public:
     virtual                            ~NclReader(void);
     
     static NclReader&                   getInstance(void);
-    std::vector<CharacterMatrix*>*      convertFromNcl(std::vector<std::string>& fnv);
-    bool                                fileExists(const char *fn) const;
-    std::vector<CharacterMatrix*>*      readData(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
-    std::vector<CharacterMatrix*>*      readData(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
+    std::vector<CharacterMatrix*>*      readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
     
     // TAH: stuff for reading trees
     std::vector<Tree*>*                 readTrees(const std::string fn, const std::string fileFormat);
-    std::vector<Tree*>*                 readTrees(const char* fileName, const std::string fileFormat);
-    std::vector<Tree*>*                 convertTreesFromNcl();
-    Tree*                               translateNclSimpleTreeToTree(NxsSimpleTree &nTree);
     
     void                                clearContent() { nexusReader.ClearContent(); }
     
+    
+    
 private:
-    MultiFormatReader                   nexusReader;
     CharacterMatrix*                    createAminoAcidMatrix(NxsCharactersBlock* charblock);
     CharacterMatrix*                    createContinuousMatrix(NxsCharactersBlock* charblock);
     CharacterMatrix*                    createNucleotideMatrix(NxsCharactersBlock* charblock);
     CharacterMatrix*                    createStandardMatrix(NxsCharactersBlock* charblock);
     
+    bool                                fileExists(const char *fn) const;
+    
+    // methods for reading sequence alignments
+    std::vector<CharacterMatrix*>*      convertFromNcl(std::vector<std::string>& fnv);
+    std::vector<CharacterMatrix*>*      readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
+    
     // methods for reading trees
     void                                constructTreefromNclRecursively(TreeNode *tn, const NxsSimpleNode* tnNcl);
+    std::vector<Tree*>*                 readTrees(const char* fileName, const std::string fileFormat);
+    std::vector<Tree*>*                 convertTreesFromNcl();
+    Tree*                               translateNclSimpleTreeToTree(NxsSimpleTree &nTree);
+    
+    
+    MultiFormatReader                   nexusReader;
 };
 
 #endif

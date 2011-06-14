@@ -334,7 +334,7 @@ NclReader& NclReader::getInstance(void) {
 	return rb;
 }
 
-std::vector<CharacterMatrix*>* NclReader::readData(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
+std::vector<CharacterMatrix*>* NclReader::readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
 	// check that the files exist
     for (std::vector<std::string>::const_iterator f = fn.begin(); f != fn.end(); f++)
@@ -352,7 +352,7 @@ std::vector<CharacterMatrix*>* NclReader::readData(const std::vector<std::string
     // read the data files
     for (std::vector<std::string>::const_iterator f = fn.begin(); f != fn.end(); f++)
     {
-        std::vector<CharacterMatrix*>* v = readData( (*f).c_str(), fileFormat, dataType, isInterleaved );
+        std::vector<CharacterMatrix*>* v = readMatrices( (*f).c_str(), fileFormat, dataType, isInterleaved );
 		if (v != NULL)
         {
 			for (std::vector<CharacterMatrix*>::iterator m = v->begin(); m != v->end(); m++)
@@ -367,7 +367,7 @@ std::vector<CharacterMatrix*>* NclReader::readData(const std::vector<std::string
     return cmv;
 }
 
-std::vector<CharacterMatrix*>* NclReader::readData(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
+std::vector<CharacterMatrix*>* NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
 	// check that the file exists
 	if ( !fileExists(fileName) )	
