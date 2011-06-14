@@ -233,7 +233,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "quit",      new Func_quit()         );
         
         /* Add math functions (alphabetical order) */ 
-        addFunction( "exp",         new Func_exp()          );
+        addFunction( "expf",        new Func_exp()          );
         addFunction( "ln",          new Func_ln()           );
         addFunction( "log",         new Func_log()          );
         addFunction( "power",       new Func_power()        );
