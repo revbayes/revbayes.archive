@@ -15,11 +15,15 @@
  * $Id$
  */
 
-#include "ConstantNode.h"
+#include "Boolean.h"
+#include "ContainerNode.h"
 #include "Func_readAlignment.h"
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "ValueContainer.h"
+#include "ValueRule.h"
+#include "VectorString.h"
 
 /** Clone object */
 Func_readAlignment* Func_readAlignment::clone( void ) const {
@@ -33,9 +37,17 @@ DAGNode* Func_readAlignment::execute( void ) {
     // get the global instance of the NCL reader
     NclReader& reader = NclReader::getInstance();
     
-    std::vector<CharacterMatrix*>* m = reader.readMatrices();
+    const VectorString* fn       = static_cast<const VectorString*>( args[0].getValue() );
+    const RbString* fileFormat   = static_cast<const RbString*>( args[1].getValue() );
+    const RbString* dataType     = static_cast<const RbString*>( args[2].getValue() );
+    const Boolean* isInterleaved = static_cast<const Boolean*>( args[3].getValue() );
+
+    std::vector<CharacterMatrix*>* m = reader.readMatrices(fn->getStdVector(),fileFormat->getValue(),dataType->getValue(),isInterleaved->getValue());
     
-    return new ConstantNode( new List( readAlignment(a->getValue()) ) );
+    // create a value container with all matrices
+    ValueContainer* vc = new ValueContainer(m);
+    
+    return new ContainerNode( vc );
 }
 
 
@@ -47,7 +59,10 @@ const ArgumentRules& Func_readAlignment::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "x", Real_name ) );
+        argumentRules.push_back( new ValueRule( "file", VectorString_name ) );
+        argumentRules.push_back( new ValueRule( "format", RbString_name ) );
+        argumentRules.push_back( new ValueRule( "type", RbString_name ) );
+        argumentRules.push_back( new ValueRule( "interleaved", Boolean_name ) );
         rulesSet = true;
     }
     

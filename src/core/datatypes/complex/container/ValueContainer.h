@@ -56,10 +56,10 @@ class ValueContainer : public Container {
         friend class                    ContainerNode;                                                              //!< Give friend class access to elements
 
                                         ValueContainer(size_t n, RbObject* x);                                      //!< Vector with n copies of x
+                                        ValueContainer(std::vector<RbObject*>* values);                              //!< Vector from std::vector
                                         ValueContainer(const std::vector<size_t>& len, RbObject* x);                //!< Array of given dimensions with copies of x
                                         ValueContainer(const TypeSpec& typeSpec);                                   //!< Empty array of given dimensions
                                         ValueContainer(const TypeSpec& typeSpec, const std::vector<size_t>& length);//!< Default value (NULL) array of given dimensions and length
-                                        ValueContainer(VariableContainer& x);                                       //!< Construct from variable container
                                         ValueContainer(const VariableContainer& x);                                 //!< Construct from const variable container
                                         ValueContainer(const ValueContainer& x);                                    //!< Copy constructor
         virtual                        ~ValueContainer(void);                                                       //!< Destructor

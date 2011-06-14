@@ -58,6 +58,25 @@ ValueContainer::ValueContainer( size_t n, RbObject* x )
     length[0] = elements.size();
 }
 
+/**
+ * Construct container with given vector. 
+ *
+ * @note Calling the constructor with a NULL argument
+ *       will result in an error.
+ */
+ValueContainer::ValueContainer( std::vector<RbObject*>* values )
+: Container( TypeSpec( values->at(0)->getType(), 1 ) ) {
+    
+//    if ( x->getDim() > 0 )
+//        throw RbException( "Illegal construction of container from container variable" );
+    
+    // set the vector
+    elements = *values;
+    
+    // Set length
+    length[0] = elements.size();
+}
+
 
 /**
  * Construct array of given dimensions containing copies of x.
@@ -128,22 +147,6 @@ ValueContainer::ValueContainer( const TypeSpec& typeSpec , const std::vector<siz
     for ( int i = 0; i < size; i++ )
         elements.push_back( getDefaultElement() );
     length = len;
-}
-
-
-/**
- * Construct value container from variable container. This
- * version will possibly trigger the evaluation of some
- * variables in the variable container. Therefore, the
- * VariableContainer reference cannot be const.
- */
-ValueContainer::ValueContainer( VariableContainer& x )
-    : Container( x ) {
-
-    for ( size_t i = 0; i < x.size(); i++ )
-        elements.push_back( x[i]->getValue()->clone() );
-
-    // Note: The length variable is copied already in the Container copy constructor
 }
 
 
