@@ -28,7 +28,7 @@ TreeUnrooted::TreeUnrooted(const TreeUnrooted& ut) : Tree( getMemberRules() ) {
 TreeUnrooted::TreeUnrooted(std::vector<std::string> names) : Tree( getMemberRules() ) {
     
     // initialize the number of tips in the tree
-    setNumberOfTips(names.size());
+    setNumberOfTips( int(names.size()) );
     
     // allocate the nodes
     int nNodes = 2 * getNumberOfTips() - 2;

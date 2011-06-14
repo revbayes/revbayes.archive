@@ -420,27 +420,28 @@ std::vector<Tree*>* RbReader::readTree(const std::string fn, const std::string f
 	
 	// check that the file exist
     if ( !fileExists(fn.c_str()) ) {
-            std::cerr << "Error: Data file \"" << fn << "\"not found" << std::endl;
-            return NULL;
+        std::cerr << "Error: Data file \"" << fn << "\"not found" << std::endl;
+        return NULL;
 	}
 
 	
-	// allocate a vector of matrices
-	std::vector<Tree*>* cmv = new std::vector<Tree*>();
+	// allocate a vector of trees
+	std::vector<Tree*>* trees = new std::vector<Tree*>();
 	
     // read the data files
  	std::vector<Tree*>* v = readTree( fn.c_str(), fileFormat);
 	if (v != NULL) {
 		for (std::vector<Tree*>::iterator m = v->begin(); m != v->end(); m++)
-			cmv->push_back( (*m) );
+			trees->push_back( (*m) );
 		delete v;
 	}
 	else 
 		return NULL;
+    
 	nexusReader.ClearContent();
 	
 	
-    return cmv;
+    return trees;
 }
 
 std::vector<Tree*>* RbReader::readTree(const char* fileName, const std::string fileFormat) {

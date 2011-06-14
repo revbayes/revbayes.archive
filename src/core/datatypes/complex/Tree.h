@@ -57,22 +57,22 @@ public:
 //    virtual void                setSubelement(size_t index, DAGNode* var, bool convert=true);                       //!< Set subelement
     
     // Tree specific methods
-    virtual void                  buildRandomTree(int nTips, RandomNumberGenerator* rng) = 0;
-    std::string                   getNewickTree(void) const { return newick; }
-    int                           getNumberOfNodes(void) { return int(nodes.size()); }
-    int                           getNumberOfTips(void) { return numberOfTips; }
-    TreeNode*                     getRoot(void) { return root; }
-    void                          randomlyBreakTree(RandomNumberGenerator* rng) {}
-    void                          removeSubtreeFromNode(TreeNode* p) {}
-    void                          setNumberOfTips(int x) { numberOfTips = x; }
+    virtual void                buildRandomTree(int nTips, RandomNumberGenerator* rng) = 0;
+    std::string                 getNewickTree(void) const { return newick; }
+    int                         getNumberOfNodes(void) { return int(nodes.size()); }
+    int                         getNumberOfTips(void) { return numberOfTips; }
+    TreeNode*                   getRoot(void) { return root; }
+    void                        randomlyBreakTree(RandomNumberGenerator* rng) {}
+    void                        removeSubtreeFromNode(TreeNode* p) {}
+    void                        setNumberOfTips(int x) { numberOfTips = x; }
     
 protected:
     Tree(void);
     Tree(const Tree& t);
     Tree(const MemberRules& memberRules);
     
-    void                          allocateNodes(int nNodes);
-    void                          deleteNodes(void);
+    void                        allocateNodes(int nNodes);
+    void                        deleteNodes(void);
     
     std::string                   newick;                                                                       //!< The newick string, should be recalculated each time the tree has changed
     std::vector<TreeNode*>        nodes;
