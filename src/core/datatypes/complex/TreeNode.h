@@ -24,7 +24,8 @@
 class TreeNode : public MemberObject {
     
 public:
-    TreeNode(void);                                                          //!< Default constructor
+    TreeNode(void);                                                                                             //!< Default constructor
+    TreeNode(const std::string& n);                                                                             //!< constructor with name
     
     // Basic utility functions
     TreeNode*                       clone(void) const;                                                          //!< Clone object

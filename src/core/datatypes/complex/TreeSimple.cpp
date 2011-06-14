@@ -25,6 +25,11 @@ TreeSimple::TreeSimple(const TreeSimple& ut) : Tree( getMemberRules() ) {
     
 }
 
+TreeSimple::TreeSimple(TreeNode *r) : Tree( getMemberRules() ) {
+    root = r;
+    
+}
+
 TreeSimple::TreeSimple(std::vector<std::string> names) : Tree( getMemberRules() ) {
     
     // initialize the number of tips in the tree

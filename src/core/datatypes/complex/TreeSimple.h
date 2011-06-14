@@ -34,6 +34,7 @@ class TreeSimple : public Tree {
 public:
     TreeSimple(void);
     TreeSimple(const TreeSimple& ut);
+    TreeSimple(TreeNode *root);
     TreeSimple(std::vector<std::string> names);
     TreeSimple(std::string newickStr);
     TreeSimple(int nTips);

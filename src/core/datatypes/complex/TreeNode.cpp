@@ -31,7 +31,12 @@
 
 /** Default constructor */
 TreeNode::TreeNode(void) : MemberObject( getMemberRules() ) {
-    
+    name = "";
+}
+
+/** constructor with name */
+TreeNode::TreeNode(const std::string& n) : MemberObject( getMemberRules() ) {
+    name = n;
 }
 
 /** Clone function */

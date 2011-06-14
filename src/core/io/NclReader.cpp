@@ -2,6 +2,8 @@
 #include "CharacterMatrixDiscrete.h"
 #include "NclReader.h"
 #include "Tree.h"
+#include "TreeNode.h"
+#include "TreeSimple.h"
 
 
 
@@ -11,6 +13,28 @@ NclReader::NclReader(void) {
 
 NclReader::~NclReader(void) {
     
+}
+
+
+void NclReader::constructTreefromNclRecursively(TreeNode *tn, const NxsSimpleNode *tnNcl) {
+    // get the children
+    std::vector<NxsSimpleNode*> children = tnNcl->GetChildren();
+    
+    // iterate over all children
+    for (std::vector<NxsSimpleNode*>::iterator it = children.begin(); it!=children.end(); it++) {
+        // create a new tree node with given name
+        const std::string& name = (*it)->GetName(); 
+        TreeNode* child = new TreeNode(name);
+        
+        // add new node as child
+        tn->addChild(child);
+        
+        // add parent to new node
+        child->setParent(tn);
+        
+        // recursive call for the child to parse the tree
+        constructTreefromNclRecursively(child, *it);
+    }
 }
 
 std::vector<CharacterMatrix*>* NclReader::convertFromNcl(std::vector<std::string>& fnv) {
@@ -416,7 +440,7 @@ std::vector<CharacterMatrix*>* NclReader::readData(const char* fileName, const s
 	return cvm;
 }
 
-std::vector<Tree*>* NclReader::readTree(const std::string fn, const std::string fileFormat) {
+std::vector<Tree*>* NclReader::readTrees(const std::string fn, const std::string fileFormat) {
 	
 	// check that the file exist
     if ( !fileExists(fn.c_str()) ) {
@@ -428,12 +452,14 @@ std::vector<Tree*>* NclReader::readTree(const std::string fn, const std::string 
 	// allocate a vector of trees
 	std::vector<Tree*>* trees = new std::vector<Tree*>();
 	
+    // TODO @Tracy: Why do we read a vector of trees, then copy every single tree into a new vector; instead of returning the vector straight away?!? (Sebastian)
+    
     // read the data files
- 	std::vector<Tree*>* v = readTree( fn.c_str(), fileFormat);
-	if (v != NULL) {
-		for (std::vector<Tree*>::iterator m = v->begin(); m != v->end(); m++)
+ 	std::vector<Tree*>* f = readTrees( fn.c_str(), fileFormat);
+	if (f != NULL) {
+		for (std::vector<Tree*>::iterator m = f->begin(); m != f->end(); m++)
 			trees->push_back( (*m) );
-		delete v;
+		delete f;
 	}
 	else 
 		return NULL;
@@ -444,7 +470,7 @@ std::vector<Tree*>* NclReader::readTree(const std::string fn, const std::string 
     return trees;
 }
 
-std::vector<Tree*>* NclReader::readTree(const char* fileName, const std::string fileFormat) {
+std::vector<Tree*>* NclReader::readTrees(const char* fileName, const std::string fileFormat) {
 	
 	// check that the file exists
 	if ( !fileExists(fileName) ) {
@@ -471,11 +497,11 @@ std::vector<Tree*>* NclReader::readTree(const char* fileName, const std::string 
 	std::string str = fileName;
 	fileNameVector.push_back( str );
 	
-	std::vector<Tree*>* cvm = convertTreeFromNcl();
+	std::vector<Tree*>* cvm = convertTreesFromNcl();
 	return cvm;
 }
 
-std::vector<Tree*>* NclReader::convertTreeFromNcl() {
+std::vector<Tree*>* NclReader::convertTreesFromNcl() {
 	
 	const unsigned nTaxaBlocks = nexusReader.GetNumTaxaBlocks();
 	std::vector<Tree*>* rbTreesFromFile;
@@ -505,13 +531,19 @@ std::vector<Tree*>* NclReader::convertTreeFromNcl() {
 
 
 Tree* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree &nTree){
-	
-    //	Tree *myTreeFromNcl = new Tree();
-	std::vector<const NxsSimpleNode *> nodes = nTree.GetPreorderTraversal();
-	for (std::vector<const NxsSimpleNode *>::const_iterator nodeIt = nodes.begin(); nodeIt != nodes.end(); ++nodeIt) {
-		
-		const NxsSimpleNode & nd = **nodeIt;
-		// Translate to non-existent tree data structure
-	}
-	return NULL;
+    
+    // get the root from the ncl tree
+    const NxsSimpleNode* rn = nTree.GetRootConst();
+    
+    // create a new tree root node
+    const std::string& name = rn->GetName();
+    TreeNode *root = new TreeNode(name);
+    
+	// construct tree recursively
+    constructTreefromNclRecursively(root, rn);
+    
+    // create a new simple tree
+    Tree *myTreeFromNcl = new TreeSimple(root);
+    
+	return myTreeFromNcl;
 }

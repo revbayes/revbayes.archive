@@ -25,6 +25,7 @@
 #include <vector>
 #include "ncl.h"
 #include "nxsmultiformat.h"
+#include "TreeNode.h"
 
 class CharacterMatrix;
 class Tree;
@@ -44,9 +45,9 @@ public:
     std::vector<CharacterMatrix*>*      readData(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
     
     // TAH: stuff for reading trees
-    std::vector<Tree*>*                 readTree(const std::string fn, const std::string fileFormat);
-    std::vector<Tree*>*                 readTree(const char* fileName, const std::string fileFormat);
-    std::vector<Tree*>*                 convertTreeFromNcl();
+    std::vector<Tree*>*                 readTrees(const std::string fn, const std::string fileFormat);
+    std::vector<Tree*>*                 readTrees(const char* fileName, const std::string fileFormat);
+    std::vector<Tree*>*                 convertTreesFromNcl();
     Tree*                               translateNclSimpleTreeToTree(NxsSimpleTree &nTree);
     
     void                                clearContent() { nexusReader.ClearContent(); }
@@ -57,6 +58,9 @@ private:
     CharacterMatrix*                    createContinuousMatrix(NxsCharactersBlock* charblock);
     CharacterMatrix*                    createNucleotideMatrix(NxsCharactersBlock* charblock);
     CharacterMatrix*                    createStandardMatrix(NxsCharactersBlock* charblock);
+    
+    // methods for reading trees
+    void                                constructTreefromNclRecursively(TreeNode *tn, const NxsSimpleNode* tnNcl);
 };
 
 #endif

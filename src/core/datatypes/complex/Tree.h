@@ -74,10 +74,10 @@ protected:
     void                        allocateNodes(int nNodes);
     void                        deleteNodes(void);
     
-    std::string                   newick;                                                                       //!< The newick string, should be recalculated each time the tree has changed
-    std::vector<TreeNode*>        nodes;
-    int                           numberOfTips;
-    TreeNode*                     root;
+    std::string                 newick;                                                                             //!< The newick string, should be recalculated each time the tree has changed
+    std::vector<TreeNode*>      nodes;
+    int                         numberOfTips;
+    TreeNode*                   root;
     
     // Override this function to map member method calls to internal functions
     virtual DAGNode*            executeOperation(const std::string& name, ArgumentFrame& args);                     //!< Map member methods to internal functions
