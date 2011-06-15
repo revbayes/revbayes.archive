@@ -91,7 +91,7 @@ std::string DAGNode::briefInfo( void ) const {
 
 
 /** Tell parser if element exists */
-bool DAGNode::existsElement( VectorInteger& index ) const {
+bool DAGNode::existsElement( VectorInteger& index ) {
 
     if ( index.size() == 0 )
         return true;

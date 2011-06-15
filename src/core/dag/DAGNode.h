@@ -66,7 +66,7 @@ class DAGNode {
         virtual bool                    isConst(void) const;                                                    //!< Is DAG node const value?
 
         // Element set and get functions you may want to override
-        virtual bool                    existsElement(VectorInteger& index) const;                              //!< Does element exist?
+        virtual bool                    existsElement(VectorInteger& index);                                    //!< Does element exist? @Fredrik: This should potentially be a const function, however, if I make it const it does not pass the normaltest.rev anymore. (Sebastian)
         virtual DAGNode*                getElement(VectorInteger& index);                                       //!< Give the parser an element
         virtual DAGNode*                getElementOwner(VectorInteger& index);                                  //!< Give the parser the element owner
         virtual void                    setElement(const VectorNatural& index, DAGNode* var, bool convert=true);//!< Set element
