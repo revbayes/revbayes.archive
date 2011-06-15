@@ -80,7 +80,7 @@ class MatrixReal : public Matrix {
         DAGNode*                            getElement(const VectorInteger& index);                                     //!< Get element or subcontainer for parser
         void                                setElement(const VectorNatural& index, DAGNode* var);                       //!< Allow parser to set element
 
-        std::vector<VectorReal>             matrix;                                                                     //!< We use vector of vectors instead of container internally
+        std::vector<VectorReal>             matrix;                                                                     //!< We use vector of vectors instead of container internally @Fredrik: The class hierarchy is not very consistent if this class does not use the member values from the parent class. It also might result into the overhead of additional memory allocations and hence slower performance. (Sebastian)
 };
 
 

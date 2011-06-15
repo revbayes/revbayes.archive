@@ -71,8 +71,8 @@ class Container : public RbComplex {
         ContainerIterator               begin(void) const;                                                  //!< Begin iterator
         ContainerIterator               end(void) const;                                                    //!< End iterator
         int                             getDim(void) const { return int(length.size()); }                   //!< Get number of dimensions (1 for vector, 2 for matrix, etc)
-        const std::string&              getElementType(void) const { return elementType; }                  //!< Get element type
-        const std::vector<size_t>&      getLength(void) const { return length; }                            //!< Get length in each dim
+        const std::string&              getElementType(void) const { return elementType; }                  //!< Get element type @Fredrik: Why does this method return a string and not a TypeSpec? Might be more consistent with TypeSpecs. (Sebastian)
+        const std::vector<size_t>&      getLength(void) const { return length; }                            //!< Get length in each dim @Fredrik: What is the difference between length and size? For me they are used synonomously. Also, I'ld prefer returning a single int for the size/length. (Sebastian)
         const TypeSpec                  getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Container function you may want to override
@@ -99,7 +99,7 @@ class Container : public RbComplex {
 
         // Member variables
         const std::string&              elementType;                                                        //!< Type of elements
-        std::vector<size_t>             length;                                                             //!< Length in each dimension
+        std::vector<size_t>             length;                                                             //!< Length in each dimension @Fredrik: Why is the length a vector<size_t>? (Sebastian)
 };
 
 #endif

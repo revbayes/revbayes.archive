@@ -57,7 +57,7 @@ class Simplex : public MemberObject {
         std::string             richInfo(void) const;                                               //!< Complete info about object
 
         // Subscript access functions
-        bool                    hasSubscript(void) { return true; }                                 //!< We support subscripting
+        bool                    hasSubscript(void) { return true; }                                 //!< We support subscripting @Fredrik: Instead of having subscripts, shouldn't a simplex be just a container (or vector)? (Sebastian)
         DAGNode*                getSubelement(VectorInteger& index) const;                          //!< Return subscript[](index) element
         size_t                  getSubelementsSize(void) const { return value.size(); }             //!< Number of subscript elements
 

@@ -32,6 +32,8 @@ class VectorRealPos;
  * This class is used to hold lists of variables. Unlike a container,
  * a list can hold containers, as well as other lists. The list object
  * corresponds in many ways to the list object in R.
+ *
+ * @Fredrik: Are you sure that a container cannot hold containers?! Anyways, I would prefer having container which can hold containers and removing this List class. (Sebastian)
  */
 class List : public MemberObject {
 

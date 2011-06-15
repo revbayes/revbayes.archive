@@ -22,7 +22,7 @@
 
 class VectorString;
 
-class RbInternal {
+class RbInternal { // @Fredrik: When is this class actually derived? For instance a frame could inherit from it, but doesn't. (Sebastian)
 
     public:
 		virtual                    ~RbInternal(void) {}                     //! Virtual destructor

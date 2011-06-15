@@ -41,7 +41,7 @@ class Move : public MemberObject {
 
         // Move functions you have to override
         virtual void                acceptMove(void) = 0;                                                                       //!< Accept the move
-        virtual void                performMove(double& lnProbabilityRatio, double& lnHastingsRatio) = 0;                       //!< Perform the move
+        virtual void                performMove(double& lnProbabilityRatio, double& lnHastingsRatio) = 0;                       //!< Perform the move @Fredrik: I think I move should return only the Hasting ratio and the caller (e.g. the Mcmc class) should compute the lnProbabilityRatio. (Sebastian)
         virtual void                rejectMove(void) = 0;                                                                       //!< Reject the move
 
         // Move functions you should not override

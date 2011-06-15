@@ -52,16 +52,16 @@ class MemberObject: public RbComplex {
         virtual std::string         richInfo(void) const;                                                               //!< Complete info
 
         // Basic utility functions you do not have to override
-        MemberObject*               getConstValue(void) const;                                                          //!< Make a constant clone
-        bool                        isConstant(void) const;                                                             //!< Are all members constant?
+        MemberObject*               getConstValue(void) const;                                                          //!< Make a constant clone @Fredrik: the name is confusing to me. Maybe something more like getCloneWithConstValues or simply force the caller to call first clone() and then makeValuesConst()? (Sebastian)
+        bool                        isConstant(void) const;                                                             //!< Are all members constant? @Fredrik: Better name: areMemberConstant()? (Sebastian)
 
         // Member variable functions; override getMemberRules to add member variables
         const MemberFrame&          getMembers(void) const { return members; }                                          //!< Get members
         virtual const MemberRules&  getMemberRules(void) const;                                                         //!< Get member rules
         const TypeSpec&             getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
-        const RbObject*             getValue(const std::string& name);                                                  //!< Get member value
+        const RbObject*             getValue(const std::string& name);                                                  //!< Get member value @Fredrik: Why is there a const getValue() if there is also a non-const getValue()? (Sebastian)
         const RbObject*             getValue(const std::string& name) const;                                            //!< Get member value (const)
-        const DAGNode*              getVariable(const std::string& name) const;                                         //!< Get member variable
+        const DAGNode*              getVariable(const std::string& name) const;                                         //!< Get member variable @Fredrik: Why is there a const getVariable() if there is also a non-const getVariable()? (Sebastian)
         DAGNode*                    getVariable(const std::string& name);                                               //!< Get member variable (non-const ptr)
         void                        setValue(const std::string& name, RbObject* val);                                   //!< Set member value
         virtual void                setVariable(const std::string& name, DAGNode* var);                                 //!< Set member variable

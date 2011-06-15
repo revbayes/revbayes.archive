@@ -83,7 +83,7 @@ class ValueContainer : public Container {
 
     protected:
         // Help function you may want to override
-        virtual RbObject*               getDefaultElement(void) const { return NULL; }                              //!< Get default element for empty slots
+        virtual RbObject*               getDefaultElement(void) const { return NULL; }                              //!< Get default element for empty slots @Fredrik: What is a default element? (Sebastian)
 
         // Parser help functions you may want to override
         virtual DAGNode*                getElement(VectorInteger& index);                                           //!< Get element or subcontainer for parser

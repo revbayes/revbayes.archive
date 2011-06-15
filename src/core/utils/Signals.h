@@ -18,7 +18,7 @@
 #define Signals_H
 
 
-class Signals {
+class Signals { // @Fredrik: Isn't a better place for this class in the parser directory? (Sebastian)
 
     public:
         enum                    RbFlags {   BREAK       = 1L << 0,

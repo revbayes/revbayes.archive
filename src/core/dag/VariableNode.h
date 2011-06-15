@@ -60,8 +60,8 @@ class VariableNode : public DAGNode {
         virtual void                    touchAffected(void) = 0;                                                        //!< Tell affected nodes value is reset
 
         // Default monitors and move functions
-        std::vector<Monitor*>           getDefaultMonitors(void);                                                       //!< Return default monitors
-        virtual MoveSchedule*           getDefaultMoves(void) = 0;                                                      //!< Return default moves
+        std::vector<Monitor*>           getDefaultMonitors(void);                                                       //!< Return default monitors @Fredrik: Shouldn't this be a cons function? (Sebastian)
+        virtual MoveSchedule*           getDefaultMoves(void) = 0;                                                      //!< Return default moves @Fredrik: Shouldn't this be a cons function? (Sebastian)
 
     protected:
                                         VariableNode(const std::string& valType);                                       //!< Constructor of empty node

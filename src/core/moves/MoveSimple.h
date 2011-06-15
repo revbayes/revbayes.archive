@@ -48,7 +48,7 @@ class MoveSimple : public Move {
                                     MoveSimple(const MemberRules& memberRules);                                             //!< Parser constructor
 
         // Function you have to override
-        virtual double              perform(std::set<StochasticNode*>& affectedNodes) = 0;                                  //!< Perform the move
+        virtual double              perform(std::set<StochasticNode*>& affectedNodes) = 0;                                  //!< Perform the move @Fredrik: I would use VariableNode instead of StochasticNode, since one might attach a move to a deterministic node too. (Sebastian)
 
         // Functions you may want to override for additional statistics purposes, e.g.
         virtual void                accept(void) {}                                                                         //!< Accept the move

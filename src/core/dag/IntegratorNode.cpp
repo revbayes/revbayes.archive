@@ -47,7 +47,7 @@ IntegratorNode::IntegratorNode( DeterministicMemberNode* condLikeVec, Distributi
 
     /* Set distribution here so we avoid inappropriate type for IntegratorNode. Also check type */
     if ( !dist->isType( DistributionCategorical_name ) )
-        throw RbException( "Invalid attempt to create IntegratorNode: distribution type is incorrect" );
+        throw RbException( "Invalid attempt to create IntegratorNode: distribution type is incorrect" ); // @Fredrik: What about discrete distribution? One could enumerate over these too. Basically all distribution except continuous distribution should be possible. (Sebastian)
     distribution = dist;
 
     /* Get distribution parameters */
