@@ -70,7 +70,7 @@ class Container : public RbComplex {
         // Container functions and basic utility functions you should not have to override
         ContainerIterator               begin(void) const;                                                  //!< Begin iterator
         ContainerIterator               end(void) const;                                                    //!< End iterator
-        int                             getDim(void) const { return int(length.size()); }                        //!< Get number of dimensions (1 for vector, 2 for matrix, etc)
+        int                             getDim(void) const { return int(length.size()); }                   //!< Get number of dimensions (1 for vector, 2 for matrix, etc)
         const std::string&              getElementType(void) const { return elementType; }                  //!< Get element type
         const std::vector<size_t>&      getLength(void) const { return length; }                            //!< Get length in each dim
         const TypeSpec                  getTypeSpec(void) const;                                            //!< Get language type of the object
@@ -95,7 +95,7 @@ class Container : public RbComplex {
         size_t                          getOffset(const VectorNatural& index) const;                        //!< Get offset in elements vector
 
         // Parser help function you have to override
-        virtual DAGNode*                getElement(VectorInteger& index) = 0;                               //!< Get element or subcontainer for parser (do not worry about returning temps)
+        virtual DAGNode*                getElement(VectorInteger& index) = 0;                               //!< Get element or subcontainer for parser (do not worry about returning temps) @Fredrik: Why do we return a DAGNode* and not just a const RbObject*? This does not seem natural to me. (Sebastian)
 
         // Member variables
         const std::string&              elementType;                                                        //!< Type of elements

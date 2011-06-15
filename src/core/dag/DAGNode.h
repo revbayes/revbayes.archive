@@ -75,8 +75,8 @@ class DAGNode {
         virtual DAGNode*                clone(void) const = 0;                                                  //!< Clone this node
         virtual const VectorString&     getDAGClass(void) const;                                                //!< Get DAG node class vector
         virtual const RbObject*         getStoredValue(void) = 0;                                               //!< Get stored value
-        virtual const RbObject*         getValue(void) = 0;                                                     //!< Get value
-        virtual const RbObject*         getValue(void) const = 0;                                               //!< Get const value; throw an error or warn if in transient state
+//        virtual const RbObject*         getValue(void) = 0;                                                     //!< Get value
+        virtual const RbObject*         getValue(void) const = 0;                                               //!< Get const value; throw an error or warn if in transient state @Fredrik: Why is there a constant function if there is also a non-constant function?! (Sebastian)
         virtual void                    printValue(std::ostream& o) const = 0;                                  //!< Print value for user
         virtual void                    printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
         virtual std::string             richInfo(void) const = 0;                                               //!< Complete info about object

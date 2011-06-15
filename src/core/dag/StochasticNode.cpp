@@ -311,13 +311,6 @@ const RbObject* StochasticNode::getStoredValue( void ) {
 }
 
 
-/** Get value */
-const RbObject* StochasticNode::getValue( void ) {
-
-    return value;
-}
-
-
 /** Get const value; we always know our value. */
 const RbObject* StochasticNode::getValue( void ) const {
 

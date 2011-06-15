@@ -43,7 +43,6 @@ class ConstantNode : public DAGNode {
 
         // ConstantNode functions
         const RbObject*         getStoredValue(void) { return value; }                                      //!< Get stored value
-        const RbObject*         getValue(void) { return value; }                                            //!< Get value
         const RbObject*         getValue(void) const { return value; }                                      //!< Get value (const)
 
         // DAG functions

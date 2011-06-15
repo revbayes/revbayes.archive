@@ -45,7 +45,6 @@ class StochasticNode : public VariableNode {
         const VectorString&     getDAGClass(void) const;                                            //!< Get DAG node class vector
         int                     getDim(void) const { return valueDim; }                             //!< Get dim (0 for scalar, 1 for vector, etc)
         const RbObject*         getStoredValue(void);                                               //!< Get stored value
-        const RbObject*         getValue(void);                                                     //!< Get current value
         const RbObject*         getValue(void) const;                                               //!< Get const value if possible
         void                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
         void                    printValue(std::ostream& o) const;                                  //!< Print struct for user

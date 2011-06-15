@@ -89,14 +89,6 @@ const RbObject* DeterministicNode::getStoredValue( void ) {
 }
 
 
-/** Get value intelligently */
-const RbObject* DeterministicNode::getValue( void ) {
-
-    update();
-    return value;
-}
-
-
 /** Get const value if possible */
 const RbObject* DeterministicNode::getValue( void ) const {
 
