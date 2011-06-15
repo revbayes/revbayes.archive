@@ -1,15 +1,34 @@
 #ifndef CharacterMatrix_H
 #define CharacterMatrix_H
 
+#include "Matrix.h"
+
 #include <string>
 #include <vector>
 
 
-class CharacterMatrix {
+class CharacterMatrix : public Matrix {
 
-    public:
+public:
 	                                CharacterMatrix(void);
 	                                CharacterMatrix(int nt, int nc);
+    
+    
+    // Basic utility functions you have to override
+    virtual CharacterMatrix*        clone(void) const = 0;                                              //!< Clone object
+    virtual const VectorString&     getClass(void) const;                                               //!< Get class
+    virtual void                    printValue(std::ostream& o) const = 0;                              //!< Print value for user
+    virtual std::string             richInfo(void) const = 0;                                           //!< Complete info about object
+    
+    // Container functions you have to override to allow vector of vectors representation
+    virtual void                    clear(void) = 0;                                                    //!< Clear
+    virtual void                    resize(const std::vector<size_t>& len) = 0;                         //!< Resize to new length vector
+    virtual void                    setLength(const std::vector<size_t>& len) = 0;                      //!< Reorganize container
+    virtual size_t                  size(void) const = 0;                                               //!< Get total number of elements
+    
+    // Matrix function you have to override
+    virtual void                    transpose(void) = 0;                                                //!< Transpose matrix
+    
         void                        addTaxonName(std::string tn) { taxonNames.push_back(tn); }
         void                        excludeCharacter(int i) { isCharacterExcluded[i] = true; }
         void                        excludeTaxon(int i) { isTaxonExcluded[i] = true; }
@@ -28,12 +47,16 @@ class CharacterMatrix {
 		std::string                 getName(void) { return name; }
         std::vector<std::string>&   getTaxa(void) { return taxonNames; }
         std::string                 getTaxonIndexed(int i) { return taxonNames[i]; }
-		virtual void                print(void) = 0;
 		void                        setNumCharacters(int x) { numCharacters = x; }
 		void                        setNumTaxa(int x) { numTaxa = x; }
 		void                        setName(std::string s) { name = s; }
 
-   protected:
+protected:
+    
+    // Parser help functions you have to override
+    virtual DAGNode*                getElement(const VectorInteger& index) = 0;                         //!< Get element or subcontainer for parser
+    virtual void                    setElement(const VectorNatural& index, DAGNode* var) = 0;           //!< Allow parser to set element
+    
 		int                         numTaxa;
 		int                         numCharacters;
 		bool                        isDiscrete;

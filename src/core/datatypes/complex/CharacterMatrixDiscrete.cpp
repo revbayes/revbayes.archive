@@ -2,8 +2,28 @@
 #include <iostream>
 #include <vector>
 #include "CharacterMatrixDiscrete.h"
+#include "RbException.h"
+#include "RbNames.h"
+#include "VectorString.h"
 
 
+#include <sstream>
+
+CharacterMatrixDiscrete::CharacterMatrixDiscrete(const CharacterMatrixDiscrete& cmc) {
+    
+	dataType = cmc.dataType;
+	isDiscrete = cmc.isDiscrete;
+    numTaxa = cmc.numTaxa;
+    numCharacters = cmc.numCharacters;
+    
+    allocateMatrix();
+    for (int i=0; i<numTaxa; i++) {
+        for (int j=0; j<numCharacters; j++) {
+            matrix[i][j] = cmc.matrix[i][j];
+        }
+    }
+    
+}
 
 CharacterMatrixDiscrete::CharacterMatrixDiscrete(int nt, int nc, std::string dt) : CharacterMatrix(nt, nc) {
 
@@ -54,6 +74,31 @@ void CharacterMatrixDiscrete::allocateMatrix(void) {
             isCharacterExcluded[i] = false;
 		}
 }
+
+/** Overloaded container clear function */
+void CharacterMatrixDiscrete::clear( void ) {
+    
+    //    matrix.clear();
+    freeMatrix();
+    //    length[0] = 0;
+    //    length[1] = 0;
+}
+
+
+/** Clone function */
+CharacterMatrixDiscrete* CharacterMatrixDiscrete::clone(void) const {
+    
+    return new CharacterMatrixDiscrete(*this);
+}
+
+
+/** Get class vector describing type of object */
+const VectorString& CharacterMatrixDiscrete::getClass(void) const {
+    
+    static VectorString rbClass = VectorString(CharacterMatrixDiscrete_name) + CharacterMatrix::getClass();
+    return rbClass;
+}
+
 
 void CharacterMatrixDiscrete::freeMatrix(void) {
 
@@ -334,7 +379,7 @@ int CharacterMatrixDiscrete::nucId(char nuc) {
 	return -1;
 }
 
-void CharacterMatrixDiscrete::print(void) {
+void CharacterMatrixDiscrete::printValue(std::ostream &o) const {
 
     for (int i=0; i<numTaxa; i++)
         {
@@ -369,6 +414,16 @@ void CharacterMatrixDiscrete::print(void) {
 			}
 		std::cout << std::endl;
 		}
+}
+
+/** Complete info about object */
+std::string CharacterMatrixDiscrete::richInfo(void) const {
+    
+    std::ostringstream o;
+    o <<  "CharacterMatrixDiscrete: value = " ;
+    printValue(o);
+    
+    return o.str();
 }
 
 void CharacterMatrixDiscrete::addAminoAcid(int taxaId, int charId, char charCode) {
@@ -611,5 +666,45 @@ void CharacterMatrixDiscrete::setState(int taxaId, int charId, int stateId) {
 		}
 	x[stateId] = true;
 }
+
+DAGNode* CharacterMatrixDiscrete::getElement(const VectorInteger& index) {
+    
+    throw RbException( "GetElement of a discrete character matrix is not supported!" );
+}
+
+
+void CharacterMatrixDiscrete::setElement(const VectorNatural& index, DAGNode* var) {
+    
+    throw RbException( "SetElement of a discrete character matrix is not supported!" );
+}
+
+
+/** Overloaded container resize method */
+void CharacterMatrixDiscrete::resize( const std::vector<size_t>& len ) {
+    
+    throw RbException( "Resize of a discrete character matrix is not supported!" );
+}
+
+
+/** Overloaded container setLength method */
+void CharacterMatrixDiscrete::setLength( const std::vector<size_t>& len) {
+    
+    throw RbException( "setLength of a discrete character matrix is not supported!" );
+}
+
+
+/** Overloaded container size method */
+size_t CharacterMatrixDiscrete::size( void ) const {
+    
+    return numCharacters * numTaxa;
+}
+
+
+/** Transpose the matrix */
+void CharacterMatrixDiscrete::transpose( void ) {
+    
+    throw RbException( "Transpose of a discrete character matrix is not supported!" );
+}
+
 
 

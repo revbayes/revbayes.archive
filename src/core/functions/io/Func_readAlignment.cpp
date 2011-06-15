@@ -44,8 +44,10 @@ DAGNode* Func_readAlignment::execute( void ) {
 
     std::vector<CharacterMatrix*>* m = reader.readMatrices(fn->getStdVector(),fileFormat->getValue(),dataType->getValue(),isInterleaved->getValue());
     
+    std::vector<RbObject*>* tmp = (std::vector<RbObject*>*) m;
+    
     // create a value container with all matrices
-    ValueContainer* vc = new ValueContainer(m);
+    ValueContainer* vc = new ValueContainer(tmp);
     
     return new ContainerNode( vc );
 }
@@ -81,6 +83,6 @@ const VectorString& Func_readAlignment::getClass( void ) const {
 /** Get return type */
 const TypeSpec Func_readAlignment::getReturnType( void ) const {
     
-    return TypeSpec( Alignment_name );
+    return TypeSpec( CharacterMatrix_name );
 }
 

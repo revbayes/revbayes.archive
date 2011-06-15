@@ -128,7 +128,7 @@ MatrixReal* MatrixReal::clone(void) const {
 /** Get class vector describing type of object */
 const VectorString& MatrixReal::getClass(void) const {
 
-    static VectorString rbClass = VectorString(MatrixReal_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(MatrixReal_name) + Matrix::getClass();
     return rbClass;
 }
 
