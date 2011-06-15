@@ -51,8 +51,6 @@ class VectorString : public Vector {
         // Vector functions
 	    void                        push_back(std::string x);                                       //!< Add element
     
-        std::vector<std::string>    getStdVector(void) const;                                       //!< Get the value vector as a std::vector
-
     protected:
         RbObject*                   getDefaultElement(void) const { return new RbString(); }        //!< Get default element for empty slots
 

@@ -42,11 +42,11 @@ DAGNode* Distribution::executeOperation( const std::string& name, ArgumentFrame&
 
     if ( name == "lnPdf" ) {
 
-        return new ConstantNode( new RealPos( lnPdf( args[0].getValue() ) ) );
+        return new ConstantNode( new RealPos( lnPdf( args[1].getValue() ) ) );
     }
     else if ( name == "pdf" ) {
 
-        return new ConstantNode( new RealPos( pdf  ( args[0].getValue() ) ) );
+        return new ConstantNode( new RealPos( pdf  ( args[1].getValue() ) ) );
     }
     else if ( name == "rv" ) {
 

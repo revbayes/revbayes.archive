@@ -139,15 +139,6 @@ const VectorString& VectorString::getClass() const {
     return rbClass;
 }
 
-std::vector<std::string> VectorString::getStdVector(void) const {
-    std::vector<std::string> strVector;
-    for (int i=0; i<elements.size(); i++) {
-        RbString* str = (RbString*) elements.at(i);
-        strVector.push_back(str->getValue());
-    }
-    
-    return strVector;
-}
 
 /** Append string element to end of vector, updating length in process */
 void VectorString::push_back(std::string x) {

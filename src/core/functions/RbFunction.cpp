@@ -168,10 +168,10 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             args.setArgumentLabel( i, theRules[i]->getArgLabel() );
     }
 
-    /* Keep track of which arguments we have used, and which argument slots we have filled */
-    std::vector<bool> taken  = std::vector<bool>(passedArgs.size(), false);
-    std::vector<bool> filled = std::vector<bool>(numFinalArgs, false);
-
+    /* Keep track of which arguments we have used, and which argument slots we have filled, and with what passed arguments */
+    std::vector<bool> taken           = std::vector<bool>(passedArgs.size(), false);
+    std::vector<bool> filled          = std::vector<bool>(numFinalArgs, false);
+    std::vector<int>  passedArgIndex = std::vector<int>  (numFinalArgs, -1);
 
     /*********************  1. Deal with ellipsis  **********************/
 
@@ -195,8 +195,9 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             if ( passedArgs[i].getLabel() != "" )
                 args.setArgumentLabel( i, passedArgs[i].getLabel() );
 
-            taken[i] = true;
-            filled[i] = true;
+            taken[i]          = true;
+            filled[i]         = true;
+            passedArgIndex[i] = i;
         }
     }
 
@@ -220,8 +221,9 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             if ( passedArgs[i].getLabel() == theRules[j]->getArgLabel() ) {
 
                 if ( theRules[j]->isArgValid(passedArgs[i].getVariable(), conversionNeeded, evaluateOnce) && !filled[j] ) {
-                    taken[i]  = true;
-                    filled[j] = true;
+                    taken[i]          = true;
+                    filled[j]         = true;
+                    passedArgIndex[j] = i;
                     if ( conversionNeeded )
                         args[j].setVariable( theRules[j]->convert( passedArgs[i].getVariable() ) );
                     else
@@ -264,8 +266,9 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             return false;
  
         if ( theRules[matchRule]->isArgValid(passedArgs[i].getVariable(), conversionNeeded, evaluateOnce) ) {
-            taken[i]          = true;
-            filled[matchRule] = true;
+            taken[i]                  = true;
+            filled[matchRule]         = true;
+            passedArgIndex[matchRule] = i;
             if ( conversionNeeded )
                 args[matchRule].setVariable( theRules[matchRule]->convert( passedArgs[i].getVariable() ) );
             else
@@ -290,8 +293,9 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
 
             if ( filled[j] == false ) {
                 if ( theRules[j]->isArgValid(passedArgs[i].getVariable(), conversionNeeded, evaluateOnce) ) {
-                    taken[i]  = true;
-                    filled[j] = true;
+                    taken[i]          = true;
+                    filled[j]         = true;
+                    passedArgIndex[j] = i;
                     if ( conversionNeeded )
                         args[j].setVariable( theRules[j]->convert( passedArgs[i].getVariable() ) );
                     else
@@ -333,19 +337,27 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
     int argIndex;
     for(argIndex=0; argIndex<numRegularRules; argIndex++) {
 
-        const VectorString& argClass = args[argIndex].getValue()->getClass();
-        size_t j;
-        for (j=0; j<argClass.size(); j++)
-            if ( argClass[j] == theRules[argIndex]->getArgType() )
-                break;
+        int k = passedArgIndex[argIndex];
+        if ( k >= 0 ) {
+            
+            const VectorString& argClass = passedArgs[k].getVariable()->getValue()->getClass();
 
-        if ( j == argClass.size() )
-            matchScore->push_back(aLargeNumber);    // We needed type conversion for this argument
-        else
-            matchScore->push_back(int(j));          // No type conversion, score is distance in class vector
+            size_t j;
+            for (j=0; j<argClass.size(); j++)
+                if ( argClass[j] == theRules[argIndex]->getArgType() )
+                    break;
+
+            if ( j == argClass.size() )
+                matchScore->push_back(aLargeNumber);    // We needed type conversion for this argument
+            else
+                matchScore->push_back(int(j));          // No type conversion, score is distance in class vector
+        }
+        else {
+            matchScore->push_back( 0 );                 // We used default value for this argument
+        }
     }
 
-    /* ... then for ellipsis args */
+    /* ... then for ellipsis args (ellipsis args always passed in order and no default values allowed for preceding args) */
     for ( ; argIndex < numFinalArgs; argIndex++ ) {
     
         
