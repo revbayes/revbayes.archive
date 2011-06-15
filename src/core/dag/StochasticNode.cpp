@@ -302,7 +302,7 @@ double StochasticNode::getLnProbabilityRatio( void ) {
 
 
 /** Get stored value */
-const RbObject* StochasticNode::getStoredValue( void ) {
+const RbObject* StochasticNode::getStoredValue( void ) const {
 
     if ( !touched )
         return value;

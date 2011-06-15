@@ -79,12 +79,12 @@ MoveSchedule* DeterministicNode::getDefaultMoves( void ) {
 
 
 /** Get stored value intelligently */
-const RbObject* DeterministicNode::getStoredValue( void ) {
+const RbObject* DeterministicNode::getStoredValue( void ) const {
 
     if ( !touched )
         return value;
 
-    update();
+//    update(); @Fredrik: Why do you update the dag-node if someone asks for the stored value? (Sebastian)
     return storedValue;
 }
 

@@ -42,7 +42,7 @@ class ConstantNode : public DAGNode {
         std::string             richInfo(void) const;                                                       //!< Complete info on object
 
         // ConstantNode functions
-        const RbObject*         getStoredValue(void) { return value; }                                      //!< Get stored value
+        const RbObject*         getStoredValue(void) const { return value; }                                      //!< Get stored value
         const RbObject*         getValue(void) const { return value; }                                      //!< Get value (const)
 
         // DAG functions

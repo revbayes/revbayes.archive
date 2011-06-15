@@ -34,7 +34,7 @@ class DeterministicNode : public VariableNode {
         virtual                        ~DeterministicNode(void);                                                        //!< Destructor
 
         // Utility functions implemented here
-        const RbObject*                 getStoredValue(void);                                                           //!< Get stored value
+        const RbObject*                 getStoredValue(void) const;                                                     //!< Get stored value
         const RbObject*                 getValue(void) const;                                                           //!< Get const value (if possible)
         void                            printValue(std::ostream& o) const;                                              //!< Print value for user
 
