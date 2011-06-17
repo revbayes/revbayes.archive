@@ -41,7 +41,7 @@
 /* 30 is somewhat arbitrary: it is on the *safe* side:
  * both speed and precision are clearly improved for k < 30.
  */
-double choose(double n, double k)
+double RbMath::choose(double n, double k)
 {
     double r, k0 = k;
     k = floor(k + 0.5);
