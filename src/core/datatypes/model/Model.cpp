@@ -90,9 +90,6 @@ Model::Model( const Model& x ) : MemberObject( x ) {
     if ( x.dagNodes.size() > 0 )
         x.dagNodes[0]->cloneDAG( newNodes );
 
-    if ( newNodes.size() != 8 )
-        getchar();
-
     /* Insert new nodes in dagNodes member frame and direct access vector */
     for ( std::map<const DAGNode*, DAGNode*>::iterator i = newNodes.begin(); i != newNodes.end(); i++ ) {
 
