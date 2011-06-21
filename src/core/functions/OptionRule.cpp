@@ -68,7 +68,7 @@ const VectorString& OptionRule::getClass( void ) const {
 
 
 /** Test if argument is valid */
-bool OptionRule::isArgValid( const DAGNode* var, bool& needsConversion, bool once ) const {
+bool OptionRule::isArgValid( DAGNode* var, bool& needsConversion, bool once ) const {
 
     // Initialize
     needsConversion = false;

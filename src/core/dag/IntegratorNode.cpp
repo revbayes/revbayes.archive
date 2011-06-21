@@ -21,7 +21,7 @@
 #include "Boolean.h"
 #include "DistributionCategorical.h"
 #include "IntegratorNode.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "MoveSchedule.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -42,12 +42,13 @@ IntegratorNode::IntegratorNode( void )
 
 
 /** Constructor from cond likes and distribution */
-IntegratorNode::IntegratorNode( DeterministicMemberNode* condLikeVec, Distribution* dist )
+IntegratorNode::IntegratorNode( MemberNode* condLikeVec, Distribution* dist )
     : StochasticNode( RbVoid_name ), condLikes( condLikeVec ) {
 
-    /* Set distribution here so we avoid inappropriate type for IntegratorNode. Also check type */
+    /* Set distribution here so we avoid inappropriate type for IntegratorNode. Also check type. For now, we only
+       allow distributions on categorical values but in principle the machinery should work for any discrete distribution. */
     if ( !dist->isType( DistributionCategorical_name ) )
-        throw RbException( "Invalid attempt to create IntegratorNode: distribution type is incorrect" ); // @Fredrik: What about discrete distribution? One could enumerate over these too. Basically all distribution except continuous distribution should be possible. (Sebastian)
+        throw RbException( "Invalid attempt to create IntegratorNode: distribution type is incorrect" );
     distribution = dist;
 
     /* Get distribution parameters */
@@ -221,7 +222,7 @@ IntegratorNode* IntegratorNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& ne
     copy->storedLnProb = storedLnProb;
 
     /* Set the copy cond likes node to its match in the new DAG */
-    DeterministicMemberNode* theCondLikesClone = condLikes->cloneDAG( newNodes );
+    MemberNode* theCondLikesClone = condLikes->cloneDAG( newNodes );
     copy->condLikes = theCondLikesClone;
     copy->parents.insert( theCondLikesClone );
     theCondLikesClone->addChildNode( copy );
@@ -394,7 +395,7 @@ void IntegratorNode::swapParentNode( DAGNode* oldNode, DAGNode* newNode ) {
     parents.insert( newNode );
 
     if ( oldNode == condLikes )
-        condLikes = static_cast<DeterministicMemberNode*>( newNode );
+        condLikes = static_cast<MemberNode*>( newNode );
 
     if ( !touched ) {
 

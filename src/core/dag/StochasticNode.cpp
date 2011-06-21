@@ -302,7 +302,7 @@ double StochasticNode::getLnProbabilityRatio( void ) {
 
 
 /** Get stored value */
-const RbObject* StochasticNode::getStoredValue( void ) const {
+const RbObject* StochasticNode::getStoredValue( void ) {
 
     if ( !touched )
         return value;
@@ -312,7 +312,7 @@ const RbObject* StochasticNode::getStoredValue( void ) const {
 
 
 /** Get const value; we always know our value. */
-const RbObject* StochasticNode::getValue( void ) const {
+const RbObject* StochasticNode::getValue( void ) {
 
     return value;
 }
@@ -378,10 +378,10 @@ void StochasticNode::printStruct( std::ostream& o ) const {
 
 
 /** Print value for user */
-void StochasticNode::printValue( std::ostream& o ) const {
+void StochasticNode::printValue( std::ostream& o ) {
 
     if ( touched )
-        RBOUT( "Warning: Variable in volatile state so value is unreliable" );
+        RBOUT( "Warning: Variable in touched state" );
 
     value->printValue(o);
 }

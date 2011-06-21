@@ -47,7 +47,7 @@ class Func_s :  public RbFunction {
 
 #include "Ellipsis.h"
 #include "Integer.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "RbNames.h"
 #include "RealPos.h"
 #include "Simplex.h"
@@ -74,7 +74,7 @@ DAGNode* Func_s<Integer>::execute( void ) {
         throw RbException( "Simplex size must be at least 2" );
 
     Simplex* temp = new Simplex( size );
-    return new DeterministicMemberNode( temp );
+    return new MemberNode( temp );
 }
 
 
@@ -86,7 +86,7 @@ DAGNode* Func_s<VectorRealPos>::execute( void ) {
 
     Simplex* temp = new Simplex( *tempVec );
 
-    return new DeterministicMemberNode( temp );
+    return new MemberNode( temp );
 }
 
 
@@ -99,7 +99,7 @@ DAGNode* Func_s<RealPos>::execute( void ) {
         tempVec.push_back( *( static_cast<const RealPos*>( args[i].getValue() )->clone() ) );
 
     // Normalization is done by the Simplex constructor
-    return new DeterministicMemberNode( new Simplex( tempVec ) );
+    return new MemberNode( new Simplex( tempVec ) );
 }
 
 

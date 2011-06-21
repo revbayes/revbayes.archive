@@ -46,7 +46,7 @@ class RbObject {
         virtual const TypeSpec      getTypeSpec(void) const;                                            //!< Get language type of the object
         virtual bool                isConstant(void) const { return true; }                             //!< Is value a constant or does it include variables?
         virtual bool                isConvertibleTo(const std::string& type, int dim, bool once) const; //!< Is convertible to type and dim?
-        virtual bool                supportsSubscripting(void) const { return false; }                  //!< Does object support subscripting (without being a container)? @Fredrik: Could you please give more details in this comment. I don't exactly understand what you mean with subscripting. (Sebastian)
+        virtual bool                supportsSubscripting(void) const { return false; }                  //!< Does object support subscripting, like in supporting operator[] (without being a container)?
         
         // Dimensions of object: override only if object is a container with dimensions exposed to language / parser
         virtual int                 getDim(void) const { return 0; }                                    //!< Get container dimensions

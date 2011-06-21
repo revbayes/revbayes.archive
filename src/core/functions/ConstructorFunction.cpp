@@ -18,7 +18,7 @@
 #include "ArgumentRule.h"
 #include "ConstructorFunction.h"
 #include "DAGNode.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbNames.h"
 #include "TypeSpec.h"
@@ -56,7 +56,7 @@ DAGNode* ConstructorFunction::execute(void) {
             copy->setVariable( args.getLabel(i), args[i].getVariable()->clone() );
     }
  
-    return new DeterministicMemberNode(copy);
+    return new MemberNode(copy);
 }
 
 

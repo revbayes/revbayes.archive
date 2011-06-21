@@ -44,10 +44,10 @@ class StochasticNode : public VariableNode {
 
         const VectorString&     getDAGClass(void) const;                                            //!< Get DAG node class vector
         int                     getDim(void) const { return valueDim; }                             //!< Get dim (0 for scalar, 1 for vector, etc)
-        const RbObject*         getStoredValue(void) const;                                         //!< Get stored value
-        const RbObject*         getValue(void) const;                                               //!< Get const value if possible
+        const RbObject*         getStoredValue(void);                                               //!< Get stored value (non-const fxn because of delayed evaluation)
+        const RbObject*         getValue(void);                                                     //!< Get value (non-const fxn because of delayed evaluation)
         void                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
-        void                    printValue(std::ostream& o) const;                                  //!< Print struct for user
+        void                    printValue(std::ostream& o);                                        //!< Print value for user  (non-const fxn because of delayed evaluation)
         std::string             richInfo(void) const;                                               //!< Complete info about object
 
         // StochasticNode functions

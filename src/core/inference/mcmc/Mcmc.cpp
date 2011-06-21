@@ -136,7 +136,7 @@ void Mcmc::setVariable(const std::string& name, DAGNode* var) {
     if ( name != "model" && !var->isDAGType( ConstantNode_name ) )
         throw RbException( "Only constant member values allowed" );
 
-    if ( name == "model" && members["model"].getVariable()->getValue() != NULL )
+    if ( name == "model" && members["model"].getValue() != NULL )
         throw RbException( "Cannot reset model" );
 
     MemberObject::setVariable(name, var);

@@ -23,7 +23,7 @@
 #include "ContainerNode.h"
 #include "Frame.h"
 #include "LookupNode.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -123,6 +123,20 @@ VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
 }
 
 
+/** Clone slot and variable */
+VariableSlot* VariableSlot::clone( void ) const {
+
+    return new VariableSlot( *this );
+}
+
+
+/** Clone slot without variable */
+VariableSlot* VariableSlot::cloneEmpty( void ) const {
+
+    return new VariableSlot( typeSpec );
+}
+
+
 /** Convert a value, if possible, otherwise rely on variable mutation */
 RbObject* VariableSlot::convertValue( RbObject* newValue ) const {
 
@@ -154,7 +168,17 @@ DAGNode* VariableSlot::convertVariable( DAGNode* newVariable ) const {
     if ( newVariable->isTypeSpec( theTypeSpec ) )
         return newVariable;
 
-    if ( Workspace::userWorkspace().isXConvertibleToY( newVariable->getTypeSpec(), theTypeSpec ) ) {
+    /* If the variable is immutable, we convert it once; otherwise, we insert a converter node */
+    if ( newVariable->isImmutable() ) {
+
+        if ( newVariable->getValue()->isConvertibleTo( theTypeSpec, true ) ) {
+        
+            DAGNode* temp = wrapValue( newVariable->getValue()->convertTo( theTypeSpec ) );
+            delete newVariable;
+            return temp;
+        }
+    }
+    else if ( Workspace::userWorkspace().isXConvertibleToY( newVariable->getTypeSpec(), theTypeSpec ) ) {
 
         PRINTF( "Using variable conversion" );
         return new ConverterNode( newVariable, theTypeSpec.getType(), theTypeSpec.getDim() );
@@ -179,20 +203,12 @@ const std::string& VariableSlot::getName( void ) const {
 /**
  * Get variable for parser during evaluation of the seman-
  * tic value of an expression. Normally, the variable slot
- * should not give out a variable for others to manage.
- * However, the parser can handle temp variables and
- * needs assistance from the slot in interpreting how
- * a variable should be accessed.
- *
- * By calling the variable's function getReference(), we
- * ensure that a lookup node or function node will return
- * the reference and not the lookup node or function node.
- * At this point, we do not know whether the parser needs
- * a reference to or a copy of the variable.
+ * should not give out a variable for others to manage
+ * unless it is a reference slot.
  */
 DAGNode* VariableSlot::getParserVariable( void ) {
 
-        return variable->getReference();
+        return variable;
 }
 
 
@@ -271,7 +287,7 @@ bool VariableSlot::isValidVariable( DAGNode* newVariable ) const {
 DAGNode* VariableSlot::nullVariable( const TypeSpec& typeSp ) {
 
     if ( Workspace::userWorkspace().isXOfTypeY( typeSp.getType(), MemberObject_name ) )
-        return new DeterministicMemberNode( typeSp.getType() );
+        return new MemberNode( typeSp.getType() );
     else if ( typeSpec.getDim() > 0 )
         return new ContainerNode( new ValueContainer( typeSp ) );
     else
@@ -285,7 +301,7 @@ void VariableSlot::printValue(std::ostream& o) const {
     if (variable == NULL)
         o << "NULL";
     else
-        getValue()->printValue(o);
+        variable->printValue( o );
 }
 
 
@@ -302,25 +318,19 @@ void VariableSlot::removeVariable( void ) {
 }
 
 
-/** Replace variable without mutating old variable or doing any type conversion; used in cloning a DAG */
+/** Replace variable without mutating old variable or doing any type conversion; used in cloning a DAG and in setting argument slots */
 void VariableSlot::replaceVariable( DAGNode* newVariable ) {
 
-    if ( variable == NULL || newVariable->getTypeSpec() != variable->getTypeSpec() || newVariable->getDAGType() != variable->getDAGType() )
+    if ( newVariable == NULL || variable == NULL || !newVariable->isTypeSpec( variable->getTypeSpec() ) )
         throw RbException( "Invalid attempt to replace a slot variable" );
 
-    if ( variable->getSlot() == this ) {
+    removeVariable();
+    variable = newVariable;
 
-        assert ( newVariable->getSlot() == NULL );
-        removeVariable();
-        variable = newVariable;
+    if ( variable->getSlot() == NULL )
         variable->setSlot( this );
-    }
-    else {
-
-        removeVariable();
-        variable = newVariable;
+    else
         variable->addReferringSlot( this );
-    }
 }
 
 
@@ -399,7 +409,7 @@ void VariableSlot::setElement( VectorInteger& index, DAGNode* newVar, bool conve
         }
 
         size_t indx = size_t( index[0] );
-        static_cast<DeterministicMemberNode*>( variable )->setElement( indx, newVar, convert );
+        static_cast<MemberNode*>( variable )->setElement( indx, newVar, convert );
     }
 }
 
@@ -494,18 +504,12 @@ void VariableSlot::setValue( RbObject* newValue ) {
 /** Set variable */
 void VariableSlot::setVariable( DAGNode* newVariable, bool convert ) {
 
+    // TODO: Should we do redirection here if a true reference slot?
+    // Or does variable mutation deal with this case correctly?
+
     // Check against attempt to set slot to NULL
     if ( newVariable == NULL )
         throw RbException( "Invalid attempt to set variable slot to NULL" );
-
-    // If we have a reference slot, we get the reference from the newVariable,
-    // that is, we compute the reference before we fill the slot
-    if ( isReference() ) {
-        DAGNode* temp = newVariable->getReference();
-        if ( temp != newVariable && newVariable->numRefs() == 0 )
-            delete newVariable;
-        newVariable = temp;
-    }
 
     // Variable conversion
     if ( convert == true )
@@ -516,7 +520,7 @@ void VariableSlot::setVariable( DAGNode* newVariable, bool convert ) {
         newVariable = newVariable->clone();
 
     // Clone the variable if it is not a safe reference
-    if ( isReference() && !newVariable->isPermanent( frame ) )
+    if ( isReference() && newVariable->getSlot() != NULL && !newVariable->isPermanent( frame ) )
         newVariable = newVariable->clone();
 
     // Make additional validity check
@@ -544,7 +548,7 @@ void VariableSlot::setVariable( DAGNode* newVariable, bool convert ) {
 DAGNode* VariableSlot::wrapValue( RbObject* value ) const {
 
     if ( value->isType( MemberObject_name ) )
-        return new DeterministicMemberNode( static_cast<MemberObject*>( value ) );
+        return new MemberNode( static_cast<MemberObject*>( value ) );
     else if ( value->isType( Container_name ) )
         return new ContainerNode( static_cast<Container*>( value ) );
     else

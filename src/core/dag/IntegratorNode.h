@@ -24,7 +24,7 @@
 #include "StochasticNode.h"
 
 class Distribution;
-class DeterministicMemberNode;
+class MemberNode;
 class RbObject;
 class VectorString;
 
@@ -33,7 +33,7 @@ class IntegratorNode : public StochasticNode {
 
     public:
                                 IntegratorNode(void);                                               //!< Construct empty integrator node
-                                IntegratorNode(DeterministicMemberNode* condLikeVec, Distribution* dist);        //!< Construct from cond like vector and distribution
+                                IntegratorNode(MemberNode* condLikeVec, Distribution* dist);        //!< Construct from cond like vector and distribution
                                 IntegratorNode(const IntegratorNode& x);                            //!< Copy constructor
 							   ~IntegratorNode(void);                                               //!< Destructor
 
@@ -69,7 +69,7 @@ class IntegratorNode : public StochasticNode {
         MoveSchedule*           getDefaultMoves(void);                                              //!< Get default moves
 
     protected:
-        DeterministicMemberNode* condLikes;                                                          //!< Cond likes
+        MemberNode*             condLikes;                                                          //!< Cond likes
 };
 
 #endif

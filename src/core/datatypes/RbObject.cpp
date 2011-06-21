@@ -101,6 +101,9 @@ bool RbObject::isConvertibleTo(const std::string& type, int dim, bool once) cons
 /** Are we of specified object type? We need to check entire class vector in case we are derived from type. */
 bool RbObject::isType(const std::string& type) const {
 
+    if ( type == RbVoid_name )
+        return true;
+
     const VectorString& classVec = getClass();
 
     for (size_t i=0; i<classVec.size(); i++) {
@@ -120,6 +123,9 @@ bool RbObject::isType(const std::string& type) const {
  */
 bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
 
+    if ( typeSpec.getType() == RbVoid_name )
+        return true;
+    
     return Workspace::userWorkspace().isXOfTypeY( getTypeSpec(), typeSpec );
 }
 

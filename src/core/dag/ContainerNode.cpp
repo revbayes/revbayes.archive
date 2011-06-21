@@ -21,7 +21,7 @@
 #include "Container.h"
 #include "ContainerNode.h"
 #include "ConverterNode.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -274,7 +274,7 @@ DAGNode* ContainerNode::convertVarElement( const VectorInteger& index, DAGNode* 
         if ( temp->isType( Container_name ) )
             return new ContainerNode( static_cast<Container*>( temp ) );
         else if ( temp->isType( MemberObject_name ) )
-            return new DeterministicMemberNode( static_cast<MemberObject*>( temp ) );
+            return new MemberNode( static_cast<MemberObject*>( temp ) );
         else
             return new ConstantNode( temp );
     }
@@ -286,7 +286,7 @@ DAGNode* ContainerNode::convertVarElement( const VectorInteger& index, DAGNode* 
 
 
 /** Does element referred to by index exist? */
-bool ContainerNode::existsElement( VectorInteger& index ) {
+bool ContainerNode::existsElement( VectorInteger& index ) const {
 
     // Check for silly references to ourself
     if ( index.size() == 0 )
@@ -394,7 +394,7 @@ DAGNode* ContainerNode::getElementOwner( VectorInteger& index ) {
         }
 
         // Get element
-        DeterministicMemberNode* elem = dynamic_cast<DeterministicMemberNode*>( container->getElement( index ) );
+        MemberNode* elem = dynamic_cast<MemberNode*>( container->getElement( index ) );
         if ( elem == NULL )
             throw RbException( getName() + index.toIndexString() + " does not exist" );
 
@@ -501,10 +501,10 @@ bool ContainerNode::isValidElement( const VectorInteger& index, const RbObject* 
 
 
 /** Check if a candidate variable element is valid */
-bool ContainerNode::isValidElement( const VectorInteger& index, const DAGNode* var, bool convert ) const {
+bool ContainerNode::isValidElement( const VectorInteger& index, DAGNode* variable, bool convert ) const {
 
-    if ( var->isImmutable() )
-        return isValidElement( index, var->getValue() );
+    if ( variable->isImmutable() )
+        return isValidElement( index, variable->getValue() );
 
     int emptyDim = getDim();
     for ( size_t i=0; i<index.size(); i++ ) {
@@ -512,10 +512,10 @@ bool ContainerNode::isValidElement( const VectorInteger& index, const DAGNode* v
             emptyDim--;
     }
 
-    if ( Workspace::userWorkspace().isXOfTypeY( var->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) )
+    if ( Workspace::userWorkspace().isXOfTypeY( variable->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) )
         return true;
 
-    if ( convert == true && Workspace::userWorkspace().isXConvertibleToY( var->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) )
+    if ( convert == true && Workspace::userWorkspace().isXConvertibleToY( variable->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) )
         return true;
 
     return false;

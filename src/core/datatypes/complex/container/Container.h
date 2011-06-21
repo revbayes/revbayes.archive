@@ -95,7 +95,7 @@ class Container : public RbComplex {
         size_t                          getOffset(const VectorNatural& index) const;                        //!< Get offset in elements vector
 
         // Parser help function you have to override
-        virtual DAGNode*                getElement(VectorInteger& index) = 0;                               //!< Get element or subcontainer for parser (do not worry about returning temps) @Fredrik: Why do we return a DAGNode* and not just a const RbObject*? This does not seem natural to me. (Sebastian)
+        virtual DAGNode*                getElement(VectorInteger& index) = 0;                               //!< Get element or subcontainer for parser (do not worry about returning temps)
 
         // Member variables
         const std::string&              elementType;                                                        //!< Type of elements

@@ -23,7 +23,7 @@
 #include "Distribution.h"
 #include "DistributionFunction.h"
 #include "DistributionInterval.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RealPos.h"
@@ -36,7 +36,7 @@
 
 /** Constructor */
 DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcType )
-    : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? TypeSpec( RealPos_name ) : dist->getVariableType() ) {
+    : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? TypeSpec( funcType == DENSITY ? Real_name : RealPos_name ) : dist->getVariableType() ) {
 
     /* Set the distribution */
     distribution = dist;
@@ -159,7 +159,7 @@ DAGNode* DistributionFunction::execute( void ) {
         if ( static_cast<const Boolean*>( args["log"].getValue() )->getValue() == false )
             return new ConstantNode( new RealPos( distribution->pdf  ( args[0].getValue() ) ) );
         else
-            return new ConstantNode( new RealPos( distribution->lnPdf( args[0].getValue() ) ) );
+            return new ConstantNode( new Real   ( distribution->lnPdf( args[0].getValue() ) ) );
     }
     else if (functionType == RVALUE) {
 
@@ -168,7 +168,7 @@ DAGNode* DistributionFunction::execute( void ) {
         if ( draw->isType( Container_name ) )
             return new ContainerNode( static_cast<Container*   >( draw ) );
         else if ( draw->isType( MemberObject_name ) )
-            return new DeterministicMemberNode   ( static_cast<MemberObject*>( draw ) );
+            return new MemberNode   ( static_cast<MemberObject*>( draw ) );
         else
             return new ConstantNode( draw );
     }
@@ -184,7 +184,7 @@ DAGNode* DistributionFunction::execute( void ) {
         if ( quant->isType( Container_name ) )
             return new ContainerNode( static_cast<Container*   >( quant ) );
         else if ( quant->isType( MemberObject_name ) )
-            return new DeterministicMemberNode   ( static_cast<MemberObject*>( quant ) );
+            return new MemberNode   ( static_cast<MemberObject*>( quant ) );
         else
             return new ConstantNode( quant );
     }
@@ -223,9 +223,12 @@ bool DistributionFunction::processArguments( const std::vector<Argument>& args, 
     /* Set member variables of the distribution */
     size_t i = 0;
     if ( functionType != RVALUE )
-        i++;
+        i++;    // Add one because first argument is not a distribution parameter
+    size_t k = argumentRules.size();
+    if ( functionType == DENSITY )
+        k--;    // Subtract one because last argumet is log
 
-    for ( ; i < argumentRules.size(); i++ ) {
+    for ( ; i < k; i++ ) {
 
         std::string name = argumentRules[i]->getArgLabel();
 

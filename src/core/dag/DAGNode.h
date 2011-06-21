@@ -66,7 +66,7 @@ class DAGNode {
         virtual bool                    isConst(void) const;                                                    //!< Is DAG node const value?
 
         // Element set and get functions you may want to override
-        virtual bool                    existsElement(VectorInteger& index);                                    //!< Does element exist? @Fredrik: This should potentially be a const function, however, if I make it const it does not pass the normaltest.rev anymore. (Sebastian)
+        virtual bool                    existsElement(VectorInteger& index) const;                              //!< Does element exist?
         virtual DAGNode*                getElement(VectorInteger& index);                                       //!< Give the parser an element
         virtual DAGNode*                getElementOwner(VectorInteger& index);                                  //!< Give the parser the element owner
         virtual void                    setElement(const VectorNatural& index, DAGNode* var, bool convert=true);//!< Set element
@@ -74,11 +74,10 @@ class DAGNode {
         // Basic utility functions you have to override
         virtual DAGNode*                clone(void) const = 0;                                                  //!< Clone this node
         virtual const VectorString&     getDAGClass(void) const;                                                //!< Get DAG node class vector
-        virtual const RbObject*         getStoredValue(void) const = 0;                                               //!< Get stored value
-//        virtual const RbObject*         getValue(void) = 0;                                                     //!< Get value
-        virtual const RbObject*         getValue(void) const = 0;                                               //!< Get const value; throw an error or warn if in transient state @Fredrik: Why is there a constant function if there is also a non-constant function?! (Sebastian)
-        virtual void                    printValue(std::ostream& o) const = 0;                                  //!< Print value for user
+        virtual const RbObject*         getStoredValue(void) = 0;                                               //!< Get stored value (non-const because of delayed evaluation)
+        virtual const RbObject*         getValue(void) = 0;                                                     //!< Get value (non-const because of delayed evaluation)
         virtual void                    printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
+        virtual void                    printValue(std::ostream& o) = 0;                                        //!< Print value for user (non-const fxn because of delayed evaluation)
         virtual std::string             richInfo(void) const = 0;                                               //!< Complete info about object
 
         // DAG functions you should not have to override

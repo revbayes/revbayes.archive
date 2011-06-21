@@ -61,12 +61,6 @@ class LookupNode : public DeterministicNode {
         bool                isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
         void                swapParentNode(DAGNode* oldP, DAGNode* newP);                               //!< Swap a parent node
 
-        // Parser element access functions
-        bool                existsElement(VectorInteger& index);                                        //!< Does element exist?
-        DAGNode*            getElement(VectorInteger& index);                                           //!< Get element
-        DAGNode*            getElementOwner(VectorInteger& index);                                      //!< Get element owner
-        void                setElement(const VectorNatural& index, DAGNode* var, bool convert=true);    //!< Set element
-
         // LookupNode functions
         const TypeSpec&     getMemberTypeSpec(const RbString& name) const;                              //!< Get type spec of a named member variable of lookup target
 

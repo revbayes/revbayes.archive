@@ -21,7 +21,7 @@
 #include "Boolean.h"
 #include "Integer.H"
 #include "MatrixReal.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "MemberObject.h"
 #include "Natural.h"
 #include "Real.h"
@@ -263,7 +263,7 @@ const VectorString& VariableContainer::getClass(void) const {
  * Get const value. In this function, we get the value from each of the 
  * elements and create a constant value container with this content.
  */
-ValueContainer* VariableContainer::getConstValue( void ) {
+ValueContainer* VariableContainer::getConstValue( void ) const {
 
     if ( elementType == Integer_name && getDim() == 1 ) {
 
@@ -315,8 +315,12 @@ ValueContainer* VariableContainer::getConstValue( void ) {
         return new MatrixReal( length, temp );
         return NULL;
     }
-    else
-        return new ValueContainer( *this );
+    else {
+        std::vector<RbObject*> temp;
+        for ( size_t i=0; i<elements.size(); i++ )
+            temp.push_back( elements[i]->getValue()->clone() );
+        return new ValueContainer( getTypeSpec(), getLength(), temp );
+    }
 }
 
 
@@ -392,7 +396,7 @@ DAGNode* VariableContainer::getElement( VectorInteger& index ) {
             throw RbException( "Container element does not support subscripting" );
         else {
             // Get member object pointer to the value
-            MemberObject* elem = static_cast<DeterministicMemberNode*>( elemPtr )->getMemberObject();            
+            MemberObject* elem = static_cast<MemberNode*>( elemPtr )->getMemberObject();            
 
             // Truncate index and delegate job to subelement
             size_t subIndex = valueIndex[0];
@@ -472,7 +476,7 @@ bool VariableContainer::isConstant( void ) const {
  */
 void VariableContainer::printValue( std::ostream& o ) const {
 
-    ValueContainer* temp = new ValueContainer( *this );
+    ValueContainer* temp = getConstValue();
 
     temp->printValue( o );
 

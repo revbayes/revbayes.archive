@@ -41,7 +41,8 @@ class VariableSlot {
         VariableSlot&           operator=(const VariableSlot& x);                                       //!< Assignment
 
         // Regular functions
-        VariableSlot*           clone(void) const { return new VariableSlot(*this); }                   //!< Clone slot
+        VariableSlot*           clone(void) const;                                                      //!< Clone slot
+        VariableSlot*           cloneEmpty(void) const;                                                 //!< Clone slot but not variable
         int                     getDim(void) const { return typeSpec.getDim(); }                        //!< Return dim of slot
         const std::string&      getName(void) const;                                                    //!< Get name of slot
         DAGNode*                getReference(void) const;                                               //!< Get a reference to the variable

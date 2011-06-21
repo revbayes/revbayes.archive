@@ -33,10 +33,13 @@ int SemMin::estimateBurnin(const std::vector<double>& values) {
         analysis.analyseCorrelation(values,i);
         
         // check if the new ess is better than any previous ones
+        //! @Sebastian: finite is not available in MS compiler
+#if 0
         if (finite(analysis.getStdErrorOfMean()) && analysis.getStdErrorOfMean() > 0 && min_sem > analysis.getStdErrorOfMean()) {
             min_sem = analysis.getStdErrorOfMean();
             best_burnin = i;
         }
+#endif
     }
     
     // return the best burnin

@@ -21,7 +21,7 @@
 #include "DAGNode.h"
 #include "DistributionCategorical.h"
 #include "MemberFunction.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RealPos.h"
@@ -45,7 +45,7 @@ DAGNode* DistributionCategorical::executeOperation( const std::string& name, Arg
 
     if ( name == "probMassVector" ) {
 
-        return new DeterministicMemberNode( getProbabilityMassVector()->clone() );
+        return new MemberNode( getProbabilityMassVector()->clone() );
     }
     else if ( name == "numStates" ) {
 

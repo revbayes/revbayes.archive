@@ -81,7 +81,7 @@ bool Workspace::addDistribution(const std::string& name, Distribution* dist) {
 
     PRINTF("Adding distribution %s to workspace\n", name.c_str());
 
-    if (typeTable.find(name) != typeTable.end())
+    if ( typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + dist->getType() + "' in the workspace");
 
     PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
@@ -202,6 +202,24 @@ bool Workspace::existsType( const std::string& name ) const {
 }
 
 
+/** Find type template object */
+RbObject* Workspace::findType( const std::string& name ) const {
+
+    if ( typesInitialized == false )
+        throw RbException( "Type table not initialized" );
+
+    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
+    if ( it == typeTable.end() ) {
+        if ( parentFrame != NULL )
+            return static_cast<Workspace*>( parentFrame )->findType( name );
+        else
+            throw RbException( "Type " + name + " does not exist in environment" );
+    }
+    else
+        return it->second;
+}
+
+
 /** Get function */
 RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Argument>& args) {
 
@@ -238,14 +256,7 @@ TypeSpec Workspace::getTypeSpec( const std::string& name ) const {
         throw RbException( "Invalid attempt to convert a generic container type to valid type specification" );
     }
 
-    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
-    if ( it == typeTable.end() ) {
-        if ( parentFrame != NULL )
-            return static_cast<Workspace*>( parentFrame )->getTypeSpec( name );
-        else
-            throw RbException( "No object class with name " + name );
-    }
-    return (*it).second->getTypeSpec();
+    return findType( name )->getTypeSpec();
 }
 
 
@@ -275,14 +286,7 @@ TypeSpec Workspace::getTypeSpec( const TypeSpec& typeSp ) const {
     if ( !isXOfTypeY( typeSp.getType(), Container_name ) )
         return typeSp;
 
-    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( typeSp.getType() );
-    if ( it == typeTable.end() ) {
-        if ( parentFrame != NULL )
-            return static_cast<Workspace*>( parentFrame )->getTypeSpec( typeSp );
-        else
-            throw RbException( "No object class with name " + typeSp.getType() );
-    }
-    return (*it).second->getTypeSpec();
+    return findType( typeSp.getType() )->getTypeSpec();
 }
 
 
@@ -295,6 +299,10 @@ RandomNumberGenerator* Workspace::get_rng(void) {
 
 /** Type checking using type table and full type spec */
 bool Workspace::isXOfTypeY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) const {
+
+    //! @todo We probably need to handle the abstract types in a more general way
+    if ( yTypeSp.getType() == RbVoid_name && existsType( xTypeSp.getType() ) )
+        return true;
 
     if ( xTypeSp.getDim() != yTypeSp.getDim() )
         return false;
@@ -312,6 +320,8 @@ bool Workspace::isXOfTypeY( const std::string& xType, const std::string& yType )
     //! @todo We probably need to handle the abstract types in a more general way
     if ( yType == RbObject_name && (existsType( xType ) || xType == RbNULL_name || xType == RbVoid_name) )
         return true;
+    if ( yType == RbVoid_name && (existsType( xType ) || xType == RbNULL_name || xType == RbVoid_name) )
+        return true;
     if ( ( xType == RbObject_name || xType == RbNULL_name || xType == RbVoid_name) && yType != RbObject_name )
         return false;
 
@@ -319,14 +329,7 @@ bool Workspace::isXOfTypeY( const std::string& xType, const std::string& yType )
     if ( xType == yType )
         return true;
 
-    if ( typeTable.find( xType ) == typeTable.end() ) {
-        if ( parentFrame == NULL )
-            throw RbException( "Unknown type named '" + xType + "'" );
-        else
-            return ( static_cast<Workspace*>( parentFrame ) )->isXOfTypeY( xType, yType );
-    }
-
-    const VectorString& xTypeVec = typeTable.find( xType )->second->getClass();
+    const VectorString& xTypeVec = findType( xType )->getClass();
     size_t i;
     for ( i = 0; i < xTypeVec.size(); i++) {
         if ( xTypeVec[i] == yType )
@@ -361,10 +364,6 @@ bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTyp
     int                 xDim    = xTypeSp.getDim();
     int                 yDim    = yTypeSp.getDim();
 
-    //! @todo We probably need to handle the abstract types in a more general way
-    if ( yType == RbObject_name && existsType( xType ) && xDim == yDim )
-        return true;
-
     bool retVal = false;
     if ( xDim > 0 ) {
     
@@ -378,11 +377,7 @@ bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTyp
     }
     else if (xDim == 0) {
 
-        TypeTable::const_iterator i = typeTable.find( xType );
-        if ( i == typeTable.end() )
-            throw RbException("Unknown type named '" + xType + "'");
-        
-        retVal = (*i).second->isConvertibleTo( yType, yDim, false );
+        retVal = findType( xType )->isConvertibleTo( yType, yDim, false );
     }
 
     return retVal;

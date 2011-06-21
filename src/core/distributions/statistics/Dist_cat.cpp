@@ -109,10 +109,10 @@ const TypeSpec Dist_cat::getVariableType( void ) const {
 
 
 /**
- * This function calculates the natural log of the probability
- * density for a categorical random variable.
+ * This function calculates the natural log of the
+ * probability of a categorical random variable.
  *
- * @brief Natural log of Dirichlet probability density
+ * @brief Natural log of categorical probability
  *
  * @param value Observed value
  * @return      Natural log of the probability density
@@ -131,8 +131,8 @@ double Dist_cat::lnPdf( const RbObject* value ) {
 
 
 /**
- * This function calculates the probability density
- * for a categorical random variable.
+ * This function calculates the probability
+ * of a categorical random variable.
  *
  * @brief Categorical probability density
  *
@@ -169,7 +169,20 @@ Categorical* Dist_cat::rv( void ) {
     // Get copy of reference object
     Categorical* draw = static_cast<Categorical*>( getValue( "dummy" )->clone() );
 
-    draw->setValue( int( rng->uniform01() * draw->getNumStates() ) );
+    // Draw a random value
+    double r   = rng->uniform01();
+    double sum = 0.0;
+    size_t i;
+    for ( i=0; i<m.size(); i++ ) {
+        sum += m[i];
+        if ( m[i] > r )
+            break;
+    }
+
+    // Set draw to this value
+    draw->setValue( int( i ) );
+
+    // Return draw
     return draw;
 }
 

@@ -16,7 +16,7 @@
 
 #include "ConstantNode.h"
 #include "ContainerNode.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "RbException.h"
 #include "List.h"
 #include "RbNames.h"
@@ -121,7 +121,7 @@ DAGNode* List::getSubelement( VectorInteger& index ) {
 
         DAGNode* retVal;
         if ( temp->isDAGType( MemberNode_name ) )
-            retVal = static_cast<DeterministicMemberNode*>( temp )->getElement( index );
+            retVal = static_cast<MemberNode*>( temp )->getElement( index );
         else
             retVal = static_cast<ContainerNode*>( temp )->getElement( index );
         

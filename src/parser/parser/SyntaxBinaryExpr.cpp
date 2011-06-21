@@ -101,7 +101,7 @@ DAGNode* SyntaxBinaryExpr::getDAGNodeExpr(VariableFrame* frame) const {
     args.push_back(Argument("", rightOperand->getDAGNodeExpr(frame)));
 
     // Get function
-    std::string funcName = "." + opCode[operation];
+    std::string funcName = "_" + opCode[operation];
     RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, args);
 
     // Return new function node

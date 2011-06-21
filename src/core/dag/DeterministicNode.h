@@ -34,9 +34,9 @@ class DeterministicNode : public VariableNode {
         virtual                        ~DeterministicNode(void);                                                        //!< Destructor
 
         // Utility functions implemented here
-        const RbObject*                 getStoredValue(void) const;                                                     //!< Get stored value
-        const RbObject*                 getValue(void) const;                                                           //!< Get const value (if possible)
-        void                            printValue(std::ostream& o) const;                                              //!< Print value for user
+        const RbObject*                 getStoredValue(void);                                                           //!< Get stored value (non-const fxn because of delayed evaluation)
+        const RbObject*                 getValue(void);                                                                 //!< Get value (non-const fxn because of delayed evaluation)
+        void                            printValue(std::ostream& o);                                                    //!< Print value for user (non-const fxn because of delayed evaluation)
 
         // Utility functions you have to override
         virtual DeterministicNode*      clone(void) const = 0;                                                          //!< Clone this node

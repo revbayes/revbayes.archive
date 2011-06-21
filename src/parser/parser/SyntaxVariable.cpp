@@ -21,7 +21,7 @@
 #include "Integer.h"
 #include "LookupNode.h"
 #include "MemberFrame.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -181,7 +181,7 @@ DAGNode* SyntaxVariable::getDAGNodeExpr( VariableFrame* frame ) const {
         if ( identifier == NULL )
             throw RbException( "Member variable identifier missing" );
 
-        MemberObject* theMemberObject = static_cast<DeterministicMemberNode*>( baseVar )->getMemberObject();
+        MemberObject* theMemberObject = static_cast<MemberNode*>( baseVar )->getMemberObject();
         MemberFrame& members = const_cast<MemberFrame&>( theMemberObject->getMembers() );
         theVar = members[ (*identifier) ].getParserVariableRef();
     }
@@ -346,7 +346,7 @@ DAGNode* SyntaxVariable::getLValue(VariableFrame* frame, VariableSlot*& theSlot,
         if ( identifier == NULL )
             throw RbException( "Member variable identifier missing" );
 
-        MemberObject* theMemberObject = static_cast<DeterministicMemberNode*>( baseVar )->getMemberObject();
+        MemberObject* theMemberObject = static_cast<MemberNode*>( baseVar )->getMemberObject();
         if ( !theMemberObject->getMembers().existsVariable( *identifier ) )
             throw RbException( "Variable " + baseVariable->getFullName( frame ) + " does not have a member called '" + *identifier + "'" );       
 
@@ -403,7 +403,7 @@ DAGNode* SyntaxVariable::getValue(VariableFrame* frame) const {
         if ( identifier == NULL )
             throw RbException( "Member variable identifier missing" );
 
-        MemberObject* theMemberObject = static_cast<DeterministicMemberNode*>( baseVar )->getMemberObject();
+        MemberObject* theMemberObject = static_cast<MemberNode*>( baseVar )->getMemberObject();
         MemberFrame& members = const_cast<MemberFrame&>( theMemberObject->getMembers() );
         theVar = members[ (*identifier) ].getParserVariable();
     }

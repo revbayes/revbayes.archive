@@ -17,7 +17,7 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "FunctionNode.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -155,7 +155,7 @@ DAGNode* SyntaxFunctionCall::getValue( VariableFrame* frame ) const {
         retVal = Workspace::userWorkspace().executeFunction( *functionName, args );
     }
     else {
-        DeterministicMemberNode* memberNode = dynamic_cast<DeterministicMemberNode*>( variable->getValue( frame ) );
+        MemberNode* memberNode = dynamic_cast<MemberNode*>( variable->getValue( frame ) );
         if ( memberNode == NULL )
             throw RbException( "Variable does not have member functions" );
         args.insert( args.begin(), Argument( "", memberNode ) );

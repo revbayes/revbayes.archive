@@ -67,7 +67,7 @@ class VariableContainer : public Container {
 
         // Container functions
         void                        clear(void);                                                                //!< Clear container
-        ValueContainer*             getConstValue(void);                                                        //!< Get constant value
+        ValueContainer*             getConstValue(void) const;                                                  //!< Get constant value
         VectorNatural               getIndex(const DAGNode* elem) const;                                        //!< Get index of an element
         void                        resize(const std::vector<size_t>& len);                                     //!< Resize container
         void                        setElement(const VectorNatural& index, DAGNode* var, bool convert=true);    //!< Set element

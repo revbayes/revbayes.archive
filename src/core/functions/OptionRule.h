@@ -39,7 +39,7 @@ class OptionRule : public ArgumentRule {
         std::string                 richInfo(void) const;                                                               //!< General info on object
 
         // OptionRule functions
-        virtual bool                isArgValid(const DAGNode* var, bool& needsConversion, bool once) const;             //!< Is var valid argument?
+        virtual bool                isArgValid(DAGNode* var, bool& needsConversion, bool once) const;             //!< Is var valid argument?
 
     protected:
         bool                        areOptionsUnique(const VectorString& optVals) const;                                //!< Test if options are unique

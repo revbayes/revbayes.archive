@@ -1,18 +1,16 @@
-/*!
- * \file
+/**
+ * @file
  * This file contains commonly used statistics functions that are used
  * in RevBayes. The probability density (pdf), log of the probability
  * density (lnPdf), cumulative probability (cdf), and quantiles of
  * common probability distributions.
  *
- * \brief Namespace containing statistical functions
+ * @brief Namespace containing statistical functions
  *
  * (c) Copyright 2009- under GPL version 3
- * \date Last modified: $Date: 2009-12-23 15:33:11 +0100 (Ons, 23 Dec 2009) $
- * \author Sebastian Hoehna (Department of Mathematics, Stockholm University)
- * \author John Huelsenbeck (Department of Integrative Biology, University of California, Berkeley)
- * \author Fredrik Ronquist (Department of Entomology, Swedish Museum of Natural History)
- * \license GPL version 3
+ * @date Last modified: $Date: 2009-12-11 16:58:43 -0800 (Fre, 11 Dec 2009) $
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
  *
  * $Id: RbStatistics.h 203 2009-12-23 14:33:11Z Hoehna $
  */

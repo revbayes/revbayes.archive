@@ -86,6 +86,7 @@ class Workspace : public VariableFrame {
         DAGNode*                    executeFunction(    const std::string&              name,
                                                         const std::vector<Argument>&    args) const;                    //!< Execute function
         bool                        existsType(const std::string& name) const;                                          //!< Does the type exist in the type table?
+        RbObject*                   findType(const std::string& name) const;                                            //!< Does the type exist in the type table?
         const VectorString&         getClassOfType(const std::string& type) const;                                      //!< Get reference to class vector of type
         FunctionTable*              getFunctionTable(void) { return functionTable; }                                    //!< Get function table
         RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy

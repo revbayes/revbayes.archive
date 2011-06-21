@@ -21,6 +21,7 @@
 #include "RbNames.h"
 #include "TypeSpec.h"
 #include "VectorString.h"
+#include "Workspace.h"
 
 #include <algorithm>
 #include <cassert>
@@ -124,7 +125,7 @@ bool ConverterNode::isParentMutableTo(const DAGNode* oldNode, const DAGNode* new
         throw RbException( "Node is not a parent" );
 
     // See if the new node value is convertible to the required type and dim
-    if ( newNode->getValue()->isConvertibleTo( valueType, valueDim, false ) )
+    if ( Workspace::userWorkspace().isXConvertibleToY( newNode->getTypeSpec(), TypeSpec( valueType, valueDim ) ) )
         return true;
     
     return false;

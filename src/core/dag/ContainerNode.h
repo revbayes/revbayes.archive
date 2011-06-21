@@ -57,10 +57,10 @@ class ContainerNode : public DeterministicNode {
         // Parser element access, test and convert functions
         RbObject*               convertValElement(const VectorInteger& index, RbObject* val ) const;                    //!< Convert value element
         DAGNode*                convertVarElement(const VectorInteger& index, DAGNode* var, bool convert=true ) const;  //!< Convert value element
-        bool                    existsElement(VectorInteger& index);                                                    //!< Does element exist?
+        bool                    existsElement(VectorInteger& index) const;                                              //!< Does element exist?
         DAGNode*                getElement(VectorInteger& index);                                                       //!< Get element
         DAGNode*                getElementOwner(VectorInteger& index);                                                  //!< Get element owner
-        bool                    isValidElement(const VectorInteger& index, const DAGNode* var, bool convert) const;     //!< Check validity of variable element
+        bool                    isValidElement(const VectorInteger& index, DAGNode* var, bool convert) const;           //!< Check validity of variable element
         bool                    isValidElement(const VectorInteger& index, const RbObject* val) const;                  //!< Check validity of value element
         void                    setElement(const VectorInteger& index, DAGNode* var, bool convert=true);                //!< Set element
 

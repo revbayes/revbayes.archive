@@ -41,6 +41,9 @@ bool MemberSlot::isValidVariable( DAGNode* newVariable ) const {
 
     bool needsConversion;
 
-    return memberRule->isArgValid( newVariable, needsConversion, false );
+    if ( newVariable->isImmutable() )
+        return memberRule->isArgValid( newVariable, needsConversion, true );
+    else
+        return memberRule->isArgValid( newVariable, needsConversion, false );
 }
 

@@ -78,22 +78,24 @@ MoveSchedule* DeterministicNode::getDefaultMoves( void ) {
 }
 
 
-/** Get stored value intelligently */
-const RbObject* DeterministicNode::getStoredValue( void ) const {
+/** Get stored value */
+const RbObject* DeterministicNode::getStoredValue( void ) {
 
     if ( !touched )
         return value;
 
-//    update(); @Fredrik: Why do you update the dag-node if someone asks for the stored value? (Sebastian)
+    if ( !changed )
+        update();
+    
     return storedValue;
 }
 
 
-/** Get const value if possible */
-const RbObject* DeterministicNode::getValue( void ) const {
+/** Get value */
+const RbObject* DeterministicNode::getValue( void ) {
 
-    if (touched && !changed)
-        throw RbException( "Invalid attempt to retrieve value from a const variable that is in volatile state" );
+    if ( touched && !changed )
+        update();
 
     return value;
 }
@@ -125,10 +127,10 @@ void DeterministicNode::keepAffected( void ) {
 
 
 /** Print value for user */
-void DeterministicNode::printValue( std::ostream& o ) const {
+void DeterministicNode::printValue( std::ostream& o ) {
 
-    if ( touched )
-        RBOUT( "Warning: Variable in volatile state so value is unreliable" );
+    if ( touched && !changed )
+        update();
 
     value->printValue(o);
 }

@@ -19,7 +19,7 @@
 #include "ContainerNode.h"
 #include "ContainerIterator.h"
 #include "DAGNode.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -58,12 +58,17 @@ ValueContainer::ValueContainer( size_t n, RbObject* x )
     length[0] = elements.size();
 }
 
+
 /**
  * Construct container with given vector. 
  *
  * @note Calling the constructor with a NULL argument
  *       will result in an error.
+ * @Sebastian This constructor is dangerous because the resulting
+ *            type specification may be wrong if the values are of 
+ *            different type. -- Fredrik
  */
+#if 0
 ValueContainer::ValueContainer( std::vector<RbObject*>* values )
 : Container( TypeSpec( values->at(0)->getType(), 1 ) ) {
     
@@ -76,6 +81,7 @@ ValueContainer::ValueContainer( std::vector<RbObject*>* values )
     // Set length
     length[0] = elements.size();
 }
+#endif
 
 
 /**
@@ -151,19 +157,31 @@ ValueContainer::ValueContainer( const TypeSpec& typeSpec , const std::vector<siz
 
 
 /**
- * Construct value container from const variable container.
- * If some variables in the variable container are in a volatile
- * state (they have been touched and not recalculated), the
- * they will throw an error upon the attempt to retrieve their
- * value.
+ * Construct value container from type specification, length
+ * specification in each dimension, and vector of elements.
  */
-ValueContainer::ValueContainer( const VariableContainer& x )
-    : Container( x ) {
+ValueContainer::ValueContainer( const TypeSpec& typeSpec, const std::vector<size_t>& len, std::vector<RbObject*> values )
+    : Container( typeSpec ) {
 
-    for ( size_t i = 0; i < x.size(); i++ )
-        elements.push_back( x[i]->getValue()->clone() );
+    // Check that length specification is OK
+    if ( len.size() == 0 )
+        throw RbException( "Length is empty" );
+    for ( size_t i = 0; i < len.size(); i++ )
+        if ( len[i] < 1 )
+            throw RbException( "Length is nonpositive in at least one dimension" );
+    if ( len.size() != typeSpec.getDim() )
+        throw RbException( "Mismatch between type and length specifications" );
 
-    // Note: The length variable is copied already in the Container copy constructor
+    // Calculate and check size
+    size_t size = 1;
+    for ( size_t i = 0; i < len.size(); i++ )
+        size *= len[i];
+    if ( size != values.size() )
+        throw RbException( "Mismatch between length specification and number of elements" );
+
+    // Fill the container
+    elements = values;
+    length = len;
 }
 
 
@@ -329,7 +347,7 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
         if ( elemPtr == NULL )
             return new ConstantNode( elementType );
         else if ( elemPtr->isType( MemberObject_name ) )
-            return new DeterministicMemberNode( static_cast<MemberObject*>( elemPtr->clone() ) );
+            return new MemberNode( static_cast<MemberObject*>( elemPtr->clone() ) );
         else
             return new ConstantNode( elemPtr->clone() );
     }

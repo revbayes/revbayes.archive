@@ -36,12 +36,20 @@ ArgumentFrame::ArgumentFrame( Frame* parentFr ) : Frame( parentFr ), arguments()
 }
 
 
-/** Copy constructor. We need to copy the slots and set the frame of the copies. */
+/**
+ * Copy constructor. We need to copy the slots and set the frame of the copies.
+ * Unlike a regular slot clone, which would make an independent copy of the variable
+ * in some cases, we create an empty clone and make sure it contains the same variable
+ * as the original slot. This ensures that RbFunction copies are actually passed in
+ * the same variables as the template they are created from.
+ */
 ArgumentFrame::ArgumentFrame( const ArgumentFrame& x ) :  Frame( x ), arguments( x.arguments ) {
 
     std::vector<std::pair<std::string, VariableSlot*> >::iterator it;
     for ( it = arguments.begin(); it != arguments.end(); it++ ) {
-        (*it).second = (*it).second->clone();
+        DAGNode* variable = const_cast<DAGNode*>( (*it).second->getVariable() );
+        (*it).second = (*it).second->cloneEmpty();
+        (*it).second->replaceVariable( variable );
         (*it).second->setFrame( this );
     }
 }
@@ -56,7 +64,7 @@ ArgumentFrame::~ArgumentFrame( void ) {
 }
 
 
-/** Assignment operator */
+/** Assignment operator. See copy constructor. */
 ArgumentFrame& ArgumentFrame::operator=( const ArgumentFrame& x ) {
 
     if ( this != &x ) {
@@ -69,10 +77,11 @@ ArgumentFrame& ArgumentFrame::operator=( const ArgumentFrame& x ) {
         arguments = x.arguments;
 
         for ( it = arguments.begin(); it != arguments.end(); it++ ) {
-            (*it).second = (*it).second->clone();
+            DAGNode* variable = const_cast<DAGNode*>( (*it).second->getVariable() );
+            (*it).second = (*it).second->cloneEmpty();
+            (*it).second->replaceVariable( variable );
             (*it).second->setFrame( this );
         }
-        
     }
 
     return (*this);

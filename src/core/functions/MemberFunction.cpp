@@ -25,7 +25,7 @@
 #include "DAGNode.h"
 #include "Ellipsis.h"
 #include "MemberFunction.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -66,7 +66,7 @@ MemberFunction* MemberFunction::clone(void) const {
 /** Execute function: call the object's internal implementation through executeOperation */
 DAGNode* MemberFunction::execute( void ) {
 
-    DeterministicMemberNode* memberNode = static_cast<DeterministicMemberNode*>( args[0].getReference() );
+    MemberNode* memberNode = static_cast<MemberNode*>( args[0].getReference() );
 
     return memberNode->getMemberObject()->executeOperation( funcName, args );
 }

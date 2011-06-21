@@ -47,7 +47,12 @@ DAGNode* Func_readAlignment::execute( void ) {
     std::vector<RbObject*>* tmp = (std::vector<RbObject*>*) m;
     
     // create a value container with all matrices
-    ValueContainer* vc = new ValueContainer(tmp);
+    //! @Sebastian: Replaced call to unsafe constructor with call to safe constructor
+    //  We might want to replace this call to the ValueContainer constructor with a call
+    //  to a generic vector class constructor
+    std::vector<size_t> length;
+    length.push_back( tmp->size() );
+    ValueContainer* vc = new ValueContainer( TypeSpec( CharacterMatrix_name, 1 ), length, *tmp );
     
     return new ContainerNode( vc );
 }

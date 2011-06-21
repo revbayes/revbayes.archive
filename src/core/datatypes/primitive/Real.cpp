@@ -101,10 +101,12 @@ void Real::printValue(std::ostream &o) const {
     int previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
 
+    std::fixed( o );
+    o.precision( 3 );
     o << value;
 
-    o.setf(previousFlags);
-    o << std::setprecision(previousPrecision);
+    o.setf( previousFlags );
+    o.precision( previousPrecision );
 }
 
 

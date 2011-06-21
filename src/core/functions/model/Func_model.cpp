@@ -19,7 +19,7 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Func_model.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "Model.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -39,7 +39,7 @@ Func_model* Func_model::clone( void ) const {
 /** Execute function */
 DAGNode* Func_model::execute( void ) {
 
-    return new DeterministicMemberNode( new Model( std::vector<DAGNode*>( 1, args[0].getReference() ) ) );
+    return new MemberNode( new Model( std::vector<DAGNode*>( 1, args[0].getReference() ) ) );
 }
 
 
@@ -51,7 +51,7 @@ const ArgumentRules& Func_model::getArgumentRules( void ) const {
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ReferenceRule( "sinknode", RbObject_name ) );
+        argumentRules.push_back( new ReferenceRule( "sinknode", RbVoid_name ) );
         rulesSet = true;
     }
 

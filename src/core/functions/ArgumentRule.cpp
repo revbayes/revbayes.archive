@@ -20,7 +20,7 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "ContainerNode.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
@@ -68,7 +68,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 
 
 /** Convert an argument to a variable that does fit the argument rule */
-DAGNode* ArgumentRule::convert(const DAGNode* arg) const {
+DAGNode* ArgumentRule::convert(DAGNode* arg) const {
     
     if ( arg == NULL )
         return NULL;
@@ -78,7 +78,7 @@ DAGNode* ArgumentRule::convert(const DAGNode* arg) const {
     if ( theConvertedValue->isType( Container_name ) )
         return new ContainerNode( (Container*)( theConvertedValue ) );
     else if ( theConvertedValue->isType( MemberObject_name ) )
-        return new DeterministicMemberNode( (MemberObject*)( theConvertedValue ) );
+        return new MemberNode( (MemberObject*)( theConvertedValue ) );
     else
         return new ConstantNode( theConvertedValue );
 }
@@ -131,7 +131,7 @@ DAGNode* ArgumentRule::getDefaultReference(void) {
 
 
 /** Test if argument is valid */
-bool ArgumentRule::isArgValid(const DAGNode* var, bool& needsConversion, bool once) const {
+bool ArgumentRule::isArgValid(DAGNode* var, bool& needsConversion, bool once) const {
     
     needsConversion = false;
     if ( var == NULL )
@@ -140,7 +140,7 @@ bool ArgumentRule::isArgValid(const DAGNode* var, bool& needsConversion, bool on
     if ( once ) {
         /* We are executing once and match based on current value; error will be thrown if arguments have not been evaluated already */
         const RbObject* value = var->getValue();
-        if ( value->isType( argSlot.getTypeSpec().getType() ) && value->getDim() == argSlot.getTypeSpec().getDim() ) {
+        if ( value->isTypeSpec( argSlot.getTypeSpec() ) ) {
             needsConversion = false;
             return true;
         }
@@ -175,10 +175,7 @@ void ArgumentRule::printValue(std::ostream &o) const {
     o << " \"" << label << "\"";
     if ( hasDefaultVal ) {
         o << " = ";
-        if ( argSlot.getVariable() == NULL )
-            o << "NULL";
-        else
-            argSlot.getVariable()->printValue( o );
+        argSlot.printValue( o );
     }
 }
 

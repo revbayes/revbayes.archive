@@ -83,7 +83,7 @@ const VectorString& ConstantNode::getDAGClass() const {
 
 
 /** Print value for user */
-void ConstantNode::printValue( std::ostream& o ) const {
+void ConstantNode::printValue( std::ostream& o ) {
 
     if ( value )
         value->printValue(o);

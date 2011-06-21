@@ -37,10 +37,10 @@ class VariableNode : public DAGNode {
         // Utility functions you have to override
         virtual VariableNode*           clone(void) const = 0;                                                          //!< Clone this node
         virtual const VectorString&     getDAGClass(void) const;                                                        //!< Get DAG node class vector
-        virtual const RbObject*         getStoredValue(void) const = 0;                                                       //!< Get stored value
-        virtual const RbObject*         getValue(void) const = 0;                                                       //!< Get value
+        virtual const RbObject*         getStoredValue(void) = 0;                                                       //!< Get stored value (non-const fxn because of delayed evaluation)
+        virtual const RbObject*         getValue(void) = 0;                                                             //!< Get value (non-const fxn because of delayed evaluation)
         virtual void                    printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
-        virtual void                    printValue(std::ostream& o) const = 0;                                          //!< Print value for user
+        virtual void                    printValue(std::ostream& o) = 0;                                                //!< Print value for user (non-const fxn because of delayed evaluation)
         virtual std::string             richInfo(void) const = 0;                                                       //!< Complete info about object
 
         // DAG function you should not override
@@ -60,8 +60,8 @@ class VariableNode : public DAGNode {
         virtual void                    touchAffected(void) = 0;                                                        //!< Tell affected nodes value is reset
 
         // Default monitors and move functions
-        std::vector<Monitor*>           getDefaultMonitors(void);                                                       //!< Return default monitors @Fredrik: Shouldn't this be a cons function? (Sebastian)
-        virtual MoveSchedule*           getDefaultMoves(void) = 0;                                                      //!< Return default moves @Fredrik: Shouldn't this be a cons function? (Sebastian)
+        std::vector<Monitor*>           getDefaultMonitors(void);                                                       //!< Return default monitors (not const because of delayed evaluation)
+        virtual MoveSchedule*           getDefaultMoves(void) = 0;                                                      //!< Return default moves (not const because of delayed evaluation)
 
     protected:
                                         VariableNode(const std::string& valType);                                       //!< Constructor of empty node

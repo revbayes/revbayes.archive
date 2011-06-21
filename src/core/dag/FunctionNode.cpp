@@ -35,13 +35,13 @@
 
 /** Constructor of empty function node */
 FunctionNode::FunctionNode( const TypeSpec& valType )
-    : DeterministicNode( valType.getType() ), valueDim( valType.getDim() ) {	
+    : DeterministicNode( valType.getType() ), valueDim( valType.getDim() ), isValueReference(false) {
 }
 
 
 /** Constructor from function: get parents from the function object */
 FunctionNode::FunctionNode( RbFunction* func )
-    : DeterministicNode( func->getReturnType().getType() ), valueDim( func->getReturnType().getDim() )  {
+    : DeterministicNode( func->getReturnType().getType() ), valueDim( func->getReturnType().getDim() ), isValueReference(false)  {
 
     /* Check for cycles */
     const ArgumentFrame& arguments = func->getArgs();
@@ -73,14 +73,15 @@ FunctionNode::FunctionNode( RbFunction* func )
 /** Copy constructor */
 FunctionNode::FunctionNode( const FunctionNode& x ) : DeterministicNode( x ), valueDim( x.valueDim ) {
 
-    function        = x.function->clone();
-    touched         = x.touched;
-    changed         = x.changed;
-    value           = x.value->clone();
+    function         = x.function->clone();
+    touched          = x.touched;
+    changed          = x.changed;
+    value            = x.value->clone();
     if ( x.storedValue != NULL )
-        storedValue = x.storedValue->clone();
+        storedValue  = x.storedValue->clone();
     else
-        storedValue = NULL;
+        storedValue  = NULL;
+    isValueReference = x.isValueReference;
 
     /* Set parents and add this node as a child node of these */
     const ArgumentFrame& args = function->getArgs();
@@ -128,14 +129,15 @@ FunctionNode& FunctionNode::operator=( const FunctionNode& x ) {
             delete storedValue;
         delete function;    // This will delete any DAG nodes that need to be deleted
 
-        function        = x.function->clone();
-        touched         = x.touched;
-        changed         = x.changed;
-        value           = x.value->clone();
+        function         = x.function->clone();
+        touched          = x.touched;
+        changed          = x.changed;
+        value            = x.value->clone();
         if ( x.storedValue != NULL )
-            storedValue = x.storedValue->clone();
+            storedValue  = x.storedValue->clone();
         else
-            storedValue = NULL;
+            storedValue  = NULL;
+        isValueReference = x.isValueReference;
 
         /* Set parents and add this node as a child node of these */
         const ArgumentFrame& args = function->getArgs();
@@ -177,6 +179,7 @@ FunctionNode* FunctionNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNod
         copy->storedValue = NULL;
     else
         copy->storedValue = storedValue->clone();
+    copy->isValueReference = isValueReference;
 
     /* Set the copy arguments to their matches in the new DAG */
     const ArgumentFrame& args     = function->getArgs();
@@ -207,13 +210,6 @@ FunctionNode* FunctionNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNod
 }
 
 
-/** Does element exist ? */
-bool FunctionNode::existsElement( VectorInteger& index ) {
-
-    return getReference()->existsElement( index );
-}
-
-
 /** Get class vector describing type of DAG node */
 const VectorString& FunctionNode::getDAGClass() const {
 
@@ -222,25 +218,11 @@ const VectorString& FunctionNode::getDAGClass() const {
 }
 
 
-/** Get element for parser */
-DAGNode* FunctionNode::getElement( VectorInteger& index ) {
-
-    return getReference()->getElement( index );
-}
-
-
-/** Get element reference for modification by parser */
-DAGNode* FunctionNode::getElementOwner( VectorInteger& index) {
-
-    return getReference()->getElementOwner( index );
-}
-
-
 /** Execute function and get a reference */
 DAGNode* FunctionNode::getReference(void) {
 
     if ( !isValueReference )
-        throw RbException( "Function does not return a reference" );
+        return this;
 
     touched = true;
     changed = false;
@@ -307,13 +289,6 @@ std::string FunctionNode::richInfo( void ) const {
     o << std::endl;
 
     return o.str();
-}
-
-
-/** Allow parser to set element */
-void FunctionNode::setElement( const VectorNatural& index, DAGNode* var, bool convert ) {
-
-    getReference()->setElement( index, var, convert );
 }
 
 

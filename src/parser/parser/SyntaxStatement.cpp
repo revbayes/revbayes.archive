@@ -175,13 +175,17 @@ DAGNode* SyntaxStatement::getValue(VariableFrame* frame) const {
                 // Execute statement
                 DAGNode* result = (*i)->getValue(frame);
 
-                // These lines print the value of single-line expressions. This is not the behavior of R but John likes it. -- Fredrik
+                // These lines would print the value of single-line expressions.
+                // This is not the behavior of R but John likes it. I leave it in
+                // for now, in case we want to use it, but commented out. -- Fredrik
+#if 0
                 if ( result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
                     result->printValue(msg);
                     RBOUT(msg.str());
                 }
-                
+#endif
+
                 // Free memory
 				if ( result != NULL && result->numRefs() == 0 )
 					delete result;  // discard result

@@ -21,7 +21,7 @@
 #include "ContainerNode.h"
 #include "Distribution.h"
 #include "MemberFunction.h"
-#include "DeterministicMemberNode.h"
+#include "MemberNode.h"
 #include "MethodTable.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -55,7 +55,7 @@ DAGNode* Distribution::executeOperation( const std::string& name, ArgumentFrame&
         if ( draw->isType( Container_name ) )
             return new ContainerNode( static_cast<Container*>( draw ) );
         else if ( draw->isType( MemberObject_name ) )
-            return new DeterministicMemberNode( static_cast<MemberObject*>( draw ) );
+            return new MemberNode( static_cast<MemberObject*>( draw ) );
         else
             return new ConstantNode( draw );
     }

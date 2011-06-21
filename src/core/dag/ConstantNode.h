@@ -38,12 +38,12 @@ class ConstantNode : public DAGNode {
         ConstantNode*           clone(void) const;                                                          //!< Clone this object
         const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
         void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
-        void                    printValue(std::ostream& o) const;                                          //!< Print struct for user
+        void                    printValue(std::ostream& o);                                                //!< Print value for user (non-const fxn because of delayed evaluation in other DAG node classes)
         std::string             richInfo(void) const;                                                       //!< Complete info on object
 
         // ConstantNode functions
-        const RbObject*         getStoredValue(void) const { return value; }                                      //!< Get stored value
-        const RbObject*         getValue(void) const { return value; }                                      //!< Get value (const)
+        const RbObject*         getStoredValue(void) { return value; }                                      //!< Get stored value (non-const fxn because of delayed evaluation in other DAG node classes)
+        const RbObject*         getValue(void) { return value; }                                            //!< Get value (non-const fxn because of delayed evaluation in other DAG node classes)
 
         // DAG functions
         ConstantNode*           cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph

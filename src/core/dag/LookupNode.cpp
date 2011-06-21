@@ -290,32 +290,11 @@ LookupNode* LookupNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes )
 }
 
 
-/** Does element exist ? */
-bool LookupNode::existsElement( VectorInteger& index ) {
-
-    return getReference()->existsElement( index );
-}
-
-
 /** Get class vector describing type of DAG node */
 const VectorString& LookupNode::getDAGClass() const {
 
     static VectorString rbClass = VectorString( LookupNode_name ) + VariableNode::getDAGClass();
     return rbClass;
-}
-
-
-/** Get element for parser */
-DAGNode* LookupNode::getElement( VectorInteger& index ) {
-
-    return getReference()->getElement( index );
-}
-
-
-/** Get element reference for modification by parser */
-DAGNode* LookupNode::getElementOwner( VectorInteger& index) {
-
-    return getReference()->getElementOwner( index );
 }
 
 
@@ -467,13 +446,6 @@ std::string LookupNode::richInfo( void ) const {
     o << std::endl;
 
     return o.str();
-}
-
-
-/** Allow parser to set element */
-void LookupNode::setElement( const VectorNatural& index, DAGNode* var, bool convert ) {
-
-    getReference()->setElement( index, var, convert );
 }
 
 

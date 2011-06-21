@@ -55,8 +55,8 @@ class Matrix : public ValueContainer {
 
         // Container functions you have to override to allow vector of vectors representation
         virtual void                    clear(void) = 0;                                                    //!< Clear
-        virtual void                    resize(const std::vector<size_t>& len) = 0;                         //!< Resize to new length vector @Fredrik: Why do have a vector<size_t> as parameters and not size_t rows, size_t cols? (Sebastian)
-        virtual void                    setLength(const std::vector<size_t>& len) = 0;                      //!< Reorganize container@Fredrik: Why do have a vector<size_t> as parameters and not size_t rows, size_t cols? (Sebastian)
+        virtual void                    resize(const std::vector<size_t>& len) = 0;                         //!< Resize to new length vector (generic container version, can be mapped to function taking nrows and ncols)
+        virtual void                    setLength(const std::vector<size_t>& len) = 0;                      //!< Reorganize container (generic container version, can be mapped to function taking nrows and ncols)
         virtual size_t                  size(void) const = 0;                                               //!< Get total number of elements
         
         // Matrix functions you do not have to override
@@ -70,9 +70,8 @@ class Matrix : public ValueContainer {
                                         Matrix(const std::string& elemType);                                //!< Set type of elements
 
         // Parser help functions you have to override
-        virtual DAGNode*                getElement(const VectorInteger& index) = 0;                         //!< Get element or subcontainer for parser
-        virtual void                    setElement(const VectorNatural& index, DAGNode* var) = 0;           //!< Allow parser to set element @Fredrik: Why does getElement takes VectorInteger while setElement takes VectorNatural. In general I would prefer setElement(int row, int col). (Sebastian)
-
+        virtual DAGNode*                getElement(const VectorInteger& index) = 0;                         //!< Get element or subcontainer for parser (generic container version, can be mapped to take row and col indices)
+        virtual void                    setElement(const VectorNatural& index, DAGNode* var) = 0;           //!< Allow parser to set element (generic container version, can be mapped to take row and col indices)
 };
 
 #endif

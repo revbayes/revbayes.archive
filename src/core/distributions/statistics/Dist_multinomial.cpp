@@ -96,7 +96,7 @@ const MemberRules& Dist_multinomial::getMemberRules( void ) const {
 }
 
 
-/** Get random variable type ( It is a distribution on a vector of natural numbers, isn't it? -- Fredrik )*/
+/** Get random variable type */
 const TypeSpec Dist_multinomial::getVariableType( void ) const {
 
     return TypeSpec( Natural_name, 1 );
