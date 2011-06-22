@@ -202,7 +202,7 @@ ContainerNode* ContainerNode::cloneDAG(std::map<const DAGNode*, DAGNode*>& newNo
         copy->storedValue = NULL;
 
     /* Clone parents through container */
-    copy->container = container->clone();   // We get independent copies here, which is not right
+    copy->container = new VariableContainer( container->getTypeSpec(), container->getLength() );
     for ( size_t i = 0; i < container->size(); i++ ) {
 
         DAGNode* theParentClone = (*container)[i]->cloneDAG(newNodes);
