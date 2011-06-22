@@ -230,7 +230,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "ls",        new Func_ls()           );
         addFunction( "model",     new Func_model()        );
         addFunction( "normalize", new Func_normalize()    );
-        addFunction( "read",      new Func_readAlignment());
+//        addFunction( "read",      new Func_readAlignment());
         addFunction( "q",         new Func_quit()         );
         addFunction( "quit",      new Func_quit()         );
         

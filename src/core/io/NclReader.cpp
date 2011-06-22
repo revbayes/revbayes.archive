@@ -97,7 +97,7 @@ CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
-    for (int i=0; i<charblock->GetNumChar(); i++)
+    for (size_t i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
 	int numOrigChar = (int)charset.size();
 	int numOrigTaxa = charblock->GetNTax();
@@ -155,7 +155,7 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
-    for (int i=0; i<charblock->GetNumChar(); i++)
+    for (size_t i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
 	int numOrigChar = (int)charset.size();
 	int numOrigTaxa = charblock->GetNTax();
@@ -204,7 +204,7 @@ CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
-    for (int i=0; i<charblock->GetNumChar(); i++)
+    for (size_t i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
 	int numOrigChar = (int)charset.size();
 	int numOrigTaxa = charblock->GetNTax();
@@ -264,7 +264,7 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
-    for (int i=0; i<charblock->GetNumChar(); i++)
+    for (size_t i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
 	int numOrigChar = (int)charset.size();
 	int numOrigTaxa = charblock->GetNTax();

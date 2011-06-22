@@ -44,15 +44,6 @@ VectorInteger::VectorInteger(int x)
 }
 
 
-/** Construct vector with one unsigned int x */
-VectorInteger::VectorInteger(unsigned int x)
-    : Vector(Integer_name) {
-
-    elements.push_back(new Integer(x));
-    length[0]++;
-}
-
-
 /** Construct vector with n ints x */
 VectorInteger::VectorInteger(size_t n, int x)
     : Vector(Integer_name) {

@@ -32,7 +32,6 @@ class VectorInteger : public Vector {
         // Constructors and destructor
                                     VectorInteger(void);                                            //!< Default constructor (empty vector)
                                     VectorInteger(int x);                                           //!< Construct vector with one int x
-                                    VectorInteger(unsigned int x);                                  //!< Construct vector with one unsigned int x
                                     VectorInteger(size_t n, int x);                                 //!< Construct vector with n ints x
                                     VectorInteger(const std::vector<int>& x);                       //!< Constructor from int vector
                                     VectorInteger(const std::vector<size_t>& x);                    //!< Constructor from unsigned int vector
