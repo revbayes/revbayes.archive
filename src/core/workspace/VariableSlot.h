@@ -54,7 +54,8 @@ class VariableSlot {
         virtual bool            isValidVariable(DAGNode* newVariable ) const;                           //!< Is newVariable valid for the slot?
         bool                    isReference(void) const { return typeSpec.isReference(); }              //!< Is this a reference slot?
         void                    printValue(std::ostream& o) const;                                      //!< Print value of slot
-        void                    replaceVariable(DAGNode* newVar);                                       //!< Clear slot and replace variable
+        void                    replaceDAGVariable(DAGNode* newVariable);                               //!< Replace variable during DAG cloning
+        void                    replaceArgumentVariable(DAGNode* newVariable);                          //!< Replace variable when filling argument frame
         void                    setElement(VectorInteger& index, DAGNode* newVar, bool convert=true);   //!< Set a slot variable element
         void                    setElement(VectorInteger& index, RbObject* newVal);                     //!< Set a slot value element
         void                    setFrame(Frame* slotFrame) { frame=slotFrame; }                         //!< Set frame of slot

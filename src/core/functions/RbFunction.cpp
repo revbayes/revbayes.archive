@@ -188,9 +188,9 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             if ( !theRules[nRules-1]->isArgValid( theDAGNode, conversionNeeded, evaluateOnce ) )
                 return false;
             if ( conversionNeeded )
-                args[i].replaceVariable( theRules[nRules-1]->convert( theDAGNode->clone() ) );
+                args[i].replaceArgumentVariable( theRules[nRules-1]->convert( theDAGNode->clone() ) );
             else
-                args[i].replaceVariable( theDAGNode );
+                args[i].replaceArgumentVariable( theDAGNode );
 
             if ( passedArgs[i].getLabel() != "" )
                 args.setArgumentLabel( i, passedArgs[i].getLabel() );
@@ -225,9 +225,9 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
                     filled[j]         = true;
                     passedArgIndex[j] = i;
                     if ( conversionNeeded )
-                        args[j].replaceVariable( theRules[j]->convert( passedArgs[i].getVariable() ) );
+                        args[j].replaceArgumentVariable( theRules[j]->convert( passedArgs[i].getVariable() ) );
                     else
-                        args[j].replaceVariable( passedArgs[i].getVariable() );
+                        args[j].replaceArgumentVariable( passedArgs[i].getVariable() );
                 }
                 else
                     return false;
@@ -270,9 +270,9 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = i;
             if ( conversionNeeded )
-                args[matchRule].replaceVariable( theRules[matchRule]->convert( passedArgs[i].getVariable() ) );
+                args[matchRule].replaceArgumentVariable( theRules[matchRule]->convert( passedArgs[i].getVariable() ) );
             else
-                args[matchRule].replaceVariable( passedArgs[i].getVariable() );
+                args[matchRule].replaceArgumentVariable( passedArgs[i].getVariable() );
         }
         else
             return false;
@@ -297,9 +297,9 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
                     filled[j]         = true;
                     passedArgIndex[j] = i;
                     if ( conversionNeeded )
-                        args[j].replaceVariable( theRules[j]->convert( passedArgs[i].getVariable() ) );
+                        args[j].replaceArgumentVariable( theRules[j]->convert( passedArgs[i].getVariable() ) );
                     else
-                        args[j].replaceVariable( passedArgs[i].getVariable() );
+                        args[j].replaceArgumentVariable( passedArgs[i].getVariable() );
                     break;
                 }
                 else
@@ -320,9 +320,9 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             return false;
 
         if ( theRules[i]->isReference() )
-            args[i].replaceVariable( theRules[i]->getDefaultReference() );
+            args[i].replaceArgumentVariable( theRules[i]->getDefaultReference() );
         else
-            args[i].replaceVariable( theRules[i]->getDefaultVariable() );
+            args[i].replaceArgumentVariable( theRules[i]->getDefaultVariable() );
     }
 
     /*********************  6. Count match score and return  **********************/

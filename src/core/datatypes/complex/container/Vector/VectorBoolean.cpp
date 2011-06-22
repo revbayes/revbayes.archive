@@ -72,7 +72,7 @@ VectorBoolean::VectorBoolean(const std::vector<int>& x) : Vector(Boolean_name) {
 /** Subscript operator */
 bool& VectorBoolean::operator[](size_t i) {
 
-    if (i < 0 || i > int(elements.size()))
+    if (i > elements.size())
         throw RbException("Index out of bounds");
 
     return static_cast<Boolean*>(elements[i])->getValueRef();

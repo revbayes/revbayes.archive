@@ -93,7 +93,7 @@ VectorRealPos::VectorRealPos( const VectorReal& x ) : Vector( RealPos_name ) {
  */
 double VectorRealPos::operator[]( size_t i ) const {
 
-    if (i < 0 || i > int(elements.size()))
+    if (i > elements.size())
         throw RbException("Index out of bounds");
     return static_cast<RealPos*>(elements[i])->getValue();
 }

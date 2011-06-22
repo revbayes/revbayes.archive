@@ -49,7 +49,7 @@ ArgumentFrame::ArgumentFrame( const ArgumentFrame& x ) :  Frame( x ), arguments(
     for ( it = arguments.begin(); it != arguments.end(); it++ ) {
         DAGNode* variable = const_cast<DAGNode*>( (*it).second->getVariable() );
         (*it).second = (*it).second->cloneEmpty();
-        (*it).second->replaceVariable( variable );
+        (*it).second->replaceArgumentVariable( variable );
         (*it).second->setFrame( this );
     }
 }
@@ -79,7 +79,7 @@ ArgumentFrame& ArgumentFrame::operator=( const ArgumentFrame& x ) {
         for ( it = arguments.begin(); it != arguments.end(); it++ ) {
             DAGNode* variable = const_cast<DAGNode*>( (*it).second->getVariable() );
             (*it).second = (*it).second->cloneEmpty();
-            (*it).second->replaceVariable( variable );
+            (*it).second->replaceArgumentVariable( variable );
             (*it).second->setFrame( this );
         }
     }

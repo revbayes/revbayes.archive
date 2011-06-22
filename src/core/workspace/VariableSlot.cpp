@@ -318,8 +318,8 @@ void VariableSlot::removeVariable( void ) {
 }
 
 
-/** Replace variable without mutating old variable or doing any type conversion; used in cloning a DAG and in setting argument slots */
-void VariableSlot::replaceVariable( DAGNode* newVariable ) {
+/** Replace variable without mutating old variable or doing any type conversion; used in setting argument slots */
+void VariableSlot::replaceArgumentVariable( DAGNode* newVariable ) {
 
     if ( newVariable == NULL || variable == NULL || !newVariable->isTypeSpec( variable->getTypeSpec() ) )
         throw RbException( "Invalid attempt to replace a slot variable" );
@@ -331,6 +331,23 @@ void VariableSlot::replaceVariable( DAGNode* newVariable ) {
         variable->setSlot( this );
     else
         variable->addReferringSlot( this );
+}
+
+
+/** Replace variable without mutating old variable or doing any type conversion; used in cloning DAGs */
+void VariableSlot::replaceDAGVariable( DAGNode* newVariable ) {
+
+    if ( newVariable == NULL || variable == NULL || !newVariable->isTypeSpec( variable->getTypeSpec() ) )
+        throw RbException( "Invalid attempt to replace a slot variable" );
+
+    // Leave slot to NULL if old variable belongs to slot outside DAG
+    if ( variable->getSlot() == this )
+        newVariable->setSlot( this );
+    else
+        newVariable->addReferringSlot( this );
+    
+    removeVariable();
+    variable = newVariable;
 }
 
 

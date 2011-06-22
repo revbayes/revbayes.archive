@@ -63,7 +63,7 @@ std::string& VectorString::operator[](size_t i) {
 /** Subscript const operator */
 const std::string& VectorString::operator[](size_t i) const {
 
-    if (i < 0 || i > int(elements.size()))
+    if (i > elements.size())
         throw RbException("Index out of bounds");
     return static_cast<RbString*>(elements[i])->getValueRef();
 }
@@ -139,11 +139,15 @@ const VectorString& VectorString::getClass() const {
     return rbClass;
 }
 
-/** Get stl vector of strings */
+
+/** Get STL vector of strings */
 std::vector<std::string> VectorString::getStdVector(void) const {	 
+
     std::vector<std::string> strVector;	 
-    for (int i=0; i<elements.size(); i++) {	 
-        RbString* str = (RbString*) elements.at(i);	 
+
+    for (size_t i=0; i<elements.size(); i++) {	 
+
+        RbString* str = static_cast<RbString*>( elements.at(i) );
         strVector.push_back(str->getValue());	 
     }	 
     

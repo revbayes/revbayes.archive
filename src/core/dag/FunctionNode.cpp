@@ -188,7 +188,7 @@ FunctionNode* FunctionNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNod
     for ( size_t i = 0; i < args.size(); i++ ) {
 
         DAGNode* theArgClone = args[i].getVariable()->cloneDAG( newNodes );
-        copyArgs[i].replaceVariable( theArgClone );
+        copyArgs[i].replaceDAGVariable( theArgClone );
 
         copy->parents.insert( theArgClone );
         theArgClone->addChildNode( copy );

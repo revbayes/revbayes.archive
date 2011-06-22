@@ -234,7 +234,7 @@ IntegratorNode* IntegratorNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& ne
     for ( size_t i = 0; i < params.size(); i++ ) {
 
         DAGNode* theParamClone = params[i].getVariable()->cloneDAG( newNodes );
-        copyParams[i].replaceVariable( theParamClone );
+        copyParams[i].replaceDAGVariable( theParamClone );
 
         copy->parents.insert( theParamClone );
         theParamClone->addChildNode( copy );

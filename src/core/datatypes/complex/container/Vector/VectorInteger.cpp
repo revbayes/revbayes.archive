@@ -44,6 +44,15 @@ VectorInteger::VectorInteger(int x)
 }
 
 
+/** Construct vector with one unsigned int x */
+VectorInteger::VectorInteger(unsigned int x)
+    : Vector(Integer_name) {
+
+    elements.push_back(new Integer(x));
+    length[0]++;
+}
+
+
 /** Construct vector with n ints x */
 VectorInteger::VectorInteger(size_t n, int x)
     : Vector(Integer_name) {
@@ -99,7 +108,7 @@ VectorInteger::VectorInteger(const ContainerIterator& x)
 /** Subscript operator */
 int& VectorInteger::operator[](size_t i) {
 
-    if (i < 0 || i > int(elements.size()))
+    if (i > elements.size())
         throw RbException("Index out of bounds");
 
     return static_cast<Integer*>(elements[i])->getValueRef();

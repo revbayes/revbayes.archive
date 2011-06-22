@@ -214,7 +214,7 @@ MemberNode* MemberNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes )
     for ( size_t i = 0; i < members.size(); i++ ) {
 
         DAGNode* theMemberClone = members[i].getVariable()->cloneDAG( newNodes );
-        copyMembers[i].replaceVariable( theMemberClone );
+        copyMembers[i].replaceDAGVariable( theMemberClone );
 
         copy->parents.insert( theMemberClone );
         theMemberClone->addChildNode( copy );
