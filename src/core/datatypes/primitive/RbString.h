@@ -18,6 +18,7 @@
 
 #include "RbObject.h"
 
+#include <fstream>
 #include <string>
 
 
@@ -35,6 +36,7 @@ class RbString : public RbObject {
                                     operator std::string() const;                       //!< Type conversion
         RbString                    operator+(const RbString& s) const;                 //!< String concatenation
         RbString                    operator+(const std::string& s) const;              //!< String concatenation
+        friend std::ostream&        operator<< (std::ostream& o, RbString const& s);    //!< String output with << operator
 
         // Basic utility functions
 	    RbString*                   clone(void) const;                                  //!< Copy

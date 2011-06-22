@@ -56,6 +56,14 @@ RbString RbString::operator+(const RbString& s) const {
 }
 
 
+/** String output with operator<<  */
+std::ostream& operator<<(std::ostream& stream, const RbString& s) {
+
+	stream << s.value;
+	return stream;
+}
+
+
 /** Clone function */
 RbString* RbString::clone() const {
 

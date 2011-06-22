@@ -16,8 +16,6 @@
  * $Id:$
  */
 
-
-
 #ifndef NclReader_H
 #define NclReader_H
 
@@ -30,44 +28,40 @@
 class CharacterMatrix;
 class Tree;
 
-class NclReader{
+class NclReader {
     
-	friend class NxsBlock;
-	
-public:
-    NclReader(void);
-    virtual                            ~NclReader(void);
-    
-    static NclReader&                   getInstance(void);
-    std::vector<CharacterMatrix*>*      readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
-    
-    // TAH: stuff for reading trees
-    std::vector<Tree*>*                 readTrees(const std::string fn, const std::string fileFormat);
-    
-    void                                clearContent() { nexusReader.ClearContent(); }
-    
-    
-    
-private:
-    CharacterMatrix*                    createAminoAcidMatrix(NxsCharactersBlock* charblock);
-    CharacterMatrix*                    createContinuousMatrix(NxsCharactersBlock* charblock);
-    CharacterMatrix*                    createNucleotideMatrix(NxsCharactersBlock* charblock);
-    CharacterMatrix*                    createStandardMatrix(NxsCharactersBlock* charblock);
-    
-    bool                                fileExists(const char *fn) const;
-    
-    // methods for reading sequence alignments
-    std::vector<CharacterMatrix*>*      convertFromNcl(std::vector<std::string>& fnv);
-    std::vector<CharacterMatrix*>*      readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
-    
-    // methods for reading trees
-    void                                constructTreefromNclRecursively(TreeNode *tn, const NxsSimpleNode* tnNcl);
-    std::vector<Tree*>*                 readTrees(const char* fileName, const std::string fileFormat);
-    std::vector<Tree*>*                 convertTreesFromNcl();
-    Tree*                               translateNclSimpleTreeToTree(NxsSimpleTree &nTree);
-    
-    
-    MultiFormatReader                   nexusReader;
+        friend class NxsBlock;
+        
+    public:
+                                            NclReader(void);
+        virtual                            ~NclReader(void);
+        
+        static NclReader&                   getInstance(void);
+        std::vector<CharacterMatrix*>*      readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
+        
+        // TAH: stuff for reading trees
+        std::vector<Tree*>*                 readTrees(const std::string fn, const std::string fileFormat);
+        void                                clearContent(void) { nexusReader.ClearContent(); }
+        
+    private:
+        CharacterMatrix*                    createAminoAcidMatrix(NxsCharactersBlock* charblock);
+        CharacterMatrix*                    createContinuousMatrix(NxsCharactersBlock* charblock);
+        CharacterMatrix*                    createNucleotideMatrix(NxsCharactersBlock* charblock);
+        CharacterMatrix*                    createStandardMatrix(NxsCharactersBlock* charblock);
+        
+        bool                                fileExists(const char *fn) const;
+        
+        // methods for reading sequence alignments
+        std::vector<CharacterMatrix*>*      convertFromNcl(std::vector<std::string>& fnv);
+        std::vector<CharacterMatrix*>*      readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
+        
+        // methods for reading trees
+        void                                constructTreefromNclRecursively(TreeNode *tn, const NxsSimpleNode* tnNcl);
+        std::vector<Tree*>*                 readTrees(const char* fileName, const std::string fileFormat);
+        std::vector<Tree*>*                 convertTreesFromNcl(void);
+        Tree*                               translateNclSimpleTreeToTree(NxsSimpleTree &nTree);
+        
+        MultiFormatReader                   nexusReader;
 };
 
 #endif

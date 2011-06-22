@@ -96,6 +96,7 @@
 #include "Func_ls.h"
 #include "Func_model.h"
 #include "Func_normalize.h"
+#include "Func_readAlignment.h"
 #include "Func_quit.h"
 #include "Func_s.h"
 #include "Func_v.h"
@@ -229,6 +230,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "ls",        new Func_ls()           );
         addFunction( "model",     new Func_model()        );
         addFunction( "normalize", new Func_normalize()    );
+        addFunction( "read",      new Func_readAlignment());
         addFunction( "q",         new Func_quit()         );
         addFunction( "quit",      new Func_quit()         );
         
