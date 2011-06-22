@@ -102,9 +102,9 @@ std::string RbFileManager::findCurrentDirectory(void) {
 
 #	ifdef WIN32
 
-    char buf[MAX_DIR_PATH];
+    LPWSTR buf[MAX_DIR_PATH];
     GetCurrentDirectory(MAX_DIR_PATH, buf);
-    return string(buf);
+    return std::string(buf);
 	
 #	else
 
@@ -156,7 +156,7 @@ bool RbFileManager::isFilePresent(const std::string mp, const std::string mf) {
 #	ifdef WIN32
 
     WIN32_FIND_DATA data;
-    string fullPath; 
+    std::string fullPath; 
     if (mp.length() > 1 && (mp[mp.length()-2] != '\\' || mp[mp.length()-2] != '/'))
         {
         fullPath = mp + "\\" + mf;
@@ -216,6 +216,13 @@ bool RbFileManager::listDirectoryContents(void) {
 /** Recursively lists the contents of the directory passed in as an argument to the function */
 bool RbFileManager::listDirectoryContents(const std::string& dirpath) {
 
+#	ifdef WIN32
+
+    // NOTE JH: Not certain how to list directory contents for windows
+    return true;
+    
+#	else
+
     DIR* dir = opendir( dirpath.c_str() );
     if (dir)
         {
@@ -247,6 +254,7 @@ bool RbFileManager::listDirectoryContents(const std::string& dirpath) {
         closedir( dir );
         }
     return true;
+#   endif
 }
 
 
@@ -268,6 +276,13 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(std::vector<std::string
 
 /** Recursively fills in a vector with the names of the files in the directory passed in as an argument to the function */
 bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirpath, std::vector<std::string>& sv) {
+
+#	ifdef WIN32
+
+    // NOTE JH: Not certain how to list directory contents for windows
+    return true;
+    
+#	else
 
     DIR* dir = opendir( dirpath.c_str() );
     if (dir)
@@ -298,6 +313,7 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirp
         closedir( dir );
         }
     return true;
+#   endif
 }
 
 
