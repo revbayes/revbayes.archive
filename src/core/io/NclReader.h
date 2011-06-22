@@ -1,7 +1,7 @@
 /**
  * @file
- * This file contains the declaration of NclReader, which is the wrapper class for the ncl library
- * for reading character matrices, sequences and trees.
+ * This file contains the declaration of NclReader, which is the wrapper class for the NCL 
+ * for reading character matrices, sequences, and trees.
  
  * @brief Declaration of NclReader
  *
@@ -19,11 +19,12 @@
 #ifndef NclReader_H
 #define NclReader_H
 
-#include <string>
-#include <vector>
 #include "ncl.h"
 #include "nxsmultiformat.h"
 #include "TreeNode.h"
+#include <map>
+#include <string>
+#include <vector>
 
 class CharacterMatrix;
 class Tree;
@@ -33,10 +34,11 @@ class NclReader {
         friend class NxsBlock;
         
     public:
-                                            NclReader(void);
-        virtual                            ~NclReader(void);
+                                            NclReader(void);                                                                //!< Default constructor
+        virtual                            ~NclReader(void);                                                                //!< Destructor
         
         static NclReader&                   getInstance(void);
+        std::vector<CharacterMatrix*>*      readMatrices(const std::map<std::string,std::string>& fileMap);
         std::vector<CharacterMatrix*>*      readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
         
         // TAH: stuff for reading trees

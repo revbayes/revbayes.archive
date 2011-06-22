@@ -78,10 +78,7 @@ void CharacterMatrixDiscrete::allocateMatrix(void) {
 /** Overloaded container clear function */
 void CharacterMatrixDiscrete::clear( void ) {
     
-    //    matrix.clear();
     freeMatrix();
-    //    length[0] = 0;
-    //    length[1] = 0;
 }
 
 

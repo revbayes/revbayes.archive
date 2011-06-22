@@ -1,9 +1,11 @@
 #include "CharacterMatrixContinuous.h"
 #include "CharacterMatrixDiscrete.h"
 #include "NclReader.h"
+#include "StringUtilities.h"
 #include "Tree.h"
 #include "TreeNode.h"
 #include "TreeSimple.h"
+#include "UserInterface.h"
 
 
 
@@ -336,6 +338,53 @@ NclReader& NclReader::getInstance(void) {
 	return rb;
 }
 
+std::vector<CharacterMatrix*>* NclReader::readMatrices(const std::map<std::string,std::string>& fileMap) {
+
+    // allocate a vector of matrices
+    std::vector<CharacterMatrix*>* cmv = new std::vector<CharacterMatrix*>();
+
+    // We loop through the map that contains as the key the path and name of the file to be read and as the
+    // value the data type. The data types are as follows: Nexus, Phylip+DNA/RNA/AA/Standard+Interleaved/Noninterleaved,
+    // Fasta+DNA/RNA/AA.
+    for (std::map<std::string,std::string>::const_iterator p = fileMap.begin(); p != fileMap.end(); p++)
+        {
+        // Check that the file exists. It is likely that this has been already checked during the formation of
+        // the map that is passed into the function, but it never hurts to be safe...
+        if ( !fileExists(p->first.c_str()) )	
+            {
+            RBOUT("Warning: Data file \"" + p->first + "\"not found");
+            continue;
+            }
+            
+        // Extract information on the file format from the value of the key/value pair. Note that we expect the 
+        // fileFmt string to be in the format file_type|data_type|interleave_type with pipes ('|') separating
+        // the format components. It might be better to make an object value in the key/value pair that contains
+        // this information.
+        std::vector<std::string> fileFmt;
+        StringUtilities::stringSplit( p->second, "|", fileFmt );
+        std::string ff = fileFmt[0];
+        std::string dt = fileFmt[1];
+        bool il = false;
+        if ( fileFmt[2] == "interleaved" )
+            il = true;
+
+        // read the file
+        std::cout << "reading file: " << p->first << std::endl;
+        std::vector<CharacterMatrix*>* v = readMatrices( p->first.c_str(), ff, dt, il );
+		if (v != NULL)
+            {
+			for (std::vector<CharacterMatrix*>::iterator m = v->begin(); m != v->end(); m++)
+				cmv->push_back( (*m) );
+			delete v;
+            }
+		else 
+			return NULL;
+		nexusReader.ClearContent();
+        }
+        
+    return cmv;
+}
+
 std::vector<CharacterMatrix*>* NclReader::readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
 	// check that the files exist
@@ -377,7 +426,7 @@ std::vector<CharacterMatrix*>* NclReader::readMatrices(const char* fileName, con
 		std::cerr << "Error: Data file \"" << fileName << "\"not found" << std::endl;
         return NULL;
         }
-    
+            
 	try
         {
 		if (fileFormat == "nexus")
