@@ -51,7 +51,7 @@ class LookupNode : public DeterministicNode {
         // Basic utility functions
         LookupNode*         clone(void) const;                                                          //!< Clone the lookup node
         const VectorString& getDAGClass(void) const;                                                    //!< Get DAG node class vector
-        int                 getDim(void) const { return valueDim; }                                     //!< Get dim of lookup target value (0 for scalar, 1 for vector, etc)
+        size_t              getDim(void) const { return valueDim; }                                     //!< Get dim of lookup target value (0 for scalar, 1 for vector, etc)
         DAGNode*            getReference(void) { return lookup(); }                                     //!< Look up the variable and get a reference to it
         void                printStruct(std::ostream& o) const;                                         //!< Print struct for user
         std::string         richInfo(void) const;                                                       //!< Complete info about object
@@ -74,7 +74,7 @@ class LookupNode : public DeterministicNode {
         LookupNode*         baseLookup;                                                                 //!< Ptr to lookup of base variable (member node)
         RbString*           memberName;                                                                 //!< Name if member variable
         IndexArgs           indexArgs;                                                                  //!< Vector of index arguments (vector<DAGNode*>)
-        int                 valueDim;                                                                   //!< Dimensions of lookup target value
+        size_t              valueDim;                                                                   //!< Dimensions of lookup target value
 };
 
 #endif

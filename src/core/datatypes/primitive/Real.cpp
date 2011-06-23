@@ -64,7 +64,7 @@ Real* Real::clone(void) const {
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbObject* Real::convertTo( const std::string& type, int dim ) const {
+RbObject* Real::convertTo( const std::string& type, size_t dim ) const {
 
     if ( type == Boolean_name && dim == 0 )
         return new Boolean(value == 0.0);
@@ -84,7 +84,7 @@ const VectorString& Real::getClass() const {
 
 
 /** Is convertible to type and dim? */
-bool Real::isConvertibleTo(const std::string& type, int dim, bool once) const {
+bool Real::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
 
     if (type == Boolean_name && dim == 0)
         return true;
@@ -98,7 +98,7 @@ bool Real::isConvertibleTo(const std::string& type, int dim, bool once) const {
 /** Print value for user */
 void Real::printValue(std::ostream &o) const {
 
-    int previousPrecision = o.precision();
+    size_t previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
 
     std::fixed( o );

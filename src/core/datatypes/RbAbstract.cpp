@@ -40,14 +40,14 @@ RbAbstract* RbAbstract::clone( void ) const {
 
 
 /** Convert to type and dim: no conversion possible. */
-RbObject* RbAbstract::convertTo( const std::string& type, int dim ) const {
+RbObject* RbAbstract::convertTo( const std::string& type, size_t dim ) const {
 
     return RbObject::convertTo( type, dim );
 }
 
 
 /** Is convertible to language object of type and dim? */
-bool RbAbstract::isConvertibleTo(const std::string& type, int dim, bool once) const {
+bool RbAbstract::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
 
     return RbObject::isConvertibleTo(type, dim, once);
 }

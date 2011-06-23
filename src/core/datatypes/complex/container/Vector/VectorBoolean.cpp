@@ -82,7 +82,7 @@ bool& VectorBoolean::operator[](size_t i) {
 /** Subscript const operator */
 const bool& VectorBoolean::operator[](size_t i) const {
 
-    if (i < 0 || i > int(elements.size()))
+    if ( i >= elements.size() )
         throw RbException("Index out of bounds");
     return static_cast<Boolean*>(elements[i])->getValueRef();
 }

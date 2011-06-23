@@ -40,7 +40,7 @@
 
 
 /** Construct empty container node */
-ContainerNode::ContainerNode( const std::string& valType, int dim )
+ContainerNode::ContainerNode( const std::string& valType, size_t dim )
     : DeterministicNode( valType ), container( NULL ), valueDim( dim ) {
 }
 
@@ -230,7 +230,7 @@ RbObject* ContainerNode::convertValElement( const VectorInteger& index, RbObject
         throw RbException( "Too many indices when setting element of " + getName() + index.toIndexString() );
     }
 
-    int emptyDim = getDim();
+    size_t emptyDim = getDim();
     for ( size_t i=0; i<index.size(); i++ ) {
         if ( index[i] >= 0 )
             emptyDim--;
@@ -258,7 +258,7 @@ DAGNode* ContainerNode::convertVarElement( const VectorInteger& index, DAGNode* 
         throw RbException( "Too many indices when setting element of " + getName() + index.toIndexString() );
     }
 
-    int emptyDim = getDim();
+    size_t emptyDim = getDim();
     for ( size_t i=0; i<index.size(); i++ ) {
         if ( index[i] >= 0 )
             emptyDim--;
@@ -341,8 +341,12 @@ const VectorString& ContainerNode::getDAGClass( void ) const {
 /** Convenient vector access */
 DAGNode* ContainerNode::getElement( size_t i ) {
 
-    VectorInteger vi(i);
-    return getElement( vi );
+    if ( container != NULL )
+        return (*container)[i];
+    else {
+        VectorInteger index( static_cast<int>( i ) );
+        return static_cast<ValueContainer*>( value )->getElement( index );
+    }
 }
 
 
@@ -427,7 +431,7 @@ bool ContainerNode::isConst( void ) const {
 
 
 /** Is it possible to mutate to type and dim? */
-bool ContainerNode::isMutableTo( const std::string& valType, int dim ) const {
+bool ContainerNode::isMutableTo( const std::string& valType, size_t dim ) const {
 
     // First check whether our slots and children allow it
     ContainerNode* dummy = new ContainerNode( valType, dim );
@@ -481,7 +485,7 @@ bool ContainerNode::isParentMutableTo( const DAGNode* oldNode, const DAGNode* ne
 /** Check if a candidate value element is valid */
 bool ContainerNode::isValidElement( const VectorInteger& index, const RbObject* val ) const {
 
-    int emptyDim = getDim();
+    size_t emptyDim = getDim();
     for ( size_t i=0; i<index.size(); i++ ) {
         if ( index[i] >= 0 )
             emptyDim--;
@@ -506,7 +510,7 @@ bool ContainerNode::isValidElement( const VectorInteger& index, DAGNode* variabl
     if ( variable->isImmutable() )
         return isValidElement( index, variable->getValue() );
 
-    int emptyDim = getDim();
+    size_t emptyDim = getDim();
     for ( size_t i=0; i<index.size(); i++ ) {
         if ( index[i] >= 0 )
             emptyDim--;
@@ -523,7 +527,7 @@ bool ContainerNode::isValidElement( const VectorInteger& index, DAGNode* variabl
 
 
 /** Mutate to type and dim */
-ContainerNode* ContainerNode::mutateTo( const std::string& valType, int dim ) const {
+ContainerNode* ContainerNode::mutateTo( const std::string& valType, size_t dim ) const {
 
     // This call will convert us to a variable container, if we are a simple value container
     if ( !isMutableTo( valType, dim ) )
@@ -625,7 +629,7 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
     }
 
     // Calculate empty dim
-    int emptyDim = getDim();
+    size_t emptyDim = getDim();
     for ( size_t i=0; i<index.size(); i++ ) {
         if ( index[i] >= 0 )
             emptyDim--;

@@ -109,7 +109,7 @@ int& VectorInteger::operator[](size_t i) {
 /** Subscript const operator */
 const int& VectorInteger::operator[](size_t i) const {
 
-    if (i < 0 || i > int(elements.size()))
+    if (i >= int(elements.size()))
         throw RbException("Index out of bounds");
     return static_cast<Integer*>(elements[i])->getValueRef();
 }

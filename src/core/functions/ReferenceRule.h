@@ -29,7 +29,7 @@ class VectorString;
 class ReferenceRule : public ArgumentRule {
 
     public:
-                                        ReferenceRule(const std::string& argName, const std::string& valType, int valDim=0);    //!< Reference rule without default
+                                        ReferenceRule(const std::string& argName, const std::string& valType, size_t valDim=0); //!< Reference rule without default
                                         ReferenceRule(const std::string& argName, const std::string& valType, DAGNode* defVar); //!< Reference rule with default
 
         // Basic utility functions

@@ -304,7 +304,7 @@ void DAGNode::mutateTo( DAGNode* newNode ) {
 
 
 /** Get number of references to the node from variable slots and other DAG nodes */
-int DAGNode::numRefs( void ) const {
+size_t DAGNode::numRefs( void ) const {
 
     if ( slot == NULL )
         return numChildren() + referringSlots.size();

@@ -93,7 +93,7 @@ double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
     RandomNumberGenerator*  rng     = GLOBAL_RNG;
     double                  alpha0  = static_cast<const RealPos*>( getValue("tuning")   )->getValue();
     int                     k       = static_cast<const Integer*>( getValue("num_cats") )->getValue();
-	int                     n       = valPtr->size();
+	size_t                  n       = valPtr->size();
 
     std::vector<double> curVal = valPtr->getValue();
     double sum = 0.0;

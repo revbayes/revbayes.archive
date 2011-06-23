@@ -154,7 +154,7 @@ DAGNode* MatrixReal::getElement( const VectorInteger& index ) {
 
     // Disregard irrelevant negative value(s) at back of index
     size_t numIndices = index.size();
-    for ( size_t i = index.size() - 1; i >= 0; i-- ) {
+    for ( int i = static_cast<int>( index.size() ) - 1; i >= 0; i-- ) {
         if ( index[i] < 0 )
             numIndices--;
         else
@@ -169,14 +169,14 @@ DAGNode* MatrixReal::getElement( const VectorInteger& index ) {
     else if ( numIndices == 1 ) {
 
         // Row submatrix, this is easy
-        if ( size_t( index[0] ) > length[0] )
+        if ( index[0] > length[0] )
             throw RbException( "Index out of bound for " + Real_name + "[][]" );
         return new ContainerNode( matrix[index[0]].clone() );
     }
         
     else /* if ( numIndices == 2 ) */ {
 
-        if ( size_t( index[0] ) < 0 ) {
+        if ( index[0] < 0 ) {
             
             // We want a column submatrix, which is a little tricky
             if ( size_t( index[0] ) > length[0] )
@@ -236,7 +236,7 @@ bool MatrixReal::numFmt(int& numToLft, int& numToRht, std::string s) const {
 /** Print value for user */
 void MatrixReal::printValue(std::ostream& o) const {
 
-    int previousPrecision = o.precision();
+    std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
     
     // find the maximum number of digits to the left and right of the decimal place
@@ -292,7 +292,7 @@ void MatrixReal::printValue(std::ostream& o) const {
         }
     
     o.setf(previousFlags);
-    o << std::setprecision(previousPrecision);
+    o << o.precision(previousPrecision);
 }
 
 
@@ -372,7 +372,7 @@ void MatrixReal::setElement( const VectorNatural& index, DAGNode* var ) {
     if ( index.size() != 2 )
         throw RbException ( "Wrong number of indices for " + Real_name + "[][]" );
 
-    if ( index[0] < 0 || index[0] >= length[0] || index[1] < 0 || index[1] >= length[1] )
+    if ( index[0] >= length[0] || index[1] >= length[1] )
         throw RbException( "Index out of bounds for " + Real_name + "[][]" );
 
     RbObject* value = var->getValue()->clone();

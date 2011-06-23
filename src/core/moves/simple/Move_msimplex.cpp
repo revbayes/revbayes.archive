@@ -91,7 +91,7 @@ double Move_msimplex::perform( std::set<StochasticNode*>& affectedNodes ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     double                 alpha0  = static_cast<const RealPos*>( getValue("tuning")   )->getValue();
     int                    k       = static_cast<const Natural*>( getValue("num_cats") )->getValue();
-    int                    n       = valPtr->getSubelementsSize();
+    size_t                 n       = valPtr->getSubelementsSize();
 
 	std::vector<double> curVal = valPtr->getValue();
 	std::vector<double> newVal = curVal;

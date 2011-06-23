@@ -26,7 +26,7 @@
 
 
 /** Constructor without default value */
-ReferenceRule::ReferenceRule( const std::string& argName, const std::string& valType, int valDim)
+ReferenceRule::ReferenceRule( const std::string& argName, const std::string& valType, size_t valDim)
     : ArgumentRule(argName, TypeSpec(valType, valDim, true)) {
 }
 

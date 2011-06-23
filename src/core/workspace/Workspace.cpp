@@ -361,8 +361,8 @@ bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTyp
 
     const std::string&  xType   = xTypeSp.getType();
     const std::string&  yType   = yTypeSp.getType();
-    int                 xDim    = xTypeSp.getDim();
-    int                 yDim    = yTypeSp.getDim();
+    size_t              xDim    = xTypeSp.getDim();
+    size_t              yDim    = yTypeSp.getDim();
 
     bool retVal = false;
     if ( xDim > 0 ) {

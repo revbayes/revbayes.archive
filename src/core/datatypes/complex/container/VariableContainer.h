@@ -57,6 +57,7 @@ class VariableContainer : public Container {
         // Overloaded operators for assignment and convenient programmer access
         VariableContainer&          operator=(const VariableContainer& x);                                      //!< Assignment operator
         const DAGNode* const&       operator[](const VectorInteger& i) const;                                   //!< Element const access
+        const DAGNode* const&       operator[](const size_t i) const;                                           //!< Element const access
 
         // Basic utility functions
         VariableContainer*          clone(void) const;                                                          //!< Clone object
@@ -76,6 +77,7 @@ class VariableContainer : public Container {
 	protected:
         // Parser operator and help functions
         DAGNode*&                   operator[](const VectorInteger& i);                                         //!< Element modify access
+        DAGNode*&                   operator[](const size_t i);                                                 //!< Element modify access
         DAGNode*                    getElement(VectorInteger& index);                                           //!< Get element or subcontainer for parser
 
         // Member variable

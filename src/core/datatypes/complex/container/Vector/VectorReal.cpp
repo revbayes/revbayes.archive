@@ -85,7 +85,7 @@ double& VectorReal::operator[](size_t i) {
 /** Subscript const operator */
 const double& VectorReal::operator[](size_t i) const {
 
-    if (i < 0 || i > int(elements.size()))
+    if (i >= int(elements.size()))
         throw RbException("Index out of bounds");
     return static_cast<Real*>(elements[i])->getValueRef();
 }
@@ -142,7 +142,7 @@ std::vector<double> VectorReal::getValue(void) const {
 /** Print value for user */
 void VectorReal::printValue(std::ostream& o) const {
 
-    int previousPrecision = o.precision();
+    std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
 
     o << "[ ";
@@ -157,7 +157,7 @@ void VectorReal::printValue(std::ostream& o) const {
     o <<  " ]";
 
     o.setf(previousFlags);
-    o << std::setprecision(previousPrecision);
+    o.precision(previousPrecision);
 }
 
 

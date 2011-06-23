@@ -22,7 +22,8 @@ EssMax::EssMax(int blockSize) {
 
 int EssMax::estimateBurnin(const std::vector<double>& values) {
     // init
-    double  max_ess     = 0;
+    //! @Sebastian Include when problem with finite solved -- FR 
+    // double  max_ess     = 0;
     int     best_burnin = 0;
     
     // iterate over possible burnins
@@ -33,7 +34,7 @@ int EssMax::estimateBurnin(const std::vector<double>& values) {
         analysis.analyseCorrelation(values,i);
         
         // check if the new ess is better than any previous ones
-        //! @Sebastian: finite not available in MS compiler
+        //! @Sebastian: finite not available in MS compiler -- Fredrik
 #if 0
         if (finite(analysis.getEss()) && max_ess < analysis.getEss()) {
             max_ess = analysis.getEss();

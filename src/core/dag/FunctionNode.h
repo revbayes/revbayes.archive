@@ -41,7 +41,7 @@ class FunctionNode : public DeterministicNode {
         // Basic utility functions
         virtual FunctionNode*       clone(void) const;                                                          //!< Clone the function node
         virtual const VectorString& getDAGClass(void) const;                                                    //!< Get DAG node class vector
-        int                         getDim(void) const { return valueDim; }                                     //!< Get dim of return value
+        size_t                      getDim(void) const { return valueDim; }                                     //!< Get dim of return value
         const RbFunction*           getFunction(void) const { return function; }                                //!< Get function
         DAGNode*                    getReference(void);                                                         //!< Execute function and return reference
         bool                        getIsValueReference(void) const { return isValueReference; }                //!< Is return value of function a reference?
@@ -58,7 +58,7 @@ class FunctionNode : public DeterministicNode {
 
         // Member variables
         RbFunction*                 function;                                                                   //!< True when value updated after touch
-        int                         valueDim;                                                                   //!< Dimensions of function return value (type in valueType)
+        size_t                      valueDim;                                                                   //!< Dimensions of function return value (type in valueType)
         bool                        isValueReference;                                                           //!< Is return value of function a reference?
 };
 

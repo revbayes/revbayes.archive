@@ -231,6 +231,26 @@ const DAGNode* const& VariableContainer::operator[]( const VectorInteger& i ) co
 }
 
 
+/** Subscript operator for vectors. */
+DAGNode*& VariableContainer::operator[]( const size_t i )  {
+    
+    if ( length.size() != 1 || i >= length[0] )
+        throw RbException( "Index error");
+    
+    return elements[i];
+}
+
+
+/** Subscript operator (const) for vectors. */
+const DAGNode* const& VariableContainer::operator[]( const size_t i ) const {
+    
+    if ( length.size() != 1 || i >= length[0] )
+        throw RbException( "Index error");
+
+    return elements[i];
+}
+
+
 /** Clear contents of variable container and make length 0 in all dimensions */
 void VariableContainer::clear(void) {
 
@@ -351,14 +371,14 @@ DAGNode* VariableContainer::getElement( VectorInteger& index ) {
 
     // Drop any negative indices at the end of the index vector because they do not matter.
     // Also count number of negative indices that pertain to this container
-    for ( size_t i = index.size() - 1; i >= 0; i-- ) {
+    for ( int i = static_cast<int>( index.size() ) - 1; i >= 0; i-- ) {
         if ( index[i] < 0)
             index.pop_back();
         else
             break;
     }
     size_t numNegativeIndices = 0;
-    for ( size_t i = 0; i < index.size(); i-- ) {
+    for ( size_t i = 0; i < index.size(); i++ ) {
         if ( index[i] < 0)
             numNegativeIndices++;
     }
@@ -506,7 +526,7 @@ void VariableContainer::resize( const std::vector<size_t>& len ) {
     VectorInteger   numValsTarget   = VectorInteger(len.size(), 0);
     int             numSourceVals   = 1;
     int             numTargetVals   = 1;
-    for ( int i = len.size() - 1; i >= 0; i-- ) {
+    for ( int i = static_cast<int>( len.size() ) - 1; i >= 0; i-- ) {
         numSourceVals *= length[i];
         numTargetVals *= len[i];
         numValsSource[i] = numSourceVals;
@@ -525,7 +545,7 @@ void VariableContainer::resize( const std::vector<size_t>& len ) {
 
         size_t lastIndex = targetIndex;
 
-        for ( int i = length.size()-1; i >= 0; i-- ) {
+        for ( int i = static_cast<int>( length.size() ) - 1; i >= 0; i-- ) {
             if ( sourceIndex % numValsSource[i] == 0 ) {
                 targetIndex += numValsTarget[i] - ( targetIndex % numValsTarget[i] );
             }

@@ -136,15 +136,15 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
     const ArgumentRules& theRules = getArgumentRules();
 
     /* Get the number of argument rules */
-    int nRules = int(theRules.size());
+    size_t nRules = theRules.size();
 
     /* Clear previously processed arguments */
     args.clear();
 
     /* Check the number of arguments and rules; get the final number of arguments
        we expect and the number of non-ellipsis rules we have */
-    int numFinalArgs;
-    int numRegularRules;
+    size_t numFinalArgs;
+    size_t numRegularRules;
     if (nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name)) {
         numRegularRules = nRules - 1;
         if ( int(passedArgs.size()) < nRules )
@@ -169,9 +169,9 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
     }
 
     /* Keep track of which arguments we have used, and which argument slots we have filled, and with what passed arguments */
-    std::vector<bool> taken           = std::vector<bool>(passedArgs.size(), false);
-    std::vector<bool> filled          = std::vector<bool>(numFinalArgs, false);
-    std::vector<int>  passedArgIndex = std::vector<int>  (numFinalArgs, -1);
+    std::vector<bool>   taken           = std::vector<bool>( passedArgs.size(), false );
+    std::vector<bool>   filled          = std::vector<bool>( numFinalArgs, false );
+    std::vector<int>    passedArgIndex  = std::vector<int> ( numFinalArgs, -1 );
 
     /*********************  1. Deal with ellipsis  **********************/
 
@@ -197,7 +197,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
 
             taken[i]          = true;
             filled[i]         = true;
-            passedArgIndex[i] = i;
+            passedArgIndex[i] = static_cast<int>( i );
         }
     }
 
@@ -223,7 +223,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
                 if ( theRules[j]->isArgValid(passedArgs[i].getVariable(), conversionNeeded, evaluateOnce) && !filled[j] ) {
                     taken[i]          = true;
                     filled[j]         = true;
-                    passedArgIndex[j] = i;
+                    passedArgIndex[j] = static_cast<int>( i );
                     if ( conversionNeeded )
                         args[j].replaceArgumentVariable( theRules[j]->convert( passedArgs[i].getVariable() ) );
                     else
@@ -268,7 +268,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
         if ( theRules[matchRule]->isArgValid(passedArgs[i].getVariable(), conversionNeeded, evaluateOnce) ) {
             taken[i]                  = true;
             filled[matchRule]         = true;
-            passedArgIndex[matchRule] = i;
+            passedArgIndex[matchRule] = static_cast<int>( i );
             if ( conversionNeeded )
                 args[matchRule].replaceArgumentVariable( theRules[matchRule]->convert( passedArgs[i].getVariable() ) );
             else
@@ -295,7 +295,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
                 if ( theRules[j]->isArgValid( passedArgs[i].getVariable(), conversionNeeded, evaluateOnce ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
-                    passedArgIndex[j] = i;
+                    passedArgIndex[j] = static_cast<int>( i );
                     if ( conversionNeeded )
                         args[j].replaceArgumentVariable( theRules[j]->convert( passedArgs[i].getVariable() ) );
                     else
@@ -389,7 +389,6 @@ std::string RbFunction::richInfo(void) const {
     else
         o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
     
-    int index=1;
     for ( size_t i = 0;  i < args.size(); i++ ) {
         o << " args[" << i << "] = " << *args[i].getValue() << std::endl;
     }

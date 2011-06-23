@@ -57,7 +57,7 @@ Integer* Integer::clone(void) const {
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbObject* Integer::convertTo( const std::string& type, int dim ) const {
+RbObject* Integer::convertTo( const std::string& type, size_t dim ) const {
 
     if ( type == Boolean_name && dim == 0 ) 
         return new Boolean(value == 0);
@@ -90,7 +90,7 @@ const VectorString& Integer::getClass() const {
 
 
 /** Is convertible to language object of type and dim? */
-bool Integer::isConvertibleTo(const std::string& type, int dim, bool once) const {
+bool Integer::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
 
     if (type == Boolean_name && dim == 0)
         return true;

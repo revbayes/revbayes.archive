@@ -68,7 +68,7 @@ Simplex::Simplex(const VectorRealPos& x) : MemberObject(getMemberRules()) {
 /** Const subscript operator allowing caller to see value but not to modify it */
 double Simplex::operator[](size_t i) const {
 
-    if ( i<0 || i>value.size()  )
+    if ( i >= value.size()  )
         throw RbException( "Index out of bound" );
 
     return value[i];
@@ -112,7 +112,7 @@ DAGNode* Simplex::getSubelement( VectorInteger& index ) const {
 /** Print value for user */
 void Simplex::printValue(std::ostream& o) const {
 
-    int previousPrecision = o.precision();
+    std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
 
     o << "[ ";
@@ -127,7 +127,7 @@ void Simplex::printValue(std::ostream& o) const {
     o <<  " ]";
 
     o.setf(previousFlags);
-    o << std::setprecision(previousPrecision);
+    o.precision(previousPrecision);
 }
 
 

@@ -44,7 +44,6 @@ class IntegratorNode : public StochasticNode {
         IntegratorNode*         clone(void) const;                                                  //!< Clone the stochastic node
 
         const VectorString&     getDAGClass(void) const;                                            //!< Get DAG node class vector
-        int                     getDim(void) const { return valueDim; }                             //!< Get dim (0 for scalar, 1 for vector, etc)
         void                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
         void                    printValue(std::ostream& o) const;                                  //!< Print struct for user
         std::string             richInfo(void) const;                                               //!< Complete info about object

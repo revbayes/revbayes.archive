@@ -150,7 +150,7 @@ std::vector<double> VectorRealPos::getValue( void ) const {
 /** Print value for user */
 void VectorRealPos::printValue(std::ostream& o) const {
 
-    int previousPrecision = o.precision();
+    std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
 
     o << "[ ";
@@ -164,7 +164,7 @@ void VectorRealPos::printValue(std::ostream& o) const {
     o <<  " ]";
 
     o.setf(previousFlags);
-    o << std::setprecision(previousPrecision);
+    o.precision(previousPrecision);
 }
 
 

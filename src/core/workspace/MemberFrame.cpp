@@ -78,7 +78,7 @@ const VariableSlot& MemberFrame::operator[]( const std::string& name ) const {
 /** Index access to variable slot based on adding sequence */
 VariableSlot& MemberFrame::operator[]( const size_t i ) {
 
-    if ( i < 0 || i >= members.size() )
+    if ( i >= members.size() )
         throw RbException( "Index out of range" );
 
     return VariableFrame::operator[]( members[i] );
@@ -88,7 +88,7 @@ VariableSlot& MemberFrame::operator[]( const size_t i ) {
 /** Index access to variable slot based on adding sequence (const) */
 const VariableSlot& MemberFrame::operator[]( const size_t i ) const {
 
-    if ( i < 0 || i >= members.size() )
+    if ( i >= members.size() )
         throw RbException( "Index out of range" );
 
     return VariableFrame::operator[]( members[i] );

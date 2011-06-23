@@ -36,8 +36,8 @@ public:
     virtual const VectorString& getClass(void) const;                                                               //!< Get class vector
     
     // Basic utility functions you may want to override
-    virtual MemberObject*       convertTo(const std::string& type, int dim) const;                                  //!< Convert to type and dim (default throws an error)
-    virtual bool                isConvertibleTo(const std::string& type, int dim, bool once) const;                 //!< Is convertible to type and dim? (default false)
+    virtual MemberObject*       convertTo(const std::string& type, size_t dim) const;                               //!< Convert to type and dim (default throws an error)
+    virtual bool                isConvertibleTo(const std::string& type, size_t dim, bool once) const;              //!< Is convertible to type and dim? (default false)
     virtual void                printValue(std::ostream& o) const;                                                  //!< Print value for user
     virtual std::string         richInfo(void) const;                                                               //!< Complete info
 

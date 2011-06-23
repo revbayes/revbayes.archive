@@ -43,7 +43,7 @@ class StochasticNode : public VariableNode {
         StochasticNode*         clone(void) const;                                                  //!< Clone the stochastic node
 
         const VectorString&     getDAGClass(void) const;                                            //!< Get DAG node class vector
-        int                     getDim(void) const { return valueDim; }                             //!< Get dim (0 for scalar, 1 for vector, etc)
+        size_t                  getDim(void) const { return valueDim; }                             //!< Get dim (0 for scalar, 1 for vector, etc)
         const RbObject*         getStoredValue(void);                                               //!< Get stored value (non-const fxn because of delayed evaluation)
         const RbObject*         getValue(void);                                                     //!< Get value (non-const fxn because of delayed evaluation)
         void                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
@@ -77,7 +77,7 @@ class StochasticNode : public VariableNode {
         virtual bool            areDistributionParamsTouched() const;                               //!< Are any distribution params touched? Important in calculating prob ratio
 
         // Member variables
-        int                     valueDim;                                                           //!< Dimensions of value
+        size_t                  valueDim;                                                           //!< Dimensions of value
         bool                    clamped;                                                            //!< Is the node clamped with data?
         Distribution*           distribution;                                                       //!< Distribution (density functions, random draw function)
         double                  lnProb;                                                             //!< Current log probability

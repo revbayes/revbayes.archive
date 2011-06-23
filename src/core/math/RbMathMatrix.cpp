@@ -42,24 +42,24 @@
  */
 void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) {
     
-	int n = aMat.getNumRows();
-	for (int j=0; j<n; j++) 
+	size_t n = aMat.getNumRows();
+	for (size_t j=0; j<n; j++) 
     {
-		for (int k=0; k<j; k++)
-			for (int i=k+1; i<j; i++)
+		for (size_t k=0; k<j; k++)
+			for (size_t i=k+1; i<j; i++)
 				aMat[i][j] = aMat[i][j] - aMat[i][k] * aMat[k][j];
         
-		for (int k=0; k<j; k++)
-			for (int i=j; i<n; i++)
+		for (size_t k=0; k<j; k++)
+			for (size_t i=j; i<n; i++)
 				aMat[i][j] = aMat[i][j] - aMat[i][k] * aMat[k][j];
         
-		for (int m=j+1; m<n; m++)
+		for (size_t m=j+1; m<n; m++)
 	  		aMat[m][j] /= aMat[j][j]; 
     }
     
-	for (int row=0; row<n; row++)
+	for (size_t row=0; row<n; row++)
     {
-		for (int col=0; col<n; col++) 
+		for (size_t col=0; col<n; col++) 
         {
 			if ( row <= col ) 
             {
@@ -91,7 +91,7 @@ void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) 
  */
 int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
     
-	int dim = A.getNumRows();
+	size_t dim = A.getNumRows();
 	if (dim != A.getNumCols())
 		return (1);
 	
@@ -99,7 +99,7 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 	MatrixReal D(dim, dim, 0.0);
 	MatrixReal N(dim, dim, 0.0);
 	MatrixReal X(dim, dim, 0.0);
-	for (int i=0; i<dim; i++)
+	for (size_t i=0; i<dim; i++)
     {
 		D[i][i] = 1.0;
         N[i][i] = 1.0;
@@ -210,7 +210,7 @@ int RbMath::findPadeQValue(const double& tolerance) {
 void RbMath::matrixInverse(MatrixReal& a, MatrixReal& aInv) {
     
     // get dimensions: we assume a square matrix
-	int n = a.getNumRows();
+	size_t n = a.getNumRows();
     
     // copy original matrix, a, into a working version, aTmp
     MatrixReal aTmp(a);
@@ -219,15 +219,15 @@ void RbMath::matrixInverse(MatrixReal& a, MatrixReal& aInv) {
 	MatrixReal lMat(n, n, 0.0);
 	MatrixReal uMat(n, n, 0.0);
     MatrixReal identity(n, n, 0.0);
-    for (int i=0; i<n; i++)
+    for (size_t i=0; i<n; i++)
         identity[i][i] = 1.0;
 	std::vector<double> bVec(n);
     
     // compute the matrix inverse
 	RbMath::computeLandU(aTmp, lMat, uMat);
-	for (int k=0; k<n; k++) 
+	for (size_t k=0; k<n; k++) 
     {
-		for (int i=0; i<n; i++)
+		for (size_t i=0; i<n; i++)
 			bVec[i] = identity[i][k];
         
 		/* Answer of Ly = b (which is solving for y) is copied into b. */
@@ -236,7 +236,7 @@ void RbMath::matrixInverse(MatrixReal& a, MatrixReal& aInv) {
 		/* Answer of Ux = y (solving for x and the y was copied into b above) 
          is also copied into b. */
 		backSubstitutionRow(uMat, bVec);
-		for (int i=0; i<n; i++)
+		for (size_t i=0; i<n; i++)
 			aInv[i][k] = bVec[i];
     }
 }
@@ -254,14 +254,14 @@ void RbMath::matrixInverse(MatrixReal& a, MatrixReal& aInv) {
  */
 int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
 	
-	int m = a.getNumRows();
-	int n = a.getNumCols();
+	size_t m = a.getNumRows();
+	size_t n = a.getNumCols();
 	
 	if ( m != t.getNumCols() || n != t.getNumRows() )
         throw (RbException("Cannot tranpose an N X M matrix if the other matrix is not M X N"));
     
-	for (int i=0; i<m; i++)
-		for (int j=0; j<n; j++)
+	for (size_t i=0; i<m; i++)
+		for (size_t j=0; j<n; j++)
 			t[j][i] = a[i][j];
 	return (0);
 }

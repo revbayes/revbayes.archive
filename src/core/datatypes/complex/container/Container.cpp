@@ -109,13 +109,13 @@ size_t Container::getOffset( const VectorNatural& index ) const {
         throw RbException( "Container index has too many dimensions" );
 
     for ( size_t i = 0; i < index.size(); i++) {
-        if ( index[i] < 0 || index[i] >= length[i] )
+        if ( index[i] >= length[i] )
             throw RbException( "Container index out of range" );
     }
 
     size_t  offset  = 0;
     size_t  numVals = 1;
-    int     k       = length.size() - 1;
+    int     k       = static_cast<int>( length.size() ) - 1;
     for ( ; k >= int( index.size() ); k--)
          numVals *= length[k];
     for ( ; k >= 0; k--) {

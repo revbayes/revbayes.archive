@@ -40,7 +40,7 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbComplex(), member
 
 
 /** Convert to type: throw an error */
-MemberObject* MemberObject::convertTo(const std::string& type, int dim) const {
+MemberObject* MemberObject::convertTo(const std::string& type, size_t dim) const {
 
     std::ostringstream msg;
     msg << "Type conversion of " << getTypeSpec() << " to " << TypeSpec(type, dim) << " not supported (yet)";
@@ -164,7 +164,7 @@ bool MemberObject::isConstant( void ) const {
 
 
 /** Is convertible to type and dim? Default is false for member objects; override if you want to support type conversion */
-bool MemberObject::isConvertibleTo(const std::string& type, int dim, bool once) const {
+bool MemberObject::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
 
 	return false;
 }

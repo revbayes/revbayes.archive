@@ -56,13 +56,13 @@ class DAGNode {
         bool                            isImmutable(void) const;                                                //!< Is DAG node immutable?
         bool                            isPermanent(Frame* frame) const;                                        //!< Is the node a permanent variable in frame?
         bool                            isTypeSpec(const TypeSpec& typeSp) const;                               //!< Is DAG node of language type typeSpec?
-        int                             numReferringSlots(void) const { return int(referringSlots.size()); }    //!< Number of referring slots
-        int                             numRefs(void) const;                                                    //!< Number of references
+        size_t                          numReferringSlots(void) const { return referringSlots.size(); }         //!< Number of referring slots
+        size_t                          numRefs(void) const;                                                    //!< Number of references
 
         // Basic utility functions you may want to override
         virtual DAGNode*                getReference(void) { return this; }                                     //!< Get reference to variable, override if lookup or fxn
-        virtual int                     getSize(void) const { return 1; }                                       //!< Total number of elements (default is 1, only different for ContainerNode)
-        virtual int                     getDim(void) const { return 0; }                                        //!< Get dim (0 for scalar, 1 for vector, etc)
+        virtual size_t                  getSize(void) const { return 1; }                                       //!< Total number of elements (default is 1, only different for ContainerNode)
+        virtual size_t                  getDim(void) const { return 0; }                                        //!< Get dim (0 for scalar, 1 for vector, etc)
         virtual bool                    isConst(void) const;                                                    //!< Is DAG node const value?
 
         // Element set and get functions you may want to override
@@ -85,8 +85,8 @@ class DAGNode {
         std::set<VariableNode*>&        getChildren(void) { return children; }                                  //!< Return children
 		std::set<DAGNode*>&             getParents(void) { return parents; }                                    //!< Return parents
         bool                            isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const;       //!< Is node x a parent of the caller in the DAG?
-        int                             numChildren(void) const { return int(children.size()); }                //!< Number of children
-        int                             numParents(void) const { return int(parents.size()); }                  //!< Number of parents
+        size_t                          numChildren(void) const { return children.size(); }                     //!< Number of children
+        size_t                          numParents(void) const { return parents.size(); }                       //!< Number of parents
         void                            printChildren(std::ostream& o) const;                                   //!< Print children DAG nodes
         void                            printParents(std::ostream& o) const;                                    //!< Print children DAG nodes
         void                            removeChildNode(VariableNode* c) { children.erase(c); }                 //!< Remove a child node

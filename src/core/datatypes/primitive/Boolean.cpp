@@ -45,7 +45,7 @@ Boolean* Boolean::clone(void) const {
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbObject* Boolean::convertTo(const std::string& type, int dim) const {
+RbObject* Boolean::convertTo(const std::string& type, size_t dim) const {
 
     if (type == Integer_name && dim == 0) {
         if (value)
@@ -73,7 +73,7 @@ const VectorString& Boolean::getClass() const {
 
 
 /** Is convertible to type and dim? */
-bool Boolean::isConvertibleTo(const std::string& type, int dim, bool once) const {
+bool Boolean::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
 
     if (type == Integer_name && dim == 0)
         return true;

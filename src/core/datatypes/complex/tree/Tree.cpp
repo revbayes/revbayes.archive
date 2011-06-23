@@ -40,7 +40,7 @@ void Tree::allocateNodes(int nNodes) {
         nodes.push_back( new TreeNode );
 }
 
-MemberObject* Tree::convertTo(std::string const &type, int dim) const {
+MemberObject* Tree::convertTo(std::string const &type, size_t dim) const {
     return NULL;
 }
 
@@ -57,7 +57,7 @@ const VectorString& Tree::getClass(void) const {
     return rbClass;
 }
 
-bool Tree::isConvertibleTo(const std::string& type, int dim, bool once) const {
+bool Tree::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
     return false;
 }
 

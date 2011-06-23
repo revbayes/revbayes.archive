@@ -35,12 +35,12 @@
  */
 void RbMath::backSubstitutionRow(MatrixReal& u, std::vector<double>& b) {
     
-	int n = u.getNumRows();
+	size_t n = u.getNumRows();
 	b[n-1] /= u[n-1][n-1];
-	for (int i=n-2; i>=0; i--) 
+	for ( int i = static_cast<int>( n ) - 2; i >= 0; i-- ) 
     {
 		double dotProduct = 0.0;
-		for (int j=i+1; j<n; j++)
+		for (size_t j=i+1; j<n; j++)
 			dotProduct += u[i][j] * b[j];
 		b[i] = (b[i] - dotProduct) / u[i][i];
     }
@@ -56,12 +56,12 @@ void RbMath::backSubstitutionRow(MatrixReal& u, std::vector<double>& b) {
  */
 void RbMath::forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b) {
     
-	int n = L.getNumRows();
+	size_t n = L.getNumRows();
 	b[0] = b[0] / L[0][0];
-	for (int i=1; i<n; i++) 
+	for (size_t i=1; i<n; i++) 
     {
 		double dotProduct = 0.0;
-		for (int j=0; j<i; j++)
+		for (size_t j=0; j<i; j++)
         {
 	      	dotProduct += L[i][j] * b[j];
         }
@@ -80,15 +80,15 @@ void RbMath::forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b) {
  */
 void RbMath::gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xMat) {
     
-	int n = a.getNumRows();
+	size_t n = a.getNumRows();
 	MatrixReal lMat(n, n, 0.0);
 	MatrixReal uMat(n, n, 0.0);
 	std::vector<double> bVec(n);
 	RbMath::computeLandU(a, lMat, uMat);
     
-	for (int k=0; k<n; k++) 
+	for (size_t k=0; k<n; k++) 
     {
-		for (int i=0; i<n; i++)
+		for (size_t i=0; i<n; i++)
 			bVec[i] = bMat[i][k];
         
 		/* Answer of Ly = b (which is solving for y) is copied into b. */
@@ -97,7 +97,7 @@ void RbMath::gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xM
 		/* Answer of Ux = y (solving for x and the y was copied into b above) 
          is also copied into b. */
 		backSubstitutionRow(uMat, bVec);
-		for (int i=0; i<n; i++)
+		for (size_t i=0; i<n; i++)
 			xMat[i][k] = bVec[i];
     }
 }

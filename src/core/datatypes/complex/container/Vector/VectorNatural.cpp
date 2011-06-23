@@ -132,7 +132,7 @@ VectorNatural::VectorNatural( const ContainerIterator& x ) : Vector( Natural_nam
  */
 unsigned int VectorNatural::operator[]( size_t i ) const {
 
-    if (i < 0 || i > int(elements.size()))
+    if (i >= int(elements.size()))
         throw RbException("Index out of bounds");
     return static_cast<Natural*>(elements[i])->getValue();
 }

@@ -40,7 +40,7 @@ class ArgumentRule : public RbInternal {
 
         // ArgumentRule functions
         DAGNode*                    convert(DAGNode* arg) const;                                                                        //!< Convert arg to conform to rule
-        int                         getArgDim(void) const { return argSlot.getTypeSpec().getDim(); }                                    //!< Get argument dim
+        size_t                      getArgDim(void) const { return argSlot.getTypeSpec().getDim(); }                                    //!< Get argument dim
         std::string                 getArgLabel(void) const { return label; }                                                           //!< Get label of argument
         const std::string&          getArgType(void) const { return argSlot.getTypeSpec().getType(); }                                  //!< Get argument type
         const TypeSpec&             getArgTypeSpec(void) const { return argSlot.getTypeSpec(); }                                        //!< Get argument type spec

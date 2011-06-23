@@ -31,7 +31,7 @@
  */
 double RbStatistics::Dirichlet::pdf(const std::vector<double> &a, const std::vector<double> &z) {
 	
-	int n = a.size();
+	size_t n = a.size();
 	double zSum = 0.0;
 	for (int i=0; i<n; i++)
 		zSum += z[i];
@@ -71,14 +71,14 @@ double RbStatistics::Dirichlet::pdf(const std::vector<double> &a, const std::vec
  */
 double RbStatistics::Dirichlet::lnPdf(const std::vector<double> &a, const std::vector<double> &z) {
     
-	int n = a.size(); //!< we assume that a and z have the same size
+	size_t n = a.size(); //!< we assume that a and z have the same size
 	double alpha0 = 0.0;
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		alpha0 += a[i];
 	double lnP = RbMath::lnGamma(alpha0);
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		lnP -= RbMath::lnGamma(a[i]);
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		lnP += (a[i] - 1.0) * std::log(z[i]);	
 	return lnP;
 }
@@ -95,14 +95,14 @@ double RbStatistics::Dirichlet::lnPdf(const std::vector<double> &a, const std::v
 std::vector<double> RbStatistics::Dirichlet::rv(const std::vector<double> &a, RandomNumberGenerator* rng) {
     
     std::vector<double> z;
-	int n = a.size();
+	size_t n = a.size();
 	double sum = 0.0;
-	for(int i=0; i<n; i++)
+	for(size_t i=0; i<n; i++)
     {
 //		z[i] = RbStatistics::Helper::rndGamma(a[i], *rng);
 		sum += z[i];
     }
-	for(int i=0; i<n; i++)
+	for(size_t i=0; i<n; i++)
 		z[i] /= sum;
     
 	return z;

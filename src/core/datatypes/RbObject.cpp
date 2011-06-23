@@ -45,7 +45,7 @@ RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbObject* RbObject::convertTo(const std::string& type, int dim) const {
+RbObject* RbObject::convertTo(const std::string& type, size_t dim) const {
 
     std::ostringstream  msg;
     msg << "Type conversion to " << TypeSpec(type, dim) << " not supported";
@@ -92,7 +92,7 @@ bool RbObject::isConvertibleTo(const TypeSpec& typeSpec, bool once) const {
 
 
 /** Is convertible to type and dim? */
-bool RbObject::isConvertibleTo(const std::string& type, int dim, bool once) const {
+bool RbObject::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
 
     return false;
 }

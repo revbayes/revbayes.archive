@@ -33,7 +33,7 @@ TypeSpec::TypeSpec( const std::string& objType )
 
 
 /** Complete constructor */
-TypeSpec::TypeSpec(const std::string& objType, int objDim, bool ref)
+TypeSpec::TypeSpec(const std::string& objType, size_t objDim, bool ref)
     : type(objType), dim(objDim), reference(ref) {
 }
 

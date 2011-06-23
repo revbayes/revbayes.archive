@@ -53,7 +53,7 @@ VectorString::VectorString(const std::vector<std::string>& x) : Vector(RbString_
 /** Subscript operator */
 std::string& VectorString::operator[](size_t i) {
 
-    if (i < 0 || i > int(elements.size()))
+    if (i >= elements.size())
         throw RbException("Index out of bounds");
 
     return static_cast<RbString*>(elements[i])->getValueRef();

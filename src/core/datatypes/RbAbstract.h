@@ -30,9 +30,9 @@ class RbAbstract : public RbObject {
 
         // Basic utility functions
         RbAbstract*             clone(void) const;                                                      //!< Clone object
-        RbObject*               convertTo(const std::string& type, int dim) const;                      //!< Convert to type and dim
+        RbObject*               convertTo(const std::string& type, size_t dim) const;                   //!< Convert to type and dim
         const VectorString&     getClass(void) const { return classVector; }                            //!< Get class vector
-        bool                    isConvertibleTo(const std::string& type, int dim, bool once) const;     //!< Is convertible to type and dim?
+        bool                    isConvertibleTo(const std::string& type, size_t dim, bool once) const;  //!< Is convertible to type and dim?
         void                    printValue(std::ostream& o) const;                                      //!< Print value (for user)
         std::string             richInfo(void) const;                                                   //!< Complete info about object
 

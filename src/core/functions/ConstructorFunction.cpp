@@ -45,9 +45,7 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 /** Execute function: we reset our template object here and give out a copy */
 DAGNode* ConstructorFunction::execute(void) {
 
-    const ArgumentRules& argRules = getArgumentRules();
-
-    MemberObject* copy = templateObject->clone();
+   MemberObject* copy = templateObject->clone();
 
     for ( size_t i = 0; i < args.size(); i++ ) {
         if ( args[i].isReference() )

@@ -38,7 +38,7 @@ class VectorString;
 class ContainerNode : public DeterministicNode {
 
     public:
-                                ContainerNode(const std::string& valType, int dim);                         //!< Constructor of empty container node
+                                ContainerNode(const std::string& valType, size_t dim);                      //!< Constructor of empty container node
                                 ContainerNode(Container* val);                                              //!< Constructor from container object
                                 ContainerNode(const ContainerNode& x);                                      //!< Copy constructor
         virtual                ~ContainerNode(void);                                                        //!< Virtual destructor
@@ -49,7 +49,7 @@ class ContainerNode : public DeterministicNode {
         // Basic utility functions
         ContainerNode*          clone(void) const;                                                          //!< Clone the member node
         const VectorString&     getDAGClass(void) const;                                                    //!< Get DAG node class vector
-        int                     getDim() const { return valueDim; }                                         //!< Get dimensions of value
+        size_t                  getDim() const { return valueDim; }                                         //!< Get dimensions of value
         bool                    isConst(void) const;                                                        //!< Is this node a const value?
         void                    printStruct(std::ostream& o) const;                                         //!< Print struct for user
         std::string             richInfo(void) const;                                                       //!< Complete info about object
@@ -65,24 +65,24 @@ class ContainerNode : public DeterministicNode {
         void                    setElement(const VectorInteger& index, DAGNode* var, bool convert=true);                //!< Set element
 
         // DAG functions
-        ContainerNode*          cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
-        bool                    isMutableTo(const std::string& valType, int dim) const;                     //!< Is node mutable to valType and dim?
-        bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;    //!< Is parent mutable to newNode?
-        ContainerNode*          mutateTo(const std::string& valType, int dim) const;                        //!< Mutate to valType and dim
-        void                    swapParentNode(DAGNode* oldNode, DAGNode* newNode);                         //!< Swap a parent node
+        ContainerNode*          cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;                           //!< Clone entire graph
+        bool                    isMutableTo(const std::string& valType, size_t dim) const;                              //!< Is node mutable to valType and dim?
+        bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;                //!< Is parent mutable to newNode?
+        ContainerNode*          mutateTo(const std::string& valType, size_t dim) const;                                 //!< Mutate to valType and dim
+        void                    swapParentNode(DAGNode* oldNode, DAGNode* newNode);                                     //!< Swap a parent node
 
         // Container functions
-        DAGNode*                getElement(const size_t i);                                                 //!< Convenient vector access
-        VectorNatural           getIndex(const DAGNode* element) const;                                     //!< Get index of element
-        size_t                  size(void) const;                                                           //!< Return container size
+        DAGNode*                getElement(const size_t i);                                                             //!< Convenient vector access
+        VectorNatural           getIndex(const DAGNode* element) const;                                                 //!< Get index of element
+        size_t                  size(void) const;                                                                       //!< Return container size
 
     private:
         // Utility function
-        void                    update(void);                                                               //!< Update value and storedValue
+        void                    update(void);                                                                           //!< Update value and storedValue
 
         // Member variables
-        VariableContainer*      container;                                                                  //!< The variable container object (NULL if constant)
-        int                     valueDim;                                                                   //!< Dimensions of value
+        VariableContainer*      container;                                                                              //!< The variable container object (NULL if constant)
+        size_t                  valueDim;                                                                               //!< Dimensions of value
 };
 
 #endif

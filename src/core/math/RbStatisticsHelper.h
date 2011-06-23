@@ -48,8 +48,8 @@ namespace RbStatistics {
                 throw (RbException("Attempting to sample too many elements from source vector"));
             destV.clear();
             std::vector<T> tmpV = sourceV;
-            int n = tmpV.size();
-            for (int i=0; i<k; i++)
+            size_t n = tmpV.size();
+            for (size_t i=0; i<k; i++)
             {
                 int whichElement = (int)(rng->uniform01()*(n-i));
                 destV.push_back( tmpV[whichElement] );

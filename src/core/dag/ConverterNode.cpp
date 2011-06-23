@@ -28,13 +28,13 @@
 
 
 /** Constructor of pristine converter node */
-ConverterNode::ConverterNode(const std::string& type, int dim)
+ConverterNode::ConverterNode(const std::string& type, size_t dim)
     : DeterministicNode(type), valueDim(dim) {
 }
 
 
 /** Basic constructor of converter node */
-ConverterNode::ConverterNode( DAGNode* origNode, const std::string& type, int dim )
+ConverterNode::ConverterNode( DAGNode* origNode, const std::string& type, size_t dim )
     : DeterministicNode( type ), valueDim( dim ) {
 
     /* Check that the call is reasonable */

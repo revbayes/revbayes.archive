@@ -57,17 +57,14 @@ int Categorical::convertSymbolToState( char c ) const {
     if ( foundMatch == false ) {
         for ( size_t i = 0; i < NALabels.size(); i++ ) {
             if ( c == NALabels[i] ) {
-                stateValue = -1 - i;
+                stateValue = -1 - static_cast<int>( i );
                 foundMatch = true;
                 break;
             }
         }
     }
 
-    if ( foundMatch == false )
-        return stateValue;
-    else
-        return stateLabels.size();
+    return stateValue;
 }
 
 

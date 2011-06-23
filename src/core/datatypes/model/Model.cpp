@@ -127,7 +127,6 @@ Model& Model::operator=( const Model& x ) {
             x.dagNodes[0]->cloneDAG( newNodes );
 
         /* Insert new nodes in dagNodes member frame and direct access vector */
-        int count = 1;
         for ( std::map<const DAGNode*, DAGNode*>::iterator i = newNodes.begin(); i != newNodes.end(); i++ ) {
 
             const DAGNode* theOldNode = (*i).first;
@@ -291,7 +290,7 @@ void Model::printValue(std::ostream& o) const {
 		{   	
 		msg << "Vertex " << ++cnt;
 		std::string nameStr = msg.str();
-		int nameStrSize = nameStr.size();
+		size_t nameStrSize = nameStr.size();
 		for (int j=0; j<18-nameStrSize; j++)
 			nameStr += " ";
 		nameStr += (*i)->getName();

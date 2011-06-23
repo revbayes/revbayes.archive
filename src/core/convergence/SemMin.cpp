@@ -22,7 +22,8 @@ SemMin::SemMin(int blockSize) {
 
 int SemMin::estimateBurnin(const std::vector<double>& values) {
     // init
-    double  min_sem     = RbConstants::Double::max;
+    //! @Sebastian: Remove comment when finite problem is solved -- FR
+    // double  min_sem     = RbConstants::Double::max;
     int     best_burnin = 0;
     
     // iterate over possible burnins

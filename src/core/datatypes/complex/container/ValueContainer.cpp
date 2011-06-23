@@ -275,7 +275,7 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
 
     // Drop any negative indices at the end of the index vector because they do not matter.
     // Also count number of negative indices that pertain to this container
-    for ( size_t i = index.size() - 1; i >= 0; i-- ) {
+    for ( int i = static_cast<int>( index.size() ) - 1; i >= 0; i-- ) {
         if ( index[i] < 0)
             index.pop_back();
         else
@@ -393,8 +393,8 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
                 if ( numLocks < length.size() - tempLen.size() )
                     break;
 
-                size_t i;
-                for ( i = tempIndex.size() - 1; i >= 0; i-- ) {
+                int i;
+                for ( i = static_cast<int>( tempIndex.size() ) - 1; i >= 0; i-- ) {
                     
                     if ( i < index.size() && tempIndex[i] == index[i] )
                         numLocks--;
@@ -419,8 +419,8 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
                 if ( numLocks == length.size() - tempLen.size() )
                     break;
 
-                size_t i;
-                for ( i = tempIndex.size() - 1; i >= 0; i-- ) {
+                int i;
+                for ( i = static_cast<int>( tempIndex.size() ) - 1; i >= 0; i-- ) {
                     
                     // Find out whether we will decrease the number of locks
                     if ( i < index.size() && tempIndex[i] == index[i] )
@@ -572,7 +572,7 @@ void ValueContainer::resize( const std::vector<size_t>& len ) {
     VectorInteger   numValsTarget   = VectorInteger(len.size(), 0);
     int             numSourceVals   = 1;
     int             numTargetVals   = 1;
-    for ( size_t i = len.size() - 1; i >= 0; i-- ) {
+    for ( int i = static_cast<int>( len.size() ) - 1; i >= 0; i-- ) {
         numSourceVals *= length[i];
         numTargetVals *= len[i];
         numValsSource[i] = numSourceVals;
@@ -591,7 +591,7 @@ void ValueContainer::resize( const std::vector<size_t>& len ) {
 
         size_t lastIndex = targetIndex;
 
-        for ( size_t i = length.size()-1; i >= 0; i-- ) {
+        for ( int i = static_cast<int>( length.size() ) - 1; i >= 0; i-- ) {
             if ( sourceIndex % numValsSource[i] == 0 ) {
                 targetIndex += numValsTarget[i] - ( targetIndex % numValsTarget[i] );
             }

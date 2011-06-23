@@ -390,7 +390,7 @@ void VariableSlot::setElement( VectorInteger& index, DAGNode* newVar, bool conve
         ContainerNode* containerVar = static_cast<ContainerNode*>( variable );
 
         // Check if valid element
-        if ( containerVar->isValidElement( emptyDim, newVar, convert ) ) {
+        if ( containerVar->isValidElement( static_cast<int>( emptyDim ), newVar, convert ) ) {
         
             containerVar->setElement( index, newVar, convert );
             return;

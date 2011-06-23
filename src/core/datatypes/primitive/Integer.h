@@ -40,12 +40,12 @@ class Integer : public RbObject {
                                 operator int(void) const { return value; }                      //!< Type conversion to int
 
         // Basic utility functions
-        Integer*                clone(void) const;                                              //!< Clone object
-        RbObject*               convertTo(const std::string& type, int dim) const;              //!< Convert to type and dim
-        const VectorString&     getClass(void) const;                                           //!< Get class vector
-        bool                    isConvertibleTo(const std::string& type, int dim, bool once) const;     //!< Is convertible to type and dim?
-        void                    printValue(std::ostream& o) const;                              //!< Print value (for user)
-        std::string             richInfo(void) const;                                           //!< Complete info about object
+        Integer*                clone(void) const;                                                      //!< Clone object
+        RbObject*               convertTo(const std::string& type, size_t dim) const;                   //!< Convert to type and dim
+        const VectorString&     getClass(void) const;                                                   //!< Get class vector
+        bool                    isConvertibleTo(const std::string& type, size_t dim, bool once) const;  //!< Is convertible to type and dim?
+        void                    printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        std::string             richInfo(void) const;                                                   //!< Complete info about object
 
         // Getters and setters
         void                    setValue(int x) { value = x; }                                  //!< Set value
