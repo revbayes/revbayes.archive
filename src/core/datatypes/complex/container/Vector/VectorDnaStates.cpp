@@ -48,8 +48,7 @@ DnaState& VectorDnaStates::operator[](size_t i) {
 
     if (i >= elements.size())
         throw RbException("Index out of bounds");
-
-    //return static_cast<DnaState*>(elements[i])->getValue();
+    return *( static_cast<DnaState*>(elements[i]) );
 }
 
 
@@ -58,7 +57,7 @@ const DnaState& VectorDnaStates::operator[](size_t i) const {
 
     if (i >= elements.size())
         throw RbException("Index out of bounds");
-    //return static_cast<RbString*>(elements[i])->getValueRef();
+    return *( static_cast<DnaState*>(elements[i]) );
 }
 
 
@@ -69,7 +68,7 @@ bool VectorDnaStates::operator==(const VectorDnaStates& x) const {
         return false;
     for (size_t i=0; i<elements.size(); i++) 
         {
-        if (operator[](i) != x[i])
+        if ( operator[](i) != x[i] )
             return false;
         }
     return true;
@@ -83,31 +82,27 @@ bool VectorDnaStates::operator!=(const VectorDnaStates& x) const {
 }
 
 
-/** Concatenation with operator+ (RbString) */
+/** Concatenation with operator+ (VectorDnaStates) */
 VectorDnaStates VectorDnaStates::operator+(const VectorDnaStates& x) const {
 
-    //VectorString tempVec = *this;
-
-    //tempVec.push_back( x.getValue() );
-
-    //return tempVec;
+    VectorDnaStates tempVec = *this;
+    for (size_t i=0; i<x.size(); i++)
+        tempVec.push_back( x[i] );
+    return tempVec;
 }
 
 
-/** Concatenation with operator+ (VectorString) */
+/** Concatenation with operator+ (DnaState) */
 VectorDnaStates VectorDnaStates::operator+(const DnaState& x) const {
 
-    //VectorString tempVec = *this;
-
-    /*for ( size_t i = 0; i < x.elements.size(); i++ )
-        tempVec.push_back( x[i] );
-
-    return tempVec;*/
+    VectorDnaStates tempVec = *this;
+    tempVec.push_back( x );
+    return tempVec;
 }
 
 
 /** Clone function */
-VectorDnaStates* VectorDnaStates::clone() const {
+VectorDnaStates* VectorDnaStates::clone(void) const {
 
     return new VectorDnaStates(*this);
 }
@@ -122,24 +117,22 @@ const VectorString& VectorDnaStates::getClass(void) const {
 
 
 /** Get STL vector of strings */
-std::vector<std::string> VectorDnaStates::getStdVector(void) const {	 
+std::vector<DnaState*> VectorDnaStates::getStdVector(void) const {	 
 
-    std::vector<std::string> strVector;	 
-
-    for (size_t i=0; i<elements.size(); i++) {	 
-
-        RbString* str = static_cast<RbString*>( elements.at(i) );
-        strVector.push_back(str->getValue());	 
-    }	 
-    
-    return strVector;	 
+    std::vector<DnaState*> dnaVector;	 
+    for (size_t i=0; i<elements.size(); i++) 
+        {	 
+        DnaState* d = static_cast<DnaState*>( elements.at(i) );
+        dnaVector.push_back(d);	 
+        }	 
+    return dnaVector;	 
 }
 
 
 /** Append string element to end of vector, updating length in process */
 void VectorDnaStates::push_back(DnaState x) {
 
-    elements.push_back(new DnaState(x));
+    elements.push_back( new DnaState(x) );
     length[0]++;
 }
 
@@ -150,7 +143,6 @@ std::string VectorDnaStates::richInfo(void) const {
     std::ostringstream o;
     o << "VectorDnaStates: value = ";
     printValue(o);
-    
     return o.str();
 }
 

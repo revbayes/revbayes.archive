@@ -48,7 +48,7 @@ class VectorDnaStates : public Vector {
         
         // Vector functions
 	    void                        push_back(DnaState x);                                          //!< Add element
-        std::vector<std::string>    getStdVector(void) const;                                       //!< Get the value vector as a std::vector
+        std::vector<DnaState*>      getStdVector(void) const;                                       //!< Get the value vector as a std::vector
 
     protected:
         RbObject*                   getDefaultElement(void) const { return new VectorDnaStates(); } //!< Get default element for empty slots
