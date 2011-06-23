@@ -25,6 +25,12 @@
 class DnaState : public NucleotideState {
 
     public:
+                                        DnaState(void);                                     //!< Default constructor
+                                        DnaState(const DnaState& s);                        //!< Copy constructor
+                                        DnaState(const char s);                             //!< Constructor with nucleotide observation
+        bool                            operator==(const DnaState& x) const;                //!< Equality
+        bool                            operator!=(const DnaState& x) const;                //!< Inequality
+
         // Basic utility functions you should not have to override
         void                            printValue(std::ostream& o) const;                  //!< Print value (for user)
 
@@ -38,9 +44,6 @@ class DnaState : public NucleotideState {
         const char                      getValue(void) const;                               //!< Get the discrete observation
 
     protected:
-                                        DnaState(void);                                     //!< Default constructor
-                                        DnaState(const DnaState& s);                        //!< Copy constructor
-                                        DnaState(const char s);                             //!< Constructor with nucleotide observation
         const static std::string        stateLabels;                                        //!< The labels for the possible states
 };
 

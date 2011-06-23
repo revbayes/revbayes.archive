@@ -43,6 +43,25 @@ DnaState::DnaState(const char s) : NucleotideState() {
 }
 
 
+/** Equals comparison */
+bool DnaState::operator==(const DnaState& x) const {
+
+    for (size_t i=0; i<numStates; i++) 
+        {
+        if ( value[i] != x.value[i] )
+            return false;
+        }
+    return true;
+}
+
+
+/** Not equals comparison */
+bool DnaState::operator!=(const DnaState& x) const {
+
+    return !operator==(x);
+}
+
+
 /** Clone object */
 DnaState* DnaState::clone(void) const {
 
