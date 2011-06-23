@@ -169,7 +169,7 @@ DAGNode* MatrixReal::getElement( const VectorInteger& index ) {
     else if ( numIndices == 1 ) {
 
         // Row submatrix, this is easy
-        if ( index[0] > length[0] )
+        if ( index[0] > static_cast<int>( length[0] ) )
             throw RbException( "Index out of bound for " + Real_name + "[][]" );
         return new ContainerNode( matrix[index[0]].clone() );
     }

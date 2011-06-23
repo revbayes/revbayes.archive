@@ -239,18 +239,10 @@ StochasticNode* StochasticNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& ne
 }
 
 
-/** Get affected nodes: insert this node but stop recursion here unless touched */
+/** Get affected nodes: insert this node but stop recursion here */
 void StochasticNode::getAffected( std::set<StochasticNode*>& affected ) {
 
-    if ( touched ) {
-    
-        for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
-            (*i)->getAffected(affected);
-    }
-    else {
-
-        affected.insert( this );
-    }
+    affected.insert( this );
 }
 
 
@@ -438,7 +430,7 @@ std::string StochasticNode::richInfo(void) const {
  * Set value: same as clamp, but do not clamp. This function will
  * also be used by moves to propose a new value.
  */
-void StochasticNode::setValue( RbObject* val ) {
+void StochasticNode::setValue( RbObject* val, std::set<StochasticNode*>& affected ) {
 
     if ( clamped )
         throw RbException( "Cannot change value of clamped node" );
@@ -459,7 +451,7 @@ void StochasticNode::setValue( RbObject* val ) {
     }
 
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
-        (*i)->touchAffected();
+        (*i)->getAffected( affected);
 }
 
 

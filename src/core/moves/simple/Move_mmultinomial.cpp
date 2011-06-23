@@ -93,7 +93,7 @@ double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
     RandomNumberGenerator*  rng     = GLOBAL_RNG;
     double                  alpha0  = static_cast<const RealPos*>( getValue("tuning")   )->getValue();
     int                     k       = static_cast<const Integer*>( getValue("num_cats") )->getValue();
-	size_t                  n       = valPtr->size();
+	int                     n       = static_cast<int>( valPtr->size() );
 
     std::vector<double> curVal = valPtr->getValue();
     double sum = 0.0;
@@ -202,11 +202,8 @@ double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
     for ( size_t i = 0; i < valPtr->size(); i++ )
         newVal[i] *= sum;
 		
-    nodePtr->setValue( new VectorReal( newVal ) );
+    nodePtr->setValue( new VectorReal( newVal ), affectedNodes );
 	
-    // Get affected nodes
-    nodePtr->getAffected( affectedNodes );
-
     return lnProposalRatio;
 }
 

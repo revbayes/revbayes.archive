@@ -113,7 +113,7 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 	// Then the infinity-norm is twice the maximum absolute value
 	// of the diagonal cells.
 	double normA = 0.0;
-	for (int i=0; i<dim; i++) 
+	for (size_t i=0; i<dim; i++) 
     {
 		double x = fabs (A[i][i]);
 		if (x > normA)
@@ -127,7 +127,7 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 	y++;
     
 	// Get max(0,y)
-	int j = 0;
+	size_t j = 0;
 	if (y > 0)
 		j = y;
     
@@ -157,10 +157,10 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
     
 	RbMath::gaussianElimination(D, N, F);
     
-	for (int k=0; k<j; k++)
+	for (size_t k=0; k<j; k++)
 		F = F * F;
 	
-	for (int i=0; i<dim; i++)
+	for (size_t i=0; i<dim; i++)
     {
 		for (j=0; j<dim; j++)
         {

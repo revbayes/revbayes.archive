@@ -396,7 +396,7 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
                 int i;
                 for ( i = static_cast<int>( tempIndex.size() ) - 1; i >= 0; i-- ) {
                     
-                    if ( i < index.size() && tempIndex[i] == index[i] )
+                    if ( i < static_cast<int>( index.size() ) && tempIndex[i] == index[i] )
                         numLocks--;
 
                     tempIndex[i]++;
@@ -423,7 +423,7 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
                 for ( i = static_cast<int>( tempIndex.size() ) - 1; i >= 0; i-- ) {
                     
                     // Find out whether we will decrease the number of locks
-                    if ( i < index.size() && tempIndex[i] == index[i] )
+                    if ( i < static_cast<int>( index.size() ) && tempIndex[i] == index[i] )
                             numLocks--;
 
                     tempIndex[i]++;
@@ -431,7 +431,7 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
                         tempIndex[i] = 0;
 
                     // Find out whether we increased the number of locks
-                    if ( i < index.size() && tempIndex[i] == index[i] )
+                    if ( i < static_cast<int>( index.size() ) && tempIndex[i] == index[i] )
                             numLocks++;
                     
                     if ( tempIndex[i] != 0 )

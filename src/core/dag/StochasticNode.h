@@ -56,7 +56,7 @@ class StochasticNode : public VariableNode {
         const Distribution*     getDistribution(void) const { return distribution; }                //!< Get distribution
         double                  getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
         bool                    isClamped(void) const { return clamped; }                           //!< Is the node clamped?
-        void                    setValue(RbObject* value);                                          //!< Set value but do not clamp
+        void                    setValue(RbObject* value, std::set<StochasticNode*>& affected);     //!< Set value but do not clamp; get affected nodes
         void                    unclamp(void);                                                      //!< Unclamp the node
         
         // DAG functions

@@ -33,7 +33,7 @@ double RbStatistics::Dirichlet::pdf(const std::vector<double> &a, const std::vec
 	
 	size_t n = a.size();
 	double zSum = 0.0;
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		zSum += z[i];
     
 	double tol = 0.0001;
@@ -44,16 +44,16 @@ double RbStatistics::Dirichlet::pdf(const std::vector<double> &a, const std::vec
     }
     
 	double aSum = 0.0;
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		aSum += a[i];
     
 	double aProd = 1.0;
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		aProd *= RbMath::gamma(a[i]);
     
 	double pdf = RbMath::gamma(aSum) / aProd;
     
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		pdf = pdf * pow( z[i], a[i] - 1.0 );
     
 	return pdf;

@@ -162,7 +162,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
         return false;
 
     /* Fill processedArguments with empty variable slots */
-    for (int i=0; i<numFinalArgs; i++) {
+    for (size_t i=0; i<numFinalArgs; i++) {
         args.push_back( new VariableSlot( theRules[i]->getArgTypeSpec() ) );
         if ( theRules[i]->getArgLabel() != "" )
             args.setArgumentLabel( i, theRules[i]->getArgLabel() );
@@ -216,7 +216,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             continue;
 
         /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
-        for (int j=0; j<numRegularRules; j++) {
+        for (size_t j=0; j<numRegularRules; j++) {
 
             if ( passedArgs[i].getLabel() == theRules[j]->getArgLabel() ) {
 
@@ -254,7 +254,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
         int matchRule = -1;
 
         /* Try all rules */
-        for (int j=0; j<numRegularRules; j++) {
+        for (size_t j=0; j<numRegularRules; j++) {
 
             if ( !filled[j] && theRules[j]->getArgLabel().compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 ) {
                 ++nMatches;
@@ -289,7 +289,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             continue;
 
         /* Find first empty slot and try to fit argument there */
-        for (int j=0; j<numRegularRules; j++) {
+        for (size_t j=0; j<numRegularRules; j++) {
 
             if ( filled[j] == false ) {
                 if ( theRules[j]->isArgValid( passedArgs[i].getVariable(), conversionNeeded, evaluateOnce ) ) {
@@ -311,7 +311,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
     /*********************  5. Fill with default values  **********************/
 
     /* Fill in empty slots using default values */
-    for(int i=0; i<numRegularRules; i++) {
+    for(size_t i=0; i<numRegularRules; i++) {
 
         if ( filled[i] == true )
             continue;
@@ -334,7 +334,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
 
     /* Now count the score, first for normal args */
     matchScore->clear();
-    int argIndex;
+    size_t argIndex;
     for(argIndex=0; argIndex<numRegularRules; argIndex++) {
 
         int k = passedArgIndex[argIndex];

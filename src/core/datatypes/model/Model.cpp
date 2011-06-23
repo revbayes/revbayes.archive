@@ -291,7 +291,7 @@ void Model::printValue(std::ostream& o) const {
 		msg << "Vertex " << ++cnt;
 		std::string nameStr = msg.str();
 		size_t nameStrSize = nameStr.size();
-		for (int j=0; j<18-nameStrSize; j++)
+		for (size_t j=0; j<18-nameStrSize; j++)
 			nameStr += " ";
 		nameStr += (*i)->getName();
 		RBOUT(nameStr);

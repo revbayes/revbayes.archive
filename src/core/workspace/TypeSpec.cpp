@@ -60,7 +60,7 @@ std::string TypeSpec::toString(void) const {
 
     std::string typeDesc = type;
 
-    for (int i=0; i<dim; i++)
+    for (size_t i=0; i<dim; i++)
         typeDesc += "[]";
 
     if (reference)

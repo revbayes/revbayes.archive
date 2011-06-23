@@ -91,7 +91,7 @@ double Move_msimplex::perform( std::set<StochasticNode*>& affectedNodes ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     double                 alpha0  = static_cast<const RealPos*>( getValue("tuning")   )->getValue();
     int                    k       = static_cast<const Natural*>( getValue("num_cats") )->getValue();
-    size_t                 n       = valPtr->getSubelementsSize();
+    int                    n       = static_cast<int>( valPtr->getSubelementsSize() );
 
 	std::vector<double> curVal = valPtr->getValue();
 	std::vector<double> newVal = curVal;
@@ -188,15 +188,12 @@ double Move_msimplex::perform( std::set<StochasticNode*>& affectedNodes ) {
 		for (size_t i=0; i<curVal.size(); i++)
 			alphaReverse[i] = newVal[i] * alpha0;	
 		
-		// finally, ew calculate the log of the Hastings ratio
+		// finally, we calculate the log of the Hastings ratio
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
 		}
 		
-    nodePtr->setValue( new Simplex( newVal ) );
+    nodePtr->setValue( new Simplex( newVal ), affectedNodes );
 	
-    // Get affected nodes
-    nodePtr->getAffected( affectedNodes );
-
     return lnProposalRatio;
 }
 

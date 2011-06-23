@@ -372,7 +372,7 @@ void IntegratorNode::restore() {
  * Set value: same as clamp, but do not clamp. This function will
  * also be used by moves to propose a new value.
  */
-void IntegratorNode::setValue( RbObject* val ) {
+void IntegratorNode::setValue( RbObject* val, std::set<StochasticNode*>& affected ) {
 
     throw RbException( "Cannot set value of integrator node" );
 }

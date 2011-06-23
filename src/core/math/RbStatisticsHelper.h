@@ -49,7 +49,7 @@ namespace RbStatistics {
             destV.clear();
             std::vector<T> tmpV = sourceV;
             size_t n = tmpV.size();
-            for (size_t i=0; i<k; i++)
+            for (int i=0; i<k; i++)
             {
                 int whichElement = (int)(rng->uniform01()*(n-i));
                 destV.push_back( tmpV[whichElement] );

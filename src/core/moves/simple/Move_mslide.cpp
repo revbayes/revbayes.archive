@@ -105,11 +105,8 @@ double Move_mslide::perform( std::set<StochasticNode*>& affectedNodes ) {
             newVal = 2.0 * maxVal - newVal;
     } while ( newVal < minVal || newVal > maxVal );
 
-    nodePtr->setValue( newVal.clone() );
+    nodePtr->setValue( newVal.clone(), affectedNodes );
 	
-    // Get affected nodes
-    nodePtr->getAffected( affectedNodes );
-
     return 0.0;
 }
 

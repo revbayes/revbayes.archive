@@ -27,7 +27,7 @@ const VectorString& CharacterMatrix::getClass(void) const {
 
 int CharacterMatrix::getIndexOfTaxonNamed(std::string s) {
 
-    for (int i=0; i<taxonNames.size(); i++)
+    for (size_t i=0; i<taxonNames.size(); i++)
         {
         if (taxonNames[i] == s)
             return i;
