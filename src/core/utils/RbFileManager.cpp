@@ -102,10 +102,15 @@ std::string RbFileManager::findCurrentDirectory(void) {
 
 #	ifdef WIN32
 
-    LPWSTR buf[MAX_DIR_PATH];
+    //! @todo Find out how to do this on Windows
+#if 0
+    LPWSTR buf = new WCHAR[MAX_DIR_PATH];
     GetCurrentDirectory(MAX_DIR_PATH, buf);
     return std::string(buf);
-	
+#endif
+
+    return std::string();
+
 #	else
 
 	char cwd[MAX_DIR_PATH+1];
@@ -127,12 +132,17 @@ bool RbFileManager::isDirectoryPresent(const std::string mp) {
 
 #	ifdef WIN32
 
+    //! @todo Find out how to do this on Windows
+#if 0
     WIN32_FIND_DATA data;
     HANDLE handle = FindFirstFile(mp.c_str(), &data);
     bool bFoundFile = handle != INVALID_HANDLE_VALUE;
     FindClose(handle);
     return bFoundFile;
-    
+#endif
+
+    return false;
+
 #	else
 
 	/* attempt to open the directory */
@@ -155,6 +165,8 @@ bool RbFileManager::isFilePresent(const std::string mp, const std::string mf) {
 
 #	ifdef WIN32
 
+    //! @todo Find out how to do this on Windows
+#if 0
     WIN32_FIND_DATA data;
     std::string fullPath; 
     if (mp.length() > 1 && (mp[mp.length()-2] != '\\' || mp[mp.length()-2] != '/'))
@@ -169,7 +181,10 @@ bool RbFileManager::isFilePresent(const std::string mp, const std::string mf) {
     bool bFoundFile = handle != INVALID_HANDLE_VALUE;
     FindClose(handle);
     return bFoundFile;
-    
+#endif
+
+    return false;
+
 #	else
 
 	/* open the directory */

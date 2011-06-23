@@ -576,6 +576,8 @@ std::vector<Tree*>* NclReader::convertTreesFromNcl(void) {
 				const NxsFullTreeDescription & ftd = trb->GetFullTreeDescription(j);
 				NxsSimpleTree tree(ftd, -1, -1.0);
 				Tree *rbTree = translateNclSimpleTreeToTree(tree);
+                //! @todo Tracy: Make sure rbTreesFromFile is properly initialized before being used -- Fredrik
+                rbTreesFromFile = new std::vector<Tree*>(); // Temporary fix making the compiler happy
 				rbTreesFromFile->push_back( rbTree );
                 }
             }
