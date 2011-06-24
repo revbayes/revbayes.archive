@@ -54,6 +54,7 @@ class MemberObject: public RbComplex {
         // Basic utility functions you do not have to override
         MemberObject*               getConstValue(void) const;                                                          //!< Make a constant clone @Fredrik: the name is confusing to me. Maybe something more like getCloneWithConstValues or simply force the caller to call first clone() and then makeValuesConst()? (Sebastian)
         bool                        isConstant(void) const;                                                             //!< Are all members constant? @Fredrik: Better name: areMemberConstant()? (Sebastian)
+        DAGNode*                    wrapIntoVariable(void);                                                             //!< Wrap value into variable
 
         // Member variable functions; override getMemberRules to add member variables
         const MemberFrame&          getMembers(void) const { return members; }                                          //!< Get members

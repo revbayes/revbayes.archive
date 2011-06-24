@@ -67,7 +67,7 @@ DAGNode* Func_v<valType, retType>::execute( void ) {
     for ( size_t i = 0; i < args.size(); i++ )
         tempVec->push_back( static_cast<const valType*>( args[i].getValue() )->clone() );
 
-    return new ContainerNode( tempVec );
+    return tempVec->wrapIntoVariable();
 }
 
 

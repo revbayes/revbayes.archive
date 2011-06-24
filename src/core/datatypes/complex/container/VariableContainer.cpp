@@ -154,7 +154,7 @@ VariableContainer::VariableContainer( const ValueContainer& x )
 
     // Fill the container
     for ( size_t i = 0; i < size; i++ )
-        elements.push_back( new ConstantNode( x.elements[i] ) );
+        elements.push_back( x.elements[i]->wrapIntoVariable() );
 }
 
 
@@ -550,8 +550,14 @@ void VariableContainer::resize( const std::vector<size_t>& len ) {
                 targetIndex += numValsTarget[i] - ( targetIndex % numValsTarget[i] );
             }
 
-        for ( size_t i = lastIndex; i < targetIndex; i++ )
-            tempElements[i] = new ConstantNode( elementType );
+            if ( Workspace::userWorkspace().isXOfTypeY( elementType, MemberObject_name ) ) {
+                for ( size_t i = lastIndex; i < targetIndex; i++ )
+                    tempElements[i] = new MemberNode( elementType );
+            }
+            else {
+                for ( size_t i = lastIndex; i < targetIndex; i++ )
+                    tempElements[i] = new ConstantNode( elementType );
+            }
         }
     } while ( sourceIndex < elements.size() );
 

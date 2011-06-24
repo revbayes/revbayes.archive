@@ -193,7 +193,7 @@ DAGNode* MatrixReal::getElement( const VectorInteger& index ) {
             if ( size_t( index[0] ) > length[0] || size_t( index[1] ) > length[1] )
                 throw RbException( "Index out of bound for " + Real_name + "[][]" );
             
-            return new ConstantNode( new Real(matrix[index[0]][index[1]]) );
+            return ( new Real(matrix[index[0]][index[1]]) )->wrapIntoVariable();
         }
     }
 }

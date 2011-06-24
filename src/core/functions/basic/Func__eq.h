@@ -69,7 +69,8 @@ DAGNode* Func__eq<firstValType,secondValType>::execute( void ) {
 
     const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
     const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
-    return new ConstantNode( new Boolean( *val1 == *val2 ) );
+    
+    return ( new Boolean( *val1 == *val2 ) )->wrapIntoVariable();
 }
 
 

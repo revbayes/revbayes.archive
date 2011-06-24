@@ -173,7 +173,7 @@ DAGNode* VariableSlot::convertVariable( DAGNode* newVariable ) const {
 
         if ( newVariable->getValue()->isConvertibleTo( theTypeSpec, true ) ) {
         
-            DAGNode* temp = wrapValue( newVariable->getValue()->convertTo( theTypeSpec ) );
+            DAGNode* temp = newVariable->getValue()->convertTo( theTypeSpec )->wrapIntoVariable();
             delete newVariable;
             return temp;
         }
@@ -354,7 +354,7 @@ void VariableSlot::replaceDAGVariable( DAGNode* newVariable ) {
 /** Set value element */
 void VariableSlot::setElement( VectorInteger& index, RbObject* newVal ) {
 
-    setElement( index, wrapValue( newVal ), true );
+    setElement( index, newVal->wrapIntoVariable(), true );
 }
 
 
@@ -497,7 +497,7 @@ void VariableSlot::setValue( RbObject* newValue ) {
     if ( newValue == NULL )
         newVariable = nullVariable( typeSpec );
     else
-        newVariable = wrapValue( newValue );
+        newVariable = newValue->wrapIntoVariable();
 
     // Make additional valitidy check
     if ( !isValidVariable( newVariable ) ) {
@@ -558,18 +558,6 @@ void VariableSlot::setVariable( DAGNode* newVariable, bool convert ) {
     }
 
     variable = newVariable;
-}
-
-
-/** Wrap value appropriately to get a variable */
-DAGNode* VariableSlot::wrapValue( RbObject* value ) const {
-
-    if ( value->isType( MemberObject_name ) )
-        return new MemberNode( static_cast<MemberObject*>( value ) );
-    else if ( value->isType( Container_name ) )
-        return new ContainerNode( static_cast<Container*>( value ) );
-    else
-        return new ConstantNode( value );
 }
 
 

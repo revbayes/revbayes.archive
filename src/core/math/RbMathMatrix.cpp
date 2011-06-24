@@ -127,7 +127,7 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 	y++;
     
 	// Get max(0,y)
-	size_t j = 0;
+	int j = 0;
 	if (y > 0)
 		j = y;
     

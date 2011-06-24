@@ -44,7 +44,7 @@ DAGNode* Func_power::execute( void ) {
     const Real* a = static_cast<const Real*>( args[0].getValue() );
     const Real* b = static_cast<const Real*>( args[1].getValue() );
     
-    return new ConstantNode( new Real( pow(a->getValue(),b->getValue()) ) );
+    return ( new Real( pow(a->getValue(),b->getValue()) ) )->wrapIntoVariable();
 }
 
 

@@ -19,6 +19,7 @@
 #include "ConstantNode.h"
 #include "Frame.h"
 #include "MemberFunction.h"
+#include "MemberNode.h"
 #include "MemberObject.h"
 #include "MemberSlot.h"
 #include "RbException.h"
@@ -221,5 +222,12 @@ void MemberObject::setValue(const std::string& name, RbObject* val) {
 void MemberObject::setVariable(const std::string& name, DAGNode* var) {
 
     members[name].setVariable(var);
+}
+
+
+/** Wrap value into a variable */
+DAGNode* MemberObject::wrapIntoVariable( void ) {
+    
+    return new MemberNode( this );
 }
 

@@ -71,21 +71,9 @@ DAGNode* Func__div<firstValType,secondValType,retType>::execute( void ) {
     const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
     const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
     retType              quot = *val1 / *val2;
-    return new ConstantNode( quot.clone() );
+    
+    return quot.clone()->wrapIntoVariable();
 }
-
-
-#if 0
-/** Execute function: We need partial specialization for value containers to get te right return variable */
-template <typename firstValType, typename secondValType>
-DAGNode* Func__div<firstValType,secondValType,ValueContainer>::execute( void ) {
-
-    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
-    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
-    ValueContainer       quot = *val1 / *val2;
-    return new ContainerNode( quot.clone() );
-}
-#endif
 
 
 /** Get argument rules */

@@ -144,7 +144,7 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
             PRINTF ( "Creating constant variable %s %s with a %s value %sthrough arrow assignment\n", TypeSpec( RbObject_name, elemIndex.size() ).toString().c_str(), varName.c_str(), value->getTypeSpec().toString().c_str(), elemIndex.size() > 0 ? "element " : "" );
             TypeSpec typeSpec( RbObject_name, elemIndex.size() );
             if ( elemIndex.size() == 0 )
-                frame->addVariable( varName, typeSpec, wrapValue( value ) );
+                frame->addVariable( varName, typeSpec, value->wrapIntoVariable() );
             else {
                 VectorNatural index = elemIndex;
                 frame->addVariable( varName, typeSpec, makeContainer( elemIndex, value ) );
@@ -288,7 +288,7 @@ ContainerNode* SyntaxAssignExpr::makeContainer( const VectorNatural& index, RbOb
         length.push_back( int( index[i] ) + 1 );
 
     ValueContainer* temp = new ValueContainer( TypeSpec( elem->getType(), index.size() ), length );
-    temp->setElement( index, wrapValue( elem ) );
+    temp->setElement( index, elem->wrapIntoVariable() );
 
     return new ContainerNode( temp );
 }
@@ -319,14 +319,3 @@ void SyntaxAssignExpr::print(std::ostream& o) const {
     o << "operation     = " << opCode[opType];
 }
 
-
-/** Wrap value appropriately to get a variable */
-DAGNode* SyntaxAssignExpr::wrapValue( RbObject* value ) const {
-
-    if ( value->isType( MemberObject_name ) )
-        return new MemberNode( static_cast<MemberObject*>( value ) );
-    else if ( value->isType( Container_name ) )
-        return new ContainerNode( static_cast<Container*>( value ) );
-    else
-        return new ConstantNode( value );
-}

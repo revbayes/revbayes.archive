@@ -47,7 +47,7 @@ DAGNode* Func_sqrt::execute( void ) {
     if ( *x < 0.0 )
 		throw RbException( "Square root of negative number. RevBayes does not (yet) support complex numbers" );
 
-    return new ConstantNode( new RealPos( sqrt( *x ) ) );
+    return ( new RealPos( sqrt( *x ) ) )->wrapIntoVariable();
 }
 
 

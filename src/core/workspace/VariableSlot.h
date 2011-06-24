@@ -69,7 +69,6 @@ class VariableSlot {
         DAGNode*                convertVariable(DAGNode* newVariable) const;                            //!< Convert variable
         DAGNode*                nullVariable(const TypeSpec& typeSp);                                   //!< Make a NULL variable of specified type
         void                    removeVariable(void);                                                   //!< Remove old variable from slot
-        DAGNode*                wrapValue(RbObject* value) const;                                       //!< Wrap value into appropriate variable
 
         // Parser access function
         DAGNode*                getParserVariable(void);                                                //!< Give parser (SyntaxVariable) the variable reference or a temp

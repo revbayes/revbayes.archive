@@ -69,7 +69,7 @@ DAGNode* Func_transpose<matrixType>::execute( void ) {
         for ( size_t j = 0; j < mat->getNumCols(); j++ )
             (*matT)[j][i] = (*mat)[i][j];
 
-    return new ContainerNode( matT );
+    return matT->wrapIntoVariable();
 }
 
 

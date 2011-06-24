@@ -74,6 +74,7 @@ class Container : public RbComplex {
         const std::string&              getElementType(void) const { return elementType; }                  //!< Get element type @Fredrik: Why does this method return a string and not a TypeSpec? Might be more consistent with TypeSpecs. (Sebastian)
         const std::vector<size_t>&      getLength(void) const { return length; }                            //!< Get length in each dim @Fredrik: What is the difference between length and size? For me they are used synonomously. Also, I'ld prefer returning a single int for the size/length. (Sebastian)
         const TypeSpec                  getTypeSpec(void) const;                                            //!< Get language type of the object
+        DAGNode*                        wrapIntoVariable(void);                                             //!< Wrap value into variable
 
         // Container function you may want to override
         virtual void                    setLength(const std::vector<size_t>& len);                          //!< Reorganize container

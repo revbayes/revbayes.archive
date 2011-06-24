@@ -42,22 +42,17 @@ DAGNode* Distribution::executeOperation( const std::string& name, ArgumentFrame&
 
     if ( name == "lnPdf" ) {
 
-        return new ConstantNode( new RealPos( lnPdf( args[1].getValue() ) ) );
+        return ( new RealPos( lnPdf( args[1].getValue() ) ) )->wrapIntoVariable();
     }
     else if ( name == "pdf" ) {
 
-        return new ConstantNode( new RealPos( pdf  ( args[1].getValue() ) ) );
+        return ( new RealPos( pdf  ( args[1].getValue() ) ) )->wrapIntoVariable();
     }
     else if ( name == "rv" ) {
 
         RbObject* draw = rv();
 
-        if ( draw->isType( Container_name ) )
-            return new ContainerNode( static_cast<Container*>( draw ) );
-        else if ( draw->isType( MemberObject_name ) )
-            return new MemberNode( static_cast<MemberObject*>( draw ) );
-        else
-            return new ConstantNode( draw );
+        return draw->wrapIntoVariable();
     }
     else
         return MemberObject::executeOperation( name, args );

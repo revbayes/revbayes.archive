@@ -75,12 +75,7 @@ DAGNode* ArgumentRule::convert(DAGNode* arg) const {
 
     RbObject* theConvertedValue = arg->getValue()->convertTo( argSlot.getTypeSpec() );
     
-    if ( theConvertedValue->isType( Container_name ) )
-        return new ContainerNode( (Container*)( theConvertedValue ) );
-    else if ( theConvertedValue->isType( MemberObject_name ) )
-        return new MemberNode( (MemberObject*)( theConvertedValue ) );
-    else
-        return new ConstantNode( theConvertedValue );
+    return theConvertedValue->wrapIntoVariable();
 }
 
 

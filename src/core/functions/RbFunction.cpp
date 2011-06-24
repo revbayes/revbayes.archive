@@ -258,7 +258,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
 
             if ( !filled[j] && theRules[j]->getArgLabel().compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 ) {
                 ++nMatches;
-                matchRule = j;
+                matchRule = static_cast<int>( j );
             }
         }
 

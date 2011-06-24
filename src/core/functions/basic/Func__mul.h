@@ -71,21 +71,9 @@ DAGNode* Func__mul<firstValType,secondValType,retType>::execute( void ) {
     const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
     const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
     retType              prod = *val1 * *val2;
-    return new ConstantNode( prod.clone() );
+    
+    return prod.clone()->wrapIntoVariable();
 }
-
-
-#if 0
-/** Execute function: We need partial specialization for value containers to get te right return variable */
-template <typename firstValType, typename secondValType>
-DAGNode* Func__mul<firstValType,secondValType,ValueContainer>::execute( void ) {
-
-    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
-    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
-    retType              prod = *val1 * *val2;
-    return new ContainerNode( prod.clone() );
-}
-#endif
 
 
 /** Get argument rules */

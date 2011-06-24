@@ -43,7 +43,7 @@ DAGNode* Func_ln::execute( void ) {
     
     const Real* x = static_cast<const Real*>( args[0].getValue() );
     
-    return new ConstantNode( new Real( log(x->getValue()) ) );
+    return ( new Real( log(x->getValue()) ) )->wrapIntoVariable();
 }
 
 

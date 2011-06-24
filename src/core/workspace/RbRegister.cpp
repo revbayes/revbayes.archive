@@ -174,24 +174,24 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_add",      new Func__add<               Real,           Real,       Real >() );
         addFunction( "_add",      new Func__add<            Integer,           Real,       Real >() );
         addFunction( "_add",      new Func__add<               Real,        Integer,       Real >() );
-        //addFunction( "_add",      new Func__add<         MatrixReal,     MatrixReal, MatrixReal >() );
+        addFunction( "_add",      new Func__add<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_div",      new Func__div<            Integer,        Integer,       Real >() );
         addFunction( "_div",      new Func__div<               Real,           Real,       Real >() );
         addFunction( "_div",      new Func__div<            Integer,           Real,       Real >() );
         addFunction( "_div",      new Func__div<               Real,        Integer,       Real >() );
-        //addFunction( "_div",      new Func__div<         MatrixReal,     MatrixReal, MatrixReal >() );
+//        addFunction( "_div",      new Func__div<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<            Integer,        Integer,    Integer >() );
         addFunction( "_mul",      new Func__mul<               Real,           Real,       Real >() );
         addFunction( "_mul",      new Func__mul<            Integer,           Real,       Real >() );
         addFunction( "_mul",      new Func__mul<               Real,        Integer,       Real >() );
-        //addFunction( "_mul",      new Func__mul<         MatrixReal,     MatrixReal, MatrixReal >() );
+        addFunction( "_mul",      new Func__mul<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<         MatrixReal,           Real, MatrixReal >() );
         addFunction( "_mul",      new Func__mul<               Real,     MatrixReal, MatrixReal >() );
         addFunction( "_sub",      new Func__sub<            Integer,        Integer,    Integer >() );
         addFunction( "_sub",      new Func__sub<               Real,           Real,       Real >() );
         addFunction( "_sub",      new Func__sub<            Integer,           Real,       Real >() );
         addFunction( "_sub",      new Func__sub<               Real,        Integer,       Real >() );
-        //addFunction( "_sub",      new Func__sub<         MatrixReal,     MatrixReal, MatrixReal >() );
+        addFunction( "_sub",      new Func__sub<         MatrixReal,     MatrixReal, MatrixReal >() );
         addFunction( "_and",      new Func__and<            Integer,        Integer >()             );
         addFunction( "_and",      new Func__and<               Real,           Real >()             );
         addFunction( "_and",      new Func__and<            Integer,           Real >()             );
@@ -230,7 +230,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "ls",        new Func_ls()           );
         addFunction( "model",     new Func_model()        );
         addFunction( "normalize", new Func_normalize()    );
-//        addFunction( "read",      new Func_readAlignment());
+        addFunction( "read",      new Func_readAlignment());
         addFunction( "q",         new Func_quit()         );
         addFunction( "quit",      new Func_quit()         );
         

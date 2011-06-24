@@ -21,6 +21,7 @@
 #include <string>
 
 
+class DAGNode;
 class TypeSpec;
 class VectorInteger;
 class VectorString;
@@ -34,11 +35,10 @@ class RbObject {
 
         // Basic utility functions you have to override (also getClass()!)
         virtual RbObject*           clone(void) const = 0;                                                  //!< Clone object
+        virtual const XmlElement*   encode(XmlDocument* doc, const std::string& name);                      //!< Function to encode this object into an XML string
         virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
         virtual void                printValue(std::ostream& o) const = 0;                                  //!< Print value for user
         virtual std::string         richInfo(void) const = 0;                                               //!< Complete info about object
-
-        virtual const XmlElement*   encode(XmlDocument* doc, const std::string& name);                      //!< function to encode this object into an XML string
 
         // Basic utility functions you may want to override
         virtual std::string         briefInfo(void) const;                                                  //!< Brief info about object
@@ -47,7 +47,8 @@ class RbObject {
         virtual bool                isConstant(void) const { return true; }                                 //!< Is value a constant or does it include variables?
         virtual bool                isConvertibleTo(const std::string& type, size_t dim, bool once) const;  //!< Is convertible to type and dim?
         virtual bool                supportsSubscripting(void) const { return false; }                      //!< Supports subscripting, as in operator[] 
-
+        virtual DAGNode*            wrapIntoVariable(void);                                                 //!< Wrap value into variable
+    
         // Dimensions of object: override only if object is a container with dimensions exposed to language / parser
         virtual int                 getDim(void) const { return 0; }                                        //!< Get container dimensions
 

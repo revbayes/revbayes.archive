@@ -43,18 +43,13 @@ DAGNode* DistributionInterval::executeOperation( const std::string& name, Argume
 
     if ( name == "cdf" ) {
 
-        return new ConstantNode( new RealPos( cdf( args[1].getValue() ) ) );
+        return ( new RealPos( cdf( args[1].getValue() ) ) )->wrapIntoVariable();
     }
     else if ( name == "quantile" ) {
 
         RbObject* quant = quantile( static_cast<const Real*>( args[1].getValue() )->getValue() );
 
-        if ( quant->isType( Container_name ) )
-            return new ContainerNode( static_cast<Container*>( quant ) );
-        else if ( quant->isType( MemberObject_name ) )
-            return new MemberNode( static_cast<MemberObject*>( quant ) );
-        else
-            return new ConstantNode( quant );
+        return quant->wrapIntoVariable();
     }
 
     return Distribution::executeOperation( name, args );

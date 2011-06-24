@@ -165,12 +165,7 @@ DAGNode* DistributionFunction::execute( void ) {
 
         RbObject* draw = distribution->rv();
         
-        if ( draw->isType( Container_name ) )
-            return new ContainerNode( static_cast<Container*   >( draw ) );
-        else if ( draw->isType( MemberObject_name ) )
-            return new MemberNode   ( static_cast<MemberObject*>( draw ) );
-        else
-            return new ConstantNode( draw );
+        return draw->wrapIntoVariable();
     }
     else if (functionType == PROB) {
 
@@ -181,12 +176,7 @@ DAGNode* DistributionFunction::execute( void ) {
         double    prob  = static_cast<const RealPos*>( args[0].getValue() )->getValue();
         RbObject* quant = static_cast<DistributionInterval*>( distribution )->quantile( prob );
         
-        if ( quant->isType( Container_name ) )
-            return new ContainerNode( static_cast<Container*   >( quant ) );
-        else if ( quant->isType( MemberObject_name ) )
-            return new MemberNode   ( static_cast<MemberObject*>( quant ) );
-        else
-            return new ConstantNode( quant );
+        return quant->wrapIntoVariable();
     }
 
     throw RbException( "Unrecognized distribution function" );

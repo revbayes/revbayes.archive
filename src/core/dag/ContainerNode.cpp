@@ -271,12 +271,8 @@ DAGNode* ContainerNode::convertVarElement( const VectorInteger& index, DAGNode* 
 
         RbObject* temp = var->getValue()->convertTo( valueType, emptyDim );
         delete var;
-        if ( temp->isType( Container_name ) )
-            return new ContainerNode( static_cast<Container*>( temp ) );
-        else if ( temp->isType( MemberObject_name ) )
-            return new MemberNode( static_cast<MemberObject*>( temp ) );
-        else
-            return new ConstantNode( temp );
+        
+        return temp->wrapIntoVariable();
     }
     
     if ( var->numRefs() == 0 )

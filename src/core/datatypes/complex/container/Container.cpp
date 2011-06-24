@@ -16,6 +16,7 @@
  */
 
 #include "Container.h"
+#include "ContainerNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "TypeSpec.h"
@@ -160,5 +161,12 @@ void Container::setLength( const std::vector<size_t>& len ) {
         throw RbException( "New length does not match container size" );
 
     length = len;
+}
+
+
+/** Wrap value into a variable */
+DAGNode* Container::wrapIntoVariable( void ) {
+    
+    return new ContainerNode( this );
 }
 

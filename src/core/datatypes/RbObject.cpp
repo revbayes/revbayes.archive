@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "ConstantNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
@@ -52,11 +53,10 @@ RbObject* RbObject::convertTo(const std::string& type, size_t dim) const {
     throw RbException( msg );
 }
 
-/** encode the object into a serializable xml-object */
+/** Encode the object into a serializable xml-object */
 const XmlElement* RbObject::encode(XmlDocument *doc, const std::string& name) {    
-    // dummy function
     
-    //TODO basic implementation which should return an empty xml object with only the name
+    //! @Sebatian TODO basic implementation which should return an empty xml object with only the name
     
     return NULL;
 }
@@ -135,6 +135,14 @@ void RbObject::print(std::ostream& o) const {
 
     o << richInfo() << std::endl;
 }
+
+
+/** Wrap value into a variable */
+DAGNode* RbObject::wrapIntoVariable( void ) {
+    
+    return new ConstantNode( this );
+}
+
 
 /** Make sure we can print the value of the object easily */
 std::ostream& operator<<(std::ostream& o, const RbObject& x) {

@@ -46,7 +46,7 @@ DAGNode* Func__range::execute( void ) {
     for ( int i = first; i <= last; i++ )
         temp.push_back(i);
 
-    return new ContainerNode( new VectorInteger(temp) );
+    return ( new VectorInteger(temp) )->wrapIntoVariable();
 }
 
 

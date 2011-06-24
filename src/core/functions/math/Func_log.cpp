@@ -44,7 +44,7 @@ DAGNode* Func_log::execute( void ) {
     const RealPos* a = static_cast<const RealPos*>( args[0].getValue() );
     const RealPos* b = static_cast<const RealPos*>( args[1].getValue() );
     
-    return new ConstantNode( new Real( log10(a->getValue())/log10(b->getValue()) ) );
+    return ( new Real( log10(a->getValue())/log10(b->getValue()) ) )->wrapIntoVariable();
 }
 
 

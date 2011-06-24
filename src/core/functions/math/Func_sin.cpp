@@ -43,7 +43,7 @@ DAGNode* Func_sin::execute( void ) {
     
     const Real* x = static_cast<const Real*>( args[0].getValue() );
     
-    return new ConstantNode( new RealPos( sin(x->getValue()) ) );
+    return ( new RealPos( sin(x->getValue()) ) )->wrapIntoVariable();
 }
 
 

@@ -346,11 +346,9 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
         RbObject* elemPtr = elements[ getOffset( index ) ];
         if ( elemPtr == NULL )
             return new ConstantNode( elementType );
-        else if ( elemPtr->isType( MemberObject_name ) )
-            return new MemberNode( static_cast<MemberObject*>( elemPtr->clone() ) );
         else
-            return new ConstantNode( elemPtr->clone() );
-    }
+            return elemPtr->clone()->wrapIntoVariable();
+        }
     else {
 
         // We want a subcontainer
