@@ -41,7 +41,7 @@ class CharacterObservationDiscrete : public CharacterObservation {
 
     protected:
                                                 CharacterObservationDiscrete(size_t n);             //!< Constructor taking the number of states as input
-        const size_t                            numStates;                                          //!< The number of discrete states
+        size_t                                  numStates;                                          //!< The number of discrete states
         std::vector<bool>                       value;                                              //!< The states, in a binary form to represent ambiguity
 };
 

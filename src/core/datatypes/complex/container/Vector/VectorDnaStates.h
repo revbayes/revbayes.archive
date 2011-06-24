@@ -31,7 +31,7 @@ class VectorDnaStates : public Vector {
 
     public:
 	                                VectorDnaStates(void);                                          //!< Default constructor (empty vector)
-                                    VectorDnaStates(const VectorDnaStates& x);                      //!< Construct vector with one string x
+                                    VectorDnaStates(const VectorDnaStates& x);                      //!< Construct vector with a vector of DNA states
 
         // Overloaded operators
 	    DnaState&                   operator[](size_t i);                                           //!< Index op allowing change
@@ -44,6 +44,7 @@ class VectorDnaStates : public Vector {
         // Basic utility functions
         VectorDnaStates*            clone(void) const;                                              //!< Clone object
         const VectorString&         getClass(void) const;                                           //!< Get class
+        void                        printValue(std::ostream& o) const;                              //!< Print value for user
         std::string                 richInfo(void) const;                                           //!< Complete info about object
         
         // Vector functions

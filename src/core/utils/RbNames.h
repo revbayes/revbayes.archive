@@ -135,6 +135,7 @@ const std::string ReferenceRule_name                            = "reference rul
 const std::string RNA_name                                      = "RNA";
 const std::string RnaState_name                                 = "RNA";
 const std::string Simplex_name                                  = "Simplex";
+const std::string StandardState_name                            = "Standard";
 const std::string SyntaxAssignExpr_name                         = "Assignment";
 const std::string SyntaxBinaryExpr_name                         = "Binary expression";
 const std::string SyntaxConstant_name                           = "Syntax element";

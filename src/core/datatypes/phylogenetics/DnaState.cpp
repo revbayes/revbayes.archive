@@ -43,6 +43,14 @@ DnaState::DnaState(const char s) : NucleotideState() {
 }
 
 
+/** Constructor that sets the observation from a set of states */
+DnaState::DnaState(const std::set<char> s) : NucleotideState() {
+
+    char c = getNucleotideCode(s);
+    setValue(c);
+}
+
+
 /** Equals comparison */
 bool DnaState::operator==(const DnaState& x) const {
 
@@ -77,40 +85,67 @@ const VectorString& DnaState::getClass(void) const {
 }
 
 
+const char DnaState::getNucleotideCode(const std::set<char>& s) const {
+
+    std::vector<bool> stateSet(4);
+    for (size_t i=0; i<4; i++)
+        stateSet[i] = false;
+    for (std::set<char>::iterator p = s.begin(); p != s.end(); p++)
+        {
+        char c = toupper(*p);
+        if (c == 'A')
+            stateSet[0] = true;
+        else if (c == 'C')
+            stateSet[1] = true;
+        else if (c == 'G')
+            stateSet[2] = true;
+        else if (c == 'T' || c == 'U')
+            stateSet[3] = true;
+        }
+    return getNucleotideCode(stateSet);
+}
+
+
+const char DnaState::getNucleotideCode(const std::vector<bool>& sSet) const {
+
+	if (sSet[0] == true && sSet[1] == false && sSet[2] == false && sSet[3] == false)
+		return 'A';
+	else if (sSet[0] == false && sSet[1] == true  && sSet[2] == false && sSet[3] == false)
+		return 'C';
+	else if (sSet[0] == true  && sSet[1] == true  && sSet[2] == false && sSet[3] == false)
+		return 'M';
+	else if (sSet[0] == false && sSet[1] == false && sSet[2] == true  && sSet[3] == false)
+		return 'G';
+	else if (sSet[0] == true  && sSet[1] == false && sSet[2] == true  && sSet[3] == false)
+		return 'R';
+	else if (sSet[0] == false && sSet[1] == true  && sSet[2] == true  && sSet[3] == false)
+		return 'S';
+	else if (sSet[0] == true  && sSet[1] == true  && sSet[2] == true  && sSet[3] == false)
+		return 'V'; 
+	else if (sSet[0] == false && sSet[1] == false && sSet[2] == false && sSet[3] == true)
+		return 'T';
+	else if (sSet[0] == true  && sSet[1] == false && sSet[2] == false && sSet[3] == true)
+		return 'W';
+	else if (sSet[0] == false && sSet[1] == true  && sSet[2] == false && sSet[3] == true)
+		return 'Y';
+	else if (sSet[0] == true  && sSet[1] == true  && sSet[2] == false && sSet[3] == true)
+		return 'H';
+	else if (sSet[0] == false && sSet[1] == false && sSet[2] == true  && sSet[3] == true)
+		return 'K';
+	else if (sSet[0] == true  && sSet[1] == false && sSet[2] == true  && sSet[3] == true)
+		return 'D';
+	else if (sSet[0] == false && sSet[1] == true  && sSet[2] == true  && sSet[3] == true)
+		return 'B';
+	else if (sSet[0] == true  && sSet[1] == true  && sSet[2] == true  && sSet[3] == true)
+		return 'N';
+    return 'N';
+}
+
+
 /** Get value */
 const char DnaState::getValue(void) const {
 
-	if (value[0] == true && value[1] == false && value[2] == false && value[3] == false)
-		return 'A';
-	else if (value[0] == false && value[1] == true  && value[2] == false && value[3] == false)
-		return 'C';
-	else if (value[0] == true  && value[1] == true  && value[2] == false && value[3] == false)
-		return 'M';
-	else if (value[0] == false && value[1] == false && value[2] == true  && value[3] == false)
-		return 'G';
-	else if (value[0] == true  && value[1] == false && value[2] == true  && value[3] == false)
-		return 'R';
-	else if (value[0] == false && value[1] == true  && value[2] == true  && value[3] == false)
-		return 'S';
-	else if (value[0] == true  && value[1] == true  && value[2] == true  && value[3] == false)
-		return 'V'; 
-	else if (value[0] == false && value[1] == false && value[2] == false && value[3] == true)
-		return 'T';
-	else if (value[0] == true  && value[1] == false && value[2] == false && value[3] == true)
-		return 'W';
-	else if (value[0] == false && value[1] == true  && value[2] == false && value[3] == true)
-		return 'Y';
-	else if (value[0] == true  && value[1] == true  && value[2] == false && value[3] == true)
-		return 'H';
-	else if (value[0] == false && value[1] == false && value[2] == true  && value[3] == true)
-		return 'K';
-	else if (value[0] == true  && value[1] == false && value[2] == true  && value[3] == true)
-		return 'D';
-	else if (value[0] == false && value[1] == true  && value[2] == true  && value[3] == true)
-		return 'B';
-	else if (value[0] == true  && value[1] == true  && value[2] == true  && value[3] == true)
-		return 'N';
-	return '*';
+    return getNucleotideCode(value);
 }
 
 

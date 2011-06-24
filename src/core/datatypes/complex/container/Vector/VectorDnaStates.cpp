@@ -137,6 +137,14 @@ void VectorDnaStates::push_back(DnaState x) {
 }
 
 
+/** Print info about object */
+void VectorDnaStates::printValue(std::ostream& o) const {
+
+    for (size_t i=0; i<elements.size(); i++)
+        elements[i]->printValue(o);
+}
+
+
 /** Complete info about object */
 std::string VectorDnaStates::richInfo(void) const {
 

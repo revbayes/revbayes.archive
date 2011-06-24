@@ -18,6 +18,7 @@
 
 #include "NucleotideState.h"
 #include <ostream>
+#include <set>
 #include <vector>
 
 
@@ -28,6 +29,7 @@ class DnaState : public NucleotideState {
                                         DnaState(void);                                     //!< Default constructor
                                         DnaState(const DnaState& s);                        //!< Copy constructor
                                         DnaState(const char s);                             //!< Constructor with nucleotide observation
+                                        DnaState(const std::set<char> s);                   //!< Constructor from a set of states
         bool                            operator==(const DnaState& x) const;                //!< Equality
         bool                            operator!=(const DnaState& x) const;                //!< Inequality
 
@@ -45,6 +47,10 @@ class DnaState : public NucleotideState {
 
     protected:
         const static std::string        stateLabels;                                        //!< The labels for the possible states
+        
+    private:
+        const char                      getNucleotideCode(const std::set<char>& s) const;
+        const char                      getNucleotideCode(const std::vector<bool>& sSet) const;
 };
 
 #endif
