@@ -1,11 +1,13 @@
 #include "CharacterMatrixContinuous.h"
 #include "CharacterMatrixDiscrete.h"
+#include "DnaState.h"
 #include "NclReader.h"
 #include "StringUtilities.h"
 #include "Tree.h"
 #include "TreeNode.h"
 #include "TreeSimple.h"
 #include "UserInterface.h"
+#include "VectorDnaStates.h"
 
 
 
@@ -197,7 +199,73 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
 }
 
 CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock) {
-    
+
+    // check that the character block is of the correct type
+	if ( charblock->GetDataType() != NxsCharactersBlock::dna && 
+         charblock->GetDataType() != NxsCharactersBlock::rna && 
+         charblock->GetDataType() != NxsCharactersBlock::nucleotide )
+        return NULL;
+
+    // get the set of characters (and the number of taxa)
+    NxsUnsignedSet charset;
+    for (int i=0; i<charblock->GetNumChar(); i++)
+        charset.insert(i);
+	int numOrigChar = (int)charset.size();
+	int numOrigTaxa = charblock->GetNTax();
+
+	// get the set of excluded characters
+	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
+
+	// read in the data, including taxon names
+	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+        {
+        // check if the taxon is excluded
+		//if ( !charblock->IsActiveTaxon(origTaxIndex) )
+        //    cm->excludeTaxon(origTaxIndex);
+        
+        // add the taxon name
+        //NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
+        //std::string tn = NxsString::GetEscaped(tLabel).c_str();
+        //cm->addTaxonName(tn);
+        
+        // allocate a vector of DNA states
+        VectorDnaStates* dataVec = new VectorDnaStates();
+        
+        // add the sequence information for the sequence associated with the taxon
+        for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
+            {	
+            // check if the site is excluded
+            NxsUnsignedSet::iterator it = excluded.find(*cit);
+            //if (it != excluded.end())
+             //   cm->excludeCharacter(*cit);
+            
+            // add the character state to the matrix
+            DnaState dnaState;
+            if ( charblock->IsGapState(origTaxIndex, *cit) == true ) 
+                dnaState = DnaState('N');
+            else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
+                dnaState = DnaState('N');
+            else
+                {
+                int nStates = charblock->GetNumStates(origTaxIndex, *cit);
+                std::set<char> stateSet;
+                stateSet.insert( charblock->GetState(origTaxIndex, *cit, 0) );
+                for (int s=1; s<nStates; s++)
+                    stateSet.insert( charblock->GetState(origTaxIndex, *cit, s) );
+                dnaState = DnaState(stateSet);
+                }
+            dataVec->push_back( dnaState );
+            }
+            
+        // TEMP: Print the vector to see if we got it
+        dataVec->richInfo();
+        }
+
+
+
+    return NULL;
+
+#   if 0
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna && charblock->GetDataType() != NxsCharactersBlock::rna && charblock->GetDataType() != NxsCharactersBlock::nucleotide )
         return NULL;
@@ -213,7 +281,9 @@ CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // allocate a matrix of the correct size
+std::cout << " 1 " << std::endl;
 	CharacterMatrixDiscrete* cm = new CharacterMatrixDiscrete( numOrigTaxa, numOrigChar, "dna" );
+std::cout << " 2 " << std::endl;
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
@@ -254,6 +324,7 @@ CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock
         return NULL;
     
 	return cm;
+#   endif
 }
 
 CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
@@ -480,7 +551,6 @@ std::vector<CharacterMatrix*>* NclReader::readMatrices(const char* fileName, con
 	std::vector<std::string> fileNameVector;
 	std::string str = fileName;
 	fileNameVector.push_back( str );
-    
 	std::vector<CharacterMatrix*>* cvm = convertFromNcl(fileNameVector);
 	if (cvm->size() == 0)
         {

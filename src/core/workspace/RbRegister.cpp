@@ -48,6 +48,7 @@
 /* Container types (alphabetic order) */
 #include "MatrixReal.h"
 #include "VectorBoolean.h"
+#include "VectorDnaStates.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
 #include "VectorReal.h"
@@ -137,6 +138,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add container types (alphabetic order) */
         addType( new MatrixReal()          );
         addType( new VectorBoolean()       );
+        addType( new VectorDnaStates()     );
         addType( new VectorInteger()       );
         addType( new VectorNatural()       );
         addType( new VectorReal()          );
