@@ -29,13 +29,13 @@
 
 
 /** Construct empty DNA vector */
-VectorDnaStates::VectorDnaStates(void) : Vector(VectorDnaStates_name) {
+VectorDnaStates::VectorDnaStates(void) : VectorCharacterObservations(VectorDnaStates_name) {
     
 }
 
 
 /** Copy constructor */
-VectorDnaStates::VectorDnaStates(const VectorDnaStates& x) : Vector(VectorDnaStates_name) {
+VectorDnaStates::VectorDnaStates(const VectorDnaStates& x) : VectorCharacterObservations(VectorDnaStates_name) {
 
     for (size_t i=0; i<x.size(); i++)
         elements.push_back( new DnaState(x[i]) );

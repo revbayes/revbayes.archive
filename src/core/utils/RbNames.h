@@ -158,6 +158,7 @@ const std::string ValueRule_name                                = "ValueRule";
 const std::string VariableNode_name                             = "Variable node";
 const std::string Vector_name                                   = "Vector";
 const std::string VectorBoolean_name                            = "Boolean vector";
+const std::string VectorCharacterObservations_name              = "Character vector";
 const std::string VectorDnaStates_name                          = "DNA vector";
 const std::string VectorInteger_name                            = "Integer vector";
 const std::string VectorNatural_name                            = "Natural vector";

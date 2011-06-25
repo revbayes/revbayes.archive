@@ -1,7 +1,7 @@
 /**
  * @file
- * This file contains the declaration of VectorCharacterObservations, a
- * vector type used to hold the character observations for a taxon.
+ * This file contains the declaration of VectorCharacterObservations, an
+ * abstract base class for different types of character observation vectors.
  *
  * @brief Declaration of VectorCharacterObservations
  *
@@ -27,25 +27,12 @@
 class VectorCharacterObservations : public Vector {
 
     public:
-                                        VectorCharacterObservations(int numChars);                           //!< Construct an empty cond like vector
-                                        VectorCharacterObservations(const VectorCharacterObservations& x);   //!< Copy constructor
-                                       ~VectorCharacterObservations(void);                                   //!< Destructor frees memory for cond like array
+        // Basic utility functions you have to override
+        virtual Vector*                 clone(void) const = 0;                                              //!< Clone object
+        virtual const VectorString&     getClass(void) const;                                               //!< Get class
 
-        // Overloaded assignment operator
-        VectorString&                   operator=(const VectorCharacterObservations& x);                     //!< Assignment operator
-
-        // Basic utility functions
-        VectorCharacterObservations*    clone(void) const;                                                  //!< Clone object
-        const VectorString&             getClass(void) const;                                               //!< Get class
-        void                            printValue(std::ostream& o) const;                                  //!< Print value for user
-        std::string                     richInfo(void) const;                                               //!< Complete info about object
-
-        // VectorCondLike functions
-        size_t                          getNumChars(void) const { return numChars; }                        //!< Get number of characters
-
-    private:
-        double*                         condLikeArray;                                                      //!< Array of conditional likelihoods
-        size_t                          numChars;                                                           //!< Number of characters
+    protected:
+                                        VectorCharacterObservations(const std::string& elemType);           //!< Set type spec of container from type of elements
 };
 
 #endif
