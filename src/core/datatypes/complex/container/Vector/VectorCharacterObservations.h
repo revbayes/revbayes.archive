@@ -27,12 +27,16 @@
 class VectorCharacterObservations : public Vector {
 
     public:
+    
         // Basic utility functions you have to override
-        virtual Vector*                 clone(void) const = 0;                                              //!< Clone object
-        virtual const VectorString&     getClass(void) const;                                               //!< Get class
+        virtual VectorCharacterObservations*    clone(void) const = 0;                                    //!< Clone object
+        virtual const VectorString&             getClass(void) const;                                     //!< Get class
+
+        // VectorCharacterObservations functions
+        size_t                                  getNumCharacters(void) { return size(); }
 
     protected:
-                                        VectorCharacterObservations(const std::string& elemType);           //!< Set type spec of container from type of elements
+                                                VectorCharacterObservations(const std::string& elemType); //!< Set type spec of container from type of elements
 };
 
 #endif

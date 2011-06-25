@@ -34,7 +34,7 @@ unsigned NxsTaxaBlock::GetMaxIndex() const
 	}
 unsigned NxsTaxaBlock::GetNumLabelsCurrentlyStored() const
 	{
-	return taxLabels.size();
+	return (unsigned)taxLabels.size();
 	}
 
 

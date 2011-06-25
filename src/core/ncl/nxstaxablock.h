@@ -444,7 +444,7 @@ inline unsigned NxsTaxaBlockSurrogate::GetNTaxTotal() const
 
 inline unsigned NxsTaxaBlock::GetNumActiveTaxa() const
 	{
-	return GetNTax() - inactiveTaxa.size();
+	return GetNTax() - (unsigned)inactiveTaxa.size();
 	}
 
 inline bool NxsTaxaBlock::IsActiveTaxon(unsigned i) const

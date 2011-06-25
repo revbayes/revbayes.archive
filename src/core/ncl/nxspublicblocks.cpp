@@ -38,7 +38,7 @@ NxsTaxaBlock * PublicNexusReader::RegisterTaxa(const std::vector<std::string> & 
 		return 0L;
 	}
 	NxsTaxaBlock *tb = new NxsTaxaBlock();
-	tb->SetNtax(tl.size());
+	tb->SetNtax( (unsigned)tl.size() );
 	for (std::vector<std::string>::const_iterator labelIt = tl.begin(); labelIt != tl.end(); ++labelIt)
 		tb->AddTaxonLabel(*labelIt);
 	AddReadTaxaBlock(tb);

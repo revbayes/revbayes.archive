@@ -323,7 +323,7 @@ class NxsAssumptionsBlock
 		NxsAssumptionsBlockAPI  *GetAssumptionsBlockForTreesBlock(NxsTreesBlockAPI *, NxsBlockLinkStatus, NxsToken &token);
 
 		NxsAssumptionsBlockAPI  *CreateNewAssumptionsBlock(NxsToken &token);
-		NxsAssumptionsBlockAPI *DealWithPossibleParensInCharDependentCmd(NxsToken &token, const char *cmd, const std::vector<std::string> *unsupported = NULL, bool * isVect = false);
+		NxsAssumptionsBlockAPI *DealWithPossibleParensInCharDependentCmd(NxsToken &token, const char *cmd, const std::vector<std::string> *unsupported = NULL, bool * isVect = NULL);
 		bool					HasAssumptionsBlockCommands() const;
 		bool					HasSetsBlockCommands() const;
 		bool					HasCodonsBlockCommands() const;

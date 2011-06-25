@@ -662,7 +662,7 @@ void NxsSimpleTree::Initialize(const NxsFullTreeDescription & td)
 						emsg << "Expecting a number as a branch length. Found " << tstr;
 						throw NxsException(emsg, token);
 						}
-					currEdge->SetIntEdgeLen(lastIntEdgeLen, t);
+					currEdge->SetIntEdgeLen((int)lastIntEdgeLen, t);
 					}
 				currInternalOrLength = true;
 				}
@@ -1399,7 +1399,7 @@ void NxsTreesBlock::ProcessTokenStreamIntoTree(
 						{
 						handledLength = true;
 						if (lastIntEdgeLen < minIntEdgeLen)
-							minIntEdgeLen = lastIntEdgeLen;
+							minIntEdgeLen = (int)lastIntEdgeLen;
 						}
 					}
 				if (!handledLength)
@@ -1644,8 +1644,8 @@ void NxsTreesBlock::HandleTreeCommand(NxsToken &token, bool rooted)
 	NxsString treeName = token.GetToken();
 	DemandEquals(token, "after tree name in TREE command");
 	file_pos fp = 0;
-	int fline = token.GetFileLine();
-	int fcol = token.GetFileColumn();
+	int fline = (int)token.GetFileLine();
+	int fcol = (int)token.GetFileColumn();
 	fp = token.GetFilePosition();
 	try {
 		// This should be either a tree description or a command comment specifying
@@ -1693,8 +1693,8 @@ void NxsTreesBlock::HandleTreeCommand(NxsToken &token, bool rooted)
 void NxsTreesBlock::ReadTreeFromOpenParensToken(NxsFullTreeDescription &td, NxsToken & token)
 	{
 	file_pos fp = 0;
-	int fline = token.GetFileLine();
-	int fcol = token.GetFileColumn();
+	int fline = (int)token.GetFileLine();
+	int fcol = (int)token.GetFileColumn();
 	ostringstream newickStream;
 	newickStream << token.GetTokenReference();
 	token.GetNextToken();

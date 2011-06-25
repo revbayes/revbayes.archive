@@ -40,8 +40,8 @@ void NxsConsumePatternSetToPatternVector(
   std::vector<int> * originalIndexToCompressed, /** OUTPUT if not 0L, this will be filled to provide map an index in `mat` to the corresponding index in `compressedTransposedMatrix` (-1 in the vector indicates that the character was not included) */
   std::vector<std::set<unsigned> > * compressedIndexToOriginal) /** OUTPUT  if not 0L, this will be filled to provide a map from an index in `compressedTransposedMatrix` to the original character count */
 {
-    const unsigned patternIndexOffset = compressedTransposedMatrix.size();
-    const unsigned numCompressedPatterns = patternSet.size();
+    const unsigned patternIndexOffset = (unsigned const)compressedTransposedMatrix.size();
+    const unsigned numCompressedPatterns = (unsigned const)patternSet.size();
     if (originalIndexToCompressed != 0L || compressedIndexToOriginal != 0L)
         {
         if (compressedIndexPattern == 0L)
@@ -209,7 +209,7 @@ unsigned NxsCompressDiscreteMatrix(
                 }
             }
 		}
-	return patternSet.size() - origNumPatterns;	
+	return (unsigned)patternSet.size() - origNumPatterns;	
     }
 
 /*----------------------------------------------------------------------------------------------------------------------
@@ -234,7 +234,7 @@ unsigned NxsCompressDiscreteMatrix(
 	    toPatternMapPtr = &toPatternMap;
 
 	NxsCompressDiscreteMatrix(mat, patternSet, toPatternMapPtr, taxaToInclude, charactersToInclude);
-    const unsigned numPatternsAdded = patternSet.size();
+    const unsigned numPatternsAdded = (unsigned const)patternSet.size();
 	
 	NxsConsumePatternSetToPatternVector(patternSet, compressedTransposedMatrix, toPatternMapPtr, originalIndexToCompressed, compressedIndexToOriginal);
 	return numPatternsAdded;
@@ -246,13 +246,13 @@ void NxsTransposeCompressedMatrix(
   std::vector<unsigned> * patternCounts,
   std::vector<double> * patternWeights)
 {
-	const unsigned npatterns = compressedTransposedMatrix.size();
+	const unsigned npatterns = (unsigned const)compressedTransposedMatrix.size();
 	if (npatterns == 0)
 	    {
 	    destination.Initialize(0, 0);
 	    return;
 	    }
-	const unsigned ntaxa = compressedTransposedMatrix[0].stateCodes.size();
+	const unsigned ntaxa = (unsigned const)compressedTransposedMatrix[0].stateCodes.size();
 	destination.Initialize(ntaxa, npatterns);
     NxsCDiscreteStateSet ** matrix = destination.GetAlias();			/** taxa x characters matrix of indices of state sets */
     if (patternCounts)

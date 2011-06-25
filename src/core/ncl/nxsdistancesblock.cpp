@@ -38,7 +38,7 @@ void NxsDistancesBlock::WriteMatrixCommand(std::ostream &out) const
 	unsigned width = taxa->GetMaxTaxonLabelLength();
 	const unsigned ntaxTotal = taxa->GetNTax();
 	out << "MATRIX";
-	int prec = out.precision(10);
+	int prec = (int)out.precision(10);
 	for (unsigned i = 0; i < ntaxTotal; i++)
 		{
 		const std::string currTaxonLabel = NxsString::GetEscaped(taxa->GetTaxonLabel(i));

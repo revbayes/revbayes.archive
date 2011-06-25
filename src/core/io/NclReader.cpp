@@ -1,5 +1,4 @@
-#include "CharacterMatrixContinuous.h"
-#include "CharacterMatrixDiscrete.h"
+#include "CharacterMatrix.h"
 #include "DnaState.h"
 #include "NclReader.h"
 #include "StringUtilities.h"
@@ -81,7 +80,7 @@ std::vector<CharacterMatrix*>* NclReader::convertFromNcl(std::vector<std::string
 				std::cerr << "Error: Mixed data types are no longer allowed" << std::endl;
                 }
             
-			m->setName( fnv[k++] );
+			//m->setName( fnv[k++] );
             
 			if (m != NULL)
 				cmv->push_back( m );
@@ -92,7 +91,8 @@ std::vector<CharacterMatrix*>* NclReader::convertFromNcl(std::vector<std::string
 }
 
 CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
-    
+ 
+#   if 0
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::protein)
         return NULL;
@@ -147,10 +147,14 @@ CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
         return NULL;
     
     return cm;
+#   else
+    return NULL;
+#   endif
 }
 
 CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock) {
-    
+ 
+#   if 0
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::continuous)
         return NULL;
@@ -196,6 +200,9 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
         }
     
     return cm;
+#   else
+    return NULL;
+#   endif
 }
 
 CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock) {
@@ -216,17 +223,21 @@ CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
 
+    // instantiate the character matrix
+	CharacterMatrix* cMat = new CharacterMatrix();
+    cMat->setDataType("DNA");
+    
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
-        // check if the taxon is excluded
-		//if ( !charblock->IsActiveTaxon(origTaxIndex) )
-        //    cm->excludeTaxon(origTaxIndex);
-        
         // add the taxon name
-        //NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
-        //std::string tn = NxsString::GetEscaped(tLabel).c_str();
-        //cm->addTaxonName(tn);
+        NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
+        std::string tn = NxsString::GetEscaped(tLabel).c_str();
+        cMat->addTaxonName(tn);
+        
+        // check if the taxon is excluded
+		if ( !charblock->IsActiveTaxon(origTaxIndex) )
+            cMat->excludeTaxon(origTaxIndex);
         
         // allocate a vector of DNA states
         VectorDnaStates* dataVec = new VectorDnaStates();
@@ -234,11 +245,6 @@ CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
             {	
-            // check if the site is excluded
-            NxsUnsignedSet::iterator it = excluded.find(*cit);
-            //if (it != excluded.end())
-             //   cm->excludeCharacter(*cit);
-            
             // add the character state to the matrix
             DnaState dnaState;
             if ( charblock->IsGapState(origTaxIndex, *cit) == true ) 
@@ -255,6 +261,11 @@ CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock
                 dnaState = DnaState(stateSet);
                 }
             dataVec->push_back( dnaState );
+
+            // check if the site is excluded
+            NxsUnsignedSet::iterator it = excluded.find(*cit);
+            if (it != excluded.end())
+                cMat->excludeCharacter(*cit);
             }
             
         // TEMP: Print the vector to see if we got it
@@ -328,7 +339,8 @@ std::cout << " 2 " << std::endl;
 }
 
 CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
-    
+ 
+#   if 0
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::standard)
         return NULL;
@@ -389,6 +401,9 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
         return NULL;
     
     return cm;
+#   else
+    return NULL;
+#   endif
 }
 
 bool NclReader::fileExists(const char* fn) const {

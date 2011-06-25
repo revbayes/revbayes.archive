@@ -1631,7 +1631,7 @@ inline unsigned NxsCharactersBlock::GetNChar() const
 */
 inline unsigned NxsCharactersBlock::GetNumIncludedChars() const
 	{
-	return nChar - excluded.size();
+	return (unsigned)nChar - (unsigned)excluded.size();
 	}
 
 

@@ -1584,7 +1584,7 @@ void NxsAssumptionsBlock::HandleUserType(NxsToken& token)
 							{
 							floatMat = !NxsString::to_long(s.c_str(), &currLongWt);
 							if (!floatMat)
-								im[i][j] = currLongWt;
+								im[i][j] = (int)currLongWt;
 							}
 						}
 					}

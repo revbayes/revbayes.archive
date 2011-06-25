@@ -484,7 +484,7 @@ CodonRecodingStruct NxsCharactersBlock::RemoveStopCodons(NxsGeneticCodesEnum gCo
 
 	const std::vector<NxsDiscreteStateCell> v = getToCodonRecodingMapper(gCode);
 	CodonRecodingStruct c = getCodonRecodingStruct(gCode);
-	const unsigned nRS = c.compressedCodonIndToAllCodonsInd.size();
+	const unsigned nRS = (unsigned)c.compressedCodonIndToAllCodonsInd.size();
 	const unsigned offset = 64 - nRS;
 	NxsDiscreteStateMatrix	dMat(this->discreteMatrix);
 	unsigned rowInd = 0;
@@ -715,7 +715,7 @@ void NxsDiscreteDatatypeMapper::BuildStateSubsetMatrix() const
 		BuildStateIntersectionMatrix();
 	isStateSubsetMatrix.clear();
 	isStateSubsetMatrixGapsMissing.clear();
-	const unsigned nsPlus = stateSetsVec.size();
+	const unsigned nsPlus = (unsigned)stateSetsVec.size();
 	IsStateSubsetRow r(nsPlus, false);
 	isStateSubsetMatrix.assign(nsPlus, r);
 	isStateSubsetMatrixGapsMissing.assign(nsPlus, r);
@@ -740,7 +740,7 @@ void NxsDiscreteDatatypeMapper::BuildStateIntersectionMatrix() const
 
 	stateIntersectionMatrix.clear();
 
-	const unsigned nsPlus = stateSetsVec.size();
+	const unsigned nsPlus = (unsigned const)stateSetsVec.size();
 	const unsigned offset = (unsigned)(sclOffset + 2);
 	StateIntersectionRow emptyRow(nsPlus, emptySet);
 	stateIntersectionMatrix.assign(nsPlus, emptyRow);
@@ -2548,7 +2548,7 @@ void NxsDiscreteDatatypeMapper::RefreshMappings(NxsToken *token)
 		if (addEq)
 			{
 			const NxsString & s = eqIt->second;
-			unsigned slen = s.length();
+			unsigned slen = (unsigned)s.length();
 			if (slen == 2 + symbols.length())
 				{
 				if (s[0] == '{' && s[slen -1] == '}')
@@ -4809,7 +4809,7 @@ void NxsCharactersBlock::WriteMatrixCommand(
 	out << "Matrix\n";
 	int prec = 6;
 	if (datatype == continuous)
-		prec = out.precision(10);
+		prec = (int)out.precision(10);
 	unsigned stride = (this->writeInterleaveLen < 1 ? this->nChar : this->writeInterleaveLen);
 	unsigned begChar = 0;
 	while (begChar < this->nChar)

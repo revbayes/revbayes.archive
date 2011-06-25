@@ -321,11 +321,11 @@ bool NxsString::IsStdAbbreviation(
 
 	// s is the unabbreviated comparison string
 	//
-	const unsigned slen = static_cast<unsigned long>(s.size());
+	const unsigned slen = static_cast<unsigned const>(s.size());
 
 	// t is the stored string
 	//
-	const unsigned tlen = static_cast<unsigned long>(size());
+	const unsigned tlen = static_cast<unsigned const>(size());
 
 	// t cannot be an abbreviation of s if it is longer than s
 	//
@@ -493,7 +493,7 @@ NxsString &NxsString::RightJustifyDbl(
 	tmp.PrintF(fmtstr, x);
 
 	NCL_ASSERT(w >= tmp.length());
-	unsigned num_spaces = w - tmp.length();
+	unsigned num_spaces = w - (unsigned)tmp.length();
 
 	for (unsigned k = 0; k < num_spaces; k++)
 		*this += ' ';
@@ -516,7 +516,7 @@ NxsString &NxsString::RightJustifyString(
 		erase();
 
 	NCL_ASSERT(w >= s.length());
-	unsigned num_spaces = w - s.length();
+	unsigned num_spaces = w - (unsigned)s.length();
 
 	for (unsigned k = 0; k < num_spaces; k++)
 		*this += ' ';

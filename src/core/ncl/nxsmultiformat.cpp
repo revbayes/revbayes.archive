@@ -706,7 +706,7 @@ bool  MultiFormatReader::readAlnData(
 	unsigned index = 0;
 	const char * firstWord = "CLUSTAL";
 	std::string found;
-	const unsigned lenFirstWord = strlen(firstWord);
+	const unsigned lenFirstWord = (unsigned const)strlen(firstWord);
 	while (index < lenFirstWord)
 		{
 		found.append(1, c);
@@ -1011,7 +1011,7 @@ void  MultiFormatReader::readFastaFile(std::istream & inf, NxsCharactersBlock::D
 
 		if (aligned)
 			{
-			moveDataToDataBlock(taxaNames, matList, longest, dataB);
+			moveDataToDataBlock(taxaNames, matList, (unsigned int)longest, dataB);
 			BlockReadHook(blockID, dataB);
 			}
 		else
@@ -1185,8 +1185,8 @@ bool  MultiFormatReader::readFinSequences(
 							stateCode = dm.StateCodeForNexusMultiStateSet('\0',
   																	  recoded,
   																	  0L,
-  																	  taxaNames.size(),
-  																	  row.size(),
+  																	  (unsigned int)taxaNames.size(),
+  																	  (unsigned int)row.size(),
   																	  0L,
   																	  nn);
 							}
@@ -1269,7 +1269,7 @@ void  MultiFormatReader::readFinFile(std::istream & inf, NxsCharactersBlock::Dat
 
 		if (aligned)
 			{
-			moveDataToDataBlock(taxaNames, matList, longest, dataB);
+			moveDataToDataBlock(taxaNames, matList, (unsigned int)longest, dataB);
 			BlockReadHook(blockID, dataB);
 			}
 		else
@@ -1532,7 +1532,7 @@ void MultiFormatReader::readAlnFile(std::istream & inf, NxsCharactersBlock::Data
 			std::list<NxsDiscreteStateRow> matList;
 			if (!readAlnData(ftcb, *dm, taxaNames, matList))
 				throw NxsException("Expecting the same number of characters for all sequences in the ALN file");
-			const unsigned nchar = matList.begin()->size();
+			const unsigned nchar = (unsigned const)matList.begin()->size();
 			moveDataToDataBlock(taxaNames, matList, nchar, dataB);
 			BlockReadHook(blockID, dataB);
 			}

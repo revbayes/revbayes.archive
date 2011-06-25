@@ -29,7 +29,7 @@ class SyntaxAssignExpr : public SyntaxElement {
 
     public:
         // Static operator types
-        enum operatorT { ArrowAssign, TildeAssign, TildIidAssign, EquationAssign };             //!< Enum of operator types
+        enum operatorT { ArrowAssign, TildeAssign, TildeIidAssign, EquationAssign };             //!< Enum of operator types
         static std::string  opCode[];                                                           //!< Operator codes for printing
 
                             SyntaxAssignExpr(operatorT              op,
