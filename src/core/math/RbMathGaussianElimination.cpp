@@ -16,7 +16,6 @@
 
 
 #include "RbMathGaussianElimination.h"
-
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "RbSettings.h"
@@ -38,12 +37,12 @@ void RbMath::backSubstitutionRow(MatrixReal& u, std::vector<double>& b) {
 	size_t n = u.getNumRows();
 	b[n-1] /= u[n-1][n-1];
 	for ( int i = static_cast<int>( n ) - 2; i >= 0; i-- ) 
-    {
+        {
 		double dotProduct = 0.0;
 		for (size_t j=i+1; j<n; j++)
 			dotProduct += u[i][j] * b[j];
 		b[i] = (b[i] - dotProduct) / u[i][i];
-    }
+        }
 }
 
 /*!
@@ -59,14 +58,14 @@ void RbMath::forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b) {
 	size_t n = L.getNumRows();
 	b[0] = b[0] / L[0][0];
 	for (size_t i=1; i<n; i++) 
-    {
+        {
 		double dotProduct = 0.0;
 		for (size_t j=0; j<i; j++)
-        {
+            {
 	      	dotProduct += L[i][j] * b[j];
-        }
+            }
 		b[i] = (b[i] - dotProduct) / L[i][i];
-    }
+        }
 }
 
 /*!
@@ -87,7 +86,7 @@ void RbMath::gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xM
 	RbMath::computeLandU(a, lMat, uMat);
     
 	for (size_t k=0; k<n; k++) 
-    {
+        {
 		for (size_t i=0; i<n; i++)
 			bVec[i] = bMat[i][k];
         
@@ -99,6 +98,6 @@ void RbMath::gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xM
 		backSubstitutionRow(uMat, bVec);
 		for (size_t i=0; i<n; i++)
 			xMat[i][k] = bVec[i];
-    }
+        }
 }
 

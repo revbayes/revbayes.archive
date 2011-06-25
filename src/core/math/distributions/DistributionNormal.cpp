@@ -98,7 +98,7 @@ double RbStatistics::Normal::cdf(double x) {
     
 	/* |X| <= 1.28 */
 	if ( fabs(x) <= 1.28 )
-    {
+        {
 		double a1 = 0.398942280444;
 		double a2 = 0.399903438504;
 		double a3 = 5.75885480458;
@@ -108,9 +108,9 @@ double RbStatistics::Normal::cdf(double x) {
 		double a7 = 5.92885724438;
 		double y = 0.5 * x * x;
 		q = 0.5 - fabs(x) * ( a1 - a2 * y / ( y + a3 - a4 / ( y + a5 + a6 / ( y + a7 ) ) ) );
-    }
+        }
 	else if ( fabs(x) <= 12.7 )
-    {
+        {
 		double b0 = 0.398942280385;
 		double b1 = 3.8052E-08;
 		double b2 = 1.00000615302;
@@ -125,21 +125,21 @@ double RbStatistics::Normal::cdf(double x) {
 		double b11 = 3.99019417011;
 		double y = 0.5 * x * x;
 		q = exp(-y) * b0 / (fabs(x) - b1 + b2 / (fabs(x) + b3 + b4 / (fabs(x) - b5 + b6 / (fabs(x) + b7 - b8 / (fabs(x) + b9 + b10 / (fabs(x) + b11))))));
-    }
+        }
 	else
-    {
+        {
 		q = 0.0;
-    }
+        }
 	if ( x < 0.0 )
-    {
+        {
 		/* negative x */
 		cdf = q;
-    }
+        }
 	else
-    {
+        {
 		/* positive x */
 		cdf = 1.0 - q;
-    }
+        }
 	return cdf;
 }
 
@@ -163,7 +163,7 @@ double RbStatistics::Normal::cdf(double mu, double sigma, double x) {
     
 	/* |X| <= 1.28 */
 	if ( fabs(z) <= 1.28 )
-    {
+        {
 		double a1 = 0.398942280444;
 		double a2 = 0.399903438504;
 		double a3 = 5.75885480458;
@@ -173,9 +173,9 @@ double RbStatistics::Normal::cdf(double mu, double sigma, double x) {
 		double a7 = 5.92885724438;
 		double y = 0.5 * z * z;
 		q = 0.5 - fabs(z) * ( a1 - a2 * y / ( y + a3 - a4 / ( y + a5 + a6 / ( y + a7 ) ) ) );
-    }
+        }
 	else if ( fabs(z) <= 12.7 )
-    {
+        {
 		double b0 = 0.398942280385;
 		double b1 = 3.8052E-08;
 		double b2 = 1.00000615302;
@@ -190,21 +190,21 @@ double RbStatistics::Normal::cdf(double mu, double sigma, double x) {
 		double b11 = 3.99019417011;
 		double y = 0.5 * z * z;
 		q = exp(-y) * b0 / (fabs(z) - b1 + b2 / (fabs(z) + b3 + b4 / (fabs(z) - b5 + b6 / (fabs(z) + b7 - b8 / (fabs(z) + b9 + b10 / (fabs(z) + b11))))));
-    }
+        }
 	else
-    {
+        {
 		q = 0.0;
-    }
+        }
 	if ( z < 0.0 )
-    {
+        {
 		/* negative x */
 		cdf = q;
-    }
+        }
 	else
-    {
+        {
 		/* positive x */
 		cdf = 1.0 - q;
-    }
+        }
 	return cdf;
 }
 
@@ -264,14 +264,14 @@ double RbStatistics::Normal::rv(RandomNumberGenerator* rng) {
     
 	double v1 = 0.0;
 	double v2 = 0.0; // NOTE: We should eventually implement this so you generate and
-    // return the extra normal random variable that is generated
+                     //       return the extra normal random variable that is generated
 	double rsq = 0.0;
 	do
-    {
+        {
 		v1 = 2.0 * rng->uniform01() - 1.0;
 		v2 = 2.0 * rng->uniform01() - 1.0;
 		rsq = v1 * v1 + v2 * v2;
-    } while ( rsq >= 1.0 || rsq == 0.0 );
+        } while ( rsq >= 1.0 || rsq == 0.0 );
 	double fac = sqrt(-2.0 * log(rsq)/rsq);
 	//extraNormalRv = v1 * fac;
 	//availableNormalRv = true;
@@ -285,11 +285,11 @@ double RbStatistics::Normal::rv(double mu, double sigma, RandomNumberGenerator* 
     // return the extra normal random variable that is generated
 	double rsq = 0.0;
 	do
-    {
+        {
 		v1 = 2.0 * rng->uniform01() - 1.0;
 		v2 = 2.0 * rng->uniform01() - 1.0;
 		rsq = v1 * v1 + v2 * v2;
-    } while ( rsq >= 1.0 || rsq == 0.0 );
+        } while ( rsq >= 1.0 || rsq == 0.0 );
 	double fac = sqrt(-2.0 * log(rsq)/rsq);
 	//extraNormalRv = v1 * fac;
 	//availableNormalRv = true;

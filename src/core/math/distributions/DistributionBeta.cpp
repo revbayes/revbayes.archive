@@ -96,10 +96,8 @@ double RbStatistics::Beta::cdf(double a, double b, double x) {
  */
 double RbStatistics::Beta::quantile(double a, double b, double p) {
     
-	double bcoeff;
 	double error = 0.0001;
 	double errapp = 0.01;
-	int j;
     
 	/* estimate the solution */
 	double x = a / ( a + b );
@@ -108,55 +106,54 @@ double RbStatistics::Beta::quantile(double a, double b, double p) {
 	int loopCnt = 2;
 	double d[MAXK * (MAXK-1)];
 	while ( errapp <= fabs ( ( x - xOld ) / x ) && loopCnt != 0 )
-    {
+        {
 		xOld = x;
 		loopCnt--;
-		/* cdfX = PROB { BETA(A,B) <= X }
-         q = ( cdf - cdfX ) / pdfX */
 		double cdfX = Beta::cdf(a, b, x);
 		double pdfX = Beta::pdf(a, b, x);
-		double q = (p - cdfX) / pdfX;
-		/* D(N,K) = C(N,K) * Q**(N+K-1) / (N-1)! */
-		double t = 1.0 - x;
-		double s1 = q * ( b - 1.0 ) / t;
-		double s2 = q * ( 1.0 - a ) / x;
+		double q    = (p - cdfX) / pdfX;
+		double t    = 1.0 - x;
+		double s1   = q * ( b - 1.0 ) / t;
+		double s2   = q * ( 1.0 - a ) / x;
 		d[2-1+0*MAXK] = s1 + s2;
 		double tail = d[2-1+0*MAXK] * q / 2.0;
 		x = x + q + tail;
         
 		int k = 3;
 		while ( error < fabs ( tail / x ) && k <= MAXK )
-        {
+            {
 			/* find D(2,K-2) */
 			s1 = q * ((double)(k) - 2.0) * s1 / t;
 			s2 = q * (2.0 - (double)(k)) * s2 / x;
 			d[2-1+(k-2)*MAXK] = s1 + s2;
+            
 			/* find D(3,K-3), D(4,K-4), D(5,K-5), ... , D(K-1,1) */
 			for (int i=3; i<=k-1; i++)
-            {
-				double sum2 = d[2-1+0*MAXK] * d[i-2+(k-i)*MAXK];
-				bcoeff = 1.0;
-				for ( j = 1; j <= k - i; j++ )
                 {
+				double sum2 = d[2-1+0*MAXK] * d[i-2+(k-i)*MAXK];
+				double bcoeff = 1.0;
+				for (int j=1; j<=k - i; j++)
+                    {
 					bcoeff = ( bcoeff * ( double ) ( k - i - j + 1 ) ) / ( double ) ( j );
 					sum2 = sum2 + bcoeff * d[2-1+j*MAXK] * d[i-2+(k-i-j)*MAXK];
-                }
+                    }
 				d[i-1+(k-i)*MAXK] = sum2 + d[i-2+(k-i+1)*MAXK] / (double)(i - 1);
-            }
+                }
+                
 			/* compute D(K,0) and use it to expand the series */
 			d[k-1+0*MAXK] = d[2-1+0*MAXK] * d[k-2+0*MAXK] + d[k-2+1*MAXK] / (double)(k - 1);
 			tail = d[k-1+0*MAXK] * q / (double)(k);
 			x += tail;
 			/* check for divergence */
 			if ( x <= 0.0 || 1.0 <= x )
-            {
+                {
                 std::ostringstream s;
                 s << "Error in betaQuantile: The series has diverged";
                 throw (RbException(s));
-            }
+                }
 			k++;
+            }
         }
-    }
 	return x;
 }
 
@@ -180,11 +177,12 @@ double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator* rng) 
     static double olda = -1.0;
     static double oldb = -1.0;
     
-    if (aa <= 0. || bb <= 0. || (!RbMath::isFinite(aa) && !RbMath::isFinite(bb))) {
+    if (aa <= 0. || bb <= 0. || (!RbMath::isFinite(aa) && !RbMath::isFinite(bb))) 
+        {
         std::ostringstream s;
         s << "Cannot draw random variable from beta distribution for a = " << aa << " and b = " << bb;
         throw (RbException(s));
-    }
+        }
     
     if (!RbMath::isFinite(aa))
     	return 1.0;
@@ -200,58 +198,66 @@ double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator* rng) 
     b = RbMath::max(aa, bb); /* a <= b */
     alpha = a + b;
     
-#define v_w_from__u1_bet(AA) 			\
-v = beta * log(u1 / (1.0 - u1));	\
-if (v <= expmax) {			\
-w = AA * exp(v);		\
+#define v_w_from__u1_bet(AA) 			                \
+v = beta * log(u1 / (1.0 - u1));	                    \
+if (v <= expmax) {		                                \
+w = AA * exp(v);		                                \
 if(!RbMath::isFinite(w)) w = RbConstants::Double::max;	\
-} else				\
+} else				                                    \
 w = RbConstants::Double::max
     
-    
-    if (a <= 1.0) {	/* --- Algorithm BC --- */
+    if (a <= 1.0) 
+        {	
+        /* --- Algorithm BC --- */
         
         /* changed notation, now also a <= b (was reversed) */
-        
-        if (!qsame) { /* initialize */
+        if (!qsame) 
+            { 
+            /* initialize */
             beta = 1.0 / a;
             delta = 1.0 + b - a;
             k1 = delta * (0.0138889 + 0.0416667 * a) / (b * beta - 0.777778);
             k2 = 0.25 + (0.5 + 0.25 / delta) * a;
-        }
+            }
         /* FIXME: "do { } while()", but not trivially because of "continue"s:*/
-        for(;;) {
+        for(;;) 
+            {
             u1 = rng->uniform01();
             u2 = rng->uniform01();
-            if (u1 < 0.5) {
+            if (u1 < 0.5) 
+                {
                 y = u1 * u2;
                 z = u1 * y;
                 if (0.25 * u2 + z - y >= k1)
                     continue;
-            } else {
+                } 
+            else 
+                {
                 z = u1 * u1 * u2;
-                if (z <= 0.25) {
+                if (z <= 0.25) 
+                    {
                     v_w_from__u1_bet(b);
                     break;
-                }
+                    }
                 if (z >= k2)
                     continue;
-            }
-            
+                }
             v_w_from__u1_bet(b);
-            
             if (alpha * (log(alpha / (a + w)) + v) - 1.3862944 >= log(z))
                 break;
-        }
+            }
         return (aa == a) ? a / (a + w) : w / (a + w);
+        }
+    else 
+        {		
+        /* Algorithm BB */
         
-    }
-    else {		/* Algorithm BB */
-        
-        if (!qsame) { /* initialize */
+        if (!qsame) 
+            { 
+            /* initialize */
             beta = sqrt((alpha - 2.0) / (2.0 * a * b - alpha));
             gamma = a + 1.0 / beta;
-        }
+            }
         do {
             u1 = rng->uniform01();
             u2 = rng->uniform01();
@@ -266,11 +272,9 @@ w = RbConstants::Double::max
             t = log(z);
             if (s > t)
                 break;
-        }
-        while (r + alpha * log(alpha / (b + w)) < t);
-        
+            } while (r + alpha * log(alpha / (b + w)) < t);
         return (aa != a) ? b / (b + w) : w / (b + w);
-    }
+        }
 }
 
 #undef MAXK

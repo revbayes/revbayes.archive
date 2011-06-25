@@ -35,21 +35,25 @@
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Geometric::cdf(int n, double p)
-{
+double RbStatistics::Geometric::cdf(int n, double p) {
     
-    if(p <= 0 || p > 1) {
+    if(p <= 0 || p > 1) 
+        {
         std::ostringstream s;
         s << "Cannot compute cdf of the Geometric distribution because n = " << n << " is not an integer";
         throw (RbException(s));
-    }
+        }
     
-    if (n < 0.) return 0.0;
-    if (!RbMath::isFinite(n)) return 1.0;
+    if (n < 0.0) 
+        return 0.0;
+    if (!RbMath::isFinite(n)) 
+        return 1.0;
     
-    if(p == 1.) { /* we cannot assume IEEE */
+    if(p == 1.0) 
+        { 
+        /* we cannot assume IEEE */
         return n;
-    }
+        }
     n = int( RbMath::log1p(-p) * (n + 1) );
         
     return -RbMath::expm1(n);
@@ -67,7 +71,8 @@ double RbStatistics::Geometric::cdf(int n, double p)
  * \throws Does not throw an error.
  */
 double RbStatistics::Geometric::lnPdf(int n, double p) {
-    return pdf(n,p,true);
+
+    return pdf(n, p, true);
 }
 
 /*!
@@ -82,7 +87,8 @@ double RbStatistics::Geometric::lnPdf(int n, double p) {
  * \throws Does not throw an error.
  */
 double RbStatistics::Geometric::pdf(int n, double p) {
-    return pdf(n,p,false);
+
+    return pdf(n, p, false);
 }
 
 /*!
@@ -110,18 +116,20 @@ double RbStatistics::Geometric::pdf(int n, double p, bool asLog) {
     
     double prob;
     
-    if (p <= 0 || p > 1) {
+    if (p <= 0 || p > 1) 
+        {
         std::ostringstream s;
         s << "Cannot compute pdf of the Geometric distribution because n = " << n << " is not an integer";
         throw (RbException(s));
-    }
+        }
     
-    if (n < 0 || !RbMath::isFinite(n) || p == 0) return 0.0;
+    if (n < 0 || !RbMath::isFinite(n) || p == 0) 
+        return 0.0;
     
     /* prob = (1-p)^x, stable for small p */
     prob = RbStatistics::Binomial::pdf(0.,n, p,1-p, asLog);
     
-    return((asLog) ? log(p) + prob : p*prob);
+    return ((asLog) ? log(p) + prob : p*prob);
 }
 
 /*!
@@ -136,13 +144,16 @@ double RbStatistics::Geometric::pdf(int n, double p, bool asLog) {
  * \throws Does not throw an error.
  */
 double RbStatistics::Geometric::quantile(double q, double p) {
-    if (p <= 0 || p > 1) {
+
+    if (p <= 0 || p > 1) 
+        {
         std::ostringstream s;
         s << "Cannot compute pdf of the Geometric distribution because q = " << q << " is not an integer";
         throw (RbException(s));
-    }
+        }
 
-    if (p == 1) return(0);
+    if (p == 1) 
+        return(0.0);
     
     /* add a fuzz to ensure left continuity */
     return ceil(log(q) / RbMath::log1p(- p) - 1 - 1e-7);

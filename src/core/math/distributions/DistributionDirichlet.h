@@ -18,8 +18,7 @@ class RandomNumberGenerator;
 
 #include <vector>
 
-namespace RbStatistics 
-{
+namespace RbStatistics {
     
 	namespace Dirichlet {
         double                      pdf(const std::vector<double>& a, const std::vector<double>& z);      /*!< Dirichlet(a[]) probability density */

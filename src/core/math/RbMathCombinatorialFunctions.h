@@ -23,8 +23,8 @@ namespace RbMath {
     double                      lnChoose(double n, double k);                                                   //!< Calculate the log factorial 
     double                      lnFactorial(int n);                                                             //!< Calculate the log factorial 
     
-// helper functions
+    // helper functions
     double                      lfastchoose(double n, double k);                                                //!< Calculate the log factorial 
-    double                      lfastchoose2(double n, double k, int *s_choose);                                //!< Calculate the log factorial 
+    double                      lfastchoose2(double n, double k, int* s_choose);                                //!< Calculate the log factorial 
     
 }

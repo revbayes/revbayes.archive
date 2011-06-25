@@ -16,8 +16,7 @@
 
 class RandomNumberGenerator;
 
-namespace RbStatistics 
-{
+namespace RbStatistics {
     
 	namespace Uniform {
         
@@ -31,6 +30,5 @@ namespace RbStatistics
         double                      quantile(double a, double b, double p);                               /*!< Uniform(a,b) quantile */
         double                      rv(RandomNumberGenerator* rng);                                       /*!< Uniform(0,1) random variable */
         double                      rv(double a, double b, RandomNumberGenerator* rng);                   /*!< Uniform(a,b) random variable */
-        
 	}
 }

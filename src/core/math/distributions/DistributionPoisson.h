@@ -16,8 +16,7 @@
 
 class RandomNumberGenerator;
 
-namespace RbStatistics 
-{
+namespace RbStatistics {
 
 	namespace Poisson {
         
@@ -26,6 +25,5 @@ namespace RbStatistics
         double                      cdf(double lambda, int x);                                            /*!< Poisson(lambda) cumulative probability */
         double                      quantile(double lambda, double p);                                    /*!< Poisson(lambda) quantile */
         int                         rv(double lambda, RandomNumberGenerator* rng);                        /*!< Poisson(lambda) random variable */
-
-    
+	}
 }

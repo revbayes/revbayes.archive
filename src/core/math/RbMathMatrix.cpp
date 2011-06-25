@@ -44,7 +44,7 @@ void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) 
     
 	size_t n = aMat.getNumRows();
 	for (size_t j=0; j<n; j++) 
-    {
+        {
 		for (size_t k=0; k<j; k++)
 			for (size_t i=k+1; i<j; i++)
 				aMat[i][j] = aMat[i][j] - aMat[i][k] * aMat[k][j];
@@ -55,24 +55,24 @@ void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) 
         
 		for (size_t m=j+1; m<n; m++)
 	  		aMat[m][j] /= aMat[j][j]; 
-    }
+        }
     
 	for (size_t row=0; row<n; row++)
-    {
-		for (size_t col=0; col<n; col++) 
         {
-			if ( row <= col ) 
+		for (size_t col=0; col<n; col++) 
             {
+			if ( row <= col ) 
+                {
 				uMat[row][col] = aMat[row][col];
 				lMat[row][col] = (row == col ? 1.0 : 0.0);
-            }
+                }
 			else 
-            {
+                {
 				lMat[row][col] = aMat[row][col];
 				uMat[row][col] = 0.0;
+                }
             }
         }
-    }
 }
 
 /*!
@@ -100,11 +100,11 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 	MatrixReal N(dim, dim, 0.0);
 	MatrixReal X(dim, dim, 0.0);
 	for (size_t i=0; i<dim; i++)
-    {
+        {
 		D[i][i] = 1.0;
         N[i][i] = 1.0;
         X[i][i] = 1.0;
-    }
+        }
     
 	// create uninitialized matrix
 	MatrixReal cX(dim, dim, 0.0);
@@ -114,11 +114,11 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 	// of the diagonal cells.
 	double normA = 0.0;
 	for (size_t i=0; i<dim; i++) 
-    {
+        {
 		double x = fabs (A[i][i]);
 		if (x > normA)
 			normA = x;
-    }
+        }
 	normA *= 2.0;
     
 	// Calculate 1 + floor (log2(normA))
@@ -138,7 +138,7 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 	
 	double c = 1.0;
 	for (int k=1; k<=qValue; k++) 
-    {
+        {
 		c = c * (qValue - k + 1.0) / ((2.0 * qValue - k + 1.0) * k);
         
 		/* X = AX */
@@ -153,7 +153,7 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 			D = D + cX;
 		else
 			D = D - cX;
-    }
+        }
     
 	RbMath::gaussianElimination(D, N, F);
     
@@ -161,13 +161,13 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
 		F = F * F;
 	
 	for (size_t i=0; i<dim; i++)
-    {
-		for (j=0; j<dim; j++)
         {
+		for (j=0; j<dim; j++)
+            {
 			if (F[i][j] < 0.0)
 				F[i][j] = fabs(F[i][j]);
+            }
         }
-    }
 	return (0);
 }
 
@@ -199,10 +199,11 @@ int RbMath::findPadeQValue(const double& tolerance) {
 	// that is, the expression below for qV = 0. However, we can simplify that to
 	double x = 8.0;
 	int qV = 0;
-	while (x > tolerance) {
+	while (x > tolerance) 
+        {
 		qV++;
 		x = pow(2.0, 3.0 - (qV + qV)) * RbMath::factorial(qV) * RbMath::factorial(qV) / (RbMath::factorial(qV+qV) * RbMath::factorial(qV+qV+1));
-	}
+        }
 	return (qV);
 }
 
@@ -226,7 +227,7 @@ void RbMath::matrixInverse(MatrixReal& a, MatrixReal& aInv) {
     // compute the matrix inverse
 	RbMath::computeLandU(aTmp, lMat, uMat);
 	for (size_t k=0; k<n; k++) 
-    {
+        {
 		for (size_t i=0; i<n; i++)
 			bVec[i] = identity[i][k];
         
@@ -238,7 +239,7 @@ void RbMath::matrixInverse(MatrixReal& a, MatrixReal& aInv) {
 		backSubstitutionRow(uMat, bVec);
 		for (size_t i=0; i<n; i++)
 			aInv[i][k] = bVec[i];
-    }
+        }
 }
 
 

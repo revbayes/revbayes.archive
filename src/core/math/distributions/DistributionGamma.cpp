@@ -19,7 +19,6 @@
 #include "DistributionChisq.h"
 #include "DistributionGamma.h"
 #include "DistributionNormal.h"
-//#include "DistributionPoisson.h"
 #include "RbStatisticsHelper.h"
 #include "RbConstants.h"
 #include "RbMathFunctions.h"
@@ -54,32 +53,33 @@ double RbStatistics::Gamma::pdf(double a, double b, double x) {
  * \throws Does not throw an error.
  */
 double RbStatistics::Gamma::pdf(double shape, double scale, double x, bool isLog) {
-//    double pr;
-//    if (shape < 0 || scale <= 0) {
-//        std::ostringstream s;
-//        s << "Cannot compute the pdf for the gamma distribution for shape = " << shape << " and scale = " << scale;
-//        throw (RbException(s));
-//	    }
-// if (x < 0)
-//	        return 0.0;
-// 
-// if (shape == 0) /* point mass at 0 */
-//	        return (x == 0)? RbConstants::Double::inf : 0.0;
-//
-// if (x == 0) {
-//	        if (shape < 1) return RbConstants::Double::inf;
-//	        if (shape > 1) return 0.0;
-//	        /* else */
-//	        return isLog ? -log(scale) : 1 / scale;
-//	    }
-//
-// if (shape < 1) {
-//	        pr = RbStatistics::Poisson::pdf(shape, x/scale, isLog);
-//	        return isLog ?  pr + log(shape/x) : pr*shape/x;
-//	    }
-// /* else  shape >= 1 */
-// pr = RbStatistics::Poisson::pdf(shape-1, x/scale, isLog);
-// return isLog ? pr - log(scale) : pr/scale;
+
+    //    double pr;
+    //    if (shape < 0 || scale <= 0) {
+    //        std::ostringstream s;
+    //        s << "Cannot compute the pdf for the gamma distribution for shape = " << shape << " and scale = " << scale;
+    //        throw (RbException(s));
+    //	    }
+    // if (x < 0)
+    //	        return 0.0;
+    // 
+    // if (shape == 0) /* point mass at 0 */
+    //	        return (x == 0)? RbConstants::Double::inf : 0.0;
+    //
+    // if (x == 0) {
+    //	        if (shape < 1) return RbConstants::Double::inf;
+    //	        if (shape > 1) return 0.0;
+    //	        /* else */
+    //	        return isLog ? -log(scale) : 1 / scale;
+    //	    }
+    //
+    // if (shape < 1) {
+    //	        pr = RbStatistics::Poisson::pdf(shape, x/scale, isLog);
+    //	        return isLog ?  pr + log(shape/x) : pr*shape/x;
+    //	    }
+    // /* else  shape >= 1 */
+    // pr = RbStatistics::Poisson::pdf(shape-1, x/scale, isLog);
+    // return isLog ? pr - log(scale) : pr/scale;
     
     return isLog ? pdf(shape, scale, exp(x)) : pdf(shape, scale, x);
 }
@@ -131,6 +131,7 @@ double RbStatistics::Gamma::quantile(double a, double b, double p) {
     
 	return RbStatistics::ChiSquare::quantile(p, 2.0 * a) / (2.0*b);
 }
+
 
 double RbStatistics::Gamma::rv(double a, double b, RandomNumberGenerator* rng) {
     

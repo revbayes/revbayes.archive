@@ -19,7 +19,7 @@
 
 namespace RbMath {
     
-    void                        backSubstitutionRow(MatrixReal& u, std::vector<double>& b);                       //!< Xxx 
-    void                        forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b);                    //!< Xxx 
-    void                        gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xMat);           //!< Xxx 
+    void                        backSubstitutionRow(MatrixReal& u, std::vector<double>& b);                       //!< Back substitution for Gaussian elimination 
+    void                        forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b);                    //!< Forward substitution for Gaussian elimination 
+    void                        gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xMat);           //!< Perform Gaussian elimination on the matrix 
 }

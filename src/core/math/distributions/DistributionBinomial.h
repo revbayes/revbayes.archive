@@ -16,18 +16,15 @@
 
 class RandomNumberGenerator;
 
-namespace RbStatistics 
-{
-    
+namespace RbStatistics {
     
 	namespace Binomial {
         
         double                      pdf(double n, double p, double x);                                    /*!< Binomial(n,p) probability density */
-        double                      pdf(double n, double p, double q, double x, bool log);                          /*!< Binomial(n,p) probability density */
+        double                      pdf(double n, double p, double q, double x, bool log);                /*!< Binomial(n,p) probability density */
         double                      lnPdf(double n, double p, double x);                                  /*!< Binomial(n,p) log_e probability density */
         double                      cdf(double a, double b, double x);                                    /*!< Binomial(n,p) cumulative probability */
         double                      quantile(double a, double b, double p);                               /*!< Binomial(n,p) quantile */
         double                      rv(double a, double b, RandomNumberGenerator* rng);                   /*!< Binomial(n,p) random variable */
 	}
-    
 }

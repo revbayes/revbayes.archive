@@ -16,8 +16,7 @@
 
 class RandomNumberGenerator;
     
-namespace RbStatistics 
-{
+namespace RbStatistics {
     
 	namespace Beta {
         
@@ -26,7 +25,6 @@ namespace RbStatistics
         double                      cdf(double a, double b, double x);                                    /*!< Beta(a,b) cumulative probability */
         double                      quantile(double a, double b, double p);                               /*!< Beta(a,b) quantile */
         double                      rv(double a, double b, RandomNumberGenerator* rng);                   /*!< Beta(a,b) random variable */
-        double                      rv_old(double a, double b, RandomNumberGenerator* rng);                   /*!< Beta(a,b) random variable */
+        double                      rv_old(double a, double b, RandomNumberGenerator* rng);               /*!< Beta(a,b) random variable */
 	}
-    
 }

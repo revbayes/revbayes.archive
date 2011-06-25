@@ -15,9 +15,10 @@
  */
 
 #include <cmath>
-
 #include "DistributionDirichlet.h"
+#include "RbException.h"
 #include "RbMathFunctions.h"
+#include "RbStatisticsHelper.h"
 
 /*!
  * This function calculates the probability density 
@@ -38,10 +39,11 @@ double RbStatistics::Dirichlet::pdf(const std::vector<double> &a, const std::vec
     
 	double tol = 0.0001;
 	if ( tol < fabs( zSum - 1.0 ) )
-    {
-		std::cerr << "ERROR: Fatal error in dirichletPdf" << std::endl;
-		exit(1);
-    }
+        {
+        std::ostringstream s;
+        s << "Fatal error in Dirichlet PDF";
+        throw RbException(s);
+        }
     
 	double aSum = 0.0;
 	for (size_t i=0; i<n; i++)
@@ -98,10 +100,10 @@ std::vector<double> RbStatistics::Dirichlet::rv(const std::vector<double> &a, Ra
 	size_t n = a.size();
 	double sum = 0.0;
 	for(size_t i=0; i<n; i++)
-    {
-//		z[i] = RbStatistics::Helper::rndGamma(a[i], *rng);
+        {
+		z[i] = RbStatistics::Helper::rndGamma(a[i], *rng);
 		sum += z[i];
-    }
+        }
 	for(size_t i=0; i<n; i++)
 		z[i] /= sum;
     

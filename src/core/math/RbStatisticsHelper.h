@@ -50,11 +50,11 @@ namespace RbStatistics {
             std::vector<T> tmpV = sourceV;
             size_t n = tmpV.size();
             for (int i=0; i<k; i++)
-            {
+                {
                 int whichElement = (int)(rng->uniform01()*(n-i));
                 destV.push_back( tmpV[whichElement] );
                 tmpV[whichElement] = tmpV[n-i-1];
-            }
+                }
         }
         template <class T> void		permuteVector(std::vector<T>& v, RandomNumberGenerator* rng) {
             
@@ -62,8 +62,8 @@ namespace RbStatistics {
         }
         
 	}
-    
 }
 
 #pragma warning (default: 4068)
+
 #endif

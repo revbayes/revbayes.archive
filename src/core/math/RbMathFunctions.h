@@ -20,16 +20,16 @@
 
 namespace RbMath {
     
-    double                      beta(double a, double b);                                                       //!< Xxx 
-    double                      binomialDeviance(double x, double np);                                                             //!< Evaluates the Deviance part
+    double                      beta(double a, double b);                                                       //!< Beta function 
+    double                      binomialDeviance(double x, double np);                                          //!< Evaluates the Deviance part
     int                         chebyshev_init(double *dos, int nos, double eta);
     double                      chebyshev_eval(double x, const double *a, const int n);
     double                      expm1(double x);                                                                //!< Compute exp(x) - 1 for small x
     double                      gamma(double x);                                                                //!< Calculate the Gamma function 
-    double                      gamma_old(double x);                                                                //!< Calculate the Gamma function 
+    double                      gamma_old(double x);                                                            //!< Calculate the Gamma function 
     double                      incompleteBeta(double a, double b, double x);                                   //!< Xxx 
     double                      incompleteGamma(double x, double alpha, double scale);                          //!< Xxx 
-    double                      incompleteGamma_old(double x, double alpha, double scale);                          //!< Xxx 
+    double                      incompleteGamma_old(double x, double alpha, double scale);                      //!< Xxx 
     double                      lnGamma_sign(double a, int *sgn);                                               //!< Calculate the log of the Gamma function
     double                      lnGamma(double a);                                                              //!< Calculate the log of the Gamma function
     double                      lnGamma_old(double a);                                                          //!< Calculate the log of the Gamma function

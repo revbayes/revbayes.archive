@@ -19,6 +19,8 @@
 
 #include "RbMathCombinatorialFunctions.h"
 #include "DistributionPoisson.h"
+#include "RbStatisticsHelper.h"
+#include "RbException.h"
 
 
 double RbStatistics::Poisson::pdf(double lambda, int x) {
@@ -58,11 +60,11 @@ double RbStatistics::Poisson::cdf(double lambda, int x) {
 	double next = exp(-lambda);
 	double cdf = next;
 	for (int i=1; i<=x; i++)
-    {
+        {
 		double last = next;
 		next = last * lambda / (double)i;
 		cdf += next;
-    }
+        }
 	return cdf;
 }
 
@@ -83,23 +85,23 @@ double RbStatistics::Poisson::quantile(double lambda, double p) {
 	double sum = 0.0;
 	int xmax = 100;
 	for (int i=0; i<=xmax; i++)
-    {
+        {
 		double sumOld = sum;
 		double newVal;
 		if ( i == 0 )
-        {
+            {
 			newVal = exp(-lambda);
 			sum = newVal;
-        }
+            }
 		else
-        {
+            {
 			double last = newVal;
 			newVal = last * lambda / ( double ) ( i );
 			sum += newVal;
-        }
+            }
 		if ( sumOld <= p && p <= sum )
 			return i;
-    }
+        }
 	//cout << "Poisson quantile warning" << endl;
 	return xmax;
 }
@@ -117,43 +119,43 @@ double RbStatistics::Poisson::quantile(double lambda, double p) {
 int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator* rng) {
     
 	if (lambda < 17.0)
-    {
-		if (lambda < 1.0e-6)
         {
-			if (lambda == 0.0) 
+		if (lambda < 1.0e-6)
+            {
+                if (lambda == 0.0) 
 				return 0;
             
 			if (lambda < 0.0)
-            {
-				/* there should be an error here */
-				std::cout << "Parameter negative in poisson function" << std::endl;
-            }
+                {
+                std::ostringstream s;
+                s << "Parameter negative in poisson function";
+                throw (RbException(s));
+                }
             
 			/* For extremely small lambda we calculate the probabilities of x = 1
              and x = 2 (ignoring higher x). The reason for using this 
              method is to prevent numerical inaccuracies in other methods. */
             //			return RbStatistics::Helper::poissonLow(lambda, *rng);
             return 1;
-        }
+            }
 		else 
-        {
+            {
 			/* use the inversion method */
-//			return RbStatistics::Helper::poissonInver(lambda, *rng);
+			return RbStatistics::Helper::poissonInver(lambda, *rng);
             return 1;
+            }
         }
-    }
 	else 
-    {
-		if (lambda > 2.0e9) 
         {
+		if (lambda > 2.0e9) 
+            {
 			/* there should be an error here */
 			std::cout << "Parameter too big in poisson function" << std::endl;
-        }
+            }
 		/* use the ratio-of-uniforms method */
-        //		return RbStatistics::Helper::poissonRatioUniforms(lambda, *rng);
+        return RbStatistics::Helper::poissonRatioUniforms(lambda, *rng);
         
         return 1;
-    }
-}
+        }
 }
 

@@ -16,8 +16,7 @@
 
 class RandomNumberGenerator;
 
-namespace RbStatistics 
-{
+namespace RbStatistics {
     
     namespace Normal {
         
@@ -32,7 +31,4 @@ namespace RbStatistics
         double                      rv(RandomNumberGenerator* rng);                                         /*!< Normal(0,1) random variable */
         double                      rv(double mu, double sigma, RandomNumberGenerator* rng);                /*!< Normal(mu,sigma) random variable */
 	}
-
-    
-    
 }

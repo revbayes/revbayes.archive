@@ -11,6 +11,7 @@
 #include "RbMathCombinatorialFunctions.h"
 
 #include <cmath>
+#include <iostream>
 
 /*!
  * This function is used when generating gamma-distributed random variables.

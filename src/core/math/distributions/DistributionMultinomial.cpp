@@ -33,7 +33,7 @@
  */
 double RbStatistics::Multinomial::pdf(const std::vector<double> &p, const std::vector<double> &x) {
 	
-    double lnP = RbStatistics::Multinomial::lnPdf(p,x);
+    double lnP = RbStatistics::Multinomial::lnPdf(p, x);
     if (lnP < -300.0)
         return 0.0;
 	return lnP;
@@ -51,7 +51,7 @@ double RbStatistics::Multinomial::pdf(const std::vector<double> &p, const std::v
  */
 double RbStatistics::Multinomial::pdf(const std::vector<double> &p, const std::vector<int> &x) {
 	
-    double lnP = RbStatistics::Multinomial::lnPdf(p,x);
+    double lnP = RbStatistics::Multinomial::lnPdf(p, x);
     if (lnP < -300.0)
         return 0.0;
 	return std::exp(lnP);
@@ -70,16 +70,20 @@ double RbStatistics::Multinomial::pdf(const std::vector<double> &p, const std::v
 double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std::vector<double> &x) {
     
     if ( p.size() != x.size() )
-        throw (RbException("Mismatch in sizes of parameter and observation vector in Multinomial lnPdf"));
+        {
+        std::ostringstream s;
+        s << "Mismatch in sizes of parameter and observation vector in Multinomial lnPdf";
+        throw (RbException(s));
+        }
     
     double lnP = 0.0;
     double sum = 0.0;
     for (size_t i=0; i<x.size(); i++)
-    {
+        {
         lnP -= RbMath::lnGamma(x[i] + 1.0);
         lnP += x[i] * log(p[i]);
         sum += x[i];
-    }
+        }
     lnP += RbMath::lnGamma(sum + 1.0);
 	return lnP;
 }
@@ -97,16 +101,20 @@ double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std:
 double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std::vector<int> &x) {
     
     if ( p.size() != x.size() )
-        throw (RbException("Mismatch in sizes of parameter and observation vector in Multinomial lnPdf"));
-    
+        {
+        std::ostringstream s;
+        s << "Mismatch in sizes of parameter and observation vector in Multinomial lnPdf";
+        throw (RbException(s));
+        }
+        
     double lnP = 0.0;
     int sum = 0;
     for (size_t i=0; i<x.size(); i++)
-    {
+        {
         lnP -= RbMath::lnGamma((double)x[i] + 1.0);
         lnP += (double)x[i] * log(p[i]);
         sum += x[i];
-    }
+        }
     lnP += RbMath::lnGamma((double)sum + 1.0);
 	return lnP;
 }
@@ -126,14 +134,14 @@ std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, Ran
     double u = rng->uniform01();
     double sum = 0.0;
     for (size_t i=0; i<p.size(); i++)
-    {
+        {
         sum += p[i];
         if (u < sum)
-        {
+            {
             x[i]++;
             break;
+            }
         }
-    }
 	return x;
 }
 
@@ -151,18 +159,18 @@ std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, int
     
     std::vector<int> x(p.size(),0);
     for (int i=0; i<n; i++)
-    {
+        {
         double u = rng->uniform01();
         double sum = 0.0;
         for (size_t j=0; j<p.size(); j++)
-        {
+            {
             sum += p[j];
             if (u < sum)
-            {
+                {
                 x[j]++;
                 break;
+                }
             }
         }
-    }
 	return x;
 }

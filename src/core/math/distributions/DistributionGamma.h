@@ -16,8 +16,7 @@
 
 class RandomNumberGenerator;
 
-namespace RbStatistics 
-{
+namespace RbStatistics {
     
 	namespace Gamma {
         
@@ -28,6 +27,4 @@ namespace RbStatistics
         double                      quantile(double a, double b, double p);                               /*!< Gamma(a,b) quantile */
         double                      rv(double a, double b, RandomNumberGenerator* rng);                   /*!< Gamma(a,b) random variable */
 	}
-    
-    
 }

@@ -41,17 +41,18 @@
 /* 30 is somewhat arbitrary: it is on the *safe* side:
  * both speed and precision are clearly improved for k < 30.
  */
-double RbMath::choose(double n, double k)
-{
+double RbMath::choose(double n, double k) {
+
     double r, k0 = k;
     k = floor(k + 0.5);
     if (fabs(k - k0) > 1e-7) 
-    {
+        {
         std::ostringstream s;
         s << "'k' (" << k0 << ") must be integer, rounded to " << k;
         throw (RbException(s));
-    }
-    if (k < k_small_max) {
+        }
+    if (k < k_small_max) 
+        {
         int j;
         if(n-k < k && n >= 0 && RbMath::isInt(n)) k = n-k; /* <- Symmetry */
         if (k <	 0) return 0.0;
@@ -62,24 +63,27 @@ double RbMath::choose(double n, double k)
             r *= (n-j+1)/j;
         return RbMath::isInt(n) ? floor(r + 0.5) : r;
         /* might have got rounding errors */
-    }
+        }
     /* else: k >= k_small_max */
-    if (n < 0) {
+    if (n < 0) 
+        {
         r = choose(-n+ k-1, k);
         if (k != 2 * floor(k / 2.)) r = -r;
         return r;
-    }
-    else if (RbMath::isInt(n)) {
+        }
+    else if (RbMath::isInt(n)) 
+        {
         if(n < k) return 0.;
         if(n - k < k_small_max) return choose(n, n-k); /* <- Symmetry */
         return floor(exp(RbMath::lfastchoose(n, k)) + 0.5);
-    }
+        }
     /* else non-integer n >= 0 : */
-    if (n < k-1) {
+    if (n < k-1) 
+        {
         int s_choose;
         r = RbMath::lfastchoose2(n, k, /* -> */ &s_choose);
         return s_choose * exp(r);
-    }
+        }
     return exp(RbMath::lfastchoose(n, k));
 }
 
@@ -103,53 +107,57 @@ double RbMath::factorial(int x) {
 /* matching R_D_nonint() in ./dpq.h : */
 #define R_IS_INT(x)	  (fabs((x) - floor((x)+0.5)) <= 1e-7)
 
-double RbMath::lnChoose(double n, double k)
-{
+double RbMath::lnChoose(double n, double k) {
+
     double k0 = k;
     k = floor(k + 0.5);
     if (fabs(k - k0) > 1e-7)
-    {
+        {
         std::ostringstream s;
         s << "'k' (" << k0 << ") must be integer, rounded to " << k;
         throw (RbException(s));
-    }
-    if (k < 2) {
+        }
+    if (k < 2) 
+        {
         if (k <	 0) return RbConstants::Double::neginf;
         if (k == 0) return 0.;
         /* else: k == 1 */
         return log(fabs(n));
-    }
+        }
     /* else: k >= 2 */
-    if (n < 0) {
+    if (n < 0) 
+        {
         return lnChoose(-n+ k-1, k);
-    }
-    else if (R_IS_INT(n)) {
-        if(n < k) return RbConstants::Double::neginf;
+        }
+    else if (R_IS_INT(n)) 
+        {
+        if(n < k) 
+            return RbConstants::Double::neginf;
         /* k <= n :*/
         if(n - k < 2) return lnChoose(n, n-k); /* <- Symmetry */
         /* else: n >= k+2 */
         return RbMath::lfastchoose(n, k);
-    }
+        }
     /* else non-integer n >= 0 : */
-    if (n < k-1) {
+    if (n < k-1) 
+        {
         int s;
         return RbMath::lfastchoose2(n, k, &s);
-    }
+        }
     return RbMath::lfastchoose(n, k);
 }
 
 
-double RbMath::lfastchoose(double n, double k)
-{
+double RbMath::lfastchoose(double n, double k) {
+
     return -log(n + 1.) - RbMath::lnBeta(n - k + 1., k + 1.);
 }
 
 /* mathematically the same:
  less stable typically, but useful if n-k+1 < 0 : */
-double RbMath::lfastchoose2(double n, double k, int *s_choose)
-{
-    double r;
-    r = lnGamma_sign(n - k + 1., s_choose);
+double RbMath::lfastchoose2(double n, double k, int *s_choose) {
+
+    double r = lnGamma_sign(n - k + 1., s_choose);
     return RbMath::lnGamma(n + 1.) - RbMath::lnGamma(k + 1.) - r;
 }
 

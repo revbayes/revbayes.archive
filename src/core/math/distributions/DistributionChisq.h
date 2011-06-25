@@ -16,8 +16,7 @@
 
 class RandomNumberGenerator;
 
-namespace RbStatistics 
-{
+namespace RbStatistics {
     
 	namespace ChiSquare {
         
@@ -27,6 +26,4 @@ namespace RbStatistics
         double                      quantile(double v, double p);                                         /*!< Chi-Square(v) quantile */
         double                      rv(double v, RandomNumberGenerator* rng);                             /*!< Chi-Square(v) random variable */
 	}
-    
-    
 }

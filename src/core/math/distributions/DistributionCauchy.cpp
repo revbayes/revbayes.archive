@@ -35,7 +35,8 @@
  * \throws Does not throw an error.
  */
 double RbStatistics::Cauchy::lnPdf(double location, double scale, double x) {
-    return pdf(location,scale,x,true);
+
+    return pdf(location, scale, x, true);
 }
 
 /*!
@@ -50,22 +51,21 @@ double RbStatistics::Cauchy::lnPdf(double location, double scale, double x) {
  * \throws Does not throw an error.
  */
 double RbStatistics::Cauchy::pdf(double location, double scale, double x) {
-    return pdf(location,scale,x,false);
+
+    return pdf(location, scale, x, false);
 }
 
 
-double RbStatistics::Cauchy::pdf(double location, double scale, double x, bool give_log)
-{
-    double y;
+double RbStatistics::Cauchy::pdf(double location, double scale, double x, bool give_log) {
     
-    if (scale <= 0) {
+    if (scale <= 0) 
+        {
         std::ostringstream s;
         s << "Cannot compute pdf of the Cauchy distribution because scale = " << scale << " is negativ.";
         throw (RbException(s));
-    }
+        }
     
-    y = (x - location) / scale;
-    return give_log ?
-	- log(RbConstants::PI * scale * (1. + y * y)) :
-	1. / (RbConstants::PI * scale * (1. + y * y));
+    double y = (x - location) / scale;
+    return give_log ? - log(RbConstants::PI * scale * (1.0 + y * y)) : 1.0 / (RbConstants::PI * scale * (1.0 + y * y));
 }
+

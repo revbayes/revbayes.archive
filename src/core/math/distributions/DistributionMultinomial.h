@@ -19,8 +19,7 @@
 
 class RandomNumberGenerator;
 
-namespace RbStatistics 
-{
+namespace RbStatistics {
     
 	namespace Multinomial {
         double                      pdf(const std::vector<double>& p, const std::vector<int>& x);         /*!< Multinomial(p[]) probability */
@@ -30,5 +29,4 @@ namespace RbStatistics
         std::vector<int>            rv(const std::vector<double>& p, RandomNumberGenerator* rng);         /*!< Multinomial(p[]) random variable */
         std::vector<int>            rv(const std::vector<double>& p, int n, RandomNumberGenerator* rng);  /*!< Multinomial(p[]) random variable */
 	}
-
 }

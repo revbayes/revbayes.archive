@@ -16,8 +16,7 @@
 
 class RandomNumberGenerator;
 
-namespace RbStatistics 
-{
+namespace RbStatistics {
     
 	namespace Exponential {
         
@@ -27,6 +26,4 @@ namespace RbStatistics
         double                      quantile(double lambda, double p);                                    /*!< Exponential(lambda) quantile */
         double                      rv(double lambda, RandomNumberGenerator* rng);                        /*!< Exponential(lambda) random variable */
 	}
-    
-    
 }
