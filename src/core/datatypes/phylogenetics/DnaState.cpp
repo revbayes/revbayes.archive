@@ -90,7 +90,7 @@ const char DnaState::getNucleotideCode(const std::set<char>& s) const {
     std::vector<bool> stateSet(4);
     for (size_t i=0; i<4; i++)
         stateSet[i] = false;
-    for (std::set<char>::iterator p = s.begin(); p != s.end(); p++)
+    for (std::set<char>::const_iterator p = s.begin(); p != s.end(); p++)
         {
         char c = toupper(*p);
         if (c == 'A')
