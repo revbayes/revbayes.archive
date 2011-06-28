@@ -18,6 +18,7 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
 
 /**
  * This is the interface for a class that manages files and directories. 

@@ -19,6 +19,18 @@
 
 
 
+/** Find the last component of a file path */
+std::string StringUtilities::getLastPathComponent(std::string& s) {
+
+    std::vector<std::string> sVec;
+    stringSplit(s, "/", sVec);
+    std::string lastComponent = "";
+    if (sVec.size() > 0)
+        lastComponent = sVec[sVec.size()-1];
+    return lastComponent;
+}
+
+
 /** Utility function for dividing string into pieces */
 void StringUtilities::stringSplit(std::string str, std::string delim, std::vector<std::string>& results) {
 

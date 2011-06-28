@@ -21,6 +21,7 @@ namespace StringUtilities {
     
     void                        stringSplit(std::string str, std::string delim, std::vector<std::string>& results); //!< Split a string into pieces
     void                        toLower(std::string& str);                                                          //!< Convert string's characters to lower case
+    std::string                 getLastPathComponent(std::string& s);                                               //!< Find the last component of a file path
 }
 
 #endif
