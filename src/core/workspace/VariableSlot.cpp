@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-11-17, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #include "ConstantNode.h"
@@ -28,12 +28,13 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "RbOptions.h"      // For PRINTF
+#include "RbOptions.h"
 #include "TypeSpec.h"
 #include "ValueContainer.h"
 #include "VariableContainer.h"
 #include "VariableSlot.h"
 #include "VectorNatural.h"
+#include "VectorIndex.h"
 #include "Workspace.h"
 
 #include <cassert>
@@ -352,14 +353,14 @@ void VariableSlot::replaceDAGVariable( DAGNode* newVariable ) {
 
 
 /** Set value element */
-void VariableSlot::setElement( VectorInteger& index, RbObject* newVal ) {
+void VariableSlot::setElement( VectorIndex& index, RbObject* newVal ) {
 
     setElement( index, newVal->wrapIntoVariable(), true );
 }
 
 
 /** Set variable element */
-void VariableSlot::setElement( VectorInteger& index, DAGNode* newVar, bool convert ) {
+void VariableSlot::setElement( VectorIndex& index, DAGNode* newVar, bool convert ) {
 
     // Check for silly call
     if ( index.size() == 0 )

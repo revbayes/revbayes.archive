@@ -24,7 +24,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "VectorInteger.h"
+#include "VectorIndex.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -368,13 +368,17 @@ DAGNode* LookupNode::lookup( void ) {
     }
     else {
         // Get the index vector from the index arguments
-        //! @todo Support string indices
-        VectorInteger index;
+        VectorIndex index;
         for ( IndexArgs::iterator i = indexArgs.begin(); i != indexArgs.end(); i++ ) {
-            if ( (*i) == NULL )
+            
+            if ( (*i) == NULL ) {
+
                 index.push_back( -1 );
-            else
-                index.push_back( ( static_cast<const Integer*>( (*i)->getValue() ) )->getValue() - 1 );
+            }
+            else {
+                
+                index.push_back( (*i)->getValue()->clone() );
+            }
         }
 
         if ( baseVariable != NULL )

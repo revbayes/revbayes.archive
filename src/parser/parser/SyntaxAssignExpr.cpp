@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #include "ConverterNode.h"
@@ -27,6 +27,7 @@
 #include "StochasticNode.h"
 #include "ValueContainer.h"
 #include "VariableContainer.h"
+#include "VectorIndex.h"
 #include "VectorNatural.h"
 #include "VectorString.h"
 #include "SyntaxAssignExpr.h"
@@ -169,7 +170,7 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
     PRINTF( "Evaluating assign expression\n" );
     
     // Get variable info from lhs
-    VectorInteger       elemIndex;
+    VectorIndex         elemIndex;
     VariableSlot*       slot = NULL;
     DAGNode*            theVariable;
     RbString            varName;
@@ -225,7 +226,6 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
             if ( elemIndex.size() == 0 )
                 frame->addVariable( varName, typeSpec, value->wrapIntoVariable() );
             else {
-                VectorNatural index = elemIndex;
                 frame->addVariable( varName, typeSpec, makeContainer( elemIndex, value ) );
             }
         }
@@ -273,7 +273,6 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
             if ( elemIndex.size() == 0 )
                 frame->addVariable( varName, typeSpec, node );
             else {
-                VectorNatural index = elemIndex;
                 frame->addVariable( varName, typeSpec, makeContainer( elemIndex, node ) );
             }
         }
@@ -332,7 +331,6 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
             if ( elemIndex.size() == 0 )
                 frame->addVariable( varName, typeSpec, node );
             else {
-                VectorNatural index = elemIndex;
                 frame->addVariable( varName, typeSpec, makeContainer( elemIndex, node ) );
             }
         }
@@ -385,37 +383,62 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
 
 
 /** Make new value container */
-ContainerNode* SyntaxAssignExpr::makeContainer( const VectorNatural& index, RbObject* elem ) const {
+ContainerNode* SyntaxAssignExpr::makeContainer( const VectorIndex& index, RbObject* elem ) const {
     
+    // Catch attempt to create containers of containers
     if ( elem->getDim() > 0 )
         throw RbException( "Illegal attempt to create container of containers" );
     
+    // Check index and get length specification
     std::vector<size_t> length;
-    for ( size_t i = 0; i < index.size(); i++ )
-        length.push_back( int( index[i] ) + 1 );
+    VectorNatural       elementIndex;
+    for ( size_t i = 0; i < index.size(); i++ ) {
+        
+        if ( !index[i]->isType( Integer_name ) )
+            throw RbException( "Cannot make container based on string index" );
+        
+        int k = static_cast<const Integer*>( index[i] )->getValue();
+        if ( k < 0 )
+            throw RbException( "Cannot make container based on empty index" );
+        
+        elementIndex.push_back( k );
+    }
     
     ValueContainer* temp = new ValueContainer( TypeSpec( elem->getType(), index.size() ), length );
-    temp->setElement( index, elem->wrapIntoVariable() );
-    
+    temp->setElement( elementIndex, elem );
+
     return new ContainerNode( temp );
 }
 
 
 /** Make new variable container */
-ContainerNode* SyntaxAssignExpr::makeContainer( const VectorNatural& index, DAGNode* elem ) const {
+ContainerNode* SyntaxAssignExpr::makeContainer( const VectorIndex& index, DAGNode* elem ) const {
     
+    // Catch attempt to create containers of containers
     if ( elem->getDim() > 0 )
         throw RbException( "Illegal attempt to create container of containers" );
     
+    // Check index and get length specification
     std::vector<size_t> length;
-    for ( size_t i = 0; i < index.size(); i++ )
-        length.push_back( int( index[i] ) + 1 );
+    VectorNatural       elementIndex;
+    for ( size_t i = 0; i < index.size(); i++ ) {
+        
+        if ( !index[i]->isType( Integer_name ) )
+            throw RbException( "Cannot make container based on string index" );
+        
+        int k = static_cast<const Integer*>( index[i] )->getValue();
+        if ( k < 0 )
+            throw RbException( "Cannot make container based on empty index" );
+        
+        elementIndex.push_back( k );
+    }
     
     VariableContainer* temp = new VariableContainer( TypeSpec( elem->getValueType(), index.size() ), length );
-    temp->setElement( index, elem );
+    temp->setElement( elementIndex, elem );
     
     return new ContainerNode( temp );
 }
+
 
 /** Print info about the syntax element */
 void SyntaxAssignExpr::print(std::ostream& o) const {

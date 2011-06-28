@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef SyntaxConstant_H

@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #include "Parser.h"
@@ -152,7 +152,7 @@ int Parser::execute(SyntaxElement *root) const {
 
 
 /** Give flex a line to parse */
-void Parser::getline(char* buf, int maxsize) {
+void Parser::getline(char* buf, size_t maxsize) {
 
     if (!rrcommand.good()) {
         foundEOF = true;

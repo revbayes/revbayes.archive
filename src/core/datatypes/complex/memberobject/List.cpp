@@ -10,124 +10,121 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 
-#include "ConstantNode.h"
-#include "ContainerNode.h"
-#include "MemberNode.h"
-#include "RbException.h"
 #include "List.h"
+#include "RbException.h"
 #include "RbNames.h"
 #include "Real.h"
-#include "VectorInteger.h"
-#include "VectorRealPos.h"
+#include "VariableSlot.h"
 #include "VectorString.h"
 
 
 /** Construct empty list */
-List::List( void ) : MemberObject(getMemberRules()) {
+List::List( void ) : MemberObject() {
 }
 
 
-/** Subscript operator allows caller access to variables */
-DAGNode* List::operator[](size_t i) const {
+/** Copy constructor */
+List::List( const List& x ) : MemberObject( getMemberRules() ) {
 
-    if ( i > variables.size()  )
+    for ( size_t i=0; i<elements.size(); i++ ) {
+        
+        elements.push_back( x.elements[i]->clone() );
+        names.push_back( x.names[i] );
+    }
+}
+
+
+/** Destructor */
+List::~List( void ) {
+
+    for ( size_t i=0; i<elements.size(); i++ )
+        delete elements[i];
+}
+
+
+/** Assignment operator */
+List& List::operator=( const List& x ) {
+
+    if ( this != &x ) {
+        
+        for ( size_t i=0; i<elements.size(); i++ )
+            delete elements[i];
+
+        for ( size_t i=0; i<elements.size(); i++ ) {
+            
+            elements.push_back( x.elements[i]->clone() );
+            names.push_back( x.names[i] );
+        }
+    }
+    
+    return ( *this );
+}
+
+
+/** Index operator allows caller convenient access to variables */
+DAGNode* List::operator[]( size_t i ) const {
+
+    if ( i > elements.size()  )
         throw RbException( "Index out of bound" );
 
-    // All variables (members) are value variables,
-    // so we only give out copies
-    return variables[i]->clone();
+    // We give out pointers to the variables themselves
+    return const_cast<DAGNode*>( elements[i]->getVariable() );
 }
 
 
-/** Add variable to list */
-void List::addVariable( DAGNode* var, const std::string& name ) {
+/** Add variable element to list */
+void List::addElement( DAGNode* var, const std::string& name ) {
 
-    members.addVariable( name, TypeSpec(RbObject_name, var->getDim() ), var );
+    // Add a value slot or reference slot depending on whether or not we own the variable
+    if ( var->getSlot() == NULL )
+        elements.push_back( new VariableSlot( TypeSpec(RbObject_name, var->getDim() ), var ) );
+    else
+        elements.push_back( new VariableSlot( TypeSpec(RbObject_name, var->getDim(), true ), var ) );
+
+    // Add name
     names.push_back( name );
-    variables.push_back( var );
 }
 
 
 /** Clone function */
 List* List::clone() const {
 
-    return new List(*this);
-}
-
-
-/** Map member methods to internal function calls */
-DAGNode* List::executeOperation(const std::string& name, ArgumentFrame& args) {
-
-    return MemberObject::executeOperation( name, args );
+    return new List( *this );
 }
 
 
 /** Get class vector describing type of object */
 const VectorString& List::getClass() const {
 
-    static VectorString rbClass = VectorString(List_name) + MemberObject::getClass();
+    static VectorString rbClass = VectorString( List_name ) + MemberObject::getClass();
     return rbClass;
 }
 
 
-/** Return member rules (no original members) */
-const MemberRules& List::getMemberRules(void) const {
+/** Get indexed element */
+DAGNode* List::getElement( size_t index ) {
 
-    static MemberRules memberRules;
-    return memberRules;
+    return operator[]( index );
 }
 
 
-/** Get methods (no methods) */
-const MethodTable& List::getMethods(void) const {
-
-    static MethodTable   methods;
-    return methods;
-}
-
-
-/**
- * Get subscript element for parser. By giving back a temp variable rather than
- * a reference to a list element, we ensure that the parser cannot set the element
- */
-DAGNode* List::getSubelement( VectorInteger& index ) {
-
-    if ( index.size() < 1 )
-        throw RbException( "Subscript index empty for " + List_name );
-
-    if ( index[0] < 0 || index[0] > int( variables.size() ) )
-        throw RbException( "Index out of bounds for " + List_name );
-
-    if ( index.size() == 1 ) {
-
-        return variables[index[0]]->clone();
+/** Get element index */
+size_t List::getElementIndex( std::string& s ) const {
+    
+    size_t i;
+    for ( i=0; i<names.size(); i++ ) {
+        if ( names[i] == s )
+            break;
     }
-    else {
-
-        VectorInteger tempIndex;
-        for ( size_t i = 1; i < index.size(); i++ )
-            tempIndex.push_back( index[i] );
-        index = tempIndex;
-
-        DAGNode* temp = variables[index[0]]->clone();
-        if ( !temp->isDAGType( MemberNode_name ) && !temp->isDAGType( ContainerNode_name ) ) {
-            delete temp;
-            throw RbException( "Object does not have elements" );
-        }
-
-        DAGNode* retVal;
-        if ( temp->isDAGType( MemberNode_name ) )
-            retVal = static_cast<MemberNode*>( temp )->getElement( index );
-        else
-            retVal = static_cast<ContainerNode*>( temp )->getElement( index );
-        
-        delete temp;
-        return retVal;
-    }
+    
+    if ( i == names.size() )
+        throw RbException( "No element with index name '" + s + "'" );
+    
+    return i;
 }
 
 
@@ -135,14 +132,14 @@ DAGNode* List::getSubelement( VectorInteger& index ) {
 void List::printValue(std::ostream& o) const {
 
 
-    for ( size_t i = 0; i < variables.size(); i++ ) {
+    for ( size_t i = 0; i < members.size(); i++ ) {
 
         if ( names[i] == "" )
-            o << "[" << i << "]" << std::endl;
+            o << "[" << i + 1 << "]" << std::endl;
         else
-            o << "." << names[i] << std::endl;
+            o << "[" << names[i] << "]" << std::endl;
 
-        variables[i]->printValue( o );
+        elements[i]->getValue()->printValue( o );
 
         o << std::endl;
     }
@@ -153,9 +150,15 @@ void List::printValue(std::ostream& o) const {
 std::string List::richInfo(void) const {
 
     std::ostringstream o;
-    o <<  "List with " << variables.size() << " elements" << std::endl;
+    o <<  "List with " << elements.size() << " elements" << std::endl;
     printValue(o);
 
     return o.str();
 }
 
+
+/** Set element */
+void List::setElement( size_t index, DAGNode* var, bool convert) {
+    
+    //! @todo Fredrik: Fill this in
+}

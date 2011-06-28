@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-12-05, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #include "ConstantNode.h"
@@ -33,6 +33,7 @@
 #include "ValueContainer.h"
 #include "VariableContainer.h"
 #include "VectorBoolean.h"
+#include "VectorIndex.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
 #include "VectorReal.h"
@@ -213,7 +214,7 @@ VariableContainer& VariableContainer::operator=( const VariableContainer& x ) {
  * Subscript operator. ContainerIterator and VectorNatural indices can also be passed in
  * because of the type conversion constructors implemented in the VectorInteger class.
  */
-DAGNode*& VariableContainer::operator[]( const VectorInteger& i ) {
+DAGNode*& VariableContainer::operator[]( const VectorNatural& i ) {
 
     size_t offset = getOffset( i );
     return elements[offset];
@@ -224,7 +225,7 @@ DAGNode*& VariableContainer::operator[]( const VectorInteger& i ) {
  * Subscript operator (const). ContainerIterator and VectorNatural indices can also be passed
  * in because of the type conversion constructors implemented in the VectorInteger class.
  */
-const DAGNode* const& VariableContainer::operator[]( const VectorInteger& i ) const {
+const DAGNode* const& VariableContainer::operator[]( const VectorNatural& i ) const {
 
     size_t offset = getOffset( i );
     return elements[offset];
@@ -265,9 +266,9 @@ void VariableContainer::clear(void) {
 
 
 /** Clone function */
-VariableContainer* VariableContainer::clone(void) const {
+VariableContainer* VariableContainer::clone( void ) const {
 
-    return new VariableContainer(*this);
+    return new VariableContainer( *this );
 }
 
 
@@ -367,8 +368,12 @@ VectorNatural VariableContainer::getIndex(const DAGNode* elem) const {
  * indicating that all elements in that dimension should be included in the return variable,
  * which is then itself a container.
  */
-DAGNode* VariableContainer::getElement( VectorInteger& index ) {
+DAGNode* VariableContainer::getElement( VectorIndex& index ) {
 
+    // Check for superfluous indices
+    if ( index.size() > getDim() )
+        throw RbException( "Too many indices when accessing element of " + getTypeSpec().toString() + " object" );
+    
     // Drop any negative indices at the end of the index vector because they do not matter.
     // Also count number of negative indices that pertain to this container
     for ( int i = static_cast<int>( index.size() ) - 1; i >= 0; i-- ) {
@@ -383,97 +388,133 @@ DAGNode* VariableContainer::getElement( VectorInteger& index ) {
             numNegativeIndices++;
     }
 
-    // Check that all relevant indices are within bounds
-    size_t min = index.size() < length.size() ? index.size() : length.size();
-    for ( size_t i = 0; i < min; i++ ) {
-    
-        if ( index[i] >= int( length[i] ) )
-            throw RbException( "Index out of bounds" );
-    }
-
     // Branch out depending on the number of indices
-    if ( index.size() > length.size() ) {
-
-        // Index goes into elements; check that it actually points to an element
-        for ( size_t i = 0; i < length.size(); i++ ) {
-            if ( index[i] < 0 ) {
-                std::ostringstream msg;
-                msg << "Invalid index into subcontainer element of " << getTypeSpec();
-                throw RbException( msg );
-            }
-        }
-
-        VectorNatural elemIndex;
-        VectorInteger valueIndex;
-        size_t i = 0;
-        for ( ; i < length.size(); i++ )
-            elemIndex.push_back( index[i] );
-        for ( ; i < index.size(); i++ )
-            valueIndex.push_back( index[i] );
-
-        DAGNode* elemPtr = elements[ getOffset( elemIndex ) ];
-        if ( !elemPtr->isDAGType( MemberNode_name ) )
-            throw RbException( "Container element does not support subscripting" );
-        else {
-            // Get member object pointer to the value
-            MemberObject* elem = static_cast<MemberNode*>( elemPtr )->getMemberObject();            
-
-            // Truncate index and delegate job to subelement
-            size_t subIndex = valueIndex[0];
-            valueIndex.pop_front();
-            index = valueIndex;
-            if ( index.size() == 0 )
-                return elem->getSubelement( subIndex );
-            else
-                return elem->getSubelement( subIndex )->getElement( index );
-        }
-    }
-    else if ( index.size() == 0 ) {
+    if ( index.size() == 0 ) {
 
         // We want the entire container, easy
         return new ContainerNode( this );
     }
     else if ( index.size() == length.size() && numNegativeIndices == 0 ) {
 
-        // We want an element, easy
-        return elements[ getOffset( index ) ];
+        // Get single element index
+        VectorNatural elemIndex = getNaturalIndex( index );
+
+        // Return element
+        return elements[ getOffset( elemIndex ) ];
     }
     else {
 
-        // We want a subcontainer
-
+        // We want a subcontainer (this code is slow, but should work)
+        
         // Get the number of elements in the subcontainer and its length and dim
         // Get the index to the first included element at the same time
         std::vector<size_t> tempLen;
-        VectorInteger       tempIndex;      // VectorNatural does not trust us to get l-values so we can modify its content directly...
+        VectorInteger       tempIndex;
         size_t size = 1;
         for ( size_t i = 0; i < length.size(); i++ ) {
             
-            if ( ( i < index.size() && index[i] < 0 ) || ( i >= index.size() ) ) {
+            if ( ( i < index.size() && index.isEmpty( i ) ) || ( i >= index.size() ) ) {
                 tempLen.push_back( length[i] );
                 size *= length[i];
                 tempIndex.push_back( 0 );           // An index we should vary
             }
-            else
-                tempIndex.push_back( index[i] );    // An index to keep fixed to index[i]
+            else {
+                
+                // An index to keep fixed to index[i]
+                if ( index[i]->isType( Integer_name ) )
+                    tempIndex.push_back( index.getInt( i ) );
+                else
+                    tempIndex.push_back( int( getIndexOfName( i, index.getString( i ) ) ) );
+            }
         }
-
+        
         // Check that we have at least some elements in the subcontainer
         if ( tempLen.size() == 0 || size == 1 )
             throw RbException( "Empty subcontainer" );
         
-        // Create the subcontainer (empty at first is probably best option)
-        // We cannot assign to a subcontainer using this mechanism so it makes
-        // no sense to create a variable container; instead we create a value
-        // container by calling getConstValue() and then wrap it in a ContainerNode
-        DAGNode* temp = getConstValue()->getElement( index );
-        if ( !temp->isDAGType( ContainerNode_name ) ) {
-            delete temp;
-            throw RbException( "Unexpected return type of subcontainer expression" );
+        // Create the subcontainer (empty at first)
+        VariableContainer* temp = new VariableContainer( TypeSpec( elementType, tempLen.size() ) );
+        
+        // Translate index to integer index
+        VectorInteger intIndex = getIntegerIndex( index );
+        
+        // Now extract the elements
+        size_t fromIndex = getOffset( tempIndex );
+        for ( ; ; ) {
+            
+            // Set toIndex to fromIndex, keep track of number of locked dimensions in tempIndex
+            size_t  toIndex     = fromIndex;
+            size_t  numLocks    = length.size() - tempLen.size(); 
+            
+            // Increment tempIndex and toIndex until next nonincluded element or the end of the array
+            for ( toIndex = fromIndex; toIndex < elements.size(); toIndex++ ) {
+                
+                // Check if we are still inside the subcontainer
+                if ( numLocks < length.size() - tempLen.size() )
+                    break;
+                
+                int i;
+                for ( i = static_cast<int>( tempIndex.size() ) - 1; i >= 0; i-- ) {
+                    
+                    if ( i < static_cast<int>( intIndex.size() ) && tempIndex[i] == intIndex[i] )
+                        numLocks--;
+                    
+                    tempIndex[i]++;
+                    if ( tempIndex[i] == length[i] )
+                        tempIndex[i] = 0;
+                    
+                    if ( tempIndex[i] != 0)
+                        break;
+                }
+            }
+            
+            // Add vector of elements from fromIndex to (but not including) toIndex
+            for ( size_t i = fromIndex; i < toIndex; i++ )
+                temp->elements.push_back( elements[i]->clone() );
+            
+            // Increment tempIndex and fromIndex until next included element or the end of the array
+            for ( fromIndex = toIndex; fromIndex < elements.size(); fromIndex++ ) {
+                
+                // Check if we now have an included element
+                if ( numLocks == length.size() - tempLen.size() )
+                    break;
+                
+                int i;
+                for ( i = static_cast<int>( tempIndex.size() ) - 1; i >= 0; i-- ) {
+                    
+                    // Find out whether we will decrease the number of locks
+                    if ( i < static_cast<int>( intIndex.size() ) && tempIndex[i] == intIndex[i] )
+                        numLocks--;
+                    
+                    tempIndex[i]++;
+                    if ( tempIndex[i] == length[i] )
+                        tempIndex[i] = 0;
+                    
+                    // Find out whether we increased the number of locks
+                    if ( i < static_cast<int>( intIndex.size() ) && tempIndex[i] == intIndex[i] )
+                        numLocks++;
+                    
+                    if ( tempIndex[i] != 0 )
+                        break;
+                }
+            }
         }
-
-        return temp;
+        
+        // Check that we have all elements
+        assert( temp->elements.size() == size );
+        
+        // We now set length of the subcontainer, and then we are done
+        temp->length = tempLen;
+        
+        return new ContainerNode( temp );
     }
+}
+
+
+/** Simple getElement function */
+DAGNode* VariableContainer::getElement( const VectorNatural& index ) {
+
+    return operator[]( index );
 }
 
 

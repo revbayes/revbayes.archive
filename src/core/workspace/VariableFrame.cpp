@@ -13,7 +13,7 @@
  * @version 1.0
  * @since 2009-11-17, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #include "ConstantNode.h"

@@ -11,7 +11,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef SyntaxAssignExpr_H
@@ -29,38 +29,38 @@ class SyntaxAssignExpr : public SyntaxElement {
 
     public:
         // Static operator types
-        enum operatorT { ArrowAssign, TildeAssign, TildeIidAssign, EquationAssign };             //!< Enum of operator types
-        static std::string  opCode[];                                                           //!< Operator codes for printing
+        enum operatorT { ArrowAssign, TildeAssign, TildeIidAssign, EquationAssign };                    //!< Enum of operator types
+        static std::string opCode[];                                                                    //!< Operator codes for printing
 
-                            SyntaxAssignExpr(operatorT              op,
-                                             SyntaxVariable*        var,
-                                             SyntaxElement*         expr);                      //!< Constructor with lhs = variable
-                            SyntaxAssignExpr(operatorT              op,
-                                             SyntaxFunctionCall*    fxnCall,
-                                             SyntaxElement*         expr);                      //!< Constructor with lhs = function call
-                            SyntaxAssignExpr(const SyntaxAssignExpr& x);                        //!< Copy constructor
-	    virtual            ~SyntaxAssignExpr();                                                 //!< Destructor
+                                    SyntaxAssignExpr(operatorT              op,
+                                                     SyntaxVariable*        var,
+                                                     SyntaxElement*         expr);                      //!< Constructor with lhs = variable
+                                    SyntaxAssignExpr(operatorT              op,
+                                                     SyntaxFunctionCall*    fxnCall,
+                                                     SyntaxElement*         expr);                      //!< Constructor with lhs = function call
+                                    SyntaxAssignExpr(const SyntaxAssignExpr& x);                        //!< Copy constructor
+	    virtual                    ~SyntaxAssignExpr();                                                 //!< Destructor
 
         // Assignment operator
-        SyntaxAssignExpr&   operator=(const SyntaxAssignExpr& x);                               //!< Assignment operator
+        SyntaxAssignExpr&           operator=(const SyntaxAssignExpr& x);                               //!< Assignment operator
 
         // Basic utility functions
-        std::string         briefInfo() const;                                                  //!< Brief info about object
-        SyntaxAssignExpr*   clone() const;                                                      //!< Clone object
-        const VectorString& getClass(void) const;                                               //!< Get class vector 
-        void                print(std::ostream& o) const;                                       //!< Print info about object
+        std::string                 briefInfo() const;                                                  //!< Brief info about object
+        SyntaxAssignExpr*           clone() const;                                                      //!< Clone object
+        const VectorString&         getClass(void) const;                                               //!< Get class vector 
+        void                        print(std::ostream& o) const;                                       //!< Print info about object
 
         // Regular functions
-        DAGNode*            getDAGNodeExpr(VariableFrame* frame) const;                         //!< Convert to DAG node expression
-        DAGNode*            getValue(VariableFrame* frame) const;                               //!< Get semantic value
-        ContainerNode*      makeContainer(const VectorNatural& index, RbObject* elem) const;    //!< Make value container
-        ContainerNode*      makeContainer(const VectorNatural& index, DAGNode* elem) const;     //!< Make variable container
+        DAGNode*                    getDAGNodeExpr(VariableFrame* frame) const;                         //!< Convert to DAG node expression
+        DAGNode*                    getValue(VariableFrame* frame) const;                               //!< Get semantic value
+        ContainerNode*              makeContainer(const VectorIndex& index, RbObject* elem) const;      //!< Make value container
+        ContainerNode*              makeContainer(const VectorIndex& index, DAGNode* elem) const;       //!< Make variable container
 
     protected:
-        SyntaxVariable*             variable;                                                   //!< A lhs variable (or NULL)
-        SyntaxFunctionCall*         functionCall;                                               //!< A lhs function call (or NULL)
-        SyntaxElement*              expression;                                                 //!< The rhs expression
-        SyntaxAssignExpr::operatorT opType;                                                     //!< The type of assignment
+        SyntaxVariable*             variable;                                                           //!< A lhs variable (or NULL)
+        SyntaxFunctionCall*         functionCall;                                                       //!< A lhs function call (or NULL)
+        SyntaxElement*              expression;                                                         //!< The rhs expression
+        SyntaxAssignExpr::operatorT opType;                                                             //!< The type of assignment
 };
 
 #endif

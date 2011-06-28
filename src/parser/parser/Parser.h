@@ -19,7 +19,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef Parser_H
@@ -39,7 +39,7 @@ class Parser {
     public:
         // Regular functions
         int                 execute(SyntaxElement* root) const;         //!< Execute the syntax tree
-        void                getline(char* buf, int maxsize);            //!< Give flex one line to process
+        void                getline(char* buf, size_t maxsize);            //!< Give flex one line to process
         int                 help(RbString* symbol) const;               //!< Get help for a symbol
         int                 help(SyntaxElement* root) const;            //!< Get help for a function call
         int                 processCommand(std::string& command);       //!< Process command with help from Bison

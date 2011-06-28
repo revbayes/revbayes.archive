@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-12-05, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef VariableContainer_H
@@ -56,7 +56,7 @@ class VariableContainer : public Container {
 
         // Overloaded operators for assignment and convenient programmer access
         VariableContainer&          operator=(const VariableContainer& x);                                      //!< Assignment operator
-        const DAGNode* const&       operator[](const VectorInteger& i) const;                                   //!< Element const access
+        const DAGNode* const&       operator[](const VectorNatural& i) const;                                     //!< Element const access
         const DAGNode* const&       operator[](const size_t i) const;                                           //!< Element const access
 
         // Basic utility functions
@@ -70,15 +70,17 @@ class VariableContainer : public Container {
         void                        clear(void);                                                                //!< Clear container
         ValueContainer*             getConstValue(void) const;                                                  //!< Get constant value
         VectorNatural               getIndex(const DAGNode* elem) const;                                        //!< Get index of an element
+        DAGNode*                    getElement(const VectorNatural& index);                                     //!< Get single element for parser
+        int                         getIndex(size_t k, const std::string& s) const;                             //!< Get index in dimension k corresponding to name s
         void                        resize(const std::vector<size_t>& len);                                     //!< Resize container
         void                        setElement(const VectorNatural& index, DAGNode* var, bool convert=true);    //!< Set element
         size_t                      size(void) const { return elements.size(); }                                //!< Get total number of elements
 
 	protected:
         // Parser operator and help functions
-        DAGNode*&                   operator[](const VectorInteger& i);                                         //!< Element modify access
+        DAGNode*&                   operator[](const VectorNatural& i);                                         //!< Element modify access
         DAGNode*&                   operator[](const size_t i);                                                 //!< Element modify access
-        DAGNode*                    getElement(VectorInteger& index);                                           //!< Get element or subcontainer for parser
+        DAGNode*                    getElement(VectorIndex& index);                                             //!< Get element or subcontainer for parser
 
         // Member variable
 	    std::vector<DAGNode*>       elements;                                                                   //!< Vector of variable elements

@@ -13,7 +13,7 @@
  * @since 2009-09-08, version 1.0
  * @interface Distribution
  *
- * $Id$
+ * $Id:$
  */
 
 #include "ArgumentFrame.h"

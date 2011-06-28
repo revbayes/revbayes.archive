@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 
@@ -89,7 +89,7 @@ MatrixReal::MatrixReal( const std::vector<size_t>& len, const std::vector<double
 }
 
 
-/** Subscript operator (const) */
+/** Index operator (const) */
 const VectorReal& MatrixReal::operator[]( const size_t i ) const {
 
     if ( i >= length[0] )
@@ -99,7 +99,7 @@ const VectorReal& MatrixReal::operator[]( const size_t i ) const {
 }
 
 
-/** Subscript operator */
+/** Index operator */
 VectorReal& MatrixReal::operator[]( const size_t i ) {
 
     if ( i >= length[0] )
@@ -330,6 +330,25 @@ std::string MatrixReal::richInfo(void) const {
 }
 
 
+/** Set matrix content from single STL vector of doubles */
+void MatrixReal::setContent( const std::vector<double>& x ) {
+    
+    if ( x.size() != length[0]*length[1] )
+        throw RbException( "Incorrect number of elements in setting " + Real_name + "[][]" );
+    
+    matrix.clear();
+    
+    size_t index = 0;
+    for ( size_t i = 0; i < length[0]; i++ ) {
+        VectorReal y;
+        for ( size_t j = 0; j < length[1]; j++ ) {
+            y.push_back( x[index++] );
+        }
+        matrix.push_back( y );
+    }
+}
+
+
 /** Set matrix value from an STL vector<vector> of doubles */
 void MatrixReal::setValue( const std::vector<std::vector<double> >& x ) {
 
@@ -344,25 +363,6 @@ void MatrixReal::setValue( const std::vector<std::vector<double> >& x ) {
     matrix.clear();
     for ( size_t i = 0; i < length[0]; i++ )
         matrix.push_back( VectorReal( x[i] ) );
-}
-
-
-/** Set matrix content from single STL vector of doubles */
-void MatrixReal::setContent( const std::vector<double>& x ) {
-
-    if ( x.size() != length[0]*length[1] )
-        throw RbException( "Incorrect number of elements in setting " + Real_name + "[][]" );
-
-    matrix.clear();
-
-    size_t index = 0;
-    for ( size_t i = 0; i < length[0]; i++ ) {
-        VectorReal y;
-        for ( size_t j = 0; j < length[1]; j++ ) {
-            y.push_back( x[index++] );
-        }
-        matrix.push_back( y );
-    }
 }
 
 

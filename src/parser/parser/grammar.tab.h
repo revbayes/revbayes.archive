@@ -59,23 +59,24 @@
      RETURN = 275,
      ARROW_ASSIGN = 276,
      TILDE_ASSIGN = 277,
-     EQUATION_ASSIGN = 278,
-     EQUAL = 279,
-     AND = 280,
-     OR = 281,
-     AND2 = 282,
-     OR2 = 283,
-     GT = 284,
-     GE = 285,
-     LT = 286,
-     LE = 287,
-     EQ = 288,
-     NE = 289,
-     END_OF_INPUT = 290,
-     UNOT = 291,
-     UPLUS = 292,
-     UMINUS = 293,
-     UAND = 294
+     TILDEIID_ASSIGN = 278,
+     EQUATION_ASSIGN = 279,
+     EQUAL = 280,
+     AND = 281,
+     OR = 282,
+     AND2 = 283,
+     OR2 = 284,
+     GT = 285,
+     GE = 286,
+     LT = 287,
+     LE = 288,
+     EQ = 289,
+     NE = 290,
+     END_OF_INPUT = 291,
+     UNOT = 292,
+     UPLUS = 293,
+     UMINUS = 294,
+     UAND = 295
    };
 #endif
 /* Tokens.  */
@@ -99,30 +100,31 @@
 #define RETURN 275
 #define ARROW_ASSIGN 276
 #define TILDE_ASSIGN 277
-#define EQUATION_ASSIGN 278
-#define EQUAL 279
-#define AND 280
-#define OR 281
-#define AND2 282
-#define OR2 283
-#define GT 284
-#define GE 285
-#define LT 286
-#define LE 287
-#define EQ 288
-#define NE 289
-#define END_OF_INPUT 290
-#define UNOT 291
-#define UPLUS 292
-#define UMINUS 293
-#define UAND 294
+#define TILDEIID_ASSIGN 278
+#define EQUATION_ASSIGN 279
+#define EQUAL 280
+#define AND 281
+#define OR 282
+#define AND2 283
+#define OR2 284
+#define GT 285
+#define GE 286
+#define LT 287
+#define LE 288
+#define EQ 289
+#define NE 290
+#define END_OF_INPUT 291
+#define UNOT 292
+#define UPLUS 293
+#define UMINUS 294
+#define UAND 295
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 90 "grammar.y"
+#line 91 "./grammar.y"
 {
     char*                           string;
     double                          realValue;
@@ -139,7 +141,7 @@ typedef union YYSTYPE
     std::list<SyntaxFormal *>*      formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 143 "grammar.tab.h"
+#line 145 "./grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

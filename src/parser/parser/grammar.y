@@ -2,16 +2,15 @@
 /**
  * @file
  * Grammar specification in bison format for RevBayes, a computing environment 
- * for evolutionary analysis using Bayesian inference. RevBayes uses EvoMoDeL,
- * Evolutionary Model Description Language, to describe evolutionary models,
- * so the EvoMoDeL grammar is a subset of the RevBayes grammar.
+ * for evolutionary analysis, particularly Bayesian phylogenetic inference. The
+ * language used by RevBayes is referred to as Rev.
  *
  * The grammar borrows heavily from the R grammar specification in the gram.y 
  * file of the R source code but deviates significantly in many respects, being
- * more similar to object-oriented languages like C++ or Java. EvoMoDeL itself
- * is inspired by the language used by BUGS to describe models. Unlike BUGS,
- * and similar programs such as JAGS, REvBayes allows models to be built in an
- * interpreted (interactive) environment.
+ * more similar to object-oriented languages like C++ or Java. The model description
+ * syntax is inspired by the language used originally by BUGS to describe complex 
+ * stochastic models. Unlike BUGS and similar programs, such as JAGS, RevBayes
+ * allows models to be built in an interpreted (interactive) environment.
  *
  * @brief Grammar specification in bison format
  *
@@ -23,17 +22,19 @@
 
 /* The following statements go into the resulting C code */
 
+#include "Boolean.h"
+#include "Integer.h"
+#include "Natural.h"
 #include "Parser.h"
-#include "PosReal.h"
-#include "RbBool.h"
-#include "RbDouble.h"
-#include "RbInt.h"
 #include "RbString.h"
+#include "Real.h"
+#include "RealPos.h"
 #include "SyntaxElement.h"
 #include "SyntaxAssignExpr.h"
 #include "SyntaxBinaryExpr.h"
 #include "SyntaxClassDef.h"
 #include "SyntaxConstant.h"
+#include "SyntaxVariableDecl.h"
 #include "SyntaxForCondition.h"
 #include "SyntaxFormal.h"
 #include "SyntaxFunctionCall.h"
@@ -110,12 +111,12 @@ typedef struct yyltype
 %type <boolValue> FALSE TRUE
 %type <idString> identifier typeSpec optDims dimList optRef
 %type <syntaxVariable> variable
-%type <syntaxFunctionCall> functionCall
+%type <syntaxFunctionCall> functionCall fxnCall
 %type <syntaxLabeledExpr> argument
 %type <syntaxFormal> formal
 %type <syntaxElement> constant
 %type <syntaxElement> statement expression stmt_or_expr
-%type <syntaxElement> arrowAssign tildeAssign equationAssign
+%type <syntaxElement> arrowAssign tildeAssign tildeIidAssign equationAssign
 %type <syntaxElement> declaration classDef memberDef
 %type <syntaxElement> functionDef
 %type <syntaxElement> forStatement ifStatement whileStatement
@@ -130,7 +131,7 @@ typedef struct yyltype
 /* Tokens returned by the lexer and handled by the parser */
 %token REAL INT NAME STRING RBNULL FALSE TRUE COMMENT
 %token FUNCTION CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
-%token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN EQUAL 
+%token ARROW_ASSIGN TILDE_ASSIGN TILDEIID_ASSIGN EQUATION_ASSIGN EQUAL 
 %token AND OR AND2 OR2 GT GE LT LE EQ NE
 %token END_OF_INPUT
 
@@ -139,9 +140,9 @@ typedef struct yyltype
 %destructor { for (std::list<SyntaxLabeledExpr*>::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting argument list\n"); } argumentList optArguments vectorList vector
 %destructor { for (std::list<SyntaxFormal*     >::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting formal list\n"); } formalList optFormals
 %destructor { delete ($$); PRINTF("Deleting identifier  ...\n"); } identifier typeSpec optDims dimList optRef
-%destructor { delete ($$); PRINTF("Deleting variable    ...\n"); } variable functionCall argument formal constant
+%destructor { delete ($$); PRINTF("Deleting variable    ...\n"); } variable functionCall fxnCall argument formal constant
 %destructor { delete ($$); PRINTF("Deleting expression  ...\n"); } statement expression stmt_or_expr 
-%destructor { delete ($$); PRINTF("Deleting assignment  ...\n"); } arrowAssign tildeAssign equationAssign 
+%destructor { delete ($$); PRINTF("Deleting assignment  ...\n"); } arrowAssign tildeAssign tildeIidAssign equationAssign 
 %destructor { delete ($$); PRINTF("Deleting declaration ...\n"); } declaration classDef memberDef 
 %destructor { delete ($$); PRINTF("Deleting functiondef ...\n"); } functionDef 
 %destructor { delete ($$); PRINTF("Deleting for/if/while...\n"); } forStatement ifStatement whileStatement 
@@ -153,14 +154,13 @@ typedef struct yyltype
 
 /*
  * Precedence table, low to high, with order of evaluation.
- * We follow R as much as possible. 
  */
 %left       '?'
 %left       WHILE FOR
 %right      IF
 %left       ELSE
 %right      ARROW_ASSIGN
-%right      TILDE_ASSIGN
+%right      TILDE_ASSIGN TILDEIID_ASSIGN
 %right      EQUATION_ASSIGN
 %right      EQUAL
 %left       OR OR2
@@ -193,15 +193,14 @@ typedef struct yyltype
  * Global variables cannot be declared. They are created by
  * assigning to them.
  *
- * As a subset of the grammar, RevBayes supports EvoMoDeL,
- * which allows a natural description of graphical represen-
+ * RevBayes allows a natural description of graphical represen-
  * tations of complex probability models. The most essential
- * components in EvoMoDeL are tilde assignment ('~') for creating
- * stochastic nodes and equation assignment (':=') for creating
- * deterministic nodes in model DAGs. Constant nodes are created
- * using arrow assignment ('<-') as in R.
+ * components are tilde assignment ('~') for creating stochastic
+ * nodes and equation assignment (':=') for creating deterministic
+ * nodes in model DAGs. Constant nodes are created using
+ * arrow assignment ('<-') as in R.
  *
- * The language passes by value except in equation and tilde
+ * The Rev language passes by value except in equation and tilde
  * assignment, in which case variables are passed by reference.
  * 
  * Unlike R, right assignment ('->') is not supported. Also,
@@ -211,7 +210,7 @@ typedef struct yyltype
  * These constructs include control statements and function def-
  * initions, among others.
  *
- * For more discussion of the language, see the Revbayes docu-
+ * For more discussion of the language, see the RevBayes docu-
  * mentation.
  */
 
@@ -312,6 +311,7 @@ expression  :   constant                    { $$ = $1; }
             |   arrowAssign                 { $$ = $1; }
             |   equationAssign              { $$ = $1; }
             |   tildeAssign                 { $$ = $1; }
+            |   tildeIidAssign              { $$ = $1; }
 
             |   functionCall                { $$ = $1; }
 
@@ -323,12 +323,34 @@ arrowAssign     :   variable ARROW_ASSIGN expression
                         PRINTF("Parser inserting arrow assignment (ARROW_ASSIGN) in syntax tree\n");
                         $$ = new SyntaxAssignExpr(SyntaxAssignExpr::ArrowAssign, $1, $3);
                     }
+                |   functionCall ARROW_ASSIGN expression
+                    { 
+                        PRINTF("Parser inserting arrow assignment (ARROW_ASSIGN) in syntax tree\n");
+                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::ArrowAssign, $1, $3);
+                    }
                 ;
 
 tildeAssign     :   variable TILDE_ASSIGN functionCall
                     {
                         PRINTF("Parser inserting tilde assignment (TILDE_ASSIGN) in syntax tree\n");
                         $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TildeAssign, $1, $3);
+                    }
+                |   functionCall TILDE_ASSIGN functionCall
+                    {
+                        PRINTF("Parser inserting tilde assignment (TILDE_ASSIGN) in syntax tree\n");
+                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TildeAssign, $1, $3);
+                    }
+                ;
+
+tildeIidAssign  :   variable TILDEIID_ASSIGN functionCall
+                    {
+                        PRINTF("Parser inserting tilde iid assignment (TILDEIID_ASSIGN) in syntax tree\n");
+                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TildeIidAssign, $1, $3);
+                    }
+                 |  functionCall TILDEIID_ASSIGN functionCall
+                    {
+                        PRINTF("Parser inserting tilde iid assignment (TILDEIID_ASSIGN) in syntax tree\n");
+                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TildeIidAssign, $1, $3);
                     }
                 ;
 
@@ -337,17 +359,34 @@ equationAssign  :   variable EQUATION_ASSIGN expression
                         PRINTF("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
                         $$ = new SyntaxAssignExpr(SyntaxAssignExpr::EquationAssign, $1, $3); 
                     }
+                |   functionCall EQUATION_ASSIGN expression
+                    {
+                        PRINTF("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
+                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::EquationAssign, $1, $3); 
+                    }
                 ;
 
 variable    :   identifier optElements
                 {
-                    PRINTF("Parser inserting variable (VARIABLE) in syntax tree\n");
+                    PRINTF("Parser inserting variable (NAMED_VAR)in syntax tree\n");
                     $$ = new SyntaxVariable($1, $2);
+                }
+            |   fxnCall '[' expression ']' optElements
+                {
+                    PRINTF("Parser inserting variable (FUNCTION_VAR) in syntax tree\n");
+                    $5->push_front($3);
+                    $$ = new SyntaxVariable($1, $5);
                 }
             |   variable '.' identifier optElements
                 {
-                    PRINTF("Parser inserting member variable (MEMBER) in syntax tree\n");
+                    PRINTF("Parser inserting member variable (NAMED_VAR)in syntax tree\n");
                     $$ = new SyntaxVariable($1, $3, $4);
+                }
+            |   variable '.' fxnCall '[' expression ']' optElements
+                {
+                    PRINTF("Parser inserting member variable (FUNCTION_VAR) in syntax tree\n");
+                    $7->push_front($5);
+                    $$ = new SyntaxVariable($1, $3, $7);
                 }
             ;
 
@@ -356,18 +395,27 @@ optElements :   /* empty */                     { $$ = new std::list<SyntaxEleme
             ;
             
 elementList :   '[' expression ']'              { $$ = new std::list<SyntaxElement*>(1, $2); }
+            |   '[' ']'                         { $$ = new std::list<SyntaxElement*>(1, NULL); }
             |   elementList '[' expression ']'  { $1->push_back($3); $$ = $1; }
+            |   elementList '[' ']'             { $1->push_back(NULL); $$ = $1; }
             ;
 
-functionCall    :   identifier '(' optArguments ')' 
+fxnCall     :   identifier '(' optArguments ')' 
+                {
+                    $$ = new SyntaxFunctionCall($1, $3);
+                }
+            ;
+
+functionCall    :   fxnCall
                     {
                         PRINTF("Parser inserting function call in syntax tree\n");
-                        $$ = new SyntaxFunctionCall($1, $3);
+                        $$ = $1;
                     }
-                |   variable '.' identifier '(' optArguments ')'
+                |   variable '.' fxnCall 
                     {
-                        PRINTF("Parser inserting member function call in syntax tree\n");
-                        $$ = new SyntaxFunctionCall($1, $3, $5);
+                        PRINTF("Parser inserting member call in syntax tree\n");
+                        $3->setBaseVariable($1);
+                        $$ = $3;
                     }
                 ;
 
@@ -442,7 +490,9 @@ optDims     :   /* empty */                 { $$ = new RbString(); }
             ;
 
 dimList     :   '[' ']'                     { $$ = new RbString("[]"); }
+            |   '[' INT ']'                 { $$ = new RbString("["); $$->append(INT); $$->append("]"); }
             |   dimList '[' ']'             { $1->append("[]"); $$ = $1; }
+            |   dimList '[' INT ']'         { $1->append("["); $1->append(INT); $1->append("]"); $$ = $1; }
             ;
 
 optRef      :   /* empty */                 { $$ = new RbString(); }
@@ -478,8 +528,13 @@ stmt_or_expr    :   statement           { $$ = $1; }
                 |   expression          { $$ = $1; }
                 ;
 
-declaration     :   classDef        { $$ = $1; }
-                |   functionDef     { $$ = $1; }
+declaration     :   classDef            { $$ = $1; }
+                |   functionDef         { $$ = $1; }
+                |   identifier optElements optRef identifier
+                    {
+                        PRINTF("Parser inserting variable declaration in syntax tree\n");
+                        $$ = new SyntaxVariableDecl($1, $2, $3, $4);
+                    }
                 ;
 
 memberDefs      :   /* empty */                 { $$ = new std::list<SyntaxElement*>(); }
@@ -540,12 +595,12 @@ vectorList  :   vectorList ',' expression   { $1->push_back(new SyntaxLabeledExp
 constant    :   FALSE
                 {
                     PRINTF("Parser inserting bool constant (false) in syntax tree\n");
-                    $$ = new SyntaxConstant(new RbBool(false));
+                    $$ = new SyntaxConstant(new Boolean(false));
                 }
             |   TRUE
                 {
                     PRINTF("Parser inserting bool constant (true) in syntax tree\n");
-                    $$ = new SyntaxConstant(new RbBool(true));
+                    $$ = new SyntaxConstant(new Boolean(true));
                 }
             |   RBNULL
                 {
@@ -554,17 +609,24 @@ constant    :   FALSE
                 }
             |   INT
                 {
-                    PRINTF("Parser inserting int constant in syntax tree\n");
-                    $$ = new SyntaxConstant(new RbInt($1));
+                    if ( $1 < 0 ) {
+                        PRINTF("Parser inserting Integer constant in syntax tree\n");
+                        $$ = new SyntaxConstant(new Integer($1));
+                    }
+                    else { 
+                        PRINTF("Parser inserting Natural constant in syntax tree\n");
+                        $$ = new SyntaxConstant(new Natural($1));
+                    }
                 }
             |   STRING
                 {
-                    PRINTF("Parser inserting string constant in syntax tree\n");
+                    PRINTF("Parser inserting String constant in syntax tree\n");
                     $$ = new SyntaxConstant(new RbString($1));
                 }
             |   REAL
                 {
                     /* This code records and preserves input format of the real */
+                    /*
                     int prec;
                     bool sci;
                     int i=0;
@@ -592,15 +654,22 @@ constant    :   FALSE
                         }
                         prec = (int)(strlen(yytext)) - 1 - i;
                     }
-                    RbDouble* real;
+                    Real* real;
                     if ($1 > 0.0)
-                        real = new PosReal($1);
+                        real = new RealPos($1);
                     else
-                        real = new RbDouble($1);
-                    //real->setPrecision(prec);
-                    //real->setScientific(sci);
-                    PRINTF("Parser inserting double constant in syntax tree \n");
-                    $$ = new SyntaxConstant(real);
+                        real = new Real($1);
+                    real->setPrecision(prec);
+                    real->setScientific(sci);
+                    */
+                    if ($1 > 0.0) {
+                        PRINTF("Parser inserting RealPos constant in syntax tree \n");
+                        $$ = new SyntaxConstant(new RealPos($1));
+                    }
+                    else {
+                        PRINTF("Parser inserting Real constant in syntax tree \n");
+                        $$ = new SyntaxConstant(new Real($1));
+                    }
                 }
             ;
 

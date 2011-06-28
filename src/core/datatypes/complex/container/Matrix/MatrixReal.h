@@ -13,7 +13,7 @@
  * @since 2010-08-20, version 1.0
  * @extends RbComplex
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef MatrixReal_H

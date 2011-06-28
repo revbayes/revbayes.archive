@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #include "ContainerIterator.h"
@@ -132,9 +132,10 @@ VectorNatural::VectorNatural( const ContainerIterator& x ) : Vector( Natural_nam
  */
 unsigned int VectorNatural::operator[]( size_t i ) const {
 
-    if (i >= int(elements.size()))
+    if ( i >= elements.size() )
         throw RbException("Index out of bounds");
-    return static_cast<Natural*>(elements[i])->getValue();
+
+    return static_cast<Natural*>( elements[i] )->getValue();
 }
 
 

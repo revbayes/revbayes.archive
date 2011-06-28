@@ -12,7 +12,7 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef Func__sub_H

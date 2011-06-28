@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #include "Argument.h"
@@ -22,8 +22,8 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "VectorString.h"
 #include "SyntaxFunctionCall.h"
+#include "VectorString.h"
 #include "VariableFrame.h"
 #include "Workspace.h"
 
@@ -152,9 +152,11 @@ DAGNode* SyntaxFunctionCall::getValue( VariableFrame* frame ) const {
     // Get function pointer and execute function
     DAGNode* retVal;
     if ( variable == NULL ) {
+
         retVal = Workspace::userWorkspace().executeFunction( *functionName, args );
     }
     else {
+        
         MemberNode* memberNode = dynamic_cast<MemberNode*>( variable->getValue( frame ) );
         if ( memberNode == NULL )
             throw RbException( "Variable does not have member functions" );

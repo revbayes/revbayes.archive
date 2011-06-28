@@ -12,12 +12,13 @@
  * @version 1.0
  * @since 2009-09-08, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "Frame.h"
+#include "Integer.h"
 #include "MemberFunction.h"
 #include "MemberNode.h"
 #include "MemberObject.h"
@@ -25,6 +26,7 @@
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
+#include "VectorIndex.h"
 #include "VectorString.h"
 #include "VariableNode.h"
 
@@ -41,10 +43,10 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbComplex(), member
 
 
 /** Convert to type: throw an error */
-MemberObject* MemberObject::convertTo(const std::string& type, size_t dim) const {
+RbObject* MemberObject::convertTo(const std::string& type, size_t dim) const {
 
     std::ostringstream msg;
-    msg << "Type conversion of " << getTypeSpec() << " to " << TypeSpec(type, dim) << " not supported (yet)";
+    msg << "Type conversion of " << getTypeSpec() << " to " << TypeSpec(type, dim) << " not supported";
     throw RbException(msg);
 }
 
@@ -89,6 +91,65 @@ MemberObject* MemberObject::getConstValue( void ) const {
 }
 
 
+/**
+ * Recursive getElement. We are responsible for finding element
+ * index[0] using our index operator. If there are more indices
+ * in the index array, we delegate the job to the element
+ * after removing index[0] from the index array.
+ */
+DAGNode* MemberObject::getElement( VectorIndex& index ) {
+    
+    if ( index.size() == 0 )
+        throw RbException( "Unexpected call to getElement with empty index" );
+    
+    if ( supportsIndex() ) {
+
+        const RbObject* elemIndex = index[0];
+        index.pop_front();
+        
+        if ( elemIndex->isType( Integer_name ) ) {
+            
+            int k = static_cast<const Integer*>( elemIndex )->getValue();
+            if ( k < 0 )
+                throw RbException( "Object of type " + getType() + " does not support emty indices" );
+            else
+                return getElement( k )->getElement( index );
+        }
+        else {
+            
+            std::string s = static_cast<const RbString*>( elemIndex )->getValue();
+            return getElement( s )->getElement( index );
+        }
+    }
+    else
+        throw RbException( "Object does not support indexing" );
+}
+
+
+/** Get element from size_t (Natural) index */
+DAGNode* MemberObject::getElement( size_t i ) {
+    
+    throw RbException( "Object does not support " + Natural_name + " indexing" );
+}
+
+
+/** Get element from string index */
+DAGNode* MemberObject::getElement( std::string& s ) {
+    
+    return getElement( getElementIndex( s ) );
+}
+
+
+/** Return element index if string indexing is supported */
+size_t MemberObject::getElementIndex( std::string& s ) const {
+
+    if ( supportsIndex() )
+        throw RbException( "Object does not support string indexing" );
+    else
+        throw RbException( "Object does not support indexing" );
+}
+
+
 /** Return member rules (no members) */
 const MemberRules& MemberObject::getMemberRules(void) const {
 
@@ -109,18 +170,6 @@ const MethodTable& MemberObject::getMethods(void) const {
     static MethodTable methods;
     
     return methods;
-}
-
-
-/**
- * Get subscript element. We are responsible for finding element
- * index[0] using our subscript operator. If there are more indices
- * in the index array, we delegate the job to our subelement
- * after removing index[0] from the index array.
- */
-DAGNode* MemberObject::getSubelement( size_t i ) {
-
-    throw RbException( "Object does not support subscripting" );
 }
 
 
@@ -197,17 +246,67 @@ std::string MemberObject::richInfo(void) const {
 }
 
 
-/** Set subscript element, or element of subscript element */
-void MemberObject::setElement( VectorNatural& index, DAGNode* var, bool convert ) {
+/**
+ * Recursive setElement. We are responsible for setting the element
+ * if there is one index. Otherwise, we find index[0] using
+ * our index operator, and delegate the job to that element
+ * after removing index[0] from the index array.
+ */
+void MemberObject::setElement( VectorIndex& index, DAGNode* var, bool convert ) {
 
-    throw RbException( "Unexpected call to setElement for a " + getTypeSpec().toString() + " value" );
+    if ( index.size() == 0 )
+        throw RbException( "Unexpected call to setElement with empty index" );
+    
+    if ( !supportsIndex() )
+        throw RbException( "Object of type " + getType() + " does not support indexing" );
+
+    if ( supportsIndex() ) {
+        
+        const RbObject* elemIndex = index[0];
+        index.pop_front();
+        
+        if ( elemIndex->isType( Integer_name ) ) {
+            
+            int k = static_cast<const Integer*>( elemIndex )->getValue();
+            if ( k < 0 )
+                throw RbException( "Object of type " + getType() + " does not support emty indices" );
+            
+            if ( index.size() == 0 )
+                setElement( k, var, convert );
+            else
+                getElement( k )->setElement( index, var, convert );
+
+            return;
+        }
+        else {
+            
+            std::string s = static_cast<const RbString*>( elemIndex )->getValue();
+
+            if ( index.size() == 0 )
+                setElement( s, var, convert );
+            else
+                getElement( s )->setElement( index, var, convert );
+            
+            return;
+        }
+    }
 }
 
 
-/** Set subscript element, or element of subscript element */
-void MemberObject::setSubelement( size_t index, DAGNode* var, bool convert ) {
+/** Set indexed element */
+void MemberObject::setElement( size_t index, DAGNode* var, bool convert ) {
 
-    throw RbException( "Unexpected call to setSubelement for a " + getTypeSpec().toString() + " value" );
+    if ( supportsIndex() )
+        throw RbException( "Bug: Object type " + getType() + " does not have setElement implemented. Please report to the RevBayes Development Core Team" );
+    else
+        throw RbException( "Object of type " + getType() + " does not support indexing" );
+}
+
+
+/** Set string indexed element  */
+void MemberObject::setElement( std::string& s, DAGNode* var, bool convert ) {
+    
+    setElement( getElementIndex( s ), var, convert );
 }
 
 

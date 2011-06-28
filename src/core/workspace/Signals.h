@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @since 2010-09-19
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef Signals_H

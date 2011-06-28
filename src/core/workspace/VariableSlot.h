@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2010-09-06, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef VariableSlot_H 
@@ -26,6 +26,7 @@
 class DAGNode;
 class Frame;
 class RbObject;
+class VectorIndex;
 
 class VariableSlot {
     
@@ -56,8 +57,8 @@ class VariableSlot {
         void                    printValue(std::ostream& o) const;                                      //!< Print value of slot
         void                    replaceDAGVariable(DAGNode* newVariable);                               //!< Replace variable during DAG cloning
         void                    replaceArgumentVariable(DAGNode* newVariable);                          //!< Replace variable when filling argument frame
-        void                    setElement(VectorInteger& index, DAGNode* newVar, bool convert=true);   //!< Set a slot variable element
-        void                    setElement(VectorInteger& index, RbObject* newVal);                     //!< Set a slot value element
+        void                    setElement(VectorIndex& index, DAGNode* newVar, bool convert=true);   //!< Set a slot variable element
+        void                    setElement(VectorIndex& index, RbObject* newVal);                     //!< Set a slot value element
         void                    setFrame(Frame* slotFrame) { frame=slotFrame; }                         //!< Set frame of slot
         void                    setReferenceFlag(bool refFlag=true);                                    //!< Potentially switch between reference and value slot
         void                    setValue(RbObject* newVal);                                             //!< Set a slot variable or the variable the slot refers to with a value

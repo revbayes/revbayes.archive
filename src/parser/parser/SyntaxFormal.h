@@ -11,7 +11,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef SyntaxFormal_H
@@ -45,8 +45,10 @@ class SyntaxFormal : public SyntaxElement {
         // Regular functions
         ArgumentRule*   getArgumentRule(VariableFrame* frame) const;                                //!< Make an argument rule
         DAGNode*        getDAGNodeExpr(VariableFrame* frame) const;                                 //!< Convert to DAG node expression
+        RbString*       getLabel(void) const { return label; }                                      //!< Get label
+        TypeSpec*       getTypeSpec(void) const { return type; }                                    //!< Get type spec
         DAGNode*        getValue(VariableFrame* frame) const;                                       //!< Get semantic value
-
+    
     protected:
         TypeSpec*       type;                                                                       //!< The type of the argument
         RbString*       label;                                                                      //!< The label of the argument

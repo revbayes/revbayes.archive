@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef SyntaxFunctionCall_H
@@ -54,6 +54,7 @@ class SyntaxFunctionCall : public SyntaxElement {
         const RbString*                 getFunctionName(void) const { return functionName; }                    //!< Get function name
         DAGNode*                        getDAGNodeExpr(VariableFrame* frame) const;                             //!< Convert to DAG node expression
         DAGNode*                        getValue(VariableFrame* frame) const;                                   //!< Get semantic value
+        void                            setBaseVariable(SyntaxVariable* var) { variable = var; }                //!< Set base variable
 
     protected:
         std::list<SyntaxLabeledExpr*>*  arguments;                                                              //!< The arguments passed to the function

@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-12-05, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #include "Container.h"
@@ -20,6 +20,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "TypeSpec.h"
+#include "VectorIndex.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
 #include "VectorString.h"
@@ -30,11 +31,15 @@
 
 /** Construct container from type specification */
 Container::Container(const TypeSpec& typeSpec)
-    : RbComplex(), elementType(typeSpec.getType()), length(typeSpec.getDim(),0) {
+    : RbComplex(), elementType(typeSpec.getType()), length(typeSpec.getDim(),0), names() {
 
-    // If the workspace has been initialized, we use it to test whether we have a container
-    if ( Workspace::userWorkspace().areTypesInitialized() && Workspace::userWorkspace().isXOfTypeY( elementType, Container_name ) )
-        throw RbException( "Cannot create container of containers" );
+    // If the workspace has been initialized, we use it to test whether we have a container or member object
+    if ( Workspace::userWorkspace().areTypesInitialized() ) {
+        if ( Workspace::userWorkspace().isXOfTypeY( elementType, Container_name ) )
+            throw RbException( "Cannot create container of containers; only primitive types allowed" );
+        if ( Workspace::userWorkspace().areTypesInitialized() && Workspace::userWorkspace().isXOfTypeY( elementType, MemberObject_name ) )
+            throw RbException( "Cannot create container of member objects; only primitive types allowed" );        
+    }
 
     // Check that length specification is OK
     if ( length.size() == 0 )
@@ -54,11 +59,12 @@ Container& Container::operator=( const Container& x) {
             throw RbException( "Dimension mismatch in container assignment" );
 
         length = x.length;
+        
+        names  = x.names;
     }
 
     return ( *this );
 }
-
 
 
 /** Return begin iterator */
@@ -83,6 +89,28 @@ ContainerIterator Container::end(void) const {
 }
 
 
+/** Get index corresponding to a string name for dimension k */
+size_t Container::getIndexOfName( size_t k, const std::string& s ) const {
+    
+    if ( k >= getDim() )
+        throw RbException( "Dimension index out of bound" );
+    
+    if ( names.size() == 0 )
+        throw RbException( "Names not set" );
+    
+    for ( size_t i=0; i<length[k]; i++ ) {
+        
+        if ( names[k][i] == s )
+            return i;
+    }
+    
+    std::ostringstream msg;
+    msg << "No match for name '" + s + "' in dimension " << k;
+    throw RbException( msg );
+    
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& Container::getClass(void) const {
 
@@ -100,6 +128,57 @@ void Container::getContainerSubscriptIndices( const VectorInteger& index, Vector
         subscriptIndex.push_back( index[i] );
         containerIndex.pop_back();
     }
+}
+
+
+/** Shave off an integer index to a single container element or a subcontainer */
+VectorInteger Container::getIntegerIndex( const VectorIndex& index ) const {
+    
+    if ( index.size() > getDim() )
+        throw RbException( "Index goes beyond this container" );
+    
+    VectorInteger intIndex;
+    for ( size_t i=0; i< index.size(); i++ ) {
+        
+        if ( index[i]->isType( Integer_name ) ) {
+            
+            intIndex.push_back( index.getInt( i ) );
+        }
+        else {
+            
+            size_t j = getIndexOfName( i, index.getString( 0 ) );
+            intIndex.push_back( int( j ) );
+        }
+    }
+    
+    return intIndex;
+}
+
+
+/** Shave off a natural index to a single container element from a generic index vector */
+VectorNatural Container::getNaturalIndex( const VectorIndex& index ) const {
+    
+    if ( index.size() < getDim() )
+        throw RbException( "Element does not exist" );
+    
+    VectorNatural natIndex;
+    for ( size_t i=0; i< getDim(); i++ ) {
+        
+        if ( index[i]->isType( Integer_name ) ) {
+            
+            int j = index.getInt( i );
+            if ( j < 0 )
+                throw RbException( "Not an element index" );
+            natIndex.push_back( j );
+        }
+        else {
+            
+            size_t j = getIndexOfName( i, index.getString( 0 ) );
+            natIndex.push_back( int( j ) );
+        }
+    }
+    
+    return natIndex;
 }
 
 

@@ -45,9 +45,8 @@ class MemberNode : public DeterministicNode {
         std::string                 richInfo(void) const;                                               //!< Complete info about object
 
         // Parser element access functions
-        bool                        existsElement(VectorInteger& index) const;                          //!< Does element exist?
-        DAGNode*                    getElement(VectorInteger& index);                                   //!< Give the parser an element
-        DAGNode*                    getElementOwner(VectorInteger& index);                              //!< Give the parser the element owner
+        DAGNode*                    getElement(VectorIndex& index);                                     //!< Give the parser an element
+        DAGNode*                    getElementOwner(VectorIndex& index);                                //!< Give the parser the element owner
         void                        setElement(size_t index, DAGNode* var, bool convert=true);          //!< Set element
 
         // DAG function

@@ -31,7 +31,7 @@ class Frame;
 class RbObject;
 class VariableNode;
 class VariableSlot;
-class VectorInteger;
+class VectorIndex;
 class VectorNatural;
 class VectorString;
 
@@ -60,16 +60,15 @@ class DAGNode {
         size_t                          numRefs(void) const;                                                    //!< Number of references
 
         // Basic utility functions you may want to override
+        virtual size_t                  getDim(void) const { return 0; }                                        //!< Get dim (0 for scalar, 1 for vector, etc)
         virtual DAGNode*                getReference(void) { return this; }                                     //!< Get reference to variable, override if lookup or fxn
         virtual size_t                  getSize(void) const { return 1; }                                       //!< Total number of elements (default is 1, only different for ContainerNode)
-        virtual size_t                  getDim(void) const { return 0; }                                        //!< Get dim (0 for scalar, 1 for vector, etc)
         virtual bool                    isConst(void) const;                                                    //!< Is DAG node const value?
 
-        // Element set and get functions you may want to override
-        virtual bool                    existsElement(VectorInteger& index) const;                              //!< Does element exist?
-        virtual DAGNode*                getElement(VectorInteger& index);                                       //!< Give the parser an element
-        virtual DAGNode*                getElementOwner(VectorInteger& index);                                  //!< Give the parser the element owner
-        virtual void                    setElement(const VectorNatural& index, DAGNode* var, bool convert=true);//!< Set element
+        // Recursive element set and get functions you may want to override
+        virtual DAGNode*                getElement(VectorIndex& index);                                         //!< Give the parser an element (recursive)
+        virtual DAGNode*                getElementOwner(VectorIndex& index);                                    //!< Give the parser the element owner (recursive)
+        virtual void                    setElement(VectorIndex& index, DAGNode* var, bool convert=true);        //!< Set element (recursive)
 
         // Basic utility functions you have to override
         virtual DAGNode*                clone(void) const = 0;                                                  //!< Clone this node
@@ -90,8 +89,6 @@ class DAGNode {
         void                            printChildren(std::ostream& o) const;                                   //!< Print children DAG nodes
         void                            printParents(std::ostream& o) const;                                    //!< Print children DAG nodes
         void                            removeChildNode(VariableNode* c) { children.erase(c); }                 //!< Remove a child node
-
-        // DAG function you may want to override
 
         // DAG function you have to override
         virtual DAGNode*                cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const = 0;       //!< Clone graph

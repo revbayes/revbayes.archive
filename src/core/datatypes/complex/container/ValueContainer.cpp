@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-12-05, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #include "ConstantNode.h"
@@ -27,6 +27,7 @@
 #include "TypeSpec.h"
 #include "ValueContainer.h"
 #include "VariableContainer.h"
+#include "VectorIndex.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
 #include "VectorString.h"
@@ -265,18 +266,30 @@ const VectorString& ValueContainer::getClass(void) const {
 }
 
 
+/** Get single element */
+DAGNode* ValueContainer::getElement( const VectorNatural& index ) const {
+
+    // The call to getOffset will throw an error if index is inappropriate
+    return elements[ getOffset( index ) ]->wrapIntoVariable();
+}
+
+
 /**
  * Get element or subcontainer corresponding to index, which can have fewer dimensions
  * or more dimensions than length. Also, the index can be negative for some of the dimensions,
  * indicating that all elements in that dimension should be included in the return variable,
  * which is then itself a container.
  */
-DAGNode* ValueContainer::getElement( VectorInteger& index ) {
+DAGNode* ValueContainer::getElement( VectorIndex& index ) {
 
+    // Check for superfluous indices
+    if ( index.size() > getDim() )
+        throw RbException( "Too many indices in accessing element of an object of type " + getTypeSpec().toString() );
+    
     // Drop any negative indices at the end of the index vector because they do not matter.
     // Also count number of negative indices that pertain to this container
     for ( int i = static_cast<int>( index.size() ) - 1; i >= 0; i-- ) {
-        if ( index[i] < 0)
+        if ( index.isEmpty( i ) < 0)
             index.pop_back();
         else
             break;
@@ -288,54 +301,25 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
     }
 
     // Check that all relevant indices are within bounds
+    // Translate to index vector of integers
+    VectorInteger intIndex;
     size_t min = index.size() < length.size() ? index.size() : length.size();
     for ( size_t i = 0; i < min; i++ ) {
     
-        if ( index[i] >= int( length[i] ) )
-            throw RbException( "Index out of bounds" );
+        if ( index[i]->isType( RbString_name ) ) {
+            
+            intIndex.push_back( int( getIndexOfName( i, index.getString( i ) ) ) );
+        }
+        else {
+        
+            intIndex.push_back( index.getInt( i ) );
+            if ( intIndex[i] >= int( length[i] ) )
+                throw RbException( "Index out of bounds" );
+        }
     }
 
     // Branch out depending on the number of indices
-    if ( index.size() > length.size() ) {
-
-        // Index goes into elements; check that it actually points to an element
-        for ( size_t i = 0; i < length.size(); i++ ) {
-            if ( index[i] < 0 ) {
-                std::ostringstream msg;
-                msg << "Invalid index into subcontainer element of " << getTypeSpec();
-                throw RbException( msg );
-            }
-        }
-
-        VectorNatural elemIndex;
-        VectorInteger valueIndex;
-        size_t i = 0;
-        for ( ; i < length.size(); i++ )
-            elemIndex.push_back( index[i] );
-        for ( ; i < index.size(); i++ )
-            valueIndex.push_back( index[i] );
-
-        RbObject* elemPtr = elements[ getOffset( elemIndex ) ];
-        if ( elemPtr == NULL )
-            throw RbException( "Index goes into a NULL object" );
-        if ( !elemPtr->isType( MemberObject_name ) )
-            throw RbException( "Container element does not support subscripting" );
-        else {
-            // Get member object pointer to the element
-            MemberObject* elem = static_cast<MemberObject*>( elemPtr );            
-
-            // Truncate index and delegate job to subelement
-            size_t subIndex = valueIndex[0];
-            valueIndex.pop_front();
-            index = valueIndex;
-            if ( index.size() == 0 )
-                return elem->getSubelement( subIndex );
-            else
-                return elem->getSubelement( subIndex )->getElement( index );
-
-        }
-    }
-    else if ( index.size() == 0 ) {
+    if ( index.size() == 0 ) {
 
         // We want the entire container, easy
         return new ContainerNode( this->clone() );
@@ -343,7 +327,7 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
     else if ( index.size() == length.size() && numNegativeIndices == 0 ) {
 
         // We want an element, easy
-        RbObject* elemPtr = elements[ getOffset( index ) ];
+        RbObject* elemPtr = elements[ getOffset( intIndex ) ];
         if ( elemPtr == NULL )
             return new ConstantNode( elementType );
         else
@@ -360,13 +344,13 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
         size_t size = 1;
         for ( size_t i = 0; i < length.size(); i++ ) {
             
-            if ( ( i < index.size() && index[i] < 0 ) || ( i >= index.size() ) ) {
+            if ( ( i < intIndex.size() && intIndex[i] < 0 ) || ( i >= intIndex.size() ) ) {
                 tempLen.push_back( length[i] );
                 size *= length[i];
                 tempIndex.push_back( 0 );           // An index we should vary
             }
             else
-                tempIndex.push_back( index[i] );    // An index to keep fixed to index[i]
+                tempIndex.push_back( intIndex[i] );    // An index to keep fixed to index[i]
         }
 
         // Check that we have at least some elements in the subcontainer
@@ -394,7 +378,7 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
                 int i;
                 for ( i = static_cast<int>( tempIndex.size() ) - 1; i >= 0; i-- ) {
                     
-                    if ( i < static_cast<int>( index.size() ) && tempIndex[i] == index[i] )
+                    if ( i < static_cast<int>( intIndex.size() ) && tempIndex[i] == intIndex[i] )
                         numLocks--;
 
                     tempIndex[i]++;
@@ -421,7 +405,7 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
                 for ( i = static_cast<int>( tempIndex.size() ) - 1; i >= 0; i-- ) {
                     
                     // Find out whether we will decrease the number of locks
-                    if ( i < static_cast<int>( index.size() ) && tempIndex[i] == index[i] )
+                    if ( i < static_cast<int>( intIndex.size() ) && tempIndex[i] == intIndex[i] )
                             numLocks--;
 
                     tempIndex[i]++;
@@ -429,7 +413,7 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
                         tempIndex[i] = 0;
 
                     // Find out whether we increased the number of locks
-                    if ( i < static_cast<int>( index.size() ) && tempIndex[i] == index[i] )
+                    if ( i < static_cast<int>( intIndex.size() ) && tempIndex[i] == intIndex[i] )
                             numLocks++;
                     
                     if ( tempIndex[i] != 0 )
@@ -450,21 +434,15 @@ DAGNode* ValueContainer::getElement( VectorInteger& index ) {
 }
 
 
-/** Set element of container with type conversion */
-void ValueContainer::setElement( const VectorNatural& index, DAGNode* var ) {
+/** Set element of value container with type conversion */
+void ValueContainer::setElement( const VectorNatural& index, RbObject* value ) {
 
     // Disallow subcontainer assignment (implict loop) for now
     if ( index.size() != length.size() ) {
     
-        if ( var->numRefs() == 0 )
-            delete var;
+        delete value;
         throw RbException( "Invalid index to element" );
     }
-
-    // Get value and check type
-    RbObject* value = var->getValue()->clone();
-    if ( var->numRefs() == 0 )
-        delete var;
 
     if ( !( value->isType( elementType ) || value->isConvertibleTo( elementType, 0, true ) ) ) {
 

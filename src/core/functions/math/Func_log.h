@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef Func_log_H

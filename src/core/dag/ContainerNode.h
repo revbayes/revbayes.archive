@@ -20,7 +20,7 @@
  * @version 1.0
  * @since 2009-12-05, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef ContainerNode_H
@@ -32,6 +32,7 @@
 #include <ostream>
 #include <vector>
 
+class VectorIndex;
 class VectorString;
 
 
@@ -55,14 +56,15 @@ class ContainerNode : public DeterministicNode {
         std::string             richInfo(void) const;                                                       //!< Complete info about object
 
         // Parser element access, test and convert functions
-        RbObject*               convertValElement(const VectorInteger& index, RbObject* val ) const;                    //!< Convert value element
-        DAGNode*                convertVarElement(const VectorInteger& index, DAGNode* var, bool convert=true ) const;  //!< Convert value element
-        bool                    existsElement(VectorInteger& index) const;                                              //!< Does element exist?
-        DAGNode*                getElement(VectorInteger& index);                                                       //!< Get element
-        DAGNode*                getElementOwner(VectorInteger& index);                                                  //!< Get element owner
-        bool                    isValidElement(const VectorInteger& index, DAGNode* var, bool convert) const;           //!< Check validity of variable element
-        bool                    isValidElement(const VectorInteger& index, const RbObject* val) const;                  //!< Check validity of value element
-        void                    setElement(const VectorInteger& index, DAGNode* var, bool convert=true);                //!< Set element
+        RbObject*               convertValueElement(const VectorInteger& index, RbObject* val ) const;                      //!< Convert value element
+        DAGNode*                convertVariableElement(const VectorInteger& index, DAGNode* var, bool convert=true ) const; //!< Convert variable element
+        DAGNode*                getElement(VectorIndex& index) const;                                                             //!< Get element (recursive)
+        DAGNode*                getElement(const VectorNatural& index) const;                                               //!< Get element (non-recursive)
+        DAGNode*                getElementOwner(VectorIndex& index);                                                        //!< Get element owner (recursive)
+        bool                    isValidElement(const VectorInteger& index, DAGNode* var, bool convert) const;               //!< Check validity of variable element
+        bool                    isValidElement(const VectorInteger& index, const RbObject* val) const;                      //!< Check validity of value element
+        void                    setElement(VectorIndex& index, DAGNode* var, bool convert=true);                            //!< Set element (supporting subcontainer assignment)
+        void                    setElement(VectorNatural& index, DAGNode* var, bool convert=true);                          //!< Set element (simple element assignment)
 
         // DAG functions
         ContainerNode*          cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;                           //!< Clone entire graph

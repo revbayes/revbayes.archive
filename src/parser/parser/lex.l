@@ -14,7 +14,7 @@
 /* The following statements go into the resulting cpp code */
 
 /* Define the call-back function for receiving input */
-#define YY_INPUT rrinput
+//#define YY_INPUT rrinput
 
 #include <cstring>
 
@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 #define YY_NEVER_INTERACTIVE 1
-extern void rrinput(char *,int &,int);
+extern void rrinput(char *,size_t &,size_t);
 #define YY_NO_UNISTD_H
 %}
 
@@ -147,7 +147,7 @@ TRUE                                    {
                                         }
 {OPTSIGN}{DIGIT}+                       {
                                             PRINTF("Flex found int %s -- ", yytext);
-                                            yylval.intValue = strtol(yytext,NULL,10); 
+                                            yylval.intValue = int(strtol(yytext,NULL,10)); 
                                             PRINTF("int value = %d\n",yylval.intValue);
                                             return INT;
                                         }

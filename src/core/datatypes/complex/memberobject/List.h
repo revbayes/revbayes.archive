@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef List_H
@@ -32,42 +32,37 @@ class VectorRealPos;
  * This class is used to hold lists of variables. Unlike a container,
  * a list can hold containers, as well as other lists. The list object
  * corresponds in many ways to the list object in R.
- *
- * @Fredrik: Are you sure that a container cannot hold containers?! Anyways, I would prefer having container which can hold containers and removing this List class. (Sebastian)
  */
 class List : public MemberObject {
 
     public:
-                                List(void);                                                 //!< Construct an empty list
-
+                                    List(void);                                                 //!< Construct an empty list
+                                    List(const List& x);                                        //!< Copy constructor
+        virtual                    ~List(void);                                                 //!< Destructor
+    
         // Overloaded operators
-        DAGNode*                operator[](size_t i) const;                                 //!< Index op to variables
+        List&                       operator=(const List& x);                                   //!< Assignment operator
+        DAGNode*                    operator[](size_t i) const;                                 //!< Index op to variables
 
         // Basic utility functions
-        List*                   clone(void) const;                                          //!< Clone object
-        const VectorString&     getClass(void) const;                                       //!< Get class
-        void                    printValue(std::ostream& o) const;                          //!< Print value for user
-        std::string             richInfo(void) const;                                       //!< Complete info about object
+        List*                       clone(void) const;                                          //!< Clone object
+        const VectorString&         getClass(void) const;                                       //!< Get class
+        void                        printValue(std::ostream& o) const;                          //!< Print value for user
+        std::string                 richInfo(void) const;                                       //!< Complete info about object
 
-        // Member variable rules
-        const MemberRules&      getMemberRules(void) const;                                 //!< Get member rules
-
-        // Member method inits
-        const MethodTable&      getMethods(void) const;                                     //!< Get methods
-
-        // Subscript access functions
-        bool                    hasSubscript(void) { return true; }                         //!< We support subscripting
-        DAGNode*                getSubelement(VectorInteger& index);                        //!< Return subscript[](index) element for parser
-        size_t                  getSubelementsSize(void) { return variables.size(); }       //!< Number of subscript elements
-
+        // Index access to elements
+        DAGNode*                    getElement(size_t i);                                       //!< Return element
+        size_t                      getElementIndex(std::string& s) const;                      //!< Convert string to numerical index
+        size_t                      getElementsSize(void) const { return elements.size(); }     //!< Number of elements
+        void                        setElement(size_t index, DAGNode* var, bool convert=true);  //!< Set element
+        bool                        supportsIndex(void) const { return true; }                  //!< We support index operator
+    
         // List function
-        void                    addVariable(DAGNode* var, const std::string& name = "");    //!< Add variable to list
+        void                        addElement(DAGNode* var, const std::string& name = "");     //!< Add element to list
 
-    private:
-        DAGNode*                executeOperation(const std::string& name, ArgumentFrame& args);     //!< Execute method
-
-        std::vector<DAGNode*>   variables;                                                  //!< Store an extra copy of variables in subscript order
-        VectorString            names;                                                      //!< Names of variables
+    protected:
+        std::vector<VariableSlot*>  elements;                                                   //!< Elements
+        VectorString                names;                                                      //!< Names of elements
 };
 
 #endif

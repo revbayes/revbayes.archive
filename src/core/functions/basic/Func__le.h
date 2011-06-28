@@ -13,7 +13,7 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef Func__le_H

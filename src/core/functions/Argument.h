@@ -14,7 +14,7 @@
  * @version 1.0
  * @since 2009-11-20, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef Argument_H

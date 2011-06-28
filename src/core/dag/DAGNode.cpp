@@ -20,11 +20,11 @@
 #include "DAGNode.h"
 #include "ContainerNode.h"
 #include "Frame.h"
-#include "VectorInteger.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
 #include "RbString.h"
+#include "VectorIndex.h"
 #include "VectorNatural.h"
 #include "VectorString.h"
 #include "VariableNode.h"
@@ -90,16 +90,6 @@ std::string DAGNode::briefInfo( void ) const {
 }
 
 
-/** Tell parser if element exists */
-bool DAGNode::existsElement( VectorInteger& index ) const {
-
-    if ( index.size() == 0 )
-        return true;
-    else
-        return false;
-}
-
-
 /** Get container of which this node is an element */
 ContainerNode* DAGNode::getContainer( void ) const {
 
@@ -127,8 +117,8 @@ const std::string& DAGNode::getDAGType( void ) const {
 }
 
 
-/** Get (make) element */
-DAGNode* DAGNode::getElement( VectorInteger& index ) {
+/** Recursive get (make) element */
+DAGNode* DAGNode::getElement( VectorIndex& index ) {
 
     if ( index.size() == 0 )
         return this;
@@ -137,8 +127,8 @@ DAGNode* DAGNode::getElement( VectorInteger& index ) {
 }
 
 
-/** Get element owner */
-DAGNode* DAGNode::getElementOwner( VectorInteger& index ) {
+/** Recursive get element owner */
+DAGNode* DAGNode::getElementOwner( VectorIndex& index ) {
 
     if ( index.size() == 0 )
         return this;
@@ -368,7 +358,7 @@ void DAGNode::removeSlot( const VariableSlot* s ) {
 
 
 /** Set element: throw an appropriate exception */
-void DAGNode::setElement( const VectorNatural& index, DAGNode* var, bool convert ) {
+void DAGNode::setElement( VectorIndex& index, DAGNode* var, bool convert ) {
 
     throw RbException( "Variable " + getName() + " does not have elemments" );
 }

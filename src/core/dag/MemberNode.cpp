@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-09-08, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 
@@ -24,7 +24,7 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "TypeSpec.h"
-#include "VectorInteger.h"
+#include "VectorIndex.h"
 #include "VectorNatural.h"
 #include "VectorString.h"
 
@@ -238,25 +238,6 @@ DAGNode* MemberNode::executeMethod(const std::string& name, const std::vector<Ar
 }
 
 
-/** Does element referred to by index exist? */
-bool MemberNode::existsElement( VectorInteger& index ) const {
-
-    if ( index.size() == 0 )
-        return true;
-    
-    if ( index[0] < 0 )
-        return false;
-    
-    if ( size_t( index[0] ) >= memberObject->getSubelementsSize() )
-        return false;
-
-    // Pop one index and delegate to subscript element
-    size_t i = index[0];
-    index.pop_front();
-    return memberObject->getSubelement( i )->existsElement( index );
-}
-
-
 /** Get class vector describing type of DAG node */
 const VectorString& MemberNode::getDAGClass() const {
 
@@ -266,26 +247,17 @@ const VectorString& MemberNode::getDAGClass() const {
 
 
 /** Get element for parser */
-DAGNode* MemberNode::getElement( VectorInteger& index ) {
+DAGNode* MemberNode::getElement( VectorIndex& index ) {
 
     if ( index.size() == 0 )
         return this;
     
-    if ( index[0] < 0 )
-        throw RbException( getName() + index.toIndexString() + " is not a subcontainer" );
-    
-    if ( size_t( index[0] ) >= memberObject->getSubelementsSize() )
-        throw RbException ( "Index out of bound for " + getName() );
-
-    // Pop one index and delegate to subscript element
-    size_t i = index[0];
-    index.pop_front();
-    return memberObject->getSubelement( i )->getElement( index );
+    return memberObject->getElement( index );
 }
 
 
 /** Get element owner for parser */
-DAGNode* MemberNode::getElementOwner( VectorInteger& index ) {
+DAGNode* MemberNode::getElementOwner( VectorIndex& index ) {
 
     // Check for erroneous call
     if ( index.size() == 0 )
@@ -294,27 +266,50 @@ DAGNode* MemberNode::getElementOwner( VectorInteger& index ) {
     // Return this if we are the owner
     if ( index.size() == 1 ) {
 
-        if ( index[0] >= int( memberObject->getSubelementsSize() ) )
-            throw RbException ( "Index out of bound for " + getName() + index.toIndexString() );
-
-        if ( index[0] < 0 )
-            throw RbException( getName() + "[] is not a subcontainer" );
+        if ( index[0]->isType( Integer_name) ) {
+            
+            int i = static_cast<const Integer*>( index[0] )->getValue();
+            
+            if ( i < 0 )
+                throw RbException( "Unexpected call to getElementOwner with terminal empty index" );
+            
+            if ( i >= static_cast<int>( memberObject->getElementsSize() ) )
+                throw RbException ( "Index out of bound for " + getName() + index.toIndexString() );                
+        }
 
         return this;
     }
     
-    // Pop one index and delegate to subscript element if allowed by member object
-    DAGNode* subElement = memberObject->getSubelement( index[0] );
-    if ( subElement->getSlot() == NULL ) {
+    // Pop one index and delegate to element if allowed by member object
+    DAGNode* element;
+    if ( index[0]->isType( Integer_name ) ) {
+ 
+        int i = static_cast<const Integer*>( index[0] )->getValue();
+
+        // Negative index must be handled by this object.
+        if ( i < 0 )
+            return this;
+
+        element = memberObject->getElement( size_t( i ) );
+    }
+    else {
+        
+        std::string s = static_cast<const RbString*>( index[0] )->getValue();
+        
+        element = memberObject->getElement( s );
+    }
+    
+    if ( element->getSlot() == NULL ) {
 
         // Not permitted by the member object
-        throw RbException( getName() + index.toIndexString() + " index goes into a temp variable" ) ;
+        delete element;
+        return this;
     }
     else {
 
         // Permitted by the member object
         index.pop_front();
-        return subElement->getElementOwner( index );
+        return element->getElementOwner( index );
     }
 }
 
@@ -389,7 +384,7 @@ std::string MemberNode::richInfo(void) const {
 /** Set element for parser, if our member object wants this (see getElementOwner) */
 void MemberNode::setElement( size_t index, DAGNode* var, bool convert ) {
 
-    if ( index >= memberObject->getSubelementsSize() ) {
+    if ( index >= memberObject->getElementsSize() ) {
         std::ostringstream msg;
         msg << "Index out of bound for " << getName() << index;
         throw RbException( msg );
@@ -398,7 +393,7 @@ void MemberNode::setElement( size_t index, DAGNode* var, bool convert ) {
     // Invalidate current value and then set element
     touched = true;
     changed = false;
-    memberObject->setSubelement( index, var, convert );
+    memberObject->setElement( index, var, convert );
 }
 
 

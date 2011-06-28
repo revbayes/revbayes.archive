@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-12-05, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 
@@ -27,7 +27,9 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "StochasticNode.h"
+#include "ValueContainer.h"
 #include "VariableContainer.h"
+#include "VectorIndex.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
 #include "VectorString.h"
@@ -223,10 +225,10 @@ ContainerNode* ContainerNode::cloneDAG(std::map<const DAGNode*, DAGNode*>& newNo
 
 
 /** Convert candidate value element(s) */
-RbObject* ContainerNode::convertValElement( const VectorInteger& index, RbObject* val ) const {
+RbObject* ContainerNode::convertValueElement( const VectorInteger& index, RbObject* valueElem ) const {
 
     if ( index.size() > size_t( getDim() ) ) {
-        delete val;
+        delete valueElem;
         throw RbException( "Too many indices when setting element of " + getName() + index.toIndexString() );
     }
 
@@ -236,25 +238,25 @@ RbObject* ContainerNode::convertValElement( const VectorInteger& index, RbObject
             emptyDim--;
     }
 
-    if ( val->isTypeSpec( TypeSpec( valueType, emptyDim ) ) )
-        return val;
+    if ( valueElem->isTypeSpec( TypeSpec( valueType, emptyDim ) ) )
+        return valueElem;
 
-    if ( val->isConvertibleTo( valueType, emptyDim, true ) ) {
-        RbObject* temp = val->convertTo( valueType, emptyDim );
-        delete val;
+    if ( valueElem->isConvertibleTo( valueType, emptyDim, true ) ) {
+        RbObject* temp = valueElem->convertTo( valueType, emptyDim );
+        delete valueElem;
         return temp;
     }
 
-    delete val;
+    delete valueElem;
     throw RbException( "Type mismatch when setting " + getName() + index.toIndexString() );
 }
 
 
 /** Convert candidate variable element(s) */
-DAGNode* ContainerNode::convertVarElement( const VectorInteger& index, DAGNode* var, bool convert ) const {
+DAGNode* ContainerNode::convertVariableElement( const VectorInteger& index, DAGNode* variableElem, bool convert ) const {
 
     if ( index.size() > size_t( getDim() ) ) {
-        delete var;
+        delete variableElem;
         throw RbException( "Too many indices when setting element of " + getName() + index.toIndexString() );
     }
 
@@ -264,65 +266,20 @@ DAGNode* ContainerNode::convertVarElement( const VectorInteger& index, DAGNode* 
             emptyDim--;
     }
 
-    if ( Workspace::userWorkspace().isXOfTypeY( var->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) )
-        return var;
+    if ( Workspace::userWorkspace().isXOfTypeY( variableElem->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) )
+        return variableElem;
 
-    if ( convert == true && Workspace::userWorkspace().isXConvertibleToY( var->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) ) {
+    if ( convert == true && Workspace::userWorkspace().isXConvertibleToY( variableElem->getTypeSpec(), TypeSpec( valueType, emptyDim ) ) ) {
 
-        RbObject* temp = var->getValue()->convertTo( valueType, emptyDim );
-        delete var;
+        RbObject* temp = variableElem->getValue()->convertTo( valueType, emptyDim );
+        delete variableElem;
         
         return temp->wrapIntoVariable();
     }
     
-    if ( var->numRefs() == 0 )
-        delete var;
+    if ( variableElem->numRefs() == 0 )
+        delete variableElem;
     throw RbException( "Type mismatch when setting " + getName() + index.toIndexString() );
-}
-
-
-/** Does element referred to by index exist? */
-bool ContainerNode::existsElement( VectorInteger& index ) const {
-
-    // Check for silly references to ourself
-    if ( index.size() == 0 )
-        return true;
-
-    if ( index.size() > size_t( getDim() ) ) {
-        
-        // If value container, the element does not exist
-        if ( container == NULL )
-            return false;
-
-        // Check that references that go beyond the container
-        // actually point to an element of the container
-        for ( size_t i = 0; i < size_t( getDim() ) ; i++ ) {
-            if ( index[i] < 0 )
-                return false;
-        }
-
-        // Pop off container index and delegate to container element
-        VectorInteger containerIndex;
-        for ( size_t i = 0; i < size_t( getDim() ); i++ )
-            containerIndex = index[i];
-        for ( size_t i = 0; i < size_t( getDim() ); i++ )
-            index.pop_front();
-
-        return container->getElement( containerIndex )->existsElement( index );
-    }
-
-    // If all indices are negative or within bounds, we should be safe
-    std::vector<size_t> len;
-    if ( container != NULL )
-        len = container->getLength();
-    else
-        static_cast<ValueContainer*>( value )->getLength();
-
-    for ( size_t i = 0; i < index.size(); i++ )
-        if ( size_t( index[i]) >= len[i] )
-            return false;
-
-    return true;
 }
 
 
@@ -339,36 +296,13 @@ DAGNode* ContainerNode::getElement( size_t i ) {
 
     if ( container != NULL )
         return (*container)[i];
-    else {
-        VectorInteger index( static_cast<int>( i ) );
-        return static_cast<ValueContainer*>( value )->getElement( index );
-    }
+    else
+        throw RbException( "No direct element access to value container from ContainerNode" );
 }
 
 
-/** Get element for parser */
-DAGNode* ContainerNode::getElement( VectorInteger& index ) {
-
-    // Check for silly references to ourself
-    if ( index.size() == 0 )
-        return this;
-
-    if ( index.size() > size_t( getDim() ) ) {
-        
-        // If value container, the element does not exist
-        if ( container == NULL )
-            throw RbException( getName() + index.toIndexString() + " does not exist" );
-
-        // Check that references that go beyond the container
-        // actually point to an element of the container
-        for ( size_t i = 0; i < size_t( getDim() ); i++ ) {
-            if ( index[i] < 0 )
-                throw RbException( getName() + index.toIndexString() + " is not a valid container" );
-        }
-
-        // Delegate to container element
-        return container->getElement( index );
-    }
+/** Get element for parser. This version supports empty indices, giving you subcontainers back. */
+DAGNode* ContainerNode::getElement( VectorIndex& index ) const {
 
     if ( container != NULL )
         return container->getElement( index );
@@ -377,30 +311,25 @@ DAGNode* ContainerNode::getElement( VectorInteger& index ) {
 }
 
 
+/** Get (or make) single element for parser */
+DAGNode* ContainerNode::getElement( const VectorNatural& index ) const {
+    
+    // Check for erroneous index
+    if ( index.size() != getDim() )
+        throw RbException( "Dimension mismatch in index to container element" );
+    
+    if ( container != NULL )
+        return container->getElement( index );
+    else
+        return static_cast<ValueContainer*>( value )->getElement( index );
+}
+
+
 /** Get element owner for parser */
-DAGNode* ContainerNode::getElementOwner( VectorInteger& index ) {
+DAGNode* ContainerNode::getElementOwner( VectorIndex& index ) {
 
-    if ( index.size() > size_t( getDim() ) ) {
-        
-        // If value container, the element does not exist
-        if ( container == NULL )
-            throw RbException( getName() + index.toIndexString() + " does not exist" );
-
-        // Check that references that go beyond the container
-        // actually point to an element of the container
-        for ( size_t i = 0; i < size_t( getDim() ); i++ ) {
-            if ( index[i] < 0 )
-                throw RbException( getName() + index.toIndexString() + " is not a valid container or subcontainer" );
-        }
-
-        // Get element
-        MemberNode* elem = dynamic_cast<MemberNode*>( container->getElement( index ) );
-        if ( elem == NULL )
-            throw RbException( getName() + index.toIndexString() + " does not exist" );
-
-        // Delegate to element
-        return elem->getElementOwner( index );
-    }
+    if ( index.size() > getDim() )
+        throw RbException( getName() + index.toIndexString() + " does not exist" );
 
     return this;
 }
@@ -605,8 +534,8 @@ std::string ContainerNode::richInfo(void) const {
 }
 
 
-/** Set variable element */
-void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool convert ) {
+/** Set variable element(s); including assignment to single elements and to subcontainers */
+void ContainerNode::setElement( VectorIndex& index, DAGNode* var, bool convert ) {
 
     // Catch empty index
     if ( index.size() == 0 ) {
@@ -621,18 +550,25 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
 
         if ( var->numRefs() == 0 )
             delete var;
-        throw RbException( "Too many indices when assigning to element of " + getName() );
+        throw RbException( "Too many indices when assigning to " + getName() );
     }
+
+    // Translate to integer index
+    VectorInteger intIndex;
+    if ( container != NULL )
+        intIndex = container->getIntegerIndex( index );
+    else
+        intIndex = static_cast<ValueContainer*>( value )->getIntegerIndex( index );
 
     // Calculate empty dim
     size_t emptyDim = getDim();
-    for ( size_t i=0; i<index.size(); i++ ) {
+    for ( size_t i=0; i<intIndex.size(); i++ ) {
         if ( index[i] >= 0 )
             emptyDim--;
     }
 
     // Convert element container or element; throws an error if conversion not possible
-    var = convertVarElement( index, var, convert );
+    var = convertVariableElement( intIndex, var, convert );
 
     // Transform ourselves into a variable container if need be
     if ( container == NULL && ( convert == false || var->isImmutable() == false ) ) {
@@ -644,10 +580,10 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
     bool grow = false;
     std::vector<size_t> containerLen = static_cast<ValueContainer*>( value )->getLength();
     std::vector<size_t> newLen       = containerLen;
-    for ( size_t i = 0; i < index.size(); i++ ) {
+    for ( size_t i = 0; i < intIndex.size(); i++ ) {
 
-        if ( index[i] >= int( containerLen[i] ) ) {
-            newLen[i] = index[i] + 1;
+        if ( intIndex[i] >= int( containerLen[i] ) ) {
+            newLen[i] = intIndex[i] + 1;
             grow = true;
         }
     }
@@ -660,8 +596,8 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
 
         // Get element index
         VectorNatural elemIndex;
-        for ( size_t i=0; i<index.size(); i++ )
-            elemIndex.push_back( index[i] );
+        for ( size_t i=0; i<intIndex.size(); i++ )
+            elemIndex.push_back( intIndex[i] );
         
         // Set single element; grow if necessary
         if ( container != NULL ) {
@@ -671,7 +607,7 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
                 container->resize( newLen );
 
             // Delete the old element
-            size_t offset = container->getOffset( index );
+            size_t offset = container->getOffset( intIndex );
             container->elements[offset]->removeChildNode( this );
             if ( container->elements[offset]->numRefs() == 0 )
                 delete container->elements[offset];
@@ -686,7 +622,9 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
             ValueContainer* valContainer = static_cast<ValueContainer*>( value );
             if ( grow )
                 valContainer->resize( newLen );
-            static_cast<ValueContainer*>( value )->setElement( elemIndex, var );
+            static_cast<ValueContainer*>( value )->setElement( elemIndex, var->getValue()->clone() );
+            if ( var->numRefs() == 0 )
+                delete var;
         }
     }
     else {
@@ -706,12 +644,12 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
             for ( ContainerIterator it1 = container->begin(); it1 != container->end(); it1++ ) {
             
                 size_t i;
-                for ( i=0; i<index.size(); i++ ) {
-                    if ( index[i] >= 0 && it1[i] != index[i] )
+                for ( i=0; i<intIndex.size(); i++ ) {
+                    if ( intIndex[i] >= 0 && it1[i] != intIndex[i] )
                         break;
                 }
 
-                if ( i == index.size() ) {
+                if ( i == intIndex.size() ) {
 
                     // Delete the old element
                     size_t offset = container->getOffset( it1 );
@@ -721,8 +659,8 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
                     parents.erase( container->elements[offset] );
 
                     // Set the new element
-                    VectorInteger vi(it2++);
-                    DAGNode* elem = var->getElement( vi );
+                    VectorNatural vecNat(it2++);
+                    DAGNode* elem = elemVar->getElement( vecNat );
                     container->elements[offset] = elem;
                     elem->addChildNode( this );
                     parents.insert( elem );
@@ -738,17 +676,37 @@ void ContainerNode::setElement( const VectorInteger& index, DAGNode* var, bool c
             for ( ContainerIterator it1 = containerVar->begin(); it1 != containerVar->end(); it1++ ) {
             
                 size_t i;
-                for ( i=0; i<index.size(); i++ ) {
-                    if ( index[i] >= 0 && it1[i] != index[i] )
+                for ( i=0; i<intIndex.size(); i++ ) {
+                    if ( index[i] >= 0 && it1[i] != intIndex[i] )
                         break;
                 }
 
                 if ( i == index.size() ) {
-                    VectorInteger vi( it2++ );
-                    containerVar->setElement( it1, elemVar->getElement( vi ) );
+                    VectorNatural vecNat( it2++ );
+                    containerVar->setElement( it1, elemVar->getElement( vecNat )->getValue()->clone() );
                 }
             }
         }
+    }
+}
+
+
+/** Set container element (simple version, no subcontainer assignment) */
+void ContainerNode::setElement( VectorNatural& index, DAGNode* var, bool convert ) {
+
+    if ( convert )
+        var = convertVariableElement(index, var );
+
+    if ( container != NULL )
+
+        container->setElement( index, var );
+
+    else {
+        
+        static_cast<ValueContainer*>( value )->setElement( index, var->getValue()->clone() );
+
+        if ( var->numRefs() == 0 )
+            delete var;
     }
 }
 

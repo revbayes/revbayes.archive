@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #include <iostream>
@@ -28,6 +28,7 @@
 #include "SyntaxFunctionCall.h"
 #include "VariableFrame.h"
 #include "VariableSlot.h"
+#include "VectorIndex.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
 #include "VectorString.h"
@@ -36,19 +37,25 @@
 
 /** Construct from identifier and index */
 SyntaxVariable::SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx) :
-    SyntaxElement(), identifier(id), index(indx), functionCall(NULL), baseVariable(NULL) {
+    SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(NULL) {
 }
 
 
 /** Construct from function call and index */
 SyntaxVariable::SyntaxVariable(SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx) :
-    SyntaxElement(), identifier(NULL), index(indx), functionCall(fxnCall), baseVariable(NULL) {
+SyntaxElement(), identifier(NULL), functionCall(fxnCall), index(indx), baseVariable(NULL) {
 }
 
 
-/** Construct from base variable (member node), identifier and index */
+/** Construct from base variable (member object), identifier and index */
 SyntaxVariable::SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx) :
-    SyntaxElement(), identifier(id), index(indx), functionCall(NULL), baseVariable(var) {
+    SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(var) {
+}
+
+
+/** Construct from base variable (member object), function call and index */
+SyntaxVariable::SyntaxVariable(SyntaxVariable* var, SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx) :
+    SyntaxElement(), identifier(NULL), functionCall(fxnCall), index(indx), baseVariable(var) {
 }
 
 
@@ -56,8 +63,8 @@ SyntaxVariable::SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<Synt
 SyntaxVariable::SyntaxVariable(const SyntaxVariable& x)
     : SyntaxElement(x) {
 
-    identifier      = new RbString(*x.identifier);
-    baseVariable    = new SyntaxVariable(*x.baseVariable);
+    identifier      = x.identifier->clone();
+    baseVariable    = x.baseVariable->clone();
     for (std::list<SyntaxElement*>::iterator i=x.index->begin(); i!=x.index->end(); i++) {
         index->push_back((*i)->clone());
     }
@@ -68,6 +75,7 @@ SyntaxVariable::SyntaxVariable(const SyntaxVariable& x)
 SyntaxVariable::~SyntaxVariable() {
     
     delete identifier;
+    delete functionCall;
     delete baseVariable;
     for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++)
         delete (*i);
@@ -81,15 +89,27 @@ SyntaxVariable& SyntaxVariable::operator=(const SyntaxVariable& x) {
     if (&x != this) {
     
         delete identifier;
+        delete functionCall;
         delete baseVariable;
         for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++)
             delete (*i);
         delete index;
 
+        identifier   = NULL;
+        functionCall = NULL;
+        baseVariable = NULL;
+        index        = NULL;
+
         SyntaxElement::operator=(x);
 
-        identifier      = new RbString(*x.identifier);
-        baseVariable    = new SyntaxVariable(*x.baseVariable);
+        if ( x.identifier != NULL )
+            identifier = x.identifier->clone();
+        if ( x.functionCall != NULL )
+            functionCall = x.functionCall->clone();
+        if ( baseVariable != NULL )
+            baseVariable = x.baseVariable->clone();
+
+        index = new std::list<SyntaxElement*>();
         for (std::list<SyntaxElement*>::iterator i=x.index->begin(); i!=x.index->end(); i++) {
             index->push_back((*i)->clone());
         }
@@ -143,7 +163,7 @@ const VectorString& SyntaxVariable::getClass(void) const {
  * a value slot, you get the variable itself rather than a copy of it.
  * A regular reference slot will return the referenced variable, which
  * can be the result of a lookup or a function call. See VariableSlot
- * for more detail; the functinality is in its getVariableRef function.
+ * for more detail.
  */
 DAGNode* SyntaxVariable::getDAGNodeExpr( VariableFrame* frame ) const {
 
@@ -197,15 +217,21 @@ DAGNode* SyntaxVariable::getDAGNodeExpr( VariableFrame* frame ) const {
             if ( (*i)->numRefs() == 0 )
                 delete (*i);
         }
-        VectorInteger elemIndex = getIndex( frame );
+        VectorIndex elemIndex = getIndex( frame );
 
-        /* We need to find the element. First ask if it exists to avoid a memory leak. */
-        if ( !theVar->existsElement( elemIndex ) )
+        /* We need to find the element. Catch exceptions to avoid a memory leak if the element does not exist. */
+        DAGNode* elem;
+        try {
+            elem = theVar->getElement( elemIndex );
+        }
+        catch ( RbException& theException ) {
+            
+            if ( theVar->numRefs() == 0 )
+                delete theVar;
+
             throw RbException( getFullName( frame ) + " does not exist" );
+        }
 
-        DAGNode* elem = theVar->getElement( elemIndex );
-        if ( theVar->numRefs() == 0 )
-            delete theVar;
         return elem;
     }
     else {
@@ -224,67 +250,67 @@ std::string SyntaxVariable::getFullName(VariableFrame* frame) const {
 
     theName << std::string(*identifier);
 
-    VectorInteger theIndex = getIndex(frame);
-    for (size_t i=0; i<theIndex.size(); i++)
-        theName << "[" << theIndex[i] << "]";
+    VectorIndex theIndex = getIndex(frame);
+    theName << theIndex;
 
     return theName.str();
 }
 
 
 /** Get index */
-VectorInteger SyntaxVariable::getIndex(VariableFrame* frame) const {
+VectorIndex SyntaxVariable::getIndex( VariableFrame* frame ) const {
 
-    VectorInteger   theIndex;
+    VectorIndex   theIndex;
 
     int count = 1;
-    for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++, count++) {
+    for ( std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++, count++ ) {
 
-        if ((*i) == NULL)
-            theIndex.push_back(-1);
+        if ( (*i) == NULL )
+
+            theIndex.push_back( -1 );
+
         else {
 
-            DAGNode* indexVar = (*i)->getValue(frame);
-            if (indexVar->getValue()->isType(Integer_name)) {
+            DAGNode* indexVar = (*i)->getValue( frame );
+            
+            if ( indexVar->getValue()->isType( Integer_name ) ) {
 
                 // Calculate (or get) an integer index
                 int intIndex = static_cast<const Integer*>( indexVar->getValue() )->getValue(); 
-                if (intIndex < 1) {
+
+                if ( intIndex < 1 ) {
+                    
                     std::ostringstream msg;
                     msg << "Index " << count << " for ";
-                    if (baseVariable != NULL)
-                        msg << baseVariable->getFullName(frame) << ".";
+                    if ( baseVariable != NULL )
+                        msg << baseVariable->getFullName( frame ) << ".";
                     msg << *identifier;
                     msg << " smaller than 1";
-                    throw RbException(msg);
+                    throw RbException( msg );
                 }
 
                 // Get zero-based value corresponding to integer index
                 theIndex.push_back(intIndex-1);
             }
-            else if (indexVar->getValue()->isType(RbString_name)) {
 
-                if ( indexVar->numRefs() == 0 )
-                    delete indexVar;
-                
-                throw RbException( "String index not implemented yet" );
-                
-                // Use variable to convert string index to integer index
-                // int intIndex = theVariable->getElementIndex((RbString*)(indexVar));
+            else if ( indexVar->getValue()->isType( RbString_name ) ) {
 
-                // If success, then we have a zero-based integer index
-                // theIndex.push_back(intIndex);
+                // Push string index onto index vector
+                theIndex.push_back( indexVar->getValue()->clone() );
             }
+            
             else {
+ 
                 if ( indexVar->numRefs() == 0 )
                     delete indexVar;
+                
                 std::ostringstream msg;
                 msg << "Index " << count << " for ";
-                if (baseVariable != NULL)
-                    msg << baseVariable->getFullName(frame) << ".";
+                if ( baseVariable != NULL )
+                    msg << baseVariable->getFullName( frame ) << ".";
                 msg << *identifier;
                 msg << " of wrong type (neither " << Integer_name << " nor " << RbString_name << ")";
-                throw RbException(msg);
+                throw RbException( msg );
             }
 
             // Avoid memory leak
@@ -307,7 +333,7 @@ VectorInteger SyntaxVariable::getIndex(VariableFrame* frame) const {
  * frame; instead, we return a NULL pointer and set theSlot pointer
  * to NULL as well.
  */
-DAGNode* SyntaxVariable::getLValue(VariableFrame* frame, VariableSlot*& theSlot, VectorInteger& elemIndex) const {
+DAGNode* SyntaxVariable::getLValue(VariableFrame* frame, VariableSlot*& theSlot, VectorIndex& elemIndex) const {
 
     /* Get index */
     elemIndex = getIndex(frame);
@@ -381,7 +407,7 @@ DAGNode* SyntaxVariable::getLValue(VariableFrame* frame, VariableSlot*& theSlot,
 DAGNode* SyntaxVariable::getValue(VariableFrame* frame) const {
 
     /* Get index */
-    VectorInteger elemIndex = getIndex(frame);
+    VectorIndex elemIndex = getIndex(frame);
 
     /* Get variable */
     DAGNode* theVar;
@@ -393,32 +419,46 @@ DAGNode* SyntaxVariable::getValue(VariableFrame* frame) const {
             theVar = functionCall->getValue( frame );
     }
     else {
+        
+        if ( functionCall == NULL ) {
 
-        // The call to getValue of baseVariable either returns
-        // a value or results in the throwing of an exception
-        DAGNode* baseVar = baseVariable->getValue( frame );
-        if ( !baseVar->isDAGType( MemberNode_name ) )
-            throw RbException( "Variable " + baseVariable->getFullName( frame ) + " does not have members" );       
-    
-        if ( identifier == NULL )
-            throw RbException( "Member variable identifier missing" );
+            // The call to getValue of baseVariable either returns
+            // a value or results in the throwing of an exception
+            DAGNode* baseVar = baseVariable->getValue( frame );
+            if ( !baseVar->isDAGType( MemberNode_name ) )
+                throw RbException( "Variable " + baseVariable->getFullName( frame ) + " does not have members" );       
+        
+            if ( identifier == NULL )
+                throw RbException( "Member variable identifier missing" );
 
-        MemberObject* theMemberObject = static_cast<MemberNode*>( baseVar )->getMemberObject();
-        MemberFrame& members = const_cast<MemberFrame&>( theMemberObject->getMembers() );
-        theVar = members[ (*identifier) ].getParserVariable();
+            MemberObject* theMemberObject = static_cast<MemberNode*>( baseVar )->getMemberObject();
+            MemberFrame& members = const_cast<MemberFrame&>( theMemberObject->getMembers() );
+            theVar = members[ (*identifier) ].getParserVariable();
+        }
+        else {
+            
+            functionCall->setBaseVariable( baseVariable );
+            theVar = functionCall->getValue( frame );
+        }
     }
 
     /* Find return value; easy if not an element */
     if ( elemIndex.size() == 0 )
         return theVar;
 
-    /* We need to find the element. First ask if it exists to avoid a memory leak. */
-    if ( !theVar->existsElement( elemIndex ) )
+    /* We need to find the element. Catch exceptions to avoid a memory leak if the element does not exist. */
+    DAGNode* elem;
+    try {
+        elem = theVar->getElement( elemIndex );
+    }
+    catch ( RbException& theException ) {
+        
+        if ( theVar->numRefs() == 0 )
+            delete theVar;
+        
         throw RbException( getFullName( frame ) + " does not exist" );
+    }
 
-    DAGNode* elem = theVar->getElement( elemIndex );
-    if ( theVar->numRefs() == 0 )
-        delete theVar;
     return elem;
 }
 

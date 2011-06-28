@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef SyntaxVariable_H
@@ -18,12 +18,12 @@
 
 #include "RbString.h"
 #include "SyntaxElement.h"
-#include "VectorInteger.h"
 
 #include <iostream>
 #include <list>
 
 class SyntaxFunctionCall;
+class VectorIndex;
 
 
 /**
@@ -38,8 +38,10 @@ class SyntaxVariable : public SyntaxElement {
 
     public:
                                     SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx);                          //!< Global variable
-                                    SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx);     //!< Member variable 
                                     SyntaxVariable(SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx);           //!< Global variable expression
+                                    SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx);     //!< Member variable 
+                                    SyntaxVariable(SyntaxVariable* var, SyntaxFunctionCall* fxnCall,
+                                                   std::list<SyntaxElement*>* indx);                                        //!< Member variable expression
                                     SyntaxVariable(const SyntaxVariable& x);                                                //!< Copy constructor
 	    virtual                    ~SyntaxVariable(void);                                                                   //!< Destructor deletes variable, identifier and index
 
@@ -55,9 +57,9 @@ class SyntaxVariable : public SyntaxElement {
         // Regular functions
         DAGNode*                    getDAGNodeExpr(VariableFrame* frame) const;                                             //!< Convert to DAG node expression
         RbString*                   getIdentifier(void) { return identifier; }                                              //!< Get identifier
-        VectorInteger               getIndex(VariableFrame* frame) const;                                                   //!< Get index
+        VectorIndex                 getIndex(VariableFrame* frame) const;                                                   //!< Evaluate index
         std::string                 getFullName(VariableFrame* frame) const;                                                //!< Get full name, with indices and base obj
-        DAGNode*                    getLValue(VariableFrame* frame, VariableSlot*& theSlot, VectorInteger& index) const;    //!< Get semantic value
+        DAGNode*                    getLValue(VariableFrame* frame, VariableSlot*& theSlot, VectorIndex& index) const;      //!< Get semantic value
         DAGNode*                    getValue(VariableFrame* frame) const;                                                   //!< Get semantic value
 
     protected:

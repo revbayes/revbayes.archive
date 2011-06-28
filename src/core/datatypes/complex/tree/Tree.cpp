@@ -40,10 +40,6 @@ void Tree::allocateNodes(int nNodes) {
         nodes.push_back( new TreeNode );
 }
 
-MemberObject* Tree::convertTo(std::string const &type, size_t dim) const {
-    return NULL;
-}
-
 void Tree::deleteNodes(void) {
     
     for (std::vector<TreeNode*>::iterator it=nodes.begin(); it != nodes.end(); it++)
@@ -55,10 +51,6 @@ const VectorString& Tree::getClass(void) const {
     
     static VectorString rbClass = VectorString(Tree_name) + MemberObject::getClass();
     return rbClass;
-}
-
-bool Tree::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
-    return false;
 }
 
 /** Do not allow the user to set the index */

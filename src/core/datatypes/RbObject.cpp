@@ -13,7 +13,7 @@
  * @since 2009-09-02, version 1.0
  * @extends RbObject
  *
- * $Id$
+ * $Id:$
  */
 
 #include "ConstantNode.h"

@@ -10,14 +10,14 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "SyntaxForCondition.h"
-#include "VectorInteger.h"
+#include "VectorNatural.h"
 #include "VariableFrame.h"
 
 #include <cassert>
@@ -135,7 +135,7 @@ bool SyntaxForCondition::getNextLoopState(VariableFrame* frame) {
         return false;
     }
 
-    (*frame)[ *varName ].setVariable( vector->getElement( nextElement ) );
+    (*frame)[ *varName ].setVariable( vector->getElement( VectorNatural( nextElement ) ) );
     nextElement++;
 
     return true;

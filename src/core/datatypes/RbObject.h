@@ -46,7 +46,7 @@ class RbObject {
         virtual const TypeSpec      getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual bool                isConstant(void) const { return true; }                                 //!< Is value a constant or does it include variables?
         virtual bool                isConvertibleTo(const std::string& type, size_t dim, bool once) const;  //!< Is convertible to type and dim?
-        virtual bool                supportsSubscripting(void) const { return false; }                      //!< Supports subscripting, as in operator[] 
+        virtual bool                supportsIndex(void) const { return false; }                             //!< Supports indexing, as in operator[]
         virtual DAGNode*            wrapIntoVariable(void);                                                 //!< Wrap value into variable
     
         // Dimensions of object: override only if object is a container with dimensions exposed to language / parser

@@ -17,7 +17,7 @@
  * @version 1.0
  * @since version 1.0 2009-09-02
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef Workspace_H

@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-12-05, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef ValueContainer_H
@@ -27,6 +27,7 @@
 
 class RbObject;
 class VariableContainer;
+class VectorIndex;
 class VectorInteger;
 class VectorNatural;
 class VectorString;
@@ -45,9 +46,8 @@ class VectorString;
  * the code to work as expected.
  * 
  * This class corresponds approximately to the basic
- * value type in R. Lists in R correspond more closely
- * to VariableContainer or even better to MemberObject
- * in RevBayes.
+ * value type in R. Lists in R correspond to the List
+ * object in RevBayes.
  */
 class ValueContainer : public Container {
 
@@ -56,7 +56,6 @@ class ValueContainer : public Container {
         friend class                    ContainerNode;                                                              //!< Give friend class access to elements
 
                                         ValueContainer(size_t n, RbObject* x);                                      //!< Vector with n copies of x
-//                                        ValueContainer(std::vector<RbObject*>* values);                             //!< Vector from std::vector @Sebastian: This constructor is not safe, see comment in .cpp file
                                         ValueContainer(const std::vector<size_t>& len, RbObject* x);                //!< Array of given dimensions with copies of x
                                         ValueContainer(const TypeSpec& typeSpec);                                   //!< Empty array of given dimensions
                                         ValueContainer(const TypeSpec& typeSpec, const std::vector<size_t>& length);//!< Default value (NULL) array of given dimensions and length
@@ -80,16 +79,17 @@ class ValueContainer : public Container {
         // Container functions you may want to override
         virtual void                    clear(void);                                                                //!< Clear
         virtual void                    resize(const std::vector<size_t>& len);                                     //!< Resize to new length vector
-        virtual void                    setElement(const VectorNatural& index, DAGNode* var);                       //!< Set element with type conversion
+        virtual void                    setElement(const VectorNatural& index, RbObject* elem);                     //!< Set element with type conversion
         virtual size_t                  size(void) const { return elements.size(); }                                //!< Get total number of elements
 
     protected:
         // Help function you may want to override
         virtual RbObject*               getDefaultElement(void) const { return NULL; }                              //!< Get default element for empty slots @Fredrik: What is a default element? (Sebastian)
 
-        // Parser help functions you may want to override
-        virtual DAGNode*                getElement(VectorInteger& index);                                           //!< Get element or subcontainer for parser
-
+        // Parser help functions you want to override
+        virtual DAGNode*                getElement(VectorIndex& index);                                             //!< Make element clone or subcontainer for parser
+        virtual DAGNode*                getElement(const VectorNatural& index) const;                               //!< Make single element clone
+    
         // Member variable
 	    std::vector<RbObject*>          elements;                                                                   //!< Vector of values
 };

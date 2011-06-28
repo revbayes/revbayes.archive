@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-09-02, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #include "RbNames.h"

@@ -15,7 +15,7 @@
  * @since 2009-12-04, version 1.0
  * @extends RbComplex
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef TreeSimple_H

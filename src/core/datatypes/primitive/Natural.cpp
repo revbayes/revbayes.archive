@@ -10,7 +10,7 @@
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id$
+ * $Id:$
  */
 
 
@@ -136,7 +136,7 @@ RbObject* Natural::convertTo( const std::string& type, size_t dim ) const {
 /** Get class vector describing type of object */
 const VectorString& Natural::getClass() const {
 
-    static VectorString rbClass = VectorString(Natural_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(Natural_name) + Integer::getClass();
     return rbClass;
 }
 

@@ -13,7 +13,7 @@
  * @since 2009-11-20, version 1.0
  * @extends RbObject
  *
- * $Id$
+ * $Id:$
  */
 
 

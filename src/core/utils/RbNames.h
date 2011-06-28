@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2010-09-09, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 #ifndef RbNames_H
@@ -145,6 +145,7 @@ const std::string SyntaxFunctionDef_name                        = "Function defi
 const std::string SyntaxLabeledExpr_name                        = "Labeled expression";
 const std::string SyntaxUnaryExpr_name                          = "Unary expression";
 const std::string SyntaxVariable_name                           = "Variable";
+const std::string SyntaxVariableDecl_name                       = "Variable declaration";
 const std::string StochasticNode_name                           = "Stochastic node";
 const std::string Trace_name                                    = "Trace";
 const std::string Tree_name                                     = "Tree";
@@ -160,8 +161,10 @@ const std::string Vector_name                                   = "Vector";
 const std::string VectorBoolean_name                            = "Boolean vector";
 const std::string VectorCharacterObservations_name              = "Character vector";
 const std::string VectorDnaStates_name                          = "DNA vector";
+const std::string VectorIndex_name                              = "Index vector";
 const std::string VectorInteger_name                            = "Integer vector";
 const std::string VectorNatural_name                            = "Natural vector";
+const std::string VectorObject_name                             = "Object vector";
 const std::string VectorReal_name                               = "Real vector";
 const std::string VectorRealPos_name                            = "+Real vector";
 const std::string VectorString_name                             = "String vector";
