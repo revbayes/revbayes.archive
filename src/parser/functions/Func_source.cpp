@@ -25,6 +25,7 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "TypeSpec.h"
+#include "UserInterface.h"
 #include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -51,8 +52,7 @@ DAGNode* Func_source::execute( void ) {
 
     /* Initialize */
     std::string commandLine;
-    std::cout << std::endl;
-    std::cout << "Processing file \"" << filename << "\" ..." << std::endl;
+    RBOUT("Processing file \"" + filename + "\" ...");
     Parser::getParser().reset();
 
     /* Command-processing loop */
@@ -68,8 +68,7 @@ DAGNode* Func_source::execute( void ) {
     }
 
     /* Return control */
-    std::cout << "Processing of file \"" << filename << "\" completed" << std::endl;
-    std::cout << std::endl;
+    RBOUT("Processing of file \"" + filename + "\" completed");
 
     return NULL;
 }
