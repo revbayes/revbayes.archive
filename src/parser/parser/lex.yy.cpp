@@ -582,6 +582,7 @@ extern "C" {
 
 /* Include objects needed to understand grammar.tab.h */
 #include "Parser.h"     // To catch any parser debug flags
+#include "RbOptions.h"
 #include "RbString.h"
 #include "SyntaxElement.h"
 #include "SyntaxFormal.h"
@@ -589,12 +590,6 @@ extern "C" {
 #include "SyntaxLabeledExpr.h"
 
 #include "grammar.tab.h"
-
-#ifdef DEBUG_PARSER
-#define PRINTF printf
-#else
-#define PRINTF(...)
-#endif
 
 #define YY_NEVER_INTERACTIVE 1
 extern void rrinput(char *,int &,int);

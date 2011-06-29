@@ -220,10 +220,12 @@ Parser& parser = Parser::getParser();
 #define YYERROR_VERBOSE
 #endif
 
+#ifndef PRINTF
 #ifdef YY_VERBOSE
 #define PRINTF printf
 #else
 #define PRINTF(...)
+#endif
 #endif
 
 #define YY_NEVER_INTERACTIVE
