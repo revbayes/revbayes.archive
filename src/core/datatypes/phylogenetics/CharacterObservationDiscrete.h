@@ -35,9 +35,10 @@ class CharacterObservationDiscrete : public CharacterObservation {
         virtual std::string                     richInfo(void) const = 0;                           //!< Complete info about object
 
         // Discrete character observation functions
+        virtual void                            addState(const char s) = 0;                         //!< Add a character state to the set of character states
         virtual const std::string&              getStateLabels(void) const = 0;                     //!< Get valid state labels
-        virtual const char                      getValue(void) const = 0;                           //!< Get the discrete observation
-        virtual void                            setValue(const char s) = 0;                         //!< Set the discrete observation
+        virtual const char                      getState(void) const = 0;                           //!< Get the discrete observation
+        virtual void                            setState(const char s) = 0;                         //!< Set the discrete observation
 
     protected:
                                                 CharacterObservationDiscrete(size_t n);             //!< Constructor taking the number of states as input

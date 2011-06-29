@@ -25,6 +25,12 @@
 class StandardState : public CharacterObservationDiscrete {
 
     public:
+                                        StandardState(void);                                //!< Default constructor
+                                        StandardState(const StandardState& s);              //!< Copy constructor
+                                        StandardState(const char s);                        //!< Constructor with nucleotide observation
+        bool                            operator==(const StandardState& x) const;           //!< Equality
+        bool                            operator!=(const StandardState& x) const;           //!< Inequality
+
         // Basic utility functions you should not have to override
         void                            printValue(std::ostream& o) const;                  //!< Print value (for user)
 
@@ -34,14 +40,12 @@ class StandardState : public CharacterObservationDiscrete {
         std::string                     richInfo(void) const;                               //!< Complete info about object
 
         // Discrete character observation functions
+        void                            addState(const char s);                             //!< Add a character state to the set of character states
         const std::string&              getStateLabels(void) const { return stateLabels; }  //!< Get valid state labels
-        const char                      getValue(void) const;                               //!< Get the discrete observation
-        void                            setValue(const char s);                             //!< Set the discrete observation
+        const char                      getState(void) const;                               //!< Get the discrete observation
+        void                            setState(const char s);                             //!< Set the discrete observation
 
     protected:
-                                        StandardState(void);                                //!< Default constructor
-                                        StandardState(const StandardState& s);              //!< Copy constructor
-                                        StandardState(const char s);                        //!< Constructor with nucleotide observation
         const static std::string        stateLabels;                                        //!< The labels for the possible states
 };
 

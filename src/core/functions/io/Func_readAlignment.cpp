@@ -118,8 +118,8 @@ DAGNode* Func_readAlignment::execute( void ) {
     
     // read the files in the map containing the file names with the output being a vector of pointers to
     // the character matrices that have been read
-    std::vector<CharacterMatrix*>* m = reader.readMatrices( fileMap );
-    std::cout << "number on vector = " << m->size() << std::endl;
+    std::vector<CharacterMatrix*> m = reader.readMatrices( fileMap );
+    std::cout << "number on vector = " << m.size() << std::endl;
     
 #   if 0    
     std::vector<RbObject*>* tmp = (std::vector<RbObject*>*) m;

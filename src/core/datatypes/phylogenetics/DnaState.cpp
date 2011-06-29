@@ -25,7 +25,7 @@ const std::string DnaState::stateLabels = "ACGT";
 /** Default constructor */
 DnaState::DnaState(void) : NucleotideState() {
 
-    setValue('n');
+    setState('n');
 }
 
 
@@ -39,7 +39,7 @@ DnaState::DnaState(const DnaState& s) : NucleotideState() {
 /** Constructor that sets the observation */
 DnaState::DnaState(const char s) : NucleotideState() {
 
-    setValue(s);
+    setState(s);
 }
 
 
@@ -47,7 +47,7 @@ DnaState::DnaState(const char s) : NucleotideState() {
 DnaState::DnaState(const std::set<char> s) : NucleotideState() {
 
     char c = getNucleotideCode(s);
-    setValue(c);
+    setState(c);
 }
 
 
@@ -143,7 +143,7 @@ const char DnaState::getNucleotideCode(const std::vector<bool>& sSet) const {
 
 
 /** Get value */
-const char DnaState::getValue(void) const {
+const char DnaState::getState(void) const {
 
     return getNucleotideCode(value);
 }
@@ -152,7 +152,7 @@ const char DnaState::getValue(void) const {
 /** Print information for the user */
 void DnaState::printValue(std::ostream &o) const {
 
-    o << getValue();
+    o << getState();
 }
 
 
@@ -160,9 +160,6 @@ void DnaState::printValue(std::ostream &o) const {
 std::string DnaState::richInfo( void ) const {
 
 	std::ostringstream o;
-    o << "DNA(";
     printValue( o );
-	o << ")";
-
     return o.str();
 }

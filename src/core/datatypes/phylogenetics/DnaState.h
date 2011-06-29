@@ -43,7 +43,7 @@ class DnaState : public NucleotideState {
 
         // Discrete character observation functions
         const std::string&              getStateLabels(void) const { return stateLabels; }  //!< Get valid state labels
-        const char                      getValue(void) const;                               //!< Get the discrete observation
+        const char                      getState(void) const;                               //!< Get the discrete observation
 
     protected:
         const static std::string        stateLabels;                                        //!< The labels for the possible states

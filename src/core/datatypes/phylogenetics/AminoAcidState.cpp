@@ -26,7 +26,7 @@ const std::string AminoAcidState::stateLabels = "ARNDCQEGHILKMFPSTWYV";
 /** Default constructor */
 AminoAcidState::AminoAcidState(void) : CharacterObservationDiscrete(20) {
 
-    setValue('n');
+    setState('n');
 }
 
 
@@ -40,7 +40,51 @@ AminoAcidState::AminoAcidState(const AminoAcidState& s) : CharacterObservationDi
 /** Constructor that sets the observation */
 AminoAcidState::AminoAcidState(const char s) : CharacterObservationDiscrete(20) {
 
-    setValue(s);
+    setState(s);
+}
+
+
+/** Equals comparison */
+bool AminoAcidState::operator==(const AminoAcidState& x) const {
+
+    for (size_t i=0; i<numStates; i++) 
+        {
+        if ( value[i] != x.value[i] )
+            return false;
+        }
+    return true;
+}
+
+
+/** Not equals comparison */
+bool AminoAcidState::operator!=(const AminoAcidState& x) const {
+
+    return !operator==(x);
+}
+
+
+/** Set the observation */
+void AminoAcidState::addState(const char s) {
+        
+    // look for matches against the state label static vector
+    char c = toupper(s);
+    size_t numMatches = 0;
+    for (size_t i=0; i<numStates; i++)
+        {
+        if ( c == stateLabels[i] )
+            {
+            value[i] = true;
+            numMatches++;
+            }
+        }
+        
+    // if there are no matches, we assume that the character state was something like
+    // a '?', 'n', or '-' and set all of the flags to true, to indicate complete ambiguity
+    if (numMatches == 0)
+        {
+        for (size_t i=0; i<numStates; i++)
+            value[i] = true;
+        }
 }
 
 
@@ -60,7 +104,7 @@ const VectorString& AminoAcidState::getClass(void) const {
 
 
 /** Get value */
-const char AminoAcidState::getValue(void) const {
+const char AminoAcidState::getState(void) const {
 
     char c;
     size_t numMatches = 0;
@@ -81,7 +125,7 @@ const char AminoAcidState::getValue(void) const {
 /** Print information for the user */
 void AminoAcidState::printValue(std::ostream &o) const {
 
-    o << getValue();
+    o << getState();
 }
 
 
@@ -89,37 +133,15 @@ void AminoAcidState::printValue(std::ostream &o) const {
 std::string AminoAcidState::richInfo( void ) const {
 
 	std::ostringstream o;
-    o << "Amino Acid(";
     printValue( o );
-	o << ")";
-
     return o.str();
 }
 
 
-void AminoAcidState::setValue(const char s) {
+void AminoAcidState::setState(const char s) {
 
     // wipe the value clean, setting all bool flags to false
     for (size_t i=0; i<numStates; i++)
         value[i] = false;
-        
-    // look for matches against the state label static vector
-    char c = toupper(s);
-    size_t numMatches = 0;
-    for (size_t i=0; i<numStates; i++)
-        {
-        if ( c == stateLabels[i] )
-            {
-            value[i] = true;
-            numMatches++;
-            }
-        }
-        
-    // if there are no matches, we assume that the character state was something like
-    // a '?' or '-' and set all of the flags to true, to indicate complete ambiguity
-    if (numMatches == 0)
-        {
-        for (size_t i=0; i<numStates; i++)
-            value[i] = true;
-        }
+    addState(s);
 }

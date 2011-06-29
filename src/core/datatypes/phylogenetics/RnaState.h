@@ -18,6 +18,7 @@
 
 #include "NucleotideState.h"
 #include <ostream>
+#include <set>
 #include <vector>
 
 
@@ -25,6 +26,13 @@
 class RnaState : public NucleotideState {
 
     public:
+                                        RnaState(void);                                     //!< Default constructor
+                                        RnaState(const RnaState& s);                        //!< Copy constructor
+                                        RnaState(const char s);                             //!< Constructor with nucleotide observation
+                                        RnaState(const std::set<char> s);                   //!< Constructor from a set of states
+        bool                            operator==(const RnaState& x) const;                //!< Equality
+        bool                            operator!=(const RnaState& x) const;                //!< Inequality
+
         // Basic utility functions you should not have to override
         void                            printValue(std::ostream& o) const;                  //!< Print value (for user)
 
@@ -35,13 +43,14 @@ class RnaState : public NucleotideState {
 
         // Discrete character observation functions
         const std::string&              getStateLabels(void) const { return stateLabels; }  //!< Get valid state labels
-        const char                      getValue(void) const;                               //!< Get the discrete observation
+        const char                      getState(void) const;                               //!< Get the discrete observation
 
     protected:
-                                        RnaState(void);                                     //!< Default constructor
-                                        RnaState(const RnaState& s);                        //!< Copy constructor
-                                        RnaState(const char s);                             //!< Constructor with nucleotide observation
         const static std::string        stateLabels;                                        //!< The labels for the possible states
+        
+    private:
+        const char                      getNucleotideCode(const std::set<char>& s) const;
+        const char                      getNucleotideCode(const std::vector<bool>& sSet) const;
 };
 
 #endif

@@ -35,9 +35,10 @@ class NucleotideState : public CharacterObservationDiscrete {
         virtual std::string             richInfo(void) const = 0;               //!< Complete info about object
 
         // Discrete character observation functions
+        void                            addState(const char s);                 //!< Add a character state to the set of character states
         virtual const std::string&      getStateLabels(void) const = 0;         //!< Get valid state labels
-        virtual const char              getValue(void) const = 0;               //!< Get the discrete observation
-        void                            setValue(const char s);                 //!< Set the discrete observation
+        virtual const char              getState(void) const = 0;               //!< Get the discrete observation
+        void                            setState(const char s);                 //!< Set the discrete observation
 
     protected:
                                         NucleotideState(void);                  //!< Default constructor

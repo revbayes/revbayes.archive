@@ -25,6 +25,12 @@
 class AminoAcidState : public CharacterObservationDiscrete {
 
     public:
+                                        AminoAcidState(void);                               //!< Default constructor
+                                        AminoAcidState(const AminoAcidState& s);            //!< Copy constructor
+                                        AminoAcidState(const char s);                       //!< Constructor with nucleotide observation
+        bool                            operator==(const AminoAcidState& x) const;          //!< Equality
+        bool                            operator!=(const AminoAcidState& x) const;          //!< Inequality
+
         // Basic utility functions you should not have to override
         void                            printValue(std::ostream& o) const;                  //!< Print value (for user)
 
@@ -34,14 +40,12 @@ class AminoAcidState : public CharacterObservationDiscrete {
         std::string                     richInfo(void) const;                               //!< Complete info about object
 
         // Discrete character observation functions
+        void                            addState(const char s);                             //!< Add a character state to the set of character states
         const std::string&              getStateLabels(void) const { return stateLabels; }  //!< Get valid state labels
-        const char                      getValue(void) const;                               //!< Get the amino acid observation
-        void                            setValue(const char s);                             //!< Set the amino acid observation
+        const char                      getState(void) const;                               //!< Get the amino acid observation
+        void                            setState(const char s);                             //!< Set the amino acid observation
 
     protected:
-                                        AminoAcidState(void);                               //!< Default constructor
-                                        AminoAcidState(const AminoAcidState& s);            //!< Copy constructor
-                                        AminoAcidState(const char s);                       //!< Constructor with nucleotide observation
         const static std::string        stateLabels;                                        //!< The labels for the possible states
 };
 

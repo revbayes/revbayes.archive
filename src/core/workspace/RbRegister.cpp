@@ -38,22 +38,30 @@
 
 
 /* Primitive types (alphabetic order) */
+#include "AminoAcidState.h"
 #include "Boolean.h"
+#include "CharacterObservationContinuous.h"
 #include "DnaState.h"
 #include "Integer.h"
 #include "Natural.h"
 #include "RbString.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RnaState.h"
+#include "StandardState.h"
 
 /* Container types (alphabetic order) */
 #include "MatrixReal.h"
+#include "VectorAminoAcidStates.h"
 #include "VectorBoolean.h"
+#include "VectorContinuousObservations.h"
 #include "VectorDnaStates.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
 #include "VectorReal.h"
 #include "VectorRealPos.h"
+#include "VectorRnaStates.h"
+#include "VectorStandardStates.h"
 #include "VectorString.h"
 
 /* MemberObject types without auto-generated constructors(alphabetic order) */
@@ -129,28 +137,36 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbAbstract( VectorString(MemberObject_name) + RbString(RbComplex_name) + RbString(RbObject_name) ) );
 
         /* Add primitive types (alphabetic order) */
-        addType( new Boolean()             );
-        addType( new DnaState()            );
-        addType( new Integer()             );
-        addType( new Natural()             );
-        addType( new RbString()            );
-        addType( new Real()                );
-        addType( new RealPos()             );
+        addType( new AminoAcidState()                 );
+        addType( new Boolean()                        );
+        addType( new CharacterObservationContinuous() );
+        addType( new DnaState()                       );
+        addType( new Integer()                        );
+        addType( new Natural()                        );
+        addType( new RbString()                       );
+        addType( new Real()                           );
+        addType( new RealPos()                        );
+        addType( new RnaState()                       );
+        addType( new StandardState()                  );
 
         /* Add container types (alphabetic order) */
-        addType( new MatrixReal()          );
-        addType( new VectorBoolean()       );
-        addType( new VectorDnaStates()     );
-        addType( new VectorInteger()       );
-        addType( new VectorNatural()       );
-        addType( new VectorReal()          );
-        addType( new VectorRealPos()       );
-        addType( new VectorString()        );
+        addType( new MatrixReal()                   );
+        addType( new VectorAminoAcidStates()        );
+        addType( new VectorBoolean()                );
+        addType( new VectorContinuousObservations() );
+        addType( new VectorDnaStates()              );
+        addType( new VectorInteger()                );
+        addType( new VectorNatural()                );
+        addType( new VectorReal()                   );
+        addType( new VectorRealPos()                );
+        addType( new VectorRnaStates()              );
+        addType( new VectorStandardStates()         );
+        addType( new VectorString()                 );
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
-        addType( new List()                );
-        addType( new Model()               );
-        addType( new Simplex()             );
+        addType( new List()    );
+        addType( new Model()   );
+        addType( new Simplex() );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "mcmc",         new Mcmc()              );
@@ -239,16 +255,16 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "quit",      new Func_quit()         );
         
         /* Add math functions (alphabetical order) */ 
-        addFunction( "expf",        new Func_exp()          );
-        addFunction( "ln",          new Func_ln()           );
-        addFunction( "log",         new Func_log()          );
-        addFunction( "power",       new Func_power()        );
-        addFunction( "sin",         new Func_sin()          );
-        addFunction( "sqrt",        new Func_sqrt()         );
+        addFunction( "expf",        new Func_exp()   );
+        addFunction( "ln",          new Func_ln()    );
+        addFunction( "log",         new Func_log()   );
+        addFunction( "power",       new Func_power() );
+        addFunction( "sin",         new Func_sin()   );
+        addFunction( "sqrt",        new Func_sqrt()  );
 
         /* Add regular templated functions (alphabetic order) */
         // TODO: Add v and s functions
-        addFunction( "transpose", new Func_transpose< MatrixReal >()             );
+        addFunction( "transpose", new Func_transpose< MatrixReal >() );
 
     }
     catch(RbException& rbException) {

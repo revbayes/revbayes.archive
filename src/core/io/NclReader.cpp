@@ -1,12 +1,21 @@
+
+#include "AminoAcidState.h"
 #include "CharacterMatrix.h"
+#include "CharacterObservationContinuous.h"
 #include "DnaState.h"
 #include "NclReader.h"
+#include "RnaState.h"
+#include "StandardState.h"
 #include "StringUtilities.h"
 #include "Tree.h"
 #include "TreeNode.h"
 #include "TreeSimple.h"
 #include "UserInterface.h"
+#include "VectorAminoAcidStates.h"
+#include "VectorContinuousObservations.h"
 #include "VectorDnaStates.h"
+#include "VectorRnaStates.h"
+#include "VectorStandardStates.h"
 
 
 
@@ -42,9 +51,9 @@ void NclReader::constructTreefromNclRecursively(TreeNode* tn, const NxsSimpleNod
         }
 }
 
-std::vector<CharacterMatrix*>* NclReader::convertFromNcl(std::vector<std::string>& fnv) {
+std::vector<CharacterMatrix*> NclReader::convertFromNcl(std::vector<std::string>& fnv) {
     
-	std::vector<CharacterMatrix*>* cmv = new std::vector<CharacterMatrix*>();
+	std::vector<CharacterMatrix*> cmv;
     
 	int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
 	int k = 0;
@@ -61,7 +70,7 @@ std::vector<CharacterMatrix*>* NclReader::convertFromNcl(std::vector<std::string
 			int dt = charBlock->GetDataType();
 			if (dt == NxsCharactersBlock::dna || dt == NxsCharactersBlock::rna || dt == NxsCharactersBlock::nucleotide)
                 {
-                m = createNucleotideMatrix(charBlock);
+                m = createDnaMatrix(charBlock);
                 }
 			else if (dt == NxsCharactersBlock::protein)
                 {
@@ -79,11 +88,12 @@ std::vector<CharacterMatrix*>* NclReader::convertFromNcl(std::vector<std::string
                 {
 				std::cerr << "Error: Mixed data types are no longer allowed" << std::endl;
                 }
-            
-			//m->setName( fnv[k++] );
-            
+                        
 			if (m != NULL)
-				cmv->push_back( m );
+                {
+                m->setFileName( fnv[k++] );
+				cmv.push_back( m );
+                }
             }
         }
     
@@ -92,7 +102,6 @@ std::vector<CharacterMatrix*>* NclReader::convertFromNcl(std::vector<std::string
 
 CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
  
-#   if 0
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::protein)
         return NULL;
@@ -101,60 +110,61 @@ CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
     NxsUnsignedSet charset;
     for (int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
-	int numOrigChar = (int)charset.size();
 	int numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
-    // allocate a matrix of the correct size
-	CharacterMatrixDiscrete* cm = new CharacterMatrixDiscrete( numOrigTaxa, numOrigChar, "amino acid" );
+    // instantiate the character matrix
+	CharacterMatrix* cMat = new CharacterMatrix();
+    cMat->setDataType("Amino Acid");
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
-        // check if the taxon is excluded
-		if ( !charblock->IsActiveTaxon(origTaxIndex) )
-            cm->excludeTaxon(origTaxIndex);
-        
         // add the taxon name
         NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tn = NxsString::GetEscaped(tLabel).c_str();
-        cm->addTaxonName(tn);
+        cMat->addTaxonName(tn);
         
+        // check if the taxon is excluded
+		if ( !charblock->IsActiveTaxon(origTaxIndex) )
+            cMat->excludeTaxon(origTaxIndex);
+        
+        // allocate a vector of Standard states
+        VectorAminoAcidStates* dataVec = new VectorAminoAcidStates();
+
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
             {	
-            // check if the site is excluded
-            NxsUnsignedSet::iterator it = excluded.find(*cit);
-            if (it != excluded.end())
-                cm->excludeCharacter(*cit);
-            
+            AminoAcidState aaState;
             if (charblock->IsGapState(origTaxIndex, *cit) == true) 
-                cm->setAminoAcid(origTaxIndex, (*cit), '?');
+                aaState.setState('n');
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
-                cm->setAminoAcid(origTaxIndex, (*cit), '?');
+                aaState.setState('n');
             else
                 {
                 int nStates = charblock->GetNumStates(origTaxIndex, *cit);
-                cm->setAminoAcid( origTaxIndex, (*cit), charblock->GetState(origTaxIndex, *cit, 0) );
+                aaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
                 for(int s=1; s<nStates; s++)
-                    cm->addAminoAcid( origTaxIndex, (*cit), charblock->GetState(origTaxIndex, *cit, s) );
+                    aaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
+            dataVec->push_back( aaState );
+                
+            // check if the site is excluded
+            NxsUnsignedSet::iterator it = excluded.find(*cit);
+            if (it != excluded.end())
+                cMat->excludeCharacter(*cit);
             }
+
+        // add the vector of nucleotide sequences for this taxon to the character matrix
+        cMat->addTaxonObservations( dataVec );
         }
     
-    if (cm->checkMatrix() == false)
-        return NULL;
-    
-    return cm;
-#   else
-    return NULL;
-#   endif
+    return cMat;
 }
 
 CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock) {
  
-#   if 0
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::continuous)
         return NULL;
@@ -163,53 +173,55 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
     NxsUnsignedSet charset;
     for (int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
-	int numOrigChar = (int)charset.size();
 	int numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
-    // allocate a matrix of the correct size
-	CharacterMatrixContinuous* cm = new CharacterMatrixContinuous( numOrigTaxa, numOrigChar );
+    // instantiate the character matrix
+	CharacterMatrix* cMat = new CharacterMatrix();
+    cMat->setDataType("Continuous");
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
-        // check if the taxon is excluded
-		if ( !charblock->IsActiveTaxon(origTaxIndex) )
-            cm->excludeTaxon(origTaxIndex);
-        
         // add the taxon name
         NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tn = NxsString::GetEscaped(tLabel).c_str();
-        cm->addTaxonName(tn);
+        cMat->addTaxonName(tn);
         
+        // check if the taxon is excluded
+		if ( !charblock->IsActiveTaxon(origTaxIndex) )
+            cMat->excludeTaxon(origTaxIndex);
+        
+        // allocate a vector of Standard states
+        VectorContinuousObservations* dataVec = new VectorContinuousObservations();
+
         // add the real-valued observation
-        int j = 0;
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
             {	
+            CharacterObservationContinuous contObs;
+            const std::vector<double>& x = charblock->GetContinuousValues( origTaxIndex, *cit, std::string("AVERAGE") );
+            contObs.setValue(x[0]);
+            dataVec->push_back( contObs );
+            
             // check if the character is excluded
             NxsUnsignedSet::iterator it = excluded.find(*cit);
             if (it != excluded.end())
-                cm->excludeCharacter(*cit);
-            
-            const std::vector<double>& x = charblock->GetContinuousValues( origTaxIndex, *cit, std::string("AVERAGE") );
-            cm->setState(origTaxIndex, (*cit), x[0]);
-            j++;
+                cMat->excludeCharacter(*cit);
             }
+
+        // add the vector of nucleotide sequences for this taxon to the character matrix
+        cMat->addTaxonObservations( dataVec );
         }
     
-    return cm;
-#   else
-    return NULL;
-#   endif
+    return cMat;
 }
 
-CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock) {
+CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna && 
-         charblock->GetDataType() != NxsCharactersBlock::rna && 
          charblock->GetDataType() != NxsCharactersBlock::nucleotide )
         return NULL;
 
@@ -217,7 +229,6 @@ CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock
     NxsUnsignedSet charset;
     for (int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
-	int numOrigChar = (int)charset.size();
 	int numOrigTaxa = charblock->GetNTax();
 
 	// get the set of excluded characters
@@ -248,17 +259,14 @@ CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock
             // add the character state to the matrix
             DnaState dnaState;
             if ( charblock->IsGapState(origTaxIndex, *cit) == true ) 
-                dnaState = DnaState('N');
+                dnaState.setState('N');
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
-                dnaState = DnaState('N');
+                dnaState.setState('N');
             else
                 {
-                int nStates = charblock->GetNumStates(origTaxIndex, *cit);
-                std::set<char> stateSet;
-                stateSet.insert( charblock->GetState(origTaxIndex, *cit, 0) );
-                for (int s=1; s<nStates; s++)
-                    stateSet.insert( charblock->GetState(origTaxIndex, *cit, s) );
-                dnaState = DnaState(stateSet);
+                dnaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );                
+                for (int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+                    dnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
             dataVec->push_back( dnaState );
 
@@ -268,79 +276,81 @@ CharacterMatrix* NclReader::createNucleotideMatrix(NxsCharactersBlock* charblock
                 cMat->excludeCharacter(*cit);
             }
             
-        // TEMP: Print the vector to see if we got it
-        dataVec->richInfo();
+        // add the vector of nucleotide sequences for this taxon to the character matrix
+        cMat->addTaxonObservations( dataVec );
         }
 
+    return cMat;
+}
 
 
-    return NULL;
+CharacterMatrix* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
 
-#   if 0
     // check that the character block is of the correct type
-	if ( charblock->GetDataType() != NxsCharactersBlock::dna && charblock->GetDataType() != NxsCharactersBlock::rna && charblock->GetDataType() != NxsCharactersBlock::nucleotide )
+	if ( charblock->GetDataType() != NxsCharactersBlock::rna )
         return NULL;
-    
+
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
     for (int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
-	int numOrigChar = (int)charset.size();
 	int numOrigTaxa = charblock->GetNTax();
-    
+
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
-    
-    // allocate a matrix of the correct size
-std::cout << " 1 " << std::endl;
-	CharacterMatrixDiscrete* cm = new CharacterMatrixDiscrete( numOrigTaxa, numOrigChar, "dna" );
-std::cout << " 2 " << std::endl;
+
+    // instantiate the character matrix
+	CharacterMatrix* cMat = new CharacterMatrix();
+    cMat->setDataType("RNA");
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
-        // check if the taxon is excluded
-		if ( !charblock->IsActiveTaxon(origTaxIndex) )
-            cm->excludeTaxon(origTaxIndex);
-        
         // add the taxon name
         NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tn = NxsString::GetEscaped(tLabel).c_str();
-        cm->addTaxonName(tn);
+        cMat->addTaxonName(tn);
+        
+        // check if the taxon is excluded
+		if ( !charblock->IsActiveTaxon(origTaxIndex) )
+            cMat->excludeTaxon(origTaxIndex);
+        
+        // allocate a vector of RNA states
+        VectorRnaStates* dataVec = new VectorRnaStates();
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
             {	
+            // add the character state to the matrix
+            RnaState rnaState;
+            if ( charblock->IsGapState(origTaxIndex, *cit) == true ) 
+                rnaState.setState('N');
+            else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
+                rnaState.setState('N');
+            else
+                {
+                rnaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );                
+                for (int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+                    rnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
+                }
+            dataVec->push_back( rnaState );
+
             // check if the site is excluded
             NxsUnsignedSet::iterator it = excluded.find(*cit);
             if (it != excluded.end())
-                cm->excludeCharacter(*cit);
-            
-            // add the character state to the matrix
-            if ( charblock->IsGapState(origTaxIndex, *cit) == true ) 
-                cm->setNucleotide( origTaxIndex, (*cit), 'N' );
-            else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
-                cm->setNucleotide( origTaxIndex, (*cit), 'N' );
-            else
-                {
-                int nStates = charblock->GetNumStates(origTaxIndex, *cit);
-                cm->setNucleotide( origTaxIndex, (*cit), charblock->GetState(origTaxIndex, *cit, 0) );
-                for(int s=1; s<nStates; s++)
-                    cm->addNucleotide( origTaxIndex, (*cit), charblock->GetState(origTaxIndex, *cit, s) );
-                }
+                cMat->excludeCharacter(*cit);
             }
+            
+        // add the vector of nucleotide sequences for this taxon to the character matrix
+        cMat->addTaxonObservations( dataVec );
         }
-    
-    if (cm->checkMatrix() == false)
-        return NULL;
-    
-	return cm;
-#   endif
+
+    return cMat;
 }
+
 
 CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
  
-#   if 0
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::standard)
         return NULL;
@@ -349,7 +359,6 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
     NxsUnsignedSet charset;
     for (int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
-	int numOrigChar = (int)charset.size();
 	int numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
@@ -359,51 +368,56 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
     const NxsDiscreteDatatypeMapper* mapper = charblock->GetDatatypeMapperForChar(0);
     std::string sym = charblock->GetSymbols();
     int nStates = mapper->GetNumStates();
+    if (nStates > 10)
+        return NULL;
     
-    // allocate a matrix of the correct size
-	CharacterMatrixDiscrete* cm = new CharacterMatrixDiscrete( numOrigTaxa, numOrigChar, nStates, "standard" );
+    // instantiate the character matrix
+	CharacterMatrix* cMat = new CharacterMatrix();
+    cMat->setDataType("Standard");
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
-        // check if the taxon is excluded
-		if ( !charblock->IsActiveTaxon(origTaxIndex) )
-            cm->excludeTaxon(origTaxIndex);
-        
         // add the taxon name
         NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tn = NxsString::GetEscaped(tLabel).c_str();
-        cm->addTaxonName(tn);
+        cMat->addTaxonName(tn);
+        
+        // check if the taxon is excluded
+		if ( !charblock->IsActiveTaxon(origTaxIndex) )
+            cMat->excludeTaxon(origTaxIndex);
+        
+        // allocate a vector of Standard states
+        VectorStandardStates* dataVec = new VectorStandardStates();
         
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
             {	
-            // check if the site is excluded
-            NxsUnsignedSet::iterator it = excluded.find(*cit);
-            if (it != excluded.end())
-                cm->excludeCharacter(*cit);
-            
             // add the character state to the matrix
-            int ns = charblock->GetNumStates(origTaxIndex, *cit);
-            for(int s=0; s<ns; s++)
+            StandardState stdState;
+            for(int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                 {
                 char c = charblock->GetState(origTaxIndex, *cit, s);
                 for (int i=0; i<nStates; i++)
                     {
                     if ( sym[i] == c )
-                        cm->setState(origTaxIndex, *cit, i);
+                        stdState.addState(i);
+                        //cMat->setState(origTaxIndex, *cit, i);
                     }
                 }
+            dataVec->push_back( stdState );
+
+            // check if the site is excluded
+            NxsUnsignedSet::iterator it = excluded.find(*cit);
+            if (it != excluded.end())
+                cMat->excludeCharacter(*cit);
             }
+
+        // add the vector of nucleotide sequences for this taxon to the character matrix
+        cMat->addTaxonObservations( dataVec );
         }
-    
-    if (cm->checkMatrix() == false)
-        return NULL;
-    
-    return cm;
-#   else
-    return NULL;
-#   endif
+        
+    return cMat;
 }
 
 bool NclReader::fileExists(const char* fn) const {
@@ -424,10 +438,10 @@ NclReader& NclReader::getInstance(void) {
 	return rb;
 }
 
-std::vector<CharacterMatrix*>* NclReader::readMatrices(const std::map<std::string,std::string>& fileMap) {
+std::vector<CharacterMatrix*> NclReader::readMatrices(const std::map<std::string,std::string>& fileMap) {
 
     // allocate a vector of matrices
-    std::vector<CharacterMatrix*>* cmv = new std::vector<CharacterMatrix*>();
+    std::vector<CharacterMatrix*> cmv;
 
     // We loop through the map that contains as the key the path and name of the file to be read and as the
     // value the data type. The data types are as follows: Nexus, Phylip+DNA/RNA/AA/Standard+Interleaved/Noninterleaved,
@@ -456,63 +470,57 @@ std::vector<CharacterMatrix*>* NclReader::readMatrices(const std::map<std::strin
 
         // read the file
         std::cout << "reading file: " << p->first << std::endl;
-        std::vector<CharacterMatrix*>* v = readMatrices( p->first.c_str(), ff, dt, il );
-		if (v != NULL)
+        std::vector<CharacterMatrix*> v = readMatrices( p->first.c_str(), ff, dt, il );
+		if (v.size() > 0)
             {
-			for (std::vector<CharacterMatrix*>::iterator m = v->begin(); m != v->end(); m++)
-				cmv->push_back( (*m) );
-			delete v;
+			for (std::vector<CharacterMatrix*>::iterator m = v.begin(); m != v.end(); m++)
+				cmv.push_back( (*m) );
             }
-		else 
-			return NULL;
 		nexusReader.ClearContent();
         }
         
     return cmv;
 }
 
-std::vector<CharacterMatrix*>* NclReader::readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
+std::vector<CharacterMatrix*> NclReader::readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
+	// instantiate a vector of matrices
+	std::vector<CharacterMatrix*> cmv;
+
 	// check that the files exist
     for (std::vector<std::string>::const_iterator f = fn.begin(); f != fn.end(); f++)
         {
         if ( !fileExists((*f).c_str()) )	
             {
             std::cerr << "Error: Data file \"" << (*f) << "\"not found" << std::endl;
-            return NULL;
+            return cmv;
             }
         }
-    
-	// allocate a vector of matrices
-	std::vector<CharacterMatrix*>* cmv = new std::vector<CharacterMatrix*>();
-    
+        
     // read the data files
     for (std::vector<std::string>::const_iterator f = fn.begin(); f != fn.end(); f++)
         {
-        std::vector<CharacterMatrix*>* v = readMatrices( (*f).c_str(), fileFormat, dataType, isInterleaved );
-		if (v != NULL)
+        std::vector<CharacterMatrix*> v = readMatrices( (*f).c_str(), fileFormat, dataType, isInterleaved );
+		if (v.size() > 0)
             {
-			for (std::vector<CharacterMatrix*>::iterator m = v->begin(); m != v->end(); m++)
-				cmv->push_back( (*m) );
-			delete v;
+			for (std::vector<CharacterMatrix*>::iterator m = v.begin(); m != v.end(); m++)
+				cmv.push_back( (*m) );
             }
-		else 
-			return NULL;
 		nexusReader.ClearContent();
         }
     
     return cmv;
 }
 
-std::vector<CharacterMatrix*>* NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
+std::vector<CharacterMatrix*> NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
 	// check that the file exists
 	if ( !fileExists(fileName) )	
         {
 		std::cerr << "Error: Data file \"" << fileName << "\"not found" << std::endl;
-        return NULL;
+        std::vector<CharacterMatrix*> dummy;
+        return dummy;
         }
-            
 	try
         {
 		if (fileFormat == "nexus")
@@ -560,19 +568,14 @@ std::vector<CharacterMatrix*>* NclReader::readMatrices(const char* fileName, con
 	catch(NxsException err)
         {
 		std::cout << "Nexus Error: " << err.msg << " (" << err.pos << ", " << err.line << ", " << err.col << ")" << std::endl;
-		return NULL;
+        std::vector<CharacterMatrix*> dummy;
+		return dummy;
         }
     
 	std::vector<std::string> fileNameVector;
 	std::string str = fileName;
 	fileNameVector.push_back( str );
-	std::vector<CharacterMatrix*>* cvm = convertFromNcl(fileNameVector);
-	if (cvm->size() == 0)
-        {
-		std::cout << "Deleting cvm" << std::endl;
-		delete cvm;
-		return NULL;
-        }
+	std::vector<CharacterMatrix*> cvm = convertFromNcl(fileNameVector);
 	return cvm;
 }
 

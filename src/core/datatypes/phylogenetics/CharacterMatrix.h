@@ -20,6 +20,8 @@ class CharacterMatrix : public MemberObject {
         // Basic utility functions
         CharacterMatrix*                            clone(void) const;                                                 //!< Clone object
         const VectorString&                         getClass(void) const;                                              //!< Get class vector   
+        void                                        printValue(std::ostream& o) const;                                 //!< Print value for user
+        std::string                                 richInfo(void) const;                                              //!< Complete info
 
         // Member variable rules
         const MemberRules&                          getMemberRules(void) const;                                        //!< Get member rules
@@ -34,8 +36,8 @@ class CharacterMatrix : public MemberObject {
         void                                        excludeCharacter(size_t i);                                        //!< Exclude character
         void                                        excludeTaxon(size_t i);                                            //!< Exclude taxon
         void                                        excludeTaxon(std::string& s);                                      //!< Exclude taxon
-        size_t                                      getNumCharacters(void);                                            //!< Number of characters
-        size_t                                      getNumTaxa(void) { return taxonObservations.size(); }              //!< Number of taxa
+        size_t                                      getNumCharacters(void) const;                                      //!< Number of characters
+        size_t                                      getNumTaxa(void) const { return taxonObservations.size(); }        //!< Number of taxa
         bool                                        isCharacterExcluded(size_t i);                                     //!< Is the character excluded
         bool                                        isTaxonExcluded(size_t i);                                         //!< Is the taxon excluded
         bool                                        isTaxonExcluded(std::string& s);                                   //!< Is the taxon excluded

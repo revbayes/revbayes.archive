@@ -53,7 +53,6 @@ class VectorDnaStates : public VectorCharacterObservations {
 
     protected:
         RbObject*                   getDefaultElement(void) const { return new VectorDnaStates(); } //!< Get default element for empty slots
-
 };
 
 #endif

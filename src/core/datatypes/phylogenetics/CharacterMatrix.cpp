@@ -44,6 +44,20 @@ CharacterMatrix::CharacterMatrix(void) : MemberObject(getMemberRules()) {
 }
 
 
+/** Add a taxon name */
+void CharacterMatrix::addTaxonName(const std::string tName) {
+
+    taxonNames.push_back( tName );
+}
+
+
+/** Add a vector of taxon observations */
+void CharacterMatrix::addTaxonObservations(VectorCharacterObservations* obs) {
+
+    taxonObservations.push_back( obs );
+}
+
+
 /** Clone object */
 CharacterMatrix* CharacterMatrix::clone(void) const {
 
@@ -155,7 +169,7 @@ const MethodTable& CharacterMatrix::getMethods(void) const {
 
 
 /** Return the number of characters in each vector of taxon observations */
-size_t CharacterMatrix::getNumCharacters(void) {
+size_t CharacterMatrix::getNumCharacters(void) const {
 
     if ( taxonObservations.size() == 0 )
         return 0;
@@ -206,17 +220,22 @@ bool CharacterMatrix::isTaxonExcluded(std::string& s) {
 }
 
 
-/** Add a vector of taxon observations */
-void CharacterMatrix::addTaxonObservations(VectorCharacterObservations* obs) {
+/** Print value for user */
+void CharacterMatrix::printValue(std::ostream& o) const {
 
-    taxonObservations.push_back( obs );
+    o << "Origination:          " << fileName << std::endl;
+    o << "Data type:            " << dataType << std::endl;
+    o << "Number of taxa:       " << getNumTaxa() << std::endl;
+    o << "Number of characters: " << getNumCharacters() << std::endl;
 }
 
 
-/** Add a taxon name */
-void CharacterMatrix::addTaxonName(const std::string tName) {
+/** Complete info */
+std::string CharacterMatrix::richInfo(void) const {
 
-    taxonNames.push_back( tName );
+	std::ostringstream o;
+    printValue( o );
+    return o.str();
 }
 
 

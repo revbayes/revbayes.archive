@@ -25,6 +25,93 @@ NucleotideState::NucleotideState(void) : CharacterObservationDiscrete( 4 ) {
 }
 
 
+/** Set the value */
+void NucleotideState::addState(const char s) {
+
+    char c = tolower(s);
+    if (c == 'u')
+        c = 't';
+        
+	if (c == 'a')
+		{
+		value[0] = true;
+		}
+	else if (c == 'c')
+		{
+		value[1] = true;
+		}
+	else if (c == 'm')
+		{
+		value[0] = true;
+		value[1] = true;
+		}
+	else if (c == 'g')
+		{
+		value[2] = true;
+		}
+	else if (c == 'r')
+		{
+		value[0] = true;
+		value[2] = true;
+		}
+	else if (c == 's')
+		{
+		value[1] = true;
+		value[2] = true;
+		}
+	else if (c == 'v')
+		{
+		value[0] = true;
+		value[1] = true;
+		value[2] = true;
+		}
+	else if (c == 't')
+		{
+		value[3] = true;
+		}
+	else if (c == 'w')
+		{
+		value[0] = true;
+		value[3] = true;
+		}
+	else if (c == 'y')
+		{
+		value[1] = true;
+		value[3] = true;
+		}
+	else if (c == 'h')
+		{
+		value[0] = true;
+		value[1] = true;
+		value[3] = true;
+		}
+	else if (c == 'k')
+		{
+		value[2] = true;
+		value[3] = true;
+		}
+	else if (c == 'd')
+		{
+		value[0] = true;
+		value[2] = true;
+		value[3] = true;
+		}
+	else if (c == 'b')
+		{
+		value[1] = true;
+		value[2] = true;
+		value[3] = true;
+		}
+	else if (c == 'n')
+		{
+		value[0] = true;
+		value[1] = true;
+		value[2] = true;
+		value[3] = true;
+		}
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& NucleotideState::getClass() const {
 
@@ -34,111 +121,111 @@ const VectorString& NucleotideState::getClass() const {
 
 
 /** Set the value */
-void NucleotideState::setValue(const char s) {
+void NucleotideState::setState(const char s) {
 
     char c = tolower(s);
     if (c == 'u')
         c = 't';
         
-	if (s == 'a')
+	if (c == 'a')
 		{
 		value[0] = true;
 		value[1] = false;
 		value[2] = false;
 		value[3] = false;
 		}
-	else if (s == 'c')
+	else if (c == 'c')
 		{
 		value[0] = false;
 		value[1] = true;
 		value[2] = false;
 		value[3] = false;
 		}
-	else if (s == 'm')
+	else if (c == 'm')
 		{
 		value[0] = true;
 		value[1] = true;
 		value[2] = false;
 		value[3] = false;
 		}
-	else if (s == 'g')
+	else if (c == 'g')
 		{
 		value[0] = false;
 		value[1] = false;
 		value[2] = true;
 		value[3] = false;
 		}
-	else if (s == 'r')
+	else if (c == 'r')
 		{
 		value[0] = true;
 		value[1] = false;
 		value[2] = true;
 		value[3] = false;
 		}
-	else if (s == 's')
+	else if (c == 's')
 		{
 		value[0] = false;
 		value[1] = true;
 		value[2] = true;
 		value[3] = false;
 		}
-	else if (s == 'v')
+	else if (c == 'v')
 		{
 		value[0] = true;
 		value[1] = true;
 		value[2] = true;
 		value[3] = false;
 		}
-	else if (s == 't')
+	else if (c == 't')
 		{
 		value[0] = false;
 		value[1] = false;
 		value[2] = false;
 		value[3] = true;
 		}
-	else if (s == 'w')
+	else if (c == 'w')
 		{
 		value[0] = true;
 		value[1] = false;
 		value[2] = false;
 		value[3] = true;
 		}
-	else if (s == 'y')
+	else if (c == 'y')
 		{
 		value[0] = false;
 		value[1] = true;
 		value[2] = false;
 		value[3] = true;
 		}
-	else if (s == 'h')
+	else if (c == 'h')
 		{
 		value[0] = true;
 		value[1] = true;
 		value[2] = false;
 		value[3] = true;
 		}
-	else if (s == 'k')
+	else if (c == 'k')
 		{
 		value[0] = false;
 		value[1] = false;
 		value[2] = true;
 		value[3] = true;
 		}
-	else if (s == 'd')
+	else if (c == 'd')
 		{
 		value[0] = true;
 		value[1] = false;
 		value[2] = true;
 		value[3] = true;
 		}
-	else if (s == 'b')
+	else if (c == 'b')
 		{
 		value[0] = false;
 		value[1] = true;
 		value[2] = true;
 		value[3] = true;
 		}
-	else if (s == 'n')
+	else if (c == 'n')
 		{
 		value[0] = true;
 		value[1] = true;

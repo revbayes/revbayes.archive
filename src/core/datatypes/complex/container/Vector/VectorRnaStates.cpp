@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of VectorDnaStates, a complex type
- * used to hold a string of DNA.
+ * This file contains the implementation of VectorRnaStates, a complex type
+ * used to hold a string of RNA.
  *
- * @brief Implementation of VectorDnaStates
+ * @brief Implementation of VectorRnaStates
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -16,12 +16,12 @@
  * $Id:$
  */
 
-#include "DnaState.h"
+#include "RnaState.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "TypeSpec.h"
-#include "VectorDnaStates.h"
+#include "VectorRnaStates.h"
 #include "VectorInteger.h"
 #include "VectorString.h"
 #include <sstream>
@@ -29,40 +29,40 @@
 
 
 /** Construct empty DNA vector */
-VectorDnaStates::VectorDnaStates(void) : VectorCharacterObservations(DnaState_name) {
+VectorRnaStates::VectorRnaStates(void) : VectorCharacterObservations(DnaState_name) {
     
 }
 
 
 /** Copy constructor */
-VectorDnaStates::VectorDnaStates(const VectorDnaStates& x) : VectorCharacterObservations(DnaState_name) {
+VectorRnaStates::VectorRnaStates(const VectorRnaStates& x) : VectorCharacterObservations(DnaState_name) {
 
     for (size_t i=0; i<x.size(); i++)
-        elements.push_back( new DnaState(x[i]) );
+        elements.push_back( new RnaState(x[i]) );
     length[0] = elements.size();
 }
 
 
 /** Subscript operator */
-DnaState& VectorDnaStates::operator[](size_t i) {
+RnaState& VectorRnaStates::operator[](size_t i) {
 
     if (i >= elements.size())
         throw RbException("Index out of bounds");
-    return *( static_cast<DnaState*>(elements[i]) );
+    return *( static_cast<RnaState*>(elements[i]) );
 }
 
 
 /** Subscript const operator */
-const DnaState& VectorDnaStates::operator[](size_t i) const {
+const RnaState& VectorRnaStates::operator[](size_t i) const {
 
     if (i >= elements.size())
         throw RbException("Index out of bounds");
-    return *( static_cast<DnaState*>(elements[i]) );
+    return *( static_cast<RnaState*>(elements[i]) );
 }
 
 
 /** Equals comparison */
-bool VectorDnaStates::operator==(const VectorDnaStates& x) const {
+bool VectorRnaStates::operator==(const VectorRnaStates& x) const {
 
     if ( size() != x.size() )
         return false;
@@ -76,16 +76,16 @@ bool VectorDnaStates::operator==(const VectorDnaStates& x) const {
 
 
 /** Not equals comparison */
-bool VectorDnaStates::operator!=(const VectorDnaStates& x) const {
+bool VectorRnaStates::operator!=(const VectorRnaStates& x) const {
 
     return !operator==(x);
 }
 
 
-/** Concatenation with operator+ (VectorDnaStates) */
-VectorDnaStates VectorDnaStates::operator+(const VectorDnaStates& x) const {
+/** Concatenation with operator+ (VectorRnaStates) */
+VectorRnaStates VectorRnaStates::operator+(const VectorRnaStates& x) const {
 
-    VectorDnaStates tempVec = *this;
+    VectorRnaStates tempVec = *this;
     for (size_t i=0; i<x.size(); i++)
         tempVec.push_back( x[i] );
     return tempVec;
@@ -93,52 +93,52 @@ VectorDnaStates VectorDnaStates::operator+(const VectorDnaStates& x) const {
 
 
 /** Concatenation with operator+ (DnaState) */
-VectorDnaStates VectorDnaStates::operator+(const DnaState& x) const {
+VectorRnaStates VectorRnaStates::operator+(const RnaState& x) const {
 
-    VectorDnaStates tempVec = *this;
+    VectorRnaStates tempVec = *this;
     tempVec.push_back( x );
     return tempVec;
 }
 
 
 /** Clone function */
-VectorDnaStates* VectorDnaStates::clone(void) const {
+VectorRnaStates* VectorRnaStates::clone(void) const {
 
-    return new VectorDnaStates(*this);
+    return new VectorRnaStates(*this);
 }
 
 
 /** Get class vector describing type of object */
-const VectorString& VectorDnaStates::getClass(void) const {
+const VectorString& VectorRnaStates::getClass(void) const {
 
-    static VectorString rbClass = VectorString(VectorDnaStates_name) + Vector::getClass();
+    static VectorString rbClass = VectorString(VectorRnaStates_name) + Vector::getClass();
     return rbClass;
 }
 
 
 /** Get STL vector of strings */
-std::vector<DnaState*> VectorDnaStates::getStdVector(void) const {	 
+std::vector<RnaState*> VectorRnaStates::getStdVector(void) const {	 
 
-    std::vector<DnaState*> dnaVector;	 
+    std::vector<RnaState*> rnaVector;	 
     for (size_t i=0; i<elements.size(); i++) 
         {	 
-        DnaState* d = static_cast<DnaState*>( elements.at(i) );
-        dnaVector.push_back(d);	 
+        RnaState* d = static_cast<RnaState*>( elements.at(i) );
+        rnaVector.push_back(d);	 
         }	 
-    return dnaVector;	 
+    return rnaVector;	 
 }
 
 
 /** Append string element to end of vector, updating length in process */
-void VectorDnaStates::push_back(DnaState x) {
+void VectorRnaStates::push_back(RnaState x) {
 
-    elements.push_back( new DnaState(x) );
+    elements.push_back( new RnaState(x) );
     length[0]++;
 }
 
 
 /** Print info about object */
-void VectorDnaStates::printValue(std::ostream& o) const {
+void VectorRnaStates::printValue(std::ostream& o) const {
 
     for (size_t i=0; i<elements.size(); i++)
         elements[i]->printValue(o);
@@ -146,10 +146,10 @@ void VectorDnaStates::printValue(std::ostream& o) const {
 
 
 /** Complete info about object */
-std::string VectorDnaStates::richInfo(void) const {
+std::string VectorRnaStates::richInfo(void) const {
 
     std::ostringstream o;
-    o << "VectorDnaStates: ";
+    o << "VectorRnaStates: ";
     printValue(o);
     return o.str();
 }
