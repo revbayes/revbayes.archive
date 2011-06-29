@@ -18,6 +18,9 @@
 /* Flag for generating debugging info */
 // #undef DEBUG_PARSER -- set this in IDE preprocessor
 
+#define DEBUG_PARSER
+
+
 /* The magic PRINTF defines */
 #if defined (DEBUG_PARSER)
 #define PRINTF printf

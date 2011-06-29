@@ -232,13 +232,13 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
         else if ( elemIndex.size() == 0 ) {
             
             // Assigning to an existing regular variable
-            PRINTF ( "Assigning a value to %s %s through arrow assignment\n", theVariable->getTypeSpec(), theVariable->getName() );
+            PRINTF ( "Assigning a value to %s %s through arrow assignment\n", theVariable->getTypeSpec().toString().c_str(), theVariable->getName().c_str() );
             slot->setValue( value );
         }
         else /* if ( elemIndex.size() > 0 ) */ {
             
             // Assigning to a container element or member object element
-            PRINTF ( "Assigning a value to %s %s%s through arrow assignment\n", theVariable->getTypeSpec(), theVariable->getName(), elemIndex.toIndexString() );
+            PRINTF ( "Assigning a value to %s %s%s through arrow assignment\n", theVariable->getTypeSpec().toString().c_str(), theVariable->getName().c_str(), elemIndex.toIndexString().c_str() );
             slot->setElement( elemIndex, value );
         }
     }
@@ -279,13 +279,13 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
         else if ( elemIndex.size() == 0 ) {
             
             // It exists - replace it
-            PRINTF ( "Assigning a dag expression to %s %s through equation assignment\n", theVariable->getTypeSpec(), theVariable->getName().c_str() );
+            PRINTF ( "Assigning a dag expression to %s %s through equation assignment\n", theVariable->getTypeSpec().toString().c_str(), theVariable->getName().c_str() );
             slot->setVariable( node );
         }
         else /* if ( elemIndex.size() > 0 ) */ {
             
             // Equation assignment to a container element or member object element
-            PRINTF ( "Assigning a dag expression to %s %s%s through equation assignment\n", theVariable->getTypeSpec(), theVariable->getName(), elemIndex.toIndexString() );
+            PRINTF ( "Assigning a dag expression to %s %s%s through equation assignment\n", theVariable->getTypeSpec().toString().c_str(), theVariable->getName().c_str(), elemIndex.toIndexString().c_str() );
             slot->setElement( elemIndex, node );
         }
     }

@@ -39,6 +39,7 @@
 
 /* Primitive types (alphabetic order) */
 #include "Boolean.h"
+#include "DnaState.h"
 #include "Integer.h"
 #include "Natural.h"
 #include "RbString.h"
@@ -129,6 +130,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add primitive types (alphabetic order) */
         addType( new Boolean()             );
+        addType( new DnaState()            );
         addType( new Integer()             );
         addType( new Natural()             );
         addType( new RbString()            );
