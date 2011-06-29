@@ -27,7 +27,11 @@ XmlTag::XmlTag(std::string content) {
 
 void XmlTag::createObjectTag(std::string &content) {
 
+//    std::cout << "Creating xml tag for:\t\t" << content << std::endl;
     textTag = false;
+    closingTag = false;
+    closed = false;
+    reference = false;
     
     // remove first and last element, i.e. '<' and '>'
     content.erase(0,1);
@@ -37,7 +41,6 @@ void XmlTag::createObjectTag(std::string &content) {
     if (content[0] == '/') 
         {
         closingTag = true;
-        closingTag = false;
         // we need to do nothing otherwise because the closing tags have no information so far
         }
     else 
@@ -82,12 +85,12 @@ void XmlTag::createObjectTag(std::string &content) {
             attributes[key_value.at(0)]    = value;
         }
     }
-    std::cout << "in createObjectTag with name \"" << name << "\"" << std::endl;
+//    std::cout << "in createObjectTag with name \"" << name << "\"" << std::endl;
 }
 
 void XmlTag::createTextTag(std::string &content) {
 
-    std::cout << "in createTextTag with text \"" << content << "\"" << std::endl;
+//    std::cout << "in createTextTag with text \"" << content << "\"" << std::endl;
     text = content;
     textTag = true;
     closed  = true;

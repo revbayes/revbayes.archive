@@ -1,10 +1,19 @@
-//
-//  XmlParser.h
-//  RevBayesGui
-//
-//  Created by Sebastian Hoehna on 4/13/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
+/**
+ * @file
+ * This file contains the declaration of XmlParser. The XmlParser reads the content of an xml file from a stream
+ * and creates from it the xml document.
+ *
+ * @brief Declaration of the inferace XmlParser
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date:$
+ * @author Sebastian Hoehna
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2011-04-13, version 1.0
+ *
+ * $Id: $
+ */
 #ifndef XmlParser_H
 #define XmlParser_H
 
@@ -18,13 +27,12 @@
 class XmlParser {
     
 public:
-    XmlParser();
+    XmlParser();                                                                                                                //!< default constructor
     
-    XmlDocument*            parse(const char* inStream);
-    XmlDocument*            parse(std::string& inStream);
-    XmlDocument*            parse(std::istream& inStream);
+    XmlDocument*            parse(const char* inStream);                                                                        //!< parser with c-type input string
+    XmlDocument*            parse(std::string& inStream);                                                                       //!< parser reading from string
+    XmlDocument*            parse(std::istream& inStream);                                                                      //!< parser reading from input stream
     
-protected:
     
 private:
     XmlTag                  readTag(std::istream& instream);

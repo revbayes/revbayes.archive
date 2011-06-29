@@ -1,10 +1,20 @@
-//
-//  XmlElementAttributed.h
-//  RevBayesGui
-//
-//  Created by Sebastian Hoehna on 4/14/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
+/**
+ * @file
+ * This file contains the declaration of XmlElementAttributed, which implements an XmlElement, but is still abstract.
+ * XmlElementAttributed is the base class of all xml elements which have attributes.
+ * <person name="Sebastian"> is an xml element with the key-value attribute (name,Sebastian)
+ *
+ * @brief Declaration of the inferace XmlElementAttributed
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date:$
+ * @author Sebastian Hoehna
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2011-04-13, version 1.0
+ *
+ * $Id: $
+ */
 #ifndef XmlElementAttributed_H
 #define XmlElementAttributed_H
 

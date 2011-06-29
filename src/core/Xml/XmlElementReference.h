@@ -1,10 +1,21 @@
-//
-//  XmlElementReferece.h
-//  RevBayesGui
-//
-//  Created by Sebastian Hoehna on 4/13/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
+/**
+ * @file
+ * This file contains the declaration of XmlElementReference, which implements an XmlElement.
+ * XmlElementReference only contain the reference ids to their true elements, so that a reconstructed element from the xml document
+ * knows when an xml element is only a copy or if it is an actual reference to the same object.
+ * 
+ *
+ * @brief Declaration of the inferace XmlElementReference
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date:$
+ * @author Sebastian Hoehna
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2011-04-13, version 1.0
+ *
+ * $Id: $
+ */
 #ifndef XmlElementReference_H
 #define XmlElementReference_H
 

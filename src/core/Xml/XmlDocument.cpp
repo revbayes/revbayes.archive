@@ -7,7 +7,6 @@
 //
 
 #include "XmlDocument.h"
-
 #include "XmlElementInstance.h"
 
 #include <sstream>
@@ -16,20 +15,26 @@ XmlDocument::XmlDocument() {
     
 }
 
+
+/**
+ * WARNING: We assume that there is no element with this id in the document. 
+ * If there is such an element, its pointer in out hash map will be overwritten!
+ *
+ */
 void XmlDocument::addXmlElement(const XmlElement *element) {
     elements.push_back(element);
     entries[element->getId()] = element;
 }
 
-const XmlElement* XmlDocument::getFirstXmlElement() {
+const XmlElement* XmlDocument::getFirstXmlElement() const {
     return *(elements.begin());
 }
 
-const XmlElement* XmlDocument::getXmlElement(uintptr_t identifier){
+const XmlElement* XmlDocument::getXmlElement(uintptr_t identifier) const {
     return entries.find(identifier)->second;
 }
 
-bool XmlDocument::hasXmlElementWithId(uintptr_t identifier) {
+bool XmlDocument::hasXmlElementWithId(uintptr_t identifier) const {
     return entries.find(identifier) != entries.end();
 }
 

@@ -17,7 +17,7 @@ XmlElementTextNode::XmlElementTextNode(const std::string& name, uintptr_t identi
 
 void XmlElementTextNode::setTextNode(std::string const &value) {
     content = value;
-    std::cout << "setting text node text" << std::endl;
+//    std::cout << "setting text node text" << std::endl;
     
 }
 

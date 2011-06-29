@@ -1,14 +1,26 @@
-//
-//  XmlDocument.h
-//  RevBayesGui
-//
-//  Created by Sebastian Hoehna on 4/13/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
+/**
+ * @file
+ * This file contains the declaration of XmlDocument, which represents a xml file
+ * from the file system in the computer memory. The document holds the complete
+ * xml trees and is responsible for operations to retieve and add xml elements
+ * to a tree. 
+ * Using the XmlDocument to add xml elements enables the usage of reference, where the 
+ * xml element is created on first occurrence with a unique id, and for every later occurrence
+ * only a reference is inserted in the tree.
+ *
+ * @brief Declaration of XmlDocument
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date:$
+ * @author Sebastian Hoehna
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2011-04-13, version 1.0
+ *
+ * $Id: $
+ */
 #ifndef XmlDocument_H
 #define XmlDocument_H
-
-//#include "XmlElement.h"
 
 #include <map>
 #include <string>
@@ -21,19 +33,20 @@ class XmlDocument {
 public:
     XmlDocument();
     
-    void                                    addXmlElement(const XmlElement* element);
-    const XmlElement*                       getFirstXmlElement();
-    const XmlElement*                       getXmlElement(uintptr_t identifier);
-    bool                                    hasXmlElementWithId(uintptr_t identifier);
-    std::string                             print();
+    void                                    addXmlElement(const XmlElement* element);                               //!< add a root xml element
+    const XmlElement*                       getFirstXmlElement() const;                                             //!< get the first element of the document
+    int                                     getNumberOfElements() const { return (int)elements.size(); }
+    const XmlElement*                       getXmlElement(uintptr_t identifier) const;                              //!< get the element with identifier
+    bool                                    hasXmlElementWithId(uintptr_t identifier) const;                        //!< is there already a
+    std::string                             print();                                                                
     
 protected:
     
 private:
     std::vector<const XmlElement*>          referencedElements;
-    std::vector<const XmlElement*>          elements;
+    std::vector<const XmlElement*>          elements;                                                               //!< the elements contained in this document
     
-    std::map<uintptr_t,const XmlElement*>   entries;
+    std::map<uintptr_t,const XmlElement*>   entries;                                                                //!< the map of all elements to their ids
     
     
 };
