@@ -13,7 +13,6 @@
  * $Id:$
  */
 
-#include "lex.h"
 
 #include "Help.h"
 #include "Parser.h"
@@ -201,7 +200,6 @@ void Parser::getline(char* buf, size_t maxsize) {
 int Parser::processCommand(std::string& command) {
 
     extern int yyparse(void);   // Defined in grammar.tab.cpp (from gammar.y)
-    extern void yy_flush_buffer ( YY_BUFFER_STATE );    // Defined in lex.yy.cpp (from lex.l)
 
     // Append command to stream where flex can find it
     rrcommand.str(rrcommand.str() + command);
@@ -234,7 +232,7 @@ int Parser::processCommand(std::string& command) {
         return 0;
     }
 
-    if (result == 0) {
+    if (result == 0 || result == 2) {
         PRINTF("Parser resetting command string\n\n");
         rrcommand.str("");
         rrcommand.clear();  // Clear any error flags

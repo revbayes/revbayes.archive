@@ -163,6 +163,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
                         if (matchScore[j] < bestScore[j]) {
                             bestScore = matchScore;
                             bestMatch = it->second;
+                            break;
                         }
                         else if (matchScore[j] > bestScore[j])
                             break;
