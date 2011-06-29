@@ -66,6 +66,7 @@ void rrinput(char* buf, int& result, int maxsize);
 
 // Global flag indicating whether flex found newline
 extern bool foundNewline;
+extern bool foundErrorBeforeEnd;
 
 #endif
 

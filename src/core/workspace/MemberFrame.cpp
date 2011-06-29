@@ -48,8 +48,12 @@ VariableSlot& MemberFrame::operator[]( const std::string& name ) {
     if ( variableTable.find(name) == variableTable.end() ) {
         if ( parentFrame != NULL )
             return parentFrame->operator []( name );
-        else
-            throw RbException( "Variable slot " + name + " does not exist" );
+        else {
+            if ( owner != NULL )
+                throw RbException( "Member variable " + owner->getName() + "." + name + " does not exist" );
+            else
+                throw RbException( "Member variable <null>." + name + " does not exist" );
+        }
     }
 
     PRINTF( "Retrieving %s %s from frame\n", it->second->getTypeSpec().toString().c_str(), name.c_str() );
@@ -65,8 +69,12 @@ const VariableSlot& MemberFrame::operator[]( const std::string& name ) const {
     if ( variableTable.find(name) == variableTable.end() ) {
         if ( parentFrame != NULL )
             return parentFrame->operator []( name );
-        else
-            throw RbException( "Variable slot " + name + " does not exist" );
+        else {
+            if ( owner != NULL )
+                throw RbException( "Member variable " + owner->getName() + "." + name + " does not exist" );
+            else
+                throw RbException( "Member variable <null>." + name + " does not exist" );
+        }
     }
 
     PRINTF( "Retrieving %s %s from frame\n", it->second->getTypeSpec().toString().c_str(), name.c_str() );

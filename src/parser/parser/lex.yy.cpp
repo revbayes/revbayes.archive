@@ -8,10 +8,11 @@
  *       end up in an infinite loop.
  */
 
+#include "lex.h"
 
-#line 2 "lex.yy.cpp"
+// #line 2 "lex.yy.cpp"
 
-#line 4 "lex.yy.cpp"
+// #line 4 "lex.yy.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -263,21 +264,6 @@ struct yy_buffer_state
     
 };
 #endif /* !YY_STRUCT_YY_BUFFER_STATE */
-
-/* Stack of input buffers. */
-static size_t yy_buffer_stack_top = 0; /**< index of top of stack. */
-static size_t yy_buffer_stack_max = 0; /**< capacity of stack. */
-static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
-
-/* We provide macros for accessing buffer states in case in the
- * future we want to put the buffer states in a more general
- * "scanner state".
- *
- * Returns the top of the stack, or NULL.
- */
-#define YY_CURRENT_BUFFER ( (yy_buffer_stack) \
-? (yy_buffer_stack)[(yy_buffer_stack_top)] \
-: NULL)
 
 /* Same as previous macro, but useful when we know that the buffer stack is not
  * NULL or when we need an lvalue. For internal use only.
@@ -544,8 +530,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "lex.l"
-#line 2 "lex.l"
+// #line 1 "lex.l"
+// #line 2 "lex.l"
 /**
  * @file
  * Lexicographical analysis for the RevBayes language.
@@ -582,7 +568,6 @@ extern "C" {
 
 /* Include objects needed to understand grammar.tab.h */
 #include "Parser.h"     // To catch any parser debug flags
-#include "RbOptions.h"
 #include "RbString.h"
 #include "SyntaxElement.h"
 #include "SyntaxFormal.h"
@@ -591,10 +576,16 @@ extern "C" {
 
 #include "grammar.tab.h"
 
+#ifdef DEBUG_PARSER
+#define PRINTF printf
+#else
+#define PRINTF(...)
+#endif
+
 #define YY_NEVER_INTERACTIVE 1
 extern void rrinput(char *,int &,int);
 #define YY_NO_UNISTD_H
-#line 592 "lex.yy.cpp"
+// #line 592 "lex.yy.cpp"
 
 #define INITIAL 0
 
@@ -747,9 +738,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 64 "lex.l"
+// #line 64 "lex.l"
     
-#line 747 "lex.yy.cpp"
+// #line 747 "lex.yy.cpp"
     
 	if ( !(yy_init) )
     {
@@ -834,7 +825,7 @@ YY_DECL
                 
             case 1:
                 YY_RULE_SETUP
-#line 65 "lex.l"
+// #line 65 "lex.l"
             {
                 PRINTF("Flex found 'function'\n");
                 return FUNCTION;
@@ -842,7 +833,7 @@ YY_DECL
                 YY_BREAK
             case 2:
                 YY_RULE_SETUP
-#line 69 "lex.l"
+// #line 69 "lex.l"
             {
                 PRINTF("Flex found 'class'\n");
                 return CLASS;
@@ -850,7 +841,7 @@ YY_DECL
                 YY_BREAK
             case 3:
                 YY_RULE_SETUP
-#line 73 "lex.l"
+// #line 73 "lex.l"
             {
                 PRINTF("Flex found 'for'\n");
                 return FOR;
@@ -858,7 +849,7 @@ YY_DECL
                 YY_BREAK
             case 4:
                 YY_RULE_SETUP
-#line 77 "lex.l"
+// #line 77 "lex.l"
             {
                 PRINTF("Flex found 'in'\n");
                 return IN;
@@ -866,7 +857,7 @@ YY_DECL
                 YY_BREAK
             case 5:
                 YY_RULE_SETUP
-#line 81 "lex.l"
+// #line 81 "lex.l"
             {
                 PRINTF("Flex found 'if'\n");
                 return IF;
@@ -874,7 +865,7 @@ YY_DECL
                 YY_BREAK
             case 6:
                 YY_RULE_SETUP
-#line 85 "lex.l"
+// #line 85 "lex.l"
             {
                 PRINTF("Flex found 'else'\n");
                 return ELSE;
@@ -882,7 +873,7 @@ YY_DECL
                 YY_BREAK
             case 7:
                 YY_RULE_SETUP
-#line 89 "lex.l"
+// #line 89 "lex.l"
             {
                 PRINTF("Flex found 'while'\n");
                 return WHILE;
@@ -890,7 +881,7 @@ YY_DECL
                 YY_BREAK
             case 8:
                 YY_RULE_SETUP
-#line 93 "lex.l"
+// #line 93 "lex.l"
             {
                 PRINTF("Flex found 'next'\n");
                 return NEXT;
@@ -898,7 +889,7 @@ YY_DECL
                 YY_BREAK
             case 9:
                 YY_RULE_SETUP
-#line 97 "lex.l"
+// #line 97 "lex.l"
             {
                 PRINTF("Flex found 'break'\n");
                 return BREAK;
@@ -906,7 +897,7 @@ YY_DECL
                 YY_BREAK
             case 10:
                 YY_RULE_SETUP
-#line 101 "lex.l"
+// #line 101 "lex.l"
             {
                 PRINTF("Flex found 'return'\n");
                 return RETURN;
@@ -914,7 +905,7 @@ YY_DECL
                 YY_BREAK
             case 11:
                 YY_RULE_SETUP
-#line 105 "lex.l"
+// #line 105 "lex.l"
             {
                 PRINTF("Flex found 'null'\n");
                 return RBNULL;
@@ -922,7 +913,7 @@ YY_DECL
                 YY_BREAK
             case 12:
                 YY_RULE_SETUP
-#line 109 "lex.l"
+// #line 109 "lex.l"
             {
                 PRINTF("Flex found 'false'\n");
                 return FALSE;
@@ -930,7 +921,7 @@ YY_DECL
                 YY_BREAK
             case 13:
                 YY_RULE_SETUP
-#line 113 "lex.l"
+// #line 113 "lex.l"
             {
                 PRINTF("Flex found 'true'\n");
                 return TRUE;
@@ -938,7 +929,7 @@ YY_DECL
                 YY_BREAK
             case 14:
                 YY_RULE_SETUP
-#line 117 "lex.l"
+// #line 117 "lex.l"
             {
                 PRINTF("Flex found 'NULL'\n");
                 return RBNULL;
@@ -946,7 +937,7 @@ YY_DECL
                 YY_BREAK
             case 15:
                 YY_RULE_SETUP
-#line 121 "lex.l"
+// #line 121 "lex.l"
             {
                 PRINTF("Flex found 'FALSE'\n");
                 return FALSE;
@@ -954,7 +945,7 @@ YY_DECL
                 YY_BREAK
             case 16:
                 YY_RULE_SETUP
-#line 125 "lex.l"
+// #line 125 "lex.l"
             {
                 PRINTF("Flex found 'TRUE'\n");
                 return TRUE;
@@ -962,7 +953,7 @@ YY_DECL
                 YY_BREAK
             case 17:
                 YY_RULE_SETUP
-#line 129 "lex.l"
+// #line 129 "lex.l"
             {
                 PRINTF("Flex found real %s -- ", yytext);
                 yylval.realValue = strtod(yytext,NULL); 
@@ -972,7 +963,7 @@ YY_DECL
                 YY_BREAK
             case 18:
                 YY_RULE_SETUP
-#line 135 "lex.l"
+// #line 135 "lex.l"
             {
                 PRINTF("Flex found real %s -- ", yytext);
                 yylval.realValue = strtod(yytext,NULL); 
@@ -982,7 +973,7 @@ YY_DECL
                 YY_BREAK
             case 19:
                 YY_RULE_SETUP
-#line 141 "lex.l"
+// #line 141 "lex.l"
             { 
                 /* Treat ints with exponents as floating point values */
                 PRINTF("Flex found int with exponent %s -- ", yytext);
@@ -993,7 +984,7 @@ YY_DECL
                 YY_BREAK
             case 20:
                 YY_RULE_SETUP
-#line 148 "lex.l"
+// #line 148 "lex.l"
             {
                 PRINTF("Flex found int %s -- ", yytext);
                 yylval.intValue = int( strtol(yytext,NULL,10) ); 
@@ -1003,7 +994,7 @@ YY_DECL
                 YY_BREAK
             case 21:
                 YY_RULE_SETUP
-#line 154 "lex.l"
+// #line 154 "lex.l"
             {
                 PRINTF("Flex found id (name) %s -- ", yytext);
                 yylval.string = yytext;
@@ -1014,7 +1005,7 @@ YY_DECL
             case 22:
                 /* rule 22 can match eol */
                 YY_RULE_SETUP
-#line 160 "lex.l"
+// #line 160 "lex.l"
             {
                 PRINTF("Flex found string %s -- ", yytext); 
                 /* Strip quotes from string */
@@ -1026,7 +1017,7 @@ YY_DECL
                 YY_BREAK
             case 23:
                 YY_RULE_SETUP
-#line 168 "lex.l"
+// #line 168 "lex.l"
             {
                 PRINTF("Flex found comment %s\n", yytext);
                 return COMMENT;
@@ -1034,7 +1025,7 @@ YY_DECL
                 YY_BREAK
             case 24:
                 YY_RULE_SETUP
-#line 172 "lex.l"
+// #line 172 "lex.l"
             {
                 PRINTF("Flex found '<-'\n");
                 return ARROW_ASSIGN;
@@ -1042,7 +1033,7 @@ YY_DECL
                 YY_BREAK
             case 25:
                 YY_RULE_SETUP
-#line 176 "lex.l"
+// #line 176 "lex.l"
             {
                 PRINTF("Flex found ':='\n");
                 return EQUATION_ASSIGN;
@@ -1050,7 +1041,7 @@ YY_DECL
                 YY_BREAK
             case 26:
                 YY_RULE_SETUP
-#line 180 "lex.l"
+// #line 180 "lex.l"
             {
                 PRINTF("Flex found '~'\n");
                 return TILDE_ASSIGN;
@@ -1058,7 +1049,7 @@ YY_DECL
                 YY_BREAK
             case 27:
                 YY_RULE_SETUP
-#line 184 "lex.l"
+// #line 184 "lex.l"
             {
                 PRINTF("Flex found '='\n");
                 return EQUAL;
@@ -1066,7 +1057,7 @@ YY_DECL
                 YY_BREAK
             case 28:
                 YY_RULE_SETUP
-#line 188 "lex.l"
+// #line 188 "lex.l"
             {
                 PRINTF("Flex found '&'\n");
                 return AND;
@@ -1074,7 +1065,7 @@ YY_DECL
                 YY_BREAK
             case 29:
                 YY_RULE_SETUP
-#line 192 "lex.l"
+// #line 192 "lex.l"
             {
                 PRINTF("Flex found '|'\n");
                 return OR;
@@ -1082,7 +1073,7 @@ YY_DECL
                 YY_BREAK
             case 30:
                 YY_RULE_SETUP
-#line 196 "lex.l"
+// #line 196 "lex.l"
             {
                 PRINTF("Flex found '&&'\n");
                 return AND;
@@ -1090,7 +1081,7 @@ YY_DECL
                 YY_BREAK
             case 31:
                 YY_RULE_SETUP
-#line 200 "lex.l"
+// #line 200 "lex.l"
             {
                 PRINTF("Flex found '||'\n");
                 return OR;
@@ -1098,7 +1089,7 @@ YY_DECL
                 YY_BREAK
             case 32:
                 YY_RULE_SETUP
-#line 204 "lex.l"
+// #line 204 "lex.l"
             {
                 PRINTF("Flex found '>'\n");
                 return GT;
@@ -1106,7 +1097,7 @@ YY_DECL
                 YY_BREAK
             case 33:
                 YY_RULE_SETUP
-#line 208 "lex.l"
+// #line 208 "lex.l"
             {
                 PRINTF("Flex found '>='\n");
                 return GE;
@@ -1114,7 +1105,7 @@ YY_DECL
                 YY_BREAK
             case 34:
                 YY_RULE_SETUP
-#line 212 "lex.l"
+// #line 212 "lex.l"
             {
                 PRINTF("Flex found '<'\n");
                 return LT;
@@ -1122,7 +1113,7 @@ YY_DECL
                 YY_BREAK
             case 35:
                 YY_RULE_SETUP
-#line 216 "lex.l"
+// #line 216 "lex.l"
             {
                 PRINTF("Flex found '<='\n");
                 return LE;
@@ -1130,7 +1121,7 @@ YY_DECL
                 YY_BREAK
             case 36:
                 YY_RULE_SETUP
-#line 220 "lex.l"
+// #line 220 "lex.l"
             {
                 PRINTF("Flex found '=='\n");
                 return EQ;
@@ -1138,7 +1129,7 @@ YY_DECL
                 YY_BREAK
             case 37:
                 YY_RULE_SETUP
-#line 224 "lex.l"
+// #line 224 "lex.l"
             {
                 PRINTF("Flex found '!='\n");
                 return EQ;
@@ -1146,7 +1137,7 @@ YY_DECL
                 YY_BREAK
             case 38:
                 YY_RULE_SETUP
-#line 228 "lex.l"
+// #line 228 "lex.l"
             {
                 PRINTF ("Flex found white space\n");
                 /* Ignore white space */
@@ -1155,7 +1146,7 @@ YY_DECL
             case 39:
                 /* rule 39 can match eol */
                 YY_RULE_SETUP
-#line 232 "lex.l"
+// #line 232 "lex.l"
             {
                 PRINTF ("Flex found newline\n");
                 foundNewline = true;
@@ -1164,7 +1155,7 @@ YY_DECL
                 YY_BREAK
             case 40:
                 YY_RULE_SETUP
-#line 237 "lex.l"
+// #line 237 "lex.l"
             {
                 /* any character not matching existing rules */
                 /* pass it onto the parser and let the parser handle it */
@@ -1174,10 +1165,10 @@ YY_DECL
                 YY_BREAK
             case 41:
                 YY_RULE_SETUP
-#line 243 "lex.l"
+// #line 243 "lex.l"
                 ECHO;
                 YY_BREAK
-#line 1175 "lex.yy.cpp"
+// #line 1175 "lex.yy.cpp"
             case YY_STATE_EOF(INITIAL):
                 yyterminate();
                 
@@ -2163,7 +2154,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 243 "lex.l"
+// #line 243 "lex.l"
 
 
 

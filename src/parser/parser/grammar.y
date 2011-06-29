@@ -269,10 +269,14 @@ prog    :       END_OF_INPUT
                     PRINTF("Bison trying to get help for function call\n");
                     return parser.help($2);
                 }
-        |       error
+        |       error '\n'
                 {
-                    PRINTF("Bison calling YYABORT\n");
-                    PRINTF("Error when reading line %d position %d to line %d position %d\n", @$.first_line, @$.first_column, @$.last_line, @$.last_column);
+                    PRINTF("Bison error when reading line %d position %d to line %d position %d\n", @$.first_line, @$.first_column, @$.last_line, @$.last_column);
+                    YYABORT;
+                }
+        |       error ';'
+                {
+                    PRINTF("Bison error when reading line %d position %d to line %d position %d\n", @$.first_line, @$.first_column, @$.last_line, @$.last_column);
                     YYABORT;
                 }
         ;
@@ -680,5 +684,12 @@ constant    :   FALSE
 int yyerror(const char *msg)
 {
     PRINTF("Bison code said: %s\n", msg);
+    if ( foundNewline == true )
+        foundErrorBeforeEnd = false;
+    else
+        foundErrorBeforeEnd = true;
+
     return 1;
 }
+
+

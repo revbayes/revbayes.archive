@@ -62,7 +62,7 @@ DAGNode* Func_source::execute( void ) {
         std::string line;
         getline( inFile, line );
 
-        // Process the line (here we continue processing even if errors are encountered)
+        // Process the line
         if ( Parser::getParser().processCommand(line) == 2 )
             throw RbException( "Problem processing file \"" + filename + "\"" );
     }

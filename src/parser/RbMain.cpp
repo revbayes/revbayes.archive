@@ -43,29 +43,31 @@ int main(int argc, char **argv) {
     // Process input; exit is managed by Parser
     int argIndex = 1;
     int result = 0;
-    for (;;) 
-		{
+    for (;;) {
 
         std::string line;
 
         // Read the command
-        if (argIndex < argc) 
-			{
+        if (argIndex < argc) {
             line = "source(\"" + std::string(argv[argIndex++]) + "\")";
             std::cout << "RevBayes > " << line << std::endl;
-			}
-        else 
-			{
-            if (result != 1)
+		}
+        else {
+            if (result == 0)
                 std::cout << "RevBayes > ";
-            else if (result == 1)
+            else /* if (result == 1) */
                 std::cout << "RevBayes + ";
             getline(std::cin, line);
-			}
+        }
 
         // Process the command line
         result = Parser::getParser().processCommand(line);
-		}
+
+        if ( result == 2 ) {
+            RBOUT( "Syntax error" );
+            result = 0;
+        }
+    }
 
     return 0;
 }

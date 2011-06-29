@@ -13,6 +13,8 @@
  * $Id:$
  */
 
+#include "lex.h"
+
 #include "Help.h"
 #include "Parser.h"
 #include "RbException.h"
@@ -36,9 +38,11 @@
 #endif
 
 
-// Global flags indicating whether flex found a newline or EOF
+// Global flags indicating whether flex found a newline or EOF, and what type of error occurred
 bool foundNewline;
 bool foundEOF;
+bool foundErrorBeforeEnd;
+
 
 /** This function gets help info about a symbol */
 int Parser::help(RbString *symbol) const {
@@ -180,10 +184,24 @@ void Parser::getline(char* buf, size_t maxsize) {
 }
 
 
-/** Process command with the help of the Bison-generated code; return 1 if command is incomplete */
+/**
+ * Process command with the help of the Bison-generated code.
+ *
+ * @param   command     command string
+ * @return  integer flag indicating status:
+ *          1 - command is incomplete
+ *          2 - syntax error
+ *          0 - command syntactically correct
+ *
+ * @note If an exception occurs on a syntactically correct
+ *       statement, the exception msg is printed here and
+ *       the return signal is set to 0. This might change
+ *       in the future.
+ */
 int Parser::processCommand(std::string& command) {
 
-    extern int yyparse(void);   // Defined in grammar.tab.c (from gammar.y)
+    extern int yyparse(void);   // Defined in grammar.tab.cpp (from gammar.y)
+    extern void yy_flush_buffer ( YY_BUFFER_STATE );    // Defined in lex.yy.cpp (from lex.l)
 
     // Append command to stream where flex can find it
     rrcommand.str(rrcommand.str() + command);
@@ -192,6 +210,8 @@ int Parser::processCommand(std::string& command) {
     PRINTF("\nCalling bison with rrcommand:\n'%s'\n", rrcommand.str().c_str());
     foundNewline = false;
     foundEOF = false;
+    foundErrorBeforeEnd = false;
+
     int result;
     try {
         result = yyparse();
@@ -210,8 +230,8 @@ int Parser::processCommand(std::string& command) {
         msg << std::endl;
         RBOUT(msg.str());
 
-        // Return signal indicating problem
-        return 1;
+        // We printed a message so we dealt with the problem
+        return 0;
     }
 
     if (result == 0) {
@@ -220,25 +240,23 @@ int Parser::processCommand(std::string& command) {
         rrcommand.clear();  // Clear any error flags
         return 0;
     }
-    else if (result == 1 && foundNewline == true && foundEOF == false && !rrcommand.good()) {
+    else if ( foundErrorBeforeEnd == true ) {
+        PRINTF("Syntax error occurred in parsing or executing the statement; resetting command string\n");
+        rrcommand.str("");
+        rrcommand.clear();
+        return 2;
+    }
+    else if ( foundNewline == true && foundEOF == false ) {
         PRINTF("Incomplete command ending with inappropriate newline; stripping newline and appending to command string\n");
         rrcommand.str(rrcommand.str() + " ");
         rrcommand.clear();
         return 1;
     }
-    else if (result == 1 && foundNewline == true && foundEOF == true) {
+    else /* if ( foundNewline == true && foundEOF == true ) */ {
         PRINTF("Incomplete command ending with appropriate newline; keeping newline and appending to command string\n");
         rrcommand.str(rrcommand.str() + "\n ");
         rrcommand.clear();
         return 1;
-    }
-    else {
-        PRINTF("Some error occurred in parsing or executing the statement\n");
-        rrcommand.str("");
-        while (foundNewline == false)
-            yyparse();
-        rrcommand.clear();
-        return 2;
     }
 }
 
