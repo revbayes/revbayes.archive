@@ -170,7 +170,16 @@ void Parser::getline(char* buf, size_t maxsize) {
         foundNewline = false;
         rrcommand.getline(buf, maxsize-3);
         size_t i = strlen(buf);
-        buf[i++] = '\n';
+        // Deal with line endings
+        if ( i >= 1 && buf[i-1] == '\r' )
+            buf[i-1] = '\n';
+        else if ( i >= 2 && buf[i-1] == '\n' && buf[i-2] == '\r' ) {
+            buf[i-2] = '\n';
+            i--;
+        }
+        else if ( i == 0 || (i >= 1 && buf[i-1] != '\n') ) {
+            buf[i++] = '\n';
+        }
         buf[i] = '\0';
     }
 
@@ -240,6 +249,7 @@ int Parser::processCommand(std::string& command) {
     }
     else if ( foundErrorBeforeEnd == true ) {
         PRINTF("Syntax error occurred in parsing or executing the statement; resetting command string\n");
+        RBOUT( "Syntax error" );
         rrcommand.str("");
         rrcommand.clear();
         return 2;

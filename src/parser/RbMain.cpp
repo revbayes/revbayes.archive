@@ -63,8 +63,8 @@ int main(int argc, char **argv) {
         // Process the command line
         result = Parser::getParser().processCommand(line);
 
+        // We just hope for better input next time
         if ( result == 2 ) {
-            RBOUT( "Syntax error" );
             result = 0;
         }
     }
