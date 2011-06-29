@@ -64,7 +64,7 @@ Func__div<firstValType, secondValType, retType>* Func__div<firstValType, secondV
 }
 
 
-/** Execute function: We rely on operator overloading to provide the necessary functionality */
+/** Execute function: We rely on operator overloading to provide the necessary functionality for most data types */
 template <typename firstValType, typename secondValType, typename retType>
 DAGNode* Func__div<firstValType,secondValType,retType>::execute( void ) {
 
@@ -73,6 +73,17 @@ DAGNode* Func__div<firstValType,secondValType,retType>::execute( void ) {
     retType              quot = *val1 / *val2;
     
     return quot.clone()->wrapIntoVariable();
+}
+
+
+/** Execute function: Special case for integer division */
+template <>
+DAGNode* Func__div<Integer,Integer,Real>::execute( void ) {
+
+    double val1 = static_cast<const Integer*>( args[0].getValue() )->getValue();
+    double val2 = static_cast<const Integer*>( args[1].getValue() )->getValue();
+    
+    return ( new Real( val1 / val2 ) )->wrapIntoVariable();
 }
 
 

@@ -54,7 +54,7 @@ DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcTyp
     if (functionType == DENSITY) {
 
         argumentRules.insert( argumentRules.begin(), new ValueRule( "x"  , distribution->getVariableType() ) );
-        argumentRules.push_back(                     new ValueRule( "log", new Boolean(true)               ) );
+        argumentRules.push_back(                     new ValueRule( "log", new Boolean(false)              ) );
     }
     else if (functionType == RVALUE) {
 
