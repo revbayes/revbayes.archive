@@ -72,7 +72,6 @@ DAGNode* Func__mul<firstValType,secondValType,retType>::execute( void ) {
     const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
     retType              prod = *val1 * *val2;
     
-    std::cout << " 1 " << std::endl;
     val1->richInfo();
     val2->richInfo();
     
