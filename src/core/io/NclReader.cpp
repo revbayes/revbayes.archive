@@ -4,6 +4,7 @@
 #include "CharacterObservationContinuous.h"
 #include "DnaState.h"
 #include "NclReader.h"
+#include "RbNames.h"
 #include "RnaState.h"
 #include "StandardState.h"
 #include "StringUtilities.h"
@@ -86,7 +87,7 @@ std::vector<CharacterMatrix*> NclReader::convertFromNcl(std::vector<std::string>
                 }
 			else if (dt == NxsCharactersBlock::mixed)
                 {
-				std::cerr << "Error: Mixed data types are no longer allowed" << std::endl;
+                addWarning("Mixed data types are not allowed");
                 }
                         
 			if (m != NULL)
@@ -394,7 +395,7 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
             {	
             // add the character state to the matrix
-            StandardState stdState;
+            StandardState stdState(sym);
             for(int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                 {
                 char c = charblock->GetState(origTaxIndex, *cit, s);
@@ -452,7 +453,7 @@ std::vector<CharacterMatrix*> NclReader::readMatrices(const std::map<std::string
         // the map that is passed into the function, but it never hurts to be safe...
         if ( !fileExists(p->first.c_str()) )	
             {
-            RBOUT("Warning: Data file \"" + p->first + "\"not found");
+            addWarning("Data file not found");
             continue;
             }
             
@@ -469,7 +470,6 @@ std::vector<CharacterMatrix*> NclReader::readMatrices(const std::map<std::string
             il = true;
 
         // read the file
-        std::cout << "reading file: " << p->first << std::endl;
         std::vector<CharacterMatrix*> v = readMatrices( p->first.c_str(), ff, dt, il );
 		if (v.size() > 0)
             {
@@ -492,7 +492,7 @@ std::vector<CharacterMatrix*> NclReader::readMatrices(const std::vector<std::str
         {
         if ( !fileExists((*f).c_str()) )	
             {
-            std::cerr << "Error: Data file \"" << (*f) << "\"not found" << std::endl;
+            addWarning("Data file not found");
             return cmv;
             }
         }
@@ -517,7 +517,7 @@ std::vector<CharacterMatrix*> NclReader::readMatrices(const char* fileName, cons
 	// check that the file exists
 	if ( !fileExists(fileName) )	
         {
-		std::cerr << "Error: Data file \"" << fileName << "\"not found" << std::endl;
+        addWarning("Data file not found");
         std::vector<CharacterMatrix*> dummy;
         return dummy;
         }
@@ -567,7 +567,9 @@ std::vector<CharacterMatrix*> NclReader::readMatrices(const char* fileName, cons
         }
 	catch(NxsException err)
         {
-		std::cout << "Nexus Error: " << err.msg << " (" << err.pos << ", " << err.line << ", " << err.col << ")" << std::endl;
+        std::string fns = fileName;
+        addWarning("Nexus error in file \"" + StringUtilities::getLastPathComponent(fns) + "\"");
+		//std::cout << pad << "Nexus Error: " << err.msg << " (" << err.pos << ", " << err.line << ", " << err.col << ")" << std::endl;
         std::vector<CharacterMatrix*> dummy;
 		return dummy;
         }
@@ -584,7 +586,7 @@ std::vector<Tree*>* NclReader::readTrees(const std::string fn, const std::string
 	// check that the file exist
     if ( !fileExists(fn.c_str()) ) 
         {
-        std::cerr << "Error: Data file \"" << fn << "\"not found" << std::endl;
+        addWarning("Data file not found");
         return NULL;
         }
     
@@ -613,7 +615,7 @@ std::vector<Tree*>* NclReader::readTrees(const char* fileName, const std::string
 	// check that the file exists
 	if ( !fileExists(fileName) ) 
         {
-		std::cerr << "Error: Data file \"" << fileName << "\"not found" << std::endl;
+        addWarning("Data file not found");
         return NULL;
         }
 	

@@ -29,6 +29,7 @@
 #include "ValueRule.h"
 #include "VectorString.h"
 #include <map>
+#include <set>
 #include <sstream>
 
 
@@ -44,7 +45,6 @@ Func_readAlignment* Func_readAlignment::clone( void ) const {
 /** Execute function */
 DAGNode* Func_readAlignment::execute( void ) {
 
-std::cout << "reading" << std::endl;
     // get the information from the arguments for reading the file
     const RbString* fn       = static_cast<const RbString*>( args[0].getValue() );
     //const RbString* fileFormat   = static_cast<const RbString*>( args[1].getValue() );
@@ -65,6 +65,10 @@ std::cout << "reading" << std::endl;
     bool readingDirectory = false;
     if ( myFileManager.testDirectory() == true && myFileManager.testFile() == false )
         readingDirectory = true;
+    if (readingDirectory == true)
+        RBOUT("Recursively reading the contents of a directory");
+    else
+        RBOUT("Attempting to read the contents of file \"" + myFileManager.getFileName() + "\"");
         
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOfFileNames;
@@ -72,7 +76,17 @@ std::cout << "reading" << std::endl;
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
     else
         vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
-        
+    if (readingDirectory == true)
+        {
+        std::stringstream o1;
+        o1 << "Found " << vectorOfFileNames.size() << " files in directory";
+        RBOUT(o1.str());
+        }
+    
+    // get the global instance of the NCL reader and clear warnings from its warnings buffer
+    NclReader& reader = NclReader::getInstance();
+    reader.clearWarnings();
+            
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
@@ -107,20 +121,64 @@ std::cout << "reading" << std::endl;
             }
         else
             {
-            RBOUT("Warning: File \"" + *p + "\" not read (unknown file type)");            
+            reader.addWarning("Unknown file type");
             }
         }
-        
-    for (std::map<std::string,std::string>::iterator p = fileMap.begin(); p != fileMap.end(); p++)
-        RBOUT("Reading file \"" + p->first + "\" (" + p->second + ")");
-        
-    // get the global instance of the NCL reader
-    NclReader& reader = NclReader::getInstance();
-    
+                
     // read the files in the map containing the file names with the output being a vector of pointers to
     // the character matrices that have been read
     std::vector<CharacterMatrix*> m = reader.readMatrices( fileMap );
-    std::cout << "number on vector = " << m.size() << std::endl;
+    
+    // print summary of results of file reading to the user
+    if (readingDirectory == true)
+        {
+        std::stringstream o2;
+        if ( m.size() == 0 )
+            o2 << "Failed to read any files";
+        else if ( m.size() == 1 )
+            o2 << "Successfully read one file";
+        else
+            o2 << "Successfully read " << m.size() << " files";
+        RBOUT(o2.str());
+        std::set<std::string> myWarnings = reader.getWarnings();
+        if ( vectorOfFileNames.size() - m.size() > 0 && myWarnings.size() > 0 )
+            {
+            std::stringstream o3;
+            if (vectorOfFileNames.size() - m.size() == 1)
+                o3 << "Did not read a file for the following ";
+            else
+                o3 << "Did not read " << vectorOfFileNames.size() - m.size() << " files for the following ";
+            if (myWarnings.size() == 1)
+                o3 << "reason:";
+            else
+                o3 << "reasons:";
+            RBOUT(o3.str());
+            for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
+                RBOUT("* "+(*it));
+            }
+        }
+    else
+        {
+        if (m.size() > 0)
+            RBOUT("Successfully read file");
+        else
+            {
+            std::set<std::string> myWarnings = reader.getWarnings();
+            if ( myWarnings.size() > 0 )
+                {
+                std::stringstream o3;
+                o3 << "Did not read the file for the following ";
+                if (myWarnings.size() == 1)
+                    o3 << "reason:";
+                else
+                    o3 << "reasons:";
+                RBOUT(o3.str());
+                for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
+                    RBOUT("* "+(*it));
+                }
+            }
+        }
+    
     
 #   if 0    
     std::vector<RbObject*>* tmp = (std::vector<RbObject*>*) m;

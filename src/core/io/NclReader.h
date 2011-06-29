@@ -23,6 +23,7 @@
 #include "nxsmultiformat.h"
 #include "TreeNode.h"
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -37,6 +38,10 @@ class NclReader {
                                             NclReader(void);                                                                //!< Default constructor
         virtual                            ~NclReader(void);                                                                //!< Destructor
         
+        void                                addWarning(std::string s) { warningsSummary.insert(s); }
+        void                                clearWarnings(void) { warningsSummary.clear(); }
+        size_t                              getNumWarnings(void) { return warningsSummary.size(); }
+        std::set<std::string>&              getWarnings(void) { return warningsSummary; }
         static NclReader&                   getInstance(void);
         std::vector<CharacterMatrix*>       readMatrices(const std::map<std::string,std::string>& fileMap);
         std::vector<CharacterMatrix*>       readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
@@ -51,7 +56,6 @@ class NclReader {
         CharacterMatrix*                    createDnaMatrix(NxsCharactersBlock* charblock);
         CharacterMatrix*                    createRnaMatrix(NxsCharactersBlock* charblock);
         CharacterMatrix*                    createStandardMatrix(NxsCharactersBlock* charblock);
-        
         bool                                fileExists(const char *fn) const;
         
         // methods for reading sequence alignments
@@ -65,6 +69,7 @@ class NclReader {
         Tree*                               translateNclSimpleTreeToTree(NxsSimpleTree &nTree);
         
         MultiFormatReader                   nexusReader;
+        std::set<std::string>               warningsSummary;
 };
 
 #endif

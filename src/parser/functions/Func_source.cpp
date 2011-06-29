@@ -52,7 +52,7 @@ DAGNode* Func_source::execute( void ) {
 
     /* Initialize */
     std::string commandLine;
-    RBOUT("Processing file \"" + filename + "\" ...");
+    RBOUT("Processing file \"" + filename + "\"");
     Parser::getParser().reset();
 
     /* Command-processing loop */
