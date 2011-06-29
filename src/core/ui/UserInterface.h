@@ -31,6 +31,7 @@ class UserInterface {
         bool                        ask(std::string msg);                                      //!< Ask user a question
         bool                        initialize(void) { return true; }                          //!< Initialize interface    
         void                        output(std::string msg);                                   //!< Display message from string
+        void                        output(std::string msg, const bool hasPadding);            //!< Display message from string with control of padding
         void                        output(std::ostringstream msg);                            //!< Display message from stringstream
         static UserInterface&       userInterface(void)                                        //!< Get the user interface
 		                               {

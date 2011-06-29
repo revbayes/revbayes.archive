@@ -15,8 +15,112 @@
  * $Id:$
  */
 
+#include <iostream>
+#include <fstream>
 #include "StringUtilities.h"
 
+
+std::string StringUtilities::formatStringWithBreaks(const std::string s, std::string padding, size_t w) {
+
+    std::vector<std::string> stringList;
+    StringUtilities::stringSplit(s, " ", stringList);
+
+    std::string nStr = padding;
+    size_t cnt = 0;
+    for (std::vector<std::string>::iterator it = stringList.begin(); it != stringList.end(); it++)
+        {
+        if (cnt + (*it).size() > w && cnt != 0)
+            {
+            cnt = 0;
+            nStr += "\n" + padding;
+            }
+        cnt += (*it).size();
+        nStr += (*it) + " ";
+        }
+    
+    return nStr;
+}
+
+
+std::string StringUtilities::formatStringWithBreaks(const std::string s, std::string padding1, std::string padding2, size_t w) {
+
+    std::vector<std::string> stringList;
+    StringUtilities::stringSplit(s, " ", stringList);
+
+    std::string nStr = padding1;
+    size_t cnt = 0;
+    for (std::vector<std::string>::iterator it = stringList.begin(); it != stringList.end(); it++)
+        {
+        if (cnt + (*it).size() > w && cnt != 0)
+            {
+            cnt = 0;
+            nStr += "\n" + padding2;
+            }
+        cnt += (*it).size();
+        nStr += (*it) + " ";
+        }
+    
+    return nStr;
+}
+
+
+std::string StringUtilities::formatStringWithBreaks(const std::string s, std::string padding, size_t col, size_t w) {
+
+    std::vector<std::string> stringList;
+    StringUtilities::stringSplit(s, " ", stringList);
+
+    std::string nStr = padding;
+    size_t cnt = 0, elemNum = 0;
+    for (std::vector<std::string>::iterator it = stringList.begin(); it != stringList.end(); it++)
+        {
+        if (cnt + (*it).size() > w && cnt != 0)
+            {
+            cnt = 0;
+            nStr += "\n" + padding;
+            for (size_t i=0; i<col; i++)
+                nStr += " ";
+            }
+        cnt += (*it).size();
+        nStr += (*it);
+        if (elemNum == 0)
+            {
+            for (size_t i=0; i<col-(*it).size(); i++)
+                nStr += " ";
+            }
+        else
+            nStr += " ";
+        elemNum++;
+        }
+    
+    return nStr;
+}
+
+std::string StringUtilities::getFileContentsAsString(std::string& s) {
+
+    // open file
+	std::ifstream fStrm;
+    fStrm.open(s.c_str(), std::ios::in);
+    if ( !fStrm.is_open() )
+        return "";
+        
+    // read the file
+    int ch;
+    std::string retStr = "";
+    while ( (ch = fStrm.get()) != EOF)
+        {
+        char c = (char)ch;
+        
+        if (ch == '\n' || ch == '\r' || ch == EOF)
+            retStr += '\n';
+        else
+            retStr += c;
+        } 
+
+    // close file
+    fStrm.close();
+
+    return retStr;
+}
 
 
 /** Find the last component of a file path */

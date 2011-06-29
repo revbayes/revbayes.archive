@@ -22,8 +22,6 @@
 #include <string>
 #include <vector>
 
-enum TagType { ROOT, HELP_ENTRY, NAME, SUCCINCT, VERBOSE, ARGUMENT, USAGE, THEORY, EXAMPLE, AUTHOR, REFERENCE }; //!< Enum specifying XML tag types
-
 class HelpNode {
 
 	public:
@@ -34,17 +32,27 @@ class HelpNode {
         size_t                           getNumChildren(void) { return childrenNodes.size(); }    //!< Get the number of children nodes
         HelpNode*                        getChildIndexed(size_t idx);                             //!< Get a child with index idx
         std::vector<HelpNode*>&          getChildren(void) { return childrenNodes; }              //!< Get a reference to the children nodes
+        HelpNode*                        getChildWithTag(const std::string& ts);
+        HelpNode*                        getChildWithTag(const std::string& ts, size_t idx);
+        int                              getIndex(void) { return index; }
         HelpNode*                        getParent(void) { return parentNode; }                   //!< Get a pointer to the parent
-        TagType                          getTagType(void) { return tagType; }                     //!< Get the tag type
+        std::string                      getTagName(void) { return tagName; }                     //!< Get the tag type
+        size_t                           getNumChildrenWithTag(const std::string& st);
+        bool                             hasChildWithTag(const std::string& ts);
+        bool                             isLeaf(void);
+        void                             print(void);
+        void                             setIndex(int x) { index = x; }
         void                             setHelpEntry(std::string s) { helpEntry = s; }           //!< Set the entry for this help node
         void                             setParent(HelpNode* p) { parentNode = p; }               //!< Set the parent node
-        void                             setTagType(TagType t) { tagType = t; }
+        void                             setTagName(std::string t) { tagName = t; }
+        void                             showNode(HelpNode* p, size_t indent);
 
 	private:
-        TagType                          tagType;                                                 //!< The XML tag associated with this node
+        std::string                      tagName;                                                 //!< The XML tag associated with this node
         std::string                      helpEntry;                                               //!< String containing the information for this help node
         HelpNode*                        parentNode;                                              //!< The parent of this node
         std::vector<HelpNode*>           childrenNodes;                                           //!< Vector of children nodes
+        int                              index;
 };
 
 #endif

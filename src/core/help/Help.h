@@ -22,6 +22,7 @@
 #define Help_H
 
 #include <string>
+#include <vector>
 
 class HelpNode;
 
@@ -33,17 +34,28 @@ class Help {
                                             static Help globalHelpInstance;
                                             return globalHelpInstance;
                                             }
+        std::string                      formatHelpString(const std::string& qs, size_t columnWidth);
+        HelpNode*                        getHelpNodeForQuery(const std::string& qs);
+        size_t                           getNumHelpEntries(void);
 		void                             initializeHelp(std::string f);            //!< Initialize the help from an XML file
+        bool                             isHelpAvailableForQuery(const std::string& qs);
+        bool                             isUserHelpAvailable(void) { return isHelpInitialized; }
+        void                             print(void);
 
 	private:
                                          Help(void);                               //!< Default constructor
                                          Help(const Help&);                        //!< Copy constructor
         Help&                            operator=(const Help&);                   //!< Assignment operator
 								        ~Help(void);                               //!< Destructor
+        std::string                      getNextTag(HelpNode* p, std::istream& inStream);
+        std::string                      getNextTag(HelpNode* p, std::string& s);
+        char                             getSpecialCharacter(std::istream& inStream);
         void                             skipWhiteSpace(std::istream& inStream);   //!< Skip white space
         bool                             isHelpInitialized;                        //!< Flag indicating whether the help has been initialized
         bool                             parseHelpFile(std::string& fn);           //!< Parse the XML file containing user help information
         HelpNode*                        helpRoot;                                 //!< The root of the help tree
+        std::vector<HelpNode*>           helpNodes;
+        int                              numHelpNodes;
 };
 
 #endif

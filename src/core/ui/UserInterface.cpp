@@ -50,11 +50,23 @@ bool UserInterface::ask(std::string msg) {
         return false;
 }
 
+
 /** Print a message and a newline */
 void UserInterface::output(std::string msg) {
 
     std::cout << pad << msg << std::endl;
 }
+
+
+/** Print a message and a newline without the padding */
+void UserInterface::output(std::string msg, const bool hasPadding) {
+
+    if (hasPadding == true)
+        output(msg);
+    else
+        std::cout << msg << std::endl;
+}
+
 
 /** Convert to string and then call output to print message string */
 void UserInterface::output(std::ostringstream msg) {

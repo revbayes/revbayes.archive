@@ -7,25 +7,26 @@
 //
 
 #include "XmlTag.h"
-
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
+
+
 XmlTag::XmlTag(std::string content) {
+
+    // we assume that an object tag starts with '<' and ends with '>'
     char firstChar = content[0];
-    // we assume that object tag start with '<' and end with '>'
-    if (firstChar == '<') {
+    if (firstChar == '<')
         createObjectTag(content);
-    }
-    else {
+    else
         createTextTag(content);
-    }
-    
 }
 
-void XmlTag::createObjectTag(std::string &content){
+
+void XmlTag::createObjectTag(std::string &content) {
+
     textTag = false;
     
     // remove first and last element, i.e. '<' and '>'
@@ -33,18 +34,20 @@ void XmlTag::createObjectTag(std::string &content){
     content.erase(content.size()-1,1);
     
     // test whether the second char is '/', i.e. it is a closing tag
-    if (content[0] == '/') {
+    if (content[0] == '/') 
+        {
         closingTag = true;
         closingTag = false;
-        
         // we need to do nothing otherwise because the closing tags have no information so far
-    }
-    else {
+        }
+    else 
+        {
         // test whether the last char is '/'
-        if (content[content.size()-1] == '/') {
+        if (content[content.size()-1] == '/') 
+            {
             // set the flag for this tag that it is closed
             closed = true;
-        }
+            }
         
         // split the content into tokens which are separated by ' '
         // WARNING: I assume that no blanks are used in names or values
@@ -79,9 +82,12 @@ void XmlTag::createObjectTag(std::string &content){
             attributes[key_value.at(0)]    = value;
         }
     }
+    std::cout << "in createObjectTag with name \"" << name << "\"" << std::endl;
 }
 
-void XmlTag::createTextTag(std::string &content){
+void XmlTag::createTextTag(std::string &content) {
+
+    std::cout << "in createTextTag with text \"" << content << "\"" << std::endl;
     text = content;
     textTag = true;
     closed  = true;

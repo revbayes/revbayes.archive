@@ -4,13 +4,15 @@
  *
  */
 
-#include <iostream>
-
 #include "Func_source.h"
+#include "Help.h"
 #include "Parser.h"
 #include "RbSettings.h"
 #include "Workspace.h"
 #include "UserInterface.h"
+#include <iostream>
+#include <string>
+
 
 
 int main(int argc, char **argv) {
@@ -23,6 +25,7 @@ int main(int argc, char **argv) {
 	RBOUT("             Released under the GPL license, version 3\n\n");
 
     RbSettings::userSettings().initializeUserSettings();
+    Help::getHelp().initializeHelp("~/help/");
     Workspace::globalWorkspace().initializeGlobalWorkspace();
 
     /* Add stuff that Sebastian does not want to have in the core */

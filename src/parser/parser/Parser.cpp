@@ -13,6 +13,7 @@
  * $Id:$
  */
 
+#include "Help.h"
 #include "Parser.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -52,13 +53,16 @@ int Parser::help(RbString *symbol) const {
 #	endif
 
     // Get some help when we have some help to get
-
-    // Print some silly stuff for now
-    msg << "Sorry, I don't know anything about '" << std::string(*symbol);
-    msg << "'; I wish I did because it looks interesting." << std::endl;
-
-    // Output the message
-    RBOUT(msg.str());
+    Help& userHelp = Help::getHelp();
+    if (userHelp.isUserHelpAvailable() == false)
+        RBOUT("User help is unavailable");
+    else if ( userHelp.isHelpAvailableForQuery(std::string(*symbol)) == false )
+        RBOUT("Help unavailable for \"" + std::string(*symbol) + "\"");
+    else 
+        {
+        std::string hStr = userHelp.formatHelpString(std::string(*symbol), 100);
+        UserInterface::userInterface().output(hStr, false);
+        }
 
     // Delete the symbol
     delete symbol;

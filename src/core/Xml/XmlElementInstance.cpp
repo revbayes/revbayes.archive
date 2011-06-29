@@ -11,15 +11,17 @@
 #include <map>
 #include <string>
 
-XmlElementInstance::XmlElementInstance(const std::string& name, uintptr_t identifier) : XmlElementAttributed(name,identifier) {
+XmlElementInstance::XmlElementInstance(const std::string& name, uintptr_t identifier) : XmlElementAttributed(name, identifier) {
     
 }
 
 void XmlElementInstance::addSubElement(const XmlElement* element) {
+
     subElements.push_back(element);
 }
 
 void XmlElementInstance::writeToStream(std::ostream &outStream, int indentLevel) const {
+
     indentStream(outStream,indentLevel);
     outStream << "<" << name << " ID=\"" << identifier << "\"";
     

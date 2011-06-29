@@ -43,6 +43,7 @@ XmlDocument* XmlParser::parse(std::string& inStream) {
 }
 
 XmlDocument* XmlParser::parse(std::istream &instream) {
+
     // create the XmlDocument
     XmlDocument* doc = new XmlDocument();
     
@@ -50,48 +51,63 @@ XmlDocument* XmlParser::parse(std::istream &instream) {
     skipWhiteSpace(instream);
     
     // iterate over all tag in the 
-    while (instream.good() && !instream.eof()) {
+    while (instream.good() && !instream.eof()) 
+        {
         // read the first opening tag
-        XmlTag      tag = readTag(instream);
+        XmlTag tag = readTag(instream);
+        std::cout << "reading opening tag with name = \"" << tag.getName() << "\"" << std::endl;
+        
         // test whether this tag is already closed, i.e. has "/>" at the end.
-        if (tag.isClosed()) {
+        if (tag.isClosed()) 
+            {
             // test whether this is a reference node
-            if (tag.isReference()) {
+            if (tag.isReference()) 
+                {
+                std::cout << "tag is a reference element" << std::endl;
                 // this is a reference element -> create the object
-                XmlElementReference* refNode = new XmlElementReference(tag.getName(),tag.getId());
+                XmlElementReference* refNode = new XmlElementReference(tag.getName(), tag.getId());
                 // add this element to the document on the top level
                 doc->addXmlElement(refNode);
-            }
-            else {
-                // this is a instance element -> create the object
-                XmlElementInstance* instNode = new XmlElementInstance(tag.getName(),tag.getId());
-                // set the attributes for this xml element
-                for (std::map<std::string,std::string>::const_iterator it=tag.getAttributes().begin(); it!=tag.getAttributes().end(); ++it) {
-                    instNode->setAttribute(it->first,it->second);
                 }
+            else 
+                {
+                std::cout << "tag is a instance element" << std::endl;
+                // this is a instance element -> create the object
+                std::cout << "   adding a instance element with tagname \"" << tag.getName() << "\" and id " << tag.getId() << std::endl;
+                XmlElementInstance* instNode = new XmlElementInstance(tag.getName(), tag.getId());
+                // set the attributes for this xml element
+                for (std::map<std::string,std::string>::const_iterator it=tag.getAttributes().begin(); it!=tag.getAttributes().end(); ++it) 
+                    {
+                    std::cout << "   attribute: " << it->first << " " << it->second << std::endl;
+                    instNode->setAttribute(it->first, it->second);
+                    }
                 // add this element to the document on the top level
                 doc->addXmlElement(instNode);
+                }
             }
-        }
-        else if (tag.isClosingTag()) {
+        else if (tag.isClosingTag()) 
+            {
+            std::cout << "tag is a closing tag with name \"" << tag.getName() << "\"" << std::endl;
             // this tag is a closing tag, i.e. "</name>"
             // so far we do nothing here
             // maybe we should check if the closing tag matches the last, not closed, opening tag
-        }
-        else {
+            }
+        else 
+            {
             // the tag is neither closed nor a closing tag. this means there will follow some content, either further tags inside or simple text
             // read the contents of this tag
             XmlElementAttributed* element = readTagContents(instream,tag.getName(),tag.getId());
             // set the attributes for this xml element
-            for (std::map<std::string,std::string>::const_iterator it=tag.getAttributes().begin(); it!=tag.getAttributes().end(); ++it) {
+            for (std::map<std::string,std::string>::const_iterator it=tag.getAttributes().begin(); it!=tag.getAttributes().end(); ++it) 
+                {
                 element->setAttribute(it->first,it->second);
-            }
+                }
             // add this element to the document on the top level
             doc->addXmlElement(element);
-        }
+            }
         
         skipWhiteSpace(instream);
-    }
+        }
     
     return doc;
 }
@@ -112,6 +128,8 @@ XmlTag XmlParser::readTag(std::istream &instream) {
 }
 
 XmlTag XmlParser::readObjectTag(std::istream &instream) {
+
+    std::cout << "in readObjectTag" << std::endl;
     // we assume this is an object tag, hence this function we read the instream until we found the first ">" which means the tag is closed
     
     // create a string stream and add characters until ">" is found
@@ -129,6 +147,8 @@ XmlTag XmlParser::readObjectTag(std::istream &instream) {
 }
 
 XmlTag XmlParser::readTextTag(std::istream &instream) {
+
+    std::cout << "in readTextTag" << std::endl;
     // we assume this is a text tag, hence this function we read the instream until we found the first "<" which means the tag is closed
     
     // create a string stream and add characters until ">" is found
@@ -148,6 +168,7 @@ XmlTag XmlParser::readTextTag(std::istream &instream) {
 
 
 XmlElementAttributed* XmlParser::readTagContents(std::istream &instream, const std::string& name, uintptr_t identifier) {
+
     // read the content tag
     XmlTag      tag = readTag(instream);
     // test whether this is a text tag
