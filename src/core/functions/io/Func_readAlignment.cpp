@@ -44,6 +44,7 @@ Func_readAlignment* Func_readAlignment::clone( void ) const {
 /** Execute function */
 DAGNode* Func_readAlignment::execute( void ) {
 
+std::cout << "reading" << std::endl;
     // get the information from the arguments for reading the file
     const RbString* fn       = static_cast<const RbString*>( args[0].getValue() );
     //const RbString* fileFormat   = static_cast<const RbString*>( args[1].getValue() );

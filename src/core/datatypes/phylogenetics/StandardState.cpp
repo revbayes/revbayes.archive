@@ -18,28 +18,25 @@
 #include "VectorString.h"
 #include <sstream>
 
-const std::string StandardState::stateLabels = "0123456789";
-
 
 
 /** Default constructor */
-StandardState::StandardState(void) : CharacterObservationDiscrete(10) {
+StandardState::StandardState(void) : CharacterObservationDiscrete(1) {
 
-    setState('n');
 }
 
 
 /** Copy constructor */
-StandardState::StandardState(const StandardState& s) : CharacterObservationDiscrete(10) {
+StandardState::StandardState(const StandardState& s) : CharacterObservationDiscrete(s.numStates) {
 
     value = s.value;
 }
 
 
-/** Constructor that sets the observation */
-StandardState::StandardState(const char s) : CharacterObservationDiscrete(10) {
+StandardState::StandardState(const std::string ss) : CharacterObservationDiscrete(ss.size()) {
 
-    setState(s);
+    setNumStates(ss.size());
+    setStateLabels(ss);
 }
 
 
@@ -124,7 +121,18 @@ const char StandardState::getState(void) const {
 /** Print information for the user */
 void StandardState::printValue(std::ostream &o) const {
 
-    o << getState();
+    if ( getNumOnStates() > 1 )
+        {
+        o << "(";
+        for (size_t i=0; i<numStates; i++)
+            {
+            if (value[i] == true)
+                o << stateLabels[i];
+            }
+        o << ")";
+        }
+    else
+        o << getState();
 }
 
 
@@ -133,7 +141,6 @@ std::string StandardState::richInfo( void ) const {
 
 	std::ostringstream o;
     printValue( o );
-
     return o.str();
 }
 

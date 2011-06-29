@@ -32,3 +32,24 @@ const VectorString& CharacterObservationDiscrete::getClass() const {
     static VectorString rbClass = VectorString( CharacterObservationDiscrete_name ) + RbObject::getClass();
     return rbClass;
 }
+
+
+size_t CharacterObservationDiscrete::getNumOnStates(void) const {
+
+    size_t nOn = 0;
+    for (size_t i=0; i<value.size(); i++)
+        {
+        if (value[i] == true)
+            nOn++;
+        }
+    return nOn;
+}
+
+
+void CharacterObservationDiscrete::setNumStates(size_t n) {
+
+    numStates = n;
+    value.resize(n);
+}
+
+

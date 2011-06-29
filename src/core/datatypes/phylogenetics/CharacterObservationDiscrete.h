@@ -36,8 +36,10 @@ class CharacterObservationDiscrete : public CharacterObservation {
 
         // Discrete character observation functions
         virtual void                            addState(const char s) = 0;                         //!< Add a character state to the set of character states
+        size_t                                  getNumOnStates(void) const;
         virtual const std::string&              getStateLabels(void) const = 0;                     //!< Get valid state labels
         virtual const char                      getState(void) const = 0;                           //!< Get the discrete observation
+        void                                    setNumStates(size_t n);                             //!< Set the number of character states
         virtual void                            setState(const char s) = 0;                         //!< Set the discrete observation
 
     protected:
