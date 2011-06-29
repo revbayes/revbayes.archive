@@ -23,9 +23,6 @@ namespace StringUtilities {
     void                        toLower(std::string& str);                                                          //!< Convert string's characters to lower case
     std::string                 getFileContentsAsString(std::string& s);                                            //!< Convert the file contents to a string
     std::string                 getLastPathComponent(std::string& s);                                               //!< Find the last component of a file path
-    std::string                 formatStringWithBreaks(const std::string s, std::string padding, size_t w);
-    std::string                 formatStringWithBreaks(const std::string s, std::string padding, size_t col, size_t w);
-    std::string                 formatStringWithBreaks(const std::string s, std::string padding1, std::string padding2, size_t w);
 }
 
 #endif

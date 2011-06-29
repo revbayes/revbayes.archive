@@ -32,27 +32,27 @@ class HelpNode {
         size_t                           getNumChildren(void) { return childrenNodes.size(); }    //!< Get the number of children nodes
         HelpNode*                        getChildIndexed(size_t idx);                             //!< Get a child with index idx
         std::vector<HelpNode*>&          getChildren(void) { return childrenNodes; }              //!< Get a reference to the children nodes
-        HelpNode*                        getChildWithTag(const std::string& ts);
-        HelpNode*                        getChildWithTag(const std::string& ts, size_t idx);
-        int                              getIndex(void) { return index; }
+        HelpNode*                        getChildWithTag(const std::string& ts);                  //!< Returns the first (only?) child of this node with the tag
+        HelpNode*                        getChildWithTag(const std::string& ts, size_t idx);      //!< Returns the idx-th child of this node with the tag
+        int                              getIndex(void) { return index; }                         //!< Returns the node index
+        size_t                           getNumChildrenWithTag(const std::string& st);            //!< Returns the number of children of the node with the tag
         HelpNode*                        getParent(void) { return parentNode; }                   //!< Get a pointer to the parent
         std::string                      getTagName(void) { return tagName; }                     //!< Get the tag type
-        size_t                           getNumChildrenWithTag(const std::string& st);
-        bool                             hasChildWithTag(const std::string& ts);
-        bool                             isLeaf(void);
-        void                             print(void);
-        void                             setIndex(int x) { index = x; }
+        bool                             hasChildWithTag(const std::string& ts);                  //!< Returns whether any of the children of this node have a tag
+        bool                             isLeaf(void);                                            //!< Is this help node at the tip (leaf) of the help tree?
+        void                             print(void);                                             //!< Print node information
+        void                             setIndex(int x) { index = x; }                           //!< Set the index
         void                             setHelpEntry(std::string s) { helpEntry = s; }           //!< Set the entry for this help node
         void                             setParent(HelpNode* p) { parentNode = p; }               //!< Set the parent node
-        void                             setTagName(std::string t) { tagName = t; }
-        void                             showNode(HelpNode* p, size_t indent);
+        void                             setTagName(std::string t) { tagName = t; }               //!< Set the tag name
+        void                             showNode(HelpNode* p, size_t indent);                    //!< Show the help information in an indented format
 
 	private:
-        std::string                      tagName;                                                 //!< The XML tag associated with this node
+        std::vector<HelpNode*>           childrenNodes;                                           //!< Vector of children nodes
+        int                              index;                                                   //!< A unique index for the help node, used when printing the help tree
         std::string                      helpEntry;                                               //!< String containing the information for this help node
         HelpNode*                        parentNode;                                              //!< The parent of this node
-        std::vector<HelpNode*>           childrenNodes;                                           //!< Vector of children nodes
-        int                              index;
+        std::string                      tagName;                                                 //!< The XML tag associated with this node
 };
 
 #endif

@@ -40,9 +40,12 @@ Help::Help(void) {
 /** Destructor */
 Help::~Help(void) {
 
+    for (std::vector<HelpNode*>::iterator p = helpNodes.begin(); p != helpNodes.end(); p++)
+        delete (*p);
 }
 
 
+/** Format a string for printing to the terminal */
 std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
 
     // get the base node in the tree for the query
@@ -70,7 +73,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
             HelpNode* hn = h->getChildWithTag("succinct");
             tempStr += ": " + hn->getHelpEntry();
             }
-        hStr += StringUtilities::formatStringWithBreaks(tempStr, pad, columnWidth);
+        hStr += formatStringWithBreaks(tempStr, pad, columnWidth);
         hStr += "\n";
         }
     
@@ -81,7 +84,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
         {
         HelpNode* hn = h->getChildWithTag("verbose");
         hStr += "\n";
-        hStr += StringUtilities::formatStringWithBreaks(hn->getHelpEntry(), pad, columnWidth);
+        hStr += formatStringWithBreaks(hn->getHelpEntry(), pad, columnWidth);
         hStr += "\n";
         }
 
@@ -91,9 +94,9 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
         {
         hStr += "\n";
         if (nArgs == 1)
-            hStr += StringUtilities::formatStringWithBreaks("Argument:\n", pad, columnWidth);
+            hStr += formatStringWithBreaks("Argument:\n", pad, columnWidth);
         else 
-            hStr += StringUtilities::formatStringWithBreaks("Arguments:\n", pad, columnWidth);
+            hStr += formatStringWithBreaks("Arguments:\n", pad, columnWidth);
         size_t longestArgName = 0;
         for (size_t i=0; i<nArgs; i++)
             {
@@ -108,7 +111,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
             HelpNode* hn1 = h->getChildWithTag("argument", i)->getChildWithTag("arg_name");
             HelpNode* hn2 = h->getChildWithTag("argument", i)->getChildWithTag("arg_description");
             hStr += "\n";
-            hStr += StringUtilities::formatStringWithBreaks(hn1->getHelpEntry() + " " + hn2->getHelpEntry(), pad, longestArgName, columnWidth);
+            hStr += formatStringWithBreaks(hn1->getHelpEntry() + " " + hn2->getHelpEntry(), pad, longestArgName, columnWidth);
             }
         hStr += "\n";
         }
@@ -118,12 +121,12 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
     if ( nUsage > 0 )
         {
         hStr += "\n";
-        hStr += StringUtilities::formatStringWithBreaks("Usage:\n", pad, columnWidth);
+        hStr += formatStringWithBreaks("Usage:\n", pad, columnWidth);
         for (size_t i=0; i<nUsage; i++)
             {
             HelpNode* hn = h->getChildWithTag("usage", i)->getChildWithTag("theory");
             hStr += "\n";
-            hStr += StringUtilities::formatStringWithBreaks(hn->getHelpEntry(), pad, columnWidth);
+            hStr += formatStringWithBreaks(hn->getHelpEntry(), pad, columnWidth);
             }
         hStr += "\n";
         }
@@ -133,14 +136,14 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
         {
         hStr += "\n";
         if (nUsage == 1)
-            hStr += StringUtilities::formatStringWithBreaks("Usage example:\n", pad, columnWidth);
+            hStr += formatStringWithBreaks("Usage example:\n", pad, columnWidth);
         else
-            hStr += StringUtilities::formatStringWithBreaks("Usage examples:\n", pad, columnWidth);
+            hStr += formatStringWithBreaks("Usage examples:\n", pad, columnWidth);
         for (size_t i=0; i<nUsage; i++)
             {
             HelpNode* hn = h->getChildWithTag("usage", i)->getChildWithTag("example");
             hStr += "\n";
-            hStr += StringUtilities::formatStringWithBreaks(hn->getHelpEntry(), pad, columnWidth);
+            hStr += formatStringWithBreaks(hn->getHelpEntry(), pad, columnWidth);
             }
         hStr += "\n";
         }
@@ -150,7 +153,7 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
         {
         HelpNode* hn = h->getChildWithTag("author");
         hStr += "\n";
-        hStr += StringUtilities::formatStringWithBreaks("Author: " + hn->getHelpEntry(), pad, columnWidth);
+        hStr += formatStringWithBreaks("Author: " + hn->getHelpEntry(), pad, columnWidth);
         hStr += "\n";
         }
     
@@ -159,20 +162,100 @@ std::string Help::formatHelpString(const std::string& qs, size_t columnWidth) {
     if ( nRef > 0 )
         {
         hStr += "\n";
-        hStr += StringUtilities::formatStringWithBreaks("References:\n", pad, columnWidth);
+        hStr += formatStringWithBreaks("References:\n", pad, columnWidth);
         for (size_t i=0; i<nRef; i++)
             {
             HelpNode* hn = h->getChildWithTag("reference", i);
             hStr += "\n";
-            hStr += StringUtilities::formatStringWithBreaks(hn->getHelpEntry(), pad, pad+"   ", columnWidth);
+            hStr += formatStringWithBreaks(hn->getHelpEntry(), pad, pad+"   ", columnWidth);
             }
         hStr += "\n";
         }
     
-    
     return hStr;
 }
 
+
+/** Used for formatting a string for printing to the screen */
+std::string Help::formatStringWithBreaks(const std::string s, std::string padding, size_t w) {
+
+    std::vector<std::string> stringList;
+    StringUtilities::stringSplit(s, " ", stringList);
+
+    std::string nStr = padding;
+    size_t cnt = 0;
+    for (std::vector<std::string>::iterator it = stringList.begin(); it != stringList.end(); it++)
+        {
+        if (cnt + (*it).size() > w && cnt != 0)
+            {
+            cnt = 0;
+            nStr += "\n" + padding;
+            }
+        cnt += (*it).size();
+        nStr += (*it) + " ";
+        }
+    
+    return nStr;
+}
+
+
+/** Used for formatting a string for printing to the screen */
+std::string Help::formatStringWithBreaks(const std::string s, std::string padding1, std::string padding2, size_t w) {
+
+    std::vector<std::string> stringList;
+    StringUtilities::stringSplit(s, " ", stringList);
+
+    std::string nStr = padding1;
+    size_t cnt = 0;
+    for (std::vector<std::string>::iterator it = stringList.begin(); it != stringList.end(); it++)
+        {
+        if (cnt + (*it).size() > w && cnt != 0)
+            {
+            cnt = 0;
+            nStr += "\n" + padding2;
+            }
+        cnt += (*it).size();
+        nStr += (*it) + " ";
+        }
+    
+    return nStr;
+}
+
+
+/** Used for formatting a string for printing to the screen */
+std::string Help::formatStringWithBreaks(const std::string s, std::string padding, size_t col, size_t w) {
+
+    std::vector<std::string> stringList;
+    StringUtilities::stringSplit(s, " ", stringList);
+
+    std::string nStr = padding;
+    size_t cnt = 0, elemNum = 0;
+    for (std::vector<std::string>::iterator it = stringList.begin(); it != stringList.end(); it++)
+        {
+        if (cnt + (*it).size() > w && cnt != 0)
+            {
+            cnt = 0;
+            nStr += "\n" + padding;
+            for (size_t i=0; i<col; i++)
+                nStr += " ";
+            }
+        cnt += (*it).size();
+        nStr += (*it);
+        if (elemNum == 0)
+            {
+            for (size_t i=0; i<col-(*it).size(); i++)
+                nStr += " ";
+            }
+        else
+            nStr += " ";
+        elemNum++;
+        }
+    
+    return nStr;
+}
+
+
+/** Returns the help node for a query */
 HelpNode* Help::getHelpNodeForQuery(const std::string& qs) {
 
     std::string theString = qs;
@@ -198,6 +281,8 @@ HelpNode* Help::getHelpNodeForQuery(const std::string& qs) {
     return NULL;
 }
 
+
+/** Gets the next XML tag when parsing an XML help file */
 std::string Help::getNextTag(HelpNode* p, std::string& s) {
 
     std::stringstream myStrm(s);
@@ -205,6 +290,7 @@ std::string Help::getNextTag(HelpNode* p, std::string& s) {
 }
 
 
+/** Gets the next XML tag when parsing an XML help file */
 std::string Help::getNextTag(HelpNode* p, std::istream& inStream) {
 
     // remove leading white space
@@ -290,7 +376,7 @@ std::string Help::getNextTag(HelpNode* p, std::istream& inStream) {
                     }
                 }
             }
-        else if (c == '/')
+        else if (c == '/' && readingTag == true)
             {
             isClosingTag = true;
             }
@@ -307,6 +393,7 @@ std::string Help::getNextTag(HelpNode* p, std::istream& inStream) {
 }
 
 
+/** Returns the number of help entries for a query */
 size_t Help::getNumHelpEntries(void) {
 
     size_t numHelpEntries = 0;
@@ -320,6 +407,7 @@ size_t Help::getNumHelpEntries(void) {
 }
 
 
+/** Interprets special XML characters, such as "&gt;" */
 char Help::getSpecialCharacter(std::istream& inStream) {
 
     // zip forward, looking for the closing semicolon and then interpret and return the character
@@ -414,6 +502,7 @@ void Help::initializeHelp(std::string f) {
 }
 
 
+/** Returns whether there is help available for a query */
 bool Help::isHelpAvailableForQuery(const std::string& qs) {
 
     if ( getHelpNodeForQuery(qs) == NULL)
@@ -439,6 +528,7 @@ bool Help::parseHelpFile(std::string& fn) {
 }
 
        
+/** Print the help tree */
 void Help::print(void) {
 
     helpRoot->showNode(helpRoot, 3);
@@ -459,6 +549,8 @@ void Help::print(void) {
         }
 }
 
+
+/** Skip white space in a stream */
 void Help::skipWhiteSpace(std::istream& inStream) {
 
     while (isspace(inStream.peek()))
