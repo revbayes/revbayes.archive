@@ -58,8 +58,8 @@ class ContainerNode : public DeterministicNode {
         // Parser element access, test and convert functions
         RbObject*               convertValueElement(const VectorInteger& index, RbObject* val ) const;                      //!< Convert value element
         DAGNode*                convertVariableElement(const VectorInteger& index, DAGNode* var, bool convert=true ) const; //!< Convert variable element
-        DAGNode*                getElement(VectorIndex& index) const;                                                             //!< Get element (recursive)
-        DAGNode*                getElement(const VectorNatural& index) const;                                               //!< Get element (non-recursive)
+        DAGNode*                getElement(VectorIndex& index);                                                             //!< Get element (recursive)
+        DAGNode*                getElement(const VectorNatural& index);                                                     //!< Get element (non-recursive)
         DAGNode*                getElementOwner(VectorIndex& index);                                                        //!< Get element owner (recursive)
         bool                    isValidElement(const VectorInteger& index, DAGNode* var, bool convert) const;               //!< Check validity of variable element
         bool                    isValidElement(const VectorInteger& index, const RbObject* val) const;                      //!< Check validity of value element

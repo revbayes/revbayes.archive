@@ -270,7 +270,7 @@ const VectorString& ValueContainer::getClass(void) const {
 DAGNode* ValueContainer::getElement( const VectorNatural& index ) const {
 
     // The call to getOffset will throw an error if index is inappropriate
-    return elements[ getOffset( index ) ]->wrapIntoVariable();
+    return elements[ getOffset( index ) ]->clone()->wrapIntoVariable();
 }
 
 
@@ -289,7 +289,7 @@ DAGNode* ValueContainer::getElement( VectorIndex& index ) {
     // Drop any negative indices at the end of the index vector because they do not matter.
     // Also count number of negative indices that pertain to this container
     for ( int i = static_cast<int>( index.size() ) - 1; i >= 0; i-- ) {
-        if ( index.isEmpty( i ) < 0)
+        if ( index.isEmpty( i ) )
             index.pop_back();
         else
             break;

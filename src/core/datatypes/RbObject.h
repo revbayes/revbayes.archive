@@ -50,7 +50,7 @@ class RbObject {
         virtual DAGNode*            wrapIntoVariable(void);                                                 //!< Wrap value into variable
     
         // Dimensions of object: override only if object is a container with dimensions exposed to language / parser
-        virtual int                 getDim(void) const { return 0; }                                        //!< Get container dimensions
+        virtual size_t              getDim(void) const { return 0; }                                        //!< Get container dimensions
 
         // Basic utility functions you should not have to override
         RbObject*                   convertTo(const TypeSpec& typeSpec) const;                              //!< Convert to language object of type typeSpec

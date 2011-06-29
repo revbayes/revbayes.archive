@@ -302,7 +302,7 @@ DAGNode* ContainerNode::getElement( size_t i ) {
 
 
 /** Get element for parser. This version supports empty indices, giving you subcontainers back. */
-DAGNode* ContainerNode::getElement( VectorIndex& index ) const {
+DAGNode* ContainerNode::getElement( VectorIndex& index ) {
 
     if ( container != NULL )
         return container->getElement( index );
@@ -312,7 +312,7 @@ DAGNode* ContainerNode::getElement( VectorIndex& index ) const {
 
 
 /** Get (or make) single element for parser */
-DAGNode* ContainerNode::getElement( const VectorNatural& index ) const {
+DAGNode* ContainerNode::getElement( const VectorNatural& index ) {
     
     // Check for erroneous index
     if ( index.size() != getDim() )

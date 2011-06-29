@@ -402,6 +402,7 @@ ContainerNode* SyntaxAssignExpr::makeContainer( const VectorIndex& index, RbObje
             throw RbException( "Cannot make container based on empty index" );
         
         elementIndex.push_back( k );
+        length.push_back( k + 1 );
     }
     
     ValueContainer* temp = new ValueContainer( TypeSpec( elem->getType(), index.size() ), length );
@@ -431,6 +432,7 @@ ContainerNode* SyntaxAssignExpr::makeContainer( const VectorIndex& index, DAGNod
             throw RbException( "Cannot make container based on empty index" );
         
         elementIndex.push_back( k );
+        length.push_back( k + 1 );
     }
     
     VariableContainer* temp = new VariableContainer( TypeSpec( elem->getValueType(), index.size() ), length );
