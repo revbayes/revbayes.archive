@@ -26,6 +26,9 @@
 class CharacterObservationDiscrete : public CharacterObservation {
 
     public:
+        virtual bool                    operator==(const CharacterObservationDiscrete& x) const;                  //!< Equality
+        virtual bool                    operator!=(const CharacterObservationDiscrete& x) const;                  //!< Inequality
+
         // Basic utility functions you should not have to override
         virtual void                            printValue(std::ostream& o) const = 0;                        //!< Print value (for user)
 

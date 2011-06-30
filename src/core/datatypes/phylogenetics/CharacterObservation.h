@@ -25,6 +25,9 @@
 class CharacterObservation : public RbObject {
 
     public:
+        virtual bool                    operator==(const CharacterObservation& x) const;                  //!< Equality
+        virtual bool                    operator!=(const CharacterObservation& x) const;                  //!< Inequality
+
         // Basic utility functions you should not have to override
         virtual void                    printValue(std::ostream& o) const = 0;                //!< Print value (for user)
 

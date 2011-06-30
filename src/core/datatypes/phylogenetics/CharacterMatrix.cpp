@@ -19,6 +19,7 @@
 
 #include "CharacterMatrix.h"
 #include "CharacterObservation.h"
+#include "DnaState.h"
 #include "MemberFunction.h"
 #include "MemberNode.h"
 #include "MoveSchedule.h"
@@ -295,7 +296,24 @@ size_t CharacterMatrix::indexOfTaxonWithName(std::string& s) {
 /** Is this character pattern constant? */
 bool CharacterMatrix::isCharacterConstant(size_t idx) {
 
-    return false;
+    CharacterObservation* f = NULL;
+    for (size_t i=0; i<getNumTaxa(); i++)
+        {
+        if ( isTaxonExcluded(i) == false )
+            {
+            if ( f == NULL )
+                {
+                f = &(*taxonObservations[i])[idx];
+                }
+            else
+                {
+                CharacterObservation* s = &(*taxonObservations[i])[idx];
+                if ( (*f) != (*s) )
+                    return false;
+                }
+            }
+        }
+    return true;
 }
 
 

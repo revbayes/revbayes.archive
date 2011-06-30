@@ -28,6 +28,9 @@ class CharacterObservation;
 class VectorCharacterObservations : public Vector {
 
     public:
+	    virtual CharacterObservation&           operator[](size_t i);                                     //!< Index op allowing change
+	    virtual const CharacterObservation&     operator[](size_t i) const;                               //!< Const index op
+
         // Basic utility functions you have to override
         virtual VectorCharacterObservations*    clone(void) const = 0;                                    //!< Clone object
         virtual const VectorString&             getClass(void) const;                                     //!< Get class

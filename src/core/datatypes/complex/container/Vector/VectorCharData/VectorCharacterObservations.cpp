@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "CharacterObservation.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
@@ -25,6 +26,24 @@
 
 VectorCharacterObservations::VectorCharacterObservations(const std::string& elemType) : Vector(elemType) {
 
+}
+
+
+/** Subscript operator */
+CharacterObservation& VectorCharacterObservations::operator[](size_t i) {
+
+    if (i >= elements.size())
+        throw RbException("Index out of bounds");
+    return *( static_cast<CharacterObservation*>(elements[i]) );
+}
+
+
+/** Subscript const operator */
+const CharacterObservation& VectorCharacterObservations::operator[](size_t i) const {
+
+    if (i >= elements.size())
+        throw RbException("Index out of bounds");
+    return *( static_cast<CharacterObservation*>(elements[i]) );
 }
 
 

@@ -26,6 +26,9 @@
 class NucleotideState : public CharacterObservationDiscrete {
 
     public:
+        virtual bool                    operator==(const NucleotideState& x) const;                  //!< Equality
+        virtual bool                    operator!=(const NucleotideState& x) const;                  //!< Inequality
+
         // Basic utility functions you should not have to override
         virtual void                    printValue(std::ostream& o) const = 0;           //!< Print value (for user)
 

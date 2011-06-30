@@ -26,6 +26,20 @@ CharacterObservationDiscrete::CharacterObservationDiscrete(size_t n) : Character
 }
 
 
+/** Equals comparison */
+bool CharacterObservationDiscrete::operator==(const CharacterObservationDiscrete& x) const {
+
+    return true;
+}
+
+
+/** Not equals comparison */
+bool CharacterObservationDiscrete::operator!=(const CharacterObservationDiscrete& x) const {
+
+    return !operator==(x);
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& CharacterObservationDiscrete::getClass() const {
 

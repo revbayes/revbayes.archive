@@ -54,6 +54,7 @@ DnaState::DnaState(const std::set<char> s) : NucleotideState() {
 /** Equals comparison */
 bool DnaState::operator==(const DnaState& x) const {
 
+    std::cout << "in == in DnaState" << std::endl;
     for (size_t i=0; i<numStates; i++) 
         {
         if ( value[i] != x.value[i] )
