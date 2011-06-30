@@ -43,67 +43,6 @@ bool foundEOF;
 bool foundErrorBeforeEnd;
 
 
-/** This function gets help info about a symbol */
-int Parser::help(RbString *symbol) const {
-
-    std::ostringstream msg;
-
-#	if defined DEBUG_PARSER
-    // Print syntax tree 
-    std::cerr << std::endl;
-    std::cerr << "Parser trying to get help for symbol '" << std::string(*symbol) << "'";
-    std::cerr << std::endl;
-#	endif
-
-    // Get some help when we have some help to get
-    Help& userHelp = Help::getHelp();
-    if (userHelp.isUserHelpAvailable() == false)
-        RBOUT("User help is unavailable");
-    else if ( userHelp.isHelpAvailableForQuery(std::string(*symbol)) == false )
-        RBOUT("Help unavailable for \"" + std::string(*symbol) + "\"");
-    else 
-        {
-        std::string hStr = userHelp.formatHelpString(std::string(*symbol), 100);
-        UserInterface::userInterface().output(hStr, false);
-        }
-
-    // Delete the symbol
-    delete symbol;
-
-    // Return success
-    return 0;
-}
-
-
-/** This function prints help info about a function if it sees a function call */
-int Parser::help(SyntaxElement *root) const {
-
-    std::ostringstream msg;
-
-#	if defined DEBUG_PARSER
-    // Print syntax tree
-    std::cerr << std::endl;
-    std::cerr << "Syntax tree root before help:\n";
-    root->print(std::cerr);
-    std::cerr << std::endl;
-#	endif
-
-    RbString symbol;
-
-    if ( root->isType(SyntaxFunctionCall_name) ) {
-        symbol = *((SyntaxFunctionCall*)(root))->getFunctionName();
-    }
-    else {
-        msg << "I have no clue -- Bison was not supposed to ask me about this!";
-        RBOUT(msg.str());
-        delete root;
-        return 1;
-    }
-
-    return help(&symbol);
-}
-
-
 /** This function causes recursive execution of a syntax tree by calling the root to get its value */
 int Parser::execute(SyntaxElement *root) const {
 
@@ -189,6 +128,68 @@ void Parser::getline(char* buf, size_t maxsize) {
     else
         PRINTF("Parser gave flex line(s):\n %s", buf);
 #	endif
+}
+
+
+/** This function gets help info about a symbol */
+int Parser::help(RbString *symbol) const {
+
+    std::ostringstream msg;
+
+#	if defined DEBUG_PARSER
+    // Print syntax tree 
+    std::cerr << std::endl;
+    std::cerr << "Parser trying to get help for symbol '" << std::string(*symbol) << "'";
+    std::cerr << std::endl;
+#	endif
+
+    // Get some help when we have some help to get
+    Help& userHelp = Help::getHelp();
+    if (userHelp.isUserHelpAvailable() == false)
+        RBOUT("User help is unavailable");
+    else if ( userHelp.isHelpAvailableForQuery(std::string(*symbol)) == false )
+        RBOUT("Help unavailable for \"" + std::string(*symbol) + "\"");
+    else 
+        {
+        std::string hStr = userHelp.formatHelpString(std::string(*symbol), 100);
+        UserInterface::userInterface().output(hStr, false);
+        }
+
+    // Delete the symbol
+    delete symbol;
+
+    // Return success
+    return 0;
+}
+
+
+/** This function prints help info about a function if it sees a function call */
+int Parser::help(SyntaxElement *root) const {
+
+    std::ostringstream msg;
+
+#	if defined DEBUG_PARSER
+    // Print syntax tree
+    std::cerr << std::endl;
+    std::cerr << "Syntax tree root before help:\n";
+    root->print(std::cerr);
+    std::cerr << std::endl;
+#	endif
+
+    RbString* symbol;
+
+    if ( root->isType(SyntaxFunctionCall_name) ) {
+        symbol = static_cast<SyntaxFunctionCall*>( root )->getFunctionName()->clone();
+    }
+    else {
+        msg << "I have no clue -- Bison was not supposed to ask me about this!";
+        RBOUT(msg.str());
+        delete root;
+        return 1;
+    }
+
+    delete root;
+    return help( symbol );
 }
 
 
