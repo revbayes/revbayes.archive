@@ -14,7 +14,6 @@
 XmlElement::XmlElement(const std::string& name, uintptr_t identifier) {
     this->name          = name;
     this->identifier    = identifier;
-    std::cout << name << " " << identifier << std::endl;
 }
 
 void XmlElement::indentStream(std::ostream &outStream, int indentLevel) const {

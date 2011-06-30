@@ -15,6 +15,7 @@
 
 
 XmlTag::XmlTag(std::string content) {
+    identifier = 0;
 
     // we assume that an object tag starts with '<' and ends with '>'
     char firstChar = content[0];
@@ -27,7 +28,6 @@ XmlTag::XmlTag(std::string content) {
 
 void XmlTag::createObjectTag(std::string &content) {
 
-//    std::cout << "Creating xml tag for:\t\t" << content << std::endl;
     textTag = false;
     closingTag = false;
     closed = false;
@@ -85,19 +85,17 @@ void XmlTag::createObjectTag(std::string &content) {
             attributes[key_value.at(0)]    = value;
         }
     }
-//    std::cout << "in createObjectTag with name \"" << name << "\"" << std::endl;
 }
 
 void XmlTag::createTextTag(std::string &content) {
 
-//    std::cout << "in createTextTag with text \"" << content << "\"" << std::endl;
     text = content;
     textTag = true;
     closed  = true;
     closingTag = false;
     reference = false;
     name = "";
-    identifier = -1;
+    identifier = 0;
 }
 
 std::vector<std::string>& XmlTag::split(const std::string &s, char delim, std::vector<std::string> &elems) {

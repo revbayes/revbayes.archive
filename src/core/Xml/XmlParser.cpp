@@ -8,6 +8,7 @@
 
 #include "XmlParser.h"
 
+#include "RbException.h"
 #include "XmlElement.h"
 #include "XmlElementAttributed.h"
 #include "XmlElementInstance.h"
@@ -55,7 +56,6 @@ XmlDocument* XmlParser::parse(std::istream &instream) {
         {
         // read the first opening tag
         XmlTag tag = readTag(instream);
-//        std::cout << "reading opening tag with name = \"" << tag.getName() << "\"" << std::endl;
         
         // test whether this tag is already closed, i.e. has "/>" at the end.
         if (tag.isClosed()) 
@@ -63,7 +63,6 @@ XmlDocument* XmlParser::parse(std::istream &instream) {
             // test whether this is a reference node
             if (tag.isReference()) 
                 {
-//                std::cout << "tag is a reference element" << std::endl;
                 // this is a reference element -> create the object
                 XmlElementReference* refNode = new XmlElementReference(tag.getName(), tag.getId());
                 // add this element to the document on the top level
@@ -71,14 +70,11 @@ XmlDocument* XmlParser::parse(std::istream &instream) {
                 }
             else 
                 {
-//                std::cout << "tag is a instance element" << std::endl;
                 // this is a instance element -> create the object
-//                std::cout << "   adding a instance element with tagname \"" << tag.getName() << "\" and id " << tag.getId() << std::endl;
                 XmlElementInstance* instNode = new XmlElementInstance(tag.getName(), tag.getId());
                 // set the attributes for this xml element
                 for (std::map<std::string,std::string>::const_iterator it=tag.getAttributes().begin(); it!=tag.getAttributes().end(); ++it) 
                     {
-//                    std::cout << "   attribute: " << it->first << " " << it->second << std::endl;
                     instNode->setAttribute(it->first, it->second);
                     }
                 // add this element to the document on the top level
@@ -87,7 +83,6 @@ XmlDocument* XmlParser::parse(std::istream &instream) {
             }
         else if (tag.isClosingTag()) 
             {
-//            std::cout << "tag is a closing tag with name \"" << tag.getName() << "\"" << std::endl;
             // this tag is a closing tag, i.e. "</name>"
             // so far we do nothing here
             // maybe we should check if the closing tag matches the last, not closed, opening tag
@@ -96,7 +91,7 @@ XmlDocument* XmlParser::parse(std::istream &instream) {
             {
             // the tag is neither closed nor a closing tag. this means there will follow some content, either further tags inside or simple text
             // read the contents of this tag
-            XmlElementAttributed* element = (XmlElementAttributed*)readTagContents(instream,tag.getName(),tag.getId());
+            XmlElementAttributed* element = readTagContents(instream,tag.getName(),tag.getId());
             // set the attributes for this xml element
             for (std::map<std::string,std::string>::const_iterator it=tag.getAttributes().begin(); it!=tag.getAttributes().end(); ++it) 
                 {
@@ -129,8 +124,6 @@ XmlTag XmlParser::readTag(std::istream &instream) {
 }
 
 XmlTag XmlParser::readObjectTag(std::istream &instream) {
-
-//    std::cout << "in readObjectTag" << std::endl;
     // we assume this is an object tag, hence this function we read the instream until we found the first ">" which means the tag is closed
     
     // create a string stream and add characters until ">" is found
@@ -140,7 +133,6 @@ XmlTag XmlParser::readObjectTag(std::istream &instream) {
         c = instream.get();
         out << c;
     } while (c != '>');
-//    std::cout << "Reading tag:\t\t" << out.str() << std::endl;
     
     // create the tag object from the string
     XmlTag tag = XmlTag(out.str());
@@ -149,8 +141,6 @@ XmlTag XmlParser::readObjectTag(std::istream &instream) {
 }
 
 XmlTag XmlParser::readTextTag(std::istream &instream) {
-
-//    std::cout << "in readTextTag" << std::endl;
     // we assume this is a text tag, hence this function we read the instream until we found the first "<" which means the tag is closed
     
     // create a string stream and add characters until ">" is found
@@ -161,7 +151,6 @@ XmlTag XmlParser::readTextTag(std::istream &instream) {
         c = instream.get();
         out << c;
     }
-//    std::cout << "Reading tag:\t\t" << out.str() << std::endl;
     
     // create the tag object from the string
     XmlTag tag = XmlTag(out.str());
@@ -180,6 +169,11 @@ XmlElementAttributed* XmlParser::readTagContents(std::istream &instream, const s
         XmlElementTextNode* element = new XmlElementTextNode(name,identifier);
         // set the content of the text node 
         element->setTextNode(tag.getText());
+        // after a text content we expect a closing tag, which we need to remove. We do this here and also check that there is a immidiate following closing tag.
+        XmlTag closingTextTag = readTag(instream);
+        if (!closingTextTag.isClosingTag()) {
+            throw RbException("Excpected closing tag after text content while reading xml file but didn't get one.");
+        }
         // return the xml element
         return element;
     }
