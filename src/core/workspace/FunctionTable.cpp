@@ -127,6 +127,37 @@ DAGNode* FunctionTable::executeFunction(const std::string& name, const std::vect
 }
 
 
+/**
+ * Find functions matching name
+ *
+ * @todo Inherited functions are not returned if there
+ *       are functions matching the name in the current
+ *       workspace.
+ */
+std::vector<const RbFunction*> FunctionTable::findFunctions(const std::string& name) const {
+
+    std::vector<const RbFunction*>  theFunctions;
+
+    size_t count = table.count(name);
+    if (count == 0) {
+        if (parentTable != NULL)
+            return parentTable->findFunctions( name );
+        else
+            return theFunctions;
+    }
+
+    std::pair<std::multimap<std::string, RbFunction*>::const_iterator,
+              std::multimap<std::string, RbFunction*>::const_iterator> retVal;
+    retVal = table.equal_range( name );
+
+    std::multimap<std::string, RbFunction*>::const_iterator it;
+    for ( it=retVal.first; it!=retVal.second; it++ )
+        theFunctions.push_back( (*it).second );
+
+    return theFunctions;
+}
+
+
 /** Find function (also processes arguments) */
 RbFunction* FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args, bool evaluateOnce) const {
 
@@ -142,20 +173,28 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
     }
     retVal = table.equal_range(name);
     if (count == 1) {
-        if (retVal.first->second->processArguments(args, evaluateOnce) == false)
+        if (retVal.first->second->processArguments(args, evaluateOnce) == false) {
+            
+            std::ostringstream msg;
+            msg << "Argument mismatch for call to function '" << name << "'. Correct usage is:" << std::endl;
+            retVal.first->second->printValue( msg );
+            msg << std::endl;
             throw RbException("Argument mismatch for call to '" + name + "'");
+        }
         return retVal.first->second;
     }
     else {
         VectorInteger matchScore, bestScore;
         RbFunction* bestMatch = NULL;
 
+        bool ambiguous = false;
         std::multimap<std::string, RbFunction*>::const_iterator it;
         for (it=retVal.first; it!=retVal.second; it++) {
             if ( (*it).second->processArguments(args, evaluateOnce, &matchScore) == true ) {
                 if ( bestMatch == NULL ) {
                     bestScore = matchScore;
                     bestMatch = it->second;
+                    ambiguous = false;
                 }
                 else {
                     size_t j;
@@ -163,28 +202,37 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
                         if (matchScore[j] < bestScore[j]) {
                             bestScore = matchScore;
                             bestMatch = it->second;
+                            ambiguous = false;
                             break;
                         }
                         else if (matchScore[j] > bestScore[j])
                             break;
                     }
                     if (j==matchScore.size() || j==bestScore.size()) {
-                        /* delete the processed arguments before returning */
-                        for ( std::multimap<std::string, RbFunction*>::const_iterator k = retVal.first; k != it; k++ )
-                            (*it).second->clearArgs();
-                        throw RbException("Ambiguous call to function '" + name + "'");
+                        ambiguous = true;   // Continue checking, there might be better matches ahead
                     }
                 }
             }
         }
-        if ( bestMatch == NULL )
-            throw RbException("No overloaded function '" + name + "' matches arguments");
-        else {
-            /* delete all processed arguments except those of the best matching function */
-            for ( std::multimap<std::string, RbFunction*>::const_iterator k = retVal.first; k != it; k++ ) {
-                if ( (*it).second != bestMatch )
-                    (*it).second->clearArgs();
+        /* Delete all processed arguments except those of the best matching function, if it is ambiguous */
+        for ( it = retVal.first; it != retVal.second; it++ ) {
+            if ( !( (*it).second == bestMatch && ambiguous == false ) )
+                (*it).second->clearArgs();
+        }
+        if ( bestMatch == NULL || ambiguous == true ) {
+            std::ostringstream msg;
+            if ( bestMatch == NULL )
+                msg << "No overloaded function '" << name << "' matches arguments" << std::endl;
+            else
+                msg << "Ambiguous call to function '" << name << "'" << std::endl;
+            msg << "Potentially matching functions are:" << std::endl;
+            for ( it = retVal.first; it != retVal.second; it++ ) {
+                (*it).second->printValue( msg );
+                msg << std::endl;
             }
+            throw RbException( msg );
+        }
+        else {
             return bestMatch;
         }
     }

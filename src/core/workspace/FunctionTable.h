@@ -34,37 +34,38 @@ class RbObject;
 class FunctionTable : public RbInternal {
 
     public:
-                                FunctionTable(FunctionTable* parent=NULL);                                          //!< Empty table
-                                FunctionTable(const FunctionTable& x);                                              //!< Copy constructor
-        virtual                ~FunctionTable();                                                                    //!< Delete functions
+                                        FunctionTable(FunctionTable* parent=NULL);                                          //!< Empty table
+                                        FunctionTable(const FunctionTable& x);                                              //!< Copy constructor
+        virtual                        ~FunctionTable();                                                                    //!< Delete functions
 
         // Assignment operator
-        FunctionTable&          operator=(const FunctionTable& x);                                                  //!< Assignment operator 
+        FunctionTable&                  operator=(const FunctionTable& x);                                                  //!< Assignment operator 
 
         // Basic utility functions
-        virtual std::string     briefInfo(void) const;                                                              //!< Brief info to string
-        virtual FunctionTable*  clone(void) const { return new FunctionTable(*this); }                              //!< Clone object
-        virtual std::string     richInfo(void) const;                                                               //!< Complete info to string
-        void                    printValue(std::ostream& o) const;                                                  //!< Print table for user
+        virtual std::string             briefInfo(void) const;                                                              //!< Brief info to string
+        virtual FunctionTable*          clone(void) const { return new FunctionTable(*this); }                              //!< Clone object
+        virtual std::string             richInfo(void) const;                                                               //!< Complete info to string
+        void                            printValue(std::ostream& o) const;                                                  //!< Print table for user
 
         // FunctionTable functions
-        virtual void            addFunction(const std::string name, RbFunction* func);                              //!< Add function
-        void                    clear(void);                                                                        //!< Clear table
-        DAGNode*                executeFunction( const std::string&             name,
-                                                 const std::vector<Argument>&   args) const;                        //!< Evaluate function (once)
-        void                    eraseFunction(const std::string& name);                                             //!< Erase a function (all versions)
-        RbFunction*             getFunction(const std::string& name, const std::vector<Argument>& args) const;      //!< Get function (a copy)
-        bool                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;             //!< Are formals unique?
-        void                    setParentTable(FunctionTable* table) { parentTable = table; }                       //!< Set parent table
+        virtual void                    addFunction(const std::string name, RbFunction* func);                              //!< Add function
+        void                            clear(void);                                                                        //!< Clear table
+        DAGNode*                        executeFunction( const std::string&             name,
+                                                         const std::vector<Argument>&   args) const;                        //!< Evaluate function (once)
+        void                            eraseFunction(const std::string& name);                                             //!< Erase a function (all versions)
+        std::vector<const RbFunction*>  findFunctions(const std::string& name) const;                                       //!< Return functions matching name
+        RbFunction*                     getFunction(const std::string& name, const std::vector<Argument>& args) const;      //!< Get function (a copy)
+        bool                            isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;             //!< Are formals unique?
+        void                            setParentTable(FunctionTable* table) { parentTable = table; }                       //!< Set parent table
 
     protected:
-        RbFunction*             findFunction(   const std::string&              name,
-                                                const std::vector<Argument>&    args,
-                                                bool                            evaluateOnce) const;                //!< Find function, process args
+        RbFunction*                     findFunction(   const std::string&              name,
+                                                        const std::vector<Argument>&    args,
+                                                        bool                            evaluateOnce) const;                //!< Find function, process args
         
         // Member variables
-        std::multimap<std::string, RbFunction*>     table;                                                          //!< Table of functions
-        FunctionTable*                              parentTable;                                                    //!< Enclosing table
+        std::multimap<std::string, RbFunction*>     table;                                                                  //!< Table of functions
+        FunctionTable*                              parentTable;                                                            //!< Enclosing table
 };
 
 #endif

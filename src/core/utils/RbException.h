@@ -27,7 +27,7 @@ class RbException : public RbInternal {
 
     public:
         // Exception types
-        enum                exceptionT { DEFAULT, QUIT };                           //!< Exception types
+        enum                exceptionT { DEFAULT, QUIT, MISSING_VARIABLE };         //!< Exception types
         static std::string  exceptionName[];                                        //!< Exception type names
 
 	                        RbException(void);                                      //!< Default constructor

@@ -88,7 +88,7 @@ VariableSlot& VariableFrame::operator[]( const std::string& name ) {
         if ( parentFrame != NULL )
             return parentFrame->operator []( name );
         else
-            throw RbException( "Variable " + name + " does not exist" );
+            throw RbException( RbException::MISSING_VARIABLE, "Variable " + name + " does not exist" );
     }
 
     PRINTF( "Retrieving %s %s from frame\n", it->second->getTypeSpec().toString().c_str(), name.c_str() );
@@ -105,7 +105,7 @@ const VariableSlot& VariableFrame::operator[]( const std::string& name ) const {
         if ( parentFrame != NULL )
             return parentFrame->operator []( name );
         else
-            throw RbException( "Variable " + name + " does not exist" );
+            throw RbException( RbException::MISSING_VARIABLE, "Variable " + name + " does not exist" );
     }
 
     PRINTF( "Retrieving %s %s from frame\n", it->second->getTypeSpec().toString().c_str(), name.c_str() );
@@ -170,7 +170,7 @@ void VariableFrame::eraseVariable( const std::string& name ) {
 
     std::map<std::string, VariableSlot*>::iterator it = variableTable.find( name );
     if ( it == variableTable.end() )
-        throw RbException( "Variable " + name + " does not exist in frame" );
+        throw RbException( RbException::MISSING_VARIABLE, "Variable " + name + " does not exist in frame" );
 
     PRINTF( "Erasing %s %s from frame\n", name.c_str(), it->second->getTypeSpec().toString().c_str() );
 
@@ -202,7 +202,7 @@ const std::string& VariableFrame::getSlotName( const VariableSlot* theSlot ) con
             return (*i).first;
     }
 
-    throw RbException( "Specified variable slot does not exist in frame" );
+    throw RbException( "No name available: Specified variable slot does not exist in frame" );
 }
 
 

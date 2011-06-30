@@ -172,7 +172,7 @@ DAGNode* SyntaxFunctionCall::getValue( VariableFrame* frame ) const {
 void SyntaxFunctionCall::print(std::ostream& o) const {
 
     o << "[" << this << "] SyntaxFunctionCall:" << std::endl;
-    o << "functionName  = " << functionName << std::endl;
+    o << "functionName  = " << *functionName << std::endl;
     o << "variable      = ";
     if (variable == NULL)
         o << "NULL" << std::endl;

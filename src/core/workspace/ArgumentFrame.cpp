@@ -214,7 +214,7 @@ const std::string& ArgumentFrame::getSlotName(const VariableSlot* slot) const {
     }
 
     if ( it == arguments.end() )
-        throw RbException( "Slot does not exist in the argument frame" );
+        throw RbException( "No name available: Slot does not exist in the argument frame" );
 
     return (*it).first;
 }

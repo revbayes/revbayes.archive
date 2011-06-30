@@ -61,6 +61,7 @@ class SyntaxVariable : public SyntaxElement {
         std::string                 getFullName(VariableFrame* frame) const;                                                //!< Get full name, with indices and base obj
         DAGNode*                    getLValue(VariableFrame* frame, VariableSlot*& theSlot, VectorIndex& index) const;      //!< Get semantic value
         DAGNode*                    getValue(VariableFrame* frame) const;                                                   //!< Get semantic value
+        bool                        isMemberVariable(void) const { return baseVariable != NULL; }                           //!< Is the variable a member variable?
 
     protected:
         RbString*                   identifier;                                                                             //!< The name of the variable, if identified by name

@@ -64,15 +64,32 @@ int Parser::execute(SyntaxElement *root) const {
     }
     catch(RbException& rbException) {
 
+        std::ostringstream msg;
+
         // Catch a quit request
         if (rbException.getExceptionType() == RbException::QUIT)
             exit(0);
 
+        // Catch a missing variable exception that might be interpreted as a request for
+        // usage help on a function
+        SyntaxVariable* theVariable = dynamic_cast<SyntaxVariable*>( root );
+        if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL && !theVariable->isMemberVariable() ) {
+
+            RbString* fxnName = theVariable->getIdentifier()->clone();
+            std::vector<const RbFunction*> functions = Workspace::userWorkspace().getFunctionTable()->findFunctions( *fxnName );
+            if ( functions.size() != 0 ) {
+                RBOUT( "Usage:" );
+                for ( std::vector<const RbFunction*>::iterator i=functions.begin(); i!=functions.end(); i++ ) {
+                    RBOUT( (*i)->briefInfo() );
+                }
+            }
+            return 0;
+        }
+
         // All other exceptions
         PRINTF("Caught an exception\n");
-        std::ostringstream msg;
+        msg << "Error: ";
         rbException.printValue(msg);
-        msg << std::endl;
         RBOUT(msg.str());
 
         // Return signal indicating problem
@@ -143,17 +160,27 @@ int Parser::help(RbString *symbol) const {
     std::cerr << std::endl;
 #	endif
 
-    // Get some help when we have some help to get
+    // Get some help
     Help& userHelp = Help::getHelp();
-    if (userHelp.isUserHelpAvailable() == false)
-        RBOUT("User help is unavailable");
-    else if ( userHelp.isHelpAvailableForQuery(std::string(*symbol)) == false )
-        RBOUT("Help unavailable for \"" + std::string(*symbol) + "\"");
-    else 
+    if ( userHelp.isUserHelpAvailable() == true && userHelp.isHelpAvailableForQuery( std::string( *symbol ) ) == true )
         {
         std::string hStr = userHelp.formatHelpString(std::string(*symbol), 100);
         UserInterface::userInterface().output(hStr, false);
         }
+    else {
+        if (userHelp.isUserHelpAvailable() == false)
+            RBOUT("User help is unavailable");
+        else if ( userHelp.isHelpAvailableForQuery(std::string(*symbol)) == false )
+            RBOUT("Help unavailable for \"" + std::string(*symbol) + "\"");
+
+        std::vector<const RbFunction*> functions = Workspace::userWorkspace().getFunctionTable()->findFunctions( *symbol );
+        if ( functions.size() != 0 ) {
+            RBOUT( "Usage:" );
+            for ( std::vector<const RbFunction*>::iterator i=functions.begin(); i!=functions.end(); i++ ) {
+                RBOUT( (*i)->briefInfo() );
+            }
+        }
+    }
 
     // Delete the symbol
     delete symbol;

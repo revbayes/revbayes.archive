@@ -25,6 +25,7 @@
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "RbOptions.h"
 #include "SyntaxFunctionCall.h"
 #include "VariableFrame.h"
 #include "VariableSlot.h"
@@ -229,6 +230,7 @@ DAGNode* SyntaxVariable::getDAGNodeExpr( VariableFrame* frame ) const {
             if ( theVar->numRefs() == 0 )
                 delete theVar;
 
+            PRINTF( "Original error: %s\n", theException.getMessage().c_str() );
             throw RbException( getFullName( frame ) + " does not exist" );
         }
 
@@ -456,6 +458,7 @@ DAGNode* SyntaxVariable::getValue(VariableFrame* frame) const {
         if ( theVar->numRefs() == 0 )
             delete theVar;
         
+        PRINTF( "Original error: %s\n", theException.getMessage().c_str() );
         throw RbException( getFullName( frame ) + " does not exist" );
     }
 
