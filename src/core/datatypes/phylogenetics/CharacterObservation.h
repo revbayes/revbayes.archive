@@ -26,15 +26,15 @@ class CharacterObservation : public RbObject {
 
     public:
         // Basic utility functions you should not have to override
-        virtual void                    printValue(std::ostream& o) const = 0;    //!< Print value (for user)
+        virtual void                    printValue(std::ostream& o) const = 0;                //!< Print value (for user)
 
         // Basic utility functions you have to override
-        virtual CharacterObservation*   clone(void) const = 0;                    //!< Clone object
-        virtual const VectorString&     getClass(void) const;                     //!< Get class vector
-        virtual std::string             richInfo(void) const = 0;                 //!< Complete info about object
+        virtual CharacterObservation*   clone(void) const = 0;                                //!< Clone object
+        virtual const VectorString&     getClass(void) const;                                 //!< Get class vector
+        virtual std::string             richInfo(void) const = 0;                             //!< Complete info about object
 
     protected:
-                                        CharacterObservation(void);               //!< Default constructor
+                                        CharacterObservation(void);                           //!< Default constructor
 };
 
 #endif

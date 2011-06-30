@@ -19,9 +19,9 @@
 #define Func_v_H
 
 #include "RbFunction.h"
-
 #include <map>
 #include <string>
+#include <typeinfo>
 
 class DAGNode;
 class VectorString;
@@ -63,7 +63,7 @@ Func_v<valType, retType>* Func_v<valType, retType>::clone( void ) const {
 template <typename valType, typename retType>
 DAGNode* Func_v<valType, retType>::execute( void ) {
 
-    retType*    tempVec = new retType();
+    retType* tempVec = new retType();
     for ( size_t i = 0; i < args.size(); i++ )
         tempVec->push_back( static_cast<const valType*>( args[i].getValue() )->clone() );
 

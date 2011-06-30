@@ -49,7 +49,7 @@ std::string StringUtilities::getFileContentsAsString(std::string& s) {
 
 
 /** Find the last component of a file path */
-std::string StringUtilities::getLastPathComponent(std::string& s) {
+std::string StringUtilities::getLastPathComponent(const std::string& s) {
 
     std::vector<std::string> sVec;
     stringSplit(s, "/", sVec);

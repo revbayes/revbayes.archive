@@ -34,16 +34,16 @@ class Boolean;
 class Natural : public Integer {
 
     public:
-                            Natural(void);                                                  //!< Default constructor (value is 0)
-                            Natural(unsigned int x);                                        //!< Constructor from unsigned int
-                            Natural(int x);                                                 //!< Constructor from int
-                            Natural(bool x);                                                //!< Constructor from bool
-                            Natural(const Integer& x);                                      //!< Constructor from Integer
-                            Natural(const Boolean& x);                                      //!< Constructor from Bool
+                            Natural(void);                                                          //!< Default constructor (value is 0)
+                            Natural(unsigned int x);                                                //!< Constructor from unsigned int
+                            Natural(int x);                                                         //!< Constructor from int
+                            Natural(bool x);                                                        //!< Constructor from bool
+                            Natural(const Integer& x);                                              //!< Constructor from Integer
+                            Natural(const Boolean& x);                                              //!< Constructor from Bool
 
         // Overloaded operators
-                            operator int(void) const { return value; }                      //!< Type conversion to int
-                            operator unsigned int(void) const { return value; }             //!< Type conversion to unsigned int
+                            operator int(void) const { return value; }                              //!< Type conversion to int
+                            operator unsigned int(void) const { return value; }                     //!< Type conversion to unsigned int
 
         // Basic utility functions
         Natural*            clone(void) const;                                                      //!< Clone object
@@ -54,10 +54,10 @@ class Natural : public Integer {
         std::string         richInfo(void) const;                                                   //!< Complete info about object
 
         // Getters and setters
-        unsigned int        getUnsignedValue(void) const { return value; }                  //!< Get value (unsigned int)
-        int                 getValue(void) const { return value; }                          //!< Get value (int)
-        void                setValue(int x);                                                //!< Set value from int (after checking)
-        void                setValue(unsigned int x);                                       //!< Set value from unsigned int
+        unsigned int        getUnsignedValue(void) const { return value; }                          //!< Get value (unsigned int)
+        int                 getValue(void) const { return value; }                                  //!< Get value (int)
+        void                setValue(int x);                                                        //!< Set value from int (after checking)
+        void                setValue(unsigned int x);                                               //!< Set value from unsigned int
 };
 
 #endif

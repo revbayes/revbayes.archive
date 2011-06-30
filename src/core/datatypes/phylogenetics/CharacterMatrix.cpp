@@ -18,7 +18,9 @@
  */
 
 #include "CharacterMatrix.h"
+#include "CharacterObservation.h"
 #include "MemberFunction.h"
+#include "MemberNode.h"
 #include "MoveSchedule.h"
 #include "Natural.h"
 #include "RbException.h"
@@ -29,6 +31,8 @@
 #include "ValueRule.h"
 #include "VariableNode.h"
 #include "VectorCharacterObservations.h"
+#include "VectorIndex.h"
+#include "VectorNatural.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -110,8 +114,77 @@ DAGNode* CharacterMatrix::executeOperation(const std::string& name, ArgumentFram
         }
     else if (name == "chartype")
         {
-        
+        std::string ct = dataType;
+        return ( new RbString(ct) )->wrapIntoVariable();
         }
+    else if (name == "nexcludedtaxa")
+        {
+        int n = (int)deletedTaxa.size();
+        return ( new Natural(n) )->wrapIntoVariable();
+        }
+    else if (name == "nexcludedchars")
+        {
+        int n = (int)deletedCharacters.size();
+        return ( new Natural(n) )->wrapIntoVariable();
+        }
+    else if (name == "nincludedtaxa")
+        {
+        int n = (int)(getNumTaxa() - deletedTaxa.size());
+        return ( new Natural(n) )->wrapIntoVariable();
+        }
+    else if (name == "nincludedchars")
+        {
+        int n = (int)(getNumCharacters() - deletedCharacters.size());
+        return ( new Natural(n) )->wrapIntoVariable();
+        }
+    else if (name == "excludedtaxa")
+        {
+        std::vector<std::string> et;
+        for (std::set<size_t>::iterator it = deletedTaxa.begin(); it != deletedTaxa.end(); it++)
+            {
+            std::string tn = getTaxonWithIndex(*it);
+            et.push_back( tn );
+            }
+        return ( new VectorString(et) )->wrapIntoVariable();
+        }
+    else if (name == "excludedchars")
+        {
+        std::vector<int> ec;
+        for (std::set<size_t>::iterator it = deletedCharacters.begin(); it != deletedCharacters.end(); it++)
+            ec.push_back( (int)(*it) );
+        return ( new VectorNatural(ec) )->wrapIntoVariable();
+        }
+    else if (name == "includedtaxa")
+        {
+        std::vector<std::string> it;
+        for (size_t i=0; i<getNumTaxa(); i++)
+            {
+            if ( isTaxonExcluded(i) == false )
+                it.push_back( getTaxonWithIndex(i) );
+            }
+        return ( new VectorString(it) )->wrapIntoVariable();
+        }
+    else if (name == "includedchars")
+        {
+        std::vector<int> ic;
+        for (size_t i=0; i<getNumCharacters(); i++)
+            {
+            if ( isCharacterExcluded(i) == false )
+                ic.push_back( (int)(i+1) );
+            }
+        return ( new VectorNatural(ic) )->wrapIntoVariable();
+        }
+    else if (name == "nconstantpatterns")
+        {
+        int n = (int)numConstantPatterns();
+        return ( new Natural(n) )->wrapIntoVariable();
+        }
+    else if (name == "ncharswithambiguity")
+        {
+        int n = 0;
+        return ( new Natural(n) )->wrapIntoVariable();
+        }
+
     return MemberObject::executeOperation( name, args );
 }
 
@@ -146,18 +219,48 @@ const MethodTable& CharacterMatrix::getMethods(void) const {
     static ArgumentRules ncharArgRules;
     static ArgumentRules ntaxaArgRules;
     static ArgumentRules chartypeArgRules;    
+    static ArgumentRules nexcludedtaxaArgRules;    
+    static ArgumentRules nexcludedcharsArgRules;    
+    static ArgumentRules nincludedtaxaArgRules;    
+    static ArgumentRules nincludedcharsArgRules;    
+    static ArgumentRules excludedtaxaArgRules;    
+    static ArgumentRules excludedcharsArgRules;    
+    static ArgumentRules includedtaxaArgRules;    
+    static ArgumentRules includedcharsArgRules;    
+    static ArgumentRules nconstantpatternsArgRules;    
+    static ArgumentRules ncharswithambiguityArgRules;    
     static bool          methodsSet = false;
 
-    if (!methodsSet) 
+    if ( methodsSet == false ) 
         {
         // this must be here so the parser can distinguish between different instances of a character matrix
-        ncharArgRules.push_back(    new ReferenceRule( "", MemberObject_name ) );
-        ntaxaArgRules.push_back(    new ReferenceRule( "", MemberObject_name ) );
-        chartypeArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
+        ncharArgRules.push_back(               new ReferenceRule( "", MemberObject_name ) );
+        ntaxaArgRules.push_back(               new ReferenceRule( "", MemberObject_name ) );
+        chartypeArgRules.push_back(            new ReferenceRule( "", MemberObject_name ) );
+        nexcludedtaxaArgRules.push_back(       new ReferenceRule( "", MemberObject_name ) );
+        nexcludedcharsArgRules.push_back(      new ReferenceRule( "", MemberObject_name ) );
+        nincludedtaxaArgRules.push_back(       new ReferenceRule( "", MemberObject_name ) );
+        nincludedcharsArgRules.push_back(      new ReferenceRule( "", MemberObject_name ) );
+        excludedtaxaArgRules.push_back(        new ReferenceRule( "", MemberObject_name ) );
+        excludedcharsArgRules.push_back(       new ReferenceRule( "", MemberObject_name ) );
+        includedtaxaArgRules.push_back(        new ReferenceRule( "", MemberObject_name ) );
+        includedcharsArgRules.push_back(       new ReferenceRule( "", MemberObject_name ) );
+        nconstantpatternsArgRules.push_back(   new ReferenceRule( "", MemberObject_name ) );
+        ncharswithambiguityArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
         
-        methods.addFunction("nchar",    new MemberFunction(Natural_name,  ncharArgRules));
-        methods.addFunction("ntaxa",    new MemberFunction(Natural_name,  ntaxaArgRules));
-        methods.addFunction("chartype", new MemberFunction(RbString_name, chartypeArgRules));
+        methods.addFunction("nchar",               new MemberFunction(Natural_name,       ncharArgRules));
+        methods.addFunction("ntaxa",               new MemberFunction(Natural_name,       ntaxaArgRules));
+        methods.addFunction("chartype",            new MemberFunction(RbString_name,      chartypeArgRules));
+        methods.addFunction("nexcludedtaxa",       new MemberFunction(Natural_name,       nexcludedtaxaArgRules));
+        methods.addFunction("nexcludedchars",      new MemberFunction(Natural_name,       nexcludedcharsArgRules));
+        methods.addFunction("nincludedtaxa",       new MemberFunction(Natural_name,       nincludedtaxaArgRules));
+        methods.addFunction("nincludedchars",      new MemberFunction(Natural_name,       nincludedcharsArgRules));
+        methods.addFunction("excludedtaxa",        new MemberFunction(VectorNatural_name, excludedtaxaArgRules));
+        methods.addFunction("excludedchars",       new MemberFunction(VectorNatural_name, excludedcharsArgRules));
+        methods.addFunction("includedtaxa",        new MemberFunction(VectorNatural_name, includedtaxaArgRules));
+        methods.addFunction("includedchars",       new MemberFunction(VectorNatural_name, includedcharsArgRules));
+        methods.addFunction("nconstantpatterns",   new MemberFunction(Natural_name,       nconstantpatternsArgRules));
+        methods.addFunction("ncharswithambiguity", new MemberFunction(Natural_name,       ncharswithambiguityArgRules));
         
         // necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
@@ -189,6 +292,13 @@ size_t CharacterMatrix::indexOfTaxonWithName(std::string& s) {
 }
 
 
+/** Is this character pattern constant? */
+bool CharacterMatrix::isCharacterConstant(size_t idx) {
+
+    return false;
+}
+
+
 /** Is the character excluded */
 bool CharacterMatrix::isCharacterExcluded(size_t i) {
 
@@ -217,6 +327,20 @@ bool CharacterMatrix::isTaxonExcluded(std::string& s) {
 	if ( it != deletedTaxa.end() )
 		return true;
     return false;
+}
+
+
+/** Calculates and returns the number of constant characters */
+size_t CharacterMatrix::numConstantPatterns(void) {
+
+    size_t nc = 0;
+    for (size_t i=0; i<getNumCharacters(); i++)
+        {
+        if ( isCharacterExcluded(i) == false && isCharacterConstant(i) == true )
+            nc++;
+        }
+    
+    return nc;
 }
 
 
@@ -282,4 +406,10 @@ void CharacterMatrix::setVariable(const std::string& name, DAGNode* var) {
 }
 
 
+/** Wrap value into a variable */
+DAGNode* CharacterMatrix::wrapIntoVariable( void ) {
+    
+    MemberNode* nde = new MemberNode( this );
+    return static_cast<DAGNode*>(nde);
+}
 

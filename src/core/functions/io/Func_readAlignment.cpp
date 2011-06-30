@@ -16,8 +16,10 @@
  */
 
 #include "Boolean.h"
+#include "CharacterMatrix.h"
 #include "ContainerNode.h"
 #include "Func_readAlignment.h"
+#include "List.h"
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
@@ -179,21 +181,18 @@ DAGNode* Func_readAlignment::execute( void ) {
             }
         }
     
-    
-#   if 0    
-    std::vector<RbObject*>* tmp = (std::vector<RbObject*>*) m;
-    
-    // create a value container with all matrices
-    //! @Sebastian: Replaced call to unsafe constructor with call to safe constructor
-    //  We might want to replace this call to the ValueContainer constructor with a call
-    //  to a generic vector class constructor
-    std::vector<size_t> length;
-    length.push_back( tmp->size() );
-    ValueContainer* vc = new ValueContainer( TypeSpec( CharacterMatrix_name, 1 ), length, *tmp );
-    
-    return new ContainerNode( vc );
-#   endif
-    return NULL;
+    // return either a list of character matrices or a single character matrix wrapped up in a DAG node
+    if ( m.size() > 1 )
+        {
+        List* retList = new List;
+        for (std::vector<CharacterMatrix*>::iterator it = m.begin(); it != m.end(); it++)
+            {
+            std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
+            retList->addElement( (*it)->wrapIntoVariable(), eName );
+            }
+        return retList->wrapIntoVariable();
+        }
+    return m[0]->wrapIntoVariable();
 }
 
 

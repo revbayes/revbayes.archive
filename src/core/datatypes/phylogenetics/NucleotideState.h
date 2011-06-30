@@ -27,21 +27,21 @@ class NucleotideState : public CharacterObservationDiscrete {
 
     public:
         // Basic utility functions you should not have to override
-        virtual void                    printValue(std::ostream& o) const = 0;  //!< Print value (for user)
+        virtual void                    printValue(std::ostream& o) const = 0;           //!< Print value (for user)
 
         // Basic utility functions you have to override
-        virtual NucleotideState*        clone(void) const = 0;                  //!< Clone object
-        virtual const VectorString&     getClass(void) const;                   //!< Get class vector
-        virtual std::string             richInfo(void) const = 0;               //!< Complete info about object
+        virtual NucleotideState*        clone(void) const = 0;                           //!< Clone object
+        virtual const VectorString&     getClass(void) const;                            //!< Get class vector
+        virtual std::string             richInfo(void) const = 0;                        //!< Complete info about object
 
         // Discrete character observation functions
-        void                            addState(const char s);                 //!< Add a character state to the set of character states
-        virtual const std::string&      getStateLabels(void) const = 0;         //!< Get valid state labels
-        virtual const char              getState(void) const = 0;               //!< Get the discrete observation
-        void                            setState(const char s);                 //!< Set the discrete observation
+        void                            addState(const char s);                          //!< Add a character state to the set of character states
+        virtual const std::string&      getStateLabels(void) const = 0;                  //!< Get valid state labels
+        virtual const char              getState(void) const = 0;                        //!< Get the discrete observation
+        void                            setState(const char s);                          //!< Set the discrete observation
 
     protected:
-                                        NucleotideState(void);                  //!< Default constructor
+                                        NucleotideState(void);                           //!< Default constructor
 };
 
 #endif

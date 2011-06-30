@@ -27,25 +27,25 @@ class CharacterObservationDiscrete : public CharacterObservation {
 
     public:
         // Basic utility functions you should not have to override
-        virtual void                            printValue(std::ostream& o) const = 0;              //!< Print value (for user)
+        virtual void                            printValue(std::ostream& o) const = 0;                        //!< Print value (for user)
 
         // Basic utility functions you have to override
-        virtual CharacterObservationDiscrete*   clone(void) const = 0;                              //!< Clone object
-        virtual const VectorString&             getClass(void) const;                               //!< Get class vector
-        virtual std::string                     richInfo(void) const = 0;                           //!< Complete info about object
+        virtual CharacterObservationDiscrete*   clone(void) const = 0;                                        //!< Clone object
+        virtual const VectorString&             getClass(void) const;                                         //!< Get class vector
+        virtual std::string                     richInfo(void) const = 0;                                     //!< Complete info about object
 
         // Discrete character observation functions
-        virtual void                            addState(const char s) = 0;                         //!< Add a character state to the set of character states
-        size_t                                  getNumOnStates(void) const;
-        virtual const std::string&              getStateLabels(void) const = 0;                     //!< Get valid state labels
-        virtual const char                      getState(void) const = 0;                           //!< Get the discrete observation
-        void                                    setNumStates(size_t n);                             //!< Set the number of character states
-        virtual void                            setState(const char s) = 0;                         //!< Set the discrete observation
+        virtual void                            addState(const char s) = 0;                                   //!< Add a character state to the set of character states
+        size_t                                  getNumOnStates(void) const;                                   //!< How many states are observed for the character
+        virtual const std::string&              getStateLabels(void) const = 0;                               //!< Get valid state labels
+        virtual const char                      getState(void) const = 0;                                     //!< Get the discrete observation
+        void                                    setNumStates(size_t n);                                       //!< Set the number of character states
+        virtual void                            setState(const char s) = 0;                                   //!< Set the discrete observation
 
     protected:
-                                                CharacterObservationDiscrete(size_t n);             //!< Constructor taking the number of states as input
-        size_t                                  numStates;                                          //!< The number of discrete states
-        std::vector<bool>                       value;                                              //!< The states, in a binary form to represent ambiguity
+                                                CharacterObservationDiscrete(size_t n);                       //!< Constructor taking the number of states as input
+        size_t                                  numStates;                                                    //!< The number of discrete states
+        std::vector<bool>                       value;                                                        //!< The states, in a binary form to represent ambiguity
 };
 
 #endif

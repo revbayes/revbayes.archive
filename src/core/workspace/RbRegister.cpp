@@ -65,6 +65,7 @@
 #include "VectorString.h"
 
 /* MemberObject types without auto-generated constructors(alphabetic order) */
+#include "CharacterMatrix.h"
 #include "List.h"
 #include "Model.h"
 #include "Simplex.h"
@@ -109,7 +110,6 @@
 #include "Func_readAlignment.h"
 #include "Func_quit.h"
 #include "Func_s.h"
-#include "Func_v.h"
 
 /* Math functions */
 #include "Func_exp.h"
@@ -164,9 +164,10 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new VectorString()                 );
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
-        addType( new List()    );
-        addType( new Model()   );
-        addType( new Simplex() );
+        addType( new CharacterMatrix() );
+        addType( new List()            );
+        addType( new Model()           );
+        addType( new Simplex()         );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "mcmc",         new Mcmc()              );
@@ -244,15 +245,15 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_or",       new Func__or<                Real,           Real >()             );
         addFunction( "_or",       new Func__or<             Integer,           Real >()             );
         addFunction( "_or",       new Func__or<                Real,        Integer >()             );
-
+        
         /* Add regular functions (alphabetical order) */
-        addFunction( "clamp",     new Func_clamp()        ); 
-        addFunction( "ls",        new Func_ls()           );
-        addFunction( "model",     new Func_model()        );
-        addFunction( "normalize", new Func_normalize()    );
-        addFunction( "read",      new Func_readAlignment());
-        addFunction( "q",         new Func_quit()         );
-        addFunction( "quit",      new Func_quit()         );
+        addFunction( "clamp",     new Func_clamp()         ); 
+        addFunction( "ls",        new Func_ls()            );
+        addFunction( "model",     new Func_model()         );
+        addFunction( "normalize", new Func_normalize()     );
+        addFunction( "read",      new Func_readAlignment() );
+        addFunction( "q",         new Func_quit()          );
+        addFunction( "quit",      new Func_quit()          );
         
         /* Add math functions (alphabetical order) */ 
         addFunction( "expf",        new Func_exp()   );

@@ -29,15 +29,15 @@ class VectorString;
 class Integer : public RbObject {
 
     public:
-        friend class                VectorInteger;                                                  //!< Give VectorInteger direct access to value
+        friend class                VectorInteger;                                                          //!< Give VectorInteger direct access to value
 
-                                    Integer(void);                                                  //!< Default constructor
-                                    Integer(const unsigned int v);                                  //!< Constructor from unsigned int
-                                    Integer(const int v);                                           //!< Constructor from int
-                                    Integer(const bool v);                                          //!< Constructor from bool
+                                    Integer(void);                                                          //!< Default constructor
+                                    Integer(const unsigned int v);                                          //!< Constructor from unsigned int
+                                    Integer(const int v);                                                   //!< Constructor from int
+                                    Integer(const bool v);                                                  //!< Constructor from bool
 
         // Overloaded operator
-                                    operator int(void) const { return value; }                      //!< Type conversion to int
+                                    operator int(void) const { return value; }                              //!< Type conversion to int
 
         // Basic utility functions
         Integer*                    clone(void) const;                                                      //!< Clone object
@@ -48,13 +48,12 @@ class Integer : public RbObject {
         std::string                 richInfo(void) const;                                                   //!< Complete info about object
 
         // Getters and setters
-        void                        setValue(int x) { value = x; }                                  //!< Set value
-        int                         getValue(void) const { return value; }                          //!< Get value
+        void                        setValue(int x) { value = x; }                                          //!< Set value
+        int                         getValue(void) const { return value; }                                  //!< Get value
 
     protected:
-        int&                        getValueRef(void) { return value; }                             //!< Get value reference for VectorInteger
-
-        int                         value;                                                          //!< Value member
+        int&                        getValueRef(void) { return value; }                                     //!< Get value reference for VectorInteger
+        int                         value;                                                                  //!< Value member
 };
 
 #endif

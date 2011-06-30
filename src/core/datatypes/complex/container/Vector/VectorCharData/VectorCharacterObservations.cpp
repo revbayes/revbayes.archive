@@ -16,6 +16,7 @@
  * $Id$
  */
 
+#include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "VectorCharacterObservations.h"
@@ -33,3 +34,4 @@ const VectorString& VectorCharacterObservations::getClass(void) const {
     static VectorString rbClass = VectorString(VectorCharacterObservations_name) + Vector::getClass();
     return rbClass;
 }
+

@@ -61,11 +61,11 @@ class RbObject {
         void                        print(std::ostream& o) const;                                           //!< Print complete object info
 
    protected:
-		                            RbObject(void) {}                                                   //!< No objects of this class
+		                            RbObject(void) {}                                                       //!< No objects of this class
 };
 
 
         // Global functions using the class
-        std::ostream&               operator<<(std::ostream& o, const RbObject& x);                     //!< Overloaded output operator
+        std::ostream&               operator<<(std::ostream& o, const RbObject& x);                         //!< Overloaded output operator
 
 #endif

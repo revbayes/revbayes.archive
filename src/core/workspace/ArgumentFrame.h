@@ -65,7 +65,7 @@ class ArgumentFrame : public Frame {
         void                        push_back(const std::string& name, VariableSlot* slot);                                 //!< Add argument slot with label
         void                        setArgumentLabel(size_t i, const std::string& name);                                    //!< Set argument name
 
-        std::vector<std::pair<std::string, VariableSlot*> >  arguments;                                                      //!< The arguments
+        std::vector<std::pair<std::string, VariableSlot*> >  arguments;                                                     //!< The arguments
 };
 
 #endif

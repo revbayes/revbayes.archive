@@ -41,9 +41,8 @@ Func_exp* Func_exp::clone( void ) const {
 /** Execute function */
 DAGNode* Func_exp::execute( void ) {
     
-    const Real* a = static_cast<const Real*>( args[0].getValue() );
-    
-    return new ConstantNode( new RealPos( exp(a->getValue()) ) );
+    const Real* x = static_cast<const Real*>( args[0].getValue() );
+    return ( new Real( exp(x->getValue()) ) )->wrapIntoVariable();
 }
 
 
