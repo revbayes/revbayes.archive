@@ -17,7 +17,7 @@
  * @version 1.0
  * @since 2011-04-13, version 1.0
  *
- * $Id: $
+ * $Id$
  */
 #ifndef XmlDocument_H
 #define XmlDocument_H

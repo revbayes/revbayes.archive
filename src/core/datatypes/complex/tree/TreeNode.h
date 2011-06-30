@@ -1,6 +1,24 @@
 /**
  * @file
- * This file contains the declaration of a TreeNode.
+ * This file contains the declaration of a TreeNode. Tree nodes are member objects and therefore can hold
+ * all the variables one might to associate to the tree. The tree nodes are used to create the structure
+ * of a tree. They provide access to their parent and children.
+ *
+ * The usage of tree nodes is to create and give easy access to parts of the dag, namely variables hold
+ * by the nodes which need access to ancestral variables.
+ *
+ * We do not distinguish between branch parameter and node parameters. A branch parameter is simply set as
+ * a node parameter of the descending node.
+ *
+ * A tree node can have a distribution associated with it, for instance in the situation when we condition
+ * on a group of taxa being monophyletic.
+ *
+ *
+ * NOTE: This class might be a temporary solution being the unified solution for all tree nodes. In the future
+ * we might make this class abstract and implement at least the two types of tree nodes: bifurcating tree nodes
+ * which are restricted two have exactly two descendants and multifurcating tree nodes which can have any number
+ * of tree nodes. Perhaps there might be also tipp nodes as a derived class and a root node, which is the 
+ * correct OO design approach but comes with a lot of overhead. A fast conversion method would be needed.
  *
  * @brief Declaration of TreeNode
  *

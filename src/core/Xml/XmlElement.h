@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2011-04-13, version 1.0
  *
- * $Id: $
+ * $Id$
  */
 #ifndef XmlElement_H
 #define XmlElement_H

@@ -20,31 +20,26 @@
 
 /** Default constructor */
 Tree::Tree(void) : MemberObject( getMemberRules() ) {
-    
+    topologyChanged = true;     // make sure we calculate the newick string at the first call
 }
 
 /** constructor */
 Tree::Tree(const MemberRules& memberRules) : MemberObject( memberRules ) {
+    topologyChanged = true;     // make sure we calculate the newick string at the first call
     
 }
 
 /** copy constructor */
 Tree::Tree(const Tree& t) : MemberObject( getMemberRules() ) {
+    topologyChanged = true;     // make sure we calculate the newick string at the first call
     
 }
 
 
-void Tree::allocateNodes(int nNodes) {
-    
-    for (int i=0; i<nNodes; i++)
-        nodes.push_back( new TreeNode );
-}
-
-void Tree::deleteNodes(void) {
-    
-    for (std::vector<TreeNode*>::iterator it=nodes.begin(); it != nodes.end(); it++)
-        delete (*it);
-    nodes.clear();
+/** recompute the newick string */
+void Tree::computeNewickString() {
+    // TODO: implement this!!!
+    newick = "computation of newick string not yet implemented";
 }
 
 const VectorString& Tree::getClass(void) const {
@@ -67,7 +62,7 @@ DAGNode* Tree::executeOperation(const std::string& name, ArgumentFrame& args) {
         ContainerNode* plate = new ContainerNode(TreeNode_name, int(nodes.size()));
         for (size_t i=0; i<nodes.size(); i++) 
         {
-//            plate[i].setValue(nodes[i]);
+//            plate->setValue(nodes[i]);
         }
         return plate;
     }
@@ -81,7 +76,7 @@ DAGNode* Tree::executeOperation(const std::string& name, ArgumentFrame& args) {
     }
     else if (name == "getTips") 
     {
-        ContainerNode* plate = new ContainerNode(TreeNode_name,numberOfTips);
+        ContainerNode* plate = new ContainerNode(TreeNode_name,tips.size());
         int j = 0;
         for (size_t i=0; i<nodes.size(); i++) 
         {

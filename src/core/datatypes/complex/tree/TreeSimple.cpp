@@ -32,12 +32,8 @@ TreeSimple::TreeSimple(TreeNode *r) : Tree( getMemberRules() ) {
 
 TreeSimple::TreeSimple(std::vector<std::string> names) : Tree( getMemberRules() ) {
     
-    // initialize the number of tips in the tree
-    setNumberOfTips( int(names.size()) );
-    
     // allocate the nodes
     int nNodes = 2 * getNumberOfTips() - 2;
-    allocateNodes(nNodes);
     
     // randomly link up the nodes
     buildRandomTree(nNodes, GLOBAL_RNG);
@@ -53,7 +49,6 @@ TreeSimple::TreeSimple(int nTips) : Tree( getMemberRules() ) {
 
 TreeSimple::~TreeSimple(void) {
     
-    deleteNodes();
 }
 
 /* Clone this tree */

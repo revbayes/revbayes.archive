@@ -27,12 +27,8 @@ TreeBinaryUnrooted::TreeBinaryUnrooted(const TreeBinaryUnrooted& ut) : Tree( get
 
 TreeBinaryUnrooted::TreeBinaryUnrooted(std::vector<std::string> names) : Tree( getMemberRules() ) {
     
-    // initialize the number of tips in the tree
-    setNumberOfTips( int(names.size()) );
-    
     // allocate the nodes
     int nNodes = 2 * getNumberOfTips() - 2;
-    allocateNodes(nNodes);
     
     // randomly link up the nodes
     buildRandomTree(nNodes, GLOBAL_RNG);
@@ -48,7 +44,6 @@ TreeBinaryUnrooted::TreeBinaryUnrooted(int nTips) : Tree( getMemberRules() ) {
 
 TreeBinaryUnrooted::~TreeBinaryUnrooted(void) {
     
-    deleteNodes();
 }
 
 /* Clone this tree */

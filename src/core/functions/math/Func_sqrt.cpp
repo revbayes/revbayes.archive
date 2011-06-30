@@ -28,6 +28,8 @@
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"
+#include "XmlDocument.h"
+#include "XmlParser.h"
 
 #include <cassert>
 #include <cmath>
@@ -42,6 +44,29 @@ Func_sqrt* Func_sqrt::clone( void ) const {
 /** Execute function */
 DAGNode* Func_sqrt::execute( void ) {
 
+    
+    XmlParser xParser;
+    /* Open file */
+    std::string filename = "mcmc";
+    std::ifstream inFile( filename.c_str() );
+    
+    if ( !inFile )
+        throw RbException( "Could not open file \"" + filename + "\"" );
+    
+    /* Command-processing loop */
+    std::string xmlFileContent = "";
+    while ( inFile.good() ) {
+        
+        // Read a line
+        std::string line;
+        getline( inFile, line );
+        xmlFileContent = xmlFileContent + line;
+        
+    }
+    XmlDocument* doc = xParser.parse(xmlFileContent);
+    std::cout << "Number of elements:\t" << doc->getNumberOfElements() << std::endl;
+    std::cout << doc->print() << std::endl;
+    
     const Real* x = static_cast<const Real*>( args[0].getValue() );
 
     if ( *x < 0.0 )
