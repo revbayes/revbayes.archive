@@ -20,7 +20,6 @@
 #define Real_H
 
 #include "RbObject.h"
-
 #include <ostream>
 #include <string>
 
@@ -35,33 +34,32 @@ class VectorString;
 class Real : public RbObject {
 
     public:
-        friend class                VectorReal;                                                     //!< Give VecorReal direct access to value
+        friend class                VectorReal;                                                             //!< Give VecorReal direct access to value
 
-                                    Real(void);                                                     //!< Default constructor (0.0)
-                                    Real(const double v);                                           //!< Construct from double
-                                    Real(const int v);                                              //!< Construct from int 
-                                    Real(const unsigned int v);                                     //!< Construct from unsigned int 
-                                    Real(const bool v);                                             //!< Construct from bool
+                                    Real(void);                                                             //!< Default constructor (0.0)
+                                    Real(const double v);                                                   //!< Construct from double
+                                    Real(const int v);                                                      //!< Construct from int 
+                                    Real(const unsigned int v);                                             //!< Construct from unsigned int 
+                                    Real(const bool v);                                                     //!< Construct from bool
 
         // Overloaded operators
-                                    operator double(void) const { return value; }                   //!< Type conversion to double for convenience
+                                    operator double(void) const { return value; }                           //!< Type conversion to double for convenience
         
         // Basic utility functions
-        virtual Real*               clone(void) const;                                              //!< Clone object
-        RbObject*                   convertTo(const std::string& type, size_t dim) const;           //!< Convert to type and dim
-        virtual const VectorString& getClass(void) const;                                           //!< Get class vector
+        virtual Real*               clone(void) const;                                                      //!< Clone object
+        RbObject*                   convertTo(const std::string& type, size_t dim) const;                   //!< Convert to type and dim
+        virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
         bool                        isConvertibleTo(const std::string& type, size_t dim, bool once) const;  //!< Is convertible to type and dim?
-        void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
-        virtual std::string         richInfo(void) const;                                           //!< Complete info about object
+        void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        virtual std::string         richInfo(void) const;                                                   //!< Complete info about object
 
         // Getters and setters
-        virtual void                setValue(double x) { value = x; }                               //!< Set value
-        double                      getValue(void) const { return value; }                          //!< Get value
+        virtual void                setValue(double x) { value = x; }                                       //!< Set value
+        double                      getValue(void) const { return value; }                                  //!< Get value
 
 	protected:
-        double&                     getValueRef(void) { return value; }                             //!< Get value reference
-
-        double                      value;                                                          //!< Value member
+        double&                     getValueRef(void) { return value; }                                     //!< Get value reference
+        double                      value;                                                                  //!< Value member
 };
 
 #endif

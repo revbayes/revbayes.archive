@@ -208,7 +208,7 @@ int RbMath::findPadeQValue(const double& tolerance) {
 }
 
 
-void RbMath::matrixInverse(MatrixReal& a, MatrixReal& aInv) {
+void RbMath::matrixInverse(const MatrixReal& a, MatrixReal& aInv) {
     
     // get dimensions: we assume a square matrix
 	size_t n = a.getNumRows();

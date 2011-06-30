@@ -99,6 +99,7 @@ class MatrixReal : public Matrix {
         MatrixReal                          operator-(const MatrixReal& A, const double& b);                            //!< operator - for matrix - scalar 
         MatrixReal                          operator*(const MatrixReal& A, const double& b);                            //!< operator * for matrix * scalar 
         MatrixReal                          operator/(const MatrixReal& A, const double& b);                            //!< operator / for matrix / scalar 
+        MatrixReal                          operator/(const MatrixReal& A, const MatrixReal& B);                        //!< operator / for matrix / matrix 
         MatrixReal&                         operator+=(MatrixReal& A, const double& b);                                 //!< operator += for scalar 
         MatrixReal&                         operator-=(MatrixReal& A, const double& b);                                 //!< operator -= for scalar 
         MatrixReal&                         operator*=(MatrixReal& A, const double& b);                                 //!< operator *= for scalar 

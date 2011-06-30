@@ -23,6 +23,6 @@ namespace RbMath {
     void                        computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat);               //!< Compute L & U decomposition of a matrix 
     int                         expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue);                          //!< Exponentiate the matrix A using the Pade method 
     int                         findPadeQValue(const double& tolerance);                                          //!< Find the pq values for controlling the tolerance of the Pade method 
-    void                        matrixInverse(MatrixReal& a, MatrixReal& aInv);                                   //!< Compute the inverse of a matrix
+    void                        matrixInverse(const MatrixReal& a, MatrixReal& aInv);                             //!< Compute the inverse of a matrix
     int                         transposeMatrix(const MatrixReal& a, MatrixReal& t);                              //!< Transpose a matrix 
 }

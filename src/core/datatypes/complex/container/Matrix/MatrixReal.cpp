@@ -18,6 +18,7 @@
 #include "ContainerNode.h"
 #include "MatrixReal.h"
 #include "RbException.h"
+#include "RbMathMatrix.h"
 #include "RbNames.h"
 #include "Real.h"
 #include "Simplex.h"
@@ -578,6 +579,41 @@ MatrixReal operator/(const double& a, const MatrixReal& B) {
 		for (size_t j=0; j<A.getNumCols(); j++)
 			A[i][j] = a / B[i][j];
 	return A;
+}
+
+/**
+ * This function performs division of a scalar by
+ * each element of a matrix and returns the
+ * resulting matrix.
+ *
+ * @brief operator/ (scalar first)
+ * @param A Matrix
+ * @param B Matrix
+ * @return A / B (actually, A * B^(-1))
+ */
+MatrixReal operator/(const MatrixReal& A, const MatrixReal& B) {
+
+    if ( A.getNumRows() != A.getNumCols() )
+        throw RbException("Cannot divide non-square matrices");
+	if ( A.getNumCols() != B.getNumCols() )
+        throw RbException("Cannot divide matrices of differing dimension");
+        
+	size_t N = A.getNumCols();
+	MatrixReal invB(N, N, 0.0);
+    RbMath::matrixInverse(B, invB);
+
+	MatrixReal C(N, N, 0.0);
+	for (size_t i=0; i<N; i++) 
+        {
+		for (size_t j=0; j<N; j++) 
+            {
+			double sum = 0.0;
+			for (size_t k=0; k<N; k++)
+				sum += A[i][k] * B [k][j];
+			C[i][j] = sum;
+            }
+        }
+	return C;    
 }
 
 /**
