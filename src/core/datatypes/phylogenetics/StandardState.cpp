@@ -41,11 +41,12 @@ StandardState::StandardState(const std::string ss) : CharacterObservationDiscret
 
 
 /** Equals comparison */
-bool StandardState::operator==(const StandardState& x) const {
+bool StandardState::operator==(const CharacterObservation& x) const {
 
+    const StandardState* derivedX = static_cast<const StandardState*>(&x);
     for (size_t i=0; i<numStates; i++) 
         {
-        if ( value[i] != x.value[i] )
+        if ( value[i] != derivedX->value[i] )
             return false;
         }
     return true;
@@ -53,7 +54,7 @@ bool StandardState::operator==(const StandardState& x) const {
 
 
 /** Not equals comparison */
-bool StandardState::operator!=(const StandardState& x) const {
+bool StandardState::operator!=(const CharacterObservation& x) const {
 
     return !operator==(x);
 }

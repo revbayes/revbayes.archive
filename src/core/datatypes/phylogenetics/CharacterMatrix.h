@@ -56,7 +56,9 @@ class CharacterMatrix : public MemberObject {
     private:
         size_t                                      indexOfTaxonWithName(std::string& s);                              //!< Get the index of the taxon
         bool                                        isCharacterConstant(size_t idx);                                   //!< Is the idx-th character a constant pattern?
+        bool                                        isCharacterMissAmbig(size_t idx);                                  //!< Does the character have missing or ambiguous data?
         size_t                                      numConstantPatterns(void);                                         //!< The number of constant patterns
+        size_t                                      numMissAmbig(void);                                                //!< The number of patterns with missing or ambiguous characters
         std::vector<VectorCharacterObservations*>   taxonObservations;                                                 //!< Vector of character observations
         std::vector<std::string>                    taxonNames;                                                        //!< Vector of taxon names
         std::set<size_t>                            deletedTaxa;                                                       //!< Set of deleted taxa

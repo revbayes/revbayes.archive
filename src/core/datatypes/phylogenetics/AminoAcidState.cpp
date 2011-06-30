@@ -45,11 +45,12 @@ AminoAcidState::AminoAcidState(const char s) : CharacterObservationDiscrete(20) 
 
 
 /** Equals comparison */
-bool AminoAcidState::operator==(const AminoAcidState& x) const {
+bool AminoAcidState::operator==(const CharacterObservation& x) const {
 
+    const AminoAcidState* derivedX = static_cast<const AminoAcidState*>(&x);
     for (size_t i=0; i<numStates; i++) 
         {
-        if ( value[i] != x.value[i] )
+        if ( value[i] != derivedX->value[i] )
             return false;
         }
     return true;
@@ -57,7 +58,7 @@ bool AminoAcidState::operator==(const AminoAcidState& x) const {
 
 
 /** Not equals comparison */
-bool AminoAcidState::operator!=(const AminoAcidState& x) const {
+bool AminoAcidState::operator!=(const CharacterObservation& x) const {
 
     return !operator==(x);
 }

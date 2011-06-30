@@ -52,11 +52,12 @@ RnaState::RnaState(const std::set<char> s) : NucleotideState() {
 
 
 /** Equals comparison */
-bool RnaState::operator==(const RnaState& x) const {
+bool RnaState::operator==(const CharacterObservation& x) const {
 
+    const RnaState* derivedX = static_cast<const RnaState*>(&x);
     for (size_t i=0; i<numStates; i++) 
         {
-        if ( value[i] != x.value[i] )
+        if ( value[i] != derivedX->value[i] )
             return false;
         }
     return true;
@@ -64,7 +65,7 @@ bool RnaState::operator==(const RnaState& x) const {
 
 
 /** Not equals comparison */
-bool RnaState::operator!=(const RnaState& x) const {
+bool RnaState::operator!=(const CharacterObservation& x) const {
 
     return !operator==(x);
 }

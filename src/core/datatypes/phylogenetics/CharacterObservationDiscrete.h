@@ -26,8 +26,8 @@
 class CharacterObservationDiscrete : public CharacterObservation {
 
     public:
-        virtual bool                    operator==(const CharacterObservationDiscrete& x) const;                  //!< Equality
-        virtual bool                    operator!=(const CharacterObservationDiscrete& x) const;                  //!< Inequality
+        virtual bool                            operator==(const CharacterObservation& x) const = 0;          //!< Equality
+        virtual bool                            operator!=(const CharacterObservation& x) const = 0;          //!< Inequality
 
         // Basic utility functions you should not have to override
         virtual void                            printValue(std::ostream& o) const = 0;                        //!< Print value (for user)
@@ -42,6 +42,7 @@ class CharacterObservationDiscrete : public CharacterObservation {
         size_t                                  getNumOnStates(void) const;                                   //!< How many states are observed for the character
         virtual const std::string&              getStateLabels(void) const = 0;                               //!< Get valid state labels
         virtual const char                      getState(void) const = 0;                                     //!< Get the discrete observation
+        virtual bool                            isMissAmbig(void) const;                                      //!< Is the character missing or ambiguous
         void                                    setNumStates(size_t n);                                       //!< Set the number of character states
         virtual void                            setState(const char s) = 0;                                   //!< Set the discrete observation
 

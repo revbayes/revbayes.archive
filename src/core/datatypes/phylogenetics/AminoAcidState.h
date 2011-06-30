@@ -28,8 +28,8 @@ class AminoAcidState : public CharacterObservationDiscrete {
                                         AminoAcidState(void);                               //!< Default constructor
                                         AminoAcidState(const AminoAcidState& s);            //!< Copy constructor
                                         AminoAcidState(const char s);                       //!< Constructor with nucleotide observation
-        bool                            operator==(const AminoAcidState& x) const;          //!< Equality
-        bool                            operator!=(const AminoAcidState& x) const;          //!< Inequality
+        bool                            operator==(const CharacterObservation& x) const;    //!< Equality
+        bool                            operator!=(const CharacterObservation& x) const;    //!< Inequality
 
         // Basic utility functions you should not have to override
         void                            printValue(std::ostream& o) const;                  //!< Print value (for user)

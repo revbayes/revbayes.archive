@@ -182,7 +182,7 @@ DAGNode* CharacterMatrix::executeOperation(const std::string& name, ArgumentFram
         }
     else if (name == "ncharswithambiguity")
         {
-        int n = 0;
+        int n = (int)numMissAmbig();
         return ( new Natural(n) )->wrapIntoVariable();
         }
 
@@ -327,6 +327,22 @@ bool CharacterMatrix::isCharacterExcluded(size_t i) {
 }
 
 
+/** Does the character have missing or ambiguous characters */
+bool CharacterMatrix::isCharacterMissAmbig(size_t idx) {
+
+    for (size_t i=0; i<getNumTaxa(); i++)
+        {
+        if ( isTaxonExcluded(i) == false )
+            {
+            CharacterObservation* c = &(*taxonObservations[i])[idx];
+            if ( c->isMissAmbig() == true )
+                return true;
+            }
+        }
+    return false;
+}
+
+
 /** Is the taxon excluded */
 bool CharacterMatrix::isTaxonExcluded(size_t i) {
 
@@ -357,8 +373,19 @@ size_t CharacterMatrix::numConstantPatterns(void) {
         if ( isCharacterExcluded(i) == false && isCharacterConstant(i) == true )
             nc++;
         }
-    
     return nc;
+}
+
+
+size_t CharacterMatrix::numMissAmbig(void) {
+
+    size_t nma = 0;
+    for (size_t i=0; i<getNumCharacters(); i++)
+        {
+        if ( isCharacterExcluded(i) == false && isCharacterMissAmbig(i) == true )
+            nma++;
+        }
+    return nma;
 }
 
 

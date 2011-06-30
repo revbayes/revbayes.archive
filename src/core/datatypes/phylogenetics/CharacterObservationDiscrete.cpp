@@ -26,20 +26,6 @@ CharacterObservationDiscrete::CharacterObservationDiscrete(size_t n) : Character
 }
 
 
-/** Equals comparison */
-bool CharacterObservationDiscrete::operator==(const CharacterObservationDiscrete& x) const {
-
-    return true;
-}
-
-
-/** Not equals comparison */
-bool CharacterObservationDiscrete::operator!=(const CharacterObservationDiscrete& x) const {
-
-    return !operator==(x);
-}
-
-
 /** Get class vector describing type of object */
 const VectorString& CharacterObservationDiscrete::getClass() const {
 
@@ -48,6 +34,7 @@ const VectorString& CharacterObservationDiscrete::getClass() const {
 }
 
 
+/** Return the number of observed states for this character (any number greater than one indicates ambiguity) */
 size_t CharacterObservationDiscrete::getNumOnStates(void) const {
 
     size_t nOn = 0;
@@ -60,6 +47,16 @@ size_t CharacterObservationDiscrete::getNumOnStates(void) const {
 }
 
 
+/** Is the character missing or ambiguous */
+bool CharacterObservationDiscrete::isMissAmbig(void) const {
+
+    if ( getNumOnStates() > 1 )
+        return true;
+    return false;
+}
+
+
+/** Set the number of states */
 void CharacterObservationDiscrete::setNumStates(size_t n) {
 
     numStates = n;

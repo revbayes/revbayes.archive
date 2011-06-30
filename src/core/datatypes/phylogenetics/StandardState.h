@@ -29,8 +29,8 @@ class StandardState : public CharacterObservationDiscrete {
                                         StandardState(void);                                       //!< Default constructor
                                         StandardState(const StandardState& s);                     //!< Copy constructor
                                         StandardState(const std::string ss);                       //!< Constructor with the set of possible states
-        bool                            operator==(const StandardState& x) const;                  //!< Equality
-        bool                            operator!=(const StandardState& x) const;                  //!< Inequality
+        bool                            operator==(const CharacterObservation& x) const;           //!< Equality
+        bool                            operator!=(const CharacterObservation& x) const;           //!< Inequality
 
         // Basic utility functions you should not have to override
         void                            printValue(std::ostream& o) const;                         //!< Print value (for user)

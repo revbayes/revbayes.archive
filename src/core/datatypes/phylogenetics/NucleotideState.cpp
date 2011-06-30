@@ -25,20 +25,6 @@ NucleotideState::NucleotideState(void) : CharacterObservationDiscrete( 4 ) {
 }
 
 
-/** Equals comparison */
-bool NucleotideState::operator==(const NucleotideState& x) const {
-
-    return true;
-}
-
-
-/** Not equals comparison */
-bool NucleotideState::operator!=(const NucleotideState& x) const {
-
-    return !operator==(x);
-}
-
-
 /** Set the value */
 void NucleotideState::addState(const char s) {
 

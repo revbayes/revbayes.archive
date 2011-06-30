@@ -34,17 +34,4 @@ const VectorString& CharacterObservation::getClass() const {
 }
 
 
-/** Equals comparison */
-bool CharacterObservation::operator==(const CharacterObservation& x) const {
-
-    std::cout << "in == in CharacterObservation" << std::endl;
-    return true;
-}
-
-
-/** Not equals comparison */
-bool CharacterObservation::operator!=(const CharacterObservation& x) const {
-
-    return !operator==(x);
-}
 

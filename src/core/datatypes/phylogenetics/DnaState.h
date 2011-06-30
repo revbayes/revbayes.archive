@@ -30,8 +30,8 @@ class DnaState : public NucleotideState {
                                         DnaState(const DnaState& s);                        //!< Copy constructor
                                         DnaState(const char s);                             //!< Constructor with nucleotide observation
                                         DnaState(const std::set<char> s);                   //!< Constructor from a set of states
-        bool                            operator==(const DnaState& x) const;                //!< Equality
-        bool                            operator!=(const DnaState& x) const;                //!< Inequality
+        bool                            operator==(const CharacterObservation& x) const;    //!< Equality
+        bool                            operator!=(const CharacterObservation& x) const;    //!< Inequality
 
         // Basic utility functions you should not have to override
         void                            printValue(std::ostream& o) const;                  //!< Print value (for user)

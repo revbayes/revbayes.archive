@@ -25,8 +25,8 @@
 class CharacterObservation : public RbObject {
 
     public:
-        virtual bool                    operator==(const CharacterObservation& x) const;                  //!< Equality
-        virtual bool                    operator!=(const CharacterObservation& x) const;                  //!< Inequality
+        virtual bool                    operator==(const CharacterObservation& x) const = 0;  //!< Equality
+        virtual bool                    operator!=(const CharacterObservation& x) const = 0;  //!< Inequality
 
         // Basic utility functions you should not have to override
         virtual void                    printValue(std::ostream& o) const = 0;                //!< Print value (for user)
@@ -35,6 +35,8 @@ class CharacterObservation : public RbObject {
         virtual CharacterObservation*   clone(void) const = 0;                                //!< Clone object
         virtual const VectorString&     getClass(void) const;                                 //!< Get class vector
         virtual std::string             richInfo(void) const = 0;                             //!< Complete info about object
+        
+        virtual bool                    isMissAmbig(void) const = 0;                          //!< Is the character missing or ambiguous
 
     protected:
                                         CharacterObservation(void);                           //!< Default constructor

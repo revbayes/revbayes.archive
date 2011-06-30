@@ -29,8 +29,8 @@ class CharacterObservationContinuous : public CharacterObservation {
                                         CharacterObservationContinuous(const CharacterObservationContinuous& s); //!< Copy constructor
                                         CharacterObservationContinuous(const double x);                          //!< Constructor with mean value
                                         CharacterObservationContinuous(const double x, const double v);          //!< Constructor with mean and variance values
-        bool                            operator==(const CharacterObservationContinuous& x) const;               //!< Equality
-        bool                            operator!=(const CharacterObservationContinuous& x) const;               //!< Inequality
+        bool                            operator==(const CharacterObservation& x) const;                         //!< Equality
+        bool                            operator!=(const CharacterObservation& x) const;                         //!< Inequality
 
         // Basic utility functions you should not have to override
         void                            printValue(std::ostream& o) const;                                       //!< Print value (for user)
@@ -44,6 +44,7 @@ class CharacterObservationContinuous : public CharacterObservation {
         const double                    getValue(void) const { return mean; }                                    //!< Get the continuous observation
         void                            setValue(const double x) { mean = x; }                                   //!< Set the continuous observation
         const double                    getVariance(void) const { return variance; }                             //!< Get the continuous observation
+        bool                            isMissAmbig(void) const { return false; }                                //!< Is the character missing or ambiguous
         void                            setVariance(const double x) { variance = x; }                            //!< Set the continuous observation
 
     private:

@@ -54,16 +54,18 @@ CharacterObservationContinuous::CharacterObservationContinuous(const double x, c
 
 
 /** Equals comparison */
-bool CharacterObservationContinuous::operator==(const CharacterObservationContinuous& x) const {
+bool CharacterObservationContinuous::operator==(const CharacterObservation& x) const {
 
-    if ( fabs(mean - x.mean) < 0.000000001 && fabs(variance - x.variance) < 0.000000001 )
+    const CharacterObservationContinuous* derivedX = static_cast<const CharacterObservationContinuous*>(&x);
+
+    if ( fabs(mean - derivedX->mean) < 0.000000001 && fabs(variance - derivedX->variance) < 0.000000001 )
         return true;
     return false;
 }
 
 
 /** Not equals comparison */
-bool CharacterObservationContinuous::operator!=(const CharacterObservationContinuous& x) const {
+bool CharacterObservationContinuous::operator!=(const CharacterObservation& x) const {
 
     return !operator==(x);
 }
