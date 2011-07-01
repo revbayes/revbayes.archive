@@ -49,9 +49,6 @@ DAGNode* Func_readAlignment::execute( void ) {
 
     // get the information from the arguments for reading the file
     const RbString* fn       = static_cast<const RbString*>( args[0].getValue() );
-    //const RbString* fileFormat   = static_cast<const RbString*>( args[1].getValue() );
-    //const RbString* dataType     = static_cast<const RbString*>( args[2].getValue() );
-    //const Boolean* isInterleaved = static_cast<const Boolean*>( args[3].getValue() );
 
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn->getValue() );
@@ -227,9 +224,6 @@ const ArgumentRules& Func_readAlignment::getArgumentRules( void ) const {
     if (!rulesSet) 
         {
         argumentRules.push_back( new ValueRule( "file", RbString_name ) );
-        //argumentRules.push_back( new ValueRule( "format", RbString_name ) );
-        //argumentRules.push_back( new ValueRule( "type", RbString_name ) );
-        //argumentRules.push_back( new ValueRule( "interleaved", Boolean_name ) );
         rulesSet = true;
         }
             
@@ -260,7 +254,7 @@ std::string Func_readAlignment::intuitDataType(std::string& s) {
     static std::string dnaStates = "acgtmgrsvwyhkdbn-.?";
     static std::string rnaStates = "acgumgrsvwyhkdbn-.?";
     static std::string aaStates  = "arndcqeghilkmfpstwyv-.?";
-    static std::string stdStates = "0123456789n-.?";
+    static std::string stdStates = "0123456789n-.?abcdefghijklmnopqrstuvwxyz()";
     static std::string nucStates = "acgtu";
     
     // and intialize a few variables we'll be needing
@@ -540,14 +534,12 @@ bool Func_readAlignment::isPhylipFile(std::string& fn, std::string& dType, bool&
         else if (lineNum > 0 && wordNum > 0)
             seqStr += word;
             
-        //std::cout << word << " (" << lineNum << " " << wordNum << ")" << std::endl;
         wordNum++;
         ch = fStrm.get();
         if (ch == '\n' || ch == '\r' || ch == EOF)
             {
             lineNum++;
             wordNum = 0;
-            //std::cout << "EOL" << std::endl;
             }
         } 
 

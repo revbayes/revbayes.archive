@@ -35,41 +35,44 @@ class NclReader {
         friend class NxsBlock;
         
     public:
-                                            NclReader(void);                                                                //!< Default constructor
-        virtual                            ~NclReader(void);                                                                //!< Destructor
-        
-        void                                addWarning(std::string s) { warningsSummary.insert(s); }
-        void                                clearWarnings(void) { warningsSummary.clear(); }
-        size_t                              getNumWarnings(void) { return warningsSummary.size(); }
-        std::set<std::string>&              getWarnings(void) { return warningsSummary; }
-        static NclReader&                   getInstance(void);
-        std::vector<CharacterMatrix*>       readMatrices(const std::map<std::string,std::string>& fileMap);
-        std::vector<CharacterMatrix*>       readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
+        void                                addWarning(std::string s) { warningsSummary.insert(s); }                   //!< Add a warning to the warnings vector
+        void                                clearWarnings(void) { warningsSummary.clear(); }                           //!< Clear all of the warnings from the warnings vector
+        size_t                              getNumWarnings(void) { return warningsSummary.size(); }                    //!< Return the number of warnings
+        std::set<std::string>&              getWarnings(void) { return warningsSummary; }                              //!< Get a reference to the warnings vector
+        static NclReader&                   getInstance(void);                                                         //!< Get a reference to this singleton class
+        std::vector<CharacterMatrix*>       readMatrices(const std::map<std::string,std::string>& fileMap);            //!< Read a list of file names contained in a map (with file format info too)
+        std::vector<CharacterMatrix*>       readMatrices(const std::vector<std::string> fn, const std::string 
+                                            fileFormat, const std::string dataType, const bool isInterleaved);         //!< Read a list of file names contained in a vector of strings
         
         // TAH: stuff for reading trees
-        std::vector<Tree*>*                 readTrees(const std::string fn, const std::string fileFormat);
-        void                                clearContent(void) { nexusReader.ClearContent(); }
+        std::vector<Tree*>*                 readTrees(const std::string fn, const std::string fileFormat);             //!< Read trees
+        void                                clearContent(void) { nexusReader.ClearContent(); }                         //!< Clear the content of the NCL object
         
     private:
-        CharacterMatrix*                    createAminoAcidMatrix(NxsCharactersBlock* charblock);
-        CharacterMatrix*                    createContinuousMatrix(NxsCharactersBlock* charblock);
-        CharacterMatrix*                    createDnaMatrix(NxsCharactersBlock* charblock);
-        CharacterMatrix*                    createRnaMatrix(NxsCharactersBlock* charblock);
-        CharacterMatrix*                    createStandardMatrix(NxsCharactersBlock* charblock);
-        bool                                fileExists(const char *fn) const;
+                                            NclReader(void) { }                                                        //!< Default constructor
+                                            NclReader(const NclReader& r) { }                                          //!< Copy constructor
+        virtual                            ~NclReader(void) { }                                                        //!< Destructor
+        
+        CharacterMatrix*                    createAminoAcidMatrix(NxsCharactersBlock* charblock);                      //!< Create an object to hold amino acid data
+        CharacterMatrix*                    createContinuousMatrix(NxsCharactersBlock* charblock);                     //!< Create an object to hold continuous data
+        CharacterMatrix*                    createDnaMatrix(NxsCharactersBlock* charblock);                            //!< Create an object to hold DNA data
+        CharacterMatrix*                    createRnaMatrix(NxsCharactersBlock* charblock);                            //!< Create an object to hold RNA data
+        CharacterMatrix*                    createStandardMatrix(NxsCharactersBlock* charblock);                       //!< Create an object to hold standard data
+        bool                                fileExists(const char *fn) const;                                          //!< Returns whether a file exists
         
         // methods for reading sequence alignments
-        std::vector<CharacterMatrix*>       convertFromNcl(std::vector<std::string>& fnv);
-        std::vector<CharacterMatrix*>       readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved);
+        std::vector<CharacterMatrix*>       convertFromNcl(std::vector<std::string>& fnv);                             //!< Reads the blocks stored by NCL and converts them to RevBayes character matrices 
+        std::vector<CharacterMatrix*>       readMatrices(const char* fileName, const std::string fileFormat, 
+                                            const std::string dataType, const bool isInterleaved);                     //!< Reads a single file using NCL
         
         // methods for reading trees
-        void                                constructTreefromNclRecursively(TreeNode *tn, const NxsSimpleNode* tnNcl);
-        std::vector<Tree*>*                 readTrees(const char* fileName, const std::string fileFormat);
-        std::vector<Tree*>*                 convertTreesFromNcl(void);
-        Tree*                               translateNclSimpleTreeToTree(NxsSimpleTree &nTree);
+        void                                constructTreefromNclRecursively(TreeNode *tn, const NxsSimpleNode* tnNcl); //!< Constructs a tree from NCL
+        std::vector<Tree*>*                 readTrees(const char* fileName, const std::string fileFormat);             //!< Reads trees contained in a file
+        std::vector<Tree*>*                 convertTreesFromNcl(void);                                                 //!< Converts trees stored by NCL into RevBayes formatted trees
+        Tree*                               translateNclSimpleTreeToTree(NxsSimpleTree &nTree);                        //!< Translate a single NCL tree into a RevBayes tree
         
-        MultiFormatReader                   nexusReader;
-        std::set<std::string>               warningsSummary;
+        MultiFormatReader                   nexusReader;                                                               //!< The NCL object that reads the files
+        std::set<std::string>               warningsSummary;                                                           //!< A vector that contains the warnings that acumulate
 };
 
 #endif

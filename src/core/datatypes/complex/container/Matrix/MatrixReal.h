@@ -83,7 +83,6 @@ class MatrixReal : public Matrix {
         std::vector<VectorReal>             matrix;                                                                     //!< We use vector of vectors instead of container internally @Fredrik: The class hierarchy is not very consistent if this class does not use the member values from the parent class. It also might result into the overhead of additional memory allocations and hence slower performance. (Sebastian)
 };
 
-
         // operators defined outside of the class
         MatrixReal                          operator+(const MatrixReal& A, const MatrixReal& B);                        //!< operator + 
         MatrixReal                          operator-(const MatrixReal& A, const MatrixReal& B);                        //!< operator - 

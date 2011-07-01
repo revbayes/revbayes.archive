@@ -1,3 +1,20 @@
+/**
+ * @file
+ * This file contains the declaration of NclReader, which is
+ * a singleton class that interfaces with NCL to read data
+ * in Fasta, Nexus, and Phylip formats.
+ *
+ * @brief Declaration of NclReader
+ *
+ * (c) Copyright 2009-
+ * @date Last modified: $Date$
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-11-20, version 1.0
+ *
+ * $Id:$
+ */
 
 #include "AminoAcidState.h"
 #include "CharacterMatrix.h"
@@ -20,15 +37,7 @@
 
 
 
-NclReader::NclReader(void) {
-    
-}
-
-NclReader::~NclReader(void) {
-    
-}
-
-
+/** Constructs a tree from NCL */
 void NclReader::constructTreefromNclRecursively(TreeNode* tn, const NxsSimpleNode* tnNcl) {
 
     // get the children
@@ -52,6 +61,8 @@ void NclReader::constructTreefromNclRecursively(TreeNode* tn, const NxsSimpleNod
         }
 }
 
+
+/** Reads the blocks stored by NCL and converts them to RevBayes character matrices */
 std::vector<CharacterMatrix*> NclReader::convertFromNcl(std::vector<std::string>& fnv) {
     
 	std::vector<CharacterMatrix*> cmv;
@@ -101,6 +112,8 @@ std::vector<CharacterMatrix*> NclReader::convertFromNcl(std::vector<std::string>
 	return cmv;
 }
 
+
+/** Create an object to hold amino acid data */
 CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
  
     // check that the character block is of the correct type
@@ -164,6 +177,8 @@ CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
     return cMat;
 }
 
+
+/** Create an object to hold continuous data */
 CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock) {
  
     // check that the character block is of the correct type
@@ -219,6 +234,8 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
     return cMat;
 }
 
+
+/** Create an object to hold DNA data */
 CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 
     // check that the character block is of the correct type
@@ -285,6 +302,7 @@ CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 }
 
 
+/** Create an object to hold RNA data */
 CharacterMatrix* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
 
     // check that the character block is of the correct type
@@ -350,6 +368,7 @@ CharacterMatrix* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
 }
 
 
+/** Create an object to hold standard data */
 CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) {
  
     // check that the character block is of the correct type
@@ -421,6 +440,8 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
     return cMat;
 }
 
+
+/** Returns whether a file exists */
 bool NclReader::fileExists(const char* fn) const {
     
 	bool exists = false;
@@ -433,12 +454,16 @@ bool NclReader::fileExists(const char* fn) const {
 	return exists;
 }
 
+
+/** Get a reference to this singleton object */
 NclReader& NclReader::getInstance(void) {
     
 	static NclReader rb;
 	return rb;
 }
 
+
+/** Read a list of file names contained in a map (with file format info too) */
 std::vector<CharacterMatrix*> NclReader::readMatrices(const std::map<std::string,std::string>& fileMap) {
 
     // allocate a vector of matrices
@@ -482,6 +507,8 @@ std::vector<CharacterMatrix*> NclReader::readMatrices(const std::map<std::string
     return cmv;
 }
 
+
+/** Read a list of file names contained in a vector of strings */
 std::vector<CharacterMatrix*> NclReader::readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
 	// instantiate a vector of matrices
@@ -512,6 +539,8 @@ std::vector<CharacterMatrix*> NclReader::readMatrices(const std::vector<std::str
     return cmv;
 }
 
+
+/** Reads a single file using NCL */
 std::vector<CharacterMatrix*> NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
 	// check that the file exists
@@ -581,6 +610,8 @@ std::vector<CharacterMatrix*> NclReader::readMatrices(const char* fileName, cons
 	return cvm;
 }
 
+
+/** Read trees */
 std::vector<Tree*>* NclReader::readTrees(const std::string fn, const std::string fileFormat) {
 	
 	// check that the file exist
@@ -610,6 +641,8 @@ std::vector<Tree*>* NclReader::readTrees(const std::string fn, const std::string
     return trees;
 }
 
+
+/** Read trees */
 std::vector<Tree*>* NclReader::readTrees(const char* fileName, const std::string fileFormat) {
 	
 	// check that the file exists
@@ -646,6 +679,8 @@ std::vector<Tree*>* NclReader::readTrees(const char* fileName, const std::string
 	return cvm;
 }
 
+
+/** Converts trees stored by NCL into RevBayes formatted trees */
 std::vector<Tree*>* NclReader::convertTreesFromNcl(void) {
 	
 	const unsigned nTaxaBlocks = nexusReader.GetNumTaxaBlocks();
@@ -677,6 +712,7 @@ std::vector<Tree*>* NclReader::convertTreesFromNcl(void) {
 }
 
 
+/** Translate a single NCL tree into a RevBayes tree */
 Tree* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree) {
     
     // get the root from the ncl tree

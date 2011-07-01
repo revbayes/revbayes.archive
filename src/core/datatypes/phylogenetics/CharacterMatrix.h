@@ -1,3 +1,18 @@
+/**
+ * @file
+ * This file contains the declaration of CharacterMatrix, which is
+ * class that holds a character matrix in RevBayes.
+ *
+ * @brief Declaration of CharacterMatrix
+ *
+ * (c) Copyright 2009-
+ * @date Last modified: $Date$
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ *
+ * $Id:$
+ */
+
 #ifndef CharacterMatrix_H
 #define CharacterMatrix_H
 

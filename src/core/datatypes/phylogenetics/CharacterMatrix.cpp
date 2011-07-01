@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of Mcmc, which is used to hold
- * information about and run an mcmc analysis.
+ * This file contains the declaration of CharacterMatrix, which is
+ * class that holds a character matrix in RevBayes.
  *
- * @brief Implementation of Mcmc
+ * @brief Implementation of CharacterMatrix
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2009-12-29 23:23:09 +0100 (Tis, 29 Dec 2009) $
@@ -377,6 +377,7 @@ size_t CharacterMatrix::numConstantPatterns(void) {
 }
 
 
+/** Returns the number of characters with missing or ambiguous data */
 size_t CharacterMatrix::numMissAmbig(void) {
 
     size_t nma = 0;
