@@ -33,14 +33,14 @@
 
 
 /** Clone object */
-Func_gtr* Func_gtr::clone( void ) const {
+Func_gtr* Func_gtr::clone(void) const {
     
     return new Func_gtr( *this );
 }
 
 
 /** Execute function */
-DAGNode* Func_gtr::execute( void ) {
+DAGNode* Func_gtr::execute(void) {
 
     // get the information from the arguments for reading the file
     //const Simplex* r = static_cast<const Simplex*>( args[0].getValue() );
@@ -95,18 +95,29 @@ DAGNode* Func_gtr::execute( void ) {
     // set the diagonal elements of the rate matrix
     m->setDiagonal();
     
-    // set the stationary frequencies for the rate matrix
-    m->calculateStationaryFrequencies();
+    // Set the stationary frequencies for the rate matrix. Note that we
+    // can do this in two ways. First, we can call calculateStationaryFrequencies
+    // on the RateMatrix object. This function call calculates the stationary
+    // frequencies using only knowledge of the rate matrix. Second, we can set
+    // the stationary frequencies directly. This is what we do here, because the
+    // stationary frequencies have been build directly into the rate matrix.
+    std::vector<double> tempFreqs = f.getValue();
+    m->setStationaryFrequencies(tempFreqs);
+        
+    // rescale the rate matrix such that the average rate is 1.0
+    m->rescaleToAverageRate(1.0);
     
-    std::cout << m->richInfo() << std::endl;
-
-    // wrap up the rate matrix object and send it on its way
+    // we know that the GTR model is time reversible (just look at the name of the
+    // model!), so we might as well set its reversibility flag directly
+    m->setIsTimeReversible(true);
+    
+    // wrap up the rate matrix object and send it on its way to parser-ville
     return m->wrapIntoVariable();
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_gtr::getArgumentRules( void ) const {
+const ArgumentRules& Func_gtr::getArgumentRules(void) const {
     
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
@@ -123,7 +134,7 @@ const ArgumentRules& Func_gtr::getArgumentRules( void ) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Func_gtr::getClass( void ) const {
+const VectorString& Func_gtr::getClass(void) const {
     
     static VectorString rbClass = VectorString( Func_gtr_name ) + RbFunction::getClass();
     return rbClass;
@@ -131,7 +142,7 @@ const VectorString& Func_gtr::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec Func_gtr::getReturnType( void ) const {
+const TypeSpec Func_gtr::getReturnType(void) const {
     
     return TypeSpec( RbNULL_name );
 }

@@ -123,6 +123,11 @@ DAGNode* Func_readAlignment::execute( void ) {
             reader.addWarning("Unknown file type");
             }
         }
+#   if 0
+    std::cout << "File map (" << fileMap.size() << ")" << std::endl;
+    for (std::map<std::string,std::string>::iterator it = fileMap.begin(); it != fileMap.end(); it++)
+        std::cout << it->first << " -- " << it->second << std::endl;
+#   endif
                 
     // read the files in the map containing the file names with the output being a vector of pointers to
     // the character matrices that have been read

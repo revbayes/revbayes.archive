@@ -31,6 +31,7 @@ class RateMatrix : public MemberObject {
 
     public:
                                             RateMatrix(void);                                                  //!< Default constructor (never call this except from the workspace once)
+                                            RateMatrix(const RateMatrix& m);                                   //!< Copy constructor
                                             RateMatrix(size_t n);                                              //!< Construct rate matrix with n states
                                            ~RateMatrix(void);                                                  //!< Destructor
         VectorReal&                         operator[](size_t i);                                              //!< Subscript operator
@@ -49,15 +50,22 @@ class RateMatrix : public MemberObject {
         const MethodTable&                  getMethods(void) const;                                            //!< Get methods
         
         // RateMatrix functions
+        double                              averageRate(void) const;                                           //!< Calculate the average rate
         void                                calculateStationaryFrequencies(void) const;                        //!< Calculate the stationary frequencies for the rate matrix
+        bool                                getIsTimeReversible(void);
         void                                rescaleToAverageRate(const double r) const;
         void                                setDiagonal(void);                                                 //!< Set the diagonal such that each row sums to zero
+        void                                setIsTimeReversible(const bool tf);  
+        void                                setStationaryFrequencies(std::vector<double>& f) const;            //!< Directly set the stationary frequencies
         DAGNode*                            wrapIntoVariable(void); 
 
 	protected:
         DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);    //!< Execute method
     
     private:
+        bool                                checkTimeReversibity(double tolerance);                            //!< Checks if the rate matrix is time reversible
+        bool                                reversibilityChecked;                                              //!< Flag indicating if time reversibility has been checked
+        bool                                isReversible;                                                      //!< Is the matrix time reversible
         size_t                              numStates;                                                         //!< The number of character states
         MatrixReal*                         theRateMatrix;                                                     //!< Holds the rate matrix
         Simplex*                            theStationaryFreqs;                                                //!< Holds the stationary frequencies

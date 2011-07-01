@@ -14,12 +14,17 @@
  * $Id:$
  */
 
+#include "MatrixComplex.h"
 #include "MatrixReal.h"
 #include <vector>
 
+
+
 namespace RbMath {
     
+    void                        backSubstitutionRow(MatrixComplex& u, std::vector<std::complex<double> >& b);     //!< Back substitution for Gaussian elimination 
     void                        backSubstitutionRow(MatrixReal& u, std::vector<double>& b);                       //!< Back substitution for Gaussian elimination 
+    void                        forwardSubstitutionRow(MatrixComplex& L, std::vector<std::complex<double> >& b);  //!< Forward substitution for Gaussian elimination 
     void                        forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b);                    //!< Forward substitution for Gaussian elimination 
     void                        gaussianElimination(MatrixReal& a, MatrixReal& bMat, MatrixReal& xMat);           //!< Perform Gaussian elimination on the matrix 
 }

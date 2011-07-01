@@ -14,20 +14,66 @@
  * $Id:$
  */
 
-#include <cassert>
-#include <cmath>
-#include <iostream>
-#include <vector>
-
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "RbMathGaussianElimination.h"
 #include "RbSettings.h"
+#include <cassert>
+#include <cmath>
+#include <complex>
+#include <iostream>
+#include <vector>
 
 
 
 // Matrix Functions
+
+
+/*!
+ * This function computes the L and U decomposition of a matrix. Basically,
+ * we find matrices lMat and uMat such that: lMat * uMat = aMat
+ *
+ * \brief Compute LU decomposition
+ * \param aMat The matrix to LU decompose (destroyed)
+ * \param lMat The L matrix
+ * \param uMat The U matrix
+ * \return Returns nothing
+ */
+void RbMath::computeLandU(MatrixComplex& aMat, MatrixComplex& lMat, MatrixComplex& uMat) {
+    
+	size_t n = aMat.getNumRows();
+	for (size_t j=0; j<n; j++) 
+        {
+		for (size_t k=0; k<j; k++)
+			for (size_t i=k+1; i<j; i++)
+				aMat[i][j] = aMat[i][j] - aMat[i][k] * aMat[k][j];
+        
+		for (size_t k=0; k<j; k++)
+			for (size_t i=j; i<n; i++)
+				aMat[i][j] = aMat[i][j] - aMat[i][k] * aMat[k][j];
+        
+		for (size_t m=j+1; m<n; m++)
+	  		aMat[m][j] /= aMat[j][j]; 
+        }
+    
+	for (size_t row=0; row<n; row++)
+        {
+		for (size_t col=0; col<n; col++) 
+            {
+			if ( row <= col ) 
+                {
+				uMat[row][col] = aMat[row][col];
+				lMat[row][col] = (row == col ? 1.0 : 0.0);
+                }
+			else 
+                {
+				lMat[row][col] = aMat[row][col];
+				uMat[row][col] = std::complex<double>(0.0,0.0);
+                }
+            }
+        }
+}
 
 
 /*!
@@ -205,6 +251,41 @@ int RbMath::findPadeQValue(const double& tolerance) {
 		x = pow(2.0, 3.0 - (qV + qV)) * RbMath::factorial(qV) * RbMath::factorial(qV) / (RbMath::factorial(qV+qV) * RbMath::factorial(qV+qV+1));
         }
 	return (qV);
+}
+
+
+void RbMath::matrixInverse(const MatrixComplex& a, MatrixComplex& aInv) {
+    
+    // get dimensions: we assume a square matrix
+	size_t n = a.getNumRows();
+    
+    // copy original matrix, a, into a working version, aTmp
+    MatrixComplex aTmp(a);
+    
+    // set up some matrices for work
+	MatrixComplex lMat(n, n, 0.0);
+	MatrixComplex uMat(n, n, 0.0);
+    MatrixComplex identity(n, n, 0.0);
+    for (size_t i=0; i<n; i++)
+        identity[i][i] = 1.0;
+	std::vector<std::complex<double> > bVec(n);
+    
+    // compute the matrix inverse
+	RbMath::computeLandU(aTmp, lMat, uMat);
+	for (size_t k=0; k<n; k++) 
+        {
+		for (size_t i=0; i<n; i++)
+			bVec[i] = identity[i][k];
+        
+		/* Answer of Ly = b (which is solving for y) is copied into b. */
+		forwardSubstitutionRow(lMat, bVec);
+        
+		/* Answer of Ux = y (solving for x and the y was copied into b above) 
+         is also copied into b. */
+		backSubstitutionRow(uMat, bVec);
+		for (size_t i=0; i<n; i++)
+			aInv[i][k] = bVec[i];
+        }
 }
 
 

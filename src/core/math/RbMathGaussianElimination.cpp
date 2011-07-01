@@ -32,6 +32,28 @@
  * \param b Solution vector
  * \return Returns nothing
  */
+void RbMath::backSubstitutionRow(MatrixComplex& u, std::vector<std::complex<double> >& b) {
+    
+	size_t n = u.getNumRows();
+	b[n-1] /= u[n-1][n-1];
+	for ( int i = static_cast<int>( n ) - 2; i >= 0; i-- ) 
+        {
+		std::complex<double> dotProduct(0.0, 0.0);
+		for (size_t j=i+1; j<n; j++)
+			dotProduct += u[i][j] * b[j];
+		b[i] = (b[i] - dotProduct) / u[i][i];
+        }
+}
+
+
+/*!
+ * Back-substitution of Gaussian elimination
+ * 
+ * \brief Back-substitution
+ * \param u Matrix to back substitute
+ * \param b Solution vector
+ * \return Returns nothing
+ */
 void RbMath::backSubstitutionRow(MatrixReal& u, std::vector<double>& b) {
     
 	size_t n = u.getNumRows();
@@ -44,6 +66,31 @@ void RbMath::backSubstitutionRow(MatrixReal& u, std::vector<double>& b) {
 		b[i] = (b[i] - dotProduct) / u[i][i];
         }
 }
+
+
+/*!
+ * Forward substitution of Gaussian elimination
+ *
+ * \brief Forward substitution
+ * \param L [in/out] Matrix for forward substitution
+ * \param b [in/out] Solution vector
+ * \return Returns nothing
+ */
+void RbMath::forwardSubstitutionRow(MatrixComplex& L, std::vector<std::complex<double> >& b) {
+    
+	size_t n = L.getNumRows();
+	b[0] = b[0] / L[0][0];
+	for (size_t i=1; i<n; i++) 
+        {
+		std::complex<double> dotProduct(0.0,0.0);
+		for (size_t j=0; j<i; j++)
+            {
+	      	dotProduct += L[i][j] * b[j];
+            }
+		b[i] = (b[i] - dotProduct) / L[i][i];
+        }
+}
+
 
 /*!
  * Forward substitution of Gaussian elimination
@@ -67,6 +114,7 @@ void RbMath::forwardSubstitutionRow(MatrixReal& L, std::vector<double>& b) {
 		b[i] = (b[i] - dotProduct) / L[i][i];
         }
 }
+
 
 /*!
  * Gaussian elimination

@@ -76,7 +76,7 @@ RbObject* Real::convertTo( const std::string& type, size_t dim ) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Real::getClass() const {
+const VectorString& Real::getClass(void) const {
 
     static VectorString rbClass = VectorString(Real_name) + RbObject::getClass();
     return rbClass;

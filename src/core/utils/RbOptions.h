@@ -17,9 +17,9 @@
 
 /* The magic PRINTF defines */
 #if defined (DEBUG_PARSER)
-#define PRINTF printf
+#   define PRINTF printf
 #else
-#define PRINTF(...)
+#   define PRINTF(...)
 #endif
 
 #endif

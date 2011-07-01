@@ -21,7 +21,6 @@
 
 #include "Matrix.h"
 #include "VectorReal.h"
-
 #include <iostream>
 #include <string>
 #include <vector>

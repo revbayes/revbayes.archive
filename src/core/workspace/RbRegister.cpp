@@ -44,6 +44,7 @@
 #include "DnaState.h"
 #include "Integer.h"
 #include "Natural.h"
+#include "RateMatrix.h"
 #include "RbString.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -107,7 +108,6 @@
 #include "Func_ls.h"
 #include "Func_model.h"
 #include "Func_normalize.h"
-#include "Func_readAlignment.h"
 #include "Func_quit.h"
 #include "Func_s.h"
 
@@ -118,6 +118,10 @@
 #include "Func_power.h"
 #include "Func_sin.h"
 #include "Func_sqrt.h"
+
+/* Phylogeny functions */
+#include "Func_gtr.h"
+#include "Func_readAlignment.h"
 
 /* Regular templated functions */
 #include "Func_transpose.h"
@@ -149,6 +153,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new DnaState()                       );
         addType( new Integer()                        );
         addType( new Natural()                        );
+        addType( new RateMatrix()                     );
         addType( new RbString()                       );
         addType( new Real()                           );
         addType( new RealPos()                        );
@@ -295,21 +300,24 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_or",       new Func__or<                Real,        Boolean >()             );
         
         /* Add regular functions (alphabetical order) */
-        addFunction( "clamp",     new Func_clamp()         ); 
-        addFunction( "ls",        new Func_ls()            );
-        addFunction( "model",     new Func_model()         );
-        addFunction( "normalize", new Func_normalize()     );
-        addFunction( "read",      new Func_readAlignment() );
-        addFunction( "q",         new Func_quit()          );
-        addFunction( "quit",      new Func_quit()          );
+        addFunction( "clamp",     new Func_clamp()     ); 
+        addFunction( "ls",        new Func_ls()        );
+        addFunction( "model",     new Func_model()     );
+        addFunction( "normalize", new Func_normalize() );
+        addFunction( "q",         new Func_quit()      );
+        addFunction( "quit",      new Func_quit()      );
         
         /* Add math functions (alphabetical order) */ 
-        addFunction( "expf",        new Func_exp()   );
-        addFunction( "ln",          new Func_ln()    );
-        addFunction( "log",         new Func_log()   );
-        addFunction( "power",       new Func_power() );
-        addFunction( "sin",         new Func_sin()   );
-        addFunction( "sqrt",        new Func_sqrt()  );
+        addFunction( "expf",      new Func_exp()   );
+        addFunction( "ln",        new Func_ln()    );
+        addFunction( "log",       new Func_log()   );
+        addFunction( "power",     new Func_power() );
+        addFunction( "sin",       new Func_sin()   );
+        addFunction( "sqrt",      new Func_sqrt()  );
+        
+        /* Add phylogeny-related functions */
+        addFunction( "gtr",       new Func_gtr()          );
+        addFunction( "read",      new Func_readAlignment() );
 
         /* Add regular templated functions (alphabetic order) */
         // TODO: Add v and s functions
