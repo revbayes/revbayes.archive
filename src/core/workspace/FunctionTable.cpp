@@ -179,7 +179,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
             msg << "Argument mismatch for call to function '" << name << "'. Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
             msg << std::endl;
-            throw RbException("Argument mismatch for call to '" + name + "'");
+            throw RbException( msg );
         }
         return retVal.first->second;
     }

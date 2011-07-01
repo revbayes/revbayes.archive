@@ -98,10 +98,13 @@ bool RbObject::isConvertibleTo(const std::string& type, size_t dim, bool once) c
 }
 
 
-/** Are we of specified object type? We need to check entire class vector in case we are derived from type. */
+/** Are we of specified object type? We need to check entire class vector in case we are derived from type.
+ *  We provide a special case for Scalar_name to avoid having to introduce an extra class for primitive
+ *  types. The function is overridden in RbComplex, so that complex objects are not of scalar type.
+ */
 bool RbObject::isType(const std::string& type) const {
 
-    if ( type == RbVoid_name )
+    if ( type == Scalar_name )
         return true;
 
     const VectorString& classVec = getClass();
@@ -115,18 +118,15 @@ bool RbObject::isType(const std::string& type) const {
 }
 
 
-/**
- * Are we of specified language type? In the general case we need
- * to resort to the workspace because we could be a container type
- * without information about the class vector of our elements, which
- * could be absent or NULL at the time.
+/** Are we of specified language type? This version works for
+ *  all objects except for containers.
  */
 bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
 
-    if ( typeSpec.getType() == RbVoid_name )
-        return true;
-    
-    return Workspace::userWorkspace().isXOfTypeY( getTypeSpec(), typeSpec );
+    if ( typeSpec.getDim() != 0 )
+        return false;
+
+    return isType( typeSpec.getType() );
 }
 
 

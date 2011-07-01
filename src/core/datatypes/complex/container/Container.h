@@ -78,6 +78,7 @@ class Container : public RbComplex {
         const std::vector<size_t>&      getLength(void) const { return length; }                            //!< Get length in each dim (length is a vector of lengths in the different dimensions according to Sebastian's wishes)
         VectorNatural                   getNaturalIndex(const VectorIndex& index) const;                    //!< Get natural index to a single container element from generic index
         const TypeSpec                  getTypeSpec(void) const;                                            //!< Get language type of the object (the container)
+        bool                            isTypeSpec(const TypeSpec& typeSpec) const;                         //!< Does the language type of the object fit type specification typeSpec?
         DAGNode*                        wrapIntoVariable(void);                                             //!< Wrap value into variable
 
         // Container function you may want to override

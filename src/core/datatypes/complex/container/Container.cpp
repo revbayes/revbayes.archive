@@ -216,6 +216,27 @@ const TypeSpec Container::getTypeSpec( void ) const {
 
 
 /**
+ * Are we of specified language type? Being containers, we need
+ * help from the workspace because we might not have information
+ * about the class vector of our elements, which could be absent or
+ * NULL at the time.
+ */
+bool Container::isTypeSpec(const TypeSpec& typeSpec) const {
+
+    // Match to dimensionless object
+    if ( typeSpec.isDimensionlessObject() )
+        return true;
+
+    // Check dimensions
+    if ( getDim() != typeSpec.getDim() )
+        return false;
+
+    // Now we need help from the workspace to get the element class vector
+    return Workspace::userWorkspace().findType( elementType )->isType( typeSpec.getType() );
+}
+
+
+/**
  * Set length in each dimension: reorganize the content of the container
  *
  * Whatever order (by row or by column) assumed by the class ContainerIterator

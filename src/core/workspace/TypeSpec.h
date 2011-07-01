@@ -23,7 +23,6 @@
 class TypeSpec {
     
     public:
-                            
                             TypeSpec(const std::string& objType);                               //!< Simple constructor with type conversion
                             TypeSpec(const std::string& objType,
                                      size_t             objDim,
@@ -37,6 +36,7 @@ class TypeSpec {
         // Regular functions
         size_t              getDim(void) const { return dim; }                                  //!< Get field dimensions
         const std::string&  getType(void) const { return type; }                                //!< Get object type
+        bool                isDimensionlessObject(void) const;                                  //!< Is dimensionless object? 
         bool                isReference(void) const { return reference; }                       //!< Is it a reference type?
         void                setDim(size_t i) { dim = i; }                                       //!< Set field dimensions
         void                setReference(bool refFlag) { reference = refFlag; }                 //!< Set or reset the reference flag

@@ -242,7 +242,7 @@ const VectorString& Func_readAlignment::getClass( void ) const {
 /** Get return type */
 const TypeSpec Func_readAlignment::getReturnType( void ) const {
     
-    return TypeSpec( RbNULL_name );
+    return TypeSpec( RbVoid_name );
 }
 
 

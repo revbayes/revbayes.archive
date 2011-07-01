@@ -15,7 +15,6 @@
 #ifndef RbOptions_H
 #define RbOptions_H
 
-
 /* The magic PRINTF defines */
 #if defined (DEBUG_PARSER)
 #define PRINTF printf

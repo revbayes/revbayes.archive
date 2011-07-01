@@ -46,6 +46,8 @@ class RbObject {
         virtual const TypeSpec      getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual bool                isConstant(void) const { return true; }                                 //!< Is value a constant or does it include variables?
         virtual bool                isConvertibleTo(const std::string& type, size_t dim, bool once) const;  //!< Is convertible to type and dim?
+        virtual bool                isType(const std::string& type) const;                                  //!< Is the object of type?
+        virtual bool                isTypeSpec(const TypeSpec& typeSpec) const;                             //!< Does the language type of the object fit type specification typeSpec?
         virtual bool                supportsIndex(void) const { return false; }                             //!< Supports indexing, as in operator[]
         virtual DAGNode*            wrapIntoVariable(void);                                                 //!< Wrap value into variable
     
@@ -56,8 +58,6 @@ class RbObject {
         RbObject*                   convertTo(const TypeSpec& typeSpec) const;                              //!< Convert to language object of type typeSpec
         const std::string&          getType(void) const;                                                    //!< Get type of object
         bool                        isConvertibleTo(const TypeSpec& typeSpec, bool once) const;             //!< Is convertible to type and dim?
-        bool                        isType(const std::string& type) const;                                  //!< Is the object of type?
-        bool                        isTypeSpec(const TypeSpec& typeSpec) const;                             //!< Does the language type of the object fit type specification typeSpec?
         void                        print(std::ostream& o) const;                                           //!< Print complete object info
 
    protected:

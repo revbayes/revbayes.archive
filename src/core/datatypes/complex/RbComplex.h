@@ -48,6 +48,9 @@ class RbComplex : public RbObject {
 		virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
 		virtual std::string                 richInfo(void) const = 0;                                               //!< Complete info 
         
+        // Basic utility function you do not have to override
+        virtual bool                        isType(const std::string& type) const;                                  //!< Is the object of type?
+
         // Default moves for types that contain sets of stochastic nodes (member objects and 
         MoveSchedule*                       getDefaultMoves(DeterministicNode* node) const { return NULL; }         //!< Get block moves applicable to the complex datatype
 

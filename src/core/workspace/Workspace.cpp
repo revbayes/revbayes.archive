@@ -132,9 +132,9 @@ bool Workspace::addFunction(const std::string& name, RbFunction* func) {
 /** Add type to the workspace */
 bool Workspace::addType(RbObject* exampleObj) {
 
-    PRINTF("Adding type %s to workspace\n", exampleObj->getTypeSpec().toString().c_str());
-
     std::string name = exampleObj->getType();
+
+    PRINTF("Adding type %s to workspace\n", name.c_str());
 
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
@@ -146,14 +146,14 @@ bool Workspace::addType(RbObject* exampleObj) {
 
 
 /** Add abstract type to the workspace */
-bool Workspace::addType(const std::string& name) {
+bool Workspace::addType(const std::string& name, RbObject* exampleObj) {
 
-    PRINTF("Adding abstract type %s to workspace\n", name.c_str());
+    PRINTF("Adding special abstract type %s to workspace\n", name.c_str());
 
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, RbObject*>( name, NULL));
+    typeTable.insert(std::pair<std::string, RbObject*>( name, exampleObj));
 
     return true;
 }
@@ -187,9 +187,6 @@ DAGNode* Workspace::executeFunction(const std::string& name, const std::vector<A
 /** Is the type added to the workspace? */
 bool Workspace::existsType( const std::string& name ) const {
 
-    if ( typesInitialized == false )
-        return true;    // Cannot provide this service if type table is not filled
-    
     std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) {
         if ( parentFrame != NULL )
@@ -205,15 +202,12 @@ bool Workspace::existsType( const std::string& name ) const {
 /** Find type template object */
 RbObject* Workspace::findType( const std::string& name ) const {
 
-    if ( typesInitialized == false )
-        throw RbException( "Type table not initialized" );
-
     std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) {
         if ( parentFrame != NULL )
             return static_cast<Workspace*>( parentFrame )->findType( name );
         else
-            throw RbException( "Type " + name + " does not exist in environment" );
+            throw RbException( "Type '" + name + "' does not exist in environment" );
     }
     else
         return it->second;
@@ -237,17 +231,6 @@ const std::string& Workspace::getTypeNameRef( const std::string& name ) const {
 /** Check and get type specification for a named object type */
 TypeSpec Workspace::getTypeSpec( const std::string& name ) const {
 
-    if ( typesInitialized == false )
-        return TypeSpec( name, 0 );    // Cannot provide this service if type table is not filled
-
-    //! @todo We probably need to catch the abstract types in a more general way
-    if ( name == RbObject_name )
-        return TypeSpec( RbObject_name, 0 );
-    else if ( name == RbNULL_name )
-        return TypeSpec( RbNULL_name, 0 );
-    else if ( name == RbVoid_name )
-        return TypeSpec( RbVoid_name, 0 );
-
     if ( name == ValueContainer_name || name == VariableContainer_name ) {
         
         // We cannot rely on the type spec provided by generic container type dummies in the type table
@@ -260,16 +243,18 @@ TypeSpec Workspace::getTypeSpec( const std::string& name ) const {
 }
 
 
-/** Check and get type specification for a named object type */
+/** Check and possibly correct a type specification */
 TypeSpec Workspace::getTypeSpec( const TypeSpec& typeSp ) const {
 
-    if ( typesInitialized == false )
-        return TypeSpec( typeSp );    // Cannot provide this service if type table is not filled
+    // We can trust container type specifications
+    if ( typeSp.getDim() > 0 )
+        return typeSp;
 
-    //! @todo We probably need to catch the abstract types in a more general way
-    if ( typeSp.getType() == RbObject_name && typeSp.getDim() == 0 )
-        return TypeSpec( typeSp );
+    // We can also trust all non-container type specifications
+    if ( !isXOfTypeY( typeSp.getType(), Container_name ) )
+        return typeSp;
 
+    // The case we need to catch is a container type using a non-container type specification (dim == 0)
     if ( typeSp.getType() == ValueContainer_name || typeSp.getType() == VariableContainer_name ) {
         
         // We cannot rely on the type spec provided by generic container type dummies in the type table
@@ -278,14 +263,10 @@ TypeSpec Workspace::getTypeSpec( const TypeSpec& typeSp ) const {
         throw RbException( "Invalid attempt to convert a generic container type to valid type specification" );
     }
 
-    // Other than generic containers, we can trust container type specifications
-    if ( typeSp.getDim() > 0 )
-        return typeSp;
+    if ( typesInitialized == false && !existsType( typeSp.getType() ) )
+        return TypeSpec( typeSp );    // Cannot provide this service if type table is not filled
 
-    // We can also trust all non-container type specifications
-    if ( !isXOfTypeY( typeSp.getType(), Container_name ) )
-        return typeSp;
-
+    // Get the dummy type object to convert into a true container type specification
     return findType( typeSp.getType() )->getTypeSpec();
 }
 
@@ -300,8 +281,8 @@ RandomNumberGenerator* Workspace::get_rng(void) {
 /** Type checking using type table and full type spec */
 bool Workspace::isXOfTypeY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) const {
 
-    //! @todo We probably need to handle the abstract types in a more general way
-    if ( yTypeSp.getType() == RbVoid_name && existsType( xTypeSp.getType() ) )
+    // If yTypeSp is dimensionless object, then all types fit
+    if ( yTypeSp.isDimensionlessObject() )
         return true;
 
     if ( xTypeSp.getDim() != yTypeSp.getDim() )
@@ -311,35 +292,19 @@ bool Workspace::isXOfTypeY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) c
 }
 
 
-/** Type checking using type table and type names, assuming same dim */
+/** Type checking using type table and type names, assuming dim = 0 */
 bool Workspace::isXOfTypeY( const std::string& xType, const std::string& yType ) const {
 
-    if ( typesInitialized == false )
-        return true;    // Cannot provide this service if type table is not filled
-
-    //! @todo We probably need to handle the abstract types in a more general way
-    if ( yType == RbObject_name && (existsType( xType ) || xType == RbNULL_name || xType == RbVoid_name) )
-        return true;
-    if ( yType == RbVoid_name && (existsType( xType ) || xType == RbNULL_name || xType == RbVoid_name) )
-        return true;
-    if ( ( xType == RbObject_name || xType == RbNULL_name || xType == RbVoid_name) && yType != RbObject_name )
-        return false;
-
-    /* Simplest case first */
-    if ( xType == yType )
-        return true;
-
-    const VectorString& xTypeVec = findType( xType )->getClass();
-    size_t i;
-    for ( i = 0; i < xTypeVec.size(); i++) {
-        if ( xTypeVec[i] == yType )
-            break;
+    // Cannot provide this service in standard way if type table is not filled with xType
+    // so hard code it instead
+    if ( typesInitialized == false && ! existsType( xType ) ) {
+        throw RbException( "Unknown type " + xType );
     }
 
-    if ( i == xTypeVec.size() )
-        return false;
-    else
-        return true;
+    if ( !existsType( xType ) )
+        throw RbException( "No type named '" + xType + "'" );
+
+    return findType( xType )->isType( yType );
 }
 
 
@@ -399,7 +364,7 @@ void Workspace::printValue(std::ostream& o) const {
     std::map<std::string, RbObject*>::const_iterator i;
     for (i=typeTable.begin(); i!=typeTable.end(); i++) {
         if ( (*i).second != NULL )
-            o << (*i).first << " = " << (*i).second->getClass() << std::endl;
+            o << (*i).first << " = " << (*i).second->getTypeSpec() << std::endl;
         else
             o << (*i).first << " = " << "unknown class vector" << std::endl;
     }

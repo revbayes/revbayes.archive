@@ -27,8 +27,9 @@
 
 #include <sstream>
 
-/** Constructor from class vector */
-RbAbstract::RbAbstract( const VectorString classVec) : RbObject(), classVector( classVec ) {
+/** Constructor */
+RbAbstract::RbAbstract( const VectorString classVec, size_t numDims, const std::string& elemType )
+: RbObject(), classVector( classVec ), dim( numDims ), elementType( elemType ) {
 }
 
 
@@ -43,6 +44,16 @@ RbAbstract* RbAbstract::clone( void ) const {
 RbObject* RbAbstract::convertTo( const std::string& type, size_t dim ) const {
 
     return RbObject::convertTo( type, dim );
+}
+
+
+/** Get language type specification of abstract class */
+const TypeSpec RbAbstract::getTypeSpec( void ) const {
+
+    if ( dim > 0 )
+        return TypeSpec( elementType, dim );
+    else
+        return TypeSpec( getType(), 0 );
 }
 
 

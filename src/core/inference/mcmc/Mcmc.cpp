@@ -120,7 +120,7 @@ const MethodTable& Mcmc::getMethods(void) const {
     if (!methodsSet) {
 
         updateArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
-        methods.addFunction("update", new MemberFunction(RbNULL_name, updateArgRules));
+        methods.addFunction("update", new MemberFunction( RbVoid_name, updateArgRules));
 
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
         methodsSet = true;

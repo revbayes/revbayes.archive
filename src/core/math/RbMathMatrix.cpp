@@ -157,12 +157,12 @@ int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
     
 	RbMath::gaussianElimination(D, N, F);
     
-	for (size_t k=0; k<j; k++)
+	for (int k=0; k<j; k++)
 		F = F * F;
 	
 	for (size_t i=0; i<dim; i++)
         {
-		for (j=0; j<dim; j++)
+		for (j=0; j<int(dim); j++)
             {
 			if (F[i][j] < 0.0)
 				F[i][j] = fabs(F[i][j]);

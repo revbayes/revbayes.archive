@@ -80,7 +80,7 @@ class Workspace : public VariableFrame {
         bool                        addDistribution(const std::string& name, DistributionInterval* dist);               //!< Add distribution on interval variable
         bool                        addFunction(const std::string& name, RbFunction* func);                             //!< Add function
         bool                        addType(RbObject* exampleObj);                                                      //!< Add type
-        bool                        addType(const std::string& name);                                                   //!< Add abstract type
+        bool                        addType(const std::string& name, RbObject* exampleObj);                             //!< Add special abstract type (synonym)
         bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);               //!< Add type with constructor
         bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
         DAGNode*                    executeFunction(    const std::string&              name,
@@ -93,7 +93,7 @@ class Workspace : public VariableFrame {
         RandomNumberGenerator*      get_rng(void);                                                                      //!< Get default random number generator
         const std::string&          getTypeNameRef(const std::string& name) const;                                      //!< Get a const reference to the type name
         TypeSpec                    getTypeSpec(const std::string& name) const;                                         //!< Get reference to type specification for object type name 
-        TypeSpec                    getTypeSpec(const TypeSpec& typeSp) const;                                          //!< Check and get reference to correct type specification
+        TypeSpec                    getTypeSpec(const TypeSpec& typeSp) const;                                          //!< Check and correct type specification
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
         bool                        isXOfTypeY(const std::string& xType, const std::string& yType) const;               //!< Type checking usng type names (assuming same dim)
         bool                        isXOfTypeY(const TypeSpec& xTypeSp, const TypeSpec& yTypeSp) const;                 //!< Type checking using full type spec

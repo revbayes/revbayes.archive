@@ -82,8 +82,8 @@ int Parser::execute(SyntaxElement *root) const {
                 for ( std::vector<const RbFunction*>::iterator i=functions.begin(); i!=functions.end(); i++ ) {
                     RBOUT( (*i)->briefInfo() );
                 }
+                return 0;
             }
-            return 0;
         }
 
         // All other exceptions
@@ -273,7 +273,7 @@ int Parser::processCommand(std::string& command) {
         PRINTF("Parser resetting command string\n\n");
         rrcommand.str("");
         rrcommand.clear();  // Clear any error flags
-        return 0;
+        return result;
     }
     else if ( foundErrorBeforeEnd == true ) {
         PRINTF("Syntax error occurred in parsing or executing the statement; resetting command string\n");

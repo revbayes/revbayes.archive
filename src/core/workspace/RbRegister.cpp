@@ -132,8 +132,14 @@ void Workspace::initializeGlobalWorkspace(void) {
     try {
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
 
-        /* Add abstract types */
+        /* Add special abstract types that do not correspond directly to classes */
+        addType( new RbAbstract( VectorString(RbVoid_name) ) );
+        addType( new RbAbstract( VectorString(Scalar_name) ) );
+
+        /* Add normal abstract types */
         addType( new RbAbstract( VectorString(RbObject_name) ) );
+        addType( new RbAbstract( VectorString(Vector_name) + RbString(Container_name) + RbString(RbComplex_name) + RbString(RbObject_name), 1, Scalar_name ) );
+        addType( new RbAbstract( VectorString(Matrix_name) + RbString(Container_name) + RbString(RbComplex_name) + RbString(RbObject_name), 2, Scalar_name ) );
         addType( new RbAbstract( VectorString(MemberObject_name) + RbString(RbComplex_name) + RbString(RbObject_name) ) );
 
         /* Add primitive types (alphabetic order) */

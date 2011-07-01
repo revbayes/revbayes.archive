@@ -55,6 +55,16 @@ TypeSpec::operator std::string( void ) const {
 }
 
 
+/** Check if it is a dimensionless object */
+bool TypeSpec::isDimensionlessObject( void ) const {
+
+    if ( type == RbObject_name && dim == 0 )
+        return true;
+    else
+        return false;
+}
+
+
 /** Convert to string */
 std::string TypeSpec::toString(void) const {
 

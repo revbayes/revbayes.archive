@@ -51,7 +51,7 @@ const ArgumentRules& Func_model::getArgumentRules( void ) const {
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ReferenceRule( "sinknode", RbVoid_name ) );
+        argumentRules.push_back( new ReferenceRule( "sinknode", RbObject_name ) );
         rulesSet = true;
     }
 

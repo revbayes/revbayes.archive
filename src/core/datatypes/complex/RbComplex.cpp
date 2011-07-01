@@ -37,3 +37,19 @@ const VectorString& RbComplex::getClass(void) const {
 	return rbClass;
 }
 
+
+/** Are we of specified object type? We override the function in RbObject because
+ *  we are not of scalar type, that is, there is no match for Scalar_name.
+ */
+bool RbComplex::isType(const std::string& type) const {
+
+    const VectorString& classVec = getClass();
+
+    for (size_t i=0; i<classVec.size(); i++) {
+        if (type == classVec[i])
+            return true;
+    }
+
+	return false;
+}
+
