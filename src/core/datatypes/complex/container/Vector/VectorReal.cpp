@@ -75,7 +75,7 @@ VectorReal::VectorReal( const VectorRealPos& x ) : Vector( Real_name ) {
 /** Subscript operator */
 double& VectorReal::operator[](size_t i) {
 
-    if (i > int(elements.size()))
+    if (i >= int(elements.size()))
         throw RbException("Index out of bounds");
 
     return static_cast<Real*>(elements[i])->getValueRef();

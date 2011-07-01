@@ -22,7 +22,6 @@
 #include "DnaState.h"
 #include "MemberFunction.h"
 #include "MemberNode.h"
-#include "MoveSchedule.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -436,19 +435,6 @@ void CharacterMatrix::restoreTaxon(std::string& s) {
     if (i >= taxonNames.size())
         return;
     deletedTaxa.erase( i );
-}
-
-
-/** Allow only constant member variables */
-void CharacterMatrix::setVariable(const std::string& name, DAGNode* var) {
-
-    if ( name != "model" && !var->isDAGType( ConstantNode_name ) )
-        throw RbException( "Only constant member values allowed" );
-
-    if ( name == "model" && members["model"].getValue() != NULL )
-        throw RbException( "Cannot reset model" );
-
-    MemberObject::setVariable(name, var);
 }
 
 

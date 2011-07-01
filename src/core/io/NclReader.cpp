@@ -80,9 +80,13 @@ std::vector<CharacterMatrix*> NclReader::convertFromNcl(std::vector<std::string>
 			NxsCharactersBlock* charBlock = nexusReader.GetCharactersBlock(taxaBlock, cBlck);
 			std::string charBlockTitle = taxaBlock->GetTitle();
 			int dt = charBlock->GetDataType();
-			if (dt == NxsCharactersBlock::dna || dt == NxsCharactersBlock::rna || dt == NxsCharactersBlock::nucleotide)
+			if (dt == NxsCharactersBlock::dna || dt == NxsCharactersBlock::nucleotide)
                 {
                 m = createDnaMatrix(charBlock);
+                }
+			else if (dt == NxsCharactersBlock::rna)
+                {
+                m = createRnaMatrix(charBlock);
                 }
 			else if (dt == NxsCharactersBlock::protein)
                 {
@@ -99,6 +103,10 @@ std::vector<CharacterMatrix*> NclReader::convertFromNcl(std::vector<std::string>
 			else if (dt == NxsCharactersBlock::mixed)
                 {
                 addWarning("Mixed data types are not allowed");
+                }
+            else 
+                {
+                addWarning("Unknown data type");
                 }
                         
 			if (m != NULL)

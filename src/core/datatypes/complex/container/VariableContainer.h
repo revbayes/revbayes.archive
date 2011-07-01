@@ -56,7 +56,7 @@ class VariableContainer : public Container {
 
         // Overloaded operators for assignment and convenient programmer access
         VariableContainer&          operator=(const VariableContainer& x);                                      //!< Assignment operator
-        const DAGNode* const&       operator[](const VectorNatural& i) const;                                     //!< Element const access
+        const DAGNode* const&       operator[](const VectorNatural& i) const;                                   //!< Element const access
         const DAGNode* const&       operator[](const size_t i) const;                                           //!< Element const access
 
         // Basic utility functions

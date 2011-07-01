@@ -17,7 +17,7 @@
  * NOTE: This class might be a temporary solution being the unified solution for all tree nodes. In the future
  * we might make this class abstract and implement at least the two types of tree nodes: bifurcating tree nodes
  * which are restricted two have exactly two descendants and multifurcating tree nodes which can have any number
- * of tree nodes. Perhaps there might be also tipp nodes as a derived class and a root node, which is the 
+ * of tree nodes. Perhaps there might be also tip nodes as a derived class and a root node, which is the 
  * correct OO design approach but comes with a lot of overhead. A fast conversion method would be needed.
  *
  * @brief Declaration of TreeNode

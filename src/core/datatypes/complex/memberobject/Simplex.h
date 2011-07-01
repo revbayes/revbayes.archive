@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+class VectorReal;
 class VectorRealPos;
 
 
@@ -50,6 +51,8 @@ class Simplex : public MemberObject {
         // Overloaded operators
         double                  operator[](size_t i) const;                                         //!< Index op giving copy - no element mod allowed
 
+        const MemberRules&      getMemberRules(void) const;                                         //!< Get member rules
+
         // Basic utility functions
         Simplex*                clone(void) const;                                                  //!< Clone object
         const VectorString&     getClass(void) const;                                               //!< Get class
@@ -57,11 +60,12 @@ class Simplex : public MemberObject {
         std::string             richInfo(void) const;                                               //!< Complete info about object
 
         // Subscript access functions
-        bool                    hasSubscript(void) { return true; }                                 //!< We support subscripting @Fredrik: Instead of having subscripts, shouldn't a simplex be just a container (or vector)? (Sebastian)
-        DAGNode*                getSubelement(VectorInteger& index) const;                          //!< Return subscript[](index) element
-        size_t                  getSubelementsSize(void) const { return value.size(); }             //!< Number of subscript elements
+        DAGNode*                getElement(VectorInteger& index) const;                             //!< Return subscript[](index) element
+        size_t                  getElementsSize(void) const { return value.size(); }                //!< Number of subscript elements
+        bool                    supportsIndex(void) { return true; }                                //!< We support subscripting @Fredrik: Instead of having subscripts, shouldn't a simplex be just a container (or vector)? (Sebastian)
 
         // Simplex functions
+        void                    setValue(const VectorReal& x);                                      //!< Set value from VectorReal & rescale
         void                    setValue(const VectorRealPos& x);                                   //!< Set value from VectorRealPos & rescale
         void                    setValue(const std::vector<double>& x);                             //!< Set value from vector<double>, check & rescale
         std::vector<double>     getValue(void) const { return value; }                              //!< Get value

@@ -40,7 +40,6 @@ class CharacterMatrix : public MemberObject {
 
         // Member variable rules
         const MemberRules&                          getMemberRules(void) const;                                        //!< Get member rules
-        void                                        setVariable(const std::string& name, DAGNode* var);                //!< Only constants allowed
 
         // Member method inits
         const MethodTable&                          getMethods(void) const;                                            //!< Get methods

@@ -21,10 +21,11 @@
 #include "Real.h"
 #include "Simplex.h"
 #include "VectorInteger.h"
+#include "VectorReal.h"
 #include "VectorRealPos.h"
 #include "VectorString.h"
-
 #include <iomanip>
+
 
 
 /** Construct simplex of length (size) n */
@@ -94,7 +95,7 @@ const VectorString& Simplex::getClass() const {
  * Get subscript element for parser. By giving back a temp variable rather than
  * a reference, we ensure that the parser cannot set the element
  */
-DAGNode* Simplex::getSubelement( VectorInteger& index ) const {
+DAGNode* Simplex::getElement( VectorInteger& index ) const {
 
     if ( index.size() != 1 )
         throw RbException( "Wrong dimensions of index for " + Simplex_name );
@@ -109,6 +110,21 @@ DAGNode* Simplex::getSubelement( VectorInteger& index ) const {
 }
 
 
+/** Get member rules */
+const MemberRules& Simplex::getMemberRules(void) const {
+
+    static MemberRules memberRules;
+    static bool        rulesSet = false;
+
+    if (!rulesSet) 
+        {
+        rulesSet = true;
+        }
+
+    return memberRules;
+}
+
+
 /** Print value for user */
 void Simplex::printValue(std::ostream& o) const {
 
@@ -117,7 +133,7 @@ void Simplex::printValue(std::ostream& o) const {
 
     o << "[ ";
     o << std::fixed;
-    o << std::setprecision(1);
+    o << std::setprecision(3);
     for (std::vector<double>::const_iterator i = value.begin(); i!= value.end(); i++) 
         {
         if (i != value.begin())
@@ -148,11 +164,19 @@ void Simplex::rescale(void) {
 std::string Simplex::richInfo(void) const {
 
     std::ostringstream o;
-    o <<  "Simplex: value = ";
     printValue(o);
-
     return o.str();
 }
+
+
+/** Set value of simplex using VectorReal */
+void Simplex::setValue(const VectorReal& x) {
+
+    value.resize(x.size());
+    for (size_t i=0; i<x.size(); i++)    
+        value[i] = x[i];
+    rescale();
+}   
 
 
 /** Set value of simplex using VectorRealPos */

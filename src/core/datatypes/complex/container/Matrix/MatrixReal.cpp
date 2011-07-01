@@ -258,7 +258,7 @@ void MatrixReal::printValue(std::ostream& o) const {
                 maxToRht = numToRht;
             }
         }
-
+        
     // print the matrix with each column of equal width and each column centered on the decimal
     for (size_t i=0; i<length[0]; i++)
         {
@@ -324,7 +324,6 @@ std::string MatrixReal::richInfo(void) const {
 
     // TODO: Replace with something that makes sense
     std::ostringstream o;
-    o <<  "MatrixReal: value = " ;
     printValue(o);
 
     return o.str();
