@@ -110,6 +110,8 @@
 #include "Func_normalize.h"
 #include "Func_quit.h"
 #include "Func_s.h"
+#include "Func_str.h"
+#include "Func_v.h"
 
 /* Math functions */
 #include "Func_exp.h"
@@ -306,6 +308,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "normalize", new Func_normalize() );
         addFunction( "q",         new Func_quit()      );
         addFunction( "quit",      new Func_quit()      );
+        addFunction( "str",       new Func_str()       );
         
         /* Add math functions (alphabetical order) */ 
         addFunction( "expf",      new Func_exp()   );
@@ -322,6 +325,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add regular templated functions (alphabetic order) */
         // TODO: Add v and s functions
         addFunction( "transpose", new Func_transpose< MatrixReal >() );
+        addFunction( "v",         new Func_v< Real,     VectorReal    >() );
+        addFunction( "v",         new Func_v< Integer,  VectorInteger >() );
 
     }
     catch(RbException& rbException) {

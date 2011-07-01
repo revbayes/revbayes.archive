@@ -82,6 +82,7 @@ const std::string Func_s_int_name                               = "Simplex const
 const std::string Func_s_realvec_name                           = "Simplex constructor function from a Real vector";
 const std::string Func_source_name                              = "Source function";
 const std::string Func_sqrt_name                                = "Square root function";
+const std::string Func_str_name                                 = "Str function";
 const std::string Func_v_double_name                            = "Vector of reals constructor function";
 const std::string Func_v_int_name                               = "Vector of integers constructor function";
 const std::string Func_v_vecrealvec_name                        = "Matrix constructor function";
