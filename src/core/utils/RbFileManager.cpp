@@ -22,7 +22,10 @@
 #include <sys/stat.h>
 
 #ifdef WIN32
-#	include <windows.h>
+#   include <windows.h>
+#   include <tchar.h> 
+#   include <stdio.h>
+#   include <strsafe.h>
 #else
 #	include <dirent.h>
 #endif
@@ -102,14 +105,9 @@ std::string RbFileManager::findCurrentDirectory(void) {
 
 #	ifdef WIN32
 
-    //! @todo Find out how to do this on Windows
-#if 0
-    LPWSTR buf = new WCHAR[MAX_DIR_PATH];
+    LPSTR buf = new char[MAX_DIR_PATH];
     GetCurrentDirectory(MAX_DIR_PATH, buf);
     return std::string(buf);
-#endif
-
-    return std::string();
 
 #	else
 
@@ -132,16 +130,11 @@ bool RbFileManager::isDirectoryPresent(const std::string mp) {
 
 #	ifdef WIN32
 
-    //! @todo Find out how to do this on Windows
-#if 0
     WIN32_FIND_DATA data;
     HANDLE handle = FindFirstFile(mp.c_str(), &data);
     bool bFoundFile = handle != INVALID_HANDLE_VALUE;
     FindClose(handle);
     return bFoundFile;
-#endif
-
-    return false;
 
 #	else
 
@@ -165,8 +158,6 @@ bool RbFileManager::isFilePresent(const std::string mp, const std::string mf) {
 
 #	ifdef WIN32
 
-    //! @todo Find out how to do this on Windows
-#if 0
     WIN32_FIND_DATA data;
     std::string fullPath; 
     if (mp.length() > 1 && (mp[mp.length()-2] != '\\' || mp[mp.length()-2] != '/'))
@@ -181,9 +172,6 @@ bool RbFileManager::isFilePresent(const std::string mp, const std::string mf) {
     bool bFoundFile = handle != INVALID_HANDLE_VALUE;
     FindClose(handle);
     return bFoundFile;
-#endif
-
-    return false;
 
 #	else
 
@@ -217,8 +205,7 @@ bool RbFileManager::listDirectoryContents(void) {
 
 #	ifdef WIN32
 
-    // NOTE JH: Not certain how to list directory contents for windows
-    return true;
+    return listDirectoryContents(filePath);
     
 #	else
     
@@ -233,9 +220,68 @@ bool RbFileManager::listDirectoryContents(const std::string& dirpath) {
 
 #	ifdef WIN32
 
-    // NOTE JH: Not certain how to list directory contents for windows
-    return true;
-    
+   WIN32_FIND_DATA ffd;
+   TCHAR szDir[MAX_PATH];
+   size_t length_of_arg;
+   HANDLE hFind = INVALID_HANDLE_VALUE;
+   DWORD dwError=0;
+
+   // Code below is largely copied from msdn.com -- Fredrik
+
+   // Check that the input path plus 3 is not longer than MAX_PATH.
+   // Three characters are for the "\*" plus NULL appended below.
+   // If input path is too long, then we just return false for now
+   StringCchLength( dirpath.c_str(), MAX_PATH, &length_of_arg );
+
+   if ( length_of_arg > (MAX_PATH - 3) )
+       return false;
+
+   // Prepare string for use with FindFile functions.  First, copy the
+   // string to a buffer, then append '\*' to the directory name.
+   StringCchCopy( szDir, MAX_PATH, dirpath.c_str() );
+   StringCchCat ( szDir, MAX_PATH, TEXT("\\*") );
+
+   // Find the first file in the directory.
+   hFind = FindFirstFile( szDir, &ffd );
+
+   // Just return false if we did not find a file
+   if ( hFind == INVALID_HANDLE_VALUE )
+       return false;
+  
+   // List all the files in the directory with some info about them.
+   do {
+
+        std::string entryName = ffd.cFileName;
+        std::string entryPath = dirpath + "\\" + entryName;
+
+       // If directory, we recurse into the directory
+       if ( ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
+         
+            if      ( entryName == ".." ) {
+                ;
+            }
+            else if ( entryName == "."  ) {
+                std::cout << dirpath + "/" << std::endl;
+                //result.push_back( dirpath + "/" );
+            }
+            else {
+                listDirectoryContents( entryPath );
+            }
+        }
+
+        // If file, just list file path
+        else {
+            std::cout << entryPath << std::endl;
+            //result.push_back( entryPath );
+        }
+    } while ( FindNextFile( hFind, &ffd ) != 0 );
+ 
+    dwError = GetLastError();
+
+    FindClose( hFind );
+
+    return dwError == ERROR_NO_MORE_FILES;
+
 #	else
 
     DIR* dir = opendir( dirpath.c_str() );
@@ -278,8 +324,7 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(std::vector<std::string
 
 #	ifdef WIN32
 
-    // NOTE JH: Not certain what to do here
-    return true;
+    return setStringWithNamesOfFilesInDirectory(filePath, sv);
     
 #	else
 
@@ -294,8 +339,65 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirp
 
 #	ifdef WIN32
 
-    // NOTE JH: Not certain how to list directory contents for windows
-    return true;
+   WIN32_FIND_DATA ffd;
+   TCHAR szDir[MAX_PATH];
+   size_t length_of_arg;
+   HANDLE hFind = INVALID_HANDLE_VALUE;
+   DWORD dwError=0;
+
+   // Code below is largely copied from msdn.com -- Fredrik
+
+   // Check that the input path plus 3 is not longer than MAX_PATH.
+   // Three characters are for the "\*" plus NULL appended below.
+   // If input path is too long, then we just return false for now
+   StringCchLength( dirpath.c_str(), MAX_PATH, &length_of_arg );
+
+   if ( length_of_arg > (MAX_PATH - 3) )
+       return false;
+
+   // Prepare string for use with FindFile functions.  First, copy the
+   // string to a buffer, then append '\*' to the directory name.
+   StringCchCopy( szDir, MAX_PATH, dirpath.c_str() );
+   StringCchCat ( szDir, MAX_PATH, TEXT("\\*") );
+
+   // Find the first file in the directory.
+   hFind = FindFirstFile( szDir, &ffd );
+
+   // Just return false if we did not find a file
+   if ( hFind == INVALID_HANDLE_VALUE )
+       return false;
+  
+   // List all the files in the directory with some info about them.
+   do {
+
+        std::string entryName = ffd.cFileName;
+        std::string entryPath = dirpath + "\\" + entryName;
+
+       // If directory, we recurse into the directory
+       if ( ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
+         
+            if      ( entryName == ".." ) {
+                ;
+            }
+            else if ( entryName == "."  ) {
+                ;
+            }
+            else {
+                setStringWithNamesOfFilesInDirectory( entryPath, sv );
+            }
+        }
+
+        // If file, just push back file path
+        else {
+            sv.push_back( entryPath );
+        }
+    } while ( FindNextFile( hFind, &ffd ) != 0 );
+ 
+    dwError = GetLastError();
+
+    FindClose( hFind );
+
+    return dwError == ERROR_NO_MORE_FILES;
     
 #	else
 

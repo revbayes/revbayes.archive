@@ -20,6 +20,7 @@
 #include "ContainerNode.h"
 #include "Func_readAlignment.h"
 #include "List.h"
+#include "MemberNode.h"
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
@@ -73,8 +74,13 @@ DAGNode* Func_readAlignment::execute( void ) {
     std::vector<std::string> vectorOfFileNames;
     if (readingDirectory == true)
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-    else
+    else {
+#if defined (WIN32)
+        vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
+#else
         vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
+#endif
+    }
     if (readingDirectory == true)
         {
         std::stringstream o1;
@@ -194,7 +200,15 @@ DAGNode* Func_readAlignment::execute( void ) {
             }
         return retList->wrapIntoVariable();
         }
-    return m[0]->wrapIntoVariable();
+    else if ( m.size() == 1 ) {
+        
+        return m[0]->wrapIntoVariable();
+    }
+    else /* if ( m.size() == 0 ) */ {
+
+        // Return null object
+        return new MemberNode( CharacterMatrix_name );
+    }
 }
 
 
@@ -247,7 +261,7 @@ const VectorString& Func_readAlignment::getClass( void ) const {
 /** Get return type */
 const TypeSpec Func_readAlignment::getReturnType( void ) const {
     
-    return TypeSpec( RbVoid_name );
+    return TypeSpec( MemberObject_name );
 }
 
 

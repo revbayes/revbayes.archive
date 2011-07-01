@@ -212,8 +212,11 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
             throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
         // Find the value we want to use for the assignment
-        RbObject* value = retValue->getValue()->clone();
-        
+        const RbObject* retValueObject = retValue->getValue();
+        RbObject* value = NULL;
+        if ( retValueObject != NULL )
+            value = retValueObject->clone();
+
         if ( slot == NULL ) {
             
             // The variable does not exist - add it to current frame
@@ -221,7 +224,7 @@ DAGNode* SyntaxAssignExpr::getValue( VariableFrame* frame ) const {
             if ( elemIndex.size() > 0 && value->getDim() > 0 )
                 throw RbException( "Invalid attempt to create container of containers" );
             
-            PRINTF ( "Creating constant variable %s %s with a %s value %sthrough arrow assignment\n", TypeSpec( RbObject_name, elemIndex.size() ).toString().c_str(), varName.c_str(), value->getTypeSpec().toString().c_str(), elemIndex.size() > 0 ? "element " : "" );
+            PRINTF ( "Creating constant variable %s %s with a %s value %sthrough arrow assignment\n", TypeSpec( RbObject_name, elemIndex.size() ).toString().c_str(), varName.c_str(), value == NULL ? "NULL" : value->getTypeSpec().toString().c_str(), elemIndex.size() > 0 ? "element " : "" );
             TypeSpec typeSpec( RbObject_name, elemIndex.size() );
             if ( elemIndex.size() == 0 )
                 frame->addVariable( varName, typeSpec, value->wrapIntoVariable() );

@@ -119,8 +119,8 @@ DAGNode* SyntaxBinaryExpr::getValue(VariableFrame* frame) const {
 
     // Package the arguments
     std::vector<Argument> args;
-    args.push_back(Argument("", leftOperand->getDAGNodeExpr(frame)));
-    args.push_back(Argument("", rightOperand->getDAGNodeExpr(frame)));
+    args.push_back(Argument("", leftOperand->getValue(frame)));
+    args.push_back(Argument("", rightOperand->getValue(frame)));
 
     // Execute function and return value
     std::string funcName = "_" + opCode[operation];

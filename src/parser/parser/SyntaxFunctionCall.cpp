@@ -129,13 +129,21 @@ DAGNode* SyntaxFunctionCall::getDAGNodeExpr(VariableFrame* frame) const {
 
     RbFunction* func;
     if (variable == NULL) {
+
         func = Workspace::userWorkspace().getFunction(*functionName, args);
         if (func == NULL)
             throw(RbException("Could not find function called '" + functionName->getValue() +
                 "' taking specified arguments"));
     }
-    else
-        func = Workspace::globalWorkspace().getFunction("_memberCall", args);
+    else {
+
+        MemberNode* memberNode = dynamic_cast<MemberNode*>( variable->getValue( frame ) );
+        if ( memberNode == NULL )
+            throw RbException( "Variable does not have member functions" );
+
+        args.insert( args.begin(), Argument( "", memberNode ) );
+        func = memberNode->getMemberObject()->getMethods().getFunction( *functionName, args );
+    }
 
     return new FunctionNode(func);
 }
