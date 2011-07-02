@@ -27,9 +27,10 @@
 /** Construct an empty cond like vector */
 CondLike::CondLike(size_t nc, size_t ns) : MemberObject(getMemberRules()) {
 
-    numChars  = nc;
-    numStates = ns;
-    clArray   = std::valarray<double>(0.0, numChars*numStates);
+    numChars     = nc;
+    numStates    = ns;
+    clArray      = std::valarray<double>(0.0, numChars*numStates);
+    lnScaleArray = std::valarray<double>(0.0, numChars);
 }
 
 
@@ -39,6 +40,7 @@ CondLike::CondLike(const CondLike& x) : MemberObject(getMemberRules()) {
     numChars  = x.numChars;
     numStates = x.numStates;
     clArray   = x.clArray;
+    lnScaleArray = std::valarray<double>(0.0, numChars);
 }
 
 
@@ -87,6 +89,8 @@ CondLike operator*(CondLike& a, CondLike& b) {
             {
             for (size_t i=0; i<ns; i++)
                 clP[i] = clL[i] * clR[i];
+                
+                
             clL += ns;
             clR += ns;
             clP += ns;

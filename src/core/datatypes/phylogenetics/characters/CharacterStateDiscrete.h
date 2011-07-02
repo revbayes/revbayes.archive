@@ -21,6 +21,8 @@
 #include <ostream>
 #include <vector>
 
+class CondLike;
+
 
 
 class CharacterStateDiscrete : public Character {
@@ -43,6 +45,7 @@ class CharacterStateDiscrete : public Character {
         virtual const std::string&              getStateLabels(void) const = 0;                    //!< Get valid state labels
         virtual const char                      getState(void) const = 0;                          //!< Get the discrete observation
         virtual bool                            isMissAmbig(void) const;                           //!< Is the character missing or ambiguous
+        virtual CondLike*                       getCondLike(void);                                 //!< Initialize and return a conditional likelihood for this state     
         void                                    setNumStates(size_t n);                            //!< Set the number of character states
         virtual void                            setState(const char s) = 0;                        //!< Set the discrete observation
 

@@ -14,6 +14,7 @@
  */
 
 #include "CharacterStateDiscrete.h"
+#include "CondLike.h"
 #include "RbNames.h"
 #include "VectorString.h"
 
@@ -31,6 +32,22 @@ const VectorString& CharacterStateDiscrete::getClass() const {
 
     static VectorString rbClass = VectorString( CharacterStateDiscrete_name ) + RbObject::getClass();
     return rbClass;
+}
+
+
+/** Initialize and return a conditional likelihood for this state */
+CondLike* CharacterStateDiscrete::getCondLike(void) {
+
+    CondLike* cl = new CondLike(1, numStates);
+    double* p = &(*cl)[0];
+    for (size_t i=0; i<numStates; i++)
+        {
+        if (value[i] == true)
+            p[i] = 1.0;
+        else
+            p[i] = 0.0;
+        }
+    return cl;
 }
 
 

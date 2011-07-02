@@ -13,6 +13,7 @@
  * $Id$
  */
 
+#include "CondLike.h"
 #include "DnaState.h"
 #include "RbNames.h"
 #include "VectorString.h"

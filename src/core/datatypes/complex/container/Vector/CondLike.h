@@ -48,6 +48,7 @@ class CondLike : public MemberObject {
 
     private:
         std::valarray<double>            clArray;                                                           //!< Array of conditional likelihoods
+        std::valarray<double>            lnScaleArray;                                                      //!< Array holding the logs of the scaling factors
         size_t                           numChars;                                                          //!< Number of characters
         size_t                           numStates;                                                         //!< Number of states
 };

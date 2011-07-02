@@ -163,7 +163,7 @@ double IntegratorNode::calculateLnProbability( void ) {
     const CondLike* condLikePtr = static_cast<const CondLike*>( condLikes->getValue() );
     size_t          numChars    = condLikePtr->getNumChars();
     size_t          numStates   = condLikePtr->getNumStates();
-    const double*   cL          = condLikePtr->getPointerToFirstElement();
+    const double*   cL          = &(*condLikePtr)[0];
     const Simplex*  m           = static_cast<DistributionCategorical*>( distribution )->getProbabilityMassVector();
 
     // Initialize C array with pi values (I suspect this is faster than using the simplex directly)
