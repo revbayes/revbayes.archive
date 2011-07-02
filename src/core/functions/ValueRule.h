@@ -28,6 +28,8 @@ class DAGNode;
 class RbObject;
 class VectorString;
 
+
+
 class ValueRule : public ArgumentRule {
 
     public:
@@ -38,8 +40,8 @@ class ValueRule : public ArgumentRule {
 
         // Basic utility functions
         virtual ValueRule*          clone(void) const { return new ValueRule(*this); }                                               //!< Clone object
-        virtual const VectorString& getClass(void) const;                                                                               //!< Get class vector
-        std::string                 richInfo(void) const;                                                                               //!< General info on object
+        virtual const VectorString& getClass(void) const;                                                                            //!< Get class vector
+        std::string                 richInfo(void) const;                                                                            //!< General info on object
 
 };
 

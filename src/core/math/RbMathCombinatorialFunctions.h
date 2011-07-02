@@ -16,6 +16,8 @@
 
 #include <vector>
 
+
+
 namespace RbMath {
 
     double                      choose(double n, double k);                                                     //!< Calculate the factorial 

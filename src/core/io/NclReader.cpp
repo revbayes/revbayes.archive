@@ -247,8 +247,7 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
 CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 
     // check that the character block is of the correct type
-	if ( charblock->GetDataType() != NxsCharactersBlock::dna && 
-         charblock->GetDataType() != NxsCharactersBlock::nucleotide )
+	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
         return NULL;
 
     // get the set of characters (and the number of taxa)
