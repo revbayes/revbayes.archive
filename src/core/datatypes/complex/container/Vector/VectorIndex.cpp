@@ -24,6 +24,7 @@
 #include "VectorString.h"
 
 
+
 /** Construct empty vector */
 VectorIndex::VectorIndex( void ) : VectorObject() {
 }
@@ -123,7 +124,6 @@ std::string VectorIndex::richInfo( void ) const {
     std::ostringstream o;
     o <<  "VectorIndex: value = ";
     printValue( o );
-    
     return o.str();
 }
 

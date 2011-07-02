@@ -140,9 +140,9 @@ void RateMatrix::calculateCijk(void) {
         MatrixReal& ev  = theEigenSystem->getEigenvectors();
         MatrixReal& iev = theEigenSystem->getInverseEigenvectors();
         double* pc = &c_ijk[0];
-        for (int i=0; i<numStates; i++)
-            for (int j=0; j<numStates; j++)
-                for (int k=0; k<numStates; k++)
+        for (size_t i=0; i<numStates; i++)
+            for (size_t j=0; j<numStates; j++)
+                for (size_t k=0; k<numStates; k++)
                     *(pc++) = ev[i][k] * iev[k][j];   
         }
     else
@@ -151,9 +151,9 @@ void RateMatrix::calculateCijk(void) {
         MatrixComplex& cev  = theEigenSystem->getComplexEigenvectors();
         MatrixComplex& ciev = theEigenSystem->getComplexInverseEigenvectors();
         std::complex<double>* pc = &cc_ijk[0];
-        for (int i=0; i<numStates; i++)
-            for (int j=0; j<numStates; j++)
-                for (int k=0; k<numStates; k++)
+        for (size_t i=0; i<numStates; i++)
+            for (size_t j=0; j<numStates; j++)
+                for (size_t k=0; k<numStates; k++)
                     *(pc++) = cev[i][k] * ciev[k][j];
         }
 }
@@ -252,8 +252,8 @@ void RateMatrix::calculateTransitionProbabilities(double t, TransitionProbabilit
 bool RateMatrix::checkTimeReversibity(double tolerance) {
 	
 	double diff = 0.0;
-	for (int i=0; i<numStates; i++)
-		for (int j=i+1; j<numStates; j++)
+	for (size_t i=0; i<numStates; i++)
+		for (size_t j=i+1; j<numStates; j++)
 			diff += fabs( (*theStationaryFreqs)[i] * (*theRateMatrix)[i][j] - (*theStationaryFreqs)[j] * (*theRateMatrix)[j][i] );
     reversibilityChecked = true;
 	if (diff < tolerance)

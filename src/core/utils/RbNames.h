@@ -42,6 +42,7 @@ const std::string CharacterContinuous_name                      = "Continuous Ch
 const std::string CharacterStateDiscrete_name                   = "Discrete Character";
 const std::string CharacterState_name                           = "Character State";
 const std::string Complex_name                                  = "Complex Number";
+const std::string CondLike_name                                 = "Conditional Likelihood";
 const std::string ConstantNode_name                             = "Constant Node";
 const std::string ConstructorFunction_name                      = "constructor function";
 const std::string Container_name                                = "container";

@@ -27,7 +27,7 @@
 #include "RbNames.h"
 #include "Simplex.h"
 #include "UserInterface.h"
-#include "VectorCondLike.h"
+#include "CondLike.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -160,11 +160,11 @@ IntegratorNode& IntegratorNode::operator=( const IntegratorNode& x ) {
 double IntegratorNode::calculateLnProbability( void ) {
 
     // Get all the values we need
-    const VectorCondLike*   condLikePtr = static_cast<const VectorCondLike*>( condLikes->getValue() );
-    size_t                  numChars    = condLikePtr->getNumChars();
-    size_t                  numStates   = condLikePtr->getNumStates();
-    const double*           cL          = condLikePtr->getCondLikeCArray();
-    const Simplex*          m           = static_cast<DistributionCategorical*>( distribution )->getProbabilityMassVector();
+    const CondLike* condLikePtr = static_cast<const CondLike*>( condLikes->getValue() );
+    size_t          numChars    = condLikePtr->getNumChars();
+    size_t          numStates   = condLikePtr->getNumStates();
+    const double*   cL          = condLikePtr->getPointerToFirstElement();
+    const Simplex*  m           = static_cast<DistributionCategorical*>( distribution )->getProbabilityMassVector();
 
     // Initialize C array with pi values (I suspect this is faster than using the simplex directly)
     double*                 pi          = new double[ numStates ];
