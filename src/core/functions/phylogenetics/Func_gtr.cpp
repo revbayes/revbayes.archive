@@ -1,8 +1,9 @@
 /**
  * @file
- * This file contains the implementation of Func_gtr.
+ * This file contains the implementation of Func_gtr, a class
+ * used to construct a GTR model of DNA substitution.
  *
- * @brief Implementation of Func_readAlingment
+ * @brief Implementation of Func_gtr
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -43,32 +44,22 @@ Func_gtr* Func_gtr::clone(void) const {
 DAGNode* Func_gtr::execute(void) {
 
     // get the information from the arguments for reading the file
-    //const Simplex* r = static_cast<const Simplex*>( args[0].getValue() );
-    //const Simplex* f = static_cast<const Simplex*>( args[1].getValue() );
-    
-    // TEMP: Initialize two simplices that mimic the simplices that are passed
-    // into the function
-    std::vector<double> vF, vR;
-    for (size_t i=0; i<4; i++)
-        vF.push_back( (double)(i+1) );
-    for (size_t i=0; i<6; i++)
-        vR.push_back( 1.0/6.0 );
-    Simplex f(vF);
-    Simplex r(vR);
+    const Simplex* r = static_cast<const Simplex*>( args[0].getValue() );
+    const Simplex* f = static_cast<const Simplex*>( args[1].getValue() );
     
     // initialize the number of states
     const size_t nStates = 4;
     
     // check the sizes of the simplices, to make certain that they are consistent
     // with a model with nStates states
-    if ( f.getElementsSize() != nStates )
+    if ( f->getElementsSize() != nStates )
         {
         std::stringstream o;
         o << "The simplex containing the state frequencies is not of size ";
         o << nStates;
         throw( RbException(o.str()) );
         }
-    if (r.getElementsSize() != nStates*(nStates-1)/2)
+    if (r->getElementsSize() != nStates*(nStates-1)/2)
         {
         std::stringstream o;
         o << "The simplex containing the rates is not of size ";
@@ -86,8 +77,8 @@ DAGNode* Func_gtr::execute(void) {
         {
         for (size_t j=i+1; j<nStates; j++)
             {
-            (*m)[i][j] = r[k] * f[j];
-            (*m)[j][i] = r[k] * f[i];
+            (*m)[i][j] = (*r)[k] * (*f)[j];
+            (*m)[j][i] = (*r)[k] * (*f)[i];
             k++;
             }
         }
@@ -101,7 +92,7 @@ DAGNode* Func_gtr::execute(void) {
     // frequencies using only knowledge of the rate matrix. Second, we can set
     // the stationary frequencies directly. This is what we do here, because the
     // stationary frequencies have been build directly into the rate matrix.
-    std::vector<double> tempFreqs = f.getValue();
+    std::vector<double> tempFreqs = f->getValue();
     m->setStationaryFrequencies(tempFreqs);
         
     // rescale the rate matrix such that the average rate is 1.0
@@ -110,6 +101,9 @@ DAGNode* Func_gtr::execute(void) {
     // we know that the GTR model is time reversible (just look at the name of the
     // model!), so we might as well set its reversibility flag directly
     m->setIsTimeReversible(true);
+    
+    // Now that we have set the rate matrix, we should update its eigen system
+    m->updateEigenSystem();
     
     // wrap up the rate matrix object and send it on its way to parser-ville
     return m->wrapIntoVariable();
@@ -124,8 +118,8 @@ const ArgumentRules& Func_gtr::getArgumentRules(void) const {
     
     if (!rulesSet) 
         {
-        //argumentRules.push_back( new ValueRule( "rates", Simplex_name ) );
-        //argumentRules.push_back( new ValueRule( "freqs", Simplex_name ) );
+        argumentRules.push_back( new ValueRule( "rates", Simplex_name ) );
+        argumentRules.push_back( new ValueRule( "freqs", Simplex_name ) );
         rulesSet = true;
         }
             

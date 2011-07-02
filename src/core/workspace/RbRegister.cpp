@@ -51,6 +51,7 @@
 #include "RealPos.h"
 #include "RnaState.h"
 #include "StandardState.h"
+#include "TransitionProbabilityMatrix.h"
 
 /* Container types (alphabetic order) */
 #include "MatrixComplex.h"
@@ -127,6 +128,7 @@
 /* Phylogeny functions */
 #include "Func_gtr.h"
 #include "Func_readAlignment.h"
+#include "Func_tiprobs.h"
 
 /* Regular templated functions */
 #include "Func_transpose.h"
@@ -165,6 +167,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RealPos()                        );
         addType( new RnaState()                       );
         addType( new StandardState()                  );
+        addType( new TransitionProbabilityMatrix()    );
 
         /* Add container types (alphabetic order) */
         addType( new MatrixComplex()                );
@@ -324,28 +327,29 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "sqrt",      new Func_sqrt()  );
         
         /* Add phylogeny-related functions */
-        addFunction( "gtr",       new Func_gtr()          );
+        addFunction( "gtr",       new Func_gtr()           );
         addFunction( "read",      new Func_readAlignment() );
+        addFunction( "tiprobs",   new Func_tiprobs()       );
 
         /* Add regular templated functions */
-        addFunction( "s",         new Func_s<   Integer         >() );
-        addFunction( "s",         new Func_s<   RealPos         >() );
-        addFunction( "s",         new Func_s<   VectorRealPos   >() );
-        addFunction( "transpose", new Func_transpose< MatrixReal >() );
-        addFunction( "v",         new Func_v<   Boolean,                        VectorBoolean                   >() );
-        addFunction( "v",         new Func_v<   Integer,                        VectorInteger                   >() );
-        addFunction( "v",         new Func_v<   Natural,                        VectorNatural                   >() );
-        addFunction( "v",         new Func_v<   Real,                           VectorReal                      >() );
-        addFunction( "v",         new Func_v<   RealPos,                        VectorRealPos                   >() );
-        addFunction( "v",         new Func_v<   Complex,                        VectorComplex                   >() );
-        addFunction( "v",         new Func_v<   RbString,                       VectorString                    >() );
-        addFunction( "v",         new Func_v<   DnaState,                       VectorDnaStates                 >() );
-        addFunction( "v",         new Func_v<   RnaState,                       VectorRnaStates                 >() );
-        addFunction( "v",         new Func_v<   AminoAcidState,                 VectorAminoAcidStates           >() );
-        addFunction( "v",         new Func_v<   StandardState,                  VectorStandardStates            >() );
-        addFunction( "v",         new Func_v<   CharacterObservationContinuous, VectorContinuousObservations    >() );
-        addFunction( "v",         new Func_v<   VectorReal,                     MatrixReal                      >() );
-        addFunction( "v",         new Func_v<   VectorComplex,                  MatrixComplex                   >() );
+        addFunction( "s",         new Func_s<         Integer                                                         >() );
+        addFunction( "s",         new Func_s<         RealPos                                                         >() );
+        addFunction( "s",         new Func_s<         VectorRealPos                                                   >() );
+        addFunction( "transpose", new Func_transpose< MatrixReal                                                      >() );
+        addFunction( "v",         new Func_v<         Boolean,                        VectorBoolean                   >() );
+        addFunction( "v",         new Func_v<         Integer,                        VectorInteger                   >() );
+        addFunction( "v",         new Func_v<         Natural,                        VectorNatural                   >() );
+        addFunction( "v",         new Func_v<         Real,                           VectorReal                      >() );
+        addFunction( "v",         new Func_v<         RealPos,                        VectorRealPos                   >() );
+        addFunction( "v",         new Func_v<         Complex,                        VectorComplex                   >() );
+        addFunction( "v",         new Func_v<         RbString,                       VectorString                    >() );
+        addFunction( "v",         new Func_v<         DnaState,                       VectorDnaStates                 >() );
+        addFunction( "v",         new Func_v<         RnaState,                       VectorRnaStates                 >() );
+        addFunction( "v",         new Func_v<         AminoAcidState,                 VectorAminoAcidStates           >() );
+        addFunction( "v",         new Func_v<         StandardState,                  VectorStandardStates            >() );
+        addFunction( "v",         new Func_v<         CharacterObservationContinuous, VectorContinuousObservations    >() );
+        addFunction( "v",         new Func_v<         VectorReal,                     MatrixReal                      >() );
+        addFunction( "v",         new Func_v<         VectorComplex,                  MatrixComplex                   >() );
     }
     catch(RbException& rbException) {
 
