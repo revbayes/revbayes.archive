@@ -66,6 +66,7 @@ class MatrixComplex : public Matrix {
         // Matrix functions
         std::vector<std::complex<double> >                 getContent(void) const;                                                                        //!< Get content (all elements) in an STL vector
         std::vector<std::vector<std::complex<double> > >   getValue(void) const;                                                                          //!< Get value as STL vector<vector> of complex values
+        void                                               push_back(const VectorComplex& x);                                                             //!< Push back a row vector
         void                                               setContent(const std::vector<std::complex<double> >& x);                                       //!< Set content using STL vector of complex values
         void                                               setValue(const std::vector<std::vector<std::complex<double> > >& x);                           //!< Set value using STL vector<vector> of complex values
         void                                               transpose(void);                                                                               //!< Transpose the matrix

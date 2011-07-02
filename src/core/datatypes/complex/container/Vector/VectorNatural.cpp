@@ -209,27 +209,11 @@ void VectorNatural::push_back( int x ) {
 }
 
 
-/** Push an unsigned int onto the back of the vector */
-void VectorNatural::push_back( unsigned int x ) {
-
-    elements.push_back( new Natural( x ) );
-    length[0]++;
-}
-
-
 /** Push an int onto the front of the vector after checking */
 void VectorNatural::push_front( int x ) {
 
     if ( x < 0 )
         throw RbException( "Trying to set " + Natural_name + "[] with negative value" );
-
-    elements.insert( elements.begin(), new Natural( x ) );
-    length[0]++;
-}
-
-
-/** Push an unsigned int onto the front of the vector */
-void VectorNatural::push_front( unsigned int x ) {
 
     elements.insert( elements.begin(), new Natural( x ) );
     length[0]++;

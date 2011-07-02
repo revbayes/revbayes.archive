@@ -294,7 +294,20 @@ void MatrixReal::printValue(std::ostream& o) const {
         }
     
     o.setf(previousFlags);
-    o << o.precision(previousPrecision);
+    o.precision(previousPrecision);
+}
+
+
+/** Push back a row vector */
+void MatrixReal::push_back( const VectorReal& x ) {
+
+    if ( size() == 0 )
+        length[1] = x.size();
+    else if ( x.size() != length[1] )
+        throw RbException( "Cannot make matrix with rows of unequal size" );
+
+    matrix.push_back( x.getValue() );
+    length[0]++;
 }
 
 

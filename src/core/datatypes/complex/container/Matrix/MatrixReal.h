@@ -67,6 +67,7 @@ class MatrixReal : public Matrix {
         // Matrix functions
         std::vector<double>                 getContent(void) const;                                                     //!< Get content (all elements) in an STL vector
         std::vector<std::vector<double> >   getValue(void) const;                                                       //!< Get value as STL vector<vector> of doubles
+        void                                push_back(const VectorReal& x);                                             //!< Push back a row vector
         void                                setContent(const std::vector<double>& x);                                   //!< Set content using STL vector of doubles
         void                                setValue(const std::vector<std::vector<double> >& x);                       //!< Set value using STL vector<vector> of doubles
         void                                transpose(void);                                                            //!< Transpose the matrix
@@ -86,6 +87,7 @@ class MatrixReal : public Matrix {
         MatrixReal                          operator+(const MatrixReal& A, const MatrixReal& B);                        //!< operator + 
         MatrixReal                          operator-(const MatrixReal& A, const MatrixReal& B);                        //!< operator - 
         MatrixReal                          operator*(const MatrixReal& A, const MatrixReal& B);                        //!< operator * (matrix multiplication) 
+        MatrixReal                          operator/(const MatrixReal& A, const MatrixReal& B);                        //!< operator / for matrix / matrix 
         MatrixReal&                         operator+=(MatrixReal& A, const MatrixReal& B);                             //!< operator += 
         MatrixReal&                         operator-=(MatrixReal& A, const MatrixReal& B);                             //!< operator -= 
         MatrixReal&                         operator*=(MatrixReal& A, const MatrixReal& B);                             //!< operator *= (matrix multiplication)
@@ -97,7 +99,6 @@ class MatrixReal : public Matrix {
         MatrixReal                          operator-(const MatrixReal& A, const double& b);                            //!< operator - for matrix - scalar 
         MatrixReal                          operator*(const MatrixReal& A, const double& b);                            //!< operator * for matrix * scalar 
         MatrixReal                          operator/(const MatrixReal& A, const double& b);                            //!< operator / for matrix / scalar 
-        MatrixReal                          operator/(const MatrixReal& A, const MatrixReal& B);                        //!< operator / for matrix / matrix 
         MatrixReal&                         operator+=(MatrixReal& A, const double& b);                                 //!< operator += for scalar 
         MatrixReal&                         operator-=(MatrixReal& A, const double& b);                                 //!< operator -= for scalar 
         MatrixReal&                         operator*=(MatrixReal& A, const double& b);                                 //!< operator *= for scalar 

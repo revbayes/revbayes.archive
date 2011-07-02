@@ -58,9 +58,7 @@ class VectorNatural : public Vector {
         std::vector<int>            getValue(void) const;                                           //!< Get value as STL int vector
         std::vector<unsigned int>   getUnsignedValue(void) const;                                   //!< Get value as STL unsigned int vector
         void                        push_back(int x);                                               //!< Append element to end
-        void                        push_back(unsigned int x);                                      //!< Append element to end
         void                        push_front(int x);                                              //!< Add element in front
-        void                        push_front(unsigned int x);                                     //!< Add element in front
         void                        setValue(const std::vector<int>& x);                            //!< Set the value using STL vector of int
         void                        setValue(const std::vector<unsigned int>& x);                   //!< Set the value using STL vector of unsigned int
         void                        setValue(const VectorNatural& x);                               //!< Set the value using VectorNatural

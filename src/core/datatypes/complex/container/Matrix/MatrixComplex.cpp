@@ -289,6 +289,19 @@ void MatrixComplex::printValue(std::ostream& o) const {
 }
 
 
+/** Push back a row vector */
+void MatrixComplex::push_back( const VectorComplex& x ) {
+
+    if ( size() == 0 )
+        length[1] = x.size();
+    else if ( x.size() != length[1] )
+        throw RbException( "Cannot make matrix with rows of unequal size" );
+
+    matrix.push_back( x );
+    length[0]++;
+}
+
+
 /** Overloaded container resize method */
 void MatrixComplex::resize( const std::vector<size_t>& len ) {
 

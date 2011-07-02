@@ -41,6 +41,7 @@
 #include "AminoAcidState.h"
 #include "Boolean.h"
 #include "CharacterObservationContinuous.h"
+#include "Complex.h"
 #include "DnaState.h"
 #include "Integer.h"
 #include "Natural.h"
@@ -52,9 +53,11 @@
 #include "StandardState.h"
 
 /* Container types (alphabetic order) */
+#include "MatrixComplex.h"
 #include "MatrixReal.h"
 #include "VectorAminoAcidStates.h"
 #include "VectorBoolean.h"
+#include "VectorComplex.h"
 #include "VectorContinuousObservations.h"
 #include "VectorDnaStates.h"
 #include "VectorInteger.h"
@@ -142,7 +145,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbAbstract( VectorString(RbVoid_name) ) );
         addType( new RbAbstract( VectorString(Scalar_name) ) );
 
-        /* Add normal abstract types */
+        /* Add abstract types */
         addType( new RbAbstract( VectorString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(Vector_name) + RbString(Container_name) + RbString(RbComplex_name) + RbString(RbObject_name), 1, Scalar_name ) );
         addType( new RbAbstract( VectorString(Matrix_name) + RbString(Container_name) + RbString(RbComplex_name) + RbString(RbObject_name), 2, Scalar_name ) );
@@ -151,6 +154,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add primitive types (alphabetic order) */
         addType( new AminoAcidState()                 );
         addType( new Boolean()                        );
+        addType( new Complex()                        );
         addType( new CharacterObservationContinuous() );
         addType( new DnaState()                       );
         addType( new Integer()                        );
@@ -163,6 +167,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new StandardState()                  );
 
         /* Add container types (alphabetic order) */
+        addType( new MatrixComplex()                );
         addType( new MatrixReal()                   );
         addType( new VectorAminoAcidStates()        );
         addType( new VectorBoolean()                );
@@ -322,12 +327,25 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "gtr",       new Func_gtr()          );
         addFunction( "read",      new Func_readAlignment() );
 
-        /* Add regular templated functions (alphabetic order) */
-        // TODO: Add v and s functions
+        /* Add regular templated functions */
+        addFunction( "s",         new Func_s<   Integer         >() );
+        addFunction( "s",         new Func_s<   RealPos         >() );
+        addFunction( "s",         new Func_s<   VectorRealPos   >() );
         addFunction( "transpose", new Func_transpose< MatrixReal >() );
-        addFunction( "v",         new Func_v< Real,     VectorReal    >() );
-        addFunction( "v",         new Func_v< Integer,  VectorInteger >() );
-
+        addFunction( "v",         new Func_v<   Boolean,                        VectorBoolean                   >() );
+        addFunction( "v",         new Func_v<   Integer,                        VectorInteger                   >() );
+        addFunction( "v",         new Func_v<   Natural,                        VectorNatural                   >() );
+        addFunction( "v",         new Func_v<   Real,                           VectorReal                      >() );
+        addFunction( "v",         new Func_v<   RealPos,                        VectorRealPos                   >() );
+        addFunction( "v",         new Func_v<   Complex,                        VectorComplex                   >() );
+        addFunction( "v",         new Func_v<   RbString,                       VectorString                    >() );
+        addFunction( "v",         new Func_v<   DnaState,                       VectorDnaStates                 >() );
+        addFunction( "v",         new Func_v<   RnaState,                       VectorRnaStates                 >() );
+        addFunction( "v",         new Func_v<   AminoAcidState,                 VectorAminoAcidStates           >() );
+        addFunction( "v",         new Func_v<   StandardState,                  VectorStandardStates            >() );
+        addFunction( "v",         new Func_v<   CharacterObservationContinuous, VectorContinuousObservations    >() );
+        addFunction( "v",         new Func_v<   VectorReal,                     MatrixReal                      >() );
+        addFunction( "v",         new Func_v<   VectorComplex,                  MatrixComplex                   >() );
     }
     catch(RbException& rbException) {
 
