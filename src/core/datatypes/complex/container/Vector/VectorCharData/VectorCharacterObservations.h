@@ -22,14 +22,14 @@
 #include <string>
 #include <vector>
 
-class CharacterObservation;
+class Character;
 
 
 class VectorCharacterObservations : public Vector {
 
     public:
-	    virtual CharacterObservation&           operator[](size_t i);                                     //!< Index op allowing change
-	    virtual const CharacterObservation&     operator[](size_t i) const;                               //!< Const index op
+	    virtual Character&                      operator[](size_t i);                                     //!< Index op allowing change
+	    virtual const Character&                operator[](size_t i) const;                               //!< Const index op
 
         // Basic utility functions you have to override
         virtual VectorCharacterObservations*    clone(void) const = 0;                                    //!< Clone object

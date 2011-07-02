@@ -40,7 +40,7 @@
 /* Primitive types (alphabetic order) */
 #include "AminoAcidState.h"
 #include "Boolean.h"
-#include "CharacterObservationContinuous.h"
+#include "CharacterContinuous.h"
 #include "Complex.h"
 #include "DnaState.h"
 #include "Integer.h"
@@ -157,7 +157,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new AminoAcidState()                 );
         addType( new Boolean()                        );
         addType( new Complex()                        );
-        addType( new CharacterObservationContinuous() );
+        addType( new CharacterContinuous()            );
         addType( new DnaState()                       );
         addType( new Integer()                        );
         addType( new Natural()                        );
@@ -347,7 +347,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "v",         new Func_v<         RnaState,                       VectorRnaStates                 >() );
         addFunction( "v",         new Func_v<         AminoAcidState,                 VectorAminoAcidStates           >() );
         addFunction( "v",         new Func_v<         StandardState,                  VectorStandardStates            >() );
-        addFunction( "v",         new Func_v<         CharacterObservationContinuous, VectorContinuousObservations    >() );
+        addFunction( "v",         new Func_v<         CharacterContinuous,            VectorContinuousObservations    >() );
         addFunction( "v",         new Func_v<         VectorReal,                     MatrixReal                      >() );
         addFunction( "v",         new Func_v<         VectorComplex,                  MatrixComplex                   >() );
     }

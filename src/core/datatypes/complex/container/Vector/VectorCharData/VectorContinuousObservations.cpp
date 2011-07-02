@@ -16,7 +16,7 @@
  * $Id$
  */
 
-#include "CharacterObservationContinuous.h"
+#include "CharacterContinuous.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
@@ -29,35 +29,35 @@
 
 
 /** Construct empty DNA vector */
-VectorContinuousObservations::VectorContinuousObservations(void) : VectorCharacterObservations(CharacterObservationContinuous_name) {
+VectorContinuousObservations::VectorContinuousObservations(void) : VectorCharacterObservations(CharacterContinuous_name) {
     
 }
 
 
 /** Copy constructor */
-VectorContinuousObservations::VectorContinuousObservations(const VectorContinuousObservations& x) : VectorCharacterObservations(CharacterObservationContinuous_name) {
+VectorContinuousObservations::VectorContinuousObservations(const VectorContinuousObservations& x) : VectorCharacterObservations(CharacterContinuous_name) {
 
     for (size_t i=0; i<x.size(); i++)
-        elements.push_back( new CharacterObservationContinuous(x[i]) );
+        elements.push_back( new CharacterContinuous(x[i]) );
     length[0] = elements.size();
 }
 
 
 /** Subscript operator */
-CharacterObservationContinuous& VectorContinuousObservations::operator[](size_t i) {
+CharacterContinuous& VectorContinuousObservations::operator[](size_t i) {
 
     if (i >= elements.size())
         throw RbException("Index out of bounds");
-    return *( static_cast<CharacterObservationContinuous*>(elements[i]) );
+    return *( static_cast<CharacterContinuous*>(elements[i]) );
 }
 
 
 /** Subscript const operator */
-const CharacterObservationContinuous& VectorContinuousObservations::operator[](size_t i) const {
+const CharacterContinuous& VectorContinuousObservations::operator[](size_t i) const {
 
     if (i >= elements.size())
         throw RbException("Index out of bounds");
-    return *( static_cast<CharacterObservationContinuous*>(elements[i]) );
+    return *( static_cast<CharacterContinuous*>(elements[i]) );
 }
 
 
@@ -93,7 +93,7 @@ VectorContinuousObservations VectorContinuousObservations::operator+(const Vecto
 
 
 /** Concatenation with operator+ (StandardState) */
-VectorContinuousObservations VectorContinuousObservations::operator+(const CharacterObservationContinuous& x) const {
+VectorContinuousObservations VectorContinuousObservations::operator+(const CharacterContinuous& x) const {
 
     VectorContinuousObservations tempVec = *this;
     tempVec.push_back( x );
@@ -117,12 +117,12 @@ const VectorString& VectorContinuousObservations::getClass(void) const {
 
 
 /** Get STL vector of strings */
-std::vector<CharacterObservationContinuous*> VectorContinuousObservations::getStdVector(void) const {	 
+std::vector<CharacterContinuous*> VectorContinuousObservations::getStdVector(void) const {	 
 
-    std::vector<CharacterObservationContinuous*> continuousVector;	 
+    std::vector<CharacterContinuous*> continuousVector;	 
     for (size_t i=0; i<elements.size(); i++) 
         {	 
-        CharacterObservationContinuous* d = static_cast<CharacterObservationContinuous*>( elements.at(i) );
+        CharacterContinuous* d = static_cast<CharacterContinuous*>( elements.at(i) );
         continuousVector.push_back(d);	 
         }	 
     return continuousVector;	 
@@ -130,9 +130,9 @@ std::vector<CharacterObservationContinuous*> VectorContinuousObservations::getSt
 
 
 /** Append string element to end of vector, updating length in process */
-void VectorContinuousObservations::push_back(CharacterObservationContinuous x) {
+void VectorContinuousObservations::push_back(CharacterContinuous x) {
 
-    elements.push_back( new CharacterObservationContinuous(x) );
+    elements.push_back( new CharacterContinuous(x) );
     length[0]++;
 }
 

@@ -20,7 +20,7 @@
 
 
 /** Default constructor */
-NucleotideState::NucleotideState(void) : CharacterObservationDiscrete( 4 ) {
+NucleotideState::NucleotideState(void) : CharacterStateDiscrete( 4 ) {
 
 }
 

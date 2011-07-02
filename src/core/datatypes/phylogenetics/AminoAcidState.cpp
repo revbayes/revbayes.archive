@@ -24,28 +24,28 @@ const std::string AminoAcidState::stateLabels = "ARNDCQEGHILKMFPSTWYV";
 
 
 /** Default constructor */
-AminoAcidState::AminoAcidState(void) : CharacterObservationDiscrete(20) {
+AminoAcidState::AminoAcidState(void) : CharacterStateDiscrete(20) {
 
     setState('n');
 }
 
 
 /** Copy constructor */
-AminoAcidState::AminoAcidState(const AminoAcidState& s) : CharacterObservationDiscrete(20) {
+AminoAcidState::AminoAcidState(const AminoAcidState& s) : CharacterStateDiscrete(20) {
 
     value = s.value;
 }
 
 
 /** Constructor that sets the observation */
-AminoAcidState::AminoAcidState(const char s) : CharacterObservationDiscrete(20) {
+AminoAcidState::AminoAcidState(const char s) : CharacterStateDiscrete(20) {
 
     setState(s);
 }
 
 
 /** Equals comparison */
-bool AminoAcidState::operator==(const CharacterObservation& x) const {
+bool AminoAcidState::operator==(const Character& x) const {
 
     const AminoAcidState* derivedX = static_cast<const AminoAcidState*>(&x);
     for (size_t i=0; i<numStates; i++) 
@@ -58,7 +58,7 @@ bool AminoAcidState::operator==(const CharacterObservation& x) const {
 
 
 /** Not equals comparison */
-bool AminoAcidState::operator!=(const CharacterObservation& x) const {
+bool AminoAcidState::operator!=(const Character& x) const {
 
     return !operator==(x);
 }

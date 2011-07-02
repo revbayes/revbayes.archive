@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of CharacterObservationDiscrete, which is
+ * This file contains the implementation of CharacterStateDiscrete, which is
  * the abstract base class for discrete character data types in RevBayes.
  *
- * @brief Implementation of CharacterObservationDiscrete
+ * @brief Implementation of CharacterStateDiscrete
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -13,29 +13,29 @@
  * $Id$
  */
 
-#include "CharacterObservationDiscrete.h"
+#include "CharacterStateDiscrete.h"
 #include "RbNames.h"
 #include "VectorString.h"
 
 
 
 /** Constructor taking the number of states */
-CharacterObservationDiscrete::CharacterObservationDiscrete(size_t n) : CharacterObservation(), numStates(n) {
+CharacterStateDiscrete::CharacterStateDiscrete(size_t n) : Character(), numStates(n) {
 
     value.resize(numStates);
 }
 
 
 /** Get class vector describing type of object */
-const VectorString& CharacterObservationDiscrete::getClass() const {
+const VectorString& CharacterStateDiscrete::getClass() const {
 
-    static VectorString rbClass = VectorString( CharacterObservationDiscrete_name ) + RbObject::getClass();
+    static VectorString rbClass = VectorString( CharacterStateDiscrete_name ) + RbObject::getClass();
     return rbClass;
 }
 
 
 /** Return the number of observed states for this character (any number greater than one indicates ambiguity) */
-size_t CharacterObservationDiscrete::getNumOnStates(void) const {
+size_t CharacterStateDiscrete::getNumOnStates(void) const {
 
     size_t nOn = 0;
     for (size_t i=0; i<value.size(); i++)
@@ -48,7 +48,7 @@ size_t CharacterObservationDiscrete::getNumOnStates(void) const {
 
 
 /** Is the character missing or ambiguous */
-bool CharacterObservationDiscrete::isMissAmbig(void) const {
+bool CharacterStateDiscrete::isMissAmbig(void) const {
 
     if ( getNumOnStates() > 1 )
         return true;
@@ -57,7 +57,7 @@ bool CharacterObservationDiscrete::isMissAmbig(void) const {
 
 
 /** Set the number of states */
-void CharacterObservationDiscrete::setNumStates(size_t n) {
+void CharacterStateDiscrete::setNumStates(size_t n) {
 
     numStates = n;
     value.resize(n);

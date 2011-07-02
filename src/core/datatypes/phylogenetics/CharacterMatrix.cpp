@@ -17,8 +17,8 @@
  * $Id: Mcmc.h 211 2009-12-29 22:23:09Z ronquist $
  */
 
+#include "Character.h"
 #include "CharacterMatrix.h"
-#include "CharacterObservation.h"
 #include "DnaState.h"
 #include "MemberFunction.h"
 #include "MemberNode.h"
@@ -295,7 +295,7 @@ size_t CharacterMatrix::indexOfTaxonWithName(std::string& s) {
 /** Is this character pattern constant? */
 bool CharacterMatrix::isCharacterConstant(size_t idx) {
 
-    CharacterObservation* f = NULL;
+    Character* f = NULL;
     for (size_t i=0; i<getNumTaxa(); i++)
         {
         if ( isTaxonExcluded(i) == false )
@@ -306,7 +306,7 @@ bool CharacterMatrix::isCharacterConstant(size_t idx) {
                 }
             else
                 {
-                CharacterObservation* s = &(*taxonObservations[i])[idx];
+                Character* s = &(*taxonObservations[i])[idx];
                 if ( (*f) != (*s) )
                     return false;
                 }
@@ -333,7 +333,7 @@ bool CharacterMatrix::isCharacterMissAmbig(size_t idx) {
         {
         if ( isTaxonExcluded(i) == false )
             {
-            CharacterObservation* c = &(*taxonObservations[i])[idx];
+            Character* c = &(*taxonObservations[i])[idx];
             if ( c->isMissAmbig() == true )
                 return true;
             }

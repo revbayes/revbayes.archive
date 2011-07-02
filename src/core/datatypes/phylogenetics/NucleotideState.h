@@ -17,17 +17,17 @@
 #ifndef NucleotideState_H
 #define NucleotideState_H
 
-#include "CharacterObservationDiscrete.h"
+#include "CharacterStateDiscrete.h"
 #include <ostream>
 #include <vector>
 
 
 
-class NucleotideState : public CharacterObservationDiscrete {
+class NucleotideState : public CharacterStateDiscrete {
 
     public:
-        virtual bool                    operator==(const CharacterObservation& x) const = 0; //!< Equality
-        virtual bool                    operator!=(const CharacterObservation& x) const = 0; //!< Inequality
+        virtual bool                    operator==(const Character& x) const = 0;            //!< Equality
+        virtual bool                    operator!=(const Character& x) const = 0;            //!< Inequality
 
         // Basic utility functions you should not have to override
         virtual void                    printValue(std::ostream& o) const = 0;               //!< Print value (for user)

@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of CharacterObservationContinuous, which is
+ * This file contains the implementation of CharacterContinuous, which is
  * the base class for the continuous character data type in RevBayes.
  *
- * @brief Implementation of CharacterObservationContinuous
+ * @brief Implementation of CharacterContinuous
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -14,7 +14,7 @@
  */
 
 #include "RbNames.h"
-#include "CharacterObservationContinuous.h"
+#include "CharacterContinuous.h"
 #include "VectorString.h"
 #include <cmath>
 #include <sstream>
@@ -22,7 +22,7 @@
 
 
 /** Default constructor */
-CharacterObservationContinuous::CharacterObservationContinuous(void) : CharacterObservation() {
+CharacterContinuous::CharacterContinuous(void) : Character() {
 
     mean     = 0.0;
     variance = 0.0;
@@ -30,7 +30,7 @@ CharacterObservationContinuous::CharacterObservationContinuous(void) : Character
 
 
 /** Copy constructor */
-CharacterObservationContinuous::CharacterObservationContinuous(const CharacterObservationContinuous& s) : CharacterObservation() {
+CharacterContinuous::CharacterContinuous(const CharacterContinuous& s) : Character() {
 
     mean     = s.mean;
     variance = s.variance;
@@ -38,7 +38,7 @@ CharacterObservationContinuous::CharacterObservationContinuous(const CharacterOb
 
 
 /** Constructor that sets the mean value */
-CharacterObservationContinuous::CharacterObservationContinuous(const double x) : CharacterObservation() {
+CharacterContinuous::CharacterContinuous(const double x) : Character() {
 
     mean     = x;
     variance = 0.0;
@@ -46,7 +46,7 @@ CharacterObservationContinuous::CharacterObservationContinuous(const double x) :
 
 
 /** Constructor that sets the mean and variance */
-CharacterObservationContinuous::CharacterObservationContinuous(const double x, const double v) : CharacterObservation() {
+CharacterContinuous::CharacterContinuous(const double x, const double v) : Character() {
 
     mean     = x;
     variance = v;
@@ -54,9 +54,9 @@ CharacterObservationContinuous::CharacterObservationContinuous(const double x, c
 
 
 /** Equals comparison */
-bool CharacterObservationContinuous::operator==(const CharacterObservation& x) const {
+bool CharacterContinuous::operator==(const Character& x) const {
 
-    const CharacterObservationContinuous* derivedX = static_cast<const CharacterObservationContinuous*>(&x);
+    const CharacterContinuous* derivedX = static_cast<const CharacterContinuous*>(&x);
 
     if ( fabs(mean - derivedX->mean) < 0.000000001 && fabs(variance - derivedX->variance) < 0.000000001 )
         return true;
@@ -65,29 +65,29 @@ bool CharacterObservationContinuous::operator==(const CharacterObservation& x) c
 
 
 /** Not equals comparison */
-bool CharacterObservationContinuous::operator!=(const CharacterObservation& x) const {
+bool CharacterContinuous::operator!=(const Character& x) const {
 
     return !operator==(x);
 }
 
 
 /** Clone object */
-CharacterObservationContinuous* CharacterObservationContinuous::clone(void) const {
+CharacterContinuous* CharacterContinuous::clone(void) const {
 
-	return new CharacterObservationContinuous( *this );
+	return new CharacterContinuous( *this );
 }
 
 
 /** Get class vector describing type of object */
-const VectorString& CharacterObservationContinuous::getClass(void) const {
+const VectorString& CharacterContinuous::getClass(void) const {
 
-    static VectorString rbClass = VectorString( CharacterObservationContinuous_name ) + RbObject::getClass();
+    static VectorString rbClass = VectorString( CharacterContinuous_name ) + RbObject::getClass();
     return rbClass;
 }
 
 
 /** Print information for the user */
-void CharacterObservationContinuous::printValue(std::ostream &o) const {
+void CharacterContinuous::printValue(std::ostream &o) const {
 
     if ( fabs(variance - 0.0) < 0.00000001 )
         o << mean;
@@ -97,7 +97,7 @@ void CharacterObservationContinuous::printValue(std::ostream &o) const {
 
 
 /** Get complete info about object */
-std::string CharacterObservationContinuous::richInfo( void ) const {
+std::string CharacterContinuous::richInfo( void ) const {
 
 	std::ostringstream o;
     printValue( o );

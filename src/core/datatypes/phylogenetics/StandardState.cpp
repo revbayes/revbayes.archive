@@ -21,19 +21,19 @@
 
 
 /** Default constructor */
-StandardState::StandardState(void) : CharacterObservationDiscrete(1) {
+StandardState::StandardState(void) : CharacterStateDiscrete(1) {
 
 }
 
 
 /** Copy constructor */
-StandardState::StandardState(const StandardState& s) : CharacterObservationDiscrete(s.numStates) {
+StandardState::StandardState(const StandardState& s) : CharacterStateDiscrete(s.numStates) {
 
     value = s.value;
 }
 
 
-StandardState::StandardState(const std::string ss) : CharacterObservationDiscrete(ss.size()) {
+StandardState::StandardState(const std::string ss) : CharacterStateDiscrete(ss.size()) {
 
     setNumStates(ss.size());
     setStateLabels(ss);
@@ -41,7 +41,7 @@ StandardState::StandardState(const std::string ss) : CharacterObservationDiscret
 
 
 /** Equals comparison */
-bool StandardState::operator==(const CharacterObservation& x) const {
+bool StandardState::operator==(const Character& x) const {
 
     const StandardState* derivedX = static_cast<const StandardState*>(&x);
     for (size_t i=0; i<numStates; i++) 
@@ -54,7 +54,7 @@ bool StandardState::operator==(const CharacterObservation& x) const {
 
 
 /** Not equals comparison */
-bool StandardState::operator!=(const CharacterObservation& x) const {
+bool StandardState::operator!=(const Character& x) const {
 
     return !operator==(x);
 }

@@ -52,7 +52,7 @@ DnaState::DnaState(const std::set<char> s) : NucleotideState() {
 
 
 /** Equals comparison */
-bool DnaState::operator==(const CharacterObservation& x) const {
+bool DnaState::operator==(const Character& x) const {
 
     const DnaState* derivedX = static_cast<const DnaState*>(&x);
     for (size_t i=0; i<numStates; i++) 
@@ -65,7 +65,7 @@ bool DnaState::operator==(const CharacterObservation& x) const {
 
 
 /** Not equals comparison */
-bool DnaState::operator!=(const CharacterObservation& x) const {
+bool DnaState::operator!=(const Character& x) const {
 
     return !operator==(x);
 }

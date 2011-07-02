@@ -17,8 +17,8 @@
  */
 
 #include "AminoAcidState.h"
+#include "CharacterContinuous.h"
 #include "CharacterMatrix.h"
-#include "CharacterObservationContinuous.h"
 #include "DnaState.h"
 #include "NclReader.h"
 #include "RbNames.h"
@@ -224,7 +224,7 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
         // add the real-valued observation
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
             {	
-            CharacterObservationContinuous contObs;
+            CharacterContinuous contObs;
             const std::vector<double>& x = charblock->GetContinuousValues( origTaxIndex, *cit, std::string("AVERAGE") );
             contObs.setValue(x[0]);
             dataVec->push_back( contObs );

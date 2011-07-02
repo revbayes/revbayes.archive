@@ -23,7 +23,7 @@
 #include <iostream>
 #include <vector>
 
-class CharacterObservationContinuous;
+class CharacterContinuous;
 
 
 
@@ -34,12 +34,12 @@ class VectorContinuousObservations : public VectorCharacterObservations {
                                                      VectorContinuousObservations(const VectorContinuousObservations& x);         //!< Construct vector with a vector of continuous characters
 
         // Overloaded operators
-	    CharacterObservationContinuous&              operator[](size_t i);                                                        //!< Index op allowing change
-	    const CharacterObservationContinuous&        operator[](size_t i) const;                                                  //!< Const index op
+	    CharacterContinuous&                         operator[](size_t i);                                                        //!< Index op allowing change
+	    const CharacterContinuous&                   operator[](size_t i) const;                                                  //!< Const index op
         bool                                         operator==(const VectorContinuousObservations& x) const;                     //!< Equality
         bool                                         operator!=(const VectorContinuousObservations& x) const;                     //!< Inequality
         VectorContinuousObservations                 operator+(const VectorContinuousObservations& x) const;                      //!< Concatenate
-        VectorContinuousObservations                 operator+(const CharacterObservationContinuous& x) const;                    //!< Concatenate
+        VectorContinuousObservations                 operator+(const CharacterContinuous& x) const;                               //!< Concatenate
 
         // Basic utility functions
         VectorContinuousObservations*                clone(void) const;                                                           //!< Clone object
@@ -48,8 +48,8 @@ class VectorContinuousObservations : public VectorCharacterObservations {
         std::string                                  richInfo(void) const;                                                        //!< Complete info about object
         
         // Vector functions
-	    void                                         push_back(CharacterObservationContinuous x);                                 //!< Add element
-        std::vector<CharacterObservationContinuous*> getStdVector(void) const;                                                    //!< Get the value vector as a std::vector
+	    void                                         push_back(CharacterContinuous x);                                            //!< Add element
+        std::vector<CharacterContinuous*>            getStdVector(void) const;                                                    //!< Get the value vector as a std::vector
 
     protected:
         RbObject*                                    getDefaultElement(void) const { return new VectorContinuousObservations(); } //!< Get default element for empty slots
