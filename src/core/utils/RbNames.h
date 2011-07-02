@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2010-09-09, version 1.0
  *
- * $Id:$
+ * $Id$
  */
 
 #ifndef RbNames_H

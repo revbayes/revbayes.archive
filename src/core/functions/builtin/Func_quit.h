@@ -14,7 +14,7 @@
  * @package functions
  * @since Version 1.0, 2009-09-03
  *
- * $Id:$
+ * $Id$
  */
 
 #ifndef Func_quit_H

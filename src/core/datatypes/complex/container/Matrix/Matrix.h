@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2010-08-20, version 1.0
  *
- * $Id:$
+ * $Id$
  */
 
 #ifndef Matrix_H

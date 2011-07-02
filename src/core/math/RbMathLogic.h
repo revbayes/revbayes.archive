@@ -11,7 +11,7 @@
  * @version 1.0
  * @since 2011-03-17, version 1.0
  *
- * $Id:$
+ * $Id$
  */
 
 #include <vector>

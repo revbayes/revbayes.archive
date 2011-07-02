@@ -12,7 +12,7 @@
  * @since 2009-12-04, version 1.0
  * @extends RbComplex
  *
- * $Id:$
+ * $Id$
  */
 
 #include "ArgumentRule.h"

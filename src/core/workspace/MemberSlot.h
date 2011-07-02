@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2010-09-06, version 1.0
  *
- * $Id:$
+ * $Id$
  */
 
 #ifndef MemberSlot_H 

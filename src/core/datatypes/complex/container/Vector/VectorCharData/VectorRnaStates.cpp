@@ -13,7 +13,7 @@
  * @since 2009-09-08, version 1.0
  * @extends RbComplex
  *
- * $Id:$
+ * $Id$
  */
 
 #include "RnaState.h"

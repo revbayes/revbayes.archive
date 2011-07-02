@@ -20,7 +20,7 @@
  * @version 1.0
  * @since 2009-12-05, version 1.0
  *
- * $Id:$
+ * $Id$
  */
 
 #ifndef ContainerNode_H

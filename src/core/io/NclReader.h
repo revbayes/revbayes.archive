@@ -13,7 +13,7 @@
  * @since 2009-08-16, version 1.0
  * @extends DAGNode
  *
- * $Id:$
+ * $Id$
  */
 
 #ifndef NclReader_H

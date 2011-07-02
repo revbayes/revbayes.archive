@@ -12,7 +12,7 @@
  * @interface SyntaxElement
  * @since Version 1.0, 2009-09-02
  *
- * $Id:$
+ * $Id$
  */
 
 #ifndef SyntaxElement_H

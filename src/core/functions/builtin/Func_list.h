@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of Func__range, which is used
- * to look up a variable.
+ * This file contains the declaration of Func_list,
+ * which constructs a list of objects.
  *
- * @brief Declaration of Func__range
+ * @brief Declaration of Func_list
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -14,31 +14,26 @@
  * $Id$
  */
 
-#ifndef Func__range_H
-#define Func__range_H
+#ifndef Func_list_H
+#define Func_list_H
 
 #include "RbFunction.h"
-
-#include <map>
-#include <string>
-#include <vector>
 
 class DAGNode;
 class VectorString;
 
-class Func__range :  public RbFunction {
+
+class Func_list :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func__range*                clone(void) const;                                          //!< Clone the object
+        Func_list*                  clone(void) const;                                          //!< Clone the object
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-        DAGNode*                    execute(void);                                              //!< Execute function
+    	DAGNode*                    execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
-
 };
 
 #endif
-

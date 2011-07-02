@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-12-04, version 1.0
  *
- * $Id:$
+ * $Id$
  */
 
 #ifndef Vector_H

@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @since 2009-09-21
  *
- * $Id:$
+ * $Id$
  */
 
 #include "Signals.h"
