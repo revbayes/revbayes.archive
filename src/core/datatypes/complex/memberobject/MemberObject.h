@@ -43,6 +43,7 @@ class MemberObject: public RbComplex {
 
         // Basic utility functions you have to override
         virtual MemberObject*       clone(void) const = 0;                                                              //!< Clone object
+        virtual MemberObject*       cloneWithoutConnections(void) const;                                                //!< Make a clone with only constant member variables and elements
         virtual const VectorString& getClass(void) const;                                                               //!< Get class vector
         
         // Basic utility functions you may want to override
@@ -52,14 +53,12 @@ class MemberObject: public RbComplex {
         virtual std::string         richInfo(void) const;                                                               //!< Complete info
 
         // Basic utility functions you do not have to override
-        MemberObject*               getConstValue(void) const;                                                          //!< Make a constant clone @Fredrik: the name is confusing to me. Maybe something more like getCloneWithConstValues or simply force the caller to call first clone() and then makeValuesConst()? (Sebastian)
-        bool                        isConstant(void) const;                                                             //!< Are all members constant? @Fredrik: Better name: areMemberConstant()? (Sebastian)
+        bool                        isConstant(void) const;                                                             //!< Is the object, including all member variables and elements, constant?
         DAGNode*                    wrapIntoVariable(void);                                                             //!< Wrap value into variable
 
         // Member variable functions you do not have to override
         const MemberFrame&          getMembers(void) const { return members; }                                          //!< Get members
         const TypeSpec&             getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
-        const RbObject*             getValue(const std::string& name);                                                  //!< Get member value @Fredrik: Why is there a const getValue() if there is also a non-const getValue()? (Sebastian)
         const RbObject*             getValue(const std::string& name) const;                                            //!< Get member value (const)
         const DAGNode*              getVariable(const std::string& name) const;                                         //!< Get member variable @Fredrik: Why is there a const getVariable() if there is also a non-const getVariable()? (Sebastian)
         DAGNode*                    getVariable(const std::string& name);                                               //!< Get member variable (non-const ptr)
@@ -74,17 +73,17 @@ class MemberObject: public RbComplex {
         virtual const MethodTable&  getMethods(void) const;                                                             //!< Get member methods
 
         // Direct string index functions you do not need to override
-        DAGNode*                    getElement(std::string& s);                                                         //!< Get element from string index
-        void                        setElement(std::string& s, DAGNode* var, bool convert=true);                        //!< Set element
+        DAGNode*                    getElement(std::string& elemName);                                                  //!< Get element from string index
+        void                        setElement(std::string& elemName, DAGNode* var, bool convert=true);                 //!< Set element
     
-        // Direct index functions you have to override to support basic indexing
-        virtual DAGNode*            getElement(size_t i);                                                               //!< Get element from size_t index
+        // Direct index functions you have to override to support basic indexing in the parser
+        virtual DAGNode*            getElement(size_t index);                                                           //!< Get element from size_t index
         virtual size_t              getElementsSize(void) const { return 0; }                                           //!< Number of subscript elements
         virtual void                setElement(size_t index, DAGNode* var, bool convert=true);                          //!< Set element
         virtual bool                supportsIndex(void) const { return false; }                                         //!< Does object support index operator?
 
         // Function you need to override to support string indexing
-        virtual size_t              getElementIndex(std::string& s) const;                                              //!< Override to support string indexing
+        virtual size_t              getElementIndex(std::string& elemName) const;                                       //!< Override to support string indexing
         
         // Recursive index functions - override to support empty indices or more elaborate checking
         virtual DAGNode*            getElement(VectorIndex& index);                                                     //!< Return element (for parser)

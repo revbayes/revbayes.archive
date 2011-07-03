@@ -69,7 +69,7 @@ ContainerNode::ContainerNode( Container* val )
         }
 
         /* Set value and stored value */
-        value       = container->getConstValue();
+        value       = container->cloneWithoutConnections();
         storedValue = NULL;
     }
     else {
@@ -754,7 +754,7 @@ void ContainerNode::update( void ) {
         assert( storedValue == NULL );
 
         storedValue = value;
-        value = container->getConstValue();
+        value = container->cloneWithoutConnections();
         changed = true;
     }
 }

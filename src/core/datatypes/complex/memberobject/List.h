@@ -16,6 +16,7 @@
 #ifndef List_H
 #define List_H
 
+#include "ArgumentFrame.h"
 #include "MemberObject.h"
 #include "VectorString.h"
 
@@ -36,33 +37,37 @@ class VectorRealPos;
 class List : public MemberObject {
 
     public:
-                                    List(void);                                                 //!< Construct an empty list
-                                    List(const List& x);                                        //!< Copy constructor
-        virtual                    ~List(void);                                                 //!< Destructor
+                                    List(bool ref=false);                                       //!< Construct an empty list of references(ref==true) or values (ref==false)
     
         // Overloaded operators
-        List&                       operator=(const List& x);                                   //!< Assignment operator
-        DAGNode*                    operator[](size_t i) const;                                 //!< Index op to variables
+        DAGNode*                    operator[](size_t i);                                       //!< Index op (non-const) to elements
+        const DAGNode*              operator[](size_t i) const;                                 //!< Index op (const) to elements
 
         // Basic utility functions
         List*                       clone(void) const;                                          //!< Clone object
+        List*                       cloneWithoutConnections(void) const;                        //!< Make a clone with only constant member variables
         const VectorString&         getClass(void) const;                                       //!< Get class
         void                        printValue(std::ostream& o) const;                          //!< Print value for user
         std::string                 richInfo(void) const;                                       //!< Complete info about object
 
+        // Member rules and methods
+        const MemberRules&          getMemberRules(void) const;                                 //!< Get member rules
+        const MethodTable&          getMethods(void) const;                                     //!< Get member methods
+
         // Index access to elements
-        DAGNode*                    getElement(size_t i);                                       //!< Return element
-        size_t                      getElementIndex(std::string& s) const;                      //!< Convert string to numerical index
+        DAGNode*                    getElement(size_t index);                                   //!< Return element
+        size_t                      getElementIndex(std::string& elemName) const;               //!< Convert string to numerical index
         size_t                      getElementsSize(void) const { return elements.size(); }     //!< Number of elements
         void                        setElement(size_t index, DAGNode* var, bool convert=true);  //!< Set element
         bool                        supportsIndex(void) const { return true; }                  //!< We support index operator
     
-        // List function
+        // List functions
         void                        addElement(DAGNode* var, const std::string& name = "");     //!< Add element to list
+        const ArgumentFrame&        getElements(void) { return elements; }                      //!< Elements
 
     protected:
-        std::vector<VariableSlot*>  elements;                                                   //!< Elements
-        VectorString                names;                                                      //!< Names of elements
+        ArgumentFrame               elements;                                                   //!< Elements
+        bool                        referenceList;                                              //!< Is this a reference list?
 };
 
 #endif

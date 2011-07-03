@@ -71,7 +71,7 @@ unsigned CharacterStateDiscrete::getUnsignedValue(void) {
     if ( sizeof(unsigned) * 8 < value.size() )
         throw ( RbException("Too many states to represent as an unsigned") );
 	unsigned val = 0;
-	for (int i=0; i<value.size(); i++)
+	for (size_t i=0; i<value.size(); i++)
 		{
 		if (value[i] == true)
 			{

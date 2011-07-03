@@ -42,6 +42,7 @@ class RbObject {
 
         // Basic utility functions you may want to override
         virtual std::string         briefInfo(void) const;                                                  //!< Brief info about object
+        virtual RbObject*           cloneWithoutConnections(void) const;                                    //!< Clone object without connecting clone to original DAG
         virtual RbObject*           convertTo(const std::string& type, size_t dim) const;                   //!< Convert to type and dim
         virtual const TypeSpec      getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual bool                isConstant(void) const { return true; }                                 //!< Is value a constant or does it include variables?

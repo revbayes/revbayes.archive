@@ -25,14 +25,14 @@
 #include <sstream>
 
 
-/** Constructor allowing all types; value argument assumed, dim assumed to be 0*/
-Ellipsis::Ellipsis(void)
-    : ArgumentRule("", TypeSpec(RbObject_name)) {
+/** Constructor allowing all types; ref signals whether arguments should be values or references */
+Ellipsis::Ellipsis(bool ref)
+    : ArgumentRule("", TypeSpec(RbObject_name, 0, ref)) {
 }
 
 
 /** Constructor requiring a certain type specification */
-Ellipsis::Ellipsis(const TypeSpec& typeSp)
+Ellipsis::Ellipsis(const TypeSpec& typeSp )
     : ArgumentRule("", typeSp) {
 }
 
@@ -48,7 +48,7 @@ const VectorString& Ellipsis::getClass(void) const {
 /** Print value for user (in descriptions of functions, for instance */
 void Ellipsis::printValue(std::ostream &o) const {
 
-    o << "...";
+    o << argSlot.getTypeSpec() << " ...";
 }
 
 /** Provide complete information about object */
@@ -57,6 +57,7 @@ std::string Ellipsis::richInfo(void) const {
     std::ostringstream o;
 
     o << "Ellipsis: ";
+    printValue( o );
 
     return o.str();
 }

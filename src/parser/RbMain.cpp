@@ -18,11 +18,11 @@
 int main(int argc, char **argv) {
 
     // Print a nifty message
-	RBOUT("\n\n");
-	RBOUT("                             RevBayes\n");
-	RBOUT("          An R-like environment for phylogenetic analysis");
-	RBOUT("                     using Bayesian inference\n");
-	RBOUT("             Released under the GPL license, version 3\n\n");
+    UserInterface::userInterface().output("\n\n", false);
+    UserInterface::userInterface().output("                             RevBayes\n", false);
+    UserInterface::userInterface().output("          An R-like environment for phylogenetic analysis", false);
+    UserInterface::userInterface().output("                     using Bayesian inference\n", false);
+    UserInterface::userInterface().output("             Released under the GPL license, version 3\n\n", false);
 
     RbSettings::userSettings().initializeUserSettings();
     Help::getHelp().initializeHelp("~/help/");

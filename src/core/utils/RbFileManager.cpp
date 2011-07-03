@@ -163,13 +163,12 @@ bool RbFileManager::isFilePresent(const std::string mp, const std::string mf) {
 
 #	ifdef WIN32
 
-    WIN32_FIND_DATA data;
     std::string fullPath; 
     if (mp.length() > 1 && (mp[mp.length()-2] != '\\' || mp[mp.length()-2] != '/'))
         fullPath = mp + "\\" + mf;
     else
         fullPath = mp + mf;
-    return isFilePresent(f);
+    return isFilePresent(mf);
 
 #	else
     

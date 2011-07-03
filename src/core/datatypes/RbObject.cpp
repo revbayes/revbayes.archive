@@ -37,6 +37,18 @@ std::string RbObject::briefInfo(void) const {
 }
 
 
+/** Make clone that does not have connections to the original DAG.
+ *  For simple objects, this is the same as clone, but for containers
+ *  and member objects, it is a little more involved, since elements
+ *  or member variables may be connect a regular clone to the DAG
+ *  of the original object.
+ */
+RbObject* RbObject::cloneWithoutConnections( void ) const {
+
+    return clone();
+}
+
+
 /** Convert to object of language type typeSpec. We simply pass this
     through to the function that uses just the type and the dim.     */
 RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {

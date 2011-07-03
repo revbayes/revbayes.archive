@@ -12,11 +12,12 @@
  * @version 1.0
  * @since 2009-09-08, version 1.0
  *
- * $Id$
+ * $Id:$
  */
 
 
 #include "Boolean.h"
+#include "List.h"
 #include "MemberFrame.h"
 #include "MemberNode.h"
 #include "MemberObject.h"
@@ -43,10 +44,17 @@ MemberNode::MemberNode( MemberObject* val )
 
     /* Check for cycles */
     std::list<DAGNode*> done;
-    const MemberFrame& members = val->getMembers();
+    const MemberFrame& members = memberObject->getMembers();
     for ( size_t i = 0; i < members.size(); i++ ) {
         if ( members[i].getVariable()->isParentInDAG( this, done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
+    }
+    if ( memberObject->isType( List_name ) ) {
+        const ArgumentFrame& elements = static_cast<List*>( val )->getElements();
+        for ( size_t i = 0; i < elements.size(); i++ ) {
+            if ( elements[i].getVariable()->isParentInDAG( this, done ) )
+                throw RbException( "Invalid assignment: cycles in the DAG" );
+        }
     }
 
     /* Set parents and add this node as a child */
@@ -55,6 +63,14 @@ MemberNode::MemberNode( MemberObject* val )
         parents.insert( theNode );
         theNode->addChildNode( this );
     }
+    if ( memberObject->isType( List_name ) ) {
+        const ArgumentFrame& elements = static_cast<List*>( val )->getElements();
+        for ( size_t i = 0; i < elements.size(); i++ ) {
+            DAGNode* theNode = const_cast<DAGNode*>( elements[i].getVariable() );
+            parents.insert( theNode );
+            theNode->addChildNode( this );
+        }
+    }
 
     /* Anchor member object frame */
     memberObject->members.setOwner( this );
@@ -62,7 +78,7 @@ MemberNode::MemberNode( MemberObject* val )
     /* Set value and stored value */
     touched     = false;
     changed     = false;
-    value       = memberObject->getConstValue();
+    value       = memberObject->cloneWithoutConnections();
     storedValue = NULL;
 
     /* Anchor value member object frame */
@@ -85,12 +101,27 @@ MemberNode::MemberNode( const MemberNode& x )
             if ( members[i].getVariable()->isParentInDAG( this, done ) )
                 throw RbException( "Invalid assignment: cycles in the DAG" );
         }
+        if ( memberObject->isType( List_name ) ) {
+            const ArgumentFrame& elements = static_cast<List*>( memberObject )->getElements();
+            for ( size_t i = 0; i < elements.size(); i++ ) {
+                if ( elements[i].getVariable()->isParentInDAG( this, done ) )
+                    throw RbException( "Invalid assignment: cycles in the DAG" );
+            }
+        }
 
         /* Set parents and add this node as a child */
         for ( size_t i = 0; i < members.size(); i++ ) {
             DAGNode* theNode = const_cast<DAGNode*>( members[i].getVariable() );
             parents.insert( theNode );
             theNode->addChildNode( this );
+        }
+        if ( memberObject->isType( List_name ) ) {
+            const ArgumentFrame& elements = static_cast<List*>( memberObject )->getElements();
+            for ( size_t i = 0; i < elements.size(); i++ ) {
+                DAGNode* theNode = const_cast<DAGNode*>( elements[i].getVariable() );
+                parents.insert( theNode );
+                theNode->addChildNode( this );
+            }
         }
 
         /* Anchor member object frame */
@@ -99,7 +130,7 @@ MemberNode::MemberNode( const MemberNode& x )
         /* Set value and stored value */
         touched     = false;
         changed     = false;
-        value       = memberObject->getConstValue();
+        value       = memberObject->cloneWithoutConnections();
         storedValue = NULL;
 
         /* Anchor value member object frame */
@@ -140,7 +171,22 @@ MemberNode& MemberNode::operator=( const MemberNode& x ) {
         if ( x.memberObject == NULL || !x.memberObject->isType( getValueType() ) )
             throw RbException( "Invalid assignment: type mismatch in member object" );
 
-        /* Remove parents first */
+        /* Check for cycles */
+        std::list<DAGNode*> done;
+        const MemberFrame& xMembers = x.memberObject->getMembers();
+        for ( size_t i = 0; i < xMembers.size(); i++ ) {
+            if ( xMembers[i].getVariable()->isParentInDAG( this, done ) )
+                throw RbException( "Invalid assignment: cycles in the DAG" );
+        }
+        if ( x.memberObject->isType( List_name ) ) {
+            const ArgumentFrame& elements = static_cast<List*>( x.memberObject )->getElements();
+            for ( size_t i = 0; i < elements.size(); i++ ) {
+                if ( elements[i].getVariable()->isParentInDAG( this, done ) )
+                    throw RbException( "Invalid assignment: cycles in the DAG" );
+            }
+        }
+
+        /* Now we can go ahead with the assignment. Remove parents first */
         for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ )
             (*i)->removeChildNode( this );
         parents.clear();
@@ -153,14 +199,20 @@ MemberNode& MemberNode::operator=( const MemberNode& x ) {
         /* Clone member object */
         memberObject = x.memberObject->clone();
 
-        /* Extract reference to new members */
-        const MemberFrame& members = memberObject->getMembers();
-
         /* Set parents and add this node as a child */
+        const MemberFrame& members = memberObject->getMembers();
         for ( size_t i = 0; i < members.size(); i++ ) {
             DAGNode* theNode = const_cast<DAGNode*>( members[i].getVariable() );
             parents.insert( theNode );
             theNode->addChildNode( this );
+        }
+        if ( memberObject->isType( List_name ) ) {
+            const ArgumentFrame& elements = static_cast<List*>( memberObject )->getElements();
+            for ( size_t i = 0; i < elements.size(); i++ ) {
+                DAGNode* theNode = const_cast<DAGNode*>( elements[i].getVariable() );
+                parents.insert( theNode );
+                theNode->addChildNode( this );
+            }
         }
 
         /* Anchor member object frame */
@@ -169,7 +221,7 @@ MemberNode& MemberNode::operator=( const MemberNode& x ) {
         /* Set value and stored value */
         touched     = false;
         changed     = false;
-        value       = memberObject->getConstValue();
+        value       = memberObject->cloneWithoutConnections();
         storedValue = NULL;
 
         /* Anchor value member object frame */
@@ -218,6 +270,19 @@ MemberNode* MemberNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes )
 
         copy->parents.insert( theMemberClone );
         theMemberClone->addChildNode( copy );
+    }
+    if ( memberObject->isType( List_name ) ) {
+        
+        const ArgumentFrame& elements     = static_cast<List*>( memberObject )->getElements();
+        ArgumentFrame&       copyElements = const_cast<ArgumentFrame&>( static_cast<List*>( copy->memberObject )->getElements() );
+        for ( size_t i = 0; i < elements.size(); i++ ) {
+
+            DAGNode* theElementClone = elements[i].getVariable()->cloneDAG( newNodes );
+            copyElements[i].replaceDAGVariable( theElementClone );
+
+            copy->parents.insert( theElementClone );
+            theElementClone->addChildNode( copy );
+        }
     }
 
     /* Make sure the children clone themselves */
@@ -405,7 +470,7 @@ void MemberNode::update(void) {
         assert( storedValue == NULL );
 
         storedValue = value;
-        value       = memberObject->getConstValue();
+        value       = memberObject->cloneWithoutConnections();
         changed     = true;
     }
 }

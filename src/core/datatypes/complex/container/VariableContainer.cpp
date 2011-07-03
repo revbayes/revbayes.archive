@@ -272,19 +272,11 @@ VariableContainer* VariableContainer::clone( void ) const {
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& VariableContainer::getClass(void) const {
-
-    static VectorString rbClass = VectorString(VariableContainer_name) + Container::getClass();
-    return rbClass;
-}
-
-
 /**
- * Get const value. In this function, we get the value from each of the 
- * elements and create a constant value container with this content.
+ * Get clone with const values. In this function, we get the value from each
+ * of the elements and create a constant value container with this content.
  */
-ValueContainer* VariableContainer::getConstValue( void ) const {
+ValueContainer* VariableContainer::cloneWithoutConnections( void ) const {
 
     if ( elementType == Integer_name && getDim() == 1 ) {
 
@@ -342,6 +334,14 @@ ValueContainer* VariableContainer::getConstValue( void ) const {
             temp.push_back( elements[i]->getValue()->clone() );
         return new ValueContainer( getTypeSpec(), getLength(), temp );
     }
+}
+
+
+/** Get class vector describing type of object */
+const VectorString& VariableContainer::getClass(void) const {
+
+    static VectorString rbClass = VectorString(VariableContainer_name) + Container::getClass();
+    return rbClass;
 }
 
 
@@ -537,7 +537,7 @@ bool VariableContainer::isConstant( void ) const {
  */
 void VariableContainer::printValue( std::ostream& o ) const {
 
-    ValueContainer* temp = getConstValue();
+    ValueContainer* temp = cloneWithoutConnections();
 
     temp->printValue( o );
 

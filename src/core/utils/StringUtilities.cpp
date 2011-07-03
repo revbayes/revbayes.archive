@@ -15,11 +15,51 @@
  * $Id$
  */
 
-#include <iostream>
-#include <fstream>
 #include "StringUtilities.h"
 
+#include <fstream>
+#include <iostream>
+#include <string>
 
+
+/** Format string for printing to screen, with word wrapping, and various indents */
+std::string StringUtilities::formatStringForScreen(const std::string s, std::string firstLinePad, std::string hangingPad, size_t screenWidth) {
+
+    std::string outputString;
+
+    std::vector<std::string> lineList;
+    StringUtilities::stringSplit( s, "\n", lineList );
+
+    for ( size_t i=0; i<lineList.size(); i++ ) {
+    
+        std::vector<std::string> stringList;
+        StringUtilities::stringSplit(lineList[i], " ", stringList);
+
+        if ( stringList.size() > 0 ) {
+            outputString += firstLinePad;
+
+            size_t count = firstLinePad.size();
+            for ( std::vector<std::string>::iterator it = stringList.begin(); it != stringList.end(); it++ ) {
+
+                if ( count + (*it).size() > screenWidth && count != 0 ) {
+                    outputString[outputString.size()-1] = '\n';
+                    outputString += hangingPad;
+                    count = hangingPad.size();
+                }
+                count += (*it).size() + 1;
+                outputString += (*it) + " ";
+            }
+            outputString[outputString.size()-1] = '\n';
+        }
+        else
+            outputString += "\n";
+    }
+
+    return outputString;
+}
+
+
+/** Return file contents as string with '\n' line breaks */
 std::string StringUtilities::getFileContentsAsString(std::string& s) {
 
     // open file
@@ -80,6 +120,8 @@ void StringUtilities::stringSplit(std::string str, std::string delim, std::vecto
         {
         if (cutAt > 0)
             results.push_back(str.substr(0, cutAt));
+        else
+            results.push_back( "" );
         str = str.substr(cutAt+1);
         }
     if (str.length() > 0)

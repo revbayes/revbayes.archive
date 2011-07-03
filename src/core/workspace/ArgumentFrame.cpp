@@ -243,6 +243,14 @@ void ArgumentFrame::push_back( VariableSlot* slot ) {
 /** Push back argument slot with name onto frame */
 void ArgumentFrame::push_back( const std::string& name, VariableSlot* slot ) {
 
+    // Check that name is unique
+    if ( name != "" ) {
+        for ( size_t i=0; i<arguments.size(); i++ ) {
+            if ( arguments[i].first == name )
+                throw RbException( "Label '" + name + "' is already in frame" );
+        }
+    }
+    
     arguments.push_back( std::pair<std::string, VariableSlot*>( name, slot ) );
     slot->setFrame( this );
 }

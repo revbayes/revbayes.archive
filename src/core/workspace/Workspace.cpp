@@ -333,7 +333,7 @@ bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTyp
     if ( xDim > 0 ) {
     
         VariableContainer* dummy    = new VariableContainer( xType );
-        ValueContainer*    dummyVal = dummy->getConstValue();
+        ValueContainer*    dummyVal = dummy->cloneWithoutConnections();
 
         retVal = dummy->isConvertibleTo( yType, yDim, false );
 

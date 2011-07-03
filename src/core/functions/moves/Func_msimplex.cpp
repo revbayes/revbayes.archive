@@ -62,7 +62,7 @@ DAGNode* Func_msimplex::execute(void) {
         throw ( RbException("Variance parameter of simplex move is too small") );
     if ( w->getValue() < 0.00001 )
         throw ( RbException("Weight parameter of simplex move is too small") );
-    if ( nc->getValue() > s->getElementsSize() )
+    if ( nc->getValue() > int( s->getElementsSize() ) )
         throw ( RbException("You cannot update more simplex variables than the dimensions of the simplex") );
     if ( nc->getValue() <= 0 )
         throw ( RbException("You must update at least one simplex variable") );

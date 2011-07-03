@@ -18,6 +18,7 @@
  */
 
 #include "RbNames.h"
+#include "StringUtilities.h"
 #include "UserInterface.h"
 
 
@@ -54,7 +55,7 @@ bool UserInterface::ask(std::string msg) {
 /** Print a message and a newline */
 void UserInterface::output(std::string msg) {
 
-    std::cout << pad << msg << std::endl;
+    std::cout << StringUtilities::formatStringForScreen( msg, pad, pad, 80 );
 }
 
 
@@ -71,7 +72,6 @@ void UserInterface::output(std::string msg, const bool hasPadding) {
 /** Convert to string and then call output to print message string */
 void UserInterface::output(std::ostringstream msg) {
 
-    output(msg.str());
+    output( msg.str() );
 }
-
 

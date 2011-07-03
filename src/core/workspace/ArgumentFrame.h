@@ -56,13 +56,15 @@ class ArgumentFrame : public Frame {
         void                        clear(void);                                                                            //!< Clear the frame
         bool                        existsVariable(const std::string& name) const;                                          //!< Does variable exist?
         size_t                      getIndex(const std::string& name) const;                                                //!< Get index of a named variable
-        const std::string&          getLabel(size_t i) const { return arguments[i].first; }                                 //!< Get index of a named variable
+        const std::string&          getLabel(size_t i) const { return arguments[i].first; }                                 //!< Get label of argument i
         const std::string&          getSlotName(const VariableSlot* slot) const;                                            //!< Get name of a slot
         size_t                      size(void) const { return arguments.size(); }                                           //!< Get size of frame           
 
-    protected:
+        // Argument frame functions
         void                        push_back(VariableSlot* slot);                                                          //!< Add argument slot without label
         void                        push_back(const std::string& name, VariableSlot* slot);                                 //!< Add argument slot with label
+
+    protected:
         void                        setArgumentLabel(size_t i, const std::string& name);                                    //!< Set argument name
 
         std::vector<std::pair<std::string, VariableSlot*> >  arguments;                                                     //!< The arguments

@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of Func_clamp, which is used
- * to clamp a stochastic node to an observed value.
+ * This file contains the declaration of Func_unclamp, which
+ * is used to unclamp a stochastic node.
  *
- * @brief Declaration of Func_clamp
+ * @brief Declaration of Func_unclamp
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -14,8 +14,8 @@
  * $Id$
  */
 
-#ifndef Func_clamp_H
-#define Func_clamp_H
+#ifndef Func_setval_H
+#define Func_setval_H
 
 #include "RbFunction.h"
 
@@ -26,11 +26,11 @@
 class DAGNode;
 class VectorString;
 
-class Func_clamp :  public RbFunction {
+class Func_setval :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func_clamp*                 clone(void) const;                      //!< Clone the object
+        Func_setval*                clone(void) const;                      //!< Clone the object
         const VectorString&         getClass(void) const;                   //!< Get class vector
 
         // Regular functions

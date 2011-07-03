@@ -90,19 +90,18 @@ int Parser::execute(SyntaxElement *root) const {
         PRINTF("Caught an exception\n");
         msg << "Error: ";
         rbException.printValue(msg);
-        RBOUT(msg.str());
+        RBOUT( msg.str() );
 
         // Return signal indicating problem
         return 2;
     }
 
     // Print result if the root is not an assign expression
-    if (result != NULL && !root->isType(SyntaxAssignExpr_name)) 
-		{
+    if (result != NULL && !root->isType(SyntaxAssignExpr_name)) {
         std::ostringstream msg;
         result->printValue(msg);
-        RBOUT(msg.str());
-		}
+        RBOUT( msg.str() );
+    }
 
     // Delete syntax tree and result
     if ( result != NULL && result->numRefs() == 0 )

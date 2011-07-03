@@ -479,12 +479,12 @@ void VariableSlot::setValue( RbObject* newValue ) {
         PRINTF( "Demoting variable value to constant value" );
 
         if ( newValue->isType( MemberObject_name ) ) {
-            RbObject* temp = static_cast<MemberObject*>( newValue )->getConstValue();
+            RbObject* temp = static_cast<MemberObject*>( newValue )->cloneWithoutConnections();
             delete newValue;
             newValue = temp;
         }
         else if ( newValue->isType( VariableContainer_name ) ) {
-            RbObject* temp = static_cast<VariableContainer*>( newValue )->getConstValue();
+            RbObject* temp = static_cast<VariableContainer*>( newValue )->cloneWithoutConnections();
             delete newValue;
             newValue = temp;
         }

@@ -61,6 +61,7 @@ class VariableContainer : public Container {
 
         // Basic utility functions
         VariableContainer*          clone(void) const;                                                          //!< Clone object
+        ValueContainer*             cloneWithoutConnections(void) const;                                        //!< Get constant value clone as a value container
         const VectorString&         getClass(void) const;                                                       //!< Get class
         bool                        isConstant(void) const;                                                     //!< Are all elements constants?
         void                        printValue(std::ostream& o) const;                                          //!< Print value for user
@@ -68,7 +69,6 @@ class VariableContainer : public Container {
 
         // Container functions
         void                        clear(void);                                                                //!< Clear container
-        ValueContainer*             getConstValue(void) const;                                                  //!< Get constant value
         VectorNatural               getIndex(const DAGNode* elem) const;                                        //!< Get index of an element
         DAGNode*                    getElement(const VectorNatural& index);                                     //!< Get single element for parser
         int                         getIndex(size_t k, const std::string& s) const;                             //!< Get index in dimension k corresponding to name s

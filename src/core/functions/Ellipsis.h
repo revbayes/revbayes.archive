@@ -32,8 +32,8 @@ class VectorString;
 class Ellipsis : public ArgumentRule {
 
     public:
-                            Ellipsis(void);                                     //! No labels or types required, value arguments assumed
-                            Ellipsis(const TypeSpec& typeSp);                   //! Some type specification needs to be met
+                            Ellipsis(bool ref=false);                           //! No labels or types required, value arguments by default
+                            Ellipsis(const TypeSpec& typeSp);                   //! Some type specification needs to be met, value arguments by default
 
         // Basic utility functions
         Ellipsis*           clone(void) const { return new Ellipsis(*this); }   //!< Clone object

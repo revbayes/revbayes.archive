@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of Func_clamp, which is
+ * This file contains the implementation of Func_setval, which is
  * the function used to clamp stochastic nodes to an observed value.
  *
- * @brief Implementation of Func_clamp
+ * @brief Implementation of Func_setval
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -18,7 +18,7 @@
 
 #include "DAGNode.h"
 #include "DeterministicNode.h"
-#include "Func_clamp.h"
+#include "Func_setval.h"
 #include "Integer.h"
 #include "LookupNode.h"
 #include "RbException.h"
@@ -33,14 +33,14 @@
 #include <cassert>
 
 /** Clone object */
-Func_clamp* Func_clamp::clone( void ) const {
+Func_setval* Func_setval::clone( void ) const {
 
-    return new Func_clamp( *this );
+    return new Func_setval( *this );
 }
 
 
 /** Execute function */
-DAGNode* Func_clamp::execute( void ) {
+DAGNode* Func_setval::execute( void ) {
 
     // Get the stochastic node from the variable reference
     StochasticNode* theNode = dynamic_cast<StochasticNode*>( args[0].getReference() );
@@ -48,22 +48,25 @@ DAGNode* Func_clamp::execute( void ) {
         throw RbException( "The variable is not a stochastic node" );
     
     // The following call will throw an error if the value type is wrong
-    theNode->clamp( args[1].getValue()->clone() );
+    std::set<StochasticNode*> affected;
+    theNode->setValue( args[1].getValue()->clone(), affected );
+
+    // todo: Do we want to update the affected nodes?
 
     return NULL;
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_clamp::getArgumentRules( void ) const {
+const ArgumentRules& Func_setval::getArgumentRules( void ) const {
 
     static ArgumentRules argumentRules;
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ReferenceRule( "variable", RbObject_name ));
-        argumentRules.push_back( new ValueRule    ( "value",    RbObject_name ));
+        argumentRules.push_back( new ReferenceRule( "variable",   RbObject_name ));
+        argumentRules.push_back( new ValueRule    ( "value", RbObject_name ));
         rulesSet = true;
     }
 
@@ -72,15 +75,15 @@ const ArgumentRules& Func_clamp::getArgumentRules( void ) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Func_clamp::getClass( void ) const {
+const VectorString& Func_setval::getClass( void ) const {
 
-    static VectorString rbClass = VectorString( Func_clamp_name ) + RbFunction::getClass();
+    static VectorString rbClass = VectorString( Func_setval_name ) + RbFunction::getClass();
     return rbClass;
 }
 
 
 /** Get return type */
-const TypeSpec Func_clamp::getReturnType( void ) const {
+const TypeSpec Func_setval::getReturnType( void ) const {
 
     return TypeSpec( RbVoid_name );
 }

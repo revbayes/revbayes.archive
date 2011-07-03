@@ -42,6 +42,22 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbComplex(), member
 }
 
 
+/** Get clone with constant values (evaluate all member variables and replace with constants) */
+MemberObject* MemberObject::cloneWithoutConnections( void ) const {
+
+    MemberObject* temp = clone();
+
+    for ( size_t i = 0; i < temp->members.size(); i++ ) {
+    
+        RbObject* constValue = temp->members[i].getValue()->cloneWithoutConnections();
+        temp->members[i].setReferenceFlag( false );
+        temp->setValue( temp->members[i].getName(), constValue );
+    }
+
+    return temp;
+}
+
+
 /** Convert to type: throw an error */
 RbObject* MemberObject::convertTo(const std::string& type, size_t dim) const {
 
@@ -75,22 +91,6 @@ const VectorString& MemberObject::getClass(void) const {
 }
 
 
-/** Get constant value (evaluate all member variables and replace with constants) of member object */
-MemberObject* MemberObject::getConstValue( void ) const {
-
-    MemberObject* temp = clone();
-
-    for ( size_t i = 0; i < temp->members.size(); i++ ) {
-    
-        RbObject* constValue = temp->members[i].getValue()->clone();
-        temp->members[i].setReferenceFlag( false );
-        temp->setValue( temp->members[i].getName(), constValue );
-    }
-
-    return temp;
-}
-
-
 /**
  * Recursive getElement. We are responsible for finding element
  * index[0] using our index operator. If there are more indices
@@ -105,11 +105,11 @@ DAGNode* MemberObject::getElement( VectorIndex& index ) {
     if ( supportsIndex() ) {
 
         const RbObject* elemIndex = index[0];
-        index.pop_front();
-        
+
         if ( elemIndex->isType( Integer_name ) ) {
             
             int k = static_cast<const Integer*>( elemIndex )->getValue();
+            index.pop_front();
             if ( k < 0 )
                 throw RbException( "Object of type " + getType() + " does not support emty indices" );
             else
@@ -118,6 +118,7 @@ DAGNode* MemberObject::getElement( VectorIndex& index ) {
         else {
             
             std::string s = static_cast<const RbString*>( elemIndex )->getValue();
+            index.pop_front();
             return getElement( s )->getElement( index );
         }
     }
@@ -129,7 +130,7 @@ DAGNode* MemberObject::getElement( VectorIndex& index ) {
 /** Get element from size_t (Natural) index */
 DAGNode* MemberObject::getElement( size_t i ) {
     
-    throw RbException( "Object does not support " + Natural_name + " indexing" );
+    throw RbException( "Object does not support integer (" + Natural_name + ") indexing" );
 }
 
 
@@ -173,14 +174,7 @@ const MethodTable& MemberObject::getMethods(void) const {
 }
 
 
-/** Get value of a member variable */
-const RbObject* MemberObject::getValue(const std::string& name) {
-
-    return members.getValue(name);
-}
-
-
-/** Get value of a member variable (const) */
+/** Get const value of a member variable */
 const RbObject* MemberObject::getValue(const std::string& name) const {
 
     return members.getValue(name);

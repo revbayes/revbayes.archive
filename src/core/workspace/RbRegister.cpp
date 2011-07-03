@@ -107,14 +107,21 @@
 #include "Func__range.h"
 #include "Func__sub.h"
 
-/* Regular functions */
+/* Builtin functions */
 #include "Func_clamp.h"
 #include "Func_ls.h"
 #include "Func_model.h"
 #include "Func_normalize.h"
 #include "Func_quit.h"
-#include "Func_s.h"
+#include "Func_reflist.h"
+#include "Func_setval.h"
 #include "Func_str.h"
+#include "Func_unclamp.h"
+#include "Func_vallist.h"
+
+/* Builtin templated functions */
+#include "Func_s.h"
+#include "Func_transpose.h"
 #include "Func_v.h"
 
 /* Math functions */
@@ -133,8 +140,6 @@
 /* Move functions */
 #include "Func_msimplex.h"
 
-/* Regular templated functions */
-#include "Func_transpose.h"
 
 #include <sstream>
 #include <vector>
@@ -253,73 +258,49 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_eq",       new Func__eq<             Integer,           Real >()             );
         addFunction( "_eq",       new Func__eq<                Real,        Integer >()             );
         addFunction( "_eq",       new Func__eq<             Boolean,        Boolean >()             );
-        addFunction( "_eq",       new Func__eq<             Boolean,        Integer >()             );
-        addFunction( "_eq",       new Func__eq<             Boolean,           Real >()             );
-        addFunction( "_eq",       new Func__eq<             Integer,        Boolean >()             );
-        addFunction( "_eq",       new Func__eq<                Real,        Boolean >()             );
         addFunction( "_ge",       new Func__ge<             Integer,        Integer >()             );
         addFunction( "_ge",       new Func__ge<                Real,           Real >()             );
         addFunction( "_ge",       new Func__ge<             Integer,           Real >()             );
         addFunction( "_ge",       new Func__ge<                Real,        Integer >()             );
         addFunction( "_ge",       new Func__ge<             Boolean,        Boolean >()             );
-        addFunction( "_ge",       new Func__ge<             Boolean,        Integer >()             );
-        addFunction( "_ge",       new Func__ge<             Boolean,           Real >()             );
-        addFunction( "_ge",       new Func__ge<             Integer,        Boolean >()             );
-        addFunction( "_ge",       new Func__ge<                Real,        Boolean >()             );
         addFunction( "_gt",       new Func__gt<             Integer,        Integer >()             );
         addFunction( "_gt",       new Func__gt<                Real,           Real >()             );
         addFunction( "_gt",       new Func__gt<             Integer,           Real >()             );
         addFunction( "_gt",       new Func__gt<                Real,        Integer >()             );
         addFunction( "_gt",       new Func__gt<             Boolean,        Boolean >()             );
-        addFunction( "_gt",       new Func__gt<             Boolean,        Integer >()             );
-        addFunction( "_gt",       new Func__gt<             Boolean,           Real >()             );
-        addFunction( "_gt",       new Func__gt<             Integer,        Boolean >()             );
-        addFunction( "_gt",       new Func__gt<                Real,        Boolean >()             );
         addFunction( "_lt",       new Func__lt<             Integer,        Integer >()             );
         addFunction( "_lt",       new Func__lt<                Real,           Real >()             );
         addFunction( "_lt",       new Func__lt<             Integer,           Real >()             );
         addFunction( "_lt",       new Func__lt<                Real,        Integer >()             );
         addFunction( "_lt",       new Func__lt<             Boolean,        Boolean >()             );
-        addFunction( "_lt",       new Func__lt<             Boolean,        Integer >()             );
-        addFunction( "_lt",       new Func__lt<             Boolean,           Real >()             );
-        addFunction( "_lt",       new Func__lt<             Integer,        Boolean >()             );
-        addFunction( "_lt",       new Func__lt<                Real,        Boolean >()             );
         addFunction( "_le",       new Func__le<             Integer,        Integer >()             );
         addFunction( "_le",       new Func__le<                Real,           Real >()             );
         addFunction( "_le",       new Func__le<             Integer,           Real >()             );
         addFunction( "_le",       new Func__le<                Real,        Integer >()             );
         addFunction( "_le",       new Func__le<             Boolean,        Boolean >()             );
-        addFunction( "_le",       new Func__le<             Boolean,        Integer >()             );
-        addFunction( "_le",       new Func__le<             Boolean,           Real >()             );
-        addFunction( "_le",       new Func__le<             Integer,        Boolean >()             );
-        addFunction( "_le",       new Func__le<                Real,        Boolean >()             );
         addFunction( "_ne",       new Func__ne<             Integer,        Integer >()             );
         addFunction( "_ne",       new Func__ne<                Real,           Real >()             );
         addFunction( "_ne",       new Func__ne<             Integer,           Real >()             );
         addFunction( "_ne",       new Func__ne<                Real,        Integer >()             );
         addFunction( "_ne",       new Func__ne<             Boolean,        Boolean >()             );
-        addFunction( "_ne",       new Func__ne<             Boolean,        Integer >()             );
-        addFunction( "_ne",       new Func__ne<             Boolean,           Real >()             );
-        addFunction( "_ne",       new Func__ne<             Integer,        Boolean >()             );
-        addFunction( "_ne",       new Func__ne<                Real,        Boolean >()             );
         addFunction( "_or",       new Func__or<             Integer,        Integer >()             );
         addFunction( "_or",       new Func__or<                Real,           Real >()             );
         addFunction( "_or",       new Func__or<             Integer,           Real >()             );
         addFunction( "_or",       new Func__or<                Real,        Integer >()             );
         addFunction( "_or",       new Func__or<             Boolean,        Boolean >()             );
-        addFunction( "_or",       new Func__or<             Boolean,        Integer >()             );
-        addFunction( "_or",       new Func__or<             Boolean,           Real >()             );
-        addFunction( "_or",       new Func__or<             Integer,        Boolean >()             );
-        addFunction( "_or",       new Func__or<                Real,        Boolean >()             );
         
-        /* Add regular functions (alphabetical order) */
+        /* Add builtin functions (alphabetical order) */
         addFunction( "clamp",     new Func_clamp()     ); 
         addFunction( "ls",        new Func_ls()        );
         addFunction( "model",     new Func_model()     );
         addFunction( "normalize", new Func_normalize() );
         addFunction( "q",         new Func_quit()      );
         addFunction( "quit",      new Func_quit()      );
+        addFunction( "reflist",   new Func_vallist()   );
+        addFunction( "setval",    new Func_setval()    );
         addFunction( "str",       new Func_str()       );
+        addFunction( "unclamp",   new Func_unclamp()   );
+        addFunction( "vallist",   new Func_vallist()   );
         
         /* Add math functions (alphabetical order) */ 
         addFunction( "expf",      new Func_exp()   );
@@ -337,7 +318,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add move functions (alphabetical order) */
         addFunction( "msimplex",  new Func_msimplex() );
         
-        /* Add regular templated functions */
+        /* Add builtin templated functions */
         addFunction( "s",         new Func_s<         Integer                                                         >() );
         addFunction( "s",         new Func_s<         RealPos                                                         >() );
         addFunction( "s",         new Func_s<         VectorRealPos                                                   >() );
