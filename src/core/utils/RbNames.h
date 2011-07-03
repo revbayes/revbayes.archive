@@ -73,6 +73,7 @@ const std::string Func_ln_name                                  = "Natural logar
 const std::string Func_log_name                                 = "Logarithm function";
 const std::string Func_ls_name                                  = "Ls function";
 const std::string Func_model_name                               = "Model function";
+const std::string Func_msimplex_name                            = "Simplex move function";
 const std::string Func_normalize_name                           = "Normalize function";
 const std::string Func_power_name                               = "Power function";
 const std::string Func_quit_name                                = "Quit function";

@@ -62,9 +62,9 @@ DAGNode* Func_gtr::execute(void) {
     if (r->getElementsSize() != nStates*(nStates-1)/2)
         {
         std::stringstream o;
-        o << "The simplex containing the rates is not of size ";
+        o << "The simplex containing the rates is not of size (";
         o << nStates;
-        o << " choose 2 = ";
+        o << " choose 2) = ";
         o << nStates*(nStates-1)/2;
         throw( RbException(o.str()) );
         }

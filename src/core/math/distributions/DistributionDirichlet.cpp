@@ -96,8 +96,8 @@ double RbStatistics::Dirichlet::lnPdf(const std::vector<double> &a, const std::v
  */
 std::vector<double> RbStatistics::Dirichlet::rv(const std::vector<double> &a, RandomNumberGenerator* rng) {
     
-    std::vector<double> z;
 	size_t n = a.size();
+    std::vector<double> z(n);
 	double sum = 0.0;
 	for(size_t i=0; i<n; i++)
         {

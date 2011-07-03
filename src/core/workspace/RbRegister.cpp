@@ -130,6 +130,9 @@
 #include "Func_readAlignment.h"
 #include "Func_tiprobs.h"
 
+/* Move functions */
+#include "Func_msimplex.h"
+
 /* Regular templated functions */
 #include "Func_transpose.h"
 
@@ -188,6 +191,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new CharacterMatrix() );
         addType( new List()            );
         addType( new Model()           );
+        addType( new Move_msimplex()   );
         addType( new Simplex()         );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
@@ -195,7 +199,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "mmultinomial", new Move_mmultinomial() );
         addTypeWithConstructor( "mslide",       new Move_mslide()       );
         addTypeWithConstructor( "mscale",       new Move_mscale()       );
-        addTypeWithConstructor( "msimplex",     new Move_msimplex()     );
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
         addDistribution( "dirichlet",   new Dist_dirichlet()   );
@@ -326,11 +329,14 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "sin",       new Func_sin()   );
         addFunction( "sqrt",      new Func_sqrt()  );
         
-        /* Add phylogeny-related functions */
+        /* Add phylogeny-related functions (alphabetical order) */
         addFunction( "gtr",       new Func_gtr()           );
         addFunction( "read",      new Func_readAlignment() );
         addFunction( "tiprobs",   new Func_tiprobs()       );
-
+        
+        /* Add move functions (alphabetical order) */
+        addFunction( "msimplex",  new Func_msimplex() );
+        
         /* Add regular templated functions */
         addFunction( "s",         new Func_s<         Integer                                                         >() );
         addFunction( "s",         new Func_s<         RealPos                                                         >() );
