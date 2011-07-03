@@ -74,13 +74,14 @@ DAGNode* Func_readAlignment::execute( void ) {
     std::vector<std::string> vectorOfFileNames;
     if (readingDirectory == true)
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-    else {
-#if defined (WIN32)
+    else 
+        {
+#       if defined (WIN32)
         vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
-#else
+#       else
         vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
-#endif
-    }
+#       endif
+        }
     if (readingDirectory == true)
         {
         std::stringstream o1;
