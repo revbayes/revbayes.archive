@@ -44,6 +44,10 @@ class NclReader {
         std::vector<CharacterMatrix*>       readMatrices(const std::vector<std::string> fn, const std::string 
                                             fileFormat, const std::string dataType, const bool isInterleaved);         //!< Read a list of file names contained in a vector of strings
         
+        bool                                isFastaFile(std::string& fn, std::string& dType);                          //!< Checks if the file is in Fasta format
+        bool                                isNexusFile(std::string& fn);                                              //!< Checks if the file is in NEXUS format
+        bool                                isPhylipFile(std::string& fn, std::string& dType, bool& isInterleaved);    //!< Checks if the file is in Phylip format
+
         // TAH: stuff for reading trees
         std::vector<Tree*>*                 readTrees(const std::string fn, const std::string fileFormat);             //!< Read trees
         void                                clearContent(void) { nexusReader.ClearContent(); }                         //!< Clear the content of the NCL object
@@ -59,6 +63,7 @@ class NclReader {
         CharacterMatrix*                    createRnaMatrix(NxsCharactersBlock* charblock);                            //!< Create an object to hold RNA data
         CharacterMatrix*                    createStandardMatrix(NxsCharactersBlock* charblock);                       //!< Create an object to hold standard data
         bool                                fileExists(const char *fn) const;                                          //!< Returns whether a file exists
+        std::string                         intuitDataType(std::string& s);                                            //!< Attempt to determine the type of data
         
         // methods for reading sequence alignments
         std::vector<CharacterMatrix*>       convertFromNcl(std::vector<std::string>& fnv);                             //!< Reads the blocks stored by NCL and converts them to RevBayes character matrices 

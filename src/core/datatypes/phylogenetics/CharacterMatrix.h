@@ -22,6 +22,7 @@
 #include <vector>
 
 class ArgumentRule;
+class Character;
 class DAGNode;
 class VectorCharacters;
 class VectorString;
@@ -32,6 +33,9 @@ class CharacterMatrix : public MemberObject {
     public:
                                                     CharacterMatrix(void);                                             //!< Default constructor
     
+        VectorCharacters&                           operator[](size_t i);                                              //!< Subscript operator
+        const VectorCharacters&                     operator[](size_t i) const;                                        //!< Subscript operator (const)
+
         // Basic utility functions
         CharacterMatrix*                            clone(void) const;                                                 //!< Clone object
         const VectorString&                         getClass(void) const;                                              //!< Get class vector   
@@ -47,11 +51,15 @@ class CharacterMatrix : public MemberObject {
         // CharacterMatrix functions
         void                                        addTaxonName(const std::string tName);                             //!< Add taxon name
         void                                        addTaxonObservations(VectorCharacters* obs);                       //!< Add obserervations
+        bool                                        areCharactersDiscrete(void) const;                                 //!< Returns whether this is a matrix of discrete characters
         void                                        excludeCharacter(size_t i);                                        //!< Exclude character
         void                                        excludeTaxon(size_t i);                                            //!< Exclude taxon
         void                                        excludeTaxon(std::string& s);                                      //!< Exclude taxon
+        Character*                                  getCharacter(size_t tn, size_t cn);                                //!< Return a pointer to a character element in the character matrix 
+        std::string                                 getDataType(void) { return dataType; }                             //!< Returns the data type for the matrix
         std::string                                 getFileName(void) const { return fileName; }                       //!< Returns the name of the file the data came from
         size_t                                      getNumCharacters(void) const;                                      //!< Number of characters
+        size_t                                      getNumStates(void) const;                                          //!< Get the number of states for the characters in this matrix
         size_t                                      getNumTaxa(void) const { return taxonObservations.size(); }        //!< Number of taxa
         std::string                                 getTaxonWithIndex(size_t idx) { return taxonNames[idx]; }          //!< Returns the idx-th taxon name
         bool                                        isCharacterExcluded(size_t i);                                     //!< Is the character excluded

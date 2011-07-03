@@ -43,6 +43,8 @@ class RbFileManager {
         void                setFilePath(std::string s) { filePath = s; }                                                     //!< Setter function for the filePath
         void                closeFile(std::ifstream& strm);                                                                  //!< Close input file
         void                closeFile(std::ofstream& strm);                                                                  //!< Close output file
+        bool                isDirectory(std::string fn);                                                                     //!< Is this a directory
+        bool                isFile(std::string fn);                                                                          //!< Is this a file
         bool                openFile(std::ifstream& strm);                                                                   //!< Open file for input
         bool                openFile(std::ofstream& strm);                                                                   //!< Open file for output
         bool                isFileNamePresent(void);                                                                         //!< Checks whether the file name is present (true) or empty (false)
@@ -58,6 +60,7 @@ class RbFileManager {
         std::string         filePath;                                                                                        //!< String with file path
         std::string         findCurrentDirectory(void);                                                                      //!< Fills in the default directory name
         bool                isDirectoryPresent(const std::string mp);                                                        //!< Checks for presence of a directory
+        bool                isFilePresent(const std::string fn);                                                             //!< Checks for the presence of a file
         bool                isFilePresent(const std::string mp, const std::string mf);                                       //!< Checks for the presence of a file
         bool                parsePathFileNames(std::string s);                                                               //!< Divides a string into the file path and file name
 };

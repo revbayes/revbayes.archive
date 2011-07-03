@@ -48,6 +48,24 @@ CharacterMatrix::CharacterMatrix(void) : MemberObject(getMemberRules()) {
 }
 
 
+/** Index operator (const) */
+const VectorCharacters& CharacterMatrix::operator[]( const size_t i ) const {
+
+    if ( i >= taxonObservations.size() )
+        throw RbException( "Index to " + Character_name + "[][] out of bounds" );
+    return *(taxonObservations[i]);
+}
+
+
+/** Index operator */
+VectorCharacters& CharacterMatrix::operator[]( const size_t i ) {
+
+    if ( i >= taxonObservations.size() )
+        throw RbException( "Index to " + Character_name + "[][] out of bounds" );
+    return *(taxonObservations[i]);
+}
+
+
 /** Add a taxon name */
 void CharacterMatrix::addTaxonName(const std::string tName) {
 
@@ -59,6 +77,25 @@ void CharacterMatrix::addTaxonName(const std::string tName) {
 void CharacterMatrix::addTaxonObservations(VectorCharacters* obs) {
 
     taxonObservations.push_back( obs );
+}
+
+
+/** Returns whether this is a matrix of discrete characters. We
+    assume that all of the characters in the matrix are of teh same
+    type. */
+bool CharacterMatrix::areCharactersDiscrete(void) const {
+
+    // get the first character in the matrix
+    if ( taxonObservations.size() == 0 )
+        return false;
+    Character* c = &(*taxonObservations[0])[0];
+
+    // dynamically cast the character to see if it has in its
+    // hierarchy CharacterStateDiscrete
+    CharacterStateDiscrete* d = dynamic_cast<CharacterStateDiscrete*>(c);
+    if (d == NULL)
+        return false;
+    return true;
 }
 
 
@@ -189,6 +226,17 @@ DAGNode* CharacterMatrix::executeOperation(const std::string& name, ArgumentFram
 }
 
 
+/** Return a pointer to a character element in the character matrix */
+Character* CharacterMatrix::getCharacter(size_t tn, size_t cn) {
+
+    if ( taxonObservations.size() <= tn )
+        return NULL;
+    if ( taxonObservations[tn]->getNumCharacters() <= cn )
+        return NULL;
+    return &(*taxonObservations[tn])[cn];
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& CharacterMatrix::getClass(void) const {
 
@@ -277,6 +325,21 @@ size_t CharacterMatrix::getNumCharacters(void) const {
     if ( taxonObservations.size() == 0 )
         return 0;
     return taxonObservations[0]->getNumCharacters();
+}
+
+
+/** Get the number of states for the characters in this matrix. We
+    assume that all of the characters in the matrix are of the same
+    type and have the same number of potential states. */
+size_t CharacterMatrix::getNumStates(void) const {
+
+    // get the first character in the matrix
+    if ( taxonObservations.size() == 0 )
+        return 0;
+    Character* c = &(*taxonObservations[0])[0];
+    
+    // have that character return the number of states
+    return c->getNumStates();
 }
 
 

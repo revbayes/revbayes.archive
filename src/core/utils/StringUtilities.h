@@ -23,6 +23,7 @@ namespace StringUtilities {
     void                        toLower(std::string& str);                                                          //!< Convert string's characters to lower case
     std::string                 getFileContentsAsString(std::string& s);                                            //!< Convert the file contents to a string
     std::string                 getLastPathComponent(const std::string& s);                                         //!< Find the last component of a file path
+    bool                        isNumber(std::string& s);                                                           //!< Checks if a string is a number
 }
 
 #endif

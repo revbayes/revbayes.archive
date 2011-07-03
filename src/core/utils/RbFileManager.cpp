@@ -138,16 +138,21 @@ bool RbFileManager::isDirectoryPresent(const std::string mp) {
 
 #	else
 
-	/* attempt to open the directory */
-	DIR* dir = opendir( mp.c_str() );
-	if ( !dir )
+	DIR* d = opendir( mp.c_str() );
+	if ( !d )
 		return false;
-		
-	/* close the directory */
-	if ( closedir(dir) == -1 )
-        return false;
-		
-	return true;
+
+    struct stat fInfo;
+    if ( !stat(mp.c_str(), &fInfo) )
+        {
+        if ( S_ISDIR(fInfo.st_mode) )
+            return true;
+        else
+            return false;
+        }
+    return false;
+    
+    closedir(d);
     
 #	endif
 }
@@ -161,13 +166,26 @@ bool RbFileManager::isFilePresent(const std::string mp, const std::string mf) {
     WIN32_FIND_DATA data;
     std::string fullPath; 
     if (mp.length() > 1 && (mp[mp.length()-2] != '\\' || mp[mp.length()-2] != '/'))
-        {
         fullPath = mp + "\\" + mf;
-        }
     else
-        {
         fullPath = mp + mf;
-        }
+    return isFilePresent(f);
+
+#	else
+    
+    std::string f = mp + "/" + mf;
+    return isFilePresent(f);
+    
+#	endif
+}
+
+
+bool RbFileManager::isFilePresent(const std::string fn) {
+
+#	ifdef WIN32
+
+    WIN32_FIND_DATA data;
+    std::string fullPath = fn; 
     HANDLE handle = FindFirstFile(fullPath.c_str(), &data);
     bool bFoundFile = handle != INVALID_HANDLE_VALUE;
     FindClose(handle);
@@ -175,26 +193,20 @@ bool RbFileManager::isFilePresent(const std::string mp, const std::string mf) {
 
 #	else
 
-	/* open the directory */
-	DIR* dir = opendir( mp.c_str() );
-	if ( !dir )
+	DIR* d = opendir( fn.c_str() );
+	if ( !d )
 		return false;
+    struct stat fInfo;
+    if ( !stat(fn.c_str(), &fInfo) )
+        {
+        if ( S_ISDIR(fInfo.st_mode) )
+            return false;
+        else
+            return true;
+        }
+    closedir(d);
 
-	/* read the directory's contents */
-	struct dirent* dirEntry;
-	bool foundFile = false;
-	while ( (dirEntry = readdir(dir)) != NULL ) 
-		{
-		std::string temp = dirEntry->d_name;
-		if ( temp == mf )
-			foundFile = true;
-		}
-
-	/* close the directory */
-	if ( closedir(dir) == -1 )
-		return false;
-
-	return foundFile;
+    return false;
     
 #	endif
 }
@@ -475,6 +487,20 @@ void RbFileManager::closeFile(std::ifstream& strm) {
 void RbFileManager::closeFile(std::ofstream& strm) {
 
 	strm.close();
+}
+
+
+/** Is this a directory */
+bool RbFileManager::isDirectory(std::string fn) {
+
+    return isDirectoryPresent(fn);
+}
+
+
+/** Is this a file */
+bool RbFileManager::isFile(std::string fn) {
+
+    return isFilePresent(fn);
 }
 
 

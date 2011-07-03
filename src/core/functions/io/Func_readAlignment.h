@@ -72,11 +72,6 @@ class Func_readAlignment :  public RbFunction {
     
     private:
         void                        formatError(RbFileManager& fm, std::string& errorStr);                   //!< Format the error string when (mis)reading files
-        std::string                 intuitDataType(std::string& s);                                          //!< Attempt to determine the type of data
-        bool                        isNumber(std::string& s);                                                //!< Checks if a string is a number
-        bool                        isFastaFile(std::string& fn, std::string& dType);                        //!< Checks if the file is in Fasta format
-        bool                        isNexusFile(std::string& fn);                                            //!< Checks if the file is in NEXUS format
-        bool                        isPhylipFile(std::string& fn, std::string& dType, bool& isInterleaved);  //!< Checks if the file is in Phylip format
 };
 
 #endif

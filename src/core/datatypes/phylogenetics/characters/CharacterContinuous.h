@@ -41,6 +41,8 @@ class CharacterContinuous : public Character {
         std::string                     richInfo(void) const;                                //!< Complete info about object
 
         // Discrete character observation functions
+        const double                    getMean(void) const { return mean; }                 //!< Get the continuous observation
+        virtual double                  getRealValue(void) { return mean; }                  //!< Return the double representation of the character
         const double                    getValue(void) const { return mean; }                //!< Get the continuous observation
         void                            setValue(const double x) { mean = x; }               //!< Set the continuous observation
         const double                    getVariance(void) const { return variance; }         //!< Get the continuous observation

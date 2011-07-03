@@ -47,6 +47,7 @@ class CharacterStateDiscrete : public Character {
         virtual size_t                          getNumStates(void) { return numStates; }           //!< Get the number of discrete states for the character
         virtual const char                      getState(void) const = 0;                          //!< Get the discrete observation
         std::vector<bool>                       getStateVector(void) const { return value; }       //!< Get the raw vector of states
+        virtual unsigned                        getUnsignedValue(void);                            //!< Get an unsigned reprsentation of the bool set
         virtual bool                            isMissAmbig(void) const;                           //!< Is the character missing or ambiguous
         void                                    setNumStates(size_t n);                            //!< Set the number of character states
         virtual void                            setState(const char s) = 0;                        //!< Set the discrete observation

@@ -1,9 +1,12 @@
-#include "ncl.h"
 #include <map>
 #include <vector>
 #include <string>
+#include "Character.h"
+//#include "CharacterContinuous.h"
+//#include "CharacterDiscrete.h"
 #include "NclReader.h"
 #include "RbFileManager.h"
+
 #import "CharacterMatrix.h"
 #import "RbData.h"
 #import "RbDataCell.h"
@@ -268,10 +271,8 @@
 	[myTool setFileName:fileName];
 	[myTool setPathName:pathName];
 		
-        
-#   if 0
-
-	// get the file format information
+	// Get the file format information from the ReadData tool panel. Note that if the file format is NEXUS,
+    // that we don't need the format/datatype information because the NCL parser can figure that out.
 	std::string localFormat = "", localDataType = "";
 	bool localIsInterleaved = true;
 	if ( [[dataFormatButton titleOfSelectedItem] isEqualToString:@"NEXUS"] == YES ) 
@@ -290,6 +291,170 @@
 		localDataType = "standard";
 	if ( [[interleavedFormatButton selectedCell] tag] == 0 )
 		localIsInterleaved = false;
+
+    // ^
+    // |
+    // Objective-C++
+    //
+    int strLen = (int)[fileToOpen length];
+    char* cStr = new char[strLen+10];
+    [fileToOpen getCString:cStr maxLength:(strLen+10)  encoding:NSUTF8StringEncoding];
+    std::string fn = cStr;
+    delete [] cStr;
+    //
+    // C++
+    // |
+    // v
+
+    // Get an instance of RbFileManager. From here on out, we use the RevBayes C++ classes to read the
+    // directory contents, etc.
+    RbFileManager myFileManager( fn );
+
+    // are we reading a single file or are we reading the contents of a directory?
+    bool readingDirectory = myFileManager.isDirectory(fn);
+
+    // set up a vector of strings containing the name or names of the files to be read
+    std::vector<std::string> vectorOfFileNames;
+    if (readingDirectory == true)
+        myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
+    else 
+        vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
+    if (readingDirectory == true)
+        {
+        //std::stringstream o1;
+        //o1 << "Found " << vectorOfFileNames.size() << " files in directory";
+        //RBOUT(o1.str());
+        }
+    
+    // get the global instance of the NCL reader and clear warnings from its warnings buffer
+    NclReader& reader = NclReader::getInstance();
+    reader.clearWarnings();
+            
+    // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
+    // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
+    // that can be read.
+    std::map<std::string,std::string> fileMap;
+    for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
+        {
+        bool isInterleaved = false;
+        std::string myFileType = "unknown", dType = "unknown";
+        if (reader.isNexusFile(*p) == true)
+            myFileType = "nexus";
+        else if (reader.isPhylipFile(*p, dType, isInterleaved) == true)
+            myFileType = "phylip";
+        else if (reader.isFastaFile(*p, dType) == true)
+            myFileType = "fasta";
+            
+        if (myFileType != "unknown")
+            {
+            std::string suffix = "|" + dType;
+            if ( myFileType == "phylip" )
+                {
+                if (isInterleaved == true)
+                    suffix += "|interleaved";
+                else
+                    suffix += "|noninterleaved";
+                }
+            else if ( myFileType == "fasta" )
+                suffix += "|noninterleaved";
+            else
+                suffix += "|unknown";
+            myFileType += suffix;
+            fileMap.insert( std::make_pair(*p,myFileType) );
+            }
+        else
+            {
+            reader.addWarning("Unknown file type");
+            }
+        }
+#   if 0
+    std::cout << "File map (" << fileMap.size() << ")" << std::endl;
+    for (std::map<std::string,std::string>::iterator it = fileMap.begin(); it != fileMap.end(); it++)
+        std::cout << it->first << " -- " << it->second << std::endl;
+#   endif
+                
+    // read the files in the map containing the file names with the output being a vector of pointers to
+    // the character matrices that have been read
+    std::vector<CharacterMatrix*> myData = reader.readMatrices( fileMap );
+    
+    // print summary of results of file reading to the user
+    if (readingDirectory == true)
+        {
+
+        }
+    else
+        {
+
+        }
+
+	// we have successfully read the data into computer memory
+	// add the matrices to the tool
+	for (std::vector<CharacterMatrix*>::iterator p = myData.begin(); p != myData.end(); p++)
+		{
+		//(*p)->print();
+		std::string fn = (*p)->getFileName();
+		NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
+		RbData* m = [[RbData alloc] init];
+		[m setNumTaxa:(int)((*p)->getNumTaxa())];
+		[m setNumCharacters:(int)((*p)->getNumCharacters())];
+		[m setName:nsfn];
+        if ( (*p)->getDataType() == "DNA" )
+            [m setDataType:DNA];
+        else if ( (*p)->getDataType() == "RNA" )
+            [m setDataType:RNA];
+        else if ( (*p)->getDataType() == "Amino Acid" )
+            [m setDataType:AA];
+        else if ( (*p)->getDataType() == "Standard" )
+            [m setDataType:STANDARD];
+        else if ( (*p)->getDataType() == "Continuous" )
+            [m setDataType:CONTINUOUS];
+
+		for (int i=0; i<(*p)->getNumTaxa(); i++)
+			{
+			NSString* taxonName = [NSString stringWithCString:(*p)->getTaxonWithIndex(i).c_str() encoding:NSUTF8StringEncoding];
+			[m addTaxonName:taxonName];
+			for (int j=0; j<(*p)->getNumCharacters(); j++)
+				{
+                Character* matrixCell = (*p)->getCharacter(i, j);
+				RbDataCell* cell = [[RbDataCell alloc] init];
+				if ((*p)->areCharactersDiscrete() == true)
+					{
+					unsigned x = matrixCell->getUnsignedValue();
+					NSNumber* n = [NSNumber numberWithUnsignedInt:x];
+					[cell setVal:n];
+					[cell setIsDiscrete:YES];
+                    [cell setDataType:[m dataType]];
+					[cell setNumStates:(int)(matrixCell->getNumStates())];
+					if ( matrixCell->isMissAmbig() == true )
+						[cell setIsAmbig:YES];
+					}
+				else 
+					{
+					double x = matrixCell->getRealValue();
+					NSNumber* n = [NSNumber numberWithDouble:x];
+					[cell setVal:n];
+					[cell setIsDiscrete:NO];
+					[cell setDataType:CONTINUOUS];
+					[cell setNumStates:0];
+					}
+				[cell setRow:i];
+				[cell setColumn:j];
+				//[cell setVal:n];
+				[m addCell:cell];
+				[cell release];
+				}
+			}
+			
+		//[m print];
+		[myTool addMatrix:m];
+		
+		//(*p)->print();
+		}
+
+
+
+
+#   if 0
 	
 	// read the file(s)
 	std::vector<CharacterMatrix*>* myData;
@@ -465,158 +630,6 @@
 		//(*p)->print();
 		}
 
-#   endif
-
-
-
-
-
-
-
-#   if 0
-
-    // From Func_readalignment() ***************************************************************
-
-    // check that the file/path name has been correctly specified
-    RbFileManager myFileManager( fn->getValue() );
-    if ( (myFileManager.isFileNamePresent() == false && myFileManager.testDirectory() == false) ||
-         (myFileManager.isFileNamePresent() == true  && (myFileManager.testFile() == false || myFileManager.testDirectory() == false)) )
-        {
-        std::string errorStr = "";
-        formatError(myFileManager, errorStr);
-        throw( RbException(errorStr) );
-        }
-
-    // are we reading a single file or are we reading the contents of a directory?
-    bool readingDirectory = false;
-    if ( myFileManager.testDirectory() == true && myFileManager.testFile() == false )
-        readingDirectory = true;
-    if (readingDirectory == true)
-        RBOUT("Recursively reading the contents of a directory");
-    else
-        RBOUT("Attempting to read the contents of file \"" + myFileManager.getFileName() + "\"");
-        
-    // set up a vector of strings containing the name or names of the files to be read
-    std::vector<std::string> vectorOfFileNames;
-    if (readingDirectory == true)
-        myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-    else 
-        {
-#       if defined (WIN32)
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
-#       else
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
-#       endif
-        }
-    if (readingDirectory == true)
-        {
-        std::stringstream o1;
-        o1 << "Found " << vectorOfFileNames.size() << " files in directory";
-        RBOUT(o1.str());
-        }
-    
-    // get the global instance of the NCL reader and clear warnings from its warnings buffer
-    NclReader& reader = NclReader::getInstance();
-    reader.clearWarnings();
-            
-    // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
-    // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
-    // that can be read.
-    std::map<std::string,std::string> fileMap;
-    for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
-        {
-        bool isInterleaved = false;
-        std::string myFileType = "unknown", dType = "unknown";
-        if (isNexusFile(*p) == true)
-            myFileType = "nexus";
-        else if (isPhylipFile(*p, dType, isInterleaved) == true)
-            myFileType = "phylip";
-        else if (isFastaFile(*p, dType) == true)
-            myFileType = "fasta";
-            
-        if (myFileType != "unknown")
-            {
-            std::string suffix = "|" + dType;
-            if ( myFileType == "phylip" )
-                {
-                if (isInterleaved == true)
-                    suffix += "|interleaved";
-                else
-                    suffix += "|noninterleaved";
-                }
-            else if ( myFileType == "fasta" )
-                suffix += "|noninterleaved";
-            else
-                suffix += "|unknown";
-            myFileType += suffix;
-            fileMap.insert( std::make_pair(*p,myFileType) );
-            }
-        else
-            {
-            reader.addWarning("Unknown file type");
-            }
-        }
-#   if 0
-    std::cout << "File map (" << fileMap.size() << ")" << std::endl;
-    for (std::map<std::string,std::string>::iterator it = fileMap.begin(); it != fileMap.end(); it++)
-        std::cout << it->first << " -- " << it->second << std::endl;
-#   endif
-                
-    // read the files in the map containing the file names with the output being a vector of pointers to
-    // the character matrices that have been read
-    std::vector<CharacterMatrix*> m = reader.readMatrices( fileMap );
-    
-    // print summary of results of file reading to the user
-    if (readingDirectory == true)
-        {
-        std::stringstream o2;
-        if ( m.size() == 0 )
-            o2 << "Failed to read any files";
-        else if ( m.size() == 1 )
-            o2 << "Successfully read one file";
-        else
-            o2 << "Successfully read " << m.size() << " files";
-        RBOUT(o2.str());
-        std::set<std::string> myWarnings = reader.getWarnings();
-        if ( vectorOfFileNames.size() - m.size() > 0 && myWarnings.size() > 0 )
-            {
-            std::stringstream o3;
-            if (vectorOfFileNames.size() - m.size() == 1)
-                o3 << "Did not read a file for the following ";
-            else
-                o3 << "Did not read " << vectorOfFileNames.size() - m.size() << " files for the following ";
-            if (myWarnings.size() == 1)
-                o3 << "reason:";
-            else
-                o3 << "reasons:";
-            RBOUT(o3.str());
-            for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
-                RBOUT("* "+(*it));
-            }
-        }
-    else
-        {
-        if (m.size() > 0)
-            RBOUT("Successfully read file");
-        else
-            {
-            std::set<std::string> myWarnings = reader.getWarnings();
-            if ( myWarnings.size() > 0 )
-                {
-                std::stringstream o3;
-                o3 << "Did not read the file for the following ";
-                if (myWarnings.size() == 1)
-                    o3 << "reason:";
-                else
-                    o3 << "reasons:";
-                RBOUT(o3.str());
-                for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
-                    RBOUT("* "+(*it));
-                }
-            }
-        }
-        
-    //END FUNC_READALIGNMENT
 #   endif
 
 	return YES;

@@ -60,6 +60,18 @@ std::string StringUtilities::getLastPathComponent(const std::string& s) {
 }
 
 
+/** Determine if the string s represents a number */
+bool StringUtilities::isNumber(std::string& s) {
+
+    for (size_t i=0; i<s.size(); i++)
+        {
+        if (!isdigit(s[i]))
+            return false;
+        }
+    return true;
+}
+
+
 /** Utility function for dividing string into pieces */
 void StringUtilities::stringSplit(std::string str, std::string delim, std::vector<std::string>& results) {
 

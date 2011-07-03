@@ -3,7 +3,7 @@
 #import "InOutlet.h"
 #import "RevBayes.h"
 #import "ToolTreeSet.h"
-#include "RbReader.h" // TAH: for ncl trees
+#include "NclReader.h" // TAH: for ncl trees
 #include "Tree.h"
 
 
@@ -100,10 +100,10 @@
         NSLog(@"Reading file with name %@.", fileToOpen);
 
         // instantiate an NCL reader object
-		RbReader& myReader = RbReader::getInstance();
+		NclReader& myReader = NclReader::getInstance();
 		
 		try {
-			myTrees = myReader.readTree(thisFileToOpen, fileFormat);
+			myTrees = myReader.readTrees(thisFileToOpen, fileFormat);
 			if (myTrees == NULL)
 				throw NxsException("help");
 		}

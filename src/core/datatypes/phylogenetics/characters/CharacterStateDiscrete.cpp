@@ -15,6 +15,7 @@
 
 #include "CharacterStateDiscrete.h"
 #include "CondLike.h"
+#include "RbException.h"
 #include "RbNames.h"
 #include "VectorString.h"
 
@@ -61,6 +62,24 @@ size_t CharacterStateDiscrete::getNumOnStates(void) const {
             nOn++;
         }
     return nOn;
+}
+
+
+/** Get the unsigned representation for this character */
+unsigned CharacterStateDiscrete::getUnsignedValue(void) {
+
+    if ( sizeof(unsigned) * 8 < value.size() )
+        throw ( RbException("Too many states to represent as an unsigned") );
+	unsigned val = 0;
+	for (int i=0; i<value.size(); i++)
+		{
+		if (value[i] == true)
+			{
+			unsigned mask = 1 << i ;
+			val |= mask;
+			}
+		}
+	return val;
 }
 
 
