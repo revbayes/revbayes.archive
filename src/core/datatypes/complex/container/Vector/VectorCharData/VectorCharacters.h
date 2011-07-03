@@ -23,23 +23,26 @@
 #include <vector>
 
 class Character;
+class CondLike;
+
 
 
 class VectorCharacters : public Vector {
 
     public:
-	    virtual Character&                      operator[](size_t i);                                     //!< Index op allowing change
-	    virtual const Character&                operator[](size_t i) const;                               //!< Const index op
+	    virtual Character&                      operator[](size_t i);                              //!< Index op allowing change
+	    virtual const Character&                operator[](size_t i) const;                        //!< Const index op
 
         // Basic utility functions you have to override
-        virtual VectorCharacters*               clone(void) const = 0;                                    //!< Clone object
-        virtual const VectorString&             getClass(void) const;                                     //!< Get class
+        virtual VectorCharacters*               clone(void) const = 0;                             //!< Clone object
+        virtual const VectorString&             getClass(void) const;                              //!< Get class
 
         // VectorCharacterObservations functions
-        size_t                                  getNumCharacters(void) { return size(); }                 //!< How many characters
+        virtual CondLike*                       getCondLike(void);                                 //!< Initialize and return a conditional likelihood for this state     
+        size_t                                  getNumCharacters(void) { return size(); }          //!< How many characters
 
     protected:
-                                                VectorCharacters(const std::string& elemType);            //!< Set type spec of container from type of elements
+                                                VectorCharacters(const std::string& elemType);     //!< Set type spec of container from type of elements
 };
 
 #endif

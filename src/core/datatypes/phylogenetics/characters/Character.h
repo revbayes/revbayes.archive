@@ -36,6 +36,7 @@ class Character : public RbObject {
         virtual const VectorString&     getClass(void) const;                      //!< Get class vector
         virtual std::string             richInfo(void) const = 0;                  //!< Complete info about object
         
+        virtual size_t                  getNumStates(void) { return 0; }           //!< Get the number states for a character (return 0 in base class)
         virtual bool                    isMissAmbig(void) const = 0;               //!< Is the character missing or ambiguous
 
     protected:

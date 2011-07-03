@@ -57,7 +57,7 @@ Move_msimplex* Move_msimplex::clone( void ) const {
 /** Get class vector describing type of object */
 const VectorString& Move_msimplex::getClass() const {
 
-    static VectorString rbClass = VectorString( Move_mslide_name ) + Move::getClass();
+    static VectorString rbClass = VectorString( Move_msimplex_name ) + Move::getClass();
     return rbClass;
 }
 
