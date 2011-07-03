@@ -20,17 +20,17 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "VectorCharacterObservations.h"
+#include "VectorCharacters.h"
 
 
 
-VectorCharacterObservations::VectorCharacterObservations(const std::string& elemType) : Vector(elemType) {
+VectorCharacters::VectorCharacters(const std::string& elemType) : Vector(elemType) {
 
 }
 
 
 /** Subscript operator */
-Character& VectorCharacterObservations::operator[](size_t i) {
+Character& VectorCharacters::operator[](size_t i) {
 
     if (i >= elements.size())
         throw RbException("Index out of bounds");
@@ -39,7 +39,7 @@ Character& VectorCharacterObservations::operator[](size_t i) {
 
 
 /** Subscript const operator */
-const Character& VectorCharacterObservations::operator[](size_t i) const {
+const Character& VectorCharacters::operator[](size_t i) const {
 
     if (i >= elements.size())
         throw RbException("Index out of bounds");
@@ -48,9 +48,9 @@ const Character& VectorCharacterObservations::operator[](size_t i) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& VectorCharacterObservations::getClass(void) const {
+const VectorString& VectorCharacters::getClass(void) const {
 
-    static VectorString rbClass = VectorString(VectorCharacterObservations_name) + Vector::getClass();
+    static VectorString rbClass = VectorString(VectorCharacters_name) + Vector::getClass();
     return rbClass;
 }
 

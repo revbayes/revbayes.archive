@@ -59,7 +59,7 @@
 #include "VectorAminoAcidStates.h"
 #include "VectorBoolean.h"
 #include "VectorComplex.h"
-#include "VectorContinuousObservations.h"
+#include "VectorCharacterContinuous.h"
 #include "VectorDnaStates.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
@@ -174,7 +174,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new MatrixReal()                   );
         addType( new VectorAminoAcidStates()        );
         addType( new VectorBoolean()                );
-        addType( new VectorContinuousObservations() );
+        addType( new VectorCharacterContinuous()    );
         addType( new VectorDnaStates()              );
         addType( new VectorInteger()                );
         addType( new VectorNatural()                );
@@ -347,7 +347,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "v",         new Func_v<         RnaState,                       VectorRnaStates                 >() );
         addFunction( "v",         new Func_v<         AminoAcidState,                 VectorAminoAcidStates           >() );
         addFunction( "v",         new Func_v<         StandardState,                  VectorStandardStates            >() );
-        addFunction( "v",         new Func_v<         CharacterContinuous,            VectorContinuousObservations    >() );
+        addFunction( "v",         new Func_v<         CharacterContinuous,            VectorCharacterContinuous       >() );
         addFunction( "v",         new Func_v<         VectorReal,                     MatrixReal                      >() );
         addFunction( "v",         new Func_v<         VectorComplex,                  MatrixComplex                   >() );
     }

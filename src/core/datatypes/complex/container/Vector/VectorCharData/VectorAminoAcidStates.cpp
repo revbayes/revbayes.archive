@@ -29,13 +29,13 @@
 
 
 /** Construct empty DNA vector */
-VectorAminoAcidStates::VectorAminoAcidStates(void) : VectorCharacterObservations(AminoAcidState_name) {
+VectorAminoAcidStates::VectorAminoAcidStates(void) : VectorCharacters(AminoAcidState_name) {
     
 }
 
 
 /** Copy constructor */
-VectorAminoAcidStates::VectorAminoAcidStates(const VectorAminoAcidStates& x) : VectorCharacterObservations(AminoAcidState_name) {
+VectorAminoAcidStates::VectorAminoAcidStates(const VectorAminoAcidStates& x) : VectorCharacters(AminoAcidState_name) {
 
     for (size_t i=0; i<x.size(); i++)
         elements.push_back( new AminoAcidState(x[i]) );

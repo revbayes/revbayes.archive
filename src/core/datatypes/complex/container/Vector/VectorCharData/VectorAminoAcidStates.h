@@ -19,7 +19,7 @@
 #ifndef VectorAminoAcidStates_H
 #define VectorAminoAcidStates_H
 
-#include "VectorCharacterObservations.h"
+#include "VectorCharacters.h"
 #include <iostream>
 #include <vector>
 
@@ -27,7 +27,7 @@ class AminoAcidState;
 
 
 
-class VectorAminoAcidStates : public VectorCharacterObservations {
+class VectorAminoAcidStates : public VectorCharacters {
 
     public:
 	                                 VectorAminoAcidStates(void);                                          //!< Default constructor (empty vector)

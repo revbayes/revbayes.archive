@@ -30,7 +30,7 @@
 #include "TreeSimple.h"
 #include "UserInterface.h"
 #include "VectorAminoAcidStates.h"
-#include "VectorContinuousObservations.h"
+#include "VectorCharacterContinuous.h"
 #include "VectorDnaStates.h"
 #include "VectorRnaStates.h"
 #include "VectorStandardStates.h"
@@ -219,7 +219,7 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
             cMat->excludeTaxon(origTaxIndex);
         
         // allocate a vector of Standard states
-        VectorContinuousObservations* dataVec = new VectorContinuousObservations();
+        VectorCharacterContinuous* dataVec = new VectorCharacterContinuous();
 
         // add the real-valued observation
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)

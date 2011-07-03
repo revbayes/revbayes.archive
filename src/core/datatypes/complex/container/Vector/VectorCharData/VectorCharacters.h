@@ -13,8 +13,8 @@
  * $Id$
  */
 
-#ifndef VectorCharacterObservations_H
-#define VectorCharacterObservations_H
+#ifndef VectorCharacters_H
+#define VectorCharacters_H
 
 #include "Vector.h"
 #include "VectorString.h"
@@ -25,21 +25,21 @@
 class Character;
 
 
-class VectorCharacterObservations : public Vector {
+class VectorCharacters : public Vector {
 
     public:
 	    virtual Character&                      operator[](size_t i);                                     //!< Index op allowing change
 	    virtual const Character&                operator[](size_t i) const;                               //!< Const index op
 
         // Basic utility functions you have to override
-        virtual VectorCharacterObservations*    clone(void) const = 0;                                    //!< Clone object
+        virtual VectorCharacters*               clone(void) const = 0;                                    //!< Clone object
         virtual const VectorString&             getClass(void) const;                                     //!< Get class
 
         // VectorCharacterObservations functions
         size_t                                  getNumCharacters(void) { return size(); }                 //!< How many characters
 
     protected:
-                                                VectorCharacterObservations(const std::string& elemType); //!< Set type spec of container from type of elements
+                                                VectorCharacters(const std::string& elemType);            //!< Set type spec of container from type of elements
 };
 
 #endif

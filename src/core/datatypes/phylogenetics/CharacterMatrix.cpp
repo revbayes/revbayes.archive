@@ -30,7 +30,7 @@
 #include "StochasticNode.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
-#include "VectorCharacterObservations.h"
+#include "VectorCharacters.h"
 #include "VectorIndex.h"
 #include "VectorNatural.h"
 #include "VectorString.h"
@@ -56,7 +56,7 @@ void CharacterMatrix::addTaxonName(const std::string tName) {
 
 
 /** Add a vector of taxon observations */
-void CharacterMatrix::addTaxonObservations(VectorCharacterObservations* obs) {
+void CharacterMatrix::addTaxonObservations(VectorCharacters* obs) {
 
     taxonObservations.push_back( obs );
 }

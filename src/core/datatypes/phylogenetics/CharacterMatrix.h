@@ -23,7 +23,7 @@
 
 class ArgumentRule;
 class DAGNode;
-class VectorCharacterObservations;
+class VectorCharacters;
 class VectorString;
 
 
@@ -46,7 +46,7 @@ class CharacterMatrix : public MemberObject {
         
         // CharacterMatrix functions
         void                                        addTaxonName(const std::string tName);                             //!< Add taxon name
-        void                                        addTaxonObservations(VectorCharacterObservations* obs);            //!< Add obserervations
+        void                                        addTaxonObservations(VectorCharacters* obs);                       //!< Add obserervations
         void                                        excludeCharacter(size_t i);                                        //!< Exclude character
         void                                        excludeTaxon(size_t i);                                            //!< Exclude taxon
         void                                        excludeTaxon(std::string& s);                                      //!< Exclude taxon
@@ -73,7 +73,7 @@ class CharacterMatrix : public MemberObject {
         bool                                        isCharacterMissAmbig(size_t idx);                                  //!< Does the character have missing or ambiguous data?
         size_t                                      numConstantPatterns(void);                                         //!< The number of constant patterns
         size_t                                      numMissAmbig(void);                                                //!< The number of patterns with missing or ambiguous characters
-        std::vector<VectorCharacterObservations*>   taxonObservations;                                                 //!< Vector of character observations
+        std::vector<VectorCharacters*>              taxonObservations;                                                 //!< Vector of character observations
         std::vector<std::string>                    taxonNames;                                                        //!< Vector of taxon names
         std::set<size_t>                            deletedTaxa;                                                       //!< Set of deleted taxa
         std::set<size_t>                            deletedCharacters;                                                 //!< Set of deleted characters

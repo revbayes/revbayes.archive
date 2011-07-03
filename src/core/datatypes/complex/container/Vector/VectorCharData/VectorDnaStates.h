@@ -19,7 +19,7 @@
 #ifndef VectorDnaStates_H
 #define VectorDnaStates_H
 
-#include "VectorCharacterObservations.h"
+#include "VectorCharacters.h"
 #include <iostream>
 #include <vector>
 
@@ -27,7 +27,7 @@ class DnaState;
 
 
 
-class VectorDnaStates : public VectorCharacterObservations {
+class VectorDnaStates : public VectorCharacters {
 
     public:
 	                                VectorDnaStates(void);                                          //!< Default constructor (empty vector)

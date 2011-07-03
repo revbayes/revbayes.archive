@@ -19,7 +19,7 @@
 #ifndef VectorStandardStates_H
 #define VectorStandardStates_H
 
-#include "VectorCharacterObservations.h"
+#include "VectorCharacters.h"
 #include <iostream>
 #include <vector>
 
@@ -27,7 +27,7 @@ class StandardState;
 
 
 
-class VectorStandardStates : public VectorCharacterObservations {
+class VectorStandardStates : public VectorCharacters {
 
     public:
 	                                VectorStandardStates(void);                                          //!< Default constructor (empty vector)

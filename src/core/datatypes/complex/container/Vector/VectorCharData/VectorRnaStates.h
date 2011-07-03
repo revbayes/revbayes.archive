@@ -19,7 +19,7 @@
 #ifndef VectorRnaStates_H
 #define VectorRnaStates_H
 
-#include "VectorCharacterObservations.h"
+#include "VectorCharacters.h"
 #include <iostream>
 #include <vector>
 
@@ -27,7 +27,7 @@ class RnaState;
 
 
 
-class VectorRnaStates : public VectorCharacterObservations {
+class VectorRnaStates : public VectorCharacters {
 
     public:
 	                                VectorRnaStates(void);                                          //!< Default constructor (empty vector)

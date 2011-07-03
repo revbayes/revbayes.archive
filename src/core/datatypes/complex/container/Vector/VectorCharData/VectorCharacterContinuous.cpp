@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of VectorContinuousObservations, a complex type
+ * This file contains the implementation of VectorCharacterContinuous, a complex type
  * used to hold a string of Standard characters.
  *
- * @brief Implementation of VectorContinuousObservations
+ * @brief Implementation of VectorCharacterContinuous
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -21,7 +21,7 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "TypeSpec.h"
-#include "VectorContinuousObservations.h"
+#include "VectorCharacterContinuous.h"
 #include "VectorInteger.h"
 #include "VectorString.h"
 #include <sstream>
@@ -29,13 +29,13 @@
 
 
 /** Construct empty DNA vector */
-VectorContinuousObservations::VectorContinuousObservations(void) : VectorCharacterObservations(CharacterContinuous_name) {
+VectorCharacterContinuous::VectorCharacterContinuous(void) : VectorCharacters(CharacterContinuous_name) {
     
 }
 
 
 /** Copy constructor */
-VectorContinuousObservations::VectorContinuousObservations(const VectorContinuousObservations& x) : VectorCharacterObservations(CharacterContinuous_name) {
+VectorCharacterContinuous::VectorCharacterContinuous(const VectorCharacterContinuous& x) : VectorCharacters(CharacterContinuous_name) {
 
     for (size_t i=0; i<x.size(); i++)
         elements.push_back( new CharacterContinuous(x[i]) );
@@ -44,7 +44,7 @@ VectorContinuousObservations::VectorContinuousObservations(const VectorContinuou
 
 
 /** Subscript operator */
-CharacterContinuous& VectorContinuousObservations::operator[](size_t i) {
+CharacterContinuous& VectorCharacterContinuous::operator[](size_t i) {
 
     if (i >= elements.size())
         throw RbException("Index out of bounds");
@@ -53,7 +53,7 @@ CharacterContinuous& VectorContinuousObservations::operator[](size_t i) {
 
 
 /** Subscript const operator */
-const CharacterContinuous& VectorContinuousObservations::operator[](size_t i) const {
+const CharacterContinuous& VectorCharacterContinuous::operator[](size_t i) const {
 
     if (i >= elements.size())
         throw RbException("Index out of bounds");
@@ -62,7 +62,7 @@ const CharacterContinuous& VectorContinuousObservations::operator[](size_t i) co
 
 
 /** Equals comparison */
-bool VectorContinuousObservations::operator==(const VectorContinuousObservations& x) const {
+bool VectorCharacterContinuous::operator==(const VectorCharacterContinuous& x) const {
 
     if ( size() != x.size() )
         return false;
@@ -76,16 +76,16 @@ bool VectorContinuousObservations::operator==(const VectorContinuousObservations
 
 
 /** Not equals comparison */
-bool VectorContinuousObservations::operator!=(const VectorContinuousObservations& x) const {
+bool VectorCharacterContinuous::operator!=(const VectorCharacterContinuous& x) const {
 
     return !operator==(x);
 }
 
 
-/** Concatenation with operator+ (VectorContinuousObservations) */
-VectorContinuousObservations VectorContinuousObservations::operator+(const VectorContinuousObservations& x) const {
+/** Concatenation with operator+ (VectorCharacterContinuous) */
+VectorCharacterContinuous VectorCharacterContinuous::operator+(const VectorCharacterContinuous& x) const {
 
-    VectorContinuousObservations tempVec = *this;
+    VectorCharacterContinuous tempVec = *this;
     for (size_t i=0; i<x.size(); i++)
         tempVec.push_back( x[i] );
     return tempVec;
@@ -93,31 +93,31 @@ VectorContinuousObservations VectorContinuousObservations::operator+(const Vecto
 
 
 /** Concatenation with operator+ (StandardState) */
-VectorContinuousObservations VectorContinuousObservations::operator+(const CharacterContinuous& x) const {
+VectorCharacterContinuous VectorCharacterContinuous::operator+(const CharacterContinuous& x) const {
 
-    VectorContinuousObservations tempVec = *this;
+    VectorCharacterContinuous tempVec = *this;
     tempVec.push_back( x );
     return tempVec;
 }
 
 
 /** Clone function */
-VectorContinuousObservations* VectorContinuousObservations::clone(void) const {
+VectorCharacterContinuous* VectorCharacterContinuous::clone(void) const {
 
-    return new VectorContinuousObservations(*this);
+    return new VectorCharacterContinuous(*this);
 }
 
 
 /** Get class vector describing type of object */
-const VectorString& VectorContinuousObservations::getClass(void) const {
+const VectorString& VectorCharacterContinuous::getClass(void) const {
 
-    static VectorString rbClass = VectorString(VectorContinuousObservations_name) + Vector::getClass();
+    static VectorString rbClass = VectorString(VectorCharacterContinuous_name) + Vector::getClass();
     return rbClass;
 }
 
 
 /** Get STL vector of strings */
-std::vector<CharacterContinuous*> VectorContinuousObservations::getStdVector(void) const {	 
+std::vector<CharacterContinuous*> VectorCharacterContinuous::getStdVector(void) const {	 
 
     std::vector<CharacterContinuous*> continuousVector;	 
     for (size_t i=0; i<elements.size(); i++) 
@@ -130,7 +130,7 @@ std::vector<CharacterContinuous*> VectorContinuousObservations::getStdVector(voi
 
 
 /** Append string element to end of vector, updating length in process */
-void VectorContinuousObservations::push_back(CharacterContinuous x) {
+void VectorCharacterContinuous::push_back(CharacterContinuous x) {
 
     elements.push_back( new CharacterContinuous(x) );
     length[0]++;
@@ -138,7 +138,7 @@ void VectorContinuousObservations::push_back(CharacterContinuous x) {
 
 
 /** Print info about object */
-void VectorContinuousObservations::printValue(std::ostream& o) const {
+void VectorCharacterContinuous::printValue(std::ostream& o) const {
 
     for (size_t i=0; i<elements.size(); i++)
         elements[i]->printValue(o);
@@ -146,10 +146,10 @@ void VectorContinuousObservations::printValue(std::ostream& o) const {
 
 
 /** Complete info about object */
-std::string VectorContinuousObservations::richInfo(void) const {
+std::string VectorCharacterContinuous::richInfo(void) const {
 
     std::ostringstream o;
-    o << "VectorContinuousObservations: ";
+    o << "VectorCharacterContinuous: ";
     printValue(o);
     return o.str();
 }
