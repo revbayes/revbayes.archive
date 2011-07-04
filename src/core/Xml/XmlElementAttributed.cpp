@@ -26,7 +26,7 @@ std::string XmlElementAttributed::getAttribute(std::string const &key) const {
 bool XmlElementAttributed::getAttributeBool(std::string const &key) const {
     std::string value = attributes.find(key)->second;
     
-    return value.compare("1");
+    return value.compare("1") == 0;
 }
 
 double XmlElementAttributed::getAttributeDouble(std::string const &key) const {
@@ -54,7 +54,7 @@ std::vector<bool> XmlElementAttributed::getAttributeVectorBool(std::string const
     // loop over the values and transform them
     std::vector<bool> bools;
     for (std::vector<std::string>::const_iterator it=tokens.begin(); it!=tokens.end(); ++it) {
-        bools.push_back(it->compare("1"));
+        bools.push_back(it->compare("1") == 0);
     }
     
     return bools;
@@ -92,7 +92,7 @@ std::vector<int> XmlElementAttributed::getAttributeVectorInt(std::string const &
     // loop over the values and transform them
     std::vector<int> ints;
     for (std::vector<std::string>::const_iterator it=tokens.begin(); it!=tokens.end(); ++it) {
-        ints.push_back(atof(it->c_str()));
+        ints.push_back(atoi(it->c_str()));
     }
     
     return ints;

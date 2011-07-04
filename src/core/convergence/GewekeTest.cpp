@@ -36,7 +36,7 @@ bool GewekeTest::assessConvergenceSingleChain(const std::vector<double>& values,
     
     // set the indices for start and end of the first window
     int startwindow1    = burnin;
-    int endWindow1      = sampleSize * frac1 + burnin; 
+    int endWindow1      = int(sampleSize * frac1) + burnin; 
     
     // get mean and variance of the first window
     analysis.analyseMean(values, startwindow1, endWindow1);
@@ -45,8 +45,8 @@ bool GewekeTest::assessConvergenceSingleChain(const std::vector<double>& values,
     double varWindow1   = analysis.getStdErrorOfMean()*analysis.getStdErrorOfMean();
     
     // set the indices for start and end of the second window
-    int startwindow2    = (int) values.size() - sampleSize * frac2;
-    int endWindow2      = (int) values.size();
+    int startwindow2    = int(values.size() - sampleSize * frac2);
+    int endWindow2      = int(values.size());
     
     // get mean and variance of the second window
     analysis.analyseMean(values, startwindow2, endWindow2);

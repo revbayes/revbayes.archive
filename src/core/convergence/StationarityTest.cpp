@@ -43,10 +43,10 @@ bool StationarityTest::assessConvergenceSingleChain(const std::vector<double>& v
     double* blockMeans = new double[nBlocks];
     double* blockSem = new double[nBlocks];
     for (int i=0; i<nBlocks; i++) {
-        analysis.analyseMean(values,i*blockSize+burnin,(i+1)*blockSize+burnin);
+        analysis.analyseMean(values,int(i*blockSize+burnin),int((i+1)*blockSize+burnin));
         blockMeans[i]   = analysis.getMean();
         
-        analysis.analyseCorrelation(values,i*blockSize+burnin,(i+1)*blockSize+burnin);
+        analysis.analyseCorrelation(values,int(i*blockSize+burnin),int((i+1)*blockSize+burnin));
         blockSem[i]     = analysis.getStdErrorOfMean();
         
         // get the quantile of a normal with mu=0, var=sem and p=(1-p_corrected)/2

@@ -43,11 +43,11 @@ bool GelmanRubinTest::assessConvergenceSingleChain(const std::vector<double>& va
     // get a mean and standard error for each block
     double* batchMeans  = new double[nBatches];
     for (int i=0; i<nBatches; i++) {
-        analysis.analyseMean(values,i*batchSize+burnin,(i+1)*batchSize+burnin);
+        analysis.analyseMean(values,int(i*batchSize+burnin),int((i+1)*batchSize+burnin));
         batchMeans[i]                       = analysis.getMean();
         
         // iterate over all samples from the chains
-        for (int j=i*batchSize+burnin; j<(i+1)*batchSize+burnin; j++) {
+        for (int j=int(i*batchSize+burnin); j<int((i+1)*batchSize+burnin); j++) {
             withinBatchVariance             += ( (values.at(j) - batchMeans[i])*(values.at(j) - batchMeans[i]) );
             betweenBatchVariance            += ( (values.at(j) - totalMean)*(values.at(i) - totalMean) );
         }
