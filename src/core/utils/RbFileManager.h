@@ -54,6 +54,7 @@ class RbFileManager {
         bool                listDirectoryContents(const std::string& dirpath);                                               //!< Recursively lists the contents of the directory passed in as the argument dirpath
         bool                setStringWithNamesOfFilesInDirectory(std::vector<std::string>& sv);                              //!< Recursively fills in a string vector with the contents of the directory filePath
         bool                setStringWithNamesOfFilesInDirectory(const std::string& dirpath, std::vector<std::string>& sv);  //!< Recursively fills in a string vector with the contents of the directory passed in as the argument dirpath
+
     private:
         std::string         curDirectory;	                                                                                 //!< String with default directory
         std::string         fileName;                                                                                        //!< String with file name       

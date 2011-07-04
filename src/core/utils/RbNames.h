@@ -56,7 +56,6 @@ const std::string Dist_exp_name                                 = "Dist_exp";
 const std::string Dist_multinomial_name                         = "Dist_multinomial";
 const std::string Dist_norm_name                                = "Dist_norm";
 const std::string Dist_unif_name                                = "Dist_unif";
-const std::string DNA_name                                      = "DNA";
 const std::string DnaState_name                                 = "DNA";
 const std::string Ellipsis_name                                 = "ellipsis";
 const std::string Func__add_name                                = "Addition";

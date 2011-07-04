@@ -59,10 +59,29 @@ RbFileManager::RbFileManager(std::string s) {
 /** Divides a string into the path and file name components */
 bool RbFileManager::parsePathFileNames(std::string s) {
 
+    // check if the path is a good one
+    bool isDPresent = isDirectoryPresent(s);
+    bool isFPresent = isFilePresent(s);
+    if (isDPresent == false && isFPresent == false)
+        {
+        fileName = "";
+        filePath = "";
+        return false;
+        }
+    if (isDPresent == true && isFPresent == false)
+        {
+        fileName = "";
+        filePath = s;
+        int location = (int)s.find_last_of( "/" );
+        if ( location == (int)s.length() - 1 )
+            s.erase( location );
+        return true;
+        }
+    
+    /* the string that is supposed to hold the
+       path/file information is empty. */
 	if ( s.length() == 0 )
 		{
-		/* the string that is supposed to hold the
-		   path/file information is empty. */
 		return false;
 		}
 		

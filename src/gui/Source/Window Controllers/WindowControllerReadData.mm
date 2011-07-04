@@ -271,6 +271,9 @@
 	[myTool setFileName:fileName];
 	[myTool setPathName:pathName];
 		
+    NSLog(@"fileToOpen = %@", fileToOpen);
+    NSLog(@"isDir = %d", isDir);
+    
 	// Get the file format information from the ReadData tool panel. Note that if the file format is NEXUS,
     // that we don't need the format/datatype information because the NCL parser can figure that out.
 	std::string localFormat = "", localDataType = "";
@@ -291,6 +294,9 @@
 		localDataType = "standard";
 	if ( [[interleavedFormatButton selectedCell] tag] == 0 )
 		localIsInterleaved = false;
+    
+    std::cerr << "localFormat = " << localFormat << std::endl;
+    std::cerr << "localDataType = " << localDataType << std::endl;
 
     // ^
     // |
@@ -326,6 +332,7 @@
         //RBOUT(o1.str());
         }
     
+std::cerr << "readingDirectory = " << readingDirectory << std::endl;
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     NclReader& reader = NclReader::getInstance();
     reader.clearWarnings();
@@ -336,6 +343,7 @@
     std::map<std::string,std::string> fileMap;
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
         {
+        std::cerr << "Checking file " << (*p) << std::endl;
         bool isInterleaved = false;
         std::string myFileType = "unknown", dType = "unknown";
         if (reader.isNexusFile(*p) == true)
@@ -366,8 +374,9 @@
             {
             reader.addWarning("Unknown file type");
             }
+        std::cerr << "Finished checking file " << (*p) << std::endl;
         }
-#   if 0
+#   if 1
     std::cout << "File map (" << fileMap.size() << ")" << std::endl;
     for (std::map<std::string,std::string>::iterator it = fileMap.begin(); it != fileMap.end(); it++)
         std::cout << it->first << " -- " << it->second << std::endl;
@@ -393,6 +402,7 @@
 		{
 		//(*p)->print();
 		std::string fn = (*p)->getFileName();
+std::cerr << "Adding matrix " << fn << std::endl;
 		NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
 		RbData* m = [[RbData alloc] init];
 		[m setNumTaxa:(int)((*p)->getNumTaxa())];
@@ -415,22 +425,25 @@
 			[m addTaxonName:taxonName];
 			for (int j=0; j<(*p)->getNumCharacters(); j++)
 				{
-                Character* matrixCell = (*p)->getCharacter(i, j);
+                const Character& matrixCell = (*p)->getCharacter(i, j);
 				RbDataCell* cell = [[RbDataCell alloc] init];
-				if ((*p)->areCharactersDiscrete() == true)
+                bool isDiscrete = true;
+                if ( matrixCell.getNumStates() == 0 )
+                    isDiscrete = false;
+				if ( isDiscrete == true )
 					{
-					unsigned x = matrixCell->getUnsignedValue();
+					unsigned x = matrixCell.getUnsignedValue();
 					NSNumber* n = [NSNumber numberWithUnsignedInt:x];
 					[cell setVal:n];
 					[cell setIsDiscrete:YES];
                     [cell setDataType:[m dataType]];
-					[cell setNumStates:(int)(matrixCell->getNumStates())];
-					if ( matrixCell->isMissAmbig() == true )
+					[cell setNumStates:(int)(matrixCell.getNumStates())];
+					if ( matrixCell.isMissAmbig() == true )
 						[cell setIsAmbig:YES];
 					}
 				else 
 					{
-					double x = matrixCell->getRealValue();
+					double x = matrixCell.getRealValue();
 					NSNumber* n = [NSNumber numberWithDouble:x];
 					[cell setVal:n];
 					[cell setIsDiscrete:NO];
