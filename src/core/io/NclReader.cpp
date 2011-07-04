@@ -65,20 +65,17 @@ void NclReader::constructTreefromNclRecursively(TreeNode* tn, const NxsSimpleNod
 /** Reads the blocks stored by NCL and converts them to RevBayes character matrices */
 std::vector<CharacterMatrix*> NclReader::convertFromNcl(std::vector<std::string>& fnv) {
     
-std::cout << "converting from NCL" << std::endl;
 	std::vector<CharacterMatrix*> cmv;
     
 	int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
 	int k = 0;
 	for (int tBlck=0; tBlck<numTaxaBlocks; tBlck++)
         {
-        std::cerr << "tBlck=" << tBlck << std::endl;
 		NxsTaxaBlock* taxaBlock = nexusReader.GetTaxaBlock(tBlck);
 		std::string taxaBlockTitle = taxaBlock->GetTitle();
 		const unsigned nCharBlocks = nexusReader.GetNumCharactersBlocks(taxaBlock);
 		for (unsigned cBlck=0; cBlck<nCharBlocks; cBlck++)
             {
-        std::cerr << "cBlck=" << cBlck << std::endl;
 			CharacterMatrix* m = NULL;
 			NxsCharactersBlock* charBlock = nexusReader.GetCharactersBlock(taxaBlock, cBlck);
 			std::string charBlockTitle = taxaBlock->GetTitle();
@@ -265,7 +262,6 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
 /** Create an object to hold DNA data */
 CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 
-std::cerr << "createDnaMatrix" << std::endl;
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
         return NULL;
@@ -280,9 +276,7 @@ std::cerr << "createDnaMatrix" << std::endl;
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
 
     // instantiate the character matrix
-std::cerr << "about to create a character matrix" << std::endl;
 	CharacterMatrix* cMat = new CharacterMatrix( DnaState_name );
-std::cerr << "cMat=" << cMat << std::endl;
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
@@ -294,7 +288,6 @@ std::cerr << "cMat=" << cMat << std::endl;
         // allocate a vector of DNA states
         VectorDnaStates* dataVec = new VectorDnaStates();
         dataVec->setTaxonName(tName);
-std::cerr << "dataVec = " << dataVec << std::endl;
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
@@ -854,7 +847,6 @@ std::vector<CharacterMatrix*> NclReader::readMatrices(const std::vector<std::str
 /** Reads a single file using NCL */
 std::vector<CharacterMatrix*> NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
-std::cerr << "readMatrices " << fileName << std::endl;
 	// check that the file exists
 	if ( !fileExists(fileName) )	
         {
