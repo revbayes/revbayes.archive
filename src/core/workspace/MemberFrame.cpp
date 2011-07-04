@@ -131,6 +131,30 @@ void MemberFrame::clear( void ) {
     members.clear();
 }
 
+
+/** Get index of named argument */
+size_t MemberFrame::getIndex( const std::string& name ) const {
+
+    std::vector<std::string>::const_iterator it;
+    it = std::find( members.begin(), members.end(), name );
+    
+    if ( it == members.end() )
+        throw RbException( "Member " + name + " does not exist" );
+
+    return it - members.begin();
+}
+
+
+/** Get name of indexed argument */
+std::string MemberFrame::getName( const size_t index ) const {
+
+    if ( index > members.size() )
+        throw RbException( "Index out of range" );
+
+    return members[index];
+}
+
+
 /**
  * Is member frame same or parent of otherFrame? We use this function
  * to decide when a reference from a slot in otherFrame to a variable in

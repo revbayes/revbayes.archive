@@ -42,7 +42,7 @@ class CharacterContinuous : public Character {
 
         // Discrete character observation functions
         const double                    getMean(void) const { return mean; }                 //!< Get the continuous observation
-        virtual double                  getRealValue(void) { return mean; }                  //!< Return the double representation of the character
+        virtual double                  getRealValue(void) const { return mean; }            //!< Return the double representation of the character
         const double                    getValue(void) const { return mean; }                //!< Get the continuous observation
         void                            setValue(const double x) { mean = x; }               //!< Set the continuous observation
         const double                    getVariance(void) const { return variance; }         //!< Get the continuous observation

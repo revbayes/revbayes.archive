@@ -37,7 +37,7 @@ const VectorString& CharacterStateDiscrete::getClass() const {
 
 
 /** Initialize and return a conditional likelihood for this state */
-CondLike* CharacterStateDiscrete::getCondLike(void) {
+CondLike* CharacterStateDiscrete::getCondLike(void) const {
 
     CondLike* cl = new CondLike(1, numStates);
     double* p = &(*cl)[0];
@@ -66,7 +66,7 @@ size_t CharacterStateDiscrete::getNumOnStates(void) const {
 
 
 /** Get the unsigned representation for this character */
-unsigned CharacterStateDiscrete::getUnsignedValue(void) {
+unsigned CharacterStateDiscrete::getUnsignedValue(void) const {
 
     if ( sizeof(unsigned) * 8 < value.size() )
         throw ( RbException("Too many states to represent as an unsigned") );

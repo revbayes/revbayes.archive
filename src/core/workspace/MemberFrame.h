@@ -45,6 +45,8 @@ class MemberFrame : public VariableFrame {
         void                        addVariableSlot(const std::string& name, const TypeSpec& typeSp);               //!< Add empty slot
         void                        clear(void);                                                                    //!< Clear frame
         void                        eraseVariable(const std::string& name);                                         //!< Erase a variable
+        size_t                      getIndex(const std::string& name) const;                                        //!< Get index of a named variable
+        std::string                 getName(const size_t index) const;                                              //!< Get name of an indexed variable
         bool                        isSameOrParentOf(Frame* otherFrame) const;                                      //!< Is the frame the same or parent to otherFrame?
         void                        push_back(const std::string& name, VariableSlot* slot);                         //!< Add member variable slot
         void                        setOwner(DAGNode* frameOwner) { owner = frameOwner; }                           //!< Set frame owner

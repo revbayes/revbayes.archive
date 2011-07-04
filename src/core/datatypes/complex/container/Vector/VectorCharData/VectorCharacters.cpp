@@ -1,7 +1,7 @@
 /**
  * @file
- * This file contains the implementation of VectorCharacterObservations, an
- * abstract base class for different types of character observation vectors.
+ * This file contains the implementation of VectorCharacters, an
+ * abstract base class for different types of character vectors.
  *
  * @brief Implementation of VectorCharacterObservations
  *
@@ -87,3 +87,15 @@ CondLike* VectorCharacters::getCondLike(void) {
         }
     return cl;
 }
+
+
+/** Push back a new character */
+void VectorCharacters::push_back( Character* newChar ) {
+
+    if ( newChar == NULL || !newChar->isType( elementType ) )
+        throw RbException( "Inappropriate character type" );
+    
+    elements.push_back( newChar );
+    length[0]++;
+}
+

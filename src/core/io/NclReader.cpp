@@ -121,6 +121,38 @@ std::vector<CharacterMatrix*> NclReader::convertFromNcl(std::vector<std::string>
 }
 
 
+/** Converts trees stored by NCL into RevBayes formatted trees */
+std::vector<Tree*>* NclReader::convertTreesFromNcl(void) {
+	
+	const unsigned nTaxaBlocks = nexusReader.GetNumTaxaBlocks();
+	std::vector<Tree*>* rbTreesFromFile;
+	for (unsigned t = 0; t < nTaxaBlocks; ++t) 
+        {
+		const NxsTaxaBlock * tb = nexusReader.GetTaxaBlock(t);
+		const unsigned nTreesBlocks = nexusReader.GetNumTreesBlocks(tb);
+		if (nTreesBlocks == 0)
+			continue;
+        
+		for (unsigned i = 0; i < nTreesBlocks; ++i) 
+            {
+			const NxsTreesBlock * trb = nexusReader.GetTreesBlock(tb, i);
+			trb->ProcessAllTrees();
+			for (unsigned j = 0; j < trb->GetNumTrees(); ++j) 
+                {
+				const NxsFullTreeDescription & ftd = trb->GetFullTreeDescription(j);
+				NxsSimpleTree tree(ftd, -1, -1.0);
+				Tree *rbTree = translateNclSimpleTreeToTree(tree);
+                //! @todo Tracy: Make sure rbTreesFromFile is properly initialized before being used -- Fredrik
+                rbTreesFromFile = new std::vector<Tree*>(); // Temporary fix making the compiler happy
+				rbTreesFromFile->push_back( rbTree );
+                }
+            }
+        }
+    
+	return rbTreesFromFile;
+}
+
+
 /** Create an object to hold amino acid data */
 CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
  
@@ -144,14 +176,9 @@ CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
-        // add the taxon name
-        NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
-        std::string tn = NxsString::GetEscaped(tLabel).c_str();
-        cMat->addTaxonName(tn);
-        
-        // check if the taxon is excluded
-		if ( !charblock->IsActiveTaxon(origTaxIndex) )
-            cMat->excludeTaxon(origTaxIndex);
+        // get the taxon name
+        NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
+        std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
         VectorAminoAcidStates* dataVec = new VectorAminoAcidStates();
@@ -171,17 +198,14 @@ CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
                     aaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
             dataVec->push_back( aaState );
-                
-            // check if the site is excluded
-            NxsUnsignedSet::iterator it = excluded.find(*cit);
-            if (it != excluded.end())
-                cMat->excludeCharacter(*cit);
             }
 
-        // add the vector of nucleotide sequences for this taxon to the character matrix
-        cMat->addTaxonObservations( dataVec );
+        // add sequence to character matrix
+        cMat->addSequence( tName, dataVec );
         }
-    
+
+    setExcluded( charblock, cMat );
+   
     return cMat;
 }
 
@@ -210,13 +234,8 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
         // add the taxon name
-        NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
-        std::string tn = NxsString::GetEscaped(tLabel).c_str();
-        cMat->addTaxonName(tn);
-        
-        // check if the taxon is excluded
-		if ( !charblock->IsActiveTaxon(origTaxIndex) )
-            cMat->excludeTaxon(origTaxIndex);
+        NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
+        std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
         VectorCharacterContinuous* dataVec = new VectorCharacterContinuous();
@@ -228,17 +247,14 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
             const std::vector<double>& x = charblock->GetContinuousValues( origTaxIndex, *cit, std::string("AVERAGE") );
             contObs.setValue(x[0]);
             dataVec->push_back( contObs );
-            
-            // check if the character is excluded
-            NxsUnsignedSet::iterator it = excluded.find(*cit);
-            if (it != excluded.end())
-                cMat->excludeCharacter(*cit);
             }
 
-        // add the vector of nucleotide sequences for this taxon to the character matrix
-        cMat->addTaxonObservations( dataVec );
+        // add sequence to character matrix
+        cMat->addSequence( tName, dataVec );
         }
     
+    setExcluded( charblock, cMat );
+
     return cMat;
 }
 
@@ -267,13 +283,8 @@ CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
         // add the taxon name
-        NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
-        std::string tn = NxsString::GetEscaped(tLabel).c_str();
-        cMat->addTaxonName(tn);
-        
-        // check if the taxon is excluded
-		if ( !charblock->IsActiveTaxon(origTaxIndex) )
-            cMat->excludeTaxon(origTaxIndex);
+        NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
+        std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of DNA states
         VectorDnaStates* dataVec = new VectorDnaStates();
@@ -294,16 +305,13 @@ CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
                     dnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
             dataVec->push_back( dnaState );
-
-            // check if the site is excluded
-            NxsUnsignedSet::iterator it = excluded.find(*cit);
-            if (it != excluded.end())
-                cMat->excludeCharacter(*cit);
             }
-            
-        // add the vector of nucleotide sequences for this taxon to the character matrix
-        cMat->addTaxonObservations( dataVec );
+
+        // add sequence to character matrix
+        cMat->addSequence( tName, dataVec );
         }
+    
+    setExcluded( charblock, cMat );
 
     return cMat;
 }
@@ -333,13 +341,8 @@ CharacterMatrix* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
         // add the taxon name
-        NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
-        std::string tn = NxsString::GetEscaped(tLabel).c_str();
-        cMat->addTaxonName(tn);
-        
-        // check if the taxon is excluded
-		if ( !charblock->IsActiveTaxon(origTaxIndex) )
-            cMat->excludeTaxon(origTaxIndex);
+        NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
+        std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of RNA states
         VectorRnaStates* dataVec = new VectorRnaStates();
@@ -360,16 +363,13 @@ CharacterMatrix* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
                     rnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
             dataVec->push_back( rnaState );
-
-            // check if the site is excluded
-            NxsUnsignedSet::iterator it = excluded.find(*cit);
-            if (it != excluded.end())
-                cMat->excludeCharacter(*cit);
             }
             
-        // add the vector of nucleotide sequences for this taxon to the character matrix
-        cMat->addTaxonObservations( dataVec );
+        // add sequence to character matrix
+        cMat->addSequence( tName, dataVec );
         }
+    
+    setExcluded( charblock, cMat );
 
     return cMat;
 }
@@ -406,13 +406,8 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
         // add the taxon name
-        NxsString tLabel = charblock->GetTaxonLabel(origTaxIndex);
-        std::string tn = NxsString::GetEscaped(tLabel).c_str();
-        cMat->addTaxonName(tn);
-        
-        // check if the taxon is excluded
-		if ( !charblock->IsActiveTaxon(origTaxIndex) )
-            cMat->excludeTaxon(origTaxIndex);
+        NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
+        std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
         VectorStandardStates* dataVec = new VectorStandardStates();
@@ -433,17 +428,14 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
                     }
                 }
             dataVec->push_back( stdState );
-
-            // check if the site is excluded
-            NxsUnsignedSet::iterator it = excluded.find(*cit);
-            if (it != excluded.end())
-                cMat->excludeCharacter(*cit);
             }
 
-        // add the vector of nucleotide sequences for this taxon to the character matrix
-        cMat->addTaxonObservations( dataVec );
+        // add sequence to character matrix
+        cMat->addSequence( tName, dataVec );
         }
-        
+    
+    setExcluded( charblock, cMat );
+
     return cMat;
 }
 
@@ -992,35 +984,19 @@ std::vector<Tree*>* NclReader::readTrees(const char* fileName, const std::string
 }
 
 
-/** Converts trees stored by NCL into RevBayes formatted trees */
-std::vector<Tree*>* NclReader::convertTreesFromNcl(void) {
-	
-	const unsigned nTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-	std::vector<Tree*>* rbTreesFromFile;
-	for (unsigned t = 0; t < nTaxaBlocks; ++t) 
-        {
-		const NxsTaxaBlock * tb = nexusReader.GetTaxaBlock(t);
-		const unsigned nTreesBlocks = nexusReader.GetNumTreesBlocks(tb);
-		if (nTreesBlocks == 0)
-			continue;
-        
-		for (unsigned i = 0; i < nTreesBlocks; ++i) 
-            {
-			const NxsTreesBlock * trb = nexusReader.GetTreesBlock(tb, i);
-			trb->ProcessAllTrees();
-			for (unsigned j = 0; j < trb->GetNumTrees(); ++j) 
-                {
-				const NxsFullTreeDescription & ftd = trb->GetFullTreeDescription(j);
-				NxsSimpleTree tree(ftd, -1, -1.0);
-				Tree *rbTree = translateNclSimpleTreeToTree(tree);
-                //! @todo Tracy: Make sure rbTreesFromFile is properly initialized before being used -- Fredrik
-                rbTreesFromFile = new std::vector<Tree*>(); // Temporary fix making the compiler happy
-				rbTreesFromFile->push_back( rbTree );
-                }
-            }
-        }
-    
-	return rbTreesFromFile;
+/** Set excluded characters and taxa */
+void NclReader::setExcluded( const NxsCharactersBlock* charblock, CharacterMatrix* cMat ) const {
+
+    // Set excluded taxa
+    for ( int origTaxIndex=0; origTaxIndex<charblock->GetNTax(); origTaxIndex++ ) {
+		if ( !charblock->IsActiveTaxon( origTaxIndex ) )
+            cMat->excludeTaxon( origTaxIndex );
+    }
+
+    // Set excluded characters
+	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
+    for ( NxsUnsignedSet::const_iterator cit = excluded.begin(); cit != excluded.end(); cit++ )
+        cMat->excludeCharacter( *cit );
 }
 
 
