@@ -164,7 +164,8 @@ const MethodTable& TransitionProbabilityMatrix::getMethods(void) const {
 void TransitionProbabilityMatrix::printValue(std::ostream& o) const {
 
     o << "Transition probability matrix:" << std::endl;
-    o << theMatrix->richInfo() << std::endl;
+    theMatrix->printValue( o );
+    o << std::endl;
 }
 
 

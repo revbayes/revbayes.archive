@@ -19,6 +19,7 @@
 
 #include "Boolean.h"
 #include "Integer.h"
+#include "Natural.h"
 #include "RealPos.h"
 #include "Real.h"
 #include "RbException.h"
@@ -60,22 +61,25 @@ Integer* Integer::clone(void) const {
 RbObject* Integer::convertTo( const std::string& type, size_t dim ) const {
 
     if ( type == Boolean_name && dim == 0 ) 
-        return new Boolean(value == 0);
+        return new Boolean( value == 0 );
 
     if ( type == Real_name && dim == 0 )
-        return new Real(value);
+        return new Real( value );
 
     if ( type == RbString_name && dim == 0 ) {
         std::ostringstream o;
-        printValue(o);
-        return new RbString(o.str());
+        printValue( o );
+        return new RbString( o.str() );
     }
 
     if ( type == VectorInteger_name && dim == 0 )
-        return new VectorInteger(value);
+        return new VectorInteger( value );
 
     if ( type == RealPos_name && dim == 0 && value > 0 )
-        return new RealPos(value);
+        return new RealPos( value );
+
+    if ( type == Natural_name && dim == 0 && value >= 0)
+        return new Natural( value );
 
     return RbObject::convertTo( type, dim );
 }
@@ -90,24 +94,27 @@ const VectorString& Integer::getClass() const {
 
 
 /** Is convertible to language object of type and dim? */
-bool Integer::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
+bool Integer::isConvertibleTo( const std::string& type, size_t dim, bool once ) const {
 
-    if (type == Boolean_name && dim == 0)
+    if ( type == Boolean_name && dim == 0 )
         return true;
 
-    if (type == Real_name && dim == 0)
+    if ( type == Real_name && dim == 0 )
         return true;
 
-    if (type == RbString_name && dim == 0)
+    if ( type == RbString_name && dim == 0 )
         return true;
     
-    if (type == VectorInteger_name && dim == 0)
+    if ( type == VectorInteger_name && dim == 0 )
         return true;
 
-    if (type == RealPos_name && dim == 0 && once == true && value > 0)
+    if ( type == RealPos_name && dim == 0 && once == true && value > 0 )
         return true;
 
-    return RbObject::isConvertibleTo(type, dim, once);
+    if ( type == Natural_name && dim == 0 && once == true && value >= 0 )
+        return true;
+
+    return RbObject::isConvertibleTo( type, dim, once );
 }
 
 

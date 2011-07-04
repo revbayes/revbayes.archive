@@ -267,7 +267,7 @@ void MatrixReal::printValue(std::ostream& o) const {
         if (i == 0)
             lineStr += "[[ ";
         else 
-            lineStr += pad  + " [ ";
+            lineStr += " [ ";
         for (size_t j=0; j<length[1]; j++)
             {
             std::ostringstream v;

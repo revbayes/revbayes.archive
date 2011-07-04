@@ -503,8 +503,8 @@ void VariableSlot::setValue( RbObject* newValue ) {
     // Make additional valitidy check
     if ( !isValidVariable( newVariable ) ) {
 
+        throw RbException( "Invalid assignment: " + newVariable->getTypeSpec().toString() + " value does not fit " + getTypeSpec().toString() + " slot" );
         delete newVariable;
-        throw RbException( "Invalid assignment: new value does not fit slot requirements" );
     }
 
     // Fill slot, possibly replacing variable

@@ -149,10 +149,10 @@ bool RbFileManager::isDirectoryPresent(const std::string mp) {
 
 #	ifdef WIN32
 
-    WIN32_FIND_DATA data;
-    HANDLE handle = FindFirstFile(mp.c_str(), &data);
-    bool bIsDirectory = data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY != 0;
-    FindClose(handle);
+    DWORD data = GetFileAttributes( mp.c_str() );
+    if ( data == INVALID_FILE_ATTRIBUTES )
+        return false;
+    bool bIsDirectory = ( data & FILE_ATTRIBUTE_DIRECTORY ) != 0;   
     return bIsDirectory;
 
 #	else
@@ -365,36 +365,36 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirp
 
 #	ifdef WIN32
 
-   WIN32_FIND_DATA ffd;
-   TCHAR szDir[MAX_PATH];
-   size_t length_of_arg;
-   HANDLE hFind = INVALID_HANDLE_VALUE;
-   DWORD dwError=0;
+    WIN32_FIND_DATA ffd;
+    TCHAR szDir[MAX_PATH];
+    size_t length_of_arg;
+    HANDLE hFind = INVALID_HANDLE_VALUE;
+    DWORD dwError=0;
 
-   // Code below is largely copied from msdn.com -- Fredrik
+    // Code below is largely copied from msdn.com -- Fredrik
 
-   // Check that the input path plus 3 is not longer than MAX_PATH.
-   // Three characters are for the "\*" plus NULL appended below.
-   // If input path is too long, then we just return false for now
-   StringCchLength( dirpath.c_str(), MAX_PATH, &length_of_arg );
+    // Check that the input path plus 3 is not longer than MAX_PATH.
+    // Three characters are for the "\*" plus NULL appended below.
+    // If input path is too long, then we just return false for now
+    StringCchLength( dirpath.c_str(), MAX_PATH, &length_of_arg );
 
-   if ( length_of_arg > (MAX_PATH - 3) )
+    if ( length_of_arg > (MAX_PATH - 3) )
        return false;
 
-   // Prepare string for use with FindFile functions.  First, copy the
-   // string to a buffer, then append '\*' to the directory name.
-   StringCchCopy( szDir, MAX_PATH, dirpath.c_str() );
-   StringCchCat ( szDir, MAX_PATH, TEXT("\\") );
+    // Prepare string for use with FindFile functions.  First, copy the
+    // string to a buffer, then append '\*' to the directory name.
+    StringCchCopy( szDir, MAX_PATH, dirpath.c_str() );
+    StringCchCat ( szDir, MAX_PATH, TEXT("\\*") );
+    
+    // Find the first file in the directory.
+    hFind = FindFirstFile( szDir, &ffd );
 
-   // Find the first file in the directory.
-   hFind = FindFirstFile( szDir, &ffd );
-
-   // Just return false if we did not find a file
-   if ( hFind == INVALID_HANDLE_VALUE )
+    // Just return false if we did not find a file
+    if ( hFind == INVALID_HANDLE_VALUE )
        return false;
   
-   // List all the files in the directory with some info about them.
-   do {
+    // List all the files in the directory with some info about them.
+    do {
 
         std::string entryName = ffd.cFileName;
         std::string entryPath = dirpath + "\\" + entryName;

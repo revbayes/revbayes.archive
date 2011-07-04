@@ -39,7 +39,7 @@
 MemberFunction::MemberFunction(const TypeSpec retType, const ArgumentRules& argRules)
     : RbFunction(), returnType(retType), argumentRules(argRules) {
 
-    if ( argumentRules[0]->getArgTypeSpec() != TypeSpec( MemberObject_name, 0, true ) )
+    if ( argumentRules.size() == 0 || argumentRules[0]->getArgTypeSpec() != TypeSpec( MemberObject_name, 0, true ) )
         throw RbException( "First argument rule to a member function must be a reference to the member object" );
     
     if ( argumentRules[0]->hasDefault() )
