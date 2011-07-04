@@ -35,27 +35,27 @@ class NclReader {
         friend class NxsBlock;
         
     public:
-        void                                addWarning(std::string s) { warningsSummary.insert(s); }                   //!< Add a warning to the warnings vector
-        void                                clearWarnings(void) { warningsSummary.clear(); }                           //!< Clear all of the warnings from the warnings vector
-        size_t                              getNumWarnings(void) { return warningsSummary.size(); }                    //!< Return the number of warnings
-        std::set<std::string>&              getWarnings(void) { return warningsSummary; }                              //!< Get a reference to the warnings vector
-        static NclReader&                   getInstance(void);                                                         //!< Get a reference to this singleton class
-        std::vector<CharacterMatrix*>       readMatrices(const std::map<std::string,std::string>& fileMap);            //!< Read a list of file names contained in a map (with file format info too)
+        void                                addWarning(std::string s) { warningsSummary.insert(s); }                        //!< Add a warning to the warnings vector
+        void                                clearWarnings(void) { warningsSummary.clear(); }                                //!< Clear all of the warnings from the warnings vector
+        size_t                              getNumWarnings(void) { return warningsSummary.size(); }                         //!< Return the number of warnings
+        std::set<std::string>&              getWarnings(void) { return warningsSummary; }                                   //!< Get a reference to the warnings vector
+        static NclReader&                   getInstance(void);                                                              //!< Get a reference to this singleton class
+        std::vector<CharacterMatrix*>       readMatrices(const std::map<std::string,std::string>& fileMap);                 //!< Read a list of file names contained in a map (with file format info too)
         std::vector<CharacterMatrix*>       readMatrices(const std::vector<std::string> fn, const std::string 
-                                            fileFormat, const std::string dataType, const bool isInterleaved);         //!< Read a list of file names contained in a vector of strings
+                                            fileFormat, const std::string dataType, const bool isInterleaved);              //!< Read a list of file names contained in a vector of strings
         
-        bool                                isFastaFile(std::string& fn, std::string& dType);                          //!< Checks if the file is in Fasta format
-        bool                                isNexusFile(std::string& fn);                                              //!< Checks if the file is in NEXUS format
-        bool                                isPhylipFile(std::string& fn, std::string& dType, bool& isInterleaved);    //!< Checks if the file is in Phylip format
+        bool                                isFastaFile(std::string& fn, std::string& dType);                               //!< Checks if the file is in Fasta format
+        bool                                isNexusFile(std::string& fn);                                                   //!< Checks if the file is in NEXUS format
+        bool                                isPhylipFile(std::string& fn, std::string& dType, bool& isInterleaved);         //!< Checks if the file is in Phylip format
 
         // TAH: stuff for reading trees
-        std::vector<Tree*>*                 readTrees(const std::string fn, const std::string fileFormat);             //!< Read trees
-        void                                clearContent(void) { nexusReader.ClearContent(); }                         //!< Clear the content of the NCL object
+        std::vector<Tree*>*                 readTrees(const std::string fn, const std::string fileFormat);                  //!< Read trees
+        void                                clearContent(void) { nexusReader.ClearContent(); }                              //!< Clear the content of the NCL object
         
     private:
-                                            NclReader(void) { }                                                        //!< Default constructor
-                                            NclReader(const NclReader& r) { }                                          //!< Copy constructor
-        virtual                            ~NclReader(void) { }                                                        //!< Destructor
+                                            NclReader(void) { }                                                             //!< Default constructor
+                                            NclReader(const NclReader& r) { }                                               //!< Copy constructor
+        virtual                            ~NclReader(void) { }                                                             //!< Destructor
         
         CharacterMatrix*                    createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
         CharacterMatrix*                    createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data

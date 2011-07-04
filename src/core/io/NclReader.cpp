@@ -181,6 +181,7 @@ CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
         
         // allocate a vector of Standard states
         VectorAminoAcidStates* dataVec = new VectorAminoAcidStates();
+        dataVec->setTaxonName(tName);
 
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
             {	
@@ -237,6 +238,7 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
         
         // allocate a vector of Standard states
         VectorCharacterContinuous* dataVec = new VectorCharacterContinuous();
+        dataVec->setTaxonName(tName);
 
         // add the real-valued observation
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
@@ -285,6 +287,7 @@ CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
         
         // allocate a vector of DNA states
         VectorDnaStates* dataVec = new VectorDnaStates();
+        dataVec->setTaxonName(tName);
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
@@ -342,6 +345,7 @@ CharacterMatrix* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
         
         // allocate a vector of RNA states
         VectorRnaStates* dataVec = new VectorRnaStates();
+        dataVec->setTaxonName(tName);
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
@@ -406,6 +410,7 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
         
         // allocate a vector of Standard states
         VectorStandardStates* dataVec = new VectorStandardStates();
+        dataVec->setTaxonName(tName);
         
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)

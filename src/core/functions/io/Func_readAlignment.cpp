@@ -58,7 +58,7 @@ DAGNode* Func_readAlignment::execute( void ) {
         {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
-        throw( RbException(errorStr) );
+        //throw( RbException(errorStr) );
         }
 
     // are we reading a single file or are we reading the contents of a directory?
@@ -199,15 +199,15 @@ DAGNode* Func_readAlignment::execute( void ) {
             }
         return retList->wrapIntoVariable();
         }
-    else if ( m.size() == 1 ) {
-        
+    else if ( m.size() == 1 ) 
+        {
         return m[0]->wrapIntoVariable();
-    }
-    else /* if ( m.size() == 0 ) */ {
-
+        }
+    else
+        {
         // Return null object
         return new MemberNode( CharacterMatrix_name );
-    }
+        }
 }
 
 

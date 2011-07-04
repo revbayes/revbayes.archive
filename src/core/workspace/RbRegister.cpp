@@ -322,6 +322,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "s",         new Func_s<         Integer                                                         >() );
         addFunction( "s",         new Func_s<         RealPos                                                         >() );
         addFunction( "s",         new Func_s<         VectorRealPos                                                   >() );
+        addFunction( "simplex",   new Func_s<         Integer                                                         >() );
+        addFunction( "simplex",   new Func_s<         RealPos                                                         >() );
+        addFunction( "simplex",   new Func_s<         VectorRealPos                                                   >() );
         addFunction( "transpose", new Func_transpose< MatrixReal                                                      >() );
         addFunction( "v",         new Func_v<         Boolean,                        VectorBoolean                   >() );
         addFunction( "v",         new Func_v<         Integer,                        VectorInteger                   >() );
