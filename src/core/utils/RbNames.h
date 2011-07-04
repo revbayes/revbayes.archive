@@ -131,7 +131,6 @@ const std::string RetValFunction_name                           = "Return value 
 const std::string Real_name                                     = "Real";
 const std::string RealPos_name                                  = "+Real";
 const std::string ReferenceRule_name                            = "reference rule";
-const std::string RNA_name                                      = "RNA";
 const std::string RnaState_name                                 = "RNA";
 const std::string Scalar_name                                   = "Scalar"; // Used for argument matching of "primitive" types
 const std::string Simplex_name                                  = "Simplex";

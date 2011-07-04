@@ -48,11 +48,7 @@
 CharacterMatrix::CharacterMatrix( const std::string& characterType )
 : MemberObject( getMemberRules() ) {
 
-std::cout << " 1 " << std::endl;
-std::cout << "characterType = " << characterType << std::endl;
-    //sequenceTypeRule = new ConstantValueRule( "", TypeSpec( characterType, 1 ) );
-    sequenceTypeRule = NULL;
-std::cout << " 2 " << std::endl;
+    sequenceTypeRule = new ConstantValueRule( "", TypeSpec( characterType, 1 ) );
 }
 
 

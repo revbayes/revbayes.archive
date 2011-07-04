@@ -211,9 +211,6 @@ bool RbFileManager::isFilePresent(const std::string fn) {
 
 #	else
 
-	DIR* d = opendir( fn.c_str() );
-	if ( !d )
-		return false;
     struct stat fInfo;
     if ( !stat(fn.c_str(), &fInfo) )
         {
@@ -222,7 +219,6 @@ bool RbFileManager::isFilePresent(const std::string fn) {
         else
             return true;
         }
-    closedir(d);
 
     return false;
     
