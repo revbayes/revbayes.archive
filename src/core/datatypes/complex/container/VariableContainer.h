@@ -74,7 +74,6 @@ class VariableContainer : public Container {
         int                         getIndex(size_t k, const std::string& s) const;                             //!< Get index in dimension k corresponding to name s
         void                        resize(const std::vector<size_t>& len);                                     //!< Resize container
         void                        setElement(const VectorNatural& index, DAGNode* var, bool convert=true);    //!< Set element
-        size_t                      size(void) const { return elements.size(); }                                //!< Get total number of elements
 
 	protected:
         // Parser operator and help functions

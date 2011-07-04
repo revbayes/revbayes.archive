@@ -79,6 +79,7 @@ MemberNode::MemberNode( MemberObject* val )
     touched     = false;
     changed     = false;
     value       = memberObject->cloneWithoutConnections();
+    value       = memberObject->clone();
     storedValue = NULL;
 
     /* Anchor value member object frame */

@@ -17,7 +17,7 @@
 #define CharacterMatrix_H
 
 #include "MemberObject.h"
-#include "ValueRule.h"
+#include "ConstantValueRule.h"
 
 #include <set>
 #include <string>
@@ -33,8 +33,12 @@ class VectorString;
 class CharacterMatrix : public MemberObject {
 
     public:
-                                            CharacterMatrix(void);                                                      //!< Default constructor
-    
+                                            CharacterMatrix(const std::string& characterType);                          //!< Constructor requires character type
+                                            CharacterMatrix(const CharacterMatrix& x);                                  //!< Copy constructor to deal with sequenceTypeRule
+        virtual                            ~CharacterMatrix(void);                                                      //!< Destructor to deal with sequenceTypeRule
+
+        // Overloaded operators
+        CharacterMatrix&                    operator=(const CharacterMatrix& x);                                        //!< Assignment operator
         const VectorCharacters&             operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
         // Basic utility functions
@@ -64,7 +68,7 @@ class CharacterMatrix : public MemberObject {
         void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
         const Character&                    getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
-        std::string                         getDataType(void) const { return dataType; }                                //!< Returns the data type for the matrix
+        const std::string&                  getDataType(void) const { return sequenceTypeRule->getArgType(); }          //!< Returns the data type for the matrix
         std::string                         getFileName(void) const { return fileName; }                                //!< Returns the name of the file the data came from
         size_t                              getNumCharacters(void) const;                                               //!< Number of characters
         size_t                              getNumStates(void) const;                                                   //!< Get the number of states for the characters in this matrix
@@ -78,24 +82,24 @@ class CharacterMatrix : public MemberObject {
         void                                restoreCharacter(size_t i);                                                 //!< Restore character
         void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
         void                                restoreTaxon(std::string& s);                                               //!< Restore taxon
-        void                                setDataType(const std::string dt) { dataType = dt; }                        //!< Set the data type
         void                                setFileName(const std::string fn) { fileName = fn; }                        //!< Set the file name
 
 	protected:
         DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);             //!< Execute method
     
     private:
+        // Utility functions
         size_t                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
         bool                                isCharacterConstant(size_t idx) const;                                      //!< Is the idx-th character a constant pattern?
         bool                                isCharacterMissAmbig(size_t idx) const;                                     //!< Does the character have missing or ambiguous data?
         size_t                              numConstantPatterns(void) const;                                            //!< The number of constant patterns
         size_t                              numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
 
+        // Member variables
         std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
         std::set<size_t>                    deletedCharacters;                                                          //!< Set of deleted characters
-        std::string                         dataType;                                                                   //!< Type of data in matrix
         std::string                         fileName;                                                                   //!< The path/filename from where this matrix originated
-        ValueRule*                          sequenceTypeRule;                                                           //!< Rule describing sequence type
+        ConstantValueRule*                  sequenceTypeRule;                                                           //!< Rule describing sequence type
 };
 
 #endif

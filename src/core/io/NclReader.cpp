@@ -170,8 +170,7 @@ CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	CharacterMatrix* cMat = new CharacterMatrix();
-    cMat->setDataType("Amino Acid");
+	CharacterMatrix* cMat = new CharacterMatrix( AminoAcidState_name );
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
@@ -227,8 +226,7 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	CharacterMatrix* cMat = new CharacterMatrix();
-    cMat->setDataType("Continuous");
+	CharacterMatrix* cMat = new CharacterMatrix( CharacterContinuous_name );
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
@@ -276,8 +274,7 @@ CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
 
     // instantiate the character matrix
-	CharacterMatrix* cMat = new CharacterMatrix();
-    cMat->setDataType("DNA");
+	CharacterMatrix* cMat = new CharacterMatrix( DnaState_name );
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
@@ -334,8 +331,7 @@ CharacterMatrix* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
 
     // instantiate the character matrix
-	CharacterMatrix* cMat = new CharacterMatrix();
-    cMat->setDataType("RNA");
+	CharacterMatrix* cMat = new CharacterMatrix( RnaState_name );
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
@@ -399,8 +395,7 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
         return NULL;
     
     // instantiate the character matrix
-	CharacterMatrix* cMat = new CharacterMatrix();
-    cMat->setDataType("Standard");
+	CharacterMatrix* cMat = new CharacterMatrix( StandardState_name );
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 

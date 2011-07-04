@@ -475,7 +475,10 @@ void SyntaxVariable::print(std::ostream& o) const {
         o << "base variable   = <" << baseVariable << "> " << baseVariable->briefInfo() << std::endl;
     int count = 1;
     for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++, count++) {
-        o << "index " << count << " = <" << (*i) << "> " << (*i)->briefInfo();
+        if ( (*i) == NULL )
+            o << "index " << count << " = <" << (*i) << "> " << (*i)->briefInfo() << std::endl;
+        else
+            o << "index " << count << " = < NULL >" << std::endl;
     }
     o << std::endl;
 

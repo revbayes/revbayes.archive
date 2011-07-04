@@ -264,6 +264,20 @@ void Container::setLength( const std::vector<size_t>& len ) {
 }
 
 
+/** Get total number of elements */
+size_t Container::size( void) const {
+
+    if ( length.size() == 0 )
+        return 0;
+
+    size_t theSize = 1;
+    for ( size_t i=0; i<length.size(); i++ )
+        theSize *= length[0];
+
+    return theSize;
+}
+
+
 /** Wrap value into a variable */
 DAGNode* Container::wrapIntoVariable( void ) {
     

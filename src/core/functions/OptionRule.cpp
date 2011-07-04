@@ -27,11 +27,10 @@
 
 #include <sstream>
 
-#include "Func__add.h"
 
 /** Construct rule without default value; use "" for no label. */
 OptionRule::OptionRule( const std::string& argName, VectorString optVals )
-    : ArgumentRule( argName, TypeSpec( RbString_name ) ), options( optVals ) {
+    : ValueRule( argName, TypeSpec( RbString_name ) ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -40,7 +39,7 @@ OptionRule::OptionRule( const std::string& argName, VectorString optVals )
 
 /** Construct rule with default value; use "" for no label. */
 OptionRule::OptionRule(const std::string& argName, RbString* defVal, VectorString optVals )
-    : ArgumentRule( argName, defVal ), options( optVals ) {
+    : ValueRule( argName, defVal ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );

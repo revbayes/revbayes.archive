@@ -80,7 +80,6 @@ class ValueContainer : public Container {
         virtual void                    clear(void);                                                                //!< Clear
         virtual void                    resize(const std::vector<size_t>& len);                                     //!< Resize to new length vector
         virtual void                    setElement(const VectorNatural& index, RbObject* elem);                     //!< Set element with type conversion
-        virtual size_t                  size(void) const { return elements.size(); }                                //!< Get total number of elements
 
     protected:
         // Help function you may want to override

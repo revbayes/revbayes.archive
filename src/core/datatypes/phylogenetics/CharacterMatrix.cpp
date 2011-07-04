@@ -44,8 +44,53 @@
 #include <string>
 
 
-/** Default constructor passes member rules to base class */
-CharacterMatrix::CharacterMatrix(void) : MemberObject(getMemberRules()) {
+/** Constructor requires character type; passes member rules to base class */
+CharacterMatrix::CharacterMatrix( const std::string& characterType )
+: MemberObject( getMemberRules() ) {
+
+    sequenceTypeRule = new ConstantValueRule( "", TypeSpec( characterType, 1 ) );
+}
+
+
+/** Copy constructor */
+CharacterMatrix::CharacterMatrix( const CharacterMatrix& x )
+: MemberObject( x ) {
+
+    deletedTaxa       = x.deletedTaxa;
+    deletedCharacters = x.deletedCharacters;
+    fileName          = x.fileName;
+
+    sequenceTypeRule  = x.sequenceTypeRule->clone();
+}
+
+
+/** Destructor */
+CharacterMatrix::~CharacterMatrix( void ) {
+
+    delete sequenceTypeRule;
+}
+
+
+/** Assignment operator */
+CharacterMatrix& CharacterMatrix::operator=( const CharacterMatrix& x ) {
+
+    if ( this != &x ) {
+
+        if ( sequenceTypeRule->getArgType() != x.sequenceTypeRule->getArgType() )
+            throw RbException( "Invalid assignment of character matrices: sequence data types differ" );
+
+        delete sequenceTypeRule;
+
+        MemberObject::operator=( x );
+
+        deletedTaxa       = x.deletedTaxa;
+        deletedCharacters = x.deletedCharacters;
+        fileName          = x.fileName;
+
+        sequenceTypeRule  = x.sequenceTypeRule->clone();
+    }
+
+    return (*this);
 }
 
 
@@ -68,6 +113,7 @@ void CharacterMatrix::addSequence( const std::string tName, VectorCharacters* ob
 
     VariableSlot* slot = new MemberSlot( sequenceTypeRule );
     members.push_back( tName, slot );
+    members[ members.size() - 1 ].setVariable( obs->wrapIntoVariable() );
 }
 
 
@@ -122,7 +168,7 @@ DAGNode* CharacterMatrix::executeOperation(const std::string& name, ArgumentFram
         }
     else if (name == "chartype")
         {
-        std::string ct = dataType;
+        std::string ct = getDataType();
         return ( new RbString(ct) )->wrapIntoVariable();
         }
     else if (name == "nexcludedtaxa")
@@ -326,7 +372,7 @@ size_t CharacterMatrix::getNumCharacters(void) const {
     if ( members.size() == 0 )
         return 0;
     else
-        return members[0].getVariable()->getSize();
+        return members[0].getValue()->getSize();
 }
 
 
@@ -490,7 +536,7 @@ size_t CharacterMatrix::numMissAmbig(void) const {
 void CharacterMatrix::printValue(std::ostream& o) const {
 
     o << "Origination:          " << fileName << std::endl;
-    o << "Data type:            " << dataType << std::endl;
+    o << "Data type:            " << getDataType() << std::endl;
     o << "Number of taxa:       " << getNumTaxa() << std::endl;
     o << "Number of characters: " << getNumCharacters() << std::endl;
 }

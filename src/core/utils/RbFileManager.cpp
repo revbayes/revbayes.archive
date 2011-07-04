@@ -132,9 +132,9 @@ bool RbFileManager::isDirectoryPresent(const std::string mp) {
 
     WIN32_FIND_DATA data;
     HANDLE handle = FindFirstFile(mp.c_str(), &data);
-    bool bFoundFile = handle != INVALID_HANDLE_VALUE;
+    bool bIsDirectory = data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY != 0;
     FindClose(handle);
-    return bFoundFile;
+    return bIsDirectory;
 
 #	else
 
@@ -369,7 +369,7 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirp
    // Prepare string for use with FindFile functions.  First, copy the
    // string to a buffer, then append '\*' to the directory name.
    StringCchCopy( szDir, MAX_PATH, dirpath.c_str() );
-   StringCchCat ( szDir, MAX_PATH, TEXT("\\*") );
+   StringCchCat ( szDir, MAX_PATH, TEXT("\\") );
 
    // Find the first file in the directory.
    hFind = FindFirstFile( szDir, &ffd );

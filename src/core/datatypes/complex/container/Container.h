@@ -77,8 +77,10 @@ class Container : public RbComplex {
         VectorInteger                   getIntegerIndex(const VectorIndex& index) const;                    //!< Get integer index to a single container element or to a subcontainer from generic index
         const std::vector<size_t>&      getLength(void) const { return length; }                            //!< Get length in each dim (length is a vector of lengths in the different dimensions according to Sebastian's wishes)
         VectorNatural                   getNaturalIndex(const VectorIndex& index) const;                    //!< Get natural index to a single container element from generic index
+        size_t                          getSize(void) const { return size(); }                              //!< Get total number of elements
         const TypeSpec                  getTypeSpec(void) const;                                            //!< Get language type of the object (the container)
         bool                            isTypeSpec(const TypeSpec& typeSpec) const;                         //!< Does the language type of the object fit type specification typeSpec?
+        virtual size_t                  size(void) const;                                                   //!< Get total number of elements (synonym to getSize)
         DAGNode*                        wrapIntoVariable(void);                                             //!< Wrap value into variable
 
         // Container function you may want to override
@@ -87,7 +89,6 @@ class Container : public RbComplex {
         // Container functions you have to override
         virtual void                    clear(void) = 0;                                                    //!< Clear
         virtual void                    resize(const std::vector<size_t>& len) = 0;                         //!< Resize
-        virtual size_t                  size(void) const = 0;                                               //!< Get number of elements
 
 	protected:
                                         Container(const TypeSpec& typeSpec);                                //!< Default constructor (set type of elements and dim of container)

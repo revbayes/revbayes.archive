@@ -62,7 +62,6 @@ class DAGNode {
         // Basic utility functions you may want to override
         virtual size_t                  getDim(void) const { return 0; }                                        //!< Get dim (0 for scalar, 1 for vector, etc)
         virtual DAGNode*                getReference(void) { return this; }                                     //!< Get reference to variable, override if lookup or fxn
-        virtual size_t                  getSize(void) const { return 1; }                                       //!< Total number of elements (default is 1, only different for ContainerNode)
         virtual bool                    isConst(void) const;                                                    //!< Is DAG node const value?
 
         // Recursive element set and get functions you may want to override

@@ -57,7 +57,7 @@
 VariableContainer::VariableContainer( size_t n, DAGNode* x )
     : Container( TypeSpec( x->getValueType(), 1 ) ) {
 
-    if ( x->getSize() > 0 )
+    if ( x->getDim() > 0 )
         throw RbException( "Illegal construction from container variable" );
 
     // Fill the vector

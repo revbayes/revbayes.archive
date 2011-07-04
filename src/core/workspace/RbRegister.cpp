@@ -193,11 +193,11 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new VectorString()                 );
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
-        addType( new CharacterMatrix() );
-        addType( new List()            );
-        addType( new Model()           );
-        addType( new Move_msimplex()   );
-        addType( new Simplex()         );
+        addType( new CharacterMatrix(DnaState_name) );
+        addType( new List()                         );
+        addType( new Model()                        );
+        addType( new Move_msimplex()                );
+        addType( new Simplex()                      );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "mcmc",         new Mcmc()              );

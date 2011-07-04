@@ -17,7 +17,7 @@
 #ifndef OptionRule_H
 #define OptionRule_H
 
-#include "ArgumentRule.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 
 #include <string>
@@ -26,7 +26,7 @@ class DAGNode;
 class RbObject;
 class RbString;
 
-class OptionRule : public ArgumentRule {
+class OptionRule : public ValueRule {
 
     public:
                                     OptionRule(const std::string& argName, VectorString optVals);                       //!< Constructor of rule without default value

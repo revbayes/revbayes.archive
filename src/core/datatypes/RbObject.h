@@ -54,6 +54,7 @@ class RbObject {
     
         // Dimensions of object: override only if object is a container with dimensions exposed to language / parser
         virtual size_t              getDim(void) const { return 0; }                                        //!< Get container dimensions
+        virtual size_t              getSize(void) const { return 1; }                                       //!< Total number of elements (default is 1, only different for ContainerNode)
 
         // Basic utility functions you should not have to override
         RbObject*                   convertTo(const TypeSpec& typeSpec) const;                              //!< Convert to language object of type typeSpec
