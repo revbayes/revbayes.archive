@@ -61,6 +61,7 @@ const std::string Ellipsis_name                                 = "ellipsis";
 const std::string Func__add_name                                = "Addition";
 const std::string Func__range_name                              = "Range function";
 const std::string Func_clamp_name                               = "Clamp function";
+const std::string Func_cos_name                                 = "Cos function";
 const std::string Func_exp_name                                 = "Exponential function";
 const std::string Func_gtr_name                                 = "GTR function";
 const std::string Func_ln_name                                  = "Natural logarithm function";

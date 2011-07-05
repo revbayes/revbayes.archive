@@ -125,6 +125,7 @@
 #include "Func_v.h"
 
 /* Math functions */
+#include "Func_cos.h"
 #include "Func_exp.h"
 #include "Func_ln.h"
 #include "Func_log.h"
@@ -303,6 +304,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "vallist",   new Func_vallist()   );
         
         /* Add math functions (alphabetical order) */ 
+        addFunction( "cos",       new Func_cos()   );
         addFunction( "expf",      new Func_exp()   );
         addFunction( "ln",        new Func_ln()    );
         addFunction( "log",       new Func_log()   );
