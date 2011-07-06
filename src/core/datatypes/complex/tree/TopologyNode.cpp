@@ -174,7 +174,6 @@ std::string TopologyNode::toString(void) const {
     std::ostringstream o;
     o <<  "Tree node: value = ";
     printValue(o);
-    
     return o.str();
 }
 

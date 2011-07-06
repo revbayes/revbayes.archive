@@ -18,10 +18,11 @@
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "ContainerNode.h"
-#include "Integer.h"
 #include "MemberFunction.h"
+#include "Natural.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "ReferenceRule.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 #include "VectorString.h"
@@ -31,29 +32,19 @@
 /** Default constructor */
 Topology::Topology(void) : MemberObject( getMemberRules() ) {
 
-    topologyChanged = true;     // make sure we calculate the newick string at the first call
 }
 
-
-/** constructor */
-Topology::Topology(const MemberRules& memberRules) : MemberObject( memberRules ) {
-
-    topologyChanged = true;     // make sure we calculate the newick string at the first call
-    
-}
 
 /** copy constructor */
 Topology::Topology(const Topology& t) : MemberObject( getMemberRules() ) {
 
-    topologyChanged = true;     // make sure we calculate the newick string at the first call
+    // need to perform a deep copy of the tree nodes
 }
 
 
-/** recompute the newick string */
-void Topology::computeNewickString() {
+Topology* Topology::clone(void) const {
 
-    // TODO: implement this!!!
-    newick = "computation of newick string not yet implemented";
+    return new Topology(*this);
 }
 
 
@@ -64,107 +55,86 @@ const VectorString& Topology::getClass(void) const {
 }
 
 
-/** Do not allow the user to set the index */
-void Topology::setVariable(const std::string& name, DAGNode* var) {
-    
-    MemberObject::setVariable(name, var);
+size_t Topology::getNumberOfTips(void) const {
+
+    size_t n = 0;
+    for (size_t i=0; i<nodes.size(); i++)
+        {
+        if (nodes[i]->isTip() == true)
+            n++;
+        }
+    return n;
 }
 
 
 /** Map calls to member methods */
 DAGNode* Topology::executeOperation(const std::string& name, ArgumentFrame& args) {
     
-    if (name == "getNodes") 
+    if (name == "ntips") 
         {
-        ContainerNode* plate = new ContainerNode(TopologyNode_name, int(nodes.size()));
-        for (size_t i=0; i<nodes.size(); i++) 
-            {
-//            plate->setValue(nodes[i]);
-            }
-        return plate;
+        return ( new Natural((int)getNumberOfTips()) )->wrapIntoVariable();
         }
-    else if (name == "getNumberOfNodes") 
+    else if (name == "nnodes")
         {
-        return new ConstantNode( new Integer((int)nodes.size()));
+        return ( new Natural((int)getNumberOfNodes()) )->wrapIntoVariable();
         }
-    else if (name == "getRoot") 
-        {
-        //return new ConstantNode( root );
-        }
-    else if (name == "getTips") 
-        {
-        ContainerNode* plate = new ContainerNode(TopologyNode_name,tips.size());
-        size_t j = 0;
-        for (size_t i=0; i<nodes.size(); i++) 
-            {
-            if ( nodes[i]->isTip() ) 
-                {
- //               plate[j].setValue(nodes[i]);
-                j++;
-                }
-            }
-        return plate;
-        }
-    else
-        throw RbException("No member method called '" + name + "' for object of type Topology");
-    
-    return NULL;
+
+    return MemberObject::executeOperation( name, args );
 }
 
 
 /** Get method specifications */
 const MethodTable& Topology::getMethods(void) const {
     
-    static MethodTable      methodInits;
-    static ArgumentRules    isTipRules;
-    static bool             initsSet = false;
-    
-    if (!initsSet) 
+    static MethodTable   methods;
+    static ArgumentRules ntipsArgRules;
+    static ArgumentRules nnodesArgRules;
+    static bool          methodsSet = false;
+
+    if ( methodsSet == false ) 
         {
-        // add a function returning all nodes of the Topology
-        methodInits.addFunction("getNodes", new MemberFunction(TopologyNode_name, ArgumentRules()));
+        // this must be here so the parser can distinguish between different instances of a character matrix
+        ntipsArgRules.push_back(  new ReferenceRule( "", MemberObject_name ) );
+        nnodesArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
         
-        // add a function returning the number of nodes
-        methodInits.addFunction("getNumberOfNodes", new MemberFunction(Boolean_name, ArgumentRules()));
+        methods.addFunction("ntips",  new MemberFunction(Natural_name, ntipsArgRules)  );
+        methods.addFunction("nnodes", new MemberFunction(Natural_name, nnodesArgRules) );
         
-        // add a function returning the root of the Topology
-        methodInits.addFunction("getRoot", new MemberFunction(TopologyNode_name, ArgumentRules()));
-        
-        // add a function returning all the tips
-        methodInits.addFunction("getTips", new MemberFunction(Boolean_name, ArgumentRules()));
-        
-        
-        //        methodInits.addFunction("getNumberOfNodes", new MemberFunction(Boolean_name, ArgumentRules()));
-        
-        initsSet = true;
+        // necessary call for proper inheritance
+        methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
+        methodsSet = true;
         }
-    
-    return methodInits;
+
+    return methods;
 }
 
 
 const MemberRules& Topology::getMemberRules(void) const {
-    
+
     static MemberRules memberRules;
     static bool        rulesSet = false;
-    
+
     if (!rulesSet) 
         {
-        
         rulesSet = true;
         }
-    
+
     return memberRules;
 }
 
 
 void Topology::printValue(std::ostream& o) const {
 
-    o << newick;
+    o << "";
 }
 
 
 std::string Topology::richInfo(void) const {
 
-    return newick;
+    std::ostringstream o;
+    o <<  "Tree: ";
+    printValue(o);
+    return o.str();
 }
+
+

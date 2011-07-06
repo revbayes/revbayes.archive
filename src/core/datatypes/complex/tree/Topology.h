@@ -33,8 +33,6 @@
 #define Topology_H
 
 #include "MemberObject.h"
-
-
 #include <set>
 #include <string>
 
@@ -42,66 +40,43 @@ class ArgumentFrame;
 class ArgumentRule;
 class DAGNode;
 class MethodTable;
-class RandomNumberGenerator;
 class TopologyNode;
 class VectorString;
-
-typedef std::vector<ArgumentRule*>   MemberRules;                                                               //!< Member rules type def, for convenience
 
 
 
 class Topology: public MemberObject {
     
     public:
-        virtual                        ~Topology(void) {}                                                       //!< Destructor
-        
-        // Basic utility functions you have to override
-        virtual Topology*               clone(void) const = 0;                                                  //!< Clone object
-        virtual const VectorString&     getClass(void) const;                                                   //!< Get class vector
-        
-        // Basic utility functions you may want to override
-        virtual void                    printValue(std::ostream& o) const;                                      //!< Print value for user
-        virtual std::string             richInfo(void) const;                                                   //!< Complete info
-
-        
-        // Member variable functions; override getMemberRules to add member variables
-        virtual const MemberRules&      getMemberRules(void) const;                                             //!< Get member rules
-        virtual void                    setVariable(const std::string& name, DAGNode* var);                     //!< Set member variable
-        
-        // Member method functions
-        virtual const MethodTable&      getMethods(void) const;                                                 //!< Get member methods
-        
-        // Topology specific methods
-        virtual void                    buildRandomTopology(int nTips, RandomNumberGenerator* rng) = 0;         //!< TODO: This function should go into one of the Topology prior distributions (Sebastian)
-        std::string                     getNewickTopology(void) const { return newick; }                        //!< Xxxxxx
-        std::vector<TopologyNode*>      getNodes(void) const { return nodes; }                                  //!< Xxxxxx
-        int                             getNumberOfNodes(void) const { return int(nodes.size()); }              //!< Xxxxxx
-        int                             getNumberOfTips(void) const { return int(tips.size()); }                //!< Xxxxxx
-        TopologyNode*                   getRoot(void) const { return root; }                                    //!< Xxxxxx
-        std::vector<TopologyNode*>      getTips(void) const { return tips; }                                    //!< Xxxxxx
-        void                            randomlyBreakTopology(RandomNumberGenerator* rng) { }                   //!< Xxxxxx
-        void                            removeSubTopologyFromNode(TopologyNode* p) { }                          //!< Xxxxxx
-        void                            setTopologyChanged(bool changed) { topologyChanged = changed; }         //!< Xxxxxx   
-        
-    protected:
                                         Topology(void);                                                         //!< Default constructor
                                         Topology(const Topology& t);                                            //!< Copy constructor
-                                        Topology(const MemberRules& memberRules);                               //!< Constructor
+                                       ~Topology(void) {}                                                       //!< Destructor
+
+        // Basic utility functions
+        Topology*                       clone(void) const;                                                      //!< Clone object
+        const VectorString&             getClass(void) const;                                                   //!< Get class vector   
+        void                            printValue(std::ostream& o) const;                                      //!< Print value for user
+        std::string                     richInfo(void) const;                                                   //!< Complete info
+
+        // Member variable rules
+        const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
+
+        // Member method inits
+        DAGNode*                        executeOperation(const std::string& name, ArgumentFrame& args);         //!< Execute method
+        const MethodTable&              getMethods(void) const;                                                 //!< Get methods
         
-        void                            computeNewickString(void);                                              //!< recompute the newick string
-        std::string                     newick;                                                                 //!< The newick string
+        // Topology functions
+        bool                            getIsRooted(void) { return isRooted; }                                  //!< Is the tree rooted
+        std::vector<TopologyNode*>&     getNodes(void) { return nodes; }                                        //!< Get a pointer to the nodes in the tree
+        size_t                          getNumberOfNodes(void) const { return int(nodes.size()); }              //!< Get the number of nodes in the tree
+        size_t                          getNumberOfTips(void) const;                                            //!< Get the number of tip nodes in the tree
+        TopologyNode*                   getRoot(void) const { return root; }                                    //!< Get a pointer to the root node of the tree
+        void                            setIsRooted(bool tf) { isRooted = tf; }                                 //!< Set the rootedness of the tree
+        
+	private:
         std::vector<TopologyNode*>      nodes;                                                                  //!< vector of pointers to all nodes
-        std::vector<TopologyNode*>      tips;                                                                   //!< vector of pointers to the tips
-        TopologyNode*                   root;                                                                   //!< pointer to the root node
-        
-        // flags indicating recalculation
-        bool                            topologyChanged;                                                        //!< flag for topology changes. if the flag is set, then the newick string, nodes in traversal oders
-        
-        // Override this function to map member method calls to internal functions
-        virtual DAGNode*                executeOperation(const std::string& name, ArgumentFrame& args);         //!< Map member methods to internal functions
-        
-        // Members is the variable frame that stores member variables
-        MemberFrame                     members;                                                                //!< Member variables
+        TopologyNode*                   root;                                                                   //!< Pointer to the root node
+        bool                            isRooted;                                                               //!< Is the topology rooted?
 };
 
 #endif
