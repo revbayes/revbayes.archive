@@ -20,21 +20,22 @@
 #include "Real.h"
 #include "VariableSlot.h"
 #include "VectorString.h"
-
 #include <algorithm>
 
 
-List::List(void) {
 
-}
+/*List::List(void) : MemberObject() {
+
+}*/
 
 
 /** Construct empty list */
-List::List( bool ref ) : MemberObject(), referenceList(ref) {
+List::List(bool ref) : MemberObject(), referenceList(ref) {
 
 }
 
-List::List(size_t len) {
+
+List::List(size_t len) : MemberObject() {
 
 }
 

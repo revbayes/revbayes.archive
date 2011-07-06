@@ -22,10 +22,11 @@
 #include "Natural.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "RbString.h"
 #include "ReferenceRule.h"
 #include "TreePlate.h"
-#include "TreePlateNode.h"
 #include "ValueRule.h"
+#include "VariableSlot.h"
 #include "VectorString.h"
 
 
@@ -75,8 +76,8 @@ DAGNode* TreePlate::executeOperation(const std::string& name, ArgumentFrame& arg
         {
         std::string varName = static_cast<const RbString*>( args[1].getValue() )->getValue();
 
-        VariableSlot* slot = new MemberSlot( treePlateVariableTypeRule );
-        members.push_back( varName, slot );
+        //VariableSlot* slot = new VariableSlot( treePlateVariableTypeRule );
+        /*members.push_back( varName, slot );
         List* lst = NULL;
         if (orderingTopology == NULL)
             {
@@ -89,7 +90,7 @@ DAGNode* TreePlate::executeOperation(const std::string& name, ArgumentFrame& arg
             size_t nNodes = orderingTopology->getNumberOfNodes();
             lst = new List(nNodes);
             }
-        members[ members.size() - 1 ].setVariable( lst->wrapIntoVariable() );
+        members[ members.size() - 1 ].setVariable( lst->wrapIntoVariable() );*/
         }
 
     return MemberObject::executeOperation( name, args );
@@ -109,7 +110,7 @@ const MethodTable& TreePlate::getMethods(void) const {
         addvariableArgRules.push_back(  new ReferenceRule( "", TreePlate_name ) );
         addvariableArgRules.push_back(  new ValueRule(     "", RbString_name  ) );
         
-        methods.addFunction("addVariable",  new MemberFunction(RbString, addvariableArgRules)  );
+        methods.addFunction("addVariable",  new MemberFunction(RbString_name, addvariableArgRules)  );
         
         // necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
