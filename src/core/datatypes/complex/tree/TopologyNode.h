@@ -46,21 +46,20 @@ class TopologyNode : public MemberObject {
     public:
                                         TopologyNode(void);                                                         //!< Default constructor
                                         TopologyNode(const std::string& n);                                         //!< constructor with name
-        
         // Basic utility functions
         TopologyNode*                   clone(void) const;                                                          //!< Clone object
-        bool                            equals(const RbObject* x) const;                                            //!< Equals comparison
         const VectorString&             getClass(void) const;                                                       //!< Get class vector
         void                            printValue(std::ostream& o) const;                                          //!< Print value for user
-        std::string                     toString(void) const;                                                       //!< Complete info
-        
-        // Member variable functions
+        std::string                     richInfo(void) const;                                                       //!< Complete info
+
+        // Member variable rules
         const MemberRules&              getMemberRules(void) const;                                                 //!< Get member rules
-        const MethodTable&              getMethodInits(void) const;                                                 //!< Get method specifications
-        void                            setValue(const std::string& name, RbObject* val);                           //!< Disallow the user for setting index
-        void                            setVariable(const std::string& name, DAGNode* var);                         //!< Disallow the user for setting index
+
+        // Member method inits
+        DAGNode*                        executeOperation(const std::string& name, ArgumentFrame& args);             //!< Execute method
+        const MethodTable&              getMethods(void) const;                                                     //!< Get methods
         
-        // TreeNode-specific functions
+        // TopologyNode functions
         void                            addChild(TopologyNode* p) { children.push_back(p); }                        //!< Adds a child node
         TopologyNode*                   getChild(int i) { return children[i]; }                                     //!< Returns the i-th child
         int                             getNumberOfChildren(void) { return int(children.size()); }                  //!< Returns the number of children
@@ -70,9 +69,6 @@ class TopologyNode : public MemberObject {
         void                            setParent(TopologyNode* p) { parent = p; }                                  //!< Sets the node's parent
         void                            removeAllChildren(void) { children.clear(); }                               //!< Removes all of the children of the node
         void                            removeChild(TopologyNode* p);                                               //!< Removes a specific child
-        
-    protected:
-        DAGNode*                        executeOperation(const std::string& name, std::vector<DAGNode*>& args);     //!< Execute method
         
     private: 
         std::vector<TopologyNode*>      children;                                                                   //!< Vector holding the node's children

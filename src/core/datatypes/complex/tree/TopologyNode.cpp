@@ -22,6 +22,7 @@
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "ReferenceRule.h"
 #include "VectorString.h"
 #include "TopologyNode.h"
 
@@ -50,34 +51,19 @@ TopologyNode* TopologyNode::clone(void) const {
 }
 
 
-/** Pointer-based equals comparison */
-bool TopologyNode::equals(const RbObject* obj) const {
-    
-    // Note: This function is on its way out
-    return false;
-}
-
-
-/** Map calls to member methods */
-DAGNode* TopologyNode::executeOperation(const std::string& name, std::vector<DAGNode*>& args) {
+DAGNode* TopologyNode::executeOperation(const std::string& name, ArgumentFrame& args) {
     
     if (name == "isTip") 
         {
-        if (getNumberOfChildren() == 0)
-            return new ConstantNode(new Boolean(true));
-        return new ConstantNode(new Boolean(false));
+        return ( new Boolean(isTip()) )->wrapIntoVariable();
         }
     else if (name == "isRoot") 
         {
-        if (getParent() == NULL)
-            return new ConstantNode(new Boolean(true));
-        return new ConstantNode(new Boolean(false));
+        return ( new Boolean(isRoot()) )->wrapIntoVariable();
         }
     else if (name == "isInterior") 
         {
-        if (getParent() != NULL && getNumberOfChildren() != 0)
-            return new ConstantNode(new Boolean(true));
-        return new ConstantNode(new Boolean(false));
+        return ( new Boolean(!isTip()) )->wrapIntoVariable();
         }
     else
         throw RbException("No member method called '" + name + "'");
@@ -95,40 +81,44 @@ const VectorString& TopologyNode::getClass() const {
 
 
 /** Get method specifications */
-const MethodTable& TopologyNode::getMethodInits(void) const {
+const MethodTable& TopologyNode::getMethods(void) const {
     
-    static MethodTable      methodInits;
-    static ArgumentRules    isTipRules;
-    static bool             initsSet = false;
-    
-    if (!initsSet) 
+    static MethodTable   methods;
+    static ArgumentRules isTipArgRules;
+    static ArgumentRules isRootArgRules;
+    static ArgumentRules isInteriorArgRules;
+    static bool          methodsSet = false;
+
+    if ( methodsSet == false ) 
         {
-        methodInits.addFunction("isTip", new MemberFunction(Boolean_name, ArgumentRules()));
-        methodInits.addFunction("isRoot", new MemberFunction(Boolean_name, ArgumentRules()));
-        methodInits.addFunction("isInterior", new MemberFunction(Boolean_name, ArgumentRules()));
+        // this must be here so the parser can distinguish between different instances of a character matrix
+        isTipArgRules.push_back(      new ReferenceRule( "", MemberObject_name ) );
+        isRootArgRules.push_back(     new ReferenceRule( "", MemberObject_name ) );
+        isInteriorArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
         
-        initsSet = true;
+        methods.addFunction("isTip",      new MemberFunction(Boolean_name, isTipArgRules)  );
+        methods.addFunction("isRoot",     new MemberFunction(Boolean_name, isRootArgRules)  );
+        methods.addFunction("isInterior", new MemberFunction(Boolean_name, isInteriorArgRules)  );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
+        methodsSet = true;
         }
-    
-    return methodInits;
+
+    return methods;
 }
 
 
-/** Get member variable rules */
 const MemberRules& TopologyNode::getMemberRules(void) const {
-    
+
     static MemberRules memberRules;
     static bool        rulesSet = false;
-    
+
     if (!rulesSet) 
         {
-        //        memberRules.push_back(new ArgumentRule("index", Integer_name));
-        //        memberRules.push_back(new ArgumentRule("brlen", RealPos_name));
-        //        memberRules.push_back(new ArgumentRule("time", RealPos_name));
-        
         rulesSet = true;
         }
-    
+
     return memberRules;
 }
 
@@ -150,30 +140,12 @@ void TopologyNode::removeChild(TopologyNode* p) {
 }
 
 
-/** Do not allow the user to set the index */
-void TopologyNode::setValue(const std::string& name, RbObject* val) {
-    
-    if (name == "index")
-        throw RbException("Cannot change index of a tree node");
-    MemberObject::setValue(name, val);
-}
+std::string TopologyNode::richInfo(void) const {
 
-
-/** Do not allow the user to set the index */
-void TopologyNode::setVariable(const std::string& name, DAGNode* var) {
-    
-    if (name == "index")
-        throw RbException("Cannot change index of a tree node");
-    MemberObject::setVariable(name, var);
-}
-
-
-/** Complete info about object */
-std::string TopologyNode::toString(void) const {
-    
     std::ostringstream o;
-    o <<  "Tree node: value = ";
+    o <<  "Topology node: ";
     printValue(o);
     return o.str();
 }
+
 
