@@ -72,7 +72,7 @@ const MemberRules& Move_msimplex::getMemberRules( void ) const {
         memberRules.push_back(new ValueRule( "tuning"  , RealPos_name ) );
         memberRules.push_back(new ValueRule( "num_cats", Natural_name ) );
 
-        /* Inherit weight and rng from Move, put it at back */
+        /* Inherit weight from Move, put it at back */
         const MemberRules& inheritedRules = Move::getMemberRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 

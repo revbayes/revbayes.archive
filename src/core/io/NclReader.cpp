@@ -25,9 +25,8 @@
 #include "RnaState.h"
 #include "StandardState.h"
 #include "StringUtilities.h"
-#include "Tree.h"
-#include "TreeNode.h"
-#include "TreeSimple.h"
+#include "Topology.h"
+#include "TopologyNode.h"
 #include "UserInterface.h"
 #include "VectorAminoAcidStates.h"
 #include "VectorCharacterContinuous.h"
@@ -38,7 +37,7 @@
 
 
 /** Constructs a tree from NCL */
-void NclReader::constructTreefromNclRecursively(TreeNode* tn, const NxsSimpleNode* tnNcl) {
+void NclReader::constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl) {
 
     // get the children
     std::vector<NxsSimpleNode*> children = tnNcl->GetChildren();
@@ -48,7 +47,7 @@ void NclReader::constructTreefromNclRecursively(TreeNode* tn, const NxsSimpleNod
         {
         // create a new tree node with given name
         const std::string& name = (*it)->GetName(); 
-        TreeNode* child = new TreeNode(name);
+        TopologyNode* child = new TopologyNode(name);
         
         // add new node as child
         tn->addChild(child);
@@ -122,10 +121,10 @@ std::vector<CharacterMatrix*> NclReader::convertFromNcl(std::vector<std::string>
 
 
 /** Converts trees stored by NCL into RevBayes formatted trees */
-std::vector<Tree*>* NclReader::convertTreesFromNcl(void) {
+std::vector<Topology*>* NclReader::convertTreesFromNcl(void) {
 	
 	const unsigned nTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-	std::vector<Tree*>* rbTreesFromFile;
+	std::vector<Topology*>* rbTreesFromFile;
 	for (unsigned t = 0; t < nTaxaBlocks; ++t) 
         {
 		const NxsTaxaBlock * tb = nexusReader.GetTaxaBlock(t);
@@ -141,9 +140,9 @@ std::vector<Tree*>* NclReader::convertTreesFromNcl(void) {
                 {
 				const NxsFullTreeDescription & ftd = trb->GetFullTreeDescription(j);
 				NxsSimpleTree tree(ftd, -1, -1.0);
-				Tree *rbTree = translateNclSimpleTreeToTree(tree);
+				Topology *rbTree = translateNclSimpleTreeToTree(tree);
                 //! @todo Tracy: Make sure rbTreesFromFile is properly initialized before being used -- Fredrik
-                rbTreesFromFile = new std::vector<Tree*>(); // Temporary fix making the compiler happy
+                rbTreesFromFile = new std::vector<Topology*>(); // Temporary fix making the compiler happy
 				rbTreesFromFile->push_back( rbTree );
                 }
             }
@@ -916,7 +915,7 @@ std::vector<CharacterMatrix*> NclReader::readMatrices(const char* fileName, cons
 
 
 /** Read trees */
-std::vector<Tree*>* NclReader::readTrees(const std::string fn, const std::string fileFormat) {
+std::vector<Topology*>* NclReader::readTrees(const std::string fn, const std::string fileFormat) {
 	
 	// check that the file exist
     if ( !fileExists(fn.c_str()) ) 
@@ -926,14 +925,14 @@ std::vector<Tree*>* NclReader::readTrees(const std::string fn, const std::string
         }
     
 	// allocate a vector of trees
-	std::vector<Tree*>* trees = new std::vector<Tree*>();
+	std::vector<Topology*>* trees = new std::vector<Topology*>();
 	
     // TODO @Tracy: Why do we read a vector of trees, then copy every single tree into a new vector; instead of returning the vector straight away?!? (Sebastian)
     
     // read the data files
- 	std::vector<Tree*>* f = readTrees( fn.c_str(), fileFormat);
+ 	std::vector<Topology*>* f = readTrees( fn.c_str(), fileFormat);
 	if (f != NULL) {
-		for (std::vector<Tree*>::iterator m = f->begin(); m != f->end(); m++)
+		for (std::vector<Topology*>::iterator m = f->begin(); m != f->end(); m++)
 			trees->push_back( (*m) );
 		delete f;
 	}
@@ -947,7 +946,7 @@ std::vector<Tree*>* NclReader::readTrees(const std::string fn, const std::string
 
 
 /** Read trees */
-std::vector<Tree*>* NclReader::readTrees(const char* fileName, const std::string fileFormat) {
+std::vector<Topology*>* NclReader::readTrees(const char* fileName, const std::string fileFormat) {
 	
 	// check that the file exists
 	if ( !fileExists(fileName) ) 
@@ -979,7 +978,7 @@ std::vector<Tree*>* NclReader::readTrees(const char* fileName, const std::string
 	std::string str = fileName;
 	fileNameVector.push_back( str );
 	
-	std::vector<Tree*>* cvm = convertTreesFromNcl();
+	std::vector<Topology*>* cvm = convertTreesFromNcl();
 	return cvm;
 }
 
@@ -1001,20 +1000,28 @@ void NclReader::setExcluded( const NxsCharactersBlock* charblock, CharacterMatri
 
 
 /** Translate a single NCL tree into a RevBayes tree */
-Tree* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree) {
+Topology* NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree) {
     
     // get the root from the ncl tree
     const NxsSimpleNode* rn = nTree.GetRootConst();
     
     // create a new tree root node
     const std::string& name = rn->GetName();
-    TreeNode* root = new TreeNode(name);
+    TopologyNode* root = new TopologyNode(name);
     
 	// construct tree recursively
     constructTreefromNclRecursively(root, rn);
     
     // create a new simple tree
-    Tree* myTreeFromNcl = new TreeSimple(root);
+    // Tracy: Crap...sorry to break this part of the code. We now have only a single class that holds only the
+    // topology of the tree. We have rethought trees quite a bit. The idea now is that we have a tree plate object and on
+    // that tree plate object lives a topology. We can throw any sort of variable onto the tree plate, such as branch lengths, character
+    // states, real numbers, etc. Here, I imagine that besides the topology, NCL will capture branch length (RealPos) 
+    // values too. Hence, we probably need to return a tree plate object here. Minimally, the function would create a
+    // tree plate object and then populate that tree plate with (minimally) the topology that you are reading and (perhaps)
+    // some variables that are contained on the tree.
+    //Topology* myTreeFromNcl = new Topology(root); <- Your old code
     
+    Topology* myTreeFromNcl = NULL;
 	return myTreeFromNcl;
 }

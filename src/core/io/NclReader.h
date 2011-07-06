@@ -21,14 +21,14 @@
 
 #include "ncl.h"
 #include "nxsmultiformat.h"
-#include "TreeNode.h"
+#include "TopologyNode.h"
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
 
 class CharacterMatrix;
-class Tree;
+class Topology;
 
 class NclReader {
     
@@ -49,7 +49,7 @@ class NclReader {
         bool                                isPhylipFile(std::string& fn, std::string& dType, bool& isInterleaved);         //!< Checks if the file is in Phylip format
 
         // TAH: stuff for reading trees
-        std::vector<Tree*>*                 readTrees(const std::string fn, const std::string fileFormat);                  //!< Read trees
+        std::vector<Topology*>*             readTrees(const std::string fn, const std::string fileFormat);                  //!< Read trees
         void                                clearContent(void) { nexusReader.ClearContent(); }                              //!< Clear the content of the NCL object
         
     private:
@@ -72,10 +72,10 @@ class NclReader {
         void                                setExcluded(const NxsCharactersBlock* charblock, CharacterMatrix* cMat ) const; //!< Set excluded taxa and excluded characters
 
         // methods for reading trees
-        void                                constructTreefromNclRecursively(TreeNode *tn, const NxsSimpleNode* tnNcl);      //!< Constructs a tree from NCL
-        std::vector<Tree*>*                 readTrees(const char* fileName, const std::string fileFormat);                  //!< Reads trees contained in a file
-        std::vector<Tree*>*                 convertTreesFromNcl(void);                                                      //!< Converts trees stored by NCL into RevBayes formatted trees
-        Tree*                               translateNclSimpleTreeToTree(NxsSimpleTree &nTree);                             //!< Translate a single NCL tree into a RevBayes tree
+        void                                constructTreefromNclRecursively(TopologyNode *tn, const NxsSimpleNode* tnNcl);  //!< Constructs a tree from NCL
+        std::vector<Topology*>*             readTrees(const char* fileName, const std::string fileFormat);                  //!< Reads trees contained in a file
+        std::vector<Topology*>*             convertTreesFromNcl(void);                                                      //!< Converts trees stored by NCL into RevBayes formatted trees
+        Topology*                           translateNclSimpleTreeToTree(NxsSimpleTree &nTree);                             //!< Translate a single NCL tree into a RevBayes tree
         
         MultiFormatReader                   nexusReader;                                                                    //!< The NCL object that reads the files
         std::set<std::string>               warningsSummary;                                                                //!< A vector that contains the warnings that acumulate
