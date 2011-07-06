@@ -37,7 +37,6 @@ class VectorRealPos;
 class List : public MemberObject {
 
     public:
-                                   // List(void);                                                 //!< Construct an empty list
                                     List(bool ref=false);                                       //!< Construct an empty list of references(ref==true) or values (ref==false)
                                     List(size_t len);                                           //!< Construct a list of size len
 

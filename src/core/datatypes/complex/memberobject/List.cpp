@@ -24,11 +24,6 @@
 
 
 
-/*List::List(void) : MemberObject() {
-
-}*/
-
-
 /** Construct empty list */
 List::List(bool ref) : MemberObject(), referenceList(ref) {
 
