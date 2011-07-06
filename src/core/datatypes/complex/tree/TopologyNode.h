@@ -73,7 +73,7 @@ class TopologyNode : public MemberObject {
     private: 
         std::vector<TopologyNode*>      children;                                                                   //!< Vector holding the node's children
         TopologyNode*                   parent;                                                                     //!< Pointer to the parent of the node
-        std::string                     name;                                                                       //!< name of the node, i.e. identifier/taxon name
+        std::string                     name;                                                                       //!< Name of the node, i.e. identifier/taxon name
 };
 
 #endif

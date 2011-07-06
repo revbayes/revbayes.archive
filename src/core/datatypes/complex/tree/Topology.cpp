@@ -29,25 +29,35 @@
 
 
 
-/** Default constructor */
+/* Default constructor */
 Topology::Topology(void) : MemberObject( getMemberRules() ) {
 
 }
 
 
-/** copy constructor */
+/* Copy constructor */
 Topology::Topology(const Topology& t) : MemberObject( getMemberRules() ) {
 
     // need to perform a deep copy of the tree nodes
 }
 
 
+/* Destructor */
+Topology::~Topology(void) {
+
+    for (std::vector<TopologyNode*>::iterator p = nodes.begin(); p != nodes.end(); p++)
+        delete (*p);
+}
+
+
+/* Clone function */
 Topology* Topology::clone(void) const {
 
     return new Topology(*this);
 }
 
 
+/* Get class information */
 const VectorString& Topology::getClass(void) const {
     
     static VectorString rbClass = VectorString(Topology_name) + MemberObject::getClass();
@@ -55,6 +65,8 @@ const VectorString& Topology::getClass(void) const {
 }
 
 
+/** Calculate and return the number of tips on the tree by going through the vector
+    of nodes, querying each about its tip status. */
 size_t Topology::getNumberOfTips(void) const {
 
     size_t n = 0;
@@ -67,7 +79,7 @@ size_t Topology::getNumberOfTips(void) const {
 }
 
 
-/** Map calls to member methods */
+/* Map calls to member methods */
 DAGNode* Topology::executeOperation(const std::string& name, ArgumentFrame& args) {
     
     if (name == "ntips") 
@@ -83,7 +95,7 @@ DAGNode* Topology::executeOperation(const std::string& name, ArgumentFrame& args
 }
 
 
-/** Get method specifications */
+/* Get method specifications */
 const MethodTable& Topology::getMethods(void) const {
     
     static MethodTable   methods;
@@ -109,6 +121,7 @@ const MethodTable& Topology::getMethods(void) const {
 }
 
 
+/* Get member rules */
 const MemberRules& Topology::getMemberRules(void) const {
 
     static MemberRules memberRules;
@@ -123,12 +136,14 @@ const MemberRules& Topology::getMemberRules(void) const {
 }
 
 
+/* Print the tree */
 void Topology::printValue(std::ostream& o) const {
 
     o << "";
 }
 
 
+/* Get a lot of information about the topology */
 std::string Topology::richInfo(void) const {
 
     std::ostringstream o;

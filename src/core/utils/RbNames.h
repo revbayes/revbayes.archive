@@ -152,6 +152,7 @@ const std::string Trace_name                                    = "Trace";
 const std::string TransitionProbabilityMatrix_name              = "Transition probability matrix";
 const std::string Topology_name                                 = "Tree Topology";
 const std::string TopologyNode_name                             = "Topology Node";
+const std::string TreePlate_name                                = "Tree Plate";
 const std::string VariableContainer_name                        = "Variable container";
 const std::string ValueContainer_name                           = "Value container";
 const std::string ValueRule_name                                = "ValueRule";

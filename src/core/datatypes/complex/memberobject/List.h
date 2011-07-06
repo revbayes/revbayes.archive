@@ -37,8 +37,10 @@ class VectorRealPos;
 class List : public MemberObject {
 
     public:
+                                    List(void);                                                 //!< Construct an empty list
                                     List(bool ref=false);                                       //!< Construct an empty list of references(ref==true) or values (ref==false)
-    
+                                    List(size_t len);                                           //!< Construct a list of size len
+
         // Overloaded operators
         DAGNode*                    operator[](size_t i);                                       //!< Index op (non-const) to elements
         const DAGNode*              operator[](size_t i) const;                                 //!< Index op (const) to elements

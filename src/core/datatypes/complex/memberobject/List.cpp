@@ -24,8 +24,18 @@
 #include <algorithm>
 
 
+List::List(void) {
+
+}
+
+
 /** Construct empty list */
 List::List( bool ref ) : MemberObject(), referenceList(ref) {
+
+}
+
+List::List(size_t len) {
+
 }
 
 
