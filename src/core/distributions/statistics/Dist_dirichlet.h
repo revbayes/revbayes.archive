@@ -18,7 +18,7 @@
 #ifndef Dist_dirichlet_H
 #define Dist_dirichlet_H
 
-#include "DistributionInterval.h"
+#include "DistributionContinuous.h"
 #include "Simplex.h"
 
 #include <ostream>
@@ -30,7 +30,7 @@ class Simplex;
 class StochasticNode;
 class VectorString;
 
-class Dist_dirichlet: public DistributionInterval {
+class Dist_dirichlet: public DistributionContinuous {
 
     public:
                                     Dist_dirichlet(void);                                               //!< Parser constructor

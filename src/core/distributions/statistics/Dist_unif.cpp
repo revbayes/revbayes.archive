@@ -34,13 +34,13 @@
 
 
 /** Default constructor for parser use */
-Dist_unif::Dist_unif(void) : DistributionInterval(getMemberRules()) {
+Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()) {
 
 }
 
 
 /** Constructor for test use */
-Dist_unif::Dist_unif(double min, double max) : DistributionInterval(getMemberRules()) {
+Dist_unif::Dist_unif(double min, double max) : DistributionContinuous(getMemberRules()) {
 
     setValue( "min", new Real(min) );
     setValue( "max", new Real(max) );
@@ -82,7 +82,7 @@ Dist_unif* Dist_unif::clone(void) const {
 /** Get class vector showing type of object */
 const VectorString& Dist_unif::getClass(void) const {
 
-    static VectorString rbClass = VectorString(Dist_unif_name) + DistributionInterval::getClass();
+    static VectorString rbClass = VectorString(Dist_unif_name) + DistributionContinuous::getClass();
     return rbClass;
 }
 

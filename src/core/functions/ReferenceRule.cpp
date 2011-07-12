@@ -31,6 +31,12 @@ ReferenceRule::ReferenceRule( const std::string& argName, const std::string& val
 }
 
 
+/** Constructor without default value and true type spec */
+ReferenceRule::ReferenceRule( const std::string& argName, const TypeSpec typeSp )
+    : ArgumentRule(argName, typeSp ) {
+}
+
+
 /** Constructor with default value */
 ReferenceRule::ReferenceRule(const std::string& argName, const std::string& valType, DAGNode* defVar)
     : ArgumentRule(argName, TypeSpec(valType, defVar->getDim(), true), defVar) {

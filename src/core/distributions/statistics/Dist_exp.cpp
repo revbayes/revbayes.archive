@@ -31,13 +31,13 @@
 
 
 /** Default constructor for parser use */
-Dist_exp::Dist_exp( void ) : DistributionInterval( getMemberRules() ) {
+Dist_exp::Dist_exp( void ) : DistributionContinuous( getMemberRules() ) {
 
 }
 
 
 /** Constructor for internal use */
-Dist_exp::Dist_exp( double rate ) : DistributionInterval( getMemberRules() ) {
+Dist_exp::Dist_exp( double rate ) : DistributionContinuous( getMemberRules() ) {
 
     setValue( "rate", new Real(rate) );
 }
@@ -72,7 +72,7 @@ Dist_exp* Dist_exp::clone( void ) const {
 /** Get class vector showing type of object */
 const VectorString& Dist_exp::getClass( void ) const {
 
-    static VectorString rbClass = VectorString( Dist_exp_name ) + DistributionInterval::getClass();
+    static VectorString rbClass = VectorString( Dist_exp_name ) + DistributionContinuous::getClass();
     return rbClass;
 }
 

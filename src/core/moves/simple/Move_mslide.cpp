@@ -16,12 +16,13 @@
  */
 
 #include "ConstantNode.h"
-#include "DistributionInterval.h"
+#include "DistributionContinuous.h"
 #include "Move_mslide.h"
 #include "RandomNumberGenerator.h"
 #include "RbNames.h"
 #include "RealPos.h"
 #include "StochasticNode.h"
+#include "StochasticReferenceRule.h"
 #include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -39,10 +40,9 @@ Move_mslide::Move_mslide( void )
 Move_mslide::Move_mslide( StochasticNode* node, double delta, double weight )
     : MoveSimple( getMemberRules() ) {
 
-    setValue( "delta" , new RealPos( delta  ) );
-    setValue( "weight", new RealPos( weight ) );
-
-    setNodePtr( node );
+    setVariable( "variable", node );
+    setValue(    "weight",   new RealPos(weight) );
+    setValue(    "delta",    new RealPos( delta  ) );
 }
 
 
@@ -56,7 +56,7 @@ Move_mslide* Move_mslide::clone( void ) const {
 /** Get class vector describing type of object */
 const VectorString& Move_mslide::getClass() const {
 
-    static VectorString rbClass = VectorString( Move_mslide_name ) + Move::getClass();
+    static VectorString rbClass = VectorString( Move_mslide_name ) + MoveSimple::getClass();
     return rbClass;
 }
 
@@ -69,11 +69,13 @@ const MemberRules& Move_mslide::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
 
-        memberRules.push_back( new ValueRule( "delta", RealPos_name ) );
+        memberRules.push_back( new StochasticReferenceRule( "variable", Real_name ) );
 
-        /* Inherit weight and rng from Move, put it at back */
-        const MemberRules& inheritedRules = Move::getMemberRules();
-        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
+        /* Inherit weight from MoveSimple, put it after variable */
+        const MemberRules& inheritedRules = MoveSimple::getMemberRules();
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+
+        memberRules.push_back( new ValueRule( "delta", RealPos_name ) );
 
         rulesSet = true;
     }
@@ -82,17 +84,28 @@ const MemberRules& Move_mslide::getMemberRules( void ) const {
 }
 
 
+/** Return the random variable type appropriate for the move */
+const TypeSpec Move_mslide::getVariableType( void ) const {
+
+    return TypeSpec( Real_name );
+}
+
+
 /** Perform the move */
 double Move_mslide::perform( std::set<StochasticNode*>& affectedNodes ) {
 
+    // Get random number generator    
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
+
     // Get relevant values
-    const Real              curVal = *( static_cast<const Real*   >( nodePtr->getValue() ) );
-    RandomNumberGenerator*  rng    = GLOBAL_RNG;
-    const RealPos           delta  = *( static_cast<const RealPos*>( getValue("delta")   ) );
-    const RbObject*         min    = static_cast<const DistributionInterval*>( nodePtr->getDistribution() )->getMin();
-    const RbObject*         max    = static_cast<const DistributionInterval*>( nodePtr->getDistribution() )->getMax();
-    const Real              minVal = *( static_cast<const Real*                >( min ) );
-    const Real              maxVal = *( static_cast<const Real*                >( max ) );
+    StochasticNode*         nodePtr =    static_cast<StochasticNode*>( members["variable"].getReference() );
+    const RealPos           delta   = *( static_cast<const RealPos*>( getValue("delta")   ) );
+
+    const Real              curVal  = *( static_cast<const Real*                  >( nodePtr->getValue() ) );
+    const RbObject*         minPtr  =    static_cast<const DistributionContinuous*>( nodePtr->getDistribution() )->getMin();
+    const RbObject*         maxPtr  =    static_cast<const DistributionContinuous*>( nodePtr->getDistribution() )->getMax();
+    const Real              minVal  = *( static_cast<const Real*                  >( minPtr ) );
+    const Real              maxVal  = *( static_cast<const Real*                  >( maxPtr ) );
 
     Real u      = rng->uniform01();
     Real newVal = curVal + ( delta * ( u - 0.5 ) );
@@ -109,5 +122,4 @@ double Move_mslide::perform( std::set<StochasticNode*>& affectedNodes ) {
 	
     return 0.0;
 }
-
 

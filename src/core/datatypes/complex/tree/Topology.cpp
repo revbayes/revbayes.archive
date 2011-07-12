@@ -50,6 +50,31 @@ Topology::~Topology(void) {
 }
 
 
+/** 
+ * Change topology according to the instructions given in the vector
+ * of TopologyChange structs. This allows the topology move machinery
+ * to do delayed updates of the topology and use the change instructions
+ * to alos update tree variable DAGs.
+ *
+ * @note We assume here that indices of nodes correspond to their
+ *       position in the nodes vector.
+ * @note No consistency checking - should probably be introduced
+ */
+void Topology::changeTopology( std::vector<TopologyChange>& topChanges ) {
+
+    for ( std::vector<TopologyChange>::iterator i=topChanges.begin(); i!=topChanges.end(); i++ ) {
+    
+        TopologyNode* childNode = nodes[ (*i).node ];
+        TopologyNode* oldParent = nodes[ (*i).oldParentNode ];
+        TopologyNode* newParent = nodes[ (*i).newParentNode ];
+
+        childNode->setParent  ( newParent );
+        oldParent->removeChild( childNode );
+        newParent->addChild   ( childNode );
+    }
+}
+
+
 /* Clone function */
 Topology* Topology::clone(void) const {
 
@@ -65,6 +90,19 @@ const VectorString& Topology::getClass(void) const {
 }
 
 
+/** Calculate the number of interior nodes in the tree by deducing the number of
+    tips from number of nodes, and then subtract 1 more if the tree is rooted. */
+size_t Topology::getNumberOfInteriorNodes(void) const {
+
+    size_t preliminaryNumIntNodes = getNumberOfNodes() - getNumberOfTips();
+
+    if ( isRooted )
+        return preliminaryNumIntNodes - 1;
+    else
+        return preliminaryNumIntNodes;
+}
+
+
 /** Calculate and return the number of tips on the tree by going through the vector
     of nodes, querying each about its tip status. */
 size_t Topology::getNumberOfTips(void) const {
@@ -76,6 +114,24 @@ size_t Topology::getNumberOfTips(void) const {
             n++;
         }
     return n;
+}
+
+
+/** We provide this function to allow a caller to randomly pick one of the interior nodes.
+    This version assumes that the root is always the last and the tips the first in the nodes vector. */
+TopologyNode* Topology::getInteriorNode( int indx ) const {
+
+    // TODO: Bound checking, maybe draw from downpass array instead
+    return nodes[ indx + getNumberOfTips() ];
+}
+
+
+/** We provide this function to allow a caller to randomly pick one of the interior nodes.
+    This version assumes that the tips are first in the nodes vector. */
+TopologyNode* Topology::getTipNode( int indx ) const {
+
+    // TODO: Bound checking
+    return nodes[ indx ];
 }
 
 

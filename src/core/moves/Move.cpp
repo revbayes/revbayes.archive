@@ -16,12 +16,17 @@
  * $Id$
  */
 
+#include "ConstantValueRule.h"
 #include "DAGNode.h"
+#include "MemberFunction.h"
 #include "Move.h"
+#include "Natural.h"
 #include "RealPos.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "ReferenceRule.h"
 #include "ValueRule.h"
+#include "VectorReal.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -31,59 +36,148 @@
 
 
 /** Constructor for parser use */
-Move::Move(const MemberRules& memberRules)
-    : MemberObject(memberRules) {
+Move::Move( const MemberRules& memberRules )
+    : MemberObject( memberRules ) {
 
     numAccepted = 0;
     numTried    = 0;
 }
 
 
-/** Calculate acceptance probability */
-double Move::getAcceptanceProbability(void) {
+/** Map calls to member methods */
+DAGNode* Move::executeOperation(const std::string& name, ArgumentFrame& args) {
 
-    return numAccepted/(double)numTried;
+    static ArgumentRules acceptArgRules;
+    static ArgumentRules acceptanceRatioArgRules;    
+    static ArgumentRules numAcceptedArgRules;    
+    static ArgumentRules numTriedArgRules;
+    static ArgumentRules proposeArgRules;
+    static ArgumentRules rejectArgRules;
+    static ArgumentRules resetCountersArgRules;
+
+    if ( name == "accept" ) {
+
+        acceptMove();
+        return NULL;
+    }
+    else if ( name == "acceptanceRatio" ) {
+
+        return ( new Real( getAcceptanceRatio() ) )->wrapIntoVariable();
+    }
+    else if ( name == "numAccepted" ) {
+
+        return ( new Natural( numAccepted ) )->wrapIntoVariable();
+    }
+    else if ( name == "numTried" ) {
+
+        return ( new Natural( numTried ) )->wrapIntoVariable();
+    }
+    else if ( name == "propose" ) {
+
+        VectorReal* temp = new VectorReal(2);
+        performMove( (*temp)[0], (*temp)[1] );
+        
+        return temp->wrapIntoVariable();
+    }
+    else if ( name == "reject" ) {
+
+        rejectMove();
+        return NULL;
+    }
+    else if ( name == "resetCounters" ) {
+
+        resetCounters();
+        return NULL;
+    }
+
+    // No hit yet; we hope there is a mapped function call in the base class
+    return MemberObject::executeOperation( name, args );
 }
 
 
-/** Get member rules: weight and random number generator */
-const MemberRules& Move::getMemberRules(void) const {
+/** Calculate acceptance probability */
+double Move::getAcceptanceRatio( void ) const {
+
+    return double( numAccepted ) / double( numTried );
+}
+
+
+/** Get class vector describing type of object */
+const VectorString& Move::getClass( void ) const { 
+
+    static VectorString rbClass = VectorString( Move_name ) + MemberObject::getClass();
+	return rbClass;
+}
+
+
+/** Return member rules */
+const MemberRules& Move::getMemberRules( void ) const {
 
     static MemberRules memberRules;
     static bool        rulesSet = false;
 
-    if (!rulesSet) {
-
-        memberRules.push_back(new ValueRule("weight", new RealPos(1.0)));
-
+    if (!rulesSet) 
+		{
+        memberRules.push_back(new ConstantValueRule( "weight"  , new RealPos(1.0) ) );
         rulesSet = true;
-    }
+		}
 
     return memberRules;
 }
 
 
-/** Get class vector describing type of object */
-const VectorString& Move::getClass(void) const { 
-
-    static VectorString rbClass = VectorString(Move_name) + RbComplex::getClass();
-	return rbClass;
-}
-
-
-/** Get methods */
+/** Get move methods */
 const MethodTable& Move::getMethods(void) const {
 
-    static MethodTable methods = MethodTable( const_cast<MethodTable*>( &(MemberObject::getMethods()) ) );
+    static MethodTable   methods;
+    
+    static ArgumentRules acceptArgRules;
+    static ArgumentRules acceptanceRatioArgRules;    
+    static ArgumentRules numAcceptedArgRules;    
+    static ArgumentRules numRejectedArgRules;    
+    static ArgumentRules numTriedArgRules;
+    static ArgumentRules proposeArgRules;
+    static ArgumentRules rejectArgRules;
+    static ArgumentRules resetCountersArgRules;
+    
+    static bool          methodsSet = false;
+
+    if ( methodsSet == false ) 
+        {
+        // Add 'this' reference used to distinguish between different instances
+        acceptArgRules.push_back         ( new ReferenceRule( "", Move_name ) );
+        acceptanceRatioArgRules.push_back( new ReferenceRule( "", Move_name ) );
+        numAcceptedArgRules.push_back    ( new ReferenceRule( "", Move_name ) );
+        numRejectedArgRules.push_back    ( new ReferenceRule( "", Move_name ) );
+        numTriedArgRules.push_back       ( new ReferenceRule( "", Move_name ) );
+        proposeArgRules.push_back        ( new ReferenceRule( "", Move_name ) );
+        rejectArgRules.push_back         ( new ReferenceRule( "", Move_name ) );
+        resetCountersArgRules.push_back  ( new ReferenceRule( "", Move_name ) );
+        
+        // Add functions
+        methods.addFunction( "accept",          new MemberFunction( RbVoid_name,     acceptArgRules ) );
+        methods.addFunction( "acceptanceRatio", new MemberFunction( Real_name,       acceptanceRatioArgRules ) );
+        methods.addFunction( "numAccepted",     new MemberFunction( Natural_name,    numAcceptedArgRules ) );
+        methods.addFunction( "numRejected",     new MemberFunction( Natural_name,    numRejectedArgRules ) );
+        methods.addFunction( "numTried",        new MemberFunction( Natural_name,    numTriedArgRules ) );
+        methods.addFunction( "propose",         new MemberFunction( VectorReal_name, proposeArgRules ) );
+        methods.addFunction( "reject",          new MemberFunction( RbVoid_name,     rejectArgRules ) );
+        methods.addFunction( "resetCounters",   new MemberFunction( RbVoid_name,     resetCountersArgRules ) );
+        
+        // Set parent table for proper inheritance
+        methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
+        methodsSet = true;
+    }
 
     return methods;
 }
 
 
-/** Get update weight */
-double Move::getUpdateWeight(void) const {
+/** We provide a convenience function for getting the update weight of the move
+ *  from its member variable "weight". */
+double Move::getUpdateWeight( void ) const {
 
-    return static_cast<const Real*>( getValue("weight") )->getValue();
+    return static_cast<const RealPos*>( members["weight"].getValue() )->getValue();
 }
 
 
@@ -93,25 +187,4 @@ void Move::resetCounters(void) {
     numAccepted = 0;
     numTried    = 0;
 }
-
-
-/** Set update weight but not negative */
-void Move::setUpdateWeight(double weight) {
-
-    if (weight < 0.0)
-        throw RbException("Negative update weight not allowed");
-
-    setValue("weight", new Real(weight));
-}
-
-
-/** Only allow constant values for member variables */
-void Move::setVariable(const std::string& name, DAGNode* var) {
-
-    if (!var->isDAGType(ConstantNode_name))
-        throw RbException("Only constant values allowed for member variables");
-
-    MemberObject::setVariable(name, var);
-}
-
 

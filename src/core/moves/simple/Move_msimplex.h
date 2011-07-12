@@ -31,18 +31,21 @@ class RbObject;
 class Move_msimplex : public MoveSimple {
 
     public:
-                                    Move_msimplex(void);                                                             //!< Parser constructor
-                                    Move_msimplex(StochasticNode* node, double tuning, int nc, double weight = 1.0); //!< Internal constructor
+                                    Move_msimplex(void);                                                                //!< Parser constructor
+                                    Move_msimplex(StochasticNode* node, double tuning, int nc, double weight = 1.0);    //!< Internal constructor
 
         // Basic utility functions
-        Move_msimplex*              clone(void) const;                                                               //!< Clone object
-        const VectorString&         getClass(void) const;                                                            //!< Get class vector
+        Move_msimplex*              clone(void) const;                                                                  //!< Clone object
+        const VectorString&         getClass(void) const;                                                               //!< Get class vector
 
         // Member variable inits
-        const MemberRules&          getMemberRules(void) const;                                                      //!< Get member rules
+        const MemberRules&          getMemberRules(void) const;                                                         //!< Get member rules
 
-	protected:
-        double                      perform(std::set<StochasticNode*>& affectedNodes);                               //!< Perform move
+        // Return variable type
+        const TypeSpec              getVariableType(void) const;                                                        //!< Get variable type for move
+
+    protected:
+        double                      perform(std::set<StochasticNode*>& affectedNodes);                                  //!< Perform move
 };
 
 #endif

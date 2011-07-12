@@ -29,7 +29,8 @@ class ConstantValueRule : public ValueRule {
 
     public:
                                     ConstantValueRule(const std::string& argName, TypeSpec typeSp);                         //!< Constructor from name and typespec
-                                    ConstantValueRule(const std::string& argName, TypeSpec typeSp, RbObject* defVal);       //!< Constructor with default value
+                                    ConstantValueRule(const std::string& argName, RbObject* defVal);                        //!< Constructor with default value and implicit type
+                                    ConstantValueRule(const std::string& argName, TypeSpec typeSp, RbObject* defVal);       //!< Constructor with default value and explicit type
 
         // Basic utility functions
         ConstantValueRule*          clone(void) const;                                                                      //!< Clone object

@@ -43,7 +43,7 @@ std::string RbObject::briefInfo(void) const {
  *  or member variables may be connect a regular clone to the DAG
  *  of the original object.
  */
-RbObject* RbObject::cloneWithoutConnections( void ) const {
+RbObject* RbObject::cloneAsConstant( void ) const {
 
     return clone();
 }

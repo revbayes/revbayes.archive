@@ -276,7 +276,7 @@ VariableContainer* VariableContainer::clone( void ) const {
  * Get clone with const values. In this function, we get the value from each
  * of the elements and create a constant value container with this content.
  */
-ValueContainer* VariableContainer::cloneWithoutConnections( void ) const {
+ValueContainer* VariableContainer::cloneAsConstant( void ) const {
 
     if ( elementType == Integer_name && getDim() == 1 ) {
 
@@ -537,7 +537,7 @@ bool VariableContainer::isConstant( void ) const {
  */
 void VariableContainer::printValue( std::ostream& o ) const {
 
-    ValueContainer* temp = cloneWithoutConnections();
+    ValueContainer* temp = cloneAsConstant();
 
     temp->printValue( o );
 

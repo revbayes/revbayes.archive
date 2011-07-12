@@ -49,6 +49,8 @@ class Distribution: public MemberObject {
 
         // Member object functions you may want to override
         virtual const MethodTable&  getMethods(void) const;                                                         //!< Get member methods
+        virtual DAGNode*            executeOperation(const std::string& name, ArgumentFrame& args);                 //!< Map member methods to internal functions
+
 
         // Distribution functions you have to override
         virtual Move*               getDefaultMove(StochasticNode* node) = 0;                                       //!< Get default move
@@ -58,8 +60,6 @@ class Distribution: public MemberObject {
         virtual RbObject*           rv(void) = 0;                                                                   //!< Generate a random draw
 
     protected:
-        virtual DAGNode*            executeOperation(const std::string& name, ArgumentFrame& args);                 //!< Map member methods to internal functions
-
 									Distribution(const MemberRules& memberRules);                                   //!< Simple constructor
 
 };

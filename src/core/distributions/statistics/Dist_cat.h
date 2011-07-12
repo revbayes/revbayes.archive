@@ -1,7 +1,8 @@
 /**
  * @file
  * This file contains the declaration of Dist_cat, which is used to hold
- * parameters and functions related to a distribution on a categorical variable.
+ * parameters and functions related to a distribution on a categorical
+ * variable ( a factor).
  *
  * @brief Declaration of Dist_cat
  *
@@ -17,7 +18,7 @@
 #define Dist_cat_H
 
 #include "Categorical.h"
-#include "DistributionCategorical.h"
+#include "DistributionDiscrete.h"
 
 #include <set>
 #include <string>
@@ -30,7 +31,7 @@ class StochasticNode;
 class VectorString;
 
 
-class Dist_cat: public DistributionCategorical {
+class Dist_cat: public DistributionDiscrete {
 
     public:
                                     Dist_cat(void);                                                         //!< Parser constructor
@@ -44,7 +45,7 @@ class Dist_cat: public DistributionCategorical {
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                             //!< Get member variable rules
 
-        // Real-valued distribution functions
+        // Discrete distribution functions
         Move*                       getDefaultMove(StochasticNode* node);                                   //!< Get default move
         virtual int                 getNumStates(void) const;                                               //!< Get number of states
         virtual const Simplex*      getProbabilityMassVector(void);                                         //!< Get probability mass vector

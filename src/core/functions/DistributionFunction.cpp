@@ -21,8 +21,8 @@
 #include "ContainerNode.h"
 #include "DAGNode.h"
 #include "Distribution.h"
+#include "DistributionContinuous.h"
 #include "DistributionFunction.h"
-#include "DistributionInterval.h"
 #include "MemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -169,12 +169,12 @@ DAGNode* DistributionFunction::execute( void ) {
     }
     else if (functionType == PROB) {
 
-        return new ConstantNode( new RealPos( static_cast<DistributionInterval*>( distribution )->cdf( args[0].getValue() ) ) );
+        return new ConstantNode( new RealPos( static_cast<DistributionContinuous*>( distribution )->cdf( args[0].getValue() ) ) );
     }
     else if (functionType == QUANTILE) {
 
         double    prob  = static_cast<const RealPos*>( args[0].getValue() )->getValue();
-        RbObject* quant = static_cast<DistributionInterval*>( distribution )->quantile( prob );
+        RbObject* quant = static_cast<DistributionContinuous*>( distribution )->quantile( prob );
         
         return quant->wrapIntoVariable();
     }

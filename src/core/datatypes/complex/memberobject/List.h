@@ -46,7 +46,7 @@ class List : public MemberObject {
 
         // Basic utility functions
         List*                       clone(void) const;                                          //!< Clone object
-        List*                       cloneWithoutConnections(void) const;                        //!< Make a clone with only constant member variables
+        List*                       cloneAsConstant(void) const;                                //!< Make a clone with constant elements
         const VectorString&         getClass(void) const;                                       //!< Get class
         void                        printValue(std::ostream& o) const;                          //!< Print value for user
         std::string                 richInfo(void) const;                                       //!< Complete info about object

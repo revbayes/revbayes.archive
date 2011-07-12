@@ -43,13 +43,13 @@ MemberObject::MemberObject(const MemberRules& memberRules) : RbComplex(), member
 
 
 /** Get clone with constant values (evaluate all member variables and replace with constants) */
-MemberObject* MemberObject::cloneWithoutConnections( void ) const {
+MemberObject* MemberObject::cloneAsConstant( void ) const {
 
     MemberObject* temp = clone();
 
     for ( size_t i = 0; i < temp->members.size(); i++ ) {
     
-        RbObject* constValue = temp->members[i].getValue()->cloneWithoutConnections();
+        RbObject* constValue = temp->members[i].getValue()->cloneAsConstant();
         temp->members[i].setReferenceFlag( false );
         temp->setValue( temp->members[i].getName(), constValue );
     }

@@ -43,7 +43,7 @@ class MemberObject: public RbComplex {
 
         // Basic utility functions you have to override
         virtual MemberObject*       clone(void) const = 0;                                                              //!< Clone object
-        virtual MemberObject*       cloneWithoutConnections(void) const;                                                //!< Make a clone with only constant member variables and elements
+        virtual MemberObject*       cloneAsConstant(void) const;                                                        //!< Make a clone with only constant members and elements
         virtual const VectorString& getClass(void) const;                                                               //!< Get class vector
         
         // Basic utility functions you may want to override
@@ -70,7 +70,9 @@ class MemberObject: public RbComplex {
 
         // Member method functions
         DAGNode*                    executeMethod(const std::string& name, const std::vector<Argument>& args);          //!< Direct call of member method
+        virtual DAGNode*            executeOperation(const std::string& name, ArgumentFrame& args);                     //!< Override to map member methods to internal functions
         virtual const MethodTable&  getMethods(void) const;                                                             //!< Get member methods
+
 
         // Direct string index functions you do not need to override
         DAGNode*                    getElement(std::string& elemName);                                                  //!< Get element from string index
@@ -93,15 +95,11 @@ class MemberObject: public RbComplex {
 									MemberObject(const MemberRules& memberRules);                                       //!< Standard constructor
                                     MemberObject(void){}                                                                //!< Default constructor; no members or methods
  
-        // Override this function to map member method calls to internal functions
-        virtual DAGNode*            executeOperation(const std::string& name, ArgumentFrame& args);                     //!< Map member methods to internal functions
-
         // Members is the variable frame that stores member variables
         MemberFrame                 members;                                                                            //!< Member variables
 
         // Friend classes
         friend class                DistributionFunction;                                                               //!< Give DistributionFunction access
-        friend class                MemberFunction;                                                                     //!< Member functino needs access to executeOperation
         friend class                MemberNode;                                                                         //!< Give MemberNode access
 };
 

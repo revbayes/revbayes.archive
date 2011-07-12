@@ -15,6 +15,7 @@
  * $Id$
  */
 
+#include "ConstantValueRule.h"
 #include "Distribution.h"
 #include "DistributionDirichlet.h"
 #include "Move_msimplex.h"
@@ -26,7 +27,7 @@
 #include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
-#include "ValueRule.h"
+#include "StochasticReferenceRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -40,12 +41,12 @@ Move_msimplex::Move_msimplex( void ) : MoveSimple( getMemberRules() ) {
 /** Constructor for internal use */
 Move_msimplex::Move_msimplex( StochasticNode* node, double tuning, int nc, double weight ) : MoveSimple( getMemberRules() ) {
 
-    setValue( "tuning", new RealPos(tuning) );
-    setValue( "num_cats", new Integer(nc) );
-    setValue( "weight", new RealPos(weight) );
-
-    setNodePtr( node );
+    setVariable( "variable", node );
+    setValue(    "weight", new RealPos(weight) );
+    setValue(    "tuning", new RealPos(tuning) );
+    setValue(    "num_cats", new Natural(nc) );
 }
+
 
 /** Clone object */
 Move_msimplex* Move_msimplex::clone( void ) const {
@@ -57,9 +58,10 @@ Move_msimplex* Move_msimplex::clone( void ) const {
 /** Get class vector describing type of object */
 const VectorString& Move_msimplex::getClass() const {
 
-    static VectorString rbClass = VectorString( Move_msimplex_name ) + Move::getClass();
+    static VectorString rbClass = VectorString( Move_msimplex_name ) + MoveSimple::getClass();
     return rbClass;
 }
+
 
 /** Return member rules */
 const MemberRules& Move_msimplex::getMemberRules( void ) const {
@@ -69,12 +71,14 @@ const MemberRules& Move_msimplex::getMemberRules( void ) const {
 
     if (!rulesSet) 
 		{
-        memberRules.push_back(new ValueRule( "tuning"  , RealPos_name ) );
-        memberRules.push_back(new ValueRule( "num_cats", Natural_name ) );
+        memberRules.push_back( new StochasticReferenceRule( "variable", Simplex_name ) );
 
-        /* Inherit weight from Move, put it at back */
-        const MemberRules& inheritedRules = Move::getMemberRules();
+        /* Inherit weight from MoveSimple, put it after variable */
+        const MemberRules& inheritedRules = MoveSimple::getMemberRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+
+        memberRules.push_back( new ConstantValueRule( "tuning"  , RealPos_name ) );
+        memberRules.push_back( new ConstantValueRule( "num_cats", Natural_name ) );
 
         rulesSet = true;
 		}
@@ -83,18 +87,27 @@ const MemberRules& Move_msimplex::getMemberRules( void ) const {
 }
 
 
+/** Return the random variable type appropriate for the move */
+const TypeSpec Move_msimplex::getVariableType( void ) const {
+
+    return TypeSpec( Simplex_name );
+}
+
+
 /** Perform the move */
 double Move_msimplex::perform( std::set<StochasticNode*>& affectedNodes ) {
 
-    // Get relevant values
-    const Simplex*         valPtr  = static_cast<const Simplex*>( nodePtr->getValue()  );
+    // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
+
+    // Get relevant values
+    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getReference() );
     double                 alpha0  = static_cast<const RealPos*>( getValue("tuning")   )->getValue();
     int                    k       = static_cast<const Natural*>( getValue("num_cats") )->getValue();
-    int                    n       = static_cast<int>( valPtr->getElementsSize() );
 
-	std::vector<double> curVal = valPtr->getValue();
+	std::vector<double> curVal = static_cast<const Simplex*>( nodePtr->getValue() )->getValue();
 	std::vector<double> newVal = curVal;
+    int                 n      = curVal.size();
 
 	/* We update the simplex values by proposing new values from a Dirichlet centered
 	   on the current values. The i-th parameter of the Dirichlet is the i-th value

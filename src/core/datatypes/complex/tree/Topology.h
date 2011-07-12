@@ -29,6 +29,14 @@ class TopologyNode;
 class VectorString;
 
 
+/** TopologyChange: A struct describing a topology change
+    in terms of a parent shift */
+typedef struct {
+    int node;
+    int oldParentNode;
+    int newParentNode;
+} TopologyChange;
+
 
 class Topology: public MemberObject {
     
@@ -51,17 +59,23 @@ class Topology: public MemberObject {
         const MethodTable&              getMethods(void) const;                                                 //!< Get methods
         
         // Topology functions
-        bool                            getIsRooted(void) { return isRooted; }                                  //!< Is the tree rooted
+        void                            changeTopology(std::vector<TopologyChange>& topChanges);                //!< Change the topology according to instructions
+        bool                            getIsBinary(void) const { return isBinary; }                            //!< Is the tree rooted
+        bool                            getIsRooted(void) const { return isRooted; }                            //!< Is the tree rooted
         std::vector<TopologyNode*>&     getNodes(void) { return nodes; }                                        //!< Get a pointer to the nodes in the tree
-        size_t                          getNumberOfNodes(void) const { return int(nodes.size()); }              //!< Get the number of nodes in the tree
+        size_t                          getNumberOfInteriorNodes(void) const;                                   //!< Get the number of nodes in the tree
+        size_t                          getNumberOfNodes(void) const { return nodes.size(); }                   //!< Get the number of nodes in the tree
         size_t                          getNumberOfTips(void) const;                                            //!< Get the number of tip nodes in the tree
+        TopologyNode*                   getInteriorNode(int indx) const;                                        //!< Get a pointer to interior node i
         TopologyNode*                   getRoot(void) const { return root; }                                    //!< Get a pointer to the root node of the tree
+        TopologyNode*                   getTipNode(int indx) const;                                             //!< Get a pointer to tip node i
         void                            setIsRooted(bool tf) { isRooted = tf; }                                 //!< Set the rootedness of the tree
         
 	private:
         std::vector<TopologyNode*>      nodes;                                                                  //!< Vector of pointers to all nodes
         TopologyNode*                   root;                                                                   //!< Pointer to the root node
         bool                            isRooted;                                                               //!< Is the topology rooted?
+        bool                            isBinary;                                                               //!< Is the topology binary?
 };
 
 #endif

@@ -18,7 +18,7 @@
 #ifndef Dist_norm_H
 #define Dist_norm_H
 
-#include "DistributionInterval.h"
+#include "DistributionContinuous.h"
 
 #include <ostream>
 #include <string>
@@ -27,7 +27,7 @@ class DAGNode;
 class Real;
 class VectorString;
 
-class Dist_norm: public DistributionInterval {
+class Dist_norm: public DistributionContinuous {
 
     public:
                                     Dist_norm(void);                                                    //!< Parser constructor

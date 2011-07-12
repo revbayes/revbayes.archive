@@ -23,7 +23,7 @@
 #include "Container.h"
 #include "Distribution.h"
 #include "DistributionFunction.h"
-#include "DistributionInterval.h"
+#include "DistributionContinuous.h"
 #include "FunctionTable.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -161,6 +161,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbAbstract( VectorString(Vector_name) + RbString(Container_name) + RbString(RbComplex_name) + RbString(RbObject_name), 1, Scalar_name ) );
         addType( new RbAbstract( VectorString(Matrix_name) + RbString(Container_name) + RbString(RbComplex_name) + RbString(RbObject_name), 2, Scalar_name ) );
         addType( new RbAbstract( VectorString(MemberObject_name) + RbString(RbComplex_name) + RbString(RbObject_name) ) );
+        addType( new RbAbstract( VectorString(Move_name) + RbString(MemberObject_name) + RbString(RbComplex_name) + RbString(RbObject_name) ) );
+        addType( new RbAbstract( VectorString(Distribution_name) + RbString(MemberObject_name) + RbString(RbComplex_name) + RbString(RbObject_name) ) );
 
         /* Add primitive types (alphabetic order) */
         addType( new AminoAcidState()                 );
@@ -197,12 +199,12 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new CharacterMatrix(DnaState_name) );
         addType( new List()                         );
         addType( new Model()                        );
-        addType( new Move_msimplex()                );
         addType( new Simplex()                      );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "mcmc",         new Mcmc()              );
         addTypeWithConstructor( "mmultinomial", new Move_mmultinomial() );
+        addTypeWithConstructor( "msimplex",     new Move_msimplex()     );
         addTypeWithConstructor( "mslide",       new Move_mslide()       );
         addTypeWithConstructor( "mscale",       new Move_mscale()       );
 
@@ -316,9 +318,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "gtr",       new Func_gtr()           );
         addFunction( "read",      new Func_readAlignment() );
         addFunction( "tiprobs",   new Func_tiprobs()       );
-        
-        /* Add move functions (alphabetical order) */
-        addFunction( "msimplex",  new Func_msimplex() );
         
         /* Add builtin templated functions */
         addFunction( "s",         new Func_s<         Integer                                                         >() );

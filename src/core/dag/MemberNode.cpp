@@ -78,7 +78,7 @@ MemberNode::MemberNode( MemberObject* val )
     /* Set value and stored value */
     touched     = false;
     changed     = false;
-    value       = memberObject->cloneWithoutConnections();
+    value       = memberObject->cloneAsConstant();
     value       = memberObject->clone();
     storedValue = NULL;
 
@@ -131,7 +131,7 @@ MemberNode::MemberNode( const MemberNode& x )
         /* Set value and stored value */
         touched     = false;
         changed     = false;
-        value       = memberObject->cloneWithoutConnections();
+        value       = memberObject->cloneAsConstant();
         storedValue = NULL;
 
         /* Anchor value member object frame */
@@ -222,7 +222,7 @@ MemberNode& MemberNode::operator=( const MemberNode& x ) {
         /* Set value and stored value */
         touched     = false;
         changed     = false;
-        value       = memberObject->cloneWithoutConnections();
+        value       = memberObject->cloneAsConstant();
         storedValue = NULL;
 
         /* Anchor value member object frame */
@@ -471,7 +471,7 @@ void MemberNode::update(void) {
         assert( storedValue == NULL );
 
         storedValue = value;
-        value       = memberObject->cloneWithoutConnections();
+        value       = memberObject->cloneAsConstant();
         changed     = true;
     }
 }

@@ -34,13 +34,13 @@
 
 
 /** Constructor for parser use */
-Dist_norm::Dist_norm( void ) : DistributionInterval( getMemberRules() ) {
+Dist_norm::Dist_norm( void ) : DistributionContinuous( getMemberRules() ) {
 
 }
 
 
 /** Constructor for internal use */
-Dist_norm::Dist_norm( double mu, double sigma ) : DistributionInterval( getMemberRules() ) {
+Dist_norm::Dist_norm( double mu, double sigma ) : DistributionContinuous( getMemberRules() ) {
 
     setValue( "mean",  new Real   ( mu    ) );
     setValue( "sigma", new RealPos( sigma ) );
@@ -116,7 +116,7 @@ Dist_norm* Dist_norm::clone( void ) const {
 /** Get class vector showing type of object */
 const VectorString& Dist_norm::getClass( void ) const {
 
-    static VectorString rbClass = VectorString( Dist_norm_name ) + DistributionInterval::getClass();
+    static VectorString rbClass = VectorString( Dist_norm_name ) + DistributionContinuous::getClass();
     return rbClass;
 }
 

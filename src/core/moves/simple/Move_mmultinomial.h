@@ -41,6 +41,9 @@ class Move_mmultinomial : public MoveSimple {
         // Member variable inits
         const MemberRules&          getMemberRules(void) const;                                                          //!< Get member rules
 
+        // Return variable type
+        const TypeSpec              getVariableType(void) const;                                            //!< Get move variable type
+
 	protected:
         double                      perform(std::set<StochasticNode*>& affectedNodes);                                   //!< Perform move
 };

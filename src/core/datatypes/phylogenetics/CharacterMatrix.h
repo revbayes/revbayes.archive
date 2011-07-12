@@ -52,6 +52,8 @@ class CharacterMatrix : public MemberObject {
 
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                                     //!< Get methods
+        DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);             //!< Execute method
+    
         
         // Index access to variables as elements
         DAGNode*                            getElement(size_t index);                                                   //!< Return element
@@ -84,9 +86,6 @@ class CharacterMatrix : public MemberObject {
         void                                restoreTaxon(std::string& s);                                               //!< Restore taxon
         void                                setFileName(const std::string fn) { fileName = fn; }                        //!< Set the file name
 
-	protected:
-        DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);             //!< Execute method
-    
     private:
         // Utility functions
         size_t                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon

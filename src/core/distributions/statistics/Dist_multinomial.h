@@ -18,7 +18,7 @@
 #ifndef Dist_multinomial_H
 #define Dist_multinomial_H
 
-#include "DistributionInterval.h"
+#include "DistributionContinuous.h"
 #include "VectorNatural.h"
 
 #include <ostream>
@@ -29,7 +29,7 @@ class Real;
 class StochasticNode;
 class VectorString;
 
-class Dist_multinomial: public DistributionInterval {
+class Dist_multinomial: public DistributionContinuous {
 
     public:
                                     Dist_multinomial(void);                                               //!< Parser constructor

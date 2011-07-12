@@ -18,7 +18,7 @@
 #ifndef Dist_exp_H
 #define Dist_exp_H
 
-#include "DistributionInterval.h"
+#include "DistributionContinuous.h"
 #include "RealPos.h"
 
 #include <ostream>
@@ -28,7 +28,7 @@ class DAGNode;
 class StochasticNode;
 class VectorString;
 
-class Dist_exp: public DistributionInterval {
+class Dist_exp: public DistributionContinuous {
 
     public:
                                     Dist_exp(void);                                                     //!< Parser constructor

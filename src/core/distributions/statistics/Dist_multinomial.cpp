@@ -38,12 +38,12 @@
 
 
 /** Default constructor for parser use */
-Dist_multinomial::Dist_multinomial( void ) : DistributionInterval( getMemberRules() ) {
+Dist_multinomial::Dist_multinomial( void ) : DistributionContinuous( getMemberRules() ) {
 }
 
 
 /** Constructor for internal use */
-Dist_multinomial::Dist_multinomial( std::vector<double> a ) : DistributionInterval( getMemberRules() ) {
+Dist_multinomial::Dist_multinomial( std::vector<double> a ) : DistributionContinuous( getMemberRules() ) {
 
     setValue( "p", new Simplex( a ) );
 }
@@ -66,7 +66,7 @@ Dist_multinomial* Dist_multinomial::clone( void ) const {
 /** Get class vector showing type of object */
 const VectorString& Dist_multinomial::getClass( void ) const {
 
-    static VectorString rbClass = VectorString(Dist_multinomial_name) + DistributionInterval::getClass();
+    static VectorString rbClass = VectorString(Dist_multinomial_name) + DistributionContinuous::getClass();
     return rbClass;
 }
 

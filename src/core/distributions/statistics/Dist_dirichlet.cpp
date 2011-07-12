@@ -36,13 +36,13 @@
 
 
 /** Default constructor for parser use */
-Dist_dirichlet::Dist_dirichlet( void ) : DistributionInterval( getMemberRules() ) {
+Dist_dirichlet::Dist_dirichlet( void ) : DistributionContinuous( getMemberRules() ) {
 
 }
 
 
 /** Constructor for internal use */
-Dist_dirichlet::Dist_dirichlet( std::vector<double> a ) : DistributionInterval( getMemberRules() ) {
+Dist_dirichlet::Dist_dirichlet( std::vector<double> a ) : DistributionContinuous( getMemberRules() ) {
 
     setValue( "alpha", new VectorRealPos(a) );
 }
@@ -86,7 +86,7 @@ Dist_dirichlet* Dist_dirichlet::clone( void ) const {
 /** Get class vector showing type of object */
 const VectorString& Dist_dirichlet::getClass( void ) const {
 
-    static VectorString rbClass = VectorString( Dist_dirichlet_name ) + DistributionInterval::getClass();
+    static VectorString rbClass = VectorString( Dist_dirichlet_name ) + DistributionContinuous::getClass();
     return rbClass;
 }
 

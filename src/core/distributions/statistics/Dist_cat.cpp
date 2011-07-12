@@ -1,7 +1,8 @@
 /**
  * @file
  * This file contains the implementation of Dist_cat, which is used to hold
- * parameters and functions related to a distribution on a categorical variable.
+ * parameters and functions related to a distribution on a categorical
+ * variable (a factor).
  *
  * @brief Implementation of Dist_cat
  *
@@ -35,12 +36,12 @@
 
 
 /** Default constructor for parser use */
-Dist_cat::Dist_cat( void ) : DistributionCategorical( getMemberRules() ) {
+Dist_cat::Dist_cat( void ) : DistributionDiscrete( getMemberRules() ) {
 }
 
 
 /** Constructor for internal use */
-Dist_cat::Dist_cat( std::vector<double> m ) : DistributionCategorical( getMemberRules() ) {
+Dist_cat::Dist_cat( std::vector<double> m ) : DistributionDiscrete( getMemberRules() ) {
 
     setValue( "m", new Simplex( m ) );
 }
@@ -56,7 +57,7 @@ Dist_cat* Dist_cat::clone( void ) const {
 /** Get class vector showing type of object */
 const VectorString& Dist_cat::getClass( void ) const {
 
-    static VectorString rbClass = VectorString( Dist_cat_name ) + DistributionCategorical::getClass();
+    static VectorString rbClass = VectorString( Dist_cat_name ) + DistributionDiscrete::getClass();
     return rbClass;
 }
 

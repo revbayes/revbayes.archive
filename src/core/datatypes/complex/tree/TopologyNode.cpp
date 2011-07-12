@@ -30,17 +30,13 @@
 
 
 
-/** Default constructor */
-TopologyNode::TopologyNode(void) : MemberObject( getMemberRules() ) {
-
-    name = "";
+/** Default constructor (interior node, no name). Give the node an optional index ID */
+TopologyNode::TopologyNode(int indx) : name(""), index(indx), MemberObject( getMemberRules() ) {
 }
 
 
-/** constructor with name */
-TopologyNode::TopologyNode(const std::string& n) : MemberObject( getMemberRules() ) {
-
-    name = n;
+/** Constructor of node with name. Give the node an optional index ID */
+TopologyNode::TopologyNode(const std::string& n, int indx) : name(n), index(indx), MemberObject( getMemberRules() ) {
 }
 
 
@@ -72,6 +68,18 @@ DAGNode* TopologyNode::executeOperation(const std::string& name, ArgumentFrame& 
 }
 
 
+/** Loop over children and get their indices */
+std::vector<int> TopologyNode::getChildrenIndices() const {
+
+    std::vector<int> temp;
+
+    for ( std::vector<TopologyNode*>::const_iterator i=children.begin(); i!=children.end(); i++ )
+        temp.push_back( (*i)->getIndex() );
+
+    return temp;
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& TopologyNode::getClass() const {
     
@@ -91,7 +99,7 @@ const MethodTable& TopologyNode::getMethods(void) const {
 
     if ( methodsSet == false ) 
         {
-        // this must be here so the parser can distinguish between different instances of a character matrix
+        // This must be here so the parser can distinguish between different instances of a character matrix
         isTipArgRules.push_back(      new ReferenceRule( "", MemberObject_name ) );
         isRootArgRules.push_back(     new ReferenceRule( "", MemberObject_name ) );
         isInteriorArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
@@ -100,7 +108,7 @@ const MethodTable& TopologyNode::getMethods(void) const {
         methods.addFunction("isRoot",     new MemberFunction(Boolean_name, isRootArgRules)  );
         methods.addFunction("isInterior", new MemberFunction(Boolean_name, isInteriorArgRules)  );
         
-        // necessary call for proper inheritance
+        // Necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
         methodsSet = true;
         }
@@ -125,7 +133,6 @@ const MemberRules& TopologyNode::getMemberRules(void) const {
 
 /** Print value for user */
 void TopologyNode::printValue(std::ostream& o) const {
-    
 }
 
 

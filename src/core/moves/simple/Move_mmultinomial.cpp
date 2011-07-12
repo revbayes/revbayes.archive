@@ -26,6 +26,7 @@
 #include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
+#include "StochasticReferenceRule.h"
 #include "ValueRule.h"
 #include "VectorReal.h"
 #include "VectorString.h"
@@ -39,15 +40,16 @@ Move_mmultinomial::Move_mmultinomial(void) : MoveSimple(getMemberRules()) {
 
 }
 
+
 /** Constructor for internal use */
 Move_mmultinomial::Move_mmultinomial(StochasticNode* node, double tuning, int nc, double weight) : MoveSimple(getMemberRules()) {
 
-    setValue("tuning",   new RealPos(tuning));
-    setValue("num_cats", new Natural(nc));
-    setValue("weight",   new RealPos(weight));
-
-    setNodePtr(node);
+    setVariable( "variable", node );
+    setValue(    "weight",   new RealPos(weight) );
+    setValue(    "tuning",   new RealPos(tuning));
+    setValue(    "num_cats", new Natural(nc));
 }
+
 
 /** Clone object */
 Move_mmultinomial* Move_mmultinomial::clone(void) const {
@@ -59,9 +61,10 @@ Move_mmultinomial* Move_mmultinomial::clone(void) const {
 /** Get class vector describing type of object */
 const VectorString& Move_mmultinomial::getClass() const {
 
-    static VectorString rbClass = VectorString(Move_mmultinomial_name) + Move::getClass();
+    static VectorString rbClass = VectorString(Move_mmultinomial_name) + MoveSimple::getClass();
     return rbClass;
 }
+
 
 /** Return member rules */
 const MemberRules& Move_mmultinomial::getMemberRules(void) const {
@@ -71,12 +74,14 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
+        memberRules.push_back( new StochasticReferenceRule( "variable", TypeSpec( RealPos_name, 1 ) ) );
+
+        /* Inherit weight from MoveSimple, put it after variable */
+        const MemberRules& inheritedRules = MoveSimple::getMemberRules();
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+
         memberRules.push_back(new ValueRule("tuning", RealPos_name));
         memberRules.push_back(new ValueRule("num_cats", Integer_name));
-
-        /* Inherit weight and rng from Move, put it at back */
-        const MemberRules& inheritedRules = Move::getMemberRules();
-        memberRules.insert(memberRules.end(), inheritedRules.begin(), inheritedRules.end()); 
 
         rulesSet = true;
 		}
@@ -85,17 +90,29 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 }
 
 
+/** Return the random variable type appropriate for the move */
+const TypeSpec Move_mmultinomial::getVariableType( void ) const {
+
+    return TypeSpec( RealPos_name, 1 );
+}
+
+
 /** Perform the move */
 double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
 
-    // Get relevant values
-    const VectorReal*       valPtr  = static_cast<const VectorReal*>( nodePtr->getValue() );
-    RandomNumberGenerator*  rng     = GLOBAL_RNG;
-    double                  alpha0  = static_cast<const RealPos*>( getValue("tuning")   )->getValue();
-    int                     k       = static_cast<const Integer*>( getValue("num_cats") )->getValue();
-	int                     n       = static_cast<int>( valPtr->size() );
+    // Get random number generator    
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
 
-    std::vector<double> curVal = valPtr->getValue();
+    // Get relevant values
+    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getReference() );
+    double                 alpha0  = static_cast<const RealPos*>( getValue("tuning")   )->getValue();
+    int                    k       = static_cast<const Integer*>( getValue("num_cats") )->getValue();
+
+    const VectorReal*      valPtr  = static_cast<const VectorReal*>( nodePtr->getValue() );
+
+    std::vector<double>    curVal  = valPtr->getValue();
+    int                    n       = curVal.size();
+
     double sum = 0.0;
     for ( size_t i = 0; i < curVal.size(); i++ )
         sum += curVal[i];

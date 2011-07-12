@@ -18,7 +18,7 @@
 #ifndef Dist_unif_H
 #define Dist_unif_H
 
-#include "DistributionInterval.h"
+#include "DistributionContinuous.h"
 #include "Real.h"
 
 #include <ostream>
@@ -26,7 +26,7 @@
 
 class VectorString;
 
-class Dist_unif: public DistributionInterval {
+class Dist_unif: public DistributionContinuous {
 
     public:
                                     Dist_unif(void);                                                    //!< Parser constructor
@@ -45,9 +45,7 @@ class Dist_unif: public DistributionInterval {
         const Real*                 getMax(void) const;                                                 //!< Get max value
         const Real*                 getMin(void) const;                                                 //!< Get min value
         const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Real)
-        double                      lnLikelihoodRatio(const RbObject* value);                           //!< Ln prob ratio of A | B when only B is touched
         double                      lnPdf(const RbObject* value);                                       //!< Ln probability density
-        double                      lnPriorRatio(const RbObject* newVal, const RbObject* oldVal);       //!< Ln prob ratio of A | B when only A is touched
         double                      pdf(const RbObject* value);                                         //!< Probability density
         Real*                       quantile(const double p);                                           //!< Quantile
         Real*                       rv(void);                                                           //!< Generate random variable

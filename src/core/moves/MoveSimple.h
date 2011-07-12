@@ -38,24 +38,24 @@ class MoveSimple : public Move {
         virtual MoveSimple*         clone(void) const = 0;                                                                  //!< Clone the object
         virtual const VectorString& getClass(void) const;                                                                   //!< Get class vector
 
+        // Member variable rules
+        virtual const MemberRules&  getMemberRules(void) const;                                                             //!< Get member rules
+
         // MoveSimple functions
         void                        acceptMove(void);				                                                        //!< Accept the move, update statistics
         void                        performMove(double& lnProbabilityRatio, double& lnHastingsRatio);                       //!< Call perform, calculate ratios
         void                        rejectMove(void);                                                                       //!< Reject the move
-        void                        setNodePtr(StochasticNode* node) { nodePtr = node; }                                    //!< Set node ptr
 
 	protected:
                                     MoveSimple(const MemberRules& memberRules);                                             //!< Parser constructor
 
-        // Function you have to override
-        virtual double              perform(std::set<StochasticNode*>& affectedNodes) = 0;                                  //!< Perform the move @Fredrik: I would use VariableNode instead of StochasticNode, since one might attach a move to a deterministic node too. (Sebastian)
+        // Functions you have to override
+        virtual double              perform(std::set<StochasticNode*>& affectedNodes) = 0;                                  //!< Perform the move and fill in the affected stochastic nodes for probability calculations
+        virtual const TypeSpec      getVariableType(void) const = 0;                                                        //!< Get type of random variable appropriate for move
 
         // Functions you may want to override for additional statistics purposes, e.g.
         virtual void                accept(void) {}                                                                         //!< Accept the move
         virtual void                reject(void) {}                                                                         //!< Reject the move
-
-        // Member variable (hidden from parser)
-        StochasticNode*             nodePtr;                                                                                //!< The node to change (ptr)
 };
 
 #endif

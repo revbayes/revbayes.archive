@@ -23,7 +23,7 @@
 #include "Container.h"
 #include "Distribution.h"
 #include "DistributionFunction.h"
-#include "DistributionInterval.h"
+#include "DistributionContinuous.h"
 #include "FunctionTable.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -96,7 +96,7 @@ bool Workspace::addDistribution(const std::string& name, Distribution* dist) {
 
 
 /** Add real-valued distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, DistributionInterval* dist) {
+bool Workspace::addDistribution(const std::string& name, DistributionContinuous* dist) {
 
     PRINTF("Adding real-valued distribution %s to workspace\n", name.c_str());
 
@@ -271,13 +271,6 @@ TypeSpec Workspace::getTypeSpec( const TypeSpec& typeSp ) const {
 }
 
 
-/** Convenient access to default random number generator */
-RandomNumberGenerator* Workspace::get_rng(void) {
-
-    return (RandomNumberGenerator*) getValue("_rng");
-}
-
-
 /** Type checking using type table and full type spec */
 bool Workspace::isXOfTypeY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) const {
 
@@ -333,7 +326,7 @@ bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTyp
     if ( xDim > 0 ) {
     
         VariableContainer* dummy    = new VariableContainer( xType );
-        ValueContainer*    dummyVal = dummy->cloneWithoutConnections();
+        ValueContainer*    dummyVal = dummy->cloneAsConstant();
 
         retVal = dummy->isConvertibleTo( yType, yDim, false );
 

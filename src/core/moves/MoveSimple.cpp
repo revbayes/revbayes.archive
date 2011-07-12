@@ -18,6 +18,7 @@
 
 #include "RbNames.h"
 #include "MoveSimple.h"
+#include "RbException.h"
 #include "StochasticNode.h"
 #include "VectorString.h"
 
@@ -28,15 +29,17 @@
 MoveSimple::MoveSimple(const MemberRules& memberRules)
     : Move(memberRules) {
 
-    nodePtr = NULL;
+    if ( !members.existsVariable("variable") )
+        throw RbException( "A simple move must have a member called 'variable'" );
 }
 
 
 /** Accept the move: update statistics and call derived method */
 void MoveSimple::acceptMove(void) {
 
-    accept();
+    StochasticNode* nodePtr = static_cast<StochasticNode*>( members["variable"].getReference() );
 
+    accept();
     numAccepted++;
     nodePtr->keep();
 }
@@ -50,13 +53,32 @@ const VectorString& MoveSimple::getClass(void) const {
 }
 
 
+/** Return member rules */
+const MemberRules& MoveSimple::getMemberRules( void ) const {
+
+    static MemberRules memberRules;
+    static bool        rulesSet = false;
+
+    if (!rulesSet) 
+		{
+        /* Inherit weight from Move */
+        const MemberRules& inheritedRules = Move::getMemberRules();
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+
+        rulesSet = true;
+		}
+
+    return memberRules;
+}
+
+
 /** Perform the move */
 void MoveSimple::performMove(double& lnProbabilityRatio, double& lnHastingsRatio) {
 
+    StochasticNode* nodePtr = static_cast<StochasticNode*>( members["variable"].getReference() );
     std::set<StochasticNode*> affectedNodes;
 
-    lnHastingsRatio   = perform(affectedNodes);
-
+    lnHastingsRatio    = perform(affectedNodes);
     lnProbabilityRatio = nodePtr->getLnProbabilityRatio();
 
     for (std::set<StochasticNode*>::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); i++)
@@ -69,9 +91,9 @@ void MoveSimple::performMove(double& lnProbabilityRatio, double& lnHastingsRatio
 /** Reject the move */
 void MoveSimple::rejectMove(void) {
 
-    reject();
+    StochasticNode* nodePtr = static_cast<StochasticNode*>( members["variable"].getReference() );
 
+    reject();
     nodePtr->restore();
 }
-
 

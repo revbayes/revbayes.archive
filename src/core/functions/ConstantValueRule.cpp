@@ -29,6 +29,13 @@ ConstantValueRule::ConstantValueRule( const std::string& argName, TypeSpec typeS
 }
 
 
+/** Construct rule with default value; use "" for no label. Here we use implicit type taken
+ *  from the default value. */
+ConstantValueRule::ConstantValueRule(const std::string& argName, RbObject* defVal )
+    : ValueRule( argName, defVal->getTypeSpec(), defVal ) {
+}
+
+
 /** Construct rule with default value; use "" for no label. */
 ConstantValueRule::ConstantValueRule(const std::string& argName, TypeSpec typeSp, RbObject* defVal )
     : ValueRule( argName, typeSp, defVal ) {

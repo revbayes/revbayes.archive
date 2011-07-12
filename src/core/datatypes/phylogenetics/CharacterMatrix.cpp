@@ -238,6 +238,23 @@ DAGNode* CharacterMatrix::executeOperation(const std::string& name, ArgumentFram
         int n = (int)numMissAmbig();
         return ( new Natural(n) )->wrapIntoVariable();
         }
+    else if (name == "excludechar")
+        {
+        const RbObject* argument = args[1].getValue();
+
+        if ( argument->isType( Natural_name ) ) {
+            
+            int n = static_cast<const Natural*>( argument )->getValue();
+            deletedCharacters.insert( n );
+        }
+        else if ( argument->isType( VectorNatural_name ) ) {
+        
+            std::vector<int> x = static_cast<const VectorNatural*>( argument )->getValue();
+            for ( size_t i=0; i<x.size(); i++ )
+                deletedCharacters.insert( x[i] );
+        }
+        return NULL;
+        }
 
     return MemberObject::executeOperation( name, args );
 }
@@ -323,7 +340,9 @@ const MethodTable& CharacterMatrix::getMethods(void) const {
     static ArgumentRules includedtaxaArgRules;    
     static ArgumentRules includedcharsArgRules;    
     static ArgumentRules nconstantpatternsArgRules;    
-    static ArgumentRules ncharswithambiguityArgRules;    
+    static ArgumentRules ncharswithambiguityArgRules;
+    static ArgumentRules excludecharArgRules;
+    static ArgumentRules excludecharArgRules2;
     static bool          methodsSet = false;
 
     if ( methodsSet == false ) 
@@ -342,6 +361,11 @@ const MethodTable& CharacterMatrix::getMethods(void) const {
         includedcharsArgRules.push_back(       new ReferenceRule( "", MemberObject_name ) );
         nconstantpatternsArgRules.push_back(   new ReferenceRule( "", MemberObject_name ) );
         ncharswithambiguityArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
+        excludecharArgRules.push_back(         new ReferenceRule( "", MemberObject_name ) );
+        excludecharArgRules2.push_back(        new ReferenceRule( "", MemberObject_name ) );
+
+        excludecharArgRules.push_back(         new ValueRule(     "", Natural_name ) );
+        excludecharArgRules2.push_back(        new ValueRule(     "", VectorNatural_name ) );
         
         methods.addFunction("nchar",               new MemberFunction(Natural_name,       ncharArgRules));
         methods.addFunction("ntaxa",               new MemberFunction(Natural_name,       ntaxaArgRules));
@@ -356,6 +380,8 @@ const MethodTable& CharacterMatrix::getMethods(void) const {
         methods.addFunction("includedchars",       new MemberFunction(VectorNatural_name, includedcharsArgRules));
         methods.addFunction("nconstantpatterns",   new MemberFunction(Natural_name,       nconstantpatternsArgRules));
         methods.addFunction("ncharswithambiguity", new MemberFunction(Natural_name,       ncharswithambiguityArgRules));
+        methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules));
+        methods.addFunction("excludechar",         new MemberFunction(RbVoid_name,        excludecharArgRules2));
         
         // necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );

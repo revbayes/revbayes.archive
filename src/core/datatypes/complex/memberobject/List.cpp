@@ -71,13 +71,13 @@ List* List::clone() const {
 
 
 /** Get clone with constant values (evaluate all member variables and replace with constants) */
-List* List::cloneWithoutConnections( void ) const {
+List* List::cloneAsConstant( void ) const {
 
     List* temp = clone();
 
     for ( size_t i = 0; i < temp->elements.size(); i++ ) {
     
-        RbObject* constValue = temp->elements[i].getValue()->cloneWithoutConnections();
+        RbObject* constValue = temp->elements[i].getValue()->cloneAsConstant();
         temp->elements[i].setReferenceFlag( false );
         temp->elements[i].setValue( constValue );
     }

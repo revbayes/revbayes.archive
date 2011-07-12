@@ -53,6 +53,7 @@ double& CondLike::operator[](size_t i) {
 }
 
 
+
 /** Subscript const operator */
 const double& CondLike::operator[](size_t i) const {
 

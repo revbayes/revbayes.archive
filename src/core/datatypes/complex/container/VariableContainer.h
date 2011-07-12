@@ -61,7 +61,7 @@ class VariableContainer : public Container {
 
         // Basic utility functions
         VariableContainer*          clone(void) const;                                                          //!< Clone object
-        ValueContainer*             cloneWithoutConnections(void) const;                                        //!< Get constant value clone as a value container
+        ValueContainer*             cloneAsConstant(void) const;                                                //!< Make constant value clone
         const VectorString&         getClass(void) const;                                                       //!< Get class
         bool                        isConstant(void) const;                                                     //!< Are all elements constants?
         void                        printValue(std::ostream& o) const;                                          //!< Print value for user

@@ -19,7 +19,7 @@
  */
 
 #include "Boolean.h"
-#include "DistributionCategorical.h"
+#include "DistributionDiscrete.h"
 #include "IntegratorNode.h"
 #include "MemberNode.h"
 #include "MoveSchedule.h"
@@ -46,8 +46,8 @@ IntegratorNode::IntegratorNode( MemberNode* condLikeVec, Distribution* dist )
     : StochasticNode( RbVoid_name ), condLikes( condLikeVec ) {
 
     /* Set distribution here so we avoid inappropriate type for IntegratorNode. Also check type. For now, we only
-       allow distributions on categorical values but in principle the machinery should work for any discrete distribution. */
-    if ( !dist->isType( DistributionCategorical_name ) )
+       allow distributions on discrete values but we should allow continuous distributions in the future. */
+    if ( !dist->isType( DistributionDiscrete_name ) )
         throw RbException( "Invalid attempt to create IntegratorNode: distribution type is incorrect" );
     distribution = dist;
 
@@ -164,7 +164,7 @@ double IntegratorNode::calculateLnProbability( void ) {
     size_t          numChars    = condLikePtr->getNumChars();
     size_t          numStates   = condLikePtr->getNumStates();
     const double*   cL          = &(*condLikePtr)[0];
-    const Simplex*  m           = static_cast<DistributionCategorical*>( distribution )->getProbabilityMassVector();
+    const Simplex*  m           = static_cast<DistributionDiscrete*>( distribution )->getProbabilityMassVector();
 
     // Initialize C array with pi values (I suspect this is faster than using the simplex directly)
     double*                 pi          = new double[ numStates ];

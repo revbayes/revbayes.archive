@@ -52,7 +52,8 @@ class RateMatrix : public MemberObject {
 
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                                           //!< Get methods
-        
+        DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);                   //!< Map method call to internal functions
+    
         // RateMatrix functions
         double                              averageRate(void) const;                                                          //!< Calculate the average rate
         void                                calculateStationaryFrequencies(void) const;                                       //!< Calculate the stationary frequencies for the rate matrix
@@ -67,9 +68,6 @@ class RateMatrix : public MemberObject {
         void                                updateEigenSystem(void);                                                          //!< Update the system of eigenvalues and eigenvectors
         DAGNode*                            wrapIntoVariable(void);                                                           //!< Wrap up this object in a DAG
 
-	protected:
-        DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);                   //!< Execute method
-    
     private:
         void                                calculateCijk(void);                                                              //!< Do precalculations on eigenvectors and their inverse
         bool                                checkTimeReversibity(double tolerance);                                           //!< Checks if the rate matrix is time reversible

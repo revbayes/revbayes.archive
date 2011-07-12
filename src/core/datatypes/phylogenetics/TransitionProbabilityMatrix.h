@@ -47,13 +47,11 @@ class TransitionProbabilityMatrix : public MemberObject {
 
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                            //!< Get methods
-        
+        DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);                   //!< Map method call to internal functions
+
         // RateMatrix functions
         DAGNode*                            wrapIntoVariable(void); 
 
-	protected:
-        DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);    //!< Execute method
-    
     private:
         size_t                              numStates;                                                         //!< The number of character states
         MatrixReal*                         theMatrix;                                                         //!< Holds the transition probability matrix

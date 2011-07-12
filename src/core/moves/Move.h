@@ -33,11 +33,11 @@ class Move : public MemberObject {
         virtual const VectorString& getClass(void) const;                                                                       //!< Get class vector
 
         // Member variable rules
-        virtual const MemberRules&  getMemberRules(void) const = 0;                                                             //!< Get member rules
-        void                        setVariable(const std::string& name, DAGNode* var);                                         //!< Only allow constants
+        virtual const MemberRules&  getMemberRules(void) const;                                                                 //!< Get member rules
 
-        // Member method inits
+        // Member methods
         virtual const MethodTable&  getMethods(void) const;                                                                     //!< Get methods
+        DAGNode*                    executeOperation(const std::string& name, ArgumentFrame& args);                             //!< Map method call to internal functions
 
         // Move functions you have to override
         virtual void                acceptMove(void) = 0;                                                                       //!< Accept the move
@@ -45,10 +45,9 @@ class Move : public MemberObject {
         virtual void                rejectMove(void) = 0;                                                                       //!< Reject the move
 
         // Move functions you should not override
-        double                      getAcceptanceProbability(void);                                                             //!< Get acceptance probability
-        double                      getUpdateWeight(void) const;                                                                //!< Get update weight
+        double                      getAcceptanceRatio(void) const;                                                             //!< Get acceptance ratio
+        double                      getUpdateWeight(void) const;                                                                //!< Get update weight of move
         void                        resetCounters(void);                                                                        //!< Reset numTried/numAccepted
-        void                        setUpdateWeight(double weight);                                                             //!< Set update weight
 
 	protected:
                                     Move(const MemberRules& memberRules);                                                       //!< Parser constructor

@@ -47,12 +47,12 @@ class Mcmc: public MemberObject {
 
         // Member method inits
         const MethodTable&          getMethods(void) const;                                                            //!< Get methods
+        DAGNode*                    executeOperation(const std::string& name, ArgumentFrame& args);                     //!< Execute method
         
         // Mcmc functions
         void                        update(void);                                                                      //!< Update the chain
 
 	protected:
-        DAGNode*                    executeOperation(const std::string& name, ArgumentFrame& args);                     //!< Execute method
 };
 
 #endif
