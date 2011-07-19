@@ -43,7 +43,7 @@ class Dist_topologyunif: public DistributionDiscrete {
 
         // Discrete distribution functions
         Move*                       getDefaultMove(StochasticNode* node);                               //!< Get default move
-        int                         getNumStates(void) const;                                           //!< Get number of states
+        size_t                      getNumStates(void) const;                                           //!< Get number of states
         virtual const Simplex*      getProbabilityMassVector(void);                                     //!< Get probability mass vector
         const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Simplex)
         double                      lnPdf(const RbObject* value);                                       //!< Ln probability density

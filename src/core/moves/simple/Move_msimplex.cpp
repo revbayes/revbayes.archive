@@ -107,7 +107,7 @@ double Move_msimplex::perform( std::set<StochasticNode*>& affectedNodes ) {
 
 	std::vector<double> curVal = static_cast<const Simplex*>( nodePtr->getValue() )->getValue();
 	std::vector<double> newVal = curVal;
-    int                 n      = curVal.size();
+    int                 n      = int( curVal.size() );
 
 	/* We update the simplex values by proposing new values from a Dirichlet centered
 	   on the current values. The i-th parameter of the Dirichlet is the i-th value

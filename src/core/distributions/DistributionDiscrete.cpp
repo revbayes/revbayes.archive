@@ -49,7 +49,7 @@ DAGNode* DistributionDiscrete::executeOperation( const std::string& name, Argume
     }
     else if ( name == "numStates" ) {
 
-        return new ConstantNode( new Natural( getNumStates() ) );
+        return new ConstantNode( new Natural( int( getNumStates() ) ) );
     }
 
     return Distribution::executeOperation( name, args );

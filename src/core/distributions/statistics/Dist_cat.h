@@ -47,7 +47,7 @@ class Dist_cat: public DistributionDiscrete {
 
         // Discrete distribution functions
         Move*                       getDefaultMove(StochasticNode* node);                                   //!< Get default move
-        virtual int                 getNumStates(void) const;                                               //!< Get number of states
+        virtual size_t              getNumStates(void) const;                                               //!< Get number of states
         virtual const Simplex*      getProbabilityMassVector(void);                                         //!< Get probability mass vector
         const TypeSpec              getVariableType(void) const;                                            //!< Get random variable type (Simplex)
         double                      lnPdf(const RbObject* value);                                           //!< Ln probability density

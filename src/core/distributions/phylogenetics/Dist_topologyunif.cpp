@@ -107,10 +107,10 @@ const MemberRules& Dist_topologyunif::getMemberRules( void ) const {
 
 
 /** Get the number of states in the distribution */
-int Dist_topologyunif::getNumStates( void ) const {
+size_t Dist_topologyunif::getNumStates( void ) const {
 
     // TODO: Calculate number of distinct topologies
-    return -1;
+    return 0;
 }
 
 

@@ -65,7 +65,7 @@ class TopologyNode : public MemberObject {
         std::vector<int>                getChildrenIndices(void) const;                                             //!< Return children indices
         int                             getIndex(void) const { return index; }                                      //!< Get index of node
         std::string                     getName(void) const { return name; }                                        //!< Get name of node
-        int                             getNumberOfChildren(void) const { return children.size(); }                 //!< Returns the number of children
+        size_t                          getNumberOfChildren(void) const { return children.size(); }                 //!< Returns the number of children
         TopologyNode*                   getParent(void) const { return parent; }                                    //!< Returns the node's parent
         int                             getParentIndex(void) const { return parent->getIndex(); }                   //!< Return parent index
         bool                            isTip(void) { return children.size() == 0; }                                //!< Is node tip?

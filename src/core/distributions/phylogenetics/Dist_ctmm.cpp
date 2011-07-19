@@ -92,9 +92,9 @@ const MemberRules& Dist_ctmm::getMemberRules( void ) const {
 
 
 /** Get the number of states in the distribution */
-int Dist_ctmm::getNumStates( void ) const {
+size_t Dist_ctmm::getNumStates( void ) const {
 
-    int numStates  = static_cast<const CharacterStateDiscrete*>( getValue( "a"  ) )->getNumStates();
+    size_t numStates  = static_cast<const CharacterStateDiscrete*>( getValue( "a"  ) )->getNumStates();
     
     return numStates;
 }

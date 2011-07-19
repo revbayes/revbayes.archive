@@ -111,7 +111,7 @@ double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
     const VectorReal*      valPtr  = static_cast<const VectorReal*>( nodePtr->getValue() );
 
     std::vector<double>    curVal  = valPtr->getValue();
-    int                    n       = curVal.size();
+    int                    n       = int( curVal.size() );
 
     double sum = 0.0;
     for ( size_t i = 0; i < curVal.size(); i++ )

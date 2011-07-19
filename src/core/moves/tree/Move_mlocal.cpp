@@ -113,10 +113,10 @@ double Move_mlocal::perform( std::set<StochasticNode*>& movedNodes, std::set<Sto
     double                       lambda   = static_cast<const RealPos*>( getValue("lambda") )->getValue();
 
     // Declare node index variables
-    size_t a, b, c, u, v;
+    int a, b, c, u, v;
 
     // Find these nodes in the current topology
-    TopologyNode* theNode = topology->getInteriorNode( size_t( rng->uniform01() * topology->getNumberOfInteriorNodes() ) );
+    TopologyNode* theNode = topology->getInteriorNode( int( rng->uniform01() * topology->getNumberOfInteriorNodes() ) );
     u = theNode->getIndex();
     v = theNode->getParentIndex();
     std::vector<int> children = theNode->getChildrenIndices();
@@ -136,7 +136,6 @@ double Move_mlocal::perform( std::set<StochasticNode*>& movedNodes, std::set<Sto
 
     // Find the corresponding branch lengths
     double aLength = static_cast<const RealPos*>( brlens[a]->getValue() )->getValue();
-    double bLength = static_cast<const RealPos*>( brlens[b]->getValue() )->getValue();
     double cLength = static_cast<const RealPos*>( brlens[c]->getValue() )->getValue();
     double uLength = static_cast<const RealPos*>( brlens[u]->getValue() )->getValue();
     double vLength = static_cast<const RealPos*>( brlens[v]->getValue() )->getValue();

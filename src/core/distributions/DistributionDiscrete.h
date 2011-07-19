@@ -47,7 +47,7 @@ class DistributionDiscrete: public Distribution {
 
         // Categorical distribution functions you have to override
         virtual Move*                       getDefaultMove(StochasticNode* node) = 0;                                   //!< Get default move
-        virtual int                         getNumStates(void) const = 0;                                               //!< Get number of states
+        virtual size_t                      getNumStates(void) const = 0;                                               //!< Get number of states
         virtual const Simplex*              getProbabilityMassVector(void) = 0;                                         //!< Get probability mass vector
         virtual const TypeSpec              getVariableType(void) const = 0;                                            //!< Get random variable type spec
         virtual double                      lnPdf(const RbObject* value) = 0;                                           //!< Ln probability density
