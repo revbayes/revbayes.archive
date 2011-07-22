@@ -32,7 +32,7 @@ ReferenceRule::ReferenceRule( const std::string& argName, const std::string& val
 
 
 /** Constructor without default value and true type spec */
-ReferenceRule::ReferenceRule( const std::string& argName, const TypeSpec typeSp )
+ReferenceRule::ReferenceRule( const std::string& argName, const TypeSpec& typeSp )
     : ArgumentRule(argName, typeSp ) {
 }
 

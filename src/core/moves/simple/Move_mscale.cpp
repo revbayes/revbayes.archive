@@ -66,8 +66,8 @@ const MemberRules& Move_mscale::getMemberRules( void ) const {
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
-
-        memberRules.push_back( new StochasticReferenceRule( "variable", RealPos_name ) );
+        TypeSpec varType(RealPos_name,0,true);
+        memberRules.push_back( new StochasticReferenceRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();

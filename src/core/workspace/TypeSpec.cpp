@@ -37,6 +37,12 @@ TypeSpec::TypeSpec(const std::string& objType, size_t objDim, bool ref)
     : type(objType), dim(objDim), reference(ref) {
 }
 
+/** Copy constructor */
+TypeSpec::TypeSpec(const TypeSpec& ts)
+: type(ts.type), dim(ts.dim), reference(ts.reference) {
+    
+}
+
 
 /** Equals comparison */
 bool TypeSpec::operator==(const TypeSpec& x) const {

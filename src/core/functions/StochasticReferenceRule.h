@@ -28,7 +28,7 @@ class VectorString;
 class StochasticReferenceRule : public ReferenceRule {
 
     public:
-                                    StochasticReferenceRule(const std::string& argName, TypeSpec typeSp);                         //!< Constructor from name and typespec
+                                    StochasticReferenceRule(const std::string& argName, const TypeSpec& typeSp);                         //!< Constructor from name and typespec
 
         // Basic utility functions
         StochasticReferenceRule*    clone(void) const;                                                                      //!< Clone object

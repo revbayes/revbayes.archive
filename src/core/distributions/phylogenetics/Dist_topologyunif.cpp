@@ -47,9 +47,9 @@ Dist_topologyunif::Dist_topologyunif( void ) : DistributionDiscrete( getMemberRu
 /** Constructor for internal use */
 Dist_topologyunif::Dist_topologyunif( int numTaxa, bool isRooted, bool isBinary ) : DistributionDiscrete( getMemberRules() ) {
 
-    setValue( "numTaxa", new Natural( numTaxa ) );
-    setValue( "isRooted", new Boolean( isRooted ) );
-    setValue( "isBinary", new Boolean( isBinary ) );
+    setValue( "numberTaxa", new Natural( numTaxa ) );
+    setValue( "isRooted"  , new Boolean( isRooted ) );
+    setValue( "isBinary"  , new Boolean( isBinary ) );
 
     // Precalculate probability of topology
     calculateTopologyProb();
@@ -59,8 +59,73 @@ Dist_topologyunif::Dist_topologyunif( int numTaxa, bool isRooted, bool isBinary 
 
 /** Precalculate the probability and log probability of a topology drawn from the distribution. */
 void Dist_topologyunif::calculateTopologyProb( void ) {
+    
+    // Get the parameters
+    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
+    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
+    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
+    
+    // Calculate probabilities of a topology drawn from the distribution
+    if (isBinary) {
+        // we have a binary topology
+        if (isRooted) {
+            // set the topology probability to default values
+            lnTopologyProb = 0.0;
+            topologyProb = 1.0;
+            for (int i=2; i<=numTaxa; i++) {
+                double tmp = 1.0/(2.0*i - 3.0);
+                lnTopologyProb += log(tmp);
+                topologyProb *= tmp;
+            }
+        } else {
+            
+            // set the topology probability to default values
+            lnTopologyProb = 0.0;
+            topologyProb = 1.0;
+            for (int i=3; i<=numTaxa; i++) {
+                double tmp = 1.0/(2.0*i - 5.0);
+                lnTopologyProb += log(tmp);
+                topologyProb *= tmp;
+            }
+        }
+    }
+}
 
-    // TODO: Calculate probabilities of a topology drawn from the distribution
+/** Precalculate the probability and log probability of a topology drawn from the distribution. */
+void Dist_topologyunif::calculateNumberOfStates( void ) {
+    
+    // Get the parameters
+    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
+    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
+    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
+    
+    // Calculate probabilities of a topology drawn from the distribution
+    if (isBinary) {
+        // we have a binary topology
+        if (isRooted) {
+            // set the number of states to default values
+            numberOfStates = 1;
+            for (size_t i=2; i<=numTaxa; i++) {
+                size_t tmp = (2*i - 3);
+                if (RbConstants::Size_t::max/numberOfStates < tmp) {
+                    numberOfStates = RbConstants::Size_t::inf;
+                    break;
+                }
+                numberOfStates *= tmp;
+            }
+        } else {
+            // set the number of states to default values
+            numberOfStates = 1;
+            for (size_t i=3; i<=numTaxa; i++) {
+                size_t tmp = (2*i - 5);
+                if (RbConstants::Size_t::max/numberOfStates < tmp) {
+                    numberOfStates = RbConstants::Size_t::inf;
+                    break;
+                }
+                numberOfStates *= tmp;
+            }
+        }
+    }
 }
 
 
@@ -95,9 +160,9 @@ const MemberRules& Dist_topologyunif::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ValueRule( "numTaxa" , Natural_name      ) );
-        memberRules.push_back( new ValueRule( "isRooted", Boolean_name      ) );
-        memberRules.push_back( new ValueRule( "isBinary", new Boolean(true) ) );
+        memberRules.push_back( new ValueRule( "numberTaxa" , Natural_name      ) );
+        memberRules.push_back( new ValueRule( "isRooted"   , Boolean_name      ) );
+        memberRules.push_back( new ValueRule( "isBinary"   , new Boolean(true) ) );
 
         rulesSet = true;
 		}
@@ -109,15 +174,14 @@ const MemberRules& Dist_topologyunif::getMemberRules( void ) const {
 /** Get the number of states in the distribution */
 size_t Dist_topologyunif::getNumStates( void ) const {
 
-    // TODO: Calculate number of distinct topologies
-    return 0;
+    return numberOfStates;
 }
 
 
 /** Get the probability mass vector */
 const Simplex* Dist_topologyunif::getProbabilityMassVector( void ) {
 
-    int             numTaxa  = static_cast<const Natural*>( getValue( "numTaxa"  ) )->getValue();
+    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
 
     if ( numTaxa <= 6 )
         return new Simplex( getNumStates() );
@@ -146,13 +210,12 @@ double Dist_topologyunif::lnPdf( const RbObject* value ) {
 
     // Get the parameters
     const Topology* top      = static_cast<const Topology*    >( value );
-    int             numTaxa  = static_cast<const Natural*>( getValue( "numTaxa"  ) )->getValue();
-    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted" ) )->getValue();
-    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary" ) )->getValue();
+    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
+    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
+    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
 
     // If numTaxa, isRooted and isBinary fits top, then return precalculated probability stored in the class
     // Otherwise return negative infinity
-    bool match = false;
     if ( top->getNumberOfNodes() == numTaxa && top->getIsRooted() == isRooted && top->getIsBinary() == isBinary )
         return lnTopologyProb;
     else
@@ -173,13 +236,12 @@ double Dist_topologyunif::pdf( const RbObject* value ) {
 
     // Get the parameters
     const Topology* top      = static_cast<const Topology*    >( value );
-    int             numTaxa  = static_cast<const Natural*>( getValue( "numTaxa"  ) )->getValue();
-    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted" ) )->getValue();
-    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary" ) )->getValue();
+    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
+    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
+    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
 
     // If numTaxa, isRooted and isBinary fits top, then return precalculated probability stored in the class
     // Otherwise return 0.0
-    bool match = false;
     if ( top->getNumberOfNodes() == numTaxa && top->getIsRooted() == isRooted && top->getIsBinary() == isBinary )
         return topologyProb;
     else
@@ -200,11 +262,19 @@ Topology* Dist_topologyunif::rv( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // Get the parameters
-    int             numTaxa  = static_cast<const Natural*>( getValue( "numTaxa"  ) )->getValue();
-    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted" ) )->getValue();
-    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary" ) )->getValue();
+    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
+    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
+    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
 
-    // TODO: Draw a random topology
+    // Draw a random topology
+    if (isBinary) {
+        Topology *top = new Topology();
+        // internally we treat unrooted topologies the same as rooted
+        top->setIsRooted(isRooted);
+        
+        
+    }
+    // TODO: Draw a random multifurcating topology
     return NULL;
 }
 

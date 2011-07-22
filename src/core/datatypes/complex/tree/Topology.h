@@ -31,11 +31,11 @@ class VectorString;
 
 /** TopologyChange: A struct describing a topology change
     in terms of a parent shift */
-typedef struct {
+struct TopologyChange {
     int node;
     int oldParentNode;
     int newParentNode;
-} TopologyChange;
+};
 
 
 class Topology: public MemberObject {

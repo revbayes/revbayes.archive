@@ -76,6 +76,8 @@ const MemberRules& MoveSimple::getMemberRules( void ) const {
 void MoveSimple::performMove(double& lnProbabilityRatio, double& lnHastingsRatio) {
 
     StochasticNode* nodePtr = static_cast<StochasticNode*>( members["variable"].getReference() );
+//    DAGNode *var = members["variable"].getVariable(); 
+//    StochasticNode* nodePtr = static_cast<StochasticNode*>( var );
     std::set<StochasticNode*> affectedNodes;
 
     lnHastingsRatio    = perform(affectedNodes);

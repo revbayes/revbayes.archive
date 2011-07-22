@@ -24,7 +24,7 @@
 
 
 /** Construct rule without default value; use "" for no label. */
-StochasticReferenceRule::StochasticReferenceRule( const std::string& argName, TypeSpec typeSp )
+StochasticReferenceRule::StochasticReferenceRule( const std::string& argName, const TypeSpec& typeSp )
     : ReferenceRule( argName, typeSp ) {
 }
 

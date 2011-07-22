@@ -74,7 +74,7 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
-        memberRules.push_back( new StochasticReferenceRule( "variable", TypeSpec( RealPos_name, 1 ) ) );
+        memberRules.push_back( new StochasticReferenceRule( "variable", TypeSpec( RealPos_name, 1 , true) ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();

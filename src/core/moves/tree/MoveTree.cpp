@@ -73,8 +73,8 @@ const MemberRules& MoveTree::getMemberRules( void ) const {
 
     if (!rulesSet) {
         
-        memberRules.push_back( new StochasticReferenceRule( "topology",      Topology_name ) );
-        memberRules.push_back( new ReferenceRule          ( "treeVariables", List_name     ) );
+        memberRules.push_back( new StochasticReferenceRule( "topology",      TypeSpec(Topology_name,true) ) );
+        memberRules.push_back( new ReferenceRule          ( "treeVariables", TypeSpec(List_name,true)     ) );
 
         /* Inherit weight from Move, put it after topology and tree variables */
         const MemberRules& inheritedRules = MoveTree::getMemberRules();

@@ -19,19 +19,23 @@
 #define RbConstants_H
 
 #include <cfloat>
+#include <limits>
 
 namespace RbConstants {
     
 	namespace Double {
-        const double    inf         = 1E+37;
-        const double    max         = 1E+37;
-        const double    neginf      = 1E-37;
+        const double    inf         = std::numeric_limits<double>::infinity();
+        const double    max         = std::numeric_limits<double>::max();
+        const double    min         = std::numeric_limits<double>::min();
+        const double    nan         = std::numeric_limits<double>::quiet_NaN();
+        const double    neginf      = -std::numeric_limits<double>::infinity();
 	}
     
     namespace Integer {
-        const int       inf         = 2147483647;
-        const int       nan         = 2147483647;
-        const int       max         = 2147483647;
+        const int       inf         = std::numeric_limits<int>::infinity();
+        const int       max         = std::numeric_limits<int>::max();
+        const int       min         = std::numeric_limits<int>::min();
+        const int       nan         = std::numeric_limits<int>::quiet_NaN();
         const int       neginf      = -2147483647;
 	}
     
@@ -39,6 +43,13 @@ namespace RbConstants {
         const double    undefined   = 1E+37;
         const double    neginf      = 1E-37;
 	}
+    
+    namespace Size_t {
+        const size_t    inf         = std::numeric_limits<std::size_t>::infinity();
+        const size_t    max         = std::numeric_limits<std::size_t>::max();
+        const size_t    min         = std::numeric_limits<std::size_t>::min();
+        const size_t    nan         = std::numeric_limits<std::size_t>::quiet_NaN();
+    }
     
     
     /* ----- The following constants and entry points are part of the R API ---- */

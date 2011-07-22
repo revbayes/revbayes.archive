@@ -52,9 +52,12 @@ class Dist_topologyunif: public DistributionDiscrete {
 
     private:
         void                        calculateTopologyProb(void);                                        //!< Calculate and set probability member variables
+        void                        calculateNumberOfStates(void);                                      //!< Calculate and set number of states member variables
 
         double                      topologyProb;                                                       //!< The probability of a topology
         double                      lnTopologyProb;                                                     //!< The log probability of a topology
+        size_t                      numberOfStates;                                                     //!< The number of states for this topology distribution
+    
 };
 
 #endif

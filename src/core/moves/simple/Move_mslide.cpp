@@ -68,8 +68,9 @@ const MemberRules& Move_mslide::getMemberRules( void ) const {
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
-
-        memberRules.push_back( new StochasticReferenceRule( "variable", Real_name ) );
+        
+        TypeSpec varType(Real_name,0,true);
+        memberRules.push_back( new StochasticReferenceRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();

@@ -70,8 +70,9 @@ const MemberRules& Move_msimplex::getMemberRules( void ) const {
     static bool        rulesSet = false;
 
     if (!rulesSet) 
-		{
-        memberRules.push_back( new StochasticReferenceRule( "variable", Simplex_name ) );
+    {
+        TypeSpec varType(Simplex_name,1,true);
+        memberRules.push_back( new StochasticReferenceRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();

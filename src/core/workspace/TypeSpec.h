@@ -27,7 +27,8 @@ class TypeSpec {
                             TypeSpec(const std::string& objType,
                                      size_t             objDim,
                                      bool               ref      = false);                      //!< Complete constructor
-
+                            TypeSpec(const TypeSpec& ts);                                       //!< Copy Constructor
+    
         // Operators
         bool                operator==(const TypeSpec& x) const;                                //!< Equals operator
         bool                operator!=(const TypeSpec& x) const { return !operator==(x); }      //!< Not equals operator
