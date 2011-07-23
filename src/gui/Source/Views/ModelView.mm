@@ -257,7 +257,7 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
     d.x = newX;
     
     // fail if segment C-D doesn't cross line A-B.
-    if ( c.y < 0.0 && d.y < 0.0 || c.y >= 0.0 && d.y >= 0.0) 
+    if ( (c.y < 0.0 && d.y) < 0.0 || (c.y >= 0.0 && d.y >= 0.0) ) 
         return NO;
 
     //discover the position of the intersection point along line A-B.

@@ -75,6 +75,7 @@
 
 - (BOOL)readTreesFile {
 	
+#   if 0
 	// start the file dialog and get the file name
     
     // make an array containing the valid file types that can be chosen
@@ -119,6 +120,7 @@
 			return NO;
 		}
 	}
+#   endif
 	return NO;
 	
 }
