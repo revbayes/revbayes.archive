@@ -60,6 +60,7 @@ class Topology: public MemberObject {
         
         // Topology functions
         void                            changeTopology(std::vector<TopologyChange>& topChanges);                //!< Change the topology according to instructions
+        TopologyNode*                   cloneTree(TopologyNode *parent);                                        //!< Deep copy of the nodes
         bool                            getIsBinary(void) const { return isBinary; }                            //!< Is the tree rooted
         bool                            getIsRooted(void) const { return isRooted; }                            //!< Is the tree rooted
         std::vector<TopologyNode*>&     getNodes(void) { return nodes; }                                        //!< Get a pointer to the nodes in the tree
@@ -70,9 +71,14 @@ class Topology: public MemberObject {
         TopologyNode*                   getRoot(void) const { return root; }                                    //!< Get a pointer to the root node of the tree
         TopologyNode*                   getTipNode(int indx) const;                                             //!< Get a pointer to tip node i
         void                            setIsRooted(bool tf) { isRooted = tf; }                                 //!< Set the rootedness of the tree
+        void                            setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the tree from it
         
 	private:
+        void                            fillNodesByPreorderTraversal(TopologyNode *node);                       //!< fill the nodes vector by a preorder traversal recursively starting with this node.
+        std::string                     buildNewickString(TopologyNode *node);                                  //!< compute the newick string for a tree rooting at this node
+    
         std::vector<TopologyNode*>      nodes;                                                                  //!< Vector of pointers to all nodes
+        std::string                     newick;                                                                 //!< the newick string
         TopologyNode*                   root;                                                                   //!< Pointer to the root node
         bool                            isRooted;                                                               //!< Is the topology rooted?
         bool                            isBinary;                                                               //!< Is the topology binary?

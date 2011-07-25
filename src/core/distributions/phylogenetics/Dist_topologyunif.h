@@ -26,6 +26,7 @@
 #include <string>
 
 class VectorString;
+class TopologyNode;
 
 class Dist_topologyunif: public DistributionDiscrete {
 
@@ -51,6 +52,7 @@ class Dist_topologyunif: public DistributionDiscrete {
         Topology*                   rv(void);                                                           //!< Generate random variable
 
     private:
+        void                        buildRandomBinaryTree(std::vector<TopologyNode*>& tips, int numTaxa);        //!< Build a random binary tree recursively until we have numTaxa tips
         void                        calculateTopologyProb(void);                                        //!< Calculate and set probability member variables
         void                        calculateNumberOfStates(void);                                      //!< Calculate and set number of states member variables
 

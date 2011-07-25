@@ -37,8 +37,18 @@ Topology::Topology(void) : MemberObject( getMemberRules() ) {
 
 /* Copy constructor */
 Topology::Topology(const Topology& t) : MemberObject( getMemberRules() ) {
+    // set the parameters
+    isRooted = t.isRooted;
+    isBinary = t.isBinary;
 
     // need to perform a deep copy of the tree nodes
+    root = cloneTree(t.getRoot());
+    
+    // fill the nodes vector
+    fillNodesByPreorderTraversal(root);
+    
+    // build the newick string
+    newick = buildNewickString(root);
 }
 
 
@@ -49,6 +59,27 @@ Topology::~Topology(void) {
         delete (*p);
 }
 
+
+/* Build newick string */
+std::string Topology::buildNewickString(TopologyNode *node) {
+    // create the newick string
+    std::string newick;
+    
+    // test whether this is a internal or external node
+    if (node->isTip()) {
+        // this is a tip so we just return the name of the node
+        newick = node->getName();
+    }
+    else {
+        newick = "(";
+        for (size_t i=0; i<(node->getNumberOfChildren()-1); i++) {
+            newick += buildNewickString(node->getChild(i)) + ",";
+        }
+        newick += buildNewickString(node->getChild(node->getNumberOfChildren()-1)) + ")";
+    }
+    
+    return newick;
+}
 
 /** 
  * Change topology according to the instructions given in the vector
@@ -72,8 +103,31 @@ void Topology::changeTopology( std::vector<TopologyChange>& topChanges ) {
         oldParent->removeChild( childNode );
         newParent->addChild   ( childNode );
     }
+    
+    newick = buildNewickString(root);
 }
 
+
+TopologyNode* Topology::cloneTree(TopologyNode *parent) {
+    // get first a shallow copy
+    TopologyNode *node = parent->clone();
+    
+    // replace all children by depp copies of the children
+    for (size_t i=0; i<node->getNumberOfChildren(); i++) {
+        // get the old child
+        TopologyNode *oldChild = node->getChild(0);
+        
+        // get a deep copy of the child
+        TopologyNode *newChild = cloneTree(oldChild);
+        node->removeChild(oldChild);
+        node->addChild(newChild);
+        
+        // set this node as the parent of the new deep copy
+        newChild->setParent(node);
+    }
+    
+    return node;
+}
 
 /* Clone function */
 Topology* Topology::clone(void) const {
@@ -151,6 +205,18 @@ DAGNode* Topology::executeOperation(const std::string& name, ArgumentFrame& args
 }
 
 
+/* fill the nodes vector by a preorder traversal recursively starting with this node. */
+void Topology::fillNodesByPreorderTraversal(TopologyNode *node) {
+    // this is preorder so add yourself first
+    nodes.push_back(node);
+    
+    // now call this function recursively for all your children
+    for (size_t i=0; i<node->getNumberOfChildren(); i++) {
+        fillNodesByPreorderTraversal(node->getChild(i));
+    }
+}
+
+
 /* Get method specifications */
 const MethodTable& Topology::getMethods(void) const {
     
@@ -195,7 +261,7 @@ const MemberRules& Topology::getMemberRules(void) const {
 /* Print the tree */
 void Topology::printValue(std::ostream& o) const {
 
-    o << "";
+    o << newick;
 }
 
 
@@ -208,4 +274,17 @@ std::string Topology::richInfo(void) const {
     return o.str();
 }
 
+void Topology::setRoot(TopologyNode *r) {
+    // set the root
+    root = r;
+    
+    // clear all previous nodes
+    nodes.clear();
+    
+    // bootstrap all nodes from the root and add the in a pre-order traversal
+    fillNodesByPreorderTraversal(r);
+    
+    // recalculate the newick string
+    newick = buildNewickString(root);
+}
 

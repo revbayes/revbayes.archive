@@ -28,6 +28,7 @@
 #include "RbNames.h"
 #include "Simplex.h"
 #include "Topology.h"
+#include "TopologyNode.h"
 #include "ValueRule.h"
 #include "VectorString.h"
 
@@ -40,7 +41,8 @@
 Dist_topologyunif::Dist_topologyunif( void ) : DistributionDiscrete( getMemberRules() ) {
 
     // Precalculate probability of topology
-    calculateTopologyProb();
+    // TODO: this will crash because we haven't set the parameter of the distribution
+//    calculateTopologyProb();
 }
 
 
@@ -53,6 +55,37 @@ Dist_topologyunif::Dist_topologyunif( int numTaxa, bool isRooted, bool isBinary 
 
     // Precalculate probability of topology
     calculateTopologyProb();
+}
+
+
+void Dist_topologyunif::buildRandomBinaryTree(std::vector<TopologyNode *> &tips, int numTaxa) {
+    
+    if (tips.size() < numTaxa) {
+        // Get the rng
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        
+        // randomly draw one node from the list of tips
+        size_t index = floor(rng->uniform01()*tips.size());
+        
+        // get the node from the list
+        TopologyNode* parent = tips.at(index);
+        
+        // remove the randomly drawn node from the list
+        tips.erase(tips.begin()+index);
+        
+        // add a left child
+        TopologyNode *leftChild = new TopologyNode(0);
+        parent->addChild(leftChild);
+        tips.push_back(leftChild);
+        
+        // add a right child
+        TopologyNode *rightChild = new TopologyNode(0);
+        parent->addChild(rightChild);
+        tips.push_back(rightChild);
+        
+        // recursive call to this function
+        buildRandomBinaryTree(tips, numTaxa);
+    }
 }
 
 
@@ -272,7 +305,34 @@ Topology* Dist_topologyunif::rv( void ) {
         // internally we treat unrooted topologies the same as rooted
         top->setIsRooted(isRooted);
         
+        TopologyNode *root = new TopologyNode((int)pow(2,numTaxa)-1);
+        std::vector<TopologyNode*> nodes;
+        nodes.push_back(root);
+        // recursively build the tree
+        buildRandomBinaryTree(nodes, numTaxa);
         
+        // set tip names
+        for (size_t i=1; i<=numTaxa; i++) {
+            size_t index = floor(rng->uniform01() * nodes.size());
+            
+            // get the node from the list
+            TopologyNode* node = nodes.at(index);
+            
+            // remove the randomly drawn node from the list
+            nodes.erase(nodes.begin()+index);
+            
+            // set name
+            std::string name;
+            std::stringstream out;
+            out << int(i);
+            name = out.str();
+            node->setName(name);
+        }
+        
+        // initialize the topology by setting the root
+        top->setRoot(root);
+        
+        return top;
     }
     // TODO: Draw a random multifurcating topology
     return NULL;
@@ -284,6 +344,7 @@ void Dist_topologyunif::setVariable( const std::string& name, DAGNode* var ) {
 
     DistributionDiscrete::setVariable( name, var );
 
-    calculateTopologyProb();
+    // TODO: recaluclation of the probability crashes if not all variable are already set!!!
+//    calculateTopologyProb();
 }
 

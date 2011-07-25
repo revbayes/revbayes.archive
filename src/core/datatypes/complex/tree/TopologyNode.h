@@ -61,7 +61,7 @@ class TopologyNode : public MemberObject {
         
         // TopologyNode functions
         void                            addChild(TopologyNode* p) { children.push_back(p); }                        //!< Adds a child node
-        TopologyNode*                   getChild(int i) const { return children[i]; }                               //!< Returns the i-th child
+        TopologyNode*                   getChild(size_t i) const { return children[i]; }                            //!< Returns the i-th child
         std::vector<int>                getChildrenIndices(void) const;                                             //!< Return children indices
         int                             getIndex(void) const { return index; }                                      //!< Get index of node
         std::string                     getName(void) const { return name; }                                        //!< Get name of node
@@ -70,6 +70,7 @@ class TopologyNode : public MemberObject {
         int                             getParentIndex(void) const { return parent->getIndex(); }                   //!< Return parent index
         bool                            isTip(void) { return children.size() == 0; }                                //!< Is node tip?
         bool                            isRoot(void) { return parent == NULL; }                                     //!< Is node root?
+        void                            setName(const std::string& n) { name = n; }                                 //!< Set the name of this node
         void                            setParent(TopologyNode* p) { parent = p; }                                  //!< Sets the node's parent
         void                            removeAllChildren(void) { children.clear(); }                               //!< Removes all of the children of the node
         void                            removeChild(TopologyNode* p);                                               //!< Removes a specific child

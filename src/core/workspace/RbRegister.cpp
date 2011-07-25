@@ -74,6 +74,7 @@
 #include "List.h"
 #include "Model.h"
 #include "Simplex.h"
+#include "Topology.h"
 
 /* MemberObject types with auto-generated constructors (alphabetic order) */
 #include "Mcmc.h"
@@ -87,6 +88,7 @@
 #include "Dist_exp.h"
 #include "Dist_multinomial.h"
 #include "Dist_norm.h"
+#include "Dist_topologyunif.h"
 #include "Dist_unif.h"
 
 /* Basic internal functions (alphabetic order) */
@@ -200,6 +202,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new List()                         );
         addType( new Model()                        );
         addType( new Simplex()                      );
+        addType( new Topology()                     );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "mcmc",         new Mcmc()              );
@@ -209,11 +212,12 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "mscale",       new Move_mscale()       );
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
-        addDistribution( "dirichlet",   new Dist_dirichlet()   );
-        addDistribution( "exp",         new Dist_exp()         );
-        addDistribution( "multinomial", new Dist_multinomial() );
-        addDistribution( "norm",        new Dist_norm()        );
-        addDistribution( "unif",        new Dist_unif()        );
+        addDistribution( "dirichlet",    new Dist_dirichlet()   );
+        addDistribution( "exp",          new Dist_exp()         );
+        addDistribution( "multinomial",  new Dist_multinomial() );
+        addDistribution( "norm",         new Dist_norm()        );
+        addDistribution( "unifTopology", new Dist_topologyunif());
+        addDistribution( "unif",         new Dist_unif()        );
 
         /* Now we have added all primitive and complex data types and can start type checking */
         Workspace::globalWorkspace().typesInitialized = true;
