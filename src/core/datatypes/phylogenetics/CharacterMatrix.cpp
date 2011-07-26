@@ -61,6 +61,7 @@ CharacterMatrix::CharacterMatrix( const CharacterMatrix& x )
     fileName          = x.fileName;
 
     sequenceTypeRule  = x.sequenceTypeRule->clone();
+    sequenceNames     = x.sequenceNames;
 }
 
 
@@ -114,6 +115,9 @@ void CharacterMatrix::addSequence( const std::string tName, VectorCharacters* ob
     VariableSlot* slot = new MemberSlot( sequenceTypeRule );
     members.push_back( tName, slot );
     members[ members.size() - 1 ].setVariable( obs->wrapIntoVariable() );
+    
+    // add the sequence name to the list
+    sequenceNames.push_back(tName);
 }
 
 
@@ -156,7 +160,11 @@ void CharacterMatrix::excludeTaxon(std::string& s) {
 /** Map calls to member methods */
 DAGNode* CharacterMatrix::executeOperation(const std::string& name, ArgumentFrame& args) {
 
-    if (name == "ntaxa") 
+    if (name == "names") 
+    {
+        return sequenceNames.clone()->wrapIntoVariable();
+    }
+    else if (name == "ntaxa") 
         {
         int n = (int)getNumTaxa();
         return ( new Natural(n) )->wrapIntoVariable();
@@ -329,6 +337,7 @@ const MethodTable& CharacterMatrix::getMethods(void) const {
 
     static MethodTable   methods;
     static ArgumentRules ncharArgRules;
+    static ArgumentRules namesArgRules;
     static ArgumentRules ntaxaArgRules;
     static ArgumentRules chartypeArgRules;    
     static ArgumentRules nexcludedtaxaArgRules;    
@@ -348,6 +357,7 @@ const MethodTable& CharacterMatrix::getMethods(void) const {
     if ( methodsSet == false ) 
         {
         // this must be here so the parser can distinguish between different instances of a character matrix
+        namesArgRules.push_back(               new ReferenceRule( "", MemberObject_name ) );
         ncharArgRules.push_back(               new ReferenceRule( "", MemberObject_name ) );
         ntaxaArgRules.push_back(               new ReferenceRule( "", MemberObject_name ) );
         chartypeArgRules.push_back(            new ReferenceRule( "", MemberObject_name ) );
@@ -366,7 +376,8 @@ const MethodTable& CharacterMatrix::getMethods(void) const {
 
         excludecharArgRules.push_back(         new ValueRule(     "", Natural_name ) );
         excludecharArgRules2.push_back(        new ValueRule(     "", VectorNatural_name ) );
-        
+            
+        methods.addFunction("names",               new MemberFunction(VectorString_name,  namesArgRules));
         methods.addFunction("nchar",               new MemberFunction(Natural_name,       ncharArgRules));
         methods.addFunction("ntaxa",               new MemberFunction(Natural_name,       ntaxaArgRules));
         methods.addFunction("chartype",            new MemberFunction(RbString_name,      chartypeArgRules));

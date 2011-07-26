@@ -18,6 +18,7 @@
 
 #include "MemberObject.h"
 #include "ConstantValueRule.h"
+#include "VectorString.h"
 
 #include <set>
 #include <string>
@@ -27,7 +28,6 @@ class ArgumentRule;
 class Character;
 class DAGNode;
 class VectorCharacters;
-class VectorString;
 
 
 class CharacterMatrix : public MemberObject {
@@ -98,6 +98,7 @@ class CharacterMatrix : public MemberObject {
         std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
         std::set<size_t>                    deletedCharacters;                                                          //!< Set of deleted characters
         std::string                         fileName;                                                                   //!< The path/filename from where this matrix originated
+        VectorString                        sequenceNames;                                                              //!< names of the sequences
         ConstantValueRule*                  sequenceTypeRule;                                                           //!< Rule describing sequence type
 };
 
