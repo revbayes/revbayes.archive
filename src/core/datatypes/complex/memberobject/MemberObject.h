@@ -62,6 +62,7 @@ class MemberObject: public RbComplex {
         const RbObject*             getValue(const std::string& name) const;                                            //!< Get member value (const)
         const DAGNode*              getVariable(const std::string& name) const;                                         //!< Get member variable @Fredrik: Why is there a const getVariable() if there is also a non-const getVariable()? (Sebastian)
         DAGNode*                    getVariable(const std::string& name);                                               //!< Get member variable (non-const ptr)
+        bool                        hasMember(const std::string& name) const;                                           //!< Has this object a member with name xxx
         void                        setValue(const std::string& name, RbObject* val);                                   //!< Set member value
 
         // Member variable functions you may wish to override

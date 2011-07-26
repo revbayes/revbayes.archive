@@ -194,6 +194,11 @@ DAGNode* MemberObject::getVariable(const std::string& name) {
     return const_cast<DAGNode*>(members.getVariable(name));
 }
 
+/** Does this object have a member called "name" */
+bool MemberObject::hasMember(std::string const &name) const {
+    return members.existsVariable( name );
+}
+
 
 /** Is the object constant? */
 bool MemberObject::isConstant( void ) const {

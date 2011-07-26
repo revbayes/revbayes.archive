@@ -314,7 +314,7 @@ Topology* Dist_topologyunif::rv( void ) {
         buildRandomBinaryTree(nodes, numTaxa);
         
         // set tip names
-        for (size_t i=1; i<=numTaxa; i++) {
+        for (size_t i=0; i<numTaxa; i++) {
             size_t index = floor(rng->uniform01() * nodes.size());
             
             // get the node from the list

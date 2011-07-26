@@ -18,6 +18,7 @@
 
 
 #include "Boolean.h"
+#include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RbNames.h"
@@ -70,6 +71,8 @@ RbObject* Real::convertTo( const std::string& type, size_t dim ) const {
         return new Boolean(value == 0.0);
     if ( type == RealPos_name && dim == 0 && value > 0.0)
         return new RealPos(value);
+    if ( type == Probability_name && dim == 0 && value >= 0.0 && value <= 1.0)
+        return new Probability(value);
 
     return RbObject::convertTo( type, dim );
 }
@@ -89,6 +92,8 @@ bool Real::isConvertibleTo(const std::string& type, size_t dim, bool once) const
     if (type == Boolean_name && dim == 0)
         return true;
     if (type == RealPos_name && dim == 0 && once == true && value > 0.0)
+        return true;
+    if ( type == Probability_name && dim == 0 && value >= 0.0 && value <= 1.0)
         return true;
 
     return RbObject::isConvertibleTo(type, dim, once);

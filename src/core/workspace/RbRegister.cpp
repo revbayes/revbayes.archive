@@ -45,6 +45,7 @@
 #include "DnaState.h"
 #include "Integer.h"
 #include "Natural.h"
+#include "Probability.h"
 #include "RateMatrix.h"
 #include "RbString.h"
 #include "Real.h"
@@ -85,6 +86,7 @@
 #include "TreePlate.h"
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
+#include "Dist_birthdeath.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exp.h"
 #include "Dist_multinomial.h"
@@ -175,6 +177,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new DnaState()                       );
         addType( new Integer()                        );
         addType( new Natural()                        );
+        addType( new Probability()                    );
         addType( new RateMatrix()                     );
         addType( new RbString()                       );
         addType( new Real()                           );
@@ -214,6 +217,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "treeplate",    new TreePlate()         );
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
+        addDistribution( "birthdeath",   new Dist_birthdeath()  );
         addDistribution( "dirichlet",    new Dist_dirichlet()   );
         addDistribution( "exp",          new Dist_exp()         );
         addDistribution( "multinomial",  new Dist_multinomial() );

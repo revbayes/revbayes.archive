@@ -16,6 +16,7 @@
  */
 
 #include "ArgumentRule.h"
+#include "Boolean.h"
 #include "ConstantNode.h"
 #include "ContainerNode.h"
 #include "List.h"
@@ -85,26 +86,48 @@ const VectorString& TreePlate::getClass(void) const {
 /* Map calls to member methods */
 DAGNode* TreePlate::executeOperation(const std::string& name, ArgumentFrame& args) {
     
-    if (name == "addVariable") 
-        {
+    // special handling for adding a variable
+    if (name == "addVariable") {
+        // get the name of the variable
         std::string varName = static_cast<const RbString*>( args[1].getValue() )->getValue();
-
-        MemberSlot* slot = new MemberSlot( treePlateVariableTypeRule );
-        members.push_back( varName, slot );
-        List* lst = NULL;
-        if (orderingTopology == NULL)
-            {
-            // we don't have a topology and we initialize the member with an empty list
-            lst = new List;
-            }
-        else
-            {
-            // we have a tree
-            size_t nNodes = orderingTopology->getNumberOfNodes();
-            lst = new List(nNodes);
-            }
-        members[ members.size() - 1 ].setVariable( lst->wrapIntoVariable() );
+        
+        // test whether this variable already exists
+        if (hasMember(name)) {
+            throw RbException("Variable with name \"" + name + "\" already exists.");
         }
+        
+        // get the replication parameter
+        bool repl = static_cast<const Boolean*>( args[3].getValue() )->getValue();
+        
+        if (repl) {
+            if (orderingTopology == NULL) {
+                // we don't have a topology and we initialize the member with an empty list
+                throw RbException("Cannot add variable with name \"" + name + "\" replicated for each node if the topology was not set.");
+            }
+            else {
+                // we have a tree
+                size_t nNodes = orderingTopology->getNumberOfNodes();
+                
+                // prepare the variable and slot for the variable
+                DAGNode* var = args[2].getReference();
+                ValueRule* varTypeRule = new ValueRule( "", var->getValueType() );
+                MemberSlot* slot = new MemberSlot( varTypeRule );
+                for (int i=0; i<nNodes; i++) {
+                    members.push_back( varName, slot->clone() );
+                    members[ members.size() - 1 ].setVariable( var );
+                }
+                
+                delete slot;
+            }
+        } else {
+            DAGNode* var = args[2].getReference();
+            ValueRule* varTypeRule = new ValueRule( "", var->getValueType() );
+            MemberSlot* slot = new MemberSlot( varTypeRule );
+            members.push_back( varName, slot );
+            members[ members.size() - 1 ].setVariable( var );
+        }
+        
+    }
 
     return MemberObject::executeOperation( name, args );
 }
@@ -121,9 +144,13 @@ const MethodTable& TreePlate::getMethods(void) const {
         {
         // this must be here so the parser can distinguish between different instances of a tree plates
 //        addvariableArgRules.push_back(  new ReferenceRule( "", TreePlate_name ) );
-        addvariableArgRules.push_back(  new ValueRule(     "", RbString_name  ) );
+        addvariableArgRules.push_back(  new ReferenceRule( ""      , MemberObject_name ) );
+            
+        addvariableArgRules.push_back(  new ValueRule( "name"      , RbString_name  ) );
+        addvariableArgRules.push_back(  new ReferenceRule( ""      , RbObject_name ) );
+        addvariableArgRules.push_back(  new ValueRule( "replicate" , Boolean_name  ) );
         
-        methods.addFunction("addVariable",  new MemberFunction(RbString_name, addvariableArgRules)  );
+        methods.addFunction("addVariable",  new MemberFunction(RbVoid_name, addvariableArgRules)  );
         
         // necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
