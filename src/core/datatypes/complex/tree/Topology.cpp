@@ -227,7 +227,7 @@ const MethodTable& Topology::getMethods(void) const {
 
     if ( methodsSet == false ) 
         {
-        // this must be here so the parser can distinguish between different instances of a character matrix
+        // this must be here so the parser can distinguish between different instances
         ntipsArgRules.push_back(  new ReferenceRule( "", MemberObject_name ) );
         nnodesArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
         

@@ -30,6 +30,7 @@ class TreePlate: public MemberObject {
     
     public:
                                         TreePlate(void);                                                        //!< Default constructor
+                                        TreePlate(Topology* top);                                               //!< constructor
                                         TreePlate(const TreePlate& t);                                          //!< Copy constructor
                                        ~TreePlate(void);                                                        //!< Destructor
 
@@ -41,6 +42,7 @@ class TreePlate: public MemberObject {
 
         // Member variable rules
         const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
+        void                            setVariable(const std::string& name, DAGNode* var);                     //!< Catch setting of the topology
 
         // Member method inits
         DAGNode*                        executeOperation(const std::string& name, ArgumentFrame& args);         //!< Execute method
@@ -50,6 +52,7 @@ class TreePlate: public MemberObject {
 
 	private:
         void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }           //!< Order the topology
+        
         Topology*                       orderingTopology;                                                       //!< The topology that orders the tree plate
         ValueRule*                      treePlateVariableTypeRule;                                              //!< Rule describing plate variable type
 };

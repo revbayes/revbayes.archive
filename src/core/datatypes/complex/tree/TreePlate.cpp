@@ -40,19 +40,30 @@ TreePlate::TreePlate(void) : MemberObject( getMemberRules() ) {
     treePlateVariableTypeRule = new ValueRule( "", TypeSpec( List_name ) );
 }
 
+/* constructor */
+TreePlate::TreePlate(Topology* top) : MemberObject( getMemberRules() ) {
+    
+    orderingTopology = top;
+    setVariable("topology", top->wrapIntoVariable());
+    treePlateVariableTypeRule = new ValueRule( "", TypeSpec( List_name ) );
+}
+
 
 /* Copy constructor */
-TreePlate::TreePlate(const TreePlate& t) : MemberObject( getMemberRules() ) {
+TreePlate::TreePlate(const TreePlate& t) : MemberObject( t ) {
 
-    treePlateVariableTypeRule = new ValueRule( "", TypeSpec( List_name ) );
+    if (t.orderingTopology != NULL)
+        orderingTopology = t.orderingTopology->clone();
+    
+    treePlateVariableTypeRule = t.treePlateVariableTypeRule->clone();
 }
 
 
 /* Destructor */
 TreePlate::~TreePlate(void) {
 
-    
-    delete treePlateVariableTypeRule;
+//    delete orderingTopology;
+//    delete treePlateVariableTypeRule;
 }
 
 
@@ -108,8 +119,8 @@ const MethodTable& TreePlate::getMethods(void) const {
 
     if ( methodsSet == false ) 
         {
-        // this must be here so the parser can distinguish between different instances of a character matrix
-        addvariableArgRules.push_back(  new ReferenceRule( "", TreePlate_name ) );
+        // this must be here so the parser can distinguish between different instances of a tree plates
+//        addvariableArgRules.push_back(  new ReferenceRule( "", TreePlate_name ) );
         addvariableArgRules.push_back(  new ValueRule(     "", RbString_name  ) );
         
         methods.addFunction("addVariable",  new MemberFunction(RbString_name, addvariableArgRules)  );
@@ -130,7 +141,10 @@ const MemberRules& TreePlate::getMemberRules(void) const {
     static bool        rulesSet = false;
 
     if (!rulesSet) 
-        {
+    {
+        TypeSpec varType(Topology_name,0,true);
+        memberRules.push_back( new ReferenceRule( "topology" , varType ) );
+        
         rulesSet = true;
         }
 
@@ -141,7 +155,10 @@ const MemberRules& TreePlate::getMemberRules(void) const {
 /* Print the tree */
 void TreePlate::printValue(std::ostream& o) const {
 
-    o << "";
+    o << "Tree Plate:\n";
+    orderingTopology->printValue(o);
+    
+    // TODO: print other member too
 }
 
 
@@ -152,6 +169,15 @@ std::string TreePlate::richInfo(void) const {
     o <<  "Tree Plate: ";
     printValue(o);
     return o.str();
+}
+
+/** Catch setting of the topology variable */
+void TreePlate::setVariable(const std::string& name, DAGNode* var) {
+    
+    if ( name == "topology" )
+        orderingTopology = (Topology*)(var->getValue());
+    
+    MemberObject::setVariable(name, var);
 }
 
 

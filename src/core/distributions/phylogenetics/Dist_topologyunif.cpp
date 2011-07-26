@@ -194,6 +194,7 @@ const MemberRules& Dist_topologyunif::getMemberRules( void ) const {
     if ( !rulesSet )
 		{
         memberRules.push_back( new ValueRule( "numberTaxa" , Natural_name      ) );
+        memberRules.push_back( new ValueRule( "tipNames"   , VectorString_name ) );
         memberRules.push_back( new ValueRule( "isRooted"   , Boolean_name      ) );
         memberRules.push_back( new ValueRule( "isBinary"   , new Boolean(true) ) );
 
@@ -295,9 +296,10 @@ Topology* Dist_topologyunif::rv( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // Get the parameters
-    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
-    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
-    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
+    int                 numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
+    bool                isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
+    bool                isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
+    const VectorString  *names   = static_cast<const VectorString*>( getValue( "tipNames"    ) );
 
     // Draw a random topology
     if (isBinary) {
@@ -322,10 +324,7 @@ Topology* Dist_topologyunif::rv( void ) {
             nodes.erase(nodes.begin()+index);
             
             // set name
-            std::string name;
-            std::stringstream out;
-            out << int(i);
-            name = out.str();
+            std::string name = (*names)[i];
             node->setName(name);
         }
         

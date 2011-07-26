@@ -82,6 +82,7 @@
 #include "Move_mscale.h"
 #include "Move_msimplex.h"
 #include "Move_mslide.h"
+#include "TreePlate.h"
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "Dist_dirichlet.h"
@@ -210,6 +211,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "msimplex",     new Move_msimplex()     );
         addTypeWithConstructor( "mslide",       new Move_mslide()       );
         addTypeWithConstructor( "mscale",       new Move_mscale()       );
+        addTypeWithConstructor( "treeplate",    new TreePlate()         );
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
         addDistribution( "dirichlet",    new Dist_dirichlet()   );
