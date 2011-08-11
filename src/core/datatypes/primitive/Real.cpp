@@ -125,3 +125,56 @@ std::string Real::richInfo(void) const {
     return o.str();
 }
 
+
+////////////////////////////////// Global Real operators ///////////////////////////////////
+
+
+/**
+ * This function performs unary plus on a real,
+ * which simply returns a copy of the real.
+ *
+ * @brief unary operator+
+ *
+ * @param  A The real operand
+ * @return A copy of the operand
+ */
+Real operator+(const Real& A) {
+
+	Real B = A;
+	return B;
+}
+
+
+/**
+ * This function performs unary minus on a real.
+ *
+ * @brief operator-
+ *
+ * @param A The real operand
+ * @return -A
+ */
+Real operator-(const Real& A) {
+
+	Real B( - A.getValue() );
+
+    return B;
+}
+
+
+/**
+ * This function performs unary not on a real by
+ * comparing the value to 0.0. It returns true if the
+ * value is different from 0.0.
+ *
+ * @brief operator!
+ *
+ * @param A The real operand
+ * @return True if A != 0.0
+ */
+Boolean operator!(const Real& A) {
+
+	Boolean B( A.getValue() != 0.0 );
+
+    return B;
+}
+

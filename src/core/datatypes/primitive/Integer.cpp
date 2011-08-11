@@ -124,6 +124,7 @@ void Integer::printValue(std::ostream &o) const {
     o << value;
 }
 
+
 /** Get complete info about object */
 std::string Integer::richInfo(void) const {
 
@@ -133,5 +134,58 @@ std::string Integer::richInfo(void) const {
 	o<< ")";
 
     return o.str();
+}
+
+
+////////////////////////////////// Global Integer operators ///////////////////////////////////
+
+
+/**
+ * This function performs unary plus on an integer,
+ * which simply returns a copy of the integer.
+ *
+ * @brief unary operator+
+ *
+ * @param  A The integer operand
+ * @return A copy of the operand
+ */
+Integer operator+(const Integer& A) {
+
+	Integer B = A;
+	return B;
+}
+
+
+/**
+ * This function performs unary minus on an integer.
+ *
+ * @brief operator-
+ *
+ * @param A The integer operand
+ * @return -A
+ */
+Integer operator-(const Integer& A) {
+
+	Integer B( - A.getValue() );
+
+    return B;
+}
+
+
+/**
+ * This function performs unary not on an integer by
+ * comparing the value to 0. It returns true if the
+ * value is different from 0.
+ *
+ * @brief operator!
+ *
+ * @param A The integer operand
+ * @return True if A != 0
+ */
+Boolean operator!(const Integer& A) {
+
+	Boolean B( A.getValue() != 0 );
+
+    return B;
 }
 

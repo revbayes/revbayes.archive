@@ -19,10 +19,12 @@
 #include "Frame.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "VectorString.h"
+#include "Signals.h"
 #include "SyntaxElement.h"
 #include "TypeSpec.h"
 #include "UserFunction.h"
+#include "VariableFrame.h"
+#include "VectorString.h"
 
 #include <list>
 #include <sstream>
@@ -79,12 +81,32 @@ UserFunction* UserFunction::clone(void) const {
 /** Execute function */
 DAGNode* UserFunction::execute( void ) {
 
-    std::cerr << "I am a user-defined function." << std::endl;
-    std::cerr << "I know who I am but I do not know how to execute myself." << std::endl;
+    // Clear signals
+    Signals::getSignals().clearFlags();
 
-    //TODO: Execute code: call getvalue, maintain a call stack and a frame stack, watch for return signal
+    // Set initial return value
+    DAGNode* retValue = NULL;
 
-    return NULL;
+    // Create new variable frame
+    VariableFrame* fxnFrame = new VariableFrame( &args );
+
+    // Execute code
+    for ( std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++ ) {
+    
+        if ( retValue != NULL && retValue->numRefs() == 0 )
+            delete retValue;
+
+        retValue = (*i)->getValue( fxnFrame );
+
+        if ( Signals::getSignals().isSet( Signals::RETURN ) )
+            break;
+    }
+
+    // Delete the variable frame of the function
+    delete fxnFrame;
+
+    // Return the return value
+    return retValue;
 }
 
 

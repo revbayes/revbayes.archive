@@ -58,14 +58,14 @@ Dist_topologyunif::Dist_topologyunif( int numTaxa, bool isRooted, bool isBinary 
 }
 
 
-void Dist_topologyunif::buildRandomBinaryTree(std::vector<TopologyNode *> &tips, int numTaxa) {
+void Dist_topologyunif::buildRandomBinaryTree(std::vector<TopologyNode *> &tips, size_t numTaxa) {
     
     if (tips.size() < numTaxa) {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
         
         // randomly draw one node from the list of tips
-        size_t index = floor(rng->uniform01()*tips.size());
+        size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
         
         // get the node from the list
         TopologyNode* parent = tips.at(index);
@@ -138,7 +138,7 @@ void Dist_topologyunif::calculateNumberOfStates( void ) {
         if (isRooted) {
             // set the number of states to default values
             numberOfStates = 1;
-            for (size_t i=2; i<=numTaxa; i++) {
+            for (int i=2; i<=numTaxa; i++) {
                 size_t tmp = (2*i - 3);
                 if (RbConstants::Size_t::max/numberOfStates < tmp) {
                     numberOfStates = RbConstants::Size_t::inf;
@@ -149,7 +149,7 @@ void Dist_topologyunif::calculateNumberOfStates( void ) {
         } else {
             // set the number of states to default values
             numberOfStates = 1;
-            for (size_t i=3; i<=numTaxa; i++) {
+            for (int i=3; i<=numTaxa; i++) {
                 size_t tmp = (2*i - 5);
                 if (RbConstants::Size_t::max/numberOfStates < tmp) {
                     numberOfStates = RbConstants::Size_t::inf;
@@ -307,15 +307,15 @@ Topology* Dist_topologyunif::rv( void ) {
         // internally we treat unrooted topologies the same as rooted
         top->setIsRooted(isRooted);
         
-        TopologyNode *root = new TopologyNode((int)pow(2,numTaxa)-1);
+        TopologyNode *root = new TopologyNode((int)pow(2.0,numTaxa)-1);
         std::vector<TopologyNode*> nodes;
         nodes.push_back(root);
         // recursively build the tree
         buildRandomBinaryTree(nodes, numTaxa);
         
         // set tip names
-        for (size_t i=0; i<numTaxa; i++) {
-            size_t index = floor(rng->uniform01() * nodes.size());
+        for (int i=0; i<numTaxa; i++) {
+            size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
             
             // get the node from the list
             TopologyNode* node = nodes.at(index);

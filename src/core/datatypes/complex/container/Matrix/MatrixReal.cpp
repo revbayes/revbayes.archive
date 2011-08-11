@@ -434,22 +434,33 @@ void MatrixReal::transpose(void) {
 
 
 /**
- * This function performs addition of a scalar to
- * each element of a matrix and returns the
- * resulting matrix.
+ * This function performs unary plus on a matrix,
+ * which simply returns a copy of the matrix.
  *
- * @brief operator+ (scalar)
- * @param A Matrix
- * @param b Scalar
- * @return A + b
+ * @param  A The matrix operand
+ * @return A copy of the operand
  */
-MatrixReal operator+(const MatrixReal& A, const double& b) {
+MatrixReal operator+(const MatrixReal& A) {
+
+	MatrixReal B = A;
+
+    return B;
+}
+
+
+/**
+ * This function performs unary minus on a matrix.
+ *
+ * @param A The matrix operand
+ * @return -A (the negative of the operand)
+ */
+MatrixReal operator-(const MatrixReal& A) {
 
 	MatrixReal B;
     B = A;
 	for (size_t i=0; i<B.getNumRows(); i++)
 		for (size_t j=0; j<B.getNumCols(); j++)
-			B[i][j] = A[i][j] - b;
+			B[i][j] = -B[i][j];
 	return B;
 }
 

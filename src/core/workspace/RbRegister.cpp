@@ -111,6 +111,9 @@
 #include "Func__or.h"
 #include "Func__range.h"
 #include "Func__sub.h"
+#include "Func__uminus.h"
+#include "Func__unot.h"
+#include "Func__uplus.h"
 
 /* Builtin functions */
 #include "Func_clamp.h"
@@ -232,6 +235,17 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add basic internal functions (alphabetic order) */
         addFunction( "_range",    new Func__range()       );
        
+        /* Add basic unary arithmetic and logical templated functions */
+        addFunction( "_uplus",    new Func__uplus <         Integer,        Integer >() );
+        addFunction( "_uplus",    new Func__uplus <            Real,           Real >() );
+        addFunction( "_uplus",    new Func__uplus <      MatrixReal,     MatrixReal >() );
+        addFunction( "_uminus",   new Func__uminus<         Integer,        Integer >() );
+        addFunction( "_uminus",   new Func__uminus<            Real,           Real >() );
+        addFunction( "_uminus",   new Func__uminus<      MatrixReal,     MatrixReal >() );
+        addFunction( "_unot",     new Func__unot  <         Boolean >() );
+        addFunction( "_unot",     new Func__unot  <         Integer >() );
+        addFunction( "_unot",     new Func__unot  <            Real >() );
+
         /* Add basic arithmetic templated functions */
         addFunction( "_add",      new Func__add<            Integer,        Integer,    Integer >() );
         addFunction( "_add",      new Func__add<               Real,           Real,       Real >() );

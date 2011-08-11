@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 
+class Boolean;
 class VectorNatural;
 
 
@@ -84,6 +85,8 @@ class MatrixReal : public Matrix {
 };
 
         // operators defined outside of the class
+        MatrixReal                          operator+(const MatrixReal& A);                                             //!< Unary operator + 
+        MatrixReal                          operator-(const MatrixReal& A);                                             //!< Unary operator - 
         MatrixReal                          operator+(const MatrixReal& A, const MatrixReal& B);                        //!< operator + 
         MatrixReal                          operator-(const MatrixReal& A, const MatrixReal& B);                        //!< operator - 
         MatrixReal                          operator*(const MatrixReal& A, const MatrixReal& B);                        //!< operator * (matrix multiplication) 

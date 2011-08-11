@@ -56,6 +56,8 @@ class SyntaxStatement : public SyntaxElement {
         DAGNode*                    getValue(VariableFrame* frame) const;                           //!< Get semantic value
 
     protected:
+        bool                        isTrue(SyntaxElement* expression, VariableFrame* frame) const;  //!< Does expression evaluate to true?
+
         enum statementT             statementType;                                                  //!< The type of statement
         SyntaxElement*              expression;                                                     //!< Expression, conditional expr, or for condition
         std::list<SyntaxElement*>*  statements1;                                                    //!< First set of statements

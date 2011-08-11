@@ -23,6 +23,7 @@
 #include <ostream>
 #include <string>
 
+class Boolean;
 class VectorString;
 
 /**
@@ -61,6 +62,11 @@ class Real : public RbObject {
         double&                     getValueRef(void) { return value; }                                     //!< Get value reference
         double                      value;                                                                  //!< Value member
 };
+
+        // Operators defined outside of the class
+        Real                        operator+ (const Real& A);                                              //!< Unary operator + 
+        Real                        operator- (const Real& A);                                              //!< Unary operator - 
+        Boolean                     operator! (const Real& A);                                              //!< Unary operator !
 
 #endif
 

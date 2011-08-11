@@ -64,11 +64,23 @@ SyntaxVariable::SyntaxVariable(SyntaxVariable* var, SyntaxFunctionCall* fxnCall,
 SyntaxVariable::SyntaxVariable(const SyntaxVariable& x)
     : SyntaxElement(x) {
 
-    identifier      = x.identifier->clone();
-    baseVariable    = x.baseVariable->clone();
-    for (std::list<SyntaxElement*>::iterator i=x.index->begin(); i!=x.index->end(); i++) {
-        index->push_back((*i)->clone());
+    identifier = x.identifier->clone();
+    if ( x.baseVariable != NULL )
+        baseVariable = x.baseVariable->clone();
+    else
+        baseVariable = NULL;
+    if ( x.functionCall != NULL )
+        functionCall = x.functionCall->clone();
+    else
+        functionCall = NULL;
+    if ( x.index != NULL ) {
+        index = new std::list<SyntaxElement*>();
+        for (std::list<SyntaxElement*>::iterator i=x.index->begin(); i!=x.index->end(); i++) {
+            index->push_back((*i)->clone());
+        }
     }
+    else
+        index = NULL;
 }
 
 
@@ -78,9 +90,11 @@ SyntaxVariable::~SyntaxVariable() {
     delete identifier;
     delete functionCall;
     delete baseVariable;
-    for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++)
-        delete (*i);
-    delete index;
+    if ( index != NULL ) {
+        for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++)
+            delete (*i);
+        delete index;
+    }
 }
 
 

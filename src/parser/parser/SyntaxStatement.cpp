@@ -13,6 +13,7 @@
  * $Id$
  */
 
+#include "Boolean.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
@@ -206,6 +207,35 @@ DAGNode* SyntaxStatement::getValue(VariableFrame* frame) const {
             }
         }
     }
+    else if ( statementType == While ) {
+
+        // Loop over statements inside the while loop, first checking the expression
+        while ( isTrue( expression, frame ) ) {
+
+            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
+
+                // Execute statement
+                DAGNode* result = (*i)->getValue( frame );
+
+                // Free memory
+				if ( result != NULL && result->numRefs() == 0 )
+					delete result;  // discard result
+
+                // Catch signal
+                if ( !Signals::getSignals().isGood() )
+                    break;
+            }
+
+            // Catch signals
+            if ( Signals::getSignals().isSet(Signals::BREAK) ) {
+                Signals::getSignals().clearFlags();
+                break;
+            }
+            else if ( Signals::getSignals().isSet(Signals::CONTINUE) ) {
+                Signals::getSignals().clearFlags();  // Just continue with next loop state
+            }
+        }
+    }
     else if (statementType == Break) {
     
         // Set BREAK signal
@@ -216,11 +246,94 @@ DAGNode* SyntaxStatement::getValue(VariableFrame* frame) const {
         // Set CONTINUE signal
         Signals::getSignals().set(Signals::CONTINUE);
     }
-    else {
-        throw (RbException("Statement of type " + stmtName[statementType] + " not implemented yet"));
+    else if (statementType == Return) {
+    
+        // Set RETURN signal and return expression value
+        Signals::getSignals().set(Signals::RETURN);
+        return expression->getValue(frame);
+    }
+    else if ( statementType == If ) {
+
+        // Process statements inside the if clause if expression is true
+        if ( isTrue( expression, frame ) ) {
+
+            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
+
+                // Execute statement
+                DAGNode* result = (*i)->getValue( frame );
+
+                // Free memory
+				if ( result != NULL && result->numRefs() == 0 )
+					delete result;  // discard result
+            }
+        }
+    }
+    else if ( statementType == IfElse ) {
+
+        // Process statements inside the if clause if expression is true,
+        // otherwise process statements in else clause
+        if ( isTrue( expression, frame ) ) {
+
+            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
+
+                // Execute statement
+                DAGNode* result = (*i)->getValue( frame );
+
+                // Free memory
+				if ( result != NULL && result->numRefs() == 0 )
+					delete result;  // discard result
+            }
+        }
+        else {
+
+            for ( std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++ ) {
+
+                // Execute statement
+                DAGNode* result = (*i)->getValue( frame );
+
+                // Free memory
+				if ( result != NULL && result->numRefs() == 0 )
+					delete result;  // discard result
+            }
+        }
     }
 
     return NULL;
+}
+
+
+/**
+ * This is a help function that evaluates the expression and then checks
+ * whether the result is true or false, or can be interpreted as a Boolean
+ * true or false value.
+ */
+bool SyntaxStatement::isTrue( SyntaxElement* expression, VariableFrame* frame ) const {
+
+    DAGNode* temp = expression->getValue( frame  );
+
+    if ( temp == NULL )
+        return false;
+
+    if ( temp->getValue()->isType( Boolean_name ) ) {
+    
+        bool retValue = static_cast<const Boolean*>( temp->getValue() )->getValue();
+
+        if ( temp->numRefs() == 0 )
+            delete   temp;
+
+        return retValue;
+    }
+    else {
+    
+        Boolean* tempBool = static_cast<Boolean*>( temp->getValue()->convertTo( Boolean_name, 0 ) );
+        bool     retValue = tempBool->getValue();
+
+        delete   tempBool;
+        if ( temp->numRefs() == 0 )
+            delete   temp;
+
+        return   retValue;
+    }
 }
 
 

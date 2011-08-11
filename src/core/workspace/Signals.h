@@ -22,7 +22,8 @@ class Signals { // @Fredrik: Isn't a better place for this class in the parser d
 
     public:
         enum                    RbFlags {   BREAK       = 1L << 0,
-                                            CONTINUE    = 1L << 1 };                            //!< RevBayes flags
+                                            CONTINUE    = 1L << 1,
+                                            RETURN      = 1L << 2 };                            //!< RevBayes flags
 
         void                    set(const long flag) { flags |= flag; }                         //!< Set a flag
         void                    clearFlags(void) { flags = 0L; }                                //!< Clear flags

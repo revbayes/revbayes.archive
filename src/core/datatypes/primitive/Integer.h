@@ -24,6 +24,7 @@
 #include <ostream>
 #include <string>
 
+class Boolean;
 class VectorString;
 
 class Integer : public RbObject {
@@ -55,6 +56,11 @@ class Integer : public RbObject {
         int&                        getValueRef(void) { return value; }                                     //!< Get value reference for VectorInteger
         int                         value;                                                                  //!< Value member
 };
+
+        // Operators defined outside of the class
+        Integer                     operator+ (const Integer& A);                                           //!< Unary operator + 
+        Integer                     operator- (const Integer& A);                                           //!< Unary operator - 
+        Boolean                     operator! (const Integer& A);                                           //!< Unary operator !
 
 #if 0
         Integer                     operator+ (const Integer& A, const Integer& B);                         //!< operator + 
