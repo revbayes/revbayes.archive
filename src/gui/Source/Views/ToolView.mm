@@ -79,7 +79,7 @@
 		imageRect.origin = NSZeroPoint;
 		imageRect.size = NSMakeSize(toolSize, toolSize);
 		NSRect drawingRect = imageRect;
-		drawingRect.origin = NSMakePoint(i * toolSize, 2.0);
+		drawingRect.origin = NSMakePoint(i * toolSize, 13.0);
         
 		// draw the tool image
 		[toolImage drawInRect:drawingRect fromRect:imageRect operation:NSCompositeSourceOver fraction:1.0];

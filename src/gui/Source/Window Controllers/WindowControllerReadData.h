@@ -60,7 +60,6 @@ class CharacterMatrix;
 - (unsigned)missingForNumStates:(int)n;
 - (IBAction)okButtonAction:(id)sender;
 - (BOOL)readDataFile;
-- (void)resizeWindowTo:(float)h;
 - (void)setControlsEnabledState;
 - (void)setControlWindowSize;
 - (void)setToolValues;

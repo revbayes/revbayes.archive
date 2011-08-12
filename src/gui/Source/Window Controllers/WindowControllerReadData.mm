@@ -236,6 +236,22 @@
     [oPanel setCanChooseDirectories:YES];
 
     // open the panel
+#   if 1
+    NSString* fileToOpen;
+    [oPanel setAllowedFileTypes:fileTypes];
+    int result = (int)[oPanel runModal];
+    if ( result == NSFileHandlingPanelOKButton )
+        {
+        NSArray* filesToOpen = [oPanel URLs];
+        int count = (int)[filesToOpen count];
+        for (int i=0; i<count; i++) 
+            {
+            NSLog(@"%d -- %@\n", i, [[filesToOpen objectAtIndex:i] path]);
+            fileToOpen = [[filesToOpen objectAtIndex:i] path];
+            }
+        }
+    
+#   else
     NSString* fileToOpen;
     int result = (int)[oPanel runModalForDirectory:nil file:nil types:fileTypes];
     if ( result == NSOKButton ) 
@@ -244,10 +260,12 @@
         int count = (int)[filesToOpen count];
         for (int i=0; i<count; i++) 
             {
+            NSLog(@"%d -- %@\n", i, [filesToOpen objectAtIndex:i]);
             fileToOpen = [filesToOpen objectAtIndex:i];
             }
         }
-    
+#   endif
+        
 	// check to see if the selection is a file or a directory
     NSFileManager* fileManager = [NSFileManager defaultManager];
 	BOOL isDir;

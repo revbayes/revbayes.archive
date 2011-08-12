@@ -159,7 +159,7 @@
 		{
 		if ( [myTool numDataMatrices] == 0 )
 			return;
-		RbData* d = [myTool dataMatrixIndexed:[charMatrixSelector indexOfSelectedItem]];
+		RbData* d = [myTool dataMatrixIndexed:(int)[charMatrixSelector indexOfSelectedItem]];
 		NSMatrix* m = [excludedCharMatrices objectAtIndex:[charMatrixSelector indexOfSelectedItem]];
 		[m deselectAllCells];
 		for (int i=0; i<[m numberOfRows]; i++)
@@ -355,7 +355,7 @@
 		ToolReadData* t = (ToolReadData*)[myTool getToolOfInletIndexed:0];
 		if (t == nil)
 			return;
-		RbData* d = [t dataMatrixIndexed:[charMatrixSelector indexOfSelectedItem]];
+		RbData* d = [t dataMatrixIndexed:(int)[charMatrixSelector indexOfSelectedItem]];
 		NSMatrix* m = [includedCharMatrices objectAtIndex:[charMatrixSelector indexOfSelectedItem]];
 		[m deselectAllCells];
 		for (int i=0; i<[m numberOfRows]; i++)
