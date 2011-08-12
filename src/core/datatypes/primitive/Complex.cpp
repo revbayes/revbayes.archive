@@ -28,42 +28,42 @@
 
 
 /** Default constructor */
-Complex::Complex(void) : RbObject() {
+Complex::Complex(void) : RbLanguageObject() {
 
     value = std::complex<double>( 0.0, 0.0 );
 }
 
 
 /** Copy constructor */
-Complex::Complex(const Complex& c) : RbObject() {
+Complex::Complex(const Complex& c) : RbLanguageObject() {
 
     value = c.value;
 }
 
 
 /** Construct from double */
-Complex::Complex(const double x) : RbObject() {
+Complex::Complex(const double x) : RbLanguageObject() {
 
     value = std::complex<double>( x, 0.0 );
 }
 
 
 /** Construct from int */
-Complex::Complex(const int x) : RbObject() {
+Complex::Complex(const int x) : RbLanguageObject() {
 
     value = std::complex<double>( (double)x, 0.0 );
 }
 
 
 /** Construct from unsigned int */
-Complex::Complex(const unsigned int x) : RbObject() {
+Complex::Complex(const unsigned int x) : RbLanguageObject() {
 
     value = std::complex<double>( (double)x, 0.0 );
 }
 
 
 /** Construct from bool */
-Complex::Complex(const bool v) : RbObject() {
+Complex::Complex(const bool v) : RbLanguageObject() {
 
     if (v == true) 
         value = std::complex<double>(1.0, 0.0);
@@ -73,7 +73,7 @@ Complex::Complex(const bool v) : RbObject() {
 
 
 /** Construct from complex */
-Complex::Complex(const std::complex<double>& c) : RbObject() {
+Complex::Complex(const std::complex<double>& c) : RbLanguageObject() {
 
     value = c;
 }
@@ -87,24 +87,24 @@ Complex* Complex::clone(void) const {
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbObject* Complex::convertTo(const std::string& type, size_t dim) const {
+RbLanguageObject* Complex::convertTo(const std::string& type) const {
 
-    return RbObject::convertTo( type, dim );
+    return RbLanguageObject::convertTo( type );
 }
 
 
 /** Get class vector describing type of object */
 const VectorString& Complex::getClass(void) const {
 
-    static VectorString rbClass = VectorString(Complex_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(Complex_name) + RbLanguageObject::getClass();
     return rbClass;
 }
 
 
 /** Is convertible to type and dim? */
-bool Complex::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
+bool Complex::isConvertibleTo(const std::string& type, bool once) const {
 
-    return RbObject::isConvertibleTo(type, dim, once);
+    return RbLanguageObject::isConvertibleTo(type, once);
 }
 
 

@@ -28,15 +28,18 @@
 
 
 /** Default constructor for matrix */
-Matrix::Matrix(const std::string& elemType)
-    : ValueContainer(TypeSpec(elemType, 2)) {
+Matrix::Matrix(const std::string& elemType) : Container(TypeSpec(elemType)) {
+}
+
+/** Default constructor for matrix */
+Matrix::Matrix(const std::string& elemType, const MemberRules& memberRules) : Container(TypeSpec(elemType), memberRules) {
 }
 
 
 /** Get class vector describing type of object */
 const VectorString& Matrix::getClass(void) const {
 
-    static VectorString rbClass = VectorString(Matrix_name) + ValueContainer::getClass();
+    static VectorString rbClass = VectorString(Matrix_name) + Container::getClass();
     return rbClass;
 }
 

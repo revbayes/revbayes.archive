@@ -18,12 +18,10 @@
 #include "ArgumentRule.h"
 #include "Boolean.h"
 #include "ConstantNode.h"
-#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "Distribution.h"
 #include "DistributionContinuous.h"
 #include "DistributionFunction.h"
-#include "MemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RealPos.h"
@@ -47,7 +45,7 @@ DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcTyp
     /* Get the distribution parameter rules and set type to value argument */
     const ArgumentRules& memberRules = dist->getMemberRules();
     for ( ArgumentRules::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
-        argumentRules.push_back( new ValueRule( (*i)->getArgLabel(), (*i)->getArgTypeSpec() ) );
+        argumentRules.push_back( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() ) );
     }
 
     /* Modify argument rules based on function type */
@@ -72,10 +70,11 @@ DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcTyp
 
 
 /** Copy constructor */
-DistributionFunction::DistributionFunction( const DistributionFunction& x ) : returnType( x.returnType ) {
+DistributionFunction::DistributionFunction( const DistributionFunction& x ) : RbFunction(x), returnType( x.returnType ) {
 
     argumentRules = x.argumentRules;
     distribution  = x.distribution->clone();
+    distribution->retain();
     functionType  = x.functionType;
 
     /* Modify argument rules based on function type */
@@ -102,7 +101,12 @@ DistributionFunction::DistributionFunction( const DistributionFunction& x ) : re
 /** Destructor */
 DistributionFunction::~DistributionFunction(void) {
 
-    delete distribution;
+    if (distribution != NULL) {
+        distribution->release();
+        if (distribution->isUnreferenced()) {
+            delete distribution;
+        }
+    }
 }
 
 
@@ -114,10 +118,16 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
         if ( returnType != x.returnType )
             throw RbException( "Invalid assignment involving distributions on different types of random variables" );
         
-        delete distribution;
+        if (distribution != NULL) {
+            distribution->release();
+            if (distribution->isUnreferenced()) {
+                delete distribution;
+            }
+        }
 
         argumentRules = x.argumentRules;
         distribution  = x.distribution->clone();
+        distribution->retain();
         functionType  = x.functionType;
 
         /* Modify argument rules based on function type */
@@ -152,31 +162,31 @@ DistributionFunction* DistributionFunction::clone( void ) const {
 
 
 /** Execute operation: switch based on type */
-DAGNode* DistributionFunction::execute( void ) {
+RbLanguageObject* DistributionFunction::execute( void ) {
 
     if ( functionType == DENSITY ) {
 
         if ( static_cast<const Boolean*>( args["log"].getValue() )->getValue() == false )
-            return new ConstantNode( new RealPos( distribution->pdf  ( args[0].getValue() ) ) );
+            return new RealPos( distribution->pdf  ( args[0].getValue() ) );
         else
-            return new ConstantNode( new Real   ( distribution->lnPdf( args[0].getValue() ) ) );
+            return new Real   ( distribution->lnPdf( args[0].getValue() ) );
     }
     else if (functionType == RVALUE) {
 
-        RbObject* draw = distribution->rv();
+        RbLanguageObject* draw = distribution->rv();
         
-        return draw->wrapIntoVariable();
+        return draw;
     }
     else if (functionType == PROB) {
 
-        return new ConstantNode( new RealPos( static_cast<DistributionContinuous*>( distribution )->cdf( args[0].getValue() ) ) );
+        return new RealPos( static_cast<DistributionContinuous*>( distribution )->cdf( args[0].getValue() ) );
     }
     else if (functionType == QUANTILE) {
 
         double    prob  = static_cast<const RealPos*>( args[0].getValue() )->getValue();
-        RbObject* quant = static_cast<DistributionContinuous*>( distribution )->quantile( prob );
+        RbLanguageObject* quant = static_cast<DistributionContinuous*>( distribution )->quantile( prob );
         
-        return quant->wrapIntoVariable();
+        return quant;
     }
 
     throw RbException( "Unrecognized distribution function" );
@@ -205,7 +215,7 @@ const TypeSpec DistributionFunction::getReturnType(void) const {
 }
 
 /** Process arguments */
-bool DistributionFunction::processArguments( const std::vector<Argument>& args, bool evaluateOnce, VectorInteger* matchScore ) {
+bool DistributionFunction::processArguments( const std::vector<Argument*>& args, bool evaluateOnce, VectorInteger* matchScore ) {
 
     if ( !RbFunction::processArguments( args, evaluateOnce, matchScore ) )
         return false;
@@ -220,11 +230,11 @@ bool DistributionFunction::processArguments( const std::vector<Argument>& args, 
 
     for ( ; i < k; i++ ) {
 
-        std::string name = argumentRules[i]->getArgLabel();
+        std::string name = argumentRules[i]->getArgumentLabel();
 
         /* All distribution variables are references but we have value arguments here
            so a const cast is needed to deal with the mismatch */
-        distribution->setVariable( name, args[i].getVariable() );
+        distribution->setMemberVariable( name, args[i]->getVariable() );
     }
 
     return true;

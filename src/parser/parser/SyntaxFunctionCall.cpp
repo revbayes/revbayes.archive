@@ -16,15 +16,16 @@
 #include "Argument.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
-#include "FunctionNode.h"
-#include "MemberNode.h"
+#include "DeterministicNode.h"
+#include "Environment.h"
+#include "MemberFunction.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "RbOptions.h"
 #include "SyntaxFunctionCall.h"
 #include "VectorString.h"
-#include "VariableFrame.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -116,16 +117,16 @@ const VectorString& SyntaxFunctionCall::getClass(void) const {
 
 
 /** Convert element to a deterministic function node. */
-DAGNode* SyntaxFunctionCall::getDAGNodeExpr(VariableFrame* frame) const {
+Variable* SyntaxFunctionCall::getContentAsVariable(Environment* env) const {
 
     // Package arguments
-    std::vector<Argument> args;
-    if (variable != NULL) {
-        args.push_back(Argument("object", variable->getDAGNodeExpr(frame)));
-        args.push_back(Argument("function", new ConstantNode(functionName)));
+    std::vector<Argument*> args;
+    for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++) {
+        PRINTF( "Adding argument with label \"%s\".\n", (*i)->getLabel()->getValue().c_str() );
+        Argument *theArg = new Argument(*(*i)->getLabel(), (*i)->getExpression()->getContentAsVariable(env) );
+        theArg->retain();
+        args.push_back(theArg);
     }
-    for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        args.push_back(Argument(*(*i)->getLabel(), (*i)->getExpression()->getDAGNodeExpr(frame)));    
 
     RbFunction* func;
     if (variable == NULL) {
@@ -137,43 +138,20 @@ DAGNode* SyntaxFunctionCall::getDAGNodeExpr(VariableFrame* frame) const {
     }
     else {
 
-        MemberNode* memberNode = dynamic_cast<MemberNode*>( variable->getValue( frame ) );
-        if ( memberNode == NULL )
+        DAGNode* theNode = variable->getContentAsVariable( env )->getDagNodePtr();
+        if ( theNode == NULL || !theNode->getValue()->isType(MemberObject_name) )
             throw RbException( "Variable does not have member functions" );
 
-        args.insert( args.begin(), Argument( "", memberNode ) );
-        func = memberNode->getMemberObject()->getMethods().getFunction( *functionName, args );
+        MemberObject *theMemberObject = dynamic_cast<MemberObject*>(theNode->getValuePtr());
+//        args.insert( args.begin(), new Argument( "", memberNode ) );
+        MemberFunction *theMemberFunction = (MemberFunction*) theMemberObject->getMethods().getFunction( *functionName, args );
+        theMemberFunction->setMemberObject(theMemberObject);
+        func = theMemberFunction;
     }
 
-    return new FunctionNode(func);
+    return new Variable(new DeterministicNode(func));
 }
 
-
-/** Look up the function or member function and calculate the value. */
-DAGNode* SyntaxFunctionCall::getValue( VariableFrame* frame ) const {
-
-    // Package arguments
-    std::vector<Argument> args;
-    for ( std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++ )
-        args.push_back( Argument( *(*i)->getLabel(), (*i)->getExpression()->getValue( frame ) ) );    
-
-    // Get function pointer and execute function
-    DAGNode* retVal;
-    if ( variable == NULL ) {
-
-        retVal = Workspace::userWorkspace().executeFunction( *functionName, args );
-    }
-    else {
-        
-        MemberNode* memberNode = dynamic_cast<MemberNode*>( variable->getValue( frame ) );
-        if ( memberNode == NULL )
-            throw RbException( "Variable does not have member functions" );
-        args.insert( args.begin(), Argument( "", memberNode ) );
-        retVal = memberNode->executeMethod( *functionName, args);
-    }
-
-    return retVal;
-}
 
 
 /** Print info about the syntax element */

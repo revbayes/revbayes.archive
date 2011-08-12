@@ -41,15 +41,15 @@ class CharacterStateDiscrete : public Character {
 
         // Discrete character observation functions
         virtual void                            addState(const char s) = 0;                        //!< Add a character state to the set of character states
-        virtual CondLike*                       getCondLike(void) const;                            //!< Initialize and return a conditional likelihood for this state     
-        size_t                                  getNumOnStates(void) const;                        //!< How many states are observed for the character
+//        virtual CondLike*                       getCondLike(void) const;                            //!< Initialize and return a conditional likelihood for this state     
+        size_t                                  getNumberObservedStates(void) const;               //!< How many states are observed for the character
         virtual const std::string&              getStateLabels(void) const = 0;                    //!< Get valid state labels
-        virtual size_t                          getNumStates(void) const { return numStates; }     //!< Get the number of discrete states for the character
+        virtual size_t                          getNumberOfStates(void) const { return numStates; }//!< Get the number of discrete states for the character
         virtual const char                      getState(void) const = 0;                          //!< Get the discrete observation
         std::vector<bool>                       getStateVector(void) const { return value; }       //!< Get the raw vector of states
         virtual unsigned                        getUnsignedValue(void) const;                      //!< Get an unsigned reprsentation of the bool set
-        virtual bool                            isMissAmbig(void) const;                           //!< Is the character missing or ambiguous
-        void                                    setNumStates(size_t n);                            //!< Set the number of character states
+        virtual bool                            isMissingOrAmbiguous(void) const;                  //!< Is the character missing or ambiguous
+        void                                    setNumberOfStates(size_t n);                       //!< Set the number of character states
         virtual void                            setState(const char s) = 0;                        //!< Set the discrete observation
 
     protected:

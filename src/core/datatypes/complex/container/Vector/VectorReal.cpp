@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -41,7 +41,7 @@ VectorReal::VectorReal(void) : Vector(Real_name) {
 VectorReal::VectorReal(const double x) : Vector(Real_name) {
 
     elements.push_back(new Real(x));
-    length[0] = 1;
+    length = 1;
 }
 
 
@@ -50,7 +50,7 @@ VectorReal::VectorReal(const size_t n, const double x) : Vector(Real_name) {
 
     for (size_t i = 0; i < n; i++)
         elements.push_back(new Real(x));
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -59,16 +59,16 @@ VectorReal::VectorReal(const std::vector<double>& x) : Vector(Real_name) {
 
     for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++)
         elements.push_back(new Real(*i));
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
 /** Constructor from VectorRealPos */
 VectorReal::VectorReal( const VectorRealPos& x ) : Vector( Real_name ) {
 
-    for ( size_t i = 0; i < x.size(); i++ )
+    for ( size_t i = 0; i < x.getLength(); i++ )
         elements.push_back( new Real( x[i] ) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -78,7 +78,7 @@ double& VectorReal::operator[](size_t i) {
     if (i >= int(elements.size()))
         throw RbException("Index out of bounds");
 
-    return static_cast<Real*>(elements[i])->getValueRef();
+    return static_cast<Real*>(elements[i])->getValueReference();
 }
 
 
@@ -87,14 +87,14 @@ const double& VectorReal::operator[](size_t i) const {
 
     if (i >= int(elements.size()))
         throw RbException("Index out of bounds");
-    return static_cast<Real*>(elements[i])->getValueRef();
+    return static_cast<Real*>(elements[i])->getValueReference();
 }
 
 
 /** Equals comparison */
 bool VectorReal::operator==(const VectorReal& x) const {
 
-    if (size() != x.size())
+    if (getLength() != x.getLength())
         return false;
 
     for (size_t i=0; i<elements.size(); i++) {
@@ -120,6 +120,19 @@ VectorReal* VectorReal::clone(void) const {
 }
 
 
+/** Can we convert this vector into another object? */
+RbLanguageObject* VectorReal::convertTo(std::string const &type) const {
+    
+    // test for type conversion
+    if (type == VectorRealPos_name) {
+        
+        return new VectorRealPos( getValue() );
+    }
+    
+    return Vector::convertTo(type);
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& VectorReal::getClass(void) const {
 
@@ -132,10 +145,32 @@ const VectorString& VectorReal::getClass(void) const {
 std::vector<double> VectorReal::getValue(void) const {
 
     std::vector<double> temp;
-    for (size_t i=0; i<size(); i++)
+    for (size_t i=0; i<getLength(); i++)
         temp.push_back(operator[](i));
 
     return temp;
+}
+
+
+/** Can we convert this vector into another object? */
+bool VectorReal::isConvertibleTo(std::string const &type, bool once) const {
+    
+    // test for type conversion
+    if (type == VectorRealPos_name && once == true) {
+        
+        for (std::vector<RbLanguageObject*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+            Real *x = dynamic_cast<Real*>(*it);
+            
+            // test whether we can convert this element, otherwise return false
+            if (!x->isConvertibleTo(type, once)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    return Vector::isConvertibleTo(type, once);
 }
 
 
@@ -148,7 +183,7 @@ void VectorReal::printValue(std::ostream& o) const {
     o << "[ ";
     o << std::fixed;
     o << std::setprecision(1);
-    for (std::vector<RbObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) 
+    for (std::vector<RbLanguageObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) 
         {
         if (i != elements.begin())
             o << ", ";
@@ -165,7 +200,7 @@ void VectorReal::printValue(std::ostream& o) const {
 void VectorReal::push_back(double x) {
 
     elements.push_back(new Real(x));
-    length[0]++;
+    length++;
 }
 
 
@@ -173,7 +208,7 @@ void VectorReal::push_back(double x) {
 void VectorReal::push_front(double x) {
 
     elements.insert(elements.begin(), new Real(x));
-    length[0]++;
+    length++;
 }
 
 
@@ -192,9 +227,10 @@ std::string VectorReal::richInfo(void) const {
 void VectorReal::setValue(const std::vector<double>& x) {
 
     clear();
+    length = 0;
     for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++) {   
         elements.push_back(new Real(*i));
-        length[0]++;
+        length++;
     }
 }   
 
@@ -203,9 +239,10 @@ void VectorReal::setValue(const std::vector<double>& x) {
 void VectorReal::setValue(const VectorReal& x) {
 
     clear();
-    for (size_t i=0; i<x.size(); i++) {   
+    length = 0;
+    for (size_t i=0; i<x.getLength(); i++) {   
         elements.push_back(new Real(x[i]));
-        length[0]++;
+        length++;
     }
 }   
 

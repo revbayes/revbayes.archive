@@ -17,7 +17,7 @@
 #ifndef TreePlate_H
 #define TreePlate_H
 
-#include "MemberObject.h"
+#include "MutableMemberObject.h"
 #include <set>
 #include <string>
 
@@ -26,7 +26,7 @@ class ValueRule;
 
 
 
-class TreePlate: public MemberObject {
+class TreePlate: public MutableMemberObject {
     
     public:
                                         TreePlate(void);                                                        //!< Default constructor
@@ -40,12 +40,12 @@ class TreePlate: public MemberObject {
         void                            printValue(std::ostream& o) const;                                      //!< Print value for user
         std::string                     richInfo(void) const;                                                   //!< Complete info
 
-        // Member variable rules
+        // Member variable functions
         const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
-        void                            setVariable(const std::string& name, DAGNode* var);                     //!< Catch setting of the topology
+        void                            setMemberVariable(const std::string& name, Variable* var);              //!< Catch setting of the topology
 
         // Member method inits
-        DAGNode*                        executeOperation(const std::string& name, ArgumentFrame& args);         //!< Execute method
+        RbLanguageObject*               executeOperation(const std::string& name, Environment& args);           //!< Execute method
         const MethodTable&              getMethods(void) const;                                                 //!< Get methods
         
         // Tree plate functions

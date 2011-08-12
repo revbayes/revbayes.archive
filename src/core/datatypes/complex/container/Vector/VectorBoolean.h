@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-12-04, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -54,7 +54,7 @@ class VectorBoolean : public Vector {
         void                        setValue(const std::vector<bool>& x);                           //!< Set the value
 
     protected:
-        RbObject*                   getDefaultElement(void) const { return new Boolean(); }         //!< Get default element for empty slots
+//        RbObject*                   getDefaultElement(void) const { return new Boolean(); }         //!< Get default element for empty slots
 
 };
 

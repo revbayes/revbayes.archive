@@ -41,15 +41,14 @@ class Dist_ctmm: public DistributionDiscrete {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        void                        setVariable(const std::string& name, DAGNode* var);                 //!< Set member variable (ensure number of states is consistent)
+        void                        setMemberVariable(const std::string& name, Variable* var);          //!< Set member variable (ensure number of states is consistent)
 
         // Discrete distribution functions
-        Move*                       getDefaultMove(StochasticNode* node);                               //!< Get default move
-        size_t                      getNumStates(void) const;                                           //!< Get number of states
+        size_t                      getNumberOfStates(void) const;                                      //!< Get number of states
         virtual const Simplex*      getProbabilityMassVector(void);                                     //!< Get probability mass vector
         const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-        double                      lnPdf(const RbObject* value);                                       //!< Ln probability density
-        double                      pdf(const RbObject* value);                                         //!< Probability density
+        double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
+        double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         CharacterStateDiscrete*     rv(void);                                                           //!< Generate random variable
 };
 

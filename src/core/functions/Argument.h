@@ -23,6 +23,7 @@
 #include "DAGNode.h"
 #include "RbInternal.h"
 #include "RbObject.h"
+#include "Variable.h"
 
 #include <ostream>
 #include <string>
@@ -30,7 +31,10 @@
 class Argument : public RbInternal {
 
     public:
-                                Argument(const std::string& argLabel, DAGNode* arg);                //!< Constructor 
+                                Argument(Variable* arg);                                            //!< Constructor 
+                                Argument(const std::string& argLabel, Variable* arg);               //!< Constructor 
+                                Argument(const Argument &x);                                        //!< Copy constructor 
+    virtual                     ~Argument(void);                                                    //!< Destructor
 
         // Basic utility functions
         Argument*               clone(void) const { return new Argument (*this); }                  //!< Clone object
@@ -38,12 +42,15 @@ class Argument : public RbInternal {
         std::string             richInfo(void) const;                                               //!< Complete info about object
 
         // Regular functions
+        Variable*               getVariable(void) { return var; }                                   //!< Get the variable contained in this argument
         std::string             getLabel(void) const { return label; }                              //!< Get label of argument
-        DAGNode*                getVariable(void) const { return dagNodePtr; }                      //!< Get argument variable
+        DAGNode*                getDagNode(void) const { return var->getDagNodePtr(); }             //!< Get argument variable
+        void                    setDagNode(DAGNode *newNode);                                       //!< set the DAG node of the argument; replaces the DAG node in the variable
+        void                    setVariable(Variable *newVar);                                      //!< set the variable of the argument
 
     protected:
         std::string             label;                                                              //!< Label of argument
-        DAGNode*                dagNodePtr;                                                         //!< Pointer to the DAG node wrapper of the argument value
+        Variable               *var;                                                                //!< Pointer to the variable slot containing the variable (and value)
 };
 
 #endif

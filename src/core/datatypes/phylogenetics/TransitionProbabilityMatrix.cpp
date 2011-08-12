@@ -20,25 +20,23 @@
 #include "Boolean.h"
 #include "MatrixReal.h"
 #include "MemberFunction.h"
-#include "MemberNode.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "RealPos.h"
-#include "ReferenceRule.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
-#include "VectorIndex.h"
 #include "VectorNatural.h"
 #include "VectorReal.h"
 #include "VectorRealPos.h"
 #include "VectorString.h"
 #include "Workspace.h"
+
 #include <cmath>
 #include <fstream>
 #include <sstream>
@@ -47,7 +45,7 @@
 
 
 /** Constructor passes member rules and method inits to base class */
-TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : MemberObject(getMemberRules()) {
+TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : ConstantMemberObject(getMemberRules()) {
 
     numStates = 2;
     theMatrix = new MatrixReal(numStates, numStates);
@@ -55,7 +53,7 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : MemberObject(ge
 
 
 /** Construct rate matrix with n states */
-TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : MemberObject(getMemberRules()) {
+TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : ConstantMemberObject(getMemberRules()) {
 
     numStates = n;
     theMatrix = new MatrixReal(numStates, numStates);
@@ -103,11 +101,11 @@ TransitionProbabilityMatrix* TransitionProbabilityMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-DAGNode* TransitionProbabilityMatrix::executeOperation(const std::string& name, ArgumentFrame& args) {
+RbLanguageObject* TransitionProbabilityMatrix::executeOperation(const std::string& name, Environment& args) {
 
     if (name == "nstates") 
         {
-        return ( new Natural((int)numStates) )->wrapIntoVariable();
+        return ( new Natural((int)numStates) );
         }
 
     return MemberObject::executeOperation( name, args );
@@ -147,7 +145,7 @@ const MethodTable& TransitionProbabilityMatrix::getMethods(void) const {
     if ( methodsSet == false ) 
         {
         // this must be here so the parser can distinguish between different instances of a character matrix
-        nstatesArgRules.push_back(         new ReferenceRule( "", MemberObject_name ) );
+        nstatesArgRules.push_back(         new ValueRule( "", MemberObject_name ) );
         
         methods.addFunction("nstates",         new MemberFunction(Natural_name, nstatesArgRules)         );
         
@@ -175,13 +173,5 @@ std::string TransitionProbabilityMatrix::richInfo(void) const {
 	std::ostringstream o;
     printValue( o );
     return o.str();
-}
-
-
-/** Wrap value into a variable */
-DAGNode* TransitionProbabilityMatrix::wrapIntoVariable( void ) {
-    
-    MemberNode* nde = new MemberNode( this );
-    return static_cast<DAGNode*>(nde);
 }
 

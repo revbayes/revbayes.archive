@@ -29,7 +29,7 @@
 
 /** Constructor */
 MoveSchedule::MoveSchedule(VariableNode* node, double weight)
-    : RbComplex() {
+    : ConstantMemberObject() {
 
     theNode = node;
     nodeUpdateWeight = weight;
@@ -92,7 +92,7 @@ MoveSchedule* MoveSchedule::clone(void) const {
 /** Get class vector describing type of object */
 const VectorString& MoveSchedule::getClass(void) const { 
 
-    static VectorString rbClass = VectorString(MoveSchedule_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(MoveSchedule_name) + ConstantMemberObject::getClass();
 	return rbClass;
 }
 

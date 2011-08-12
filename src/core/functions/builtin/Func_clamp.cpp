@@ -20,10 +20,8 @@
 #include "DeterministicNode.h"
 #include "Func_clamp.h"
 #include "Integer.h"
-#include "LookupNode.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "ReferenceRule.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
@@ -40,10 +38,10 @@ Func_clamp* Func_clamp::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_clamp::execute( void ) {
+RbLanguageObject* Func_clamp::execute( void ) {
 
     // Get the stochastic node from the variable reference
-    StochasticNode* theNode = dynamic_cast<StochasticNode*>( args[0].getReference() );
+    StochasticNode* theNode = dynamic_cast<StochasticNode*>( args[0].getDagNodePtr() );
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
@@ -62,8 +60,8 @@ const ArgumentRules& Func_clamp::getArgumentRules( void ) const {
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ReferenceRule( "variable", RbObject_name ));
-        argumentRules.push_back( new ValueRule    ( "value",    RbObject_name ));
+        argumentRules.push_back( new ValueRule ( "variable", RbObject_name ));
+        argumentRules.push_back( new ValueRule ( "value",    RbObject_name ));
         rulesSet = true;
     }
 

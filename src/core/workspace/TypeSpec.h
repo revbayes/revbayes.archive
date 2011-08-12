@@ -23,10 +23,7 @@
 class TypeSpec {
     
     public:
-                            TypeSpec(const std::string& objType);                               //!< Simple constructor with type conversion
-                            TypeSpec(const std::string& objType,
-                                     size_t             objDim,
-                                     bool               ref      = false);                      //!< Complete constructor
+                            TypeSpec(const std::string& objType);                               //!< Complete constructor
                             TypeSpec(const TypeSpec& ts);                                       //!< Copy Constructor
     
         // Operators
@@ -35,19 +32,12 @@ class TypeSpec {
                             operator std::string(void) const;                                   //!< Type conversion to string
 
         // Regular functions
-        size_t              getDim(void) const { return dim; }                                  //!< Get field dimensions
         const std::string&  getType(void) const { return type; }                                //!< Get object type
-        bool                isDimensionlessObject(void) const;                                  //!< Is dimensionless object? 
-        bool                isReference(void) const { return reference; }                       //!< Is it a reference type?
-        void                setDim(size_t i) { dim = i; }                                       //!< Set field dimensions
-        void                setReference(bool refFlag) { reference = refFlag; }                 //!< Set or reset the reference flag
         std::string         toString(void) const;                                               //!< Express as a string
 
     private:
         // Member variables
-        const std::string&  type;                                                               //!< The type of the object or objects
-        size_t              dim;                                                                //!< The field dimensions (0 = scalar, 1 = vector etc)
-        bool                reference;                                                          //!< Flags whether it is a reference type
+        const std::string   type;                                                               //!< The type of the object or objects
 };
 
 

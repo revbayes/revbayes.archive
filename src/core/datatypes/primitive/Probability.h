@@ -33,6 +33,7 @@ public:
     Probability(bool x);                                            //!< Construct from bool
     
     // Basic utility functions
+    virtual std::string     briefInfo(void) const;                  //!< Brief info about the object
     Probability*            clone(void) const;                      //!< Clone object
     const VectorString&     getClass(void) const;                   //!< Get class vector
     std::string             richInfo(void) const;                   //!< Complete info about object

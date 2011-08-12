@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -39,7 +39,7 @@ VectorRealPos::VectorRealPos( double x ) : Vector( RealPos_name ) {
     if ( x <= 0.0 )
         throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value" );
     elements.push_back( new RealPos( x ) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -51,7 +51,7 @@ VectorRealPos::VectorRealPos( size_t n, double x ) : Vector( RealPos_name ) {
 
     for ( size_t i = 0; i < n; i++ )
         elements.push_back( new RealPos( x ) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -65,7 +65,7 @@ VectorRealPos::VectorRealPos( const std::vector<double>& x ) : Vector( RealPos_n
 
     for ( size_t i = 0; i < x.size(); i++ )
         elements.push_back( new RealPos( x[i] ) );
-    length[0] = elements.size();
+    length = elements.size();
 
 }
 
@@ -73,14 +73,14 @@ VectorRealPos::VectorRealPos( const std::vector<double>& x ) : Vector( RealPos_n
 /** Constructor from VectorReal */
 VectorRealPos::VectorRealPos( const VectorReal& x ) : Vector( RealPos_name ) {
 
-    for ( size_t i = 0; i < x.size(); i++ ) {
+    for ( size_t i = 0; i < x.getLength(); i++ ) {
         if ( x[i] <= 0.0 )
             throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
     }
 
-    for ( size_t i = 0; i < x.size(); i++ )
+    for ( size_t i = 0; i < x.getLength(); i++ )
         elements.push_back( new RealPos( x[i] ) );
-    length[0] = elements.size();
+    length = elements.size();
 
 }
 
@@ -102,7 +102,7 @@ double VectorRealPos::operator[]( size_t i ) const {
 /** Equals comparison */
 bool VectorRealPos::operator==( const VectorRealPos& x ) const {
 
-    if ( size() != x.size() )
+    if ( getLength() != x.getLength() )
         return false;
 
     for ( size_t i = 0; i < elements.size(); i++) {
@@ -127,6 +127,18 @@ VectorRealPos* VectorRealPos::clone( void ) const {
     return new VectorRealPos( *this );
 }
 
+/** Can we convert this vector into another object? */
+RbLanguageObject* VectorRealPos::convertTo(std::string const &type) const {
+    
+    // test for type conversion
+    if (type == VectorReal_name) {
+        
+        return new VectorReal( getValue() );
+    }
+    
+    return Vector::convertTo(type);
+}
+
 
 /** Get class vector describing type of object */
 const VectorString& VectorRealPos::getClass( void ) const {
@@ -140,10 +152,22 @@ const VectorString& VectorRealPos::getClass( void ) const {
 std::vector<double> VectorRealPos::getValue( void ) const {
 
     std::vector<double> temp;
-    for ( std::vector<RbObject*>::const_iterator i = elements.begin(); i != elements.end(); i++ )
+    for ( std::vector<RbLanguageObject*>::const_iterator i = elements.begin(); i != elements.end(); i++ )
         temp.push_back( static_cast<RealPos*>( (*i) )->getValue() );
 
     return temp;
+}
+
+/** Can we convert this vector into another object? */
+bool VectorRealPos::isConvertibleTo(std::string const &type, bool once) const {
+    
+    // test for type conversion
+    if (type == VectorReal_name) {
+
+        return true;
+    }
+    
+    return Vector::isConvertibleTo(type, once);
 }
 
 
@@ -156,7 +180,7 @@ void VectorRealPos::printValue(std::ostream& o) const {
     o << "[ ";
     o << std::fixed;
     o << std::setprecision(1);
-    for (std::vector<RbObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) {
+    for (std::vector<RbLanguageObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) {
         if (i != elements.begin())
             o << ", ";
         o << *(*i);
@@ -175,7 +199,7 @@ void VectorRealPos::push_back( double x ) {
         throw RbException( "Trying to set " + RealPos_name + "[] element with nonpositive value" );
 
     elements.push_back( new RealPos( x ) );
-    length[0]++;
+    length++;
 }
 
 
@@ -186,7 +210,7 @@ void VectorRealPos::push_front( double x ) {
         throw RbException( "Trying to set " + RealPos_name + "[] element with nonpositive value" );
 
     elements.insert( elements.begin(), new RealPos( x ) );
-    length[0]++;
+    length++;
 }
 
 
@@ -212,7 +236,7 @@ void VectorRealPos::setValue( const std::vector<double>& x ) {
                 throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
             elements.push_back( new RealPos( x[i] ) );
         }
-        length[0] = elements.size();
+        length = elements.size();
     }
     else {
 
@@ -228,19 +252,19 @@ void VectorRealPos::setValue( const std::vector<double>& x ) {
 /** Set value of vector using VectorInteger */
 void VectorRealPos::setValue( const VectorInteger& x ) {
 
-    if ( x.size() != elements.size() ) {
+    if ( x.getLength() != elements.size() ) {
     
         clear();
-        for ( size_t i = 0; i < x.size(); i++ ) {
+        for ( size_t i = 0; i < x.getLength(); i++ ) {
             if ( x[i] <= 0.0 )
                 throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
             elements.push_back( new RealPos( x[i] ) );
         }
-        length[0] = elements.size();
+        length = elements.size();
     }
     else {
 
-        for ( size_t i = 0; i < x.size(); i++ ) {
+        for ( size_t i = 0; i < x.getLength(); i++ ) {
             if ( x[i] <= 0.0 )
                 throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
             static_cast<RealPos*>( elements[i] )->setValue( x[i] );
@@ -252,16 +276,16 @@ void VectorRealPos::setValue( const VectorInteger& x ) {
 /** Set value of vector using VectorNatural */
 void VectorRealPos::setValue( const VectorNatural& x ) {
 
-    if ( x.size() != elements.size() ) {
+    if ( x.getLength() != elements.size() ) {
     
         clear();
-        for ( size_t i = 0; i < x.size(); i++ )
+        for ( size_t i = 0; i < x.getLength(); i++ )
             elements.push_back( new RealPos( x[i] ) );
-        length[0] = elements.size();
+        length = elements.size();
     }
     else {
 
-        for ( size_t i = 0; i < x.size(); i++ )
+        for ( size_t i = 0; i < x.getLength(); i++ )
             static_cast<RealPos*>( elements[i] )->setValue( x[i] );
     }
 }
@@ -270,19 +294,19 @@ void VectorRealPos::setValue( const VectorNatural& x ) {
 /** Set value of vector using VectorReal */
 void VectorRealPos::setValue( const VectorReal& x ) {
 
-    if ( x.size() != elements.size() ) {
+    if ( x.getLength() != elements.size() ) {
     
         clear();
-        for ( size_t i = 0; i < x.size(); i++ ) {
+        for ( size_t i = 0; i < x.getLength(); i++ ) {
             if ( x[i] <= 0.0 )
                 throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
             elements.push_back( new RealPos( x[i] ) );
         }
-        length[0] = elements.size();
+        length = elements.size();
     }
     else {
 
-        for ( size_t i = 0; i < x.size(); i++ ) {
+        for ( size_t i = 0; i < x.getLength(); i++ ) {
             if ( x[i] <= 0.0 )
                 throw RbException( "Trying to set " + RealPos_name + "[] with nonpositive value(s)" );
             static_cast<RealPos*>( elements[i] )->setValue( x[i] );
@@ -294,16 +318,16 @@ void VectorRealPos::setValue( const VectorReal& x ) {
 /** Set value of vector using VectorRealPos */
 void VectorRealPos::setValue( const VectorRealPos& x ) {
 
-    if ( x.size() != elements.size() ) {
+    if ( x.getLength() != elements.size() ) {
     
         clear();
-        for ( size_t i = 0; i < x.size(); i++ )
+        for ( size_t i = 0; i < x.getLength(); i++ )
             elements.push_back( new RealPos( x[i] ) );
-        length[0] = elements.size();
+        length = elements.size();
     }
     else {
 
-        for ( size_t i = 0; i < x.size(); i++ )
+        for ( size_t i = 0; i < x.getLength(); i++ )
             static_cast<RealPos*>( elements[i] )->setValue( x[i] ); 
     }
 }   

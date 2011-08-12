@@ -44,9 +44,9 @@ Dist_birthdeath::Dist_birthdeath( void ) : Distribution( getMemberRules() ) {
 /** Constructor for internal use */
 Dist_birthdeath::Dist_birthdeath( double lambda, double mu, double rho ) : Distribution( getMemberRules() ) {
     
-    setValue( "lambda", new Real( lambda ) );
-    setValue( "mu"  ,   new Real( mu ) );
-    setValue( "rho"  ,  new Real( rho ) );
+//    setMemberValue( "lambda", new Real( lambda ) );
+//    setMemberValue( "mu"  ,   new Real( mu ) );
+//    setMemberValue( "rho"  ,  new Real( rho ) );
 
 }
 
@@ -63,14 +63,6 @@ const VectorString& Dist_birthdeath::getClass( void ) const {
     
     static VectorString rbClass = VectorString( Dist_birthdeath_name ) + Distribution::getClass();
     return rbClass;
-}
-
-
-/** Get default move */
-Move* Dist_birthdeath::getDefaultMove( StochasticNode* node ) {
-    
-	// TODO: Add a default move
-    return NULL;
 }
 
 
@@ -97,7 +89,7 @@ const MemberRules& Dist_birthdeath::getMemberRules( void ) const {
 /** Get random variable type */
 const TypeSpec Dist_birthdeath::getVariableType( void ) const {
     
-    return TypeSpec( VectorRealPos_name, 0, false );
+    return TypeSpec( VectorRealPos_name );
 }
 
 
@@ -110,16 +102,16 @@ const TypeSpec Dist_birthdeath::getVariableType( void ) const {
  * @param value Observed speciation times
  * @return      Natural log of the probability
  */
-double Dist_birthdeath::lnPdf( const RbObject* value ) {
+double Dist_birthdeath::lnPdf( const RbLanguageObject* value ) {
     
     // Get the parameters
     const VectorRealPos* times = static_cast<const VectorRealPos*>( value );
-    double                 b   = static_cast<const RealPos*    >( getValue( "lambda" ) )->getValue();
-    double                 d   = static_cast<const RealPos*    >( getValue( "mu"     ) )->getValue();
-    double                 p   = static_cast<const Probability*>( getValue( "rho"    ) )->getValue();
+    double                 b   = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
+    double                 d   = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
+    double                 p   = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
     
     // get the number of speciation events
-    size_t events = times->getLength()[0];
+    size_t events = times->getLength();
     
     // get the time of the orign. Note, we assume the process starts at the origin and not at the root. Further, we do not assume that the process starts with t_0 = 0.
     double now   = (*times)[events-1];
@@ -147,16 +139,16 @@ double Dist_birthdeath::lnPdf( const RbObject* value ) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_birthdeath::pdf( const RbObject* value ) {
+double Dist_birthdeath::pdf( const RbLanguageObject* value ) {
     
     // Get the parameters
     const VectorRealPos* times = static_cast<const VectorRealPos*>( value );
-    double                 b   = static_cast<const RealPos*    >( getValue( "lambda" ) )->getValue();
-    double                 d   = static_cast<const RealPos*    >( getValue( "mu"     ) )->getValue();
-    double                 p   = static_cast<const Probability*>( getValue( "rho"    ) )->getValue();
+    double                 b   = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
+    double                 d   = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
+    double                 p   = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
     
     // get the number of speciation events
-    size_t events = times->getLength()[0];
+    size_t events = times->getLength();
     
     // get the time of the orign. Note, we assume the process starts at the origin and not at the root. Further, we do not assume that the process starts with t_0 = 0.
     double now   = (*times)[events-1];
@@ -185,10 +177,10 @@ double Dist_birthdeath::pdf( const RbObject* value ) {
 VectorRealPos* Dist_birthdeath::rv( void ) {
     
     // Get the parameters
-    double b        = static_cast<const RealPos*    >( getValue( "lambda"   ) )->getValue();
-    double d        = static_cast<const RealPos*    >( getValue( "mu"       ) )->getValue();
-    double p        = static_cast<const Probability*>( getValue( "rho"      ) )->getValue();
-    size_t nSpecies = static_cast<const Natural*    >( getValue( "nSpecies" ) )->getValue();
+    double b        = static_cast<const RealPos*    >( getMemberValue( "lambda"   ) )->getValue();
+    double d        = static_cast<const RealPos*    >( getMemberValue( "mu"       ) )->getValue();
+    double p        = static_cast<const Probability*>( getMemberValue( "rho"      ) )->getValue();
+    size_t nSpecies = static_cast<const Natural*    >( getMemberValue( "nSpecies" ) )->getValue();
     
     // create the vector of speciation times
     VectorRealPos *times = new VectorRealPos();

@@ -23,8 +23,8 @@
 #ifndef Workspace_H
 #define Workspace_H
 
+#include "Environment.h"
 #include "FunctionTable.h"
-#include "VariableFrame.h"
 #include "VectorString.h"
 
 #include <map>
@@ -72,9 +72,16 @@ typedef std::map<std::string, RbObject*> TypeTable;
  * to the function table.
  *
  */
-class Workspace : public VariableFrame {
+class Workspace : public Environment {
 
     public:
+    
+        // Frame functions you have to override
+        Workspace*                  clone(void) const;                                                                  //!< Clone frame
+        const VectorString&         getClass() const;                                                                   //!< Get class vector
+        void                        printValue(std::ostream& o) const;                                                  //!< Print table for user
+        std::string                 richInfo(void) const;                                                               //!< Complete info to string
+
 
         bool                        addDistribution(const std::string& name, Distribution* dist);                       //!< Add distribution
         bool                        addDistribution(const std::string& name, DistributionContinuous* dist);             //!< Add distribution on continuous variable
@@ -83,22 +90,18 @@ class Workspace : public VariableFrame {
         bool                        addType(const std::string& name, RbObject* exampleObj);                             //!< Add special abstract type (synonym)
         bool                        addTypeWithConstructor(const std::string& name, MemberObject* templ);               //!< Add type with constructor
         bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
-        DAGNode*                    executeFunction(    const std::string&              name,
-                                                        const std::vector<Argument>&    args) const;                    //!< Execute function
+        RbLanguageObject*           executeFunction(    const std::string&              name,
+                                                        const std::vector<Argument*>&   args) const;                    //!< Execute function
         bool                        existsType(const std::string& name) const;                                          //!< Does the type exist in the type table?
         RbObject*                   findType(const std::string& name) const;                                            //!< Does the type exist in the type table?
         const VectorString&         getClassOfType(const std::string& type) const;                                      //!< Get reference to class vector of type
         FunctionTable*              getFunctionTable(void) const { return functionTable; }                              //!< Get function table
-        RbFunction*                 getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
-        const std::string&          getTypeNameRef(const std::string& name) const;                                      //!< Get a const reference to the type name
-        TypeSpec                    getTypeSpec(const std::string& name) const;                                         //!< Get reference to type specification for object type name 
-        TypeSpec                    getTypeSpec(const TypeSpec& typeSp) const;                                          //!< Check and correct type specification
+        RbFunction*                 getFunction(const std::string& name, const std::vector<Argument*>& args);           //!< Get function copy
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
-        bool                        isXOfTypeY(const std::string& xType, const std::string& yType) const;               //!< Type checking usng type names (assuming same dim)
+        bool                        isXOfTypeY(const std::string& xType, const std::string& yType) const;               //!< Type checking usng type names
         bool                        isXOfTypeY(const TypeSpec& xTypeSp, const TypeSpec& yTypeSp) const;                 //!< Type checking using full type spec
-        bool                        isXConvertibleToY(const std::string& xType, const std::string& yType) const;        //!< Type conversion checking usng type names (assuming dim = 0)
+        bool                        isXConvertibleToY(const std::string& xType, const std::string& yType) const;        //!< Type conversion checking usng type names
         bool                        isXConvertibleToY(const TypeSpec& xTypeSp, const TypeSpec& yTypeSp) const;          //!< Type conversion checking using full type spec
-        void                        printValue(std::ostream& c) const;                                                  //!< Print workspace
         static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
                                     {
                                         static Workspace globalSpace = Workspace();

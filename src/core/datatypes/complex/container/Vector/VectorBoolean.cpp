@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -39,7 +39,7 @@ VectorBoolean::VectorBoolean(void) : Vector(Boolean_name) {
 VectorBoolean::VectorBoolean(bool x) : Vector(Boolean_name) {
 
     elements.push_back(new Boolean(x));
-    length[0] = 1;
+    length = 1;
 }
 
 
@@ -48,7 +48,7 @@ VectorBoolean::VectorBoolean(size_t n, bool x) : Vector(Boolean_name) {
 
     for (size_t i = 0; i < n; i++)
         elements.push_back(new Boolean(x));
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -57,7 +57,7 @@ VectorBoolean::VectorBoolean(const std::vector<bool>& x) : Vector(Boolean_name) 
 
     for (std::vector<bool>::const_iterator i=x.begin(); i!=x.begin(); i++)
         elements.push_back(new Boolean(*i));
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -66,7 +66,7 @@ VectorBoolean::VectorBoolean(const std::vector<int>& x) : Vector(Boolean_name) {
 
     for (std::vector<int>::const_iterator i=x.begin(); i!=x.end(); i++)
         elements.push_back( new Boolean( (*i) == 0 ) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 /** Subscript operator */
@@ -75,7 +75,7 @@ bool& VectorBoolean::operator[](size_t i) {
     if (i > elements.size())
         throw RbException("Index out of bounds");
 
-    return static_cast<Boolean*>(elements[i])->getValueRef();
+    return static_cast<Boolean*>(elements[i])->getValueReference();
 }
 
 
@@ -84,14 +84,14 @@ const bool& VectorBoolean::operator[](size_t i) const {
 
     if ( i >= elements.size() )
         throw RbException("Index out of bounds");
-    return static_cast<Boolean*>(elements[i])->getValueRef();
+    return static_cast<Boolean*>(elements[i])->getValueReference();
 }
 
 
 /** Equals comparison */
 bool VectorBoolean::operator==(const VectorBoolean& x) const {
 
-    if (size() != x.size())
+    if (getLength() != x.getLength())
         return false;
 
     for (size_t i=0; i<elements.size(); i++) {
@@ -129,18 +129,17 @@ const VectorString& VectorBoolean::getClass() const {
 std::vector<bool> VectorBoolean::getValue(void) const {
 
     std::vector<bool> temp;
-    for (size_t i=0; i<size(); i++)
+    for (size_t i=0; i<getLength(); i++)
         temp.push_back(operator[](i));
 
     return temp;
 }
 
-
 /** Append element to end of vector, updating length in process */
 void VectorBoolean::push_back(bool x) {
 
     elements.push_back(new Boolean(x));
-    length[0]++;
+    length++;
 }
 
 
@@ -148,7 +147,7 @@ void VectorBoolean::push_back(bool x) {
 void VectorBoolean::push_front(bool x) {
 
     elements.insert(elements.begin(), new Boolean(x));
-    length[0]++;
+    length++;
 }
 
 
@@ -169,7 +168,7 @@ void VectorBoolean::setValue(const std::vector<bool>& x) {
     clear();
     for (std::vector<bool>::const_iterator i=x.begin(); i!=x.end(); i++) {   
         elements.push_back(new Boolean(*i));
-        length[0]++;
+        length++;
     }
 }   
 
@@ -178,9 +177,9 @@ void VectorBoolean::setValue(const std::vector<bool>& x) {
 void VectorBoolean::setValue(const VectorBoolean& x) {
 
     clear();
-    for (size_t i=0; i<x.size(); i++) {   
+    for (size_t i=0; i<x.getLength(); i++) {   
         elements.push_back(new Boolean(x[i]));
-        length[0]++;
+        length++;
     }
 }   
 

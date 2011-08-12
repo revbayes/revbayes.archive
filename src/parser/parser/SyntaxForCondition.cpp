@@ -13,21 +13,20 @@
  * $Id$
  */
 
+#include "ConstantNode.h"
+#include "Environment.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "SyntaxForCondition.h"
 #include "VectorNatural.h"
-#include "VariableFrame.h"
 
 #include <cassert>
 #include <sstream>
 
 
 /** Standard constructor */
-SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr)
-    : SyntaxElement(), varName(identifier), inExpression(inExpr), vector(NULL),
-      wasLoopVariableReference(false), nextElement(-1) {
+SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr) : SyntaxElement(), varName(identifier), inExpression(inExpr), vector(NULL), nextElement(-1) {
 
     if ( inExpression == NULL ) {
         delete varName;
@@ -37,13 +36,11 @@ SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inEx
 
 
 /** Deep copy constructor */
-SyntaxForCondition::SyntaxForCondition(const SyntaxForCondition& x)
-    : SyntaxElement(x) {
+SyntaxForCondition::SyntaxForCondition(const SyntaxForCondition& x) : SyntaxElement(x) {
 
     varName                  = new RbString(*(x.varName));
     inExpression             = x.inExpression->clone();
     vector                   = NULL;
-    wasLoopVariableReference = false;
     nextElement              = -1;
 }
 
@@ -73,7 +70,6 @@ SyntaxForCondition& SyntaxForCondition::operator=(const SyntaxForCondition& x) {
         varName                  = new RbString(*(x.varName));
         inExpression             = x.inExpression->clone();
         vector                   = NULL;
-        wasLoopVariableReference = false;
         nextElement              = -1;
     }
 
@@ -102,40 +98,31 @@ SyntaxElement* SyntaxForCondition::clone () const {
 
 
 /** Finalize loop. */
-void SyntaxForCondition::finalizeLoop(VariableFrame* frame) {
+void SyntaxForCondition::finalizeLoop(Environment* env) {
 
     if ( nextElement < 0 )
         return;
 
-    if ( !wasLoopVariableReference )
-        (*frame)[ *varName ].setReferenceFlag( false );
-
-    delete vector;
+    vector->release();
+    if (vector->isUnreferenced())
+        delete vector;
     
-    wasLoopVariableReference = false;
     nextElement = -1;
 }
 
 
-/** Convert element to DAG node (not applicable so return NULL) */
-DAGNode* SyntaxForCondition::getDAGNodeExpr(VariableFrame* frame) const {
-
-    return NULL;
-}
-
-
 /** Get next loop state */
-bool SyntaxForCondition::getNextLoopState(VariableFrame* frame) {
+bool SyntaxForCondition::getNextLoopState(Environment* env) {
 
     if ( nextElement < 0 )
-        initializeLoop( frame );
+        initializeLoop( env );
     
-    if ( nextElement == vector->size() ) {
-        finalizeLoop( frame );
+    if ( nextElement == vector->getLength() ) {
+        finalizeLoop( env );
         return false;
     }
 
-    (*frame)[ *varName ].setVariable( vector->getElement( VectorNatural( nextElement ) ) );
+    (*env)[ *varName ].getVariable()->setDagNode( new ConstantNode((RbLanguageObject*)vector->getElement( nextElement )) );
     nextElement++;
 
     return true;
@@ -143,35 +130,41 @@ bool SyntaxForCondition::getNextLoopState(VariableFrame* frame) {
 
 
 /** Get semantic value (not applicable so return NULL) */
-DAGNode* SyntaxForCondition::getValue(VariableFrame* frame) const {
+Variable* SyntaxForCondition::getContentAsVariable(Environment* env) const {
 
     return NULL;
 }
 
 
 /** Initialize loop state */
-void SyntaxForCondition::initializeLoop(VariableFrame* frame) {
+void SyntaxForCondition::initializeLoop(Environment* env) {
 
     assert ( nextElement < 0 );
 
     // Evaluate expression and check that we get a vector
-    DAGNode* value = inExpression->getValue(frame);
+    DAGNode *theNode = inExpression->getContentAsVariable(env)->getDagNodePtr();
+    RbLanguageObject *theValue = theNode->getValue()->clone();
 
     // Check that it is a vector
-    if ( value->isDAGType( ContainerNode_name ) == false || value->getDim() != 1 ) {
-        delete value;
+    if ( theValue->isType( Container_name ) == false ) {
+        if (theNode->isUnreferenced())
+            delete theNode;             // this will also delete the value 
         throw ( RbException("The 'in' expression does not evaluate to a vector") );
     }
-    vector = dynamic_cast<ContainerNode*>(value);
+    vector = dynamic_cast<Container*>(theValue);
+    vector->retain();
 
     // Initialize nextValue
     nextElement = 0;
 
-    // Add loop variable to frame if it is not there already; make sure it is a reference variable
-    if ( frame->existsVariable( *varName ) )
-        (*frame)[ *varName ].setReferenceFlag( true );
-    else
-        frame->addVariableSlot( *varName, TypeSpec( vector->getValueType(), 0, true ) );
+    // Add loop variable to frame if it is not there already
+    if (!env->existsVariable(*varName)) {
+        env->addVariable( *varName, TypeSpec( vector->getElementType() ) );
+    }
+    
+    // cleaning up
+    if (theNode->isUnreferenced())
+        delete theNode;             // this will also delete the value 
 }
 
 

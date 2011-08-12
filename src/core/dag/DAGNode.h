@@ -19,7 +19,9 @@
 #ifndef DAGNode_H
 #define DAGNode_H
 
+#include "RbInternal.h"
 #include "TypeSpec.h"
+
 
 #include <list>
 #include <map>
@@ -28,15 +30,16 @@
 
 class ContainerNode;
 class Frame;
+class RbLanguageObject;
 class RbObject;
 class VariableNode;
-class VariableSlot;
+class Variable;
 class VectorIndex;
 class VectorNatural;
 class VectorString;
 
 
-class DAGNode {
+class DAGNode : public RbInternal {
 
     friend class                        VariableSlot;                                                           //!< Give VariableSlot exclusive access to slot mgmt functions
 
@@ -45,74 +48,59 @@ class DAGNode {
 
         // Basic utility functions you should not override
         std::string                     briefInfo(void) const;                                                  //!< Brief info about object
-        ContainerNode*                  getContainer(void) const;                                               //!< Get container if container element
-        const std::string&              getDAGType(void) const;                                                 //!< Get DAG node type
-        const std::string               getName(void) const;                                                    //!< Get name from slot and children
-        const TypeSpec                  getTypeSpec(void) const;                                                //!< Get language type specification for value
-        std::set<VariableSlot*>&        getReferringSlots(void) { return referringSlots; }                      //!< Return referring slots
-		VariableSlot*                   getSlot(void) const { return slot; }                                    //!< Return slot managing the variable
-        const std::string&              getValueType(void) const { return valueType; }                          //!< Get value type
-        bool                            isDAGType(const std::string& type) const;                               //!< Is DAG node of type?
-        bool                            isImmutable(void) const;                                                //!< Is DAG node immutable?
-        bool                            isPermanent(Frame* frame) const;                                        //!< Is the node a permanent variable in frame?
-        bool                            isTypeSpec(const TypeSpec& typeSp) const;                               //!< Is DAG node of language type typeSpec?
-        size_t                          numReferringSlots(void) const { return referringSlots.size(); }         //!< Number of referring slots
-        size_t                          numRefs(void) const;                                                    //!< Number of references
+        const std::string&              getValueType(void) const { return valueTypeSpec.getType(); }            //!< Get value type
+        const TypeSpec&                 getValueTypeSpec(void) const { return valueTypeSpec; }                  //!< Get value type
+        bool                            isValueOfTypeSpec(const TypeSpec& typeSp) const;                        //!< Is DAG node of language type typeSpec?
 
         // Basic utility functions you may want to override
-        virtual size_t                  getDim(void) const { return 0; }                                        //!< Get dim (0 for scalar, 1 for vector, etc)
-        virtual DAGNode*                getReference(void) { return this; }                                     //!< Get reference to variable, override if lookup or fxn
         virtual bool                    isConst(void) const;                                                    //!< Is DAG node const value?
-
-        // Recursive element set and get functions you may want to override
-        virtual DAGNode*                getElement(VectorIndex& index);                                         //!< Give the parser an element (recursive)
-        virtual DAGNode*                getElementOwner(VectorIndex& index);                                    //!< Give the parser the element owner (recursive)
-        virtual void                    setElement(VectorIndex& index, DAGNode* var, bool convert=true);        //!< Set element (recursive)
 
         // Basic utility functions you have to override
         virtual DAGNode*                clone(void) const = 0;                                                  //!< Clone this node
-        virtual const VectorString&     getDAGClass(void) const;                                                //!< Get DAG node class vector
-        virtual const RbObject*         getStoredValue(void) = 0;                                               //!< Get stored value (non-const because of delayed evaluation)
-        virtual const RbObject*         getValue(void) = 0;                                                     //!< Get value (non-const because of delayed evaluation)
+        virtual const VectorString&     getClass(void) const;                                                   //!< Get DAG node class vector
+        virtual const RbLanguageObject* getStoredValue(void) = 0;                                               //!< Get stored value (non-const because of delayed evaluation)
+        virtual const RbLanguageObject* getValue(void) = 0;                                                     //!< Get value (non-const because of delayed evaluation)
+        virtual RbLanguageObject*       getValuePtr(void) = 0;                                                  //!< Get value pointer (non-const because of delayed evaluation)
         virtual void                    printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
         virtual void                    printValue(std::ostream& o) = 0;                                        //!< Print value for user (non-const fxn because of delayed evaluation)
         virtual std::string             richInfo(void) const = 0;                                               //!< Complete info about object
-
-        // DAG functions you should not have to override
-        void                            addChildNode(VariableNode* c) { children.insert(c); }                   //!< Add child node
-        std::set<VariableNode*>&        getChildren(void) { return children; }                                  //!< Return children
-		std::set<DAGNode*>&             getParents(void) { return parents; }                                    //!< Return parents
-        bool                            isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const;       //!< Is node x a parent of the caller in the DAG?
-        size_t                          numChildren(void) const { return children.size(); }                     //!< Number of children
-        size_t                          numParents(void) const { return parents.size(); }                       //!< Number of parents
-        void                            printChildren(std::ostream& o) const;                                   //!< Print children DAG nodes
-        void                            printParents(std::ostream& o) const;                                    //!< Print children DAG nodes
-        void                            removeChildNode(VariableNode* c) { children.erase(c); }                 //!< Remove a child node
-
+    
         // DAG function you have to override
         virtual DAGNode*                cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const = 0;       //!< Clone graph
 
+        // DAG functions you should not have to override
+        void                            addChildNode(VariableNode* c);                                          //!< Add child node
+        std::set<VariableNode*>&        getChildren(void) { return children; }                                  //!< Return children
+        RbObject*                       getElement(size_t index);                                               //!< Get element at index (container function)
+        const std::string&              getName(void) const;                                                    //!< get the name
+		std::set<DAGNode*>&             getParents(void) { return parents; }                                    //!< Return parents
+        Variable*                       getVariable(void) { return variable; }                                  //!< Get the variable owning this node
+        bool                            isParentInDAG(const DAGNode* x, std::list<DAGNode*>& done) const;       //!< Is node x a parent of the caller in the DAG?
+        size_t                          numberOfChildren(void) const { return children.size(); }                //!< Number of children
+        size_t                          numberOfParents(void) const { return parents.size(); }                  //!< Number of parents
+        void                            printChildren(std::ostream& o) const;                                   //!< Print children DAG nodes
+        void                            printParents(std::ostream& o) const;                                    //!< Print children DAG nodes
+        void                            removeChildNode(VariableNode* c);                                       //!< Remove a child node
+        void                            setName(const std::string &n) { name = n; }                             //!< Replace the name of the variable
+        void                            setVariable(Variable *var);                                             //!< Set the variable owning this node
+
+
+
     protected:
-                                        DAGNode(RbObject* value);                                               //!< Constructor of filled node
+                                        DAGNode(RbLanguageObject* value);                                       //!< Constructor of filled node
                                         DAGNode(const std::string& valType);                                    //!< Constructor of empty node
                                         DAGNode(const DAGNode& x);                                              //!< Copy constructor
 
-        // Slot reference management and mutation functions for VariableSlot friend class
-        void                            addReferringSlot(VariableSlot* s) { referringSlots.insert(s); }         //!< Add referring slot (not managing this node)
-        virtual bool                    isMutableTo(DAGNode* newNode) const;                                    //!< Is node mutable to newNode?
-        virtual void                    mutateTo(DAGNode* newNode);                                             //!< Mutate to new node
-        void                            removeSlot(const VariableSlot* s);                                      //!< Remove a managing or referring slot
-		void                            setSlot(VariableSlot* s) { slot = s; }                                  //!< Set slot managing the variable
 
         // Member variables keeping track of references
         std::set<VariableNode*>         children;                                                               //!< Set of children nodes
         std::set<DAGNode*>              parents;                                                                //!< Set of parent nodes
-        VariableSlot*                   slot;                                                                   //!< Slot owning the node
-        std::set<VariableSlot*>         referringSlots;                                                         //!< Set of slots referring to the node
+        Variable                       *variable;                                                               //!< The variable owning this dag node
 
         // Member value variables
-        const std::string&              valueType;                                                              //!< Type of value
-        RbObject*                       value;                                                                  //!< Value
+        const TypeSpec                  valueTypeSpec;                                                          //!< the TypeSpec of the value
+        RbLanguageObject*               value;                                                                  //!< Value
+        std::string                     name;                                                                   //!< The name/identifier of the DAG node
 };
 
 #endif

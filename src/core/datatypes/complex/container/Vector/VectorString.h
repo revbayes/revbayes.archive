@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -54,7 +54,6 @@ class VectorString : public Vector {
         std::vector<std::string>    getStdVector(void) const;                                       //!< Get the value vector as a std::vector
     
     protected:
-        RbObject*                   getDefaultElement(void) const { return new RbString(); }        //!< Get default element for empty slots
 
 };
 

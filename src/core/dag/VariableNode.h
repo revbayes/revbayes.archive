@@ -31,44 +31,43 @@ class VectorString;
 
 class VariableNode : public DAGNode {
 
-    public:
-        virtual                        ~VariableNode(void);                                                             //!< Virtual destructor
+public:
+    virtual                        ~VariableNode(void);                                                             //!< Virtual destructor
 
-        // Utility functions you have to override
-        virtual VariableNode*           clone(void) const = 0;                                                          //!< Clone this node
-        virtual const VectorString&     getDAGClass(void) const;                                                        //!< Get DAG node class vector
-        virtual const RbObject*         getStoredValue(void) = 0;                                                       //!< Get stored value (non-const fxn because of delayed evaluation)
-        virtual const RbObject*         getValue(void) = 0;                                                             //!< Get value (non-const fxn because of delayed evaluation)
-        virtual void                    printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
-        virtual void                    printValue(std::ostream& o) = 0;                                                //!< Print value for user (non-const fxn because of delayed evaluation)
-        virtual std::string             richInfo(void) const = 0;                                                       //!< Complete info about object
+    // Utility functions you have to override
+    virtual VariableNode*           clone(void) const = 0;                                                          //!< Clone this node
+    virtual const VectorString&     getClass(void) const;                                                           //!< Get DAG node class 
+    virtual const RbLanguageObject* getStoredValue(void) = 0;                                                       //!< Get stored value (non-const fxn because of delayed evaluation)
+    virtual const RbLanguageObject* getValue(void) = 0;                                                             //!< Get value (non-const fxn because of delayed evaluation)
+    virtual RbLanguageObject*       getValuePtr(void) = 0;                                                          //!< Get value pointer (non-const fxn because of delayed evaluation)
+    virtual void                    printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
+    virtual void                    printValue(std::ostream& o) = 0;                                                //!< Print value for user (non-const fxn because of delayed evaluation)
+    virtual std::string             richInfo(void) const = 0;                                                       //!< Complete info about object
 
-        // DAG function you should not override
-        bool                            isTouched(void) const { return touched; }                                       //!< Is node touched by move or parser?
+    // DAG function you should not override
+    void                            addParentNode(DAGNode* p);                                                      //!< Add parent node
+    bool                            isTouched(void) const { return touched; }                                       //!< Is node touched by move or parser?
+    void                            removeParentNode(DAGNode* p) { parents.erase(p); }                              //!< Remove a child node
 
-        // DAG functions you may want to override
-        virtual bool                    isConst(void) const { return false; }                                           //!< Is DAG node const value?
-        virtual bool                    isParentMutableTo(const DAGNode* oldNode, const DAGNode* newNode) const;        //!< Is parent mutable to newNode?
+    // DAG functions you may want to override
+    virtual bool                    isConst(void) const { return false; }                                           //!< Is DAG node const value?
 
-        // DAG functions you have to override
-        virtual VariableNode*           cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const = 0;               //!< Clone entire graph
-        virtual void    	            getAffected(std::set<StochasticNode*>& affected) = 0;                           //!< Mark and get affected nodes
-        virtual void                    keep(void) = 0;                                                                 //!< Keep current state
-        virtual void    	            keepAffected(void) = 0;                                                         //!< Keep value of affected nodes
-        virtual void                    restoreAffected(void) = 0;                                                      //!< Restore value of affected nodes
-        virtual void                    swapParentNode(DAGNode* oldP, DAGNode* newP) = 0;                               //!< Swap a parent node
-        virtual void                    touchAffected(void) = 0;                                                        //!< Tell affected nodes value is reset
+    // DAG functions you have to override
+    virtual VariableNode*           cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const = 0;               //!< Clone entire graph
+    virtual void    	            getAffected(std::set<StochasticNode*>& affected) = 0;                           //!< Mark and get affected nodes
+    virtual void                    keep(void) = 0;                                                                 //!< Keep current state
+    virtual void    	            keepAffected(void) = 0;                                                         //!< Keep value of affected nodes
+    virtual void                    restoreAffected(void) = 0;                                                      //!< Restore value of affected nodes
+    virtual void                    swapParentNode(DAGNode* oldP, DAGNode* newP) = 0;                               //!< Swap a parent node
+    virtual void                    touchAffected(void) = 0;                                                        //!< Tell affected nodes value is reset
 
-        // Default monitors and move functions
-        std::vector<Monitor*>           getDefaultMonitors(void);                                                       //!< Return default monitors (not const because of delayed evaluation)
-        virtual MoveSchedule*           getDefaultMoves(void) = 0;                                                      //!< Return default moves (not const because of delayed evaluation)
+protected:
+    VariableNode(const std::string& valType);                                                                       //!< Constructor of empty node
+    VariableNode(const VariableNode &v);                                                                            //!< Copy Constructor
 
-    protected:
-                                        VariableNode(const std::string& valType);                                       //!< Constructor of empty node
-
-        // Member variables
-        bool                            touched;                                                                        //!< Is touched by move?
-        RbObject*                       storedValue;                                                                    //!< Stored value
+    // Member variables
+    bool                            touched;                                                                        //!< Is touched by move?
+    RbLanguageObject*               storedValue;                                                                    //!< Stored value
 };
 
 #endif

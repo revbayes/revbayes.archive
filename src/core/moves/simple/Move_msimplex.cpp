@@ -15,7 +15,6 @@
  * $Id$
  */
 
-#include "ConstantValueRule.h"
 #include "Distribution.h"
 #include "DistributionDirichlet.h"
 #include "Move_msimplex.h"
@@ -27,7 +26,7 @@
 #include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
-#include "StochasticReferenceRule.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -36,15 +35,6 @@
 
 /** Constructor for parser */
 Move_msimplex::Move_msimplex( void ) : MoveSimple( getMemberRules() ) {
-}
-
-/** Constructor for internal use */
-Move_msimplex::Move_msimplex( StochasticNode* node, double tuning, int nc, double weight ) : MoveSimple( getMemberRules() ) {
-
-    setVariable( "variable", node );
-    setValue(    "weight", new RealPos(weight) );
-    setValue(    "tuning", new RealPos(tuning) );
-    setValue(    "num_cats", new Natural(nc) );
 }
 
 
@@ -71,15 +61,15 @@ const MemberRules& Move_msimplex::getMemberRules( void ) const {
 
     if (!rulesSet) 
     {
-        TypeSpec varType(Simplex_name,1,true);
-        memberRules.push_back( new StochasticReferenceRule( "variable", varType ) );
+        TypeSpec varType( Simplex_name );
+        memberRules.push_back( new ValueRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
 
-        memberRules.push_back( new ConstantValueRule( "tuning"  , RealPos_name ) );
-        memberRules.push_back( new ConstantValueRule( "num_cats", Natural_name ) );
+        memberRules.push_back( new ValueRule( "tuning"  , RealPos_name ) );
+        memberRules.push_back( new ValueRule( "num_cats", Natural_name ) );
 
         rulesSet = true;
 		}
@@ -102,9 +92,10 @@ double Move_msimplex::perform( std::set<StochasticNode*>& affectedNodes ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getReference() );
-    double                 alpha0  = static_cast<const RealPos*>( getValue("tuning")   )->getValue();
-    int                    k       = static_cast<const Natural*>( getValue("num_cats") )->getValue();
+//    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
+    StochasticNode        *nodePtr = NULL;
+    double                 alpha0  = static_cast<const RealPos*>( getMemberValue("tuning")   )->getValue();
+    int                    k       = static_cast<const Natural*>( getMemberValue("num_cats") )->getValue();
 
 	std::vector<double> curVal = static_cast<const Simplex*>( nodePtr->getValue() )->getValue();
 	std::vector<double> newVal = curVal;

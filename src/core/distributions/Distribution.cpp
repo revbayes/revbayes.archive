@@ -16,43 +16,40 @@
  * $Id$
  */
 
-#include "ArgumentFrame.h"
 #include "ConstantNode.h"
-#include "ContainerNode.h"
 #include "Distribution.h"
+#include "Environment.h"
 #include "MemberFunction.h"
-#include "MemberNode.h"
 #include "MethodTable.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RealPos.h"
-#include "ReferenceRule.h"
 #include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
 
 /** Constructor with inheritance for member rules */
-Distribution::Distribution( const MemberRules& memberRules ) : MemberObject( memberRules ) {
+Distribution::Distribution( const MemberRules& memberRules ) : ConstantMemberObject( memberRules ) {
 }
 
 
 /** Map direct method calls to internal class methods. */
-DAGNode* Distribution::executeOperation( const std::string& name, ArgumentFrame& args ) {
+RbLanguageObject* Distribution::executeOperation( const std::string& name, Environment& args ) {
 
     if ( name == "lnPdf" ) {
 
-        return ( new RealPos( lnPdf( args[1].getValue() ) ) )->wrapIntoVariable();
+        return ( new RealPos( lnPdf( args[1].getValue() ) ) );
     }
     else if ( name == "pdf" ) {
 
-        return ( new RealPos( pdf  ( args[1].getValue() ) ) )->wrapIntoVariable();
+        return ( new RealPos( pdf  ( args[1].getValue() ) ) );
     }
     else if ( name == "rv" ) {
 
-        RbObject* draw = rv();
+        RbLanguageObject* draw = rv();
 
-        return draw->wrapIntoVariable();
+        return draw;
     }
     else
         return MemberObject::executeOperation( name, args );
@@ -78,13 +75,13 @@ const MethodTable& Distribution::getMethods( void ) const {
 
     if ( !methodsSet ) {
 
-        lnPdfArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
+        lnPdfArgRules.push_back( new ValueRule( "", MemberObject_name ) );
         lnPdfArgRules.push_back( new ValueRule    ( "x", RbObject_name    ) );
 
-        pdfArgRules.push_back  ( new ReferenceRule( "",  MemberObject_name ) );
+        pdfArgRules.push_back  ( new ValueRule( "",  MemberObject_name ) );
         pdfArgRules.push_back  ( new ValueRule    ( "x", RbObject_name     ) );
 
-        rvArgRules.push_back   ( new ReferenceRule( "",  MemberObject_name ) );
+        rvArgRules.push_back   ( new ValueRule( "",  MemberObject_name ) );
 
         methods.addFunction( "lnPdf", new MemberFunction( Real_name    , lnPdfArgRules ) );
         methods.addFunction( "pdf",   new MemberFunction( Real_name    , pdfArgRules   ) );

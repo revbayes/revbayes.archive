@@ -30,30 +30,35 @@
 
 class ArgumentRule;
 class DAGNode;
+class MemberObject;
 class VectorInteger;
 class VectorString;
 
 class MemberFunction :  public RbFunction {
 
-    public:
-                                    MemberFunction(const TypeSpec retType, const ArgumentRules& argRules);      //!< Constructor
+public:
+    MemberFunction(const TypeSpec retType, const ArgumentRules& argRules);                                  //!< Constructor
+    virtual ~MemberFunction(void);                                                                          //!< Destructor
 
-        // Basic utility functions
-        std::string                 briefInfo(void) const;                                                      //!< Brief info about object
-        MemberFunction*             clone(void) const;                                                          //!< Clone the object
-    	const VectorString&         getClass(void) const;                                                       //!< Get class vector
-        std::string                 richInfo(void) const;                                                       //!< Complete info about object
+    // Basic utility functions
+    std::string                 briefInfo(void) const;                                                      //!< Brief info about object
+    MemberFunction*             clone(void) const;                                                          //!< Clone the object
+    const VectorString&         getClass(void) const;                                                       //!< Get class vector
+    std::string                 richInfo(void) const;                                                       //!< Complete info about object
 
-        // Regular functions
-        DAGNode*                    execute(void);                                                              //!< Execute function (not used @Fredrik: Why is it here if it is not used? (Sebastian)
-        const ArgumentRules&        getArgumentRules(void) const;                                               //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                                                  //!< Get type of return value
-        void                        setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of member method
+    // Regular functions
+    RbLanguageObject*           execute(void);                                                              //!< Execute function
+   
+    const ArgumentRules&        getArgumentRules(void) const;                                               //!< Get argument rules
+    const TypeSpec              getReturnType(void) const;                                                  //!< Get type of return value
+    void                        setMemberObject(MemberObject *obj);                                         //!< Set the member object to which this function belongs
+    void                        setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of member method
 
-	private:
-        const ArgumentRules&        argumentRules;                                                              //!< Argument rules (different for different member functions)
-        std::string                 funcName;                                                                       //!< Name of member method
-        const TypeSpec              returnType;                                                                 //!< Return type (different for different member functions)
+private:
+    const ArgumentRules&        argumentRules;                                                              //!< Argument rules (different for different member functions)
+    std::string                 funcName;                                                                   //!< Name of member method
+    MemberObject                *object;                                                                    //!< The member object to which this function belongs
+    const TypeSpec              returnType;                                                                 //!< Return type (different for different member functions)
         
 };
 

@@ -24,44 +24,32 @@
 #include "VectorString.h"
 #include "Workspace.h"
 
+#include <cassert>
 #include <sstream>
 
+/** Destructor */
+RbObject::~RbObject() {
 
-/** Brief info about object: use static class attribute */
-std::string RbObject::briefInfo(void) const {
-
-    std::ostringstream o;
-    o << "Object of type ";
-    getClass().printValue(o);
-    return o.str();
+//    assert(isUnreferenced());
+//    if (!isUnreferenced())
+//        throw RbException("Cannot delete referenced object.");
 }
 
-
-/** Make clone that does not have connections to the original DAG.
- *  For simple objects, this is the same as clone, but for containers
- *  and member objects, it is a little more involved, since elements
- *  or member variables may be connect a regular clone to the DAG
- *  of the original object.
- */
-RbObject* RbObject::cloneAsConstant( void ) const {
-
-    return clone();
-}
 
 
 /** Convert to object of language type typeSpec. We simply pass this
     through to the function that uses just the type and the dim.     */
 RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
-    return convertTo( typeSpec.getType(), typeSpec.getDim() );
+    return convertTo( typeSpec.getType() );
 }
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbObject* RbObject::convertTo(const std::string& type, size_t dim) const {
+RbObject* RbObject::convertTo(const std::string& type) const {
 
     std::ostringstream  msg;
-    msg << "Type conversion to " << TypeSpec(type, dim) << " not supported";
+    msg << "Type conversion to " << TypeSpec(type) << " not supported";
     throw RbException( msg );
 }
 
@@ -81,6 +69,15 @@ const VectorString& RbObject::getClass(void) const {
 	return rbClass; 
 }
 
+/** Get element or subcontainer at index. This is a convinience function implemented here so that we don't have to cast to container. 
+ If this object is not a container, we throw an excpetion */
+RbObject* RbObject::getElement(size_t index) {
+    
+    std::ostringstream  msg;
+    msg << "Illegal call to getElement in type \"" << getType() << "\"";
+    throw RbException( msg );
+}
+
 
 /** Get object type (first entry in class vector) */
 const std::string& RbObject::getType(void) const {
@@ -92,19 +89,19 @@ const std::string& RbObject::getType(void) const {
 /** Get language type spec for object */
 const TypeSpec RbObject::getTypeSpec(void) const {
 
-    return TypeSpec( getClass()[0], getDim() );
+    return TypeSpec( getClass()[0] );
 }
 
 
 /** Is convertible to type and dim? */
 bool RbObject::isConvertibleTo(const TypeSpec& typeSpec, bool once) const {
 
-    return isConvertibleTo( typeSpec.getType(), typeSpec.getDim(), once );
+    return isConvertibleTo( typeSpec.getType(), once );
 }
 
 
 /** Is convertible to type and dim? */
-bool RbObject::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
+bool RbObject::isConvertibleTo(const std::string& type, bool once) const {
 
     return false;
 }
@@ -121,7 +118,7 @@ bool RbObject::isType(const std::string& type) const {
 
     const VectorString& classVec = getClass();
 
-    for (size_t i=0; i<classVec.size(); i++) {
+    for (size_t i=0; i<classVec.getLength(); i++) {
         if (type == classVec[i])
             return true;
     }
@@ -135,31 +132,8 @@ bool RbObject::isType(const std::string& type) const {
  */
 bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
 
-    if ( typeSpec.getDim() != 0 )
-        return false;
-
     return isType( typeSpec.getType() );
 }
 
 
-/** Print info about object simply by using richInfo function */
-void RbObject::print(std::ostream& o) const {
-
-    o << richInfo() << std::endl;
-}
-
-
-/** Wrap value into a variable */
-DAGNode* RbObject::wrapIntoVariable( void ) {
-    
-    return new ConstantNode( this );
-}
-
-
-/** Make sure we can print the value of the object easily */
-std::ostream& operator<<(std::ostream& o, const RbObject& x) {
-
-    x.printValue(o);
-    return o;
-}
 

@@ -39,11 +39,11 @@ Func_cos* Func_cos::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_cos::execute( void ) {
+RbLanguageObject* Func_cos::execute( void ) {
     
     const Real* x = static_cast<const Real*>( args[0].getValue() );
     
-    return ( new Real( cos( x->getValue() ) ) )->wrapIntoVariable();
+    return ( new Real( cos( x->getValue() ) ) );
 }
 
 

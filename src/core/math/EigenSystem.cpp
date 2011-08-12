@@ -40,11 +40,11 @@ EigenSystem::EigenSystem(MatrixReal* m) {
         
 	// check that the matrix, m, is square and return
 	// an empty eigensystem if it is not
-	if ( m->getNumRows() != m->getNumCols() )
+	if ( m->getNumberOfRows() != m->getNumberOfColumns() )
 		return;
 	
 	// set the dimensions of the matrix
-	n = m->getNumRows();
+	n = m->getNumberOfRows();
 
 	// allocate and initialize components of eigensystem
 	// assuming it is going to be real and not complex
@@ -1278,7 +1278,7 @@ bool EigenSystem::update(void) {
     MatrixReal A(*qPtr);
 
 	// check that the dimension of A is right
-	if (A.getNumRows() != n || A.getNumCols() != n)
+	if (A.getNumberOfRows() != n || A.getNumberOfColumns() != n)
 		return false;
 	
 	// balance the n X n matrix

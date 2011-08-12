@@ -53,6 +53,18 @@ Probability::Probability( unsigned int x ) : RealPos( x ) {
 }
 
 
+/** Get brief info about object */
+std::string Probability::briefInfo( void ) const {
+    
+	std::ostringstream o;
+    o << "Prob(";
+    printValue( o );
+	o << ")";
+    
+    return o.str();
+}
+
+
 /** Clone object */
 Probability* Probability::clone( void ) const {
     

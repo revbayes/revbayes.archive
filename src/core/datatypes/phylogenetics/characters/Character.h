@@ -17,12 +17,12 @@
 #ifndef Character_H
 #define Character_H
 
-#include "RbObject.h"
+#include "RbLanguageObject.h"
 #include <ostream>
 
 
 
-class Character : public RbObject {
+class Character : public RbLanguageObject {
 
     public:
         virtual bool                    operator==(const Character& x) const = 0;  //!< Equality
@@ -36,10 +36,10 @@ class Character : public RbObject {
         virtual const VectorString&     getClass(void) const;                      //!< Get class vector
         virtual std::string             richInfo(void) const = 0;                  //!< Complete info about object
         
-        virtual size_t                  getNumStates(void) const { return 0; }     //!< Get the number states for a character (return 0 in base class)
+        virtual size_t                  getNumberOfStates(void) const { return 0; }//!< Get the number states for a character (return 0 in base class)
         virtual double                  getRealValue(void) const { return 0.0; }   //!< Return the double representation of the character
         virtual unsigned                getUnsignedValue(void) const { return 0; } //!< Get an unsigned representation of the bool set
-        virtual bool                    isMissAmbig(void) const = 0;               //!< Is the character missing or ambiguous
+        virtual bool                    isMissingOrAmbiguous(void) const = 0;      //!< Is the character missing or ambiguous
 
     protected:
                                         Character(void);                           //!< Default constructor

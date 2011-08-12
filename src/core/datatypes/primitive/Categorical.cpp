@@ -23,17 +23,17 @@
 
 
 /** Default constructor */
-Categorical::Categorical( void ) : RbObject(), value( -1 ) {
+Categorical::Categorical( void ) : RbLanguageObject(), value( -1 ) {
 }
 
 
 /** Constructor from int value: check that the value is valid */
-Categorical::Categorical( int x ) : RbObject(), value( x ) {
+Categorical::Categorical( int x ) : RbLanguageObject(), value( x ) {
 }
 
 
 /** Construct from char value, taken to be a valid state symbol or NA symbol */
-Categorical::Categorical( char c ) : value(-1) {
+Categorical::Categorical( char c ) :  RbLanguageObject(), value(-1) {
 }
 
 

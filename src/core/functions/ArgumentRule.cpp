@@ -16,11 +16,10 @@
  * $Id$
  */
 
+#include "Argument.h"
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
-#include "ContainerNode.h"
-#include "MemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
@@ -31,10 +30,10 @@
 
 
 /** Construct rule based on default value; use "" for no label. */
-ArgumentRule::ArgumentRule(const std::string& argName, RbObject* defVal)
-    : RbInternal(), label(argName), argSlot(defVal->getTypeSpec()), hasDefaultVal(true) {
+ArgumentRule::ArgumentRule(const std::string& argName, RbLanguageObject* defVal) : RbInternal(), label(argName), argSlot(argName, defVal->getTypeSpec()), hasDefaultVal(true) {
 
-    argSlot.setValue( defVal );
+    Variable *tmpVar = new Variable( argName, new ConstantNode(defVal) );
+    argSlot.setVariable( tmpVar );
 }
 
 
@@ -46,36 +45,25 @@ ArgumentRule::ArgumentRule(const std::string& argName, RbObject* defVal)
  * rules that had a container type instead of the language type of the container, which
  * would make the rule worthless.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp)
-    : RbInternal(), label(argName), argSlot(Workspace::userWorkspace().getTypeSpec(argTypeSp)), hasDefaultVal(false) {
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp) : RbInternal(), label(argName), argSlot(argName,argTypeSp), hasDefaultVal(false) {
+
 }
 
 
 /** Construct rule with default value. We rely on workspace to check the provided type specification. */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbObject* defValue)
-: RbInternal(), label(argName), argSlot(Workspace::userWorkspace().getTypeSpec(argTypeSp)), hasDefaultVal(true) {
-
-    argSlot.setValue( defValue );
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject* defValue) : RbInternal(), label(argName), argSlot(argName,argTypeSp), hasDefaultVal(true) {
+    
+    Variable *tmpVar = new Variable( new ConstantNode(defValue) );
+    argSlot.setVariable( tmpVar );
 }
 
 
 /** Construct rule with default reference or value variable. */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable)
-    : RbInternal(), label(argName), argSlot(Workspace::userWorkspace().getTypeSpec(argTypeSp)), hasDefaultVal(true) {
-
-    argSlot.setVariable( defVariable );
-}
-
-
-/** Convert an argument to a variable that does fit the argument rule */
-DAGNode* ArgumentRule::convert(DAGNode* arg) const {
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable) : RbInternal(), label(argName), argSlot(argName,argTypeSp), hasDefaultVal(true) {
+        
     
-    if ( arg == NULL )
-        return NULL;
-
-    RbObject* theConvertedValue = arg->getValue()->convertTo( argSlot.getTypeSpec() );
-    
-    return theConvertedValue->wrapIntoVariable();
+    Variable *tmpVar = new Variable( defVariable );
+    argSlot.setVariable( tmpVar );
 }
 
 
@@ -87,46 +75,8 @@ const VectorString& ArgumentRule::getClass(void) const {
 }
 
 
-/** Get default value */
-RbObject* ArgumentRule::getDefaultValue(void) const {
-
-    if ( !hasDefault() )
-        throw RbException("There is no default value for argument '" + label + "'");
-
-    const RbObject* defValue = argSlot.getValue();
-    if ( defValue == NULL )
-        return NULL;
-    else
-        return defValue->clone();
-}
-
-
-/** Get default variable */
-DAGNode* ArgumentRule::getDefaultVariable(void) const {
-
-    if ( !hasDefault() )
-        throw RbException("There is no default value for argument '" + label + "'");
-
-    const DAGNode* defValue = argSlot.getVariable();
-    if ( defValue == NULL )
-        return NULL;
-    else
-        return defValue->clone();
-}
-
-
-/** Get default reference (a variable ptr corresponding to a '&' argument) */
-DAGNode* ArgumentRule::getDefaultReference(void) {
-
-    if ( !hasDefault() )
-        throw RbException("There is no default value for argument '" + label + "'");
-
-    return argSlot.getReference();
-}
-
-
 /** Test if argument is valid */
-bool ArgumentRule::isArgValid(DAGNode* var, bool& needsConversion, bool once) const {
+bool ArgumentRule::isArgumentValid(DAGNode* var, bool& needsConversion, bool once) const {
     
     needsConversion = false;
     if ( var == NULL )
@@ -134,26 +84,25 @@ bool ArgumentRule::isArgValid(DAGNode* var, bool& needsConversion, bool once) co
 
     if ( once ) {
         /* We are executing once and match based on current value; error will be thrown if arguments have not been evaluated already */
-        const RbObject* value = var->getValue();
-        if ( value->isTypeSpec( argSlot.getTypeSpec() ) ) {
+        const RbLanguageObject* value = var->getValue();
+        if ( value->isTypeSpec( argSlot.getSlotTypeSpec() ) ) {
             needsConversion = false;
             return true;
         }
 
-        if ( value->isConvertibleTo( argSlot.getTypeSpec(), once ) == true) {
+        if ( value->isConvertibleTo( argSlot.getSlotTypeSpec(), once ) == true) {
             needsConversion = true;
             return true;
         }
     }
     else {
         /* We need safe argument matching for repeated evaluation in a function node */
-        if ( Workspace::userWorkspace().isXOfTypeY( var->getValueType(), argSlot.getTypeSpec().getType() ) == true &&
-            var->getDim() == argSlot.getTypeSpec().getDim()  ) {
+        if ( Workspace::userWorkspace().isXOfTypeY( var->getValueType(), argSlot.getSlotTypeSpec().getType() ) == true ) {
             needsConversion = false;
             return true;
         }
 
-        if ( Workspace::userWorkspace().isXConvertibleToY( var->getTypeSpec(), argSlot.getTypeSpec() ) == true) {
+        if ( Workspace::userWorkspace().isXConvertibleToY( var->getValueTypeSpec(), argSlot.getSlotTypeSpec() ) == true) {
             needsConversion = true;
             return true;
         }
@@ -166,7 +115,7 @@ bool ArgumentRule::isArgValid(DAGNode* var, bool& needsConversion, bool once) co
 /** Print value for user (in descriptions of functions, for instance) */
 void ArgumentRule::printValue(std::ostream &o) const {
 
-    o << argSlot.getTypeSpec().toString();
+    o << argSlot.getSlotType();
     o << " \"" << label << "\"";
     if ( hasDefaultVal ) {
         o << " = ";

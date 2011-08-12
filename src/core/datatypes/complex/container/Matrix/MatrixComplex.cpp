@@ -15,7 +15,6 @@
 
 #include "Complex.h"
 #include "ConstantNode.h"
-#include "ContainerNode.h"
 #include "MatrixComplex.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
@@ -41,11 +40,12 @@ MatrixComplex::MatrixComplex(void) : Matrix(Complex_name) {
 /** Construct matrix of specified dimensions (length), initialize it with double x (default 0.0) */
 MatrixComplex::MatrixComplex(const size_t nRows, const size_t nCols, std::complex<double> x) : Matrix(Complex_name) {
 
-    length[0] = nRows;
-    length[1] = nCols;
+    length  = nRows;
+    rows    = nRows;
+    cols    = nCols;
 
-    for ( size_t i = 0; i < length[0]; i++ )
-        matrix.push_back( VectorComplex( length[1], x ) );
+    for ( size_t i = 0; i < rows; i++ )
+        matrix.push_back( VectorComplex( cols, x ) );
 }
 
 
@@ -59,37 +59,20 @@ MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> 
         if ( x[i].size() != numCols )
             throw RbException( "Invalid attempt to initialize a matrix container using a jagged matrix" );
         }
+    
+    length  = numRows;
+    rows    = numRows;
+    cols    = numCols;
 
-    length[0] = numRows;
-    length[1] = numCols;
-
-    for ( size_t i = 0; i < length[0]; i++ )
+    for ( size_t i = 0; i < rows; i++ )
         matrix.push_back( VectorComplex( x[i] ) );
-}
-
-
-/** Construct matrix from a length specification [ nRows, nCols ] and a single vector of values */
-MatrixComplex::MatrixComplex(const std::vector<size_t>& len, const std::vector<std::complex<double> >& x) : Matrix(Complex_name) {
-
-    length = len;
-
-    size_t index = 0;
-    for (size_t i=0; i<len[0]; i++) 
-        {
-        VectorComplex y;
-        for (size_t j=0; j<len[1]; j++) 
-            {
-            y.push_back( x[index++] );
-            }
-        matrix.push_back( y );
-        }
 }
 
 
 /** Index operator (const) */
 const VectorComplex& MatrixComplex::operator[]( const size_t i ) const {
 
-    if ( i >= length[0] )
+    if ( i >= length )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
 
     return matrix[i];
@@ -99,7 +82,7 @@ const VectorComplex& MatrixComplex::operator[]( const size_t i ) const {
 /** Index operator */
 VectorComplex& MatrixComplex::operator[]( const size_t i ) {
 
-    if ( i >= length[0] )
+    if ( i >= length )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
 
     return matrix[i];
@@ -110,8 +93,9 @@ VectorComplex& MatrixComplex::operator[]( const size_t i ) {
 void MatrixComplex::clear( void ) {
 
     matrix.clear();
-    length[0] = 0;
-    length[1] = 0;
+    length  = 0;
+    rows    = 0;
+    cols    = 0;
 }
 
 
@@ -134,63 +118,24 @@ const VectorString& MatrixComplex::getClass(void) const {
 std::vector<std::complex<double> > MatrixComplex::getContent( void ) const {
 
     std::vector<std::complex<double> > temp;
-    for (size_t i=0; i<length[0]; i++)
-        for (size_t j=0; j<length[1]; j++)
+    for (size_t i=0; i<rows; i++)
+        for (size_t j=0; j<cols; j++)
             temp.push_back( matrix[i][j] );
     return temp;
 }
 
 
 /** Overloaded container method to get element or subcontainer for parser */
-DAGNode* MatrixComplex::getElement( const VectorInteger& index ) {
+VectorComplex* MatrixComplex::getElement( size_t index ) {
+    
+    return &matrix[index];
+}
 
-    if ( index.size() > 2 )
-        throw RbException( "Too many indices for " + Complex_name + "[][]" );
-
-    // Disregard irrelevant negative value(s) at back of index
-    size_t numIndices = index.size();
-    for ( int i = static_cast<int>( index.size() ) - 1; i >= 0; i-- ) 
-        {
-        if ( index[i] < 0 )
-            numIndices--;
-        else
-            break;
-        }
-
-    if ( numIndices == 0 ) 
-        {
-        return new ContainerNode( this->clone() );
-        }
-
-    else if ( numIndices == 1 ) 
-        {
-        // Row submatrix, this is easy
-        if ( index[0] > static_cast<int>( length[0] ) )
-            throw RbException( "Index out of bound for " + Complex_name + "[][]" );
-        return new ContainerNode( matrix[index[0]].clone() );
-        }
-        
-    else /* if ( numIndices == 2 ) */ 
-        {
-        if ( index[0] < 0 ) 
-            {
-            // We want a column submatrix, which is a little tricky
-            if ( size_t( index[0] ) > length[0] )
-                throw RbException( "Index out of bound for " + Complex_name + "[][]" );
-            
-            VectorComplex* temp = new VectorComplex();
-            for ( size_t j = 0; j < length[1]; j++ )
-                temp->push_back( matrix[index[0]][j] );
-            return new ContainerNode( temp );
-            }
-        else 
-            {
-            // We want an element, this is easy
-            if ( size_t( index[0] ) > length[0] || size_t( index[1] ) > length[1] )
-                throw RbException( "Index out of bound for " + Complex_name + "[][]" );
-            return ( new Complex(matrix[index[0]][index[1]]) )->wrapIntoVariable();
-            }
-        }
+/** Overloaded container method to get element or subcontainer for parser */
+Complex* MatrixComplex::getElement( size_t row , size_t col) {
+    
+    VectorComplex& tmp = matrix[row];
+    return (Complex*) tmp.getElement(col);
 }
 
 
@@ -198,7 +143,7 @@ DAGNode* MatrixComplex::getElement( const VectorInteger& index ) {
 std::vector<std::vector<std::complex<double> > > MatrixComplex::getValue( void ) const {
 
     std::vector<std::vector<std::complex<double> > > temp;
-    for ( size_t i = 0; i < length[0]; i++ )
+    for ( size_t i = 0; i < length; i++ )
         temp.push_back( matrix[i].getValue() );
     return temp;
 }
@@ -235,9 +180,9 @@ void MatrixComplex::printValue(std::ostream& o) const {
     // find the maximum number of digits to the left and right of the decimal place
     int maxToLft = 0, maxToRht = 0;
     bool foundDecimalPoint = false;
-    for (size_t i=0; i<length[0]; i++)
+    for (size_t i=0; i<rows; i++)
         {
-        for (size_t j=0; j<length[1]; j++)
+        for (size_t j=0; j<cols; j++)
             {
             std::ostringstream v;
             v << matrix[i][j];
@@ -252,14 +197,14 @@ void MatrixComplex::printValue(std::ostream& o) const {
         }
         
     // print the matrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i<length[0]; i++)
+    for (size_t i=0; i<rows; i++)
         {
         std::string lineStr = "";
         if (i == 0)
             lineStr += "[[ ";
         else 
             lineStr += pad  + " [ ";
-        for (size_t j=0; j<length[1]; j++)
+        for (size_t j=0; j<cols; j++)
             {
             std::ostringstream v;
             v << matrix[i][j];
@@ -272,10 +217,10 @@ void MatrixComplex::printValue(std::ostream& o) const {
                 lineStr += ".";
             for (int k=0; k<maxToRht-numToRht; k++)
                 lineStr += "0";
-            if (j+1 < length[1])
+            if (j+1 < cols)
                 lineStr += ", ";
             }
-        if (i == length[0]-1)
+        if (i == rows-1)
             lineStr += " ]]";
         else 
             lineStr += " ],\n";
@@ -293,35 +238,61 @@ void MatrixComplex::printValue(std::ostream& o) const {
 void MatrixComplex::push_back( const VectorComplex& x ) {
 
     if ( size() == 0 )
-        length[1] = x.size();
-    else if ( x.size() != length[1] )
+        cols = x.getLength();
+    else if ( x.getLength() != cols )
         throw RbException( "Cannot make matrix with rows of unequal size" );
 
     matrix.push_back( x );
-    length[0]++;
+    rows++;
 }
 
 
 /** Overloaded container resize method */
-void MatrixComplex::resize( const std::vector<size_t>& len ) {
+void MatrixComplex::resize( size_t len ) {
 
-    if ( len.size() != 2 )
-        throw RbException( "Invalid length specification in attempt to resize " + Complex_name + "[][]" );
-
-    if ( len[0] < length[0] || len[1] < length[1] )
-        throw RbException( "Invalid attempt to shrink " + Complex_name + "[][]" );
-
-    // First add the new rows with the right number of columns
-    for ( size_t i = length[0]; i < len[0]; i++ )
-        matrix.push_back( VectorComplex( len[1] ) );
-
-    // Now add columns to the old rows
-    for ( size_t i = 0; i < length[0]; i++ )
-        matrix[i].resize( len[1] );
-
-    // Set new length specification
-    length = len;
+//    if ( len.size() != 2 )
+//        throw RbException( "Invalid length specification in attempt to resize " + Complex_name + "[][]" );
+//
+//    if ( len[0] < rows || len[1] < cols )
+//        throw RbException( "Invalid attempt to shrink " + Complex_name + "[][]" );
+//
+//    // First add the new rows with the right number of columns
+//    for ( size_t i = rows; i < len[0]; i++ )
+//        matrix.push_back( VectorComplex( len[1] ) );
+//
+//    // Now add columns to the old rows
+//    for ( size_t i = 0; i < rows; i++ )
+//        matrix[i].resize( len[1] );
+//
+//    // Set new length specification
+//    length = len;
+    
+    throw RbException("Not implemented method MatrixComplex::resize()");
 }
+
+/** Overloaded container resize method */
+void MatrixComplex::resize( size_t rows, size_t cols ) {
+    
+    //    if ( len.size() != 2 )
+    //        throw RbException( "Invalid length specification in attempt to resize " + Complex_name + "[][]" );
+    //
+    //    if ( len[0] < rows || len[1] < cols )
+    //        throw RbException( "Invalid attempt to shrink " + Complex_name + "[][]" );
+    //
+    //    // First add the new rows with the right number of columns
+    //    for ( size_t i = rows; i < len[0]; i++ )
+    //        matrix.push_back( VectorComplex( len[1] ) );
+    //
+    //    // Now add columns to the old rows
+    //    for ( size_t i = 0; i < rows; i++ )
+    //        matrix[i].resize( len[1] );
+    //
+    //    // Set new length specification
+    //    length = len;
+    
+    throw RbException("Not implemented method MatrixComplex::resize()");
+}
+
 
 
 /** Complete info about object */
@@ -338,15 +309,15 @@ std::string MatrixComplex::richInfo(void) const {
 /** Set matrix content from single STL vector of doubles */
 void MatrixComplex::setContent( const std::vector<std::complex<double> >& x ) {
     
-    if ( x.size() != length[0]*length[1] )
+    if ( x.size() != rows*cols )
         throw RbException( "Incorrect number of elements in setting " + Complex_name + "[][]" );
     
     matrix.clear();
     
     size_t index = 0;
-    for ( size_t i = 0; i < length[0]; i++ ) {
+    for ( size_t i = 0; i < rows; i++ ) {
         VectorComplex y;
-        for ( size_t j = 0; j < length[1]; j++ ) {
+        for ( size_t j = 0; j < cols; j++ ) {
             y.push_back( x[index++] );
         }
         matrix.push_back( y );
@@ -357,66 +328,81 @@ void MatrixComplex::setContent( const std::vector<std::complex<double> >& x ) {
 /** Set matrix value from an STL vector<vector> of complex values */
 void MatrixComplex::setValue( const std::vector<std::vector<std::complex<double> > >& x ) {
 
-    if ( x.size() != length[0] )
+    if ( x.size() != rows )
         throw RbException( "Wrong number of rows in setting value of " + Complex_name + "[][]" );
 
     for ( size_t i = 0; i < x.size(); i++ ) {
-        if ( x[i].size() != length[1] )
+        if ( x[i].size() != cols )
             throw RbException( "Wrong number of columns in at least one row in setting value of " + Complex_name + "[][]" );
     }
 
     matrix.clear();
-    for ( size_t i = 0; i < length[0]; i++ )
+    for ( size_t i = 0; i < rows; i++ )
         matrix.push_back( VectorComplex( x[i] ) );
 }
 
 
 /** Overloaded container setElement method */
-void MatrixComplex::setElement( const VectorNatural& index, DAGNode* var ) {
+void MatrixComplex::setElement( size_t index, RbLanguageObject* var ) {
 
-    if ( index.size() != 2 )
-        throw RbException ( "Wrong number of indices for " + Complex_name + "[][]" );
-
-    if ( index[0] >= length[0] || index[1] >= length[1] )
-        throw RbException( "Index out of bounds for " + Complex_name + "[][]" );
-
-    RbObject* value = var->getValue()->clone();
-    if ( value == NULL )
-        throw RbException( "Cannot set " + Complex_name + "[][] element to NULL" );
-
-    if ( value->isType( Complex_name ) )
-        matrix[index[0]][index[1]] = static_cast<Complex*>( value )->getValue();
-    else {
-        // We rely on convertTo to throw an error with a meaningful message
-        matrix[index[0]][index[1]] = static_cast<Complex*>( value->convertTo( Complex_name ) )->getValue();
-    }
+//    if ( index.size() != 2 )
+//        throw RbException ( "Wrong number of indices for " + Complex_name + "[][]" );
+//
+//    if ( index[0] >= rows || index[1] >= cols )
+//        throw RbException( "Index out of bounds for " + Complex_name + "[][]" );
+//
+//    RbObject* value = var->getValue()->clone();
+//    if ( value == NULL )
+//        throw RbException( "Cannot set " + Complex_name + "[][] element to NULL" );
+//
+//    if ( value->isType( Complex_name ) )
+//        matrix[index[0]][index[1]] = static_cast<Complex*>( value )->getValue();
+//    else {
+//        // We rely on convertTo to throw an error with a meaningful message
+//        matrix[index[0]][index[1]] = static_cast<Complex*>( value->convertTo( Complex_name ) )->getValue();
+//    }
+    
+    throw RbException("Not implemented method MatrixComplex::setElement()");
 }
 
-
-/** Overloaded container setLength method */
-void MatrixComplex::setLength( const std::vector<size_t>& len) {
-
-    if ( len[0] * len[1] != size() )
-        throw RbException( "New length for " + Complex_name + "[][] does not have the right number of elements" );
-
-    std::vector<std::complex<double> > temp = getContent();
-    setContent( temp );
+/** Overloaded container setElement method */
+void MatrixComplex::setElement( size_t row, size_t col, RbLanguageObject* var ) {
+    
+    //    if ( index.size() != 2 )
+    //        throw RbException ( "Wrong number of indices for " + Complex_name + "[][]" );
+    //
+    //    if ( index[0] >= rows || index[1] >= cols )
+    //        throw RbException( "Index out of bounds for " + Complex_name + "[][]" );
+    //
+    //    RbObject* value = var->getValue()->clone();
+    //    if ( value == NULL )
+    //        throw RbException( "Cannot set " + Complex_name + "[][] element to NULL" );
+    //
+    //    if ( value->isType( Complex_name ) )
+    //        matrix[index[0]][index[1]] = static_cast<Complex*>( value )->getValue();
+    //    else {
+    //        // We rely on convertTo to throw an error with a meaningful message
+    //        matrix[index[0]][index[1]] = static_cast<Complex*>( value->convertTo( Complex_name ) )->getValue();
+    //    }
+    
+    throw RbException("Not implemented method MatrixComplex::setElement()");
 }
+
 
 
 /** Overloaded container size method */
 size_t MatrixComplex::size( void ) const {
 
-    return length[0] * length[1];
+    return rows * cols;
 }
 
 
 /** Transpose the matrix */
 void MatrixComplex::transpose( void ) {
 
-    MatrixComplex temp(length[1], length[0]);
-    for ( size_t i = 0; i < length[0]; i++ )
-        for ( size_t j = 0; j < length[1]; j++ )
+    MatrixComplex temp(cols, rows);
+    for ( size_t i = 0; i < rows; i++ )
+        for ( size_t j = 0; j < cols; j++ )
             temp[j][i] = matrix[i][j];
 }
 
@@ -438,8 +424,8 @@ MatrixComplex operator+(const MatrixComplex& A, const double& b) {
 
 	MatrixComplex B;
     B = A;
-	for (size_t i=0; i<B.getNumRows(); i++)
-		for (size_t j=0; j<B.getNumCols(); j++)
+	for (size_t i=0; i<B.getNumberOfRows(); i++)
+		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = A[i][j] - b;
 	return B;
 }
@@ -459,8 +445,8 @@ MatrixComplex operator-(const MatrixComplex& A, const double& b) {
 
 	MatrixComplex B;
     B = A;
-	for (size_t i=0; i<B.getNumRows(); i++)
-		for (size_t j=0; j<B.getNumCols(); j++)
+	for (size_t i=0; i<B.getNumberOfRows(); i++)
+		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = A[i][j] - b;
 	return B;
 }
@@ -479,8 +465,8 @@ MatrixComplex operator*(const MatrixComplex& A, const double& b) {
 
 	MatrixComplex B;
     B = A;
-	for (size_t i=0; i<B.getNumRows(); i++)
-		for (size_t j=0; j<B.getNumCols(); j++)
+	for (size_t i=0; i<B.getNumberOfRows(); i++)
+		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = A[i][j] * b;
 	return B;
 }
@@ -499,8 +485,8 @@ MatrixComplex operator/(const MatrixComplex& A, const double& b) {
 
 	MatrixComplex B;
     B = A;
-	for (size_t i=0; i<B.getNumRows(); i++)
-		for (size_t j=0; j<B.getNumCols(); j++)
+	for (size_t i=0; i<B.getNumberOfRows(); i++)
+		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = A[i][j] / b;
 	return B;
 }
@@ -519,8 +505,8 @@ MatrixComplex operator+(const double& a, const MatrixComplex& B) {
 
 	MatrixComplex A;
     A = B;
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a + B[i][j];
 	return A;
 }
@@ -539,8 +525,8 @@ MatrixComplex operator-(const double& a, const MatrixComplex& B) {
 
 	MatrixComplex A;
     A = B;
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a - B[i][j];
 	return A;
 }
@@ -559,8 +545,8 @@ MatrixComplex operator*(const double& a, const MatrixComplex& B) {
 
 	MatrixComplex A;
     A = B;
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a * B[i][j];
 	return A;
 }
@@ -579,8 +565,8 @@ MatrixComplex operator/(const double& a, const MatrixComplex& B) {
 
 	MatrixComplex A;
     A = B;
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a / B[i][j];
 	return A;
 }
@@ -597,12 +583,12 @@ MatrixComplex operator/(const double& a, const MatrixComplex& B) {
  */
 MatrixComplex operator/(const MatrixComplex& A, const MatrixComplex& B) {
 
-    if ( A.getNumRows() != A.getNumCols() )
+    if ( A.getNumberOfRows() != A.getNumberOfColumns() )
         throw RbException("Cannot divide non-square matrices");
-	if ( A.getNumCols() != B.getNumCols() )
+	if ( A.getNumberOfColumns() != B.getNumberOfColumns() )
         throw RbException("Cannot divide matrices of differing dimension");
         
-	size_t N = A.getNumCols();
+	size_t N = A.getNumberOfColumns();
 	MatrixComplex invB(N, N, 0.0);
     RbMath::matrixInverse(B, invB);
 
@@ -632,8 +618,8 @@ MatrixComplex operator/(const MatrixComplex& A, const MatrixComplex& B) {
  */
 MatrixComplex &operator+=(MatrixComplex& A, const double& b) {
 
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] += b;
 	return A;
 }
@@ -650,8 +636,8 @@ MatrixComplex &operator+=(MatrixComplex& A, const double& b) {
  */
 MatrixComplex &operator-=(MatrixComplex& A, const double& b) {
 
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] -= b;
 	return A;
 }
@@ -668,8 +654,8 @@ MatrixComplex &operator-=(MatrixComplex& A, const double& b) {
  */
 MatrixComplex &operator*=(MatrixComplex& A, const double& b) {
 
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] *= b;
 	return A;
 }
@@ -686,8 +672,8 @@ MatrixComplex &operator*=(MatrixComplex& A, const double& b) {
  */
 MatrixComplex &operator/=(MatrixComplex& A, const double& b) {
 
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] /= b;
 	return A;
 }
@@ -704,9 +690,9 @@ MatrixComplex &operator/=(MatrixComplex& A, const double& b) {
  */
 MatrixComplex operator+(const MatrixComplex& A, const MatrixComplex& B) {
 
-	size_t m = A.getNumRows();
-	size_t n = A.getNumCols();
-	if (B.getNumRows() != m || B.getNumCols() != n)
+	size_t m = A.getNumberOfRows();
+	size_t n = A.getNumberOfColumns();
+	if (B.getNumberOfRows() != m || B.getNumberOfColumns() != n)
         throw RbException("Cannot add matrices A and B: the matrices are not of the same dimension");
 	else 
         {
@@ -732,9 +718,9 @@ MatrixComplex operator+(const MatrixComplex& A, const MatrixComplex& B) {
  */
 MatrixComplex operator-(const MatrixComplex& A, const MatrixComplex& B) {
 
-	size_t m = A.getNumRows();
-	size_t n = A.getNumCols();
-	if (B.getNumRows() != m || B.getNumCols() != n)
+	size_t m = A.getNumberOfRows();
+	size_t n = A.getNumberOfColumns();
+	if (B.getNumberOfRows() != m || B.getNumberOfColumns() != n)
         throw RbException("Cannot subtract matrices A and B: the matrices are not of the same dimension");
 	else 
         {
@@ -764,11 +750,11 @@ MatrixComplex operator-(const MatrixComplex& A, const MatrixComplex& B) {
  */
 MatrixComplex operator*(const MatrixComplex& A, const MatrixComplex& B) {
 
-	if ( A.getNumCols() != B.getNumRows() )
+	if ( A.getNumberOfColumns() != B.getNumberOfRows() )
         throw RbException("Cannot multiply matrices A and B: the number of columns of A does not equal the number of rows in B");
-	size_t M = A.getNumRows();
-	size_t N = A.getNumCols();
-	size_t K = B.getNumCols();
+	size_t M = A.getNumberOfRows();
+	size_t N = A.getNumberOfColumns();
+	size_t K = B.getNumberOfColumns();
 	MatrixComplex C(M, K, 0.0);
 	for (size_t i=0; i<M; i++) 
         {
@@ -796,9 +782,9 @@ MatrixComplex operator*(const MatrixComplex& A, const MatrixComplex& B) {
  */
 MatrixComplex&  operator+=(MatrixComplex& A, const MatrixComplex& B) {
 
-	size_t m = A.getNumRows();
-	size_t n = A.getNumCols();
-	if (B.getNumRows() == m && B.getNumCols() == n) 
+	size_t m = A.getNumberOfRows();
+	size_t n = A.getNumberOfColumns();
+	if (B.getNumberOfRows() == m && B.getNumberOfColumns() == n) 
         {
 		for (size_t i=0; i<m; i++) 
             {
@@ -822,9 +808,9 @@ MatrixComplex&  operator+=(MatrixComplex& A, const MatrixComplex& B) {
  */
 MatrixComplex&  operator-=(MatrixComplex& A, const MatrixComplex& B) {
 
-	size_t m = A.getNumRows();
-	size_t n = A.getNumCols();
-	if (B.getNumRows() == m && B.getNumCols() == n) 
+	size_t m = A.getNumberOfRows();
+	size_t n = A.getNumberOfColumns();
+	if (B.getNumberOfRows() == m && B.getNumberOfColumns() == n) 
         {
 		for (size_t i=0; i<m; i++) 
             {
@@ -850,9 +836,9 @@ MatrixComplex&  operator-=(MatrixComplex& A, const MatrixComplex& B) {
  */
 MatrixComplex &operator*=(MatrixComplex& A, const MatrixComplex& B) {
 
-	if ( A.getNumRows() == A.getNumCols() && B.getNumRows() == B.getNumCols() && A.getNumRows() == B.getNumRows() ) 
+	if ( A.getNumberOfRows() == A.getNumberOfColumns() && B.getNumberOfRows() == B.getNumberOfColumns() && A.getNumberOfRows() == B.getNumberOfRows() ) 
         {
-		size_t N = A.getNumRows();
+		size_t N = A.getNumberOfRows();
 		MatrixComplex C(N, N, 0.0);
 		for (size_t i=0; i<N; i++) 
             {

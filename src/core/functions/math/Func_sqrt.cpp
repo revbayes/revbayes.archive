@@ -40,14 +40,14 @@ Func_sqrt* Func_sqrt::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_sqrt::execute( void ) {
+RbLanguageObject* Func_sqrt::execute( void ) {
     
     const Real* x = static_cast<const Real*>( args[0].getValue() );
 
     if ( *x < 0.0 )
 		throw RbException( "Square root of negative number. RevBayes does not (yet) support complex numbers" );
 
-    return ( new RealPos( sqrt( *x ) ) )->wrapIntoVariable();
+    return ( new RealPos( sqrt( *x ) ) );
 }
 
 

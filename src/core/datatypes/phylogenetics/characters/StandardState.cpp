@@ -35,7 +35,7 @@ StandardState::StandardState(const StandardState& s) : CharacterStateDiscrete(s.
 
 StandardState::StandardState(const std::string ss) : CharacterStateDiscrete(ss.size()) {
 
-    setNumStates(ss.size());
+    setNumberOfStates(ss.size());
     setStateLabels(ss);
 }
 
@@ -122,7 +122,7 @@ const char StandardState::getState(void) const {
 /** Print information for the user */
 void StandardState::printValue(std::ostream &o) const {
 
-    if ( getNumOnStates() > 1 )
+    if ( getNumberOfStates() > 1 )
         {
         o << "(";
         for (size_t i=0; i<numStates; i++)

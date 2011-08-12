@@ -18,7 +18,6 @@
 #include "ArgumentRule.h"
 #include "ConstructorFunction.h"
 #include "DAGNode.h"
-#include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbNames.h"
 #include "TypeSpec.h"
@@ -28,9 +27,9 @@
 
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction(MemberObject* obj) 
-    : RbFunction(), templateObject(obj) {
+ConstructorFunction::ConstructorFunction(MemberObject* obj) : RbFunction(), templateObject(obj) {
 
+    templateObject->retain();
     argRules = templateObject->getMemberRules();
 }
 
@@ -43,18 +42,15 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-DAGNode* ConstructorFunction::execute(void) {
+RbLanguageObject* ConstructorFunction::execute(void) {
 
    MemberObject* copy = templateObject->clone();
 
     for ( size_t i = 0; i < args.size(); i++ ) {
-        if ( args[i].isReference() )
-            copy->setVariable( args.getLabel(i), args[i].getReference() );
-        else
-            copy->setVariable( args.getLabel(i), args[i].getVariable()->clone() );
+        copy->setMemberVariable( args[i].getLabel(), args[i].getVariable() );
     }
  
-    return new MemberNode(copy);
+    return copy;
 }
 
 

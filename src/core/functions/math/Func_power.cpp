@@ -39,12 +39,12 @@ Func_power* Func_power::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_power::execute( void ) {
+RbLanguageObject* Func_power::execute( void ) {
     
     const Real* a = static_cast<const Real*>( args[0].getValue() );
     const Real* b = static_cast<const Real*>( args[1].getValue() );
     
-    return ( new Real( pow(a->getValue(),b->getValue()) ) )->wrapIntoVariable();
+    return ( new Real( pow(a->getValue(),b->getValue()) ) );
 }
 
 

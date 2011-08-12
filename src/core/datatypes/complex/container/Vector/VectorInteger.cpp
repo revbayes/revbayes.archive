@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -24,6 +24,8 @@
 #include "VectorInteger.h"
 #include "VectorNatural.h"
 #include "VectorString.h"
+#include "VectorReal.h"
+#include "VectorRealPos.h"
 
 #include <sstream>
 
@@ -40,7 +42,7 @@ VectorInteger::VectorInteger(int x)
     : Vector(Integer_name) {
 
     elements.push_back(new Integer(x));
-    length[0]++;
+    length++;
 }
 
 
@@ -50,7 +52,7 @@ VectorInteger::VectorInteger(size_t n, int x)
 
     for (size_t i = 0; i < n; i++)
         elements.push_back(new Integer(x));
-    length[0] = n;
+    length = n;
 }
 
 
@@ -60,7 +62,7 @@ VectorInteger::VectorInteger(const std::vector<int>& x)
 
     for (size_t i=0; i<x.size(); i++) {
         elements.push_back(new Integer(x[i]));
-        length[0]++;
+        length++;
     }
 }
 
@@ -69,9 +71,9 @@ VectorInteger::VectorInteger(const std::vector<int>& x)
 VectorInteger::VectorInteger(const VectorNatural& x)
     : Vector(Integer_name) {
 
-    for (size_t i=0; i<x.size(); i++) {
+    for (size_t i=0; i<x.getLength(); i++) {
         elements.push_back(new Integer(x[i]));
-        length[0]++;
+        length++;
     }
 }
 
@@ -82,7 +84,7 @@ VectorInteger::VectorInteger(const std::vector<size_t>& x)
 
     for (std::vector<size_t>::const_iterator i=x.begin(); i!=x.end(); i++)
         elements.push_back(new Integer(int(*i)));
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -92,7 +94,7 @@ VectorInteger::VectorInteger(const ContainerIterator& x)
 
     for (ContainerIterator::const_iterator i=x.begin(); i!=x.end(); i++)
         elements.push_back(new Integer(*i));
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -102,7 +104,7 @@ int& VectorInteger::operator[](size_t i) {
     if (i > elements.size())
         throw RbException("Index out of bounds");
 
-    return static_cast<Integer*>(elements[i])->getValueRef();
+    return static_cast<Integer*>(elements[i])->getValueReference();
 }
 
 
@@ -111,14 +113,14 @@ const int& VectorInteger::operator[](size_t i) const {
 
     if (i >= int(elements.size()))
         throw RbException("Index out of bounds");
-    return static_cast<Integer*>(elements[i])->getValueRef();
+    return static_cast<Integer*>(elements[i])->getValueReference();
 }
 
 
 /** Equals comparison */
 bool VectorInteger::operator==(const VectorInteger& x) const {
 
-    if (size() != x.size())
+    if (getLength() != x.getLength())
         return false;
 
     for (size_t i=0; i<elements.size(); i++) {
@@ -144,6 +146,40 @@ VectorInteger* VectorInteger::clone() const {
 }
 
 
+/** Can we convert this vector into another object? */
+RbLanguageObject* VectorInteger::convertTo(std::string const &type) const {
+    
+    // test for type conversion
+    if (type == VectorRealPos_name) {
+        
+        // create an stl vector and add each element
+        std::vector<double> d;
+        for (std::vector<RbLanguageObject*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+            int i = dynamic_cast<Natural*>(*it)->getValue();
+            d.push_back(i);
+        }
+        
+        return new VectorRealPos(d);
+    }
+    else if (type == VectorNatural_name) {
+        
+        return new VectorNatural( getValue() );
+    }
+    else if (type == VectorReal_name) {
+        
+        // create an stl vector and add each element
+        std::vector<double> d;
+        for (std::vector<RbLanguageObject*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+            int i = dynamic_cast<Natural*>(*it)->getValue();
+            d.push_back(i);
+        }
+        
+        return new VectorRealPos(d);
+    }
+    
+    return Vector::convertTo(type);
+}
+
 /** Get class vector describing type of object */
 const VectorString& VectorInteger::getClass() const {
 
@@ -156,10 +192,36 @@ const VectorString& VectorInteger::getClass() const {
 std::vector<int> VectorInteger::getValue(void) const {
 
     std::vector<int> temp;
-    for (size_t i=0; i<size(); i++)
+    for (size_t i=0; i<getLength(); i++)
         temp.push_back(operator[](i));
 
     return temp;
+}
+
+
+/** Can we convert this vector into another object? */
+bool VectorInteger::isConvertibleTo(std::string const &type, bool once) const {
+    
+    // test for type conversion
+    if (type == VectorNatural_name && once == true) {
+        
+        for (std::vector<RbLanguageObject*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+            Integer *x = dynamic_cast<Integer*>(*it);
+            
+            // test whether we can convert this element, otherwise return false
+            if (!x->isConvertibleTo(type, once)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    else if (type == VectorReal_name || type == VectorRealPos_name) {
+        
+        return true;
+    }
+    
+    return Vector::isConvertibleTo(type, once);
 }
 
 
@@ -167,7 +229,7 @@ std::vector<int> VectorInteger::getValue(void) const {
 void VectorInteger::push_back(int x) {
 
     elements.push_back(new Integer(x));
-    length[0]++;
+    length++;
 }
 
 
@@ -175,7 +237,7 @@ void VectorInteger::push_back(int x) {
 void VectorInteger::push_front(int x) {
 
     elements.insert(elements.begin(), new Integer(x));
-    length[0]++;
+    length++;
 }
 
 
@@ -190,28 +252,13 @@ std::string VectorInteger::richInfo(void) const {
 }
 
 
-/** Convert to element index string for use in parser */
-std::string VectorInteger::toIndexString(void) const {
-
-    std::ostringstream o;
-    for ( size_t i = 0; i < elements.size(); i++ ) {
-        if ( operator[](i) < 0 )
-            o <<  "[]";
-        else
-            o << "[" << operator[](i) + 1 << "]";
-    }
-
-    return o.str();
-}
-
-
 /** Set value of vector using STL vector */
 void VectorInteger::setValue(const std::vector<int>& x) {
 
     clear();
     for (std::vector<int>::const_iterator i=x.begin(); i!=x.end(); i++) {   
         elements.push_back(new Integer(*i));
-        length[0]++;
+        length++;
     }
 }   
 
@@ -220,9 +267,9 @@ void VectorInteger::setValue(const std::vector<int>& x) {
 void VectorInteger::setValue(const VectorInteger& x) {
 
     clear();
-    for (size_t i=0; i<x.size(); i++) {   
+    for (size_t i=0; i<x.getLength(); i++) {   
         elements[i] = new Integer(x[i]);
-        length[0]++;
+        length++;
     }
 }   
 

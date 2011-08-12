@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-12-04, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -53,7 +53,9 @@ class VectorReal : public Vector {
         
         // Basic utility functions
         VectorReal*                 clone(void) const;                                          //!< Clone object
+        RbLanguageObject*           convertTo(const std::string& type) const;                   //!< Convert to type
         const VectorString&         getClass(void) const;                                       //!< Get class
+        bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
         void                        printValue(std::ostream& o) const;                          //!< Print value (for user)
         std::string                 richInfo(void) const;                                       //!< Complete info about object
 
@@ -63,9 +65,6 @@ class VectorReal : public Vector {
         void                        push_front(double x);                                       //!< Add element in front
         void                        setValue(const VectorReal& x);                              //!< Set the value
         void                        setValue(const std::vector<double>& x);                     //!< Set the value
-
-    protected:
-        RbObject*                   getDefaultElement(void) const { return new Real(); }        //!< Get default element for empty slots
 
 };
 

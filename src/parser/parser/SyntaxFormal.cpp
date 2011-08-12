@@ -13,14 +13,13 @@
  * $Id$
  */
 
+#include "Environment.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "ReferenceRule.h"
 #include "SyntaxFormal.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "VariableFrame.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -28,32 +27,29 @@
 
 /** Constructor with implicit type */
 SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal)
-    : SyntaxElement(), type(new TypeSpec(RbObject_name)), label(id), defaultExpr(defaultVal) {
+    : SyntaxElement(), argType(new TypeSpec(RbObject_name)), label(id), defaultExpr(defaultVal) {
 }
 
 
 /** Constructor with explicit type */
 SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defaultVal)
-: SyntaxElement(), type(NULL), label(id), defaultExpr(defaultVal) {
+: SyntaxElement(), argType(NULL), label(id), defaultExpr(defaultVal) {
 
     // Convert to standard string
     const std::string typeString = *typeSpec;
 
     // Count dimensions and check if reference
     int         nDim        = 0;
-    bool        isRef       = false;
     std::string tpName      = std::string();
     for (std::string::const_iterator i=typeString.begin(); i!=typeString.end(); i++) {
         if ((*i) == '[')
             nDim++;
-        else if ((*i) == '&')
-            isRef = true;
         else if ((*i) != ']')
             tpName += (*i);
     }
 
     // Create the type specification
-    type = new TypeSpec(Workspace::userWorkspace().getTypeSpec(tpName), nDim, isRef);
+    argType = new TypeSpec(tpName);
     
     // Avoid memory leak
     delete typeSpec;
@@ -64,7 +60,7 @@ SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defa
 SyntaxFormal::SyntaxFormal(const SyntaxFormal& x)
     : SyntaxElement(x) {
 
-    type        = new TypeSpec(x.type->getType(), x.type->getDim(), x.type->isReference());
+    argType     = new TypeSpec(x.argType->getType());
     label       = new RbString(*(x.label));
     defaultExpr = x.defaultExpr->clone();
 }
@@ -73,7 +69,7 @@ SyntaxFormal::SyntaxFormal(const SyntaxFormal& x)
 /** Destructor deletes pointer members */
 SyntaxFormal::~SyntaxFormal() {
     
-    delete type;
+    delete argType;
     delete label;
     delete defaultExpr;
 }
@@ -84,13 +80,13 @@ SyntaxFormal& SyntaxFormal::operator=(const SyntaxFormal& x) {
 
     if (&x != this) {
 
-        delete type;
+        delete argType;
         delete label;
         delete defaultExpr;
 
         SyntaxElement::operator=(x);
 
-        type        = new TypeSpec(x.type->getType(), x.type->getDim(), x.type->isReference());
+        argType        = new TypeSpec(x.argType->getType());
         label       = new RbString(*(x.label));
         defaultExpr = x.defaultExpr->clone();
     }
@@ -105,9 +101,9 @@ std::string SyntaxFormal::briefInfo () const {
     std::ostringstream   o;
 
     if (defaultExpr == NULL)
-        o << "SyntaxFormal:  '" << type->toString() << " " << std::string(*label);
+        o << "SyntaxFormal:  '" << argType->toString() << " " << std::string(*label);
     else {
-        o << "SyntaxFormal:  '" << type->toString() << " " << std::string(*label) << " = ";
+        o << "SyntaxFormal:  '" << argType->toString() << " " << std::string(*label) << " = ";
         o << defaultExpr->briefInfo();
     }
 
@@ -123,34 +119,20 @@ SyntaxFormal* SyntaxFormal::clone () const {
 
 
 /** Make argument rule from element */
-ArgumentRule* SyntaxFormal::getArgumentRule(VariableFrame* frame) const {
+ArgumentRule* SyntaxFormal::getArgumentRule(Environment* env) const {
 
-    if ( type->isReference() ) {
-    
-        if ( defaultExpr == NULL )
-            return new ReferenceRule( *label, type->getType(), type->getDim() );
-        else
-            return new ReferenceRule( *label, type->getType(), defaultExpr->getValue( frame ) );
-    }
-    else {
 
-        if (defaultExpr == NULL)
-            return new ValueRule(*label, *type);
-        else
-            return new ValueRule(*label, *type, defaultExpr->getValue(frame));
-    }
+    if (defaultExpr == NULL)
+        return new ValueRule(*label, *argType);
+    else
+        return new ValueRule(*label, *argType, defaultExpr->getContentAsVariable(env)->getDagNodePtr());
+
 }
 
-
-/** Convert element to DAG node (not applicable so return NULL) */
-DAGNode* SyntaxFormal::getDAGNodeExpr(VariableFrame* frame) const {
-
-    return NULL;
-}
 
 
 /** Get semantic value (not applicable so return NULL) */
-DAGNode* SyntaxFormal::getValue(VariableFrame* frame) const {
+Variable* SyntaxFormal::getContentAsVariable(Environment* env) const {
 
     return NULL;
 }
@@ -160,7 +142,7 @@ DAGNode* SyntaxFormal::getValue(VariableFrame* frame) const {
 void SyntaxFormal::print(std::ostream& o) const {
 
     o << "SyntaxFormal:" << std::endl;
-    o << "type        = " << type->toString() << std::endl;
+    o << "type        = " << argType->toString() << std::endl;
     o << "label       = " << *label << std::endl;
     o << "defaultExpr = " << defaultExpr->briefInfo() << std::endl;
 }

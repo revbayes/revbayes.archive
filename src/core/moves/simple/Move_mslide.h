@@ -33,6 +33,7 @@ class Move_mslide : public MoveSimple {
     public:
                                     Move_mslide(void);                                                      //!< Parser constructor
                                     Move_mslide(StochasticNode* node, double delta, double weight = 1.0);   //!< Internal constructor
+    Move_mslide(const Move_mslide &ms);                                                                 //!< Copy Constructor
 
         // Basic utility functions
         Move_mslide*                clone(void) const;                                                      //!< Clone object

@@ -28,7 +28,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-12-04, version 1.0
- * @extends RbComplex
+ * @extends MemberObject
  *
  * $Id$
  */
@@ -36,12 +36,12 @@
 #ifndef TopologyNode_H
 #define TopologyNode_H
 
-#include "MemberObject.h"
+#include "ConstantMemberObject.h"
 #include <vector>
 
 
 
-class TopologyNode : public MemberObject {
+class TopologyNode : public ConstantMemberObject {
     
     public:
                                         TopologyNode(int indx=0);                                                   //!< Default constructor with optional index
@@ -56,7 +56,7 @@ class TopologyNode : public MemberObject {
         const MemberRules&              getMemberRules(void) const;                                                 //!< Get member rules
 
         // Member method inits
-        DAGNode*                        executeOperation(const std::string& name, ArgumentFrame& args);             //!< Execute method
+        RbLanguageObject*               executeOperation(const std::string& name, Environment& args);               //!< Execute method
         const MethodTable&              getMethods(void) const;                                                     //!< Get methods
         
         // TopologyNode functions

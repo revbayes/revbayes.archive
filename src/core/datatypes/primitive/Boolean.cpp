@@ -28,13 +28,23 @@
 
 
 /** Default constructor */
-Boolean::Boolean(void) : RbObject(), value(false) {
+Boolean::Boolean(void) : RbLanguageObject(), value(false) {
 
 }
 
 /** Construct from bool */
-Boolean::Boolean(const bool v) : RbObject(), value(v) {
+Boolean::Boolean(const bool v) : RbLanguageObject(), value(v) {
 
+}
+
+
+/** Get brief info about object */
+std::string Boolean::briefInfo(void) const {
+    
+	std::ostringstream o;
+    o << "Boolean: value = ";
+    printValue(o);
+    return o.str();
 }
 
 /** Clone object */
@@ -45,22 +55,22 @@ Boolean* Boolean::clone(void) const {
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbObject* Boolean::convertTo(const std::string& type, size_t dim) const {
+RbLanguageObject* Boolean::convertTo(const std::string& type) const {
 
-    if (type == Integer_name && dim == 0) {
+    if (type == Integer_name) {
         if (value)
             return new Integer(1);
         else 
             return new Integer(0);
     }
-    else if (type == Real_name && dim == 0) {
+    else if (type == Real_name) {
         if (value)
             return new Real(1.0);
         else 
             return new Real(0.0);
     }
 
-    return RbObject::convertTo(type, dim);
+    return RbLanguageObject::convertTo(type);
 }
 
 
@@ -73,14 +83,14 @@ const VectorString& Boolean::getClass() const {
 
 
 /** Is convertible to type and dim? */
-bool Boolean::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
+bool Boolean::isConvertibleTo(const std::string& type, bool once) const {
 
-    if (type == Integer_name && dim == 0)
+    if (type == Integer_name)
         return true;
-    else if (type == Real_name && dim == 0)
+    else if (type == Real_name)
         return true;
 
-    return RbObject::isConvertibleTo(type, dim, once);
+    return RbObject::isConvertibleTo(type, once);
 }
 
 

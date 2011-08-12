@@ -25,8 +25,8 @@
 #include "Real.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "ReferenceRule.h"
 #include "Simplex.h"
+#include "ValueRule.h"
 #include "VectorInteger.h"
 #include "VectorReal.h"
 #include "VectorString.h"
@@ -45,12 +45,12 @@ Dist_multinomial::Dist_multinomial( void ) : DistributionContinuous( getMemberRu
 /** Constructor for internal use */
 Dist_multinomial::Dist_multinomial( std::vector<double> a ) : DistributionContinuous( getMemberRules() ) {
 
-    setValue( "p", new Simplex( a ) );
+//    setMemberValue( "p", new Simplex( a ) );
 }
 
 
 /** Cdf function */
-double Dist_multinomial::cdf( const RbObject* value ) {
+double Dist_multinomial::cdf( const RbLanguageObject* value ) {
 
     throw RbException( "Cdf function of multinomial not implemented yet" );
 }
@@ -71,14 +71,6 @@ const VectorString& Dist_multinomial::getClass( void ) const {
 }
 
 
-/** Get default move */
-Move* Dist_multinomial::getDefaultMove( StochasticNode* node ) {
-
-	// Default move for a stochastic node having a Dirichlet distribution
-    return new Move_mmultinomial( node, 300.0, 4, 1.0 );
-}
-
-
 /** Get member variable rules */
 const MemberRules& Dist_multinomial::getMemberRules( void ) const {
 
@@ -87,7 +79,7 @@ const MemberRules& Dist_multinomial::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ReferenceRule( "p", Simplex_name ) );
+        memberRules.push_back( new ValueRule( "p", Simplex_name ) );
 
         rulesSet = true;
 		}
@@ -99,7 +91,7 @@ const MemberRules& Dist_multinomial::getMemberRules( void ) const {
 /** Get random variable type */
 const TypeSpec Dist_multinomial::getVariableType( void ) const {
 
-    return TypeSpec( Natural_name, 1 );
+    return TypeSpec( Natural_name );
 }
 
 
@@ -112,10 +104,10 @@ const TypeSpec Dist_multinomial::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_multinomial::lnPdf( const RbObject* value ) {
+double Dist_multinomial::lnPdf( const RbLanguageObject* value ) {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> p = static_cast<const Simplex*      >( getValue( "p" ) )->getValue();
+    std::vector<double> p = static_cast<const Simplex*      >( getMemberValue( "p" ) )->getValue();
     std::vector<int   > x = static_cast<const VectorNatural*>( value           )->getValue();
 
 	// Check that the vectors are both the same size
@@ -135,10 +127,10 @@ double Dist_multinomial::lnPdf( const RbObject* value ) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_multinomial::pdf( const RbObject* value ) {
+double Dist_multinomial::pdf( const RbLanguageObject* value ) {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> p = static_cast<const Simplex*      >( getValue( "p" ) )->getValue();
+    std::vector<double> p = static_cast<const Simplex*      >( getMemberValue( "p" ) )->getValue();
     std::vector<int   > x = static_cast<const VectorNatural*> (value           )->getValue();
 
 	// check that the vectors are both the same size
@@ -166,7 +158,7 @@ VectorNatural* Dist_multinomial::quantile(const double p) {
  */
 VectorNatural* Dist_multinomial::rv( void ) {
 
-    std::vector<double> p      = static_cast<const Simplex*>( getValue( "p" ) )->getValue();
+    std::vector<double> p      = static_cast<const Simplex*>( getMemberValue( "p" ) )->getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector<int>       r( p.size() );
 

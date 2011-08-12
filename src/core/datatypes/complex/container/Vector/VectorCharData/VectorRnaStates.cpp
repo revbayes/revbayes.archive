@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends VectorCharacters
  *
  * $Id$
  */
@@ -37,9 +37,9 @@ VectorRnaStates::VectorRnaStates(void) : VectorCharacters(RnaState_name) {
 /** Copy constructor */
 VectorRnaStates::VectorRnaStates(const VectorRnaStates& x) : VectorCharacters(RnaState_name) {
 
-    for (size_t i=0; i<x.size(); i++)
+    for (size_t i=0; i<x.getLength(); i++)
         elements.push_back( new RnaState(x[i]) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -64,7 +64,7 @@ const RnaState& VectorRnaStates::operator[](size_t i) const {
 /** Equals comparison */
 bool VectorRnaStates::operator==(const VectorRnaStates& x) const {
 
-    if ( size() != x.size() )
+    if ( getLength() != x.getLength() )
         return false;
     for (size_t i=0; i<elements.size(); i++) 
         {
@@ -86,7 +86,7 @@ bool VectorRnaStates::operator!=(const VectorRnaStates& x) const {
 VectorRnaStates VectorRnaStates::operator+(const VectorRnaStates& x) const {
 
     VectorRnaStates tempVec = *this;
-    for (size_t i=0; i<x.size(); i++)
+    for (size_t i=0; i<x.getLength(); i++)
         tempVec.push_back( x[i] );
     return tempVec;
 }
@@ -133,7 +133,7 @@ std::vector<RnaState*> VectorRnaStates::getStdVector(void) const {
 void VectorRnaStates::push_back(RnaState x) {
 
     elements.push_back( new RnaState(x) );
-    length[0]++;
+    length++;
 }
 
 

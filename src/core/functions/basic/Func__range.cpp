@@ -17,7 +17,6 @@
  */
 
 #include "ConstantNode.h"
-#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "Func__range.h"
 #include "VectorInteger.h"
@@ -26,6 +25,7 @@
 #include "RbNames.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
+#include "VectorNatural.h"
 #include "VectorString.h"
 
 
@@ -37,7 +37,7 @@ Func__range* Func__range::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func__range::execute( void ) {
+RbLanguageObject* Func__range::execute( void ) {
 
     int first = static_cast<const Integer*>( args[0].getValue() )->getValue();
     int last  = static_cast<const Integer*>( args[1].getValue() )->getValue();
@@ -45,8 +45,11 @@ DAGNode* Func__range::execute( void ) {
     std::vector<int> temp;
     for ( int i = first; i <= last; i++ )
         temp.push_back(i);
-
-    return ( new VectorInteger(temp) )->wrapIntoVariable();
+    
+    if (first >= 0 && last >= 0) 
+        return new VectorNatural(temp);
+    else
+        return ( new VectorInteger(temp) );
 }
 
 
@@ -78,6 +81,6 @@ const VectorString& Func__range::getClass( void ) const {
 /** Get return type */
 const TypeSpec Func__range::getReturnType( void ) const {
 
-    return TypeSpec( Integer_name, 1 );
+    return TypeSpec( VectorInteger_name );
 }
 

@@ -23,7 +23,6 @@
 #include <vector>
 
 class Character;
-class CondLike;
 
 
 class VectorCharacters : public Vector {
@@ -35,10 +34,11 @@ class VectorCharacters : public Vector {
         // Basic utility functions you have to override
         virtual VectorCharacters*               clone(void) const = 0;                                 //!< Clone object
         virtual const VectorString&             getClass(void) const;                                  //!< Get class
+        virtual void                            printValue(std::ostream& o) const = 0;                 //!< Print value for user
 
         // VectorCharacters functions
-        virtual CondLike*                       getCondLike(void);                                     //!< Initialize and return a conditional likelihood for this state     
-        size_t                                  getNumCharacters(void) const { return size(); }        //!< How many characters
+//        virtual CondLike*                       getCondLike(void);                                     //!< Initialize and return a conditional likelihood for this state     
+        size_t                                  getNumCharacters(void) const { return getLength(); }   //!< How many characters
         std::string                             getTaxonName(void) const { return taxonName; }         //!< Return the name of the character vector
         void                                    push_back( Character* newChar );                       //!< Push back a new character
         void                                    setTaxonName(std::string tn) { taxonName = tn; }       //!< Set the taxon name

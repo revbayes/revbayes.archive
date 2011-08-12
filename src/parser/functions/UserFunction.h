@@ -28,7 +28,7 @@
 
 class ArgumentRule;
 class DAGNode;
-class Frame;
+class Environment;
 class RbObject;
 class RbString;
 class TypeSpec;
@@ -41,7 +41,7 @@ class UserFunction :  public RbFunction {
                 UserFunction(   const ArgumentRules&        argRules,
                                 const TypeSpec&             retType,
                                 std::list<SyntaxElement*>*  stmts,
-                                Frame*                      defineEnv);     //!< Constructor
+                                Environment*                defineEnv);     //!< Constructor
                 UserFunction(const UserFunction& x);                        //!< Copy constructor
                 virtual ~UserFunction();                                    //!< Delete the code
 
@@ -52,7 +52,7 @@ class UserFunction :  public RbFunction {
         std::string                 richInfo() const;                   //!< Complete info about object
 
         // Regular functions
-		DAGNode*                    execute(void);                      //!< Execute function
+		RbLanguageObject*           execute(void);                      //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;       //!< Get arg rules
         const TypeSpec              getReturnType(void) const;          //!< Get return type
 
@@ -60,7 +60,7 @@ class UserFunction :  public RbFunction {
         const ArgumentRules         argumentRules;      //!< The argument rules
         const TypeSpec              returnType;         //!< The return type (complete specification)
         std::list<SyntaxElement*>*  code;               //!< The code
-        Frame*                      defineEnvironment;  //!< The definition environment
+        Environment*                defineEnvironment;  //!< The definition environment
 
 };
 

@@ -22,21 +22,21 @@
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "ReferenceRule.h"
-#include "VectorString.h"
 #include "TopologyNode.h"
+#include "VectorString.h"
+#include "ValueRule.h"
 
 #include <algorithm>
 
 
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
-TopologyNode::TopologyNode(int indx) : name(""), index(indx), MemberObject( getMemberRules() ) {
+TopologyNode::TopologyNode(int indx) : name(""), index(indx), ConstantMemberObject( getMemberRules() ) {
 }
 
 
 /** Constructor of node with name. Give the node an optional index ID */
-TopologyNode::TopologyNode(const std::string& n, int indx) : name(n), index(indx), MemberObject( getMemberRules() ) {
+TopologyNode::TopologyNode(const std::string& n, int indx) : name(n), index(indx), ConstantMemberObject( getMemberRules() ) {
 }
 
 
@@ -47,19 +47,19 @@ TopologyNode* TopologyNode::clone(void) const {
 }
 
 
-DAGNode* TopologyNode::executeOperation(const std::string& name, ArgumentFrame& args) {
+RbLanguageObject* TopologyNode::executeOperation(const std::string& name, Environment& args) {
     
     if (name == "isTip") 
         {
-        return ( new Boolean(isTip()) )->wrapIntoVariable();
+        return ( new Boolean(isTip()) );
         }
     else if (name == "isRoot") 
         {
-        return ( new Boolean(isRoot()) )->wrapIntoVariable();
+        return ( new Boolean(isRoot()) );
         }
     else if (name == "isInterior") 
         {
-        return ( new Boolean(!isTip()) )->wrapIntoVariable();
+        return ( new Boolean(!isTip()) );
         }
     else
         throw RbException("No member method called '" + name + "'");
@@ -100,9 +100,9 @@ const MethodTable& TopologyNode::getMethods(void) const {
     if ( methodsSet == false ) 
         {
         // This must be here so the parser can distinguish between different instances of a character matrix
-        isTipArgRules.push_back(      new ReferenceRule( "", MemberObject_name ) );
-        isRootArgRules.push_back(     new ReferenceRule( "", MemberObject_name ) );
-        isInteriorArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
+        isTipArgRules.push_back(      new ValueRule( "", MemberObject_name ) );
+        isRootArgRules.push_back(     new ValueRule( "", MemberObject_name ) );
+        isInteriorArgRules.push_back( new ValueRule( "", MemberObject_name ) );
         
         methods.addFunction("isTip",      new MemberFunction(Boolean_name, isTipArgRules)  );
         methods.addFunction("isRoot",     new MemberFunction(Boolean_name, isRootArgRules)  );

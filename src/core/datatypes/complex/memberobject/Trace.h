@@ -103,7 +103,6 @@ class Trace : public MemberObject {
     int                     passedStationarityTest;                     //!< Whether this parameter passed the stationarity test.
     int                     passedGewekeTest;                           //!< Whether this parameter passed the Geweke statistic.
 //    int                     passedHeidelbergerWelcheStatistic;          //!< Whether this parameter passed the Heidelberger-Welch statistic.
-//    int                     passedRafteryLewisStatistic;                //!< Whether this parameter passed the Raftery-Lewis statistic.
     int                     passedEssThreshold;                         //!< Whether this parameter passed the threshold for the ESS.
     int                     passedSemThreshold;                         //!< Whether this parameter passed the threshold for the SEM.
     int                     passedIidBetweenChainsStatistic;            //!< Whether this parameter passed the iid test of chains.

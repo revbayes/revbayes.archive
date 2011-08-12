@@ -15,7 +15,6 @@
 
 
 #include "ConstantNode.h"
-#include "MemberNode.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "Real.h"
@@ -29,50 +28,34 @@
 
 
 /** Construct simplex of length (size) n */
-Simplex::Simplex(const size_t n) : MemberObject() {
+Simplex::Simplex(const size_t n) : VectorRealPos(n,1.0/n) {
 
-    if (n < 2)
-        throw RbException( "Simplex must have at least two elements" );
-
-    for (size_t i=0; i<n; i++)
-        value.push_back(1.0/n);
 }
 
 
 /** Construct simplex from STL vector */
-Simplex::Simplex(const std::vector<double>& x) : MemberObject(getMemberRules()) {
+Simplex::Simplex(const std::vector<double>& x) : VectorRealPos(x) {
 
-    if (x.size() < 2)
-        throw RbException( "Simplex must have at least two elements" );
-
-    for (size_t i=0; i<x.size(); i++)
-        if (x[i] <= 0.0)
-            throw (RbException("Cannot set simplex from nonpositive value"));
-
-    value = x;
     rescale();
 }
 
 
 /** Construct simplex from VectorRealPos, which is guaranteed to have real positive numbers */
-Simplex::Simplex(const VectorRealPos& x) : MemberObject(getMemberRules()) {
+Simplex::Simplex(const VectorRealPos& x) : VectorRealPos(x) {
 
-    for (size_t i=0; i<x.size(); i++)
-        if (x[i] <= 0.0)
-            throw (RbException("Cannot set simplex from nonpositive value"));
-
-    value = x.getValue();
     rescale();
 }
 
+/** Const subscript operator allowing caller to see value but not to modify it */
+double Simplex::operator[](size_t i) {
+    
+    return VectorRealPos::operator[](i);
+}
 
 /** Const subscript operator allowing caller to see value but not to modify it */
-double Simplex::operator[](size_t i) const {
+const double& Simplex::operator[](size_t i) const {
 
-    if ( i >= value.size()  )
-        throw RbException( "Index out of bound" );
-
-    return value[i];
+    return VectorRealPos::operator[](i);
 }
 
 
@@ -91,74 +74,27 @@ const VectorString& Simplex::getClass() const {
 }
 
 
-/**
- * Get subscript element for parser. By giving back a temp variable rather than
- * a reference, we ensure that the parser cannot set the element
- */
-DAGNode* Simplex::getElement( VectorInteger& index ) const {
-
-    if ( index.size() != 1 )
-        throw RbException( "Wrong dimensions of index for " + Simplex_name );
-    if ( index[0] > int( value.size() ) )
-        throw RbException( "Index out of bounds for " + Simplex_name );
-
-    if ( index[0] < 0 )
-        return new MemberNode( this->clone() );
-
-    else
-        return new ConstantNode( new RealPos( value[index[0]] ) );
-}
-
-
-/** Get member rules */
-const MemberRules& Simplex::getMemberRules(void) const {
-
-    static MemberRules memberRules;
-    static bool        rulesSet = false;
-
-    if (!rulesSet) 
-        {
-        rulesSet = true;
-        }
-
-    return memberRules;
-}
-
-
 /** Print value for user */
 void Simplex::printValue(std::ostream& o) const {
 
-    std::streamsize previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
-
-    o << "[ ";
-    o << std::fixed;
-    o << std::setprecision(3);
-    for (std::vector<double>::const_iterator i = value.begin(); i!= value.end(); i++) 
-        {
-        if (i != value.begin())
-            o << ", ";
-        o << (*i);
-        }
-    o <<  " ]";
-
-    o.setf(previousFlags);
-    o.precision(previousPrecision);
+    VectorRealPos::printValue(o);
 }
 
 
 /** Rescale the simplex */
 void Simplex::rescale(void) {
 
-   // Rescale the simplex
-   double sum = 0.0;
-   for (size_t i=0; i<value.size(); i++)
-       sum += value[i];
+    // Rescale the simplex
+    double sum = 0.0;
+    for (size_t i=0; i<elements.size(); i++)
+       sum += static_cast<RealPos*>(elements[i])->getValue();
 
-   for (size_t i=0; i<value.size(); i++)
-       value[i] /= sum;
+    for (size_t i=0; i<elements.size(); i++) {
+        RealPos* val = static_cast<RealPos*>(elements[i]);
+        val->setValue(val->getValue() / sum);
+    }
+    
 }
-
 
 /** Complete info about object */
 std::string Simplex::richInfo(void) const {
@@ -172,20 +108,27 @@ std::string Simplex::richInfo(void) const {
 /** Set value of simplex using VectorReal */
 void Simplex::setValue(const VectorReal& x) {
 
-    value.resize(x.size());
-    for (size_t i=0; i<x.size(); i++)    
-        value[i] = x[i];
+    elements.clear();
+    for (size_t i=0; i<x.getLength(); i++)    
+        elements.push_back(new RealPos(x[i]));
+    
     rescale();
+    
+    // set the number of elements
+    length = elements.size();
 }   
 
 
 /** Set value of simplex using VectorRealPos */
 void Simplex::setValue(const VectorRealPos& x) {
-
-    value.resize(x.size());
-    for (size_t i=0; i<x.size(); i++)    
-        value[i] = x[i];
+    
+    elements.clear();
+    for (size_t i=0; i<x.getLength(); i++)    
+        elements.push_back(new RealPos(x[i]));
     rescale();
+    
+    // set the number of elements
+    length = elements.size();
 }   
 
 
@@ -195,9 +138,16 @@ void Simplex::setValue(const std::vector<double>& x) {
     for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++)
         if ((*i) < 0.0)
             throw (RbException("Cannot set simplex with negative value"));
-
-    value.clear();
-    value = x;
-    rescale();
+    
+    double sum = 0.0;
+    for (size_t i=0; i<x.size(); i++)
+        sum += x[i];
+    
+    elements.clear();
+    for (size_t i=0; i<x.size(); i++)    
+        elements.push_back(new RealPos(x[i]/sum));
+    
+    // set the number of elements
+    length = elements.size();
 }
 

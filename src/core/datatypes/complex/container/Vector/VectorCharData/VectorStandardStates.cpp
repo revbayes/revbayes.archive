@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends VectorCharacters
  *
  * $Id$
  */
@@ -37,9 +37,9 @@ VectorStandardStates::VectorStandardStates(void) : VectorCharacters(StandardStat
 /** Copy constructor */
 VectorStandardStates::VectorStandardStates(const VectorStandardStates& x) : VectorCharacters(StandardState_name) {
 
-    for (size_t i=0; i<x.size(); i++)
+    for (size_t i=0; i<x.getLength(); i++)
         elements.push_back( new StandardState(x[i]) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -64,7 +64,7 @@ const StandardState& VectorStandardStates::operator[](size_t i) const {
 /** Equals comparison */
 bool VectorStandardStates::operator==(const VectorStandardStates& x) const {
 
-    if ( size() != x.size() )
+    if ( getLength() != x.getLength() )
         return false;
     for (size_t i=0; i<elements.size(); i++) 
         {
@@ -86,7 +86,7 @@ bool VectorStandardStates::operator!=(const VectorStandardStates& x) const {
 VectorStandardStates VectorStandardStates::operator+(const VectorStandardStates& x) const {
 
     VectorStandardStates tempVec = *this;
-    for (size_t i=0; i<x.size(); i++)
+    for (size_t i=0; i<x.getLength(); i++)
         tempVec.push_back( x[i] );
     return tempVec;
 }
@@ -133,7 +133,7 @@ std::vector<StandardState*> VectorStandardStates::getStdVector(void) const {
 void VectorStandardStates::push_back(StandardState x) {
 
     elements.push_back( new StandardState(x) );
-    length[0]++;
+    length++;
 }
 
 

@@ -52,7 +52,7 @@ class RateMatrix : public MemberObject {
 
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                                           //!< Get methods
-        DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);                   //!< Map method call to internal functions
+        RbLanguageObject*                   executeOperation(const std::string& name, Environment& args);                    //!< Map method call to internal functions
     
         // RateMatrix functions
         double                              averageRate(void) const;                                                          //!< Calculate the average rate
@@ -60,7 +60,7 @@ class RateMatrix : public MemberObject {
         void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const; //!< Calculate the transition probabilities for the rate matrix
         bool                                getAreEigensDirty(void) { return areEigensDirty; }                                //!< Returns whether the eigensystem is in need of recalculation
         bool                                getIsTimeReversible(void);                                                        //!< Return whether the rate matrix is time reversible
-        size_t                              getNumStates(void) const { return numStates; }                                    //!< Return the number of states
+        size_t                              getNumberOfStates(void) const { return numStates; }                               //!< Return the number of states
         void                                rescaleToAverageRate(const double r) const;                                       //!< Rescale the rate matrix such that the average rate is "r"
         void                                setDiagonal(void);                                                                //!< Set the diagonal such that each row sums to zero
         void                                setIsTimeReversible(const bool tf);                                               //!< Directly set whether the rate matrix is time reversible

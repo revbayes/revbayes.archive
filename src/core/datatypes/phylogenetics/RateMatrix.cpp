@@ -22,20 +22,17 @@
 #include "RateMatrix.h"
 #include "MatrixReal.h"
 #include "MemberFunction.h"
-#include "MemberNode.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "RealPos.h"
-#include "ReferenceRule.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
-#include "VectorIndex.h"
 #include "VectorNatural.h"
 #include "VectorReal.h"
 #include "VectorRealPos.h"
@@ -270,24 +267,24 @@ RateMatrix* RateMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-DAGNode* RateMatrix::executeOperation(const std::string& name, ArgumentFrame& args) {
+RbLanguageObject* RateMatrix::executeOperation(const std::string& name, Environment& args) {
 
     if (name == "nstates") 
         {
-        return ( new Natural((int)numStates) )->wrapIntoVariable();
+        return ( new Natural((int)numStates) );
         }
     else if (name == "stationaryfreqs")
         {
         Simplex* s = theStationaryFreqs->clone();
-        return s->wrapIntoVariable();
+        return s;
         }
     else if (name == "averate")
         {
-        return ( new RealPos(averageRate()) )->wrapIntoVariable();
+        return ( new RealPos(averageRate()) );
         }        
     else if (name == "reversible")
         {
-        return ( new Boolean(isReversible) )->wrapIntoVariable();
+        return ( new Boolean(isReversible) );
         }        
 
     return MemberObject::executeOperation( name, args );
@@ -339,10 +336,10 @@ const MethodTable& RateMatrix::getMethods(void) const {
     if ( methodsSet == false ) 
         {
         // this must be here so the parser can distinguish between different instances of a character matrix
-        nstatesArgRules.push_back(         new ReferenceRule( "", MemberObject_name ) );
-        stationaryfreqsArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
-        averateArgRules.push_back(         new ReferenceRule( "", MemberObject_name ) );
-        reversibleArgRules.push_back(      new ReferenceRule( "", MemberObject_name ) );
+        nstatesArgRules.push_back(         new ValueRule( "", MemberObject_name ) );
+        stationaryfreqsArgRules.push_back( new ValueRule( "", MemberObject_name ) );
+        averateArgRules.push_back(         new ValueRule( "", MemberObject_name ) );
+        reversibleArgRules.push_back(      new ValueRule( "", MemberObject_name ) );
         
         methods.addFunction("nstates",         new MemberFunction(Natural_name, nstatesArgRules)         );
         methods.addFunction("stationaryfreqs", new MemberFunction(Simplex_name, stationaryfreqsArgRules) );
@@ -485,13 +482,5 @@ void RateMatrix::updateEigenSystem(void) {
     theEigenSystem->update();
     calculateCijk();
     areEigensDirty = false;
-}
-
-
-/** Wrap value into a variable */
-DAGNode* RateMatrix::wrapIntoVariable( void ) {
-    
-    MemberNode* nde = new MemberNode( this );
-    return static_cast<DAGNode*>(nde);
 }
 

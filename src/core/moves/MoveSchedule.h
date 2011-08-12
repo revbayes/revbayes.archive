@@ -20,7 +20,7 @@
 #ifndef MoveSchedule_H
 #define MoveSchedule_H
 
-#include "RbComplex.h"
+#include "ConstantMemberObject.h"
 
 #include <vector>
 
@@ -29,7 +29,7 @@ class RbObject;
 class VectorString;
 class VariableNode;
 
-class MoveSchedule : public RbComplex {
+class MoveSchedule : public ConstantMemberObject {
 
     public:
                                 MoveSchedule(VariableNode* node, double weight);    //!< Constructor

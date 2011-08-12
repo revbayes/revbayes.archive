@@ -20,12 +20,12 @@
 
 
 /** Constructor from string */
-RbString::RbString(const std::string& v) : RbObject(), value(v) {
+RbString::RbString(const std::string& v) : RbLanguageObject(), value(v) {
 }
 
 
 /** Constructor from int */
-RbString::RbString(int i) : RbObject() {
+RbString::RbString(int i) : RbLanguageObject() {
 
     std::ostringstream o;
     o << i;
@@ -34,7 +34,7 @@ RbString::RbString(int i) : RbObject() {
 
 
 /** Constructor from string */
-RbString::RbString(double x) : RbObject() {
+RbString::RbString(double x) : RbLanguageObject() {
 
     std::ostringstream o;
     o << x;
@@ -63,6 +63,11 @@ std::ostream& operator<<(std::ostream& stream, const RbString& s) {
 	return stream;
 }
 
+/** Brief info on object */
+std::string RbString::briefInfo() const {
+    
+	return "RbString; value = '" + value + "'";
+}
 
 /** Clone function */
 RbString* RbString::clone() const {
@@ -74,7 +79,7 @@ RbString* RbString::clone() const {
 /** Get class vector describing type of object */
 const VectorString& RbString::getClass() const {
 
-    static VectorString rbClass = VectorString(RbString_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(RbString_name) + RbLanguageObject::getClass();
     return rbClass;
 }
 

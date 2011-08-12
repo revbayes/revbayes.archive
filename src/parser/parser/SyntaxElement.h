@@ -18,14 +18,13 @@
 #ifndef SyntaxElement_H
 #define SyntaxElement_H
 
-#include "DAGNode.h"
-#include "Frame.h"
+#include "Variable.h"
 
 #include <iostream>
 #include <string>
 
 /* Forward declarations */
-class VariableFrame;
+class Environment;
 class VectorString;
 
 /**
@@ -62,28 +61,23 @@ class VectorString;
  *  The base class does not reference any other syntax elements and therefore has an empty
  *  destructor.
  */
-class SyntaxElement {
+class SyntaxElement : public RbInternal {
 
     public:
-        virtual                    ~SyntaxElement(void) {}                              //!< Destructor; delete syntax subtree
+        virtual                    ~SyntaxElement(void) {}                                      //!< Destructor; delete syntax subtree
 
         // Basic utility functions you have to override
-        virtual std::string         briefInfo(void) const = 0;                          //!< Brief info about object
-        virtual SyntaxElement*      clone(void) const = 0;                              //!< Clone object
-        virtual const VectorString& getClass(void) const;                               //!< Get class vector 
-        virtual void                print(std::ostream& o) const = 0;                   //!< Print info about object
-
-        // Basic utility functions you should not override
-        const std::string&          getType(void) const;                                //!< Get type
-        bool                        isType(const std::string& type) const;              //!< Is the element of type?
+        virtual std::string         briefInfo(void) const = 0;                                  //!< Brief info about object
+        virtual SyntaxElement*      clone(void) const = 0;                                      //!< Clone object
+        virtual const VectorString& getClass(void) const;                                       //!< Get class vector 
+        virtual void                print(std::ostream& o) const = 0;                           //!< Print info about object
 
         // Regular functions
-        virtual DAGNode*            getDAGNodeExpr(VariableFrame* frame) const = 0;     //!< Convert to DAG node expression
-        virtual DAGNode*            getValue(VariableFrame* frame) const = 0;           //!< Get semantic value
-        virtual bool                isConstExpr(void) const { return false; }           //!< Is subtree constant expr?
+        virtual Variable*           getContentAsVariable(Environment* env) const = 0;           //!< Get semantic value
+        virtual bool                isConstExpression(void) const { return false; }             //!< Is subtree constant expr?
 
     protected:
-                                    SyntaxElement(void) {}                              //!< Protected constructor, just in case
+                                    SyntaxElement(void) : RbInternal() {}                       //!< Protected constructor, just in case
 };
 
 #endif

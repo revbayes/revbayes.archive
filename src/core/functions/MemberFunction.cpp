@@ -21,11 +21,9 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "Ellipsis.h"
 #include "MemberFunction.h"
-#include "MemberNode.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbNames.h"
@@ -36,21 +34,25 @@
 
 
 /** Constructor */
-MemberFunction::MemberFunction(const TypeSpec retType, const ArgumentRules& argRules)
-    : RbFunction(), returnType(retType), argumentRules(argRules) {
+MemberFunction::MemberFunction(const TypeSpec retType, const ArgumentRules& argRules) : RbFunction(), returnType(retType), argumentRules(argRules), object(NULL) {
 
-    if ( argumentRules.size() == 0 || argumentRules[0]->getArgTypeSpec() != TypeSpec( MemberObject_name, 0, true ) )
-        throw RbException( "First argument rule to a member function must be a reference to the member object" );
-    
-    if ( argumentRules[0]->hasDefault() )
-        throw RbException( "First argument rule to a member function is not allowed to have a default" );
+}
+
+MemberFunction::~MemberFunction() {
+    // delete the old object
+    if (object != NULL) {
+        object->release();
+        if (object->isUnreferenced()) {
+            delete object;
+        }
+    }
 }
 
 /** Brief info on the function */
 std::string MemberFunction::briefInfo(void) const {
 
     std::ostringstream o;
-    o << "MemberFunction: " << (*this);
+    o << "MemberFunction: " << getClass();
 
     return o.str();
 }
@@ -64,11 +66,10 @@ MemberFunction* MemberFunction::clone(void) const {
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-DAGNode* MemberFunction::execute( void ) {
+RbLanguageObject* MemberFunction::execute( void ) {
 
-    MemberNode* memberNode = static_cast<MemberNode*>( args[0].getReference() );
+    return object->executeOperation( funcName, args );
 
-    return memberNode->getMemberObject()->executeOperation( funcName, args );
 }
 
 
@@ -98,7 +99,7 @@ const TypeSpec MemberFunction::getReturnType(void) const {
 std::string MemberFunction::richInfo(void) const {
 
     std::ostringstream o;
-    o << "MemberFunction: " << (*this) << std::endl;
+    o << "MemberFunction: " << std::endl;
     
     if ( argsProcessed )
         o << "Arguments processed; there are " << args.size() << " arguments." << std::endl;
@@ -109,5 +110,18 @@ std::string MemberFunction::richInfo(void) const {
         o << " args[" << i << "] = " << args[i].getValue() << std::endl;
 
     return o.str();
+}
+
+void MemberFunction::setMemberObject(MemberObject *obj) {
+    // delete the old object
+    if (object != NULL) {
+        object->release();
+        if (object->isUnreferenced()) {
+            delete object;
+        }
+    }
+    
+    object = obj;
+    object->retain();
 }
 

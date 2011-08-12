@@ -16,13 +16,13 @@
 #ifndef Categorical_H
 #define Categorical_H
 
-#include "RbObject.h"
+#include "RbLanguageObject.h"
 
 #include <ostream>
 #include <string>
 
 
-class Categorical : public RbObject {
+class Categorical : public RbLanguageObject {
 
     public:
         // Overloaded operators
@@ -38,7 +38,7 @@ class Categorical : public RbObject {
 
         // Categorical functions you do not have to override
         int                             convertSymbolToState(char c) const;                                 //!< Convert symbol to state code
-        int                             getNumStates(void) { return int( getStateLabels().size() ); }       //!< Get number of states
+        int                             getNumberOfStates(void) { return int( getStateLabels().size() ); }  //!< Get number of states
         int                             getValue(void) const { return value; }                              //!< Get value as an int
         bool                            isValidState(int x) const;                                          //!< Is valid state value?
         void                            setValue(int x);                                                    //!< Set value from int

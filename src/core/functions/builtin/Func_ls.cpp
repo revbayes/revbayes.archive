@@ -40,7 +40,7 @@ Func_ls* Func_ls::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_ls::execute( void ) {
+RbLanguageObject* Func_ls::execute( void ) {
 
     /* Open file */
     const Boolean *printAll = static_cast<const Boolean*>( args[0].getValue() );

@@ -17,10 +17,9 @@
 
 #include "Boolean.h"
 #include "CharacterMatrix.h"
-#include "ContainerNode.h"
+#include "ConstantNode.h"
 #include "Func_readAlignment.h"
 #include "List.h"
-#include "MemberNode.h"
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
@@ -28,7 +27,6 @@
 #include "RbString.h"
 #include "StringUtilities.h"
 #include "UserInterface.h"
-#include "ValueContainer.h"
 #include "ValueRule.h"
 #include "VectorString.h"
 #include <map>
@@ -46,7 +44,7 @@ Func_readAlignment* Func_readAlignment::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_readAlignment::execute( void ) {
+RbLanguageObject* Func_readAlignment::execute( void ) {
 
     // get the information from the arguments for reading the file
     const RbString* fn       = static_cast<const RbString*>( args[0].getValue() );
@@ -191,22 +189,23 @@ DAGNode* Func_readAlignment::execute( void ) {
     // return either a list of character matrices or a single character matrix wrapped up in a DAG node
     if ( m.size() > 1 )
         {
-        List* retList = new List;
-        for (std::vector<CharacterMatrix*>::iterator it = m.begin(); it != m.end(); it++)
-            {
-            std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-            retList->addElement( (*it)->wrapIntoVariable(), eName );
-            }
-        return retList->wrapIntoVariable();
+//        List* retList = new List;
+//        for (std::vector<CharacterMatrix*>::iterator it = m.begin(); it != m.end(); it++)
+//            {
+//            std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
+//            retList->addElement( new ConstantNode(*it), eName );
+//            }
+//        return retList;
+            throw RbException("Wanted to create a List of CharacterMatrix but List does not exist anymore. See Func_readAlignment");
         }
     else if ( m.size() == 1 ) 
         {
-        return m[0]->wrapIntoVariable();
+        return m[0];
         }
     else
         {
         // Return null object
-        return new MemberNode( CharacterMatrix_name );
+        return NULL;
         }
 }
 

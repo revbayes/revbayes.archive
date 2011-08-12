@@ -26,14 +26,12 @@
 
 
 /** Constructor allowing all types; ref signals whether arguments should be values or references */
-Ellipsis::Ellipsis(bool ref)
-    : ArgumentRule("", TypeSpec(RbObject_name, 0, ref)) {
+Ellipsis::Ellipsis( void ) : ArgumentRule("", TypeSpec(RbObject_name)) {
 }
 
 
 /** Constructor requiring a certain type specification */
-Ellipsis::Ellipsis(const TypeSpec& typeSp )
-    : ArgumentRule("", typeSp) {
+Ellipsis::Ellipsis(const TypeSpec& typeSp ) : ArgumentRule("", typeSp) {
 }
 
 

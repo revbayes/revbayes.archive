@@ -17,15 +17,12 @@
  */
 
 #include "ConstantNode.h"
-#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "DistributionDiscrete.h"
 #include "MemberFunction.h"
-#include "MemberNode.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "ReferenceRule.h"
 #include "RbNames.h"
 #include "Simplex.h"
 #include "ValueRule.h"
@@ -41,15 +38,15 @@ DistributionDiscrete::DistributionDiscrete( const MemberRules& memberRules )
 
 
 /** Map direct method calls to internal class methods. */
-DAGNode* DistributionDiscrete::executeOperation( const std::string& name, ArgumentFrame& args ) {
+RbLanguageObject* DistributionDiscrete::executeOperation( const std::string& name, Environment& args ) {
 
     if ( name == "probMassVector" ) {
 
-        return new MemberNode( getProbabilityMassVector()->clone() );
+        return getProbabilityMassVector()->clone();
     }
     else if ( name == "numStates" ) {
 
-        return new ConstantNode( new Natural( int( getNumStates() ) ) );
+        return new Natural( int( getNumberOfStates() ) );
     }
 
     return Distribution::executeOperation( name, args );
@@ -74,9 +71,9 @@ const MethodTable& DistributionDiscrete::getMethods( void ) const {
 
     if ( !methodsSet ) {
 
-        probMassVectorArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
+        probMassVectorArgRules.push_back( new ValueRule( "", MemberObject_name ) );
 
-        numStatesArgRules.push_back     ( new ReferenceRule( "", MemberObject_name ) );
+        numStatesArgRules.push_back     ( new ValueRule( "", MemberObject_name ) );
 
         methods.addFunction( "probMassVector", new MemberFunction( Simplex_name, probMassVectorArgRules ) );
         methods.addFunction( "numStates",      new MemberFunction( Natural_name, numStatesArgRules ) );

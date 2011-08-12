@@ -48,10 +48,10 @@ class DistributionFunction :  public RbFunction {
     	const VectorString&         getClass(void) const;                                                   //!< Get class vector
 
         // DistributionFunction functions
-        DAGNode*                    execute(void);                                                          //!< Execute function
+        RbLanguageObject*           execute(void);                                                          //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                              //!< Get type spec of return value
-        bool                        processArguments(   const std::vector<Argument>&    args,
+        bool                        processArguments(   const std::vector<Argument*>&   args,
                                                         bool                            evaluateOnce,
                                                         VectorInteger*                  matchScore=NULL);   //!< Process args, set member variables of distribution
 

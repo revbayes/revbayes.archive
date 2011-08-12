@@ -42,7 +42,7 @@
  */
 void RbMath::computeLandU(MatrixComplex& aMat, MatrixComplex& lMat, MatrixComplex& uMat) {
     
-	size_t n = aMat.getNumRows();
+	size_t n = aMat.getNumberOfRows();
 	for (size_t j=0; j<n; j++) 
         {
 		for (size_t k=0; k<j; k++)
@@ -88,7 +88,7 @@ void RbMath::computeLandU(MatrixComplex& aMat, MatrixComplex& lMat, MatrixComple
  */
 void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) {
     
-	size_t n = aMat.getNumRows();
+	size_t n = aMat.getNumberOfRows();
 	for (size_t j=0; j<n; j++) 
         {
 		for (size_t k=0; k<j; k++)
@@ -137,8 +137,8 @@ void RbMath::computeLandU(MatrixReal& aMat, MatrixReal& lMat, MatrixReal& uMat) 
  */
 int RbMath::expMatrixPade(MatrixReal& A, MatrixReal& F, int qValue) {
     
-	size_t dim = A.getNumRows();
-	if (dim != A.getNumCols())
+	size_t dim = A.getNumberOfRows();
+	if (dim != A.getNumberOfColumns())
 		return (1);
 	
 	// create identity matrices
@@ -257,7 +257,7 @@ int RbMath::findPadeQValue(const double& tolerance) {
 void RbMath::matrixInverse(const MatrixComplex& a, MatrixComplex& aInv) {
     
     // get dimensions: we assume a square matrix
-	size_t n = a.getNumRows();
+	size_t n = a.getNumberOfRows();
     
     // copy original matrix, a, into a working version, aTmp
     MatrixComplex aTmp(a);
@@ -292,7 +292,7 @@ void RbMath::matrixInverse(const MatrixComplex& a, MatrixComplex& aInv) {
 void RbMath::matrixInverse(const MatrixReal& a, MatrixReal& aInv) {
     
     // get dimensions: we assume a square matrix
-	size_t n = a.getNumRows();
+	size_t n = a.getNumberOfRows();
     
     // copy original matrix, a, into a working version, aTmp
     MatrixReal aTmp(a);
@@ -336,10 +336,10 @@ void RbMath::matrixInverse(const MatrixReal& a, MatrixReal& aInv) {
  */
 int RbMath::transposeMatrix(const MatrixReal& a, MatrixReal& t) {
 	
-	size_t m = a.getNumRows();
-	size_t n = a.getNumCols();
+	size_t m = a.getNumberOfRows();
+	size_t n = a.getNumberOfColumns();
 	
-	if ( m != t.getNumCols() || n != t.getNumRows() )
+	if ( m != t.getNumberOfColumns() || n != t.getNumberOfRows() )
         throw (RbException("Cannot tranpose an N X M matrix if the other matrix is not M X N"));
     
 	for (size_t i=0; i<m; i++)

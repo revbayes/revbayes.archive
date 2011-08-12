@@ -43,16 +43,15 @@ class DistributionDiscrete: public Distribution {
 
         // Member object functions you should not have to override
         const MethodTable&                  getMethods(void) const;                                                     //!< Get member methods
-        DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);             //!< Direct call of member method
+        RbLanguageObject*                   executeOperation(const std::string& name, Environment& args);               //!< Direct call of member method
 
         // Categorical distribution functions you have to override
-        virtual Move*                       getDefaultMove(StochasticNode* node) = 0;                                   //!< Get default move
-        virtual size_t                      getNumStates(void) const = 0;                                               //!< Get number of states
+        virtual size_t                      getNumberOfStates(void) const = 0;                                          //!< Get number of states
         virtual const Simplex*              getProbabilityMassVector(void) = 0;                                         //!< Get probability mass vector
         virtual const TypeSpec              getVariableType(void) const = 0;                                            //!< Get random variable type spec
-        virtual double                      lnPdf(const RbObject* value) = 0;                                           //!< Ln probability density
-        virtual double                      pdf(const RbObject* value) = 0;                                             //!< Probability density
-        virtual RbObject*                   rv(void) = 0;                                                               //!< Generate a random draw
+        virtual double                      lnPdf(const RbLanguageObject* value) = 0;                                   //!< Ln probability density
+        virtual double                      pdf(const RbLanguageObject* value) = 0;                                     //!< Probability density
+        virtual RbLanguageObject*           rv(void) = 0;                                                               //!< Generate a random draw
 
     protected:
                                             DistributionDiscrete(const MemberRules& memberRules);                    //!< Constructor

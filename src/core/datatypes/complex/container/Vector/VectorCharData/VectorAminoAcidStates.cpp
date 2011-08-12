@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends VectorCharacters
  *
  * $Id$
  */
@@ -37,9 +37,9 @@ VectorAminoAcidStates::VectorAminoAcidStates(void) : VectorCharacters(AminoAcidS
 /** Copy constructor */
 VectorAminoAcidStates::VectorAminoAcidStates(const VectorAminoAcidStates& x) : VectorCharacters(AminoAcidState_name) {
 
-    for (size_t i=0; i<x.size(); i++)
+    for (size_t i=0; i<x.getLength(); i++)
         elements.push_back( new AminoAcidState(x[i]) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -64,7 +64,7 @@ const AminoAcidState& VectorAminoAcidStates::operator[](size_t i) const {
 /** Equals comparison */
 bool VectorAminoAcidStates::operator==(const VectorAminoAcidStates& x) const {
 
-    if ( size() != x.size() )
+    if ( getLength() != x.getLength() )
         return false;
     for (size_t i=0; i<elements.size(); i++) 
         {
@@ -86,7 +86,7 @@ bool VectorAminoAcidStates::operator!=(const VectorAminoAcidStates& x) const {
 VectorAminoAcidStates VectorAminoAcidStates::operator+(const VectorAminoAcidStates& x) const {
 
     VectorAminoAcidStates tempVec = *this;
-    for (size_t i=0; i<x.size(); i++)
+    for (size_t i=0; i<x.getLength(); i++)
         tempVec.push_back( x[i] );
     return tempVec;
 }
@@ -133,7 +133,7 @@ std::vector<AminoAcidState*> VectorAminoAcidStates::getStdVector(void) const {
 void VectorAminoAcidStates::push_back(AminoAcidState x) {
 
     elements.push_back( new AminoAcidState(x) );
-    length[0]++;
+    length++;
 }
 
 

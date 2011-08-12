@@ -14,15 +14,13 @@
  */
 
 
-#include "ContainerNode.h"
+#include "Environment.h"
 #include "Integer.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbOptions.h"
 #include "RbString.h"
 #include "SyntaxVariableDecl.h"
-#include "ValueContainer.h"
-#include "VariableFrame.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -123,20 +121,13 @@ const VectorString& SyntaxVariableDecl::getClass( void ) const {
 }
 
 
-/** Convert element to DAG node: Not applicable */
-DAGNode* SyntaxVariableDecl::getDAGNodeExpr(VariableFrame* frame) const {
-    
-    throw RbException( "Unexpected call to getDAGNodeExpr of SyntaxVariableDecl" );
-}
-
-
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-DAGNode* SyntaxVariableDecl::getValue( VariableFrame* frame ) const {
+Variable* SyntaxVariableDecl::getContentAsVariable( Environment* env ) const {
     
     PRINTF( "Evaluating variable declaration\n" );
     
     // Check if variable exists
-    if ( frame->existsVariable( *variableName ) )
+    if ( env->existsVariable( *variableName ) )
         throw RbException( "Illegal attempt to redefine variable " + *variableName );
     
     // Check if type exists
@@ -153,7 +144,7 @@ DAGNode* SyntaxVariableDecl::getValue( VariableFrame* frame ) const {
         }
         else {
             
-            DAGNode*        temp    = (*i)->getValue( frame );
+            DAGNode*        temp    = (*i)->getContentAsVariable( env )->getDagNodePtr();
             const RbObject* value   = temp->getValue();
             
             if ( value->isType( Integer_name ) )
@@ -164,7 +155,7 @@ DAGNode* SyntaxVariableDecl::getValue( VariableFrame* frame ) const {
     }
     
     // Make type specification
-    TypeSpec typeSpec( *elementTypeName, length.size(), referenceSymbol->getValue() == "&" );
+    TypeSpec typeSpec( *elementTypeName );
 
     // Check if we have some positive lengths
     bool positiveLengthSpec = false;
@@ -185,14 +176,11 @@ DAGNode* SyntaxVariableDecl::getValue( VariableFrame* frame ) const {
                 containerLength.push_back( 1 );
         }
         
-        ValueContainer* tempContainer = new ValueContainer( typeSpec, containerLength );
-    
-        frame->addVariable( *variableName, typeSpec, new ContainerNode( tempContainer ) );
     }
     else {
 
         // Create new slot in frame with null variable
-        frame->addVariableSlot( *variableName, typeSpec );
+        env->addVariable( *variableName, typeSpec );
     }
     
     return NULL;

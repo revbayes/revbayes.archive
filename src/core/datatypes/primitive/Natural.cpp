@@ -88,6 +88,17 @@ Natural::Natural( const Boolean& x) : Integer() {
 }
 
 
+/** Get brief info about object */
+std::string Natural::briefInfo( void ) const {
+    
+	std::ostringstream o;
+    o << "Natural(";
+    printValue( o );
+	o << ")";
+    
+    return o.str();
+}
+
 /** Clone object */
 Natural* Natural::clone( void ) const {
 
@@ -96,40 +107,40 @@ Natural* Natural::clone( void ) const {
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbObject* Natural::convertTo( const std::string& type, size_t dim ) const {
+RbLanguageObject* Natural::convertTo( const std::string& type ) const {
 
-    if ( type == Boolean_name && dim == 0 ) 
+    if ( type == Boolean_name ) 
         return new Boolean( value == 0 );
 
-    if ( type == Real_name && dim == 0 )
+    if ( type == Real_name )
         return new Real( value );
 
-    if ( type == RealPos_name && dim == 0 )
+    if ( type == RealPos_name )
         return new RealPos( value );
 
-    if ( type == RbString_name && dim == 0) {
+    if ( type == RbString_name ) {
         
         std::ostringstream o;
         printValue( o );
         return new RbString( o.str() );
     }
 
-    if ( type == Natural_name && dim == 1 )
+    if ( type == VectorNatural_name )
         return new VectorNatural( value );
 
-    if ( type == Integer_name && dim == 1 )
+    if ( type == VectorInteger_name )
         return new VectorInteger( value );
 
-    if ( type == Boolean_name && dim == 1 ) 
+    if ( type == VectorBoolean_name ) 
         return new VectorBoolean( value == 0 );
 
-    if ( type == Real_name && dim == 1 )
+    if ( type == VectorReal_name )
         return new VectorReal( value );
 
-    if ( type == RealPos_name && dim == 1 )
+    if ( type == VectorRealPos_name )
         return new VectorRealPos( value );
 
-    return Integer::convertTo( type, dim );
+    return Integer::convertTo( type );
 }
 
 
@@ -142,36 +153,36 @@ const VectorString& Natural::getClass() const {
 
 
 /** Is convertible to type and dim? */
-bool Natural::isConvertibleTo( const std::string& type, size_t dim, bool once ) const {
+bool Natural::isConvertibleTo( const std::string& type, bool once ) const {
 
-    if ( type == Boolean_name && dim == 0 ) 
+    if ( type == Boolean_name ) 
         return true;
 
-    if ( type == Real_name && dim == 0 )
+    if ( type == Real_name )
         return true;
 
-    if ( type == RealPos_name && dim == 0 )
+    if ( type == RealPos_name )
         return true;
 
-    if ( type == RbString_name && dim == 0 )
+    if ( type == RbString_name )
         return true;
 
-    if ( type == Natural_name && dim == 1 )
+    if ( type == VectorNatural_name )
         return true;
 
-    if ( type == Integer_name && dim == 1 )
+    if ( type == VectorInteger_name )
         return true;
 
-    if ( type == Boolean_name && dim == 1 ) 
+    if ( type == VectorBoolean_name ) 
         return true;
 
-    if ( type == Real_name && dim == 1 )
+    if ( type == VectorReal_name )
         return true;
 
-    if ( type == RealPos_name && dim == 1 )
+    if ( type == VectorRealPos_name )
         return true;
 
-    return Integer::isConvertibleTo( type, dim, once );
+    return Integer::isConvertibleTo( type, once );
 }
 
 

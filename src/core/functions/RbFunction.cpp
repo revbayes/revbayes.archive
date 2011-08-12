@@ -30,11 +30,23 @@
 #include <sstream>
 
 
-/** Basic constructor. By default, we put the function in the user work space; override if something else is needed. */
-RbFunction::RbFunction(void) : RbObject() {
+/** Basic constructor. */
+RbFunction::RbFunction(void) : RbInternal() {
 
     argsProcessed = false;
-    args.setParentFrame( &Workspace::userWorkspace() );
+//    args.setParentFrame( &Workspace::userWorkspace() );
+}
+
+/** Copy constructor. */
+RbFunction::RbFunction(const RbFunction &x) : RbInternal(x) {
+    
+    for (size_t i=0; i<x.args.size(); i++) {
+        const std::string &name = x.args.getName(i);
+        const VariableSlot &theSlot = x.args[i];
+        args.addVariable(name, theSlot.clone());
+    }
+    
+    argsProcessed = x.argsProcessed;
 }
 
 
@@ -49,9 +61,10 @@ std::string RbFunction::briefInfo(void) const {
 
 
 /* Delete processed args */
-void RbFunction::clearArgs(void) {
+void RbFunction::clearArguments(void) {
 
     args.clear();
+    
     argsProcessed = false;
 }
 
@@ -125,7 +138,7 @@ void RbFunction::printValue(std::ostream& o) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
-bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool evaluateOnce, VectorInteger* matchScore) {
+bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, bool evaluateOnce, VectorInteger* matchScore) {
 
     bool    conversionNeeded;
     int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
@@ -163,12 +176,11 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
 
     /* Fill processedArguments with empty variable slots */
     for (size_t i=0; i<numRegularRules; i++) {
-        args.push_back( new VariableSlot( theRules[i]->getArgTypeSpec() ) );
-        if ( theRules[i]->getArgLabel() != "" )
-            args.setArgumentLabel( i, theRules[i]->getArgLabel() );
+        args.addVariable( theRules[i]->getArgumentLabel(), new VariableSlot( theRules[i]->getArgumentLabel(), theRules[i]->getArgumentTypeSpec() ) );
     }
     for (size_t i=numRegularRules; i<numFinalArgs; i++) {
-        args.push_back( new VariableSlot( theRules[nRules-1]->getArgTypeSpec() ) );
+        VariableSlot *theEllipsisSlot = new VariableSlot( EmptyString, theRules[nRules-1]->getArgumentTypeSpec() );
+        args.addVariable( theEllipsisSlot->getLabel(), theEllipsisSlot );
     }
     
     /* Keep track of which arguments we have used, and which argument slots we have filled, and with what passed arguments */
@@ -185,18 +197,18 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
 
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
 
-            DAGNode* theDAGNode = passedArgs[i].getVariable();
+            Argument *theArgument = passedArgs[i];
+            DAGNode* theDAGNode = theArgument->getDagNode();
             if ( theDAGNode == NULL )
                 return false;   // This should never happen
-            if ( !theRules[nRules-1]->isArgValid( theDAGNode, conversionNeeded, evaluateOnce ) )
+            if ( !theRules[nRules-1]->isArgumentValid( theDAGNode, conversionNeeded, evaluateOnce ) )
                 return false;
-            if ( conversionNeeded )
-                args[i].replaceArgumentVariable( theRules[nRules-1]->convert( theDAGNode->clone() ) );
-            else
-                args[i].replaceArgumentVariable( theDAGNode );
+            
+            // add this variable to the argument list
+            args[i].setVariable( theArgument->getVariable() );
 
-            if ( passedArgs[i].getLabel() != "" )
-                args.setArgumentLabel( i, passedArgs[i].getLabel() );
+            if ( theArgument->getLabel() != "" )
+                args.setName( i, theArgument->getLabel() );
 
             taken[i]          = true;
             filled[i]         = true;
@@ -215,22 +227,21 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             break;
 
         /* Skip if no label */
-        if ( passedArgs[i].getLabel().size() == 0 )
+        if ( passedArgs[i]->getLabel().size() == 0 )
             continue;
 
         /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
         for (size_t j=0; j<numRegularRules; j++) {
 
-            if ( passedArgs[i].getLabel() == theRules[j]->getArgLabel() ) {
+            if ( passedArgs[i]->getLabel() == theRules[j]->getArgumentLabel() ) {
 
-                if ( theRules[j]->isArgValid(passedArgs[i].getVariable(), conversionNeeded, evaluateOnce) && !filled[j] ) {
+                if ( theRules[j]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded, evaluateOnce) && !filled[j] ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
-                    if ( conversionNeeded )
-                        args[j].replaceArgumentVariable( theRules[j]->convert( passedArgs[i].getVariable() ) );
-                    else
-                        args[j].replaceArgumentVariable( passedArgs[i].getVariable() );
+                    
+                    // add this variable to the argument list
+                    args[j].setVariable( passedArgs[i]->getVariable() );
                 }
                 else
                     return false;
@@ -249,7 +260,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
             continue;
 
         /* Skip if no label */
-        if ( passedArgs[i].getLabel().size() == 0 )
+        if ( passedArgs[i]->getLabel().size() == 0 )
             continue;
 
         /* Initialize match index and number of matches */
@@ -259,7 +270,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
         /* Try all rules */
         for (size_t j=0; j<numRegularRules; j++) {
 
-            if ( !filled[j] && theRules[j]->getArgLabel().compare(0, passedArgs[i].getLabel().size(), passedArgs[i].getLabel()) == 0 ) {
+            if ( !filled[j] && theRules[j]->getArgumentLabel().compare(0, passedArgs[i]->getLabel().size(), passedArgs[i]->getLabel()) == 0 ) {
                 ++nMatches;
                 matchRule = static_cast<int>( j );
             }
@@ -268,14 +279,13 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
         if (nMatches != 1)
             return false;
  
-        if ( theRules[matchRule]->isArgValid(passedArgs[i].getVariable(), conversionNeeded, evaluateOnce) ) {
+        if ( theRules[matchRule]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded, evaluateOnce) ) {
             taken[i]                  = true;
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = static_cast<int>( i );
-            if ( conversionNeeded )
-                args[matchRule].replaceArgumentVariable( theRules[matchRule]->convert( passedArgs[i].getVariable() ) );
-            else
-                args[matchRule].replaceArgumentVariable( passedArgs[i].getVariable() );
+            
+            // add this variable to the argument list
+            args[matchRule].setVariable( passedArgs[i]->getVariable() );
         }
         else
             return false;
@@ -295,14 +305,15 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
         for (size_t j=0; j<numRegularRules; j++) {
 
             if ( filled[j] == false ) {
-                if ( theRules[j]->isArgValid( passedArgs[i].getVariable(), conversionNeeded, evaluateOnce ) ) {
+                DAGNode *argVar = passedArgs[i]->getDagNode();
+                if ( theRules[j]->isArgumentValid( argVar, conversionNeeded, evaluateOnce ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
-                    if ( conversionNeeded )
-                        args[j].replaceArgumentVariable( theRules[j]->convert( passedArgs[i].getVariable() ) );
-                    else
-                        args[j].replaceArgumentVariable( passedArgs[i].getVariable() );
+                    
+                    // add this variable to the argument list
+                    args[j].setVariable( passedArgs[i]->getVariable() );
+                    
                     break;
                 }
                 else
@@ -322,10 +333,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
         if ( !theRules[i]->hasDefault() )
             return false;
 
-        if ( theRules[i]->isReference() )
-            args[i].replaceArgumentVariable( theRules[i]->getDefaultReference() );
-        else
-            args[i].replaceArgumentVariable( theRules[i]->getDefaultVariable() );
+        args[i].setVariable( theRules[i]->getDefaultVariable() );
     }
 
     /*********************  6. Count match score and return  **********************/
@@ -343,14 +351,14 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
         int k = passedArgIndex[argIndex];
         if ( k >= 0 ) {
             
-            const VectorString& argClass = passedArgs[k].getVariable()->getValue()->getClass();
+            const VectorString& argClass = passedArgs[k]->getDagNode()->getValue()->getClass();
 
             size_t j;
-            for (j=0; j<argClass.size(); j++)
-                if ( argClass[j] == theRules[argIndex]->getArgType() )
+            for (j=0; j<argClass.getLength(); j++)
+                if ( argClass[j] == theRules[argIndex]->getArgumentType() )
                     break;
 
-            if ( j == argClass.size() )
+            if ( j == argClass.getLength() )
                 matchScore->push_back(aLargeNumber);    // We needed type conversion for this argument
             else
                 matchScore->push_back(int(j));          // No type conversion, score is distance in class vector
@@ -366,11 +374,11 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
         
         const VectorString& argClass = args[argIndex].getValue()->getClass();
         size_t j;
-        for (j=0; j<argClass.size(); j++)
-            if ( argClass[j] == theRules[nRules-1]->getArgType() )
+        for (j=0; j<argClass.getLength(); j++)
+            if ( argClass[j] == theRules[nRules-1]->getArgumentType() )
                 break;
 
-        if ( j == argClass.size() )
+        if ( j == argClass.getLength() )
             matchScore->push_back(aLargeNumber);    // We needed type conversion for this argument
         else
             matchScore->push_back(int(j));          // No type conversion, score is distance in class vector
@@ -385,7 +393,7 @@ bool  RbFunction::processArguments(const std::vector<Argument>& passedArgs, bool
 std::string RbFunction::richInfo(void) const {
 
     std::ostringstream o;
-    o << getType() << ": " << (*this) << std::endl;
+    o << getType() << ": " << std::endl;
     
     if (argsProcessed)
         o << "Arguments processed; there are " << args.size() << " values." << std::endl;

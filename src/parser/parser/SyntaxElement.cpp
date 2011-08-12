@@ -23,29 +23,8 @@
 /** Get class vector describing type of object */
 const VectorString& SyntaxElement::getClass(void) const { 
 
-    static VectorString rbClass = VectorString(SyntaxElement_name);
+    static VectorString rbClass = VectorString(SyntaxElement_name) + RbInternal::getClass();
 	return rbClass; 
-}
-
-
-/** Get type (first entry in class vector) */
-const std::string& SyntaxElement::getType(void) const {
-
-    return getClass()[0];
-}
-
-
-/** Are we of specified type? We need to check entire class vector in case we are derived from type. */
-bool SyntaxElement::isType(const std::string& type) const {
-
-    const VectorString& classVec = getClass();
-
-    for (size_t i=0; i<classVec.size(); i++) {
-        if (type == classVec[i])
-            return true;
-    }
-
-	return false;
 }
 
 

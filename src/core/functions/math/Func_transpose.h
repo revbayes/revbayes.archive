@@ -35,7 +35,7 @@ class Func_transpose :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-    	DAGNode*                    execute(void);                                              //!< Execute function
+    	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
@@ -43,7 +43,6 @@ class Func_transpose :  public RbFunction {
 
 #endif
 
-#include "ContainerNode.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"
@@ -59,17 +58,17 @@ Func_transpose<matrixType>* Func_transpose<matrixType>::clone( void ) const {
 
 /** Execute function by simply rearranging elements in new matrix of same type */
 template <typename matrixType>
-DAGNode* Func_transpose<matrixType>::execute( void ) {
+RbLanguageObject* Func_transpose<matrixType>::execute( void ) {
 
     const matrixType* mat = static_cast<const matrixType*>( args[0].getValue() );
 
-    matrixType* matT = new matrixType( mat->getNumCols(), mat->getNumRows() );
+    matrixType* matT = new matrixType( mat->getNumberOfColumns(), mat->getNumberOfRows() );
     
-    for ( size_t i = 0; i < mat->getNumRows(); i++ )
-        for ( size_t j = 0; j < mat->getNumCols(); j++ )
+    for ( size_t i = 0; i < mat->getNumberOfRows(); i++ )
+        for ( size_t j = 0; j < mat->getNumberOfColumns(); j++ )
             (*matT)[j][i] = (*mat)[i][j];
 
-    return matT->wrapIntoVariable();
+    return matT;
 }
 
 

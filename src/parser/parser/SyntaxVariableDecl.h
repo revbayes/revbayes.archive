@@ -45,8 +45,7 @@ class SyntaxVariableDecl : public SyntaxElement {
         void                        print(std::ostream& o) const;                                   //!< Print info about object
         
         // Regular functions
-        DAGNode*                    getDAGNodeExpr(VariableFrame* frame) const;                     //!< Convert to DAG node expression
-        DAGNode*                    getValue(VariableFrame* frame) const;                           //!< Get semantic value
+        Variable*                   getContentAsVariable(Environment* env) const;           //!< Get semantic value
         
     protected:
         RbString*                   elementTypeName;                                                //!< Element type of the variable

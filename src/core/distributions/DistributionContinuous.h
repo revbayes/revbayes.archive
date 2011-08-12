@@ -44,20 +44,20 @@ class DistributionContinuous: public Distribution {
 
         // Member object functions you should not have to override
         const MethodTable&              getMethods(void) const;                                                     //!< Get member methods
-        DAGNode*                        executeOperation(const std::string& name, ArgumentFrame& args);             //!< Direct call of member method
+        RbLanguageObject*               executeOperation(const std::string& name, Environment& args);               //!< Direct call of member method
 
         // Interval distribution functions you probably want to override
-        virtual const RbObject*         getMax(void) const;                                                         //!< Get max value of coverage
-        virtual const RbObject*         getMin(void) const;                                                         //!< Get min value of coverage
+        virtual const RbLanguageObject* getMax(void) const;                                                         //!< Get max value of coverage
+        virtual const RbLanguageObject* getMin(void) const;                                                         //!< Get min value of coverage
 
         // Interval distribution functions you have to override
-        virtual double                  cdf(const RbObject* value) = 0;                                             //!< Cumulative probability
-        virtual Move*                   getDefaultMove(StochasticNode* node) = 0;                                   //!< Get default move
+        virtual double                  cdf(const RbLanguageObject* value) = 0;                                     //!< Cumulative probability
+//        virtual Move*                   getDefaultMove(StochasticNode* node) = 0;                                   //!< Get default move
         virtual const TypeSpec          getVariableType(void) const = 0;                                            //!< Get random variable type spec
-        virtual double                  lnPdf(const RbObject* value) = 0;                                           //!< Ln probability density
-        virtual double                  pdf(const RbObject* value) = 0;                                             //!< Probability density
-        virtual RbObject*               quantile(const double p) = 0;                                               //!< Quantile
-        virtual RbObject*               rv(void) = 0;                                                               //!< Generate a random draw
+        virtual double                  lnPdf(const RbLanguageObject* value) = 0;                                   //!< Ln probability density
+        virtual double                  pdf(const RbLanguageObject* value) = 0;                                     //!< Probability density
+        virtual RbLanguageObject*       quantile(const double p) = 0;                                               //!< Quantile
+        virtual RbLanguageObject*       rv(void) = 0;                                                               //!< Generate a random draw
 
     protected:
                                         DistributionContinuous(const MemberRules& memberRules);                     //!< Constructor

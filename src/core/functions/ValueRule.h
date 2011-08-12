@@ -20,7 +20,6 @@
 
 #include "ArgumentRule.h"
 #include "TypeSpec.h"
-#include "VariableSlot.h"
 
 #include <string>
 
@@ -33,9 +32,9 @@ class VectorString;
 class ValueRule : public ArgumentRule {
 
     public:
-                                    ValueRule(const std::string& argName, RbObject* defValue);                                       //!< Constructor of rule from default value
+                                    ValueRule(const std::string& argName, RbLanguageObject* defValue);                               //!< Constructor of rule from default value
                                     ValueRule(const std::string& argName, const TypeSpec& argTypeSp);                                //!< Constructor of rule without default value
-                                    ValueRule(const std::string& argName, const TypeSpec& argTypeSp, RbObject* defValue);            //!< Constructor of rule with default value
+                                    ValueRule(const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject* defValue);    //!< Constructor of rule with default value
                                     ValueRule(const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable);          //!< Constructor of rule with default reference or default wrapped value
 
         // Basic utility functions

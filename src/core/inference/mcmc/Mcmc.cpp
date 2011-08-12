@@ -23,13 +23,15 @@
 #include "Mcmc.h"
 #include "MemberFunction.h"
 #include "Model.h"
+#include "Monitor.h"
+#include "MonitorsContainer.h"
 #include "Move.h"
+#include "MovesContainer.h"
 #include "MoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RangeRule.h"
-#include "ReferenceRule.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "StochasticNode.h"
@@ -45,20 +47,12 @@
 
 
 /** Constructor passes member rules and method inits to base class */
-Mcmc::Mcmc(void)
-    : MemberObject(getMemberRules()) {
+Mcmc::Mcmc(void) : ConstantMemberObject(getMemberRules()) {
 }
 
-
-/** Constructor for internal use */
-Mcmc::Mcmc(Model* model, int ngen, int printfreq, int samplefreq, std::string filename)
-    : MemberObject(getMemberRules()) {
-
-    setValue("model",      model);
-    setValue("ngen",       new Integer(ngen));
-    setValue("printfreq",  new Integer(printfreq));
-    setValue("samplefreq", new Integer(samplefreq));
-    setValue("filename",   new RbString(filename));
+/** Copy constructor */
+Mcmc::Mcmc(const Mcmc &x) : ConstantMemberObject(x) {
+    
 }
 
 
@@ -70,11 +64,13 @@ Mcmc* Mcmc::clone(void) const {
 
 
 /** Map calls to member methods */
-DAGNode* Mcmc::executeOperation(const std::string& name, ArgumentFrame& args) {
+RbLanguageObject* Mcmc::executeOperation(const std::string& name, Environment& args) {
 
-    if (name == "update") {
-       update();
-       return NULL;
+    if (name == "run") {
+        const RbLanguageObject* argument = args[0].getValue();
+        int n = static_cast<const Natural*>( argument )->getValue();
+        run(n);
+        return NULL;
     }
 
     return MemberObject::executeOperation( name, args );
@@ -84,7 +80,7 @@ DAGNode* Mcmc::executeOperation(const std::string& name, ArgumentFrame& args) {
 /** Get class vector describing type of object */
 const VectorString& Mcmc::getClass(void) const {
 
-    static VectorString rbClass = VectorString(Mcmc_name) + MemberObject::getClass();
+    static VectorString rbClass = VectorString(Mcmc_name) + ConstantMemberObject::getClass();
     return rbClass;
 }
 
@@ -97,11 +93,9 @@ const MemberRules& Mcmc::getMemberRules(void) const {
 
     if (!rulesSet) {
 
-        memberRules.push_back( new ValueRule         ( "model"     , Model_name                         ) );
-        memberRules.push_back( new RangeRule<Integer>( "ngen"      , new Integer(1), Integer(1), Integer(INT_MAX) ) );
-        memberRules.push_back( new RangeRule<Integer>( "printfreq" , new Integer(1), Integer(1), Integer(INT_MAX) ) );
-        memberRules.push_back( new RangeRule<Integer>( "samplefreq", new Integer(1), Integer(1), Integer(INT_MAX) ) );
-        memberRules.push_back( new ValueRule         ( "filename"  , new RbString( "out" )              ) );
+        memberRules.push_back( new ValueRule ( "model"    , Model_name    ) );
+        memberRules.push_back( new ValueRule ( "moves"    , MovesContainer_name ) );
+        memberRules.push_back( new ValueRule ( "monitors" , MonitorsContainer_name ) );
 
         rulesSet = true;
     }
@@ -119,8 +113,8 @@ const MethodTable& Mcmc::getMethods(void) const {
 
     if (!methodsSet) {
 
-        updateArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
-        methods.addFunction("update", new MemberFunction( RbVoid_name, updateArgRules));
+        updateArgRules.push_back( new ValueRule( "generations", Natural_name      ) );
+        methods.addFunction("run", new MemberFunction( RbVoid_name, updateArgRules));
 
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
         methodsSet = true;
@@ -131,117 +125,107 @@ const MethodTable& Mcmc::getMethods(void) const {
 
 
 /** Allow only constant member variables */
-void Mcmc::setVariable(const std::string& name, DAGNode* var) {
+void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
 
-    if ( name != "model" && !var->isDAGType( ConstantNode_name ) )
-        throw RbException( "Only constant member values allowed" );
-
-    if ( name == "model" && members["model"].getValue() != NULL )
-        throw RbException( "Cannot reset model" );
-
-    MemberObject::setVariable(name, var);
+    // we need to change the DAG nodes to which the moves are pointing to
+    // when the moves where created they pointed to DAG nodes in the workspace
+    // but the model created clones of theses nodes.
+    // Hence we need to set the DAG nodes of the moves to these clones.
+    if ( name == "moves" ) {
+        // get the DAG nodes
+        const Model* theModel = dynamic_cast<const Model*>(getMemberValue("model"));
+        
+        MovesContainer *moves = dynamic_cast<MovesContainer*>(var->getDagNodePtr()->getValuePtr()->convertTo(MovesContainer_name));
+        for (size_t i=0; i<moves->getLength(); i++) {
+            // get the move #i
+            Move *theMove       = moves->getElement(i);
+            
+            // get the DAG node for this move
+            std::vector<VariableNode*> &theOldNodes = theMove->getDagNodes();
+            
+            // get the DAG node which corresponds in the model to the cloned original node
+            std::vector<VariableNode*> theNewNodes = theModel->getClonedDagNodes(theOldNodes);
+            
+            // clone the move and replace the node
+            Move *newMove       = theMove->clone();
+            newMove->replaceDagNodes(theNewNodes);
+            moves->setElement(i, newMove);
+            
+        }
+        
+        setMemberDagNode(name, new ConstantNode(moves));
+    }
+    else if ( name == "monitors" ) {
+        // get the DAG nodes
+        const Model* theModel = dynamic_cast<const Model*>(getMemberValue("model"));
+        
+        MonitorsContainer *monitors = dynamic_cast<MonitorsContainer*>(var->getDagNodePtr()->getValuePtr()->convertTo(MonitorsContainer_name));
+        for (size_t i=0; i<monitors->getLength(); i++) {
+            // get the monitor #i
+            Monitor *theMonitor       = monitors->getElement(i);
+            
+            // get the DAG node for this monitor
+            std::vector<VariableNode*> &theOldNodes = theMonitor->getDagNodes();
+            
+            // get the DAG node which corresponds in the model to the cloned original node
+            std::vector<VariableNode*> theNewNodes = theModel->getClonedDagNodes(theOldNodes);
+            
+            // clone the move and replace the node
+            Monitor *newMonitor       = theMonitor->clone();
+            newMonitor->replaceDagNodes(theNewNodes);
+            monitors->setElement(i, newMonitor);
+            
+        }
+        
+        setMemberDagNode(name, new ConstantNode(monitors));
+    }
+    else {
+        ConstantMemberObject::setMemberVariable(name, var);
+    }
 }
 
 
 /** Run the mcmc chain */
-void Mcmc::update(void) {
+void Mcmc::run(size_t ngen) {
 
     std::cerr << "Initializing mcmc chain ..." << std::endl;
 
     /* Get the dag nodes from the model */
-    std::vector<DAGNode*>& dagNodes = ((Model*)(getValue("model")))->getDAGNodes();
+    std::vector<DAGNode*>& dagNodes = ((Model*)(getMemberValue("model")))->getDAGNodes();
 
-    /* Get the moves, monitors, variable nodes and stochastic nodes */
-    std::vector<Monitor*>        monitors;
-    std::map<double, Move*>      tempMoves;
-    double                       sumWeights = 0.0;
-    std::vector<StochasticNode*> stochasticNodes;
-    std::vector<VariableNode*>   variableNodes;
-
-    for (std::vector<DAGNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
-        if ((*i)->isDAGType(VariableNode_name)) {
-
-            VariableNode*          theNode         = dynamic_cast<VariableNode*>(*i);
-            std::vector<Monitor*>  theMonitors     = theNode->getDefaultMonitors();
-            MoveSchedule*          theMoveSchedule;
-            if (theNode->isDAGType(StochasticNode_name) && ((StochasticNode*)(theNode))->isClamped())
-                theMoveSchedule = NULL;
-            else
-                theMoveSchedule = theNode->getDefaultMoves();
-
-            /* Update value of all variable nodes in case the parser left them in 'dirty' state */
-            theNode->keep();
-
-            /* Get monitor */
-            for (std::vector<Monitor*>::iterator j=theMonitors.begin(); j!=theMonitors.end(); j++)
-                monitors.push_back(*j);
-
-            /* Get moves */
-            if (theMoveSchedule != NULL) {
-                double              nodeWeight = theMoveSchedule->getUpdateWeight();
-                std::vector<Move*>& theMoves   = theMoveSchedule->getMoves();
-                for (std::vector<Move*>::iterator j=theMoves.begin(); j!=theMoves.end(); j++) {
-                    double weight = (*j)->getUpdateWeight() * nodeWeight;
-                    sumWeights += weight;
-                    tempMoves.insert(std::pair<double, Move*>(sumWeights, *j));
-                }
-            }
-
-            variableNodes.push_back(theNode);
-            if (theNode->isDAGType(StochasticNode_name)) {
-                stochasticNodes.push_back((StochasticNode*)(theNode));
-            }
-        }
-    }
-
-    /* Correct the temporary move map so the key is the lower cumulative probability of the move */
-    std::map<double, Move*> moves;
-    double cumulativeProb = 0.0;
-    for (std::map<double, Move*>::iterator i=tempMoves.begin(); i!=tempMoves.end(); i++) {
-        cumulativeProb = (*i).first / sumWeights;
-        moves.insert(std::pair<double, Move*>(cumulativeProb, (*i).second));
-    }
-    tempMoves.clear();
+    /* Get the moves and monitors */
+    MonitorsContainer *monitors = dynamic_cast<MonitorsContainer*>(getMemberDagNodePtr( "monitors" )->getValuePtr() );
+    MovesContainer       *moves = dynamic_cast<MovesContainer*   >(getMemberDagNodePtr( "moves"    )->getValuePtr() );
 
     /* Get the chain settings */
     std::cerr << "Getting the chain settings ..." << std::endl;
 
-    int                    ngen       = ((Integer*)(getValue("ngen")))->getValue();
-    int                    printfreq  = ((Integer*)(getValue("printfreq")))->getValue();
-    int                    samplefreq = ((Integer*)(getValue("samplefreq")))->getValue();
-    std::string            fileName   = ((RbString*)(getValue("filename")))->getValue();
     RandomNumberGenerator* rng        = GLOBAL_RNG;
 
     /* Open the output file and print headers */
     std::cerr << "Opening file and printing headers ..." << std::endl;
-
-    std::ofstream outFile(fileName.c_str());
-    outFile << "gen";
-    for (std::vector<VariableNode*>::iterator i=variableNodes.begin(); i!=variableNodes.end(); i++) {
-        outFile << "\t";
-        if ((*i)->getName() == "")
-            outFile << "Unnamed " << (*i)->getDAGType();
-        else
-            outFile << (*i)->getName();
+    for (size_t i=0; i<monitors->getLength(); i++) {
+        // get the monitor
+        Monitor *theMonitor = monitors->getElement(i);
+        
+        // open the file stream for the monitor
+        theMonitor->openStream();
+        
+        // print the header information
+        theMonitor->printHeader();
     }
-    outFile << std::endl;
 
-    /* Print starting values to outfile */
-    outFile << std::fixed;
-    for (std::vector<VariableNode*>::iterator i=variableNodes.begin(); i!=variableNodes.end(); i++) {
-        if ( i != variableNodes.begin() )
-            outFile << "\t";
-        (*i)->printValue(outFile);
-    }
-    outFile << std::endl;
 
     /* Get initial lnProbability of model */
     double lnProbability = 0.0;
     std::vector<double> initProb;
-    for (std::vector<StochasticNode*>::iterator i=stochasticNodes.begin(); i!=stochasticNodes.end(); i++) {
-        double lnProb = (*i)->calculateLnProbability();
-        lnProbability += lnProb;
-        initProb.push_back(lnProb);
+    for (std::vector<DAGNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+        if ((*i)->isType(StochasticNode_name)) {
+            StochasticNode *stochNode = dynamic_cast<StochasticNode*>(*i);
+            double lnProb = stochNode->calculateLnProbability();
+            lnProbability += lnProb;
+//            initProb.push_back(lnProb);
+        }
     }
     std::cerr << "Initial lnProbability = " << lnProbability << std::endl;
 
@@ -253,64 +237,58 @@ void Mcmc::update(void) {
 
     for (int gen=1; gen<=ngen; gen++) {
 
-        /* Get the move */
-        double u = rng->uniform01();
-        std::map<double, Move*>::iterator it = moves.upper_bound(u);
-        Move* theMove = (*it).second;
+        for (size_t i=0; i<moves->getLength(); i++) {
+            /* Get the move */
+            Move* theMove = moves->getElement(i);
 
-        /* Propose a new value */
-        double lnProbabilityRatio, lnHastingsRatio;
-        theMove->performMove(lnProbabilityRatio, lnHastingsRatio);
+            /* Propose a new value */
+            double lnProbabilityRatio;
+            double lnHastingsRatio = theMove->performMove(lnProbabilityRatio);
 
-        /* Calculate acceptance ratio */
-        double lnR = lnProbabilityRatio + lnHastingsRatio;
-        double r;
-        if (lnR > 0.0)
-            r = 1.0;
-        else if (lnR < -300.0)
-            r = 0.0;
-        else
-            r = exp(lnR);
+            /* Calculate acceptance ratio */
+            double lnR = lnProbabilityRatio + lnHastingsRatio;
+            double r;
+            if (lnR > 0.0)
+                r = 1.0;
+            else if (lnR < -300.0)
+                r = 0.0;
+            else
+                r = exp(lnR);
 
-        /* Accept or reject the move */
-        u = rng->uniform01();
-        if (u < r) {
-            theMove->acceptMove();
-            lnProbability += lnProbabilityRatio;
-        }
-        else {
-            theMove->rejectMove();
-        }
-
-        /* Monitor */
-        //! @todo : Do appropriate monitoring; just printing all variable nodes for now */
-        if (gen % samplefreq == 0) {
-            for (std::vector<VariableNode*>::iterator i=variableNodes.begin(); i!=variableNodes.end(); i++) {
-                if ( i != variableNodes.begin() )
-                    outFile << "\t";
-                (*i)->printValue(outFile);
+            /* Accept or reject the move */
+            double u = rng->uniform01();
+            if (u < r) {
+                theMove->acceptMove();
+                lnProbability += lnProbabilityRatio;
             }
-            outFile << std::endl;
-        }
-
-        /* Print to screen */
-        if (gen % printfreq == 0)
-            std::cout << gen << "\t" << lnProbability << std::endl;
+            else {
+                theMove->rejectMove();
+            }
 
 #ifndef NDEBUG
-        /* Assert that the probability calculation shortcuts work */
-        if (gen % samplefreq == 0) {
+            /* Assert that the probability calculation shortcuts work */
             double curLnProb = 0.0;
             std::vector<double> lnRatio;
-            for (std::vector<StochasticNode*>::iterator i=stochasticNodes.begin(); i!=stochasticNodes.end(); i++) {
-                 double lnProb = (*i)->calculateLnProbability();
-                 curLnProb += lnProb;
-                 lnRatio.push_back(initProb[i-stochasticNodes.begin()] - lnProb);
+            for (std::vector<DAGNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
+                if ((*i)->isType(StochasticNode_name)) {
+                    StochasticNode *stochNode = dynamic_cast<StochasticNode*>(*i);
+                    double lnProb = stochNode->calculateLnProbability();
+                    curLnProb += lnProb;
+                    //                lnRatio.push_back(initProb[stochNode-dagNodes.begin()] - lnProb);
+                }
             }
             if (fabs(lnProbability - curLnProb) > 1E-8)
                 throw RbException("Error in ln probability calculation shortcuts");
-        }
 #endif
+        }
+
+        /* Monitor */
+        for (size_t i=0; i<monitors->getLength(); i++) {
+            monitors->getElement(i)->monitor(gen);
+        }
+
+        /* Print to screen */
+        std::cout << gen << "\t" << lnProbability << std::endl;
 
     }
 

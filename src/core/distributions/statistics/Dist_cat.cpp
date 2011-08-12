@@ -24,8 +24,8 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "Real.h"
-#include "ReferenceRule.h"
 #include "Simplex.h"
+#include "ValueRule.h"
 #include "VectorRealPos.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -43,7 +43,7 @@ Dist_cat::Dist_cat( void ) : DistributionDiscrete( getMemberRules() ) {
 /** Constructor for internal use */
 Dist_cat::Dist_cat( std::vector<double> m ) : DistributionDiscrete( getMemberRules() ) {
 
-    setValue( "m", new Simplex( m ) );
+//    setMemberValue( "m", new Simplex( m ) );
 }
 
 
@@ -61,15 +61,6 @@ const VectorString& Dist_cat::getClass( void ) const {
     return rbClass;
 }
 
-
-/** Get default move */
-Move* Dist_cat::getDefaultMove( StochasticNode* node ) {
-
-	// TODO: Add a default move, such as random draw from noncurrent states
-    return NULL;
-}
-
-
 /** Get member variable rules */
 const MemberRules& Dist_cat::getMemberRules( void ) const {
 
@@ -78,8 +69,8 @@ const MemberRules& Dist_cat::getMemberRules( void ) const {
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ReferenceRule( "m"    , Simplex_name ) );
-        memberRules.push_back( new ReferenceRule( "dummy", Categorical_name ) );
+        memberRules.push_back( new ValueRule( "m"    , Simplex_name ) );
+        memberRules.push_back( new ValueRule( "dummy", Categorical_name ) );
 
         rulesSet = true;
 		}
@@ -89,23 +80,23 @@ const MemberRules& Dist_cat::getMemberRules( void ) const {
 
 
 /** Get the number of states in the distribution */
-size_t Dist_cat::getNumStates( void ) const {
+size_t Dist_cat::getNumberOfStates( void ) const {
 
-    return static_cast<const Simplex*>( getValue("m") )->getElementsSize();
+    return static_cast<const Simplex*>( getMemberValue("m") )->getLength();
 }
 
 
 /** Get the probability mass vector */
 const Simplex* Dist_cat::getProbabilityMassVector( void ) {
 
-    return static_cast<const Simplex*>( getValue("m") );
+    return static_cast<const Simplex*>( getMemberValue("m") );
 }
 
 
 /** Get random variable type */
 const TypeSpec Dist_cat::getVariableType( void ) const {
 
-    return getVariable( "dummy" )->getTypeSpec();
+    return getMemberDagNode( "dummy" )->getTypeSpec();
 }
 
 
@@ -118,11 +109,11 @@ const TypeSpec Dist_cat::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_cat::lnPdf( const RbObject* value ) {
+double Dist_cat::lnPdf( const RbLanguageObject* value ) {
 
 	// Get the value and the parameters of the categorical distribution
-    std::vector<double> m = static_cast<const Simplex*    >( getValue("m") )->getValue();
-    int                 x = static_cast<const Categorical*>( value         )->getValue();
+    std::vector<double> m = static_cast<const Simplex*    >( getMemberValue("m") )->getValue();
+    int                 x = static_cast<const Categorical*>( value               )->getValue();
 
     if ( x < 0 )
         return 0.0;
@@ -140,11 +131,11 @@ double Dist_cat::lnPdf( const RbObject* value ) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_cat::pdf( const RbObject* value ) {
+double Dist_cat::pdf( const RbLanguageObject* value ) {
 
 	// Get the value and the parameter of the categorical distribution
-    std::vector<double> m = static_cast<const Simplex*    >( getValue("m") )->getValue();
-    int                 x = static_cast<const Categorical*>( value         )->getValue();
+    std::vector<double> m = static_cast<const Simplex*    >( getMemberValue("m") )->getValue();
+    int                 x = static_cast<const Categorical*>( value               )->getValue();
 
 	if ( x < 0 )
         return 1.0;
@@ -164,11 +155,11 @@ double Dist_cat::pdf( const RbObject* value ) {
 Categorical* Dist_cat::rv( void ) {
 
 	// Get the parameter of the categorical distribution and the rng
-    std::vector<double>    m   = static_cast<const Simplex*    >( getValue( "m" ) )->getValue();
+    std::vector<double>    m   = static_cast<const Simplex*    >( getMemberValue( "m" ) )->getValue();
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     // Get copy of reference object
-    Categorical* draw = static_cast<Categorical*>( getValue( "dummy" )->clone() );
+    Categorical* draw = static_cast<Categorical*>( getMemberValue( "dummy" )->clone() );
 
     // Draw a random value
     double r   = rng->uniform01();

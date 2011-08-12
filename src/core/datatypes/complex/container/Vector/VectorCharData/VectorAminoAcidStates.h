@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-12-04, version 1.0
- * @extends RbComplex
+ * @extends VectorCharacters
  *
  * $Id$
  */
@@ -52,7 +52,6 @@ class VectorAminoAcidStates : public VectorCharacters {
         std::vector<AminoAcidState*> getStdVector(void) const;                                             //!< Get the value vector as a std::vector
 
     protected:
-        RbObject*                    getDefaultElement(void) const { return new VectorAminoAcidStates(); } //!< Get default element for empty slots
 };
 
 #endif

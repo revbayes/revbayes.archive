@@ -17,7 +17,6 @@
 #define SyntaxForCondition_H
 
 #include "Container.h"
-#include "ContainerNode.h"
 #include "VectorInteger.h"
 #include "SyntaxElement.h"
 
@@ -30,31 +29,29 @@ class RbString;
 class SyntaxForCondition : public SyntaxElement {
 
     public:
-                                SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr);    //!< Standard constructor
-                                SyntaxForCondition(const SyntaxForCondition& x);                    //!< Copy constructor
-	    virtual                ~SyntaxForCondition();                                               //!< Destructor
+                                SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr);        //!< Standard constructor
+                                SyntaxForCondition(const SyntaxForCondition& x);                        //!< Copy constructor
+	    virtual                ~SyntaxForCondition();                                                   //!< Destructor
 
         // Assignment operator
-        SyntaxForCondition&     operator=(const SyntaxForCondition& x);                             //!< Assignment operator
+        SyntaxForCondition&     operator=(const SyntaxForCondition& x);                                 //!< Assignment operator
         
         // Basic utility functions
-        std::string             briefInfo() const;                                                  //!< Brief info about object
-        SyntaxElement*          clone() const;                                                      //!< Clone object
-        void                    print(std::ostream& o) const;                                       //!< Print info about object
+        std::string             briefInfo() const;                                                      //!< Brief info about object
+        SyntaxElement*          clone() const;                                                          //!< Clone object
+        void                    print(std::ostream& o) const;                                           //!< Print info about object
 
         // Regular functions
-        void                    finalizeLoop(VariableFrame* frame);                                 //!< Finalize loop
-        DAGNode*                getDAGNodeExpr(VariableFrame* frame) const;                         //!< Convert to DAG node expression
-        bool                    getNextLoopState(VariableFrame* frame);                             //!< Get next state of loop
-        DAGNode*                getValue(VariableFrame* frame) const;                               //!< Get semantic value
-        void                    initializeLoop(VariableFrame* frame);                               //!< Initialize loop
+        void                    finalizeLoop(Environment* env);                                         //!< Finalize loop
+        bool                    getNextLoopState(Environment* env);                                     //!< Get next state of loop
+        Variable*               getContentAsVariable(Environment* env) const;                           //!< Get semantic value
+        void                    initializeLoop(Environment* env);                                       //!< Initialize loop
 
     protected:
-        RbString*               varName;                                                            //!< The name of the loop variable
-        SyntaxElement*          inExpression;                                                       //!< The in expression (a vector of values)
-        ContainerNode*          vector;                                                             //!< Vector result of 'in' expression
-        bool                    wasLoopVariableReference;                                           //!< Was loop variable reference before loop?
-        int                     nextElement;                                                        //!< Next element in vector
+        RbString*               varName;                                                                //!< The name of the loop variable
+        SyntaxElement*          inExpression;                                                           //!< The in expression (a vector of values)
+        Container*              vector;                                                                 //!< Vector result of 'in' expression
+        int                     nextElement;                                                            //!< Next element in vector
 
 };
 

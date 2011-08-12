@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends VectorCharacter
  *
  * $Id$
  */
@@ -37,9 +37,10 @@ VectorCharacterContinuous::VectorCharacterContinuous(void) : VectorCharacters(Ch
 /** Copy constructor */
 VectorCharacterContinuous::VectorCharacterContinuous(const VectorCharacterContinuous& x) : VectorCharacters(CharacterContinuous_name) {
 
-    for (size_t i=0; i<x.size(); i++)
+    for (size_t i=0; i<x.getLength(); i++)
         elements.push_back( new CharacterContinuous(x[i]) );
-    length[0] = elements.size();
+    length = elements.size();
+    
 }
 
 
@@ -64,7 +65,7 @@ const CharacterContinuous& VectorCharacterContinuous::operator[](size_t i) const
 /** Equals comparison */
 bool VectorCharacterContinuous::operator==(const VectorCharacterContinuous& x) const {
 
-    if ( size() != x.size() )
+    if ( getLength() != x.getLength() )
         return false;
     for (size_t i=0; i<elements.size(); i++) 
         {
@@ -86,7 +87,7 @@ bool VectorCharacterContinuous::operator!=(const VectorCharacterContinuous& x) c
 VectorCharacterContinuous VectorCharacterContinuous::operator+(const VectorCharacterContinuous& x) const {
 
     VectorCharacterContinuous tempVec = *this;
-    for (size_t i=0; i<x.size(); i++)
+    for (size_t i=0; i<x.getLength(); i++)
         tempVec.push_back( x[i] );
     return tempVec;
 }
@@ -133,7 +134,7 @@ std::vector<CharacterContinuous*> VectorCharacterContinuous::getStdVector(void) 
 void VectorCharacterContinuous::push_back(CharacterContinuous x) {
 
     elements.push_back( new CharacterContinuous(x) );
-    length[0]++;
+    length++;
 }
 
 

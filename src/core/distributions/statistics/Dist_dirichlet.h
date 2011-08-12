@@ -34,7 +34,6 @@ class Dist_dirichlet: public DistributionContinuous {
 
     public:
                                     Dist_dirichlet(void);                                               //!< Parser constructor
-                                    Dist_dirichlet(std::vector<double> a);                              //!< Internal constructor
 
         // Basic utility functions
         Dist_dirichlet*             clone(void) const;                                                  //!< Clone object
@@ -44,11 +43,10 @@ class Dist_dirichlet: public DistributionContinuous {
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Real-valued distribution functions
-        double                      cdf(const RbObject* value);                                         //!< Cumulative density
-        Move*                       getDefaultMove(StochasticNode* node);                               //!< Get default move
+        double                      cdf(const RbLanguageObject* value);                                 //!< Cumulative density
         const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-        double                      lnPdf(const RbObject* value);                                       //!< Ln probability density
-        double                      pdf(const RbObject* value);                                         //!< Probability density
+        double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
+        double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         Simplex*                    quantile(const double p);                                           //!< Quantile
         Simplex*                    rv(void);                                                           //!< Generate random variable
 };

@@ -23,6 +23,7 @@
 #include <list>
 
 class ArgumentRule;
+class ArgumentEnvironment;
 class RbString;
 class TypeSpec;
 
@@ -43,14 +44,13 @@ class SyntaxFormal : public SyntaxElement {
         void            print(std::ostream& o) const;                                               //!< Print info about object
 
         // Regular functions
-        ArgumentRule*   getArgumentRule(VariableFrame* frame) const;                                //!< Make an argument rule
-        DAGNode*        getDAGNodeExpr(VariableFrame* frame) const;                                 //!< Convert to DAG node expression
+        ArgumentRule*   getArgumentRule(Environment* env) const;                                    //!< Make an argument rule
         RbString*       getLabel(void) const { return label; }                                      //!< Get label
-        TypeSpec*       getTypeSpec(void) const { return type; }                                    //!< Get type spec
-        DAGNode*        getValue(VariableFrame* frame) const;                                       //!< Get semantic value
+        TypeSpec*       getArgumentTypeSpec(void) const { return argType; }                         //!< Get type spec
+        Variable*       getContentAsVariable(Environment* env) const;                               //!< Get semantic value
     
     protected:
-        TypeSpec*       type;                                                                       //!< The type of the argument
+        TypeSpec*       argType;                                                                    //!< The type of the argument
         RbString*       label;                                                                      //!< The label of the argument
         SyntaxElement*  defaultExpr;                                                                //!< Default value expression of argument
 };

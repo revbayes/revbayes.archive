@@ -11,14 +11,13 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
 
 #include "Character.h"
 #include "CharacterStateDiscrete.h"
-#include "CondLike.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
@@ -57,38 +56,6 @@ const VectorString& VectorCharacters::getClass(void) const {
     return rbClass;
 }
 
-
-/** Initialize and return a conditional likelihood for this state */
-CondLike* VectorCharacters::getCondLike(void) {
-
-    // get the number of characters and states
-    size_t nc = elements.size();
-    size_t ns = (*this)[0].getNumStates();
-    if ( ns == 0 || nc == 0 )
-        throw ( RbException("Problem creating conditional likelihood vector") );
-    
-    // allocate a new conditional likelihood object
-    CondLike* cl = new CondLike(nc, ns);
-    
-    // fill in the conditional likelihood vector
-    double* p = &(*cl)[0];
-    for (size_t i=0; i<elements.size(); i++) 
-        {
-        CharacterStateDiscrete* discP = dynamic_cast<CharacterStateDiscrete*>( &(*this)[i] );
-        std::vector<bool> s = discP->getStateVector();
-        for (size_t i=0; i<ns; i++)
-            {
-            if (s[i] == true)
-                p[i] = 1.0;
-            else
-                p[i] = 0.0;
-            }
-        p += ns;
-        }
-    return cl;
-}
-
-
 /** Push back a new character */
 void VectorCharacters::push_back( Character* newChar ) {
 
@@ -96,6 +63,6 @@ void VectorCharacters::push_back( Character* newChar ) {
         throw RbException( "Inappropriate character type" );
     
     elements.push_back( newChar );
-    length[0]++;
+    length++;
 }
 

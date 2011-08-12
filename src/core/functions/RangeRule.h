@@ -40,7 +40,7 @@ class RangeRule : public ArgumentRule {
         std::string                 richInfo(void) const;                                                               //!< General info on object
 
         // MinmaxRule functions
-        bool                        isArgValid(DAGNode* var, bool& needsConversion, bool once) const;                   //!< Is var valid argument?
+        bool                        isArgumentValid(DAGNode* var, bool& needsConversion, bool once) const;              //!< Is var valid argument?
 
     protected:
         valType                     minVal;                                                                             //!< Min value
@@ -84,10 +84,10 @@ const VectorString& RangeRule<valType>::getClass( void ) const {
 
 /** Check whether argument is constant and within the permissible range */
 template <typename valType>
-bool RangeRule<valType>::isArgValid( DAGNode* var, bool& needsConversion, bool once ) const {
+bool RangeRule<valType>::isArgumentValid( DAGNode* var, bool& needsConversion, bool once ) const {
 
     needsConversion = false;
-    if ( !var->isDAGType( ConstantNode_name ) )
+    if ( !var->isType( ConstantNode_name ) )
         return false;
 
     const valType* val = static_cast<const valType*> ( var->getValue() );

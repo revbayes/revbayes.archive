@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends VectorCharacters
  *
  * $Id$
  */
@@ -37,9 +37,9 @@ VectorDnaStates::VectorDnaStates(void) : VectorCharacters(DnaState_name) {
 /** Copy constructor */
 VectorDnaStates::VectorDnaStates(const VectorDnaStates& x) : VectorCharacters(DnaState_name) {
 
-    for (size_t i=0; i<x.size(); i++)
+    for (size_t i=0; i<x.getLength(); i++)
         elements.push_back( new DnaState(x[i]) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -64,7 +64,7 @@ const DnaState& VectorDnaStates::operator[](size_t i) const {
 /** Equals comparison */
 bool VectorDnaStates::operator==(const VectorDnaStates& x) const {
 
-    if ( size() != x.size() )
+    if ( getLength() != x.getLength() )
         return false;
     for (size_t i=0; i<elements.size(); i++) 
         {
@@ -86,7 +86,7 @@ bool VectorDnaStates::operator!=(const VectorDnaStates& x) const {
 VectorDnaStates VectorDnaStates::operator+(const VectorDnaStates& x) const {
 
     VectorDnaStates tempVec = *this;
-    for (size_t i=0; i<x.size(); i++)
+    for (size_t i=0; i<x.getLength(); i++)
         tempVec.push_back( x[i] );
     return tempVec;
 }
@@ -133,7 +133,7 @@ std::vector<DnaState*> VectorDnaStates::getStdVector(void) const {
 void VectorDnaStates::push_back(DnaState x) {
 
     elements.push_back( new DnaState(x) );
-    length[0]++;
+    length++;
 }
 
 

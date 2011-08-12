@@ -25,11 +25,41 @@
 
 
 /** Construct from argument label and DAG node */
-Argument::Argument(const std::string& argLabel, DAGNode* arg)
-    : RbInternal() {
+Argument::Argument(Variable* v) : RbInternal() {
+    
+    label   = "";
+    var     = v;
+    var->retain();
+}
 
-    label      = argLabel;
-    dagNodePtr = arg;
+
+/** Construct from argument label and DAG node */
+Argument::Argument(const std::string& argLabel, Variable* v) : RbInternal() {
+
+    label   = argLabel;
+    var     = v;
+    var->retain();
+}
+
+/** Copy Constructor. We keep the same pointer to the variable stored inside this argument. */
+Argument::Argument(const Argument &x) : RbInternal(x) {
+    
+    label   = x.label;
+    var     = x.var;
+    var->retain();
+}
+
+
+/** Destructor */
+Argument::~Argument() {
+    
+    // delete the variable of the argument
+    if (var != NULL) {
+        var->release();
+        if (var->isUnreferenced()) {
+            delete var;
+        }
+    }
 }
 
 
@@ -46,8 +76,27 @@ std::string Argument::richInfo(void) const {
 
     std::ostringstream o;
     o << "Argument: label = \"" << label << "\", value = ";
-    dagNodePtr->printValue(o);
+    var->printValue(o);
 
     return o.str();
+}
+
+/** Set the DAG node of the argument */
+void Argument::setDagNode(DAGNode *newNode) {
+    var->setDagNode(newNode);
+}
+
+
+/** Set the variable of the argument */
+void Argument::setVariable(Variable *newVar) {
+    if (var != NULL) {
+        var->release();
+        if (var->isUnreferenced()) {
+            delete var;
+        }
+    }
+    
+    var = newVar;
+    var->retain();
 }
 

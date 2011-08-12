@@ -30,13 +30,14 @@ class Func_unclamp :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func_unclamp*               clone(void) const;                      //!< Clone the object
-        const VectorString&         getClass(void) const;                   //!< Get class vector
+        Func_unclamp*               clone(void) const;                                  //!< Clone the object
+        const VectorString&         getClass(void) const;                               //!< Get class vector
 
         // Regular functions
-        DAGNode*                    execute(void);                          //!< Execute operation
-        const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;              //!< Get type of return value
+        bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
+        RbLanguageObject*           execute(void);                                      //!< Execute operation
+        const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
+        const TypeSpec              getReturnType(void) const;                          //!< Get type of return value
 
 };
 

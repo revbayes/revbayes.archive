@@ -17,11 +17,11 @@
 #ifndef Topology_H
 #define Topology_H
 
-#include "MemberObject.h"
+#include "ConstantMemberObject.h"
 #include <set>
 #include <string>
 
-class ArgumentFrame;
+class ArgumentEnvironment;
 class ArgumentRule;
 class DAGNode;
 class MethodTable;
@@ -38,7 +38,7 @@ struct TopologyChange {
 };
 
 
-class Topology: public MemberObject {
+class Topology: public ConstantMemberObject {
     
     public:
                                         Topology(void);                                                         //!< Default constructor
@@ -55,7 +55,7 @@ class Topology: public MemberObject {
         const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
 
         // Member method inits
-        DAGNode*                        executeOperation(const std::string& name, ArgumentFrame& args);         //!< Execute method
+        RbLanguageObject*               executeOperation(const std::string& name, Environment& args);           //!< Execute method
         const MethodTable&              getMethods(void) const;                                                 //!< Get methods
         
         // Topology functions

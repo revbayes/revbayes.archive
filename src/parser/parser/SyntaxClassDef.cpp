@@ -17,7 +17,6 @@
 #include "RbNames.h"
 #include "SyntaxClassDef.h"
 #include "UserFunction.h"
-#include "VariableFrame.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -25,31 +24,51 @@
 
 
 /** Construct definition from class name, base class name, and variable and function definitions */
-SyntaxClassDef::SyntaxClassDef( RbString*                   name,
-                                RbString*                   base,
-                                std::list<SyntaxElement*>*  defs)
-    : SyntaxElement(), className(name), baseClass(base), definitions(defs) {
+SyntaxClassDef::SyntaxClassDef( RbString* name, RbString* base, std::list<SyntaxElement*>* defs) : SyntaxElement(), className(name), baseClass(base), definitions(defs) {
+    className->retain();
+    baseClass->retain();
+    for (std::list<SyntaxElement*>::iterator it=definitions->begin(); it!=definitions->end(); it++) {
+        (*it)->retain();
+    }
 }
 
 
 /** Deep copy constructor */
-SyntaxClassDef::SyntaxClassDef(const SyntaxClassDef& x)
-    : SyntaxElement(x) {
+SyntaxClassDef::SyntaxClassDef(const SyntaxClassDef& x) : SyntaxElement(x) {
 
     className   = new RbString(*className);
     baseClass   = new RbString(*baseClass);
     definitions = new std::list<SyntaxElement*>();
- 
     for (std::list<SyntaxElement*>::const_iterator i=x.definitions->begin(); i!=x.definitions->end(); i++)
         definitions->push_back((*i)->clone());
+    
+    className->retain();
+    baseClass->retain();
+    for (std::list<SyntaxElement*>::iterator it=definitions->begin(); it!=definitions->end(); it++) {
+        (*it)->retain();
+    }
+ 
 }
 
 
 /** Destructor deletes members */
 SyntaxClassDef::~SyntaxClassDef() {
     
-    delete className;
-    delete baseClass;
+    // delete className;
+    if (className != NULL) {
+        className->release();
+        if (className->isUnreferenced()) {
+            delete className;
+        }
+    }
+    
+    // delete baseClass;
+    if (baseClass != NULL) {
+        baseClass->release();
+        if (baseClass->isUnreferenced()) {
+            delete baseClass;
+        }
+    }
 
     for (std::list<SyntaxElement*>::iterator i=definitions->begin(); i!=definitions->end(); i++)
         delete (*i);
@@ -100,15 +119,8 @@ SyntaxElement* SyntaxClassDef::clone () const {
 }
 
 
-/** Convert element to DAG node; return NULL since it is not applicable */
-DAGNode* SyntaxClassDef::getDAGNodeExpr(VariableFrame* frame) const {
-
-    return NULL;
-}
-
-
 /** Get semantic value: insert a user-defined class in the user workspace */
-DAGNode* SyntaxClassDef::getValue(VariableFrame* frame) const {
+Variable* SyntaxClassDef::getContentAsVariable(Environment* env) const {
 
     std::cerr << "Sorry, user-defined classes are not implemented yet" << std::endl;
 

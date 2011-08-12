@@ -30,7 +30,7 @@ class Func_quit :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Func_quit functions
-    	DAGNode*                    execute(void);                                              //!< Execute function
+    	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return val
 

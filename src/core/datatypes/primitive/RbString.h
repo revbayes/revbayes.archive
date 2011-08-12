@@ -16,18 +16,18 @@
 #ifndef RbString_H
 #define RbString_H
 
-#include "RbObject.h"
+#include "RbLanguageObject.h"
 
 #include <fstream>
 #include <string>
 
 
-class RbString : public RbObject {
+class RbString : public RbLanguageObject {
 
     public:
-        friend class                VectorString;                                       //!< Give VectorString modify access to value
+//        friend class                VectorString;                                       //!< Give VectorString modify access to value
 
-                                    RbString(void) : RbObject(), value() {}             //!< Default: empty string
+                                    RbString(void) : RbLanguageObject(), value() {}     //!< Default: empty string
                                     RbString(int i);                                    //!< Constructor from int
                                     RbString(double i);                                 //!< Constructor from int
                                     RbString(const std::string& v);                     //!< Constructor from string
@@ -38,9 +38,11 @@ class RbString : public RbObject {
         RbString                    operator+(const std::string& s) const;              //!< String concatenation
         friend std::ostream&        operator<< (std::ostream& o, RbString const& s);    //!< String output with << operator
 
-        // Basic utility functions
+    // Basic utility functions
+        std::string                 briefInfo(void) const;                              //!< Brief info about the object
 	    RbString*                   clone(void) const;                                  //!< Copy
         const VectorString&         getClass(void) const;                               //!< Get class
+        std::string&                getValueReference(void) { return value; }           //!< Get value reference
         void                        printValue(std::ostream& o) const;                  //!< Print value (for user)
         std::string                 richInfo(void) const;                               //!< General info on object
 
@@ -52,7 +54,6 @@ class RbString : public RbObject {
         void                        setValue(const std::string& x) { value = x; }       //!< Set value
 
     private:
-        std::string&                getValueRef(void) { return value; }                 //!< Get value reference
 
         std::string                 value;                                              //!< Value member
 };

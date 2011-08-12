@@ -29,12 +29,15 @@ class VectorString;
 class Func_exp :  public RbFunction {
     
 public:
+    Func_exp(void);                                                                         //!< default constructor
+    Func_exp(const Func_exp &x);                                                            //!< copy constructor
+    
     // Basic utility functions
     Func_exp*                   clone(void) const;                                          //!< Clone the object
     const VectorString&         getClass(void) const;                                       //!< Get class vector
     
     // Regular functions
-    DAGNode*                    execute(void);                                              //!< Execute function
+    RbLanguageObject*           execute(void);                                              //!< Execute function
     const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
     const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
     

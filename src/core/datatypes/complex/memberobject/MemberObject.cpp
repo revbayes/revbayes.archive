@@ -17,58 +17,46 @@
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "Frame.h"
 #include "Integer.h"
 #include "MemberFunction.h"
-#include "MemberNode.h"
 #include "MemberObject.h"
-#include "MemberSlot.h"
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbNames.h"
-#include "VectorIndex.h"
 #include "VectorString.h"
 #include "VariableNode.h"
 
 
 /** Constructor: we set member variables here from member rules */
-MemberObject::MemberObject(const MemberRules& memberRules) : RbComplex(), members() {
+MemberObject::MemberObject(const MemberRules& memberRules) : RbLanguageObject() {
 
     /* Fill member table (frame) based on member rules */
     for ( MemberRules::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
-
-        members.push_back( (*i)->getArgLabel(), new MemberSlot( *i ) );
+        // creare variable slots with name and type
+        members.addVariable( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() );
     }
 }
 
 
-/** Get clone with constant values (evaluate all member variables and replace with constants) */
-MemberObject* MemberObject::cloneAsConstant( void ) const {
-
-    MemberObject* temp = clone();
-
-    for ( size_t i = 0; i < temp->members.size(); i++ ) {
+/** Copy constructor */
+MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
     
-        RbObject* constValue = temp->members[i].getValue()->cloneAsConstant();
-        temp->members[i].setReferenceFlag( false );
-        temp->setValue( temp->members[i].getName(), constValue );
-    }
-
-    return temp;
+    // copy the members
+    members = MemberEnvironment(m.members);
 }
 
 
 /** Convert to type: throw an error */
-RbObject* MemberObject::convertTo(const std::string& type, size_t dim) const {
+RbLanguageObject* MemberObject::convertTo(const std::string& type) const {
 
     std::ostringstream msg;
-    msg << "Type conversion of " << getTypeSpec() << " to " << TypeSpec(type, dim) << " not supported";
+    msg << "Type conversion of " << getTypeSpec() << " to " << TypeSpec(type) << " not supported";
     throw RbException(msg);
 }
 
 
 /** Execute member method: delegate to method table. */
-DAGNode* MemberObject::executeMethod(const std::string& name, const std::vector<Argument>& args) {
+RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std::vector<Argument*>& args) {
 
     return getMethods().executeFunction(name, args);
 }
@@ -77,7 +65,7 @@ DAGNode* MemberObject::executeMethod(const std::string& name, const std::vector<
 /** Map member method call to internal function call. This is used as an alternative mechanism to providing a complete
  *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
  *  is used without the appropriate mapping to internal function calls being present. */
-DAGNode* MemberObject::executeOperation(const std::string& name, ArgumentFrame& args) {
+RbLanguageObject* MemberObject::executeOperation(const std::string& name, Environment& args) {
 
     throw RbException( "No mapping from member method " + name + " to internal function call provided" );
 }
@@ -86,68 +74,8 @@ DAGNode* MemberObject::executeOperation(const std::string& name, ArgumentFrame& 
 /** Get class vector describing type of object */
 const VectorString& MemberObject::getClass(void) const {
 
-    static VectorString rbClass = VectorString(MemberObject_name) + RbComplex::getClass();
+    static VectorString rbClass = VectorString(MemberObject_name) + RbLanguageObject::getClass();
     return rbClass;
-}
-
-
-/**
- * Recursive getElement. We are responsible for finding element
- * index[0] using our index operator. If there are more indices
- * in the index array, we delegate the job to the element
- * after removing index[0] from the index array.
- */
-DAGNode* MemberObject::getElement( VectorIndex& index ) {
-    
-    if ( index.size() == 0 )
-        throw RbException( "Unexpected call to getElement with empty index" );
-    
-    if ( supportsIndex() ) {
-
-        const RbObject* elemIndex = index[0];
-
-        if ( elemIndex->isType( Integer_name ) ) {
-            
-            int k = static_cast<const Integer*>( elemIndex )->getValue();
-            index.pop_front();
-            if ( k < 0 )
-                throw RbException( "Object of type " + getType() + " does not support emty indices" );
-            else
-                return getElement( k )->getElement( index );
-        }
-        else {
-            
-            std::string s = static_cast<const RbString*>( elemIndex )->getValue();
-            index.pop_front();
-            return getElement( s )->getElement( index );
-        }
-    }
-    else
-        throw RbException( "Object does not support indexing" );
-}
-
-
-/** Get element from size_t (Natural) index */
-DAGNode* MemberObject::getElement( size_t i ) {
-    
-    throw RbException( "Object does not support integer (" + Natural_name + ") indexing" );
-}
-
-
-/** Get element from string index */
-DAGNode* MemberObject::getElement( std::string& s ) {
-    
-    return getElement( getElementIndex( s ) );
-}
-
-
-/** Return element index if string indexing is supported */
-size_t MemberObject::getElementIndex( std::string& s ) const {
-
-    if ( supportsIndex() )
-        throw RbException( "Object does not support string indexing" );
-    else
-        throw RbException( "Object does not support indexing" );
 }
 
 
@@ -175,23 +103,23 @@ const MethodTable& MemberObject::getMethods(void) const {
 
 
 /** Get const value of a member variable */
-const RbObject* MemberObject::getValue(const std::string& name) const {
+const RbLanguageObject* MemberObject::getMemberValue(const std::string& name) const {
 
     return members.getValue(name);
 }
 
 
 /** Get a member variable */
-const DAGNode* MemberObject::getVariable(const std::string& name) const {
+const DAGNode* MemberObject::getMemberDagNode(const std::string& name) const {
 
-    return members.getVariable(name);
+    return members.getDagNode(name);
 }
 
 
 /** Get a member variable (non-const, for derived classes) */
-DAGNode* MemberObject::getVariable(const std::string& name) {
+DAGNode* MemberObject::getMemberDagNodePtr(const std::string& name) {
 
-    return const_cast<DAGNode*>(members.getVariable(name));
+    return members.getDagNodePtr(name);
 }
 
 /** Does this object have a member called "name" */
@@ -203,17 +131,12 @@ bool MemberObject::hasMember(std::string const &name) const {
 /** Is the object constant? */
 bool MemberObject::isConstant( void ) const {
 
-    for ( size_t i = 0; i < members.size(); i++ ) {
-        if ( !members[i].getValue()->isConstant() )
-            return false;
-    }
-
     return true;
 }
 
 
 /** Is convertible to type and dim? Default is false for member objects; override if you want to support type conversion */
-bool MemberObject::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
+bool MemberObject::isConvertibleTo(const std::string& type, bool once) const {
 
 	return false;
 }
@@ -221,14 +144,16 @@ bool MemberObject::isConvertibleTo(const std::string& type, size_t dim, bool onc
 
 /** Print value for user */
 void MemberObject::printValue(std::ostream& o) const {
+    
+    o << "Printing members of MemberObject ...." << std::endl;
 
     for ( size_t i = 0; i < members.size(); i++ ) {
 
-        o << "." << members[i].getName() << std::endl;
-        if ( members[i].getValue() == NULL)
+        o << "." << members.getName(i) << std::endl;
+        if ( members[members.getName(i)].getValue() == NULL)
             o << "NULL";
         else
-            members[i].getValue()->printValue(o);
+            members[members.getName(i)].getValue()->printValue(o);
         o << std::endl << std::endl;
     }
 }
@@ -245,87 +170,18 @@ std::string MemberObject::richInfo(void) const {
 }
 
 
-/**
- * Recursive setElement. We are responsible for setting the element
- * if there is one index. Otherwise, we find index[0] using
- * our index operator, and delegate the job to that element
- * after removing index[0] from the index array.
- */
-void MemberObject::setElement( VectorIndex& index, DAGNode* var, bool convert ) {
-
-    if ( index.size() == 0 )
-        throw RbException( "Unexpected call to setElement with empty index" );
+/** Set a member DAG node */
+void MemberObject::setMemberDagNode(const std::string& name, DAGNode* var) {
     
-    if ( !supportsIndex() )
-        throw RbException( "Object of type " + getType() + " does not support indexing" );
-
-    if ( supportsIndex() ) {
-        
-        const RbObject* elemIndex = index[0];
-        index.pop_front();
-        
-        if ( elemIndex->isType( Integer_name ) ) {
-            
-            int k = static_cast<const Integer*>( elemIndex )->getValue();
-            if ( k < 0 )
-                throw RbException( "Object of type " + getType() + " does not support emty indices" );
-            
-            if ( index.size() == 0 )
-                setElement( k, var, convert );
-            else
-                getElement( k )->setElement( index, var, convert );
-
-            return;
-        }
-        else {
-            
-            std::string s = static_cast<const RbString*>( elemIndex )->getValue();
-
-            if ( index.size() == 0 )
-                setElement( s, var, convert );
-            else
-                getElement( s )->setElement( index, var, convert );
-            
-            return;
-        }
-    }
-}
-
-
-/** Set indexed element */
-void MemberObject::setElement( size_t index, DAGNode* var, bool convert ) {
-
-    if ( supportsIndex() )
-        throw RbException( "Bug: Object type " + getType() + " does not have setElement implemented. Please report to the RevBayes Development Core Team" );
-    else
-        throw RbException( "Object of type " + getType() + " does not support indexing" );
-}
-
-
-/** Set string indexed element  */
-void MemberObject::setElement( std::string& s, DAGNode* var, bool convert ) {
-    
-    setElement( getElementIndex( s ), var, convert );
-}
-
-
-/** Set value of a member variable */
-void MemberObject::setValue(const std::string& name, RbObject* val) {
-
-    members[name].setValue(val);
+    members[name].getVariable()->setDagNode(var);
 }
 
 
 /** Set a member variable */
-void MemberObject::setVariable(const std::string& name, DAGNode* var) {
+void MemberObject::setMemberVariable(const std::string& name, Variable* var) {
 
     members[name].setVariable(var);
 }
 
 
-/** Wrap value into a variable */
-DAGNode* MemberObject::wrapIntoVariable( void ) {
-    
-    return new MemberNode( this );
-}
 

@@ -33,25 +33,24 @@ class VectorString;
 class SyntaxConstant : public SyntaxElement {
 
     public:
-                        SyntaxConstant(RbObject* val);              //!< Constructor from value
-                        SyntaxConstant(const SyntaxConstant& sc);   //!< Copy constructor
-	    virtual        ~SyntaxConstant();                           //!< Destructor deletes value
+                            SyntaxConstant(RbLanguageObject* val);                  //!< Constructor from value
+                            SyntaxConstant(const SyntaxConstant& sc);               //!< Copy constructor
+	    virtual            ~SyntaxConstant();                                       //!< Destructor deletes value
 
         // Assignment operator
-        SyntaxConstant& operator=(const SyntaxConstant& x);         //!< Assignment operator
+        SyntaxConstant&     operator=(const SyntaxConstant& x);                     //!< Assignment operator
 
         // Basic utility functions
-        std::string     briefInfo(void) const;                      //!< Brief info about object
-        SyntaxConstant* clone(void) const;                          //!< Clone object
-        void            print(std::ostream& o) const;               //!< Print info about object
+        std::string         briefInfo(void) const;                                  //!< Brief info about object
+        SyntaxConstant*     clone(void) const;                                      //!< Clone object
+        void                print(std::ostream& o) const;                           //!< Print info about object
 
         // Regular functions
-        DAGNode*        getDAGNodeExpr(VariableFrame* frame) const; //!< Convert to DAG node expression
-        DAGNode*        getValue(VariableFrame* frame) const;       //!< Get semantic value
-        bool            isConstExpr(void) const { return true; }    //!< Is subtree constant expr?
+        Variable*           getContentAsVariable(Environment* env) const;           //!< Get semantic value
+        bool                isConstExpression(void) const { return true; }          //!< Is subtree constant expr?
 
     protected:
-        RbObject*       value;                                      //!< The constant value
+        RbLanguageObject*   value;                                                  //!< The constant value
 };
 
 #endif

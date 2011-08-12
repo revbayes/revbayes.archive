@@ -39,11 +39,11 @@ Func_ln* Func_ln::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_ln::execute( void ) {
+RbLanguageObject* Func_ln::execute( void ) {
     
     const Real* x = static_cast<const Real*>( args[0].getValue() );
     
-    return ( new Real( log(x->getValue()) ) )->wrapIntoVariable();
+    return ( new Real( log(x->getValue()) ) );
 }
 
 

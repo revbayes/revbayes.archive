@@ -18,16 +18,13 @@
 
 #include "Func_tiprobs.h"
 #include "List.h"
-#include "MemberNode.h"
 #include "RateMatrix.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "RealPos.h"
-#include "ReferenceRule.h"
 #include "TransitionProbabilityMatrix.h"
 #include "UserInterface.h"
-#include "ValueContainer.h"
 #include "ValueRule.h"
 #include "VectorReal.h"
 #include "VectorString.h"
@@ -44,14 +41,14 @@ Func_tiprobs* Func_tiprobs::clone(void) const {
 
 
 /** Execute function */
-DAGNode* Func_tiprobs::execute(void) {
+RbLanguageObject* Func_tiprobs::execute(void) {
 
     // get the information from the arguments for reading the file
     const RateMatrix* q = static_cast<const RateMatrix*>( args[0].getValue() );
     const RealPos*    t = static_cast<const RealPos*>(    args[1].getValue() );
         
     // initialize the number of states
-    const size_t nStates = q->getNumStates();
+    const size_t nStates = q->getNumberOfStates();
     
     // check that the number of states isn't 1
     if ( nStates < 2 )
@@ -68,7 +65,7 @@ DAGNode* Func_tiprobs::execute(void) {
     q->calculateTransitionProbabilities( t->getValue(), *m );
     
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return m->wrapIntoVariable();
+    return m;
 }
 
 
@@ -80,7 +77,7 @@ const ArgumentRules& Func_tiprobs::getArgumentRules(void) const {
     
     if (!rulesSet) 
         {
-        argumentRules.push_back( new ReferenceRule( "q", RateMatrix_name ) );
+        argumentRules.push_back( new ValueRule( "q", RateMatrix_name ) );
         argumentRules.push_back( new ValueRule( "t", RealPos_name    ) );
         rulesSet = true;
         }

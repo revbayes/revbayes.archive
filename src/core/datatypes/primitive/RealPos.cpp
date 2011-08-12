@@ -49,6 +49,17 @@ RealPos::RealPos( unsigned int x ) : Real( x ) {
 }
 
 
+/** Get brief info about object */
+std::string RealPos::briefInfo( void ) const {
+    
+	std::ostringstream o;
+    o << "+Real(";
+    printValue( o );
+	o << ")";
+    
+    return o.str();
+}
+
 /** Clone object */
 RealPos* RealPos::clone( void ) const {
 

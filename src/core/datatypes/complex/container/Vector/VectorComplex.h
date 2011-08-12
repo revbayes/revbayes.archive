@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-12-04, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -58,7 +58,6 @@ class VectorComplex : public Vector {
         void                               setValue(const std::vector<std::complex<double> >& x);      //!< Set the value
 
     protected:
-        RbObject*                          getDefaultElement(void) const { return new Complex(); }     //!< Get default element for empty slots
 
 };
 

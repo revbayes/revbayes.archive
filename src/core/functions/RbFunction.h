@@ -26,7 +26,8 @@
 #include <vector>
 
 #include "Argument.h"
-#include "ArgumentFrame.h"
+#include "Environment.h"
+#include "RbInternal.h"
 
 class ArgumentRule;
 class DAGNode;
@@ -39,7 +40,7 @@ typedef std::vector<ArgumentRule*> ArgumentRules;
 /**
  * This is the interface and abstract base class for functions in
  * RevBayes. Function instances are put in the function table in the
- * relevant frame (user workspace or base environment) if they are
+ * relevant Environment (user workspace or base environment) if they are
  * global. If they are member functions of user-defined type, they
  * are instead associated with the function table of the approprioate
  * class in the class table of the user workspace.
@@ -53,12 +54,11 @@ typedef std::vector<ArgumentRule*> ArgumentRules;
  * arguments do not match.
  *
  */
-class RbFunction :  public RbObject {
-
-    friend class                                FunctionNode;                                                                       //!< Give FunctionNode direct access to function frame
+class RbFunction :  public RbInternal {
 
     public:
         virtual                                ~RbFunction(void) {}                                                                 //!< Destructor
+                                                RbFunction(const RbFunction &x);                                                    //!< Copy constuctor
 
         // Basic utility functions you have to override
         virtual RbFunction*                     clone(void) const = 0;                                                              //!< Clone object
@@ -72,25 +72,27 @@ class RbFunction :  public RbObject {
     	void                                    printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
 
         // RbFunction functions you have to override
-        virtual DAGNode*                        execute(void) = 0;                                                                  //!< Execute function @Fredrik: Why do functions return DAGNode* and RbObject*? (Sebastian)
+        virtual RbLanguageObject*               execute(void) = 0;                                                                  //!< Execute function
         virtual const ArgumentRules&            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec                  getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // RbFunction function you may want to override
-        virtual bool                            processArguments(const std::vector<Argument>&    passedArgs,
+        virtual bool                            processArguments(const std::vector<Argument*>&   passedArgs,
                                                                  bool                            evaluateOnce,
                                                                  VectorInteger*                  matchScore=NULL);                  //!< Process args, return a match score if pointer is not null
+        virtual bool                            addAsChildOfArguments(void) { return true; }                                        //!< Should we add the node containing this function as a child of its parameters (arguments)? False in cases such as constructor functions and true in cases like math functions
         virtual bool                            throws(void) { return false; }                                                      //!< Does the function throw exceptions?
+    
 
         // RbFunction functions you should not override
-        void                                    clearArgs(void);                                                                    //!< Clear argument frame "args"
-        const ArgumentFrame&                    getArgs(void) const { return args; }                                                //!< Get processed arguments in argument frame "args"
+        void                                    clearArguments(void);                                                               //!< Clear argument Environment "args"
+        const Environment&                      getArguments(void) const { return args; }                                           //!< Get processed arguments in argument Environment "args"
 
 	protected:
                                                 RbFunction(void);                                                                   //!< Basic constructor
 
         // Member variables
-        ArgumentFrame                           args;                                                                               //!< Frame for passed arguments
+        Environment                             args;                                                                               //!< Environment for passed arguments
         bool                                    argsProcessed;                                                                      //!< Are arguments processed?
 };
 

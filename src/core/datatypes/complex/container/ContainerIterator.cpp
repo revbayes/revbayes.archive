@@ -20,40 +20,30 @@
 
 
 /** Constructor from start value and length in each dimension */
-ContainerIterator::ContainerIterator(const VectorInteger& index, const VectorInteger& len) {
+ContainerIterator::ContainerIterator(size_t index, size_t len) {
 
-    if (len.size() == 0 || index.size() == 0)
+    if (len == 0 || index == 0)
         throw RbException("Container index with missing length");
 
-    if (len.size() != index.size())
-        throw RbException("Index does not fit dimensions");
-
-
-    for (size_t i=0; i<len.size(); i++) {
-        if (len[i] <= 0)
-            throw (RbException("Container index with nonpositive length"));
-        push_back(index[i]);
-        length.push_back(len[i]);
-    }
 }
 
 
 /** Overloaded operator++ (prefix) (We add ints with base 10 so we can go on to infinity) */
 ContainerIterator& ContainerIterator::operator++() {
 
-    std::vector<int>::reverse_iterator i, j;
-    for (i=rbegin(), j=length.rbegin(); i!=rend(); i++, j++) {
-        (*i)++;
-        if ((*i) < (*j))
-            break;
-        (*i) = 0;
-    }
-    /* Add in numbers ad infinitum */
-    if (i == rend()) {
-        insert(begin(), 1);
-        if (j == length.rend())
-            length.insert(length.begin(), 10);
-    }
+//    std::vector<int>::reverse_iterator i, j;
+//    for (i=rbegin(), j=length.rbegin(); i!=rend(); i++, j++) {
+//        (*i)++;
+//        if ((*i) < (*j))
+//            break;
+//        (*i) = 0;
+//    }
+//    /* Add in numbers ad infinitum */
+//    if (i == rend()) {
+//        insert(begin(), 1);
+//        if (j == length.rend())
+//            length.insert(length.begin(), 10);
+//    }
     return (*this);
 }
 
@@ -70,20 +60,20 @@ ContainerIterator ContainerIterator::operator++(int dummy) {
 /** Overloaded operator-- (prefix) */
 ContainerIterator& ContainerIterator::operator--() {
 
-    std::vector<int>::reverse_iterator i, j;
-    for (i=rbegin(), j=length.rbegin(); i!=rend(); i++, j++) {
-        (*i)--;
-        if ((*i) >= 0)
-            break;
-        else
-            (*i) = (*j) - 1;
-    }
-    /* Take away numbers until empty */
-    if (i == rend() && size() > 0) {
-        pop_back();
-        for (i=rbegin(); i!=rend(); i++)
-            (*i) = 0;
-    }
+//    std::vector<int>::reverse_iterator i, j;
+//    for (i=rbegin(), j=length.rbegin(); i!=rend(); i++, j++) {
+//        (*i)--;
+//        if ((*i) >= 0)
+//            break;
+//        else
+//            (*i) = (*j) - 1;
+//    }
+//    /* Take away numbers until empty */
+//    if (i == rend() && size() > 0) {
+//        pop_back();
+//        for (i=rbegin(); i!=rend(); i++)
+//            (*i) = 0;
+//    }
     return (*this);
 }
 
@@ -100,18 +90,18 @@ ContainerIterator ContainerIterator::operator--(int dummy) {
 /** Overloaded operator== */
 bool ContainerIterator::operator==(const ContainerIterator& x) const {
 
-    if (size() != x.size())
-        return false;
-
-    std::vector<int>::const_iterator i, j;
-    for (i=length.begin(), j=x.length.begin(); i!=length.end(); i++, j++) {
-        if ((*i) != (*j))
-            return false;
-    }
-    for (i=begin(), j=x.begin(); i!=end(); i++, j++) {
-        if ((*i) != (*j))
-            return false;
-    }
+//    if (size() != x.size())
+//        return false;
+//
+//    std::vector<int>::const_iterator i, j;
+//    for (i=length.begin(), j=x.length.begin(); i!=length.end(); i++, j++) {
+//        if ((*i) != (*j))
+//            return false;
+//    }
+//    for (i=begin(), j=x.begin(); i!=end(); i++, j++) {
+//        if ((*i) != (*j))
+//            return false;
+//    }
     return true;
 }
 
@@ -119,16 +109,16 @@ bool ContainerIterator::operator==(const ContainerIterator& x) const {
 /** Overloaded operator< (smaller length is always smaller if unequal) */
 bool ContainerIterator::operator<(const ContainerIterator& x) const {
 
-    if (size() < x.size())
-        return true;
-    else if (size() > x.size())
-        return false;
-    
-    std::vector<int>::const_iterator i, j;
-    for (i=begin(), j=length.begin(); i!=end(); i++, j++) {
-        if ((*i) < (*j))
-            return true;
-    }
+//    if (size() < x.size())
+//        return true;
+//    else if (size() > x.size())
+//        return false;
+//    
+//    std::vector<int>::const_iterator i, j;
+//    for (i=begin(), j=length.begin(); i!=end(); i++, j++) {
+//        if ((*i) < (*j))
+//            return true;
+//    }
     return false;
 }
 

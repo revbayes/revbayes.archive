@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-12-04, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -46,9 +46,10 @@ class VectorInteger : public Vector {
         
         // Basic utility functions
         VectorInteger*              clone(void) const;                                              //!< Clone object
+        RbLanguageObject*           convertTo(const std::string& type) const;                       //!< Convert to type
         const VectorString&         getClass(void) const;                                           //!< Get class
+        bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
         std::string                 richInfo(void) const;                                           //!< Complete info about object
-        std::string                 toIndexString(void) const;                                      //!< Convert to an element or subcontainer index string ([1][2], [][3] etc)
 
         // Vector functions, including STL-like functions
         std::vector<int>            getValue(void) const;                                           //!< Get value as STL int vector
@@ -56,9 +57,6 @@ class VectorInteger : public Vector {
         void                        push_front(int x);                                              //!< Add element in front
         void                        setValue(const VectorInteger& x);                               //!< Set the value
         void                        setValue(const std::vector<int>& x);                            //!< Set the value
-
-    protected:
-        RbObject*                   getDefaultElement(void) const { return new Integer(); }         //!< Get default element for empty slots
 
 };
 

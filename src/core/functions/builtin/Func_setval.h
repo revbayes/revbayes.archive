@@ -3,7 +3,7 @@
  * This file contains the declaration of Func_unclamp, which
  * is used to unclamp a stochastic node.
  *
- * @brief Declaration of Func_unclamp
+ * @brief Declaration of Func_setval
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -30,13 +30,14 @@ class Func_setval :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func_setval*                clone(void) const;                      //!< Clone the object
-        const VectorString&         getClass(void) const;                   //!< Get class vector
+        Func_setval*                clone(void) const;                                  //!< Clone the object
+        const VectorString&         getClass(void) const;                               //!< Get class vector
 
         // Regular functions
-        DAGNode*                    execute(void);                          //!< Execute operation
-        const ArgumentRules&        getArgumentRules(void) const;           //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;              //!< Get type of return value
+        bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
+        RbLanguageObject*           execute(void);                                      //!< Execute operation
+        const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
+        const TypeSpec              getReturnType(void) const;                          //!< Get type of return value
 
 };
 

@@ -42,21 +42,21 @@ class StochasticNode : public VariableNode {
         // Basic utility functions
         StochasticNode*         clone(void) const;                                                  //!< Clone the stochastic node
 
-        const VectorString&     getDAGClass(void) const;                                            //!< Get DAG node class vector
-        size_t                  getDim(void) const { return valueDim; }                             //!< Get dim (0 for scalar, 1 for vector, etc)
-        const RbObject*         getStoredValue(void);                                               //!< Get stored value (non-const fxn because of delayed evaluation)
-        const RbObject*         getValue(void);                                                     //!< Get value (non-const fxn because of delayed evaluation)
+        const VectorString&     getClass(void) const;                                               //!< Get DAG node class vector
+        const RbLanguageObject* getStoredValue(void);                                               //!< Get stored value (non-const fxn because of delayed evaluation)
+        const RbLanguageObject* getValue(void);                                                     //!< Get value (non-const fxn because of delayed evaluation)
+        RbLanguageObject*       getValuePtr(void);                                                  //!< Get value pointer (non-const fxn because of delayed evaluation)
         void                    printStruct(std::ostream& o) const;                                 //!< Print struct for user
         void                    printValue(std::ostream& o);                                        //!< Print value for user  (non-const fxn because of delayed evaluation)
         std::string             richInfo(void) const;                                               //!< Complete info about object
 
         // StochasticNode functions
         double                  calculateLnProbability(void);                                       //!< Calculate log conditional probability
-        void                    clamp(RbObject* observedVal);                                       //!< Clamp the node with an observed value
+        void                    clamp(RbLanguageObject* observedVal);                               //!< Clamp the node with an observed value
         const Distribution*     getDistribution(void) const { return distribution; }                //!< Get distribution
         double                  getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
         bool                    isClamped(void) const { return clamped; }                           //!< Is the node clamped?
-        void                    setValue(RbObject* value, std::set<StochasticNode*>& affected);     //!< Set value but do not clamp; get affected nodes
+        void                    setValue(RbLanguageObject* value, std::set<StochasticNode*>& affected);     //!< Set value but do not clamp; get affected nodes
         void                    unclamp(void);                                                      //!< Unclamp the node
         
         // DAG functions
@@ -69,15 +69,11 @@ class StochasticNode : public VariableNode {
         void                    swapParentNode(DAGNode* oldP, DAGNode* newP);                       //!< Swap a parent node
         void                    touchAffected(void) {}                                              //!< Tell affected nodes value is reset
 
-        // Move function
-        MoveSchedule*           getDefaultMoves(void);                                              //!< Get default moves
-
     protected:
         // Help function
         virtual bool            areDistributionParamsTouched() const;                               //!< Are any distribution params touched? Important in calculating prob ratio
 
         // Member variables
-        size_t                  valueDim;                                                           //!< Dimensions of value
         bool                    clamped;                                                            //!< Is the node clamped with data?
         Distribution*           distribution;                                                       //!< Distribution (density functions, random draw function)
         double                  lnProb;                                                             //!< Current log probability

@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-12-04, version 1.0
- * @extends RbComplex
+ * @extends Container
  *
  * $Id$
  */
@@ -25,7 +25,39 @@
 
 /** Set type of elements */
 Vector::Vector(const std::string& elemType)
-    : ValueContainer(TypeSpec(elemType, 1)) {
+    : Container(TypeSpec(elemType)) {
+}
+
+/** Assignment operator; make sure we get independent elements */
+Vector& Vector::operator=( const Vector& x ) {
+    
+    if ( this != &x ) {
+        
+        // First assign using parent assignment operator. This will test to make sure the containers
+        // are of the same type, and throw an error if they are not. By calling it before we destroy
+        // our own elements, we can make sure that an assignment error leaves us intact, which it should
+        Container::operator=( x );
+        
+        for ( std::vector<RbLanguageObject*>::iterator i = elements.begin(); i != elements.end(); i++ )
+            delete ( *i );
+        elements.clear();
+        
+        for ( std::vector<RbLanguageObject*>::const_iterator i = x.elements.begin(); i != x.elements.end(); i++ )
+            elements.push_back( (*i)->clone() );
+    }
+    
+    return ( *this );
+}
+
+/** Clear contents of value container and make length 0 in all dimensions */
+void Vector::clear( void ) {
+    
+    for ( std::vector<RbLanguageObject*>::iterator i = elements.begin(); i != elements.end(); i++ ) {
+        delete ( *i );
+    }
+    elements.clear();
+    
+    length = 0;
 }
 
 
@@ -36,13 +68,35 @@ const VectorString& Vector::getClass(void) const {
 	return rbClass;
 }
 
+/** Get element */
+RbLanguageObject* Vector::getElement(const size_t index) {
+    
+    return elements[index];
+}
+
+
+/** Print value for user */
+void Vector::printValue( std::ostream& o ) const {
+    
+    o << "[ ";
+    for ( std::vector<RbLanguageObject*>::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
+        if ( i != elements.begin() )
+            o << ", ";
+        if ( (*i) == NULL )
+            o << "NULL";
+        else
+            (*i)->printValue(o);
+    }
+    o <<  " ]";
+    
+}
 
 /** Pop element off of front of vector, updating length in process */
 void Vector::pop_front(void) {
 
     delete elements.front();
     elements.erase(elements.begin());
-    length[0]--;
+    length--;
 }
 
 
@@ -51,7 +105,7 @@ void Vector::pop_back(void) {
 
     delete elements.back();
     elements.pop_back();
-    length[0]--;
+    length--;
 }
 
 
@@ -62,7 +116,15 @@ void Vector::resize( size_t n ) {
         throw RbException( "Invalid attempt to shrink vector" );
 
     for ( size_t i = elements.size(); i < n; i++ )
-        elements.push_back( getDefaultElement() );
-    length[0] = elements.size();
+        elements.push_back( NULL );
+    length = elements.size();
+}
+
+/** Set element */
+void Vector::setElement(const size_t index, RbLanguageObject *elem) {
+    if (index >= length) {
+        throw RbException("Cannot set element in Vector outside the current range.");
+    }
+    elements.insert(elements.begin()+index, elem);
 }
 

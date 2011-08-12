@@ -55,12 +55,12 @@ int Parser::execute(SyntaxElement *root) const {
 #	endif
 
     // Declare a variable for the result
-    DAGNode *result;
+    Variable *result;
     
     //! Execute syntax tree
     try {
         PRINTF("Parser getting the semantic value of the syntax tree...\n");
-        result = root->getValue(&Workspace::userWorkspace());
+        result = root->getContentAsVariable(&Workspace::userWorkspace());
     }
     catch(RbException& rbException) {
 
@@ -97,16 +97,19 @@ int Parser::execute(SyntaxElement *root) const {
     }
 
     // Print result if the root is not an assign expression
-    if (result != NULL && !root->isType(SyntaxAssignExpr_name)) {
+    if (result != NULL && result->getDagNodePtr() != NULL && !root->isType(SyntaxAssignExpr_name)) {
         std::ostringstream msg;
-        result->printValue(msg);
+        result->getDagNodePtr()->printValue(msg);
         RBOUT( msg.str() );
     }
 
     // Delete syntax tree and result
-    if ( result != NULL && result->numRefs() == 0 )
-        delete result;
-    delete root;
+    if ( result != NULL ) {
+        if (result->isUnreferenced()) {
+            delete result;
+        }
+    }
+//    delete root;
 
     // Return success
     return 0;

@@ -21,32 +21,25 @@
 
 
 /** Construct rule based on default value; use "" for no label. */
-ValueRule::ValueRule( const std::string& argName, RbObject* defVal )
-    : ArgumentRule( argName, defVal ) {
+ValueRule::ValueRule( const std::string& argName, RbLanguageObject* defVal ) : ArgumentRule( argName, defVal ) {
 }
 
 
 /** Construct rule without default value; use "" for no label. */
-ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp )
-    : ArgumentRule( argName, argTypeSp ) {
+ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp ) : ArgumentRule( argName, argTypeSp ) {
 
-    argSlot.setReferenceFlag( false );
 }
 
 
 /** Construct rule with default value. We rely on workspace to check the provided type specification. */
-ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp, RbObject* defValue )
-    : ArgumentRule( argName, argTypeSp, defValue ) {
+ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp, RbLanguageObject* defValue ) : ArgumentRule( argName, argTypeSp, defValue ) {
 
-    argSlot.setReferenceFlag( false );
 }
 
 
 /** Construct rule with default reference or value variable. */
-ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable )
-    : ArgumentRule( argName, argTypeSp, defVariable ) {
+ValueRule::ValueRule( const std::string& argName, const TypeSpec& argTypeSp, DAGNode* defVariable ) : ArgumentRule( argName, argTypeSp, defVariable ) {
 
-    argSlot.setReferenceFlag( false );
 }
 
 

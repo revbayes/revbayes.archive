@@ -18,6 +18,7 @@
 #define ConstructorFunction_H
 
 #include "RbFunction.h"
+#include "MemberObject.h"
 
 #include <map>
 #include <set>
@@ -25,26 +26,27 @@
 #include <vector>
 
 class DAGNode;
-class MemberObject;
 class VectorString;
 
 class ConstructorFunction :  public RbFunction {
 
     public:
-                                    ConstructorFunction(MemberObject* obj);     //!< Object constructor
+                                    ConstructorFunction(MemberObject* obj);                                         //!< Object constructor
 
         // Basic utility functions
-        ConstructorFunction*        clone(void) const;                          //!< Clone the object
-    	const VectorString&         getClass(void) const;                       //!< Get class vector
+        ConstructorFunction*        clone(void) const;                                                              //!< Clone the object
+    	const VectorString&         getClass(void) const;                                                           //!< Get class vector
 
         // Regular functions
-        DAGNode*                    execute(void);                              //!< Execute function
-        const ArgumentRules&        getArgumentRules(void) const;               //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                  //!< Get type of return value
+        bool                        addAsChildOfArguments(void) { return false; }                                   //!< We do not wish that a constructor functions is added as a child of the arguments.
+        RbLanguageObject*           execute(void);                                                                  //!< Execute function
+        const ArgumentRules&        getArgumentRules(void) const;                                                   //!< Get argument rules
+        const TypeSpec              getReturnType(void) const;                                                      //!< Get type of return value
+        const std::string&          getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
 
 	protected:
-        ArgumentRules               argRules;                                   //!< Member rules converted to reference rules
-        MemberObject*               templateObject;                             //!< The template object
+        ArgumentRules               argRules;                                                                       //!< Member rules converted to reference rules
+        MemberObject*               templateObject;                                                                 //!< The template object
 };
 
 #endif

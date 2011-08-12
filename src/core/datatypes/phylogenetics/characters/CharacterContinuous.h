@@ -46,7 +46,7 @@ class CharacterContinuous : public Character {
         const double                    getValue(void) const { return mean; }                //!< Get the continuous observation
         void                            setValue(const double x) { mean = x; }               //!< Set the continuous observation
         const double                    getVariance(void) const { return variance; }         //!< Get the continuous observation
-        bool                            isMissAmbig(void) const { return false; }            //!< Is the character missing or ambiguous
+        bool                            isMissingOrAmbiguous(void) const { return false; }   //!< Is the character missing or ambiguous
         void                            setVariance(const double x) { variance = x; }        //!< Set the continuous observation
 
     private:

@@ -33,18 +33,19 @@
 
 
 /** Constructor from value */
-ConstantNode::ConstantNode( RbObject* val ) : DAGNode( val ) {
+ConstantNode::ConstantNode( RbLanguageObject* val ) : DAGNode( val ) {
 
-    if ( val->getDim() > 0 )
-        throw RbException( "Invalid attempt to create ConstantNode with container value" );
 }
 
 
 /** Constructor from value class */
 ConstantNode::ConstantNode( const std::string& valType ) : DAGNode( valType ) {
 
-    if ( Workspace::userWorkspace().isXOfTypeY( valType, Container_name ) )
-        throw RbException( "Invalid attempt to create ConstantNode with container value" );
+}
+
+/** Copy constructor */
+ConstantNode::ConstantNode( const ConstantNode &x ) : DAGNode( x ) {
+    
 }
 
 
@@ -67,7 +68,8 @@ ConstantNode* ConstantNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNod
 
     /* Make sure the children clone themselves */
     for( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
-        (*i)->cloneDAG( newNodes );
+        VariableNode *child = *i;
+        child->cloneDAG( newNodes );
     }
  
     return copy;
@@ -75,9 +77,9 @@ ConstantNode* ConstantNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNod
 
 
 /** Get class vector describing type of DAG node */
-const VectorString& ConstantNode::getDAGClass() const {
+const VectorString& ConstantNode::getClass() const {
 
-    static VectorString rbClass = VectorString( ConstantNode_name ) + DAGNode::getDAGClass();
+    static VectorString rbClass = VectorString( ConstantNode_name ) + DAGNode::getClass();
     return rbClass;
 }
 
@@ -95,14 +97,9 @@ void ConstantNode::printValue( std::ostream& o ) {
 /** Print struct for user */
 void ConstantNode::printStruct(std::ostream &o) const {
 
-    o << "_DAGClass     = " << getDAGClass() << std::endl;
-    o << "_valueType    = " << valueType << std::endl;
-    o << "_dim          = " << getDim() << std::endl;
+    o << "_Class        = " << getClass() << std::endl;
+    o << "_valueType    = " << getValueType() << std::endl;
     o << "_value        = " << value->briefInfo() << std::endl;
-
-    o << "_parents      = ";
-    printParents(o);
-    o << std::endl;
 
     o << "_children     = ";
     printChildren(o);

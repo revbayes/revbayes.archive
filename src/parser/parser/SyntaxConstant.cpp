@@ -16,29 +16,34 @@
 #include <iostream>
 
 #include "ConstantNode.h"
-#include "RbObject.h"
+#include "RbLanguageObject.h"
 #include "SyntaxConstant.h"
-#include "VariableFrame.h"
 
 
 /** Construct from value */
-SyntaxConstant::SyntaxConstant(RbObject* val) : SyntaxElement(), value(val) {
+SyntaxConstant::SyntaxConstant(RbLanguageObject* val) : SyntaxElement(), value(val) {
 }
 
 
 /** Deep copy constructor */
 SyntaxConstant::SyntaxConstant(const SyntaxConstant& x) : SyntaxElement(x), value(NULL) {
 
-    if (value != NULL)
+    if (value != NULL) {
         value = (x.value->clone());
+        value->retain();
+    }
 }
 
 
 /** Destructor deletes value */
 SyntaxConstant::~SyntaxConstant(void) {
     
-    if (value != NULL)
-        delete value;
+    if (value != NULL) {
+        value->release();
+        if (value->isUnreferenced()) {
+            delete value;
+        }
+    }
 }
 
 
@@ -50,12 +55,17 @@ SyntaxConstant& SyntaxConstant::operator=(const SyntaxConstant& x) {
         SyntaxElement::operator=(x);
         
         if (value != NULL) {
-            delete value;
+            value->release();
+            if (value->isUnreferenced()) {
+                delete value;
+            }
             value = NULL;
         }
 
-        if (x.value != NULL)
+        if (x.value != NULL) {
             value = x.value->clone();
+            value->retain();
+        }
     }
 
     return (*this);
@@ -76,21 +86,14 @@ SyntaxConstant* SyntaxConstant::clone (void) const {
 }
 
 
-/** Convert element to DAG node expression */
-DAGNode* SyntaxConstant::getDAGNodeExpr(VariableFrame* frame) const {
-
-    return getValue(frame);
-}
-
-
 /** Get semantic value of element */
-DAGNode* SyntaxConstant::getValue(VariableFrame* frame) const {
+Variable* SyntaxConstant::getContentAsVariable(Environment* env) const {
 
     // We return a clone in case this function is called repeatedly. The ConstantNode manages the clone.
     if (value == NULL)
-        return new ConstantNode(NULL);
+        return new Variable(new ConstantNode(NULL));
     else
-        return new ConstantNode(value->clone());
+        return new Variable(new ConstantNode(value));
 }
 
 

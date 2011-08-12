@@ -17,14 +17,13 @@
  */
 
 #include "ConstantNode.h"
-#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "DistributionContinuous.h"
 #include "MemberFunction.h"
-#include "MemberNode.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "ReferenceRule.h"
+#include "Real.h"
+#include "RbConstants.h"
 #include "RbNames.h"
 #include "ValueRule.h"
 #include "VectorString.h"
@@ -39,17 +38,17 @@ DistributionContinuous::DistributionContinuous( const MemberRules& memberRules )
 
 
 /** Map direct method calls to internal class methods. */
-DAGNode* DistributionContinuous::executeOperation( const std::string& name, ArgumentFrame& args ) {
+RbLanguageObject* DistributionContinuous::executeOperation( const std::string& name, Environment& args ) {
 
     if ( name == "cdf" ) {
 
-        return ( new RealPos( cdf( args[1].getValue() ) ) )->wrapIntoVariable();
+        return ( new RealPos( cdf( args[1].getValue() ) ) );
     }
     else if ( name == "quantile" ) {
 
-        RbObject* quant = quantile( static_cast<const Real*>( args[1].getValue() )->getValue() );
+        RbLanguageObject* quant = quantile( static_cast<const Real*>( args[1].getValue() )->getValue() );
 
-        return quant->wrapIntoVariable();
+        return quant;
     }
 
     return Distribution::executeOperation( name, args );
@@ -65,16 +64,16 @@ const VectorString& DistributionContinuous::getClass( void ) const {
 
 
 /** Get max value of distribution */
-const RbObject* DistributionContinuous::getMax( void ) const {
+const RbLanguageObject* DistributionContinuous::getMax( void ) const {
 
-    throw RbException( "DistributionContinuous getMax not implemented" );
+    return new Real(RbConstants::Double::max);
 }
 
 
 /** Get min value of distribution */
-const RbObject* DistributionContinuous::getMin( void ) const {
-
-    throw RbException( "DistributionContinuous getMin not implemented" );
+const RbLanguageObject* DistributionContinuous::getMin( void ) const {
+    
+    return new Real(RbConstants::Double::min);
 }
 
 
@@ -88,10 +87,10 @@ const MethodTable& DistributionContinuous::getMethods( void ) const {
 
     if ( !methodsSet ) {
 
-        cdfArgRules.push_back     ( new ReferenceRule( "",  MemberObject_name ) );
+        cdfArgRules.push_back     ( new ValueRule( "",  MemberObject_name ) );
         cdfArgRules.push_back     ( new ValueRule    ( "q", RealPos_name      ) );
 
-        quantileArgRules.push_back( new ReferenceRule( "",  MemberObject_name ) );
+        quantileArgRules.push_back( new ValueRule( "",  MemberObject_name ) );
         quantileArgRules.push_back( new ValueRule    ( "p", RealPos_name      ) );
 
         methods.addFunction( "cdf",      new MemberFunction( Real_name, cdfArgRules      ) );

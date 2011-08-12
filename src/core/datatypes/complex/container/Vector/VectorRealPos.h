@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-12-04, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -46,9 +46,11 @@ class VectorRealPos : public Vector {
         bool                        operator==(const VectorRealPos& x) const;                       //!< Equals comparison
         bool                        operator!=(const VectorRealPos& x) const;                       //!< Not equals comparison
         
-        // Basic utility functions, pure virtual in RbComplex and implemented here
+        // Basic utility functions, pure virtual in MemberObject and implemented here
         VectorRealPos*              clone(void) const;                                              //!< Clone object
+        RbLanguageObject*           convertTo(const std::string& type) const;                       //!< Convert to type
         const VectorString&         getClass(void) const;                                           //!< Get class vector
+        bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
         void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
         std::string                 richInfo(void) const;                                           //!< Complete info about object
 
@@ -63,7 +65,7 @@ class VectorRealPos : public Vector {
         void                        setValue(const VectorRealPos& x);                               //!< Set the value using VectorRealPos
 
     protected:
-        RbObject*                   getDefaultElement(void) const { return new RealPos(); }          //!< Get default element for empty slots
+//        RbObject*                   getDefaultElement(void) const { return new RealPos(); }          //!< Get default element for empty slots
 
 };
 

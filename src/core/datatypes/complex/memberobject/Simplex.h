@@ -16,14 +16,11 @@
 #ifndef Simplex_H
 #define Simplex_H
 
-#include "MemberObject.h"
+#include "VectorRealPos.h"
 
 #include <ostream>
 #include <string>
 #include <vector>
-
-class VectorReal;
-class VectorRealPos;
 
 
 /**
@@ -41,39 +38,36 @@ class VectorRealPos;
  * is also implemented to give the RevBayes source code access to element
  * values, but not references.
  */
-class Simplex : public MemberObject {
+class Simplex : public VectorRealPos {
 
     public:
-                                Simplex(const size_t n = 2);                                        //!< Simplex of length (size) n
-                                Simplex(const std::vector<double>& x);                              //!< Simplex from double vector
-                                Simplex(const VectorRealPos& x);                                    //!< Simplex from positive real vector
-
-        // Overloaded operators
-        double                  operator[](size_t i) const;                                         //!< Index op giving copy - no element mod allowed
-
-        const MemberRules&      getMemberRules(void) const;                                         //!< Get member rules
-
+                                    Simplex(const size_t n = 2);                                //!< Simplex of length (size) n
+                                    Simplex(const std::vector<double>& x);                      //!< Simplex from double vector
+                                    Simplex(const VectorRealPos& x);                            //!< Simplex from positive real vector
+    
+        double                      operator[](size_t i);                                       //!< Index op
+        const double&               operator[](size_t i) const;                                 //!< Const index op
+        bool                        operator==(const VectorReal& x) const;                      //!< Equals comparison
+        bool                        operator!=(const VectorReal& x) const;                      //!< Not equals comparison
+    
         // Basic utility functions
-        Simplex*                clone(void) const;                                                  //!< Clone object
-        const VectorString&     getClass(void) const;                                               //!< Get class
-        void                    printValue(std::ostream& o) const;                                  //!< Print value for user
-        std::string             richInfo(void) const;                                               //!< Complete info about object
-
-        // Subscript access functions
-        DAGNode*                getElement(VectorInteger& index) const;                             //!< Return subscript[](index) element
-        size_t                  getElementsSize(void) const { return value.size(); }                //!< Number of subscript elements
-        bool                    supportsIndex(void) { return true; }                                //!< We support subscripting @Fredrik: Instead of having subscripts, shouldn't a simplex be just a container (or vector)? (Sebastian)
-
-        // Simplex functions
-        void                    setValue(const VectorReal& x);                                      //!< Set value from VectorReal & rescale
-        void                    setValue(const VectorRealPos& x);                                   //!< Set value from VectorRealPos & rescale
-        void                    setValue(const std::vector<double>& x);                             //!< Set value from vector<double>, check & rescale
-        std::vector<double>     getValue(void) const { return value; }                              //!< Get value
+        Simplex*                    clone(void) const;                                          //!< Clone object
+        const VectorString&         getClass(void) const;                                       //!< Get class
+        void                        printValue(std::ostream& o) const;                          //!< Print value (for user)
+        std::string                 richInfo(void) const;                                       //!< Complete info about object
+    
+        // Vector functions, including STL-like functions
+        void                        push_back(double x);                                        //!< Append element to end
+        void                        push_front(double x);                                       //!< Add element in front
+        void                        setValue(const std::vector<double>& x);                         //!< Set the value using STL vector of int
+        void                        setValue(const VectorInteger& x);                               //!< Set the value using VectorInteger
+        void                        setValue(const VectorNatural& x);                               //!< Set the value using VectorNatural
+        void                        setValue(const VectorReal& x);                                  //!< Set the value using VectorReal
+        void                        setValue(const VectorRealPos& x);                               //!< Set the value using VectorRealPos
 
     private:
         void                    rescale(void);                                                      //!< Rescale the simplex
 
-        std::vector<double>     value;                                                              //!< Vector containing values
 };
 
 #endif

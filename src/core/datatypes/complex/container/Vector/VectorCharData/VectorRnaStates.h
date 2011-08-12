@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-12-04, version 1.0
- * @extends RbComplex
+ * @extends VectorCharacters
  *
  * $Id$
  */
@@ -52,7 +52,7 @@ class VectorRnaStates : public VectorCharacters {
         std::vector<RnaState*>      getStdVector(void) const;                                       //!< Get the value vector as a std::vector
 
     protected:
-        RbObject*                   getDefaultElement(void) const { return new VectorRnaStates(); } //!< Get default element for empty slots
+//        RbObject*                   getDefaultElement(void) const { return new VectorRnaStates(); } //!< Get default element for empty slots
 };
 
 #endif

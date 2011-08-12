@@ -16,16 +16,17 @@
  * $Id$
  */
 
-#include "ConstantValueRule.h"
 #include "DAGNode.h"
+#include "DagNodeContainer.h"
 #include "MemberFunction.h"
 #include "Move.h"
 #include "Natural.h"
 #include "RealPos.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "ReferenceRule.h"
+#include "StochasticNode.h"
 #include "ValueRule.h"
+#include "VariableNode.h"
 #include "VectorReal.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -35,17 +36,43 @@
 #include <vector>
 
 
-/** Constructor for parser use */
-Move::Move( const MemberRules& memberRules )
-    : MemberObject( memberRules ) {
+/** Constructor */
+Move::Move( const MemberRules& memberRules ) : ConstantMemberObject( memberRules ) {
 
     numAccepted = 0;
     numTried    = 0;
 }
 
+/** Copy Constructor. We use a shallow copy of the nodes */
+Move::Move(const Move &m) : ConstantMemberObject(m) {
+    
+    numTried    = m.numTried;
+    numAccepted = m.numAccepted;
+    
+    nodes       = m.nodes;
+    // retain all nodes
+    for (size_t i=0; i<nodes.size(); i++) {
+        nodes[i]->retain();
+    }
+}
+
+/** Destructor */
+Move::~Move() {
+    // release all nodes
+    for (size_t i=0; i<nodes.size(); i++) {
+        VariableNode *theNode = nodes[i];
+        if (theNode != NULL) {
+            theNode->release();
+            if (theNode->isUnreferenced())
+                delete theNode;
+        }
+    }
+    nodes.clear();
+}
+
 
 /** Map calls to member methods */
-DAGNode* Move::executeOperation(const std::string& name, ArgumentFrame& args) {
+RbLanguageObject* Move::executeOperation(const std::string& name, Environment& args) {
 
     static ArgumentRules acceptArgRules;
     static ArgumentRules acceptanceRatioArgRules;    
@@ -62,22 +89,23 @@ DAGNode* Move::executeOperation(const std::string& name, ArgumentFrame& args) {
     }
     else if ( name == "acceptanceRatio" ) {
 
-        return ( new Real( getAcceptanceRatio() ) )->wrapIntoVariable();
+        return ( new Real( getAcceptanceRatio() ) );
     }
     else if ( name == "numAccepted" ) {
 
-        return ( new Natural( numAccepted ) )->wrapIntoVariable();
+        return ( new Natural( numAccepted ) );
     }
     else if ( name == "numTried" ) {
 
-        return ( new Natural( numTried ) )->wrapIntoVariable();
+        return ( new Natural( numTried ) );
     }
     else if ( name == "propose" ) {
 
         VectorReal* temp = new VectorReal(2);
-        performMove( (*temp)[0], (*temp)[1] );
+        Real *tmp = new Real(performMove( (*temp)[0] ));
         
-        return temp->wrapIntoVariable();
+        // return the Hastings ratio
+        return tmp;
     }
     else if ( name == "reject" ) {
 
@@ -118,7 +146,7 @@ const MemberRules& Move::getMemberRules( void ) const {
 
     if (!rulesSet) 
 		{
-        memberRules.push_back(new ConstantValueRule( "weight"  , new RealPos(1.0) ) );
+        memberRules.push_back(new ValueRule( "weight"  , new RealPos(1.0) ) );
         rulesSet = true;
 		}
 
@@ -144,15 +172,6 @@ const MethodTable& Move::getMethods(void) const {
 
     if ( methodsSet == false ) 
         {
-        // Add 'this' reference used to distinguish between different instances
-        acceptArgRules.push_back         ( new ReferenceRule( "", Move_name ) );
-        acceptanceRatioArgRules.push_back( new ReferenceRule( "", Move_name ) );
-        numAcceptedArgRules.push_back    ( new ReferenceRule( "", Move_name ) );
-        numRejectedArgRules.push_back    ( new ReferenceRule( "", Move_name ) );
-        numTriedArgRules.push_back       ( new ReferenceRule( "", Move_name ) );
-        proposeArgRules.push_back        ( new ReferenceRule( "", Move_name ) );
-        rejectArgRules.push_back         ( new ReferenceRule( "", Move_name ) );
-        resetCountersArgRules.push_back  ( new ReferenceRule( "", Move_name ) );
         
         // Add functions
         methods.addFunction( "accept",          new MemberFunction( RbVoid_name,     acceptArgRules ) );
@@ -186,5 +205,89 @@ void Move::resetCounters(void) {
 
     numAccepted = 0;
     numTried    = 0;
+}
+
+/** Set member variable. We catch here setting of the stochastic nodes to add them to our internal vector */
+void Move::setMemberVariable(std::string const &name, Variable *var) {
+    
+    // test whether we want to set the variable 
+    if (name == "variable") {
+        // clear the nodes
+        for (size_t i=0; i<nodes.size(); i++) {
+            VariableNode *theNode = nodes[i];
+            if (theNode != NULL) {
+                theNode->release();
+                if (theNode->isUnreferenced()) {
+                    delete theNode;
+                }
+            }
+        }
+        nodes.clear();
+        
+        // test whether we want to set multiple variable
+        if (var->getValue()->isType(DagNodeContainer_name)) {
+            DagNodeContainer *container = dynamic_cast<DagNodeContainer*>(var->getDagNodePtr()->getValuePtr());
+            
+            // add all moves
+            for (size_t i=0; i<container->getLength(); i++) {
+                RbObject *theElement = container->getElement(i);
+                
+                // check if it is a stochastic node
+                if (theElement->isType(VariableNode_name)) {
+                    // cast to stochastic node
+                    VariableNode *theNode = dynamic_cast<VariableNode*>(theElement);
+                    
+                    // add
+                    nodes.push_back(theNode);
+                    
+                    //retain
+                    theNode->retain();
+                }
+                else {
+                    throw RbException("Cannot add non variable node to a move.");
+                }
+            }
+        }
+        else if (var->getDagNode()->isType(VariableNode_name)) {
+            // cast to stochastic node
+            VariableNode *theNode = dynamic_cast<VariableNode*>(var->getDagNodePtr());
+            
+            // add
+            nodes.push_back(theNode);
+            
+            //retain
+            theNode->retain();
+        }
+        else {
+            throw RbException("Cannot add non variable node to a move.");
+        }
+    }
+    
+    ConstantMemberObject::setMemberVariable(name, var);
+}
+
+
+void Move::replaceDagNodes(std::vector<VariableNode *> &n) {
+    
+    // release all nodes
+    for (size_t i=0; i<nodes.size(); i++) {
+        VariableNode *theNode = nodes[i];
+        if (theNode != NULL) {
+            theNode->release();
+            if (theNode->isUnreferenced())
+                delete theNode;
+        }
+    }
+    nodes.clear();
+    
+    // add all nodes
+    for (size_t i=0; i<n.size(); i++) {
+        VariableNode *theNode = n[i];
+        if (theNode != NULL) {
+            theNode->retain();
+            nodes.push_back(theNode);
+        }
+    }
+    
 }
 

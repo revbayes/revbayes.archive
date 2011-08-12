@@ -16,7 +16,7 @@
 #ifndef TransitionProbabilityMatrix_H
 #define TransitionProbabilityMatrix_H
 
-#include "MemberObject.h"
+#include "ConstantMemberObject.h"
 
 class ArgumentRule;
 class DAGNode;
@@ -26,7 +26,7 @@ class VectorString;
 
 
 
-class TransitionProbabilityMatrix : public MemberObject {
+class TransitionProbabilityMatrix : public ConstantMemberObject {
 
     public:
                                             TransitionProbabilityMatrix(void);                                 //!< Default constructor (never call this except from the workspace once)
@@ -47,7 +47,7 @@ class TransitionProbabilityMatrix : public MemberObject {
 
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                            //!< Get methods
-        DAGNode*                            executeOperation(const std::string& name, ArgumentFrame& args);                   //!< Map method call to internal functions
+        RbLanguageObject*                   executeOperation(const std::string& name, Environment& args);      //!< Map method call to internal functions
 
         // RateMatrix functions
         DAGNode*                            wrapIntoVariable(void); 

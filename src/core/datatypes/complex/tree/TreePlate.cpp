@@ -10,7 +10,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-12-04, version 1.0
- * @extends RbComplex
+ * @extends MemberObject
  *
  * $Id$
  */
@@ -18,15 +18,12 @@
 #include "ArgumentRule.h"
 #include "Boolean.h"
 #include "ConstantNode.h"
-#include "ContainerNode.h"
 #include "List.h"
 #include "MemberFunction.h"
-#include "MemberSlot.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbString.h"
-#include "ReferenceRule.h"
 #include "Topology.h"
 #include "TreePlate.h"
 #include "ValueRule.h"
@@ -35,23 +32,22 @@
 
 
 /* Default constructor */
-TreePlate::TreePlate(void) : MemberObject( getMemberRules() ) {
+TreePlate::TreePlate(void) : MutableMemberObject( getMemberRules() ) {
 
     orderingTopology = NULL;
     treePlateVariableTypeRule = new ValueRule( "", TypeSpec( List_name ) );
 }
 
 /* constructor */
-TreePlate::TreePlate(Topology* top) : MemberObject( getMemberRules() ) {
+TreePlate::TreePlate(Topology* top) : MutableMemberObject( getMemberRules() ) {
     
     orderingTopology = top;
-    setVariable("topology", top->wrapIntoVariable());
     treePlateVariableTypeRule = new ValueRule( "", TypeSpec( List_name ) );
 }
 
 
 /* Copy constructor */
-TreePlate::TreePlate(const TreePlate& t) : MemberObject( t ) {
+TreePlate::TreePlate(const TreePlate& t) : MutableMemberObject( t ) {
 
     if (t.orderingTopology != NULL)
         orderingTopology = t.orderingTopology->clone();
@@ -84,12 +80,12 @@ const VectorString& TreePlate::getClass(void) const {
 
 
 /* Map calls to member methods */
-DAGNode* TreePlate::executeOperation(const std::string& name, ArgumentFrame& args) {
+RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environment& args) {
     
     // special handling for adding a variable
     if (name == "addVariable") {
         // get the name of the variable
-        std::string varName = static_cast<const RbString*>( args[1].getValue() )->getValue();
+        std::string varName = static_cast<const RbString*>( args[0].getValue() )->getValue();
         
         // test whether this variable already exists
         if (hasMember(name)) {
@@ -97,7 +93,7 @@ DAGNode* TreePlate::executeOperation(const std::string& name, ArgumentFrame& arg
         }
         
         // get the replication parameter
-        bool repl = static_cast<const Boolean*>( args[3].getValue() )->getValue();
+        bool repl = static_cast<const Boolean*>( args[2].getValue() )->getValue();
         
         if (repl) {
             if (orderingTopology == NULL) {
@@ -109,27 +105,32 @@ DAGNode* TreePlate::executeOperation(const std::string& name, ArgumentFrame& arg
                 size_t nNodes = orderingTopology->getNumberOfNodes();
                 
                 // prepare the variable and slot for the variable
-                DAGNode* var = args[2].getReference();
+                DAGNode* var = args[1].getDagNodePtr();
                 ValueRule* varTypeRule = new ValueRule( "", var->getValueType() );
-                MemberSlot* slot = new MemberSlot( varTypeRule );
+                VariableSlot* slot = new VariableSlot(varName, RbObject_name );
                 for (int i=0; i<nNodes; i++) {
-                    members.push_back( varName, slot->clone() );
-                    members[ members.size() - 1 ].setVariable( var );
+ //                   members
+ //                   members.addVariable( varName, slot->clone() );
+ //                   members[ members.size() - 1 ].setVariable( var );
                 }
                 
                 delete slot;
             }
         } else {
-            DAGNode* var = args[2].getReference();
-            ValueRule* varTypeRule = new ValueRule( "", var->getValueType() );
-            MemberSlot* slot = new MemberSlot( varTypeRule );
-            members.push_back( varName, slot );
-            members[ members.size() - 1 ].setVariable( var );
+            DAGNode* var = args[1].getDagNodePtr();
+            
+            // Add an empty variable with type
+            members.addVariable( varName, RbObject_name );
+            
+            // set the variable
+            members[ varName ].getVariable()->setDagNode( var );
         }
         
+        return NULL;
     }
-
-    return MemberObject::executeOperation( name, args );
+    else {
+        return MemberObject::executeOperation( name, args );
+    }
 }
 
 
@@ -142,12 +143,9 @@ const MethodTable& TreePlate::getMethods(void) const {
 
     if ( methodsSet == false ) 
         {
-        // this must be here so the parser can distinguish between different instances of a tree plates
-//        addvariableArgRules.push_back(  new ReferenceRule( "", TreePlate_name ) );
-        addvariableArgRules.push_back(  new ReferenceRule( ""      , MemberObject_name ) );
             
         addvariableArgRules.push_back(  new ValueRule( "name"      , RbString_name  ) );
-        addvariableArgRules.push_back(  new ReferenceRule( ""      , RbObject_name ) );
+        addvariableArgRules.push_back(  new ValueRule( ""          , RbObject_name ) );
         addvariableArgRules.push_back(  new ValueRule( "replicate" , Boolean_name  ) );
         
         methods.addFunction("addVariable",  new MemberFunction(RbVoid_name, addvariableArgRules)  );
@@ -169,8 +167,8 @@ const MemberRules& TreePlate::getMemberRules(void) const {
 
     if (!rulesSet) 
     {
-        TypeSpec varType(Topology_name,0,true);
-        memberRules.push_back( new ReferenceRule( "topology" , varType ) );
+        TypeSpec varType(Topology_name);
+        memberRules.push_back( new ValueRule( "topology" , varType ) );
         
         rulesSet = true;
         }
@@ -199,12 +197,12 @@ std::string TreePlate::richInfo(void) const {
 }
 
 /** Catch setting of the topology variable */
-void TreePlate::setVariable(const std::string& name, DAGNode* var) {
+void TreePlate::setMemberVariable(const std::string& name, Variable* var) {
     
     if ( name == "topology" )
         orderingTopology = (Topology*)(var->getValue());
     
-    MemberObject::setVariable(name, var);
+    MemberObject::setMemberVariable(name, var);
 }
 
 

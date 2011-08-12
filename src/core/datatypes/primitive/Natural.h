@@ -46,10 +46,11 @@ class Natural : public Integer {
                             operator unsigned int(void) const { return value; }                     //!< Type conversion to unsigned int
 
         // Basic utility functions
+        std::string         briefInfo(void) const;                                                  //!< Brief info about the object
         Natural*            clone(void) const;                                                      //!< Clone object
-        RbObject*           convertTo(const std::string& type, size_t dim) const;                   //!< Convert to type and dim
+        RbLanguageObject*   convertTo(const std::string& type) const;                               //!< Convert to type and dim
         const VectorString& getClass(void) const;                                                   //!< Get class vector
-        bool                isConvertibleTo(const std::string& type, size_t dim, bool once) const;  //!< Is convertible to type and dim?
+        bool                isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type and dim?
         void                printValue(std::ostream& o) const;                                      //!< Print value (for user)
         std::string         richInfo(void) const;                                                   //!< Complete info about object
 

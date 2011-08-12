@@ -21,6 +21,7 @@
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
+#include "RbOptions.h"
 #include "VectorInteger.h"
 #include "VectorString.h"
 #include "VariableNode.h"
@@ -29,55 +30,51 @@
 
 
 /** Constructor */
-VariableNode::VariableNode( const std::string& valType )
-    : DAGNode( valType ), touched( false ), storedValue( NULL ) {
+VariableNode::VariableNode( const std::string& valType ) : DAGNode( valType ), touched( false ), storedValue( NULL ) {
+}
+
+/** Copy Constructor */
+VariableNode::VariableNode(const VariableNode &v) : DAGNode(v) {
+    touched = false;
+    storedValue = NULL;
 }
 
 
 /** Destructor */
 VariableNode::~VariableNode( void ) {
 
-    if ( numRefs() != 0 )
-        throw RbException( "Cannot delete VariableNode with references" );
-
-    if ( storedValue )
-        delete storedValue;
+    
+    if ( storedValue != NULL ) {
+        storedValue->release();
+        if (storedValue->isUnreferenced()) {
+            delete storedValue;
+        }
+    }
 
     /* Remove this node as a child node of parents and delete these if appropriate */
     for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ ) {
         (*i)->removeChildNode( this );
-        if ( (*i)->numRefs() == 0 )
+        (*i)->release();
+        if ((*i)->isUnreferenced()) {
             delete (*i);
+        }
     }
 }
 
+/** add a child node */
+void VariableNode::addParentNode(DAGNode *p) {
+    PRINTF("Adding parent with name \"%s\" to child with name \"%s\".\n",p->getName().c_str(),getName().c_str());
 
-/** Get class vector describing type of DAG node */
-const VectorString& VariableNode::getDAGClass() const {
+    // retain and add the parent
+    p->retain();
+    parents.insert(p);
+}
 
-    static VectorString rbClass = VectorString( VariableNode_name ) + DAGNode::getDAGClass();
+
+/** Get class vector describing type of variable DAG node */
+const VectorString& VariableNode::getClass() const {
+    
+    static VectorString rbClass = VectorString( VariableNode_name ) + DAGNode::getClass();
     return rbClass;
-}
-
-
-/** Get default monitors */
-std::vector<Monitor*> VariableNode::getDefaultMonitors( void ) {
-
-    std::vector<Monitor*>   monitors;
-    monitors.push_back( new Monitor( this, 100 ) );
-
-    return monitors;
-}
-
-
-/** Is it possible to change parent node oldNode to newNode? */
-bool VariableNode::isParentMutableTo( const DAGNode* oldNode, const DAGNode* newNode ) const {
-
-    // Find node among parents
-    if ( parents.find( const_cast<DAGNode*>( oldNode ) ) == parents.end() )
-        throw RbException( "Node is not a parent" );
-   
-    // If all parents are in variable slots, answer is yes (given that the parent node itself is mutable)
-    return true;
 }
 

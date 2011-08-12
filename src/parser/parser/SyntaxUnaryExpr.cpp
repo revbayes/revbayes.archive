@@ -14,12 +14,13 @@
  */
 
 #include "Argument.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
-#include "FunctionNode.h"
+#include "DeterministicNode.h"
+#include "Environment.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "SyntaxUnaryExpr.h"
-#include "VariableFrame.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -97,32 +98,20 @@ const VectorString& SyntaxUnaryExpr::getClass(void) const {
 
 
 /** Convert element to DAG node expression */
-DAGNode* SyntaxUnaryExpr::getDAGNodeExpr(VariableFrame* frame) const {
+Variable* SyntaxUnaryExpr::getContentAsVariable(Environment* env) const {
 
     // Package the argument
-    std::vector<Argument> arg;
-    arg.push_back(Argument("", expression->getDAGNodeExpr(frame)));
+    std::vector<Argument*> arg;
+    arg.push_back(new Argument("", expression->getContentAsVariable(env) ));
 
     // Find the function
     std::string funcName = "_" + opCode[operation];
     RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, arg);
 
     // Return new function node
-    return new FunctionNode(func);
+    return new Variable(new DeterministicNode(func));
 }
 
-
-/** Look up the function and calculate the value. The argument is a value argument, so it is safe to get its value. */
-DAGNode* SyntaxUnaryExpr::getValue(VariableFrame* frame) const {
-
-    // Package the argument
-    std::vector<Argument> arg;
-    arg.push_back(Argument("", expression->getValue(frame)));
-
-    // Execute function and return value
-    std::string funcName = "_" + opCode[operation];
-    return Workspace::globalWorkspace().executeFunction(funcName, arg);
-}
 
 
 /** Print info about the syntax element */

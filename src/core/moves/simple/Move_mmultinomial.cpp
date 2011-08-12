@@ -26,7 +26,6 @@
 #include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"
-#include "StochasticReferenceRule.h"
 #include "ValueRule.h"
 #include "VectorReal.h"
 #include "VectorString.h"
@@ -38,16 +37,6 @@
 /** Constructor for parser */
 Move_mmultinomial::Move_mmultinomial(void) : MoveSimple(getMemberRules()) {
 
-}
-
-
-/** Constructor for internal use */
-Move_mmultinomial::Move_mmultinomial(StochasticNode* node, double tuning, int nc, double weight) : MoveSimple(getMemberRules()) {
-
-    setVariable( "variable", node );
-    setValue(    "weight",   new RealPos(weight) );
-    setValue(    "tuning",   new RealPos(tuning));
-    setValue(    "num_cats", new Natural(nc));
 }
 
 
@@ -74,7 +63,7 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 
     if (!rulesSet) 
 		{
-        memberRules.push_back( new StochasticReferenceRule( "variable", TypeSpec( RealPos_name, 1 , true) ) );
+        memberRules.push_back( new ValueRule( "variable", TypeSpec( VectorRealPos_name ) ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
@@ -93,7 +82,7 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 /** Return the random variable type appropriate for the move */
 const TypeSpec Move_mmultinomial::getVariableType( void ) const {
 
-    return TypeSpec( RealPos_name, 1 );
+    return TypeSpec( RealPos_name );
 }
 
 
@@ -104,9 +93,10 @@ double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getReference() );
-    double                 alpha0  = static_cast<const RealPos*>( getValue("tuning")   )->getValue();
-    int                    k       = static_cast<const Integer*>( getValue("num_cats") )->getValue();
+//    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
+    StochasticNode        *nodePtr = NULL;
+    double                 alpha0  = static_cast<const RealPos*>( getMemberValue("tuning")   )->getValue();
+    int                    k       = static_cast<const Integer*>( getMemberValue("num_cats") )->getValue();
 
     const VectorReal*      valPtr  = static_cast<const VectorReal*>( nodePtr->getValue() );
 
@@ -216,7 +206,7 @@ double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
 		}
         
-    for ( size_t i = 0; i < valPtr->size(); i++ )
+    for ( size_t i = 0; i < valPtr->getLength(); i++ )
         newVal[i] *= sum;
 		
     nodePtr->setValue( new VectorReal( newVal ), affectedNodes );

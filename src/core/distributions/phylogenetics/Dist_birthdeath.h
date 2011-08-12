@@ -41,10 +41,9 @@ public:
     const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
     
     // Discrete distribution functions
-    Move*                       getDefaultMove(StochasticNode* node);                               //!< Get default move
     const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-    double                      lnPdf(const RbObject* value);                                       //!< Ln probability density
-    double                      pdf(const RbObject* value);                                         //!< Probability density
+    double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
+    double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
     VectorRealPos*              rv(void);                                                           //!< Generate random variable
     
 private:

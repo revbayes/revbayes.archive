@@ -35,7 +35,7 @@ class Func__sub :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-    	DAGNode*                    execute(void);                                              //!< Execute function
+    	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
@@ -43,7 +43,6 @@ class Func__sub :  public RbFunction {
 
 #endif
 
-#include "ContainerNode.h"
 #include "DAGNode.h"
 #include "Integer.h"
 #include "MatrixReal.h"
@@ -51,7 +50,6 @@ class Func__sub :  public RbFunction {
 #include "RbNames.h"
 #include "Real.h"
 #include "TypeSpec.h"
-#include "ValueContainer.h"
 #include "ValueRule.h"
 #include "VectorString.h"
 
@@ -66,13 +64,13 @@ Func__sub<firstValType, secondValType, retType>* Func__sub<firstValType, secondV
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename firstValType, typename secondValType, typename retType>
-DAGNode* Func__sub<firstValType,secondValType,retType>::execute( void ) {
+RbLanguageObject* Func__sub<firstValType,secondValType,retType>::execute( void ) {
 
     const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
     const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
     retType              diff = *val1 - *val2;
     
-    return diff.clone()->wrapIntoVariable();
+    return diff.clone();
 }
 
 

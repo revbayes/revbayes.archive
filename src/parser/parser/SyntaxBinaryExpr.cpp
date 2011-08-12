@@ -18,11 +18,12 @@
 #include <sstream>
 
 #include "Argument.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
-#include "FunctionNode.h"
+#include "DeterministicNode.h"
 #include "RbException.h"
+#include "RbNames.h"
 #include "SyntaxBinaryExpr.h"
-#include "VariableFrame.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
@@ -33,17 +34,19 @@ std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", 
 
 
 /** Construct from operator type and operands */
-SyntaxBinaryExpr::SyntaxBinaryExpr(operatorT op, SyntaxElement* lhs, SyntaxElement* rhs) 
-    : SyntaxElement(), leftOperand(lhs), rightOperand(rhs), operation(op) {
+SyntaxBinaryExpr::SyntaxBinaryExpr(operatorT op, SyntaxElement* lhs, SyntaxElement* rhs) : SyntaxElement(), leftOperand(lhs), rightOperand(rhs), operation(op) {
+    leftOperand->retain();
+    rightOperand->retain();
 }
 
 
 /** Deep copy constructor */
-SyntaxBinaryExpr::SyntaxBinaryExpr(const SyntaxBinaryExpr& x)
-    : SyntaxElement(x) {
+SyntaxBinaryExpr::SyntaxBinaryExpr(const SyntaxBinaryExpr& x) : SyntaxElement(x) {
 
     leftOperand  = x.leftOperand->clone();
+    leftOperand->retain();
     rightOperand = x.rightOperand->clone();
+    rightOperand->retain();
     operation    = x.operation;
 }
 
@@ -51,8 +54,21 @@ SyntaxBinaryExpr::SyntaxBinaryExpr(const SyntaxBinaryExpr& x)
 /** Destructor deletes operands */
 SyntaxBinaryExpr::~SyntaxBinaryExpr() {
     
-    delete leftOperand;
-    delete rightOperand;
+    // delete leftOperand;
+    if (leftOperand != NULL) {
+        leftOperand->release();
+        if (leftOperand->isUnreferenced()) {
+            delete leftOperand;
+        }
+    }
+    
+    //delete rightOperand;
+    if (rightOperand != NULL) {
+        rightOperand->release();
+        if (rightOperand->isUnreferenced()) {
+            delete rightOperand;
+        }
+    }
 }
 
 
@@ -60,14 +76,29 @@ SyntaxBinaryExpr::~SyntaxBinaryExpr() {
 SyntaxBinaryExpr& SyntaxBinaryExpr::operator=(const SyntaxBinaryExpr& x) {
 
     if (&x != this) {
-    
-        delete leftOperand;
-        delete rightOperand;
+        
+        // delete leftOperand;
+        if (leftOperand != NULL) {
+            leftOperand->release();
+            if (leftOperand->isUnreferenced()) {
+                delete leftOperand;
+            }
+        }
+        
+        //delete rightOperand;
+        if (rightOperand != NULL) {
+            rightOperand->release();
+            if (rightOperand->isUnreferenced()) {
+                delete rightOperand;
+            }
+        }
 
         SyntaxElement::operator=(x);
 
         leftOperand  = x.leftOperand->clone();
+        leftOperand->retain();
         rightOperand = x.rightOperand->clone();
+        rightOperand->retain();
         operation    = x.operation;
     }
 
@@ -92,39 +123,26 @@ SyntaxElement* SyntaxBinaryExpr::clone () const {
 }
 
 
-/** Convert element to DAG node */
-DAGNode* SyntaxBinaryExpr::getDAGNodeExpr(VariableFrame* frame) const {
-
-    // Package arguments
-    std::vector<Argument> args;
-    args.push_back(Argument("", leftOperand->getDAGNodeExpr(frame)));
-    args.push_back(Argument("", rightOperand->getDAGNodeExpr(frame)));
-
-    // Get function
-    std::string funcName = "_" + opCode[operation];
-    RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, args);
-
-    // Return new function node
-    return new FunctionNode(func);
-}
-
-
 /**
  * @brief Get semantic value
  *
  * We simply look up the function and calculate the value.
  *
  */
-DAGNode* SyntaxBinaryExpr::getValue(VariableFrame* frame) const {
+Variable* SyntaxBinaryExpr::getContentAsVariable(Environment* env) const {
 
     // Package the arguments
-    std::vector<Argument> args;
-    args.push_back(Argument("", leftOperand->getValue(frame)));
-    args.push_back(Argument("", rightOperand->getValue(frame)));
+    std::vector<Argument*> args;
+    DAGNode *left = leftOperand->getContentAsVariable(env)->getDagNodePtr();
+    args.push_back(new Argument("", left->getVariable() ));
+    DAGNode *right = rightOperand->getContentAsVariable(env)->getDagNodePtr();
+    args.push_back(new Argument("", right->getVariable() ));
 
-    // Execute function and return value
+    // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[operation];
-    return Workspace::globalWorkspace().executeFunction(funcName, args);
+    RbFunction *theFunction = Workspace::globalWorkspace().getFunction(funcName, args);
+    
+    return new Variable(new DeterministicNode( theFunction ));
 }
 
 

@@ -43,7 +43,7 @@ bool RbInternal::isType(const std::string& type) const {
 
     const VectorString& classVec = getClass();
 
-    for (size_t i=0; i<classVec.size(); i++) {
+    for (size_t i=0; i<classVec.getLength(); i++) {
         if (type == classVec[i])
             return true;
     }
@@ -51,18 +51,4 @@ bool RbInternal::isType(const std::string& type) const {
 	return false;
 }
 
-
-/** Print info about object simply by using richInfo function */
-void RbInternal::print(std::ostream& o) const {
-
-    o << richInfo() << std::endl;
-}
-
-
-/** Make sure we can print the value of the object easily */
-std::ostream& operator<<(std::ostream& o, const RbInternal& x) {
-
-    x.printValue(o);
-    return o;
-}
 

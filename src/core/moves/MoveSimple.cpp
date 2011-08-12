@@ -29,19 +29,27 @@
 MoveSimple::MoveSimple(const MemberRules& memberRules)
     : Move(memberRules) {
 
-    if ( !members.existsVariable("variable") )
-        throw RbException( "A simple move must have a member called 'variable'" );
+//    if ( !members.existsVariable("variable") )
+//        throw RbException( "A simple move must have a member called 'variable'" );
+}
+
+
+/** Copy constructor */
+MoveSimple::MoveSimple(const MoveSimple &ms) : Move(ms) {
+    
 }
 
 
 /** Accept the move: update statistics and call derived method */
 void MoveSimple::acceptMove(void) {
 
-    StochasticNode* nodePtr = static_cast<StochasticNode*>( members["variable"].getReference() );
+//    StochasticNode* nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
 
     accept();
     numAccepted++;
-    nodePtr->keep();
+    for (std::vector<VariableNode*>::iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        (*it)->keep();
+    }
 }
 
 
@@ -73,29 +81,29 @@ const MemberRules& MoveSimple::getMemberRules( void ) const {
 
 
 /** Perform the move */
-void MoveSimple::performMove(double& lnProbabilityRatio, double& lnHastingsRatio) {
+double MoveSimple::performMove(double& lnProbabilityRatio) {
 
-    StochasticNode* nodePtr = static_cast<StochasticNode*>( members["variable"].getReference() );
-//    DAGNode *var = members["variable"].getVariable(); 
-//    StochasticNode* nodePtr = static_cast<StochasticNode*>( var );
+    StochasticNode* nodePtr = (StochasticNode*) nodes[0];
     std::set<StochasticNode*> affectedNodes;
 
-    lnHastingsRatio    = perform(affectedNodes);
+    double lnHastingsRatio    = perform(affectedNodes);
     lnProbabilityRatio = nodePtr->getLnProbabilityRatio();
 
     for (std::set<StochasticNode*>::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); i++)
         lnProbabilityRatio += (*i)->getLnProbabilityRatio();
 
     numTried++;
+    
+    return lnHastingsRatio;
 }
 
 
 /** Reject the move */
 void MoveSimple::rejectMove(void) {
 
-    StochasticNode* nodePtr = static_cast<StochasticNode*>( members["variable"].getReference() );
-
     reject();
-    nodePtr->restore();
+    for (size_t i=0; i<nodes.size(); i++) {
+        ((StochasticNode*)nodes[i])->restore();
+    }
 }
 

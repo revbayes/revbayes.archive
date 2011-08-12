@@ -50,11 +50,8 @@ class SyntaxAssignExpr : public SyntaxElement {
         const VectorString&         getClass(void) const;                                               //!< Get class vector 
         void                        print(std::ostream& o) const;                                       //!< Print info about object
 
-        // Regular functions
-        DAGNode*                    getDAGNodeExpr(VariableFrame* frame) const;                         //!< Convert to DAG node expression
-        DAGNode*                    getValue(VariableFrame* frame) const;                               //!< Get semantic value
-        ContainerNode*              makeContainer(const VectorIndex& index, RbObject* elem) const;      //!< Make value container
-        ContainerNode*              makeContainer(const VectorIndex& index, DAGNode* elem) const;       //!< Make variable container
+    // Regular functions
+        Variable*                   getContentAsVariable(Environment* env) const;                       //!< Get semantic value
 
     protected:
         SyntaxVariable*             variable;                                                           //!< A lhs variable (or NULL)

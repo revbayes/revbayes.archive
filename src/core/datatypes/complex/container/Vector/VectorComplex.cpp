@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -40,7 +40,7 @@ VectorComplex::VectorComplex(void) : Vector(Complex_name) {
 VectorComplex::VectorComplex(const double x) : Vector(Complex_name) {
 
     elements.push_back(new Complex(x));
-    length[0] = 1;
+    length = 1;
 }
 
 
@@ -49,7 +49,7 @@ VectorComplex::VectorComplex(const size_t n, const double x) : Vector(Complex_na
 
     for (size_t i = 0; i < n; i++)
         elements.push_back(new Complex(x));
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -58,7 +58,7 @@ VectorComplex::VectorComplex(const std::vector<double>& x) : Vector(Complex_name
 
     for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++)
         elements.push_back(new Complex(*i));
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -67,16 +67,16 @@ VectorComplex::VectorComplex(const std::vector<std::complex<double> >& x) : Vect
 
     for (std::vector<std::complex<double> >::const_iterator i=x.begin(); i!=x.end(); i++)
         elements.push_back(new Complex(*i));
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
 /** Constructor from VectorComplex */
 VectorComplex::VectorComplex( const VectorComplex& x ) : Vector(Complex_name) {
 
-    for ( size_t i = 0; i < x.size(); i++ )
+    for ( size_t i = 0; i < x.getLength(); i++ )
         elements.push_back( new Complex( x[i] ) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -84,7 +84,7 @@ VectorComplex::VectorComplex(size_t n, std::complex<double> x) : Vector(Complex_
 
     for (size_t i = 0; i < n; i++)
         elements.push_back(new Complex(x));
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 /** Subscript operator */
@@ -93,7 +93,7 @@ std::complex<double>& VectorComplex::operator[](size_t i) {
     if (i >= int(elements.size()))
         throw RbException("Index out of bounds");
 
-    return static_cast<Complex*>(elements[i])->getValueRef();
+    return static_cast<Complex*>(elements[i])->getValueReference();
 }
 
 
@@ -102,14 +102,14 @@ const std::complex<double>& VectorComplex::operator[](size_t i) const {
 
     if (i >= int(elements.size()))
         throw RbException("Index out of bounds");
-    return static_cast<Complex*>(elements[i])->getValueRef();
+    return static_cast<Complex*>(elements[i])->getValueReference();
 }
 
 
 /** Equals comparison */
 bool VectorComplex::operator==(const VectorComplex& x) const {
 
-    if (size() != x.size())
+    if (getLength() != x.getLength())
         return false;
 
     for (size_t i=0; i<elements.size(); i++) {
@@ -147,7 +147,7 @@ const VectorString& VectorComplex::getClass(void) const {
 std::vector<std::complex<double> > VectorComplex::getValue(void) const {
 
     std::vector<std::complex<double> > temp;
-    for (size_t i=0; i<size(); i++)
+    for (size_t i=0; i<getLength(); i++)
         temp.push_back(operator[](i));
     return temp;
 }
@@ -162,7 +162,7 @@ void VectorComplex::printValue(std::ostream& o) const {
     o << "[ ";
     o << std::fixed;
     o << std::setprecision(1);
-    for (std::vector<RbObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) 
+    for (std::vector<RbLanguageObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) 
         {
         if (i != elements.begin())
             o << ", ";
@@ -179,7 +179,7 @@ void VectorComplex::printValue(std::ostream& o) const {
 void VectorComplex::push_back(std::complex<double> x) {
 
     elements.push_back(new Complex(x));
-    length[0]++;
+    length++;
 }
 
 
@@ -187,7 +187,7 @@ void VectorComplex::push_back(std::complex<double> x) {
 void VectorComplex::push_front(std::complex<double> x) {
 
     elements.insert(elements.begin(), new Complex(x));
-    length[0]++;
+    length++;
 }
 
 
@@ -206,7 +206,7 @@ void VectorComplex::setValue(const std::vector<std::complex<double> >& x) {
     clear();
     for (std::vector<std::complex<double> >::const_iterator i=x.begin(); i!=x.end(); i++) {   
         elements.push_back(new Complex(*i));
-        length[0]++;
+        length++;
     }
 }   
 
@@ -215,10 +215,10 @@ void VectorComplex::setValue(const std::vector<std::complex<double> >& x) {
 void VectorComplex::setValue(const VectorComplex& x) {
 
     clear();
-    for (size_t i=0; i<x.size(); i++) 
+    for (size_t i=0; i<x.getLength(); i++) 
         {   
         elements.push_back(new Complex(x[i]));
-        length[0]++;
+        length++;
         }
 }   
 

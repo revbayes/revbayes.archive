@@ -30,7 +30,7 @@
 class CharacterMatrix;
 class Topology;
 
-class NclReader {
+class NclReader{
     
         friend class NxsBlock;
         

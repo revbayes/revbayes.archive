@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-08, version 1.0
- * @extends RbComplex
+ * @extends Vector
  *
  * $Id$
  */
@@ -37,7 +37,7 @@ VectorString::VectorString(const std::string& x)
     : Vector(RbString_name) {
 
     elements.push_back(new RbString(x));
-    length[0] = 1;
+    length = 1;
 }
 
 
@@ -46,7 +46,7 @@ VectorString::VectorString(const std::vector<std::string>& x) : Vector(RbString_
 
     for (std::vector<std::string>::const_iterator i=x.begin(); i!=x.end(); i++)
         elements.push_back(new RbString(*i));
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -56,7 +56,7 @@ std::string& VectorString::operator[](size_t i) {
     if (i >= elements.size())
         throw RbException("Index out of bounds");
 
-    return static_cast<RbString*>(elements[i])->getValueRef();
+    return static_cast<RbString*>(elements[i])->getValueReference();
 }
 
 
@@ -65,14 +65,14 @@ const std::string& VectorString::operator[](size_t i) const {
 
     if (i > elements.size())
         throw RbException("Index out of bounds");
-    return static_cast<RbString*>(elements[i])->getValueRef();
+    return static_cast<RbString*>(elements[i])->getValueReference();
 }
 
 
 /** Equals comparison */
 bool VectorString::operator==(const VectorString& x) const {
 
-    if (size() != x.size())
+    if (getLength() != x.getLength())
         return false;
 
     for (size_t i=0; i<elements.size(); i++) {
@@ -159,7 +159,7 @@ std::vector<std::string> VectorString::getStdVector(void) const {
 void VectorString::push_back(std::string x) {
 
     elements.push_back(new RbString(x));
-    length[0]++;
+    length++;
 }
 
 

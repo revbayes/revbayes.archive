@@ -30,7 +30,7 @@ class Func_source :  public RbFunction {
     	const VectorString&     getClass(void) const;               //!< Get class vector
 
         // Func_source functions
-    	DAGNode*                execute(void);                      //!< Execute function
+    	RbLanguageObject*       execute(void);                      //!< Execute function
         const ArgumentRules&    getArgumentRules(void) const;       //!< Get argument rules
         const TypeSpec          getReturnType(void) const;          //!< Get type of return val
         bool                    throws(void) { return true; }       //!< Function may throw exceptions

@@ -22,7 +22,6 @@
 #include "RbNames.h"
 #include "RealPos.h"
 #include "StochasticNode.h"
-#include "StochasticReferenceRule.h"
 #include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -31,18 +30,13 @@
 
 
 /** Constructor for parser */
-Move_mslide::Move_mslide( void )
-    : MoveSimple( getMemberRules() ) {
+Move_mslide::Move_mslide( void ) : MoveSimple( getMemberRules() ) {
 }
 
 
-/** Constructor for internal use */
-Move_mslide::Move_mslide( StochasticNode* node, double delta, double weight )
-    : MoveSimple( getMemberRules() ) {
-
-    setVariable( "variable", node );
-    setValue(    "weight",   new RealPos(weight) );
-    setValue(    "delta",    new RealPos( delta  ) );
+/** Copy constructor */
+Move_mslide::Move_mslide(const Move_mslide &ms) : MoveSimple(ms) {
+    
 }
 
 
@@ -69,8 +63,8 @@ const MemberRules& Move_mslide::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
         
-        TypeSpec varType(Real_name,0,true);
-        memberRules.push_back( new StochasticReferenceRule( "variable", varType ) );
+        TypeSpec varType( Real_name );
+        memberRules.push_back( new ValueRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
@@ -99,14 +93,14 @@ double Move_mslide::perform( std::set<StochasticNode*>& affectedNodes ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-    StochasticNode*         nodePtr =    static_cast<StochasticNode*>( members["variable"].getReference() );
-    const RealPos           delta   = *( static_cast<const RealPos*>( getValue("delta")   ) );
+    StochasticNode*         nodePtr =    static_cast<StochasticNode*>( nodes[0] );
+    const RealPos           delta   = *( static_cast<const RealPos*>( getMemberValue("delta")   ) );
 
-    const Real              curVal  = *( static_cast<const Real*                  >( nodePtr->getValue() ) );
+    double                  curVal  =  ( static_cast<const Real*                  >( nodePtr->getValue() ) )->getValue();
     const RbObject*         minPtr  =    static_cast<const DistributionContinuous*>( nodePtr->getDistribution() )->getMin();
     const RbObject*         maxPtr  =    static_cast<const DistributionContinuous*>( nodePtr->getDistribution() )->getMax();
-    const Real              minVal  = *( static_cast<const Real*                  >( minPtr ) );
-    const Real              maxVal  = *( static_cast<const Real*                  >( maxPtr ) );
+    double                  minVal  = ( static_cast<const Real*                  >( minPtr ) )->getValue();
+    double                  maxVal  = ( static_cast<const Real*                  >( maxPtr ) )->getValue();
 
     Real u      = rng->uniform01();
     Real newVal = curVal + ( delta * ( u - 0.5 ) );

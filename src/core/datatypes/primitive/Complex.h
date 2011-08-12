@@ -19,7 +19,8 @@
 #ifndef Complex_H
 #define Complex_H
 
-#include "RbObject.h"
+#include "RbLanguageObject.h"
+
 #include <complex>
 #include <ostream>
 #include <string>
@@ -28,10 +29,10 @@ class VectorString;
 
 
 
-class Complex : public RbObject {
+class Complex : public RbLanguageObject {
 
     public:
-        friend class                VectorComplex;                                                          //!< Give VecorReal direct access to value
+//        friend class                VectorComplex;                                                          //!< Give VecorReal direct access to value
 
                                     Complex(void);                                                          //!< Default constructor (0.0, 0.0)
                                     Complex(const Complex& c);                                              //!< Copy constructor
@@ -46,9 +47,10 @@ class Complex : public RbObject {
         
         // Basic utility functions
         virtual Complex*            clone(void) const;                                                      //!< Clone object
-        RbObject*                   convertTo(const std::string& type, size_t dim) const;                   //!< Convert to type and dim
+        RbLanguageObject*           convertTo(const std::string& type) const;                               //!< Convert to type and dim
         virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
-        bool                        isConvertibleTo(const std::string& type, size_t dim, bool once) const;  //!< Is convertible to type and dim?
+        std::complex<double>&       getValueReference(void) { return value; }                               //!< Get value reference
+        bool                        isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type and dim?
         void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
         virtual std::string         richInfo(void) const;                                                   //!< Complete info about object
 
@@ -57,7 +59,6 @@ class Complex : public RbObject {
         std::complex<double>        getValue(void) const { return value; }                                  //!< Get value
 
 	protected:
-        std::complex<double>&       getValueRef(void) { return value; }                                     //!< Get value reference
         std::complex<double>        value;                                                                  //!< Value member
 };
 

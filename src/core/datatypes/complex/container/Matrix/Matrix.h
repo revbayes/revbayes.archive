@@ -18,7 +18,7 @@
 #ifndef Matrix_H
 #define Matrix_H
 
-#include "ValueContainer.h"
+#include "Container.h"
 
 #include <iostream>
 #include <string>
@@ -42,7 +42,7 @@ class VectorInteger;
  * represent the values internally, these
  * functions are declared as abstract here.
  */
-class Matrix : public ValueContainer {
+class Matrix : public Container {
 
     public:
         virtual                        ~Matrix(void) {}                                                     //!< Virtual destructor
@@ -55,23 +55,26 @@ class Matrix : public ValueContainer {
 
         // Container functions you have to override to allow vector of vectors representation
         virtual void                    clear(void) = 0;                                                    //!< Clear
-        virtual void                    resize(const std::vector<size_t>& len) = 0;                         //!< Resize to new length vector (generic container version, can be mapped to function taking nrows and ncols)
-        virtual void                    setLength(const std::vector<size_t>& len) = 0;                      //!< Reorganize container (generic container version, can be mapped to function taking nrows and ncols)
-        virtual size_t                  size(void) const = 0;                                               //!< Get total number of elements
-        
-        // Matrix functions you do not have to override
-        size_t                          getNumCols(void) const { return length[1]; }                        //!< Get the number of columns in the matrix
-        size_t                          getNumRows(void) const { return length[0]; }                        //!< Get the number of rows in the matrix
-
-        // Matrix function you have to override
+        virtual Container*              getElement(size_t index) = 0;                                       //!< Get element or subcontainer
+        virtual RbLanguageObject*       getElement(size_t row, size_t col) = 0;                             //!< Get element or subcontainer
+        virtual void                    setElement(size_t index, RbLanguageObject* var) = 0;                //!< set element
+        virtual void                    setElement(size_t row, size_t col, RbLanguageObject* var) = 0;      //!< set element
+        virtual void                    resize(size_t rows) = 0;                                            //!< Resize to new length vector
+        virtual void                    resize(size_t rows, size_t cols) = 0;                               //!< Resize to new length vector
+        virtual size_t                  size(void) const = 0;                                               //!< Get number of rows
         virtual void                    transpose(void) = 0;                                                //!< Transpose matrix
+    
+        // Matrix functions you do not have to override
+        size_t                          getNumberOfColumns(void) const { return cols; }                     //!< Get the number of columns in the matrix
+        size_t                          getNumberOfRows(void) const { return rows; }                        //!< Get the number of rows in the matrix
 
     protected:
                                         Matrix(const std::string& elemType);                                //!< Set type of elements
+                                        Matrix(const std::string& elemType, const MemberRules& memberRules);//!< Set type of elements
 
-        // Parser help functions you have to override
-        virtual DAGNode*                getElement(const VectorInteger& index) = 0;                         //!< Get element or subcontainer for parser (generic container version, can be mapped to take row and col indices)
-        virtual void                    setElement(const VectorNatural& index, DAGNode* var) = 0;           //!< Allow parser to set element (generic container version, can be mapped to take row and col indices)
+    
+        size_t                          rows;
+        size_t                          cols;
 };
 
 #endif

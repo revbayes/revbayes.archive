@@ -31,6 +31,16 @@
 #include <cassert>
 #include <cmath>
 
+Func_exp::Func_exp(void) : RbFunction() {
+    
+}
+
+/** Copy constructor */
+Func_exp::Func_exp(const Func_exp &x) : RbFunction(x) {
+    
+}
+
+
 /** Clone object */
 Func_exp* Func_exp::clone( void ) const {
     
@@ -39,10 +49,10 @@ Func_exp* Func_exp::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_exp::execute( void ) {
+RbLanguageObject* Func_exp::execute( void ) {
     
     const Real* x = static_cast<const Real*>( args[0].getValue() );
-    return ( new Real( exp(x->getValue()) ) )->wrapIntoVariable();
+    return ( new Real( exp(x->getValue()) ) );
 }
 
 

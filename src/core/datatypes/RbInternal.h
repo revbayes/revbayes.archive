@@ -17,12 +17,14 @@
 #ifndef RbInternal_H
 #define RbInternal_H
 
+#include "RbObject.h"
+
 #include <ostream>
 #include <string>
 
 class VectorString;
 
-class RbInternal { // @Fredrik: When is this class actually derived? For instance a frame could inherit from it, but doesn't. (Sebastian)
+class RbInternal : public RbObject { 
 
     public:
 		virtual                    ~RbInternal(void) {}                     //! Virtual destructor
@@ -30,23 +32,14 @@ class RbInternal { // @Fredrik: When is this class actually derived? For instanc
         // Basic utility functions you have to override
         virtual RbInternal*         clone(void) const = 0;                  //!< Clone object
         virtual const VectorString& getClass(void) const;                   //!< Get class vector
-        virtual std::string         richInfo(void) const = 0;               //!< Complete info about object
-
-        // Basic utility functions you may want to override
-        virtual void                printValue(std::ostream& o) const {}    //!< Print value for user
 
         // Basic utility functions you do not have to override
         const std::string&          getType(void) const;                    //!< Get type
         bool                        isType(const std::string& type) const;  //!< Is the object of type?
-        void                        print(std::ostream& o) const;           //!< Print object
 
    protected:
 		                            RbInternal(void) {}                     //!< No objects of this class
 };
-
-
-/* Global functions using the class */
-std::ostream&   operator<<(std::ostream& o, const RbInternal& x);           //!< Overloaded output operator
 
 #endif
 

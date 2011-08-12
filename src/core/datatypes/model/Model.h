@@ -18,8 +18,7 @@
 #ifndef Model_H
 #define Model_H
 
-#include "MemberFrame.h"
-#include "MemberObject.h"
+#include "ConstantMemberObject.h"
 
 #include <ostream>
 #include <string>
@@ -27,37 +26,38 @@
 
 class ArgumentRule;
 class DAGNode;
+class StochasticNode;
 class VectorString;
 
-class Model : public MemberObject {
+class Model : public ConstantMemberObject {
 
     public:
-                                    Model(void);                                                                                            //!< Default constructor for a Model object
-                                    Model(const std::vector<DAGNode*>& sinkNodes);                                                          //!< Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. 
-                                    Model(const Model& x);                                                                                  //!< Copy constructor for a Model object.
+                                    Model(void);                                                //!< Default constructor for a Model object
+                                    Model(const std::vector<DAGNode*>& sinkNodes);              //!< Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. 
+                                    Model(const Model& x);                                      //!< Copy constructor for a Model object.
 
         // Assignment operator
-        Model&                      operator=(const Model& x);                                                                              //!< Assignment operator
+        Model&                      operator=(const Model& x);                                  //!< Assignment operator
 
         // Basic utility functions
-        Model*                      clone(void) const;                                                                                      //!< Make a copy (clone) of the Model.
-        const VectorString&         getClass(void) const;                                                                                   //!< Initialize the inheritance hierarchy for a Model object.
-        void                        printValue(std::ostream& o) const;                                                                      //!< Print the Model for the user as a list of the DAGNodes in the model graph.
-        std::string                 richInfo(void) const;                                                                                   //!< Complete info
-
+        Model*                      clone(void) const;                                          //!< Make a copy (clone) of the Model.
+        const VectorString&         getClass(void) const;                                       //!< Initialize the inheritance hierarchy for a Model object.
+        void                        printValue(std::ostream& o) const;                          //!< Print the Model for the user as a list of the DAGNodes in the model graph.
+        std::string                 richInfo(void) const;                                       //!< Complete info
+    
+        const MemberRules&          getMemberRules(void) const;                                 //!< Get member rules
+    
         // Model functions
-        std::vector<DAGNode*>&      getDAGNodes(void) { return dagNodes; }                                                                  //!< Return the DAGNodes in the model graph.
+        std::vector<VariableNode*>  getClonedDagNodes(std::vector<VariableNode*> &orgNodes) const;   //!< Get cloned nodes corresponding to originals
+        std::vector<DAGNode*>&      getDAGNodes(void) { return dagNodes; }                      //!< Return the DAGNodes in the model graph.
+        void                        setMemberVariable(const std::string& name, Variable* var);  //!< set a new member with name. catch setting of sinknode
 
-	protected:
-        // Help functions
-		void                        getExposedChildren(DAGNode* p, std::set<VariableNode*>& ec, std::vector<DAGNode*>& nodeList) const;     //!< Make a list of the children of a DAGNode (p) that are exposed to the user.
-		void                        getExposedDagNodes(std::vector<DAGNode*>& exposedDagNodes, bool exposeEverybody, bool usePlates) const; //!< Get a list of the DAGNodes that are exposed to the user.
-		void                        getExposedParents(DAGNode* p, std::set<DAGNode*>& ep, std::vector<DAGNode*>& nodeList) const;           //!< Make a list of the parents of a DAGNode (p) that are exposed to the user.
-		int                         getIndexForVector(const std::vector<DAGNode*>& v, const DAGNode* p) const;                              //!< Finds position of a DAGNode in a vector of DAGNodes
+	private:
+        int                         findIndexInVector(const std::vector<DAGNode*>& v, const DAGNode* p) const;
 
-        // Member variables
-        std::vector<DAGNode*>       dagNodes;                                                                                               //!< Direct access to DAGNodes in the model graph
-        MemberFrame                 dagNodeMembers;                                                                                         //!< Maintain dag node variables here, hidden from user
+    // Member variables
+    std::vector<DAGNode*>           dagNodes;                
+    std::map<const DAGNode*, DAGNode*>  nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
 };
 
 #endif

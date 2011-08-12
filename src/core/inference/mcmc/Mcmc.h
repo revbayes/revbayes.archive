@@ -20,7 +20,7 @@
 #ifndef Mcmc_H
 #define Mcmc_H
 
-#include "MemberObject.h"
+#include "ConstantMemberObject.h"
 
 #include <set>
 #include <string>
@@ -30,29 +30,30 @@ class DAGNode;
 class Model;
 class VectorString;
 
-class Mcmc: public MemberObject {
+class Mcmc: public ConstantMemberObject {
 
     public:
-								    Mcmc(void);                                                                        //!< Parser constructor
-									Mcmc(Model* model, int ngen, int printfreq, int samplefreq, std::string filename); //!< Internal constructor
-	    virtual                    ~Mcmc(void) {}                                                                      //!< Destructor
+    Mcmc(void);                                                                                                 //!< Default constructor
+    Mcmc(const Mcmc &x);                                                                                        //!< Copy Constructor
+    virtual                    ~Mcmc(void) {}                                                                   //!< Destructor
 
-        // Basic utility functions
-        Mcmc*                       clone(void) const;                                                                 //!< Clone object
-        const VectorString&         getClass(void) const;                                                              //!< Get class vector   
+    // Basic utility functions
+    Mcmc*                       clone(void) const;                                                              //!< Clone object
+    const VectorString&         getClass(void) const;                                                           //!< Get class vector   
 
-        // Member variable rules
-        const MemberRules&          getMemberRules(void) const;                                                        //!< Get member rules
-        void                        setVariable(const std::string& name, DAGNode* var);                                //!< Only constants allowed
+    // Member variable rules
+    const MemberRules&          getMemberRules(void) const;                                                     //!< Get member rules
+    void                        setMemberVariable(const std::string& name, Variable* var);                      //!< Only constants allowed
 
-        // Member method inits
-        const MethodTable&          getMethods(void) const;                                                            //!< Get methods
-        DAGNode*                    executeOperation(const std::string& name, ArgumentFrame& args);                     //!< Execute method
+    // Member method inits
+    const MethodTable&          getMethods(void) const;                                                         //!< Get methods
+    RbLanguageObject*           executeOperation(const std::string& name, Environment& args);                   //!< Execute method
         
-        // Mcmc functions
-        void                        update(void);                                                                      //!< Update the chain
+    // Mcmc functions
+    void                        run(size_t ngen);                                                               //!< Update the chain
 
 	protected:
+    
 };
 
 #endif

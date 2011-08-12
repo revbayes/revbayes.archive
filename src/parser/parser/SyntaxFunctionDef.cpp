@@ -15,10 +15,10 @@
 
 #include "ValueRule.h"
 #include "DAGNode.h"
+#include "Environment.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "RbObject.h"
-#include "VariableFrame.h"
 #include "VectorString.h"
 #include "SyntaxFunctionDef.h"
 #include "UserFunction.h"
@@ -50,7 +50,7 @@ SyntaxFunctionDef::SyntaxFunctionDef(   RbString* type,
 
         // Create the type specification
         delete returnType;
-        returnType = new TypeSpec(Workspace::userWorkspace().getTypeNameRef(tpName), nDim, isRef);
+        returnType = new TypeSpec(tpName );
     }
 }
 
@@ -59,7 +59,7 @@ SyntaxFunctionDef::SyntaxFunctionDef(   RbString* type,
 SyntaxFunctionDef::SyntaxFunctionDef(const SyntaxFunctionDef& x)
     : SyntaxElement(x) {
 
-    returnType   = new TypeSpec(x.returnType->getType(), x.returnType->getDim(), x.returnType->isReference());
+    returnType   = new TypeSpec(x.returnType->getType());
     functionName = new RbString(*functionName);
  
     for (std::list<SyntaxFormal*>::const_iterator i=x.formalArgs->begin(); i!=x.formalArgs->end(); i++)
@@ -104,7 +104,7 @@ SyntaxFunctionDef& SyntaxFunctionDef::operator=(const SyntaxFunctionDef& x) {
 
         SyntaxElement::operator=(x);
 
-        returnType   = new TypeSpec(x.returnType->getType(), x.returnType->getDim(), x.returnType->isReference());
+        returnType   = new TypeSpec(x.returnType->getType());
         functionName = new RbString(*functionName);
      
         for (std::list<SyntaxFormal*>::const_iterator i=x.formalArgs->begin(); i!=x.formalArgs->end(); i++)
@@ -143,21 +143,14 @@ const VectorString& SyntaxFunctionDef::getClass(void) const {
 }
 
 
-/** Convert element to DAG node; return NULL since it is not applicable */
-DAGNode* SyntaxFunctionDef::getDAGNodeExpr(VariableFrame* formal) const {
-
-    return NULL;
-}
-
-
 /** Get semantic value: insert a user-defined function in the user workspace */
-DAGNode* SyntaxFunctionDef::getValue(VariableFrame* frame) const {
+Variable* SyntaxFunctionDef::getContentAsVariable(Environment* env) const {
 
     // Get argument rules from the formals
     static ArgumentRules argRules;
 
-    for (std::list<SyntaxFormal*>::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
-        argRules.push_back( (*i)->getArgumentRule(frame) );
+//    for (std::list<SyntaxFormal*>::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
+//        argRules.push_back( (*i)->getArgumentRule(env) );
 
     // Create copy of the statements
     std::list<SyntaxElement*>* stmts = new std::list<SyntaxElement*>();
@@ -165,13 +158,13 @@ DAGNode* SyntaxFunctionDef::getValue(VariableFrame* frame) const {
         stmts->push_back((*i)->clone());
 
     // Create copy of the environment in which the function was defined
-    VariableFrame* defineEnvironment = frame->cloneEnvironment();
+//    Environment* defineEnvironment = env->cloneEnvironment();
 
     // Create the function
-    UserFunction* theFunction = new UserFunction(argRules, *returnType, stmts, defineEnvironment);
+//    UserFunction* theFunction = new UserFunction(argRules, *returnType, stmts, defineEnvironment);
 
     // Insert in the user workspace
-    Workspace::userWorkspace().addFunction(*functionName, theFunction);
+//    Workspace::userWorkspace().addFunction(*functionName, theFunction);
 
     // No return value 
     return NULL;

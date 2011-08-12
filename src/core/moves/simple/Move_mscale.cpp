@@ -21,7 +21,6 @@
 #include "RbNames.h"
 #include "RealPos.h"
 #include "StochasticNode.h"
-#include "StochasticReferenceRule.h"
 #include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -32,15 +31,6 @@
 /** Constructor for parser */
 Move_mscale::Move_mscale( void )
     : MoveSimple( getMemberRules() ) {
-}
-
-
-/** Constructor for internal use */
-Move_mscale::Move_mscale( StochasticNode* node, double lambda, double weight ) : MoveSimple( getMemberRules() ) {
-
-    setVariable( "variable", node );
-    setValue(    "weight",   new RealPos(weight) );
-    setValue(    "lambda",   new RealPos(lambda) );
 }
 
 
@@ -66,8 +56,8 @@ const MemberRules& Move_mscale::getMemberRules( void ) const {
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
-        TypeSpec varType(RealPos_name,0,true);
-        memberRules.push_back( new StochasticReferenceRule( "variable", varType ) );
+        TypeSpec varType( RealPos_name );
+        memberRules.push_back( new ValueRule( "variable", varType ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
         const MemberRules& inheritedRules = MoveSimple::getMemberRules();
@@ -96,8 +86,8 @@ double Move_mscale::perform( std::set<StochasticNode*>& affectedNodes ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     // Get relevant values
-    StochasticNode*        nodePtr =    static_cast<StochasticNode*>( members["variable"].getReference() );
-    const RealPos          lambda  = *( static_cast<const RealPos*>( getValue("lambda")  ) );
+    StochasticNode*        nodePtr =    static_cast<StochasticNode*>( members["variable"].getDagNodePtr() );
+    const RealPos          lambda  = *( static_cast<const RealPos*>( getMemberValue("lambda")  ) );
 
     const RealPos          curVal  = *( static_cast<const RealPos*>( nodePtr->getValue() ) );
 

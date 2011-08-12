@@ -24,7 +24,6 @@
 #include "RbString.h"
 #include "Simplex.h"
 #include "UserInterface.h"
-#include "ValueContainer.h"
 #include "ValueRule.h"
 #include "VectorReal.h"
 #include "VectorString.h"
@@ -41,7 +40,7 @@ Func_gtr* Func_gtr::clone(void) const {
 
 
 /** Execute function */
-DAGNode* Func_gtr::execute(void) {
+RbLanguageObject* Func_gtr::execute(void) {
 
     // get the information from the arguments for reading the file
     const Simplex* r = static_cast<const Simplex*>( args[0].getValue() );
@@ -52,14 +51,14 @@ DAGNode* Func_gtr::execute(void) {
     
     // check the sizes of the simplices, to make certain that they are consistent
     // with a model with nStates states
-    if ( f->getElementsSize() != nStates )
+    if ( f->getLength() != nStates )
         {
         std::stringstream o;
         o << "The simplex containing the state frequencies is not of size ";
         o << nStates;
         throw( RbException(o.str()) );
         }
-    if (r->getElementsSize() != nStates*(nStates-1)/2)
+    if (r->getLength() != nStates*(nStates-1)/2)
         {
         std::stringstream o;
         o << "The simplex containing the rates is not of size (";
@@ -106,7 +105,7 @@ DAGNode* Func_gtr::execute(void) {
     m->updateEigenSystem();
     
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return m->wrapIntoVariable();
+    return m;
 }
 
 

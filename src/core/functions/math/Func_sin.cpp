@@ -39,11 +39,11 @@ Func_sin* Func_sin::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_sin::execute( void ) {
+RbLanguageObject* Func_sin::execute( void ) {
     
     const Real* x = static_cast<const Real*>( args[0].getValue() );
     
-    return ( new RealPos( sin(x->getValue()) ) )->wrapIntoVariable();
+    return ( new RealPos( sin(x->getValue()) ) );
 }
 
 

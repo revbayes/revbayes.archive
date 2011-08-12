@@ -31,43 +31,38 @@ class XmlElement;
 class RbObject {
 
     public:
-        virtual                    ~RbObject(void) {}                                                       //!< Virtual destructor
+        virtual                    ~RbObject(void);                                                         //!< Virtual destructor
 
         // Basic utility functions you have to override (also getClass()!)
         virtual RbObject*           clone(void) const = 0;                                                  //!< Clone object
         virtual const XmlElement*   encode(XmlDocument* doc, const std::string& name);                      //!< Function to encode this object into an XML string
         virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
-        virtual void                printValue(std::ostream& o) const = 0;                                  //!< Print value for user
-        virtual std::string         richInfo(void) const = 0;                                               //!< Complete info about object
 
         // Basic utility functions you may want to override
-        virtual std::string         briefInfo(void) const;                                                  //!< Brief info about object
-        virtual RbObject*           cloneAsConstant(void) const;                                            //!< Make constant clone of object
-        virtual RbObject*           convertTo(const std::string& type, size_t dim) const;                   //!< Convert to type and dim
+        virtual bool                allowsVariableInsertion(void) const { return false; }                   //!< Do we allow variable to be inserted in this object (only appicable for some container, e.g. DagNodeContainer)
+        virtual RbObject*           convertTo(const std::string& type) const;                               //!< Convert to type
+        virtual RbObject*           getElement(size_t index);                                               //!< Get element or subcontainer
         virtual const TypeSpec      getTypeSpec(void) const;                                                //!< Get language type of the object
-        virtual bool                isConstant(void) const { return true; }                                 //!< Is value a constant or does it include variables?
-        virtual bool                isConvertibleTo(const std::string& type, size_t dim, bool once) const;  //!< Is convertible to type and dim?
+
+        virtual bool                isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type?
         virtual bool                isType(const std::string& type) const;                                  //!< Is the object of type?
         virtual bool                isTypeSpec(const TypeSpec& typeSpec) const;                             //!< Does the language type of the object fit type specification typeSpec?
-        virtual bool                supportsIndex(void) const { return false; }                             //!< Supports indexing, as in operator[]
-        virtual DAGNode*            wrapIntoVariable(void);                                                 //!< Wrap value into variable
     
-        // Dimensions of object: override only if object is a container with dimensions exposed to language / parser
-        virtual size_t              getDim(void) const { return 0; }                                        //!< Get container dimensions
-        virtual size_t              getSize(void) const { return 1; }                                       //!< Total number of elements (default is 1, only different for ContainerNode)
 
         // Basic utility functions you should not have to override
         RbObject*                   convertTo(const TypeSpec& typeSpec) const;                              //!< Convert to language object of type typeSpec
+        size_t                      getNumberOfReferences(void) { return numReferences; }                   //!< Get the number how often this instance is referenced by other objects
         const std::string&          getType(void) const;                                                    //!< Get type of object
-        bool                        isConvertibleTo(const TypeSpec& typeSpec, bool once) const;             //!< Is convertible to type and dim?
-        void                        print(std::ostream& o) const;                                           //!< Print complete object info
+        bool                        isConvertibleTo(const TypeSpec& typeSpec, bool once) const;             //!< Is convertible to type?
+        bool                        isUnreferenced(void) { return numReferences == 0; }                     //!< Test whether other objetcs still hold references to this object
+//        bool                        isUnreferenced(void) { return false; }                                  //!< Test whether other objetcs still hold references to this object
+        void                        release(void) { numReferences--; }                                      //!< release the object
+        void                        retain(void) { numReferences++; }                                       //!< retain the object
 
-   protected:
-		                            RbObject(void) {}                                                       //!< No objects of this class
+    protected:
+                                    RbObject(void) { numReferences = 0; }                                   //!< No objects of this class
+    
+    private:
+        size_t                      numReferences;
 };
-
-
-        // Global functions using the class
-        std::ostream&               operator<<(std::ostream& o, const RbObject& x);                         //!< Overloaded output operator
-
 #endif

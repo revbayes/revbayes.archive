@@ -20,6 +20,8 @@
 #include "Real.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
+#include "VectorReal.h"
+#include "VectorRealPos.h"
 #include "VectorString.h"
 
 
@@ -34,7 +36,7 @@ VectorNatural::VectorNatural( int x ) : Vector( Natural_name ) {
     if ( x < 0 )
         throw RbException( "Trying to set " + Natural_name + "[] with negative value" );
     elements.push_back( new Natural( x ) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -42,7 +44,7 @@ VectorNatural::VectorNatural( int x ) : Vector( Natural_name ) {
 VectorNatural::VectorNatural( unsigned int x ) : Vector( Natural_name ) {
 
     elements.push_back( new Natural( x ) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -54,7 +56,7 @@ VectorNatural::VectorNatural( size_t n, int x ) : Vector( Natural_name ) {
 
     for ( size_t i = 0; i < n; i++ )
         elements.push_back( new Natural( x ) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -65,7 +67,7 @@ VectorNatural::VectorNatural( size_t n, unsigned int x ) : Vector( Natural_name 
     // Natural will throw an error if the value is out of range
      for ( size_t i = 0; i < n; i++ )
         elements.push_back( new Natural( x ) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -79,7 +81,7 @@ VectorNatural::VectorNatural( const std::vector<int>& x ) : Vector( Natural_name
 
     for ( size_t i = 0; i < x.size(); i++ )
         elements.push_back( new Natural( x[i] ) );
-    length[0] = elements.size();
+    length = elements.size();
 
 }
 
@@ -91,21 +93,21 @@ VectorNatural::VectorNatural( const std::vector<unsigned int>& x ) : Vector( Nat
     // Natural will throw an error if the value is out of range
     for ( size_t i = 0; i < x.size(); i++ )
         elements.push_back( new Natural( x[i] ) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
 /** Constructor from Integer vector (VectorInteger) */
 VectorNatural::VectorNatural( const VectorInteger& x ) : Vector( Natural_name ) {
 
-    for ( size_t i = 0; i < x.size(); i++ ) {
+    for ( size_t i = 0; i < x.getLength(); i++ ) {
         if ( x[i] < 0 )
             throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
     }
 
-    for ( size_t i = 0; i < x.size(); i++ )
+    for ( size_t i = 0; i < x.getLength(); i++ )
         elements.push_back( new Natural( x[i] ) );
-    length[0] = elements.size();
+    length = elements.size();
 
 }
 
@@ -120,7 +122,7 @@ VectorNatural::VectorNatural( const ContainerIterator& x ) : Vector( Natural_nam
 
     for ( size_t i = 0; i < x.size(); i++ )
         elements.push_back( new Natural( x[i] ) );
-    length[0] = elements.size();
+    length = elements.size();
 }
 
 
@@ -142,7 +144,7 @@ unsigned int VectorNatural::operator[]( size_t i ) const {
 /** Equals comparison */
 bool VectorNatural::operator==( const VectorNatural& x ) const {
 
-    if ( size() != x.size() )
+    if ( getLength() != x.getLength() )
         return false;
 
     for ( size_t i = 0; i < elements.size(); i++) {
@@ -168,6 +170,41 @@ VectorNatural* VectorNatural::clone( void ) const {
 }
 
 
+/** Can we convert this vector into another object? */
+RbLanguageObject* VectorNatural::convertTo(std::string const &type) const {
+    
+    // test for type conversion
+    if (type == VectorRealPos_name) {
+        
+        // create an stl vector and add each element
+        std::vector<double> d;
+        for (std::vector<RbLanguageObject*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+            int i = dynamic_cast<Natural*>(*it)->getValue();
+            d.push_back(i);
+        }
+        
+        return new VectorRealPos(d);
+    }
+    else if (type == VectorInteger_name) {
+        
+        return new VectorInteger( getValue() );
+    }
+    else if (type == VectorReal_name) {
+        
+        // create an stl vector and add each element
+        std::vector<double> d;
+        for (std::vector<RbLanguageObject*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+            int i = dynamic_cast<Natural*>(*it)->getValue();
+            d.push_back(i);
+        }
+        
+        return new VectorRealPos(d);
+    }
+    
+    return Vector::convertTo(type);
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& VectorNatural::getClass( void ) const {
 
@@ -180,7 +217,7 @@ const VectorString& VectorNatural::getClass( void ) const {
 std::vector<int> VectorNatural::getValue( void ) const {
 
     std::vector<int> temp;
-    for ( std::vector<RbObject*>::const_iterator i = elements.begin(); i != elements.end(); i++ )
+    for ( std::vector<RbLanguageObject*>::const_iterator i = elements.begin(); i != elements.end(); i++ )
         temp.push_back( static_cast<Natural*>( (*i) )->getValue() );
 
     return temp;
@@ -191,12 +228,24 @@ std::vector<int> VectorNatural::getValue( void ) const {
 std::vector<unsigned int> VectorNatural::getUnsignedValue( void ) const {
 
     std::vector<unsigned int> temp;
-    for ( std::vector<RbObject*>::const_iterator i = elements.begin(); i != elements.end(); i++ )
+    for ( std::vector<RbLanguageObject*>::const_iterator i = elements.begin(); i != elements.end(); i++ )
         temp.push_back( static_cast<Natural*>( (*i) )->getValue() );
 
     return temp;
 }
 
+
+/** Can we convert this vector into another object? */
+bool VectorNatural::isConvertibleTo(std::string const &type, bool once) const {
+    
+    // test for type conversion
+    if (type == VectorRealPos_name || type == VectorInteger_name || type == VectorReal_name) {
+        
+        return true;
+    }
+    
+    return Vector::isConvertibleTo(type, once);
+}
 
 /** Push an int onto the back of the vector after checking */
 void VectorNatural::push_back( int x ) {
@@ -205,7 +254,7 @@ void VectorNatural::push_back( int x ) {
         throw RbException( "Trying to set " + Natural_name + "[] with negative value" );
 
     elements.push_back( new Natural( x ) );
-    length[0]++;
+    length++;
 }
 
 
@@ -216,7 +265,7 @@ void VectorNatural::push_front( int x ) {
         throw RbException( "Trying to set " + Natural_name + "[] with negative value" );
 
     elements.insert( elements.begin(), new Natural( x ) );
-    length[0]++;
+    length++;
 }
 
 
@@ -242,7 +291,7 @@ void VectorNatural::setValue( const std::vector<int>& x ) {
                 throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
             elements.push_back( new Natural( x[i] ) );
         }
-        length[0] = elements.size();
+        length = elements.size();
     }
     else {
 
@@ -263,7 +312,7 @@ void VectorNatural::setValue( const std::vector<unsigned int>& x ) {
         clear();
         for ( size_t i = 0; i < x.size(); i++ )
             elements.push_back( new Natural( x[i] ) );
-        length[0] = elements.size();
+        length = elements.size();
     }
     else {
 
@@ -276,16 +325,16 @@ void VectorNatural::setValue( const std::vector<unsigned int>& x ) {
 /** Set value of vector using VectorNatural */
 void VectorNatural::setValue( const VectorNatural& x ) {
 
-    if ( x.size() != elements.size() ) {
+    if ( x.getLength() != elements.size() ) {
     
         clear();
-        for ( size_t i = 0; i < x.size(); i++ )
+        for ( size_t i = 0; i < x.getLength(); i++ )
             elements.push_back( new Natural( x[i] ) );
-        length[0] = elements.size();
+        length = elements.size();
     }
     else {
 
-        for ( size_t i = 0; i < x.size(); i++ )
+        for ( size_t i = 0; i < x.getLength(); i++ )
             static_cast<Natural*>( elements[i] )->setValue( x[i] ); 
     }
 }   
@@ -294,27 +343,17 @@ void VectorNatural::setValue( const VectorNatural& x ) {
 /** Set value of vector using VectorInteger */
 void VectorNatural::setValue( const VectorInteger& x ) {
 
-    if ( x.size() != elements.size() ) {
+    if ( x.getLength() != elements.size() ) {
     
         clear();
-        for ( size_t i = 0; i < x.size(); i++ )
+        for ( size_t i = 0; i < x.getLength(); i++ )
             elements.push_back( new Natural( x[i] ) );
-        length[0] = elements.size();
+        length = elements.size();
     }
     else {
 
-        for ( size_t i = 0; i < x.size(); i++ )
+        for ( size_t i = 0; i < x.getLength(); i++ )
             static_cast<Natural*>( elements[i] )->setValue( x[i] ); 
     }
 }
 
-
-/** Convert to element index string for use in parser */
-std::string VectorNatural::toIndexString(void) const {
-
-    std::ostringstream o;
-    for ( size_t i = 0; i < elements.size(); i++ ) 
-        o << "[" << operator[](i) + 1 << "]";
-
-    return o.str();
-}

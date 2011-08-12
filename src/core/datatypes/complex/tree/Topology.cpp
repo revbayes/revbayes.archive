@@ -10,33 +10,33 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-12-04, version 1.0
- * @extends RbComplex
+ * @extends MemberObject
  *
  * $Id$
  */
 
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
-#include "ContainerNode.h"
+#include "MutableMemberObject.h"
 #include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RbNames.h"
-#include "ReferenceRule.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 #include "VectorString.h"
+#include "ValueRule.h"
 
 
 
 /* Default constructor */
-Topology::Topology(void) : MemberObject( getMemberRules() ) {
+Topology::Topology(void) : ConstantMemberObject( getMemberRules() ) {
 
 }
 
 
 /* Copy constructor */
-Topology::Topology(const Topology& t) : MemberObject( getMemberRules() ) {
+Topology::Topology(const Topology& t) : ConstantMemberObject( getMemberRules() ) {
     // set the parameters
     isRooted = t.isRooted;
     isBinary = t.isBinary;
@@ -139,7 +139,7 @@ Topology* Topology::clone(void) const {
 /* Get class information */
 const VectorString& Topology::getClass(void) const {
     
-    static VectorString rbClass = VectorString(Topology_name) + MemberObject::getClass();
+    static VectorString rbClass = VectorString(Topology_name) + ConstantMemberObject::getClass();
     return rbClass;
 }
 
@@ -190,15 +190,15 @@ TopologyNode* Topology::getTipNode( int indx ) const {
 
 
 /* Map calls to member methods */
-DAGNode* Topology::executeOperation(const std::string& name, ArgumentFrame& args) {
+RbLanguageObject* Topology::executeOperation(const std::string& name, Environment& args) {
     
     if (name == "ntips") 
         {
-        return ( new Natural((int)getNumberOfTips()) )->wrapIntoVariable();
+        return ( new Natural((int)getNumberOfTips()) );
         }
     else if (name == "nnodes")
         {
-        return ( new Natural((int)getNumberOfNodes()) )->wrapIntoVariable();
+        return ( new Natural((int)getNumberOfNodes()) );
         }
 
     return MemberObject::executeOperation( name, args );
@@ -226,18 +226,14 @@ const MethodTable& Topology::getMethods(void) const {
     static bool          methodsSet = false;
 
     if ( methodsSet == false ) 
-        {
-        // this must be here so the parser can distinguish between different instances
-        ntipsArgRules.push_back(  new ReferenceRule( "", MemberObject_name ) );
-        nnodesArgRules.push_back( new ReferenceRule( "", MemberObject_name ) );
-        
-        methods.addFunction("ntips",  new MemberFunction(Natural_name, ntipsArgRules)  );
-        methods.addFunction("nnodes", new MemberFunction(Natural_name, nnodesArgRules) );
+    {
+        methods.addFunction("ntips",  new MemberFunction(TypeSpec(Natural_name), ntipsArgRules)  );
+        methods.addFunction("nnodes", new MemberFunction(TypeSpec(Natural_name), nnodesArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
         methodsSet = true;
-        }
+    }
 
     return methods;
 }

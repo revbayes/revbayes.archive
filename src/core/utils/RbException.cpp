@@ -26,26 +26,22 @@ std::string RbException::exceptionName[] = { "DEFAULT", "QUIT" };
 
 
 /** Default constructor */
-RbException::RbException(void)
-    : RbInternal(), exceptionType(DEFAULT), message() {
+RbException::RbException(void) : RbInternal(), exceptionType(DEFAULT), message() {
 }
 
 
 /** Message constructor */
-RbException::RbException(const std::string& msg)
-    : RbInternal(), exceptionType(DEFAULT), message(msg) {
+RbException::RbException(const std::string& msg) : RbInternal(), exceptionType(DEFAULT), message(msg) {
 }
 
 
 /** Message constructor from stringstream */
-RbException::RbException(const std::ostringstream& msg)
-    : RbInternal(), exceptionType(DEFAULT), message(msg.str()) {
+RbException::RbException(const std::ostringstream& msg) : RbInternal(), exceptionType(DEFAULT), message(msg.str()) {
 }
 
 
 /** General constructor */
-RbException::RbException(exceptionT type, const std::string& msg)
-    : RbInternal(), exceptionType(type), message(msg) {
+RbException::RbException(exceptionT type, const std::string& msg) : RbInternal(), exceptionType(type), message(msg) {
 }
 
 

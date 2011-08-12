@@ -41,11 +41,10 @@ class Dist_norm: public DistributionContinuous {
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Normal distribution functions
-        double                      cdf(const RbObject* value);                                         //!< Cumulative density
-        Move*                       getDefaultMove(StochasticNode* node);                               //!< Get default move
+        double                      cdf(const RbLanguageObject* value);                                         //!< Cumulative density
         const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (RealPos)
-        double                      lnPdf(const RbObject* value);                                       //!< Ln probability density
-        double                      pdf(const RbObject* value);                                         //!< Probability density
+        double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
+        double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         Real*                       quantile(const double p);                                           //!< Quantile
         Real*                       rv(void);                                                           //!< Generate random variable
 };

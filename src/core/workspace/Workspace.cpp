@@ -33,8 +33,6 @@
 #include "RbObject.h"
 #include "RbOptions.h"         // For PRINTF
 #include "UserInterface.h"
-#include "ValueContainer.h"
-#include "VariableContainer.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -42,15 +40,16 @@
 
 
 /** Constructor of global workspace */
-Workspace::Workspace() : VariableFrame(), functionTable(new FunctionTable()), typesInitialized(false) {
-
+Workspace::Workspace() : Environment(), functionTable(new FunctionTable()), typesInitialized(false) {
+    // since we are a singleton we hold ourselve
+    retain();
 }
 
 
 /** Constructor of user workspace */
-Workspace::Workspace(Workspace* parentSpace)
-    : VariableFrame(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())), typesInitialized(false) {
-
+Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())), typesInitialized(false) {
+    // since we are a singleton we hold ourselve
+    retain();
 }
 
 
@@ -175,8 +174,21 @@ bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* te
 }
 
 
+/** clone */
+Workspace* Workspace::clone() const {
+    return new Workspace(*this);
+}
+
+/** Get class vector describing type of object */
+const VectorString& Workspace::getClass() const {
+    
+    static VectorString rbClass = VectorString(Workspace_name) + Environment::getClass();
+    return rbClass;
+}
+
+
 /** Execute function to get its value (workspaces only evaluate functions once) */
-DAGNode* Workspace::executeFunction(const std::string& name, const std::vector<Argument>& args) const {
+RbLanguageObject* Workspace::executeFunction(const std::string& name, const std::vector<Argument*>& args) const {
 
     /* Using this calling convention indicates that we are only interested in
        evaluating the function once */
@@ -189,8 +201,8 @@ bool Workspace::existsType( const std::string& name ) const {
 
     std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) {
-        if ( parentFrame != NULL )
-            return static_cast<Workspace*>( parentFrame )->existsType( name );
+        if ( parentEnvironment != NULL )
+            return static_cast<Workspace*>( parentEnvironment )->existsType( name );
         else
             return false;
     }
@@ -204,8 +216,8 @@ RbObject* Workspace::findType( const std::string& name ) const {
 
     std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) {
-        if ( parentFrame != NULL )
-            return static_cast<Workspace*>( parentFrame )->findType( name );
+        if ( parentEnvironment != NULL )
+            return static_cast<Workspace*>( parentEnvironment )->findType( name );
         else
             throw RbException( "Type '" + name + "' does not exist in environment" );
     }
@@ -215,71 +227,13 @@ RbObject* Workspace::findType( const std::string& name ) const {
 
 
 /** Get function */
-RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Argument>& args) {
+RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Argument*>& args) {
 
     return functionTable->getFunction(name, args);
 }
 
-
-/** Check and get reference to the type name of an object type */
-const std::string& Workspace::getTypeNameRef( const std::string& name ) const {
-
-    return getTypeSpec( name ).getType();
-}
-
-
-/** Check and get type specification for a named object type */
-TypeSpec Workspace::getTypeSpec( const std::string& name ) const {
-
-    if ( name == ValueContainer_name || name == VariableContainer_name ) {
-        
-        // We cannot rely on the type spec provided by generic container type dummies in the type table
-        // because they do not know the relevant element dimensions. There should not be such dummies
-        // in the type table anyway, but we add an extra check here just to make sure
-        throw RbException( "Invalid attempt to convert a generic container type to valid type specification" );
-    }
-
-    return findType( name )->getTypeSpec();
-}
-
-
-/** Check and possibly correct a type specification */
-TypeSpec Workspace::getTypeSpec( const TypeSpec& typeSp ) const {
-
-    // We can trust container type specifications
-    if ( typeSp.getDim() > 0 )
-        return typeSp;
-
-    // We can also trust all non-container type specifications
-    if ( !isXOfTypeY( typeSp.getType(), Container_name ) )
-        return typeSp;
-
-    // The case we need to catch is a container type using a non-container type specification (dim == 0)
-    if ( typeSp.getType() == ValueContainer_name || typeSp.getType() == VariableContainer_name ) {
-        
-        // We cannot rely on the type spec provided by generic container type dummies in the type table
-        // because they do not know the relevant element dimensions. There should not be such dummies
-        // in the type table anyway, but we add an extra check here just to make sure
-        throw RbException( "Invalid attempt to convert a generic container type to valid type specification" );
-    }
-
-    if ( typesInitialized == false && !existsType( typeSp.getType() ) )
-        return TypeSpec( typeSp );    // Cannot provide this service if type table is not filled
-
-    // Get the dummy type object to convert into a true container type specification
-    return findType( typeSp.getType() )->getTypeSpec();
-}
-
-
 /** Type checking using type table and full type spec */
 bool Workspace::isXOfTypeY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) const {
-
-    // If yTypeSp is dimensionless object, then all types fit
-    if ( yTypeSp.isDimensionlessObject() )
-        return true;
-
-    if ( xTypeSp.getDim() != yTypeSp.getDim() )
-        return false;
 
     return isXOfTypeY( xTypeSp.getType(), yTypeSp.getType() );
 }
@@ -304,8 +258,8 @@ bool Workspace::isXOfTypeY( const std::string& xType, const std::string& yType )
 /** Is type x convertible to type y using type names, assuming dim = 0 */
 bool Workspace::isXConvertibleToY( const std::string& xType, const std::string& yType ) const {
 
-    TypeSpec    xTypeSpec   = TypeSpec( xType, 0 );
-    TypeSpec    yTypeSpec   = TypeSpec( yType, 0 );
+    TypeSpec    xTypeSpec   = TypeSpec( xType );
+    TypeSpec    yTypeSpec   = TypeSpec( yType );
 
     return isXConvertibleToY( xTypeSpec, yTypeSpec );
 }
@@ -319,24 +273,11 @@ bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTyp
 
     const std::string&  xType   = xTypeSp.getType();
     const std::string&  yType   = yTypeSp.getType();
-    size_t              xDim    = xTypeSp.getDim();
-    size_t              yDim    = yTypeSp.getDim();
 
     bool retVal = false;
-    if ( xDim > 0 ) {
     
-        VariableContainer* dummy    = new VariableContainer( xType );
-        ValueContainer*    dummyVal = dummy->cloneAsConstant();
-
-        retVal = dummy->isConvertibleTo( yType, yDim, false );
-
-        delete dummyVal;
-        delete dummy;
-    }
-    else if (xDim == 0) {
-
-        retVal = findType( xType )->isConvertibleTo( yType, yDim, false );
-    }
+    retVal = findType( xType )->isConvertibleTo( yType, false );
+    
 
     return retVal;
 }
@@ -346,7 +287,12 @@ bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTyp
 void Workspace::printValue(std::ostream& o) const {
 
     o << "Variable table:" << std::endl;
-    VariableFrame::printValue(o);
+    VariableTable::const_iterator it;
+    for ( it = variableTable.begin(); it != variableTable.end(); it++) {
+        o << (*it).first << " = ";
+        (*it).second->printValue( o );
+        o << std::endl;
+    }
     o << std::endl;
 
     o << "Function table:" << std::endl;
@@ -361,6 +307,17 @@ void Workspace::printValue(std::ostream& o) const {
         else
             o << (*i).first << " = " << "unknown class vector" << std::endl;
     }
+}
+
+
+/** Complete info about object to string */
+std::string Workspace::richInfo( void ) const {
+    
+    std::ostringstream o;
+    o << "Workspace:" << std::endl;
+    printValue( o );
+    
+    return o.str();
 }
 
 

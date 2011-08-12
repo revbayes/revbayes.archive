@@ -50,9 +50,10 @@ class VectorNatural : public Vector {
         
         // Basic utility functions
         VectorNatural*              clone(void) const;                                              //!< Clone object
+        RbLanguageObject*           convertTo(const std::string& type) const;                       //!< Convert to type
         const VectorString&         getClass(void) const;                                           //!< Get class
+        bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
         std::string                 richInfo(void) const;                                           //!< Complete info about object
-        std::string                 toIndexString(void) const;                                      //!< Convert to an element index string ([1], [3][1] etc)
 
         // Vector functions, including STL-like functions
         std::vector<int>            getValue(void) const;                                           //!< Get value as STL int vector
@@ -65,7 +66,7 @@ class VectorNatural : public Vector {
         void                        setValue(const VectorInteger& x);                               //!< Set the value using VectorInteger
 
     protected:
-        RbObject*                   getDefaultElement(void) const { return new Natural(); }         //!< Get default element for empty slots
+//        RbObject*                   getDefaultElement(void) const { return new Natural(); }         //!< Get default element for empty slots
 
 };
 

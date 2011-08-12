@@ -18,7 +18,7 @@
 #ifndef Monitor_H
 #define Monitor_H
 
-#include "RbComplex.h"
+#include "ConstantMemberObject.h"
 
 #include <fstream>
 #include <ostream>
@@ -29,25 +29,38 @@ class RbObject;
 class VectorString;
 class VariableNode;
 
-class Monitor : public RbComplex {
+class Monitor : public ConstantMemberObject {
 
-    public:
-                                    Monitor(VariableNode* node, int freq);          //!< Constructor
+public:
+    // Constructors and Destructors
+    Monitor();                                                                                      //!< Default Constructor
+    Monitor(const Monitor &x);                                                                      //!< Copy Constructor
+    virtual ~Monitor(void);                                                                         //!< Destructor
 
-        // Basic utility functions
-        Monitor*                    clone(void) const;                              //!< Clone object
-        const VectorString&         getClass(void) const;                           //!< Get class
-        void                        printValue(std::ostream& o) const;              //!< Print value (for user)
-        std::string                 richInfo(void) const;                           //!< Complete info about object
+    // Basic utility functions
+    Monitor*                    clone(void) const;                                                  //!< Clone object
+    RbLanguageObject*           convertTo(const std::string &type) const;                           //!< Convert to type
+    const VectorString&         getClass(void) const;                                               //!< Get class
+    bool                        isConvertibleTo(const std::string& type, bool once) const;          //!< Is convertible to type?
+    void                        printValue(std::ostream& o) const;                                  //!< Print value (for user)
+    std::string                 richInfo(void) const;                                               //!< Complete info about object
 
-        // Monitor functions
-        void                        monitor(std::ofstream& o) const;                //!< Monitor unconditionally
-        void                        monitor(int gen, std::ofstream& o) const;       //!< Monitor at generation gen
-        void                        printHeader(std::ofstream& o) const;            //!< Print header
+    // Member Object Functions
+    const MemberRules&          getMemberRules( void ) const;                                       //!< The member rules for a monitor
+    void                        setMemberVariable(const std::string &name, Variable *var);          //!< Set a member variable. We catch here setting of variable nodes
 
-    private:
-        VariableNode*               theNode;                                         //!< The node to monitor
-        int                         samplingFrequency;                               //!< Sampling frequency
+    // Monitor functions
+    void                        closeStream(void);                                                  //!< Close stream after finish writing
+    std::vector<VariableNode*>& getDagNodes(void) { return nodes;}                                  //!< Get the nodes vector
+    void                        monitor(void);                                                      //!< Monitor unconditionally
+    void                        monitor(int gen);                                                   //!< Monitor at generation gen
+    void                        openStream(void);                                                   //!< Open the stream for writing
+    void                        printHeader(void);                                                  //!< Print header
+    void                        replaceDagNodes(std::vector<VariableNode*> &n);                     //!< Set the nodes vector
+    
+private:
+    std::vector<VariableNode*>  nodes;                                                              //!< Vector of nodes which this monitors prints
+    std::ofstream               outStream;
 };
 
 #endif

@@ -14,7 +14,6 @@
  */
 
 #include "CharacterStateDiscrete.h"
-#include "CondLike.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "VectorString.h"
@@ -36,24 +35,8 @@ const VectorString& CharacterStateDiscrete::getClass() const {
 }
 
 
-/** Initialize and return a conditional likelihood for this state */
-CondLike* CharacterStateDiscrete::getCondLike(void) const {
-
-    CondLike* cl = new CondLike(1, numStates);
-    double* p = &(*cl)[0];
-    for (size_t i=0; i<numStates; i++)
-        {
-        if (value[i] == true)
-            p[i] = 1.0;
-        else
-            p[i] = 0.0;
-        }
-    return cl;
-}
-
-
 /** Return the number of observed states for this character (any number greater than one indicates ambiguity) */
-size_t CharacterStateDiscrete::getNumOnStates(void) const {
+size_t CharacterStateDiscrete::getNumberObservedStates(void) const {
 
     size_t nOn = 0;
     for (size_t i=0; i<value.size(); i++)
@@ -84,16 +67,16 @@ unsigned CharacterStateDiscrete::getUnsignedValue(void) const {
 
 
 /** Is the character missing or ambiguous */
-bool CharacterStateDiscrete::isMissAmbig(void) const {
+bool CharacterStateDiscrete::isMissingOrAmbiguous(void) const {
 
-    if ( getNumOnStates() > 1 )
+    if ( getNumberObservedStates() > 1 )
         return true;
     return false;
 }
 
 
 /** Set the number of states */
-void CharacterStateDiscrete::setNumStates(size_t n) {
+void CharacterStateDiscrete::setNumberOfStates(size_t n) {
 
     numStates = n;
     value.resize(n);

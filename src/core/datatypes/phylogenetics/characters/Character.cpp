@@ -20,7 +20,7 @@
 
 
 /** Default constructor */
-Character::Character(void) : RbObject() {
+Character::Character(void) : RbLanguageObject() {
 
 }
 

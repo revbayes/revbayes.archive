@@ -28,8 +28,8 @@
 #include <sstream>
 
 /** Constructor */
-RbAbstract::RbAbstract( const VectorString classVec, size_t numDims, const std::string& elemType )
-: RbObject(), classVector( classVec ), dim( numDims ), elementType( elemType ) {
+RbAbstract::RbAbstract( const VectorString classVec, const std::string& elemType )
+: RbLanguageObject(), classVector( classVec ), elementType( elemType ) {
 }
 
 
@@ -41,26 +41,22 @@ RbAbstract* RbAbstract::clone( void ) const {
 
 
 /** Convert to type and dim: no conversion possible. */
-RbObject* RbAbstract::convertTo( const std::string& type, size_t dim ) const {
+RbLanguageObject* RbAbstract::convertTo( const std::string& type ) const {
 
-    return RbObject::convertTo( type, dim );
+    return RbLanguageObject::convertTo( type );
 }
 
 
 /** Get language type specification of abstract class */
 const TypeSpec RbAbstract::getTypeSpec( void ) const {
-
-    if ( dim > 0 )
-        return TypeSpec( elementType, dim );
-    else
-        return TypeSpec( getType(), 0 );
+    return TypeSpec( getType() );
 }
 
 
 /** Is convertible to language object of type and dim? */
-bool RbAbstract::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
+bool RbAbstract::isConvertibleTo(const std::string& type, bool once) const {
 
-    return RbObject::isConvertibleTo(type, dim, once);
+    return RbLanguageObject::isConvertibleTo(type, once);
 }
 
 

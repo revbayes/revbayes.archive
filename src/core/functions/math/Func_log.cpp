@@ -39,12 +39,12 @@ Func_log* Func_log::clone( void ) const {
 
 
 /** Execute function */
-DAGNode* Func_log::execute( void ) {
+RbLanguageObject* Func_log::execute( void ) {
     
     const RealPos* a = static_cast<const RealPos*>( args[0].getValue() );
     const RealPos* b = static_cast<const RealPos*>( args[1].getValue() );
     
-    return ( new Real( log10(a->getValue())/log10(b->getValue()) ) )->wrapIntoVariable();
+    return ( new Real( log10(a->getValue())/log10(b->getValue()) ) );
 }
 
 
