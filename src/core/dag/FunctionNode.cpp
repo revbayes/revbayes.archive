@@ -297,7 +297,7 @@ void FunctionNode::update( void ) {
 
     if ( touched && !changed ) {
 
-        assert( storedValue == NULL );
+//        assert( storedValue == NULL );
         
         DAGNode* retVal = function->execute();
 
