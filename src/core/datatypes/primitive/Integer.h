@@ -19,7 +19,7 @@
 #ifndef Integer_H
 #define Integer_H
 
-#include "RbObject.h"
+#include "RbLanguageObject.h"
 
 #include <ostream>
 #include <string>
@@ -27,10 +27,10 @@
 class Boolean;
 class VectorString;
 
-class Integer : public RbObject {
+class Integer : public RbLanguageObject {
 
     public:
-        friend class                VectorInteger;                                                          //!< Give VectorInteger direct access to value
+//        friend class                VectorInteger;                                                          //!< Give VectorInteger direct access to value
 
                                     Integer(void);                                                          //!< Default constructor
                                     Integer(const unsigned int v);                                          //!< Constructor from unsigned int
@@ -41,10 +41,12 @@ class Integer : public RbObject {
                                     operator int(void) const { return value; }                              //!< Type conversion to int
 
         // Basic utility functions
+        std::string                 briefInfo(void) const;                                                  //!< Brief info about the object
         Integer*                    clone(void) const;                                                      //!< Clone object
-        RbObject*                   convertTo(const std::string& type, size_t dim) const;                   //!< Convert to type and dim
+        RbLanguageObject*           convertTo(const std::string& type) const;                               //!< Convert to type
         virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
-        bool                        isConvertibleTo(const std::string& type, size_t dim, bool once) const;  //!< Is convertible to type and dim?
+        int&                        getValueReference(void) { return value; }                               //!< Get value reference for VectorInteger
+        bool                        isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type and dim?
         void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
         std::string                 richInfo(void) const;                                                   //!< Complete info about object
 
@@ -53,7 +55,6 @@ class Integer : public RbObject {
         int                         getValue(void) const { return value; }                                  //!< Get value
 
     protected:
-        int&                        getValueRef(void) { return value; }                                     //!< Get value reference for VectorInteger
         int                         value;                                                                  //!< Value member
 };
 

@@ -33,7 +33,7 @@ class Func__uplus :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-    	DAGNode*                    execute(void);                                              //!< Execute function
+    	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
@@ -41,7 +41,7 @@ class Func__uplus :  public RbFunction {
 
 #endif
 
-#include "DAGNode.h"
+#include "RbLanguageObject.h"
 #include "RbNames.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
@@ -58,11 +58,11 @@ Func__uplus<valType, retType>* Func__uplus<valType, retType>::clone( void ) cons
 
 /** Execute function: We simply return a copy of the value */
 template <typename valType, typename retType>
-DAGNode* Func__uplus<valType, retType>::execute( void ) {
+RbLanguageObject* Func__uplus<valType, retType>::execute( void ) {
 
     const valType*  val = static_cast<const valType*> ( args[0].getValue() );
 
-    return val->clone()->wrapIntoVariable();
+    return val->clone();
 }
 
 

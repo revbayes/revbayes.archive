@@ -30,32 +30,41 @@
 
 
 /** Default constructor */
-Real::Real(void) : RbObject(), value(0.0) {
+Real::Real(void) : RbLanguageObject(), value(0.0) {
 }
 
 
 /** Construct from double */
-Real::Real(const double v) : RbObject(), value(v) {
+Real::Real(const double v) : RbLanguageObject(), value(v) {
 }
 
 
 /** Construct from int */
-Real::Real(const int v) : RbObject(), value(v) {
+Real::Real(const int v) : RbLanguageObject(), value(v) {
 }
 
 
 /** Construct from unsigned int */
-Real::Real(const unsigned int v) : RbObject(), value(v) {
+Real::Real(const unsigned int v) : RbLanguageObject(), value(v) {
 }
 
 
 /** Construct from bool */
-Real::Real(const bool v) : RbObject() {
+Real::Real(const bool v) : RbLanguageObject() {
 
     if (v) value = 1.0;
     else value = 0.0;
 }
 
+/** Get brief info about object */
+std::string Real::briefInfo(void) const {
+    
+	std::ostringstream o;
+    o << "Real(";
+    printValue(o);
+	o << ")";
+    return o.str();
+}
 
 /** Clone object */
 Real* Real::clone(void) const {
@@ -65,38 +74,38 @@ Real* Real::clone(void) const {
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbObject* Real::convertTo( const std::string& type, size_t dim ) const {
+RbLanguageObject* Real::convertTo( const std::string& type ) const {
 
-    if ( type == Boolean_name && dim == 0 )
+    if ( type == Boolean_name )
         return new Boolean(value == 0.0);
-    if ( type == RealPos_name && dim == 0 && value > 0.0)
+    if ( type == RealPos_name && value > 0.0)
         return new RealPos(value);
-    if ( type == Probability_name && dim == 0 && value >= 0.0 && value <= 1.0)
+    if ( type == Probability_name && value >= 0.0 && value <= 1.0)
         return new Probability(value);
 
-    return RbObject::convertTo( type, dim );
+    return RbLanguageObject::convertTo( type );
 }
 
 
 /** Get class vector describing type of object */
 const VectorString& Real::getClass(void) const {
 
-    static VectorString rbClass = VectorString(Real_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(Real_name) + RbLanguageObject::getClass();
     return rbClass;
 }
 
 
 /** Is convertible to type and dim? */
-bool Real::isConvertibleTo(const std::string& type, size_t dim, bool once) const {
+bool Real::isConvertibleTo(const std::string& type, bool once) const {
 
-    if (type == Boolean_name && dim == 0)
+    if (type == Boolean_name)
         return true;
-    if (type == RealPos_name && dim == 0 && once == true && value > 0.0)
+    if (type == RealPos_name && once == true && value > 0.0)
         return true;
-    if ( type == Probability_name && dim == 0 && value >= 0.0 && value <= 1.0)
+    if ( type == Probability_name && value >= 0.0 && value <= 1.0)
         return true;
 
-    return RbObject::isConvertibleTo(type, dim, once);
+    return RbLanguageObject::isConvertibleTo(type, once);
 }
 
 

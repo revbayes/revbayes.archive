@@ -16,14 +16,12 @@
  */
 
 #include "ValueRule.h"
-#include "Frame.h"
 #include "RbNames.h"
 #include "RbString.h"
 #include "Signals.h"
 #include "SyntaxElement.h"
 #include "TypeSpec.h"
 #include "UserFunction.h"
-#include "VariableFrame.h"
 #include "VectorString.h"
 
 #include <list>
@@ -33,14 +31,13 @@
 UserFunction::UserFunction( const ArgumentRules&        argRules,
                             const TypeSpec&             retType,
                             std::list<SyntaxElement*>*  stmts,
-                            Frame*                      defineEnv)
+                            Environment*                defineEnv)
     : RbFunction(), argumentRules(argRules), returnType(retType), code(stmts), defineEnvironment(defineEnv) {
 }
 
 
 /** Copy constructor */
-UserFunction::UserFunction(const UserFunction &x)
-    : RbFunction(x), argumentRules(x.argumentRules), returnType(x.returnType) {
+UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules(x.argumentRules), returnType(x.returnType) {
 
     defineEnvironment   = x.defineEnvironment->clone();
     for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
@@ -79,34 +76,34 @@ UserFunction* UserFunction::clone(void) const {
 
 
 /** Execute function */
-DAGNode* UserFunction::execute( void ) {
+RbLanguageObject* UserFunction::execute( void ) {
 
     // Clear signals
     Signals::getSignals().clearFlags();
 
     // Set initial return value
-    DAGNode* retValue = NULL;
+    Variable* retValue = NULL;
 
     // Create new variable frame
-    VariableFrame* fxnFrame = new VariableFrame( &args );
+    Environment* functionEnvironment = new Environment( &args );
 
     // Execute code
     for ( std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++ ) {
     
-        if ( retValue != NULL && retValue->numRefs() == 0 )
+        if ( retValue != NULL && retValue->isUnreferenced() )
             delete retValue;
 
-        retValue = (*i)->getValue( fxnFrame );
+        retValue = (*i)->getContentAsVariable( functionEnvironment );
 
         if ( Signals::getSignals().isSet( Signals::RETURN ) )
             break;
     }
 
     // Delete the variable frame of the function
-    delete fxnFrame;
+    delete functionEnvironment;
 
     // Return the return value
-    return retValue;
+    return retValue->getDagNodePtr()->getValuePtr();
 }
 
 

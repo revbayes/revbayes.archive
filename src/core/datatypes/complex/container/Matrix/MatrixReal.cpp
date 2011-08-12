@@ -15,7 +15,6 @@
 
 
 #include "ConstantNode.h"
-#include "ContainerNode.h"
 #include "MatrixReal.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
@@ -46,11 +45,12 @@ MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, double x) : Matri
     if ( nRows < 1 || nCols < 1 )
         throw RbException( "Nonpositive length(s) for " + Real_name + "[][]" );
 
-    length[0] = nRows;
-    length[1] = nCols;
+    length = nRows;
+    rows = nRows;
+    cols = nCols;
 
-    for ( size_t i = 0; i < length[0]; i++ )
-        matrix.push_back( VectorReal( length[1], x ) );
+    for ( size_t i = 0; i < rows; i++ )
+        matrix.push_back( VectorReal( cols, x ) );
 }
 
 
@@ -63,38 +63,20 @@ MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : Matrix(Real
         if ( x[i].size() != numCols )
             throw RbException( "Invalid attempt to initialize a matrix container using a jagged matrix" );
     }
+    
+    length = numRows;
+    rows = numRows;
+    cols = numCols;
 
-    length[0] = numRows;
-    length[1] = numCols;
-
-    for ( size_t i = 0; i < length[0]; i++ )
+    for ( size_t i = 0; i < cols; i++ )
         matrix.push_back( VectorReal( x[i] ) );
-}
-
-
-/** Construct matrix from a length specification [ nRows, nCols ] and a single vector of values */
-MatrixReal::MatrixReal( const std::vector<size_t>& len, const std::vector<double>& x ) : Matrix( Real_name ) {
-
-    if ( len[0] < 1 || len[1] < 1 )
-        throw RbException( "Nonpositive length(s) for " + Real_name + "[][]" );
-
-    length = len;
-
-    size_t index = 0;
-    for ( size_t i = 0; i < len[0]; i++ ) {
-        VectorReal y;
-        for ( size_t j=0; j < len[1]; j++ ) {
-            y.push_back( x[index++] );
-        }
-        matrix.push_back( y );
-    }
 }
 
 
 /** Index operator (const) */
 const VectorReal& MatrixReal::operator[]( const size_t i ) const {
 
-    if ( i >= length[0] )
+    if ( i >= length )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
 
     return matrix[i];
@@ -104,7 +86,7 @@ const VectorReal& MatrixReal::operator[]( const size_t i ) const {
 /** Index operator */
 VectorReal& MatrixReal::operator[]( const size_t i ) {
 
-    if ( i >= length[0] )
+    if ( i >= length )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
 
     return matrix[i];
@@ -115,8 +97,9 @@ VectorReal& MatrixReal::operator[]( const size_t i ) {
 void MatrixReal::clear( void ) {
 
     matrix.clear();
-    length[0] = 0;
-    length[1] = 0;
+    length = 0;
+    rows = 0;
+    cols = 0;
 }
 
 
@@ -140,8 +123,8 @@ std::vector<double> MatrixReal::getContent( void ) const {
 
     std::vector<double> temp;
 
-    for ( size_t i = 0; i < length[0]; i++ )
-        for ( size_t j = 0; j < length[1]; j++ )
+    for ( size_t i = 0; i < rows; i++ )
+        for ( size_t j = 0; j < cols; j++ )
             temp.push_back( matrix[i][j] );
 
     return temp;
@@ -149,55 +132,16 @@ std::vector<double> MatrixReal::getContent( void ) const {
 
 
 /** Overloaded container method to get element or subcontainer for parser */
-DAGNode* MatrixReal::getElement( const VectorInteger& index ) {
+VectorReal* MatrixReal::getElement( size_t index ) {
+    
+    return &matrix[index];
+}
 
-    if ( index.size() > 2 )
-        throw RbException( "Too many indices for " + Real_name + "[][]" );
-
-    // Disregard irrelevant negative value(s) at back of index
-    size_t numIndices = index.size();
-    for ( int i = static_cast<int>( index.size() ) - 1; i >= 0; i-- ) {
-        if ( index[i] < 0 )
-            numIndices--;
-        else
-            break;
-    }
-
-    if ( numIndices == 0 ) {
-
-        return new ContainerNode( this->clone() );
-    }
-
-    else if ( numIndices == 1 ) {
-
-        // Row submatrix, this is easy
-        if ( index[0] > static_cast<int>( length[0] ) )
-            throw RbException( "Index out of bound for " + Real_name + "[][]" );
-        return new ContainerNode( matrix[index[0]].clone() );
-    }
-        
-    else /* if ( numIndices == 2 ) */ {
-
-        if ( index[0] < 0 ) {
-            
-            // We want a column submatrix, which is a little tricky
-            if ( size_t( index[0] ) > length[0] )
-                throw RbException( "Index out of bound for " + Real_name + "[][]" );
-            
-            VectorReal* temp = new VectorReal();
-            for ( size_t j = 0; j < length[1]; j++ )
-                temp->push_back( matrix[index[0]][j] );
-            return new ContainerNode( temp );
-        }
-        else {
-            
-            // We want an element, this is easy
-            if ( size_t( index[0] ) > length[0] || size_t( index[1] ) > length[1] )
-                throw RbException( "Index out of bound for " + Real_name + "[][]" );
-            
-            return ( new Real(matrix[index[0]][index[1]]) )->wrapIntoVariable();
-        }
-    }
+/** Overloaded container method to get element or subcontainer for parser */
+Real* MatrixReal::getElement( size_t row, size_t col ) {
+    
+    VectorReal& tmp = matrix[row];
+    return (Real*) tmp.getElement(col);
 }
 
 
@@ -206,7 +150,7 @@ std::vector<std::vector<double> > MatrixReal::getValue( void ) const {
 
     std::vector<std::vector<double> > temp;
 
-    for ( size_t i = 0; i < length[0]; i++ )
+    for ( size_t i = 0; i < cols; i++ )
         temp.push_back( matrix[i].getValue() );
 
     return temp;
@@ -244,9 +188,9 @@ void MatrixReal::printValue(std::ostream& o) const {
     // find the maximum number of digits to the left and right of the decimal place
     int maxToLft = 0, maxToRht = 0;
     bool foundDecimalPoint = false;
-    for (size_t i=0; i<length[0]; i++)
+    for (size_t i=0; i<rows; i++)
         {
-        for (size_t j=0; j<length[1]; j++)
+        for (size_t j=0; j<cols; j++)
             {
             std::ostringstream v;
             v << matrix[i][j];
@@ -261,14 +205,14 @@ void MatrixReal::printValue(std::ostream& o) const {
         }
         
     // print the matrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i<length[0]; i++)
+    for (size_t i=0; i<rows; i++)
         {
         std::string lineStr = "";
         if (i == 0)
             lineStr += "[[ ";
         else 
             lineStr += " [ ";
-        for (size_t j=0; j<length[1]; j++)
+        for (size_t j=0; j<cols; j++)
             {
             std::ostringstream v;
             v << matrix[i][j];
@@ -281,10 +225,10 @@ void MatrixReal::printValue(std::ostream& o) const {
                 lineStr += ".";
             for (int k=0; k<maxToRht-numToRht; k++)
                 lineStr += "0";
-            if (j+1 < length[1])
+            if (j+1 < cols)
                 lineStr += ", ";
             }
-        if (i == length[0]-1)
+        if (i == rows-1)
             lineStr += " ]]";
         else 
             lineStr += " ],\n";
@@ -302,34 +246,60 @@ void MatrixReal::printValue(std::ostream& o) const {
 void MatrixReal::push_back( const VectorReal& x ) {
 
     if ( size() == 0 )
-        length[1] = x.size();
-    else if ( x.size() != length[1] )
+        cols = x.getLength();
+    else if ( x.getLength() != cols )
         throw RbException( "Cannot make matrix with rows of unequal size" );
 
     matrix.push_back( x.getValue() );
-    length[0]++;
+    length++;
+    rows++;
 }
 
 
 /** Overloaded container resize method */
-void MatrixReal::resize( const std::vector<size_t>& len ) {
+void MatrixReal::resize( size_t cols ) {
 
-    if ( len.size() != 2 )
-        throw RbException( "Invalid length specification in attempt to resize " + Real_name + "[][]" );
+//    if ( len.size() != 2 )
+//        throw RbException( "Invalid length specification in attempt to resize " + Real_name + "[][]" );
+//
+//    if ( len[0] < rows || len[1] < cols )
+//        throw RbException( "Invalid attempt to shrink " + Real_name + "[][]" );
+//
+//    // First add the new rows with the right number of columns
+//    for ( size_t i = rows; i < len[0]; i++ )
+//        matrix.push_back( VectorReal( len[1] ) );
+//
+//    // Now add columns to the old rows
+//    for ( size_t i = 0; i < rows; i++ )
+//        matrix[i].resize( len[1] );
+//
+//    // Set new length specification
+//    length = len;
+    
+    throw RbException("Cannot resize MatrixReal");
+}
 
-    if ( len[0] < length[0] || len[1] < length[1] )
-        throw RbException( "Invalid attempt to shrink " + Real_name + "[][]" );
-
-    // First add the new rows with the right number of columns
-    for ( size_t i = length[0]; i < len[0]; i++ )
-        matrix.push_back( VectorReal( len[1] ) );
-
-    // Now add columns to the old rows
-    for ( size_t i = 0; i < length[0]; i++ )
-        matrix[i].resize( len[1] );
-
-    // Set new length specification
-    length = len;
+/** Overloaded container resize method */
+void MatrixReal::resize( size_t rows, size_t cols ) {
+    
+    //    if ( len.size() != 2 )
+    //        throw RbException( "Invalid length specification in attempt to resize " + Real_name + "[][]" );
+    //
+    //    if ( len[0] < rows || len[1] < cols )
+    //        throw RbException( "Invalid attempt to shrink " + Real_name + "[][]" );
+    //
+    //    // First add the new rows with the right number of columns
+    //    for ( size_t i = rows; i < len[0]; i++ )
+    //        matrix.push_back( VectorReal( len[1] ) );
+    //
+    //    // Now add columns to the old rows
+    //    for ( size_t i = 0; i < rows; i++ )
+    //        matrix[i].resize( len[1] );
+    //
+    //    // Set new length specification
+    //    length = len;
+    
+    throw RbException("Cannot resize MatrixReal");
 }
 
 
@@ -347,15 +317,15 @@ std::string MatrixReal::richInfo(void) const {
 /** Set matrix content from single STL vector of doubles */
 void MatrixReal::setContent( const std::vector<double>& x ) {
     
-    if ( x.size() != length[0]*length[1] )
+    if ( x.size() != cols*rows )
         throw RbException( "Incorrect number of elements in setting " + Real_name + "[][]" );
     
     matrix.clear();
     
     size_t index = 0;
-    for ( size_t i = 0; i < length[0]; i++ ) {
+    for ( size_t i = 0; i < rows; i++ ) {
         VectorReal y;
-        for ( size_t j = 0; j < length[1]; j++ ) {
+        for ( size_t j = 0; j < cols; j++ ) {
             y.push_back( x[index++] );
         }
         matrix.push_back( y );
@@ -366,66 +336,81 @@ void MatrixReal::setContent( const std::vector<double>& x ) {
 /** Set matrix value from an STL vector<vector> of doubles */
 void MatrixReal::setValue( const std::vector<std::vector<double> >& x ) {
 
-    if ( x.size() != length[0] )
+    if ( x.size() != rows )
         throw RbException( "Wrong number of rows in setting value of " + Real_name + "[][]" );
 
     for ( size_t i = 0; i < x.size(); i++ ) {
-        if ( x[i].size() != length[1] )
+        if ( x[i].size() != cols )
             throw RbException( "Wrong number of columns in at least one row in setting value of " + Real_name + "[][]" );
     }
 
     matrix.clear();
-    for ( size_t i = 0; i < length[0]; i++ )
+    for ( size_t i = 0; i < rows; i++ )
         matrix.push_back( VectorReal( x[i] ) );
 }
 
 
 /** Overloaded container setElement method */
-void MatrixReal::setElement( const VectorNatural& index, DAGNode* var ) {
+void MatrixReal::setElement( size_t index, RbLanguageObject* var ) {
 
-    if ( index.size() != 2 )
-        throw RbException ( "Wrong number of indices for " + Real_name + "[][]" );
-
-    if ( index[0] >= length[0] || index[1] >= length[1] )
-        throw RbException( "Index out of bounds for " + Real_name + "[][]" );
-
-    RbObject* value = var->getValue()->clone();
-    if ( value == NULL )
-        throw RbException( "Cannot set " + Real_name + "[][] element to NULL" );
-
-    if ( value->isType( Real_name ) )
-        matrix[index[0]][index[1]] = static_cast<Real*>( value )->getValue();
-    else {
-        // We rely on convertTo to throw an error with a meaningful message
-        matrix[index[0]][index[1]] = static_cast<Real*>( value->convertTo( Real_name ) )->getValue();
-    }
+//    if ( index.size() != 2 )
+//        throw RbException ( "Wrong number of indices for " + Real_name + "[][]" );
+//
+//    if ( index[0] >= rows || index[1] >= cols )
+//        throw RbException( "Index out of bounds for " + Real_name + "[][]" );
+//
+//    RbObject* value = var->getValue()->clone();
+//    if ( value == NULL )
+//        throw RbException( "Cannot set " + Real_name + "[][] element to NULL" );
+//
+//    if ( value->isType( Real_name ) )
+//        matrix[index[0]][index[1]] = static_cast<Real*>( value )->getValue();
+//    else {
+//        // We rely on convertTo to throw an error with a meaningful message
+//        matrix[index[0]][index[1]] = static_cast<Real*>( value->convertTo( Real_name ) )->getValue();
+//    }
+    
+    throw RbException("Cannot set element in MatrixReal");
 }
 
-
-/** Overloaded container setLength method */
-void MatrixReal::setLength( const std::vector<size_t>& len) {
-
-    if ( len[0] * len[1] != size() )
-        throw RbException( "New length for " + Real_name + "[][] does not have the right number of elements" );
-
-    std::vector<double> temp = getContent();
-    setContent( temp );
+/** Overloaded container setElement method */
+void MatrixReal::setElement( size_t row, size_t col, RbLanguageObject* var ) {
+    
+    //    if ( index.size() != 2 )
+    //        throw RbException ( "Wrong number of indices for " + Real_name + "[][]" );
+    //
+    //    if ( index[0] >= rows || index[1] >= cols )
+    //        throw RbException( "Index out of bounds for " + Real_name + "[][]" );
+    //
+    //    RbObject* value = var->getValue()->clone();
+    //    if ( value == NULL )
+    //        throw RbException( "Cannot set " + Real_name + "[][] element to NULL" );
+    //
+    //    if ( value->isType( Real_name ) )
+    //        matrix[index[0]][index[1]] = static_cast<Real*>( value )->getValue();
+    //    else {
+    //        // We rely on convertTo to throw an error with a meaningful message
+    //        matrix[index[0]][index[1]] = static_cast<Real*>( value->convertTo( Real_name ) )->getValue();
+    //    }
+    
+    throw RbException("Cannot set element in MatrixReal");
 }
+
 
 
 /** Overloaded container size method */
 size_t MatrixReal::size( void ) const {
 
-    return length[0] * length[1];
+    return rows * cols;
 }
 
 
 /** Transpose the matrix */
 void MatrixReal::transpose(void) {
 
-    MatrixReal temp(length[1], length[0]);
-    for ( size_t i = 0; i < length[0]; i++ )
-        for ( size_t j = 0; j < length[1]; j++ )
+    MatrixReal temp(cols, rows);
+    for ( size_t i = 0; i < rows; i++ )
+        for ( size_t j = 0; j < cols; j++ )
             temp[j][i] = matrix[i][j];
 }
 
@@ -458,8 +443,8 @@ MatrixReal operator-(const MatrixReal& A) {
 
 	MatrixReal B;
     B = A;
-	for (size_t i=0; i<B.getNumRows(); i++)
-		for (size_t j=0; j<B.getNumCols(); j++)
+	for (size_t i=0; i<B.getNumberOfRows(); i++)
+		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = -B[i][j];
 	return B;
 }
@@ -479,8 +464,8 @@ MatrixReal operator-(const MatrixReal& A, const double& b) {
 
 	MatrixReal B;
     B = A;
-	for (size_t i=0; i<B.getNumRows(); i++)
-		for (size_t j=0; j<B.getNumCols(); j++)
+	for (size_t i=0; i<B.getNumberOfRows(); i++)
+		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = A[i][j] - b;
 	return B;
 }
@@ -499,8 +484,8 @@ MatrixReal operator*(const MatrixReal& A, const double& b) {
 
 	MatrixReal B;
     B = A;
-	for (size_t i=0; i<B.getNumRows(); i++)
-		for (size_t j=0; j<B.getNumCols(); j++)
+	for (size_t i=0; i<B.getNumberOfRows(); i++)
+		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = A[i][j] * b;
 	return B;
 }
@@ -519,8 +504,8 @@ MatrixReal operator/(const MatrixReal& A, const double& b) {
 
 	MatrixReal B;
     B = A;
-	for (size_t i=0; i<B.getNumRows(); i++)
-		for (size_t j=0; j<B.getNumCols(); j++)
+	for (size_t i=0; i<B.getNumberOfRows(); i++)
+		for (size_t j=0; j<B.getNumberOfColumns(); j++)
 			B[i][j] = A[i][j] / b;
 	return B;
 }
@@ -539,8 +524,8 @@ MatrixReal operator+(const double& a, const MatrixReal& B) {
 
 	MatrixReal A;
     A = B;
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a + B[i][j];
 	return A;
 }
@@ -559,8 +544,8 @@ MatrixReal operator-(const double& a, const MatrixReal& B) {
 
 	MatrixReal A;
     A = B;
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a - B[i][j];
 	return A;
 }
@@ -579,8 +564,8 @@ MatrixReal operator*(const double& a, const MatrixReal& B) {
 
 	MatrixReal A;
     A = B;
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a * B[i][j];
 	return A;
 }
@@ -599,8 +584,8 @@ MatrixReal operator/(const double& a, const MatrixReal& B) {
 
 	MatrixReal A;
     A = B;
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] = a / B[i][j];
 	return A;
 }
@@ -617,12 +602,12 @@ MatrixReal operator/(const double& a, const MatrixReal& B) {
  */
 MatrixReal operator/(const MatrixReal& A, const MatrixReal& B) {
 
-    if ( A.getNumRows() != A.getNumCols() )
+    if ( A.getNumberOfRows() != A.getNumberOfColumns() )
         throw RbException("Cannot divide non-square matrices");
-	if ( A.getNumCols() != B.getNumCols() )
+	if ( A.getNumberOfColumns() != B.getNumberOfColumns() )
         throw RbException("Cannot divide matrices of differing dimension");
         
-	size_t N = A.getNumCols();
+	size_t N = A.getNumberOfColumns();
 	MatrixReal invB(N, N, 0.0);
     RbMath::matrixInverse(B, invB);
 
@@ -652,8 +637,8 @@ MatrixReal operator/(const MatrixReal& A, const MatrixReal& B) {
  */
 MatrixReal &operator+=(MatrixReal& A, const double& b) {
 
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] += b;
 	return A;
 }
@@ -670,8 +655,8 @@ MatrixReal &operator+=(MatrixReal& A, const double& b) {
  */
 MatrixReal &operator-=(MatrixReal& A, const double& b) {
 
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] -= b;
 	return A;
 }
@@ -688,8 +673,8 @@ MatrixReal &operator-=(MatrixReal& A, const double& b) {
  */
 MatrixReal &operator*=(MatrixReal& A, const double& b) {
 
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] *= b;
 	return A;
 }
@@ -706,8 +691,8 @@ MatrixReal &operator*=(MatrixReal& A, const double& b) {
  */
 MatrixReal &operator/=(MatrixReal& A, const double& b) {
 
-	for (size_t i=0; i<A.getNumRows(); i++)
-		for (size_t j=0; j<A.getNumCols(); j++)
+	for (size_t i=0; i<A.getNumberOfRows(); i++)
+		for (size_t j=0; j<A.getNumberOfColumns(); j++)
 			A[i][j] /= b;
 	return A;
 }
@@ -724,9 +709,9 @@ MatrixReal &operator/=(MatrixReal& A, const double& b) {
  */
 MatrixReal operator+(const MatrixReal& A, const MatrixReal& B) {
 
-	size_t m = A.getNumRows();
-	size_t n = A.getNumCols();
-	if (B.getNumRows() != m || B.getNumCols() != n)
+	size_t m = A.getNumberOfRows();
+	size_t n = A.getNumberOfColumns();
+	if (B.getNumberOfRows() != m || B.getNumberOfColumns() != n)
         throw RbException("Cannot add matrices A and B: the matrices are not of the same dimension");
 	else 
         {
@@ -752,9 +737,9 @@ MatrixReal operator+(const MatrixReal& A, const MatrixReal& B) {
  */
 MatrixReal operator-(const MatrixReal& A, const MatrixReal& B) {
 
-	size_t m = A.getNumRows();
-	size_t n = A.getNumCols();
-	if (B.getNumRows() != m || B.getNumCols() != n)
+	size_t m = A.getNumberOfRows();
+	size_t n = A.getNumberOfColumns();
+	if (B.getNumberOfRows() != m || B.getNumberOfColumns() != n)
         throw RbException("Cannot subtract matrices A and B: the matrices are not of the same dimension");
 	else 
         {
@@ -784,11 +769,11 @@ MatrixReal operator-(const MatrixReal& A, const MatrixReal& B) {
  */
 MatrixReal operator*(const MatrixReal& A, const MatrixReal& B) {
 
-	if ( A.getNumCols() != B.getNumRows() )
+	if ( A.getNumberOfColumns() != B.getNumberOfRows() )
         throw RbException("Cannot multiply matrices A and B: the number of columns of A does not equal the number of rows in B");
-	size_t M = A.getNumRows();
-	size_t N = A.getNumCols();
-	size_t K = B.getNumCols();
+	size_t M = A.getNumberOfRows();
+	size_t N = A.getNumberOfColumns();
+	size_t K = B.getNumberOfColumns();
 	MatrixReal C(M, K, 0.0);
 	for (size_t i=0; i<M; i++) {
 		for (size_t j=0; j<K; j++) {
@@ -814,9 +799,9 @@ MatrixReal operator*(const MatrixReal& A, const MatrixReal& B) {
  */
 MatrixReal&  operator+=(MatrixReal& A, const MatrixReal& B) {
 
-	size_t m = A.getNumRows();
-	size_t n = A.getNumCols();
-	if (B.getNumRows() == m && B.getNumCols() == n) 
+	size_t m = A.getNumberOfRows();
+	size_t n = A.getNumberOfColumns();
+	if (B.getNumberOfRows() == m && B.getNumberOfColumns() == n) 
         {
 		for (size_t i=0; i<m; i++) 
             {
@@ -840,9 +825,9 @@ MatrixReal&  operator+=(MatrixReal& A, const MatrixReal& B) {
  */
 MatrixReal&  operator-=(MatrixReal& A, const MatrixReal& B) {
 
-	size_t m = A.getNumRows();
-	size_t n = A.getNumCols();
-	if (B.getNumRows() == m && B.getNumCols() == n) 
+	size_t m = A.getNumberOfRows();
+	size_t n = A.getNumberOfColumns();
+	if (B.getNumberOfRows() == m && B.getNumberOfColumns() == n) 
         {
 		for (size_t i=0; i<m; i++) 
             {
@@ -868,9 +853,9 @@ MatrixReal&  operator-=(MatrixReal& A, const MatrixReal& B) {
  */
 MatrixReal &operator*=(MatrixReal& A, const MatrixReal& B) {
 
-	if ( A.getNumRows() == A.getNumCols() && B.getNumRows() == B.getNumCols() && A.getNumRows() == B.getNumRows() ) 
+	if ( A.getNumberOfRows() == A.getNumberOfColumns() && B.getNumberOfRows() == B.getNumberOfColumns() && A.getNumberOfRows() == B.getNumberOfRows() ) 
         {
-		size_t N = A.getNumRows();
+		size_t N = A.getNumberOfRows();
 		MatrixReal C(N, N, 0.0);
 		for (size_t i=0; i<N; i++) 
             {

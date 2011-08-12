@@ -32,8 +32,6 @@
 #include "RbFunction.h"
 #include "RbObject.h"
 #include "UserInterface.h"
-#include "ValueContainer.h"
-#include "VariableContainer.h"
 #include "Workspace.h"
 
 
@@ -55,6 +53,7 @@
 #include "TransitionProbabilityMatrix.h"
 
 /* Container types (alphabetic order) */
+#include "DagNodeContainer.h"
 #include "MatrixComplex.h"
 #include "MatrixReal.h"
 #include "VectorAminoAcidStates.h"
@@ -79,6 +78,7 @@
 
 /* MemberObject types with auto-generated constructors (alphabetic order) */
 #include "Mcmc.h"
+#include "Monitor.h"
 #include "Move_mmultinomial.h"
 #include "Move_mscale.h"
 #include "Move_msimplex.h"
@@ -118,21 +118,19 @@
 /* Builtin functions */
 #include "Func_clamp.h"
 #include "Func_ls.h"
-#include "Func_model.h"
-#include "Func_normalize.h"
+#include "Func_normalizeVector.h"
 #include "Func_quit.h"
-#include "Func_reflist.h"
 #include "Func_setval.h"
-#include "Func_str.h"
+#include "Func_structure.h"
 #include "Func_unclamp.h"
-#include "Func_vallist.h"
 
 /* Builtin templated functions */
-#include "Func_s.h"
+#include "Func_simplex.h"
 #include "Func_transpose.h"
-#include "Func_v.h"
+#include "Func_vector.h"
 
 /* Math functions */
+#include "Func_abs.h"
 #include "Func_cos.h"
 #include "Func_exp.h"
 #include "Func_ln.h"
@@ -145,9 +143,6 @@
 #include "Func_gtr.h"
 #include "Func_readAlignment.h"
 #include "Func_tiprobs.h"
-
-/* Move functions */
-#include "Func_msimplex.h"
 
 
 #include <sstream>
@@ -166,11 +161,13 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add abstract types */
         addType( new RbAbstract( VectorString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(Vector_name) + RbString(Container_name) + RbString(RbComplex_name) + RbString(RbObject_name), 1, Scalar_name ) );
-        addType( new RbAbstract( VectorString(Matrix_name) + RbString(Container_name) + RbString(RbComplex_name) + RbString(RbObject_name), 2, Scalar_name ) );
-        addType( new RbAbstract( VectorString(MemberObject_name) + RbString(RbComplex_name) + RbString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(Move_name) + RbString(MemberObject_name) + RbString(RbComplex_name) + RbString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(Distribution_name) + RbString(MemberObject_name) + RbString(RbComplex_name) + RbString(RbObject_name) ) );
+        addType( new RbAbstract( VectorString(RbLanguageObject_name) + VectorString(RbObject_name) ) );
+        addType( new RbAbstract( VectorString(RbInternal_name) + VectorString(RbObject_name) ) );
+        addType( new RbAbstract( VectorString(Vector_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name), Scalar_name ) );
+        addType( new RbAbstract( VectorString(Matrix_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name), Scalar_name ) );
+        addType( new RbAbstract( VectorString(MemberObject_name) + RbString(RbObject_name) ) );
+        addType( new RbAbstract( VectorString(Move_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
+        addType( new RbAbstract( VectorString(Distribution_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
 
         /* Add primitive types (alphabetic order) */
         addType( new AminoAcidState()                 );
@@ -190,6 +187,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new TransitionProbabilityMatrix()    );
 
         /* Add container types (alphabetic order) */
+        addType( new DagNodeContainer()             );
         addType( new MatrixComplex()                );
         addType( new MatrixReal()                   );
         addType( new VectorAminoAcidStates()        );
@@ -206,14 +204,14 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
         addType( new CharacterMatrix(DnaState_name) );
-        addType( new List()                         );
-        addType( new Model()                        );
         addType( new Simplex()                      );
         addType( new Topology()                     );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "mcmc",         new Mcmc()              );
+        addTypeWithConstructor( "monitor",      new Monitor()           );
         addTypeWithConstructor( "mmultinomial", new Move_mmultinomial() );
+        addTypeWithConstructor( "model",        new Model()             );
         addTypeWithConstructor( "msimplex",     new Move_msimplex()     );
         addTypeWithConstructor( "mslide",       new Move_mslide()       );
         addTypeWithConstructor( "mscale",       new Move_mscale()       );
@@ -257,6 +255,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_div",      new Func__div<            Integer,           Real,       Real >() );
         addFunction( "_div",      new Func__div<               Real,        Integer,       Real >() );
         addFunction( "_div",      new Func__div<         MatrixReal,     MatrixReal, MatrixReal >() );
+        addFunction( "_exp",      new Func_power()                                                  );
         addFunction( "_mul",      new Func__mul<            Integer,        Integer,    Integer >() );
         addFunction( "_mul",      new Func__mul<               Real,           Real,       Real >() );
         addFunction( "_mul",      new Func__mul<            Integer,           Real,       Real >() );
@@ -317,19 +316,17 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_or",       new Func__or<             Boolean,        Boolean >()             );
         
         /* Add builtin functions (alphabetical order) */
-        addFunction( "clamp",     new Func_clamp()     ); 
-        addFunction( "ls",        new Func_ls()        );
-        addFunction( "model",     new Func_model()     );
-        addFunction( "normalize", new Func_normalize() );
-        addFunction( "q",         new Func_quit()      );
-        addFunction( "quit",      new Func_quit()      );
-        addFunction( "reflist",   new Func_vallist()   );
-        addFunction( "setval",    new Func_setval()    );
-        addFunction( "str",       new Func_str()       );
-        addFunction( "unclamp",   new Func_unclamp()   );
-        addFunction( "vallist",   new Func_vallist()   );
+        addFunction( "clamp",     new Func_clamp()           ); 
+        addFunction( "ls",        new Func_ls()              );
+        addFunction( "normalize", new Func_normalizeVector() );
+        addFunction( "q",         new Func_quit()            );
+        addFunction( "quit",      new Func_quit()            );
+        addFunction( "setval",    new Func_setval()          );
+        addFunction( "str",       new Func_structure()       );
+        addFunction( "unclamp",   new Func_unclamp()         );
         
         /* Add math functions (alphabetical order) */ 
+        addFunction( "abs",       new Func_abs()   );
         addFunction( "cos",       new Func_cos()   );
         addFunction( "expf",      new Func_exp()   );
         addFunction( "ln",        new Func_ln()    );
@@ -344,27 +341,24 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "tiprobs",   new Func_tiprobs()       );
         
         /* Add builtin templated functions */
-        addFunction( "s",         new Func_s<         Integer                                                         >() );
-        addFunction( "s",         new Func_s<         RealPos                                                         >() );
-        addFunction( "s",         new Func_s<         VectorRealPos                                                   >() );
-        addFunction( "simplex",   new Func_s<         Integer                                                         >() );
-        addFunction( "simplex",   new Func_s<         RealPos                                                         >() );
-        addFunction( "simplex",   new Func_s<         VectorRealPos                                                   >() );
-        addFunction( "transpose", new Func_transpose< MatrixReal                                                      >() );
-        addFunction( "v",         new Func_v<         Boolean,                        VectorBoolean                   >() );
-        addFunction( "v",         new Func_v<         Integer,                        VectorInteger                   >() );
-        addFunction( "v",         new Func_v<         Natural,                        VectorNatural                   >() );
-        addFunction( "v",         new Func_v<         Real,                           VectorReal                      >() );
-        addFunction( "v",         new Func_v<         RealPos,                        VectorRealPos                   >() );
-        addFunction( "v",         new Func_v<         Complex,                        VectorComplex                   >() );
-        addFunction( "v",         new Func_v<         RbString,                       VectorString                    >() );
-        addFunction( "v",         new Func_v<         DnaState,                       VectorDnaStates                 >() );
-        addFunction( "v",         new Func_v<         RnaState,                       VectorRnaStates                 >() );
-        addFunction( "v",         new Func_v<         AminoAcidState,                 VectorAminoAcidStates           >() );
-        addFunction( "v",         new Func_v<         StandardState,                  VectorStandardStates            >() );
-        addFunction( "v",         new Func_v<         CharacterContinuous,            VectorCharacterContinuous       >() );
-        addFunction( "v",         new Func_v<         VectorReal,                     MatrixReal                      >() );
-        addFunction( "v",         new Func_v<         VectorComplex,                  MatrixComplex                   >() );
+//        addFunction( "simplex",   new Func_simplex<         Integer                                                         >() );
+        addFunction( "simplex",   new Func_simplex<         RealPos                                                         >() );
+//        addFunction( "simplex",   new Func_simplex<         VectorRealPos                                                   >() );
+        addFunction( "transpose", new Func_transpose<       MatrixReal                                                      >() );
+        addFunction( "v",         new Func_vector<          Boolean,                        VectorBoolean                   >() );
+        addFunction( "v",         new Func_vector<          Integer,                        VectorInteger                   >() );
+        addFunction( "v",         new Func_vector<          Natural,                        VectorNatural                   >() );
+        addFunction( "v",         new Func_vector<          Real,                           VectorReal                      >() );
+        addFunction( "v",         new Func_vector<          RealPos,                        VectorRealPos                   >() );
+        addFunction( "v",         new Func_vector<          Complex,                        VectorComplex                   >() );
+        addFunction( "v",         new Func_vector<          RbString,                       VectorString                    >() );
+        addFunction( "v",         new Func_vector<          DnaState,                       VectorDnaStates                 >() );
+        addFunction( "v",         new Func_vector<          RnaState,                       VectorRnaStates                 >() );
+        addFunction( "v",         new Func_vector<          AminoAcidState,                 VectorAminoAcidStates           >() );
+        addFunction( "v",         new Func_vector<          StandardState,                  VectorStandardStates            >() );
+        addFunction( "v",         new Func_vector<          CharacterContinuous,            VectorCharacterContinuous       >() );
+        addFunction( "v",         new Func_vector<          VectorReal,                     MatrixReal                      >() );
+        addFunction( "v",         new Func_vector<          VectorComplex,                  MatrixComplex                   >() );
     }
     catch(RbException& rbException) {
 

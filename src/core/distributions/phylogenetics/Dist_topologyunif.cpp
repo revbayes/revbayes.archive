@@ -49,9 +49,9 @@ Dist_topologyunif::Dist_topologyunif( void ) : DistributionDiscrete( getMemberRu
 /** Constructor for internal use */
 Dist_topologyunif::Dist_topologyunif( int numTaxa, bool isRooted, bool isBinary ) : DistributionDiscrete( getMemberRules() ) {
 
-    setValue( "numberTaxa", new Natural( numTaxa ) );
-    setValue( "isRooted"  , new Boolean( isRooted ) );
-    setValue( "isBinary"  , new Boolean( isBinary ) );
+//    setMemberValue( "numberTaxa", new Natural( numTaxa ) );
+//    setMemberValue( "isRooted"  , new Boolean( isRooted ) );
+//    setMemberValue( "isBinary"  , new Boolean( isBinary ) );
 
     // Precalculate probability of topology
     calculateTopologyProb();
@@ -94,9 +94,9 @@ void Dist_topologyunif::buildRandomBinaryTree(std::vector<TopologyNode *> &tips,
 void Dist_topologyunif::calculateTopologyProb( void ) {
     
     // Get the parameters
-    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
-    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
-    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
+    int             numTaxa  = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
+    bool            isRooted = static_cast<const Boolean*>( getMemberValue( "isRooted"    ) )->getValue();
+    bool            isBinary = static_cast<const Boolean*>( getMemberValue( "isBinary"    ) )->getValue();
     
     // Calculate probabilities of a topology drawn from the distribution
     if (isBinary) {
@@ -128,9 +128,9 @@ void Dist_topologyunif::calculateTopologyProb( void ) {
 void Dist_topologyunif::calculateNumberOfStates( void ) {
     
     // Get the parameters
-    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
-    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
-    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
+    int             numTaxa  = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
+    bool            isRooted = static_cast<const Boolean*>( getMemberValue( "isRooted"    ) )->getValue();
+    bool            isBinary = static_cast<const Boolean*>( getMemberValue( "isBinary"    ) )->getValue();
     
     // Calculate probabilities of a topology drawn from the distribution
     if (isBinary) {
@@ -177,14 +177,6 @@ const VectorString& Dist_topologyunif::getClass( void ) const {
 }
 
 
-/** Get default move */
-Move* Dist_topologyunif::getDefaultMove( StochasticNode* node ) {
-
-	// TODO: Add a default move
-    return NULL;
-}
-
-
 /** Get member variable rules */
 const MemberRules& Dist_topologyunif::getMemberRules( void ) const {
 
@@ -206,7 +198,7 @@ const MemberRules& Dist_topologyunif::getMemberRules( void ) const {
 
 
 /** Get the number of states in the distribution */
-size_t Dist_topologyunif::getNumStates( void ) const {
+size_t Dist_topologyunif::getNumberOfStates( void ) const {
 
     return numberOfStates;
 }
@@ -215,10 +207,10 @@ size_t Dist_topologyunif::getNumStates( void ) const {
 /** Get the probability mass vector */
 const Simplex* Dist_topologyunif::getProbabilityMassVector( void ) {
 
-    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
+    int             numTaxa  = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
 
     if ( numTaxa <= 6 )
-        return new Simplex( getNumStates() );
+        return new Simplex( getNumberOfStates() );
     else
         throw RbException( "Too many topologies to generate probability mass vector" );
 }
@@ -240,13 +232,13 @@ const TypeSpec Dist_topologyunif::getVariableType( void ) const {
  * @param value Observed topology
  * @return      Natural log of the probability
  */
-double Dist_topologyunif::lnPdf( const RbObject* value ) {
+double Dist_topologyunif::lnPdf( const RbLanguageObject* value ) {
 
     // Get the parameters
     const Topology* top      = static_cast<const Topology*    >( value );
-    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
-    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
-    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
+    int             numTaxa  = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
+    bool            isRooted = static_cast<const Boolean*>( getMemberValue( "isRooted"    ) )->getValue();
+    bool            isBinary = static_cast<const Boolean*>( getMemberValue( "isBinary"    ) )->getValue();
 
     // If numTaxa, isRooted and isBinary fits top, then return precalculated probability stored in the class
     // Otherwise return negative infinity
@@ -266,13 +258,13 @@ double Dist_topologyunif::lnPdf( const RbObject* value ) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_topologyunif::pdf( const RbObject* value ) {
+double Dist_topologyunif::pdf( const RbLanguageObject* value ) {
 
     // Get the parameters
     const Topology* top      = static_cast<const Topology*    >( value );
-    int             numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
-    bool            isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
-    bool            isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
+    int             numTaxa  = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
+    bool            isRooted = static_cast<const Boolean*>( getMemberValue( "isRooted"    ) )->getValue();
+    bool            isBinary = static_cast<const Boolean*>( getMemberValue( "isBinary"    ) )->getValue();
 
     // If numTaxa, isRooted and isBinary fits top, then return precalculated probability stored in the class
     // Otherwise return 0.0
@@ -296,10 +288,10 @@ Topology* Dist_topologyunif::rv( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // Get the parameters
-    int                 numTaxa  = static_cast<const Natural*>( getValue( "numberTaxa"  ) )->getValue();
-    bool                isRooted = static_cast<const Boolean*>( getValue( "isRooted"    ) )->getValue();
-    bool                isBinary = static_cast<const Boolean*>( getValue( "isBinary"    ) )->getValue();
-    const VectorString  *names   = static_cast<const VectorString*>( getValue( "tipNames"    ) );
+    int                 numTaxa  = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
+    bool                isRooted = static_cast<const Boolean*>( getMemberValue( "isRooted"    ) )->getValue();
+    bool                isBinary = static_cast<const Boolean*>( getMemberValue( "isBinary"    ) )->getValue();
+    const VectorString  *names   = static_cast<const VectorString*>( getMemberValue( "tipNames"    ) );
 
     // Draw a random topology
     if (isBinary) {
@@ -339,9 +331,9 @@ Topology* Dist_topologyunif::rv( void ) {
 
 
 /** We intercept a call to set a member variable to make sure that the topology prob gets recalculated */
-void Dist_topologyunif::setVariable( const std::string& name, DAGNode* var ) {
+void Dist_topologyunif::setMemberVariable( const std::string& name, Variable* var ) {
 
-    DistributionDiscrete::setVariable( name, var );
+    DistributionDiscrete::setMemberVariable( name, var );
 
     // TODO: recaluclation of the probability crashes if not all variable are already set!!!
 //    calculateTopologyProb();

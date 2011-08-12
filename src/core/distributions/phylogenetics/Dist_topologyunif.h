@@ -7,13 +7,13 @@
  * @brief Declaration of Dist_topologyunif
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2009-12-14 12:43:32 +0100 (Mån, 14 Dec 2009) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-27, version 1.0
  *
- * $Id: MemberObject.h 194 2009-12-14 11:43:32Z ronquist $
+ * $Id$
  */
 
 #ifndef Dist_topologyunif_H
@@ -40,15 +40,14 @@ class Dist_topologyunif: public DistributionDiscrete {
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        void                        setVariable(const std::string& name, DAGNode* var);                 //!< Set member variable (ensure topologyProb is updated)
+        void                        setMemberVariable(const std::string& name, Variable* var);          //!< Set member variable (ensure topologyProb is updated)
 
         // Discrete distribution functions
-        Move*                       getDefaultMove(StochasticNode* node);                               //!< Get default move
-        size_t                      getNumStates(void) const;                                           //!< Get number of states
+        size_t                      getNumberOfStates(void) const;                                      //!< Get number of states
         virtual const Simplex*      getProbabilityMassVector(void);                                     //!< Get probability mass vector
         const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-        double                      lnPdf(const RbObject* value);                                       //!< Ln probability density
-        double                      pdf(const RbObject* value);                                         //!< Probability density
+        double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
+        double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         Topology*                   rv(void);                                                           //!< Generate random variable
 
     private:

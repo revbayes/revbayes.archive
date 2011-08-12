@@ -32,22 +32,33 @@
 #include <sstream>
 
 /** Default constructor */
-Integer::Integer(void) : RbObject(), value(0) {
+Integer::Integer(void) : RbLanguageObject(), value(0) {
 }
 
 /** Construct from int */
-Integer::Integer(const int v) : RbObject(), value(v) {
+Integer::Integer(const int v) : RbLanguageObject(), value(v) {
 }
 
 /** Construct from unsigned int (ambiguous between int and bool otherwise) */
-Integer::Integer(const unsigned int v) : RbObject(), value(v) {
+Integer::Integer(const unsigned int v) : RbLanguageObject(), value(v) {
 }
 
 /** Construct from bool */
-Integer::Integer(const bool v) : RbObject() {
+Integer::Integer(const bool v) : RbLanguageObject() {
 
     if (v) value = 1;
     else value = 0;
+}
+
+/** Get brief info about object */
+std::string Integer::briefInfo(void) const {
+    
+	std::ostringstream o;
+    o << "Integer(";
+    printValue(o);
+	o<< ")";
+    
+    return o.str();
 }
 
 /** Clone object */
@@ -58,63 +69,63 @@ Integer* Integer::clone(void) const {
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbObject* Integer::convertTo( const std::string& type, size_t dim ) const {
+RbLanguageObject* Integer::convertTo( const std::string& type ) const {
 
-    if ( type == Boolean_name && dim == 0 ) 
+    if ( type == Boolean_name ) 
         return new Boolean( value == 0 );
 
-    if ( type == Real_name && dim == 0 )
+    if ( type == Real_name )
         return new Real( value );
 
-    if ( type == RbString_name && dim == 0 ) {
+    if ( type == RbString_name ) {
         std::ostringstream o;
         printValue( o );
         return new RbString( o.str() );
     }
 
-    if ( type == VectorInteger_name && dim == 0 )
+    if ( type == VectorInteger_name )
         return new VectorInteger( value );
 
-    if ( type == RealPos_name && dim == 0 && value > 0 )
+    if ( type == RealPos_name && value > 0 )
         return new RealPos( value );
 
-    if ( type == Natural_name && dim == 0 && value >= 0)
+    if ( type == Natural_name && value >= 0)
         return new Natural( value );
 
-    return RbObject::convertTo( type, dim );
+    return RbLanguageObject::convertTo( type );
 }
 
 
 /** Get class vector describing type of object */
 const VectorString& Integer::getClass() const {
 
-    static VectorString rbClass = VectorString(Integer_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(Integer_name) + RbLanguageObject::getClass();
     return rbClass;
 }
 
 
 /** Is convertible to language object of type and dim? */
-bool Integer::isConvertibleTo( const std::string& type, size_t dim, bool once ) const {
+bool Integer::isConvertibleTo( const std::string& type, bool once ) const {
 
-    if ( type == Boolean_name && dim == 0 )
+    if ( type == Boolean_name)
         return true;
 
-    if ( type == Real_name && dim == 0 )
+    if ( type == Real_name )
         return true;
 
-    if ( type == RbString_name && dim == 0 )
+    if ( type == RbString_name )
         return true;
     
-    if ( type == VectorInteger_name && dim == 0 )
+    if ( type == VectorInteger_name )
         return true;
 
-    if ( type == RealPos_name && dim == 0 && once == true && value > 0 )
+    if ( type == RealPos_name && once == true && value > 0 )
         return true;
 
-    if ( type == Natural_name && dim == 0 && once == true && value >= 0 )
+    if ( type == Natural_name && once == true && value >= 0 )
         return true;
 
-    return RbObject::isConvertibleTo( type, dim, once );
+    return RbLanguageObject::isConvertibleTo( type, once );
 }
 
 

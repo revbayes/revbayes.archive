@@ -33,7 +33,7 @@ class Func__unot :  public RbFunction {
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-    	DAGNode*                    execute(void);                                              //!< Execute function
+    	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
@@ -59,12 +59,12 @@ Func__unot<valType>* Func__unot<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType>
-DAGNode* Func__unot<valType>::execute( void ) {
+RbLanguageObject* Func__unot<valType>::execute( void ) {
 
     const valType*  val = static_cast<const valType*> ( args[0].getValue() );
     Boolean         res = ! (*val);
 
-    return res.clone()->wrapIntoVariable();
+    return res.clone();
 }
 
 
@@ -100,6 +100,6 @@ const VectorString& Func__unot<valType>::getClass( void ) const {
 template <typename valType>
 const TypeSpec Func__unot<valType>::getReturnType( void ) const {
 
-    return TypeSpec( Boolean_name, 0 );
+    return TypeSpec( Boolean_name );
 }
 

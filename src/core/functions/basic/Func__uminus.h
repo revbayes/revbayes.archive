@@ -21,7 +21,7 @@
 
 #include <string>
 
-class DAGNode;
+class RbLanguageObject;
 class VectorString;
 
 template <typename valType, typename retType>
@@ -29,11 +29,11 @@ class Func__uminus :  public RbFunction {
 
     public:
         // Basic utility functions
-        Func__uminus*                clone(void) const;                                          //!< Clone the object
+        Func__uminus*               clone(void) const;                                          //!< Clone the object
     	const VectorString&         getClass(void) const;                                       //!< Get class vector
 
         // Regular functions
-    	DAGNode*                    execute(void);                                              //!< Execute function
+    	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
 
@@ -58,12 +58,12 @@ Func__uminus<valType, retType>* Func__uminus<valType, retType>::clone( void ) co
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType, typename retType>
-DAGNode* Func__uminus<valType, retType>::execute( void ) {
+RbLanguageObject* Func__uminus<valType, retType>::execute( void ) {
 
     const valType*  val = static_cast<const valType*> ( args[0].getValue() );
     retType         res = -( *val );
 
-    return res.clone()->wrapIntoVariable();
+    return res.clone();
 }
 
 

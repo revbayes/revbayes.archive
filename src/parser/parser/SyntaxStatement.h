@@ -52,11 +52,10 @@ class SyntaxStatement : public SyntaxElement {
         void                        print(std::ostream& o) const;                                   //!< Print info about object
 
         // Regular functions
-        DAGNode*                    getDAGNodeExpr(VariableFrame* frame) const;                     //!< Convert to DAG node expression
-        DAGNode*                    getValue(VariableFrame* frame) const;                           //!< Get semantic value
+        Variable*                   getContentAsVariable(Environment* env) const;                   //!< Get semantic value
 
     protected:
-        bool                        isTrue(SyntaxElement* expression, VariableFrame* frame) const;  //!< Does expression evaluate to true?
+        bool                        isTrue(SyntaxElement* expression, Environment* env) const;      //!< Does expression evaluate to true?
 
         enum statementT             statementType;                                                  //!< The type of statement
         SyntaxElement*              expression;                                                     //!< Expression, conditional expr, or for condition

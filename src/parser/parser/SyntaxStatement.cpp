@@ -13,9 +13,9 @@
  * $Id$
  */
 
-#include "Boolean.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
+#include "Environment.h"
 #include "RbException.h"
 #include "RbNames.h"
 #include "Signals.h"
@@ -23,7 +23,6 @@
 #include "SyntaxForCondition.h"
 #include "SyntaxStatement.h"
 #include "UserInterface.h"
-#include "VariableFrame.h"
 #include "Workspace.h"
 
 #include <cassert>
@@ -148,15 +147,9 @@ SyntaxElement* SyntaxStatement::clone () const {
 }
 
 
-/** Convert element to DAG node; inapplicable, so return NULL */
-DAGNode* SyntaxStatement::getDAGNodeExpr(VariableFrame* frame) const {
-
-    return NULL;
-}
-
 
 /** Get semantic value: it is here that we execute the statement */
-DAGNode* SyntaxStatement::getValue(VariableFrame* frame) const {
+Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
 
     if (statementType == For) {
 
@@ -166,30 +159,26 @@ DAGNode* SyntaxStatement::getValue(VariableFrame* frame) const {
 
         // Initialize for loop
         Signals::getSignals().clearFlags();
-        forCond->initializeLoop(frame);
+        
+        // create a new environment for the loop
+        // we need a new environment so that the elements will nt be visible from the outside
+//        Environment *loopEnv = new Environment(env);
+        Environment *loopEnv = env;
+        
+        forCond->initializeLoop(loopEnv);
 
         // Now loop over statements inside the for loop
-        while (forCond->getNextLoopState(frame)) {
+        while (forCond->getNextLoopState(loopEnv)) {
 
             for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
 
                 // Execute statement
-                DAGNode* result = (*i)->getValue(frame);
+                Variable* result = (*i)->getContentAsVariable(loopEnv);
 
-                // These lines would print the value of single-line expressions.
-                // This is not the behavior of R but John likes it. I leave it in
-                // for now, in case we want to use it, but commented out. -- Fredrik
-#if 0
-                if ( result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
-                    std::ostringstream msg;
-                    result->printValue(msg);
-                    RBOUT(msg.str());
+                // Free memory
+				if ( result != NULL && result->isUnreferenced()) {
+					delete result;  // discard result
                 }
-#endif
-
-                // Free memory
-				if ( result != NULL && result->numRefs() == 0 )
-					delete result;  // discard result
 
                 // Catch signal
                 if ( !Signals::getSignals().isGood() )
@@ -198,7 +187,7 @@ DAGNode* SyntaxStatement::getValue(VariableFrame* frame) const {
 
             // Catch signals
             if ( Signals::getSignals().isSet(Signals::BREAK) ) {
-                forCond->finalizeLoop(frame);   // We need to tell the for condition to finalize the loop
+                forCond->finalizeLoop(loopEnv);   // We need to tell the for condition to finalize the loop
                 Signals::getSignals().clearFlags();
                 break;
             }
@@ -206,35 +195,9 @@ DAGNode* SyntaxStatement::getValue(VariableFrame* frame) const {
                 Signals::getSignals().clearFlags();  // Just continue with next loop state
             }
         }
-    }
-    else if ( statementType == While ) {
-
-        // Loop over statements inside the while loop, first checking the expression
-        while ( isTrue( expression, frame ) ) {
-
-            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
-
-                // Execute statement
-                DAGNode* result = (*i)->getValue( frame );
-
-                // Free memory
-				if ( result != NULL && result->numRefs() == 0 )
-					delete result;  // discard result
-
-                // Catch signal
-                if ( !Signals::getSignals().isGood() )
-                    break;
-            }
-
-            // Catch signals
-            if ( Signals::getSignals().isSet(Signals::BREAK) ) {
-                Signals::getSignals().clearFlags();
-                break;
-            }
-            else if ( Signals::getSignals().isSet(Signals::CONTINUE) ) {
-                Signals::getSignals().clearFlags();  // Just continue with next loop state
-            }
-        }
+        
+        // destroy the loop environment
+//        delete loopEnv;
     }
     else if (statementType == Break) {
     
@@ -246,94 +209,15 @@ DAGNode* SyntaxStatement::getValue(VariableFrame* frame) const {
         // Set CONTINUE signal
         Signals::getSignals().set(Signals::CONTINUE);
     }
-    else if (statementType == Return) {
-    
-        // Set RETURN signal and return expression value
-        Signals::getSignals().set(Signals::RETURN);
-        return expression->getValue(frame);
+    else if (statementType == If) {
+        throw (RbException("Statement of type " + stmtName[statementType] + " not implemented yet"));
+        
     }
-    else if ( statementType == If ) {
-
-        // Process statements inside the if clause if expression is true
-        if ( isTrue( expression, frame ) ) {
-
-            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
-
-                // Execute statement
-                DAGNode* result = (*i)->getValue( frame );
-
-                // Free memory
-				if ( result != NULL && result->numRefs() == 0 )
-					delete result;  // discard result
-            }
-        }
-    }
-    else if ( statementType == IfElse ) {
-
-        // Process statements inside the if clause if expression is true,
-        // otherwise process statements in else clause
-        if ( isTrue( expression, frame ) ) {
-
-            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
-
-                // Execute statement
-                DAGNode* result = (*i)->getValue( frame );
-
-                // Free memory
-				if ( result != NULL && result->numRefs() == 0 )
-					delete result;  // discard result
-            }
-        }
-        else {
-
-            for ( std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++ ) {
-
-                // Execute statement
-                DAGNode* result = (*i)->getValue( frame );
-
-                // Free memory
-				if ( result != NULL && result->numRefs() == 0 )
-					delete result;  // discard result
-            }
-        }
+    else {
+        throw (RbException("Statement of type " + stmtName[statementType] + " not implemented yet"));
     }
 
     return NULL;
-}
-
-
-/**
- * This is a help function that evaluates the expression and then checks
- * whether the result is true or false, or can be interpreted as a Boolean
- * true or false value.
- */
-bool SyntaxStatement::isTrue( SyntaxElement* expression, VariableFrame* frame ) const {
-
-    DAGNode* temp = expression->getValue( frame  );
-
-    if ( temp == NULL )
-        return false;
-
-    if ( temp->getValue()->isType( Boolean_name ) ) {
-    
-        bool retValue = static_cast<const Boolean*>( temp->getValue() )->getValue();
-
-        if ( temp->numRefs() == 0 )
-            delete   temp;
-
-        return retValue;
-    }
-    else {
-    
-        Boolean* tempBool = static_cast<Boolean*>( temp->getValue()->convertTo( Boolean_name, 0 ) );
-        bool     retValue = tempBool->getValue();
-
-        delete   tempBool;
-        if ( temp->numRefs() == 0 )
-            delete   temp;
-
-        return   retValue;
-    }
 }
 
 

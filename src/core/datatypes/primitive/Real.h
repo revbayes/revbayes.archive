@@ -19,7 +19,7 @@
 #ifndef Real_H
 #define Real_H
 
-#include "RbObject.h"
+#include "RbLanguageObject.h"
 #include <ostream>
 #include <string>
 
@@ -32,10 +32,10 @@ class VectorString;
  *
  * @note Some functions are virtual because RealPos is derived from double
  */
-class Real : public RbObject {
+class Real : public RbLanguageObject {
 
     public:
-        friend class                VectorReal;                                                             //!< Give VecorReal direct access to value
+//        friend class                VectorReal;                                                             //!< Give VecorReal direct access to value
 
                                     Real(void);                                                             //!< Default constructor (0.0)
                                     Real(const double v);                                                   //!< Construct from double
@@ -47,10 +47,12 @@ class Real : public RbObject {
                                     operator double(void) const { return value; }                           //!< Type conversion to double for convenience
         
         // Basic utility functions
+        virtual std::string         briefInfo(void) const;                                                  //!< Brief info about the object
         virtual Real*               clone(void) const;                                                      //!< Clone object
-        RbObject*                   convertTo(const std::string& type, size_t dim) const;                   //!< Convert to type and dim
+        RbLanguageObject*           convertTo(const std::string& type) const;                               //!< Convert to type and dim
         virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
-        bool                        isConvertibleTo(const std::string& type, size_t dim, bool once) const;  //!< Is convertible to type and dim?
+        double&                     getValueReference(void) { return value; }                               //!< Get value reference
+        bool                        isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type?
         void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
         virtual std::string         richInfo(void) const;                                                   //!< Complete info about object
 
@@ -59,7 +61,6 @@ class Real : public RbObject {
         double                      getValue(void) const { return value; }                                  //!< Get value
 
 	protected:
-        double&                     getValueRef(void) { return value; }                                     //!< Get value reference
         double                      value;                                                                  //!< Value member
 };
 
