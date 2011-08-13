@@ -53,8 +53,6 @@ class VectorString : public Vector {
     
         std::vector<std::string>    getStdVector(void) const;                                       //!< Get the value vector as a std::vector
     
-    protected:
-
 };
 
 #endif

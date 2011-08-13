@@ -27,7 +27,7 @@
 class Vector : public Container {
 
     public:
-    virtual                        ~Vector(void);                                                           //!< Virtual destructor 
+        virtual                        ~Vector(void);                                                       //!< Virtual destructor 
 
         // Basic utility functions you have to override
         virtual Vector*                 clone(void) const = 0;                                              //!< Clone object
@@ -49,6 +49,7 @@ class Vector : public Container {
 
         protected:
                                         Vector(const std::string& elemType);                                //!< Set type spec of container from type of elements
+                                        Vector(const Vector &v);                                            //!< Copy Constructor
     
         std::vector<RbLanguageObject*>  elements;
 };

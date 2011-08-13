@@ -53,9 +53,6 @@ class VectorBoolean : public Vector {
         void                        setValue(const VectorBoolean& x);                               //!< Set the value
         void                        setValue(const std::vector<bool>& x);                           //!< Set the value
 
-    protected:
-//        RbObject*                   getDefaultElement(void) const { return new Boolean(); }         //!< Get default element for empty slots
-
 };
 
 #endif

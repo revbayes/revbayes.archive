@@ -28,6 +28,20 @@ Vector::Vector(const std::string& elemType) : Container(TypeSpec(elemType)) {
 }
 
 
+/** Copy Constructor */
+Vector::Vector(const Vector &v) : Container(v.elementType) {
+    
+    // copy all the elements by deep copy
+    for (std::vector<RbLanguageObject*>::const_iterator it=v.elements.begin(); it!=v.elements.end(); it++) {
+        RbLanguageObject *copy = (*it)->clone();
+        copy->retain();
+        elements.push_back(copy);
+    }
+    
+    length = v.getLength();
+}
+
+
 /** Destructor. Free the memory of the elements. */
 Vector::~Vector(void) {
     
@@ -45,12 +59,14 @@ Vector& Vector::operator=( const Vector& x ) {
         // our own elements, we can make sure that an assignment error leaves us intact, which it should
         Container::operator=( x );
         
-        for ( std::vector<RbLanguageObject*>::iterator i = elements.begin(); i != elements.end(); i++ )
-            delete ( *i );
-        elements.clear();
+        // just call clear which will free the memory of the objects
+        clear();
         
-        for ( std::vector<RbLanguageObject*>::const_iterator i = x.elements.begin(); i != x.elements.end(); i++ )
-            elements.push_back( (*i)->clone() );
+        for ( std::vector<RbLanguageObject*>::const_iterator i = x.elements.begin(); i != x.elements.end(); i++ ) {
+            RbLanguageObject *element = (*i)->clone();
+            element->retain();
+            elements.push_back( element );
+        }
     }
     
     return ( *this );

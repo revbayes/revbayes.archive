@@ -139,6 +139,9 @@ bool Workspace::addType(RbObject* exampleObj) {
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
     typeTable.insert(std::pair<std::string, RbObject*>(exampleObj->getType(), exampleObj));
+    
+    // retain the object
+    exampleObj->retain();
 
     return true;
 }
@@ -153,6 +156,9 @@ bool Workspace::addType(const std::string& name, RbObject* exampleObj) {
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
     typeTable.insert(std::pair<std::string, RbObject*>( name, exampleObj));
+    
+    // retain the object
+    exampleObj->retain();
 
     return true;
 }

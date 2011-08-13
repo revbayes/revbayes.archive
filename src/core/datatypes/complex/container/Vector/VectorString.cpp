@@ -165,6 +165,7 @@ void VectorString::push_back(std::string x) {
     RbString *element = new RbString(x);
     element->retain();
     elements.push_back( element );
+    
     length++;
 }
 
