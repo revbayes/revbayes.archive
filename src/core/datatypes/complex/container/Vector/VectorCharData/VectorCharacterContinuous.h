@@ -51,8 +51,6 @@ class VectorCharacterContinuous : public VectorCharacters {
 	    void                                         push_back(CharacterContinuous x);                                         //!< Add element
         std::vector<CharacterContinuous*>            getStdVector(void) const;                                                 //!< Get the value vector as a std::vector
 
-    protected:
-//        RbObject*                                    getDefaultElement(void) const { return new VectorCharacterContinuous(); } //!< Get default element for empty slots
 };
 
 #endif

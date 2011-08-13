@@ -38,7 +38,9 @@ VectorBoolean::VectorBoolean(void) : Vector(Boolean_name) {
 /** Construct vector with one bool x */
 VectorBoolean::VectorBoolean(bool x) : Vector(Boolean_name) {
 
-    elements.push_back(new Boolean(x));
+    Boolean *element = new Boolean(x);
+    element->retain();
+    elements.push_back( element );
     length = 1;
 }
 
@@ -46,8 +48,11 @@ VectorBoolean::VectorBoolean(bool x) : Vector(Boolean_name) {
 /** Construct vector with n bools x */
 VectorBoolean::VectorBoolean(size_t n, bool x) : Vector(Boolean_name) {
 
-    for (size_t i = 0; i < n; i++)
-        elements.push_back(new Boolean(x));
+    for (size_t i = 0; i < n; i++) {
+        Boolean *element = new Boolean(x);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 }
 
@@ -55,8 +60,11 @@ VectorBoolean::VectorBoolean(size_t n, bool x) : Vector(Boolean_name) {
 /** Constructor from bool vector */
 VectorBoolean::VectorBoolean(const std::vector<bool>& x) : Vector(Boolean_name) {
 
-    for (std::vector<bool>::const_iterator i=x.begin(); i!=x.begin(); i++)
-        elements.push_back(new Boolean(*i));
+    for (std::vector<bool>::const_iterator i=x.begin(); i!=x.begin(); i++) {
+        Boolean *element = new Boolean(*i);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 }
 
@@ -64,8 +72,11 @@ VectorBoolean::VectorBoolean(const std::vector<bool>& x) : Vector(Boolean_name) 
 /** Constructor from int vector */
 VectorBoolean::VectorBoolean(const std::vector<int>& x) : Vector(Boolean_name) {
 
-    for (std::vector<int>::const_iterator i=x.begin(); i!=x.end(); i++)
-        elements.push_back( new Boolean( (*i) == 0 ) );
+    for (std::vector<int>::const_iterator i=x.begin(); i!=x.end(); i++) {
+        Boolean *element = new Boolean( (*i) == 0 );
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 }
 
@@ -137,16 +148,20 @@ std::vector<bool> VectorBoolean::getValue(void) const {
 
 /** Append element to end of vector, updating length in process */
 void VectorBoolean::push_back(bool x) {
-
-    elements.push_back(new Boolean(x));
+    
+    Boolean *element = new Boolean(x);
+    element->retain();
+    elements.push_back( element );
     length++;
 }
 
 
 /** Add element in front of vector, updating length in process */
 void VectorBoolean::push_front(bool x) {
-
-    elements.insert(elements.begin(), new Boolean(x));
+    
+    Boolean *element = new Boolean(x);
+    element->retain();
+    elements.insert(elements.begin(), element );
     length++;
 }
 
@@ -166,8 +181,10 @@ std::string VectorBoolean::richInfo(void) const {
 void VectorBoolean::setValue(const std::vector<bool>& x) {
 
     clear();
-    for (std::vector<bool>::const_iterator i=x.begin(); i!=x.end(); i++) {   
-        elements.push_back(new Boolean(*i));
+    for (std::vector<bool>::const_iterator i=x.begin(); i!=x.end(); i++) { 
+        Boolean *element = new Boolean(*i);
+        element->retain();
+        elements.push_back( element );  
         length++;
     }
 }   
@@ -178,7 +195,9 @@ void VectorBoolean::setValue(const VectorBoolean& x) {
 
     clear();
     for (size_t i=0; i<x.getLength(); i++) {   
-        elements.push_back(new Boolean(x[i]));
+        Boolean *element = new Boolean(x[i]);
+        element->retain();
+        elements.push_back( element );
         length++;
     }
 }   

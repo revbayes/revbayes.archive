@@ -32,11 +32,17 @@
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
 TopologyNode::TopologyNode(int indx) : name(""), index(indx), ConstantMemberObject( getMemberRules() ) {
+    
+    // initialize
+    parent = NULL;
 }
 
 
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const std::string& n, int indx) : name(n), index(indx), ConstantMemberObject( getMemberRules() ) {
+    
+    // initialize
+    parent = NULL;
 }
 
 
@@ -99,10 +105,6 @@ const MethodTable& TopologyNode::getMethods(void) const {
 
     if ( methodsSet == false ) 
         {
-        // This must be here so the parser can distinguish between different instances of a character matrix
-        isTipArgRules.push_back(      new ValueRule( "", MemberObject_name ) );
-        isRootArgRules.push_back(     new ValueRule( "", MemberObject_name ) );
-        isInteriorArgRules.push_back( new ValueRule( "", MemberObject_name ) );
         
         methods.addFunction("isTip",      new MemberFunction(Boolean_name, isTipArgRules)  );
         methods.addFunction("isRoot",     new MemberFunction(Boolean_name, isRootArgRules)  );
@@ -133,6 +135,11 @@ const MemberRules& TopologyNode::getMemberRules(void) const {
 
 /** Print value for user */
 void TopologyNode::printValue(std::ostream& o) const {
+    
+    if (name != "")
+        o << name << ":";
+    else
+        o << "Unnamed Topology Node:";
 }
 
 

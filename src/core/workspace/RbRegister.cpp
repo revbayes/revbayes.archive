@@ -75,6 +75,7 @@
 #include "Model.h"
 #include "Simplex.h"
 #include "Topology.h"
+#include "TopologyNode.h"
 
 /* MemberObject types with auto-generated constructors (alphabetic order) */
 #include "Mcmc.h"
@@ -206,6 +207,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new CharacterMatrix(DnaState_name) );
         addType( new Simplex()                      );
         addType( new Topology()                     );
+        addType( new TopologyNode()                 );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "mcmc",         new Mcmc()              );

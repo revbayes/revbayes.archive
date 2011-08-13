@@ -25,6 +25,7 @@
 #include "RbNames.h"
 #include "RbString.h"
 #include "Topology.h"
+#include "TopologyNode.h"
 #include "TreePlate.h"
 #include "ValueRule.h"
 #include "VectorString.h"
@@ -35,14 +36,12 @@
 TreePlate::TreePlate(void) : MutableMemberObject( getMemberRules() ) {
 
     orderingTopology = NULL;
-    treePlateVariableTypeRule = new ValueRule( "", TypeSpec( List_name ) );
 }
 
 /* constructor */
 TreePlate::TreePlate(Topology* top) : MutableMemberObject( getMemberRules() ) {
     
     orderingTopology = top;
-    treePlateVariableTypeRule = new ValueRule( "", TypeSpec( List_name ) );
 }
 
 
@@ -52,15 +51,19 @@ TreePlate::TreePlate(const TreePlate& t) : MutableMemberObject( t ) {
     if (t.orderingTopology != NULL)
         orderingTopology = t.orderingTopology->clone();
     
-    treePlateVariableTypeRule = t.treePlateVariableTypeRule->clone();
 }
 
 
 /* Destructor */
 TreePlate::~TreePlate(void) {
 
-//    delete orderingTopology;
-//    delete treePlateVariableTypeRule;
+    // delete the ordering topology
+    if (orderingTopology != NULL) {
+        orderingTopology->release();
+        if (orderingTopology->isUnreferenced()) {
+            delete orderingTopology;
+        }
+    }
 }
 
 
@@ -128,6 +131,15 @@ RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environme
         
         return NULL;
     }
+    else if (name == "nnodes") {
+        return new Natural( orderingTopology->getNumberOfNodes() );
+    }
+    else if (name == "node") {
+        // we assume that the node indices in the RevLanguage are from 1:nnodes()
+        int index = dynamic_cast<const Natural *>(args.getValue("index"))->getValue() - 1;
+        
+        return orderingTopology->getNodes()[index];
+    }
     else {
         return MemberObject::executeOperation( name, args );
     }
@@ -139,21 +151,31 @@ const MethodTable& TreePlate::getMethods(void) const {
     
     static MethodTable   methods;
     static ArgumentRules addvariableArgRules;
+    static ArgumentRules nnodesArgRules;
+    static ArgumentRules nodeArgRules;
     static bool          methodsSet = false;
 
-    if ( methodsSet == false ) 
-        {
+    if ( methodsSet == false ) {
             
+        // add the 'addVariable()' method
         addvariableArgRules.push_back(  new ValueRule( "name"      , RbString_name  ) );
         addvariableArgRules.push_back(  new ValueRule( ""          , RbObject_name ) );
         addvariableArgRules.push_back(  new ValueRule( "replicate" , Boolean_name  ) );
         
         methods.addFunction("addVariable",  new MemberFunction(RbVoid_name, addvariableArgRules)  );
         
+        // add the 'node(i)' method
+        nodeArgRules.push_back(  new ValueRule( "index" , Natural_name  ) );
+        
+        methods.addFunction("node", new MemberFunction(TopologyNode_name, nodeArgRules) );
+        
+        // add the 'nnodes()' method
+        methods.addFunction("nnodes", new MemberFunction(Natural_name, nnodesArgRules) );
+        
         // necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
         methodsSet = true;
-        }
+    }
 
     return methods;
 }

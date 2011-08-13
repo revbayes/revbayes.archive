@@ -38,8 +38,11 @@ VectorComplex::VectorComplex(void) : Vector(Complex_name) {
 
 /** Construct vector with one double x */
 VectorComplex::VectorComplex(const double x) : Vector(Complex_name) {
-
-    elements.push_back(new Complex(x));
+    
+    Complex *element = new Complex(x);
+    element->retain();
+    elements.push_back( element );
+    
     length = 1;
 }
 
@@ -47,8 +50,12 @@ VectorComplex::VectorComplex(const double x) : Vector(Complex_name) {
 /** Construct vector with n doubles x */
 VectorComplex::VectorComplex(const size_t n, const double x) : Vector(Complex_name) {
 
-    for (size_t i = 0; i < n; i++)
-        elements.push_back(new Complex(x));
+    for (size_t i = 0; i < n; i++) {
+        Complex *element = new Complex(x);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
 }
 
@@ -56,8 +63,12 @@ VectorComplex::VectorComplex(const size_t n, const double x) : Vector(Complex_na
 /** Constructor from double vector */
 VectorComplex::VectorComplex(const std::vector<double>& x) : Vector(Complex_name) {
 
-    for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++)
-        elements.push_back(new Complex(*i));
+    for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++) {
+        Complex *element = new Complex(*i);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
 }
 
@@ -65,8 +76,12 @@ VectorComplex::VectorComplex(const std::vector<double>& x) : Vector(Complex_name
 /** Constructor from complex vector */
 VectorComplex::VectorComplex(const std::vector<std::complex<double> >& x) : Vector(Complex_name) {
 
-    for (std::vector<std::complex<double> >::const_iterator i=x.begin(); i!=x.end(); i++)
-        elements.push_back(new Complex(*i));
+    for (std::vector<std::complex<double> >::const_iterator i=x.begin(); i!=x.end(); i++) {
+        Complex *element = new Complex(*i);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
 }
 
@@ -74,16 +89,24 @@ VectorComplex::VectorComplex(const std::vector<std::complex<double> >& x) : Vect
 /** Constructor from VectorComplex */
 VectorComplex::VectorComplex( const VectorComplex& x ) : Vector(Complex_name) {
 
-    for ( size_t i = 0; i < x.getLength(); i++ )
-        elements.push_back( new Complex( x[i] ) );
+    for ( size_t i = 0; i < x.getLength(); i++ ) { 
+        Complex *element = new Complex(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
 }
 
 
 VectorComplex::VectorComplex(size_t n, std::complex<double> x) : Vector(Complex_name) {
 
-    for (size_t i = 0; i < n; i++)
-        elements.push_back(new Complex(x));
+    for (size_t i = 0; i < n; i++) {
+        Complex *element = new Complex(x);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
 }
 
@@ -177,16 +200,22 @@ void VectorComplex::printValue(std::ostream& o) const {
 
 /** Append element to end of vector, updating length in process */
 void VectorComplex::push_back(std::complex<double> x) {
-
-    elements.push_back(new Complex(x));
+    
+    Complex *element = new Complex(x);
+    element->retain();
+    elements.push_back( element );
+    
     length++;
 }
 
 
 /** Add element in front of vector, updating length in process */
 void VectorComplex::push_front(std::complex<double> x) {
-
-    elements.insert(elements.begin(), new Complex(x));
+    
+    Complex *element = new Complex(x);
+    element->retain();
+    elements.insert(elements.begin(), element);
+    
     length++;
 }
 
@@ -204,10 +233,13 @@ std::string VectorComplex::richInfo(void) const {
 void VectorComplex::setValue(const std::vector<std::complex<double> >& x) {
 
     clear();
-    for (std::vector<std::complex<double> >::const_iterator i=x.begin(); i!=x.end(); i++) {   
-        elements.push_back(new Complex(*i));
-        length++;
+    for (std::vector<std::complex<double> >::const_iterator i=x.begin(); i!=x.end(); i++) { 
+        Complex *element = new Complex(*i);
+        element->retain();
+        elements.push_back( element );
     }
+    
+    length = x.size();
 }   
 
 
@@ -215,10 +247,12 @@ void VectorComplex::setValue(const std::vector<std::complex<double> >& x) {
 void VectorComplex::setValue(const VectorComplex& x) {
 
     clear();
-    for (size_t i=0; i<x.getLength(); i++) 
-        {   
-        elements.push_back(new Complex(x[i]));
-        length++;
-        }
+    for (size_t i=0; i<x.getLength(); i++) {   
+        Complex *element = new Complex(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
+    
+    length = x.getLength();
 }   
 

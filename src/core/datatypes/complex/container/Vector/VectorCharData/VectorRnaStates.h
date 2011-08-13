@@ -50,9 +50,6 @@ class VectorRnaStates : public VectorCharacters {
         // Vector functions
 	    void                        push_back(RnaState x);                                          //!< Add element
         std::vector<RnaState*>      getStdVector(void) const;                                       //!< Get the value vector as a std::vector
-
-    protected:
-//        RbObject*                   getDefaultElement(void) const { return new VectorRnaStates(); } //!< Get default element for empty slots
 };
 
 #endif

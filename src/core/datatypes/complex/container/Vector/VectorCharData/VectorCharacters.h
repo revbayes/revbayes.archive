@@ -37,7 +37,6 @@ class VectorCharacters : public Vector {
         virtual void                            printValue(std::ostream& o) const = 0;                 //!< Print value for user
 
         // VectorCharacters functions
-//        virtual CondLike*                       getCondLike(void);                                     //!< Initialize and return a conditional likelihood for this state     
         size_t                                  getNumCharacters(void) const { return getLength(); }   //!< How many characters
         std::string                             getTaxonName(void) const { return taxonName; }         //!< Return the name of the character vector
         void                                    push_back( Character* newChar );                       //!< Push back a new character

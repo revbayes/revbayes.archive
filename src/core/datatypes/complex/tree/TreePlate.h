@@ -54,7 +54,6 @@ class TreePlate: public MutableMemberObject {
         void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }           //!< Order the topology
         
         Topology*                       orderingTopology;                                                       //!< The topology that orders the tree plate
-        ValueRule*                      treePlateVariableTypeRule;                                              //!< Rule describing plate variable type
 };
 
 #endif

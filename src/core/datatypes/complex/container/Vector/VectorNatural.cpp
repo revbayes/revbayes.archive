@@ -35,15 +35,22 @@ VectorNatural::VectorNatural( int x ) : Vector( Natural_name ) {
 
     if ( x < 0 )
         throw RbException( "Trying to set " + Natural_name + "[] with negative value" );
-    elements.push_back( new Natural( x ) );
+    
+    Natural *element = new Natural(x);
+    element->retain();
+    elements.push_back( element );
+    
     length = elements.size();
 }
 
 
 /** Construct vector with one natural number x from an unsigned int */
 VectorNatural::VectorNatural( unsigned int x ) : Vector( Natural_name ) {
-
-    elements.push_back( new Natural( x ) );
+    
+    Natural *element = new Natural(x);
+    element->retain();
+    elements.push_back( element );
+    
     length = elements.size();
 }
 
@@ -54,8 +61,12 @@ VectorNatural::VectorNatural( size_t n, int x ) : Vector( Natural_name ) {
     if ( x < 0 )
         throw RbException( "Trying to set " + Natural_name + "[] with negative value" );
 
-    for ( size_t i = 0; i < n; i++ )
-        elements.push_back( new Natural( x ) );
+    for ( size_t i = 0; i < n; i++ ) {
+        
+        Natural *element = new Natural(x);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 }
 
@@ -65,8 +76,12 @@ VectorNatural::VectorNatural( size_t n, unsigned int x ) : Vector( Natural_name 
 
     // No test needed, since unsigned ints are always positive
     // Natural will throw an error if the value is out of range
-     for ( size_t i = 0; i < n; i++ )
-        elements.push_back( new Natural( x ) );
+    for ( size_t i = 0; i < n; i++ ) {
+        Natural *element = new Natural(x);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
 }
 
@@ -79,8 +94,12 @@ VectorNatural::VectorNatural( const std::vector<int>& x ) : Vector( Natural_name
             throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
     }
 
-    for ( size_t i = 0; i < x.size(); i++ )
-        elements.push_back( new Natural( x[i] ) );
+    for ( size_t i = 0; i < x.size(); i++ ) {
+        
+        Natural *element = new Natural(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 
 }
@@ -91,8 +110,12 @@ VectorNatural::VectorNatural( const std::vector<unsigned int>& x ) : Vector( Nat
 
     // No test needed, since unsigned ints are always positive
     // Natural will throw an error if the value is out of range
-    for ( size_t i = 0; i < x.size(); i++ )
-        elements.push_back( new Natural( x[i] ) );
+    for ( size_t i = 0; i < x.size(); i++ ) {
+        Natural *element = new Natural(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
 }
 
@@ -105,8 +128,11 @@ VectorNatural::VectorNatural( const VectorInteger& x ) : Vector( Natural_name ) 
             throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
     }
 
-    for ( size_t i = 0; i < x.getLength(); i++ )
-        elements.push_back( new Natural( x[i] ) );
+    for ( size_t i = 0; i < x.getLength(); i++ ) {
+        Natural *element = new Natural(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 
 }
@@ -120,8 +146,12 @@ VectorNatural::VectorNatural( const ContainerIterator& x ) : Vector( Natural_nam
             throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
     }
 
-    for ( size_t i = 0; i < x.size(); i++ )
-        elements.push_back( new Natural( x[i] ) );
+    for ( size_t i = 0; i < x.size(); i++ ) {
+        
+        Natural *element = new Natural(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 }
 
@@ -252,8 +282,11 @@ void VectorNatural::push_back( int x ) {
 
     if ( x < 0 )
         throw RbException( "Trying to set " + Natural_name + "[] with negative value" );
-
-    elements.push_back( new Natural( x ) );
+    
+    Natural *element = new Natural(x);
+    element->retain();
+    elements.push_back( element );
+    
     length++;
 }
 
@@ -263,8 +296,11 @@ void VectorNatural::push_front( int x ) {
 
     if ( x < 0 )
         throw RbException( "Trying to set " + Natural_name + "[] with negative value" );
-
-    elements.insert( elements.begin(), new Natural( x ) );
+    
+    Natural *element = new Natural(x);
+    element->retain();
+    elements.push_back( element );
+    
     length++;
 }
 
@@ -289,7 +325,10 @@ void VectorNatural::setValue( const std::vector<int>& x ) {
         for ( size_t i = 0; i < x.size(); i++ ) {
             if ( x[i] < 0 )
                 throw RbException( "Trying to set " + Natural_name + "[] with negative value(s)" );
-            elements.push_back( new Natural( x[i] ) );
+            
+            Natural *element = new Natural(x[i]);
+            element->retain();
+            elements.push_back( element );
         }
         length = elements.size();
     }
@@ -310,8 +349,12 @@ void VectorNatural::setValue( const std::vector<unsigned int>& x ) {
     if ( x.size() != elements.size() ) {
     
         clear();
-        for ( size_t i = 0; i < x.size(); i++ )
-            elements.push_back( new Natural( x[i] ) );
+        for ( size_t i = 0; i < x.size(); i++ ) {
+            Natural *element = new Natural(x[i]);
+            element->retain();
+            elements.push_back( element );
+        }
+        
         length = elements.size();
     }
     else {
@@ -328,8 +371,12 @@ void VectorNatural::setValue( const VectorNatural& x ) {
     if ( x.getLength() != elements.size() ) {
     
         clear();
-        for ( size_t i = 0; i < x.getLength(); i++ )
-            elements.push_back( new Natural( x[i] ) );
+        for ( size_t i = 0; i < x.getLength(); i++ ) {
+            Natural *element = new Natural(x[i]);
+            element->retain();
+            elements.push_back( element );
+        }
+        
         length = elements.size();
     }
     else {
@@ -346,8 +393,12 @@ void VectorNatural::setValue( const VectorInteger& x ) {
     if ( x.getLength() != elements.size() ) {
     
         clear();
-        for ( size_t i = 0; i < x.getLength(); i++ )
-            elements.push_back( new Natural( x[i] ) );
+        for ( size_t i = 0; i < x.getLength(); i++ ) {
+            Natural *element = new Natural(x[i]);
+            element->retain();
+            elements.push_back( element );
+        }
+        
         length = elements.size();
     }
     else {

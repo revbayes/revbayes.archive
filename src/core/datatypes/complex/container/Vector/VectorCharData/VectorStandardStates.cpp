@@ -37,8 +37,12 @@ VectorStandardStates::VectorStandardStates(void) : VectorCharacters(StandardStat
 /** Copy constructor */
 VectorStandardStates::VectorStandardStates(const VectorStandardStates& x) : VectorCharacters(StandardState_name) {
 
-    for (size_t i=0; i<x.getLength(); i++)
-        elements.push_back( new StandardState(x[i]) );
+    for (size_t i=0; i<x.getLength(); i++) {
+        StandardState *element = new StandardState(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
 }
 
@@ -131,8 +135,11 @@ std::vector<StandardState*> VectorStandardStates::getStdVector(void) const {
 
 /** Append string element to end of vector, updating length in process */
 void VectorStandardStates::push_back(StandardState x) {
-
-    elements.push_back( new StandardState(x) );
+    
+    StandardState *element = new StandardState(x);
+    element->retain();
+    elements.push_back( element );
+    
     length++;
 }
 

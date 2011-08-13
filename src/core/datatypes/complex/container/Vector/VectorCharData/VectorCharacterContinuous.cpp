@@ -37,8 +37,12 @@ VectorCharacterContinuous::VectorCharacterContinuous(void) : VectorCharacters(Ch
 /** Copy constructor */
 VectorCharacterContinuous::VectorCharacterContinuous(const VectorCharacterContinuous& x) : VectorCharacters(CharacterContinuous_name) {
 
-    for (size_t i=0; i<x.getLength(); i++)
-        elements.push_back( new CharacterContinuous(x[i]) );
+    for (size_t i=0; i<x.getLength(); i++) {
+        CharacterContinuous *element = new CharacterContinuous(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
     
 }
@@ -132,8 +136,11 @@ std::vector<CharacterContinuous*> VectorCharacterContinuous::getStdVector(void) 
 
 /** Append string element to end of vector, updating length in process */
 void VectorCharacterContinuous::push_back(CharacterContinuous x) {
-
-    elements.push_back( new CharacterContinuous(x) );
+    
+    CharacterContinuous *element = new CharacterContinuous(x);
+    element->retain();
+    elements.push_back( element );
+    
     length++;
 }
 

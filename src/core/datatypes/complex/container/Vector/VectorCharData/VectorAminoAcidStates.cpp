@@ -37,8 +37,11 @@ VectorAminoAcidStates::VectorAminoAcidStates(void) : VectorCharacters(AminoAcidS
 /** Copy constructor */
 VectorAminoAcidStates::VectorAminoAcidStates(const VectorAminoAcidStates& x) : VectorCharacters(AminoAcidState_name) {
 
-    for (size_t i=0; i<x.getLength(); i++)
-        elements.push_back( new AminoAcidState(x[i]) );
+    for (size_t i=0; i<x.getLength(); i++) {
+        AminoAcidState *element = new AminoAcidState(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 }
 
@@ -131,8 +134,11 @@ std::vector<AminoAcidState*> VectorAminoAcidStates::getStdVector(void) const {
 
 /** Append string element to end of vector, updating length in process */
 void VectorAminoAcidStates::push_back(AminoAcidState x) {
-
-    elements.push_back( new AminoAcidState(x) );
+    
+    AminoAcidState *element = new AminoAcidState(x);
+    element->retain();
+    elements.push_back( element );
+    
     length++;
 }
 

@@ -24,8 +24,15 @@
 
 
 /** Set type of elements */
-Vector::Vector(const std::string& elemType)
-    : Container(TypeSpec(elemType)) {
+Vector::Vector(const std::string& elemType) : Container(TypeSpec(elemType)) {
+}
+
+
+/** Destructor. Free the memory of the elements. */
+Vector::~Vector(void) {
+    
+    // just call clear which will free the memory of the elements
+    clear();
 }
 
 /** Assignment operator; make sure we get independent elements */
@@ -53,7 +60,9 @@ Vector& Vector::operator=( const Vector& x ) {
 void Vector::clear( void ) {
     
     for ( std::vector<RbLanguageObject*>::iterator i = elements.begin(); i != elements.end(); i++ ) {
-        delete ( *i );
+        (*i)->release();
+        if ((*i)->isUnreferenced())
+            delete ( *i );
     }
     elements.clear();
     
@@ -94,7 +103,12 @@ void Vector::printValue( std::ostream& o ) const {
 /** Pop element off of front of vector, updating length in process */
 void Vector::pop_front(void) {
 
-    delete elements.front();
+    // free the memory
+    RbLanguageObject *element = elements.front();
+    element->release();
+    if (element->isUnreferenced()) {
+        delete element;
+    }
     elements.erase(elements.begin());
     length--;
 }
@@ -102,8 +116,13 @@ void Vector::pop_front(void) {
 
 /** Pop element off of back of vector, updating length in process */
 void Vector::pop_back(void) {
-
-    delete elements.back();
+    
+    // free the memory
+    RbLanguageObject *element = elements.back();
+    element->release();
+    if (element->isUnreferenced()) {
+        delete element;
+    }
     elements.pop_back();
     length--;
 }
@@ -126,5 +145,8 @@ void Vector::setElement(const size_t index, RbLanguageObject *elem) {
         throw RbException("Cannot set element in Vector outside the current range.");
     }
     elements.insert(elements.begin()+index, elem);
+    
+    // retain the element
+    elem->retain();
 }
 

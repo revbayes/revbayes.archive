@@ -51,7 +51,6 @@ class VectorAminoAcidStates : public VectorCharacters {
 	    void                         push_back(AminoAcidState x);                                          //!< Add element
         std::vector<AminoAcidState*> getStdVector(void) const;                                             //!< Get the value vector as a std::vector
 
-    protected:
 };
 
 #endif

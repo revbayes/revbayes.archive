@@ -51,8 +51,6 @@ class VectorStandardStates : public VectorCharacters {
 	    void                        push_back(StandardState x);                                          //!< Add element
         std::vector<StandardState*> getStdVector(void) const;                                            //!< Get the value vector as a std::vector
 
-    protected:
-//        RbObject*                   getDefaultElement(void) const { return new VectorStandardStates(); } //!< Get default element for empty slots
 };
 
 #endif

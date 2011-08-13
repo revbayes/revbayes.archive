@@ -27,16 +27,16 @@
 
 
 /** Construct empty string vector */
-VectorString::VectorString(void)
-    : Vector(RbString_name) {
+VectorString::VectorString(void) : Vector(RbString_name) {
 }
 
 
 /** Construct vector with one string x */
-VectorString::VectorString(const std::string& x)
-    : Vector(RbString_name) {
+VectorString::VectorString(const std::string& x) : Vector(RbString_name) {
 
-    elements.push_back(new RbString(x));
+    RbString *element = new RbString(x);
+    element->retain();
+    elements.push_back( element );
     length = 1;
 }
 
@@ -44,8 +44,12 @@ VectorString::VectorString(const std::string& x)
 /** Constructor from std::string vector */
 VectorString::VectorString(const std::vector<std::string>& x) : Vector(RbString_name) {
 
-    for (std::vector<std::string>::const_iterator i=x.begin(); i!=x.end(); i++)
-        elements.push_back(new RbString(*i));
+    for (std::vector<std::string>::const_iterator i=x.begin(); i!=x.end(); i++) {
+        
+        RbString *element = new RbString(*i);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 }
 
@@ -157,8 +161,10 @@ std::vector<std::string> VectorString::getStdVector(void) const {
 
 /** Append string element to end of vector, updating length in process */
 void VectorString::push_back(std::string x) {
-
-    elements.push_back(new RbString(x));
+    
+    RbString *element = new RbString(x);
+    element->retain();
+    elements.push_back( element );
     length++;
 }
 

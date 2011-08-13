@@ -32,68 +32,82 @@
 
 
 /** Default constructor */
-VectorInteger::VectorInteger(void)
-    : Vector(Integer_name) {
+VectorInteger::VectorInteger(void) : Vector(Integer_name) {
 }
 
 
 /** Construct vector with one int x */
-VectorInteger::VectorInteger(int x)
-    : Vector(Integer_name) {
-
-    elements.push_back(new Integer(x));
+VectorInteger::VectorInteger(int x) : Vector(Integer_name) {
+    
+    Integer *element = new Integer(x);
+    element->retain();
+    elements.push_back( element );
+    
     length++;
 }
 
 
 /** Construct vector with n ints x */
-VectorInteger::VectorInteger(size_t n, int x)
-    : Vector(Integer_name) {
+VectorInteger::VectorInteger(size_t n, int x) : Vector(Integer_name) {
 
-    for (size_t i = 0; i < n; i++)
-        elements.push_back(new Integer(x));
+    for (size_t i = 0; i < n; i++) {
+        Integer *element = new Integer(x);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = n;
 }
 
 
 /** Constructor from int vector */
-VectorInteger::VectorInteger(const std::vector<int>& x)
-    : Vector(Integer_name) {
+VectorInteger::VectorInteger(const std::vector<int>& x) : Vector(Integer_name) {
 
     for (size_t i=0; i<x.size(); i++) {
-        elements.push_back(new Integer(x[i]));
-        length++;
+        Integer *element = new Integer(x[i]);
+        element->retain();
+        elements.push_back( element );
     }
+    
+    length = x.size();
 }
 
 
 /** Constructor from VectorInteger */
-VectorInteger::VectorInteger(const VectorNatural& x)
-    : Vector(Integer_name) {
+VectorInteger::VectorInteger(const VectorNatural& x) : Vector(Integer_name) {
 
     for (size_t i=0; i<x.getLength(); i++) {
-        elements.push_back(new Integer(x[i]));
-        length++;
+        Integer *element = new Integer(x[i]);
+        element->retain();
+        elements.push_back( element );
     }
+    
+    length = x.getLength();
 }
 
 
 /** Constructor from size_t vector */
-VectorInteger::VectorInteger(const std::vector<size_t>& x)
-    : Vector(Integer_name) {
+VectorInteger::VectorInteger(const std::vector<size_t>& x) : Vector(Integer_name) {
 
-    for (std::vector<size_t>::const_iterator i=x.begin(); i!=x.end(); i++)
-        elements.push_back(new Integer(int(*i)));
+    for (std::vector<size_t>::const_iterator i=x.begin(); i!=x.end(); i++) {
+        Integer *element = new Integer(int(*i));
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
 }
 
 
 /** Constructor from container iterator */
-VectorInteger::VectorInteger(const ContainerIterator& x)
-: Vector(Integer_name) {
+VectorInteger::VectorInteger(const ContainerIterator& x) : Vector(Integer_name) {
 
-    for (ContainerIterator::const_iterator i=x.begin(); i!=x.end(); i++)
-        elements.push_back(new Integer(*i));
+    for (ContainerIterator::const_iterator i=x.begin(); i!=x.end(); i++) {
+        Integer *element = new Integer(*i);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
 }
 
@@ -227,16 +241,22 @@ bool VectorInteger::isConvertibleTo(std::string const &type, bool once) const {
 
 /** Append element to end of vector, updating length in process */
 void VectorInteger::push_back(int x) {
-
-    elements.push_back(new Integer(x));
+    
+    Integer *element = new Integer(x);
+    element->retain();
+    elements.push_back( element );
+    
     length++;
 }
 
 
 /** Add element in front of vector, updating length in process */
 void VectorInteger::push_front(int x) {
-
-    elements.insert(elements.begin(), new Integer(x));
+    
+    Integer *element = new Integer(x);
+    element->retain();
+    elements.insert(elements.begin(), element);
+    
     length++;
 }
 
@@ -256,10 +276,13 @@ std::string VectorInteger::richInfo(void) const {
 void VectorInteger::setValue(const std::vector<int>& x) {
 
     clear();
-    for (std::vector<int>::const_iterator i=x.begin(); i!=x.end(); i++) {   
-        elements.push_back(new Integer(*i));
-        length++;
+    for (std::vector<int>::const_iterator i=x.begin(); i!=x.end(); i++) { 
+        Integer *element = new Integer(*i);
+        element->retain();
+        elements.push_back( element );
     }
+    
+    length = x.size();
 }   
 
 
@@ -267,9 +290,12 @@ void VectorInteger::setValue(const std::vector<int>& x) {
 void VectorInteger::setValue(const VectorInteger& x) {
 
     clear();
-    for (size_t i=0; i<x.getLength(); i++) {   
-        elements[i] = new Integer(x[i]);
-        length++;
+    for (size_t i=0; i<x.getLength(); i++) { 
+        Integer *element = new Integer(x[i]);
+        element->retain();
+        elements.push_back( element );
     }
+    
+    length = x.getLength();
 }   
 

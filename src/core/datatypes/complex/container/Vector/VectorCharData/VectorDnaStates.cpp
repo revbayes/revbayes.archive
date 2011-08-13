@@ -37,8 +37,11 @@ VectorDnaStates::VectorDnaStates(void) : VectorCharacters(DnaState_name) {
 /** Copy constructor */
 VectorDnaStates::VectorDnaStates(const VectorDnaStates& x) : VectorCharacters(DnaState_name) {
 
-    for (size_t i=0; i<x.getLength(); i++)
-        elements.push_back( new DnaState(x[i]) );
+    for (size_t i=0; i<x.getLength(); i++) {
+        DnaState *element = new DnaState(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 }
 
@@ -131,8 +134,11 @@ std::vector<DnaState*> VectorDnaStates::getStdVector(void) const {
 
 /** Append string element to end of vector, updating length in process */
 void VectorDnaStates::push_back(DnaState x) {
-
-    elements.push_back( new DnaState(x) );
+    
+    DnaState *element = new DnaState(x);
+    element->retain();
+    elements.push_back( element );
+    
     length++;
 }
 

@@ -192,14 +192,14 @@ TopologyNode* Topology::getTipNode( int indx ) const {
 /* Map calls to member methods */
 RbLanguageObject* Topology::executeOperation(const std::string& name, Environment& args) {
     
-    if (name == "ntips") 
-        {
+    if (name == "ntips") {
+    
         return ( new Natural((int)getNumberOfTips()) );
-        }
-    else if (name == "nnodes")
-        {
+    }
+    else if (name == "nnodes") {
+    
         return ( new Natural((int)getNumberOfNodes()) );
-        }
+    }
 
     return MemberObject::executeOperation( name, args );
 }

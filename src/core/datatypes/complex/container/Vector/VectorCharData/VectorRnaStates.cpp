@@ -37,8 +37,12 @@ VectorRnaStates::VectorRnaStates(void) : VectorCharacters(RnaState_name) {
 /** Copy constructor */
 VectorRnaStates::VectorRnaStates(const VectorRnaStates& x) : VectorCharacters(RnaState_name) {
 
-    for (size_t i=0; i<x.getLength(); i++)
-        elements.push_back( new RnaState(x[i]) );
+    for (size_t i=0; i<x.getLength(); i++) {
+        RnaState *element = new RnaState(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
+    
     length = elements.size();
 }
 
@@ -131,8 +135,11 @@ std::vector<RnaState*> VectorRnaStates::getStdVector(void) const {
 
 /** Append string element to end of vector, updating length in process */
 void VectorRnaStates::push_back(RnaState x) {
-
-    elements.push_back( new RnaState(x) );
+    
+    RnaState *element = new RnaState(x);
+    element->retain();
+    elements.push_back( element );
+        
     length++;
 }
 

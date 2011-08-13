@@ -63,6 +63,8 @@ void VectorCharacters::push_back( Character* newChar ) {
         throw RbException( "Inappropriate character type" );
     
     elements.push_back( newChar );
+    newChar->retain();
+    
     length++;
 }
 

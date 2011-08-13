@@ -39,8 +39,10 @@ VectorReal::VectorReal(void) : Vector(Real_name) {
 
 /** Construct vector with one double x */
 VectorReal::VectorReal(const double x) : Vector(Real_name) {
-
-    elements.push_back(new Real(x));
+    
+    Real *element = new Real(x);
+    element->retain();
+    elements.push_back( element );
     length = 1;
 }
 
@@ -48,8 +50,11 @@ VectorReal::VectorReal(const double x) : Vector(Real_name) {
 /** Construct vector with n doubles x */
 VectorReal::VectorReal(const size_t n, const double x) : Vector(Real_name) {
 
-    for (size_t i = 0; i < n; i++)
-        elements.push_back(new Real(x));
+    for (size_t i = 0; i < n; i++) {
+        Real *element = new Real(x);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 }
 
@@ -57,8 +62,11 @@ VectorReal::VectorReal(const size_t n, const double x) : Vector(Real_name) {
 /** Constructor from double vector */
 VectorReal::VectorReal(const std::vector<double>& x) : Vector(Real_name) {
 
-    for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++)
-        elements.push_back(new Real(*i));
+    for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++) {
+        Real *element = new Real(*i);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 }
 
@@ -66,8 +74,11 @@ VectorReal::VectorReal(const std::vector<double>& x) : Vector(Real_name) {
 /** Constructor from VectorRealPos */
 VectorReal::VectorReal( const VectorRealPos& x ) : Vector( Real_name ) {
 
-    for ( size_t i = 0; i < x.getLength(); i++ )
-        elements.push_back( new Real( x[i] ) );
+    for ( size_t i = 0; i < x.getLength(); i++ ) {
+        Real *element = new Real(x[i]);
+        element->retain();
+        elements.push_back( element );
+    }
     length = elements.size();
 }
 
@@ -198,16 +209,20 @@ void VectorReal::printValue(std::ostream& o) const {
 
 /** Append element to end of vector, updating length in process */
 void VectorReal::push_back(double x) {
-
-    elements.push_back(new Real(x));
+    
+    Real *element = new Real(x);
+    element->retain();
+    elements.push_back( element );
     length++;
 }
 
 
 /** Add element in front of vector, updating length in process */
 void VectorReal::push_front(double x) {
-
-    elements.insert(elements.begin(), new Real(x));
+    
+    Real *element = new Real(x);
+    element->retain();
+    elements.insert(elements.begin(), element );
     length++;
 }
 
@@ -228,8 +243,10 @@ void VectorReal::setValue(const std::vector<double>& x) {
 
     clear();
     length = 0;
-    for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++) {   
-        elements.push_back(new Real(*i));
+    for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++) { 
+        Real *element = new Real(*i);
+        element->retain();
+        elements.push_back( element );  
         length++;
     }
 }   
@@ -240,8 +257,10 @@ void VectorReal::setValue(const VectorReal& x) {
 
     clear();
     length = 0;
-    for (size_t i=0; i<x.getLength(); i++) {   
-        elements.push_back(new Real(x[i]));
+    for (size_t i=0; i<x.getLength(); i++) {  
+        Real *element = new Real(x[i]);
+        element->retain();
+        elements.push_back( element ); 
         length++;
     }
 }   
