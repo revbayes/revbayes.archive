@@ -67,6 +67,8 @@ Vector& Vector::operator=( const Vector& x ) {
             element->retain();
             elements.push_back( element );
         }
+        
+        length = elements.size();
     }
     
     return ( *this );
