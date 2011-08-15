@@ -55,18 +55,18 @@ TopologyNode* TopologyNode::clone(void) const {
 
 RbLanguageObject* TopologyNode::executeOperation(const std::string& name, Environment& args) {
     
-    if (name == "isTip") 
-        {
+    if (name == "isTip") {
         return ( new Boolean(isTip()) );
-        }
-    else if (name == "isRoot") 
-        {
+    }
+    else if (name == "isRoot") {
         return ( new Boolean(isRoot()) );
-        }
-    else if (name == "isInterior") 
-        {
+    }
+    else if (name == "isInterior") {
         return ( new Boolean(!isTip()) );
-        }
+    }
+    else if (name == "ancestor") {
+        return parent;
+    }
     else
         throw RbException("No member method called '" + name + "'");
     
@@ -98,22 +98,23 @@ const VectorString& TopologyNode::getClass() const {
 const MethodTable& TopologyNode::getMethods(void) const {
     
     static MethodTable   methods;
+    static ArgumentRules ancestorRules;
     static ArgumentRules isTipArgRules;
     static ArgumentRules isRootArgRules;
     static ArgumentRules isInteriorArgRules;
     static bool          methodsSet = false;
 
-    if ( methodsSet == false ) 
-        {
+    if ( methodsSet == false ) {
         
-        methods.addFunction("isTip",      new MemberFunction(Boolean_name, isTipArgRules)  );
-        methods.addFunction("isRoot",     new MemberFunction(Boolean_name, isRootArgRules)  );
-        methods.addFunction("isInterior", new MemberFunction(Boolean_name, isInteriorArgRules)  );
+        methods.addFunction("ancestor",   new MemberFunction(TopologyNode_name, ancestorRules)  );
+        methods.addFunction("isTip",      new MemberFunction(Boolean_name,      isTipArgRules)  );
+        methods.addFunction("isRoot",     new MemberFunction(Boolean_name,      isRootArgRules)  );
+        methods.addFunction("isInterior", new MemberFunction(Boolean_name,      isInteriorArgRules)  );
         
         // Necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
         methodsSet = true;
-        }
+    }
 
     return methods;
 }
