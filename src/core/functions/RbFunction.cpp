@@ -34,7 +34,6 @@
 RbFunction::RbFunction(void) : RbInternal() {
 
     argsProcessed = false;
-//    args.setParentFrame( &Workspace::userWorkspace() );
 }
 
 /** Copy constructor. */

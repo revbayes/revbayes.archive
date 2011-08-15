@@ -32,28 +32,45 @@ UserFunction::UserFunction( const ArgumentRules&        argRules,
                             const TypeSpec&             retType,
                             std::list<SyntaxElement*>*  stmts,
                             Environment*                defineEnv)
-    : RbFunction(), argumentRules(argRules), returnType(retType), code(stmts), defineEnvironment(defineEnv) {
+: RbFunction(), argumentRules(argRules), returnType(retType), code(stmts), defineEnvironment(defineEnv) {
+    defineEnvironment->retain();
 }
 
 
 /** Copy constructor */
 UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules(x.argumentRules), returnType(x.returnType) {
 
+    // clone the environment
     defineEnvironment   = x.defineEnvironment->clone();
-    for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
-        code->push_back((*i)->clone());
+    defineEnvironment->retain();
+    
+    // create a new list for the code
+    code                = new std::list<SyntaxElement*>();
+    for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++) {
+        SyntaxElement *element = (*i)->clone();
+        code->push_back(element);
+        element->retain();
+    }
 }
 
 
 /** Destructor */
 UserFunction::~UserFunction() {
 
-    for (std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++)
-        delete (*i);
+    for (std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++) {
+        (*i)->release();
+        if ((*i)-isUnreferenced()) {
+            delete (*i);
+        }
+    }
+    
     delete code;
 
     // defineEnvironment->destroyEnclosure();   //TODO: or something like that
-    delete defineEnvironment;
+    defineEnvironment->release();
+    if (defineEnvironment->isUnreferenced()) {
+        delete defineEnvironment;
+    }
 }
 
 
@@ -83,6 +100,9 @@ RbLanguageObject* UserFunction::execute( void ) {
 
     // Set initial return value
     Variable* retValue = NULL;
+    
+    // retain the arg because they will be destroyed otherwise when we destroy this function environment
+    args.retain();
 
     // Create new variable frame
     Environment* functionEnvironment = new Environment( &args );

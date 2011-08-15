@@ -149,22 +149,22 @@ Variable* SyntaxFunctionDef::getContentAsVariable(Environment* env) const {
     // Get argument rules from the formals
     static ArgumentRules argRules;
 
-//    for (std::list<SyntaxFormal*>::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
-//        argRules.push_back( (*i)->getArgumentRule(env) );
+    for (std::list<SyntaxFormal*>::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
+        argRules.push_back( (*i)->getArgumentRule(env) );
 
     // Create copy of the statements
     std::list<SyntaxElement*>* stmts = new std::list<SyntaxElement*>();
     for(std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++)
         stmts->push_back((*i)->clone());
 
-    // Create copy of the environment in which the function was defined
-//    Environment* defineEnvironment = env->cloneEnvironment();
+    // Create an environment with the parent environment being the one in which the function was defined
+    Environment* defineEnvironment = new Environment(env);
 
     // Create the function
-//    UserFunction* theFunction = new UserFunction(argRules, *returnType, stmts, defineEnvironment);
+    UserFunction* theFunction = new UserFunction(argRules, *returnType, stmts, defineEnvironment);
 
     // Insert in the user workspace
-//    Workspace::userWorkspace().addFunction(*functionName, theFunction);
+    Workspace::userWorkspace().addFunction(*functionName, theFunction);
 
     // No return value 
     return NULL;

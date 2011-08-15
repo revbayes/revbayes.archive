@@ -41,14 +41,14 @@
 
 /** Constructor of global workspace */
 Workspace::Workspace() : Environment(), functionTable(new FunctionTable()), typesInitialized(false) {
-    // since we are a singleton we hold ourselve
+    // since we are a singleton we own ourselve
     retain();
 }
 
 
 /** Constructor of user workspace */
 Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())), typesInitialized(false) {
-    // since we are a singleton we hold ourselve
+    // since we are a singleton we own ourselve
     retain();
 }
 
