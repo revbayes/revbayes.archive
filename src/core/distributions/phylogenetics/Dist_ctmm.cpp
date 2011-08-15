@@ -40,15 +40,6 @@ Dist_ctmm::Dist_ctmm( void ) : DistributionDiscrete( getMemberRules() ) {
 }
 
 
-/** Constructor for internal use */
-Dist_ctmm::Dist_ctmm( RateMatrix* Q, double v, CharacterStateDiscrete* a ) : DistributionDiscrete( getMemberRules() ) {
-
-//    setMemberValue( "Q", Q );
-//    setMemberValue( "v", new RealPos( v ) );
-//    setMemberValue( "a", a );
-}
-
-
 /** Clone this object */
 Dist_ctmm* Dist_ctmm::clone( void ) const {
 

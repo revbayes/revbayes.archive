@@ -87,10 +87,8 @@ const MethodTable& DistributionContinuous::getMethods( void ) const {
 
     if ( !methodsSet ) {
 
-        cdfArgRules.push_back     ( new ValueRule( "",  MemberObject_name ) );
         cdfArgRules.push_back     ( new ValueRule    ( "q", RealPos_name      ) );
 
-        quantileArgRules.push_back( new ValueRule( "",  MemberObject_name ) );
         quantileArgRules.push_back( new ValueRule    ( "p", RealPos_name      ) );
 
         methods.addFunction( "cdf",      new MemberFunction( Real_name, cdfArgRules      ) );

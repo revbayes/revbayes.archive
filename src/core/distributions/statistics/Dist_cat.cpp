@@ -95,6 +95,9 @@ const Simplex* Dist_cat::getProbabilityMassVector( void ) {
 
 /** Get random variable type */
 const TypeSpec Dist_cat::getVariableType( void ) const {
+    
+    if (getMemberDagNode( "dummy" ) == NULL) 
+        return Categorical_name;
 
     return getMemberDagNode( "dummy" )->getTypeSpec();
 }

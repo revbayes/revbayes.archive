@@ -49,9 +49,6 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
         const MethodTable&                  getMethods(void) const;                                            //!< Get methods
         RbLanguageObject*                   executeOperation(const std::string& name, Environment& args);      //!< Map method call to internal functions
 
-        // RateMatrix functions
-        DAGNode*                            wrapIntoVariable(void); 
-
     private:
         size_t                              numStates;                                                         //!< The number of character states
         MatrixReal*                         theMatrix;                                                         //!< Holds the transition probability matrix

@@ -88,6 +88,7 @@
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "Dist_birthdeath.h"
+#include "Dist_cat.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exp.h"
 #include "Dist_multinomial.h"
@@ -221,6 +222,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
         addDistribution( "birthdeath",   new Dist_birthdeath()  );
+        addDistribution( "cat",          new Dist_cat()         );
         addDistribution( "dirichlet",    new Dist_dirichlet()   );
         addDistribution( "exp",          new Dist_exp()         );
         addDistribution( "multinomial",  new Dist_multinomial() );

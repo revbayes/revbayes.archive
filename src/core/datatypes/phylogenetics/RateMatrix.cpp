@@ -335,11 +335,6 @@ const MethodTable& RateMatrix::getMethods(void) const {
 
     if ( methodsSet == false ) 
         {
-        // this must be here so the parser can distinguish between different instances of a character matrix
-        nstatesArgRules.push_back(         new ValueRule( "", MemberObject_name ) );
-        stationaryfreqsArgRules.push_back( new ValueRule( "", MemberObject_name ) );
-        averateArgRules.push_back(         new ValueRule( "", MemberObject_name ) );
-        reversibleArgRules.push_back(      new ValueRule( "", MemberObject_name ) );
         
         methods.addFunction("nstates",         new MemberFunction(Natural_name, nstatesArgRules)         );
         methods.addFunction("stationaryfreqs", new MemberFunction(Simplex_name, stationaryfreqsArgRules) );

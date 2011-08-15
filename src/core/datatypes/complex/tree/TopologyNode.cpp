@@ -46,6 +46,33 @@ TopologyNode::TopologyNode(const std::string& n, int indx) : name(n), index(indx
 }
 
 
+/** Copy constructor. We use a shallow copy. */
+TopologyNode::TopologyNode(const TopologyNode &n) : ConstantMemberObject(n) {
+    
+    // copy the members
+    name = n.name;
+    index = n.index;
+    parent = n.parent;
+    children = n.children;
+    
+    // we have to retain all the children because we own them now too
+    for (std::vector<TopologyNode*>::iterator it=children.begin(); it!=children.end(); it++) {
+        (*it)->retain();
+    }
+    
+}
+
+
+/** Destructor */
+TopologyNode::~TopologyNode(void) {
+    
+    // we do not own the parent so we do not delete it
+    
+    // free memory of children
+    removeAllChildren();
+}
+
+
 /** Add a child node. We own it from here on. */
 void TopologyNode::addChild(TopologyNode *c) {
     
@@ -231,17 +258,17 @@ void TopologyNode::setParent(TopologyNode *p) {
     
     // we only do something if this isn't already our parent
     if (p != parent) {
-        // release the parent
-        if (parent != NULL) {
-            parent->release();
-            if (parent->isUnreferenced()) {
-                delete parent;
-            }
-        }
+        // we do not own the parent so we do not have to delete it
+//        if (parent != NULL) {
+//            parent->release();
+//            if (parent->isUnreferenced()) {
+//                delete parent;
+//            }
+//        }
         
         // set and retain the new parent
         parent = p;
-        parent->retain();
+//        parent->retain();
     }
 }
 

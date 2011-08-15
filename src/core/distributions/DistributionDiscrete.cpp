@@ -71,10 +71,6 @@ const MethodTable& DistributionDiscrete::getMethods( void ) const {
 
     if ( !methodsSet ) {
 
-        probMassVectorArgRules.push_back( new ValueRule( "", MemberObject_name ) );
-
-        numStatesArgRules.push_back     ( new ValueRule( "", MemberObject_name ) );
-
         methods.addFunction( "probMassVector", new MemberFunction( Simplex_name, probMassVectorArgRules ) );
         methods.addFunction( "numStates",      new MemberFunction( Natural_name, numStatesArgRules ) );
 

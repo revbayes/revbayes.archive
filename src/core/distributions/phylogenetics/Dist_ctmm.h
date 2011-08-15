@@ -33,7 +33,6 @@ class Dist_ctmm: public DistributionDiscrete {
 
     public:
                                     Dist_ctmm(void);                                                    //!< Parser constructor
-                                    Dist_ctmm(RateMatrix* Q, double v, CharacterStateDiscrete* a);      //!< Internal constructor
 
         // Basic utility functions
         Dist_ctmm*                  clone(void) const;                                                  //!< Clone object

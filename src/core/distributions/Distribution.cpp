@@ -75,13 +75,9 @@ const MethodTable& Distribution::getMethods( void ) const {
 
     if ( !methodsSet ) {
 
-        lnPdfArgRules.push_back( new ValueRule( "", MemberObject_name ) );
         lnPdfArgRules.push_back( new ValueRule    ( "x", RbObject_name    ) );
 
-        pdfArgRules.push_back  ( new ValueRule( "",  MemberObject_name ) );
         pdfArgRules.push_back  ( new ValueRule    ( "x", RbObject_name     ) );
-
-        rvArgRules.push_back   ( new ValueRule( "",  MemberObject_name ) );
 
         methods.addFunction( "lnPdf", new MemberFunction( Real_name    , lnPdfArgRules ) );
         methods.addFunction( "pdf",   new MemberFunction( Real_name    , pdfArgRules   ) );

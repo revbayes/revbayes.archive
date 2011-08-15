@@ -41,16 +41,6 @@ Dist_birthdeath::Dist_birthdeath( void ) : Distribution( getMemberRules() ) {
 }
 
 
-/** Constructor for internal use */
-Dist_birthdeath::Dist_birthdeath( double lambda, double mu, double rho ) : Distribution( getMemberRules() ) {
-    
-//    setMemberValue( "lambda", new Real( lambda ) );
-//    setMemberValue( "mu"  ,   new Real( mu ) );
-//    setMemberValue( "rho"  ,  new Real( rho ) );
-
-}
-
-
 /** Clone this object */
 Dist_birthdeath* Dist_birthdeath::clone( void ) const {
     

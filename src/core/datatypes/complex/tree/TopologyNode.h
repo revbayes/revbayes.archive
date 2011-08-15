@@ -44,8 +44,10 @@
 class TopologyNode : public ConstantMemberObject {
     
 public:
-                                    TopologyNode(int indx=0);                                                   //!< Default constructor with optional index
-                                    TopologyNode(const std::string& n, int indx=0);                             //!< Constructor with name and optional index
+    TopologyNode(int indx=0);                                                                                   //!< Default constructor with optional index
+    TopologyNode(const std::string& n, int indx=0);                                                             //!< Constructor with name and optional index
+    TopologyNode(const TopologyNode &n);                                                                        //!< Copy constructor
+    virtual                         ~TopologyNode(void);                                                        //!< Destructor
     // Basic utility functions
     TopologyNode*                   clone(void) const;                                                          //!< Clone object
     bool                            equals(TopologyNode *node) const;                                           //!< Test whether this is the same node

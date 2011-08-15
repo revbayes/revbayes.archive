@@ -30,8 +30,7 @@ class VectorString;
 class Dist_birthdeath: public Distribution{
     
 public:
-    Dist_birthdeath(void);                                                                          //!< Parser constructor
-    Dist_birthdeath(double lambda, double mu, double rho=1.0);                                //!< Constructor for internal use
+    Dist_birthdeath(void);                                                                          //!< Default constructor
     
     // Basic utility functions
     Dist_birthdeath*            clone(void) const;                                                  //!< Clone object
