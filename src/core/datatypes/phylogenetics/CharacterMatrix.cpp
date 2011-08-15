@@ -286,11 +286,12 @@ const VectorString& CharacterMatrix::getClass(void) const {
 
 
 VectorCharacters* CharacterMatrix::getElement(size_t index) {
-    throw RbException("getElement not implemented in CharacterMatrix");
+    return dynamic_cast<VectorCharacters*>(members[index].getDagNodePtr()->getValuePtr());
 }
 
 Character* CharacterMatrix::getElement(size_t row, size_t col) {
-    throw RbException("getElement not implemented in CharacterMatrix");
+    VectorCharacters *sequence = dynamic_cast<VectorCharacters*>(members[row].getDagNodePtr()->getValuePtr());
+    return sequence->getElement(col);
 }
 
 

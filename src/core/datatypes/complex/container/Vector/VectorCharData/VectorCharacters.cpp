@@ -56,6 +56,11 @@ const VectorString& VectorCharacters::getClass(void) const {
     return rbClass;
 }
 
+
+Character* VectorCharacters::getElement(size_t index) {
+    return static_cast<Character*>(elements[index]);
+}
+
 /** Push back a new character */
 void VectorCharacters::push_back( Character* newChar ) {
 

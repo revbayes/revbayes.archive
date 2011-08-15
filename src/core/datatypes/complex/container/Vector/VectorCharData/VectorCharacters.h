@@ -27,26 +27,27 @@ class Character;
 
 class VectorCharacters : public Vector {
 
-    public:
-	    virtual Character&                      operator[](size_t i);                                  //!< Index op allowing change
-	    virtual const Character&                operator[](size_t i) const;                            //!< Const index op
+public:
+    virtual Character&                      operator[](size_t i);                                   //!< Index op allowing change
+    virtual const Character&                operator[](size_t i) const;                             //!< Const index op
 
-        // Basic utility functions you have to override
-        virtual VectorCharacters*               clone(void) const = 0;                                 //!< Clone object
-        virtual const VectorString&             getClass(void) const;                                  //!< Get class
-        virtual void                            printValue(std::ostream& o) const = 0;                 //!< Print value for user
+    // Basic utility functions you have to override
+    virtual VectorCharacters*               clone(void) const = 0;                                  //!< Clone object
+    virtual const VectorString&             getClass(void) const;                                   //!< Get class
+    virtual void                            printValue(std::ostream& o) const = 0;                  //!< Print value for user
 
-        // VectorCharacters functions
-        size_t                                  getNumCharacters(void) const { return getLength(); }   //!< How many characters
-        std::string                             getTaxonName(void) const { return taxonName; }         //!< Return the name of the character vector
-        void                                    push_back( Character* newChar );                       //!< Push back a new character
-        void                                    setTaxonName(std::string tn) { taxonName = tn; }       //!< Set the taxon name
+    // VectorCharacters functions
+    Character*                              getElement(size_t index);                               //!< Get the character at position index
+    size_t                                  getNumCharacters(void) const { return getLength(); }    //!< How many characters
+    std::string                             getTaxonName(void) const { return taxonName; }          //!< Return the name of the character vector
+    void                                    push_back( Character* newChar );                        //!< Push back a new character
+    void                                    setTaxonName(std::string tn) { taxonName = tn; }        //!< Set the taxon name
 
-    protected:
-                                                VectorCharacters(const std::string& elemType);         //!< Set type spec of container from type of elements
+protected:
+                                            VectorCharacters(const std::string& elemType);          //!< Set type spec of container from type of elements
     
-    private:
-        std::string                             taxonName;                                             //!< Name of the taxon for this vector of characters               
+private:
+    std::string                             taxonName;                                              //!< Name of the taxon for this vector of characters               
 };
 
 #endif
