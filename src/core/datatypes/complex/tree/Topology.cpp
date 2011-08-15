@@ -55,8 +55,15 @@ Topology::Topology(const Topology& t) : ConstantMemberObject( getMemberRules() )
 /* Destructor */
 Topology::~Topology(void) {
 
-    for (std::vector<TopologyNode*>::iterator p = nodes.begin(); p != nodes.end(); p++)
-        delete (*p);
+    // free the memory of the nodes
+    for (std::vector<TopologyNode*>::iterator p = nodes.begin(); p != nodes.end(); p++) {
+        (*p)->release();
+        if ((*p)->isUnreferenced()) {
+            delete (*p);
+        }
+    }
+    
+    nodes.clear();
 }
 
 
@@ -210,6 +217,9 @@ void Topology::fillNodesByPreorderTraversal(TopologyNode *node) {
     // this is preorder so add yourself first
     nodes.push_back(node);
     
+    // retain the node
+    node->retain();
+    
     // now call this function recursively for all your children
     for (size_t i=0; i<node->getNumberOfChildren(); i++) {
         fillNodesByPreorderTraversal(node->getChild(i));
@@ -275,6 +285,13 @@ void Topology::setRoot(TopologyNode *r) {
     root = r;
     
     // clear all previous nodes
+    // free the memory of the nodes
+    for (std::vector<TopologyNode*>::iterator p = nodes.begin(); p != nodes.end(); p++) {
+        (*p)->release();
+        if ((*p)->isUnreferenced()) {
+            delete (*p);
+        }
+    }
     nodes.clear();
     
     // bootstrap all nodes from the root and add the in a pre-order traversal

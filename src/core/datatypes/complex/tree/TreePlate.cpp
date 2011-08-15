@@ -140,17 +140,37 @@ RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environme
         
         return orderingTopology->getNodes()[index];
     }
+    else if (name == "index") {
+        TopologyNode *theNode = dynamic_cast<TopologyNode*>(args[0].getDagNodePtr()->getValuePtr());
+        return new Natural(getNodeIndex(theNode));
+    }
     else {
         return MemberObject::executeOperation( name, args );
     }
 }
 
 
+/** Find the index of the node */
+size_t TreePlate::getNodeIndex(TopologyNode *theNode) {
+    std::vector<TopologyNode*>& nodes = orderingTopology->getNodes();
+    
+    size_t index = 0;
+    for (; index<nodes.size(); index++) {
+        if (theNode->equals( nodes[index] ) ) {
+            break;
+        }
+    }
+    
+    // return -1 if the node does not exist in the tree
+    return (index < nodes.size() ? index + 1 : 0);
+}
+
 /* Get method specifications */
 const MethodTable& TreePlate::getMethods(void) const {
     
     static MethodTable   methods;
     static ArgumentRules addvariableArgRules;
+    static ArgumentRules getNodeIndexArgRules;
     static ArgumentRules nnodesArgRules;
     static ArgumentRules nodeArgRules;
     static bool          methodsSet = false;
@@ -163,6 +183,11 @@ const MethodTable& TreePlate::getMethods(void) const {
         addvariableArgRules.push_back(  new ValueRule( "replicate" , Boolean_name  ) );
         
         methods.addFunction("addVariable",  new MemberFunction(RbVoid_name, addvariableArgRules)  );
+        
+        // add the 'getNodeIndex(node)' method
+        getNodeIndexArgRules.push_back( new ValueRule( "node", TopologyNode_name ));
+        
+        methods.addFunction("index", new MemberFunction(Natural_name, getNodeIndexArgRules));
         
         // add the 'node(i)' method
         nodeArgRules.push_back(  new ValueRule( "index" , Natural_name  ) );

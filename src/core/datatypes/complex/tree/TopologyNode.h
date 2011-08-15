@@ -43,43 +43,44 @@
 
 class TopologyNode : public ConstantMemberObject {
     
-    public:
-                                        TopologyNode(int indx=0);                                                   //!< Default constructor with optional index
-                                        TopologyNode(const std::string& n, int indx=0);                             //!< Constructor with name and optional index
-        // Basic utility functions
-        TopologyNode*                   clone(void) const;                                                          //!< Clone object
-        const VectorString&             getClass(void) const;                                                       //!< Get class vector
-        void                            printValue(std::ostream& o) const;                                          //!< Print value for user
-        std::string                     richInfo(void) const;                                                       //!< Complete info
+public:
+                                    TopologyNode(int indx=0);                                                   //!< Default constructor with optional index
+                                    TopologyNode(const std::string& n, int indx=0);                             //!< Constructor with name and optional index
+    // Basic utility functions
+    TopologyNode*                   clone(void) const;                                                          //!< Clone object
+    bool                            equals(TopologyNode *node) const;                                           //!< Test whether this is the same node
+    const VectorString&             getClass(void) const;                                                       //!< Get class vector
+    void                            printValue(std::ostream& o) const;                                          //!< Print value for user
+    std::string                     richInfo(void) const;                                                       //!< Complete info
 
-        // Member variable rules
-        const MemberRules&              getMemberRules(void) const;                                                 //!< Get member rules
+    // Member variable rules
+    const MemberRules&              getMemberRules(void) const;                                                 //!< Get member rules
 
-        // Member method inits
-        RbLanguageObject*               executeOperation(const std::string& name, Environment& args);               //!< Execute method
-        const MethodTable&              getMethods(void) const;                                                     //!< Get methods
+    // Member method inits
+    RbLanguageObject*               executeOperation(const std::string& name, Environment& args);               //!< Execute method
+    const MethodTable&              getMethods(void) const;                                                     //!< Get methods
         
-        // TopologyNode functions
-        void                            addChild(TopologyNode* p) { children.push_back(p); }                        //!< Adds a child node
-        TopologyNode*                   getChild(size_t i) const { return children[i]; }                            //!< Returns the i-th child
-        std::vector<int>                getChildrenIndices(void) const;                                             //!< Return children indices
-        int                             getIndex(void) const { return index; }                                      //!< Get index of node
-        std::string                     getName(void) const { return name; }                                        //!< Get name of node
-        size_t                          getNumberOfChildren(void) const { return children.size(); }                 //!< Returns the number of children
-        TopologyNode*                   getParent(void) const { return parent; }                                    //!< Returns the node's parent
-        int                             getParentIndex(void) const { return parent->getIndex(); }                   //!< Return parent index
-        bool                            isTip(void) { return children.size() == 0; }                                //!< Is node tip?
-        bool                            isRoot(void) { return parent == NULL; }                                     //!< Is node root?
-        void                            setName(const std::string& n) { name = n; }                                 //!< Set the name of this node
-        void                            setParent(TopologyNode* p) { parent = p; }                                  //!< Sets the node's parent
-        void                            removeAllChildren(void) { children.clear(); }                               //!< Removes all of the children of the node
-        void                            removeChild(TopologyNode* p);                                               //!< Removes a specific child
+    // TopologyNode functions
+    void                            addChild(TopologyNode* c);                                                  //!< Adds a child node
+    TopologyNode*                   getChild(size_t i) const { return children[i]; }                            //!< Returns the i-th child
+    std::vector<int>                getChildrenIndices(void) const;                                             //!< Return children indices
+    int                             getIndex(void) const { return index; }                                      //!< Get index of node
+    std::string                     getName(void) const { return name; }                                        //!< Get name of node
+    size_t                          getNumberOfChildren(void) const { return children.size(); }                 //!< Returns the number of children
+    TopologyNode*                   getParent(void) const { return parent; }                                    //!< Returns the node's parent
+    int                             getParentIndex(void) const { return parent->getIndex(); }                   //!< Return parent index
+    bool                            isTip(void) { return children.size() == 0; }                                //!< Is node tip?
+    bool                            isRoot(void) { return parent == NULL; }                                     //!< Is node root?
+    void                            setName(const std::string& n) { name = n; }                                 //!< Set the name of this node
+    void                            setParent(TopologyNode* p);                                                 //!< Sets the node's parent
+    void                            removeAllChildren(void);                                                    //!< Removes all of the children of the node
+    void                            removeChild(TopologyNode* p);                                               //!< Removes a specific child
         
-    private: 
-        std::vector<TopologyNode*>      children;                                                                   //!< Vector holding the node's children
-        TopologyNode*                   parent;                                                                     //!< Pointer to the parent of the node
-        std::string                     name;                                                                       //!< Name of the node, i.e. identifier/taxon name
-        int                             index;                                                                      //!< Node index
+private: 
+    std::vector<TopologyNode*>      children;                                                                   //!< Vector holding the node's children
+    TopologyNode*                   parent;                                                                     //!< Pointer to the parent of the node
+    std::string                     name;                                                                       //!< Name of the node, i.e. identifier/taxon name
+    int                             index;                                                                      //!< Node index
 };
 
 #endif

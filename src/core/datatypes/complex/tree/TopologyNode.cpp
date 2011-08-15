@@ -46,10 +46,53 @@ TopologyNode::TopologyNode(const std::string& n, int indx) : name(n), index(indx
 }
 
 
+/** Add a child node. We own it from here on. */
+void TopologyNode::addChild(TopologyNode *c) {
+    
+    // retain the child
+    c->retain();
+    
+    // add the child to our internal vector
+    children.push_back(c);
+}
+
+
 /** Clone function */
 TopologyNode* TopologyNode::clone(void) const {
     
     return new TopologyNode(*this);
+}
+
+
+bool TopologyNode::equals(TopologyNode *node) const {
+    // test if the name is the same
+    if (name != node->name) {
+        return false;
+    }
+    
+    // test if the index is the same
+    if (index != node->index) {
+        return false;
+    }
+    
+    // test if the parent is the same
+    if (parent != node->parent) {
+        return false;
+    }
+    
+    // test if the size of the children differs
+    if (children.size() != node->children.size()) {
+        return false;
+    }
+    
+    // test if all children are the same
+    for (size_t i=0; i<children.size(); i++) {
+        if (children[i] != node->children[i]) {
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 
@@ -144,12 +187,32 @@ void TopologyNode::printValue(std::ostream& o) const {
 }
 
 
+/** Remove all children. We need to call intelligently the destructor here. */
+void TopologyNode::removeAllChildren(void) {
+    
+    // free the memory
+    for (std::vector<TopologyNode*>::iterator it=children.begin(); it!=children.end(); it++) {
+        (*it)->release();
+        if ((*it)->isUnreferenced()) {
+            delete *it;
+        }
+    }
+    
+    // empty the children vector
+    children.clear();
+}
+
 /** Remove a child from the vector of children */
 void TopologyNode::removeChild(TopologyNode* p) {
     
     std::vector<TopologyNode*>::iterator it = find(children.begin(), children.end(), p);
-    if ( it != children.end() )
+    if ( it != children.end() ) {
+        (*it)->release();
+        if ((*it)->isUnreferenced()) {
+            delete *it;
+        }
         children.erase(it);
+    }
     else 
         throw(RbException("Cannot find node in list of children nodes"));
 }
@@ -161,6 +224,25 @@ std::string TopologyNode::richInfo(void) const {
     o <<  "Topology node: ";
     printValue(o);
     return o.str();
+}
+
+
+void TopologyNode::setParent(TopologyNode *p) {
+    
+    // we only do something if this isn't already our parent
+    if (p != parent) {
+        // release the parent
+        if (parent != NULL) {
+            parent->release();
+            if (parent->isUnreferenced()) {
+                delete parent;
+            }
+        }
+        
+        // set and retain the new parent
+        parent = p;
+        parent->retain();
+    }
 }
 
 
