@@ -20,6 +20,7 @@
 
 #include <cfloat>
 #include <limits>
+#include <cstdlib>
 
 namespace RbConstants {
     

@@ -20,6 +20,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <stdint.h>
 
 class XmlElement {
     

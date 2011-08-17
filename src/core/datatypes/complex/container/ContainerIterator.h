@@ -19,6 +19,8 @@
 #define ContainerIterator_H
 
 #include <vector>
+#include <cstdlib>
+#include <ostream>
 
 class VectorInteger;
 
