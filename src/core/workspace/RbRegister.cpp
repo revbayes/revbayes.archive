@@ -71,7 +71,6 @@
 
 /* MemberObject types without auto-generated constructors(alphabetic order) */
 #include "CharacterMatrix.h"
-#include "List.h"
 #include "Model.h"
 #include "Simplex.h"
 #include "Topology.h"

@@ -17,7 +17,6 @@
  */
 
 #include "Func_gtr.h"
-#include "List.h"
 #include "RateMatrix.h"
 #include "RbException.h"
 #include "RbNames.h"

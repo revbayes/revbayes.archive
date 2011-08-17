@@ -17,7 +17,6 @@
 
 
 #include "DeterministicNode.h"
-#include "List.h"
 #include "MoveTree.h"
 #include "RbException.h"
 #include "RbNames.h"

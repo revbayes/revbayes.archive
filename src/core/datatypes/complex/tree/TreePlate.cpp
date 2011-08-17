@@ -18,7 +18,6 @@
 #include "ArgumentRule.h"
 #include "Boolean.h"
 #include "ConstantNode.h"
-#include "List.h"
 #include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
