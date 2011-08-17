@@ -12,7 +12,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-//#include <stdlib.h>
+#include <cstdlib>
 //#include <stdio.h>
 
 XmlElementAttributed::XmlElementAttributed(const std::string& name, uintptr_t identifier) : XmlElement(name,identifier) {

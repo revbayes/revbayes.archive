@@ -11,7 +11,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
+#include <cstdlib>
 
 
 XmlTag::XmlTag(std::string content) {
