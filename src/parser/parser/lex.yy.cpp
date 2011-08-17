@@ -578,6 +578,7 @@ extern "C" {
 }
 #define YY_SKIP_YYWRAP
 #define yywrap() 1
+#include <unistd.h>
 #endif
 
 /* Include objects needed to understand grammar.tab.h */
