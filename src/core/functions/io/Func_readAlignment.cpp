@@ -19,7 +19,7 @@
 #include "CharacterMatrix.h"
 #include "ConstantNode.h"
 #include "Func_readAlignment.h"
-#include "List.h"
+#include "DagNodeContainer.h"
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
@@ -189,13 +189,15 @@ RbLanguageObject* Func_readAlignment::execute( void ) {
     // return either a list of character matrices or a single character matrix wrapped up in a DAG node
     if ( m.size() > 1 )
         {
-//        List* retList = new List;
-//        for (std::vector<CharacterMatrix*>::iterator it = m.begin(); it != m.end(); it++)
-//            {
-//            std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-//            retList->addElement( new ConstantNode(*it), eName );
-//            }
-//        return retList;
+        DagNodeContainer* retList = new DagNodeContainer(m.size());
+        size_t index = 0;
+        for (std::vector<CharacterMatrix*>::iterator it = m.begin(); it != m.end(); it++)
+            {
+            std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
+            retList->setElement( index, new Variable(new ConstantNode(*it)) );
+            index++;
+            }
+        return retList;
             throw RbException("Wanted to create a List of CharacterMatrix but List does not exist anymore. See Func_readAlignment");
         }
     else if ( m.size() == 1 ) 
