@@ -16,7 +16,7 @@
  */
 
 #include "ArgumentRule.h"
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "ConstantNode.h"
 #include "MemberFunction.h"
 #include "MemberObject.h"
@@ -126,13 +126,13 @@ bool TopologyNode::equals(TopologyNode *node) const {
 RbLanguageObject* TopologyNode::executeOperation(const std::string& name, Environment& args) {
     
     if (name == "isTip") {
-        return ( new Boolean(isTip()) );
+        return ( new RbBoolean(isTip()) );
     }
     else if (name == "isRoot") {
-        return ( new Boolean(isRoot()) );
+        return ( new RbBoolean(isRoot()) );
     }
     else if (name == "isInterior") {
-        return ( new Boolean(!isTip()) );
+        return ( new RbBoolean(!isTip()) );
     }
     else if (name == "ancestor") {
         return parent;

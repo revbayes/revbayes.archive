@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the implementation of VectorBoolean, a complex type
- * used to hold vectors of Boolean values.
+ * used to hold vectors of RbBoolean values.
  *
  * @brief Implementation of VectorBoolean
  *
@@ -16,7 +16,7 @@
  * $Id$
  */
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "ContainerIterator.h"
 #include "VectorBoolean.h"
 #include "RbException.h"
@@ -38,7 +38,7 @@ VectorBoolean::VectorBoolean(void) : Vector(Boolean_name) {
 /** Construct vector with one bool x */
 VectorBoolean::VectorBoolean(bool x) : Vector(Boolean_name) {
 
-    Boolean *element = new Boolean(x);
+    RbBoolean *element = new RbBoolean(x);
     element->retain();
     elements.push_back( element );
     length = 1;
@@ -49,7 +49,7 @@ VectorBoolean::VectorBoolean(bool x) : Vector(Boolean_name) {
 VectorBoolean::VectorBoolean(size_t n, bool x) : Vector(Boolean_name) {
 
     for (size_t i = 0; i < n; i++) {
-        Boolean *element = new Boolean(x);
+        RbBoolean *element = new RbBoolean(x);
         element->retain();
         elements.push_back( element );
     }
@@ -61,7 +61,7 @@ VectorBoolean::VectorBoolean(size_t n, bool x) : Vector(Boolean_name) {
 VectorBoolean::VectorBoolean(const std::vector<bool>& x) : Vector(Boolean_name) {
 
     for (std::vector<bool>::const_iterator i=x.begin(); i!=x.begin(); i++) {
-        Boolean *element = new Boolean(*i);
+        RbBoolean *element = new RbBoolean(*i);
         element->retain();
         elements.push_back( element );
     }
@@ -73,7 +73,7 @@ VectorBoolean::VectorBoolean(const std::vector<bool>& x) : Vector(Boolean_name) 
 VectorBoolean::VectorBoolean(const std::vector<int>& x) : Vector(Boolean_name) {
 
     for (std::vector<int>::const_iterator i=x.begin(); i!=x.end(); i++) {
-        Boolean *element = new Boolean( (*i) == 0 );
+        RbBoolean *element = new RbBoolean( (*i) == 0 );
         element->retain();
         elements.push_back( element );
     }
@@ -86,7 +86,7 @@ bool& VectorBoolean::operator[](size_t i) {
     if (i > elements.size())
         throw RbException("Index out of bounds");
 
-    return static_cast<Boolean*>(elements[i])->getValueReference();
+    return static_cast<RbBoolean*>(elements[i])->getValueReference();
 }
 
 
@@ -95,7 +95,7 @@ const bool& VectorBoolean::operator[](size_t i) const {
 
     if ( i >= elements.size() )
         throw RbException("Index out of bounds");
-    return static_cast<Boolean*>(elements[i])->getValueReference();
+    return static_cast<RbBoolean*>(elements[i])->getValueReference();
 }
 
 
@@ -149,7 +149,7 @@ std::vector<bool> VectorBoolean::getValue(void) const {
 /** Append element to end of vector, updating length in process */
 void VectorBoolean::push_back(bool x) {
     
-    Boolean *element = new Boolean(x);
+    RbBoolean *element = new RbBoolean(x);
     element->retain();
     elements.push_back( element );
     length++;
@@ -159,7 +159,7 @@ void VectorBoolean::push_back(bool x) {
 /** Add element in front of vector, updating length in process */
 void VectorBoolean::push_front(bool x) {
     
-    Boolean *element = new Boolean(x);
+    RbBoolean *element = new RbBoolean(x);
     element->retain();
     elements.insert(elements.begin(), element );
     length++;
@@ -182,7 +182,7 @@ void VectorBoolean::setValue(const std::vector<bool>& x) {
 
     clear();
     for (std::vector<bool>::const_iterator i=x.begin(); i!=x.end(); i++) { 
-        Boolean *element = new Boolean(*i);
+        RbBoolean *element = new RbBoolean(*i);
         element->retain();
         elements.push_back( element );  
         length++;
@@ -195,7 +195,7 @@ void VectorBoolean::setValue(const VectorBoolean& x) {
 
     clear();
     for (size_t i=0; i<x.getLength(); i++) {   
-        Boolean *element = new Boolean(x[i]);
+        RbBoolean *element = new RbBoolean(x[i]);
         element->retain();
         elements.push_back( element );
         length++;

@@ -44,7 +44,7 @@ class Func__ge :  public RbFunction {
 
 #endif
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "DAGNode.h"
 #include "Integer.h"
 #include "MatrixReal.h"
@@ -71,7 +71,7 @@ RbLanguageObject* Func__ge<firstValType,secondValType>::execute( void ) {
     const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
     const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
     
-    return ( new Boolean( *val1 >= *val2 ) );
+    return ( new RbBoolean( *val1 >= *val2 ) );
 }
 
 

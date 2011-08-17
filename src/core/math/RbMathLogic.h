@@ -2,7 +2,7 @@
  * @file RbMathLogic
  * This file contains some logic function on numbers.
  *
- * @brief Implementation of simple boolean algebra on numbers.
+ * @brief Implementation of simple RbBoolean algebra on numbers.
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$

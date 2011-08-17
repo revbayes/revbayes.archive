@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the declaration of VectorBoolean, a complex type
- * used to hold boolean vectors.
+ * used to hold RbBoolean vectors.
  *
  * @brief Declaration of VectorBoolean
  *

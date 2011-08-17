@@ -14,7 +14,7 @@
  */
 
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "RbAbstract.h"
 #include "RealPos.h"
 #include "Real.h"

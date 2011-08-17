@@ -874,7 +874,7 @@ class NxsTreesBlock
 		{
 			this->writeTranslateTable = wtt;
 		}
-		/*! Sets the boolean field that determines whether or not the trees
+		/*! Sets the RbBoolean field that determines whether or not the trees
 			block will validate treat internal node labels
 			as taxon labels during the parse. In this case the labels will
 			checked against the taxa block (true is the default).

@@ -2,7 +2,7 @@
  * @file
  * This file contains the declaration and implementation
  * of the templated Func__unot, which is used to perform
- * the unary Boolean not (!) operation.
+ * the unary RbBoolean not (!) operation.
  *
  * @brief Declaration and implementation of Func__unot
  *
@@ -41,7 +41,7 @@ class Func__unot :  public RbFunction {
 
 #endif
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "DAGNode.h"
 #include "RbNames.h"
 #include "TypeSpec.h"
@@ -62,7 +62,7 @@ template <typename valType>
 RbLanguageObject* Func__unot<valType>::execute( void ) {
 
     const valType*  val = static_cast<const valType*> ( args[0].getValue() );
-    Boolean         res = ! (*val);
+    RbBoolean         res = ! (*val);
 
     return res.clone();
 }

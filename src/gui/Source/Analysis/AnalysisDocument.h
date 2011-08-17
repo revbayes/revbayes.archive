@@ -6,8 +6,7 @@
 
 
 
-@interface AnalysisDocument : NSDocument
-{
+@interface AnalysisDocument : NSDocument {
 
     IBOutlet NSButton*                    helpButton;            // a pointer to the help button
 	IBOutlet AnalysisView*                analysisViewPtr;       // a pointer to the view for the window

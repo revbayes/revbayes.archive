@@ -16,7 +16,7 @@
  */
 
 #include "ArgumentRule.h"
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "ConstantNode.h"
 #include "MemberFunction.h"
 #include "Natural.h"
@@ -95,7 +95,7 @@ RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environme
         }
         
         // get the replication parameter
-        bool repl = static_cast<const Boolean*>( args[2].getValue() )->getValue();
+        bool repl = static_cast<const RbBoolean*>( args[2].getValue() )->getValue();
         
         if (repl) {
             if (orderingTopology == NULL) {

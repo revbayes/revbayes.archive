@@ -17,7 +17,7 @@
  * $Id$
  */
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "DAGNode.h"
 #include "Func_ls.h"
 #include "Model.h"
@@ -43,7 +43,7 @@ Func_ls* Func_ls::clone( void ) const {
 RbLanguageObject* Func_ls::execute( void ) {
 
     /* Open file */
-    const Boolean *printAll = static_cast<const Boolean*>( args[0].getValue() );
+    const RbBoolean *printAll = static_cast<const RbBoolean*>( args[0].getValue() );
     
     std::cout << "User workspace:" << std::endl;
     std::cout << "===============" << std::endl;
@@ -74,7 +74,7 @@ const ArgumentRules& Func_ls::getArgumentRules( void ) const {
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ValueRule( "all", new Boolean( false ) ) );
+        argumentRules.push_back( new ValueRule( "all", new RbBoolean( false ) ) );
         rulesSet = true;
     }
 

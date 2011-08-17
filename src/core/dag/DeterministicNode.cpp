@@ -18,7 +18,7 @@
  */
 
 #include "ArgumentRule.h"
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
@@ -283,8 +283,8 @@ void DeterministicNode::printStruct( std::ostream& o ) const {
     
     o << "_valueType   = " << getValueType() << std::endl;
     o << "_function    = " << function->getType() << std::endl;
-    o << "_touched     = " << ( touched ? Boolean( true ) : Boolean( false ) ) << std::endl;
-    o << "_changed     = " << ( changed ? Boolean( true ) : Boolean( false ) ) << std::endl;
+    o << "_touched     = " << ( touched ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
+    o << "_changed     = " << ( changed ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
     
     o << "_parents     = ";
     printParents(o);

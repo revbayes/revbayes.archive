@@ -17,7 +17,7 @@
  * $Id: Mcmc.h 211 2009-12-29 22:23:09Z ronquist $
  */
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "MatrixReal.h"
 #include "MemberFunction.h"
 #include "Natural.h"

@@ -17,7 +17,7 @@
  * $Id: StochasticNode.cpp 221 2010-01-12 20:51:54Z Hoehna $
  */
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "Distribution.h"
 #include "MoveSchedule.h"
 #include "RbException.h"
@@ -406,8 +406,8 @@ void StochasticNode::printStruct( std::ostream& o ) const {
     o << "_Class        = " << getClass() << std::endl;
     o << "_valueType    = " << getValueType() << std::endl;
     o << "_distribution = " << distribution->briefInfo() << std::endl;
-    o << "_touched      = " << ( touched ? Boolean( true ) : Boolean( false ) ) << std::endl;
-    o << "_clamped      = " << ( clamped ? Boolean( true ) : Boolean( false ) ) << std::endl;
+    o << "_touched      = " << ( touched ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
+    o << "_clamped      = " << ( clamped ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
     o << "_value        = " << value->briefInfo() << std::endl;
     if ( touched )
         o << "_storedValue  = " << storedValue->briefInfo() << std::endl;

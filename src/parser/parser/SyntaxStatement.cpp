@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "Environment.h"
@@ -342,7 +342,7 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
 
 /**
  * This is a help function that evaluates the expression and then checks
- * whether the result is true or false, or can be interpreted as a Boolean
+ * whether the result is true or false, or can be interpreted as a RbBoolean
  * true or false value.
  */
 bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment* env ) const {
@@ -354,7 +354,7 @@ bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment* env ) cons
     
     if ( temp->getValue()->isType( Boolean_name ) ) {
         
-        bool retValue = static_cast<const Boolean*>( temp->getValue() )->getValue();
+        bool retValue = static_cast<const RbBoolean*>( temp->getValue() )->getValue();
         
         if ( temp->isUnreferenced() )
             delete   temp;
@@ -363,7 +363,7 @@ bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment* env ) cons
     }
     else {
         
-        Boolean* tempBool = static_cast<Boolean*>( temp->getValue()->convertTo( Boolean_name ) );
+        RbBoolean* tempBool = static_cast<RbBoolean*>( temp->getValue()->convertTo( Boolean_name ) );
         bool     retValue = tempBool->getValue();
         
         delete   tempBool;

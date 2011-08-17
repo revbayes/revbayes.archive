@@ -15,7 +15,7 @@
  * $Id$
  */
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "CharacterMatrix.h"
 #include "ConstantNode.h"
 #include "Func_readAlignment.h"

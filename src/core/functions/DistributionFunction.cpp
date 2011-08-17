@@ -16,7 +16,7 @@
  */
 
 #include "ArgumentRule.h"
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Distribution.h"
@@ -52,7 +52,7 @@ DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcTyp
     if (functionType == DENSITY) {
 
         argumentRules.insert( argumentRules.begin(), new ValueRule( "x"  , distribution->getVariableType() ) );
-        argumentRules.push_back(                     new ValueRule( "log", new Boolean(false)              ) );
+        argumentRules.push_back(                     new ValueRule( "log", new RbBoolean(false)              ) );
     }
     else if (functionType == RVALUE) {
 
@@ -81,7 +81,7 @@ DistributionFunction::DistributionFunction( const DistributionFunction& x ) : Rb
     if (functionType == DENSITY) {
 
         argumentRules.insert( argumentRules.begin(), new ValueRule( "x"  , distribution->getVariableType() ) );
-        argumentRules.push_back(                     new ValueRule( "log", new Boolean(true)             ) );
+        argumentRules.push_back(                     new ValueRule( "log", new RbBoolean(true)             ) );
     }
     else if (functionType == RVALUE) {
     
@@ -134,7 +134,7 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
         if (functionType == DENSITY) {
 
             argumentRules.insert( argumentRules.begin(), new ValueRule( "x", distribution->getVariableType() ) );
-            argumentRules.push_back(                     new ValueRule( "log", new Boolean(true)             ) );
+            argumentRules.push_back(                     new ValueRule( "log", new RbBoolean(true)             ) );
         }
         else if (functionType == RVALUE) {
         
@@ -166,7 +166,7 @@ RbLanguageObject* DistributionFunction::execute( void ) {
 
     if ( functionType == DENSITY ) {
 
-        if ( static_cast<const Boolean*>( args["log"].getValue() )->getValue() == false )
+        if ( static_cast<const RbBoolean*>( args["log"].getValue() )->getValue() == false )
             return new RealPos( distribution->pdf  ( args[0].getValue() ) );
         else
             return new Real   ( distribution->lnPdf( args[0].getValue() ) );

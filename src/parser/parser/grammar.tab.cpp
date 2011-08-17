@@ -175,7 +175,7 @@
 
 /* The following statements go into the resulting C code */
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "Integer.h"
 #include "Natural.h"
 #include "Parser.h"
@@ -2801,7 +2801,7 @@ yyreduce:
 #line 600 "./grammar.y"
     {
                     PRINTF("Parser inserting bool constant (false) in syntax tree\n");
-                    (yyval.syntaxElement) = new SyntaxConstant(new Boolean(false));
+                    (yyval.syntaxElement) = new SyntaxConstant(new RbBoolean(false));
                 }
     break;
 
@@ -2809,7 +2809,7 @@ yyreduce:
 #line 605 "./grammar.y"
     {
                     PRINTF("Parser inserting bool constant (true) in syntax tree\n");
-                    (yyval.syntaxElement) = new SyntaxConstant(new Boolean(true));
+                    (yyval.syntaxElement) = new SyntaxConstant(new RbBoolean(true));
                 }
     break;
 

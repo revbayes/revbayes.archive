@@ -17,7 +17,7 @@
  * $Id: Mcmc.h 211 2009-12-29 22:23:09Z ronquist $
  */
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "EigenSystem.h"
 #include "RateMatrix.h"
 #include "MatrixReal.h"
@@ -284,7 +284,7 @@ RbLanguageObject* RateMatrix::executeOperation(const std::string& name, Environm
         }        
     else if (name == "reversible")
         {
-        return ( new Boolean(isReversible) );
+        return ( new RbBoolean(isReversible) );
         }        
 
     return MemberObject::executeOperation( name, args );

@@ -446,7 +446,7 @@ std::cerr << "Adding matrix " << fn << std::endl;
                 const Character& matrixCell = (*p)->getCharacter(i, j);
 				RbDataCell* cell = [[RbDataCell alloc] init];
                 bool isDiscrete = true;
-                if ( matrixCell.getNumStates() == 0 )
+                if ( matrixCell.getNumberOfStates() == 0 )
                     isDiscrete = false;
 				if ( isDiscrete == true )
 					{
@@ -455,8 +455,8 @@ std::cerr << "Adding matrix " << fn << std::endl;
 					[cell setVal:n];
 					[cell setIsDiscrete:YES];
                     [cell setDataType:[m dataType]];
-					[cell setNumStates:(int)(matrixCell.getNumStates())];
-					if ( matrixCell.isMissAmbig() == true )
+					[cell setNumStates:(int)(matrixCell.getNumberOfStates())];
+					if ( matrixCell.isMissingOrAmbiguous() == true )
 						[cell setIsAmbig:YES];
 					}
 				else 

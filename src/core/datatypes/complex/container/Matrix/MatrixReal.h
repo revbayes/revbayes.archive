@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 
-class Boolean;
+class RbBoolean;
 class VectorNatural;
 
 

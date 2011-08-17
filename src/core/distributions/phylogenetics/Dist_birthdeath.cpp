@@ -14,7 +14,7 @@
  * $Id$
  */
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "DAGNode.h"
 #include "Dist_birthdeath.h"
 #include "Integer.h"
