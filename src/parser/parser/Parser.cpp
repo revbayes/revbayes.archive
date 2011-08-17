@@ -27,6 +27,7 @@
 #include "UserInterface.h"
 #include "Workspace.h"
 
+#include <cstring>
 #include <sstream>
 
 /** Trigger printing of PRINTF debug statements by defining DEBUG_PARSER */
