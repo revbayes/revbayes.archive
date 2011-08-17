@@ -31,6 +31,7 @@
 #include "VectorString.h"
 
 #include <sstream>
+#include <climits>
 
 
 /** Default constructor */
