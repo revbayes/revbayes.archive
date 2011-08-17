@@ -30,7 +30,7 @@ CharacterStateDiscrete::CharacterStateDiscrete(size_t n) : Character(), numState
 /** Get class vector describing type of object */
 const VectorString& CharacterStateDiscrete::getClass() const {
 
-    static VectorString rbClass = VectorString( CharacterStateDiscrete_name ) + RbObject::getClass();
+    static VectorString rbClass = VectorString( CharacterStateDiscrete_name ) + Character::getClass();
     return rbClass;
 }
 
@@ -80,6 +80,24 @@ void CharacterStateDiscrete::setNumberOfStates(size_t n) {
 
     numStates = n;
     value.resize(n);
+}
+
+
+/** Set the values */
+void CharacterStateDiscrete::setValue(const std::vector<bool> &v) {
+    value = v;
+}
+
+
+/** Set value with single index */
+void CharacterStateDiscrete::setValue(int x) {
+    // reset all values
+    for (size_t i=0; i<value.size(); i++) {
+        value[i] = false;
+    }
+    
+    // set the value with given index to true
+    value[x] = true;
 }
 
 

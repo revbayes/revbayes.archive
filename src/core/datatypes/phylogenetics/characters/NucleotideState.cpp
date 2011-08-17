@@ -115,7 +115,7 @@ void NucleotideState::addState(const char s) {
 /** Get class vector describing type of object */
 const VectorString& NucleotideState::getClass() const {
 
-    static VectorString rbClass = VectorString( NucleotideState_name ) + RbObject::getClass();
+    static VectorString rbClass = VectorString( NucleotideState_name ) + CharacterStateDiscrete::getClass();
     return rbClass;
 }
 

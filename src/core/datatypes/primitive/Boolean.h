@@ -30,8 +30,6 @@ class VectorString;
 class Boolean : public RbLanguageObject {
 
     public:
-//        friend class            VectorBoolean;                                                          //!< Give VectorBoolean direct access to value
-
                                 Boolean(void);                                                          //!< Default constructor
                                 Boolean(const bool v);                                                  //!< Construct from bool
 

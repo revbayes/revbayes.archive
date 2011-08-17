@@ -42,7 +42,7 @@ int Categorical::convertSymbolToState( char c ) const {
 
     int stateValue;
     const std::string& stateLabels = getStateLabels();
-    const std::string& NALabels    = getNALabels();
+//    const std::string& NALabels    = getNALabels();
 
     bool foundMatch = false;
 
@@ -54,15 +54,15 @@ int Categorical::convertSymbolToState( char c ) const {
         }
     }
 
-    if ( foundMatch == false ) {
-        for ( size_t i = 0; i < NALabels.size(); i++ ) {
-            if ( c == NALabels[i] ) {
-                stateValue = -1 - static_cast<int>( i );
-                foundMatch = true;
-                break;
-            }
-        }
-    }
+//    if ( foundMatch == false ) {
+//        for ( size_t i = 0; i < NALabels.size(); i++ ) {
+//            if ( c == NALabels[i] ) {
+//                stateValue = -1 - static_cast<int>( i );
+//                foundMatch = true;
+//                break;
+//            }
+//        }
+//    }
 
     return stateValue;
 }
@@ -71,7 +71,7 @@ int Categorical::convertSymbolToState( char c ) const {
 /** Get class vector describing type of object */
 const VectorString& Categorical::getClass() const {
 
-    static VectorString rbClass = VectorString( Categorical_name ) + RbObject::getClass();
+    static VectorString rbClass = VectorString( Categorical_name ) + RbLanguageObject::getClass();
     return rbClass;
 }
 
@@ -79,7 +79,7 @@ const VectorString& Categorical::getClass() const {
 /** Check if character code is valid */
 bool Categorical::isValidState( int x ) const {
 
-    if ( x >= int( getStateLabels().size() ) || x < int( getNALabels().size() ) )
+    if ( x >= int( getStateLabels().size() ) ) // || x < int( getNALabels().size() ) )
         return false;
 
     return true;
@@ -89,9 +89,9 @@ bool Categorical::isValidState( int x ) const {
 /** Print value for user */
 void Categorical::printValue( std::ostream& o ) const {
 
-    if ( value < 0 )
-        o << getNALabels()[ -1 - value ];
-    else
+//    if ( value < 0 )
+//        o << getNALabels()[ -1 - value ];
+//    else
         o << getStateLabels()[ value ];
 }
 

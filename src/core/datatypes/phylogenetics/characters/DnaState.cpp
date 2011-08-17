@@ -81,7 +81,7 @@ DnaState* DnaState::clone(void) const {
 /** Get class vector describing type of object */
 const VectorString& DnaState::getClass(void) const {
 
-    static VectorString rbClass = VectorString( DnaState_name ) + RbObject::getClass();
+    static VectorString rbClass = VectorString( DnaState_name ) + NucleotideState::getClass();
     return rbClass;
 }
 

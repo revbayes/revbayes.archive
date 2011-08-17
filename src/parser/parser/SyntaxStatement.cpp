@@ -152,6 +152,8 @@ SyntaxElement* SyntaxStatement::clone () const {
 /** Get semantic value: it is here that we execute the statement */
 Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
 
+    Variable* result;
+    
     if (statementType == For) {
 
         // Convert expression to for condition
@@ -174,11 +176,19 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
             for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
 
                 // Execute statement
-                Variable* result = (*i)->getContentAsVariable(loopEnv);
+                result = (*i)->getContentAsVariable(loopEnv);
+                
+                // Print result if it is not an assign expression (==NULL)
+                if (result != NULL) {
+                    std::ostringstream msg;
+                    result->getDagNodePtr()->printValue(msg);
+                    RBOUT( msg.str() );
+                }
 
                 // Free memory
-				if ( result != NULL && result->isUnreferenced()) {
-					delete result;  // discard result
+				if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && result->isUnreferenced()) {
+                    delete result;  // discard result
+                    result = NULL;
                 }
 
                 // Catch signal
@@ -218,25 +228,34 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
             for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
 	 
                 // Execute statement
-	            Variable* result = (*i)->getContentAsVariable( env );
+	            result = (*i)->getContentAsVariable( env );
+                
+                // Print result if it is not an assign expression (==NULL)
+                if (result != NULL) {
+                    std::ostringstream msg;
+                    result->getDagNodePtr()->printValue(msg);
+                    RBOUT( msg.str() );
+                }
 	 
 	            // Free memory
-                if ( result != NULL && result->isUnreferenced() )
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && result->isUnreferenced() ){
                     delete result;  // discard result
+                    result = NULL;
+                }
 	 
 	            // Catch signal
 	            if ( !Signals::getSignals().isGood() )
-           break;
-	             }
+                    break;
+            }
 
             // Catch signals
             if ( Signals::getSignals().isSet(Signals::BREAK) ) {
 	                 Signals::getSignals().clearFlags();
 	                 break;
-	             }
+            }
             else if ( Signals::getSignals().isSet(Signals::CONTINUE) ) {
 	                 Signals::getSignals().clearFlags();  // Just continue with next loop state
-	             }
+            }
         }
     }
     else if (statementType == Return) {
@@ -253,11 +272,20 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
             for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
 
                 // Execute statement
-                Variable* result = (*i)->getContentAsVariable(env);
+                result = (*i)->getContentAsVariable(env);
+                
+                // Print result if it is not an assign expression (==NULL)
+                if (result != NULL) {
+                    std::ostringstream msg;
+                    result->getDagNodePtr()->printValue(msg);
+                    RBOUT( msg.str() );
+                }
 
                 // Free memory
-                if ( result != NULL && result->isUnreferenced() )
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && result->isUnreferenced() ){
                     delete result;  // discard result
+                    result = NULL;
+                }
             }
         }
     }
@@ -270,27 +298,45 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
             for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
             
                 // Execute statement
-                Variable* result = (*i)->getContentAsVariable( env );
+                result = (*i)->getContentAsVariable( env );
+                
+                // Print result if it is not an assign expression (==NULL)
+                if (result != NULL) {
+                    std::ostringstream msg;
+                    result->getDagNodePtr()->printValue(msg);
+                    RBOUT( msg.str() );
+                }
                 
                 // Free memory
-                if ( result != NULL && result->isUnreferenced() )
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && result->isUnreferenced() ){
                     delete result;  // discard result
+                    result = NULL;
+                }
             }
         }
         else {	
             for ( std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++ ) {
     
                 // Execute statement
-                Variable* result = (*i)->getContentAsVariable( env );
+                result = (*i)->getContentAsVariable( env );
+                
+                // Print result if it is not an assign expression (==NULL)
+                if (result != NULL) {
+                    std::ostringstream msg;
+                    result->getDagNodePtr()->printValue(msg);
+                    RBOUT( msg.str() );
+                }
                     
                 // Free memory
-                if ( result != NULL && result->isUnreferenced() )
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && result->isUnreferenced() ) {
                     delete result;  // discard result
+                    result = NULL;
+                }
             }
         }
     }
 
-    return NULL;
+    return result;
 }
 
 

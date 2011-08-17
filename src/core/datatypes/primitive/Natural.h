@@ -21,8 +21,6 @@
 #include <ostream>
 #include <string>
 
-class Boolean;
-
 
 /**
  * Primitive type for Natural numbers (including 0).

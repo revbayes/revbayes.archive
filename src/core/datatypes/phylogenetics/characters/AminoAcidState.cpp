@@ -99,7 +99,7 @@ AminoAcidState* AminoAcidState::clone(void) const {
 /** Get class vector describing type of object */
 const VectorString& AminoAcidState::getClass(void) const {
 
-    static VectorString rbClass = VectorString( AminoAcidState_name ) + RbObject::getClass();
+    static VectorString rbClass = VectorString( AminoAcidState_name ) + CharacterStateDiscrete::getClass();
     return rbClass;
 }
 

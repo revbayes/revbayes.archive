@@ -27,6 +27,7 @@
 #include "RbNames.h"
 #include "RealPos.h"
 #include "Simplex.h"
+#include "TransitionProbabilityMatrix.h"
 #include "ValueRule.h"
 #include "VectorString.h"
 
@@ -87,11 +88,30 @@ size_t Dist_ctmm::getNumberOfStates( void ) const {
 /** Get the probability mass vector */
 const Simplex* Dist_ctmm::getProbabilityMassVector( void ) {
 
-    // TODO:
-    // Calculate the transition probability matrix
-    // Calculate and return the probability mass vector on the states
+    // get the information from the arguments for reading the file
+    const RateMatrix*                q = static_cast<const RateMatrix*>(                members[0].getValue() );
+    const RealPos*                   t = static_cast<const RealPos*>(                   members[1].getValue() );
+    const CharacterStateDiscrete*    c = static_cast<const CharacterStateDiscrete*>(    members[2].getValue() );
+    
+    // initialize the number of states
+    const size_t nStates = q->getNumberOfStates();
+    
+    // check that the number of states isn't 1
+    if ( nStates < 2 )
+    {
+        std::stringstream o;
+        o << "Too few states for the rate matrix";
+        throw( RbException(o.str()) );
+    }
+    
+    // construct a rate matrix of the correct dimensions
+    TransitionProbabilityMatrix* m = new TransitionProbabilityMatrix(nStates);
+    
+    // calculate the transition probabilities    
+    q->calculateTransitionProbabilities( t->getValue(), *m );
+    
+    //
 
-    return NULL;
 }
 
 
@@ -115,14 +135,39 @@ double Dist_ctmm::lnPdf( const RbLanguageObject* value ) {
 
     // Get the parameters
     const RateMatrix*             Q      = static_cast<const RateMatrix*            >( getMemberValue( "Q" ) );
-    double                        v      = static_cast<const RealPos*               >( getMemberValue( "v" ) )->getValue();
+    double                        t      = static_cast<const RealPos*               >( getMemberValue( "v" ) )->getValue();
     const CharacterStateDiscrete* start  = static_cast<const CharacterStateDiscrete*>( getMemberValue( "a" ) );
-
-    // Get the value
     const CharacterStateDiscrete* stop  = static_cast<const CharacterStateDiscrete* >( value );
-
-    // TODO: Calculate log probability
-    return 0.0;
+    
+    // calculate the transition probability matrix
+    
+    // initialize the number of states
+    const size_t nStates = Q->getNumberOfStates();
+    
+    // construct a rate matrix of the correct dimensions
+    TransitionProbabilityMatrix* m = new TransitionProbabilityMatrix(nStates);
+    
+    // calculate the transition probabilities    
+    Q->calculateTransitionProbabilities( t, *m );
+    
+    double lnprob = 0.0;
+    std::vector<bool> startState = start->getStateVector();
+    std::vector<bool> stopState  = stop->getStateVector();
+    size_t indexStart=0;
+    size_t indexEnd=0;
+    for (std::vector<bool>::iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
+        // test whether the state is set
+        if (*itStart) {
+            for (std::vector<bool>::iterator itStop=stopState.begin(); itStop!=stopState.end(); itStop++, indexEnd++) {
+                // test whether the state is set
+                if (*itStop) {
+                    lnprob += log((*m)[indexStart][indexEnd]);
+                }
+            }
+        }
+    }
+    
+    return lnprob;
 }
 
 
@@ -139,14 +184,39 @@ double Dist_ctmm::pdf( const RbLanguageObject* value ) {
 
     // Get the parameters
     const RateMatrix*             Q      = static_cast<const RateMatrix*            >( getMemberValue( "Q" ) );
-    double                        v      = static_cast<const RealPos*               >( getMemberValue( "v" ) )->getValue();
+    double                        t      = static_cast<const RealPos*               >( getMemberValue( "v" ) )->getValue();
     const CharacterStateDiscrete* start  = static_cast<const CharacterStateDiscrete*>( getMemberValue( "a" ) );
-
-    // Get the value
     const CharacterStateDiscrete* stop  = static_cast<const CharacterStateDiscrete* >( value );
 
-    // TODO: Calculate log probability
-    return 1.0;
+    // calculate the transition probability matrix
+    
+    // initialize the number of states
+    const size_t nStates = Q->getNumberOfStates();
+    
+    // construct a rate matrix of the correct dimensions
+    TransitionProbabilityMatrix* m = new TransitionProbabilityMatrix(nStates);
+    
+    // calculate the transition probabilities    
+    Q->calculateTransitionProbabilities( t, *m );
+    
+    double prob = 1.0;
+    std::vector<bool> startState = start->getStateVector();
+    std::vector<bool> stopState  = stop->getStateVector();
+    size_t indexStart=0;
+    size_t indexEnd=0;
+    for (std::vector<bool>::iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
+        // test whether the state is set
+        if (*itStart) {
+            for (std::vector<bool>::iterator itStop=stopState.begin(); itStop!=stopState.end(); itStop++, indexEnd++) {
+                // test whether the state is set
+                if (*itStop) {
+                    prob *= ((*m)[indexStart][indexEnd]);
+                }
+            }
+        }
+    }
+
+    return prob;
 }
 
 
@@ -164,11 +234,41 @@ CharacterStateDiscrete* Dist_ctmm::rv( void ) {
     
     // Get the parameters
     const RateMatrix*             Q      = static_cast<const RateMatrix*            >( getMemberValue( "Q" ) );
-    double                        v      = static_cast<const RealPos*               >( getMemberValue( "v" ) )->getValue();
+    double                        t      = static_cast<const RealPos*               >( getMemberValue( "v" ) )->getValue();
     const CharacterStateDiscrete* start  = static_cast<const CharacterStateDiscrete*>( getMemberValue( "a" ) );
-
-    // TODO: Draw a random character state
-    return NULL;
+    
+    // calculate the transition probability matrix
+    
+    // initialize the number of states
+    const size_t nStates = Q->getNumberOfStates();
+    
+    // construct a rate matrix of the correct dimensions
+    TransitionProbabilityMatrix* m = new TransitionProbabilityMatrix(nStates);
+    
+    // calculate the transition probabilities    
+    Q->calculateTransitionProbabilities( t, *m );
+    
+    CharacterStateDiscrete* draw = start->clone();
+    std::vector<bool> startState = start->getStateVector();
+    size_t indexStart=0;
+    for (std::vector<bool>::iterator itStart=startState.begin() ; itStart!=startState.end(); itStart++, indexStart++) {
+        // test whether the state is set
+        if (*itStart) {
+            VectorReal probs = (*m)[indexStart];
+            double u = rng->uniform01();
+            for (size_t i=0; i<probs.getLength(); i++) {
+                u -= probs[i];
+                if (u <= 0) {
+                    std::vector<bool> values = std::vector<bool>(start->getNumberOfStates());
+                    values[i] = true;
+                    draw->setValue(values);
+                    break;
+                }
+            }
+        }
+    }
+    
+    return draw;
 }
 
 
@@ -177,13 +277,15 @@ void Dist_ctmm::setMemberVariable( const std::string& name, Variable* var ) {
 
     DistributionDiscrete::setMemberVariable( name, var );
 
-    if ( name == "Q" || name == "a" ) {
-        
-        const RateMatrix*             Q      = static_cast<const RateMatrix*            >( getMemberValue( "Q" ) );
-        const CharacterStateDiscrete* start  = static_cast<const CharacterStateDiscrete*>( getMemberValue( "a" ) );
-
-        if ( start->getNumberOfStates() != Q->getNumberOfStates() )
-            throw RbException( "Starting state and rate matrix need to have the same number of states" );
-    }
+    // we cannot do the following because first only one variable is set and hence the following code crashes
+    // nevertheless a test like that might be useful
+//    if ( name == "Q" || name == "a" ) {
+//        
+//        const RateMatrix*             Q      = static_cast<const RateMatrix*            >( getMemberValue( "Q" ) );
+//        const CharacterStateDiscrete* start  = static_cast<const CharacterStateDiscrete*>( getMemberValue( "a" ) );
+//
+//        if ( start->getNumberOfStates() != Q->getNumberOfStates() )
+//            throw RbException( "Starting state and rate matrix need to have the same number of states" );
+//    }
 }
 

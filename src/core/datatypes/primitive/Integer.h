@@ -19,19 +19,17 @@
 #ifndef Integer_H
 #define Integer_H
 
+#include "Boolean.h"
 #include "RbLanguageObject.h"
 
 #include <ostream>
 #include <string>
 
-class Boolean;
 class VectorString;
 
 class Integer : public RbLanguageObject {
 
     public:
-//        friend class                VectorInteger;                                                          //!< Give VectorInteger direct access to value
-
                                     Integer(void);                                                          //!< Default constructor
                                     Integer(const unsigned int v);                                          //!< Constructor from unsigned int
                                     Integer(const int v);                                                   //!< Constructor from int

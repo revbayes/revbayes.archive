@@ -144,6 +144,10 @@ RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environme
         TopologyNode *theNode = dynamic_cast<TopologyNode*>(args[0].getDagNodePtr()->getValuePtr());
         return new Natural(getNodeIndex(theNode));
     }
+    else if (name == "tipIndex") {
+        TopologyNode *theNode = dynamic_cast<TopologyNode*>(args[0].getDagNodePtr()->getValuePtr());
+        return new Natural(getTipIndex(theNode));
+    }
     else {
         return MemberObject::executeOperation( name, args );
     }
@@ -165,12 +169,29 @@ size_t TreePlate::getNodeIndex(TopologyNode *theNode) {
     return (index < nodes.size() ? index + 1 : 0);
 }
 
+
+/** Find the tip-index of the node */
+size_t TreePlate::getTipIndex(TopologyNode *theNode) {
+    
+    size_t index = 0;
+    for (; index<orderingTopology->getNumberOfTips(); index++) {
+        TopologyNode *theTip = orderingTopology->getTipNode(index);
+        if (theNode->equals( theTip ) ) {
+            break;
+        }
+    }
+    
+    // return -1 if the node does not exist in the tree
+    return (index < orderingTopology->getNumberOfTips() ? index + 1 : 0);
+}
+
 /* Get method specifications */
 const MethodTable& TreePlate::getMethods(void) const {
     
     static MethodTable   methods;
     static ArgumentRules addvariableArgRules;
     static ArgumentRules getNodeIndexArgRules;
+    static ArgumentRules getTipIndexArgRules;
     static ArgumentRules nnodesArgRules;
     static ArgumentRules nodeArgRules;
     static bool          methodsSet = false;
@@ -184,10 +205,15 @@ const MethodTable& TreePlate::getMethods(void) const {
         
         methods.addFunction("addVariable",  new MemberFunction(RbVoid_name, addvariableArgRules)  );
         
-        // add the 'getNodeIndex(node)' method
+        // add the 'index(node)' method
         getNodeIndexArgRules.push_back( new ValueRule( "node", TopologyNode_name ));
         
         methods.addFunction("index", new MemberFunction(Natural_name, getNodeIndexArgRules));
+        
+        // add the 'tipIndex(node)' method
+        getTipIndexArgRules.push_back( new ValueRule( "node", TopologyNode_name ));
+        
+        methods.addFunction("tipIndex", new MemberFunction(Natural_name, getTipIndexArgRules));
         
         // add the 'node(i)' method
         nodeArgRules.push_back(  new ValueRule( "index" , Natural_name  ) );

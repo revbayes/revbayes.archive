@@ -81,7 +81,7 @@ CharacterContinuous* CharacterContinuous::clone(void) const {
 /** Get class vector describing type of object */
 const VectorString& CharacterContinuous::getClass(void) const {
 
-    static VectorString rbClass = VectorString( CharacterContinuous_name ) + RbObject::getClass();
+    static VectorString rbClass = VectorString( CharacterContinuous_name ) + Character::getClass();
     return rbClass;
 }
 

@@ -95,7 +95,7 @@ void StandardState::addState(const char s) {
 /** Get class vector describing type of object */
 const VectorString& StandardState::getClass(void) const {
 
-    static VectorString rbClass = VectorString( StandardState_name ) + RbObject::getClass();
+    static VectorString rbClass = VectorString( StandardState_name ) + CharacterStateDiscrete::getClass();
     return rbClass;
 }
 

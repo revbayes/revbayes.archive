@@ -81,7 +81,7 @@ RnaState* RnaState::clone(void) const {
 /** Get class vector describing type of object */
 const VectorString& RnaState::getClass(void) const {
 
-    static VectorString rbClass = VectorString( RnaState_name ) + RbObject::getClass();
+    static VectorString rbClass = VectorString( RnaState_name ) + NucleotideState::getClass();
     return rbClass;
 }
 

@@ -189,7 +189,7 @@ TopologyNode* Topology::getInteriorNode( int indx ) const {
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
     This version assumes that the tips are first in the nodes vector. */
-TopologyNode* Topology::getTipNode( int indx ) const {
+TopologyNode* Topology::getTipNode( size_t indx ) const {
 
     // TODO: Bound checking
     return nodes[ indx ];

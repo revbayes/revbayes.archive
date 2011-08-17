@@ -99,7 +99,7 @@ const TypeSpec Dist_cat::getVariableType( void ) const {
     if (getMemberDagNode( "dummy" ) == NULL) 
         return Categorical_name;
 
-    return getMemberDagNode( "dummy" )->getTypeSpec();
+    return getMemberDagNode( "dummy" )->getValueTypeSpec();
 }
 
 
@@ -170,7 +170,7 @@ Categorical* Dist_cat::rv( void ) {
     size_t i;
     for ( i=0; i<m.size(); i++ ) {
         sum += m[i];
-        if ( m[i] > r )
+        if ( sum > r )
             break;
     }
 

@@ -137,6 +137,6 @@ const VectorString& Func_gtr::getClass(void) const {
 /** Get return type */
 const TypeSpec Func_gtr::getReturnType(void) const {
     
-    return TypeSpec( RbVoid_name );
+    return TypeSpec( RateMatrix_name );
 }
 

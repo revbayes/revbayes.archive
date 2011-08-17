@@ -17,12 +17,12 @@
 #ifndef Character_H
 #define Character_H
 
-#include "RbLanguageObject.h"
+#include "Categorical.h"
 #include <ostream>
 
 
 
-class Character : public RbLanguageObject {
+class Character : public Categorical {
 
     public:
         virtual bool                    operator==(const Character& x) const = 0;  //!< Equality

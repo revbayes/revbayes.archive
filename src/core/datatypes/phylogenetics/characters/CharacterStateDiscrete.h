@@ -41,7 +41,6 @@ class CharacterStateDiscrete : public Character {
 
         // Discrete character observation functions
         virtual void                            addState(const char s) = 0;                        //!< Add a character state to the set of character states
-//        virtual CondLike*                       getCondLike(void) const;                            //!< Initialize and return a conditional likelihood for this state     
         size_t                                  getNumberObservedStates(void) const;               //!< How many states are observed for the character
         virtual const std::string&              getStateLabels(void) const = 0;                    //!< Get valid state labels
         virtual size_t                          getNumberOfStates(void) const { return numStates; }//!< Get the number of discrete states for the character
@@ -51,6 +50,8 @@ class CharacterStateDiscrete : public Character {
         virtual bool                            isMissingOrAmbiguous(void) const;                  //!< Is the character missing or ambiguous
         void                                    setNumberOfStates(size_t n);                       //!< Set the number of character states
         virtual void                            setState(const char s) = 0;                        //!< Set the discrete observation
+        void                                    setValue(int x);                                   //!< Set value from int
+        void                                    setValue(const std::vector<bool> &v);              //!< Set the value vector
 
     protected:
                                                 CharacterStateDiscrete(size_t n);                  //!< Constructor taking the number of states as input

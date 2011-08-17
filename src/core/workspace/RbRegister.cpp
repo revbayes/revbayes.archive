@@ -89,6 +89,7 @@
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "Dist_birthdeath.h"
 #include "Dist_cat.h"
+#include "Dist_ctmm.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exp.h"
 #include "Dist_multinomial.h"
@@ -170,6 +171,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbAbstract( VectorString(MemberObject_name) + RbString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(Move_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(Distribution_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
+        addType( new RbAbstract( VectorString(CharacterStateDiscrete_name) + RbString(Character_name) + RbString(Categorical_name) + RbString(RbLanguageObject_name) + RbString(RbObject_name)));
 
         /* Add primitive types (alphabetic order) */
         addType( new AminoAcidState()                 );
@@ -223,6 +225,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
         addDistribution( "birthdeath",   new Dist_birthdeath()  );
         addDistribution( "cat",          new Dist_cat()         );
+        addDistribution( "ctmc",         new Dist_ctmm()        );
         addDistribution( "dirichlet",    new Dist_dirichlet()   );
         addDistribution( "exp",          new Dist_exp()         );
         addDistribution( "multinomial",  new Dist_multinomial() );
@@ -326,7 +329,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "q",         new Func_quit()            );
         addFunction( "quit",      new Func_quit()            );
         addFunction( "setval",    new Func_setval()          );
-        addFunction( "str",       new Func_structure()       );
+        addFunction( "structure", new Func_structure()       );
         addFunction( "unclamp",   new Func_unclamp()         );
         
         /* Add math functions (alphabetical order) */ 

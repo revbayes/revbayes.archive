@@ -69,7 +69,7 @@ class Topology: public ConstantMemberObject {
         size_t                          getNumberOfTips(void) const;                                            //!< Get the number of tip nodes in the tree
         TopologyNode*                   getInteriorNode(int indx) const;                                        //!< Get a pointer to interior node i
         TopologyNode*                   getRoot(void) const { return root; }                                    //!< Get a pointer to the root node of the tree
-        TopologyNode*                   getTipNode(int indx) const;                                             //!< Get a pointer to tip node i
+        TopologyNode*                   getTipNode(size_t indx) const;                                          //!< Get a pointer to tip node i
         void                            setIsRooted(bool tf) { isRooted = tf; }                                 //!< Set the rootedness of the tree
         void                            setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the tree from it
         

@@ -47,7 +47,8 @@ UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules
     // create a new list for the code
     code                = new std::list<SyntaxElement*>();
     for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++) {
-        SyntaxElement *element = (*i)->clone();
+//        SyntaxElement *element = (*i)->clone();
+        SyntaxElement *element = *i;
         code->push_back(element);
         element->retain();
     }

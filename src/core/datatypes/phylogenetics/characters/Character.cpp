@@ -20,7 +20,7 @@
 
 
 /** Default constructor */
-Character::Character(void) : RbLanguageObject() {
+Character::Character(void) : Categorical() {
 
 }
 
@@ -28,7 +28,7 @@ Character::Character(void) : RbLanguageObject() {
 /** Get class vector describing type of object */
 const VectorString& Character::getClass() const {
 
-    static VectorString rbClass = VectorString( Character_name ) + RbObject::getClass();
+    static VectorString rbClass = VectorString( Character_name ) + Categorical::getClass();
     return rbClass;
 }
 
