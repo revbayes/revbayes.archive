@@ -65,6 +65,7 @@ const std::string Func__add_name                                = "Addition";
 const std::string Func__range_name                              = "Range function";
 const std::string Func_abs_name                                 = "Absolut (|x|) function";
 const std::string Func_clamp_name                               = "Clamp function";
+const std::string Func_clear_name                               = "Clear function";
 const std::string Func_cos_name                                 = "Cos function";
 const std::string Func_exp_name                                 = "Exponential function";
 const std::string Func_gtr_name                                 = "GTR function";

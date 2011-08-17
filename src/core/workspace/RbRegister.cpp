@@ -120,6 +120,7 @@
 
 /* Builtin functions */
 #include "Func_clamp.h"
+#include "Func_clear.h"
 #include "Func_ls.h"
 #include "Func_normalizeVector.h"
 #include "Func_quit.h"
@@ -324,6 +325,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         
         /* Add builtin functions (alphabetical order) */
         addFunction( "clamp",     new Func_clamp()           ); 
+        addFunction( "clear",     new Func_clear()           ); 
         addFunction( "ls",        new Func_ls()              );
         addFunction( "normalize", new Func_normalizeVector() );
         addFunction( "q",         new Func_quit()            );
