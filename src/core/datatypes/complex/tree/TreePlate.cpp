@@ -200,7 +200,7 @@ const MethodTable& TreePlate::getMethods(void) const {
         // add the 'addVariable()' method
         addvariableArgRules.push_back(  new ValueRule( "name"      , RbString_name  ) );
         addvariableArgRules.push_back(  new ValueRule( ""          , RbObject_name ) );
-        addvariableArgRules.push_back(  new ValueRule( "replicate" , Boolean_name  ) );
+        addvariableArgRules.push_back(  new ValueRule( "replicate" , RbBoolean_name  ) );
         
         methods.addFunction("addVariable",  new MemberFunction(RbVoid_name, addvariableArgRules)  );
         

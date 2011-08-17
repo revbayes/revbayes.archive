@@ -30,13 +30,13 @@
 
 
 /** Default constructor */
-VectorBoolean::VectorBoolean(void) : Vector(Boolean_name) {
+VectorBoolean::VectorBoolean(void) : Vector(RbBoolean_name) {
 
 }
 
 
 /** Construct vector with one bool x */
-VectorBoolean::VectorBoolean(bool x) : Vector(Boolean_name) {
+VectorBoolean::VectorBoolean(bool x) : Vector(RbBoolean_name) {
 
     RbBoolean *element = new RbBoolean(x);
     element->retain();
@@ -46,7 +46,7 @@ VectorBoolean::VectorBoolean(bool x) : Vector(Boolean_name) {
 
 
 /** Construct vector with n bools x */
-VectorBoolean::VectorBoolean(size_t n, bool x) : Vector(Boolean_name) {
+VectorBoolean::VectorBoolean(size_t n, bool x) : Vector(RbBoolean_name) {
 
     for (size_t i = 0; i < n; i++) {
         RbBoolean *element = new RbBoolean(x);
@@ -58,7 +58,7 @@ VectorBoolean::VectorBoolean(size_t n, bool x) : Vector(Boolean_name) {
 
 
 /** Constructor from bool vector */
-VectorBoolean::VectorBoolean(const std::vector<bool>& x) : Vector(Boolean_name) {
+VectorBoolean::VectorBoolean(const std::vector<bool>& x) : Vector(RbBoolean_name) {
 
     for (std::vector<bool>::const_iterator i=x.begin(); i!=x.begin(); i++) {
         RbBoolean *element = new RbBoolean(*i);
@@ -70,7 +70,7 @@ VectorBoolean::VectorBoolean(const std::vector<bool>& x) : Vector(Boolean_name) 
 
 
 /** Constructor from int vector */
-VectorBoolean::VectorBoolean(const std::vector<int>& x) : Vector(Boolean_name) {
+VectorBoolean::VectorBoolean(const std::vector<int>& x) : Vector(RbBoolean_name) {
 
     for (std::vector<int>::const_iterator i=x.begin(); i!=x.end(); i++) {
         RbBoolean *element = new RbBoolean( (*i) == 0 );

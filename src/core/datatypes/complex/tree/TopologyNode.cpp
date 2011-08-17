@@ -177,9 +177,9 @@ const MethodTable& TopologyNode::getMethods(void) const {
     if ( methodsSet == false ) {
         
         methods.addFunction("ancestor",   new MemberFunction(TopologyNode_name, ancestorRules)  );
-        methods.addFunction("isTip",      new MemberFunction(Boolean_name,      isTipArgRules)  );
-        methods.addFunction("isRoot",     new MemberFunction(Boolean_name,      isRootArgRules)  );
-        methods.addFunction("isInterior", new MemberFunction(Boolean_name,      isInteriorArgRules)  );
+        methods.addFunction("isTip",      new MemberFunction(RbBoolean_name,      isTipArgRules)  );
+        methods.addFunction("isRoot",     new MemberFunction(RbBoolean_name,      isRootArgRules)  );
+        methods.addFunction("isInterior", new MemberFunction(RbBoolean_name,      isInteriorArgRules)  );
         
         // Necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );

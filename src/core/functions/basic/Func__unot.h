@@ -100,6 +100,6 @@ const VectorString& Func__unot<valType>::getClass( void ) const {
 template <typename valType>
 const TypeSpec Func__unot<valType>::getReturnType( void ) const {
 
-    return TypeSpec( Boolean_name );
+    return TypeSpec( RbBoolean_name );
 }
 

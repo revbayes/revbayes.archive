@@ -76,7 +76,7 @@ Real* Real::clone(void) const {
 /** Convert to type and dim. The caller manages the returned object. */
 RbLanguageObject* Real::convertTo( const std::string& type ) const {
 
-    if ( type == Boolean_name )
+    if ( type == RbBoolean_name )
         return new RbBoolean(value == 0.0);
     if ( type == RealPos_name && value > 0.0)
         return new RealPos(value);
@@ -98,7 +98,7 @@ const VectorString& Real::getClass(void) const {
 /** Is convertible to type and dim? */
 bool Real::isConvertibleTo(const std::string& type, bool once) const {
 
-    if (type == Boolean_name)
+    if (type == RbBoolean_name)
         return true;
     if (type == RealPos_name && once == true && value > 0.0)
         return true;

@@ -352,7 +352,7 @@ bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment* env ) cons
     if ( temp == NULL )
         return false;
     
-    if ( temp->getValue()->isType( Boolean_name ) ) {
+    if ( temp->getValue()->isType( RbBoolean_name ) ) {
         
         bool retValue = static_cast<const RbBoolean*>( temp->getValue() )->getValue();
         
@@ -363,7 +363,7 @@ bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment* env ) cons
     }
     else {
         
-        RbBoolean* tempBool = static_cast<RbBoolean*>( temp->getValue()->convertTo( Boolean_name ) );
+        RbBoolean* tempBool = static_cast<RbBoolean*>( temp->getValue()->convertTo( RbBoolean_name ) );
         bool     retValue = tempBool->getValue();
         
         delete   tempBool;

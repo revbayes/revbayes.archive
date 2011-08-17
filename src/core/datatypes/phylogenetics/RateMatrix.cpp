@@ -339,7 +339,7 @@ const MethodTable& RateMatrix::getMethods(void) const {
         methods.addFunction("nstates",         new MemberFunction(Natural_name, nstatesArgRules)         );
         methods.addFunction("stationaryfreqs", new MemberFunction(Simplex_name, stationaryfreqsArgRules) );
         methods.addFunction("averate",         new MemberFunction(RealPos_name, averateArgRules)         );
-        methods.addFunction("reversible",      new MemberFunction(Boolean_name, reversibleArgRules)      );
+        methods.addFunction("reversible",      new MemberFunction(RbBoolean_name, reversibleArgRules)      );
         
         // necessary call for proper inheritance
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );

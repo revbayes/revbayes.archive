@@ -187,7 +187,7 @@ const MemberRules& Dist_topologyunif::getMemberRules( void ) const {
 		{
         memberRules.push_back( new ValueRule( "numberTaxa" , Natural_name      ) );
         memberRules.push_back( new ValueRule( "tipNames"   , VectorString_name ) );
-        memberRules.push_back( new ValueRule( "isRooted"   , Boolean_name      ) );
+        memberRules.push_back( new ValueRule( "isRooted"   , RbBoolean_name      ) );
         memberRules.push_back( new ValueRule( "isBinary"   , new RbBoolean(true) ) );
 
         rulesSet = true;

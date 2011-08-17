@@ -119,7 +119,7 @@ Natural* Natural::clone( void ) const {
 /** Convert to type and dim. The caller manages the returned object. */
 RbLanguageObject* Natural::convertTo( const std::string& type ) const {
 
-    if ( type == Boolean_name ) 
+    if ( type == RbBoolean_name ) 
         return new RbBoolean( value == 0 );
 
     if ( type == Real_name )
@@ -165,7 +165,7 @@ const VectorString& Natural::getClass() const {
 /** Is convertible to type and dim? */
 bool Natural::isConvertibleTo( const std::string& type, bool once ) const {
 
-    if ( type == Boolean_name ) 
+    if ( type == RbBoolean_name ) 
         return true;
 
     if ( type == Real_name )

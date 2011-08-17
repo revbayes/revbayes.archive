@@ -108,6 +108,6 @@ const VectorString& Func__and<firstValType, secondValType>::getClass( void ) con
 template <typename firstValType, typename secondValType>
 const TypeSpec Func__and<firstValType, secondValType>::getReturnType( void ) const {
 
-    return TypeSpec( Boolean_name );
+    return TypeSpec( RbBoolean_name );
 }
 
