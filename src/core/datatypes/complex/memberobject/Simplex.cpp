@@ -53,7 +53,7 @@ double Simplex::operator[](size_t i) {
 }
 
 /** Const subscript operator allowing caller to see value but not to modify it */
-const double& Simplex::operator[](size_t i) const {
+double Simplex::operator[](size_t i) const {
 
     return VectorRealPos::operator[](i);
 }

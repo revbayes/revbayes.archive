@@ -46,7 +46,7 @@ class Simplex : public VectorRealPos {
                                     Simplex(const VectorRealPos& x);                            //!< Simplex from positive real vector
     
         double                      operator[](size_t i);                                       //!< Index op
-        const double&               operator[](size_t i) const;                                 //!< Const index op
+        double                      operator[](size_t i) const;                                 //!< Const index op
         bool                        operator==(const VectorReal& x) const;                      //!< Equals comparison
         bool                        operator!=(const VectorReal& x) const;                      //!< Not equals comparison
     
