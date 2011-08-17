@@ -19,7 +19,7 @@
 #ifndef Integer_H
 #define Integer_H
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "RbLanguageObject.h"
 
 #include <ostream>
@@ -59,19 +59,19 @@ class Integer : public RbLanguageObject {
         // Operators defined outside of the class
         Integer                     operator+ (const Integer& A);                                           //!< Unary operator + 
         Integer                     operator- (const Integer& A);                                           //!< Unary operator - 
-        Boolean                     operator! (const Integer& A);                                           //!< Unary operator !
+        RbBoolean                     operator! (const Integer& A);                                           //!< Unary operator !
 
 #if 0
         Integer                     operator+ (const Integer& A, const Integer& B);                         //!< operator + 
         Integer                     operator- (const Integer& A, const Integer& B);                         //!< operator - 
         Integer                     operator* (const Integer& A, const Integer& B);                         //!< operator *
         Integer                     operator/ (const Integer& A, const Integer& B);                         //!< operator / 
-        Boolean                     operator==(const Integer& A, const Integer& B);                         //!< operator == 
-        Boolean                     operator!=(const Integer& A, const Integer& B);                         //!< operator != 
-        Boolean                     operator< (const Integer& A, const Integer& B);                         //!< operator < 
-        Boolean                     operator<=(const Integer& A, const Integer& B);                         //!< operator <= 
-        Boolean                     operator> (const Integer& A, const Integer& B);                         //!< operator > 
-        Boolean                     operator>=(const Integer& A, const Integer& B);                         //!< operator >= 
+        RbBoolean                     operator==(const Integer& A, const Integer& B);                         //!< operator == 
+        RbBoolean                     operator!=(const Integer& A, const Integer& B);                         //!< operator != 
+        RbBoolean                     operator< (const Integer& A, const Integer& B);                         //!< operator < 
+        RbBoolean                     operator<=(const Integer& A, const Integer& B);                         //!< operator <= 
+        RbBoolean                     operator> (const Integer& A, const Integer& B);                         //!< operator > 
+        RbBoolean                     operator>=(const Integer& A, const Integer& B);                         //!< operator >= 
         Integer                     operator+ (const Integer& A);                                           //!< unary operator + 
         Integer                     operator- (const Integer& A);                                           //!< unary operator - 
 #endif

@@ -14,7 +14,7 @@
  */
 
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "Natural.h"
 #include "Integer.h"
 #include "RealPos.h"
@@ -89,7 +89,7 @@ Natural::Natural( const Integer& x ) : Integer() {
 
 
 /** Construct from Bool */
-Natural::Natural( const Boolean& x) : Integer() {
+Natural::Natural( const RbBoolean& x) : Integer() {
 
     if ( x )
         value = 1;
@@ -120,7 +120,7 @@ Natural* Natural::clone( void ) const {
 RbLanguageObject* Natural::convertTo( const std::string& type ) const {
 
     if ( type == Boolean_name ) 
-        return new Boolean( value == 0 );
+        return new RbBoolean( value == 0 );
 
     if ( type == Real_name )
         return new Real( value );

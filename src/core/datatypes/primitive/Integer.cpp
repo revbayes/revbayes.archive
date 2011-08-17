@@ -17,7 +17,7 @@
  */
 
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "Integer.h"
 #include "Natural.h"
 #include "RealPos.h"
@@ -72,7 +72,7 @@ Integer* Integer::clone(void) const {
 RbLanguageObject* Integer::convertTo( const std::string& type ) const {
 
     if ( type == Boolean_name ) 
-        return new Boolean( value == 0 );
+        return new RbBoolean( value == 0 );
 
     if ( type == Real_name )
         return new Real( value );
@@ -193,9 +193,9 @@ Integer operator-(const Integer& A) {
  * @param A The integer operand
  * @return True if A != 0
  */
-Boolean operator!(const Integer& A) {
+RbBoolean operator!(const Integer& A) {
 
-	Boolean B( A.getValue() != 0 );
+	RbBoolean B( A.getValue() != 0 );
 
     return B;
 }

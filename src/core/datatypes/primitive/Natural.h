@@ -38,7 +38,7 @@ class Natural : public Integer {
                             Natural(int x);                                                         //!< Constructor from int
                             Natural(bool x);                                                        //!< Constructor from bool
                             Natural(const Integer& x);                                              //!< Constructor from Integer
-                            Natural(const Boolean& x);                                              //!< Constructor from Bool
+                            Natural(const RbBoolean& x);                                              //!< Constructor from Bool
 
         // Overloaded operators
                             operator int(void) const { return value; }                              //!< Type conversion to int

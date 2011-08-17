@@ -17,7 +17,7 @@
  */
 
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "Complex.h"
 #include "RbNames.h"
 #include "TypeSpec.h"

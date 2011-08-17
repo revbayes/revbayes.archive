@@ -23,7 +23,7 @@
 #include <ostream>
 #include <string>
 
-class Boolean;
+class RbBoolean;
 class VectorString;
 
 /**
@@ -67,7 +67,7 @@ class Real : public RbLanguageObject {
         // Operators defined outside of the class
         Real                        operator+ (const Real& A);                                              //!< Unary operator + 
         Real                        operator- (const Real& A);                                              //!< Unary operator - 
-        Boolean                     operator! (const Real& A);                                              //!< Unary operator !
+        RbBoolean                     operator! (const Real& A);                                              //!< Unary operator !
 
 #endif
 

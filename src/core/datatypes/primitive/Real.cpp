@@ -17,7 +17,7 @@
  */
 
 
-#include "Boolean.h"
+#include "RbBoolean.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -77,7 +77,7 @@ Real* Real::clone(void) const {
 RbLanguageObject* Real::convertTo( const std::string& type ) const {
 
     if ( type == Boolean_name )
-        return new Boolean(value == 0.0);
+        return new RbBoolean(value == 0.0);
     if ( type == RealPos_name && value > 0.0)
         return new RealPos(value);
     if ( type == Probability_name && value >= 0.0 && value <= 1.0)
@@ -180,9 +180,9 @@ Real operator-(const Real& A) {
  * @param A The real operand
  * @return True if A != 0.0
  */
-Boolean operator!(const Real& A) {
+RbBoolean operator!(const Real& A) {
 
-	Boolean B( A.getValue() != 0.0 );
+	RbBoolean B( A.getValue() != 0.0 );
 
     return B;
 }
