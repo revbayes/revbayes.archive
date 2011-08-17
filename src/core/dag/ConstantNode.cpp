@@ -65,7 +65,7 @@ ConstantNode* ConstantNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNod
     /* Make pristine copy */
     ConstantNode* copy = clone();
     newNodes[ this ] = copy;
-
+    
     /* Make sure the children clone themselves */
     for( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
         VariableNode *child = *i;

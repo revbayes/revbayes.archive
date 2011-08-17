@@ -178,6 +178,9 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
             storedValue = NULL;
         lnProb       = x.lnProb;
         storedLnProb = x.storedLnProb;
+        
+        // set the name
+        name = x.name;
     }
 
     return ( *this );

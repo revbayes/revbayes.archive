@@ -78,6 +78,7 @@ const std::string Func_normalizeVector_name                     = "Normalize vec
 const std::string Func_power_name                               = "Power function";
 const std::string Func_quit_name                                = "Quit function";
 const std::string Func_readAlignment_name                       = "Read alignment function";
+const std::string Func_readTraces_name                          = "Read traces function";
 const std::string Func_reflist_name                             = "Reflist function";
 const std::string Func_setval_name                              = "Setval function";
 const std::string Func_sin_name                                 = "Sin function";

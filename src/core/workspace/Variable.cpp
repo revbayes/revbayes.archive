@@ -45,7 +45,7 @@ Variable::Variable(const std::string &n, DAGNode* dn) : RbInternal() {
 /** Constructor of filled variable. */
 Variable::Variable(DAGNode* n) {
     // we do not have a name for the variable so we use the empty string
-    name = EmptyString;
+    name = n->getName();
     
     // initialize the variable
     node = NULL;

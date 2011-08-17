@@ -33,7 +33,7 @@ class ConstantNode : public DAGNode {
                                 ConstantNode(const ConstantNode &x);                                        //!< Copy constructor
 
         // Assignment operator
-        ConstantNode&           operator=(const ConstantNode& x);                                           //!< Assignment operator
+//        ConstantNode&           operator=(const ConstantNode& x);                                           //!< Assignment operator
 
         // Basic utility functions
         ConstantNode*           clone(void) const;                                                          //!< Clone this object
