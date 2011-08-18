@@ -103,7 +103,7 @@ const VectorString& StandardState::getClass(void) const {
 /** Get value */
 const char StandardState::getState(void) const {
 
-    char c;
+    char c = '?';
     size_t numMatches = 0;
     for (size_t i=0; i<numStates; i++)
         {

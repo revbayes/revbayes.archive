@@ -113,7 +113,7 @@ VectorComplex::VectorComplex(size_t n, std::complex<double> x) : Vector(Complex_
 /** Subscript operator */
 std::complex<double>& VectorComplex::operator[](size_t i) {
 
-    if (i >= int(elements.size()))
+    if (i >= elements.size())
         throw RbException("Index out of bounds");
 
     return static_cast<Complex*>(elements[i])->getValueReference();
@@ -123,7 +123,7 @@ std::complex<double>& VectorComplex::operator[](size_t i) {
 /** Subscript const operator */
 const std::complex<double>& VectorComplex::operator[](size_t i) const {
 
-    if (i >= int(elements.size()))
+    if (i >= elements.size())
         throw RbException("Index out of bounds");
     return static_cast<Complex*>(elements[i])->getValueReference();
 }

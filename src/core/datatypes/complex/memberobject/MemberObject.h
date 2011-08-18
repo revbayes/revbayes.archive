@@ -57,7 +57,7 @@ class MemberObject: public RbLanguageObject {
         // Member variable functions you do not have to override
         const MemberEnvironment&    getMembers(void) const { return members; }                                          //!< Get members
         MemberEnvironment*          getMembersPtr(void) { return &members; }                                            //!< Get members
-        const TypeSpec&             getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
+        const TypeSpec              getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
         const RbLanguageObject*     getMemberValue(const std::string& name) const;                                      //!< Get member value (const)
         const DAGNode*              getMemberDagNode(const std::string& name) const;                                    //!< Get member variable 
         DAGNode*                    getMemberDagNodePtr(const std::string& name);                                       //!< Get member variable (non-const ptr)

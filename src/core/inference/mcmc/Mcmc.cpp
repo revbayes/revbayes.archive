@@ -244,7 +244,7 @@ void Mcmc::run(size_t ngen) {
             /* Propose a new value */
             double lnProbabilityRatio;
             double lnHastingsRatio = theMove->performMove(lnProbabilityRatio);
-
+            // QUESTION: How to Gibbs samplers by-pass the accept-reject?
             /* Calculate acceptance ratio */
             double lnR = lnProbabilityRatio + lnHastingsRatio;
             double r;
@@ -256,7 +256,7 @@ void Mcmc::run(size_t ngen) {
                 r = exp(lnR);
 
             /* Accept or reject the move */
-            double u = rng->uniform01();
+            double u = rng->uniform01(); // TODO No need to draw rng if lnR > 0.0x
             if (u < r) {
                 theMove->acceptMove();
                 lnProbability += lnProbabilityRatio;

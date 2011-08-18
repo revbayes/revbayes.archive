@@ -87,8 +87,8 @@ const MemberRules& MemberObject::getMemberRules(void) const {
 
 
 /** Get type specification for a member variable */
-const TypeSpec& MemberObject::getMemberTypeSpec(const std::string& name) const {
-
+const TypeSpec MemberObject::getMemberTypeSpec(const std::string& name) const {
+    // TODO Object can go out of scope before reference get returned.
     return members[name].getTypeSpec();
 }
 

@@ -31,7 +31,7 @@
 
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
-TopologyNode::TopologyNode(int indx) : name(""), index(indx), ConstantMemberObject( getMemberRules() ) {
+TopologyNode::TopologyNode(int indx) : ConstantMemberObject( getMemberRules() ), name(""), index(indx) {
     
     // initialize
     parent = NULL;
@@ -39,7 +39,7 @@ TopologyNode::TopologyNode(int indx) : name(""), index(indx), ConstantMemberObje
 
 
 /** Constructor of node with name. Give the node an optional index ID */
-TopologyNode::TopologyNode(const std::string& n, int indx) : name(n), index(indx), ConstantMemberObject( getMemberRules() ) {
+TopologyNode::TopologyNode(const std::string& n, int indx) : ConstantMemberObject( getMemberRules() ), name(n), index(indx) {
     
     // initialize
     parent = NULL;
