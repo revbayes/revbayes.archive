@@ -43,7 +43,7 @@ class Categorical : public RbLanguageObject {
         int                             getNumberOfStates(void) { return int( getStateLabels().size() ); }  //!< Get number of states
         int                             getValue(void) const { return value; }                              //!< Get value as an int
         bool                            isValidState(int x) const;                                          //!< Is valid state value?
-        virtual void                    setValue(int x);                                                    //!< Set value from int
+        void                    setValue(int x);                                                    //!< Set value from int
 
         // Categorical functions you have to override
     virtual const std::string&      getStateLabels(void) const { return  EmptyString; }                                     //!< Get valid state labels
