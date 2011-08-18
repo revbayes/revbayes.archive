@@ -29,7 +29,7 @@
 #include "VectorRealPos.h"
 #include "VectorReal.h"
 #include "VectorString.h"
-
+#include <climits>
 #include <sstream>
 #include <climits>
 
@@ -61,10 +61,10 @@ Natural::Natural( unsigned int x) : Integer() {
 
 /** Construct from unsigned int */
 Natural::Natural( size_t x) : Integer() {
-    
+
     if ( x > INT_MAX )
         throw RbException( "Value out of range for " + Natural_name );
-    
+
     value = int(x);
 }
 
@@ -100,12 +100,12 @@ Natural::Natural( const RbBoolean& x) : Integer() {
 
 /** Get brief info about object */
 std::string Natural::briefInfo( void ) const {
-    
+
 	std::ostringstream o;
     o << "Natural(";
     printValue( o );
 	o << ")";
-    
+
     return o.str();
 }
 
@@ -119,7 +119,7 @@ Natural* Natural::clone( void ) const {
 /** Convert to type and dim. The caller manages the returned object. */
 RbLanguageObject* Natural::convertTo( const std::string& type ) const {
 
-    if ( type == RbBoolean_name ) 
+    if ( type == RbBoolean_name )
         return new RbBoolean( value == 0 );
 
     if ( type == Real_name )
@@ -129,7 +129,7 @@ RbLanguageObject* Natural::convertTo( const std::string& type ) const {
         return new RealPos( value );
 
     if ( type == RbString_name ) {
-        
+
         std::ostringstream o;
         printValue( o );
         return new RbString( o.str() );
@@ -141,7 +141,7 @@ RbLanguageObject* Natural::convertTo( const std::string& type ) const {
     if ( type == VectorInteger_name )
         return new VectorInteger( value );
 
-    if ( type == VectorBoolean_name ) 
+    if ( type == VectorBoolean_name )
         return new VectorBoolean( value == 0 );
 
     if ( type == VectorReal_name )
@@ -165,7 +165,7 @@ const VectorString& Natural::getClass() const {
 /** Is convertible to type and dim? */
 bool Natural::isConvertibleTo( const std::string& type, bool once ) const {
 
-    if ( type == RbBoolean_name ) 
+    if ( type == RbBoolean_name )
         return true;
 
     if ( type == Real_name )
@@ -183,7 +183,7 @@ bool Natural::isConvertibleTo( const std::string& type, bool once ) const {
     if ( type == VectorInteger_name )
         return true;
 
-    if ( type == VectorBoolean_name ) 
+    if ( type == VectorBoolean_name )
         return true;
 
     if ( type == VectorReal_name )
