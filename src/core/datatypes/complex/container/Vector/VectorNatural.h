@@ -30,6 +30,8 @@
  * including the fact that doing so would make it impossible to
  * protect the subscript operator return.
  */
+const std::string VectorNatural_name = "Natural vector";
+
 class VectorNatural : public Vector {
 
     public:

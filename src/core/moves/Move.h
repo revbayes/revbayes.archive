@@ -24,6 +24,8 @@ class RandomNumberGenerator;
 class StochasticNode;
 class VectorString;
 
+const std::string Move_name = "Move";
+
 class Move : public ConstantMemberObject {
 
     public:

@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func_clamp_name = "Clamp function";
+
 class Func_clamp :  public RbFunction {
 
     public:

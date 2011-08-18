@@ -27,6 +27,8 @@
 class VectorString;
 
 
+const std::string MutableMemberObject_name = "mutable MemberObject";
+
 class MutableMemberObject : public MemberObject {
     
 public:

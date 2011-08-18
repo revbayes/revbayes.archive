@@ -27,6 +27,8 @@
 class VectorString;
 
 
+const std::string ConstantMemberObject_name = "const MemberObject";
+
 class ConstantMemberObject : public MemberObject {
     
 public:

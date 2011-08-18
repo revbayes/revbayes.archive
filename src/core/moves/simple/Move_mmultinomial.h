@@ -28,6 +28,8 @@
 class Real;
 class RbObject;
 
+const std::string Move_mmultinomial_name = "mmultinomial move";
+
 class Move_mmultinomial : public MoveSimple {
 
     public:

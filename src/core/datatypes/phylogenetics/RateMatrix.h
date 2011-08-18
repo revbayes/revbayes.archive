@@ -31,6 +31,8 @@ class VectorString;
 
 
 
+const std::string RateMatrix_name = "Rate Matrix";
+
 class RateMatrix : public MemberObject {
 
     public:

@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func_unclamp_name = "Setval function";
+
 class Func_unclamp :  public RbFunction {
 
     public:

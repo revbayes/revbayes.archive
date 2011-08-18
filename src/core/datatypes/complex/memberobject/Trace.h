@@ -21,6 +21,8 @@
 #define PASSED 1
 #define NOT_CHECKED 2
 
+const std::string Trace_name = "Trace";
+
 class Trace : public MemberObject {
     public:
     

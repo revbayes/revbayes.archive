@@ -27,6 +27,8 @@
 class VectorString;
 
 
+const std::string RbBoolean_name = "Bool";
+
 class RbBoolean : public RbLanguageObject {
 
     public:

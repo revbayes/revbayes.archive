@@ -35,6 +35,8 @@ class VectorIndex;
  * if needed.
  *
  */
+const std::string SyntaxVariable_name = "Variable";
+
 class SyntaxVariable : public SyntaxElement {
 
     public:

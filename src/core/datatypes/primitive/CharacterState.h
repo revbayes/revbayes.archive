@@ -23,6 +23,8 @@
 #include <string>
 
 
+const std::string CharacterState_name = "Character State";
+
 class CharacterState : public Categorical {
 
     public:

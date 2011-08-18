@@ -34,6 +34,8 @@ class VectorString;
  * as being multidimensional. 
  *
  */
+const std::string MovesContainer_name = "Move Container";
+
 class MovesContainer : public Container {
     
 public: 

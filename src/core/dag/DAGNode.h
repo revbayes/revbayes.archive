@@ -39,6 +39,8 @@ class VectorNatural;
 class VectorString;
 
 
+const std::string DAGNode_name = "DAG Node";
+
 class DAGNode : public RbInternal {
 
     friend class                        VariableSlot;                                                           //!< Give VariableSlot exclusive access to slot mgmt functions

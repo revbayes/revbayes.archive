@@ -44,6 +44,8 @@ class Frame;
 class RbObject;
 class VectorIndex;
 
+const std::string Variable_name = "Variable";
+
 class Variable : public RbInternal {
     
 public:

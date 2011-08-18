@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func_normalizeVector_name = "Normalize vector function";
+
 class Func_normalizeVector :  public RbFunction {
 
     public:

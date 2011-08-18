@@ -28,6 +28,8 @@
 class VectorString;
 class TopologyNode;
 
+const std::string Dist_topologyunif_name = "Dist_topologyunif";
+
 class Dist_topologyunif: public DistributionDiscrete {
 
     public:

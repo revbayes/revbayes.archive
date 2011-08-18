@@ -27,6 +27,8 @@ class StandardState;
 
 
 
+const std::string VectorStandardStates_name = "Standard character vector";
+
 class VectorStandardStates : public VectorCharacters {
 
     public:

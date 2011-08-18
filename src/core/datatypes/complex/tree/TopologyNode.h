@@ -41,6 +41,8 @@
 
 
 
+const std::string TopologyNode_name = "Topology Node";
+
 class TopologyNode : public ConstantMemberObject {
     
 public:

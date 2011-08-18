@@ -26,6 +26,8 @@
 
 class VectorString;
 
+const std::string Dist_unif_name = "Dist_unif";
+
 class Dist_unif: public DistributionContinuous {
 
     public:

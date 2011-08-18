@@ -35,6 +35,8 @@ class StochasticNode;
 class VectorString;
 
 
+const std::string Distribution_name = "Distribution";
+
 class Distribution: public ConstantMemberObject {
 
     public:

@@ -35,6 +35,8 @@ class VectorString;
  * as being multidimensional. 
  *
  */
+const std::string DagNodeContainer_name = "DAG Node Container";
+
 class DagNodeContainer : public Container {
     
 public: 

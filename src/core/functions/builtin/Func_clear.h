@@ -22,6 +22,8 @@
 
 #include "RbFunction.h"
 
+const std::string Func_clear_name = "Clear function";
+
 class Func_clear :  public RbFunction {
     
 public:

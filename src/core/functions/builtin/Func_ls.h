@@ -22,6 +22,8 @@
 
 #include "RbFunction.h"
 
+const std::string Func_ls_name = "Ls function";
+
 class Func_ls :  public RbFunction {
 
     public:

@@ -29,6 +29,8 @@
 class RateMatrix;
 class VectorString;
 
+const std::string Dist_ctmm_name = "Dist_ctmm";
+
 class Dist_ctmm: public DistributionDiscrete {
 
     public:

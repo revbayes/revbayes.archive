@@ -29,6 +29,8 @@
  * sure inheritance is safe, we restrict the range
  * of natural numbers from 0 to to INT_MAX
  */
+const std::string Natural_name = "Natural";
+
 class Natural : public Integer {
 
     public:

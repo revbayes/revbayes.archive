@@ -61,6 +61,8 @@ class VectorString;
  *  The base class does not reference any other syntax elements and therefore has an empty
  *  destructor.
  */
+const std::string SyntaxElement_name = "Syntax element";
+
 class SyntaxElement : public RbInternal {
 
     public:

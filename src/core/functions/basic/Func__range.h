@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func__range_name = "Range function";
+
 class Func__range :  public RbFunction {
 
     public:

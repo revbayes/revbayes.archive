@@ -54,6 +54,8 @@ typedef std::vector<ArgumentRule*> ArgumentRules;
  * arguments do not match.
  *
  */
+const std::string RbFunction_name = "function";
+
 class RbFunction :  public RbInternal {
 
     public:

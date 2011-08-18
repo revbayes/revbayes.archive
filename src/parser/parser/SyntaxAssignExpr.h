@@ -25,6 +25,8 @@
 #include <string>
 
 
+//const std::string SyntaxAssignExpr_name = "Assignment";
+
 class SyntaxAssignExpr : public SyntaxElement {
 
     public:

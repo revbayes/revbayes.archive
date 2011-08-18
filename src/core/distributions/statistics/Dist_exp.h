@@ -28,6 +28,8 @@ class DAGNode;
 class StochasticNode;
 class VectorString;
 
+const std::string Dist_exp_name = "Dist_exp";
+
 class Dist_exp: public DistributionContinuous {
 
     public:

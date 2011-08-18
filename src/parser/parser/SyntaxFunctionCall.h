@@ -31,6 +31,8 @@
  * function is a member, if any.
  *
  */
+const std::string SyntaxFunctionCall_name = "Function call";
+
 class SyntaxFunctionCall : public SyntaxElement {
 
     public:

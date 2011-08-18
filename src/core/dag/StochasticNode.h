@@ -28,6 +28,8 @@ class RbObject;
 class VectorString;
 
 
+const std::string StochasticNode_name = "Stochastic node";
+
 class StochasticNode : public VariableNode {
 
     public:

@@ -31,6 +31,8 @@ class StochasticNode;
 class VectorString;
 
 
+const std::string Dist_cat_name = "Dist_cat";
+
 class Dist_cat: public DistributionDiscrete {
 
     public:

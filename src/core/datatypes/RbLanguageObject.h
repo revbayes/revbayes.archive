@@ -30,6 +30,8 @@ class VectorString;
 class XmlDocument;
 class XmlElement;
 
+const std::string RbLanguageObject_name = "language object";
+
 class RbLanguageObject : public RbObject {
     
 public:

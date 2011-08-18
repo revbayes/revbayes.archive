@@ -29,6 +29,8 @@ class VectorString;
 
 
 
+const std::string Complex_name = "Complex";
+
 class Complex : public RbLanguageObject {
 
     public:

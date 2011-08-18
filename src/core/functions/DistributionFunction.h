@@ -31,6 +31,8 @@ class Distribution;
 class VectorInteger;
 class VectorString;
 
+const std::string DistributionFunction_name = "Distribution Function";
+
 class DistributionFunction :  public RbFunction {
 
     public:

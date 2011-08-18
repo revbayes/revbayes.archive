@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func_log_name = "Logarithm function";
+
 class Func_log :  public RbFunction {
     
 public:

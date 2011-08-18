@@ -27,6 +27,8 @@ class DnaState;
 
 
 
+const std::string VectorDnaStates_name = "DNA vector";
+
 class VectorDnaStates : public VectorCharacters {
 
     public:

@@ -22,6 +22,8 @@
 
 
 
+const std::string Character_name = "Character";
+
 class Character : public Categorical {
 
     public:

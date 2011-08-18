@@ -29,6 +29,8 @@ class VectorString;
 
 #include <set>
 
+const std::string VariableNode_name = "Variable node";
+
 class VariableNode : public DAGNode {
 
 public:

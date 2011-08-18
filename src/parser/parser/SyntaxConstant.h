@@ -30,6 +30,8 @@ class VectorString;
  * already in the constructor.
  *
  */
+const std::string SyntaxConstant_name = "Syntax element";
+
 class SyntaxConstant : public SyntaxElement {
 
     public:

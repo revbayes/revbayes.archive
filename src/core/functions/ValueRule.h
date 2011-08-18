@@ -29,6 +29,8 @@ class VectorString;
 
 
 
+const std::string ValueRule_name = "ValueRule";
+
 class ValueRule : public ArgumentRule {
 
     public:

@@ -29,6 +29,8 @@ class RbObject;
 class VectorString;
 class VariableNode;
 
+const std::string MoveSchedule_name = "move schedule";
+
 class MoveSchedule : public ConstantMemberObject {
 
     public:

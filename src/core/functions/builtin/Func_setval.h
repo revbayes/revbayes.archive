@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func_setval_name = "Setval function";
+
 class Func_setval :  public RbFunction {
 
     public:

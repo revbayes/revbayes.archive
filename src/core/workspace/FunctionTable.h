@@ -31,6 +31,8 @@ class Argument;
 class ArgumentRule;
 class RbObject;
 
+const std::string FunctionTable_name = "Function Table";
+
 class FunctionTable : public RbInternal {
 
     public:

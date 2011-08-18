@@ -28,6 +28,8 @@
 class Real;
 class RbObject;
 
+const std::string Move_mscale_name = "mscale move";
+
 class Move_mscale : public MoveSimple {
 
     public:

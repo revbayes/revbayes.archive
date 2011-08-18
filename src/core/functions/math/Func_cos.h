@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func_cos_name = "Cos function";
+
 class Func_cos :  public RbFunction {
     
     public:

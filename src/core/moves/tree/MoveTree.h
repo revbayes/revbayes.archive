@@ -30,6 +30,8 @@ class StochasticNode;
 class VectorString;
 
 
+const std::string MoveTree_name = "MoveTree";
+
 class MoveTree : public Move {
 
     public:

@@ -30,6 +30,8 @@ class Frame;
 class RbObject;
 class VectorIndex;
 
+const std::string VariableSlot_name = "Variable Slot";
+
 class VariableSlot : public RbInternal {
     
 public:

@@ -37,6 +37,8 @@ class VectorString;
  * as being multidimensional. 
  *
  */
+const std::string Container_name = "container";
+
 class Container : public ConstantMemberObject {
 
     public:

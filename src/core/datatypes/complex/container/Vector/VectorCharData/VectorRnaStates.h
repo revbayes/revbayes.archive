@@ -27,6 +27,8 @@ class RnaState;
 
 
 
+const std::string VectorRnaStates_name = "RNA vector";
+
 class VectorRnaStates : public VectorCharacters {
 
     public:

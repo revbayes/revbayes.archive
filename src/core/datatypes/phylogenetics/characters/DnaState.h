@@ -23,6 +23,8 @@
 
 
 
+const std::string DnaState_name = "DNA";
+
 class DnaState : public NucleotideState {
 
     public:

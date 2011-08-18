@@ -26,6 +26,8 @@
 #include <vector>
 
 
+const std::string MemberEnvironment_name = "Member Environment";
+
 class MemberEnvironment : public Environment {
     
 public:

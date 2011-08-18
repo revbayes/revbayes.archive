@@ -27,6 +27,8 @@ class DAGNode;
 class Real;
 class VectorString;
 
+const std::string Dist_norm_name = "Dist_norm";
+
 class Dist_norm: public DistributionContinuous {
 
     public:

@@ -72,6 +72,8 @@ typedef std::map<std::string, RbObject*> TypeTable;
  * to the function table.
  *
  */
+const std::string Workspace_name = "Workspace";
+
 class Workspace : public Environment {
 
     public:

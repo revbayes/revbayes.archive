@@ -30,6 +30,8 @@ class DAGNode;
 class Model;
 class VectorString;
 
+const std::string Mcmc_name = "MCMC";
+
 class Mcmc: public ConstantMemberObject {
 
     public:

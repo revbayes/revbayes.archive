@@ -29,6 +29,8 @@ class Real;
 class StochasticNode;
 class VectorString;
 
+const std::string Dist_multinomial_name = "Dist_multinomial";
+
 class Dist_multinomial: public DistributionContinuous {
 
     public:

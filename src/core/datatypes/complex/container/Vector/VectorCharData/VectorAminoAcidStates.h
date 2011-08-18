@@ -27,6 +27,8 @@ class AminoAcidState;
 
 
 
+const std::string VectorAminoAcidStates_name = "Amino acid vector";
+
 class VectorAminoAcidStates : public VectorCharacters {
 
     public:

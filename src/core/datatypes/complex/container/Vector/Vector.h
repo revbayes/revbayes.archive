@@ -24,6 +24,8 @@
 #include <vector>
 
 
+const std::string Vector_name = "Vector";
+
 class Vector : public Container {
 
     public:

@@ -23,6 +23,8 @@
 
 class VectorString;
 
+const std::string Probability_name = "Probability";
+
 class Probability : public RealPos {
     
 public:

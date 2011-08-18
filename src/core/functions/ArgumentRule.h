@@ -30,6 +30,8 @@ class DAGNode;
 class RbObject;
 class VectorString;
 
+const std::string ArgumentRule_name = "argument rule";
+
 class ArgumentRule : public RbInternal {
 
     public:

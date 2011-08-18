@@ -22,6 +22,8 @@
 
 
 
+const std::string AminoAcidState_name = "Amino Acid";
+
 class AminoAcidState : public CharacterStateDiscrete {
 
     public:

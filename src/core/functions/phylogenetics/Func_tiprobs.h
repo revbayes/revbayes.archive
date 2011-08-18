@@ -24,6 +24,8 @@ class VectorString;
 
 
 
+const std::string Func_tiprobs_name = "Transition probability function";
+
 class Func_tiprobs :  public RbFunction {
     
     public:

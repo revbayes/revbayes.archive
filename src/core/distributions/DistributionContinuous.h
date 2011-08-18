@@ -30,6 +30,8 @@ class StochasticNode;
 class VectorString;
 
 
+const std::string DistributionContinuous_name = "Distribution on Continuous Random Variable";
+
 class DistributionContinuous: public Distribution {
 
     public:

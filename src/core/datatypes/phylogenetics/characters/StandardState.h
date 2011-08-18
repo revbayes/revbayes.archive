@@ -23,6 +23,8 @@
 
 
 
+const std::string StandardState_name = "Standard";
+
 class StandardState : public CharacterStateDiscrete {
 
     public:

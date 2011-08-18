@@ -25,6 +25,8 @@
 #include <string>
 
 
+const std::string SyntaxVariableDecl_name = "Variable declaration";
+
 class SyntaxVariableDecl : public SyntaxElement {
     
     public:

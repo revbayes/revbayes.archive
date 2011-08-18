@@ -27,6 +27,8 @@ class ValueRule;
 
 
 
+const std::string TreePlate_name = "Tree Plate";
+
 class TreePlate: public MutableMemberObject {
     
 public:

@@ -29,6 +29,8 @@
 class DAGNode;
 class VectorString;
 
+//const std::string Ellipsis_name = "ellipsis";
+
 class Ellipsis : public ArgumentRule {
 
     public:

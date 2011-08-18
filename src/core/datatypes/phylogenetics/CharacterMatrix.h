@@ -30,6 +30,8 @@ class ArgumentRule;
 class DAGNode;
 
 
+const std::string CharacterMatrix_name = "Character Matrix";
+
 class CharacterMatrix : public Matrix {
 
     public:

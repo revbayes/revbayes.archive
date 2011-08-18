@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func_power_name = "Power function";
+
 class Func_power :  public RbFunction {
     
 public:

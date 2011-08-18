@@ -34,6 +34,8 @@ class VectorString;
  * as being multidimensional. 
  *
  */
+const std::string MonitorsContainer_name = "Monitor Container";
+
 class MonitorsContainer : public Container {
     
 public: 

@@ -41,6 +41,8 @@ class VectorNatural;
  * If necessary, one could also add C-style pointer
  * arrays to the interface.
  */
+const std::string MatrixReal_name = "Real Matrix";
+
 class MatrixReal : public Matrix {
 
     public:

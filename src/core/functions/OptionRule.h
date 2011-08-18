@@ -26,6 +26,8 @@ class DAGNode;
 class RbObject;
 class RbString;
 
+const std::string OptionRule_name = "OptionRule";
+
 class OptionRule : public ValueRule {
 
     public:

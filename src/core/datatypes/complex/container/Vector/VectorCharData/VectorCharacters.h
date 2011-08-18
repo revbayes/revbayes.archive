@@ -25,6 +25,8 @@
 class Character;
 
 
+const std::string VectorCharacters_name = "Character vector";
+
 class VectorCharacters : public Vector {
 
 public:

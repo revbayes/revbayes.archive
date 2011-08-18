@@ -29,6 +29,8 @@ class DAGNode;
 class StochasticNode;
 class VectorString;
 
+const std::string Model_name = "Model";
+
 class Model : public ConstantMemberObject {
 
     public:

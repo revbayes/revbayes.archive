@@ -26,6 +26,8 @@ class DAGNode;
 class RbObject;
 class VectorString;
 
+const std::string RangeRule_name = "RangeRule";
+
 template <typename valType>
 class RangeRule : public ArgumentRule {
 

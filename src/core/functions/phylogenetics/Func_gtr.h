@@ -24,6 +24,8 @@ class VectorString;
 
 
 
+const std::string Func_gtr_name = "GTR function";
+
 class Func_gtr :  public RbFunction {
     
     public:

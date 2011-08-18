@@ -58,6 +58,8 @@ class VectorString;
  * TODO: Implement the reading of unaligned data.
  *
  */
+const std::string Func_readAlignment_name = "Read alignment function";
+
 class Func_readAlignment :  public RbFunction {
     
     public:

@@ -22,6 +22,8 @@
 
 #include "RbFunction.h"
 
+const std::string Func_source_name = "Source function";
+
 class Func_source :  public RbFunction {
 
     public:

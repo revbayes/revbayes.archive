@@ -27,6 +27,8 @@ class CharacterContinuous;
 
 
 
+const std::string VectorCharacterContinuous_name = "Continuous characters vector";
+
 class VectorCharacterContinuous : public VectorCharacters {
 
     public:

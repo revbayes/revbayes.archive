@@ -26,6 +26,8 @@
 
 class VectorString;
 
+const std::string Dist_birthdeath_name = "Dist_birthdeath";
+
 class Dist_birthdeath: public Distribution{
     
 public:

@@ -60,6 +60,8 @@ typedef std::map<std::string, VariableSlot*> VariableTable;         //!< Typedef
  * also contains a function table, and a class (type) table.
  *
  */
+const std::string Environment_name = "Environment";
+
 class Environment : public RbInternal {
     
 public:

@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func_abs_name = "Absolut (|x|) function";
+
 class Func_abs :  public RbFunction {
     
 public:

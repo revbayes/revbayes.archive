@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func_sqrt_name = "Square root function";
+
 class Func_sqrt :  public RbFunction {
 
     public:

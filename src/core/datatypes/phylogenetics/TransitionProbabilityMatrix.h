@@ -26,6 +26,8 @@ class VectorString;
 
 
 
+const std::string TransitionProbabilityMatrix_name = "Transition probability matrix";
+
 class TransitionProbabilityMatrix : public ConstantMemberObject {
 
     public:

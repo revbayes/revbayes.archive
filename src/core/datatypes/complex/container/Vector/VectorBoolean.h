@@ -25,6 +25,8 @@
 #include <vector>
 
 
+const std::string VectorBoolean_name = "RbBoolean vector";
+
 class VectorBoolean : public Vector {
 
     public:

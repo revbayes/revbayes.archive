@@ -26,6 +26,8 @@
 
 
 
+const std::string VectorComplex_name = "Complex vector";
+
 class VectorComplex : public Vector {
 
     public:

@@ -24,6 +24,8 @@
 #include <list>
 
 
+const std::string SyntaxLabeledExpr_name = "Labeled expression";
+
 class SyntaxLabeledExpr : public SyntaxElement {
 
     public:

@@ -33,6 +33,8 @@
 class Real;
 class RbObject;
 
+const std::string Move_mlocal_name = "mlocal move";
+
 class Move_mlocal : public MoveTree {
 
     public:

@@ -27,6 +27,8 @@ class DAGNode;
 class RbFileManager;
 class VectorString;
 
+const std::string Func_readTraces_name = "Read traces function";
+
 class Func_readTraces :  public RbFunction {
     
 public:

@@ -28,6 +28,8 @@
 class Real;
 class RbObject;
 
+const std::string Move_mslide_name = "mslide move";
+
 class Move_mslide : public MoveSimple {
 
     public:

@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+const std::string RbException_name = "exception";
+
 class RbException : public RbInternal {
 
     public:

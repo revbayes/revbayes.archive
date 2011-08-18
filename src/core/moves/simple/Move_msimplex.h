@@ -28,6 +28,8 @@
 class Real;
 class RbObject;
 
+const std::string Move_msimplex_name = "msimplex move";
+
 class Move_msimplex : public MoveSimple {
 
     public:

@@ -32,6 +32,8 @@ class VectorString;
  *
  * @note Some functions are virtual because RealPos is derived from double
  */
+const std::string Real_name = "Real";
+
 class Real : public RbLanguageObject {
 
     public:

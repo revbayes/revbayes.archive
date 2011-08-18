@@ -25,6 +25,8 @@
 #include <iostream>
 #include <vector>
 
+const std::string VectorReal_name = "Real vector";
+
 class VectorRealPos;
 
 
@@ -35,6 +37,7 @@ class VectorRealPos;
  *       from this class without giving
  *       inappropriate access to elements.
  */
+
 class VectorReal : public Vector {
 
     public:

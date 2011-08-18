@@ -27,6 +27,8 @@
 #include <string>
 
 
+const std::string SyntaxFunctionDef_name = "Function definition";
+
 class SyntaxFunctionDef : public SyntaxElement {
 
     public:

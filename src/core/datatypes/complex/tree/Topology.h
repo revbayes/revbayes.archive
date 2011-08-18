@@ -38,6 +38,8 @@ struct TopologyChange {
 };
 
 
+const std::string Topology_name = "Tree Topology";
+
 class Topology: public ConstantMemberObject {
     
     public:

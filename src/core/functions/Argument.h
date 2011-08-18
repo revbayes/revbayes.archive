@@ -28,6 +28,8 @@
 #include <ostream>
 #include <string>
 
+const std::string Argument_name = "argument";
+
 class Argument : public RbInternal {
 
     public:

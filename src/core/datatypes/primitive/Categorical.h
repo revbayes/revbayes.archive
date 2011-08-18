@@ -24,6 +24,8 @@
 #include <string>
 
 
+const std::string Categorical_name = "Categorical";
+
 class Categorical : public RbLanguageObject {
 
     public:

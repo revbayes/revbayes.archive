@@ -23,6 +23,8 @@
 
 class VectorString;
 
+const std::string RealPos_name = "+Real";
+
 class RealPos : public Real {
 
     public:

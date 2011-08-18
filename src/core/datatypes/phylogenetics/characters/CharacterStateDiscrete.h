@@ -25,6 +25,8 @@ class CondLike;
 
 
 
+const std::string CharacterStateDiscrete_name = "Discrete Character";
+
 class CharacterStateDiscrete : public Character {
 
     public:

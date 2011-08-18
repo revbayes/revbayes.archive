@@ -24,6 +24,8 @@
 
 class VectorString;
 
+const std::string RbInternal_name = "internal";
+
 class RbInternal : public RbObject { 
 
     public:

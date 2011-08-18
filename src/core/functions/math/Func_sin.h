@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func_sin_name = "Sin function";
+
 class Func_sin :  public RbFunction {
     
 public:

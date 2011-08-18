@@ -29,6 +29,8 @@ class StochasticNode;
 class VectorString;
 
 
+const std::string DistributionDiscrete_name = "Distribution on Discrete Random Variable";
+
 class DistributionDiscrete: public Distribution {
 
     public:

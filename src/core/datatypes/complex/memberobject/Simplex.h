@@ -38,6 +38,8 @@
  * is also implemented to give the RevBayes source code access to element
  * values, but not references.
  */
+const std::string Simplex_name = "Simplex";
+
 class Simplex : public VectorRealPos {
 
     public:

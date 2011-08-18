@@ -26,6 +26,8 @@
 class DAGNode;
 class VectorString;
 
+const std::string Func__add_name = "Addition";
+
 template <typename firstValType, typename secondValType, typename retType>
 class Func__add :  public RbFunction {
 

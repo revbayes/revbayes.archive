@@ -39,6 +39,8 @@ class VectorNatural;
 
 
 
+const std::string MatrixComplex_name = "Complex Matrix";
+
 class MatrixComplex : public Matrix {
 
     public:

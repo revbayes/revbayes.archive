@@ -30,6 +30,8 @@
  * getDAGNodeExpr is called.
  *
  */
+const std::string SyntaxBinaryExpr_name = "Binary expression";
+
 class SyntaxBinaryExpr : public SyntaxElement {
 
     public:

@@ -27,6 +27,8 @@
 
 class VectorString;
 
+const std::string Integer_name = "Integer";
+
 class Integer : public RbLanguageObject {
 
     public:

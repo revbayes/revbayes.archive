@@ -35,6 +35,8 @@ class TypeSpec;
 class VectorString;
 class SyntaxElement;
 
+const std::string UserFunction_name = "user function";
+
 class UserFunction :  public RbFunction {
 
     public:

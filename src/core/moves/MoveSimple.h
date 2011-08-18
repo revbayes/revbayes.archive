@@ -29,6 +29,8 @@ class StochasticNode;
 class VariableNode;
 class VectorString;
 
+const std::string MoveSimple_name = "MoveSimple";
+
 class MoveSimple : public Move {
 
 public:

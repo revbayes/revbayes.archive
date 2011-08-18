@@ -42,6 +42,8 @@ class VectorInteger;
  * represent the values internally, these
  * functions are declared as abstract here.
  */
+const std::string Matrix_name = "Matrix";
+
 class Matrix : public Container {
 
     public:

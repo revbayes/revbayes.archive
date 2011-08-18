@@ -27,6 +27,8 @@
 #include <vector>
 
 
+const std::string VectorString_name = "String vector";
+
 class VectorString : public Vector {
 
     public:

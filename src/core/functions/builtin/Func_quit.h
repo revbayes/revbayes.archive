@@ -22,6 +22,8 @@
 
 #include "RbFunction.h"
 
+const std::string Func_quit_name = "Quit function";
+
 class Func_quit :  public RbFunction {
 
     public:

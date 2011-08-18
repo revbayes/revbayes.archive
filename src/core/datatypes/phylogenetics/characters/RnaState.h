@@ -23,6 +23,8 @@
 
 
 
+const std::string RnaState_name = "RNA";
+
 class RnaState : public NucleotideState {
 
     public:

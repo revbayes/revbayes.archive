@@ -32,6 +32,8 @@
  * This class holds a vector of real positive numbers in a convenient
  * way for use in the RevBayes source code.
  */
+const std::string VectorRealPos_name = "+Real vector";
+
 class VectorRealPos : public Vector {
 
     public:

@@ -26,6 +26,8 @@
 #include <vector>
 
 
+const std::string VectorInteger_name = "Integer vector";
+
 class VectorInteger : public Vector {
 
     public:

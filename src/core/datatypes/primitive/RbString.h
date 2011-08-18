@@ -22,6 +22,8 @@
 #include <string>
 
 
+const std::string RbString_name = "String";
+
 class RbString : public RbLanguageObject {
 
     public:

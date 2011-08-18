@@ -30,6 +30,8 @@
  * getDAGNodeExpr is called.
  *
  */
+const std::string SyntaxUnaryExpr_name = "Unary expression";
+
 class SyntaxUnaryExpr : public SyntaxElement {
 
     public:

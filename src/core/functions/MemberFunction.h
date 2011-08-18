@@ -34,6 +34,8 @@ class MemberObject;
 class VectorInteger;
 class VectorString;
 
+const std::string MemberFunction_name = "Member function";
+
 class MemberFunction :  public RbFunction {
 
 public:

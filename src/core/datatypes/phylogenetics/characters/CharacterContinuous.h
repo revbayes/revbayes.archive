@@ -22,6 +22,8 @@
 
 
 
+const std::string CharacterContinuous_name = "Continuous Character";
+
 class CharacterContinuous : public Character {
 
     public:

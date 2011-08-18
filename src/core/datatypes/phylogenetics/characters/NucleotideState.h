@@ -23,6 +23,8 @@
 
 
 
+const std::string NucleotideState_name = "Nucleotide State";
+
 class NucleotideState : public CharacterStateDiscrete {
 
     public:

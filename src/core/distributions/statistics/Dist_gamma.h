@@ -28,6 +28,8 @@ class DAGNode;
 class StochasticNode;
 class VectorString;
 
+const std::string Dist_gamma_name = "Dist_gamma";
+
 class Dist_gamma: public DistributionContinuous {
 
     public:

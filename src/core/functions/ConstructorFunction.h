@@ -28,6 +28,8 @@
 class DAGNode;
 class VectorString;
 
+//const std::string ConstructorFunction_name = "constructor function";
+
 class ConstructorFunction :  public RbFunction {
 
     public:

@@ -29,6 +29,8 @@ class RbObject;
 class VectorString;
 class VariableNode;
 
+const std::string Monitor_name = "Monitor";
+
 class Monitor : public ConstantMemberObject {
 
 public:

@@ -28,6 +28,8 @@
 
 class RbFunction;
 
+const std::string DeterministicNode_name = "Deterministic Node";
+
 class DeterministicNode : public VariableNode {
 
     public:

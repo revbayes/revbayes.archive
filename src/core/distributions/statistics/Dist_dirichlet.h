@@ -30,6 +30,8 @@ class Simplex;
 class StochasticNode;
 class VectorString;
 
+const std::string Dist_dirichlet_name = "Dist_dirichlet";
+
 class Dist_dirichlet: public DistributionContinuous {
 
     public:
