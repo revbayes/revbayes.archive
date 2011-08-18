@@ -32,7 +32,6 @@ class Dist_topologyunif: public DistributionDiscrete {
 
     public:
                                     Dist_topologyunif(void);                                            //!< Parser constructor
-                                    Dist_topologyunif(int numTaxa, bool isRooted, bool isBinary=true);  //!< Constructor for internal use
 
         // Basic utility functions
         Dist_topologyunif*          clone(void) const;                                                  //!< Clone object

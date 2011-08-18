@@ -46,18 +46,6 @@ Dist_topologyunif::Dist_topologyunif( void ) : DistributionDiscrete( getMemberRu
 }
 
 
-/** Constructor for internal use */
-Dist_topologyunif::Dist_topologyunif( int numTaxa, bool isRooted, bool isBinary ) : DistributionDiscrete( getMemberRules() ) {
-
-//    setMemberValue( "numberTaxa", new Natural( numTaxa ) );
-//    setMemberValue( "isRooted"  , new RbBoolean( isRooted ) );
-//    setMemberValue( "isBinary"  , new RbBoolean( isBinary ) );
-
-    // Precalculate probability of topology
-    calculateTopologyProb();
-}
-
-
 void Dist_topologyunif::buildRandomBinaryTree(std::vector<TopologyNode *> &tips, size_t numTaxa) {
     
     if (tips.size() < numTaxa) {

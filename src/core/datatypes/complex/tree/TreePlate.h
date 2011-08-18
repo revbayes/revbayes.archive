@@ -22,6 +22,7 @@
 #include <string>
 
 class Topology;
+class TopologyNode;
 class ValueRule;
 
 
@@ -49,6 +50,7 @@ public:
     const MethodTable&              getMethods(void) const;                                                 //!< Get methods
         
     // Tree plate functions
+    void                            setNodeTime(TopologyNode* n, double t);                                 //!< Set the time of the node
 
 private:
     void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }           //!< Order the topology

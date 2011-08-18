@@ -19,8 +19,7 @@
 #define Dist_birthdeath_H
 
 #include "Distribution.h"
-#include "Topology.h"
-#include "VectorRealPos.h"
+#include "TreePlate.h"
 
 #include <ostream>
 #include <string>
@@ -43,9 +42,10 @@ public:
     const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Simplex)
     double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
     double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
-    VectorRealPos*              rv(void);                                                           //!< Generate random variable
+    TreePlate*                  rv(void);                                                           //!< Generate random variable
     
 private:
+    void                        buildRandomBinaryTree(std::vector<TopologyNode *> &interior, std::vector<TopologyNode *> &tips, size_t numTaxa);
     
 };
 

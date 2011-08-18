@@ -15,6 +15,7 @@
  */
 
 #include "RbBoolean.h"
+#include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Dist_birthdeath.h"
 #include "Integer.h"
@@ -25,7 +26,11 @@
 #include "RbConstants.h"
 #include "RbException.h"
 #include "RbNames.h"
+#include "TreePlate.h"
+#include "Topology.h"
+#include "TopologyNode.h"
 #include "ValueRule.h"
+#include "Variable.h"
 #include "VectorString.h"
 #include "VectorRealPos.h"
 
@@ -38,6 +43,39 @@
 /** Default constructor for parser use */
 Dist_birthdeath::Dist_birthdeath( void ) : Distribution( getMemberRules() ) {
     
+}
+
+void Dist_birthdeath::buildRandomBinaryTree(std::vector<TopologyNode *> &internalNodes, std::vector<TopologyNode *> &tips, size_t numTaxa) {
+    
+    if (tips.size() < numTaxa) {
+        // Get the rng
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        
+        // randomly draw one node from the list of tips
+        size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
+        
+        // get the node from the list
+        TopologyNode* parent = tips.at(index);
+        
+        // add the internal node
+        internalNodes.push_back(parent);
+        
+        // remove the randomly drawn node from the list
+        tips.erase(tips.begin()+index);
+        
+        // add a left child
+        TopologyNode *leftChild = new TopologyNode(0);
+        parent->addChild(leftChild);
+        tips.push_back(leftChild);
+        
+        // add a right child
+        TopologyNode *rightChild = new TopologyNode(0);
+        parent->addChild(rightChild);
+        tips.push_back(rightChild);
+        
+        // recursive call to this function
+        buildRandomBinaryTree(internalNodes, tips, numTaxa);
+    }
 }
 
 
@@ -79,7 +117,7 @@ const MemberRules& Dist_birthdeath::getMemberRules( void ) const {
 /** Get random variable type */
 const TypeSpec Dist_birthdeath::getVariableType( void ) const {
     
-    return TypeSpec( VectorRealPos_name );
+    return TypeSpec( TreePlate_name );
 }
 
 
@@ -164,16 +202,18 @@ double Dist_birthdeath::pdf( const RbLanguageObject* value ) {
  *
  * @return      Randomly drawn vector of speciation times
  */
-VectorRealPos* Dist_birthdeath::rv( void ) {
+TreePlate* Dist_birthdeath::rv( void ) {
     
     // Get the parameters
-    double b        = static_cast<const RealPos*    >( getMemberValue( "lambda"   ) )->getValue();
-    double d        = static_cast<const RealPos*    >( getMemberValue( "mu"       ) )->getValue();
-    double p        = static_cast<const Probability*>( getMemberValue( "rho"      ) )->getValue();
-    size_t nSpecies = static_cast<const Natural*    >( getMemberValue( "nSpecies" ) )->getValue();
+    double b                    = static_cast<const RealPos*     >( getMemberValue( "lambda"   ) )->getValue();
+    double d                    = static_cast<const RealPos*     >( getMemberValue( "mu"       ) )->getValue();
+    double p                    = static_cast<const Probability* >( getMemberValue( "rho"      ) )->getValue();
+    size_t nSpecies             = static_cast<const Natural*     >( getMemberValue( "nSpecies" ) )->getValue();
+    const VectorString  *names  = static_cast<const VectorString*>( getMemberValue( "tipNames" ) );
     
-    // create the vector of speciation times
-    VectorRealPos *times = new VectorRealPos();
+    double scale    = b - d;
+    b /= scale;
+    d /= scale;
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -185,26 +225,58 @@ VectorRealPos* Dist_birthdeath::rv( void ) {
 	double t_or = log((-b * p - b * pow(ran,(1.0/nSpecies)) + d * pow(ran,(1.0/nSpecies)) + b * p * pow(ran,(1.0/nSpecies)))/(b * p * (-1.0 + pow(ran,(1.0/nSpecies))))) / (b - d);
     
     // tmp vector of speciation times. we need to sort this vector before we use it later
-    std::vector<double> tmp_times;
+    std::vector<double> times;
     
     // simulate speciation times
     for (size_t i=0; i<nSpecies; i++) {
         ran = rng->uniform01(); 
         double t = 1.0/(p*b-(d-b*(1.0-p)))*log((p*b-(d-b*(1.0-p))* exp((-(p*b)+(d-b*(1.0-p)))*t_or) -(d-b*(1.0-p))*(1-exp((-(p*b)+(d-b*(1.0-p)))*t_or)) *ran )/(p*b-(d-b*(1.0-p))* exp((-(p*b)+(d-b*(1.0-p)))*t_or) -(p*b)*(1-exp((-(p*b)+(d-b*(1.0-p)))*t_or)) *ran )   ); 
-        tmp_times.push_back(t);
+        times.push_back(t);
     }
+    
+    // create a new random tree
+    Topology *top = new Topology();
+    // internally we treat unrooted topologies the same as rooted
+    top->setIsRooted(true);
+    
+    TopologyNode *root = new TopologyNode((int)pow(2.0,nSpecies)-1);
+    std::vector<TopologyNode*> tips;
+    std::vector<TopologyNode*> interior;
+    tips.push_back(root);
+    // recursively build the tree
+    buildRandomBinaryTree(interior, tips, nSpecies);
+    
+    // set tip names
+    for (int i=0; i<nSpecies; i++) {
+        size_t index = size_t( floor(rng->uniform01() * tips.size()) );
+        
+        // get the node from the list
+        TopologyNode* node = tips.at(index);
+        
+        // remove the randomly drawn node from the list
+        tips.erase(tips.begin()+index);
+        
+        // set name
+        std::string name = (*names)[i];
+        node->setName(name);
+    }
+    
+    // initialize the topology by setting the root
+    top->setRoot(root);
     
     // sort the speciation times
-    sort (tmp_times.begin(), tmp_times.end());
+    sort (times.begin(), times.end());
     
-    // add the times to the vector
-    for (size_t i=0; i<nSpecies; i++) {
-        times->push_back(tmp_times[i]);
+    // create a tree plate
+    TreePlate *plate = new TreePlate();
+    plate->setMemberVariable("topology", new Variable(new ConstantNode(top)));
+    
+    // add the speciation time to the topology
+    for (size_t i=0; i<times.size(); i++) {
+        plate->setNodeTime(interior[i],times[i]*scale);
     }
     
-    
-    
-    return times;
+    return plate;
 }
 
 
