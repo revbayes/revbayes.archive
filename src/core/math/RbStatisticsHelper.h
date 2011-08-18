@@ -22,7 +22,7 @@
 #include "RbException.h"
 
 
-#pragma warning (disable: 4068)
+//#pragma warning (disable: 4068)
 
 namespace RbStatistics {
     	
@@ -64,6 +64,6 @@ namespace RbStatistics {
 	}
 }
 
-#pragma warning (default: 4068)
+//#pragma warning (default: 4068)
 
 #endif

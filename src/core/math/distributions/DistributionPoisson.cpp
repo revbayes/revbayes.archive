@@ -87,7 +87,7 @@ double RbStatistics::Poisson::quantile(double lambda, double p) {
 	for (int i=0; i<=xmax; i++)
         {
 		double sumOld = sum;
-		double newVal;
+		double newVal = 0.0;
 		if ( i == 0 )
             {
 			newVal = exp(-lambda);

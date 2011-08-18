@@ -40,7 +40,7 @@ Categorical::Categorical( char c ) :  RbLanguageObject(), value(-1) {
 /** Translate character symbol to state */
 int Categorical::convertSymbolToState( char c ) const {
 
-    int stateValue;
+    int stateValue = 0;
     const std::string& stateLabels = getStateLabels();
 //    const std::string& NALabels    = getNALabels();
 

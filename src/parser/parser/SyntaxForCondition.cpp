@@ -117,7 +117,7 @@ bool SyntaxForCondition::getNextLoopState(Environment* env) {
     if ( nextElement < 0 )
         initializeLoop( env );
     
-    if ( nextElement == vector->getLength() ) {
+    if ( nextElement == static_cast<int>(vector->getLength()) ) {
         finalizeLoop( env );
         return false;
     }

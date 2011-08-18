@@ -236,7 +236,7 @@ double Dist_topologyunif::lnPdf( const RbLanguageObject* value ) {
 
     // Get the parameters
     const Topology* top      = static_cast<const Topology*    >( value );
-    int             numTaxa  = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
+    unsigned int    numTaxa  = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
     bool            isRooted = static_cast<const RbBoolean*>( getMemberValue( "isRooted"    ) )->getValue();
     bool            isBinary = static_cast<const RbBoolean*>( getMemberValue( "isBinary"    ) )->getValue();
 
@@ -262,7 +262,7 @@ double Dist_topologyunif::pdf( const RbLanguageObject* value ) {
 
     // Get the parameters
     const Topology* top      = static_cast<const Topology*    >( value );
-    int             numTaxa  = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
+    unsigned int    numTaxa  = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ) )->getValue();
     bool            isRooted = static_cast<const RbBoolean*>( getMemberValue( "isRooted"    ) )->getValue();
     bool            isBinary = static_cast<const RbBoolean*>( getMemberValue( "isBinary"    ) )->getValue();
 

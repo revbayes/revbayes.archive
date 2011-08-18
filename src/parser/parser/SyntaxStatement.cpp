@@ -152,7 +152,7 @@ SyntaxElement* SyntaxStatement::clone () const {
 /** Get semantic value: it is here that we execute the statement */
 Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
 
-    Variable* result;
+    Variable* result = NULL;
     
     if (statementType == For) {
 

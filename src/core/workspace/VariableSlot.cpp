@@ -34,7 +34,7 @@
 
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, Variable *var) : RbInternal(), label(lbl), varTypeSpec(typeSp) {
+VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, Variable *var) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
     
     variable = var;
     variable->retain();
@@ -42,7 +42,7 @@ VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, Varia
 }
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, Variable *var) : RbInternal() , label(lbl), varTypeSpec( TypeSpec(RbObject_name) ) {
+VariableSlot::VariableSlot(const std::string &lbl, Variable *var) : RbInternal() , varTypeSpec( TypeSpec(RbObject_name) ), label(lbl) {
     
     variable = var;
     variable->retain();
@@ -51,7 +51,7 @@ VariableSlot::VariableSlot(const std::string &lbl, Variable *var) : RbInternal()
 
 
 /** Constructor of empty slot based on type specification */
-VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbInternal(), label(lbl), varTypeSpec(typeSp) {
+VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
     
     variable = NULL;
     
@@ -59,7 +59,7 @@ VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbI
 
 
 /** Copy constructor (shallow copy). */
-VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), label(x.label), varTypeSpec(x.varTypeSpec) {
+VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), varTypeSpec(x.varTypeSpec), label(x.label) {
     
     if ( x.variable != NULL ) {
         variable = x.variable;

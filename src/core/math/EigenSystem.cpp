@@ -563,7 +563,7 @@ int EigenSystem::hqr2(int low, int high, MatrixReal& h, VectorReal& wr, VectorRe
 
 	/* search for next eigenvalues */
 	int en=high, na, numIterations = (int)n * 30;
-	double p, q, r, s, t=0.0, w, x, y, z;
+	double p = 0.0, q = 0.0, r = 0.0, s = 0.0, t=0.0, w, x, y, z = 0.0;
 	while ( en >= low )
 		{
 		int iter = 0;
@@ -1278,7 +1278,7 @@ bool EigenSystem::update(void) {
     MatrixReal A(*qPtr);
 
 	// check that the dimension of A is right
-	if (A.getNumberOfRows() != n || A.getNumberOfColumns() != n)
+	if (A.getNumberOfRows() != static_cast<unsigned int>(n)|| A.getNumberOfColumns() != static_cast<unsigned int>(n))
 		return false;
 	
 	// balance the n X n matrix

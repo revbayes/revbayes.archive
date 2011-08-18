@@ -107,7 +107,7 @@ const VectorString& AminoAcidState::getClass(void) const {
 /** Get value */
 const char AminoAcidState::getState(void) const {
 
-    char c;
+    char c = '?';
     size_t numMatches = 0;
     for (size_t i=0; i<numStates; i++)
         {

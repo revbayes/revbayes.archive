@@ -173,7 +173,7 @@ Variable* SyntaxAssignExpr::getContentAsVariable( Environment* env ) const {
     VariableSlot*       theSlot = variable->getSlot( env );
     
     // Declare variable storing the return value of the assignment expression
-    Variable* theVariable;
+    Variable* theVariable = NULL;
     
     // Deal with arrow assignments
     if ( opType == ArrowAssign ) {

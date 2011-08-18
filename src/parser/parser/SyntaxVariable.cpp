@@ -262,7 +262,7 @@ VariableSlot* SyntaxVariable::getSlot(Environment* env) const {
     VariableSlot *theSlot = NULL;
     
     /* Get variable */
-    DAGNode* theDagNode;
+    DAGNode* theDagNode = NULL;
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
@@ -290,7 +290,7 @@ VariableSlot* SyntaxVariable::getSlot(Environment* env) const {
 
         // The call to getValue of baseVariable either returns
         // a value or results in the throwing of an exception
-        DAGNode* baseVar = baseVariable->getContentAsVariable( env )->getDagNodePtr();
+//        DAGNode* baseVar = baseVariable->getContentAsVariable( env )->getDagNodePtr();
 //        if ( !baseVar->isType( MemberNode_name ) )
             throw RbException( "Variable " + baseVariable->getFullName( env ) + " does not have members. Missing implementation in SyntaxVariable::getLValue()" );       
     

@@ -91,7 +91,7 @@ const Simplex* Dist_ctmm::getProbabilityMassVector( void ) {
     // get the information from the arguments for reading the file
     const RateMatrix*                q = static_cast<const RateMatrix*>(                members[0].getValue() );
     const RealPos*                   t = static_cast<const RealPos*>(                   members[1].getValue() );
-    const CharacterStateDiscrete*    c = static_cast<const CharacterStateDiscrete*>(    members[2].getValue() );
+//    const CharacterStateDiscrete*    c = static_cast<const CharacterStateDiscrete*>(    members[2].getValue() );
     
     // initialize the number of states
     const size_t nStates = q->getNumberOfStates();
@@ -111,7 +111,7 @@ const Simplex* Dist_ctmm::getProbabilityMassVector( void ) {
     q->calculateTransitionProbabilities( t->getValue(), *m );
     
     //
-
+    return NULL; // TODO Return vector
 }
 
 

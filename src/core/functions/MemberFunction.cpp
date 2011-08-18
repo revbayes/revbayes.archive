@@ -34,7 +34,8 @@
 
 
 /** Constructor */
-MemberFunction::MemberFunction(const TypeSpec retType, const ArgumentRules& argRules) : RbFunction(), returnType(retType), argumentRules(argRules), object(NULL) {
+MemberFunction::MemberFunction(const TypeSpec retType, const ArgumentRules& argRules) : 
+    RbFunction(), argumentRules(argRules), object(NULL), returnType(retType) {
 
 }
 

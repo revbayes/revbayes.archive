@@ -104,17 +104,17 @@ RbLanguageObject* TreePlate::executeOperation(const std::string& name, Environme
             }
             else {
                 // we have a tree
-                size_t nNodes = orderingTopology->getNumberOfNodes();
+//                size_t nNodes = orderingTopology->getNumberOfNodes();
                 
                 // prepare the variable and slot for the variable
-                DAGNode* var = args[1].getDagNodePtr();
-                ValueRule* varTypeRule = new ValueRule( "", var->getValueType() );
+//                DAGNode* var = args[1].getDagNodePtr();
+//                ValueRule* varTypeRule = new ValueRule( "", var->getValueType() );
                 VariableSlot* slot = new VariableSlot(varName, RbObject_name );
-                for (int i=0; i<nNodes; i++) {
+ //               for (unsigned int i=0; i<nNodes; i++) {
  //                   members
  //                   members.addVariable( varName, slot->clone() );
  //                   members[ members.size() - 1 ].setVariable( var );
-                }
+ //               }
                 
                 delete slot;
             }

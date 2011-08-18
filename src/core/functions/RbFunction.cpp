@@ -159,7 +159,7 @@ bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, boo
     size_t numRegularRules;
     if (nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name)) {
         numRegularRules = nRules - 1;
-        if ( int(passedArgs.size()) < nRules )
+        if ( passedArgs.size() < nRules )
             numFinalArgs = nRules - 1;
         else
             numFinalArgs = passedArgs.size();
@@ -170,7 +170,7 @@ bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, boo
     }
 
     /* Check if we have too many arguments */
-    if ( int(passedArgs.size()) > numFinalArgs )
+    if ( passedArgs.size() > numFinalArgs )
         return false;
 
     /* Fill processedArguments with empty variable slots */
@@ -192,7 +192,7 @@ bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, boo
     /* Process ellipsis arguments. If we have an ellipsis, all preceding arguments must be passed in;
        no default values are allowed. Note that the argument labels are discarded here, which is not
        correct. */
-    if ( nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && int(passedArgs.size()) >= nRules ) {
+    if ( nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && passedArgs.size() >= nRules ) {
 
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
 

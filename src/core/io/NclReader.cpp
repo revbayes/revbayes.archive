@@ -124,7 +124,7 @@ std::vector<CharacterMatrix*> NclReader::convertFromNcl(std::vector<std::string>
 std::vector<Topology*>* NclReader::convertTreesFromNcl(void) {
 	
 	const unsigned nTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-	std::vector<Topology*>* rbTreesFromFile;
+	std::vector<Topology*>* rbTreesFromFile = NULL;
 	for (unsigned t = 0; t < nTaxaBlocks; ++t) 
         {
 		const NxsTaxaBlock * tb = nexusReader.GetTaxaBlock(t);
@@ -161,7 +161,7 @@ CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
-    for (int i=0; i<charblock->GetNumChar(); i++)
+    for (unsigned int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
 	int numOrigTaxa = charblock->GetNTax();
     
@@ -218,7 +218,7 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
-    for (int i=0; i<charblock->GetNumChar(); i++)
+    for (unsigned int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
 	int numOrigTaxa = charblock->GetNTax();
     
@@ -267,7 +267,7 @@ CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
-    for (int i=0; i<charblock->GetNumChar(); i++)
+    for (unsigned int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
 	int numOrigTaxa = charblock->GetNTax();
 
@@ -300,7 +300,7 @@ CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
             else
                 {
                 dnaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );                
-                for (int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+                for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                     dnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
             dataVec->push_back( dnaState );
@@ -325,7 +325,7 @@ CharacterMatrix* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
 
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
-    for (int i=0; i<charblock->GetNumChar(); i++)
+    for (unsigned int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
 	int numOrigTaxa = charblock->GetNTax();
 
@@ -358,7 +358,7 @@ CharacterMatrix* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
             else
                 {
                 rnaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );                
-                for (int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+                for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                     rnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
             dataVec->push_back( rnaState );
@@ -383,7 +383,7 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
-    for (int i=0; i<charblock->GetNumChar(); i++)
+    for (unsigned int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
 	int numOrigTaxa = charblock->GetNTax();
     
@@ -416,7 +416,7 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
             {	
             // add the character state to the matrix
             StandardState stdState(sym);
-            for(int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+            for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                 {
                 char c = charblock->GetState(origTaxIndex, *cit, s);
                 for (int i=0; i<nStates; i++)
@@ -713,7 +713,7 @@ bool NclReader::isPhylipFile(std::string& fn, std::string& dType, bool& isInterl
 
     // read the file token-by-token looking for NEXUS things
     bool foundNumTaxa = false, foundNumChar = false;
-    int numTaxa = 0;
+    unsigned int numTaxa = 0;
     std::vector<std::string> taxonNames;
     int ch = fStrm.get();
     fStrm.unget();
@@ -987,7 +987,7 @@ std::vector<Topology*>* NclReader::readTrees(const char* fileName, const std::st
 void NclReader::setExcluded( const NxsCharactersBlock* charblock, CharacterMatrix* cMat ) const {
 
     // Set excluded taxa
-    for ( int origTaxIndex=0; origTaxIndex<charblock->GetNTax(); origTaxIndex++ ) {
+    for (unsigned int origTaxIndex=0; origTaxIndex<charblock->GetNTax(); origTaxIndex++ ) {
 		if ( !charblock->IsActiveTaxon( origTaxIndex ) )
             cMat->excludeTaxon( origTaxIndex );
     }

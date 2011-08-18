@@ -235,7 +235,7 @@ void Mcmc::run(size_t ngen) {
     std::cout << std::endl;
     std::cout << "Gen\tlnProbability" << std::endl;
 
-    for (int gen=1; gen<=ngen; gen++) {
+    for (unsigned int gen=1; gen<=ngen; gen++) {
 
         for (size_t i=0; i<moves->getLength(); i++) {
             /* Get the move */
