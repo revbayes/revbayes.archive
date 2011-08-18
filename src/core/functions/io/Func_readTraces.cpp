@@ -110,7 +110,7 @@ RbLanguageObject* Func_readTraces::execute( void ) {
             
             // skip empty lines
             //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-            if (line.length == 0) 
+            if (line.length() == 0) 
             {
                 continue;
             }
