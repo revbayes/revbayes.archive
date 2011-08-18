@@ -266,9 +266,6 @@
         for (int i = 0; i < [lines count]; i++) {
             NSString* line = [lines objectAtIndex:i];
             
-            //            NSLog(@"Reading line %i in.", i);
-            //            NSLog(@"Line:\t%@.", line);
-            
             // skip empty lines
             line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
             if ([line length] == 0) 
