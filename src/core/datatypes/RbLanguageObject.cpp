@@ -71,9 +71,6 @@ bool RbLanguageObject::isConvertibleTo(const std::string& type, bool once) const
  */
 bool RbLanguageObject::isType(const std::string& type) const {
     
-    if ( type == Scalar_name )
-        return true;
-    
     const VectorString& classVec = getClass();
     
     for (size_t i=0; i<classVec.getLength(); i++) {

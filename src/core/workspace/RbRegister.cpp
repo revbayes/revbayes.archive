@@ -160,14 +160,13 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add special abstract types that do not correspond directly to classes */
         addType( new RbAbstract( VectorString(RbVoid_name) ) );
-        addType( new RbAbstract( VectorString(Scalar_name) ) );
 
         /* Add abstract types */
         addType( new RbAbstract( VectorString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(RbLanguageObject_name) + VectorString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(RbInternal_name) + VectorString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(Vector_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name), Scalar_name ) );
-        addType( new RbAbstract( VectorString(Matrix_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name), Scalar_name ) );
+        addType( new RbAbstract( VectorString(Vector_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name) ) );
+        addType( new RbAbstract( VectorString(Matrix_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(MemberObject_name) + RbString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(Move_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(Distribution_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
@@ -175,7 +174,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add primitive types (alphabetic order) */
         addType( new AminoAcidState()                 );
-        addType( new RbBoolean()                        );
+        addType( new RbBoolean()                      );
         addType( new Complex()                        );
         addType( new CharacterContinuous()            );
         addType( new DnaState()                       );
@@ -281,46 +280,46 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_and",      new Func__and<               Real,           Real >()             );
         addFunction( "_and",      new Func__and<            Integer,           Real >()             );
         addFunction( "_and",      new Func__and<               Real,        Integer >()             );
-        addFunction( "_and",      new Func__and<            RbBoolean,        RbBoolean >()             );
-        addFunction( "_and",      new Func__and<            RbBoolean,        Integer >()             );
-        addFunction( "_and",      new Func__and<            RbBoolean,           Real >()             );
-        addFunction( "_and",      new Func__and<            Integer,        RbBoolean >()             );
-        addFunction( "_and",      new Func__and<               Real,        RbBoolean >()             );
+        addFunction( "_and",      new Func__and<            RbBoolean,        RbBoolean >()         );
+        addFunction( "_and",      new Func__and<            RbBoolean,        Integer >()           );
+        addFunction( "_and",      new Func__and<            RbBoolean,           Real >()           );
+        addFunction( "_and",      new Func__and<            Integer,        RbBoolean >()           );
+        addFunction( "_and",      new Func__and<               Real,        RbBoolean >()           );
         addFunction( "_eq",       new Func__eq<             Integer,        Integer >()             );
         addFunction( "_eq",       new Func__eq<                Real,           Real >()             );
         addFunction( "_eq",       new Func__eq<             Integer,           Real >()             );
         addFunction( "_eq",       new Func__eq<                Real,        Integer >()             );
-        addFunction( "_eq",       new Func__eq<             RbBoolean,        RbBoolean >()             );
+        addFunction( "_eq",       new Func__eq<             RbBoolean,        RbBoolean >()         );
         addFunction( "_ge",       new Func__ge<             Integer,        Integer >()             );
         addFunction( "_ge",       new Func__ge<                Real,           Real >()             );
         addFunction( "_ge",       new Func__ge<             Integer,           Real >()             );
         addFunction( "_ge",       new Func__ge<                Real,        Integer >()             );
-        addFunction( "_ge",       new Func__ge<             RbBoolean,        RbBoolean >()             );
+        addFunction( "_ge",       new Func__ge<             RbBoolean,        RbBoolean >()         );
         addFunction( "_gt",       new Func__gt<             Integer,        Integer >()             );
         addFunction( "_gt",       new Func__gt<                Real,           Real >()             );
         addFunction( "_gt",       new Func__gt<             Integer,           Real >()             );
         addFunction( "_gt",       new Func__gt<                Real,        Integer >()             );
-        addFunction( "_gt",       new Func__gt<             RbBoolean,        RbBoolean >()             );
+        addFunction( "_gt",       new Func__gt<             RbBoolean,        RbBoolean >()         );
         addFunction( "_lt",       new Func__lt<             Integer,        Integer >()             );
         addFunction( "_lt",       new Func__lt<                Real,           Real >()             );
         addFunction( "_lt",       new Func__lt<             Integer,           Real >()             );
         addFunction( "_lt",       new Func__lt<                Real,        Integer >()             );
-        addFunction( "_lt",       new Func__lt<             RbBoolean,        RbBoolean >()             );
+        addFunction( "_lt",       new Func__lt<             RbBoolean,        RbBoolean >()         );
         addFunction( "_le",       new Func__le<             Integer,        Integer >()             );
         addFunction( "_le",       new Func__le<                Real,           Real >()             );
         addFunction( "_le",       new Func__le<             Integer,           Real >()             );
         addFunction( "_le",       new Func__le<                Real,        Integer >()             );
-        addFunction( "_le",       new Func__le<             RbBoolean,        RbBoolean >()             );
+        addFunction( "_le",       new Func__le<             RbBoolean,        RbBoolean >()         );
         addFunction( "_ne",       new Func__ne<             Integer,        Integer >()             );
         addFunction( "_ne",       new Func__ne<                Real,           Real >()             );
         addFunction( "_ne",       new Func__ne<             Integer,           Real >()             );
         addFunction( "_ne",       new Func__ne<                Real,        Integer >()             );
-        addFunction( "_ne",       new Func__ne<             RbBoolean,        RbBoolean >()             );
+        addFunction( "_ne",       new Func__ne<             RbBoolean,        RbBoolean >()         );
         addFunction( "_or",       new Func__or<             Integer,        Integer >()             );
         addFunction( "_or",       new Func__or<                Real,           Real >()             );
         addFunction( "_or",       new Func__or<             Integer,           Real >()             );
         addFunction( "_or",       new Func__or<                Real,        Integer >()             );
-        addFunction( "_or",       new Func__or<             RbBoolean,        RbBoolean >()             );
+        addFunction( "_or",       new Func__or<             RbBoolean,        RbBoolean >()         );
         
         /* Add builtin functions (alphabetical order) */
         addFunction( "clamp",     new Func_clamp()           ); 
