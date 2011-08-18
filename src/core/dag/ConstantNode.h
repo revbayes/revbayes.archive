@@ -50,6 +50,9 @@ class ConstantNode : public DAGNode {
         // DAG functions
         ConstantNode*           cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
         bool                    isTouched (void) const { return false; }                                    //!< Touched by a move?
+        void                    keep(void);                                                                 //!< Keep current state
+        void    	            keepAffected(void);                                                         //!< Keep value of affected nodes
+        void                    touchAffected(void);                                                        //!< Tell affected nodes value is reset
     
 };
 

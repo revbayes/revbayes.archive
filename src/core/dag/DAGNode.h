@@ -67,6 +67,9 @@ class DAGNode : public RbInternal {
     
         // DAG function you have to override
         virtual DAGNode*                cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const = 0;       //!< Clone graph
+        virtual void                    keep(void) = 0;                                                         //!< Keep current state
+        virtual void    	            keepAffected(void) = 0;                                                 //!< Keep value of affected nodes
+        virtual void                    touchAffected(void) = 0;                                                //!< Tell affected nodes value is reset
 
         // DAG functions you should not have to override
         void                            addChildNode(VariableNode* c);                                          //!< Add child node

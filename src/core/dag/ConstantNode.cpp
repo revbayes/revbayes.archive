@@ -84,6 +84,19 @@ const VectorString& ConstantNode::getClass() const {
 }
 
 
+/** Keep the value. This should be only called when the variable is reassigned. We only call keep affected which calls keep for all children. */
+void ConstantNode::keep(void) {
+    keepAffected();
+}
+
+/** Keep value of node and affected variable nodes */
+void ConstantNode::keepAffected( void ) {
+    
+    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
+            (*i)->keepAffected();
+    }
+}
+
 /** Print value for user */
 void ConstantNode::printValue( std::ostream& o ) {
 
@@ -116,5 +129,13 @@ std::string ConstantNode::richInfo( void ) const {
     o << "ConstantNode: value = " << value->briefInfo();
 
     return o.str();
+}
+
+/** Touch value of node and touch affected variable nodes */
+void ConstantNode::touchAffected( void ) {
+    
+    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
+        (*i)->touchAffected();
+    }
 }
 

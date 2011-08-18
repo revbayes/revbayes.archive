@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-class List;
+class Container;
 class RandomNumberGenerator;
 class StochasticNode;
 class VectorString;
@@ -62,7 +62,7 @@ class MoveTree : public Move {
         // Help functions
         const Topology*                 getTopology(void) const;                                                //!< Get topology
         std::vector<StochasticNode*>    getTreeVariable(const std::string& name) const;                         //!< Get tree variable
-        void                            reconnectTreeVariables(List* treeVars, std::vector<TopologyChange>& topChanges);        //!< Reconnect tree variables
+        void                            reconnectTreeVariables(Container* treeVars, std::vector<TopologyChange>& topChanges);        //!< Reconnect tree variables
 
         // Member variables storing info about the move
         std::set<StochasticNode*>       moved;

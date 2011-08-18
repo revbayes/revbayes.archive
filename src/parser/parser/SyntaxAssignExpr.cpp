@@ -279,6 +279,8 @@ Variable* SyntaxAssignExpr::getContentAsVariable( Environment* env ) const {
 //        throw RbException( "Support of ~iid not complete yet" );
 //    }
     
+    theSlot->getDagNodePtr()->touchAffected();
+    theSlot->getDagNodePtr()->keep();
     
     // release the return variable
     theVariable->release();
