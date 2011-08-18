@@ -127,6 +127,7 @@
 #include "Func_setval.h"
 #include "Func_structure.h"
 #include "Func_unclamp.h"
+#include "Func_unique.h"
 
 /* Builtin templated functions */
 #include "Func_simplex.h"
@@ -333,6 +334,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "setval",    new Func_setval()          );
         addFunction( "structure", new Func_structure()       );
         addFunction( "unclamp",   new Func_unclamp()         );
+        addFunction( "unique",    new Func_unique()          );
         
         /* Add math functions (alphabetical order) */ 
         addFunction( "abs",       new Func_abs()   );

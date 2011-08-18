@@ -28,6 +28,7 @@
 #include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
+#include "DistributionNormal.h"
 
 #include <cmath>
 
@@ -59,49 +60,12 @@ Dist_norm::Dist_norm( double mu, double sigma ) : DistributionContinuous( getMem
  */
 double Dist_norm::cdf( const RbLanguageObject* value ) {
 
-    const Real*    mu    = static_cast<const Real*   >( getMemberValue("mean") );
-    const RealPos* sigma = static_cast<const RealPos*>( getMemberValue("sd"  ) );
-    const Real*    q     = static_cast<const Real*   >( value                  );
+	
+	double    mu    = static_cast<const Real*   >( getMemberValue("mean") )->getValue();
+    double sigma = static_cast<const RealPos*>( getMemberValue("sd"  ) )->getValue();
+    double q   = static_cast<const Real*>( value           )->getValue();
+	return RbStatistics::Normal::cdf(mu, sigma, q);
 
-    double p;
-    double z = ( (*q) - (*mu) ) / (*sigma);
-
-    /* |X| <= 1.28 */
-    if ( fabs(z) <= 1.28 ) {
-        double a1 = 0.398942280444;
-        double a2 = 0.399903438504;
-        double a3 = 5.75885480458;
-        double a4 = 29.8213557808;
-        double a5 = 2.62433121679;
-        double a6 = 48.6959930692;
-        double a7 = 5.92885724438;
-        double y = 0.5 * z * z;
-        p = 0.5 - fabs(z) * ( a1 - a2 * y / ( y + a3 - a4 / ( y + a5 + a6 / ( y + a7 ) ) ) );
-    }
-    else if ( fabs(z) <= 12.7 ) {
-        double b0 = 0.398942280385;
-        double b1 = 3.8052E-08;
-        double b2 = 1.00000615302;
-        double b3 = 3.98064794E-04;
-        double b4 = 1.98615381364;
-        double b5 = 0.151679116635;
-        double b6 = 5.29330324926;
-        double b7 = 4.8385912808;
-        double b8 = 15.1508972451;
-        double b9 = 0.742380924027;
-        double b10 = 30.789933034;
-        double b11 = 3.99019417011;
-        double y = 0.5 * z * z;
-        p = exp(-y) * b0 / (fabs(z) - b1 + b2 / (fabs(z) + b3 + b4 / (fabs(z) - b5 + b6 / (fabs(z) + b7 - b8 / (fabs(z) + b9 + b10 / (fabs(z) + b11))))));
-    }
-    else {
-        p = 0.0;
-    }
-
-    if ( z < 0.0 )
-        return p;
-    else
-        return 1.0 - p;
 }
 
 
@@ -160,9 +124,9 @@ double Dist_norm::lnPdf(const RbLanguageObject* value) {
     double sigma = static_cast<const RealPos*>( getMemberValue( "sd"   ) )->getValue();
     double x     = static_cast<const Real*   >( value                    )->getValue();
 
-    double z = ( x - mu ) / sigma;
 
-    return ( -0.5 * z * z ) - 0.5 * std::log ( 2.0 * RbConstants::PI * sigma );
+    return RbStatistics::Normal::lnPdf(mu, sigma, x);
+
 }
 
 
@@ -181,9 +145,8 @@ double Dist_norm::pdf( const RbLanguageObject* value ) {
     double sigma = static_cast<const RealPos*>( getMemberValue( "sd"   ) )->getValue();
     double x     = static_cast<const Real*   >( value                    )->getValue();
 
-    double z = (x - mu) / sigma;
+    return RbStatistics::Normal::pdf(mu, sigma, x);
 
-    return exp( -0.5 * z * z ) / ( sigma * sqrt ( 2.0 * RbConstants::PI ) );
 }
 
 
@@ -207,29 +170,7 @@ Real* Dist_norm::quantile( const double p) {
 
     double mu    = static_cast<const Real*   >( getMemberValue( "mean" ) )->getValue();
     double sigma = static_cast<const RealPos*>( getMemberValue( "sd"   ) )->getValue();
-
-    double a0 = -0.322232431088;
-    double a1 = -1.0;
-    double a2 = -0.342242088547;
-    double a3 = -0.0204231210245;
-    double a4 = -0.453642210148e-4;
-    double b0 = 0.0993484626060;
-    double b1 = 0.588581570495;
-    double b2 = 0.531103462366; 
-    double b3 = 0.103537752850; 
-    double b4 = 0.0038560700634;
-
-    double p1 = ( p < 0.5 ? p : 1.0 - p);
-    if ( p1 < 1e-20 ) 
-       throw RbException( "Probability of normal quantile out of range" );
-
-    double y = sqrt( log(1.0/(p1*p1)) );   
-    double z = y + ((((y*a4+a3)*y+a2)*y+a1)*y+a0) / ((((y*b4+b3)*y+b2)*y+b1)*y+b0);
-
-    if ( p < 0.5 )
-        z = -z;
-
-    return new Real( z * sigma + mu );
+	return new Real( RbStatistics::Normal::quantile(mu, sigma, p) );
 }
 
 
@@ -259,22 +200,8 @@ Real* Dist_norm::rv(void) {
     double sigma = static_cast<const RealPos*>( getMemberValue( "sd"   ) )->getValue();
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
+	return new Real( RbStatistics::Normal::rv(mu, sigma, rng) ) ;
 
-    double v1  = 0.0;
-    double v2  = 0.0;
-    double rsq = 0.0;
-    do {
-        v1 = 2.0 * rng->uniform01() - 1.0;
-        v2 = 2.0 * rng->uniform01() - 1.0;
-        rsq = v1 * v1 + v2 * v2;
-    } while ( rsq >= 1.0 || rsq == 0.0 );
-
-    double fac = sqrt( -2.0 * log( rsq ) / rsq );
-
-    extraNormalRv = ( mu + sigma * ( v1 * fac ) );
-    availableNormalRv = true;
-
-    return new Real( mu + sigma * (v2 * fac) );
 }
 
 
