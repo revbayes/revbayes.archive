@@ -66,7 +66,6 @@ class RateMatrix : public MemberObject {
         void                                setIsTimeReversible(const bool tf);                                               //!< Directly set whether the rate matrix is time reversible
         void                                setStationaryFrequencies(std::vector<double>& f) const;                           //!< Directly set the stationary frequencies
         void                                updateEigenSystem(void);                                                          //!< Update the system of eigenvalues and eigenvectors
-        DAGNode*                            wrapIntoVariable(void);                                                           //!< Wrap up this object in a DAG
 
     private:
         void                                calculateCijk(void);                                                              //!< Do precalculations on eigenvectors and their inverse
