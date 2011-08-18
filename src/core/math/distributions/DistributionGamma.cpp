@@ -30,7 +30,7 @@
  *
  * \brief Gamma probability density.
  * \param a is the shape parameter of the gamma. 
- * \param b is the scale parameter of the gamma. 
+ * \param b is the rate parameter of the gamma. 
  * \param x is the gamma random variable. 
  * \return Returns the probability density.
  * \throws Does not throw an error.
@@ -47,7 +47,7 @@ double RbStatistics::Gamma::pdf(double a, double b, double x) {
  *
  * \brief Gamma probability density.
  * \param a is the shape parameter of the gamma. 
- * \param b is the scale parameter of the gamma. 
+ * \param b is the rate parameter of the gamma. 
  * \param x is the gamma random variable. 
  * \return Returns the probability density.
  * \throws Does not throw an error.
@@ -90,7 +90,7 @@ double RbStatistics::Gamma::pdf(double shape, double scale, double x, bool isLog
  *
  * \brief Natural log of gamma probability density.
  * \param a is the shape parameter of the gamma. 
- * \param b is the scale parameter of the gamma. 
+ * \param b is the rate parameter of the gamma. 
  * \param x is the gamma random variable. 
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
@@ -106,7 +106,7 @@ double RbStatistics::Gamma::lnPdf(double a, double b, double x) {
  *
  * \brief Gamma cumulative probability.
  * \param a is the shape parameter of the gamma. 
- * \param b is the scale parameter of the gamma. 
+ * \param b is the rate parameter of the gamma. 
  * \param x is the gamma random variable. 
  * \return Returns the cumulative probability.
  * \throws Does not throw an error.
@@ -122,7 +122,7 @@ double RbStatistics::Gamma::cdf(double a, double b, double x) {
  *
  * \brief Gamma quantile.
  * \param a is the shape parameter. 
- * \param b is the scale parameter. 
+ * \param b is the rate parameter. 
  * \param p is the probability up to the quantile. 
  * \return Returns the quantile.
  * \throws Does not throw an error.

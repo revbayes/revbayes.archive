@@ -27,11 +27,11 @@
 #include "Workspace.h"
 #include "RbException.h"
 #include "RbMathFunctions.h"
+#include "DistributionGamma.h"
 #include "RbStatisticsHelper.h"
 
 #include <cmath>
 #include <sstream>
-
 
 /** Default constructor for parser use */
 Dist_gamma::Dist_gamma( void ) : DistributionContinuous( getMemberRules() ) {
@@ -42,8 +42,7 @@ Dist_gamma::Dist_gamma( void ) : DistributionContinuous( getMemberRules() ) {
 /** Constructor for internal use */
 Dist_gamma::Dist_gamma( double shape, double rate ) 
     : DistributionContinuous( getMemberRules() ) {
-        // Do nothing
-//        setMemberValue( "rate", new Real(rate) );
+    // Do nothing
 }
 
 
@@ -58,8 +57,12 @@ Dist_gamma::Dist_gamma( double shape, double rate )
  *
  */
 double Dist_gamma::cdf( const RbLanguageObject* value ) {
+    
+    const double shape  = static_cast<const RealPos*>(getMemberValue("shape"))->getValue();
+    const double lambda = static_cast<const RealPos*>(getMemberValue("rate"))->getValue();
+    const double x      = static_cast<const RealPos*>(value)->getValue();    
 
-    throw RbException("Not yet implemented: Dist_gamma::cdf()");
+    return RbStatistics::Gamma::cdf(shape, lambda, x);
 }
 
 
@@ -116,8 +119,8 @@ double Dist_gamma::lnPdf( const RbLanguageObject* value ) {
     const double shape  = static_cast<const RealPos*>(getMemberValue("shape"))->getValue();
     const double lambda = static_cast<const RealPos*>(getMemberValue("rate"))->getValue();
     const double x      = static_cast<const RealPos*>(value)->getValue();
-
-    return -RbMath::lnGamma(shape) + shape * std::log(lambda) + (shape - 1.0) * std::log(x) - lambda * x;    
+  
+    return RbStatistics::Gamma::lnPdf(shape, lambda, x); 
 }
 
 
@@ -136,7 +139,7 @@ double Dist_gamma::pdf( const RbLanguageObject* value ) {
     const double lambda = static_cast<const RealPos*>(getMemberValue("rate"))->getValue();
     const double x      = static_cast<const RealPos*>(value)->getValue();
     
-    return 1.0 / RbMath::gamma(shape) * std::pow(lambda, shape) * std::pow(x, shape - 1.0) * std::exp(-lambda * x);
+    return RbStatistics::Gamma::pdf(shape, lambda, x, false);    
 }
 
 
@@ -152,8 +155,11 @@ double Dist_gamma::pdf( const RbLanguageObject* value ) {
  */
 RealPos* Dist_gamma::quantile(const double p) {
 
-    throw RbException("Not yet implemented: Dist_gamma::quantile()");
+    const double shape  = static_cast<const RealPos*>(getMemberValue("shape"))->getValue();    
+    const double lambda = static_cast<const RealPos*>(getMemberValue("rate"))->getValue();
     
+    double quantile = RbStatistics::Gamma::quantile(shape, lambda, p);     
+    return new RealPos(quantile);
 }
 
 
@@ -170,10 +176,9 @@ RealPos* Dist_gamma::rv( void ) {
     const double shape = static_cast<const RealPos*>(getMemberValue("shape"))->getValue();
     const double lambda = static_cast<const RealPos*>(getMemberValue("rate"))->getValue();
     
-    RandomNumberGenerator* rng    = GLOBAL_RNG;
-    double rv =  RbStatistics::Helper::rndGamma(shape, *rng) / lambda;
-    return new RealPos( rv );
-    
+    RandomNumberGenerator* rng = GLOBAL_RNG;        
+    double rv = RbStatistics::Gamma::rv(shape, lambda, rng);
+    return new RealPos(rv);
 }
 
 
