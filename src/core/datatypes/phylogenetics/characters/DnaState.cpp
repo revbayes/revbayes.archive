@@ -14,7 +14,7 @@
  */
 
 #include "DnaState.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "VectorString.h"
 #include <sstream>
 

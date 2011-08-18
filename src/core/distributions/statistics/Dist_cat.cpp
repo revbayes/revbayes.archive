@@ -22,7 +22,7 @@
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "Real.h"
 #include "Simplex.h"
 #include "ValueRule.h"

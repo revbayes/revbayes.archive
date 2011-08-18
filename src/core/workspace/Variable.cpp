@@ -17,7 +17,7 @@
 
 #include "DAGNode.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbObject.h"
 #include "RbOptions.h"
 #include "TypeSpec.h"

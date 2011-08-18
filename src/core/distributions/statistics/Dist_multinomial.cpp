@@ -24,7 +24,7 @@
 #include "RandomNumberGenerator.h"
 #include "Real.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "Simplex.h"
 #include "ValueRule.h"
 #include "VectorInteger.h"

@@ -15,7 +15,7 @@
  * $Id$
  */
 
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "SyntaxElement.h"
 #include "VectorString.h"
 

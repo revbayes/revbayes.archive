@@ -29,7 +29,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbFunction.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbObject.h"
 #include "RbOptions.h"         // For PRINTF
 #include "UserInterface.h"

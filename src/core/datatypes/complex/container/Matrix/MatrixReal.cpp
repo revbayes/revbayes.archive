@@ -18,7 +18,7 @@
 #include "MatrixReal.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "Real.h"
 #include "Simplex.h"
 #include "UserInterface.h"

@@ -14,7 +14,7 @@
  */
 
 #include "Character.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "VectorString.h"
 
 

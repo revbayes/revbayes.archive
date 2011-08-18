@@ -20,7 +20,7 @@
 
 #include "Argument.h"
 #include "DAGNode.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "VectorString.h"
 
 

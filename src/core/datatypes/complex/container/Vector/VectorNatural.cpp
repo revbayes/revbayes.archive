@@ -16,7 +16,7 @@
 #include "ContainerIterator.h"
 #include "Natural.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "Real.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"

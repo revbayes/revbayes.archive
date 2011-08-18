@@ -42,7 +42,7 @@ class Func__uminus :  public RbFunction {
 #endif
 
 #include "DAGNode.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"

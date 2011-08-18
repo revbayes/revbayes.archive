@@ -22,7 +22,7 @@
 #include "MemberFunction.h"
 #include "MethodTable.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RealPos.h"
 #include "ValueRule.h"
 #include "VectorString.h"

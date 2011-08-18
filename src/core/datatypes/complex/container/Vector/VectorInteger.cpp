@@ -19,7 +19,7 @@
 #include "ContainerIterator.h"
 #include "Integer.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TypeSpec.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"

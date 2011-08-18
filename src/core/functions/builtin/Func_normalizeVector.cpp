@@ -25,7 +25,7 @@
 #include "Integer.h"
 #include "RbException.h"
 #include "RbMathVector.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RealPos.h"
 #include "Simplex.h"
 #include "StochasticNode.h"

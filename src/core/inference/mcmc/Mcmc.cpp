@@ -32,7 +32,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RangeRule.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "StochasticNode.h"
 #include "ValueRule.h"

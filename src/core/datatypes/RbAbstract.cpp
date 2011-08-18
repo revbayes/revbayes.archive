@@ -19,7 +19,7 @@
 #include "RealPos.h"
 #include "Real.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "TypeSpec.h"
 #include "VectorInteger.h"

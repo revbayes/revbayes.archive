@@ -21,7 +21,7 @@
 #include "CharacterMatrix.h"
 #include "DnaState.h"
 #include "NclReader.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RnaState.h"
 #include "StandardState.h"
 #include "StringUtilities.h"

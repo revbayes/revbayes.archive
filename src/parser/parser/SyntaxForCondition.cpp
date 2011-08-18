@@ -16,7 +16,7 @@
 #include "ConstantNode.h"
 #include "Environment.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "SyntaxForCondition.h"
 #include "VectorNatural.h"

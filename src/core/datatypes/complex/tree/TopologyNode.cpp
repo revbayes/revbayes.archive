@@ -21,7 +21,7 @@
 #include "MemberFunction.h"
 #include "MemberObject.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TopologyNode.h"
 #include "VectorString.h"
 #include "ValueRule.h"

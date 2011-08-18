@@ -22,7 +22,7 @@
 #include "Func_ls.h"
 #include "Model.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"

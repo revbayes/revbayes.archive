@@ -19,7 +19,7 @@
 #include "DistributionContinuous.h"
 #include "Move_mslide.h"
 #include "RandomNumberGenerator.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RealPos.h"
 #include "StochasticNode.h"
 #include "ValueRule.h"

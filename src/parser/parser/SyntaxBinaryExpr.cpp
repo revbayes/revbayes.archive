@@ -22,7 +22,7 @@
 #include "DAGNode.h"
 #include "DeterministicNode.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "SyntaxBinaryExpr.h"
 #include "VectorString.h"
 #include "Workspace.h"

@@ -19,7 +19,7 @@
 #include "Character.h"
 #include "CharacterStateDiscrete.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "VectorCharacters.h"
 

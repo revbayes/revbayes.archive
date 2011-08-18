@@ -26,7 +26,7 @@
 #include "MemberFunction.h"
 #include "MemberObject.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TypeSpec.h"
 #include "VectorString.h"
 

@@ -21,7 +21,7 @@
 #include "Func_structure.h"
 #include "Integer.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"

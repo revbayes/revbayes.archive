@@ -19,7 +19,7 @@
 #include "ConstantNode.h"
 #include "MoveTree.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "StochasticNode.h"
 #include "ValueRule.h"
 #include "Topology.h"

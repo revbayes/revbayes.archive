@@ -17,7 +17,7 @@
 
 #include "Environment.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbOptions.h"
 #include "Variable.h"
 #include "VariableSlot.h"

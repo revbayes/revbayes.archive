@@ -20,7 +20,7 @@
 #include "Real.h"
 #include "RbException.h"
 #include "Integer.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbObject.h"
 #include "VectorString.h"
 #include "Workspace.h"

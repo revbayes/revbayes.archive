@@ -23,7 +23,7 @@
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "StringUtilities.h"
 #include "UserInterface.h"

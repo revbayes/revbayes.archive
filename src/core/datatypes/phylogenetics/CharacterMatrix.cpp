@@ -24,7 +24,7 @@
 #include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "StochasticNode.h"
 #include "ValueRule.h"

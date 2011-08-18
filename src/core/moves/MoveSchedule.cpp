@@ -20,7 +20,7 @@
 #include "Move.h"
 #include "MoveSchedule.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "VectorString.h"
 #include "VariableNode.h"
 

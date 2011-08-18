@@ -16,7 +16,7 @@
 #ifndef Categorical_H
 #define Categorical_H
 
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbLanguageObject.h"
 
 

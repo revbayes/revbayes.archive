@@ -16,7 +16,7 @@
 
 #include "Environment.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbObject.h"
 #include "SyntaxLabeledExpr.h"
 #include "VectorString.h"

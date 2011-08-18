@@ -18,7 +18,7 @@
 #include "Func_readTraces.h"
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "StringUtilities.h"
 #include "Trace.h"
 #include "UserInterface.h"

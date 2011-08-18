@@ -21,7 +21,7 @@
 #include "Distribution.h"
 #include "MoveSchedule.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "StochasticNode.h"
 #include "UserInterface.h"
 #include "VectorString.h"

@@ -18,7 +18,7 @@
 #define RangeRule_H
 
 #include "ArgumentRule.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 
 #include <string>
 

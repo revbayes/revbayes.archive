@@ -21,7 +21,7 @@
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TypeSpec.h"
 #include "VectorString.h"
 

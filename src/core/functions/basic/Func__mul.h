@@ -47,7 +47,7 @@ class Func__mul :  public RbFunction {
 #include "Integer.h"
 #include "MatrixReal.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "Real.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"

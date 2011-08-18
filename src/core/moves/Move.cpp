@@ -23,7 +23,7 @@
 #include "Natural.h"
 #include "RealPos.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "StochasticNode.h"
 #include "ValueRule.h"
 #include "VariableNode.h"

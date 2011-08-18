@@ -20,7 +20,7 @@
 #include "RbBoolean.h"
 #include "Real.h"
 #include "Integer.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TypeSpec.h"
 #include "VectorString.h"
 

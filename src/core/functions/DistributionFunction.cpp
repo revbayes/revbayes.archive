@@ -23,7 +23,7 @@
 #include "DistributionContinuous.h"
 #include "DistributionFunction.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"

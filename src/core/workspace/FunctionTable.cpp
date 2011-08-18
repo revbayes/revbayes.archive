@@ -19,8 +19,9 @@
 #include "VectorInteger.h"
 #include "RbException.h"
 #include "RbFunction.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "VectorString.h"
+#include "Ellipsis.h"
 
 #include <sstream>
 

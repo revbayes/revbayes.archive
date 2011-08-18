@@ -25,7 +25,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "Simplex.h"
 #include "Topology.h"
 #include "TopologyNode.h"

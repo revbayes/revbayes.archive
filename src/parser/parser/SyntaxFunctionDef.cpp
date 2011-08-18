@@ -17,7 +17,7 @@
 #include "DAGNode.h"
 #include "Environment.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbObject.h"
 #include "VectorString.h"
 #include "SyntaxFunctionDef.h"

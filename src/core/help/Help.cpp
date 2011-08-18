@@ -18,7 +18,7 @@
 #include "Help.h"
 #include "HelpNode.h"
 #include "RbFileManager.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "StringUtilities.h"
 #include "UserInterface.h"
 #include <iostream>

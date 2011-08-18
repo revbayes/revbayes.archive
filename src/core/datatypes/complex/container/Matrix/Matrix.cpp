@@ -18,7 +18,7 @@
 
 #include "Matrix.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TypeSpec.h"
 #include "VectorInteger.h"
 #include "VectorString.h"

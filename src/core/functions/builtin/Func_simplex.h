@@ -47,7 +47,7 @@ class Func_simplex :  public RbFunction {
 
 #include "Ellipsis.h"
 #include "Integer.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RealPos.h"
 #include "Simplex.h"
 #include "TypeSpec.h"

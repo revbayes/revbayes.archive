@@ -43,7 +43,7 @@ class Func__unot :  public RbFunction {
 
 #include "RbBoolean.h"
 #include "DAGNode.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"

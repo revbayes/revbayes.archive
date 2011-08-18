@@ -23,7 +23,7 @@
 #include "Natural.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "Simplex.h"
 #include "ValueRule.h"
 #include "VectorString.h"

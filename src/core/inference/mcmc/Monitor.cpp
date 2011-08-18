@@ -19,7 +19,7 @@
 #include "Monitor.h"
 #include "MonitorsContainer.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
 #include "VectorString.h"

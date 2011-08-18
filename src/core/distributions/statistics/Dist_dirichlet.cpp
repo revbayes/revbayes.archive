@@ -21,7 +21,7 @@
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "DistributionDirichlet.h"
 #include "Real.h"
 #include "Simplex.h"

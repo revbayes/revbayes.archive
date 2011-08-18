@@ -23,7 +23,7 @@
 #include "Natural.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "RealPos.h"
 #include "Simplex.h"

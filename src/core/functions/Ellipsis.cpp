@@ -17,7 +17,7 @@
 
 #include "DAGNode.h"
 #include "Ellipsis.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbObject.h"
 #include "TypeSpec.h"
 #include "VectorString.h"

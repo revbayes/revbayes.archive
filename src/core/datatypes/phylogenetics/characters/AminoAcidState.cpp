@@ -14,7 +14,7 @@
  */
 
 #include "AminoAcidState.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "VectorString.h"
 #include <sstream>
 

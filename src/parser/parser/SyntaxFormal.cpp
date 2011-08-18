@@ -15,7 +15,7 @@
 
 #include "Environment.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "SyntaxFormal.h"
 #include "TypeSpec.h"

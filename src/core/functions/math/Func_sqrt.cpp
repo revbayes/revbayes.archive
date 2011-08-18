@@ -23,7 +23,7 @@
 #include "RealPos.h"
 #include "Real.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "StochasticNode.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"

@@ -18,7 +18,7 @@
 #include "MatrixComplex.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "UserInterface.h"
 #include "VectorComplex.h"
 #include "VectorInteger.h"

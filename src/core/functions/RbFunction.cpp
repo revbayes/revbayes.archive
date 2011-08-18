@@ -22,7 +22,7 @@
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "RbFunction.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "VectorInteger.h"
 #include "VectorString.h"
 #include "Workspace.h"

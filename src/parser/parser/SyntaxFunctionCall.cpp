@@ -21,7 +21,7 @@
 #include "MemberFunction.h"
 #include "MemberObject.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbObject.h"
 #include "RbOptions.h"
 #include "SyntaxFunctionCall.h"

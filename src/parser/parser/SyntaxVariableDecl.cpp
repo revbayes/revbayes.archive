@@ -17,7 +17,7 @@
 #include "Environment.h"
 #include "Integer.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbOptions.h"
 #include "RbString.h"
 #include "SyntaxVariableDecl.h"

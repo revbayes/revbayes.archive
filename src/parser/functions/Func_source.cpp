@@ -22,7 +22,7 @@
 #include "Model.h"
 #include "Parser.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "TypeSpec.h"
 #include "UserInterface.h"

@@ -16,7 +16,7 @@
  * $Id$
  */
 
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "MoveSimple.h"
 #include "RbException.h"
 #include "StochasticNode.h"

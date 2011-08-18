@@ -21,7 +21,7 @@
 #include "VectorBoolean.h"
 #include "RbException.h"
 #include "Integer.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "VectorInteger.h"
 #include "VectorString.h"
 

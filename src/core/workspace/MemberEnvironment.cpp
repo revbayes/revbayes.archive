@@ -20,7 +20,7 @@
 // Regular include files
 #include "MemberEnvironment.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbOptions.h"         // For PRINTF
 #include "VectorString.h"
 

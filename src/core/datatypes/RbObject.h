@@ -28,6 +28,8 @@ class VectorString;
 class XmlDocument;
 class XmlElement;
 
+const std::string RbObject_name = "Object";
+
 class RbObject {
 
     public:

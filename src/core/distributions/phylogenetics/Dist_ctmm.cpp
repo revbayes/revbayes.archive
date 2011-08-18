@@ -24,7 +24,7 @@
 #include "RandomNumberGenerator.h"
 #include "RateMatrix.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RealPos.h"
 #include "Simplex.h"
 #include "TransitionProbabilityMatrix.h"

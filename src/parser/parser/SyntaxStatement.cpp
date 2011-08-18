@@ -18,7 +18,7 @@
 #include "DeterministicNode.h"
 #include "Environment.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "Signals.h"
 #include "VectorString.h"
 #include "SyntaxForCondition.h"

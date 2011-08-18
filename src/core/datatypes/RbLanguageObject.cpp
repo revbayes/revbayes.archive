@@ -18,7 +18,7 @@
 
 #include "ConstantNode.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbLanguageObject.h"
 #include "TypeSpec.h"
 #include "VectorString.h"

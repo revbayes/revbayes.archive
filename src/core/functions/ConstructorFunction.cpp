@@ -19,7 +19,7 @@
 #include "ConstructorFunction.h"
 #include "DAGNode.h"
 #include "MemberObject.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TypeSpec.h"
 #include "VectorString.h"
 

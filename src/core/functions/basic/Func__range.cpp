@@ -22,7 +22,7 @@
 #include "VectorInteger.h"
 #include "Integer.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorNatural.h"

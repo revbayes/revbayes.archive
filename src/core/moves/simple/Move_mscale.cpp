@@ -18,7 +18,7 @@
 #include "ConstantNode.h"
 #include "Move_mscale.h"
 #include "RandomNumberGenerator.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RealPos.h"
 #include "StochasticNode.h"
 #include "ValueRule.h"

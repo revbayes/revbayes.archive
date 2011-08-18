@@ -42,7 +42,7 @@ class Func__uplus :  public RbFunction {
 #endif
 
 #include "RbLanguageObject.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"

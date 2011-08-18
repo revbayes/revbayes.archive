@@ -19,7 +19,7 @@
 #include "Func_tiprobs.h"
 #include "RateMatrix.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "RealPos.h"
 #include "TransitionProbabilityMatrix.h"

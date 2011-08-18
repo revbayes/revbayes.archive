@@ -18,7 +18,7 @@
 
 #include "StandardState.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbString.h"
 #include "TypeSpec.h"
 #include "VectorStandardStates.h"

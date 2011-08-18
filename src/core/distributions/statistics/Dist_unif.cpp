@@ -23,7 +23,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "Real.h"
 #include "ValueRule.h"
 #include "VectorString.h"

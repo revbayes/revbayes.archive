@@ -20,7 +20,7 @@
 #include "Move_mscale.h"
 #include "RealPos.h"
 #include "RandomNumberGenerator.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "Real.h"
 #include "ValueRule.h"
 #include "VectorString.h"

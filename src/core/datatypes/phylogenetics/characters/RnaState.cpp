@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RnaState.h"
 #include "VectorString.h"
 #include <sstream>

@@ -45,7 +45,7 @@ class Func_vector :  public RbFunction {
 #endif
 
 #include "Ellipsis.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"

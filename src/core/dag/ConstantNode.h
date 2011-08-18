@@ -25,7 +25,7 @@
 class RbObject;
 class VectorString;
 
-//const std::string ConstantNode_name = "Constant Node";
+const std::string ConstantNode_name = "Constant Node";
 
 class ConstantNode : public DAGNode {
 

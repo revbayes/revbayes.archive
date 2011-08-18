@@ -19,7 +19,7 @@
 #include "DeterministicNode.h"
 #include "Distribution.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbOptions.h"
 #include "SyntaxFunctionCall.h"
 #include "StochasticNode.h"
@@ -27,6 +27,7 @@
 #include "VectorString.h"
 #include "SyntaxAssignExpr.h"
 #include "Workspace.h"
+#include "ConstructorFunction.h"
 
 #include <iostream>
 #include <list>

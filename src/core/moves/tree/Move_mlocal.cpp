@@ -27,7 +27,7 @@
 #include "Natural.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "RbStatisticsHelper.h"
 #include "RealPos.h"
 #include "Simplex.h"

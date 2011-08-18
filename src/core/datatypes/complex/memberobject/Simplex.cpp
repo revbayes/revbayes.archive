@@ -16,7 +16,7 @@
 
 #include "ConstantNode.h"
 #include "RbException.h"
-#include "RbNames.h"
+#include "RbUtil.h"
 #include "Real.h"
 #include "Simplex.h"
 #include "VectorInteger.h"
