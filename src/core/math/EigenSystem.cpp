@@ -44,7 +44,7 @@ EigenSystem::EigenSystem(MatrixReal* m) {
 		return;
 	
 	// set the dimensions of the matrix
-	n = m->getNumberOfRows();
+	n = static_cast<int>(m->getNumberOfRows());
 
 	// allocate and initialize components of eigensystem
 	// assuming it is going to be real and not complex

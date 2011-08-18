@@ -51,6 +51,7 @@ const std::string Dist_cat_name                                 = "Dist_cat";
 const std::string Dist_ctmm_name                                = "Dist_ctmm";
 const std::string Dist_dirichlet_name                           = "Dist_dirichlet";
 const std::string Dist_exp_name                                 = "Dist_exp";
+const std::string Dist_gamma_name                               = "Dist_gamma";
 const std::string Dist_multinomial_name                         = "Dist_multinomial";
 const std::string Dist_norm_name                                = "Dist_norm";
 const std::string Dist_topologyunif_name                        = "Dist_topologyunif";
