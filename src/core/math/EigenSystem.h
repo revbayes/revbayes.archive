@@ -59,7 +59,7 @@ class EigenSystem {
         void                        luBackSubstitution (MatrixReal& a, int *indx, double *b);                                  //!< back-substitutes an LU-decomposed matrix
         int                         luDecompose(MatrixReal& a, double *vv, int *indx, double *pd);                             //!< calculates the LU-decomposition of a matrix
 
-        int                         n;                                                                                         //!< Row and column dimension (square matrix)
+        size_t                      n;                                                                                         //!< Row and column dimension (square matrix)
         MatrixReal*                 qPtr;                                                                                      //!< A pointer to the rate matrix for this system of eigen values and vectors
         MatrixReal                  eigenvectors;                                                                              //!< Matrix for internal storage of eigenvectors
         MatrixReal                  inverseEigenvectors;                                                                       //!< Matrix for internal storage of the inverse eigenvectors

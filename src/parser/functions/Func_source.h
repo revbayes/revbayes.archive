@@ -33,7 +33,7 @@ class Func_source :  public RbFunction {
     	RbLanguageObject*       execute(void);                      //!< Execute function
         const ArgumentRules&    getArgumentRules(void) const;       //!< Get argument rules
         const TypeSpec          getReturnType(void) const;          //!< Get type of return val
-        bool                    throws(void) { return true; }       //!< Function may throw exceptions
+        bool                    throws(void) const { return true; }       //!< Function may throw exceptions
 
 };
 

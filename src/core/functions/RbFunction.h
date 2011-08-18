@@ -81,7 +81,7 @@ class RbFunction :  public RbInternal {
                                                                  bool                            evaluateOnce,
                                                                  VectorInteger*                  matchScore=NULL);                  //!< Process args, return a match score if pointer is not null
         virtual bool                            addAsChildOfArguments(void) { return true; }                                        //!< Should we add the node containing this function as a child of its parameters (arguments)? False in cases such as constructor functions and true in cases like math functions
-        virtual bool                            throws(void) { return false; }                                                      //!< Does the function throw exceptions?
+        virtual bool                            throws(void) const { return false; }                                                      //!< Does the function throw exceptions?
     
 
         // RbFunction functions you should not override
