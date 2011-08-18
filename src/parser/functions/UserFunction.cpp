@@ -68,10 +68,6 @@ UserFunction::~UserFunction() {
     delete code;
 
     // defineEnvironment->destroyEnclosure();   //TODO: or something like that
-    defineEnvironment->release();
-    if (defineEnvironment->isUnreferenced()) {
-        delete defineEnvironment;
-    }
 }
 
 
