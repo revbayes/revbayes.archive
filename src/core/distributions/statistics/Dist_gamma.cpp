@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2009-08-27, version 1.0
  *
- * $Id: MemberObject.h 194 2009-12-14 11:43:32Z ronquist $
+ * $Id: MemberObject.h 194 2009-12-14 11:43:32Z msuchard $
  */
 
 #include "DAGNode.h"
@@ -25,6 +25,9 @@
 #include "ValueRule.h"
 #include "VectorString.h"
 #include "Workspace.h"
+#include "RbException.h"
+#include "RbMathFunctions.h"
+#include "RbStatisticsHelper.h"
 
 #include <cmath>
 #include <sstream>
@@ -32,22 +35,23 @@
 
 /** Default constructor for parser use */
 Dist_gamma::Dist_gamma( void ) : DistributionContinuous( getMemberRules() ) {
-
+    // Do nothing
 }
 
 
 /** Constructor for internal use */
-Dist_gamma::Dist_gamma( double rate ) : DistributionContinuous( getMemberRules() ) {
-
-//    setMemberValue( "rate", new Real(rate) );
+Dist_gamma::Dist_gamma( double shape, double rate ) 
+    : DistributionContinuous( getMemberRules() ) {
+        // Do nothing
+//        setMemberValue( "rate", new Real(rate) );
 }
 
 
 /**
  * This function calculates the cumulative probability for
- * an exponentially-distributed random variable.
+ * an gamma-distributed random variable.
  *
- * @brief Exponential cumulative probability
+ * @brief Gamma cumulative probability
  *
  * @param q     Quantile
  * @return      Cumulative probability
@@ -55,10 +59,7 @@ Dist_gamma::Dist_gamma( double rate ) : DistributionContinuous( getMemberRules()
  */
 double Dist_gamma::cdf( const RbLanguageObject* value ) {
 
-    const RealPos* lambda = static_cast<const RealPos*>( getMemberValue("rate") );
-    const RealPos* q      = static_cast<const RealPos*>( value            );
-
-    return 1.0 - std::exp( - (*lambda) * (*q) );
+    throw RbException("Not yet implemented: Dist_gamma::cdf()");
 }
 
 
@@ -84,6 +85,7 @@ const MemberRules& Dist_gamma::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
 
+        memberRules.push_back( new ValueRule( "shape", RealPos_name) );
         memberRules.push_back( new ValueRule( "rate", RealPos_name ) );
 
         rulesSet = true;
@@ -102,45 +104,47 @@ const TypeSpec Dist_gamma::getVariableType( void ) const {
 
 /**
  * This function calculates the natural log of the probability
- * density for an exponentially-distributed random variable.
+ * density for an gamma-distributed random variable.
  *
- * @brief Natural log of exponential probability density
+ * @brief Natural log of gamma probability density
  *
  * @param value Observed value
  * @return      Natural log of the probability density
  */
 double Dist_gamma::lnPdf( const RbLanguageObject* value ) {
+    
+    const double shape  = static_cast<const RealPos*>(getMemberValue("shape"))->getValue();
+    const double lambda = static_cast<const RealPos*>(getMemberValue("rate"))->getValue();
+    const double x      = static_cast<const RealPos*>(value)->getValue();
 
-    double lambda = static_cast<const RealPos*>( getMemberValue( "rate" ) )->getValue();
-    double x      = static_cast<const RealPos*>( value              )->getValue();
-
-    return std::log(lambda) -lambda * x;
+    return -RbMath::lnGamma(shape) + shape * std::log(lambda) + (shape - 1.0) * std::log(x) - lambda * x;    
 }
 
 
 /**
  * This function calculates the probability density
- * for an exponentially-distributed random variable.
+ * for an gamma-distributed random variable.
  *
- * @brief Exponential probability density
+ * @brief Gamma probability density
  *
  * @param value Observed value
  * @return      Probability density
  */
 double Dist_gamma::pdf( const RbLanguageObject* value ) {
 
-    double lambda = static_cast<const RealPos*>( getMemberValue( "rate" ) )->getValue();
-    double x      = static_cast<const RealPos*>( value              )->getValue();
-
-    return lambda * std::exp( -lambda * x );
+    const double shape  = static_cast<const RealPos*>(getMemberValue("shape"))->getValue();    
+    const double lambda = static_cast<const RealPos*>(getMemberValue("rate"))->getValue();
+    const double x      = static_cast<const RealPos*>(value)->getValue();
+    
+    return 1.0 / RbMath::gamma(shape) * std::pow(lambda, shape) * std::pow(x, shape - 1.0) * std::exp(-lambda * x);
 }
 
 
 /**
- * This function calculates the quantile for an
- * exponentially-distributed random variable.
+ * This function calculates the quantile for a
+ * gamma-distributed random variable.
  *
- * @brief Quantile of exponential probability density
+ * @brief Quantile of gamma probability density
  *
  * @param p     Cumulative probability of quantile
  * @return      Quantile
@@ -148,27 +152,29 @@ double Dist_gamma::pdf( const RbLanguageObject* value ) {
  */
 RealPos* Dist_gamma::quantile(const double p) {
 
-    const RealPos* lambda = static_cast<const RealPos*>( getMemberValue( "rate" ) );
-
-    return new RealPos( -( 1.0 / (*lambda) ) * std::log( 1.0 - p ) );
+    throw RbException("Not yet implemented: Dist_gamma::quantile()");
+    
 }
 
 
 /**
- * This function generates an exponentially-distributed
+ * This function generates a gamma-distributed
  * random variable.
  *
- * @brief Random draw from exponential distribution
+ * @brief Random draw from gamma distribution
  *
- * @return      Random draw from exponential distribution
+ * @return      Random draw from gamma distribution
  */
 RealPos* Dist_gamma::rv( void ) {
 
-    const RealPos*         lambda = static_cast<const RealPos*>( getMemberValue("rate") );
+    const double shape = static_cast<const RealPos*>(getMemberValue("shape"))->getValue();
+    const double lambda = static_cast<const RealPos*>(getMemberValue("rate"))->getValue();
+    
     RandomNumberGenerator* rng    = GLOBAL_RNG;
-
-    double u = rng->uniform01();
-
-    return new RealPos( -( 1.0 / (*lambda) ) * std::log( u ) );
+    double rv =  RbStatistics::Helper::rndGamma(shape, *rng) / lambda;
+    return new RealPos( rv );
+    
 }
+
+
 

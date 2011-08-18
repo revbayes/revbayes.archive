@@ -32,7 +32,7 @@ class Dist_gamma: public DistributionContinuous {
 
     public:
                                     Dist_gamma(void);                                                     //!< Parser constructor
-                                    Dist_gamma(double rate);                                              //!< Internal constructor
+                                    Dist_gamma(double shape, double rate);                                              //!< Internal constructor
 
         // Basic utility functions
         Dist_gamma*                   clone(void) const;                                                  //!< Clone object
@@ -48,6 +48,7 @@ class Dist_gamma: public DistributionContinuous {
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         RealPos*                    quantile(const double p);                                           //!< Quantile
         RealPos*                    rv(void);                                                           //!< Generate random variable
+    
 };
 
 #endif

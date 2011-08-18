@@ -91,6 +91,7 @@
 #include "Dist_ctmm.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exp.h"
+#include "Dist_gamma.h"
 #include "Dist_multinomial.h"
 #include "Dist_norm.h"
 #include "Dist_topologyunif.h"
@@ -227,6 +228,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "ctmc",         new Dist_ctmm()        );
         addDistribution( "dirichlet",    new Dist_dirichlet()   );
         addDistribution( "exp",          new Dist_exp()         );
+        addDistribution( "gamma",        new Dist_gamma()       );
         addDistribution( "multinomial",  new Dist_multinomial() );
         addDistribution( "norm",         new Dist_norm()        );
         addDistribution( "unifTopology", new Dist_topologyunif());
