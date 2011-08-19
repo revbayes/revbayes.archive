@@ -76,7 +76,7 @@ RbLanguageObject* MemberObject::executeOperation(const std::string& name, Enviro
         }
         
         return NULL;
-    }
+    } 
     else {
         throw RbException( "No mapping from member method " + name + " to internal function call provided" );
     }

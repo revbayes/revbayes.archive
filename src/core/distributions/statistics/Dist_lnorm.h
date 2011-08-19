@@ -27,6 +27,8 @@ class DAGNode;
 class Real;
 class VectorString;
 
+const std::string Dist_lnorm_name = "lognormal distribution";
+
 class Dist_lnorm: public DistributionContinuous {
 	
 public:
