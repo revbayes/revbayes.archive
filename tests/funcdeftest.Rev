@@ -1,0 +1,13 @@
+# Testing function definitions
+
+#function square (x) { x * x }
+#
+#square(5.0)
+
+function fac(i) {
+   if (i > 1) {
+      return i * fac(i-1)
+   } else {
+      return 1
+   }
+}

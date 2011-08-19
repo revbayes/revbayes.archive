@@ -1,0 +1,83 @@
+# Phylogenetic model test
+
+# Read data from Nexus file
+# Return type is data set (Dataset) or something similar
+# Related functions, like readfasta and readphylip
+# read these formats; I like this solution better than
+# a generic command where you give format options, but
+# we could implement both, that is, 
+# readnexus("filename") could be the same as readdata("filename", format="nexus")
+# For now, I think one data type for data sets is sufficient, it could have a
+# member method for querying the character data type ("DNA", "RNA", etc )
+
+D <- readnexus("data.nex")
+
+tau ~ clocktopologyunif( D.numberOfTaxa(), D.names() )
+
+Tree <- treeplate(tau)
+
+RealPos t
+DNAStates[D.numchars()] s
+Tree.add(t, "times")
+Tree.add(s, "dna_states")
+
+
+# specify the priors for the birth-death process
+
+relDeath ~ unif(0,1)
+
+netDiv ~ unif(0,1000000)
+
+lambda := -netDiv / (relDeath-1.0)
+
+mu := lambda - netDiv
+
+
+
+# set the birth death distribution
+Tree.times ~ birthdeath(lambda, mu)
+
+# Now we can specify the model by using the tree functions for generating node or branch
+# indices. In clock trees, T.anc(i) would simply give the ancestral node index with respect
+# to the arbitrarily placed calculation root (which would be a node with degree three, I
+# assume, all thre being descendants in this case).
+# create the priors for the parameters of the substitution model
+pi ~ dirichlet(4)
+r ~ dirichlet(6)
+
+
+
+# create the rate matrix for the substitution model
+Q := gtr_ratematrix(pi, r)
+
+
+
+# create an object of a continuous time Markov chain
+CTMC <- ctmc(Q)
+h ~ exponential(10)
+
+for ( i in 1:Tree.numberOfNodes() ) 
+    {
+    for ( j in 1:Tree.dna_states[1].size() ) 
+        {
+        
+    	if (Tree.node(i) == Tree.isroot(i)) 
+    	    {
+            
+            Tree.dna_state[i][j] ~ ctmc(Q).stationaryDistr()
+        
+            } 
+    	else if (Tree.node(i) == Tree.istip(i))
+    	    {
+            Tree.dna_states[i][j] ~ ctmc(Q, (Tree.times[Tree.anc(i)] - Tree.times[i])*h, dna_states[Tree.anc(i)][j])
+            clamp( Tree.dna_states[i][j], D[i][j] )
+            }
+        else
+            {
+            Tree.dna_states[i][j] ~ ctmc(Q, (Tree.times[Tree.anc(i)] - Tree.times[i])*h, dna_states[Tree.anc(i)][j])
+            }
+        }
+    }
+
+
+
