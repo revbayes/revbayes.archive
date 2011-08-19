@@ -27,7 +27,7 @@
 #include "Workspace.h"
 
 #include <cmath>
-
+#include <cassert>
 
 /** Constructor for parser */
 Move_mslide::Move_mslide( void ) : MoveSimple( getMemberRules() ) {
@@ -111,7 +111,11 @@ double Move_mslide::perform( std::set<StochasticNode*>& affectedNodes ) {
             newVal = 2.0 * minVal - newVal;
         else if ( newVal > maxVal )
             newVal = 2.0 * maxVal - newVal;
-    } while ( newVal < minVal || newVal > maxVal );
+    } while ( newVal < minVal or newVal > maxVal );
+
+    // FIXME: not the most efficient possible way of handling multiple reflections :-P
+
+    assert(newVal >= minVal and newVal <= maxVal);
 
     nodePtr->setValue( newVal.clone(), affectedNodes );
 	
