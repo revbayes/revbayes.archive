@@ -1,7 +1,7 @@
 /**
  * @file
- * This file contains the declaration of Dist_norm, which is used to hold
- * parameters and functions related to a normal distribution.
+ * This file contains the declaration of Dist_lnorm, which is used to hold
+ * parameters and functions related to a lognormal distribution.
  *
  * @brief Declaration of Dist_lnorm
  *
@@ -40,7 +40,7 @@ public:
 	// Member variable setup
 	const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
 	
-	// Normal distribution functions
+	// Lognormal distribution functions
 	double                      cdf(const RbLanguageObject* value);                                         //!< Cumulative density
 	const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (RealPos)
 	double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density

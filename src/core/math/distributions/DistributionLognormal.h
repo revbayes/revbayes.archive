@@ -1,8 +1,8 @@
 /**
  * @file DistributionLognormal
- * This file contains the functions of the normal distribution.
+ * This file contains the functions of the lognormal distribution.
  *
- * @brief Implementation of the normal distribution.
+ * @brief Implementation of the lognormal distribution.
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -24,12 +24,12 @@ namespace RbStatistics {
         double                      pdf(double x);                                                          /*!< Lognormal(0,1) probability density */
         double                      pdf(double m, double s, double x);                                 /*!< Lognormal(m,s) probability density */
         double                      lnPdf(double x);                                                        /*!< Log of the Lognormal(0,1) probability density */
-        double                      lnPdf(double m, double s, double x);                               /*!< Log of the Lognormal(mu,sigma) probability density */
+        double                      lnPdf(double m, double s, double x);                               /*!< Log of the Lognormal(m,s) probability density */
         double                      cdf(double x);                                                          /*!< Lognormal(0,1) cumulative probability */
         double                      cdf(double m, double s, double x);                                 /*!< Lognormal(m,s) cumulative probability */
         double                      quantile(double p);                                                     /*!< Lognormal(0,1) quantile */
-        double                      quantile(double m, double s, double p);                            /*!< Lognormal(mu,sigma) quantile */
+        double                      quantile(double m, double s, double p);                            /*!< Lognormal(m,s) quantile */
         double                      rv(RandomNumberGenerator* rng);                                         /*!< Lognormal(0,1) random variable */
-        double                      rv(double m, double s, RandomNumberGenerator* rng);                /*!< Lognormal(mu,sigma) random variable */
+        double                      rv(double m, double s, RandomNumberGenerator* rng);                /*!< Lognormal(m,s) random variable */
 	}
 }

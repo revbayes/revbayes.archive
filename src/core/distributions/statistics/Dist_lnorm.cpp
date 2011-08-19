@@ -24,7 +24,6 @@
 #include "Real.h"
 #include "RbConstants.h"
 #include "RbException.h"
-#include "RbNames.h"
 #include "StochasticNode.h"
 #include "ValueRule.h"
 #include "VectorString.h"
@@ -56,16 +55,12 @@ Dist_lnorm::Dist_lnorm( void ) : DistributionContinuous( getMemberRules() ) {
  * @param q     Quantile
  * @return      Cumulative probability
  *
- * @see Adams, A. G. 1969. Areas under the normal curve. Computer J. 12:197-198.
  */
 double Dist_lnorm::cdf( const RbLanguageObject* value ) {
 	
-//    const Real*    m    = static_cast<const Real*   >( getMemberValue("m") );
     double m    = static_cast<const Real*   >( getMemberValue( "m" ) )->getValue();
 	double s    = static_cast<const RealPos*   >( getMemberValue( "s" ) )->getValue();
     double q    = static_cast<const Real*   >( value                 )->getValue();
-//    const RealPos* s = static_cast<const RealPos*>( getMemberValue("s"  ) );
-//    const Real*    q     = static_cast<const Real*   >( value                  );
 	
 	return RbStatistics::Lognormal::cdf(m, s, q);
 }
@@ -134,7 +129,7 @@ double Dist_lnorm::lnPdf(const RbLanguageObject* value) {
  * This function calculates the probability density
  * for a lognormally-distributed random variable.
  *
- * @brief Normal probability density
+ * @brief Lognormal probability density
  *
  * @param value Observed value
  * @return      Probability density
@@ -158,17 +153,10 @@ double Dist_lnorm::pdf( const RbLanguageObject* value ) {
  * @param p     Cumulative probability of quantile
  * @return      Quantile
  *
- * @see Odeh, R. E. and J. O. Evans. 1974. The percentage points of the normal
- *      distribution. Applied Statistics, 22:96-97.
- * @see Wichura, M. J.  1988. Algorithm AS 241: The percentage points of the
- *      normal distribution. 37:477-484.
- * @see Beasley, JD & S. G. Springer. 1977. Algorithm AS 111: The percentage
- *      points of the normal distribution. 26:118-121.
  */
 Real* Dist_lnorm::quantile( const double p) {
 	double m    = static_cast<const Real*   >( getMemberValue( "m" ) )->getValue();
     double s = static_cast<const RealPos*>( getMemberValue( "s"   ) )->getValue();
-    //double p     = static_cast<const Real*   >( value                    )->getValue();
 	
     return new Real (RbStatistics::Lognormal::quantile(m, s, p));
     
@@ -179,11 +167,8 @@ Real* Dist_lnorm::quantile( const double p) {
  * This function generates a lognormally-distributed
  * random variable.
  *
- * @todo What algorithm is this? It is not Box-Muller, not Ziggurat. It does
- *       not resemble the R code, which uses Ahrens & Dieter and Kinderman & Ramage.
- *       Code for extra normal rv based on guesswork using comments in RbStatistics.cpp.
  *
- * @brief Random draw from normal distribution
+ * @brief Random draw from lognormal distribution
  *
  * @return      Random draw
  */
