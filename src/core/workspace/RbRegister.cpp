@@ -91,6 +91,7 @@
 #include "Dist_ctmm.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exp.h"
+#include "Dist_logis.h"
 #include "Dist_multinomial.h"
 #include "Dist_norm.h"
 #include "Dist_lnorm.h"
@@ -99,7 +100,7 @@
 
 /* Basic internal functions (alphabetic order) */
 #include "Func__range.h"
-       
+
 /* Basic arithmetic/logic templated functions */
 #include "Func__add.h"
 #include "Func__and.h"
@@ -229,6 +230,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "ctmc",         new Dist_ctmm()        );
         addDistribution( "dirichlet",    new Dist_dirichlet()   );
         addDistribution( "exp",          new Dist_exp()         );
+        addDistribution( "logis",        new Dist_logis()       );
         addDistribution( "multinomial",  new Dist_multinomial() );
         addDistribution( "norm",         new Dist_norm()        );
 		addDistribution( "lnorm",        new Dist_lnorm()       );
@@ -241,7 +243,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 
         /* Add basic internal functions (alphabetic order) */
         addFunction( "_range",    new Func__range()       );
-       
+
         /* Add basic unary arithmetic and logical templated functions */
         addFunction( "_uplus",    new Func__uplus <         Integer,        Integer >() );
         addFunction( "_uplus",    new Func__uplus <            Real,           Real >() );
@@ -277,7 +279,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_sub",      new Func__sub<            Integer,           Real,       Real >() );
         addFunction( "_sub",      new Func__sub<               Real,        Integer,       Real >() );
         addFunction( "_sub",      new Func__sub<         MatrixReal,     MatrixReal, MatrixReal >() );
-        
+
         /* Add basic logic templated functions */
         addFunction( "_and",      new Func__and<            Integer,        Integer >()             );
         addFunction( "_and",      new Func__and<               Real,           Real >()             );
@@ -323,10 +325,10 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_or",       new Func__or<             Integer,           Real >()             );
         addFunction( "_or",       new Func__or<                Real,        Integer >()             );
         addFunction( "_or",       new Func__or<           RbBoolean,      RbBoolean >()             );
-        
+
         /* Add builtin functions (alphabetical order) */
-        addFunction( "clamp",     new Func_clamp()           ); 
-        addFunction( "clear",     new Func_clear()           ); 
+        addFunction( "clamp",     new Func_clamp()           );
+        addFunction( "clear",     new Func_clear()           );
         addFunction( "ls",        new Func_ls()              );
         addFunction( "normalize", new Func_normalizeVector() );
         addFunction( "q",         new Func_quit()            );
@@ -335,8 +337,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "structure", new Func_structure()       );
         addFunction( "unclamp",   new Func_unclamp()         );
         addFunction( "unique",    new Func_unique()          );
-        
-        /* Add math functions (alphabetical order) */ 
+        /* Add math functions (alphabetical order) */
+
         addFunction( "abs",       new Func_abs()   );
         addFunction( "cos",       new Func_cos()   );
         addFunction( "expf",      new Func_exp()   );
@@ -345,12 +347,12 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "power",     new Func_power() );
         addFunction( "sin",       new Func_sin()   );
         addFunction( "sqrt",      new Func_sqrt()  );
-        
+
         /* Add phylogeny-related functions (alphabetical order) */
         addFunction( "gtr",       new Func_gtr()           );
         addFunction( "read",      new Func_readAlignment() );
         addFunction( "tiprobs",   new Func_tiprobs()       );
-        
+
         /* Add builtin templated functions */
 //        addFunction( "simplex",   new Func_simplex<         Integer                                                         >() );
         addFunction( "simplex",   new Func_simplex<         RealPos                                                         >() );
