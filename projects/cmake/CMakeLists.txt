@@ -13,7 +13,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -g -Wall -pg")
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 
 # Set source root relate to project file
-set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../trunk/src)
+set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../src)
 
 # TODO Split these up based on sub-package dependency
 include_directories(
