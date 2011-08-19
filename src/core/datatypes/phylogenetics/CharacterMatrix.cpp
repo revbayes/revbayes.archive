@@ -49,6 +49,7 @@ CharacterMatrix::CharacterMatrix( const std::string& charType ) : Matrix( charTy
 /** Copy constructor */
 CharacterMatrix::CharacterMatrix( const CharacterMatrix& x ) : Matrix( x ) {
 
+    characterType     = x.characterType;
     deletedTaxa       = x.deletedTaxa;
     deletedCharacters = x.deletedCharacters;
     fileName          = x.fileName;

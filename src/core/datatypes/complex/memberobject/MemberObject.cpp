@@ -23,8 +23,11 @@
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbUtil.h"
+#include "UserInterface.h"
 #include "VectorString.h"
+#include "ValueRule.h"
 #include "VariableNode.h"
+
 
 
 /** Constructor: we set member variables here from member rules */
@@ -66,8 +69,17 @@ RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std
  *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
  *  is used without the appropriate mapping to internal function calls being present. */
 RbLanguageObject* MemberObject::executeOperation(const std::string& name, Environment& args) {
-
-    throw RbException( "No mapping from member method " + name + " to internal function call provided" );
+    
+    if (name == "memberNames") {
+        for (size_t i=0; i<members.size(); i++) {
+            RBOUT(members.getName(i));
+        }
+        
+        return NULL;
+    }
+    else {
+        throw RbException( "No mapping from member method " + name + " to internal function call provided" );
+    }
 }
 
 
@@ -97,6 +109,16 @@ const TypeSpec MemberObject::getMemberTypeSpec(const std::string& name) const {
 const MethodTable& MemberObject::getMethods(void) const {
 
     static MethodTable methods;
+    static ArgumentRules getMemberNamesArgRules;
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false ) {
+        
+        // add the 'memberNames()' method
+        
+        methods.addFunction("memberNames",  new MemberFunction(RbVoid_name, getMemberNamesArgRules)  );
+        
+    }   
     
     return methods;
 }
