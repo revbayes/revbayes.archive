@@ -47,14 +47,10 @@ RbLanguageObject* Func_dppConFromExpNumClusters::execute( void ) {
     
 	const RealPos* clust = static_cast<const RealPos*>( args[0].getValue() );
 	const RealPos* num = static_cast<const RealPos*>( args[1].getValue() );
-	
-//    return ( new Real( pow(a->getValue(),b->getValue()) ) );
-	
+		
 	double p = RbStatistics::Helper::dppConcParamFromNumTables(clust->getValue(), num->getValue());
 		
 	return ( new RealPos( p ) );
-	
-	
 }
 
 

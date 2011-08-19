@@ -43,24 +43,19 @@ double RbStatistics::Helper::dppConcParamFromNumTables(double tables, double num
 	else
 		goUp = false;
 	double increment = 0.1;
-	while ( fabs(ea - target) > 0.000001 )
-	{
-		if (ea < target && goUp == true)
-		{
+	while ( fabs(ea - target) > 0.000001 ) {
+		if (ea < target && goUp == true) {
 			a += increment;
 		}
-		else if (ea > target && goUp == false)
-		{
+		else if (ea > target && goUp == false) {
 			a -= increment;
 		}
-		else if (ea < target && goUp == false)
-		{
+		else if (ea < target && goUp == false) {
 			increment /= 2.0;
 			goUp = true;
 			a += increment;
 		}
-		else
-		{
+		else {
 			increment /= 2.0;
 			goUp = false;
 			a -= increment;
@@ -68,7 +63,6 @@ double RbStatistics::Helper::dppConcParamFromNumTables(double tables, double num
 		ea = dppExpectNumTableFromConcParam(a, num);
 	}
 	return a;
-	
 }
 
 /*!
@@ -93,7 +87,6 @@ double RbStatistics::Helper::dppExpectNumTableFromConcParam(double conp, double 
 		expectedNum += ( 1.0 / (i - 1.0 + conp) );
 	expectedNum *= conp;
 	return expectedNum;
-	
 }
 
 /*!
