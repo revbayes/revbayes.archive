@@ -113,7 +113,7 @@ bool ContainerIterator::operator<(const ContainerIterator& x) const {
 //        return true;
 //    else if (size() > x.size())
 //        return false;
-//    
+//
 //    std::vector<int>::const_iterator i, j;
 //    for (i=begin(), j=length.begin(); i!=end(); i++, j++) {
 //        if ((*i) < (*j))
