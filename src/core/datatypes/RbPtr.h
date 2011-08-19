@@ -26,9 +26,6 @@ class RbPtr {
 };
 
 template <typename T>
-std::map<T*,int>RbPtr<T>::refCountMap;
-
-template <typename T>
 RbPtr<T>::RbPtr(T* inPtr) {
 
     initializePointer(inPtr);
