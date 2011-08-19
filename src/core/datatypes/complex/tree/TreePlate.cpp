@@ -24,6 +24,7 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "Real.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 #include "TreePlate.h"
@@ -256,7 +257,25 @@ std::string TreePlate::richInfo(void) const {
 
 /** Set the time (or age) of the node to the given value. We rely on a intelligent internal ordering */
 void TreePlate::setNodeTime(TopologyNode *n, double t) {
-    // TODO
+    
+    // check if a container already exists with that name
+    if (!members.existsVariable("times")) {
+        // we don't have a container for this variable name yet
+        // so we just create one
+        members.addVariable("times", new Variable(new ConstantNode(new DagNodeContainer(orderingTopology->getNumberOfNodes()))));
+    }
+    
+    // get the container with the variables for this node
+    DagNodeContainer *vars = static_cast<DagNodeContainer*>(members["times"].getDagNodePtr()->getValuePtr());
+    
+    // get the variable
+    Variable* var = new Variable(new ConstantNode(new Real(t)));
+    
+    // get the index of the node
+    size_t nodeIndex = getNodeIndex(n);
+    
+    // set the variable
+    vars->setElement(nodeIndex, var);
 }
 
 /** Set the length of the edge subtending this node */
