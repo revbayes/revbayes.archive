@@ -56,8 +56,8 @@ public:
 
 private:
     void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }           //!< Order the topology
-    size_t                          getNodeIndex(TopologyNode *theNode);                                    //!< Get the index of the node
-    size_t                          getTipIndex(TopologyNode *theNode);                                     //!< Get the index of the node
+    size_t                          getNodeIndex(const TopologyNode *theNode);                              //!< Get the index of the node
+    size_t                          getTipIndex(const TopologyNode *theNode);                               //!< Get the index of the node
         
     Topology*                       orderingTopology;                                                       //!< The topology that orders the tree plate
 };
