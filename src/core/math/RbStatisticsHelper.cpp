@@ -229,3 +229,87 @@ int RbStatistics::Helper::poissonRatioUniforms(double lambda, RandomNumberGenera
     }
 	return(k);
 }
+
+/*!
+ * This function is used to calculate the concentration parameter
+ * of the DPP from a given number of tables and a given number of 
+ * data elements.
+ *
+ * \brief Subfunction for DPP.
+ * \param tables is the given number of tables. 
+ * \param num is the given number of data elemnts. 
+ * \return Returns an approximate value of alpha. 
+ * \throws 
+ */
+double RbStatistics::Helper::dppConcParamFromNumTables(double tables, double num){
+    
+    if ( tables < 1.0 )
+		throw RbException( "The Dirichlet Process expects there to be 1 or more clusters: clusters > 0." );
+	if ( num < 2.0)
+		throw RbException( "The Dirichlet Process expects there to be more than 1 data element: number > 2." );
+	if ( tables > num)
+		throw RbException( "The Dirichlet Process expects there to fewer clusters than data elements: clusters < number." );
+	double a = 0.000001;
+	double ea = dppExpectNumTableFromConcParam(a, num);
+	bool goUp;
+	double target = tables;
+	if (target <= 1.0) 
+		target = 1.01;
+	if (ea < target)
+		goUp = true;
+	else
+		goUp = false;
+	double increment = 0.1;
+	while ( fabs(ea - target) > 0.000001 )
+	{
+		if (ea < target && goUp == true)
+		{
+			a += increment;
+		}
+		else if (ea > target && goUp == false)
+		{
+			a -= increment;
+		}
+		else if (ea < target && goUp == false)
+		{
+			increment /= 2.0;
+			goUp = true;
+			a += increment;
+		}
+		else
+		{
+			increment /= 2.0;
+			goUp = false;
+			a -= increment;
+		}
+		ea = dppExpectNumTableFromConcParam(a, num);
+	}
+	return a;
+	
+}
+
+/*!
+ * This function is used to calculate the expected number of tables
+ * of the DPP from a given value of alpha and a given number of 
+ * data elements.
+ *
+ * \brief Subfunction for DPP.
+ * \param tables is the given number of tables. 
+ * \param num is the given number of data elemnts. 
+ * \return Returns an approximate value of alpha. 
+ * \throws 
+ */
+double RbStatistics::Helper::dppExpectNumTableFromConcParam(double conp, double num){
+    
+    if ( conp <= 0.0 )
+		throw RbException( "The concentration parameter must be larger than 0.0." );
+	if ( num < 2.0)
+		throw RbException( "The Dirichlet Process expects there to be more than 1 data element: number > 2." );
+	double expectedNum = 0.0;
+	for (int i=1; i<=num; i++)
+		expectedNum += ( 1.0 / (i - 1.0 + conp) );
+	expectedNum *= conp;
+	return expectedNum;
+	
+}
+

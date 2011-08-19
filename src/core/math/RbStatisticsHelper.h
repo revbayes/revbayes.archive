@@ -14,8 +14,8 @@
  *
  * $Id: RbStatistics.h 203 2009-12-23 14:33:11Z Hoehna $
  */
-#ifndef RbStatistics_H
-#define RbStatistics_H
+#ifndef RbStatisticsHelper_H
+#define RbStatisticsHelper_H
 
 #include <vector>
 #include "RandomNumberGenerator.h"
@@ -30,12 +30,15 @@ namespace RbStatistics {
     
 	namespace Helper {
         
+		double                      dppConcParamFromNumTables(double tables, double num);
+		double                      dppExpectNumTableFromConcParam(double conp, double num);
+        int                         poissonInver(double lambda, RandomNumberGenerator& rng);
+        int                         poissonLow(double lambda, RandomNumberGenerator& rng);
+        int                         poissonRatioUniforms(double lambda, RandomNumberGenerator& rng);
         double                      rndGamma(double s, RandomNumberGenerator& rng);
         double                      rndGamma1(double s, RandomNumberGenerator& rng);
         double                      rndGamma2(double s, RandomNumberGenerator& rng);
-        int                         poissonLow(double lambda, RandomNumberGenerator& rng);
-        int                         poissonInver(double lambda, RandomNumberGenerator& rng);
-        int                         poissonRatioUniforms(double lambda, RandomNumberGenerator& rng);
+		
         template <class T> void		randomlySelectFromVectorWithReplacement(std::vector<T>& sourceV, std::vector<T>& destV, int k, RandomNumberGenerator* rng) {
             
             destV.clear();
