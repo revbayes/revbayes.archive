@@ -1,0 +1,78 @@
+# Phylogenetic model test
+
+# Read data from Nexus file
+D <- read("data/primates.nex")
+
+# Create random variable drawn from a uniform topology distribution
+tau ~ unifTopology( numberTaxa=D.ntaxa(), tipNames=D.names(), isRooted=false, isBinary=true )
+
+# Create the tree plate that is ordered by the topology
+tree <- treeplate(tau)
+
+# Now we can specify the model by using the tree functions for generating node or branch
+# indices. In clock trees, T.anc(i) would simply give the ancestral node index with respect
+# to the arbitrarily placed calculation root.
+
+
+# create the priors for the parameters of the substitution model
+
+# pi ~ dirichlet(4)
+pi_prior <- v(1,1,1,1)
+pi ~ dirichlet(pi_prior)
+# r ~ dirichlet(6)
+r_prior <- v(1,1,1,1,1,1)
+r ~ dirichlet(r_prior)
+
+
+# create the rate matrix for the substitution model
+Q := gtr(rates=r, freqs=pi)
+
+dummyState <- D[1][1]
+
+lambda <- 1
+
+nodeCount <- tree.nnodes()
+charCount <- D.nchar()
+
+for (i in 1:nodeCount) {
+   for (j in 1:charCount) {  
+      node <- tree.node(i)
+      if (node.isRoot()) {   
+         dna_state[i][j] ~ cat(Q.stationaryfreqs(), dummyState)
+      } else {
+         if (node.isTip()) {
+            parent <- node.ancestor()
+            parentIndex <- tree.index(parent)
+            bl[i] ~ exp(lambda)
+            dna_state[i][j] ~ ctmc(Q, bl[i], dna_state[parentIndex][j])
+         } else {
+            parent <- node.ancestor()
+            parentIndex <- tree.index(parent)
+            bl[i] ~ exp(lambda)
+            dna_state[i][j] ~ ctmc(Q, bl[i], dna_state[parentIndex][j])
+         }
+      }
+   }
+}
+
+
+
+
+
+#            tipIndex <- tree.tipIndex(node)
+#            clamp(dna_state[i][j], D[tipIndex][j] )
+
+
+#for (i in 1:nodeCount) { 
+#   node <- tree.node(i)
+#   if (node.isRoot()) {   
+#      i
+#   } else {
+#      i
+#      parent <- node.ancestor()
+#      parentIndex <- tree.index(parent)
+#      parentIndex
+#   }
+#}
+
+
