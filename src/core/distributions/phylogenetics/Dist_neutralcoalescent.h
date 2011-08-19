@@ -21,6 +21,7 @@
 
 #include "Distribution.h"
 #include "TreePlate.h"
+#include "TopologyNode.h"
 
 #include <ostream>
 #include <string>
@@ -33,6 +34,10 @@ class Dist_neutralcoalescent: public Distribution{
 
 public:
     Dist_neutralcoalescent(void);                                                                   //!< Default constructor
+
+    // convenience
+    typedef std::map<TopologyNode*, double> NodeDoubleMapType;                                      //!< Save our fingers
+
 
     // Basic utility functions
     Dist_neutralcoalescent*     clone(void) const;                                                  //!< Clone object
@@ -49,7 +54,10 @@ public:
 
 private:
     void                        buildRandomBinaryTree(std::vector<TopologyNode *> &interior, std::vector<TopologyNode *> &tips, size_t numTaxa);
+    double                      drawWaitingTime(unsigned long numNodes, unsigned long haploidPopSize);
 
+    // Private variables
+    NodeDoubleMapType  waitingTimes;
 
 };
 

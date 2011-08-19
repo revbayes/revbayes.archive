@@ -259,6 +259,11 @@ void TreePlate::setNodeTime(TopologyNode *n, double t) {
     // TODO
 }
 
+/** Set the length of the edge subtending this node */
+void TreePlate::setBranchLength(TopologyNode *n, double t) {
+    // TODO
+}
+
 /** Catch setting of the topology variable */
 void TreePlate::setMemberVariable(const std::string& name, Variable* var) {
     

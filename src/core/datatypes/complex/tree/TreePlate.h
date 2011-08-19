@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the declaration of a TreePlate a class that contains a topology and a set of variables.
- * 
+ *
  * @brief Declaration of the TreePlate
  *
  * (c) Copyright 2009- under GPL version 3
@@ -30,7 +30,7 @@ class ValueRule;
 const std::string TreePlate_name = "Tree Plate";
 
 class TreePlate: public MutableMemberObject {
-    
+
 public:
                                     TreePlate(void);                                                        //!< Default constructor
                                     TreePlate(Topology* top);                                               //!< constructor
@@ -39,7 +39,7 @@ public:
 
     // Basic utility functions
     TreePlate*                      clone(void) const;                                                      //!< Clone object
-    const VectorString&             getClass(void) const;                                                   //!< Get class vector   
+    const VectorString&             getClass(void) const;                                                   //!< Get class vector
     void                            printValue(std::ostream& o) const;                                      //!< Print value for user
     std::string                     richInfo(void) const;                                                   //!< Complete info
 
@@ -50,15 +50,16 @@ public:
     // Member method inits
     RbLanguageObject*               executeOperation(const std::string& name, Environment& args);           //!< Execute method
     const MethodTable&              getMethods(void) const;                                                 //!< Get methods
-        
+
     // Tree plate functions
     void                            setNodeTime(TopologyNode* n, double t);                                 //!< Set the time of the node
+    void                            setBranchLength(TopologyNode *n, double t);                             //!< Set the length of the branch
 
 private:
     void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }           //!< Order the topology
     size_t                          getNodeIndex(const TopologyNode *theNode);                              //!< Get the index of the node
     size_t                          getTipIndex(const TopologyNode *theNode);                               //!< Get the index of the node
-        
+
     Topology*                       orderingTopology;                                                       //!< The topology that orders the tree plate
 };
 

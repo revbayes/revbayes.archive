@@ -45,6 +45,12 @@ Dist_neutralcoalescent::Dist_neutralcoalescent( void ) : Distribution( getMember
 
 }
 
+double Dist_neutralcoalescent::drawWaitingTime(unsigned long numNodes, unsigned long haploidPopSize) {
+    // TODO!!!!!!!!!
+    // ( DUMMY IMPLEMENTATION )
+    return 1.0;
+}
+
 void Dist_neutralcoalescent::buildRandomBinaryTree(std::vector<TopologyNode *> &internalNodes, std::vector<TopologyNode *> &tips, size_t numTaxa) {
 
     // if (tips.size() < numTaxa) {
@@ -106,8 +112,8 @@ const MemberRules& Dist_neutralcoalescent::getMemberRules( void ) const {
         // memberRules.push_back( new ValueRule( "lambda"   , RealPos_name     ) );
         // memberRules.push_back( new ValueRule( "mu"       , RealPos_name     ) );
         // memberRules.push_back( new ValueRule( "rho"      , Probability_name ) );
-        memberRules.push_back( new ValueRule( "nTips" , Natural_name     ) );
-        memberRules.push_back( new ValueRule( "haploidPopSize" , Natural_name     ) );
+        memberRules.push_back( new ValueRule( "tipNames", VectorString_name) );
+        memberRules.push_back( new ValueRule( "haploidPopSize" , Natural_name, new Natural(1) ) );
 
         rulesSet = true;
     }
@@ -213,9 +219,9 @@ TreePlate* Dist_neutralcoalescent::rv( void ) {
     // double b                    = static_cast<const RealPos*     >( getMemberValue( "lambda"   ) )->getValue();
     // double d                    = static_cast<const RealPos*     >( getMemberValue( "mu"       ) )->getValue();
     // double p                    = static_cast<const Probability* >( getMemberValue( "rho"      ) )->getValue();
-    size_t nTips                 = static_cast<const Natural*     >( getMemberValue( "nTips" ) )->getValue();
-    // size_t haploidPopSize        = static_cast<const Natural*     >( getMemberValue( "haploidPopSize" ) )->getValue();
-    // const VectorString  *names   = static_cast<const VectorString*>( getMemberValue( "tipNames" ) );
+    size_t haploidPopSize        = static_cast<const Natural*     >( getMemberValue( "haploidPopSize" ) )->getValue();
+    const VectorString  *names   = static_cast<const VectorString*>( getMemberValue( "tipNames" ) );
+    size_t nTips                 = 100; // names->getSize();
 
     // create a new random tree
     Topology *top = new Topology();
@@ -223,16 +229,37 @@ TreePlate* Dist_neutralcoalescent::rv( void ) {
     // internally we treat unrooted topologies the same as rooted
     top->setIsRooted(true);
 
+    // track edge lengths
+    Dist_neutralcoalescent::NodeDoubleMapType edge_lengths; // TODO: assign initial size
+
     // create pool of nodes to be coalesced
     std::vector<TopologyNode*> nodesToCoalesce;
     for (size_t i=0; i < nTips; ++i) {
-         nodesToCoalesce.push_back( new TopologyNode() ); //  what should I use as index??
+        TopologyNode* node = new TopologyNode();
+        nodesToCoalesce.push_back( node ); //  what should I use as index??
+        edge_lengths.insert(std::pair<TopologyNode*, double>(node, 0.0));
+        std::string name = (*names)[i];
+        node->setName(name);
     }
 
     // get random number generator
     RandomNumberGenerator* rng = GLOBAL_RNG;
+
+    // prepare the waiting times
+    this->waitingTimes.clear();
+
+    // run the coalescence process
     TopologyNode* children[2] = {NULL, NULL};
     while (nodesToCoalesce.size() > 0) {
+        // create parent
+        TopologyNode *parent = new TopologyNode();
+        // pick and record a waiting time
+        double waitingTime = this->drawWaitingTime(nodesToCoalesce.size(), haploidPopSize);
+        this->waitingTimes.insert(std::pair<TopologyNode*, double>(parent, waitingTime));
+        // extend all edges by waiting time
+        for (Dist_neutralcoalescent::NodeDoubleMapType::iterator ei = edge_lengths.begin(); ei != edge_lengths.end(); ++ei) {
+            edge_lengths[ei->first] = ei->second + waitingTime;
+        }
         // pick two children to coalesce
         for (int i=0; i<2; ++i) {
             // randomly draw one node from the list of tips
@@ -243,11 +270,10 @@ TreePlate* Dist_neutralcoalescent::rv( void ) {
             // NOTE: memory not freed!!
             nodesToCoalesce.erase(nodesToCoalesce.begin()+index);
         }
-        // create parent
-        TopologyNode *parent = new TopologyNode();
         parent->addChild(children[0]);
         parent->addChild(children[1]);
         nodesToCoalesce.push_back(parent);
+        edge_lengths[parent] = 0.0;
     }
 
 
