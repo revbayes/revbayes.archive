@@ -7,7 +7,7 @@
 //
 
 #include "RbStatisticsHelper.h"
-
+#include "RbString.h"
 #include "RbMathCombinatorialFunctions.h"
 
 #include <cmath>
@@ -27,11 +27,11 @@
 double RbStatistics::Helper::dppConcParamFromNumTables(double tables, double num){
     
     if ( tables < 1.0 )
-		throw RbException( "The Dirichlet Process expects there to be 1 or more clusters: clusters > 0." );
+		throw RbException( "The Dirichlet Process expects there to be 1 or more clusters. You entered: " + RbString(tables) + ".");
 	if ( num < 2.0)
-		throw RbException( "The Dirichlet Process expects there to be more than 1 data element: number > 2." );
+		throw RbException( "The Dirichlet Process expects there to be more than 1 data element. You entered: " + RbString(num) + "." );
 	if ( tables > num)
-		throw RbException( "The Dirichlet Process expects there to fewer clusters than data elements: clusters < number." );
+		throw RbException( "The Dirichlet Process expects there to be fewer clusters than data elements. You entered: " + RbString(tables) + " clusters, and " + RbString(num) + " data elements." );
 	double a = 0.000001;
 	double ea = dppExpectNumTableFromConcParam(a, num);
 	bool goUp;
@@ -105,19 +105,16 @@ int RbStatistics::Helper::poissonInver(double lambda, RandomNumberGenerator& rng
 	static double p_f0;
 	int x;
     
-	if (lambda != p_L_last) 
-    {
+	if (lambda != p_L_last) {
 		p_L_last = lambda;
 		p_f0 = exp(-lambda);
     } 
     
-	while (1) 
-    {  
+	while (1) {  
 		double r = rng.uniform01();  
 		x = 0;  
 		double f = p_f0;
-		do 
-        {
+		do {
 			r -= f;
 			if (r <= 0.0) 
 				return x;
@@ -177,8 +174,7 @@ int RbStatistics::Helper::poissonRatioUniforms(double lambda, RandomNumberGenera
 	double x;                       /* real sample */
 	int k;                          /* integer sample */
     
-	if (p_L_last != lambda) 
-    {
+	if (p_L_last != lambda) {
 		p_L_last = lambda;
 		p_a = lambda + 0.5;
 		mode = (int)lambda;
@@ -188,8 +184,7 @@ int RbStatistics::Helper::poissonRatioUniforms(double lambda, RandomNumberGenera
 		p_bound = (int)(p_a + 6.0 * p_h);
     }
     
-	while(1) 
-    {
+	while(1) {
 		u = rng.uniform01();
 		if (u == 0.0) 
 			continue;
@@ -243,16 +238,14 @@ double RbStatistics::Helper::rndGamma1(double s, RandomNumberGenerator& rng) {
 	double			r, x = 0.0, small = 1e-37, w;
 	static double   a, p, uf, ss = 10.0, d;
 	
-	if (s != ss) 
-    {
+	if (s != ss) {
 		a  = 1.0 - s;
 		p  = a / (a + s * exp(-a));
 		uf = p * pow(small / a, s);
 		d  = a * log(a);
 		ss = s;
     }
-	for (;;) 
-    {
+	for (;;) {
 		r = rng.uniform01();
 		if (r > p)        
 			x = a - log((1.0 - r) / (1.0 - p)), w = a * log(x) - d;
@@ -283,14 +276,12 @@ double RbStatistics::Helper::rndGamma2(double s, RandomNumberGenerator& rng) {
 	double			r, d, f, g, x;
 	static double	b, h, ss = 0.0;
 	
-	if (s != ss) 
-    {
+	if (s != ss) {
 		b  = s - 1.0;
 		h  = sqrt(3.0 * s - 0.75);
 		ss = s;
     }
-	for (;;) 
-    {
+	for (;;) {
 		r = rng.uniform01();
 		g = r - r * r;
 		f = (r - 0.5) * h / sqrt(g);

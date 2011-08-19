@@ -41,7 +41,8 @@ Func_unique* Func_unique::clone( void ) const {
 /** Execute function */
 RbLanguageObject* Func_unique::execute( void ) {
 	
-	// do stuff here: TAH and BRM
+	//VectorReal* tempVec = new VectorReal;
+	
 	
 }
 
