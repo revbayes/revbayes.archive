@@ -21,13 +21,13 @@
 	</argument>
 	
 	<usage>
-		<theory>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfStatFreq=n, expectedNumberOfExchangeabilities=m)</theory>
-		<theory>myModel <- dppBranchHeterogeneousGTR(D, n, m)</theory>
-		<theory>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfQMatrices=n)</theory>
-		<theory>myModel <- dppBranchHeterogeneousGTR(D, n)</theory>
-		<example>D <- read(&quot;example.nex&quot;)</example>
-		<example>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfStatFreq=3, expectedNumberOfExchangeabilities=2)</example>
-		<example>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfQMatrices=4)</example>
+		<theory>myModel &lt;- dppBranchHeterogeneousGTR(data=D, expectedNumberOfStatFreq=n, expectedNumberOfExchangeabilities=m)</theory>
+		<theory>myModel &lt;- dppBranchHeterogeneousGTR(D, n, m)</theory>
+		<theory>myModel &lt;- dppBranchHeterogeneousGTR(data=D, expectedNumberOfQMatrices=n)</theory>
+		<theory>myModel &lt;- dppBranchHeterogeneousGTR(D, n)</theory>
+		<example>D &lt;- read(&quot;example.nex&quot;)</example>
+		<example>myModel &lt;- dppBranchHeterogeneousGTR(data=D, expectedNumberOfStatFreq=3, expectedNumberOfExchangeabilities=2)</example>
+		<example>myModel &lt;- dppBranchHeterogeneousGTR(data=D, expectedNumberOfQMatrices=4)</example>
 	</usage>
 	<author>Fredrik Ronquist and Bastien Boussau</author>
 	<reference></reference>
@@ -49,13 +49,10 @@
 		<arg_description>The expected number of clusters of equilibrium frequencies.</arg_description>
 	</argument>
 	<usage>
-		<theory>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfStatFreq=n, expectedNumberOfExchangeabilities=m)</theory>
-		<theory>myModel <- dppBranchHeterogeneousGTR(D, n, m)</theory>
-		<theory>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfQMatrices=n)</theory>
-		<theory>myModel <- dppBranchHeterogeneousGTR(D, n)</theory>
-		<example>D <- read(&quot;example.nex&quot;)</example>
-		<example>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfStatFreq=3, expectedNumberOfExchangeabilities=2)</example>
-		<example>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfQMatrices=4)</example>
+		<theory>myModel &lt;- dppBranchHeterogeneousGTR(data=D, expectedNumberOfStatFreq=n)</theory>
+		<theory>myModel &lt;- dppBranchHeterogeneousGTR(D, n)</theory>
+		<example>D &lt;- read(&quot;example.nex&quot;)</example>
+		<example>myModel &lt;- dppBranchHeterogeneousGTR(data=D, expectedNumberOfStatFreq=3)</example>
 	</usage>
 	<author>Fredrik Ronquist and Bastien Boussau</author>
 	<reference></reference>
@@ -78,13 +75,10 @@
 	</argument>
 	
 	<usage>
-		<theory>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfStatFreq=n, expectedNumberOfExchangeabilities=m)</theory>
-		<theory>myModel <- dppBranchHeterogeneousGTR(D, n, m)</theory>
-		<theory>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfQMatrices=n)</theory>
-		<theory>myModel <- dppBranchHeterogeneousGTR(D, n)</theory>
-		<example>D <- read(&quot;example.nex&quot;)</example>
-		<example>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfStatFreq=3, expectedNumberOfExchangeabilities=2)</example>
-		<example>myModel <- dppBranchHeterogeneousGTR(data=D, expectedNumberOfQMatrices=4)</example>
+		<theory>myModel &lt;- dppBranchHeterogeneousGTR(data=D, expectedNumberOfExchangeabilities=m)</theory>
+		<theory>myModel &lt;- dppBranchHeterogeneousGTR(D, m)</theory>
+		<example>D &lt;- read(&quot;example.nex&quot;)</example>
+		<example>myModel &lt;- dppBranchHeterogeneousGTR(data=D,  expectedNumberOfExchangeabilities=2)</example>
 	</usage>
 	<author>Fredrik Ronquist and Bastien Boussau</author>
 	<reference></reference>
