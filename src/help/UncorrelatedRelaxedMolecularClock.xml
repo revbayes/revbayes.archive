@@ -1,0 +1,19 @@
+<help_entry>
+	<name>UncorrelatedRelaxedMolecularClock</name>
+	<succinct>Implementation of an uncorrelated relaxed molecular clock model </succinct>
+	<verbose>This function describes a relaxed molecular clock model as implemented in 'Relaxed Phylogenetics and Dating with Confidence', Drummond et al., 2006. The rates are uncorrelated from node to node and are drawn from a common underlying distribution (as specified). 
+	</verbose>
+	<argument>
+		<arg_name>data</arg_name>
+		<arg_description>An uncorrelated relaxed molecular clock model</arg_description>
+	</argument>
+	<usage>
+		<theory>myModel <- branchHeterogeneousGTR(data=D)</theory>
+		<theory>myModel <- branchHeterogeneousGTR(D)</theory>
+		<example>D <- read(&quot;example.nex&quot;)</example>
+		<example>myModel <- branchHeterogeneousGTR(D)</example>
+
+	</usage>
+	<author>Fredrik Ronquist and Wai Lok Sibon Li </author>
+	<reference></reference>
+</help_entry>
