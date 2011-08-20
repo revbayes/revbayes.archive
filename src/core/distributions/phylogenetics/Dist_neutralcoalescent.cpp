@@ -257,7 +257,7 @@ TreePlate* Dist_neutralcoalescent::rv( void ) {
     // double p                    = static_cast<const Probability* >( getMemberValue( "rho"      ) )->getValue();
     size_t haploidPopSize        = static_cast<const Natural*     >( getMemberValue( "haploidPopSize" ) )->getValue();
     const VectorString  *names   = static_cast<const VectorString*>( getMemberValue( "tipNames" ) );
-    size_t nTips                 = 100; // names->getSize();
+    size_t nTips                 = names->getLength();
 
     // create a new random tree
     Topology *top = new Topology();
@@ -311,6 +311,8 @@ TreePlate* Dist_neutralcoalescent::rv( void ) {
         nodesToCoalesce.push_back(parent);
         edge_lengths[parent] = 0.0;
     }
+
+    // TODO: use tree plate to add edge lengths to nodes
 
 
     // double scale    = b - d;
