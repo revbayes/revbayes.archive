@@ -756,6 +756,8 @@
 		645EB76413FEE04400018F3A /* SyntaxVariableDecl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 645EB40213FEE04300018F3A /* SyntaxVariableDecl.cpp */; };
 		645EB76613FEE04400018F3A /* RbMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 645EB40413FEE04300018F3A /* RbMain.cpp */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
+		64A2F9FF13FF370E00A37094 /* Dist_beta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 64A2F9FD13FF370E00A37094 /* Dist_beta.cpp */; };
+		64A2FA0013FF370E00A37094 /* Dist_beta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 64A2F9FD13FF370E00A37094 /* Dist_beta.cpp */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
@@ -1677,6 +1679,8 @@
 		645EB76C13FEE08C00018F3A /* models */ = {isa = PBXFileReference; lastKnownFileType = folder; name = models; path = ../../models; sourceTree = "<group>"; };
 		645EB76D13FEE08C00018F3A /* projects */ = {isa = PBXFileReference; lastKnownFileType = folder; name = projects; path = ..; sourceTree = "<group>"; };
 		645EB76E13FEE08C00018F3A /* tests */ = {isa = PBXFileReference; lastKnownFileType = folder; name = tests; path = ../../tests; sourceTree = "<group>"; };
+		64A2F9FD13FF370E00A37094 /* Dist_beta.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dist_beta.cpp; sourceTree = "<group>"; };
+		64A2F9FE13FF370E00A37094 /* Dist_beta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dist_beta.h; sourceTree = "<group>"; };
 		85CD022E133948C400318200 /* RevBayesGui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RevBayesGui.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		85CD0232133948C400318200 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		85CD0235133948C400318200 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -2026,6 +2030,8 @@
 		645EB0F113FEE04200018F3A /* statistics */ = {
 			isa = PBXGroup;
 			children = (
+				64A2F9FD13FF370E00A37094 /* Dist_beta.cpp */,
+				64A2F9FE13FF370E00A37094 /* Dist_beta.h */,
 				645EB0F213FEE04200018F3A /* Dist_cat.cpp */,
 				645EB0F313FEE04200018F3A /* Dist_cat.h */,
 				645EB0F413FEE04200018F3A /* Dist_dirichlet.cpp */,
@@ -3673,6 +3679,7 @@
 				645EB76213FEE04400018F3A /* SyntaxVariable.cpp in Sources */,
 				645EB76413FEE04400018F3A /* SyntaxVariableDecl.cpp in Sources */,
 				645EB76613FEE04400018F3A /* RbMain.cpp in Sources */,
+				64A2FA0013FF370E00A37094 /* Dist_beta.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4014,6 +4021,7 @@
 				645EB75F13FEE04400018F3A /* SyntaxUnaryExpr.cpp in Sources */,
 				645EB76113FEE04400018F3A /* SyntaxVariable.cpp in Sources */,
 				645EB76313FEE04400018F3A /* SyntaxVariableDecl.cpp in Sources */,
+				64A2F9FF13FF370E00A37094 /* Dist_beta.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
