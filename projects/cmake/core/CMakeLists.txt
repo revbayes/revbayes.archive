@@ -156,6 +156,8 @@ ${PROJECT_SOURCE_DIR}/core/distributions/phylogenetics/Dist_ctmm.cpp
 ${PROJECT_SOURCE_DIR}/core/distributions/phylogenetics/Dist_ctmm.h
 ${PROJECT_SOURCE_DIR}/core/distributions/phylogenetics/Dist_topologyunif.cpp
 ${PROJECT_SOURCE_DIR}/core/distributions/phylogenetics/Dist_topologyunif.h
+${PROJECT_SOURCE_DIR}/core/distributions/statistics/Dist_beta.cpp
+${PROJECT_SOURCE_DIR}/core/distributions/statistics/Dist_beta.h
 ${PROJECT_SOURCE_DIR}/core/distributions/statistics/Dist_cat.cpp
 ${PROJECT_SOURCE_DIR}/core/distributions/statistics/Dist_cat.h
 ${PROJECT_SOURCE_DIR}/core/distributions/statistics/Dist_dirichlet.cpp

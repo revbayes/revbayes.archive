@@ -27,17 +27,17 @@
 #include "RbMathLogic.h"
 
 /*!
- * This function returns the probability density for a 
+ * This function returns the probability density for a
  * Beta-distributed random variable.
  *
  * \brief Beta probability density.
- * \param a parameter of the Beta. 
- * \param b parameter of the Beta. 
+ * \param a parameter of the Beta.
+ * \param b parameter of the Beta.
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
 double RbStatistics::Beta::pdf(double a, double b, double x) {
-    
+
 	double pdf;
 	if ( x < 0.0 || 1.0 < x )
 		pdf = 0.0;
@@ -47,32 +47,32 @@ double RbStatistics::Beta::pdf(double a, double b, double x) {
 }
 
 /*!
- * This function returns the natural log of the probability density 
+ * This function returns the natural log of the probability density
  * for a Beta-distributed random variable.
  *
  * \brief Beta log probability density.
- * \param a parameter of the Beta. 
- * \param b parameter of the Beta. 
+ * \param a parameter of the Beta.
+ * \param b parameter of the Beta.
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
 double RbStatistics::Beta::lnPdf(double a, double b, double x) {
-    
+
 	return ( (RbMath::lnGamma(a + b) - RbMath::lnGamma(a) - RbMath::lnGamma(b)) + (a - 1.0) * std::log(x) + (b - 1.0) * std::log(1.0 - x) );
 }
 
 /*!
- * This function returns the cumulative probability for a 
+ * This function returns the cumulative probability for a
  * Beta-distributed random variable.
  *
  * \brief Beta cumulative probability.
- * \param a parameter of the Beta. 
- * \param b parameter of the Beta. 
+ * \param a parameter of the Beta.
+ * \param b parameter of the Beta.
  * \return Returns the cumulative probability.
  * \throws Does not throw an error.
  */
 double RbStatistics::Beta::cdf(double a, double b, double x) {
-    
+
 	double cdf;
 	if ( x <= 0.0 )
 		cdf = 0.0;
@@ -84,24 +84,24 @@ double RbStatistics::Beta::cdf(double a, double b, double x) {
 }
 
 /*!
- * This function returns the quantile for a 
+ * This function returns the quantile for a
  * Beta-distributed random variable.
  *
  * \brief Beta quantile.
- * \param a parameter of the Beta. 
- * \param b parameter of the Beta. 
- * \param p is the probability up to the quantile. 
+ * \param a parameter of the Beta.
+ * \param b parameter of the Beta.
+ * \param p is the probability up to the quantile.
  * \return Returns the quantile.
  * \throws Does not throw an error.
  */
 double RbStatistics::Beta::quantile(double a, double b, double p) {
-    
+
 	double error = 0.0001;
 	double errapp = 0.01;
-    
+
 	/* estimate the solution */
 	double x = a / ( a + b );
-    
+
 	double xOld = 0.0;
 	int loopCnt = 2;
 	double d[MAXK * (MAXK-1)];
@@ -118,7 +118,7 @@ double RbStatistics::Beta::quantile(double a, double b, double p) {
 		d[2-1+0*MAXK] = s1 + s2;
 		double tail = d[2-1+0*MAXK] * q / 2.0;
 		x = x + q + tail;
-        
+
 		int k = 3;
 		while ( error < fabs ( tail / x ) && k <= MAXK )
             {
@@ -126,7 +126,7 @@ double RbStatistics::Beta::quantile(double a, double b, double p) {
 			s1 = q * ((double)(k) - 2.0) * s1 / t;
 			s2 = q * (2.0 - (double)(k)) * s2 / x;
 			d[2-1+(k-2)*MAXK] = s1 + s2;
-            
+
 			/* find D(3,K-3), D(4,K-4), D(5,K-5), ... , D(K-1,1) */
 			for (int i=3; i<=k-1; i++)
                 {
@@ -139,7 +139,7 @@ double RbStatistics::Beta::quantile(double a, double b, double p) {
                     }
 				d[i-1+(k-i)*MAXK] = sum2 + d[i-2+(k-i+1)*MAXK] / (double)(i - 1);
                 }
-                
+
 			/* compute D(K,0) and use it to expand the series */
 			d[k-1+0*MAXK] = d[2-1+0*MAXK] * d[k-2+0*MAXK] + d[k-2+1*MAXK] / (double)(k - 1);
 			tail = d[k-1+0*MAXK] * q / (double)(k);
@@ -169,35 +169,35 @@ double RbStatistics::Beta::quantile(double a, double b, double p) {
 double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator* rng) {
     double a, b, alpha;
     double r, s, t, u1, u2, v, w, y, z;
-    
+
     int qsame;
     /* FIXME:  Keep Globals (properly) for threading */
     /* Uses these GLOBALS to save time when many rv's are generated : */
     static double beta, gamma, delta, k1, k2;
     static double olda = -1.0;
     static double oldb = -1.0;
-    
-    if (aa <= 0. || bb <= 0. || (!RbMath::isFinite(aa) && !RbMath::isFinite(bb))) 
+
+    if (aa <= 0. || bb <= 0. || (!RbMath::isFinite(aa) && !RbMath::isFinite(bb)))
         {
         std::ostringstream s;
         s << "Cannot draw random variable from beta distribution for a = " << aa << " and b = " << bb;
         throw (RbException(s));
         }
-    
+
     if (!RbMath::isFinite(aa))
     	return 1.0;
-    
+
     if (!RbMath::isFinite(bb))
     	return 0.0;
-    
+
     /* Test if we need new "initializing" */
     qsame = (olda == aa) && (oldb == bb);
     if (!qsame) { olda = aa; oldb = bb; }
-    
+
     a = RbMath::min(aa, bb);
     b = RbMath::max(aa, bb); /* a <= b */
     alpha = a + b;
-    
+
 #define v_w_from__u1_bet(AA) 			                \
 v = beta * log(u1 / (1.0 - u1));	                    \
 if (v <= expmax) {		                                \
@@ -205,14 +205,14 @@ w = AA * exp(v);		                                \
 if(!RbMath::isFinite(w)) w = RbConstants::Double::max;	\
 } else				                                    \
 w = RbConstants::Double::max
-    
-    if (a <= 1.0) 
-        {	
+
+    if (a <= 1.0)
+        {
         /* --- Algorithm BC --- */
-        
+
         /* changed notation, now also a <= b (was reversed) */
-        if (!qsame) 
-            { 
+        if (!qsame)
+            {
             /* initialize */
             beta = 1.0 / a;
             delta = 1.0 + b - a;
@@ -220,21 +220,21 @@ w = RbConstants::Double::max
             k2 = 0.25 + (0.5 + 0.25 / delta) * a;
             }
         /* FIXME: "do { } while()", but not trivially because of "continue"s:*/
-        for(;;) 
+        for(;;)
             {
             u1 = rng->uniform01();
             u2 = rng->uniform01();
-            if (u1 < 0.5) 
+            if (u1 < 0.5)
                 {
                 y = u1 * u2;
                 z = u1 * y;
                 if (0.25 * u2 + z - y >= k1)
                     continue;
-                } 
-            else 
+                }
+            else
                 {
                 z = u1 * u1 * u2;
-                if (z <= 0.25) 
+                if (z <= 0.25)
                     {
                     v_w_from__u1_bet(b);
                     break;
@@ -248,12 +248,12 @@ w = RbConstants::Double::max
             }
         return (aa == a) ? a / (a + w) : w / (a + w);
         }
-    else 
-        {		
+    else
+        {
         /* Algorithm BB */
-        
-        if (!qsame) 
-            { 
+
+        if (!qsame)
+            {
             /* initialize */
             beta = sqrt((alpha - 2.0) / (2.0 * a * b - alpha));
             gamma = a + 1.0 / beta;
@@ -261,9 +261,9 @@ w = RbConstants::Double::max
         do {
             u1 = rng->uniform01();
             u2 = rng->uniform01();
-            
+
             v_w_from__u1_bet(a);
-            
+
             z = u1 * u1 * u2;
             r = gamma * v - 1.3862944;
             s = a + r - w;

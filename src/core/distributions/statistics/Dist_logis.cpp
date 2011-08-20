@@ -33,7 +33,8 @@
 #include <sstream>
 #include <vector>
 
-
+#include "MatrixReal.h"
+#include "RbMathMatrix.h"
 /** Default constructor for parser use */
 Dist_logis::Dist_logis( void ) : DistributionContinuous( getMemberRules() ) {
 
@@ -94,6 +95,7 @@ double Dist_logis::pdf( const RbLanguageObject* value ) {
     double x =          static_cast<const Real*     >( value                        )->getValue();
 
 	return RbStatistics::Logistic::pdf( location, scale, x );
+
 }
 
 

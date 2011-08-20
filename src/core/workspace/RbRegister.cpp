@@ -86,6 +86,7 @@
 #include "TreePlate.h"
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
+#include "Dist_beta.h"
 #include "Dist_birthdeath.h"
 #include "Dist_cat.h"
 #include "Dist_ctmm.h"
@@ -226,6 +227,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "treeplate",    new TreePlate()         );
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
+        addDistribution( "beta",         new Dist_beta()  );
         addDistribution( "birthdeath",   new Dist_birthdeath()  );
         addDistribution( "cat",          new Dist_cat()         );
         addDistribution( "ctmc",         new Dist_ctmm()        );

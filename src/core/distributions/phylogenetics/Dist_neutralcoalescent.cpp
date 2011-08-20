@@ -114,6 +114,7 @@ const MemberRules& Dist_neutralcoalescent::getMemberRules( void ) const {
         // memberRules.push_back( new ValueRule( "rho"      , Probability_name ) );
         memberRules.push_back( new ValueRule( "tipNames", VectorString_name) );
         memberRules.push_back( new ValueRule( "haploidPopSize" , Natural_name, new Natural(1) ) );
+        memberRules.push_back( new ValueRule( "noTaxa" , RealPos_name ) );
 
         rulesSet = true;
     }
@@ -128,6 +129,15 @@ const TypeSpec Dist_neutralcoalescent::getVariableType( void ) const {
     return TypeSpec( TreePlate_name );
 }
 
+// TODO
+//double Dist_neutralcoalescent::calInterval(TreePlate t, int i) {
+//    return 0;
+//}
+
+// TODO
+//double Dist_neutralcoalescent::getLineageCount(TreePlate t, int i) {
+//    return 0;
+//}
 
 /**
  * This function calculates the natural log of the
@@ -163,6 +173,32 @@ double Dist_neutralcoalescent::lnPdf( const RbLanguageObject* value ) {
     // }
 
     // return log_p;
+
+    const VectorRealPos* times = static_cast<const VectorRealPos*>( value );
+    TreePlate* t;// TODO get tree?
+
+    // get the number of coalescent events
+    size_t events = times->getLength();
+
+    double log_p = 0.0;
+    double startTime;
+
+    for (size_t i = 0; i < events; i++) {
+
+
+//        double finishTime = startTime + getInterval(t, i);
+//        double intervalArea = calIntegral(startTime, finishTime);
+//
+//        int lCount = getLineageCount(i);
+//        int k2 RbMath::kchoose2(lCount);
+//
+//        log_p += -k2 * intervalArea;
+//
+//
+//        startTime = finishTime;
+    }
+
+//        return log_p;
 
     return 0.0;
 }

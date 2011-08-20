@@ -58,45 +58,15 @@ double RbStatistics::Logistic::pdf(double location, double scale, double x){
     return pdf;
 
 }
-//
-//
-//	size_t n = a.size();
-//	double zSum = 0.0;
-//	for (size_t i=0; i<n; i++)
-//		zSum += z[i];
-//
-//	double tol = 0.0001;
-//	if ( tol < fabs( zSum - 1.0 ) )
-//        {
-//        std::ostringstream s;
-//        s << "Fatal error in Dirichlet PDF";
-//        throw RbException(s);
-//        }
-//
-//	double aSum = 0.0;
-//	for (size_t i=0; i<n; i++)
-//		aSum += a[i];
-//
-//	double aProd = 1.0;
-//	for (size_t i=0; i<n; i++)
-//		aProd *= RbMath::gamma(a[i]);
-//
-//	double pdf = RbMath::gamma(aSum) / aProd;
-//
-//	for (size_t i=0; i<n; i++)
-//		pdf = pdf * pow( z[i], a[i] - 1.0 );
-
-//	return pdf;
-
 
 /*!
  * This function calculates the natural log of the probability density
  * for a Logistic-distributed random variable.
  *
  * \brief Natural log of Logistic probability density.
- * \param location
- * \param scale
- * \param x
+ * \param location: location parameter for logistic distribution
+ * \param scale:    scale parameter for logistic distribution
+ * \param x:        random variable for logistic distirbution
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
