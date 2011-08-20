@@ -174,16 +174,16 @@ double Dist_neutralcoalescent::lnPdf( const RbLanguageObject* value ) {
 
     // return log_p;
 
-    const VectorRealPos* times = static_cast<const VectorRealPos*>( value );
-    TreePlate* t;// TODO get tree?
+    // const VectorRealPos* times = static_cast<const VectorRealPos*>( value );
+    // TreePlate* t;// TODO get tree?
 
-    // get the number of coalescent events
-    size_t events = times->getLength();
+    // // get the number of coalescent events
+    // size_t events = times->getLength();
 
-    double log_p = 0.0;
-    double startTime;
+    // double log_p = 0.0;
+    // double startTime;
 
-    for (size_t i = 0; i < events; i++) {
+    // for (size_t i = 0; i < events; i++) {
 
 
 //        double finishTime = startTime + getInterval(t, i);
@@ -196,7 +196,7 @@ double Dist_neutralcoalescent::lnPdf( const RbLanguageObject* value ) {
 //
 //
 //        startTime = finishTime;
-    }
+    // }
 
 //        return log_p;
 
@@ -259,21 +259,22 @@ TreePlate* Dist_neutralcoalescent::rv( void ) {
     const VectorString  *names   = static_cast<const VectorString*>( getMemberValue( "tipNames" ) );
     size_t nTips                 = names->getLength();
 
+    // clear tracking data
+    this->nodeEdgeLengths.clear();
+    this->numNodesToWaitingTimeMap.clear();
+
     // create a new random tree
     Topology *top = new Topology();
 
     // internally we treat unrooted topologies the same as rooted
     top->setIsRooted(true);
 
-    // track edge lengths
-    Dist_neutralcoalescent::NodeDoubleMapType edge_lengths; // TODO: assign initial size
-
     // create pool of nodes to be coalesced
     std::vector<TopologyNode*> nodesToCoalesce;
     for (size_t i=0; i < nTips; ++i) {
         TopologyNode* node = new TopologyNode();
-        nodesToCoalesce.push_back( node ); //  what should I use as index??
-        edge_lengths.insert(std::pair<TopologyNode*, double>(node, 0.0));
+        nodesToCoalesce.push_back( node );
+        this->nodeEdgeLengths.insert(std::pair<TopologyNode*, double>(node, 0.0));
         std::string name = (*names)[i];
         node->setName(name);
     }
@@ -281,106 +282,54 @@ TreePlate* Dist_neutralcoalescent::rv( void ) {
     // get random number generator
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
-    // prepare the waiting times
-    this->waitingTimes.clear();
-
     // run the coalescence process
     TopologyNode* children[2] = {NULL, NULL};
-    while (nodesToCoalesce.size() > 0) {
+    while (nodesToCoalesce.size() > 1) {
         // create parent
         TopologyNode *parent = new TopologyNode();
         // pick and record a waiting time
         double waitingTime = this->drawWaitingTime(nodesToCoalesce.size(), haploidPopSize);
-        this->waitingTimes.insert(std::pair<TopologyNode*, double>(parent, waitingTime));
-        // extend all edges by waiting time
-        for (Dist_neutralcoalescent::NodeDoubleMapType::iterator ei = edge_lengths.begin(); ei != edge_lengths.end(); ++ei) {
-            edge_lengths[ei->first] = ei->second + waitingTime;
+        // store number of waiting times to coalesce event given current number of nodes
+        this->numNodesToWaitingTimeMap.insert(std::pair<unsigned long, double>(nodesToCoalesce.size(), waitingTime));
+        // extend edges of all nodes waiting to coalesce by waiting time
+        for (std::vector<TopologyNode*>::iterator ni = nodesToCoalesce.begin(); ni != nodesToCoalesce.end(); ++ni) {
+            this->nodeEdgeLengths[*ni] = this->nodeEdgeLengths[*ni] + waitingTime;
         }
         // pick two children to coalesce
-        for (int i=0; i<2; ++i) {
-            // randomly draw one node from the list of tips
-            size_t index = static_cast<size_t>( floor(rng->uniform01()*nodesToCoalesce.size()) );
-            // get the node from the list
-            children[i] = nodesToCoalesce.at(index);
-            // remove the randomly drawn node from the list
-            // NOTE: memory not freed!!
-            nodesToCoalesce.erase(nodesToCoalesce.begin()+index);
+        if (nodesToCoalesce.size() == 2) {
+            // probably no need to special case this,
+            // but more efficient than trying to randomly select
+            // two items from pool of two
+            children[0] = nodesToCoalesce[0];
+            children[1] = nodesToCoalesce[1];
+            nodesToCoalesce.clear();
+        } else {
+            for (int i=0; i<2; ++i) {
+                // randomly draw one node from the list of tips
+                size_t index = static_cast<size_t>( floor(rng->uniform01()*nodesToCoalesce.size()) );
+                // get the node from the list
+                children[i] = nodesToCoalesce.at(index);
+                // remove the randomly drawn node from the list
+                // NOTE: memory not freed!!
+                nodesToCoalesce.erase(nodesToCoalesce.begin()+index);
+            }
         }
         parent->addChild(children[0]);
         parent->addChild(children[1]);
         nodesToCoalesce.push_back(parent);
-        edge_lengths[parent] = 0.0;
+        this->nodeEdgeLengths[parent] = 0.0;
     }
 
-    // TODO: use tree plate to add edge lengths to nodes
+    // set the root node
+    // assert(nodesToCoalesce.size() == 1);
+    top->setRoot( nodesToCoalesce[0] );
 
-
-    // double scale    = b - d;
-    // b /= scale;
-    // d /= scale;
-
-    // // Get the rng
-    // RandomNumberGenerator* rng = GLOBAL_RNG;
-
-    // // get a new random number
-    // double ran = rng->uniform01();
-
-    // // simulate the time of the origin
-	// double t_or = log((-b * p - b * pow(ran,(1.0/nTips)) + d * pow(ran,(1.0/nTips)) + b * p * pow(ran,(1.0/nTips)))/(b * p * (-1.0 + pow(ran,(1.0/nTips))))) / (b - d);
-
-    // // tmp vector of speciation times. we need to sort this vector before we use it later
-    // std::vector<double> times;
-
-    // // simulate speciation times
-    // for (size_t i=0; i<nTips; i++) {
-    //     ran = rng->uniform01();
-    //     double t = 1.0/(p*b-(d-b*(1.0-p)))*log((p*b-(d-b*(1.0-p))* exp((-(p*b)+(d-b*(1.0-p)))*t_or) -(d-b*(1.0-p))*(1-exp((-(p*b)+(d-b*(1.0-p)))*t_or)) *ran )/(p*b-(d-b*(1.0-p))* exp((-(p*b)+(d-b*(1.0-p)))*t_or) -(p*b)*(1-exp((-(p*b)+(d-b*(1.0-p)))*t_or)) *ran )   );
-    //     times.push_back(t);
-    // }
-
-    // // create a new random tree
-    // Topology *top = new Topology();
-    // // internally we treat unrooted topologies the same as rooted
-    // top->setIsRooted(true);
-
-    // TopologyNode *root = new TopologyNode((int)pow(2.0,nTips)-1);
-    // std::vector<TopologyNode*> tips;
-    // std::vector<TopologyNode*> interior;
-    // tips.push_back(root);
-    // // recursively build the tree
-    // buildRandomBinaryTree(interior, tips, nTips);
-
-    // // set tip names
-    // for (int i=0; i<nTips; i++) {
-    //     size_t index = size_t( floor(rng->uniform01() * tips.size()) );
-
-    //     // get the node from the list
-    //     TopologyNode* node = tips.at(index);
-
-    //     // remove the randomly drawn node from the list
-    //     tips.erase(tips.begin()+index);
-
-    //     // set name
-    //     std::string name = (*names)[i];
-    //     node->setName(name);
-    // }
-
-    // // initialize the topology by setting the root
-    // top->setRoot(root);
-
-    // // sort the speciation times
-    // sort (times.begin(), times.end());
-
-    // // create a tree plate
-    // TreePlate *plate = new TreePlate();
-    // plate->setMemberVariable("topology", new Variable(new ConstantNode(top)));
-
-    // // add the speciation time to the topology
-    // for (size_t i=0; i<times.size(); i++) {
-    //     plate->setNodeTime(interior[i],times[i]*scale);
-    // }
-
+    // build the tree plate
     TreePlate *plate = new TreePlate();
+    plate->setMemberVariable("topology", new Variable(new ConstantNode(top)));
+    for (TopologyNodeToRealMapType::iterator ndi = this->nodeEdgeLengths.begin(); ndi !=  this->nodeEdgeLengths.end(); ++ndi) {
+        plate->setBranchLength(ndi->first, ndi->second);
+    }
     return plate;
 }
 

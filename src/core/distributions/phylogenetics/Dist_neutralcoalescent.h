@@ -36,8 +36,8 @@ public:
     Dist_neutralcoalescent(void);                                                                   //!< Default constructor
 
     // convenience
-    typedef std::map<TopologyNode*, double> NodeDoubleMapType;                                      //!< Save our fingers
-
+    typedef std::map<TopologyNode*, double> TopologyNodeToRealMapType;                                      //!< Save our fingers
+    typedef std::map<unsigned long, double> IntegerToRealMapType;
 
     // Basic utility functions
     Dist_neutralcoalescent*     clone(void) const;                                                  //!< Clone object
@@ -57,7 +57,8 @@ private:
     double                      drawWaitingTime(unsigned long numNodes, unsigned long haploidPopSize);
 
     // Private variables
-    NodeDoubleMapType  waitingTimes;
+    TopologyNodeToRealMapType   nodeEdgeLengths;
+    IntegerToRealMapType        numNodesToWaitingTimeMap;
 
 };
 
