@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!--
+	Rev language module for BBEdit
+	
+	Based on http://homepages.nyu.edu/~jmb736/projects/R.html by Jonathan Marc Bearak
+-->
+<dict>
+	<key>BBEditDocumentType</key>
+	<string>CodelessLanguageModule</string>
+	<key>BBLMColorsSyntax</key>
+	<true/>
+	<key>BBLMIsCaseSensitive</key>
+	<true/>
+	<key>BBLMKeywordList</key>
+	<array>
+		<string>function</string>
+		<string>NULL</string>
+		<string>FALSE</string>
+		<string>TRUE</string>
+		<string>for</string>
+		<string>while</string>
+		<string>if</string>
+		<string>ifelse</string>
+		<string>else</string>
+		<string>end</string>
+		<string>stop</string>
+		<string>NA</string>
+		<string>NaN</string>
+	</array>
+	<key>BBLMPredefinedNameList</key>
+	<array>
+		<string>_add</string>
+		<string>_and</string>
+		<string>_div</string>
+		<string>_eq</string>
+		<string>_exp</string>
+		<string>_ge</string>
+		<string>_gt</string>
+		<string>_le</string>
+		<string>_lt</string>
+		<string>_mul</string>
+		<string>_ne</string>
+		<string>_or</string>
+		<string>_range</string>
+		<string>_sub</string>
+		<string>_uminus</string>
+		<string>_unot</string>
+		<string>_uplus</string>
+		<string>abs</string>
+		<string>birthdeath</string>
+		<string>cat</string>
+		<string>clamp</string>
+		<string>clear</string>
+		<string>cos</string>
+		<string>ctmc</string>
+		<string>dbirthdeath</string>
+		<string>dcat</string>
+		<string>dctmc</string>
+		<string>ddirichlet</string>
+		<string>dexp</string>
+		<string>dirichlet</string>
+		<string>dlnorm</string>
+		<string>dlogis</string>
+		<string>dmultinomial</string>
+		<string>dnorm</string>
+		<string>dppConFromExpNumClusters</string>
+		<string>dunif</string>
+		<string>dunifTopology</string>
+		<string>exp</string>
+		<string>expf</string>
+		<string>gtr</string>
+		<string>ln</string>
+		<string>lnorm</string>
+		<string>log</string>
+		<string>logis</string>
+		<string>ls</string>
+		<string>mcmc</string>
+		<string>mmultinomial</string>
+		<string>model</string>
+		<string>monitor</string>
+		<string>mscale</string>
+		<string>msimplex</string>
+		<string>mslide</string>
+		<string>multinomial</string>
+		<string>norm</string>
+		<string>normalize</string>
+		<string>pdirichlet</string>
+		<string>pexp</string>
+		<string>plnorm</string>
+		<string>plogis</string>
+		<string>pmultinomial</string>
+		<string>pnorm</string>
+		<string>power</string>
+		<string>punif</string>
+		<string>q</string>
+		<string>qdirichlet</string>
+		<string>qexp</string>
+		<string>qlnorm</string>
+		<string>qlogis</string>
+		<string>qmultinomial</string>
+		<string>qnorm</string>
+		<string>quit</string>
+		<string>qunif</string>
+		<string>rbirthdeath</string>
+		<string>rcat</string>
+		<string>rctmc</string>
+		<string>rdirichlet</string>
+		<string>read</string>
+		<string>rexp</string>
+		<string>rlnorm</string>
+		<string>rlogis</string>
+		<string>rmultinomial</string>
+		<string>rnorm</string>
+		<string>runif</string>
+		<string>runifTopology</string>
+		<string>setval</string>
+		<string>simplex</string>
+		<string>sin</string>
+		<string>source</string>
+		<string>sqrt</string>
+		<string>structure</string>
+		<string>tiprobs</string>
+		<string>transpose</string>
+		<string>treeplate</string>
+		<string>unclamp</string>
+		<string>unif</string>
+		<string>unifTopology</string>
+		<string>unique</string>
+		<string>v</string>
+	</array>
+	<key>BBLMLanguageCode</key>
+	<string>RevB</string>
+	<key>BBLMLanguageDisplayName</key>
+	<string>RevBayes</string>
+	<key>BBLMScansFunctions</key>
+	<true/>
+	<key>BBLMSuffixMap</key>
+	<array>
+		<dict>
+			<key>BBLMLanguageSuffix</key>
+			<string>.Rev</string>
+		</dict>
+	</array>
+	<key>Language Features</key>
+	<dict>
+		<key>Close Block Comments</key>
+		<string></string>
+		<key>Close Parameter Lists</key>
+		<string>)</string>
+		<key>Close Statement Blocks</key>
+		<string>}</string>
+		<key>Close Strings 1</key>
+		<string>&quot;</string>
+		<key>Close Strings 2</key>
+		<string>&apos;</string>
+		<key>End-of-line Ends Strings 1</key>
+		<false/>
+		<key>End-of-line Ends Strings 2</key>
+		<false/>
+		<key>Escape Char in Strings 1</key>
+		<string>\</string>
+		<key>Escape Char in Strings 2</key>
+		<string>\</string>
+		<key>Identifier and Keyword Characters</key>
+		<string>1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz.</string>
+		<key>Open Block Comments</key>
+		<string></string>
+		<key>Open Line Comments</key>
+		<string>#</string>
+		<key>Open Parameter Lists</key>
+		<string>(</string>
+		<key>Open Statement Blocks</key>
+		<string>{</string>
+		<key>Open Strings 1</key>
+		<string>&quot;</string>
+		<key>Open Strings 2</key>
+		<string>&apos;</string>
+		<key>Prefix for Functions</key>
+		<string></string>
+		<key>Prefix for Procedures</key>
+		<string></string>
+		<key>Terminator for Prototypes 1</key>
+		<string></string>
+		<key>Terminator for Prototypes 2</key>
+		<string></string>
+</dict>
+</dict>
+</plist>
