@@ -131,57 +131,20 @@ const TypeSpec Dist_neutralcoalescent::getVariableType( void ) const {
  */
 double Dist_neutralcoalescent::lnPdf( const RbLanguageObject* value ) {
 
-    // Get the parameters
-    // const VectorRealPos* times = static_cast<const VectorRealPos*>( value );
-    // double                 b   = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
-    // double                 d   = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
-    // double                 p   = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
+    const VectorRealPos* waitingTimes  = static_cast<const VectorRealPos*>( value );
+    size_t haploidPopSize              = static_cast<const Natural*  >( getMemberValue( "haploidPopSize" ) )->getValue();
+    size_t nWaitingTimes               = waitingTimes->getLength();
+    size_t nNodes                      = nWaitingTimes + 1;
 
-    // // get the number of speciation events
-    // size_t events = times->getLength();
+    double log_p = 0.0;
 
-    // // get the time of the orign. Note, we assume the process starts at the origin and not at the root. Further, we do not assume that the process starts with t_0 = 0.
-    // double now   = (*times)[events-1];
-    // double t_or  = now - (*times)[0] ;
+    for (size_t i = 0; i < nWaitingTimes; ++i) {
+        unsigned int k = nNodes;
+        double k2N = (k*(k-1)/2) / haploidPopSize;
+        log_p = log_p + log(k2N) - (k2N * (*waitingTimes)[i]);
+    }
 
-    // // calculate the probability
-    // double log_p = events * (2*log(b-d) - (log(p*b + (b*(1.0-p)-d)*exp((d-b)*t_or)) + log(1.0 - exp((d-b)*t_or))));
-
-    // // iterate over all speciation events
-    // for (size_t i=1; i<events; i++){
-    //     double t = now - (*times)[i];
-    //     log_p += (d-b)*t - 2*log(p*b + (b*(1.0-p)-d)*exp((d-b)*t));
-    // }
-
-    // return log_p;
-
-    // const VectorRealPos* times = static_cast<const VectorRealPos*>( value );
-    // TreePlate* t;// TODO get tree?
-
-    // // get the number of coalescent events
-    // size_t events = times->getLength();
-
-    // double log_p = 0.0;
-    // double startTime;
-
-    // for (size_t i = 0; i < events; i++) {
-
-
-//        double finishTime = startTime + getInterval(t, i);
-//        double intervalArea = calIntegral(startTime, finishTime);
-//
-//        int lCount = getLineageCount(i);
-//        int k2 RbMath::kchoose2(lCount);
-//
-//        log_p += -k2 * intervalArea;
-//
-//
-//        startTime = finishTime;
-    // }
-
-//        return log_p;
-
-    return 0.0;
+    return log_p;
 }
 
 
@@ -195,12 +158,6 @@ double Dist_neutralcoalescent::lnPdf( const RbLanguageObject* value ) {
  * @return      Probability density
  */
 double Dist_neutralcoalescent::pdf( const RbLanguageObject* value ) {
-
-    // // Get the parameters
-    // const VectorRealPos* times = static_cast<const VectorRealPos*>( value );
-    // double                 b   = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
-    // double                 d   = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
-    // double                 p   = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
 
     // // get the number of speciation events
     // size_t events = times->getLength();
