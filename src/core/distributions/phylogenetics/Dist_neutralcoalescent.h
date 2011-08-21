@@ -53,7 +53,6 @@ public:
     TreePlate*                  rv(void);                                                           //!< Generate tree from the coalescent
 
 private:
-    void                        buildRandomBinaryTree(std::vector<TopologyNode *> &interior, std::vector<TopologyNode *> &tips, size_t numTaxa);
     double                      drawWaitingTime(unsigned long numNodes, unsigned long haploidPopSize);
 
     // Private variables

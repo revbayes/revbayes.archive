@@ -66,40 +66,6 @@ double Dist_neutralcoalescent::drawWaitingTime(unsigned long numNodes, unsigned 
     return tmrca;
 }
 
-void Dist_neutralcoalescent::buildRandomBinaryTree(std::vector<TopologyNode *> &internalNodes, std::vector<TopologyNode *> &tips, size_t numTaxa) {
-
-    // if (tips.size() < numTaxa) {
-    //     // Get the rng
-    //     RandomNumberGenerator* rng = GLOBAL_RNG;
-
-    //     // randomly draw one node from the list of tips
-    //     size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
-
-    //     // get the node from the list
-    //     TopologyNode* parent = tips.at(index);
-
-    //     // add the internal node
-    //     internalNodes.push_back(parent);
-
-    //     // remove the randomly drawn node from the list
-    //     tips.erase(tips.begin()+index);
-
-    //     // add a left child
-    //     TopologyNode *leftChild = new TopologyNode(0);
-    //     parent->addChild(leftChild);
-    //     tips.push_back(leftChild);
-
-    //     // add a right child
-    //     TopologyNode *rightChild = new TopologyNode(0);
-    //     parent->addChild(rightChild);
-    //     tips.push_back(rightChild);
-
-    //     // recursive call to this function
-    //     buildRandomBinaryTree(internalNodes, tips, numTaxa);
-    // }
-}
-
-
 /** Clone this object */
 Dist_neutralcoalescent* Dist_neutralcoalescent::clone( void ) const {
 
