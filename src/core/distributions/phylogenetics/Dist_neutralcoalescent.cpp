@@ -18,9 +18,11 @@
 #include "ConstantNode.h"
 #include "DAGNode.h"
 #include "Dist_neutralcoalescent.h"
+#include "DistributionExponential.h"
 #include "Integer.h"
 #include "Natural.h"
 #include "Probability.h"
+#include "RbMathCombinatorialFunctions.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -45,10 +47,23 @@ Dist_neutralcoalescent::Dist_neutralcoalescent( void ) : Distribution( getMember
 
 }
 
+/**
+    A random draw from the "Kingman distribution" (continuous time version):
+    Time to go from n genes to n-1 genes; i.e. waiting time until two
+    lineages coalesce.  This is a random number with an exponential
+    distribution with a rate of (n choose 2).
+    `haploidPopSize` is the effective *haploid* population size; i.e., number of gene
+    in the population: 2 * N in a diploid population of N individuals,
+    or N in a haploid population of N individuals.
+    If `haploidPopSize` is 1 or 0 or None, then time is in haploid population units;
+    i.e. where 1 unit of time equals 2N generations for a diploid population of
+    size N, or N generations for a haploid population of size N. Otherwise time
+    is in generations.
+*/
 double Dist_neutralcoalescent::drawWaitingTime(unsigned long numNodes, unsigned long haploidPopSize) {
-    // TODO!!!!!!!!!
-    // ( DUMMY IMPLEMENTATION )
-    return 1.0;
+    double rate = RbMath::kchoose2(numNodes);
+    double tmrca = RbStatistics::Exponential::rv(rate, GLOBAL_RNG) * haploidPopSize;
+    return tmrca;
 }
 
 void Dist_neutralcoalescent::buildRandomBinaryTree(std::vector<TopologyNode *> &internalNodes, std::vector<TopologyNode *> &tips, size_t numTaxa) {
@@ -310,7 +325,6 @@ TreePlate* Dist_neutralcoalescent::rv( void ) {
                 // get the node from the list
                 children[i] = nodesToCoalesce.at(index);
                 // remove the randomly drawn node from the list
-                // NOTE: memory not freed!!
                 nodesToCoalesce.erase(nodesToCoalesce.begin()+index);
             }
         }
