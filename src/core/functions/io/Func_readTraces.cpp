@@ -139,7 +139,7 @@ RbLanguageObject* Func_readTraces::execute( void ) {
             // we assume a header at the first line of the file
             if (!hasHeaderBeenRead) {
                 
-                for (int j=0; j<columns.size(); j++) {
+                for (size_t j=0; j<columns.size(); j++) {
                     Trace* t = new Trace();
                     
                     std::string parmName = columns[j];

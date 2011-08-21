@@ -54,12 +54,12 @@ public:
     void                    clear(void);                                                                //!< Clear
     Move*                   getElement(size_t index);                                                   //!< Get element or subcontainer
     void                    push_back(Move* m);                                                         //!< Add a move object
-    void                    resize(const size_t len);                                                   //!< Resize
+    void                    resize(size_t len);                                                         //!< Resize
     void                    setElement(const size_t index, Move *elem);                                 //!< Set an element
     
 private:
     
-    std::vector<Move*>   elements;                                                                      //!< The elements
+    std::vector<Move*>      elements;                                                                   //!< The elements
     
 };  
 

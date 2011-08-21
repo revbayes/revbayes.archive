@@ -43,7 +43,7 @@ RbLanguageObject* Func_unique::execute( void ) {
 	
 	//VectorReal* tempVec = new VectorReal;
 	
-	
+	return NULL;
 }
 
 

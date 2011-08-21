@@ -96,7 +96,7 @@ const VectorString& Vector::getClass(void) const {
 }
 
 /** Get element */
-RbLanguageObject* Vector::getElement(const size_t index) {
+RbLanguageObject* Vector::getElement(size_t index) {
     
     return elements[index];
 }

@@ -111,11 +111,9 @@ double Move_mslide::perform( std::set<StochasticNode*>& affectedNodes ) {
             newVal = 2.0 * minVal - newVal;
         else if ( newVal > maxVal )
             newVal = 2.0 * maxVal - newVal;
-    } while ( newVal < minVal or newVal > maxVal );
+    } while ( newVal < minVal || newVal > maxVal );
 
-    // FIXME: not the most efficient possible way of handling multiple reflections :-P
-
-    assert(newVal >= minVal and newVal <= maxVal);
+    // FIXME: not the most efficient way of handling multiple reflections :-P
 
     nodePtr->setValue( newVal.clone(), affectedNodes );
 	

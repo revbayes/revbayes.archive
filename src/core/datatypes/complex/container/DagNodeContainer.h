@@ -56,7 +56,7 @@ public:
     // Container functions
     void                    clear(void);                                                                //!< Clear
     VariableSlot*           getElement(size_t index);                                                   //!< Get element or subcontainer
-    void                    resize(const size_t len);                                                   //!< Resize
+    void                    resize(size_t len);                                                         //!< Resize
     void                    setElement(const size_t index, Variable *elem);                             //!< Set an element
     
 private:

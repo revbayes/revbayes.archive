@@ -49,17 +49,10 @@ Natural::Natural( int x ) : Integer() {
 }
 
 
-/** Construct from unsigned int */
-Natural::Natural( unsigned int x) : Integer() {
-
-    if ( x > INT_MAX )
-        throw RbException( "Value out of range for " + Natural_name );
-
-    value = x;
-}
-
-
-/** Construct from unsigned int */
+/**
+ * Construct from size_t, which can be either an unsigned long or an unsigned int depending
+ * on system.
+ */
 Natural::Natural( size_t x) : Integer() {
 
     if ( x > INT_MAX )

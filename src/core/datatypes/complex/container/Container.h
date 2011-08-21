@@ -62,7 +62,7 @@ class Container : public ConstantMemberObject {
 
         // Container functions you have to override
         virtual void                    clear(void) = 0;                                                    //!< Clear
-        virtual void                    resize(const size_t len) = 0;                                       //!< Resize
+        virtual void                    resize(size_t len) = 0;                                             //!< Resize
         virtual RbObject*               getElement(size_t index) = 0;                                       //!< Get element or subcontainer (not constant because of potential resize)
 
 protected:

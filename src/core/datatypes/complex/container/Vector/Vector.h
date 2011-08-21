@@ -46,7 +46,7 @@ class Vector : public Container {
     
         // Container functions you have to override
         virtual void                    clear(void);                                                        //!< Clear
-        virtual RbLanguageObject*       getElement(const size_t index);                                     //!< get element
+        virtual RbLanguageObject*       getElement(size_t index);                                           //!< Get element
         virtual void                    setElement(const size_t index, RbLanguageObject* elem);             //!< Set element with type conversion
 
         protected:

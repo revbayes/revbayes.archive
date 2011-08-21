@@ -239,7 +239,7 @@ TreePlate* Dist_birthdeath::rv( void ) {
     // internally we treat unrooted topologies the same as rooted
     top->setIsRooted(true);
     
-    TopologyNode *root = new TopologyNode((int)pow(2.0,nSpecies)-1);
+    TopologyNode *root = new TopologyNode((int)pow(2.0,int(nSpecies))-1);
     std::vector<TopologyNode*> tips;
     std::vector<TopologyNode*> interior;
     tips.push_back(root);
@@ -247,7 +247,7 @@ TreePlate* Dist_birthdeath::rv( void ) {
     buildRandomBinaryTree(interior, tips, nSpecies);
     
     // set tip names
-    for (int i=0; i<nSpecies; i++) {
+    for (size_t i=0; i<nSpecies; i++) {
         size_t index = size_t( floor(rng->uniform01() * tips.size()) );
         
         // get the node from the list

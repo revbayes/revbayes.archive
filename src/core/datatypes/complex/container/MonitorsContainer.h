@@ -54,7 +54,7 @@ public:
     void                    clear(void);                                                                //!< Clear
     Monitor*                getElement(size_t index);                                                   //!< Get element or subcontainer
     void                    push_back(Monitor* m);                                                      //!< Add a monitor object
-    void                    resize(const size_t len);                                                   //!< Resize
+    void                    resize(size_t len);                                                         //!< Resize
     void                    setElement(const size_t index, Monitor *elem);                              //!< Set an element
     
 private:

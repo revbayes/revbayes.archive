@@ -22,8 +22,6 @@
 #include "RbException.h"
 
 
-//#pragma warning (disable: 4068)
-
 namespace RbStatistics {
     	
 #pragma mark Helper Functions
