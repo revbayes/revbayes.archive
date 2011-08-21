@@ -134,12 +134,11 @@ double Dist_neutralcoalescent::lnPdf( const RbLanguageObject* value ) {
     const VectorRealPos* waitingTimes  = static_cast<const VectorRealPos*>( value );
     size_t haploidPopSize              = static_cast<const Natural*  >( getMemberValue( "haploidPopSize" ) )->getValue();
     size_t nWaitingTimes               = waitingTimes->getLength();
-    size_t nNodes                      = nWaitingTimes + 1;
+    size_t k                           = nWaitingTimes + 1;
 
     double log_p = 0.0;
 
     for (size_t i = 0; i < nWaitingTimes; ++i) {
-        unsigned int k = nNodes;
         double k2N = (k*(k-1)/2) / haploidPopSize;
         log_p = log_p + log(k2N) - (k2N * (*waitingTimes)[i]);
     }
