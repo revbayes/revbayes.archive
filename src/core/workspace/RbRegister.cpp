@@ -132,6 +132,8 @@
 #include "Func_unclamp.h"
 #include "Func_unique.h"
 #include "Func_size.h"
+#include "Func_sort.h"
+
 
 
 /* Builtin templated functions */
@@ -366,6 +368,18 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "size",    new Func_size<VectorAminoAcidStates>()          );
         addFunction( "size",    new Func_size<VectorStandardStates>()          );
         addFunction( "size",    new Func_size<VectorCharacterContinuous>()          );
+        addFunction( "sort",    new Func_sort<VectorBoolean>()          );
+        addFunction( "sort",    new Func_sort<VectorInteger>()          );
+        addFunction( "sort",    new Func_sort<VectorNatural>()          );
+        addFunction( "sort",    new Func_sort<VectorReal>()          );
+        addFunction( "sort",    new Func_sort<VectorRealPos>()          );
+        addFunction( "sort",    new Func_sort<VectorComplex>()          );
+        addFunction( "sort",    new Func_sort<VectorString>()          );
+        addFunction( "sort",    new Func_sort<VectorDnaStates>()          );
+        addFunction( "sort",    new Func_sort<VectorRnaStates>()          );
+        addFunction( "sort",    new Func_sort<VectorAminoAcidStates>()          );
+        addFunction( "sort",    new Func_sort<VectorStandardStates>()          );
+        addFunction( "sort",    new Func_sort<VectorCharacterContinuous>()          );
 
         /* Add math functions (alphabetical order) */
 
