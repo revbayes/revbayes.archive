@@ -116,3 +116,10 @@ RbBoolean       operator!=(const RbString& A, const RbString& B){
     
     return std::string( A ) != std::string( B );
 }
+
+RbBoolean       operator< (const RbString& A, const RbString& B){
+    
+    return std::string ( A ) < std::string ( B );
+    
+}
+

@@ -300,20 +300,25 @@ void VectorInteger::setValue(const VectorInteger& x) {
 }   
 
 
-bool comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) { return (*(static_cast<Integer*>(i)) < *(static_cast<Integer*>(j)) ); }
+bool VectorInteger::comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) { 
+
+    return (*(static_cast<Integer*>(i)) < *(static_cast<Integer*>(j)) ); 
+
+}
 
 
-/** Sort the vector */
+/* Sort the vector */
 void VectorInteger::sort( void ) {
     
-    std::sort(elements.begin(), elements.end(), comparisonFunction);
+    std::sort(elements.begin(), elements.end(), comparisonFunction );
     return;
     
 }
 
-/** Remove consecutive duplicates and resizes the vector */
+/* Remove duplicates and resizes the vector */
 void VectorInteger::unique(void) {
 
+    sort();
     std::vector<RbLanguageObject*> uniqueVector;
     uniqueVector.push_back (elements[0]);
     for (int i = 1 ; i< elements.size() ; i++)

@@ -52,13 +52,16 @@ class VectorString : public Vector {
         
         // Vector functions
 	    void                        push_back(std::string x);                                       //!< Add element
-        void                               sort( void );                                           //!< sorts the vector    
-        void                               unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
+        void                        sort( void );                                           //!< Sort the vector    
+        void                        unique(void);                                           //!< Remove duplicates and resize the vector
 
     
     
         std::vector<std::string>    getStdVector(void) const;                                       //!< Get the value vector as a std::vector
+    protected:
     
+        static bool                 comparisonFunction (RbLanguageObject* i,RbLanguageObject* j);                                            //!< Utilitary function for sort
+ 
 };
 
 #endif

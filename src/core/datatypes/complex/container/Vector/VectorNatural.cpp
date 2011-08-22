@@ -409,17 +409,25 @@ void VectorNatural::setValue( const VectorInteger& x ) {
 }
 
 
-/** Sort the vector */
+bool VectorNatural::comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) { 
+    
+    return (*(static_cast<Integer*>(i)) < *(static_cast<Integer*>(j)) ); 
+    
+}
+
+
+/* Sort the vector */
 void VectorNatural::sort( void ) {
     
-    std::sort(elements.begin(), elements.end());
+    std::sort(elements.begin(), elements.end(), comparisonFunction);
     return;
     
 }
 
-/** Remove consecutive duplicates and resizes the vector */
+/* Remove duplicates and resize the vector */
 void VectorNatural::unique(void) {
     
+    sort();
     std::vector<RbLanguageObject*> uniqueVector;
     uniqueVector.push_back (elements[0]);
     for (int i = 1 ; i< elements.size() ; i++)

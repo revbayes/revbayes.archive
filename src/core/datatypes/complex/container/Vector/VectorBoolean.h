@@ -57,6 +57,9 @@ class VectorBoolean : public Vector {
         void                               sort( void );                                           //!< sorts the vector    
         void                               unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
 
+protected:    
+        static bool                 comparisonFunction (RbLanguageObject* i,RbLanguageObject* j);                                            //!< Utilitary function for sort
+
 };
 
 #endif

@@ -49,6 +49,13 @@ Natural::Natural( int x ) : Integer() {
 }
 
 
+/** Construct from unsigned int */
+Natural::Natural( unsigned int x ) : Integer() {
+        
+    value = x;
+}
+
+
 /**
  * Construct from size_t, which can be either an unsigned long or an unsigned int depending
  * on system.

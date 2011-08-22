@@ -198,4 +198,10 @@ RbBoolean       operator!=(const Complex& A, const Complex& B){
     return std::complex<double> ( A ) != std::complex<double> ( B );
 }
 
+RbBoolean                     operator< (const Complex& A, const Complex& B){
+    
+    return std::complex<double> ( A ) < std::complex<double> ( B );
+
+}
+
 

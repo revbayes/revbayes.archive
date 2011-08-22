@@ -73,16 +73,32 @@ void VectorCharacters::push_back( Character* newChar ) {
     length++;
 }
 
+bool comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) {
+
+    return (*(static_cast<Character*>(i)) < *(static_cast<Character*>(j)) ); 
+
+}
+
+
+bool VectorCharacters::comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) { 
+    
+    return (*(static_cast<Character*>(i)) < *(static_cast<Character*>(j)) ); 
+    
+}
+
+
 /** Sort the vector */
 void VectorCharacters::sort( void ) {
     
-    std::sort(elements.begin(), elements.end());
+    std::sort(elements.begin(), elements.end(), comparisonFunction);
     return;
     
 }
 
-/** Remove consecutive duplicates and resizes the vector */
+/* Remove duplicates and resize the vector */
 void VectorCharacters::unique(void) {
+    
+    sort();
     std::vector<RbLanguageObject*> uniqueVector;
     uniqueVector.push_back (elements[0]);
     for (int i = 1 ; i< elements.size() ; i++)

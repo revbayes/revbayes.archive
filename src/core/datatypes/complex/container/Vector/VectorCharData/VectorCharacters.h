@@ -44,15 +44,21 @@ public:
     std::string                             getTaxonName(void) const { return taxonName; }          //!< Return the name of the character vector
     void                                    push_back( Character* newChar );                        //!< Push back a new character
     void                                    setTaxonName(std::string tn) { taxonName = tn; }        //!< Set the taxon name
-    void                                    sort( void );                                           //!< sorts the vector    
-    void                                    unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
+    void                                    sort( void );                                           //!< Sort the vector    
+    void                                    unique(void);                                           //!< Remove duplicates and resize the vector
 
     
 protected:
                                             VectorCharacters(const std::string& elemType);          //!< Set type spec of container from type of elements
+
+    
+    static bool                             comparisonFunction (RbLanguageObject* i,RbLanguageObject* j);                                            //!< Utilitary function for sort
+
     
 private:
     std::string                             taxonName;                                              //!< Name of the taxon for this vector of characters               
 };
+
+bool comparisonFunction (RbLanguageObject* i,RbLanguageObject* j);                                            //!< Utilitary function for sort
 
 #endif

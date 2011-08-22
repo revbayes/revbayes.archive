@@ -181,16 +181,25 @@ std::string VectorString::richInfo(void) const {
 }
 
 
+bool VectorString::comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) { 
+    
+    return (*(static_cast<RbString*>(i)) < *(static_cast<RbString*>(j)) ); 
+    
+}
+
+
 /** Sort the vector */
 void VectorString::sort( void ) {
     
-    std::sort(elements.begin(), elements.end());
+    std::sort(elements.begin(), elements.end(), comparisonFunction);
     return;
     
 }
 
 /** Remove consecutive duplicates and resizes the vector */
 void VectorString::unique(void) {
+    
+    sort();
     std::vector<RbLanguageObject*> uniqueVector;
     uniqueVector.push_back (elements[0]);
     for (int i = 1 ; i< elements.size() ; i++)

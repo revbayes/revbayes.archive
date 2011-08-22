@@ -73,7 +73,10 @@ class VectorNatural : public Vector {
     
     protected:
 //        RbObject*                   getDefaultElement(void) const { return new Natural(); }         //!< Get default element for empty slots
-
+    
+    static bool                             comparisonFunction (RbLanguageObject* i,RbLanguageObject* j);                                            //!< Utilitary function for sort
+    
+    
 };
 
 #endif

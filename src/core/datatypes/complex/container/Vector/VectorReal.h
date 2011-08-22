@@ -68,8 +68,11 @@ class VectorReal : public Vector {
         void                        push_front(double x);                                       //!< Add element in front
         void                        setValue(const VectorReal& x);                              //!< Set the value
         void                        setValue(const std::vector<double>& x);                     //!< Set the value
-        void                               sort( void );                                           //!< sorts the vector    
-        void                               unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
+        void                        sort( void );                                           //!< Sort the vector    
+        void                        unique(void);                                           //!< Remove duplicates and resize the vector
+protected:
+    
+        static bool                 comparisonFunction (RbLanguageObject* i,RbLanguageObject* j);                                            //!< Utilitary function for sort
 
     
     

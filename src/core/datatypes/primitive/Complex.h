@@ -71,6 +71,7 @@ Complex                     operator- (const Complex& A);                       
 RbBoolean                   operator! (const Complex& A);                                           //!< Unary operator !
 RbBoolean                   operator==(const Complex& A, const Complex& B);                         //!< operator == 
 RbBoolean                   operator!=(const Complex& A, const Complex& B);                         //!< operator != 
+RbBoolean                     operator< (const Complex& A, const Complex& B);                         //!< operator < 
 
 
 

@@ -64,6 +64,8 @@ class VectorComplex : public Vector {
     
     
     protected:
+   
+        static bool                         comparisonFunction (RbLanguageObject* i,RbLanguageObject* j);                                            //!< Utilitary function for sort
 
 };
 

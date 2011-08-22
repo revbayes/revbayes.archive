@@ -37,6 +37,7 @@ class Natural : public Integer {
                             Natural(void);                                                          //!< Default constructor (value is 0)
                             Natural(size_t x);                                                      //!< Constructor from size_t
                             Natural(int x);                                                         //!< Constructor from int
+                            Natural(unsigned int x);                                                         //!< Constructor from int
                             Natural(bool x);                                                        //!< Constructor from bool
                             Natural(const Integer& x);                                              //!< Constructor from Integer
                             Natural(const RbBoolean& x);                                              //!< Constructor from Bool

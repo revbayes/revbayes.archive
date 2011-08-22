@@ -257,10 +257,17 @@ void VectorComplex::setValue(const VectorComplex& x) {
 }   
 
 
+bool VectorComplex::comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) { 
+    
+    return (*(static_cast<Complex*>(i)) < *(static_cast<Complex*>(j)) ); 
+    
+}
+
+
 /** Sort the vector */
 void VectorComplex::sort( void ) {
     
-    std::sort(elements.begin(), elements.end());
+    std::sort(elements.begin(), elements.end(), comparisonFunction);
     return;
     
 }

@@ -365,7 +365,14 @@ void VectorRealPos::setValue( const VectorRealPos& x ) {
 }   
 
 
-/** Sort the vector */
+bool VectorRealPos::comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) { 
+    
+    return (*(static_cast<RealPos*>(i)) < *(static_cast<RealPos*>(j)) ); 
+    
+}
+
+
+/* Sort the vector */
 void VectorRealPos::sort( void ) {
     
     std::sort(elements.begin(), elements.end());
@@ -373,8 +380,10 @@ void VectorRealPos::sort( void ) {
     
 }
 
-/** Remove consecutive duplicates and resizes the vector */
+/* Remove duplicates and resize the vector */
 void VectorRealPos::unique(void) {
+    
+    sort();
     std::vector<RbLanguageObject*> uniqueVector;
     uniqueVector.push_back (elements[0]);
     for (int i = 1 ; i< elements.size() ; i++)

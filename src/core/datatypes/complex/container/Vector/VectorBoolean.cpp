@@ -203,6 +203,13 @@ void VectorBoolean::setValue(const VectorBoolean& x) {
 }   
 
 
+bool VectorBoolean::comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) { 
+    
+    return (*(static_cast<RbBoolean*>(i)) < *(static_cast<RbBoolean*>(j)) ); 
+    
+}
+
+
 /** Sort the vector */
 void VectorBoolean::sort( void ) {
     
@@ -213,6 +220,7 @@ void VectorBoolean::sort( void ) {
 
 /** Remove consecutive duplicates and resizes the vector */
 void VectorBoolean::unique(void) {
+    sort();
     std::vector<RbLanguageObject*> uniqueVector;
     uniqueVector.push_back (elements[0]);
     for (int i = 1 ; i< elements.size() ; i++)
