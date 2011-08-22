@@ -1683,6 +1683,7 @@
 		85CD0235133948C400318200 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		85CD0236133948C400318200 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		85CD0237133948C400318200 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BDDB04311402F34100938F48 /* Func_size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_size.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2131,6 +2132,7 @@
 				645EB12D13FEE04200018F3A /* Func_unclamp.cpp */,
 				645EB12E13FEE04200018F3A /* Func_unclamp.h */,
 				645EB13013FEE04200018F3A /* Func_unique.h */,
+				BDDB04311402F34100938F48 /* Func_size.h */,
 				645EB13113FEE04200018F3A /* Func_vector.h */,
 			);
 			path = builtin;

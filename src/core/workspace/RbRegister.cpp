@@ -131,6 +131,8 @@
 #include "Func_structure.h"
 #include "Func_unclamp.h"
 #include "Func_unique.h"
+#include "Func_size.h"
+
 
 /* Builtin templated functions */
 #include "Func_simplex.h"
@@ -352,6 +354,18 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "unique",    new Func_unique<VectorAminoAcidStates>()          );
         addFunction( "unique",    new Func_unique<VectorStandardStates>()          );
         addFunction( "unique",    new Func_unique<VectorCharacterContinuous>()          );
+        addFunction( "size",    new Func_size<VectorBoolean>()          );
+        addFunction( "size",    new Func_size<VectorInteger>()          );
+        addFunction( "size",    new Func_size<VectorNatural>()          );
+        addFunction( "size",    new Func_size<VectorReal>()          );
+        addFunction( "size",    new Func_size<VectorRealPos>()          );
+        addFunction( "size",    new Func_size<VectorComplex>()          );
+        addFunction( "size",    new Func_size<VectorString>()          );
+        addFunction( "size",    new Func_size<VectorDnaStates>()          );
+        addFunction( "size",    new Func_size<VectorRnaStates>()          );
+        addFunction( "size",    new Func_size<VectorAminoAcidStates>()          );
+        addFunction( "size",    new Func_size<VectorStandardStates>()          );
+        addFunction( "size",    new Func_size<VectorCharacterContinuous>()          );
 
         /* Add math functions (alphabetical order) */
 

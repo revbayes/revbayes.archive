@@ -31,17 +31,22 @@
 
 #include <sstream>
 
-/** Default constructor */
+/* Default constructor */
 Integer::Integer(void) : RbLanguageObject(), value(0) {
 }
 
-/** Construct from int */
+/* Construct from int */
 Integer::Integer(const int v) : RbLanguageObject(), value(v) {
 }
 
-/** Construct from unsigned int (ambiguous between int and bool otherwise) */
+/* Construct from unsigned int (ambiguous between int and bool otherwise) */
 Integer::Integer(const unsigned int v) : RbLanguageObject(), value(v) {
 }
+
+/* Construct from size_t (ambiguous between int and size_t otherwise) */
+Integer::Integer(const size_t v) : RbLanguageObject(), value(v) {
+}
+
 
 /** Construct from bool */
 Integer::Integer(const bool v) : RbLanguageObject() {
