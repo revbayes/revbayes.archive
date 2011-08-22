@@ -16,6 +16,7 @@
 #ifndef RbString_H
 #define RbString_H
 
+#include "RbBoolean.h"
 #include "RbLanguageObject.h"
 
 #include <fstream>
@@ -61,6 +62,8 @@ class RbString : public RbLanguageObject {
 };
 
 std::string     operator+(const std::string& A, const RbString& B);                     //!< Append to std::string
+RbBoolean       operator==(const RbString& A, const RbString& B);                         //!< operator == 
+RbBoolean       operator!=(const RbString& A, const RbString& B);                         //!< operator != 
 
 #endif
 

@@ -299,3 +299,34 @@ void VectorInteger::setValue(const VectorInteger& x) {
     length = x.getLength();
 }   
 
+
+bool comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) { return (*(static_cast<Integer*>(i)) < *(static_cast<Integer*>(j)) ); }
+
+
+/** Sort the vector */
+void VectorInteger::sort( void ) {
+    
+    std::sort(elements.begin(), elements.end(), comparisonFunction);
+    return;
+    
+}
+
+/** Remove consecutive duplicates and resizes the vector */
+void VectorInteger::unique(void) {
+
+    std::vector<RbLanguageObject*> uniqueVector;
+    uniqueVector.push_back (elements[0]);
+    for (int i = 1 ; i< elements.size() ; i++)
+    {
+        if (*(static_cast<Integer*>(elements[i])) != *(static_cast<Integer*>(elements[i-1])))
+            uniqueVector.push_back(elements[i]);
+    }
+    
+    clear();
+    elements = uniqueVector;
+    length = elements.size();
+    return;
+    
+}
+
+

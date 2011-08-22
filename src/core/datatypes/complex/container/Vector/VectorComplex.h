@@ -58,7 +58,11 @@ class VectorComplex : public Vector {
         void                               push_front(std::complex<double> x);                         //!< Add element in front
         void                               setValue(const VectorComplex& x);                           //!< Set the value
         void                               setValue(const std::vector<std::complex<double> >& x);      //!< Set the value
-
+        void                               sort( void );                                           //!< sorts the vector    
+        void                               unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
+        
+    
+    
     protected:
 
 };

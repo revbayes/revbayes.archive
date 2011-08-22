@@ -132,3 +132,70 @@ std::string Complex::richInfo(void) const {
     return o.str();
 }
 
+////////////////////////////////// Global Complex operators ///////////////////////////////////
+
+
+/**
+ * This function performs unary plus on a complex,
+ * which simply returns a copy of the complex.
+ *
+ * @brief unary operator+
+ *
+ * @param  A The complex operand
+ * @return A copy of the operand
+ */
+Complex operator+(const Complex& A) {
+    
+	Complex B = A;
+	return B;
+}
+
+
+/**
+ * This function performs unary minus on an integer.
+ *
+ * @brief operator-
+ *
+ * @param A The integer operand
+ * @return -A
+ */
+Complex operator-(const Complex& A) {
+    
+	Complex B( - A.getValue() );
+    
+    return B;
+}
+
+
+/**
+ * This function performs unary not on an integer by
+ * comparing the value to 0. It returns true if the
+ * value is different from 0.
+ *
+ * @brief operator!
+ *
+ * @param A The integer operand
+ * @return True if A != 0
+ */
+RbBoolean operator!(const Complex& A) {
+    
+    std::complex<double> zero (0, 0);
+	RbBoolean B( A.getValue() != zero );
+    
+    return B;
+}
+
+
+/** Operator == for testing equality */
+RbBoolean       operator==(const Complex& A, const Complex& B){
+    
+    return std::complex<double> ( A ) == std::complex<double> ( B );
+}
+
+/** Operator != for testing inequality */
+RbBoolean       operator!=(const Complex& A, const Complex& B){
+    
+    return std::complex<double> ( A ) != std::complex<double> ( B );
+}
+
+

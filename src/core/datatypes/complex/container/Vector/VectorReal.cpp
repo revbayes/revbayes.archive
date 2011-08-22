@@ -265,3 +265,29 @@ void VectorReal::setValue(const VectorReal& x) {
     }
 }   
 
+
+/** Sort the vector */
+void VectorReal::sort( void ) {
+    
+    std::sort(elements.begin(), elements.end());
+    return;
+    
+}
+
+/** Remove consecutive duplicates and resizes the vector */
+void VectorReal::unique(void) {
+    std::vector<RbLanguageObject*> uniqueVector;
+    uniqueVector.push_back (elements[0]);
+    for (int i = 1 ; i< elements.size() ; i++)
+    {
+        if (*(static_cast<Real*>(elements[i])) != *(static_cast<Real*>(elements[i-1])))
+            uniqueVector.push_back(elements[i]);
+    }
+    
+    clear();
+    elements = uniqueVector;
+    length = elements.size();
+    return;
+    
+}
+

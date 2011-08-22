@@ -26,8 +26,9 @@
 class DAGNode;
 class VectorString;
 
-const std::string Func_unique_name = "Unclamp function";
+const std::string Func_unique_name = "Unique function";
 
+template <typename valType>
 class Func_unique :  public RbFunction {
 	
 public:
@@ -44,4 +45,69 @@ public:
 };
 
 #endif
+
+#include "Ellipsis.h"
+#include "RbUtil.h"
+#include "TypeSpec.h"
+#include "ValueRule.h"
+#include "Vector"
+
+
+/** Clone object */
+template <typename valType>
+Func_unique<valType>* Func_unique<valType>::clone( void ) const {
+    
+    return new Func_unique( *this );
+}
+
+
+/** Execute function: We rely on operator overloading to provide the necessary functionality */
+template <typename valType> 
+RbLanguageObject* Func_unique<valType>::execute( void ) {
+    
+    valType* val =  static_cast<const valType*> ( args[0].getValue() )->clone() ;
+    
+    if(val->size() == 0) 
+        return val;
+    val->sort();
+    val->unique();
+    return val;
+
+}
+
+
+/** Get argument rules */
+template <typename valType>
+const ArgumentRules& Func_unique<valType>::getArgumentRules( void ) const {
+    
+    static ArgumentRules argumentRules;
+    static bool          rulesSet = false;
+    
+    if ( !rulesSet ) 
+    {
+        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        rulesSet = true;
+    }
+    
+    return argumentRules;
+}
+
+
+/** Get class vector describing type of object */
+template <typename valType>
+const VectorString& Func_unique<valType>::getClass( void ) const {
+    
+    static std::string  rbName  = "Func_unique<" + valType().getType() + ">"; 
+    static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
+    
+    return rbClass;
+}
+
+
+/** Get return type */
+template <typename valType> const TypeSpec Func_unique<valType>::getReturnType( void ) const {
+	
+    return valType().getTypeSpec();
+}
+
 

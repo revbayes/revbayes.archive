@@ -256,3 +256,28 @@ void VectorComplex::setValue(const VectorComplex& x) {
     length = x.getLength();
 }   
 
+
+/** Sort the vector */
+void VectorComplex::sort( void ) {
+    
+    std::sort(elements.begin(), elements.end());
+    return;
+    
+}
+
+/** Remove consecutive duplicates and resizes the vector */
+void VectorComplex::unique(void) {
+/*    std::vector<RbLanguageObject*> uniqueVector;
+    uniqueVector.push_back (elements[0]);
+    for (int i = 1 ; i< elements.size() ; i++)
+    {
+        if (*(static_cast<Complex*>(elements[i])) != *(static_cast<Complex*>(elements[i-1])))
+            uniqueVector.push_back(elements[i]);
+    }
+    
+    clear();
+    elements = uniqueVector;
+    length = elements.size();
+    return;
+    */
+}

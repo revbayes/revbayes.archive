@@ -59,8 +59,17 @@ class VectorInteger : public Vector {
         void                        push_front(int x);                                              //!< Add element in front
         void                        setValue(const VectorInteger& x);                               //!< Set the value
         void                        setValue(const std::vector<int>& x);                            //!< Set the value
+        void                        sort( void );                                           //!< sorts the vector    
+        void                        unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
 
+//        bool comparisonFunction (Integer* i,Integer* j);                                            //!< Utilitary function for sort
+
+    
+    
 };
+
+//bool comparisonFunction (Integer* i,Integer* j);                                            //!< Utilitary function for sort
+
 
 #endif
 

@@ -68,7 +68,11 @@ class VectorReal : public Vector {
         void                        push_front(double x);                                       //!< Add element in front
         void                        setValue(const VectorReal& x);                              //!< Set the value
         void                        setValue(const std::vector<double>& x);                     //!< Set the value
+        void                               sort( void );                                           //!< sorts the vector    
+        void                               unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
 
+    
+    
 };
 
 #endif

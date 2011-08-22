@@ -61,5 +61,7 @@ class Natural : public Integer {
         void                setValue(unsigned int x);                                               //!< Set value from unsigned int
 };
 
+
+
 #endif
 

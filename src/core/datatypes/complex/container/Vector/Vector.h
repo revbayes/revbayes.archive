@@ -43,12 +43,18 @@ class Vector : public Container {
         void                            pop_back(void);                                                     //!< Drop element at back
         void                            pop_front(void);                                                    //!< Drop element from front
         void                            resize(size_t n);                                                   //!< Resize to new vector of length n
+        size_t                          size(void) const;                                                   //!< get the number of elements in the vector
+    
     
         // Container functions you have to override
         virtual void                    clear(void);                                                        //!< Clear
         virtual RbLanguageObject*       getElement(size_t index);                                           //!< Get element
         virtual void                    setElement(const size_t index, RbLanguageObject* elem);             //!< Set element with type conversion
+        virtual void                            sort(void) = 0;                                                         //!< sort the vector
+        virtual void                            unique(void) = 0;                                                       //!< removes consecutive duplicates
 
+    
+    
         protected:
                                         Vector(const std::string& elemType);                                //!< Set type spec of container from type of elements
                                         Vector(const Vector &v);                                            //!< Copy Constructor

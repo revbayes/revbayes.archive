@@ -202,3 +202,28 @@ void VectorBoolean::setValue(const VectorBoolean& x) {
     }
 }   
 
+
+/** Sort the vector */
+void VectorBoolean::sort( void ) {
+    
+    std::sort(elements.begin(), elements.end());
+    return;
+    
+}
+
+/** Remove consecutive duplicates and resizes the vector */
+void VectorBoolean::unique(void) {
+    std::vector<RbLanguageObject*> uniqueVector;
+    uniqueVector.push_back (elements[0]);
+    for (int i = 1 ; i< elements.size() ; i++)
+    {
+        if (*(static_cast<RbBoolean*>(elements[i])) != *(static_cast<RbBoolean*>(elements[i-1])))
+            uniqueVector.push_back(elements[i]);
+    }
+    
+    clear();
+    elements = uniqueVector;
+    length = elements.size();
+    return;
+    
+}

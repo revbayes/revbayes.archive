@@ -180,3 +180,29 @@ std::string VectorString::richInfo(void) const {
     return o.str();
 }
 
+
+/** Sort the vector */
+void VectorString::sort( void ) {
+    
+    std::sort(elements.begin(), elements.end());
+    return;
+    
+}
+
+/** Remove consecutive duplicates and resizes the vector */
+void VectorString::unique(void) {
+    std::vector<RbLanguageObject*> uniqueVector;
+    uniqueVector.push_back (elements[0]);
+    for (int i = 1 ; i< elements.size() ; i++)
+    {
+        if (*(static_cast<RbString*>(elements[i])) != *(static_cast<RbString*>(elements[i-1])))
+            uniqueVector.push_back(elements[i]);
+    }
+    
+    clear();
+    elements = uniqueVector;
+    length = elements.size();
+    return;
+    
+}
+

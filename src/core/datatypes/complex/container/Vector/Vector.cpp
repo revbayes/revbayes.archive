@@ -21,7 +21,7 @@
 #include "TypeSpec.h"
 #include "Vector.h"
 #include "VectorString.h"
-
+#include <algorithm>
 
 /** Set type of elements */
 Vector::Vector(const std::string& elemType) : Container(TypeSpec(elemType)) {
@@ -167,4 +167,12 @@ void Vector::setElement(const size_t index, RbLanguageObject *elem) {
     // retain the element
     elem->retain();
 }
+
+/** Get the size of the vector */
+size_t Vector::size( void ) const {
+    
+    return length;
+
+}
+
 

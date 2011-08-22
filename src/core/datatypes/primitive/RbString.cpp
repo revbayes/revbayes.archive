@@ -104,3 +104,15 @@ std::string operator+( const std::string& A, const RbString& B ) {
     return A + std::string( B );
 }
 
+
+/** Operator == for testing equality */
+RbBoolean       operator==(const RbString& A, const RbString& B){
+    
+    return std::string( A ) == std::string( B );
+}
+
+/** Operator != for testing inequality */
+RbBoolean       operator!=(const RbString& A, const RbString& B){
+    
+    return std::string( A ) != std::string( B );
+}

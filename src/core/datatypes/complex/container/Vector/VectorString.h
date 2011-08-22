@@ -52,6 +52,10 @@ class VectorString : public Vector {
         
         // Vector functions
 	    void                        push_back(std::string x);                                       //!< Add element
+        void                               sort( void );                                           //!< sorts the vector    
+        void                               unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
+
+    
     
         std::vector<std::string>    getStdVector(void) const;                                       //!< Get the value vector as a std::vector
     

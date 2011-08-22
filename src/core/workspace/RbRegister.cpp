@@ -340,7 +340,19 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "setval",    new Func_setval()          );
         addFunction( "structure", new Func_structure()       );
         addFunction( "unclamp",   new Func_unclamp()         );
-        addFunction( "unique",    new Func_unique()          );
+        addFunction( "unique",    new Func_unique<VectorBoolean>()          );
+        addFunction( "unique",    new Func_unique<VectorInteger>()          );
+        addFunction( "unique",    new Func_unique<VectorNatural>()          );
+        addFunction( "unique",    new Func_unique<VectorReal>()          );
+        addFunction( "unique",    new Func_unique<VectorRealPos>()          );
+        addFunction( "unique",    new Func_unique<VectorComplex>()          );
+        addFunction( "unique",    new Func_unique<VectorString>()          );
+        addFunction( "unique",    new Func_unique<VectorDnaStates>()          );
+        addFunction( "unique",    new Func_unique<VectorRnaStates>()          );
+        addFunction( "unique",    new Func_unique<VectorAminoAcidStates>()          );
+        addFunction( "unique",    new Func_unique<VectorStandardStates>()          );
+        addFunction( "unique",    new Func_unique<VectorCharacterContinuous>()          );
+
         /* Add math functions (alphabetical order) */
 
         addFunction( "abs",       new Func_abs()   );
@@ -362,7 +374,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "simplex",   new Func_simplex<         RealPos                                                         >() );
 //        addFunction( "simplex",   new Func_simplex<         VectorRealPos                                                   >() );
         addFunction( "transpose", new Func_transpose<       MatrixReal                                                      >() );
-        addFunction( "v",         new Func_vector<          RbBoolean,                        VectorBoolean                   >() );
+        addFunction( "v",         new Func_vector<          RbBoolean,                      VectorBoolean                   >() );
         addFunction( "v",         new Func_vector<          Integer,                        VectorInteger                   >() );
         addFunction( "v",         new Func_vector<          Natural,                        VectorNatural                   >() );
         addFunction( "v",         new Func_vector<          Real,                           VectorReal                      >() );

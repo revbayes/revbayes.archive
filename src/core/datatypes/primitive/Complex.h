@@ -19,6 +19,7 @@
 #ifndef Complex_H
 #define Complex_H
 
+#include "RbBoolean.h"
 #include "RbLanguageObject.h"
 
 #include <complex>
@@ -63,6 +64,30 @@ class Complex : public RbLanguageObject {
 	protected:
         std::complex<double>        value;                                                                  //!< Value member
 };
+
+// Operators defined outside of the class
+Complex                     operator+ (const Complex& A);                                           //!< Unary operator + 
+Complex                     operator- (const Complex& A);                                           //!< Unary operator - 
+RbBoolean                   operator! (const Complex& A);                                           //!< Unary operator !
+RbBoolean                   operator==(const Complex& A, const Complex& B);                         //!< operator == 
+RbBoolean                   operator!=(const Complex& A, const Complex& B);                         //!< operator != 
+
+
+
+#if 0
+Complex                     operator+ (const Complex& A, const Complex& B);                         //!< operator + 
+Complex                     operator- (const Complex& A, const Complex& B);                         //!< operator - 
+Complex                     operator* (const Complex& A, const Complex& B);                         //!< operator *
+Complex                     operator/ (const Complex& A, const Complex& B);                         //!< operator / 
+RbBoolean                     operator==(const Complex& A, const Complex& B);                         //!< operator == 
+RbBoolean                     operator!=(const Complex& A, const Complex& B);                         //!< operator != 
+RbBoolean                     operator< (const Complex& A, const Complex& B);                         //!< operator < 
+RbBoolean                     operator<=(const Complex& A, const Complex& B);                         //!< operator <= 
+RbBoolean                     operator> (const Complex& A, const Complex& B);                         //!< operator > 
+RbBoolean                     operator>=(const Complex& A, const Complex& B);                         //!< operator >= 
+Complex                     operator+ (const Complex& A);                                           //!< unary operator + 
+Complex                     operator- (const Complex& A);                                           //!< unary operator - 
+#endif
 
 #endif
 

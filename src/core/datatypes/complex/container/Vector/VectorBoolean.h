@@ -54,6 +54,8 @@ class VectorBoolean : public Vector {
         void                        push_front(bool x);                                             //!< Add element in front
         void                        setValue(const VectorBoolean& x);                               //!< Set the value
         void                        setValue(const std::vector<bool>& x);                           //!< Set the value
+        void                               sort( void );                                           //!< sorts the vector    
+        void                               unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
 
 };
 

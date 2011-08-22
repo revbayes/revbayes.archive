@@ -66,7 +66,11 @@ class VectorNatural : public Vector {
         void                        setValue(const std::vector<unsigned int>& x);                   //!< Set the value using STL vector of unsigned int
         void                        setValue(const VectorNatural& x);                               //!< Set the value using VectorNatural
         void                        setValue(const VectorInteger& x);                               //!< Set the value using VectorInteger
+        void                               sort( void );                                           //!< sorts the vector    
+        void                               unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
 
+    
+    
     protected:
 //        RbObject*                   getDefaultElement(void) const { return new Natural(); }         //!< Get default element for empty slots
 

@@ -207,8 +207,6 @@
 		645EB4CA13FEE04300018F3A /* Func_structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 645EB12B13FEE04200018F3A /* Func_structure.cpp */; };
 		645EB4CB13FEE04300018F3A /* Func_unclamp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 645EB12D13FEE04200018F3A /* Func_unclamp.cpp */; };
 		645EB4CC13FEE04300018F3A /* Func_unclamp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 645EB12D13FEE04200018F3A /* Func_unclamp.cpp */; };
-		645EB4CD13FEE04300018F3A /* Func_unique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 645EB12F13FEE04200018F3A /* Func_unique.cpp */; };
-		645EB4CE13FEE04300018F3A /* Func_unique.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 645EB12F13FEE04200018F3A /* Func_unique.cpp */; };
 		645EB4CF13FEE04300018F3A /* ConstructorFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 645EB13213FEE04200018F3A /* ConstructorFunction.cpp */; };
 		645EB4D013FEE04300018F3A /* ConstructorFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 645EB13213FEE04200018F3A /* ConstructorFunction.cpp */; };
 		645EB4D113FEE04300018F3A /* DistributionFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 645EB13413FEE04200018F3A /* DistributionFunction.cpp */; };
@@ -993,7 +991,6 @@
 		645EB12C13FEE04200018F3A /* Func_structure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_structure.h; sourceTree = "<group>"; };
 		645EB12D13FEE04200018F3A /* Func_unclamp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_unclamp.cpp; sourceTree = "<group>"; };
 		645EB12E13FEE04200018F3A /* Func_unclamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_unclamp.h; sourceTree = "<group>"; };
-		645EB12F13FEE04200018F3A /* Func_unique.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_unique.cpp; sourceTree = "<group>"; };
 		645EB13013FEE04200018F3A /* Func_unique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_unique.h; sourceTree = "<group>"; };
 		645EB13113FEE04200018F3A /* Func_vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_vector.h; sourceTree = "<group>"; };
 		645EB13213FEE04200018F3A /* ConstructorFunction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConstructorFunction.cpp; sourceTree = "<group>"; };
@@ -2133,7 +2130,6 @@
 				645EB12C13FEE04200018F3A /* Func_structure.h */,
 				645EB12D13FEE04200018F3A /* Func_unclamp.cpp */,
 				645EB12E13FEE04200018F3A /* Func_unclamp.h */,
-				645EB12F13FEE04200018F3A /* Func_unique.cpp */,
 				645EB13013FEE04200018F3A /* Func_unique.h */,
 				645EB13113FEE04200018F3A /* Func_vector.h */,
 			);
@@ -3561,7 +3557,6 @@
 				645EB4C813FEE04300018F3A /* Func_setval.cpp in Sources */,
 				645EB4CA13FEE04300018F3A /* Func_structure.cpp in Sources */,
 				645EB4CC13FEE04300018F3A /* Func_unclamp.cpp in Sources */,
-				645EB4CE13FEE04300018F3A /* Func_unique.cpp in Sources */,
 				645EB4D013FEE04300018F3A /* ConstructorFunction.cpp in Sources */,
 				645EB4D213FEE04300018F3A /* DistributionFunction.cpp in Sources */,
 				645EB4D413FEE04300018F3A /* Ellipsis.cpp in Sources */,
@@ -3787,7 +3782,6 @@
 				645EB4C713FEE04300018F3A /* Func_setval.cpp in Sources */,
 				645EB4C913FEE04300018F3A /* Func_structure.cpp in Sources */,
 				645EB4CB13FEE04300018F3A /* Func_unclamp.cpp in Sources */,
-				645EB4CD13FEE04300018F3A /* Func_unique.cpp in Sources */,
 				645EB4CF13FEE04300018F3A /* ConstructorFunction.cpp in Sources */,
 				645EB4D113FEE04300018F3A /* DistributionFunction.cpp in Sources */,
 				645EB4D313FEE04300018F3A /* Ellipsis.cpp in Sources */,

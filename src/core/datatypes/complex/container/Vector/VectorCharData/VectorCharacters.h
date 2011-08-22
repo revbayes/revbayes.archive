@@ -44,7 +44,10 @@ public:
     std::string                             getTaxonName(void) const { return taxonName; }          //!< Return the name of the character vector
     void                                    push_back( Character* newChar );                        //!< Push back a new character
     void                                    setTaxonName(std::string tn) { taxonName = tn; }        //!< Set the taxon name
+    void                                    sort( void );                                           //!< sorts the vector    
+    void                                    unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
 
+    
 protected:
                                             VectorCharacters(const std::string& elemType);          //!< Set type spec of container from type of elements
     

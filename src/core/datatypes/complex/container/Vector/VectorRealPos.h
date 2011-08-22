@@ -65,7 +65,11 @@ class VectorRealPos : public Vector {
         void                        setValue(const VectorNatural& x);                               //!< Set the value using VectorNatural
         void                        setValue(const VectorReal& x);                                  //!< Set the value using VectorReal
         void                        setValue(const VectorRealPos& x);                               //!< Set the value using VectorRealPos
+        void                               sort( void );                                           //!< sorts the vector    
+        void                               unique(void);                                           //!< Removes consecutive duplicates and resizes the vector
 
+    
+    
     protected:
 //        RbObject*                   getDefaultElement(void) const { return new RealPos(); }          //!< Get default element for empty slots
 
