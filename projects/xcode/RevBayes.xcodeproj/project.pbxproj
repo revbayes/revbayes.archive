@@ -773,6 +773,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6441D49714030FCF00A2A760 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../../scripts; sourceTree = "<group>"; };
 		6454895513FEDF13002ED337 /* RevBayes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RevBayes; sourceTree = BUILT_PRODUCTS_DIR; };
 		645EB04313FEE04200018F3A /* BurninEstimatorContinuous.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BurninEstimatorContinuous.cpp; sourceTree = "<group>"; };
 		645EB04413FEE04200018F3A /* BurninEstimatorContinuous.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BurninEstimatorContinuous.h; sourceTree = "<group>"; };
@@ -3155,6 +3156,7 @@
 				645EB76B13FEE08C00018F3A /* examples */,
 				645EB76C13FEE08C00018F3A /* models */,
 				645EB76D13FEE08C00018F3A /* projects */,
+				6441D49714030FCF00A2A760 /* scripts */,
 				645EB76E13FEE08C00018F3A /* tests */,
 				85CD0231133948C400318200 /* Frameworks */,
 				85CD022F133948C400318200 /* Products */,
