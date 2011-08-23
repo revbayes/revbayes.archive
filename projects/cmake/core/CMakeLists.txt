@@ -211,12 +211,13 @@ ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_quit.cpp
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_quit.h
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_setval.cpp
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_setval.h
+${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_size.h
+${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_sort.h
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_simplex.h
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_structure.cpp
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_structure.h
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_unclamp.cpp
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_unclamp.h
-${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_unique.cpp
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_unique.h
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_vector.h
 ${PROJECT_SOURCE_DIR}/core/functions/ConstructorFunction.cpp
