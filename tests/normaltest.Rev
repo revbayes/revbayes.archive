@@ -17,3 +17,4 @@ mymodel <- model(x)
 mymcmc <- mcmc(mymodel, ngen=100, printfreq=1, samplefreq=1, file="test.out")
 
 mymcmc.update()
+

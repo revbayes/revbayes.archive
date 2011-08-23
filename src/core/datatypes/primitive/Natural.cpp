@@ -39,6 +39,16 @@ Natural::Natural( void ) : Integer( 0 ) {
 }
 
 
+/** Construct from bool */
+Natural::Natural( bool x ) : Integer() {
+
+    if ( x )
+        value = 1;
+    else
+        value = 0;
+}
+
+
 /** Construct from int */
 Natural::Natural( int x ) : Integer() {
 
@@ -49,32 +59,20 @@ Natural::Natural( int x ) : Integer() {
 }
 
 
-/** Construct from unsigned int */
+/* Construct from unsigned int */
 Natural::Natural( unsigned int x ) : Integer() {
         
     value = x;
 }
 
 
-/**
- * Construct from size_t, which can be either an unsigned long or an unsigned int depending
- * on system.
- */
-Natural::Natural( size_t x) : Integer() {
+/* Construct from unsigned long */
+Natural::Natural( unsigned long x) : Integer() {
 
     if ( x > INT_MAX )
         throw RbException( "Value out of range for " + Natural_name );
 
     value = int(x);
-}
-
-/** Construct from bool */
-Natural::Natural( bool x ) : Integer() {
-
-    if ( x )
-        value = 1;
-    else
-        value = 0;
 }
 
 

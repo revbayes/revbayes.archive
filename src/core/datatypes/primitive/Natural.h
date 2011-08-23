@@ -35,12 +35,12 @@ class Natural : public Integer {
 
     public:
                             Natural(void);                                                          //!< Default constructor (value is 0)
-                            Natural(size_t x);                                                      //!< Constructor from size_t
-                            Natural(int x);                                                         //!< Constructor from int
-                            Natural(unsigned int x);                                                         //!< Constructor from int
                             Natural(bool x);                                                        //!< Constructor from bool
+                            Natural(int x);                                                         //!< Constructor from int
+                            Natural(unsigned int x);                                                //!< Constructor from int
+                            Natural(unsigned long x);                                               //!< Constructor from size_t
                             Natural(const Integer& x);                                              //!< Constructor from Integer
-                            Natural(const RbBoolean& x);                                              //!< Constructor from Bool
+                            Natural(const RbBoolean& x);                                            //!< Constructor from Bool
 
         // Overloaded operators
                             operator int(void) const { return value; }                              //!< Type conversion to int
