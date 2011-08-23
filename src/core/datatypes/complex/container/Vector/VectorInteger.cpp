@@ -27,6 +27,7 @@
 #include "VectorReal.h"
 #include "VectorRealPos.h"
 
+#include <algorithm>
 #include <sstream>
 
 
@@ -321,7 +322,7 @@ void VectorInteger::unique(void) {
     sort();
     std::vector<RbLanguageObject*> uniqueVector;
     uniqueVector.push_back (elements[0]);
-    for (int i = 1 ; i< elements.size() ; i++)
+    for (size_t i=1 ; i<elements.size() ; i++)
     {
         if (*(static_cast<Integer*>(elements[i])) != *(static_cast<Integer*>(elements[i-1])))
             uniqueVector.push_back(elements[i]);

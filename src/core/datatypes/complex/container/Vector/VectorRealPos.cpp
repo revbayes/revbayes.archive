@@ -26,6 +26,7 @@
 #include "VectorRealPos.h"
 #include "VectorString.h"
 
+#include <algorithm>
 #include <iomanip>
 
 /** Construct empty vector */
@@ -386,7 +387,7 @@ void VectorRealPos::unique(void) {
     sort();
     std::vector<RbLanguageObject*> uniqueVector;
     uniqueVector.push_back (elements[0]);
-    for (int i = 1 ; i< elements.size() ; i++)
+    for (size_t i = 1 ; i< elements.size() ; i++)
     {
         if (*(static_cast<RealPos*>(elements[i])) != *(static_cast<RealPos*>(elements[i-1])))
             uniqueVector.push_back(elements[i]);

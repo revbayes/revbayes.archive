@@ -23,6 +23,7 @@
 #include "VectorInteger.h"
 #include "VectorComplex.h"
 #include "VectorString.h"
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <limits>

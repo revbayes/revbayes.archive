@@ -155,7 +155,7 @@ RbLanguageObject* Func_readTraces::execute( void ) {
             }
             
             // adding values to the Tracess
-            for (int j=0; j<columns.size(); j++) {
+            for (size_t j=0; j<columns.size(); j++) {
                 Trace* t = data[j];
                 std::string tmp = columns[j];
                 double d = 1.0;

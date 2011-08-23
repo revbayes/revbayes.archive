@@ -25,6 +25,7 @@
 #include "VectorInteger.h"
 #include "VectorString.h"
 
+#include <algorithm>
 #include <sstream>
 
 
@@ -223,7 +224,7 @@ void VectorBoolean::unique(void) {
     sort();
     std::vector<RbLanguageObject*> uniqueVector;
     uniqueVector.push_back (elements[0]);
-    for (int i = 1 ; i< elements.size() ; i++)
+    for (size_t i = 1 ; i< elements.size() ; i++)
     {
         if (*(static_cast<RbBoolean*>(elements[i])) != *(static_cast<RbBoolean*>(elements[i-1])))
             uniqueVector.push_back(elements[i]);

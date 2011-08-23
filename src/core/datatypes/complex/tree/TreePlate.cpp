@@ -52,7 +52,8 @@ TreePlate::TreePlate(const TreePlate& t) : MutableMemberObject( t ) {
     
     if (t.orderingTopology != NULL)
         orderingTopology = t.orderingTopology->clone();
-    
+    else
+        orderingTopology = NULL;
 }
 
 

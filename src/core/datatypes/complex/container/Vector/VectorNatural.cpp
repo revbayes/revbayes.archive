@@ -24,6 +24,7 @@
 #include "VectorRealPos.h"
 #include "VectorString.h"
 
+#include <algorithm>
 
 /** Construct empty vector */
 VectorNatural::VectorNatural( void ) : Vector( Natural_name ) {
@@ -430,7 +431,7 @@ void VectorNatural::unique(void) {
     sort();
     std::vector<RbLanguageObject*> uniqueVector;
     uniqueVector.push_back (elements[0]);
-    for (int i = 1 ; i< elements.size() ; i++)
+    for (size_t i = 1 ; i< elements.size() ; i++)
     {
         if (*(static_cast<Integer*>(elements[i])) != *(static_cast<Integer*>(elements[i-1])))
             uniqueVector.push_back(elements[i]);
