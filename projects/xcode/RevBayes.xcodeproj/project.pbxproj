@@ -3233,6 +3233,9 @@
 /* Begin PBXProject section */
 		85CD0225133948C300318200 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0410;
+			};
 			buildConfigurationList = 85CD0228133948C400318200 /* Build configuration list for PBXProject "RevBayes" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -4067,6 +4070,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4080,6 +4084,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -4126,6 +4131,7 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/../../src/gui/RevBayesGui-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "$(PROJECT_DIR)/../../src/gui/RevBayesGUI-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -4141,6 +4147,7 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(PROJECT_DIR)/../../src/gui/RevBayesGui-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "$(PROJECT_DIR)/../../src/gui/RevBayesGUI-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
