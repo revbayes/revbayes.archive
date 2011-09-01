@@ -18,7 +18,7 @@
 #ifndef Matrix_H
 #define Matrix_H
 
-#include "Container.h"
+#include "Vector.h"
 
 #include <iostream>
 #include <string>
@@ -44,7 +44,7 @@ class VectorInteger;
  */
 const std::string Matrix_name = "Matrix";
 
-class Matrix : public Container {
+class Matrix : public Vector {
 
     public:
         virtual                        ~Matrix(void) {}                                                     //!< Virtual destructor
@@ -57,7 +57,7 @@ class Matrix : public Container {
 
         // Container functions you have to override to allow vector of vectors representation
         virtual void                    clear(void) = 0;                                                    //!< Clear
-        virtual Container*              getElement(size_t index) = 0;                                       //!< Get element or subcontainer
+        virtual AbstractVector*         getElement(size_t index) = 0;                                       //!< Get element or subcontainer
         virtual RbLanguageObject*       getElement(size_t row, size_t col) = 0;                             //!< Get element or subcontainer
         virtual void                    setElement(size_t index, RbLanguageObject* var) = 0;                //!< set element
         virtual void                    setElement(size_t row, size_t col, RbLanguageObject* var) = 0;      //!< set element

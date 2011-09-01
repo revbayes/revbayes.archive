@@ -18,7 +18,7 @@
 #ifndef Vector_H
 #define Vector_H
 
-#include "Container.h"
+#include "AbstractVector.h"
 
 #include <iostream>
 #include <vector>
@@ -26,45 +26,42 @@
 
 const std::string Vector_name = "Vector";
 
-class Vector : public Container {
+class Vector : public AbstractVector {
 
-    public:
-        virtual                        ~Vector(void);                                                       //!< Virtual destructor 
+public:
+    Vector();                                                                                       //!< Default constructor with type RbLanguageObject
+    Vector(const TypeSpec &elemType);                                                               //!< Set type spec of container from type of elements
+    Vector(const Vector &v);                                                                        //!< Copy Constructor
 
-        // Basic utility functions you have to override
-        virtual Vector*                 clone(void) const = 0;                                              //!< Clone object
-        virtual const VectorString&     getClass(void) const;                                               //!< Get class
-        virtual void                    printValue(std::ostream& o) const;                                  //!< Print value for user
-        virtual std::string             richInfo(void) const = 0;                                           //!< Complete info about object
-        
-        Vector&                         operator=(const Vector& x);                                         //!< Assignment operator
-    
-        // Vector functions you do not have to override
-        void                            pop_back(void);                                                     //!< Drop element at back
-        void                            pop_front(void);                                                    //!< Drop element from front
-        void                            resize(size_t n);                                                   //!< Resize to new vector of length n
-        size_t                          size(void) const;                                                   //!< Get the number of elements in the vector
-    
-    
-        // Container functions you have to override
-        virtual void                    clear(void);                                                        //!< Clear
-        virtual RbLanguageObject*       getElement(size_t index);                                           //!< Get element
-        virtual void                    setElement(const size_t index, RbLanguageObject* elem);             //!< Set element with type conversion
-        virtual void                            sort(void) = 0;                                                         //!< Sort the vector
-        virtual void                            unique(void) = 0;                                                       //!< Remove duplicates and resize the vector
-        
-    
-    
-        protected:
-                                        Vector(const std::string& elemType);                                //!< Set type spec of container from type of elements
-                                        Vector(const Vector &v);                                            //!< Copy Constructor
-//        virtual bool comparisonFunction (RbLanguageObject* i,RbLanguageObject* j);                                            //!< Utilitary function for sort
+    virtual                        ~Vector(void);                                                   //!< Virtual destructor 
 
+    // Basic utility functions you have to override
+    Vector*                         clone(void) const;                                              //!< Clone object
+    const VectorString&             getClass(void) const;                                           //!< Get class
+    void                            printValue(std::ostream& o) const;                              //!< Print value for user
+    std::string                     richInfo(void) const;                                           //!< Complete info about object
     
-        std::vector<RbLanguageObject*>  elements;
+    RbLanguageObject&               operator[](size_t i);                                           //!< Index op allowing change
+    const RbLanguageObject&         operator[](size_t i) const;                                     //!< Const index op
+    Vector&                         operator=(const Vector& x);                                     //!< Assignment operator
+    
+    // Vector functions
+    void                            clear(void);                                                    //!< Clear
+    RbLanguageObject*               getElement(size_t index) const;                                 //!< Get element
+    void                            pop_back(void);                                                 //!< Drop element at back
+    void                            pop_front(void);                                                //!< Drop element from front
+    void                            push_back(RbObject* x);                                         //!< Append element to end
+    void                            push_front(RbObject* x);                                        //!< Add element in front
+    void                            resize(size_t n);                                               //!< Resize to new AbstractVector of length n
+    void                            setElement(const size_t index, RbLanguageObject* elem);         //!< Set element with type conversion
+    void                            sort(void);                                                     //!< sort the AbstractVector
+    size_t                          size(void) const;                                               //!< get the number of elements in the AbstractVector
+    void                            unique(void);                                                   //!< removes consecutive duplicates
+    
+    protected:
+    
+    std::vector<RbLanguageObject*>  elements;
 };
-
-
 
 #endif
 

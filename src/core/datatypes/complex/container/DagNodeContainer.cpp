@@ -17,26 +17,24 @@
  */
 
 #include "DagNodeContainer.h"
-#include "MonitorsContainer.h"
-#include "MovesContainer.h"
+#include "Move.h"
+#include "Monitor.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
+#include "Vector.h"
 #include "VectorString.h"
 #include "ConstantNode.h"
 
 
 /** Set type of elements */
-DagNodeContainer::DagNodeContainer(void) : Container(TypeSpec(DAGNode_name)) {
+DagNodeContainer::DagNodeContainer(void) : ConstantMemberObject() {
     
 }
 
 /** Set type of elements */
-DagNodeContainer::DagNodeContainer(size_t l) : Container(TypeSpec(DAGNode_name)) {
+DagNodeContainer::DagNodeContainer(size_t l) : ConstantMemberObject() {
     resize(l);
-    
-    // set the length
-    length = l;
 }
 
 
@@ -57,8 +55,6 @@ void DagNodeContainer::clear( void ) {
         }
     }
     elements.clear();
-    
-    length = 0;
 }
 
 /** clone */
@@ -69,11 +65,35 @@ DagNodeContainer* DagNodeContainer::clone(void) const {
 
 RbLanguageObject* DagNodeContainer::convertTo(std::string const &type) const {
     
+    static const TypeSpec movesContainerType = TypeSpec(Vector_name,new TypeSpec(Move_name));
+    static const TypeSpec monitorsContainerType = TypeSpec(Vector_name,new TypeSpec(Monitor_name));
+    
     // test for type conversion
-    if (type == MovesContainer_name) {
+//    TypeSpec ts(type);
+//    if (ts.getType() == Vector_name) {
+//        // test whether each object in the container is actually a constant node holding a value
+//        Vector* valueVector = new Vector(*ts.getElementType());
+//        for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+//            DAGNode *theNode = (*it)->getDagNodePtr();
+//            if (theNode->isType(ConstantNode_name) && theNode->getValue()->isType(Move_name)) {
+//                RbLanguageObject* element = theNode->getValuePtr();
+//                valueVector->push_back(element);
+//            }
+//            else {
+//                return NULL;
+//            }
+//        }
+//        
+//        // return the moves
+//        return valueVector;
+//    }
+    
+    
+    
+    if (type == movesContainerType.getType()) {
         
         // test whether each object in the container is actually a constant node holding a move
-        MovesContainer* moves = new MovesContainer();
+        Vector* moves = new Vector(TypeSpec(Move_name));
         for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             DAGNode *theNode = (*it)->getDagNodePtr();
             if (theNode->isType(ConstantNode_name) && theNode->getValue()->isType(Move_name)) {
@@ -88,10 +108,10 @@ RbLanguageObject* DagNodeContainer::convertTo(std::string const &type) const {
         // return the moves
         return moves;
     }
-    else if (type == MonitorsContainer_name) {
+    else if (type == monitorsContainerType.getType()) {
         
         // test whether each object in the container is actually a constant node holding a move
-        MonitorsContainer* monitors = new MonitorsContainer();
+        Vector* monitors = new Vector(TypeSpec(Monitor_name));
         for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             DAGNode *theNode = (*it)->getDagNodePtr();
             if (theNode->isType(ConstantNode_name) && theNode->getValue()->isType(Monitor_name)) {
@@ -113,17 +133,17 @@ RbLanguageObject* DagNodeContainer::convertTo(std::string const &type) const {
 /** Get class DagNodeContainer describing type of object */
 const VectorString& DagNodeContainer::getClass(void) const { 
     
-    static VectorString rbClass = VectorString(DagNodeContainer_name) + Container::getClass();
+    static VectorString rbClass = VectorString(DagNodeContainer_name) + ConstantMemberObject::getClass();
 	return rbClass;
 }
 
 /** Get element */
-VariableSlot* DagNodeContainer::getElement(const size_t index) {
+VariableSlot* DagNodeContainer::getElement(const size_t index) const {
     
     // test if the index is outside the current range
-    if (index >= length) {
-        // Yes, it is outside the range and we need resizing
-        resize(index + 1);
+    if (index >= size()) {
+        // Yes, it is outside the range and we through a error
+        throw RbException("Index out of bounds in DagNodeContainer.");
     }
     
     return elements[index];
@@ -133,8 +153,12 @@ VariableSlot* DagNodeContainer::getElement(const size_t index) {
 /** Can we convert this DAG node container into another object? */
 bool DagNodeContainer::isConvertibleTo(std::string const &type, bool once) const {
     
+    
+    static const TypeSpec movesContainerType = TypeSpec(Vector_name,new TypeSpec(Move_name));
+    static const TypeSpec monitorsContainerType = TypeSpec(Vector_name,new TypeSpec(Monitor_name));
+    
     // test for type conversion
-    if (type == MovesContainer_name) {
+    if (type == movesContainerType.getType()) {
         
         // test whether each object in the container is actually a constant node holding a move
         for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
@@ -147,7 +171,7 @@ bool DagNodeContainer::isConvertibleTo(std::string const &type, bool once) const
         // return the moves
         return true;
     }
-    else if (type == MonitorsContainer_name) {
+    else if (type == monitorsContainerType.getType()) {
         
         // test whether each object in the container is actually a constant node holding a monitor
         for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
@@ -163,6 +187,47 @@ bool DagNodeContainer::isConvertibleTo(std::string const &type, bool once) const
     
     return false;
 }
+
+
+void DagNodeContainer::pop_back(void) {
+    elements.pop_back();
+}
+
+
+void DagNodeContainer::pop_front(void) {
+    elements.erase(elements.begin());
+}
+
+
+void DagNodeContainer::push_back(RbObject *x) {
+    
+    // we expect to receive a parameter of type Variable
+    Variable *var           = dynamic_cast<Variable*>(x);
+    if (var != NULL) {
+        VariableSlot *theSlot   = new VariableSlot(EmptyString,var);
+        elements.push_back(theSlot);
+    }
+    else {
+        throw RbException("Cannot add variable of non Variable type to DagNodeContainer.");
+    }
+    
+}
+
+
+void DagNodeContainer::push_front(RbObject *x) {
+    
+    // we expect to receive a parameter of type Variable
+    Variable *var           = dynamic_cast<Variable*>(x);
+    if (var != NULL) {
+        VariableSlot *theSlot   = new VariableSlot(EmptyString,var);
+        elements.insert( elements.begin(), theSlot );
+    }
+    else {
+        throw RbException("Cannot add variable of non Variable type to DagNodeContainer.");
+    }
+    
+}
+
 
 
 
@@ -198,8 +263,6 @@ void DagNodeContainer::resize( size_t n ) {
         elements.push_back( emptySlot );
     }
     
-    // reset the length
-    length = elements.size();
 }
 
 
@@ -215,11 +278,33 @@ std::string DagNodeContainer::richInfo(void) const {
 
 
 /** Set element */
+void DagNodeContainer::setElement(const size_t index, RbObject *elem) {
+    if (index >= size()) {
+        throw RbException("Cannot set element in DagNodeContainer outside the current range.");
+    }
+    // we expect to receive a parameter of type Variable
+    Variable *var           = dynamic_cast<Variable*>(elem);
+    if (var != NULL) {
+        VariableSlot *theSlot = elements[index];
+        theSlot->setVariable(var);
+    }
+    else {
+        throw RbException("Cannot add variable of non Variable type to DagNodeContainer.");
+    }
+}
+
+
+/** Set element */
 void DagNodeContainer::setElement(const size_t index, Variable *elem) {
-    if (index >= length) {
+    if (index >= size()) {
         throw RbException("Cannot set element in DagNodeContainer outside the current range.");
     }
     VariableSlot *theSlot = elements[index];
     theSlot->setVariable(elem);
+}
+
+
+size_t DagNodeContainer::size(void) const {
+    return elements.size();
 }
 

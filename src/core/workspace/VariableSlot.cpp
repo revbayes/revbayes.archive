@@ -16,7 +16,6 @@
  */
 
 #include "ConstantNode.h"
-#include "Container.h"
 #include "DAGNode.h"
 #include "MemberObject.h"
 #include "RbException.h"

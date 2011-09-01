@@ -23,16 +23,13 @@
 #include "NclReader.h"
 #include "RbUtil.h"
 #include "RnaState.h"
+#include "Sequence.h"
 #include "StandardState.h"
 #include "StringUtilities.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 #include "UserInterface.h"
-#include "VectorAminoAcidStates.h"
-#include "VectorCharacterContinuous.h"
-#include "VectorDnaStates.h"
-#include "VectorRnaStates.h"
-#include "VectorStandardStates.h"
+#include "Vector.h"
 
 
 
@@ -179,24 +176,23 @@ CharacterMatrix* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
-        VectorAminoAcidStates* dataVec = new VectorAminoAcidStates();
-        dataVec->setTaxonName(tName);
-
+        Sequence *dataVec = new Sequence(AminoAcidState_name,tName);
+            
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
             {	
-            AminoAcidState aaState;
+            AminoAcidState *aaState = new AminoAcidState();
             if (charblock->IsGapState(origTaxIndex, *cit) == true) 
-                aaState.setState('n');
+                aaState->setState('n');
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
-                aaState.setState('n');
+                aaState->setState('n');
             else
                 {
                 int nStates = charblock->GetNumStates(origTaxIndex, *cit);
-                aaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
+                aaState->setState( charblock->GetState(origTaxIndex, *cit, 0) );
                 for(int s=1; s<nStates; s++)
-                    aaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
+                    aaState->addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
-            dataVec->push_back( aaState );
+            dataVec->addCharacter( aaState );
             }
 
         // add sequence to character matrix
@@ -236,16 +232,15 @@ CharacterMatrix* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
-        VectorCharacterContinuous* dataVec = new VectorCharacterContinuous();
-        dataVec->setTaxonName(tName);
+        Sequence* dataVec = new Sequence(CharacterContinuous_name,tName);
 
         // add the real-valued observation
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
             {	
-            CharacterContinuous contObs;
+            CharacterContinuous *contObs = new CharacterContinuous();
             const std::vector<double>& x = charblock->GetContinuousValues( origTaxIndex, *cit, std::string("AVERAGE") );
-            contObs.setValue(x[0]);
-            dataVec->push_back( contObs );
+            contObs->setValue(x[0]);
+            dataVec->addCharacter( contObs );
             }
 
         // add sequence to character matrix
@@ -285,25 +280,25 @@ CharacterMatrix* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of DNA states
-        VectorDnaStates* dataVec = new VectorDnaStates();
+        Sequence* dataVec = new Sequence(DnaState_name,tName);
         dataVec->setTaxonName(tName);
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
             {	
             // add the character state to the matrix
-            DnaState dnaState;
+            DnaState *dnaState = new DnaState();
             if ( charblock->IsGapState(origTaxIndex, *cit) == true ) 
-                dnaState.setState('N');
+                dnaState->setState('N');
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
-                dnaState.setState('N');
+                dnaState->setState('N');
             else
                 {
-                dnaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );                
+                dnaState->setState( charblock->GetState(origTaxIndex, *cit, 0) );                
                 for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
-                    dnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
+                    dnaState->addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
-            dataVec->push_back( dnaState );
+            dataVec->addCharacter( dnaState );
             }
 
         // add sequence to character matrix
@@ -343,25 +338,24 @@ CharacterMatrix* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of RNA states
-        VectorRnaStates* dataVec = new VectorRnaStates();
-        dataVec->setTaxonName(tName);
+        Sequence* dataVec = new Sequence(RnaState_name,tName);
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
             {	
             // add the character state to the matrix
-            RnaState rnaState;
+            RnaState *rnaState = new RnaState();
             if ( charblock->IsGapState(origTaxIndex, *cit) == true ) 
-                rnaState.setState('N');
+                rnaState->setState('N');
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
-                rnaState.setState('N');
+                rnaState->setState('N');
             else
                 {
-                rnaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );                
+                rnaState->setState( charblock->GetState(origTaxIndex, *cit, 0) );                
                 for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
-                    rnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
+                    rnaState->addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
-            dataVec->push_back( rnaState );
+            dataVec->addCharacter( rnaState );
             }
             
         // add sequence to character matrix
@@ -408,25 +402,24 @@ CharacterMatrix* NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
-        VectorStandardStates* dataVec = new VectorStandardStates();
-        dataVec->setTaxonName(tName);
+        Sequence* dataVec = new Sequence(StandardState_name,tName);
         
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
             {	
             // add the character state to the matrix
-            StandardState stdState(sym);
+            StandardState *stdState = new StandardState(sym);
             for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                 {
                 char c = charblock->GetState(origTaxIndex, *cit, s);
                 for (int i=0; i<nStates; i++)
                     {
                     if ( sym[i] == c )
-                        stdState.addState(i);
+                        stdState->addState(i);
                         //cMat->setState(origTaxIndex, *cit, i);
                     }
                 }
-            dataVec->push_back( stdState );
+            dataVec->addCharacter( stdState );
             }
 
         // add sequence to character matrix

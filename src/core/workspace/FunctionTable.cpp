@@ -205,7 +205,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
                 }
                 else {
                     size_t j;
-                    for (j=0; j<matchScore.getLength() && j<bestScore.getLength(); j++) {
+                    for (j=0; j<matchScore.size() && j<bestScore.size(); j++) {
                         if (matchScore[j] < bestScore[j]) {
                             bestScore = matchScore;
                             bestMatch = it->second;
@@ -215,7 +215,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
                         else if (matchScore[j] > bestScore[j])
                             break;
                     }
-                    if (j==matchScore.getLength() || j==bestScore.getLength()) {
+                    if (j==matchScore.size() || j==bestScore.size()) {
                         ambiguous = true;   // Continue checking, there might be better matches ahead
                     }
                 }

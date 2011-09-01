@@ -107,8 +107,8 @@ const TypeSpec Dist_multinomial::getVariableType( void ) const {
 double Dist_multinomial::lnPdf( const RbLanguageObject* value ) {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> p = static_cast<const Simplex*      >( getMemberValue( "p" ) )->getValue();
-    std::vector<int   > x = static_cast<const VectorNatural*>( value           )->getValue();
+    std::vector<double>       p = static_cast<const Simplex*      >( getMemberValue( "p" ) )->getValue();
+    std::vector<unsigned int> x = static_cast<const VectorNatural*>( value                 )->getValue();
 
 	// Check that the vectors are both the same size
 	if ( p.size() != x.size() )
@@ -130,8 +130,8 @@ double Dist_multinomial::lnPdf( const RbLanguageObject* value ) {
 double Dist_multinomial::pdf( const RbLanguageObject* value ) {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> p = static_cast<const Simplex*      >( getMemberValue( "p" ) )->getValue();
-    std::vector<int   > x = static_cast<const VectorNatural*> (value           )->getValue();
+    std::vector<double>       p = static_cast<const Simplex*      >( getMemberValue( "p" ) )->getValue();
+    std::vector<unsigned int> x = static_cast<const VectorNatural*> (value                 )->getValue();
 
 	// check that the vectors are both the same size
 	if ( p.size() != x.size() )

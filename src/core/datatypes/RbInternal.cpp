@@ -43,7 +43,7 @@ bool RbInternal::isType(const std::string& type) const {
 
     const VectorString& classVec = getClass();
 
-    for (size_t i=0; i<classVec.getLength(); i++) {
+    for (size_t i=0; i<classVec.size(); i++) {
         if (type == classVec[i])
             return true;
     }

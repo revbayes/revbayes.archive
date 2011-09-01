@@ -133,7 +133,7 @@ double Dist_neutralcoalescent::lnPdf( const RbLanguageObject* value ) {
 
     const VectorRealPos* waitingTimes  = static_cast<const VectorRealPos*>( value );
     size_t haploidPopSize              = static_cast<const Natural*  >( getMemberValue( "haploidPopSize" ) )->getValue();
-    size_t nWaitingTimes               = waitingTimes->getLength();
+    size_t nWaitingTimes               = waitingTimes->size();
     size_t k                           = nWaitingTimes + 1;
 
     double log_p = 0.0;
@@ -160,7 +160,7 @@ double Dist_neutralcoalescent::lnPdf( const RbLanguageObject* value ) {
 double Dist_neutralcoalescent::pdf( const RbLanguageObject* value ) {
 
     // // get the number of speciation events
-    // size_t events = times->getLength();
+    // size_t events = times->size();
 
     // // get the time of the orign. Note, we assume the process starts at the origin and not at the root. Further, we do not assume that the process starts with t_0 = 0.
     // double now   = (*times)[events-1];
@@ -195,7 +195,7 @@ TreePlate* Dist_neutralcoalescent::rv( void ) {
     // double p                    = static_cast<const Probability* >( getMemberValue( "rho"      ) )->getValue();
     size_t haploidPopSize        = static_cast<const Natural*     >( getMemberValue( "haploidPopSize" ) )->getValue();
     const VectorString  *names   = static_cast<const VectorString*>( getMemberValue( "tipNames" ) );
-    size_t nTips                 = names->getLength();
+    size_t nTips                 = names->size();
 
     // clear tracking data
     this->nodeEdgeLengths.clear();

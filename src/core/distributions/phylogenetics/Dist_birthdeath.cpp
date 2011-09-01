@@ -139,7 +139,7 @@ double Dist_birthdeath::lnPdf( const RbLanguageObject* value ) {
     double                 p   = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
     
     // get the number of speciation events
-    size_t events = times->getLength();
+    size_t events = times->size();
     
     // get the time of the orign. Note, we assume the process starts at the origin and not at the root. Further, we do not assume that the process starts with t_0 = 0.
     double now   = (*times)[events-1];
@@ -176,7 +176,7 @@ double Dist_birthdeath::pdf( const RbLanguageObject* value ) {
     double                 p   = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
     
     // get the number of speciation events
-    size_t events = times->getLength();
+    size_t events = times->size();
     
     // get the time of the orign. Note, we assume the process starts at the origin and not at the root. Further, we do not assume that the process starts with t_0 = 0.
     double now   = (*times)[events-1];

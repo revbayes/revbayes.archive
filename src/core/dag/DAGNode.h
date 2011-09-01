@@ -34,7 +34,6 @@ class RbLanguageObject;
 class RbObject;
 class VariableNode;
 class Variable;
-class VectorIndex;
 class VectorNatural;
 class VectorString;
 

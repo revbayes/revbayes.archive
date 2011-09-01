@@ -87,11 +87,10 @@ void Simplex::rescale(void) {
     // Rescale the simplex
     double sum = 0.0;
     for (size_t i=0; i<elements.size(); i++)
-       sum += static_cast<RealPos*>(elements[i])->getValue();
+       sum += elements[i];
 
     for (size_t i=0; i<elements.size(); i++) {
-        RealPos* val = static_cast<RealPos*>(elements[i]);
-        val->setValue(val->getValue() / sum);
+        elements[i] = elements[i] / sum;
     }
     
 }
@@ -109,13 +108,10 @@ std::string Simplex::richInfo(void) const {
 void Simplex::setValue(const VectorReal& x) {
 
     elements.clear();
-    for (size_t i=0; i<x.getLength(); i++)    
-        elements.push_back(new RealPos(x[i]));
+    for (size_t i=0; i<x.size(); i++)    
+        elements.push_back(x[i]);
     
     rescale();
-    
-    // set the number of elements
-    length = elements.size();
 }   
 
 
@@ -123,12 +119,10 @@ void Simplex::setValue(const VectorReal& x) {
 void Simplex::setValue(const VectorRealPos& x) {
     
     elements.clear();
-    for (size_t i=0; i<x.getLength(); i++)    
-        elements.push_back(new RealPos(x[i]));
+    for (size_t i=0; i<x.size(); i++)    
+        elements.push_back(x[i]);
     rescale();
     
-    // set the number of elements
-    length = elements.size();
 }   
 
 
@@ -145,9 +139,6 @@ void Simplex::setValue(const std::vector<double>& x) {
     
     elements.clear();
     for (size_t i=0; i<x.size(); i++)    
-        elements.push_back(new RealPos(x[i]/sum));
-    
-    // set the number of elements
-    length = elements.size();
+        elements.push_back(x[i]/sum);
 }
 

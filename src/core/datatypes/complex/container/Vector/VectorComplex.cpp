@@ -17,13 +17,11 @@
  */
 
 #include "Complex.h"
-#include "ContainerIterator.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "VectorInteger.h"
 #include "VectorComplex.h"
 #include "VectorString.h"
-#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <limits>
@@ -32,83 +30,58 @@
 
 
 /** Default constructor */
-VectorComplex::VectorComplex(void) : Vector(Complex_name) {
+VectorComplex::VectorComplex(void) : AbstractVector(Complex_name) {
 
 }
 
 
 /** Construct vector with one double x */
-VectorComplex::VectorComplex(const double x) : Vector(Complex_name) {
+VectorComplex::VectorComplex(const double x) : AbstractVector(Complex_name) {
     
-    Complex *element = new Complex(x);
-    element->retain();
-    elements.push_back( element );
-    
-    length = 1;
+    elements.push_back( std::complex<double>( x, 0.0 ) );
+
 }
 
 
 /** Construct vector with n doubles x */
-VectorComplex::VectorComplex(const size_t n, const double x) : Vector(Complex_name) {
+VectorComplex::VectorComplex(const size_t n, const double x) : AbstractVector(Complex_name) {
 
     for (size_t i = 0; i < n; i++) {
-        Complex *element = new Complex(x);
-        element->retain();
-        elements.push_back( element );
+        elements.push_back( std::complex<double>( x, 0.0 ) );
     }
-    
-    length = elements.size();
 }
 
 
 /** Constructor from double vector */
-VectorComplex::VectorComplex(const std::vector<double>& x) : Vector(Complex_name) {
+VectorComplex::VectorComplex(const std::vector<double>& x) : AbstractVector(Complex_name) {
 
     for (std::vector<double>::const_iterator i=x.begin(); i!=x.end(); i++) {
-        Complex *element = new Complex(*i);
-        element->retain();
-        elements.push_back( element );
+        elements.push_back( std::complex<double>( *i, 0.0 ) );
     }
     
-    length = elements.size();
 }
 
 
 /** Constructor from complex vector */
-VectorComplex::VectorComplex(const std::vector<std::complex<double> >& x) : Vector(Complex_name) {
+VectorComplex::VectorComplex(const std::vector<std::complex<double> >& x) : AbstractVector(Complex_name) {
 
-    for (std::vector<std::complex<double> >::const_iterator i=x.begin(); i!=x.end(); i++) {
-        Complex *element = new Complex(*i);
-        element->retain();
-        elements.push_back( element );
-    }
-    
-    length = elements.size();
+    elements = x;
 }
 
 
 /** Constructor from VectorComplex */
-VectorComplex::VectorComplex( const VectorComplex& x ) : Vector(Complex_name) {
+VectorComplex::VectorComplex( const VectorComplex& x ) : AbstractVector(x) {
 
-    for ( size_t i = 0; i < x.getLength(); i++ ) { 
-        Complex *element = new Complex(x[i]);
-        element->retain();
-        elements.push_back( element );
-    }
-    
-    length = elements.size();
+    elements = x.elements;
 }
 
 
-VectorComplex::VectorComplex(size_t n, std::complex<double> x) : Vector(Complex_name) {
+VectorComplex::VectorComplex(size_t n, std::complex<double> x) : AbstractVector(Complex_name) {
 
     for (size_t i = 0; i < n; i++) {
-        Complex *element = new Complex(x);
-        element->retain();
-        elements.push_back( element );
+        elements.push_back( x );
     }
-    
-    length = elements.size();
+
 }
 
 /** Subscript operator */
@@ -117,7 +90,7 @@ std::complex<double>& VectorComplex::operator[](size_t i) {
     if (i >= elements.size())
         throw RbException("Index out of bounds");
 
-    return static_cast<Complex*>(elements[i])->getValueReference();
+    return elements[i];
 }
 
 
@@ -126,14 +99,14 @@ const std::complex<double>& VectorComplex::operator[](size_t i) const {
 
     if (i >= elements.size())
         throw RbException("Index out of bounds");
-    return static_cast<Complex*>(elements[i])->getValueReference();
+    return elements[i];
 }
 
 
 /** Equals comparison */
 bool VectorComplex::operator==(const VectorComplex& x) const {
 
-    if (getLength() != x.getLength())
+    if (size() != x.size())
         return false;
 
     for (size_t i=0; i<elements.size(); i++) {
@@ -159,22 +132,49 @@ VectorComplex* VectorComplex::clone(void) const {
 }
 
 
+void VectorComplex::clear(void) {
+    elements.clear();
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& VectorComplex::getClass(void) const {
 
-    static VectorString rbClass = VectorString(VectorComplex_name) + Vector::getClass();
+    static VectorString rbClass = VectorString(VectorComplex_name) + AbstractVector::getClass();
     return rbClass;
+}
+
+
+Complex* VectorComplex::getElement(size_t index) const {
+    
+    if (index >= elements.size())
+        throw RbException("Index out of bounds");
+    
+    Complex *c = new Complex(elements[index]);
+    return c;
 }
 
 
 /** Export value as STL vector */
 std::vector<std::complex<double> > VectorComplex::getValue(void) const {
 
-    std::vector<std::complex<double> > temp;
-    for (size_t i=0; i<getLength(); i++)
-        temp.push_back(operator[](i));
-    return temp;
+    return elements;
 }
+
+
+void VectorComplex::pop_back(void) {
+    elements.pop_back();
+}
+
+
+void VectorComplex::pop_front(void) {
+    
+    // free the memory
+    elements.erase(elements.begin());
+}
+
+
+
 
 
 /** Print value for user */
@@ -186,11 +186,11 @@ void VectorComplex::printValue(std::ostream& o) const {
     o << "[ ";
     o << std::fixed;
     o << std::setprecision(1);
-    for (std::vector<RbLanguageObject*>::const_iterator i = elements.begin(); i!= elements.end(); i++) 
+    for (std::vector<std::complex<double> >::const_iterator i = elements.begin(); i!= elements.end(); i++) 
         {
         if (i != elements.begin())
             o << ", ";
-        o << *(*i);
+        o << (*i);
         }
     o <<  " ]";
 
@@ -199,25 +199,50 @@ void VectorComplex::printValue(std::ostream& o) const {
 }
 
 
+/** Push an int onto the back of the vector after checking */
+void VectorComplex::push_back( RbObject *x ) {
+    
+    if ( x->isType(Complex_name) ) {
+        elements.push_back(static_cast<Complex*>(x)->getValue());
+    } else if ( x->isConvertibleTo(Complex_name, true) ) {
+        elements.push_back(static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
+    }
+    else {
+        throw RbException( "Trying to set " + Complex_name + "[] with invalid value" );
+    }
+}
+
+
 /** Append element to end of vector, updating length in process */
 void VectorComplex::push_back(std::complex<double> x) {
     
-    Complex *element = new Complex(x);
-    element->retain();
-    elements.push_back( element );
+    elements.push_back( x );
+}
+
+
+/** Push an int onto the front of the vector after checking */
+void VectorComplex::push_front( RbObject *x ) {
     
-    length++;
+    if ( x->isType(Complex_name) ) {
+        elements.insert( elements.begin(), static_cast<Complex*>(x)->getValue());
+    } else if ( x->isConvertibleTo(Complex_name, true) ) {
+        elements.insert( elements.begin(), static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
+    }
+    else {
+        throw RbException( "Trying to set " + Complex_name + "[] with invalid value" );
+    }
 }
 
 
 /** Add element in front of vector, updating length in process */
 void VectorComplex::push_front(std::complex<double> x) {
     
-    Complex *element = new Complex(x);
-    element->retain();
-    elements.insert(elements.begin(), element);
-    
-    length++;
+    elements.insert(elements.begin(), x);
+}
+
+
+void VectorComplex::resize(size_t n) {
+    elements.resize(n);
 }
 
 
@@ -230,45 +255,50 @@ std::string VectorComplex::richInfo(void) const {
 }
 
 
+void VectorComplex::setElement(const size_t index, RbLanguageObject *x) {
+    
+    // check for type and convert if necessary
+    if ( x->isType(Complex_name) ) {
+        // resize if necessary
+        if (index >= elements.size()) {
+            elements.resize(index);
+        }
+        elements.insert( elements.begin() + index, static_cast<Complex*>(x)->getValue());
+    } else if ( x->isConvertibleTo(Complex_name, true) ) {
+        // resize if necessary
+        if (index >= elements.size()) {
+            elements.resize(index);
+        }
+        elements.insert( elements.begin() + index, static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
+    }
+    else {
+        throw RbException( "Trying to set " + Complex_name + "[] with invalid value" );
+    }
+}
+
 /** Set value of vector using STL vector */
 void VectorComplex::setValue(const std::vector<std::complex<double> >& x) {
 
-    clear();
-    for (std::vector<std::complex<double> >::const_iterator i=x.begin(); i!=x.end(); i++) { 
-        Complex *element = new Complex(*i);
-        element->retain();
-        elements.push_back( element );
-    }
-    
-    length = x.size();
+    elements = x;
 }   
 
 
 /** Set value of vector using VectorComplex */
 void VectorComplex::setValue(const VectorComplex& x) {
 
-    clear();
-    for (size_t i=0; i<x.getLength(); i++) {   
-        Complex *element = new Complex(x[i]);
-        element->retain();
-        elements.push_back( element );
-    }
-    
-    length = x.getLength();
+    elements = x.elements;
 }   
 
 
-bool VectorComplex::comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) { 
-    
-    return (*(static_cast<Complex*>(i)) < *(static_cast<Complex*>(j)) ); 
-    
+size_t VectorComplex::size(void) const {
+    return elements.size();
 }
 
 
 /** Sort the vector */
 void VectorComplex::sort( void ) {
     
-    std::sort(elements.begin(), elements.end(), comparisonFunction);
+//    std::sort(elements.begin(), elements.end());
     return;
     
 }

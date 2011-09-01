@@ -28,50 +28,54 @@
 
 const std::string VectorInteger_name = "Integer vector";
 
-class VectorInteger : public Vector {
+class VectorInteger : public AbstractVector {
 
     public:
-        // Constructors and destructor
-                                    VectorInteger(void);                                            //!< Default constructor (empty vector)
-                                    VectorInteger(int x);                                           //!< Construct vector with one int x
-                                    VectorInteger(size_t n, int x);                                 //!< Construct vector with n ints x
-                                    VectorInteger(const std::vector<int>& x);                       //!< Constructor from int vector
-                                    VectorInteger(const std::vector<size_t>& x);                    //!< Constructor from unsigned int vector
-                                    VectorInteger(const VectorNatural& x);                          //!< Constructor from vector of natural numbers
-                                    VectorInteger(const ContainerIterator& x);                      //!< Constructor from container iterator
+    // Constructors and destructor
+                                VectorInteger(void);                                            //!< Default constructor (empty vector)
+                                VectorInteger(int x);                                           //!< Construct vector with one int x
+                                VectorInteger(size_t n, int x);                                 //!< Construct vector with n ints x
+                                VectorInteger(const std::vector<int>& x);                       //!< Constructor from int vector
+                                VectorInteger(const std::vector<size_t>& x);                    //!< Constructor from unsigned int vector
+                                VectorInteger(const VectorNatural& x);                          //!< Constructor from vector of natural numbers
 
-        // Overloaded operators
-        int&                        operator[](size_t i);                                           //!< Index op allowing change
-        const int&                  operator[](size_t i) const;                                     //!< Const index op
-        bool                        operator==(const VectorInteger& x) const;                       //!< Equals comparison
-        bool                        operator!=(const VectorInteger& x) const;                       //!< Not equals comparison
-        
-        // Basic utility functions
-        VectorInteger*              clone(void) const;                                              //!< Clone object
-        RbLanguageObject*           convertTo(const std::string& type) const;                       //!< Convert to type
-        const VectorString&         getClass(void) const;                                           //!< Get class
-        bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
-        std::string                 richInfo(void) const;                                           //!< Complete info about object
+    // Overloaded operators
+    int&                        operator[](size_t i);                                           //!< Index op allowing change
+    const int&                  operator[](size_t i) const;                                     //!< Const index op
+    bool                        operator==(const VectorInteger& x) const;                       //!< Equals comparison
+    bool                        operator!=(const VectorInteger& x) const;                       //!< Not equals comparison
+    
+    // Basic utility functions
+    VectorInteger*              clone(void) const;                                              //!< Clone object
+    RbLanguageObject*           convertTo(const std::string& type) const;                       //!< Convert to type
+    const VectorString&         getClass(void) const;                                           //!< Get class
+    bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
+    std::string                 richInfo(void) const;                                           //!< Complete info about object
 
         // Vector functions, including STL-like functions
-        std::vector<int>            getValue(void) const;                                           //!< Get value as STL int vector
-        void                        push_back(int x);                                               //!< Append element to end
-        void                        push_front(int x);                                              //!< Add element in front
-        void                        setValue(const VectorInteger& x);                               //!< Set the value
-        void                        setValue(const std::vector<int>& x);                            //!< Set the value
-        void                        sort( void );                                           //!< sorts the vector    
-        void                        unique(void);                                           //!< Removes duplicates and resizes the vector
+    void                        clear(void);                                                    //!< Clear
+    Integer*                    getElement(size_t index) const;                                 //!< Get element
+    std::vector<int>            getValue(void) const;                                           //!< Get value as STL int vector
+    void                        pop_back(void);                                                 //!< Drop element at back
+    void                        pop_front(void);                                                //!< Drop element from front
+    void                        push_back(RbObject* x);                                         //!< Append element to end
+    void                        push_back(int x);                                               //!< Append element to end
+    void                        push_front(RbObject* x);                                        //!< Add element in front
+    void                        push_front(int x);                                              //!< Add element in front
+    void                        resize(size_t n);                                               //!< Resize to new AbstractVector of length n
+    void                        setElement(const size_t index, RbLanguageObject* elem);         //!< Set element with type conversion
+    void                        setValue(const VectorInteger& x);                               //!< Set the value
+    void                        setValue(const std::vector<int>& x);                            //!< Set the value
+    void                        sort(void);                                                     //!< sort the AbstractVector
+    size_t                      size(void) const;                                               //!< get the number of elements in the AbstractVector
+    void                        unique(void);                                                   //!< removes consecutive duplicates
 
-    protected:
 
-        static bool                 comparisonFunction (RbLanguageObject* i,RbLanguageObject* j);                                            //!< Utilitary function for sort
-
-        
+    private:
+    std::vector<int>            elements;
     
     
 };
-
-
 
 #endif
 

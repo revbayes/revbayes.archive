@@ -15,7 +15,6 @@
  * $Id: MemberObject.h 194 2009-12-14 11:43:32Z ronquist $
  */
 
-#include "ContainerIterator.h"
 #include "ConstantNode.h"
 #include "ConstructorFunction.h"
 #include "DAGNode.h"

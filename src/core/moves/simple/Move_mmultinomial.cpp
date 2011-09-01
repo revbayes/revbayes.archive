@@ -206,7 +206,7 @@ double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
 		}
         
-    for ( size_t i = 0; i < valPtr->getLength(); i++ )
+    for ( size_t i = 0; i < valPtr->size(); i++ )
         newVal[i] *= sum;
 		
     nodePtr->setValue( new VectorReal( newVal ), affectedNodes );

@@ -45,7 +45,6 @@ MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, double x) : Matri
     if ( nRows < 1 || nCols < 1 )
         throw RbException( "Nonpositive length(s) for " + Real_name + "[][]" );
 
-    length = nRows;
     rows = nRows;
     cols = nCols;
 
@@ -64,7 +63,6 @@ MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : Matrix(Real
             throw RbException( "Invalid attempt to initialize a matrix container using a jagged matrix" );
     }
     
-    length = numRows;
     rows = numRows;
     cols = numCols;
 
@@ -76,7 +74,7 @@ MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : Matrix(Real
 /** Index operator (const) */
 const VectorReal& MatrixReal::operator[]( const size_t i ) const {
 
-    if ( i >= length )
+    if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
 
     return matrix[i];
@@ -86,7 +84,7 @@ const VectorReal& MatrixReal::operator[]( const size_t i ) const {
 /** Index operator */
 VectorReal& MatrixReal::operator[]( const size_t i ) {
 
-    if ( i >= length )
+    if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
 
     return matrix[i];
@@ -97,7 +95,6 @@ VectorReal& MatrixReal::operator[]( const size_t i ) {
 void MatrixReal::clear( void ) {
 
     matrix.clear();
-    length = 0;
     rows = 0;
     cols = 0;
 }
@@ -246,12 +243,11 @@ void MatrixReal::printValue(std::ostream& o) const {
 void MatrixReal::push_back( const VectorReal& x ) {
 
     if ( size() == 0 )
-        cols = x.getLength();
-    else if ( x.getLength() != cols )
+        cols = x.size();
+    else if ( x.size() != cols )
         throw RbException( "Cannot make matrix with rows of unequal size" );
 
     matrix.push_back( x.getValue() );
-    length++;
     rows++;
 }
 

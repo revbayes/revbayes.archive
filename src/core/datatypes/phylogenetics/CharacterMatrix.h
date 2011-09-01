@@ -19,7 +19,7 @@
 #include "Matrix.h"
 #include "Character.h"
 #include "ValueRule.h"
-#include "VectorCharacters.h"
+#include "Vector.h"
 #include "VectorString.h"
 
 #include <set>
@@ -28,6 +28,7 @@
 
 class ArgumentRule;
 class DAGNode;
+class Sequence;
 
 
 const std::string CharacterMatrix_name = "Character Matrix";
@@ -41,7 +42,7 @@ class CharacterMatrix : public Matrix {
 
         // Overloaded operators
         CharacterMatrix&                    operator=(const CharacterMatrix& x);                                        //!< Assignment operator
-        const VectorCharacters&             operator[](size_t i) const;                                                 //!< Subscript operator (const)
+        const Sequence&                     operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
         // Basic utility functions
         CharacterMatrix*                    clone(void) const;                                                          //!< Clone object
@@ -59,7 +60,7 @@ class CharacterMatrix : public Matrix {
     
         // Container and matrix functions
         void                                clear(void);                                                                //!< Clear
-        VectorCharacters*                   getElement(size_t index);                                                   //!< Get element or subcontainer
+        Vector*                             getElement(size_t index);                                                   //!< Get element or subcontainer
         Character*                          getElement(size_t row, size_t col);                                         //!< Get element or subcontainer
         void                                setElement(size_t index, RbLanguageObject* var);                            //!< Allow to set element
         void                                setElement(size_t row, size_t col, RbLanguageObject* var);                  //!< set element
@@ -69,7 +70,7 @@ class CharacterMatrix : public Matrix {
         void                                transpose(void);                                                            //!< Transpose the matrix
 
         // CharacterMatrix functions
-        void                                addSequence(const std::string tName, VectorCharacters* obs);                //!< Add taxon name
+        void                                addSequence(const std::string tName, Sequence* obs);                        //!< Add taxon name
         void                                excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
@@ -79,12 +80,12 @@ class CharacterMatrix : public Matrix {
         size_t                              getNumCharacters(void) const;                                               //!< Number of characters
         size_t                              getNumStates(void) const;                                                   //!< Get the number of states for the characters in this matrix
         size_t                              getNumTaxa(void) const { return members.size(); }                           //!< Number of taxa
-        const VectorCharacters&             getSequence(size_t tn) const;                                               //!< Return a reference to a sequence in the character matrix
+        const Sequence&                     getSequence(size_t tn) const;                                               //!< Return a reference to a sequence in the character matrix
         std::string                         getTaxonWithIndex(size_t idx) const;                                        //!< Returns the idx-th taxon name
         bool                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
         bool                                isTaxonExcluded(std::string& s) const;                                      //!< Is the taxon excluded
-        VectorCharacters*                   makeSiteColumn(size_t cn) const;                                            //!< Return a reference to a sequence in the character matrix
+        Vector*                             makeSiteColumn(size_t cn) const;                                            //!< Return a reference to a sequence in the character matrix
         void                                restoreCharacter(size_t i);                                                 //!< Restore character
         void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
         void                                restoreTaxon(std::string& s);                                               //!< Restore taxon

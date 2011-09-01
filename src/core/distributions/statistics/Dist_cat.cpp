@@ -82,7 +82,7 @@ const MemberRules& Dist_cat::getMemberRules( void ) const {
 /** Get the number of states in the distribution */
 size_t Dist_cat::getNumberOfStates( void ) const {
 
-    return static_cast<const Simplex*>( getMemberValue("m") )->getLength();
+    return static_cast<const Simplex*>( getMemberValue("m") )->size();
 }
 
 

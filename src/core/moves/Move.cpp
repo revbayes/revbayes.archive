@@ -229,7 +229,7 @@ void Move::setMemberVariable(std::string const &name, Variable *var) {
             DagNodeContainer *container = dynamic_cast<DagNodeContainer*>(var->getDagNodePtr()->getValuePtr());
             
             // add all moves
-            for (size_t i=0; i<container->getLength(); i++) {
+            for (size_t i=0; i<container->size(); i++) {
                 RbObject *theElement = container->getElement(i);
                 
                 // check if it is a stochastic node

@@ -20,7 +20,6 @@
 
 #include "ConstantNode.h"
 #include "ConstructorFunction.h"
-#include "Container.h"
 #include "Distribution.h"
 #include "DistributionFunction.h"
 #include "DistributionContinuous.h"
@@ -56,22 +55,19 @@
 #include "DagNodeContainer.h"
 #include "MatrixComplex.h"
 #include "MatrixReal.h"
-#include "VectorAminoAcidStates.h"
+#include "Vector.h"
 #include "VectorBoolean.h"
 #include "VectorComplex.h"
-#include "VectorCharacterContinuous.h"
-#include "VectorDnaStates.h"
 #include "VectorInteger.h"
 #include "VectorNatural.h"
 #include "VectorReal.h"
 #include "VectorRealPos.h"
-#include "VectorRnaStates.h"
-#include "VectorStandardStates.h"
 #include "VectorString.h"
 
 /* MemberObject types without auto-generated constructors(alphabetic order) */
 #include "CharacterMatrix.h"
 #include "Model.h"
+#include "Sequence.h"
 #include "Simplex.h"
 #include "Topology.h"
 #include "TopologyNode.h"
@@ -174,8 +170,8 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbAbstract( VectorString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(RbLanguageObject_name) + VectorString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(RbInternal_name) + VectorString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(Vector_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name) ) );
-        addType( new RbAbstract( VectorString(Matrix_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name) ) );
+//        addType( new RbAbstract( VectorString(Vector_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name) ) );
+//        addType( new RbAbstract( VectorString(Matrix_name) + RbString(Container_name) + RbString(ConstantMemberObject_name) + RbString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(MemberObject_name) + RbString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(Move_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
         addType( new RbAbstract( VectorString(Distribution_name) + RbString(MemberObject_name) + RbString(RbObject_name) ) );
@@ -202,16 +198,12 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new DagNodeContainer()             );
         addType( new MatrixComplex()                );
         addType( new MatrixReal()                   );
-        addType( new VectorAminoAcidStates()        );
+        addType( new Vector()                       );
         addType( new VectorBoolean()                );
-        addType( new VectorCharacterContinuous()    );
-        addType( new VectorDnaStates()              );
         addType( new VectorInteger()                );
         addType( new VectorNatural()                );
         addType( new VectorReal()                   );
         addType( new VectorRealPos()                );
-        addType( new VectorRnaStates()              );
-        addType( new VectorStandardStates()         );
         addType( new VectorString()                 );
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
@@ -351,11 +343,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "unique",    new Func_unique<VectorRealPos>()          );
         addFunction( "unique",    new Func_unique<VectorComplex>()          );
         addFunction( "unique",    new Func_unique<VectorString>()          );
-        addFunction( "unique",    new Func_unique<VectorDnaStates>()          );
-        addFunction( "unique",    new Func_unique<VectorRnaStates>()          );
-        addFunction( "unique",    new Func_unique<VectorAminoAcidStates>()          );
-        addFunction( "unique",    new Func_unique<VectorStandardStates>()          );
-        addFunction( "unique",    new Func_unique<VectorCharacterContinuous>()          );
         addFunction( "size",    new Func_size<VectorBoolean>()          );
         addFunction( "size",    new Func_size<VectorInteger>()          );
         addFunction( "size",    new Func_size<VectorNatural>()          );
@@ -363,11 +350,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "size",    new Func_size<VectorRealPos>()          );
         addFunction( "size",    new Func_size<VectorComplex>()          );
         addFunction( "size",    new Func_size<VectorString>()          );
-        addFunction( "size",    new Func_size<VectorDnaStates>()          );
-        addFunction( "size",    new Func_size<VectorRnaStates>()          );
-        addFunction( "size",    new Func_size<VectorAminoAcidStates>()          );
-        addFunction( "size",    new Func_size<VectorStandardStates>()          );
-        addFunction( "size",    new Func_size<VectorCharacterContinuous>()          );
         addFunction( "sort",    new Func_sort<VectorBoolean>()          );
         addFunction( "sort",    new Func_sort<VectorInteger>()          );
         addFunction( "sort",    new Func_sort<VectorNatural>()          );
@@ -375,11 +357,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "sort",    new Func_sort<VectorRealPos>()          );
         addFunction( "sort",    new Func_sort<VectorComplex>()          );
         addFunction( "sort",    new Func_sort<VectorString>()          );
-        addFunction( "sort",    new Func_sort<VectorDnaStates>()          );
-        addFunction( "sort",    new Func_sort<VectorRnaStates>()          );
-        addFunction( "sort",    new Func_sort<VectorAminoAcidStates>()          );
-        addFunction( "sort",    new Func_sort<VectorStandardStates>()          );
-        addFunction( "sort",    new Func_sort<VectorCharacterContinuous>()          );
 
         /* Add math functions (alphabetical order) */
 
@@ -409,11 +386,6 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "v",         new Func_vector<          RealPos,                        VectorRealPos                   >() );
         addFunction( "v",         new Func_vector<          Complex,                        VectorComplex                   >() );
         addFunction( "v",         new Func_vector<          RbString,                       VectorString                    >() );
-        addFunction( "v",         new Func_vector<          DnaState,                       VectorDnaStates                 >() );
-        addFunction( "v",         new Func_vector<          RnaState,                       VectorRnaStates                 >() );
-        addFunction( "v",         new Func_vector<          AminoAcidState,                 VectorAminoAcidStates           >() );
-        addFunction( "v",         new Func_vector<          StandardState,                  VectorStandardStates            >() );
-        addFunction( "v",         new Func_vector<          CharacterContinuous,            VectorCharacterContinuous       >() );
         addFunction( "v",         new Func_vector<          VectorReal,                     MatrixReal                      >() );
         addFunction( "v",         new Func_vector<          VectorComplex,                  MatrixComplex                   >() );
     }

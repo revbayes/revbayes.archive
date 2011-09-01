@@ -40,7 +40,6 @@ MatrixComplex::MatrixComplex(void) : Matrix(Complex_name) {
 /** Construct matrix of specified dimensions (length), initialize it with double x (default 0.0) */
 MatrixComplex::MatrixComplex(const size_t nRows, const size_t nCols, std::complex<double> x) : Matrix(Complex_name) {
 
-    length  = nRows;
     rows    = nRows;
     cols    = nCols;
 
@@ -60,7 +59,6 @@ MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> 
             throw RbException( "Invalid attempt to initialize a matrix container using a jagged matrix" );
         }
     
-    length  = numRows;
     rows    = numRows;
     cols    = numCols;
 
@@ -72,7 +70,7 @@ MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> 
 /** Index operator (const) */
 const VectorComplex& MatrixComplex::operator[]( const size_t i ) const {
 
-    if ( i >= length )
+    if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
 
     return matrix[i];
@@ -82,7 +80,7 @@ const VectorComplex& MatrixComplex::operator[]( const size_t i ) const {
 /** Index operator */
 VectorComplex& MatrixComplex::operator[]( const size_t i ) {
 
-    if ( i >= length )
+    if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
 
     return matrix[i];
@@ -93,7 +91,6 @@ VectorComplex& MatrixComplex::operator[]( const size_t i ) {
 void MatrixComplex::clear( void ) {
 
     matrix.clear();
-    length  = 0;
     rows    = 0;
     cols    = 0;
 }
@@ -143,7 +140,7 @@ Complex* MatrixComplex::getElement( size_t row , size_t col) {
 std::vector<std::vector<std::complex<double> > > MatrixComplex::getValue( void ) const {
 
     std::vector<std::vector<std::complex<double> > > temp;
-    for ( size_t i = 0; i < length; i++ )
+    for ( size_t i = 0; i < size(); i++ )
         temp.push_back( matrix[i].getValue() );
     return temp;
 }
@@ -238,8 +235,8 @@ void MatrixComplex::printValue(std::ostream& o) const {
 void MatrixComplex::push_back( const VectorComplex& x ) {
 
     if ( size() == 0 )
-        cols = x.getLength();
-    else if ( x.getLength() != cols )
+        cols = x.size();
+    else if ( x.size() != cols )
         throw RbException( "Cannot make matrix with rows of unequal size" );
 
     matrix.push_back( x );

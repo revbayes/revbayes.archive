@@ -71,7 +71,7 @@ const MemberRules& MoveTree::getMemberRules( void ) const {
     if (!rulesSet) {
         
         memberRules.push_back( new ValueRule ( "topology",      TypeSpec(Topology_name) ) );
-        memberRules.push_back( new ValueRule ( "treeVariables", TypeSpec(Container_name)     ) );
+//        memberRules.push_back( new ValueRule ( "treeVariables", TypeSpec(Container_name)     ) );
 
         /* Inherit weight from Move, put it after topology and tree variables */
         const MemberRules& inheritedRules = MoveTree::getMemberRules();
@@ -93,13 +93,13 @@ const MemberRules& MoveTree::getMemberRules( void ) const {
 std::vector<StochasticNode*> MoveTree::getTreeVariable( const std::string& name ) const {
 
     ConstantNode*    treeVarsNode = static_cast<ConstantNode*>( members["treeVariables"].getDagNodePtr() );
-    Container*           treeVars = static_cast<Container*>   ( treeVarsNode->getValuePtr() );
+//    Container*           treeVars = static_cast<Container*>   ( treeVarsNode->getValuePtr() );
 
     std::vector<StochasticNode*> temp;
-    for ( size_t i=0; i<treeVars->getLength(); i++ ) {
-    
+//    for ( size_t i=0; i<treeVars->size(); i++ ) {
+//    
 //        temp.push_back( static_cast<StochasticNode*>( treeVars[i] ) );
-    }
+//    }
 
     return temp;
 }
@@ -127,7 +127,7 @@ double MoveTree::performMove(double& lnProbabilityRatio) {
     // Get topology and tree variable info
     StochasticNode* topNode         = static_cast<StochasticNode*>   ( members["topology"].getDagNodePtr() );
     ConstantNode*   treeVarsNode    = static_cast<ConstantNode*>     ( members["treeVariables"].getDagNodePtr() );
-    Container*      treeVars        = static_cast<Container*>        ( treeVarsNode->getValuePtr() );
+//    Container*      treeVars        = static_cast<Container*>        ( treeVarsNode->getValuePtr() );
     Topology*       top             = static_cast<Topology*>         ( topNode->getValue()->clone() );
 
     // Declare local variable needed to retrieve set of affected nodes
@@ -141,7 +141,7 @@ double MoveTree::performMove(double& lnProbabilityRatio) {
     topNode->setValue( top, affected );
 
     // Reconnnect the tree variables according to new topology
-    reconnectTreeVariables( treeVars, topChanges );
+//    reconnectTreeVariables( treeVars, topChanges );
 
     // Calculate probability ratio
     lnProbabilityRatio = topNode->getLnProbabilityRatio();
@@ -169,30 +169,30 @@ double MoveTree::performMove(double& lnProbabilityRatio) {
  *       target child node. This is done using the isParentInDAG function, to test whether the
  *       immediate child is a parent of the target child
  */
-void MoveTree::reconnectTreeVariables( Container* treeVars, std::vector<TopologyChange>& topChanges ) {
-
-    for ( size_t i=0; i<treeVars->getLength(); i++ ) {
-    
-        ConstantNode*      treeVarNode = static_cast<ConstantNode*>( treeVars->getElement( i ) );
-        Container*             treeVar = static_cast<Container*>   ( treeVarNode->getValuePtr() );
-
-        for ( std::vector<TopologyChange>::iterator j=topChanges.begin(); j!=topChanges.end(); j++ ) {
-        
-            StochasticNode* childNode = static_cast<StochasticNode*>( treeVar->getElement( (*j).node          ) );
-            StochasticNode* oldParent = static_cast<StochasticNode*>( treeVar->getElement( (*j).oldParentNode ) );
-            StochasticNode* newParent = static_cast<StochasticNode*>( treeVar->getElement( (*j).newParentNode ) );
-            
-            std::set<VariableNode*> immediateChildren = oldParent->getChildren();
-            for ( std::set<VariableNode*>::iterator k=immediateChildren.begin(); k!=immediateChildren.end(); k++ ) {            
-
-                std::list<DAGNode*> done;
-                done.clear();
-                if ( (*k) == childNode || childNode->isParentInDAG( (*k), done ) )
-                    (*k)->swapParentNode( oldParent, newParent );
-            }
-        }
-    }
-}
+//void MoveTree::reconnectTreeVariables( Container* treeVars, std::vector<TopologyChange>& topChanges ) {
+//
+//    for ( size_t i=0; i<treeVars->size(); i++ ) {
+//    
+//        ConstantNode*      treeVarNode = static_cast<ConstantNode*>( treeVars->getElement( i ) );
+//        Container*             treeVar = static_cast<Container*>   ( treeVarNode->getValuePtr() );
+//
+//        for ( std::vector<TopologyChange>::iterator j=topChanges.begin(); j!=topChanges.end(); j++ ) {
+//        
+//            StochasticNode* childNode = static_cast<StochasticNode*>( treeVar->getElement( (*j).node          ) );
+//            StochasticNode* oldParent = static_cast<StochasticNode*>( treeVar->getElement( (*j).oldParentNode ) );
+//            StochasticNode* newParent = static_cast<StochasticNode*>( treeVar->getElement( (*j).newParentNode ) );
+//            
+//            std::set<VariableNode*> immediateChildren = oldParent->getChildren();
+//            for ( std::set<VariableNode*>::iterator k=immediateChildren.begin(); k!=immediateChildren.end(); k++ ) {            
+//
+//                std::list<DAGNode*> done;
+//                done.clear();
+//                if ( (*k) == childNode || childNode->isParentInDAG( (*k), done ) )
+//                    (*k)->swapParentNode( oldParent, newParent );
+//            }
+//        }
+//    }
+//}
 
 
 /** Here we reconnect the tree variables according to the old topology, restore the topology
@@ -203,7 +203,7 @@ void MoveTree::rejectMove(void) {
     // Get topology and tree variable info
     StochasticNode* topNode      = static_cast<StochasticNode*>( members["topology"].getDagNodePtr() );
     ConstantNode*   treeVarsNode = static_cast<ConstantNode*>  ( members["treeVariables"].getDagNodePtr() );
-    Container*      treeVars     = static_cast<Container*>     ( treeVarsNode->getValuePtr() );
+//    Container*      treeVars     = static_cast<Container*>     ( treeVarsNode->getValuePtr() );
 
     // Reconnnect the tree variables according to old topology
     for ( std::vector<TopologyChange>::iterator i=topChanges.begin(); i!=topChanges.end(); i++ ) {
@@ -211,7 +211,7 @@ void MoveTree::rejectMove(void) {
         (*i).newParentNode = (*i).oldParentNode;
         (*i).oldParentNode = temp;
     }
-    reconnectTreeVariables( treeVars, topChanges );
+//    reconnectTreeVariables( treeVars, topChanges );
 
     // Restore topology and all other moved nodes
     topNode->restore();

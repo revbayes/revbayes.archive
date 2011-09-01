@@ -20,7 +20,6 @@
 // Regular include files
 #include "ConstantNode.h"
 #include "ConstructorFunction.h"
-#include "Container.h"
 #include "Distribution.h"
 #include "DistributionFunction.h"
 #include "DistributionContinuous.h"

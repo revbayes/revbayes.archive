@@ -21,20 +21,53 @@
 
 
 /** Complete constructor */
-TypeSpec::TypeSpec(const std::string& objType) : type(objType) {
+TypeSpec::TypeSpec(const std::string &objType, TypeSpec *elemType) : baseType(objType) {
+    elementType = elemType;
+    
+    type = baseType;
+    
+    // add the element type
+    if (elementType != NULL) {
+        type += "<" + elementType->toString() + ">";
+    }
 }
 
 /** Copy constructor */
-TypeSpec::TypeSpec(const TypeSpec& ts)
-: type(ts.type) {
+TypeSpec::TypeSpec(const TypeSpec& ts) : baseType(ts.baseType) {
     
+    // make a independent copy of the element type
+    if (ts.elementType != NULL) {
+        elementType = new TypeSpec(*ts.elementType);
+    }
+    else {
+        elementType = NULL;
+    }
+    
+    type = baseType;
+    
+    // add the element type
+    if (elementType != NULL) {
+        type += "<" + elementType->toString() + ">";
+    }
+}
+
+
+/** Assignment operator; make sure we get independent elements */
+TypeSpec& TypeSpec::operator=( const TypeSpec& x ) {
+    
+    if ( this != &x ) {
+        
+        elementType = new TypeSpec(*x.elementType);
+    }
+    
+    return ( *this );
 }
 
 
 /** Equals comparison */
 bool TypeSpec::operator==(const TypeSpec& x) const {
 
-    if ( type == x.type )
+    if ( type == x.type && elementType == x.elementType)
         return true;
     else
         return false;
@@ -51,9 +84,7 @@ TypeSpec::operator std::string( void ) const {
 /** Convert to string */
 std::string TypeSpec::toString(void) const {
 
-    std::string typeDesc = type;
-
-    return typeDesc;
+    return type;
 }
 
 

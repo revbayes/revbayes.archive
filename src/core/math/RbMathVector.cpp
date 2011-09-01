@@ -50,7 +50,7 @@ void RbMath::normalize(std::vector<double>& x, double sum) {
 
 void RbMath::vectorMultiplication(const VectorReal& v1, const VectorReal& v2, MatrixReal& p) {
     
-    if ( v1.getLength() != v2.getLength() )
+    if ( v1.size() != v2.size() )
         throw (RbException("Cannot multiply two vectors of different dimensions"));
     
 //    std::cout << "v1 : " << v1.getIsRowVector() << std::endl;

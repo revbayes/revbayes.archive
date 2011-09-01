@@ -256,7 +256,7 @@ CharacterStateDiscrete* Dist_ctmm::rv( void ) {
         if (*itStart) {
             VectorReal probs = (*m)[indexStart];
             double u = rng->uniform01();
-            for (size_t i=0; i<probs.getLength(); i++) {
+            for (size_t i=0; i<probs.size(); i++) {
                 u -= probs[i];
                 if (u <= 0) {
                     std::vector<bool> values = std::vector<bool>(start->getNumberOfStates());

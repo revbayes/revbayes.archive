@@ -16,8 +16,8 @@
  */
 
 #include "Ellipsis.h"
+#include "Integer.h"
 #include "Monitor.h"
-#include "MonitorsContainer.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "ValueRule.h"
@@ -61,16 +61,6 @@ Monitor::~Monitor() {
 /** Convert to object of type */
 RbLanguageObject* Monitor::convertTo(const std::string &type) const {
     
-    // test the type and convert if possible
-    if (type == MonitorsContainer_name) {
-        MonitorsContainer *monitors = new MonitorsContainer();
-        
-        monitors->push_back(this->clone());
-        
-        // return the monitors
-        return monitors;
-    }
-    
     // call base class
     return ConstantMemberObject::convertTo(type);
 }
@@ -110,11 +100,6 @@ const MemberRules& Monitor::getMemberRules( void ) const {
 
 /** Is convertible to? */
 bool Monitor::isConvertibleTo(std::string const &type, bool once) const {
-    
-    // test the type
-    if (type == MonitorsContainer_name) {
-        return true;
-    }
     
     // call base class
     return ConstantMemberObject::isConvertibleTo(type, once);

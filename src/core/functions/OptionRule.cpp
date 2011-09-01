@@ -49,8 +49,8 @@ OptionRule::OptionRule(const std::string& argName, RbString* defVal, VectorStrin
 /** Help function to test whether a vector of string contains unique string values */
 bool OptionRule::areOptionsUnique( const VectorString& optVals ) const {
 
-    for ( size_t i = 0; i < optVals.getLength(); i++ )
-        for ( size_t j = i + 1; j < optVals.getLength(); j++ )
+    for ( size_t i = 0; i < optVals.size(); i++ )
+        for ( size_t j = i + 1; j < optVals.size(); j++ )
             if ( optVals[i] == optVals[j] )
                 return false;
 
@@ -89,7 +89,7 @@ bool OptionRule::isArgValid( DAGNode* var, bool& needsConversion, bool once ) co
         value = static_cast<RbString*>( var->getValue()->clone() );
 
     std::string valString = value->getValue();
-    for ( size_t i = 0; i < options.getLength(); i++ ) {
+    for ( size_t i = 0; i < options.size(); i++ ) {
         if ( options[i] == valString ) {
             valid = true;
             break;

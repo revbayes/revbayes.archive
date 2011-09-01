@@ -18,16 +18,14 @@
  */
 
 #include "ConstantNode.h"
-#include "ContainerIterator.h"
 #include "Integer.h"
 #include "Mcmc.h"
 #include "MemberFunction.h"
 #include "Model.h"
 #include "Monitor.h"
-#include "MonitorsContainer.h"
 #include "Move.h"
-#include "MovesContainer.h"
 #include "MoveSchedule.h"
+#include "Natural.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -94,8 +92,8 @@ const MemberRules& Mcmc::getMemberRules(void) const {
     if (!rulesSet) {
 
         memberRules.push_back( new ValueRule ( "model"    , Model_name    ) );
-        memberRules.push_back( new ValueRule ( "moves"    , MovesContainer_name ) );
-        memberRules.push_back( new ValueRule ( "monitors" , MonitorsContainer_name ) );
+        memberRules.push_back( new ValueRule ( "moves"    , TypeSpec(Vector_name, new TypeSpec(Move_name)) ) );
+        memberRules.push_back( new ValueRule ( "monitors" , TypeSpec(Vector_name, new TypeSpec(Monitor_name)) ) );
 
         rulesSet = true;
     }
@@ -135,10 +133,10 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
         // get the DAG nodes
         const Model* theModel = dynamic_cast<const Model*>(getMemberValue("model"));
         
-        MovesContainer *moves = dynamic_cast<MovesContainer*>(var->getDagNodePtr()->getValuePtr()->convertTo(MovesContainer_name));
-        for (size_t i=0; i<moves->getLength(); i++) {
+        Vector *moves = static_cast<Vector*>(var->getDagNodePtr()->getValuePtr());
+        for (size_t i=0; i<moves->size(); i++) {
             // get the move #i
-            Move *theMove       = moves->getElement(i);
+            Move *theMove       = static_cast<Move*>(moves->getElement(i));
             
             // get the DAG node for this move
             std::vector<VariableNode*> &theOldNodes = theMove->getDagNodes();
@@ -157,12 +155,12 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
     }
     else if ( name == "monitors" ) {
         // get the DAG nodes
-        const Model* theModel = dynamic_cast<const Model*>(getMemberValue("model"));
+        const Model* theModel = static_cast<const Model*>(getMemberValue("model"));
         
-        MonitorsContainer *monitors = dynamic_cast<MonitorsContainer*>(var->getDagNodePtr()->getValuePtr()->convertTo(MonitorsContainer_name));
-        for (size_t i=0; i<monitors->getLength(); i++) {
+        Vector *monitors = static_cast<Vector*>(var->getDagNodePtr()->getValuePtr());
+        for (size_t i=0; i<monitors->size(); i++) {
             // get the monitor #i
-            Monitor *theMonitor       = monitors->getElement(i);
+            Monitor *theMonitor       = static_cast<Monitor*>(monitors->getElement(i));
             
             // get the DAG node for this monitor
             std::vector<VariableNode*> &theOldNodes = theMonitor->getDagNodes();
@@ -194,8 +192,8 @@ void Mcmc::run(size_t ngen) {
     std::vector<DAGNode*>& dagNodes = ((Model*)(getMemberValue("model")))->getDAGNodes();
 
     /* Get the moves and monitors */
-    MonitorsContainer *monitors = dynamic_cast<MonitorsContainer*>(getMemberDagNodePtr( "monitors" )->getValuePtr() );
-    MovesContainer       *moves = dynamic_cast<MovesContainer*   >(getMemberDagNodePtr( "moves"    )->getValuePtr() );
+    Vector *monitors = static_cast<Vector*>(getMemberDagNodePtr( "monitors" )->getValuePtr() );
+    Vector    *moves = static_cast<Vector*>(getMemberDagNodePtr( "moves"    )->getValuePtr() );
 
     /* Get the chain settings */
     std::cerr << "Getting the chain settings ..." << std::endl;
@@ -204,9 +202,9 @@ void Mcmc::run(size_t ngen) {
 
     /* Open the output file and print headers */
     std::cerr << "Opening file and printing headers ..." << std::endl;
-    for (size_t i=0; i<monitors->getLength(); i++) {
+    for (size_t i=0; i<monitors->size(); i++) {
         // get the monitor
-        Monitor *theMonitor = monitors->getElement(i);
+        Monitor *theMonitor = static_cast<Monitor*>(monitors->getElement(i));
         
         // open the file stream for the monitor
         theMonitor->openStream();
@@ -237,9 +235,9 @@ void Mcmc::run(size_t ngen) {
 
     for (unsigned int gen=1; gen<=ngen; gen++) {
 
-        for (size_t i=0; i<moves->getLength(); i++) {
+        for (size_t i=0; i<moves->size(); i++) {
             /* Get the move */
-            Move* theMove = moves->getElement(i);
+            Move* theMove = static_cast<Move*>(moves->getElement(i));
 
             /* Propose a new value */
             double lnProbabilityRatio;
@@ -283,8 +281,8 @@ void Mcmc::run(size_t ngen) {
         }
 
         /* Monitor */
-        for (size_t i=0; i<monitors->getLength(); i++) {
-            monitors->getElement(i)->monitor(gen);
+        for (size_t i=0; i<monitors->size(); i++) {
+            static_cast<Monitor*>(monitors->getElement(i))->monitor(gen);
         }
 
         /* Print to screen */

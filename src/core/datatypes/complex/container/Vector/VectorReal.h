@@ -38,44 +38,50 @@ class VectorRealPos;
  *       inappropriate access to elements.
  */
 
-class VectorReal : public Vector {
+class VectorReal : public AbstractVector {
 
     public:
-                                    VectorReal(void);                                           //!< Default constructor (empty vector)
-                                    VectorReal(const std::string& elemType);                    //!< Default constructor for derived classes
-                                    VectorReal(double x);                                       //!< Construct vector with one double x
-                                    VectorReal(size_t n, double x);                             //!< Construct vector with n doubles x
-                                    VectorReal(const std::vector<double>& x);                   //!< Constructor from double vector
-                                    VectorReal(const VectorRealPos& x);                         //!< Constructor from VectorRealPos
+                                VectorReal(void);                                               //!< Default constructor (empty vector)
+                                VectorReal(const std::string& elemType);                        //!< Default constructor for derived classes
+                                VectorReal(double x);                                           //!< Construct vector with one double x
+                                VectorReal(size_t n, double x);                                 //!< Construct vector with n doubles x
+                                VectorReal(const std::vector<double>& x);                       //!< Constructor from double vector
+                                VectorReal(const VectorRealPos& x);                             //!< Constructor from VectorRealPos
 
-        // Overloaded operators
-        double&                     operator[](size_t i);                                       //!< Index op allowing change
-        const double&               operator[](size_t i) const;                                 //!< Const index op
-        bool                        operator==(const VectorReal& x) const;                      //!< Equals comparison
-        bool                        operator!=(const VectorReal& x) const;                      //!< Not equals comparison
-        
-        // Basic utility functions
-        VectorReal*                 clone(void) const;                                          //!< Clone object
-        RbLanguageObject*           convertTo(const std::string& type) const;                   //!< Convert to type
-        const VectorString&         getClass(void) const;                                       //!< Get class
-        bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
-        void                        printValue(std::ostream& o) const;                          //!< Print value (for user)
-        std::string                 richInfo(void) const;                                       //!< Complete info about object
+    // Overloaded operators
+    double&                     operator[](size_t i);                                           //!< Index op allowing change
+    const double&               operator[](size_t i) const;                                     //!< Const index op
+    bool                        operator==(const VectorReal& x) const;                          //!< Equals comparison
+    bool                        operator!=(const VectorReal& x) const;                          //!< Not equals comparison
+    
+    // Basic utility functions
+    VectorReal*                 clone(void) const;                                              //!< Clone object
+    RbLanguageObject*           convertTo(const std::string& type) const;                       //!< Convert to type
+    const VectorString&         getClass(void) const;                                           //!< Get class
+    bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
+    void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
+    std::string                 richInfo(void) const;                                           //!< Complete info about object
 
         // Vector functions, including STL-like functions
-        std::vector<double>         getValue(void) const;                                       //!< Get value
-        void                        push_back(double x);                                        //!< Append element to end
-        void                        push_front(double x);                                       //!< Add element in front
-        void                        setValue(const VectorReal& x);                              //!< Set the value
-        void                        setValue(const std::vector<double>& x);                     //!< Set the value
-        void                        sort( void );                                           //!< Sort the vector    
-        void                        unique(void);                                           //!< Remove duplicates and resize the vector
-protected:
+    void                        clear(void);                                                    //!< Clear
+    Real*                       getElement(size_t index) const;                                 //!< Get element
+    std::vector<double>         getValue(void) const;                                           //!< Get value
+    void                        pop_back(void);                                                 //!< Drop element at back
+    void                        pop_front(void);                                                //!< Drop element from front
+    void                        push_back(RbObject* x);                                         //!< Append element to end
+    void                        push_back(double x);                                            //!< Append element to end
+    void                        push_front(RbObject* x);                                        //!< Add element in front
+    void                        push_front(double x);                                           //!< Add element in front
+    void                        resize(size_t n);                                               //!< Resize to new AbstractVector of length n
+    void                        setElement(const size_t index, RbLanguageObject* elem);         //!< Set element with type conversion
+    void                        setValue(const VectorReal& x);                                  //!< Set the value
+    void                        setValue(const std::vector<double>& x);                         //!< Set the value
+    void                        sort(void);                                                     //!< sort the AbstractVector
+    size_t                      size(void) const;                                               //!< get the number of elements in the AbstractVector
+    void                        unique(void);                                                   //!< removes consecutive duplicates
     
-        static bool                 comparisonFunction (RbLanguageObject* i,RbLanguageObject* j);                                            //!< Utilitary function for sort
-
-    
-    
+    private:
+    std::vector<double>         elements;
 };
 
 #endif

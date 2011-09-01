@@ -17,7 +17,6 @@
  */
 
 #include "RbBoolean.h"
-#include "ContainerIterator.h"
 #include "VectorBoolean.h"
 #include "RbException.h"
 #include "Integer.h"
@@ -25,85 +24,70 @@
 #include "VectorInteger.h"
 #include "VectorString.h"
 
-#include <algorithm>
 #include <sstream>
 
 
 
 /** Default constructor */
-VectorBoolean::VectorBoolean(void) : Vector(RbBoolean_name) {
+VectorBoolean::VectorBoolean(void) : AbstractVector(RbBoolean_name) {
 
 }
 
 
 /** Construct vector with one bool x */
-VectorBoolean::VectorBoolean(bool x) : Vector(RbBoolean_name) {
+VectorBoolean::VectorBoolean(bool x) : AbstractVector(RbBoolean_name) {
 
-    RbBoolean *element = new RbBoolean(x);
-    element->retain();
-    elements.push_back( element );
-    length = 1;
+    elements.push_back( x );
 }
 
 
 /** Construct vector with n bools x */
-VectorBoolean::VectorBoolean(size_t n, bool x) : Vector(RbBoolean_name) {
+VectorBoolean::VectorBoolean(size_t n, bool x) : AbstractVector(RbBoolean_name) {
 
     for (size_t i = 0; i < n; i++) {
-        RbBoolean *element = new RbBoolean(x);
-        element->retain();
-        elements.push_back( element );
+        elements.push_back( x );
     }
-    length = elements.size();
 }
 
 
 /** Constructor from bool vector */
-VectorBoolean::VectorBoolean(const std::vector<bool>& x) : Vector(RbBoolean_name) {
+VectorBoolean::VectorBoolean(const std::vector<bool>& x) : AbstractVector(RbBoolean_name) {
 
-    for (std::vector<bool>::const_iterator i=x.begin(); i!=x.begin(); i++) {
-        RbBoolean *element = new RbBoolean(*i);
-        element->retain();
-        elements.push_back( element );
-    }
-    length = elements.size();
+    elements = x;
 }
 
 
 /** Constructor from int vector */
-VectorBoolean::VectorBoolean(const std::vector<int>& x) : Vector(RbBoolean_name) {
+VectorBoolean::VectorBoolean(const std::vector<int>& x) : AbstractVector(RbBoolean_name) {
 
     for (std::vector<int>::const_iterator i=x.begin(); i!=x.end(); i++) {
-        RbBoolean *element = new RbBoolean( (*i) == 0 );
-        element->retain();
-        elements.push_back( element );
+        elements.push_back( (*i) == 0 );
     }
-    length = elements.size();
 }
 
 /** Subscript operator */
-bool& VectorBoolean::operator[](size_t i) {
+std::vector<bool>::reference VectorBoolean::operator[](size_t i) {
 
     if (i > elements.size())
         throw RbException("Index out of bounds");
 
-    return static_cast<RbBoolean*>(elements[i])->getValueReference();
+    return elements[i];
 }
 
 
 /** Subscript const operator */
-const bool& VectorBoolean::operator[](size_t i) const {
+std::vector<bool>::const_reference VectorBoolean::operator[](size_t i) const {
 
     if ( i >= elements.size() )
         throw RbException("Index out of bounds");
-    return static_cast<RbBoolean*>(elements[i])->getValueReference();
+    return elements[i];
 }
 
 
 /** Equals comparison */
 bool VectorBoolean::operator==(const VectorBoolean& x) const {
 
-    if (getLength() != x.getLength())
+    if (size() != x.size())
         return false;
 
     for (size_t i=0; i<elements.size(); i++) {
@@ -122,6 +106,11 @@ bool VectorBoolean::operator!=(const VectorBoolean& x) const {
 }
 
 
+void VectorBoolean::clear(void) {
+    elements.clear();
+}
+
+
 /** Clone function */
 VectorBoolean* VectorBoolean::clone() const {
 
@@ -132,38 +121,80 @@ VectorBoolean* VectorBoolean::clone() const {
 /** Get class vector describing type of object */
 const VectorString& VectorBoolean::getClass() const {
 
-    static VectorString rbClass = VectorString(VectorBoolean_name) + Vector::getClass();
+    static VectorString rbClass = VectorString(VectorBoolean_name) + AbstractVector::getClass();
     return rbClass;
+}
+
+
+RbBoolean* VectorBoolean::getElement(size_t index) const {
+    
+    if ( index >= elements.size() )
+        throw RbException("Index out of bounds");
+    
+    RbBoolean *b = new RbBoolean(elements[index]);
+    return b;
 }
 
 
 /** Export value as STL vector */
 std::vector<bool> VectorBoolean::getValue(void) const {
 
-    std::vector<bool> temp;
-    for (size_t i=0; i<getLength(); i++)
-        temp.push_back(operator[](i));
+    return elements;
+}
 
-    return temp;
+
+void VectorBoolean::pop_back() {
+    elements.pop_back();
+}
+
+
+void VectorBoolean::pop_front() {
+    elements.erase(elements.begin());
+}
+
+
+/** Append element to end of vector, updating length in process */
+void VectorBoolean::push_back(RbObject *x) {
+ 
+    if ( x->isType(RbBoolean_name) ) {
+        elements.push_back(static_cast<RbBoolean*>(x)->getValue());
+    } else if ( x->isConvertibleTo(RbBoolean_name, true) ) {
+        elements.push_back(static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
+    }
+    else {
+        throw RbException( "Trying to set " + RbBoolean_name + "[] with invalid value" );
+    }
 }
 
 /** Append element to end of vector, updating length in process */
 void VectorBoolean::push_back(bool x) {
-    
-    RbBoolean *element = new RbBoolean(x);
-    element->retain();
-    elements.push_back( element );
-    length++;
+
+    elements.push_back( x );
 }
 
+
+/** Append element to front of vector, updating length in process */
+void VectorBoolean::push_front(RbObject *x) {
+    
+    if ( x->isType(RbBoolean_name) ) {
+        elements.insert( elements.begin() , static_cast<RbBoolean*>(x)->getValue());
+    } else if ( x->isConvertibleTo(RbBoolean_name, true) ) {
+        elements.insert( elements.begin() , static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
+    }
+    else {
+        throw RbException( "Trying to set " + RbBoolean_name + "[] with invalid value" );
+    }
+}
 
 /** Add element in front of vector, updating length in process */
 void VectorBoolean::push_front(bool x) {
     
-    RbBoolean *element = new RbBoolean(x);
-    element->retain();
-    elements.insert(elements.begin(), element );
-    length++;
+    elements.insert(elements.begin(), x );
+}
+
+
+void VectorBoolean::resize(size_t n) {
+    elements.resize(n);
 }
 
 
@@ -178,36 +209,44 @@ std::string VectorBoolean::richInfo(void) const {
 }
 
 
+void VectorBoolean::setElement(const size_t index, RbLanguageObject *x) {
+    
+    // check for type and convert if necessary
+    if ( x->isType(RbBoolean_name) ) {
+        // resize if necessary
+        if (index >= elements.size()) {
+            elements.resize(index);
+        }
+        elements.insert( elements.begin() + index, static_cast<RbBoolean*>(x)->getValue());
+    } else if ( x->isConvertibleTo(RbBoolean_name, true) ) {
+        // resize if necessary
+        if (index >= elements.size()) {
+            elements.resize(index);
+        }
+        elements.insert( elements.begin() + index, static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
+    }
+    else {
+        throw RbException( "Trying to set " + RbBoolean_name + "[] with invalid value" );
+    }
+}
+
+
 /** Set value of vector using STL vector */
 void VectorBoolean::setValue(const std::vector<bool>& x) {
 
-    clear();
-    for (std::vector<bool>::const_iterator i=x.begin(); i!=x.end(); i++) { 
-        RbBoolean *element = new RbBoolean(*i);
-        element->retain();
-        elements.push_back( element );  
-        length++;
-    }
+    elements = x;
 }   
 
 
 /** Set value of vector using VectorBoolean */
 void VectorBoolean::setValue(const VectorBoolean& x) {
 
-    clear();
-    for (size_t i=0; i<x.getLength(); i++) {   
-        RbBoolean *element = new RbBoolean(x[i]);
-        element->retain();
-        elements.push_back( element );
-        length++;
-    }
+    elements = x.getValue();
 }   
 
 
-bool VectorBoolean::comparisonFunction (RbLanguageObject* i,RbLanguageObject* j) { 
-    
-    return (*(static_cast<RbBoolean*>(i)) < *(static_cast<RbBoolean*>(j)) ); 
-    
+size_t VectorBoolean::size(void) const {
+    return elements.size();
 }
 
 
@@ -221,18 +260,15 @@ void VectorBoolean::sort( void ) {
 
 /** Remove consecutive duplicates and resizes the vector */
 void VectorBoolean::unique(void) {
-    sort();
-    std::vector<RbLanguageObject*> uniqueVector;
+    std::vector<bool> uniqueVector;
     uniqueVector.push_back (elements[0]);
-    for (size_t i = 1 ; i< elements.size() ; i++)
+    for (int i = 1 ; i< elements.size() ; i++)
     {
-        if (*(static_cast<RbBoolean*>(elements[i])) != *(static_cast<RbBoolean*>(elements[i-1])))
+        if (elements[i] != elements[i-1])
             uniqueVector.push_back(elements[i]);
     }
     
-    clear();
     elements = uniqueVector;
-    length = elements.size();
     return;
     
 }

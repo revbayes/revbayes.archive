@@ -26,10 +26,11 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
+#include "Sequence.h"
 #include "StochasticNode.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
-#include "VectorCharacters.h"
+#include "Vector.h"
 #include "VectorNatural.h"
 #include "VectorString.h"
 #include "Workspace.h"
@@ -85,23 +86,23 @@ CharacterMatrix& CharacterMatrix::operator=( const CharacterMatrix& x ) {
 
 
 /** Index (const) operator */
-const VectorCharacters& CharacterMatrix::operator[]( const size_t i ) const {
+const Sequence& CharacterMatrix::operator[]( const size_t i ) const {
 
     return getSequence( i );
 }
 
 
 /** Add a sequence to the character matrix. For now, we require same data type and same length. */
-void CharacterMatrix::addSequence( const std::string tName, VectorCharacters* obs ) {
+void CharacterMatrix::addSequence( const std::string tName, Sequence* obs ) {
 
     // set the number of character per sequence
     if (members.size() == 0) {
-        cols = obs->getNumCharacters();
+        cols = obs->size();
     }
-    else if ( obs->getLength() != getNumCharacters() ) {
+    else if ( obs->size() != getNumCharacters() ) {
 
         std::ostringstream msg;
-        msg << "Invalid attempt to add sequence of length " << obs->getLength() << " to aligned character matrix of length " << getNumCharacters();
+        msg << "Invalid attempt to add sequence of length " << obs->size() << " to aligned character matrix of length " << getNumCharacters();
         throw RbException( msg );
     }
 
@@ -257,7 +258,7 @@ RbLanguageObject* CharacterMatrix::executeOperation(const std::string& name, Env
         }
         else if ( argument->isType( VectorNatural_name ) ) {
         
-            std::vector<int> x = static_cast<const VectorNatural*>( argument )->getValue();
+            std::vector<unsigned int> x = static_cast<const VectorNatural*>( argument )->getValue();
             for ( size_t i=0; i<x.size(); i++ )
                 deletedCharacters.insert( x[i] );
         }
@@ -274,7 +275,7 @@ const Character& CharacterMatrix::getCharacter( size_t tn, size_t cn ) const {
     if ( cn >= getNumCharacters() )
         throw RbException( "Character index out of range" );
 
-    return getSequence( tn )[cn];
+    return static_cast<const Character&>(getSequence( tn )[cn]);
 }
 
 
@@ -286,13 +287,13 @@ const VectorString& CharacterMatrix::getClass(void) const {
 }
 
 
-VectorCharacters* CharacterMatrix::getElement(size_t index) {
-    return dynamic_cast<VectorCharacters*>(members[index].getDagNodePtr()->getValuePtr());
+Vector* CharacterMatrix::getElement(size_t index) {
+    return dynamic_cast<Vector*>(members[index].getDagNodePtr()->getValuePtr());
 }
 
 Character* CharacterMatrix::getElement(size_t row, size_t col) {
-    VectorCharacters *sequence = dynamic_cast<VectorCharacters*>(members[row].getDagNodePtr()->getValuePtr());
-    return sequence->getElement(col);
+    Vector *sequence = dynamic_cast<Vector*>(members[row].getDagNodePtr()->getValuePtr());
+    return static_cast<Character*>(sequence->getElement(col));
 }
 
 
@@ -374,21 +375,21 @@ size_t CharacterMatrix::getNumStates(void) const {
     if ( members.size() == 0 )
         return 0;
 
-    const VectorCharacters& sequence = getSequence( 0 );
-    if ( sequence.getLength() == 0 )
+    const Sequence& sequence = getSequence( 0 );
+    if ( sequence.size() == 0 )
         return 0;
 
-    return sequence[0].getNumberOfStates();
+    return static_cast<const Character&>(sequence[0]).getNumberOfStates();
 }
 
 
 /** Get sequence with index tn */
-const VectorCharacters& CharacterMatrix::getSequence( size_t tn ) const {
+const Sequence& CharacterMatrix::getSequence( size_t tn ) const {
 
     if ( tn >= getNumTaxa() )
         throw RbException( "Taxon index out of range" );
 
-    const VectorCharacters* sequence = static_cast<const VectorCharacters*>( members[members.getName(tn)].getValue() );
+    const Sequence* sequence = static_cast<const Sequence*>( members[members.getName(tn)].getValue() );
 
     return *sequence;
 }
@@ -485,7 +486,7 @@ bool CharacterMatrix::isTaxonExcluded(std::string& s) const {
 
 
 /** Make copy of site column with index cn */
-VectorCharacters* CharacterMatrix::makeSiteColumn( size_t cn ) const {
+Vector* CharacterMatrix::makeSiteColumn( size_t cn ) const {
 
     if ( cn >= getNumCharacters() )
         throw RbException( "Site index out of range" );
@@ -493,7 +494,7 @@ VectorCharacters* CharacterMatrix::makeSiteColumn( size_t cn ) const {
     if ( getNumTaxa() == 0 )
         throw RbException( "Character matrix is empty" );
 
-    VectorCharacters* temp = static_cast<const VectorCharacters*>( members[0].getValue() )->clone();
+    Vector* temp = static_cast<const Vector*>( members[0].getValue() )->clone();
     temp->clear();
     for ( size_t i=0; i<getNumTaxa(); i++ )
         temp->push_back( getCharacter( i, cn ).clone() );

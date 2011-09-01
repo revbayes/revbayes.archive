@@ -353,11 +353,11 @@ bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, boo
             const VectorString& argClass = passedArgs[k]->getDagNode()->getValue()->getClass();
 
             size_t j;
-            for (j=0; j<argClass.getLength(); j++)
+            for (j=0; j<argClass.size(); j++)
                 if ( argClass[j] == theRules[argIndex]->getArgumentType() )
                     break;
 
-            if ( j == argClass.getLength() )
+            if ( j == argClass.size() )
                 matchScore->push_back(aLargeNumber);    // We needed type conversion for this argument
             else
                 matchScore->push_back(int(j));          // No type conversion, score is distance in class vector
@@ -373,11 +373,11 @@ bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, boo
         
         const VectorString& argClass = args[argIndex].getValue()->getClass();
         size_t j;
-        for (j=0; j<argClass.getLength(); j++)
+        for (j=0; j<argClass.size(); j++)
             if ( argClass[j] == theRules[nRules-1]->getArgumentType() )
                 break;
 
-        if ( j == argClass.getLength() )
+        if ( j == argClass.size() )
             matchScore->push_back(aLargeNumber);    // We needed type conversion for this argument
         else
             matchScore->push_back(int(j));          // No type conversion, score is distance in class vector

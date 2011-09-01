@@ -39,6 +39,26 @@ double RbStatistics::Multinomial::pdf(const std::vector<double> &p, const std::v
 	return lnP;
 }
 
+
+/*!
+ * This function calculates the probability  
+ * for a Multinomially-distributed random variable.
+ *
+ * \brief Multinomially probability.
+ * \param p is a reference to a vector of doubles containing the Multinomial parameters. 
+ * \param x is a reference to a vector of ints containing the random variables. 
+ * \return Returns the probability.
+ * \throws Throws an MbException::ERROR.
+ */
+double RbStatistics::Multinomial::pdf(const std::vector<double> &p, const std::vector<unsigned int> &x) {
+	
+    double lnP = RbStatistics::Multinomial::lnPdf(p, x);
+    if (lnP < -300.0)
+        return 0.0;
+	return std::exp(lnP);
+}
+
+
 /*!
  * This function calculates the probability  
  * for a Multinomially-distributed random variable.
@@ -85,6 +105,37 @@ double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std:
         sum += x[i];
         }
     lnP += RbMath::lnGamma(sum + 1.0);
+	return lnP;
+}
+
+/*!
+ * This function calculates the natural log of the probability  
+ * for a Multinomially-distributed random variable.
+ *
+ * \brief Natural log of Multinomial probability.
+ * \param p is a reference to a vector of doubles containing the Multinomial parameters. 
+ * \param x is a reference to a vector of ints containing the random variables. 
+ * \return Returns the natural log of the probability.
+ * \throws Does not throw an error.
+ */
+double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std::vector<unsigned int> &x) {
+    
+    if ( p.size() != x.size() )
+    {
+        std::ostringstream s;
+        s << "Mismatch in sizes of parameter and observation vector in Multinomial lnPdf";
+        throw (RbException(s));
+    }
+    
+    double lnP = 0.0;
+    int sum = 0;
+    for (size_t i=0; i<x.size(); i++)
+    {
+        lnP -= RbMath::lnGamma((double)x[i] + 1.0);
+        lnP += (double)x[i] * log(p[i]);
+        sum += x[i];
+    }
+    lnP += RbMath::lnGamma((double)sum + 1.0);
 	return lnP;
 }
 

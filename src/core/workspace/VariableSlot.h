@@ -28,7 +28,6 @@ class Variable;
 class DAGNode;
 class Frame;
 class RbObject;
-class VectorIndex;
 
 const std::string VariableSlot_name = "Variable Slot";
 

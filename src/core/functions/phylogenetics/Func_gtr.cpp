@@ -51,14 +51,14 @@ RbLanguageObject* Func_gtr::execute(void) {
 
     // check the sizes of the simplices, to make certain that they are consistent
     // with a model with nStates states
-    if ( f->getLength() != nStates )
+    if ( f->size() != nStates )
         {
         std::stringstream o;
         o << "The simplex containing the state frequencies is not of size ";
         o << nStates;
         throw( RbException(o.str()) );
         }
-    if (r->getLength() != nStates*(nStates-1)/2)
+    if (r->size() != nStates*(nStates-1)/2)
         {
         std::stringstream o;
         o << "The simplex containing the rates is not of size (";
