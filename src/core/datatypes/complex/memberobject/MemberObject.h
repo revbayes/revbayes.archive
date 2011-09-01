@@ -48,8 +48,6 @@ class MemberObject: public RbLanguageObject {
         virtual const VectorString& getClass(void) const;                                                               //!< Get class vector
         
         // Basic utility functions you may want to override
-        virtual RbLanguageObject*   convertTo(const std::string& type) const;                                           //!< Convert to type (default throws an error)
-        virtual bool                isConvertibleTo(const std::string& type, bool once) const;                          //!< Is convertible to type? (default false)
         virtual void                printValue(std::ostream& o) const;                                                  //!< Print value for user
         virtual std::string         richInfo(void) const;                                                               //!< Complete info
 

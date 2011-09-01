@@ -46,7 +46,6 @@ public:
     
     // Basic utility functions you may want to override
     virtual std::string         briefInfo(void) const;                                                  //!< Brief info about object
-//    virtual RbObject*           cloneAsConstant(void) const;                                            //!< Make constant clone of object
     virtual RbLanguageObject*   convertTo(const std::string& type) const;                               //!< Convert to type and dim
     virtual bool                isConstant(void) const { return true; }                                 //!< Is value a constant or does it include variables?
     virtual bool                isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type and dim?

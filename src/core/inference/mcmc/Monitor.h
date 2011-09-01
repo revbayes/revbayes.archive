@@ -41,9 +41,7 @@ public:
 
     // Basic utility functions
     Monitor*                    clone(void) const;                                                  //!< Clone object
-    RbLanguageObject*           convertTo(const std::string &type) const;                           //!< Convert to type
     const VectorString&         getClass(void) const;                                               //!< Get class
-    bool                        isConvertibleTo(const std::string& type, bool once) const;          //!< Is convertible to type?
     void                        printValue(std::ostream& o) const;                                  //!< Print value (for user)
     std::string                 richInfo(void) const;                                               //!< Complete info about object
 

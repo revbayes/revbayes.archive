@@ -38,6 +38,7 @@ std::string RbLanguageObject::briefInfo(void) const {
 /** Convert to type and dim. The caller manages the returned object. */
 RbLanguageObject* RbLanguageObject::convertTo(const std::string& type) const {
     
+    
     return NULL;
 }
 

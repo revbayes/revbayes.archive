@@ -43,7 +43,7 @@ class RbObject {
         // Basic utility functions you may want to override
         virtual bool                allowsVariableInsertion(void) const { return false; }                   //!< Do we allow variable to be inserted in this object (only appicable for some container, e.g. DagNodeContainer)
         virtual RbObject*           convertTo(const std::string& type) const;                               //!< Convert to type
-        virtual RbObject*           getElement(size_t index);                                               //!< Get element or subcontainer
+        virtual RbObject*           getElement(size_t index) const;                                         //!< Get element or subcontainer
         virtual const TypeSpec      getTypeSpec(void) const;                                                //!< Get language type of the object
 
         virtual bool                isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type?

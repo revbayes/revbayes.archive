@@ -38,14 +38,6 @@ ConstantMemberObject::ConstantMemberObject(const MemberRules& memberRules) : Mem
 }
 
 
-/** Convert to type: throw an error */
-RbLanguageObject* ConstantMemberObject::convertTo(const std::string& type) const {
-    
-    std::ostringstream msg;
-    msg << "Type conversion of " << getTypeSpec() << " to " << TypeSpec(type) << " not supported";
-    throw RbException(msg);
-}
-
 /** Get class vector describing type of object */
 const VectorString& ConstantMemberObject::getClass(void) const {
     
@@ -60,25 +52,18 @@ bool ConstantMemberObject::isConstant( void ) const {
 }
 
 
-/** Is convertible to type and dim? Default is false for member objects; override if you want to support type conversion */
-bool ConstantMemberObject::isConvertibleTo(const std::string& type, bool once) const {
-    
-	return false;
-}
-
-
 /** Print value for user */
 void ConstantMemberObject::printValue(std::ostream& o) const {
     
-//    for ( size_t i = 0; i < members.size(); i++ ) {
-//        
-//        o << "." << members[i].getName() << std::endl;
-//        if ( members[i].getValue() == NULL)
-//            o << "NULL";
-//        else
-//            members[i].getValue()->printValue(o);
-//        o << std::endl << std::endl;
-//    }
+    for ( size_t i = 0; i < members.size(); i++ ) {
+        
+        o << "." << members[i].getLabel() << std::endl;
+        if ( members[i].getValue() == NULL)
+            o << "NULL";
+        else
+            members[i].getValue()->printValue(o);
+        o << std::endl << std::endl;
+    }
 }
 
 

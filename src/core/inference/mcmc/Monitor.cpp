@@ -58,14 +58,6 @@ Monitor::~Monitor() {
 }
 
 
-/** Convert to object of type */
-RbLanguageObject* Monitor::convertTo(const std::string &type) const {
-    
-    // call base class
-    return ConstantMemberObject::convertTo(type);
-}
-
-
 /** Clone the object */
 Monitor* Monitor::clone(void) const {
 
@@ -96,13 +88,6 @@ const MemberRules& Monitor::getMemberRules( void ) const {
     }
     
     return memberRules;
-}
-
-/** Is convertible to? */
-bool Monitor::isConvertibleTo(std::string const &type, bool once) const {
-    
-    // call base class
-    return ConstantMemberObject::isConvertibleTo(type, once);
 }
 
 

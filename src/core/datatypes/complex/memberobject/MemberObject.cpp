@@ -49,15 +49,6 @@ MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
 }
 
 
-/** Convert to type: throw an error */
-RbLanguageObject* MemberObject::convertTo(const std::string& type) const {
-
-    std::ostringstream msg;
-    msg << "Type conversion of " << getTypeSpec() << " to " << TypeSpec(type) << " not supported";
-    throw RbException(msg);
-}
-
-
 /** Execute member method: delegate to method table. */
 RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std::vector<Argument*>& args) {
 
@@ -154,13 +145,6 @@ bool MemberObject::hasMember(std::string const &name) const {
 bool MemberObject::isConstant( void ) const {
 
     return true;
-}
-
-
-/** Is convertible to type and dim? Default is false for member objects; override if you want to support type conversion */
-bool MemberObject::isConvertibleTo(const std::string& type, bool once) const {
-
-	return false;
 }
 
 

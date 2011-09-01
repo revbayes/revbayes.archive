@@ -18,7 +18,7 @@
 #ifndef DagNodeContainer_H
 #define DagNodeContainer_H
 
-#include "AbstractVector.h"
+#include "Container.h"
 #include "VariableSlot.h"
 
 #include <ostream>
@@ -36,7 +36,7 @@ class VectorString;
  */
 const std::string DagNodeContainer_name = "DAG Node Container";
 
-class DagNodeContainer : public ConstantMemberObject {
+class DagNodeContainer : public Container {
     
 public: 
     DagNodeContainer(void);                                                                             //!< Default constructor 

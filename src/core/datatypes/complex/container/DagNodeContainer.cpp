@@ -28,12 +28,12 @@
 
 
 /** Set type of elements */
-DagNodeContainer::DagNodeContainer(void) : ConstantMemberObject() {
+DagNodeContainer::DagNodeContainer(void) : Container(RbLanguageObject_name) {
     
 }
 
 /** Set type of elements */
-DagNodeContainer::DagNodeContainer(size_t l) : ConstantMemberObject() {
+DagNodeContainer::DagNodeContainer(size_t l) : Container(RbLanguageObject_name) {
     resize(l);
 }
 
@@ -256,7 +256,7 @@ void DagNodeContainer::resize( size_t n ) {
         throw RbException( "Invalid attempt to shrink DagNodeContainer" );
     
     // add NULL elements for each new element
-    for ( size_t i = elements.size(); i < n; i++ ) {
+    for ( size_t i = elements.size(); i <= n; i++ ) {
         Variable *emptyVar = new Variable(EmptyString);
         VariableSlot *emptySlot = new VariableSlot(EmptyString, emptyVar );
         emptySlot->retain();
@@ -307,4 +307,33 @@ void DagNodeContainer::setElement(const size_t index, Variable *elem) {
 size_t DagNodeContainer::size(void) const {
     return elements.size();
 }
+
+/* Sort the vector */
+void DagNodeContainer::sort( void ) {
+    
+    std::sort(elements.begin(), elements.end());
+    return;
+    
+}
+
+/* Remove duplicates and resize the vector */
+void DagNodeContainer::unique(void) {
+    
+    sort();
+    std::vector<VariableSlot*> uniqueVector;
+    uniqueVector.push_back (elements[0]);
+    for (size_t i = 1 ; i< elements.size() ; i++)
+    {
+        if (elements[i] != elements[i-1])
+            uniqueVector.push_back(elements[i]);
+    }
+    
+    clear();
+    elements = uniqueVector;
+    return;
+    
+}
+
+
+
 

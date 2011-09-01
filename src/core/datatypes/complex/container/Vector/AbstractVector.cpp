@@ -16,21 +16,22 @@
  * $Id$
  */
 
+#include "AbstractVector.h"
+#include "Container.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "AbstractVector.h"
 #include "VectorString.h"
 #include <algorithm>
 
 /** Set type of elements */
-AbstractVector::AbstractVector(const TypeSpec& elemType) : ConstantMemberObject(), elementType(elemType) {
+AbstractVector::AbstractVector(const TypeSpec& elemType) : Container(elemType) {
     
 }
 
 
 /** Copy Constructor */
-AbstractVector::AbstractVector(const AbstractVector &v) : ConstantMemberObject(v), elementType(v.elementType) {
+AbstractVector::AbstractVector(const AbstractVector &v) : Container(v) {
     
 }
 
@@ -57,7 +58,7 @@ AbstractVector& AbstractVector::operator=( const AbstractVector& x ) {
 /** Get class AbstractVector describing type of object */
 const VectorString& AbstractVector::getClass(void) const { 
     
-    static VectorString rbClass = VectorString(AbstractVector_name) + ConstantMemberObject::getClass();
+    static VectorString rbClass = VectorString(AbstractVector_name) + Container::getClass();
 	return rbClass;
 }
 
@@ -76,6 +77,13 @@ void AbstractVector::printValue( std::ostream& o ) const {
     }
     o <<  " ]";
     
+}
+
+
+void AbstractVector::setElement(const size_t index, RbObject *x) {
+    RbLanguageObject *elem = dynamic_cast<RbLanguageObject*>(x);
+    if (elem != NULL)
+        setElement(index, elem);
 }
 
 

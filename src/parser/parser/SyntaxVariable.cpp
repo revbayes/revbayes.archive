@@ -340,7 +340,13 @@ VariableSlot* SyntaxVariable::getSlot(Environment* env) const {
                 theDagNode = new ConstantNode(new DagNodeContainer(indexValue+1));
                 theSlot->getVariable()->setDagNode(theDagNode);
             }
-            RbObject                    *subElement             = theDagNode->getValuePtr()->getElement(indexValue);
+            
+            Container                   *con                    = static_cast<Container*>(theDagNode->getValuePtr());
+            // test if the container is large enough
+            if (con->size() <= indexValue) {
+                con->resize(indexValue);
+            }
+            RbObject                    *subElement             = con->getElement(indexValue);
             
             // test whether the element exists and needs 
             if (subElement == NULL) {

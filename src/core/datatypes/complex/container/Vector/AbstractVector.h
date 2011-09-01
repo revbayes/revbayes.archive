@@ -18,7 +18,7 @@
 #ifndef AbstractVector_H
 #define AbstractVector_H
 
-#include "ConstantMemberObject.h"
+#include "Container.h"
 
 #include <iostream>
 #include <vector>
@@ -26,7 +26,7 @@
 
 const std::string AbstractVector_name = "AbstractVector";
 
-class AbstractVector : public ConstantMemberObject {
+class AbstractVector : public Container {
     
 public:
     virtual                        ~AbstractVector(void);                                               //!< Virtual destructor 
@@ -52,11 +52,7 @@ public:
     virtual void                    unique(void) = 0;                                                   //!< removes consecutive duplicates
     
     // AbstractVector functions you do not have to override
-    const TypeSpec&                 getElementType(void) const { return elementType; }                  //!< Get element type
-    bool                            empty(void) { return size() == 0; }                                 //!< Test whether the container is empty
-    virtual bool                    supportsIndex(void) const { return true; }                          //!< Does object support index operator?
-    
-    
+    void                            setElement(const size_t index, RbObject* elem);                     //!< Set element with type conversion
     
 protected:
     AbstractVector(const TypeSpec &elemType);                                                           //!< Set type spec of container from type of elements
@@ -64,8 +60,6 @@ protected:
     
     AbstractVector&                 operator=(const AbstractVector& x);                                 //!< Assignment operator
     
-    // Member variables
-    const TypeSpec                  elementType;                                                        //!< Type of elements
 };
 
 #endif

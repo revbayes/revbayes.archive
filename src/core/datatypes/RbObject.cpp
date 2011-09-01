@@ -71,7 +71,7 @@ const VectorString& RbObject::getClass(void) const {
 
 /** Get element or subcontainer at index. This is a convinience function implemented here so that we don't have to cast to container. 
  If this object is not a container, we throw an excpetion */
-RbObject* RbObject::getElement(size_t index) {
+RbObject* RbObject::getElement(size_t index) const {
     
     std::ostringstream  msg;
     msg << "Illegal call to getElement in type \"" << getType() << "\"";
