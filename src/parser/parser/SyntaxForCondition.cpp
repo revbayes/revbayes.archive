@@ -13,6 +13,7 @@
  * $Id$
  */
 
+#include "AbstractVector.h"
 #include "ConstantNode.h"
 #include "Environment.h"
 #include "RbException.h"
@@ -117,7 +118,7 @@ bool SyntaxForCondition::getNextLoopState(Environment* env) {
     if ( nextElement < 0 )
         initializeLoop( env );
     
-    if ( nextElement == static_cast<int>(vector->getLength()) ) {
+    if ( nextElement == static_cast<int>(vector->size()) ) {
         finalizeLoop( env );
         return false;
     }
@@ -146,12 +147,12 @@ void SyntaxForCondition::initializeLoop(Environment* env) {
     RbLanguageObject *theValue = theNode->getValue()->clone();
 
     // Check that it is a vector
-    if ( theValue->isType( Container_name ) == false ) {
+    if ( theValue->isType( AbstractVector_name ) == false ) {
         if (theNode->isUnreferenced())
             delete theNode;             // this will also delete the value 
         throw ( RbException("The 'in' expression does not evaluate to a vector") );
     }
-    vector = dynamic_cast<Container*>(theValue);
+    vector = dynamic_cast<AbstractVector*>(theValue);
     vector->retain();
 
     // Initialize nextValue

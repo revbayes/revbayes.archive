@@ -24,7 +24,6 @@
 
 class SyntaxFunctionCall;
 class VariableSlot;
-class VectorIndex;
 
 
 /**
