@@ -1,0 +1,15 @@
+# Test file for using to sample from normal(0,1) distribution
+# This should be easy to check, since E X = 0, and E X*X = 1
+
+x ~ norm(0, 1)
+x2 := x*x
+
+moves[1] <- mslide(x,weight=1.0,delta=8.0)
+ 
+filemonitors <- monitor(filename="simpletest.out",printgen=1,x,x2)
+
+mymodel <- model(x)
+ 
+mymcmc <- mcmc(mymodel, moves=moves, monitors=filemonitors)
+
+mymcmc.run(generations=5000)
