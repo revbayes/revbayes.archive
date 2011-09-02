@@ -102,6 +102,20 @@ const MemberRules& Dist_norm::getMemberRules( void ) const {
 }
 
 
+/** Get max value of distribution */
+const Real* Dist_norm::getMax( void ) const {
+
+    return new Real(RbConstants::Double::max);
+}
+
+
+/** Get min value of distribution */
+const Real* Dist_norm::getMin( void ) const {
+
+    return new Real(-RbConstants::Double::max);
+}
+
+
 /** Get random variable type */
 const TypeSpec Dist_norm::getVariableType( void ) const {
 

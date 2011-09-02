@@ -44,6 +44,8 @@ class Dist_norm: public DistributionContinuous {
 
         // Normal distribution functions
         double                      cdf(const RbLanguageObject* value);                                         //!< Cumulative density
+        const Real*                 getMax(void) const;                                                 //!< Get max value
+        const Real*                 getMin(void) const;                                                 //!< Get min value
         const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (RealPos)
         double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density

@@ -72,7 +72,8 @@ const RbLanguageObject* DistributionContinuous::getMax( void ) const {
 
 /** Get min value of distribution */
 const RbLanguageObject* DistributionContinuous::getMin( void ) const {
-    
+
+    // Note that this is not -\inf, but the smallest unnormalized positive value.
     return new Real(RbConstants::Double::min);
 }
 
