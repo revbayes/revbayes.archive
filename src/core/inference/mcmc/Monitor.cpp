@@ -124,9 +124,9 @@ void Monitor::monitor(int gen) {
             // print the value
             (*it)->printValue(outStream);
         }
+
+	outStream << std::endl;
     }
-    
-    outStream << std::endl;
 }
 
 
