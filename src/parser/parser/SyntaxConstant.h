@@ -30,7 +30,7 @@ class VectorString;
  * already in the constructor.
  *
  */
-const std::string SyntaxConstant_name = "Syntax element";
+const std::string SyntaxConstant_name = "Constant";
 
 class SyntaxConstant : public SyntaxElement {
 
@@ -45,6 +45,8 @@ class SyntaxConstant : public SyntaxElement {
         // Basic utility functions
         std::string         briefInfo(void) const;                                  //!< Brief info about object
         SyntaxConstant*     clone(void) const;                                      //!< Clone object
+        const VectorString& getClass(void) const;                                   //!< Get class vector 
+        const TypeSpec&     getTypeSpec(void) const;                                //!< Get language type of the object
         void                print(std::ostream& o) const;                           //!< Print info about object
 
         // Regular functions
@@ -53,6 +55,9 @@ class SyntaxConstant : public SyntaxElement {
 
     protected:
         RbLanguageObject*   value;                                                  //!< The constant value
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

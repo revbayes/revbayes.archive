@@ -31,6 +31,9 @@
 #include <cassert>
 
 
+// Definition of the static type spec member
+const TypeSpec StochasticNode::typeSpec(StochasticNode_name);
+
 /** Constructor of empty StochasticNode */
 StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.getType() ), clamped( false ), distribution( NULL ) {
 }
@@ -309,6 +312,12 @@ const VectorString& StochasticNode::getClass() const {
 
     static VectorString rbClass = VectorString( StochasticNode_name ) + VariableNode::getClass();
     return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& StochasticNode::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

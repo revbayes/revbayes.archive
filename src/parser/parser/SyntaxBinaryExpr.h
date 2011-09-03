@@ -36,31 +36,36 @@ class SyntaxBinaryExpr : public SyntaxElement {
 
     public:
         // Binary operator types
-        enum                operatorT { Range, Add, Sub, Mul, Div, Exp, Lt, Le, Eq, Ne, Ge, Gt, And, Or, And2, Or2 };
-        static std::string  opCode[];                                               //!< Operator codes for printing
+        enum                    operatorT { Range, Add, Sub, Mul, Div, Exp, Lt, Le, Eq, Ne, Ge, Gt, And, Or, And2, Or2 };
+        static std::string      opCode[];                                               //!< Operator codes for printing
 
         // Constructors and destructor
-                            SyntaxBinaryExpr(SyntaxBinaryExpr::operatorT    op,
+                                SyntaxBinaryExpr(SyntaxBinaryExpr::operatorT    op,
                                              SyntaxElement*                 lhs,
                                              SyntaxElement*                 rhs);   //!< Standard constructor 
-                            SyntaxBinaryExpr(const SyntaxBinaryExpr& x);            //!< Copy constructor
-        virtual            ~SyntaxBinaryExpr();                                     //!< Destroy operands
+                                SyntaxBinaryExpr(const SyntaxBinaryExpr& x);            //!< Copy constructor
+        virtual                ~SyntaxBinaryExpr();                                     //!< Destroy operands
 
         // Assignment operator
-        SyntaxBinaryExpr&   operator=(const SyntaxBinaryExpr& x);                   //!< Assignment operator
+        SyntaxBinaryExpr&       operator=(const SyntaxBinaryExpr& x);                   //!< Assignment operator
 
         // Basic utility functions
-        std::string         briefInfo() const;                                      //!< Brief info about object
-        SyntaxElement*      clone() const;                                          //!< Clone object
-        void                print(std::ostream& o) const;                           //!< Print info about object
+        std::string             briefInfo() const;                                      //!< Brief info about object
+        SyntaxElement*          clone() const;                                          //!< Clone object
+        const VectorString&     getClass(void) const;                                   //!< Get class vector 
+        const TypeSpec&         getTypeSpec(void) const;                                //!< Get language type of the object
+        void                    print(std::ostream& o) const;                           //!< Print info about object
 
         // Regular functions
-        Variable*           getContentAsVariable(Environment* env) const;           //!< Get semantic value
+        Variable*               getContentAsVariable(Environment* env) const;           //!< Get semantic value
 
     protected:
-        SyntaxElement*      leftOperand;                                            //!< The left operand
-        SyntaxElement*      rightOperand;                                           //!< The right operand
-        enum operatorT      operation;                                              //!< The type of operation
+        SyntaxElement*          leftOperand;                                            //!< The left operand
+        SyntaxElement*          rightOperand;                                           //!< The right operand
+        enum operatorT          operation;                                              //!< The type of operation
+    
+    private:
+        static const TypeSpec   typeSpec;
 };
 
 #endif

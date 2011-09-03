@@ -49,7 +49,8 @@ class Topology: public ConstantMemberObject {
 
         // Basic utility functions
         Topology*                       clone(void) const;                                                      //!< Clone object
-        const VectorString&             getClass(void) const;                                                   //!< Get class vector   
+        const VectorString&             getClass(void) const;                                                   //!< Get class vector 
+        const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object  
         void                            printValue(std::ostream& o) const;                                      //!< Print value for user
         std::string                     richInfo(void) const;                                                   //!< Complete info
 
@@ -75,7 +76,8 @@ class Topology: public ConstantMemberObject {
         void                            setIsRooted(bool tf) { isRooted = tf; }                                 //!< Set the rootedness of the tree
         void                            setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the tree from it
         
-	private:
+private:
+        static const TypeSpec           typeSpec;
         void                            fillNodesByPreorderTraversal(TopologyNode *node);                       //!< fill the nodes vector by a preorder traversal recursively starting with this node.
         std::string                     buildNewickString(TopologyNode *node);                                  //!< compute the newick string for a tree rooting at this node
     

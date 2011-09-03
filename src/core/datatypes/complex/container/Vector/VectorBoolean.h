@@ -19,7 +19,7 @@
 #ifndef VectorBoolean_H
 #define VectorBoolean_H
 
-#include "Vector.h"
+#include "AbstractVector.h"
 
 #include <iostream>
 #include <vector>
@@ -46,6 +46,7 @@ class VectorBoolean : public AbstractVector {
     // Basic utility functions
     VectorBoolean*                      clone(void) const;                                              //!< Clone object
     const VectorString&                 getClass(void) const;                                           //!< Get class
+    const TypeSpec&                     getTypeSpec(void) const;                                        //!< Get language type of the object
     std::string                         richInfo(void) const;                                           //!< Complete info about object
 
     // Vector functions, including STL-like functions
@@ -68,6 +69,7 @@ class VectorBoolean : public AbstractVector {
 
     private:
     std::vector<bool>               elements;
+    static const TypeSpec           typeSpec;
     
 };
 

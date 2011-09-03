@@ -46,6 +46,7 @@ class SyntaxFunctionDef : public SyntaxElement {
         std::string                     briefInfo() const;                                          //!< Brief info about object
         SyntaxFunctionDef*              clone() const;                                              //!< Clone object
         const VectorString&             getClass(void) const;                                       //!< Get class vector 
+        const TypeSpec&                 getTypeSpec(void) const;                                    //!< Get language type of the object
         void                            print(std::ostream& o) const;                               //!< Print info about object
 
         // Regular functions
@@ -56,6 +57,9 @@ class SyntaxFunctionDef : public SyntaxElement {
         RbString*                       functionName;                                               //!< The name of the function
         std::list<SyntaxFormal*>*       formalArgs;                                                 //!< The formal arguments
         std::list<SyntaxElement*>*      code;                                                       //!< The list of statements
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

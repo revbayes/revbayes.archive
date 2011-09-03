@@ -31,6 +31,10 @@
 #include <cassert>
 #include <cmath>
 
+
+// Definition of the static type spec member
+const TypeSpec Func_sin::typeSpec(Func_sin_name);
+
 /** Clone object */
 Func_sin* Func_sin::clone( void ) const {
     
@@ -75,5 +79,11 @@ const VectorString& Func_sin::getClass( void ) const {
 const TypeSpec Func_sin::getReturnType( void ) const {
     
     return TypeSpec( Real_name );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Func_sin::getTypeSpec(void) const {
+    return typeSpec;
 }
 

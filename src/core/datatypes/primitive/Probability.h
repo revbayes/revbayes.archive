@@ -38,10 +38,15 @@ public:
     virtual std::string     briefInfo(void) const;                  //!< Brief info about the object
     Probability*            clone(void) const;                      //!< Clone object
     const VectorString&     getClass(void) const;                   //!< Get class vector
+    const TypeSpec&         getTypeSpec(void) const;                //!< Get language type of the object
     std::string             richInfo(void) const;                   //!< Complete info about object
     
     // Setter disallowing nonpositive values
     void                    setValue(double x);                     //!< Set value
+    
+    
+private:
+    static const TypeSpec   typeSpec;
 };
 
 #endif

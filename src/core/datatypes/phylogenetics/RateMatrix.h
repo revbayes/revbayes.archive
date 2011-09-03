@@ -45,7 +45,8 @@ class RateMatrix : public MemberObject {
     
         // Basic utility functions
         RateMatrix*                         clone(void) const;                                                                //!< Clone object
-        const VectorString&                 getClass(void) const;                                                             //!< Get class vector   
+        const VectorString&                 getClass(void) const;                                                             //!< Get class vector
+        const TypeSpec&                     getTypeSpec(void) const;                                                          //!< Get language type of the object   
         void                                printValue(std::ostream& o) const;                                                //!< Print value for user
         std::string                         richInfo(void) const;                                                             //!< Complete info
 
@@ -84,6 +85,8 @@ class RateMatrix : public MemberObject {
         EigenSystem*                        theEigenSystem;                                                                   //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                            //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >  cc_ijk;                                                                           //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
+    
+        static const TypeSpec               typeSpec;
 };
 
 #endif

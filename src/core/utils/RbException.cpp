@@ -21,6 +21,9 @@
 #include <iostream>
 
 
+// Definition of the static type spec member
+const TypeSpec RbException::typeSpec(RbException_name);
+
 /** Static string with names of exception types for printing */
 std::string RbException::exceptionName[] = { "DEFAULT", "QUIT" };
 
@@ -57,6 +60,12 @@ const VectorString& RbException::getClass(void) const {
 
     static VectorString rbClass = VectorString(RbException_name) + RbInternal::getClass();
 	return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& RbException::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

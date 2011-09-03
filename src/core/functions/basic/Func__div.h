@@ -32,13 +32,16 @@ class Func__div :  public RbFunction {
     public:
         // Basic utility functions
         Func__div*                  clone(void) const;                                          //!< Clone the object
-    	const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
     	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif
@@ -52,6 +55,11 @@ class Func__div :  public RbFunction {
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"
+
+
+// Definition of the static type spec member
+template <typename firstValType, typename secondValType, typename retType>
+const TypeSpec Func__div<firstValType, secondValType, retType>::typeSpec("Func__div", new TypeSpec(firstValType().getType() + "," + secondValType().getType() + "," + retType().getType()));
 
 
 /** Clone object */
@@ -119,5 +127,12 @@ template <typename firstValType, typename secondValType, typename retType>
 const TypeSpec Func__div<firstValType, secondValType, retType>::getReturnType(void) const {
 
     return retType().getTypeSpec();
+}
+
+/** Get return spec */
+template <typename firstValType, typename secondValType, typename retType>
+const TypeSpec& Func__div<firstValType, secondValType, retType>::getTypeSpec( void ) const {
+    
+    return typeSpec;
 }
 

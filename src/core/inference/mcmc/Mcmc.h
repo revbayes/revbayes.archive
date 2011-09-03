@@ -34,14 +34,15 @@ const std::string Mcmc_name = "MCMC";
 
 class Mcmc: public ConstantMemberObject {
 
-    public:
+public:
     Mcmc(void);                                                                                                 //!< Default constructor
     Mcmc(const Mcmc &x);                                                                                        //!< Copy Constructor
     virtual                    ~Mcmc(void) {}                                                                   //!< Destructor
 
     // Basic utility functions
     Mcmc*                       clone(void) const;                                                              //!< Clone object
-    const VectorString&         getClass(void) const;                                                           //!< Get class vector   
+    const VectorString&         getClass(void) const;                                                           //!< Get class vector  
+    const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object 
 
     // Member variable rules
     const MemberRules&          getMemberRules(void) const;                                                     //!< Get member rules
@@ -53,8 +54,9 @@ class Mcmc: public ConstantMemberObject {
         
     // Mcmc functions
     void                        run(size_t ngen);                                                               //!< Update the chain
-
-	protected:
+    
+private:
+    static const TypeSpec       typeSpec;
     
 };
 

@@ -54,6 +54,7 @@ public:
     TopologyNode*                   clone(void) const;                                                          //!< Clone object
     bool                            equals(TopologyNode *node) const;                                           //!< Test whether this is the same node
     const VectorString&             getClass(void) const;                                                       //!< Get class vector
+    const TypeSpec&                 getTypeSpec(void) const;                                                    //!< Get language type of the object
     void                            printValue(std::ostream& o) const;                                          //!< Print value for user
     std::string                     richInfo(void) const;                                                       //!< Complete info
 
@@ -80,7 +81,8 @@ public:
     void                            removeAllChildren(void);                                                    //!< Removes all of the children of the node
     void                            removeChild(TopologyNode* p);                                               //!< Removes a specific child
         
-private: 
+private:
+    static const TypeSpec           typeSpec;
     std::vector<TopologyNode*>      children;                                                                   //!< Vector holding the node's children
     TopologyNode*                   parent;                                                                     //!< Pointer to the parent of the node
     std::string                     name;                                                                       //!< Name of the node, i.e. identifier/taxon name

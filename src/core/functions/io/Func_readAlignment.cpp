@@ -35,6 +35,8 @@
 
 
 
+// Definition of the static type spec member
+const TypeSpec Func_readAlignment::typeSpec(Func_readAlignment_name);
 
 /** Clone object */
 Func_readAlignment* Func_readAlignment::clone( void ) const {
@@ -262,6 +264,12 @@ const VectorString& Func_readAlignment::getClass( void ) const {
 const TypeSpec Func_readAlignment::getReturnType( void ) const {
     
     return TypeSpec( MemberObject_name );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Func_readAlignment::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

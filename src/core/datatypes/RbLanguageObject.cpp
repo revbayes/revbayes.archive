@@ -36,10 +36,10 @@ std::string RbLanguageObject::briefInfo(void) const {
 }
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbLanguageObject* RbLanguageObject::convertTo(const std::string& type) const {
+RbObject* RbLanguageObject::convertTo(const TypeSpec& type) const {
     
     
-    return NULL;
+    return RbObject::convertTo(type);
 }
 
 /** Encode the object into a serializable xml-object */
@@ -60,26 +60,9 @@ const VectorString& RbLanguageObject::getClass(void) const {
 
 
 /** Is convertible to type and dim? */
-bool RbLanguageObject::isConvertibleTo(const std::string& type, bool once) const {
+bool RbLanguageObject::isConvertibleTo(const TypeSpec& type) const {
     
-    return false;
-}
-
-
-/** Are we of specified object type? We need to check entire class vector in case we are derived from type.
- *  We provide a special case for Scalar_name to avoid having to introduce an extra class for primitive
- *  types. The function is overridden in RbComplex, so that complex objects are not of scalar type.
- */
-bool RbLanguageObject::isType(const std::string& type) const {
-    
-    const VectorString& classVec = getClass();
-    
-    for (size_t i=0; i<classVec.size(); i++) {
-        if (type == classVec[i])
-            return true;
-    }
-    
-	return false;
+    return RbObject::isConvertibleTo(type);
 }
 
 

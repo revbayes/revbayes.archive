@@ -32,6 +32,7 @@ class Func_gtr :  public RbFunction {
         // Basic utility functions
         Func_gtr*                   clone(void) const;                                                       //!< Clone the object
         const VectorString&         getClass(void) const;                                                    //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
         RbLanguageObject*           execute(void);                                                           //!< Execute function
@@ -39,6 +40,7 @@ class Func_gtr :  public RbFunction {
         const TypeSpec              getReturnType(void) const;                                               //!< Get type of return value
     
     private:
+        static const TypeSpec       typeSpec;
 
 };
 

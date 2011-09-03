@@ -28,6 +28,9 @@
 #include "Workspace.h"
 
 
+// Definition of the static type spec member
+const TypeSpec SyntaxBinaryExpr::typeSpec(SyntaxBinaryExpr_name);
+
 /** Static vector of strings giving names of operator types */
 std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", "exp", "lt", "le",
                                            "eq", "ne", "ge", "gt", "and", "or", "and", "or"};
@@ -123,6 +126,14 @@ SyntaxElement* SyntaxBinaryExpr::clone () const {
 }
 
 
+/** Get class vector describing type of object */
+const VectorString& SyntaxBinaryExpr::getClass(void) const { 
+    
+    static VectorString rbClass = VectorString(SyntaxBinaryExpr_name) + SyntaxElement::getClass();
+	return rbClass; 
+}
+
+
 /**
  * @brief Get semantic value
  *
@@ -143,6 +154,12 @@ Variable* SyntaxBinaryExpr::getContentAsVariable(Environment* env) const {
     RbFunction *theFunction = Workspace::globalWorkspace().getFunction(funcName, args);
     
     return new Variable(new DeterministicNode( theFunction ));
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxBinaryExpr::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

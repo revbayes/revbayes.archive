@@ -42,13 +42,13 @@
 
 
 /** Constructor requires character type; passes member rules to base class */
-CharacterMatrix::CharacterMatrix( const std::string& charType ) : Matrix( charType, getMemberRules() ) {
+CharacterMatrix::CharacterMatrix( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec(CharacterMatrix_name, new TypeSpec(charType)) {
     characterType = charType;
 }
 
 
 /** Copy constructor */
-CharacterMatrix::CharacterMatrix( const CharacterMatrix& x ) : Matrix( x ) {
+CharacterMatrix::CharacterMatrix( const CharacterMatrix& x ) : Matrix( x ), typeSpec(CharacterMatrix_name, new TypeSpec(characterType)) {
 
     characterType     = x.characterType;
     deletedTaxa       = x.deletedTaxa;
@@ -251,12 +251,12 @@ RbLanguageObject* CharacterMatrix::executeOperation(const std::string& name, Env
         {
         const RbObject* argument = args[1].getValue();
 
-        if ( argument->isType( Natural_name ) ) {
+        if ( argument->isTypeSpec( TypeSpec(Natural_name) ) ) {
             
             int n = static_cast<const Natural*>( argument )->getValue();
             deletedCharacters.insert( n );
         }
-        else if ( argument->isType( VectorNatural_name ) ) {
+        else if ( argument->isTypeSpec( TypeSpec(VectorNatural_name) ) ) {
         
             std::vector<unsigned int> x = static_cast<const VectorNatural*>( argument )->getValue();
             for ( size_t i=0; i<x.size(); i++ )
@@ -399,6 +399,12 @@ const Sequence& CharacterMatrix::getSequence( size_t tn ) const {
 std::string CharacterMatrix::getTaxonWithIndex( size_t idx ) const {
 
     return members.getName( idx );
+}
+
+
+/** Get the type spec of this class. We return a member variable because instances might have different element types. */
+const TypeSpec& CharacterMatrix::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

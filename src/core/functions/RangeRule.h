@@ -38,6 +38,7 @@ class RangeRule : public ArgumentRule {
         // Basic utility functions
         RangeRule*                  clone(void) const { return new RangeRule(*this); }                                  //!< Clone object
         const VectorString&         getClass(void) const;                                                               //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                                  //!< Print value for user
         std::string                 richInfo(void) const;                                                               //!< General info on object
 
@@ -47,6 +48,9 @@ class RangeRule : public ArgumentRule {
     protected:
         valType                     minVal;                                                                             //!< Min value
         valType                     maxVal;                                                                             //!< Max value
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

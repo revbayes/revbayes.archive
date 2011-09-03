@@ -38,6 +38,7 @@ class ArgumentRule : public RbInternal {
         // Basic utility functions
         virtual ArgumentRule*       clone(void) const { return new ArgumentRule(*this); }                                               //!< Clone object
         virtual const VectorString& getClass(void) const;                                                                               //!< Get class vector
+        virtual const TypeSpec&     getTypeSpec(void) const;                                                                            //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                                                  //!< Print value for user
         std::string                 richInfo(void) const;                                                                               //!< General info on object
 
@@ -47,7 +48,7 @@ class ArgumentRule : public RbInternal {
         const TypeSpec&             getArgumentTypeSpec(void) const { return argSlot.getSlotTypeSpec(); }                               //!< Get argument type spec
         Variable*                   getDefaultVariable(void) { return argSlot.getVariable(); }                                          //!< Get default argument
         bool                        hasDefault(void) const { return hasDefaultVal; }                                                    //!< Has default?
-        virtual bool                isArgumentValid(DAGNode* var, bool& needsConversion, bool once) const;                              //!< Is var valid argument?
+        virtual bool                isArgumentValid(DAGNode* var, bool& needsConversion) const;                                         //!< Is var valid argument?
 
     protected:
                                     ArgumentRule(const std::string& argName, RbLanguageObject* defValue);                               //!< Constructor of rule from default value
@@ -58,6 +59,9 @@ class ArgumentRule : public RbInternal {
         std::string                 label;                                                                                              //!< Label of argument
         VariableSlot                argSlot;                                                                                            //!< Slot with typespec and possibly default value
         bool                        hasDefaultVal;                                                                                      //!< Has default (which can be NULL) ?
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

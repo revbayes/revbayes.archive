@@ -28,6 +28,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec OptionRule::typeSpec(OptionRule_name);
+
 /** Construct rule without default value; use "" for no label. */
 OptionRule::OptionRule( const std::string& argName, VectorString optVals )
     : ValueRule( argName, TypeSpec( RbString_name ) ), options( optVals ) {
@@ -66,8 +69,14 @@ const VectorString& OptionRule::getClass( void ) const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& OptionRule::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Test if argument is valid */
-bool OptionRule::isArgValid( DAGNode* var, bool& needsConversion, bool once ) const {
+bool OptionRule::isArgValid( DAGNode* var, bool& needsConversion ) const {
 
     // Initialize
     needsConversion = false;
@@ -77,7 +86,7 @@ bool OptionRule::isArgValid( DAGNode* var, bool& needsConversion, bool once ) co
         return false;
 
     // This will make sure we have a string variable
-    if ( !ArgumentRule::isArgumentValid( var, needsConversion, once ) )
+    if ( !ArgumentRule::isArgumentValid( var, needsConversion ) )
         return false;
 
     // Make sure we have a valid option

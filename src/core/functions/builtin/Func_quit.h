@@ -29,13 +29,16 @@ class Func_quit :  public RbFunction {
     public:
         // Basic utility functions
         Func_quit*                  clone(void) const;                                          //!< Clone object
-    	const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Func_quit functions
     	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return val
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

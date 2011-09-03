@@ -26,6 +26,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec ConstructorFunction::typeSpec(ConstructorFunction_name);
+
 /** Constructor */
 ConstructorFunction::ConstructorFunction(MemberObject* obj) : RbFunction(), templateObject(obj) {
 
@@ -73,5 +76,11 @@ const VectorString& ConstructorFunction::getClass(void) const {
 const TypeSpec ConstructorFunction::getReturnType(void) const {
 
     return templateObject->getTypeSpec();
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& ConstructorFunction::getTypeSpec(void) const {
+    return typeSpec;
 }
 

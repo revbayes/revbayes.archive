@@ -50,6 +50,7 @@ class SyntaxAssignExpr : public SyntaxElement {
         std::string                 briefInfo() const;                                                  //!< Brief info about object
         SyntaxAssignExpr*           clone() const;                                                      //!< Clone object
         const VectorString&         getClass(void) const;                                               //!< Get class vector 
+        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
         void                        print(std::ostream& o) const;                                       //!< Print info about object
 
     // Regular functions
@@ -60,6 +61,9 @@ class SyntaxAssignExpr : public SyntaxElement {
         SyntaxFunctionCall*         functionCall;                                                       //!< A lhs function call (or NULL)
         SyntaxElement*              expression;                                                         //!< The rhs expression
         SyntaxAssignExpr::operatorT opType;                                                             //!< The type of assignment
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

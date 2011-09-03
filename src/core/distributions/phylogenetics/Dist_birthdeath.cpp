@@ -40,6 +40,9 @@
 #include <vector>
 
 
+// Definition of the static type spec member
+const TypeSpec Dist_birthdeath::typeSpec(Dist_birthdeath_name);
+
 /** Default constructor for parser use */
 Dist_birthdeath::Dist_birthdeath( void ) : Distribution( getMemberRules() ) {
     
@@ -111,6 +114,12 @@ const MemberRules& Dist_birthdeath::getMemberRules( void ) const {
     }
     
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_birthdeath::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

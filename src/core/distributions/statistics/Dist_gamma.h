@@ -33,12 +33,12 @@ const std::string Dist_gamma_name = "Dist_gamma";
 class Dist_gamma: public DistributionContinuous {
 
     public:
-                                    Dist_gamma(void);                                                     //!< Parser constructor
-                                    Dist_gamma(double shape, double rate);                                              //!< Internal constructor
+                                    Dist_gamma(void);                                                   //!< Parser constructor
 
         // Basic utility functions
-        Dist_gamma*                   clone(void) const;                                                  //!< Clone object
+        Dist_gamma*                 clone(void) const;                                                  //!< Clone object
         const VectorString&         getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
@@ -51,6 +51,8 @@ class Dist_gamma: public DistributionContinuous {
         RealPos*                    quantile(const double p);                                           //!< Quantile
         RealPos*                    rv(void);                                                           //!< Generate random variable
     
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

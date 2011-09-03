@@ -17,7 +17,9 @@
 #define Sequence_H
 
 #include "ConstantMemberObject.h"
+#include "Vector.h"
 #include "VectorString.h"
+
 #include <ostream>
 #include <string>
 #include <vector>
@@ -32,13 +34,14 @@ class Sequence : public ConstantMemberObject {
 public:
     Sequence(const std::string& elemType, const std::string tname="");                              //!< Set type spec of container from type of elements
     
-    virtual Character&                      operator[](size_t i);                                   //!< Index op allowing change
-    virtual const Character&                operator[](size_t i) const;                             //!< Const index op
+    Character&                              operator[](size_t i);                                   //!< Index op allowing change
+    const Character&                        operator[](size_t i) const;                             //!< Const index op
     
     // Basic utility functions you have to override
-    virtual Sequence*                       clone(void) const;                                      //!< Clone object
-    virtual const VectorString&             getClass(void) const;                                   //!< Get class
-    virtual void                            printValue(std::ostream& o) const;                      //!< Print value for user
+    Sequence*                               clone(void) const;                                      //!< Clone object
+    const VectorString&                     getClass(void) const;                                   //!< Get class
+    const TypeSpec&                         getTypeSpec(void) const;                                //!< Get language type of the object
+    void                                    printValue(std::ostream& o) const;                      //!< Print value for user
     
     // Sequence functions
     void                                    addCharacter( Character* newChar );                     //!< Push back a new character
@@ -53,6 +56,8 @@ private:
     std::string                             characterType;                                          //!< The type of characters this sequence holds
     std::string                             taxonName;                                              //!< Name of the taxon for this vector of characters               
     Vector                                  characters;                                             //!< The vector containing the characters of the sequence
+    
+    static const TypeSpec                   typeSpec;
 };
 
 #endif

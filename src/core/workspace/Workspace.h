@@ -81,6 +81,7 @@ class Workspace : public Environment {
         // Frame functions you have to override
         Workspace*                  clone(void) const;                                                                  //!< Clone frame
         const VectorString&         getClass() const;                                                                   //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                                                  //!< Print table for user
         std::string                 richInfo(void) const;                                                               //!< Complete info to string
 
@@ -94,15 +95,13 @@ class Workspace : public Environment {
         bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
         RbLanguageObject*           executeFunction(    const std::string&              name,
                                                         const std::vector<Argument*>&   args) const;                    //!< Execute function
-        bool                        existsType(const std::string& name) const;                                          //!< Does the type exist in the type table?
-        RbObject*                   findType(const std::string& name) const;                                            //!< Does the type exist in the type table?
-        const VectorString&         getClassOfType(const std::string& type) const;                                      //!< Get reference to class vector of type
+        bool                        existsType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
+        RbObject*                   findType(const TypeSpec& name) const;                                               //!< Does the type exist in the type table?
+        const VectorString&         getClassOfType(const TypeSpec& type) const;                                         //!< Get reference to class vector of type
         FunctionTable*              getFunctionTable(void) const { return functionTable; }                              //!< Get function table
         RbFunction*                 getFunction(const std::string& name, const std::vector<Argument*>& args);           //!< Get function copy
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
-        bool                        isXOfTypeY(const std::string& xType, const std::string& yType) const;               //!< Type checking usng type names
         bool                        isXOfTypeY(const TypeSpec& xTypeSp, const TypeSpec& yTypeSp) const;                 //!< Type checking using full type spec
-        bool                        isXConvertibleToY(const std::string& xType, const std::string& yType) const;        //!< Type conversion checking usng type names
         bool                        isXConvertibleToY(const TypeSpec& xTypeSp, const TypeSpec& yTypeSp) const;          //!< Type conversion checking using full type spec
         static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
                                     {
@@ -126,6 +125,8 @@ class Workspace : public Environment {
         TypeTable                   typeTable;                                                                           //!< Type table
 
         bool                        typesInitialized;                                                                    //!< Is type table initialized? Before then, we can't perform type checking.
+
+        static const TypeSpec       typeSpec;
 };
 
 #endif

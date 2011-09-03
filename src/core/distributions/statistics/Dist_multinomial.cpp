@@ -37,15 +37,11 @@
 #include <vector>
 
 
+// Definition of the static type spec member
+const TypeSpec Dist_multinomial::typeSpec(Dist_multinomial_name);
+
 /** Default constructor for parser use */
 Dist_multinomial::Dist_multinomial( void ) : DistributionContinuous( getMemberRules() ) {
-}
-
-
-/** Constructor for internal use */
-Dist_multinomial::Dist_multinomial( std::vector<double> a ) : DistributionContinuous( getMemberRules() ) {
-
-//    setMemberValue( "p", new Simplex( a ) );
 }
 
 
@@ -85,6 +81,12 @@ const MemberRules& Dist_multinomial::getMemberRules( void ) const {
 		}
 
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_multinomial::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

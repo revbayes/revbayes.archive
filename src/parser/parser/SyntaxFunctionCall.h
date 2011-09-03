@@ -49,7 +49,8 @@ class SyntaxFunctionCall : public SyntaxElement {
         // Basic utility functions
         std::string                     briefInfo() const;                                                      //!< Brief info about object
         SyntaxFunctionCall*             clone() const;                                                          //!< Clone object
-        const VectorString&             getClass(void) const;                                                   //!< Get class vector 
+        const VectorString&             getClass(void) const;                                                   //!< Get class vector
+        const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object 
         void                            print(std::ostream& o) const;                                           //!< Print info about object
 
         // Regular functions
@@ -61,6 +62,9 @@ class SyntaxFunctionCall : public SyntaxElement {
         std::list<SyntaxLabeledExpr*>*  arguments;                                                              //!< The arguments passed to the function
         RbString*                       functionName;                                                           //!< The name of the function
         SyntaxVariable*                 variable;                                                               //!< Variable holding member function
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

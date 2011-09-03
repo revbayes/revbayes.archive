@@ -27,6 +27,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec Monitor::typeSpec(Monitor_name);
+
 /** Constructor */
 Monitor::Monitor(void) : ConstantMemberObject(getMemberRules()) {
 
@@ -88,6 +91,12 @@ const MemberRules& Monitor::getMemberRules( void ) const {
     }
     
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Monitor::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

@@ -33,6 +33,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec MemberFunction::typeSpec(MemberFunction_name);
+
 /** Constructor */
 MemberFunction::MemberFunction(const TypeSpec retType, const ArgumentRules& argRules) : 
     RbFunction(), argumentRules(argRules), object(NULL), returnType(retType) {
@@ -93,6 +96,12 @@ const ArgumentRules& MemberFunction::getArgumentRules(void) const {
 const TypeSpec MemberFunction::getReturnType(void) const {
 
     return returnType;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& MemberFunction::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

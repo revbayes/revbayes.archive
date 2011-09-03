@@ -29,6 +29,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec SyntaxVariableDecl::typeSpec(SyntaxVariableDecl_name);
+
 /** Construct from operator type, variable and expression */
 SyntaxVariableDecl::SyntaxVariableDecl( RbString* typeName, std::list<SyntaxElement*>* lengths, RbString* referenceChar, RbString* varName) 
     : SyntaxElement(), elementTypeName(typeName), lengthExpr(lengths), referenceSymbol(referenceChar), variableName(varName) {
@@ -131,7 +134,7 @@ Variable* SyntaxVariableDecl::getContentAsVariable( Environment* env ) const {
         throw RbException( "Illegal attempt to redefine variable " + *variableName );
     
     // Check if type exists
-    if ( !Workspace::userWorkspace().existsType( *elementTypeName ) )
+    if ( !Workspace::userWorkspace().existsType( TypeSpec(elementTypeName->getValue()) ) )
         throw RbException( "Type " + *elementTypeName + " does not exist" );
 
     // Evaluate length specification
@@ -147,7 +150,7 @@ Variable* SyntaxVariableDecl::getContentAsVariable( Environment* env ) const {
             DAGNode*        temp    = (*i)->getContentAsVariable( env )->getDagNodePtr();
             const RbObject* value   = temp->getValue();
             
-            if ( value->isType( Integer_name ) )
+            if ( value->isTypeSpec( TypeSpec(Integer_name) ) )
                 length.push_back( static_cast<const Integer*>( value )->getValue() );
             else
                 throw RbException( "Expression in length specification of variable declaration does not evaluate to an integer" );
@@ -184,6 +187,12 @@ Variable* SyntaxVariableDecl::getContentAsVariable( Environment* env ) const {
     }
     
     return NULL;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxVariableDecl::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

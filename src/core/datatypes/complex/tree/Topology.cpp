@@ -28,6 +28,8 @@
 #include "ValueRule.h"
 
 
+// Definition of the static type spec member
+const TypeSpec Topology::typeSpec(Topology_name);
 
 /* Default constructor */
 Topology::Topology(void) : ConstantMemberObject( getMemberRules() ) {
@@ -193,6 +195,12 @@ TopologyNode* Topology::getTipNode( size_t indx ) const {
 
     // TODO: Bound checking
     return nodes[ indx ];
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Topology::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

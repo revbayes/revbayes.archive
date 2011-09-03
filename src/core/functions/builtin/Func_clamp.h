@@ -34,13 +34,16 @@ class Func_clamp :  public RbFunction {
         // Basic utility functions
         Func_clamp*                 clone(void) const;                                  //!< Clone the object
         const VectorString&         getClass(void) const;                               //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 
         // Regular functions
         bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
         RbLanguageObject*           execute(void);                                      //!< Execute operation
         const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                          //!< Get type of return value
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

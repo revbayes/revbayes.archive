@@ -40,6 +40,7 @@ class StandardState : public CharacterStateDiscrete {
         // Basic utility functions you have to override
         StandardState*                  clone(void) const;                                         //!< Clone object
         const VectorString&             getClass(void) const;                                      //!< Get class vector
+        const TypeSpec&                 getTypeSpec(void) const;                                   //!< Get language type of the object
         std::string                     richInfo(void) const;                                      //!< Complete info about object
 
         // Discrete character observation functions
@@ -51,6 +52,9 @@ class StandardState : public CharacterStateDiscrete {
 
     protected:
         std::string                     stateLabels;                                               //!< The labels for the possible states
+    
+    private:
+        static const TypeSpec           typeSpec;
 };
 
 #endif

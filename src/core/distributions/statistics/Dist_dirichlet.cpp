@@ -35,6 +35,9 @@
 #include <vector>
 
 
+// Definition of the static type spec member
+const TypeSpec Dist_dirichlet::typeSpec(Dist_dirichlet_name);
+
 /** Default constructor for parser use */
 Dist_dirichlet::Dist_dirichlet( void ) : DistributionContinuous( getMemberRules() ) {
 
@@ -98,6 +101,12 @@ const MemberRules& Dist_dirichlet::getMemberRules( void ) const {
 		}
 
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_dirichlet::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

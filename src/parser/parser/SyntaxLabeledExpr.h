@@ -40,6 +40,7 @@ class SyntaxLabeledExpr : public SyntaxElement {
         std::string         briefInfo() const;                                      //!< Brief info about object
         SyntaxLabeledExpr*  clone() const;                                          //!< Clone object
         const VectorString& getClass(void) const;                                   //!< Get class vector 
+        const TypeSpec&     getTypeSpec(void) const;                                //!< Get language type of the object
         void                print(std::ostream& o) const;                           //!< Print info about object
 
         // Regular functions
@@ -50,6 +51,9 @@ class SyntaxLabeledExpr : public SyntaxElement {
     protected:
         RbString*           label;                                                  //!< The label of the argument
         SyntaxElement*      expression;                                             //!< The expression for the argument value
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

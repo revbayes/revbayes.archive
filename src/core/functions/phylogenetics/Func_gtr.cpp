@@ -17,7 +17,6 @@
  */
 
 #include "Func_gtr.h"
-//#include "list.h"
 #include "RateMatrix.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -31,6 +30,8 @@
 #include <vector>
 
 
+// Definition of the static type spec member
+const TypeSpec Func_gtr::typeSpec(Func_gtr_name);
 
 /** Clone object */
 Func_gtr* Func_gtr::clone(void) const {
@@ -138,5 +139,11 @@ const VectorString& Func_gtr::getClass(void) const {
 const TypeSpec Func_gtr::getReturnType(void) const {
 
     return TypeSpec( RateMatrix_name );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Func_gtr::getTypeSpec(void) const {
+    return typeSpec;
 }
 

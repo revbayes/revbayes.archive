@@ -38,6 +38,9 @@
 #include <vector>
 
 
+// Definition of the static type spec member
+const TypeSpec Workspace::typeSpec(Workspace_name);
+
 /** Constructor of global workspace */
 Workspace::Workspace() : Environment(), functionTable(new FunctionTable()), typesInitialized(false) {
     // since we are a singleton we own ourselve
@@ -137,7 +140,7 @@ bool Workspace::addType(RbObject* exampleObj) {
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, RbObject*>(exampleObj->getType(), exampleObj));
+    typeTable.insert(std::pair<std::string, RbObject*>(name, exampleObj));
     
     // retain the object
     exampleObj->retain();
@@ -202,7 +205,7 @@ RbLanguageObject* Workspace::executeFunction(const std::string& name, const std:
 
 
 /** Is the type added to the workspace? */
-bool Workspace::existsType( const std::string& name ) const {
+bool Workspace::existsType( const TypeSpec& name ) const {
 
     std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) {
@@ -217,7 +220,7 @@ bool Workspace::existsType( const std::string& name ) const {
 
 
 /** Find type template object */
-RbObject* Workspace::findType( const std::string& name ) const {
+RbObject* Workspace::findType( const TypeSpec& name ) const {
 
     std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) {
@@ -237,36 +240,26 @@ RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Ar
     return functionTable->getFunction(name, args);
 }
 
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Workspace::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Type checking using type table and full type spec */
 bool Workspace::isXOfTypeY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) const {
-
-    return isXOfTypeY( xTypeSp.getType(), yTypeSp.getType() );
-}
-
-
-/** Type checking using type table and type names, assuming dim = 0 */
-bool Workspace::isXOfTypeY( const std::string& xType, const std::string& yType ) const {
-
+    
     // Cannot provide this service in standard way if type table is not filled with xType
     // so hard code it instead
-    if ( typesInitialized == false && ! existsType( xType ) ) {
-        throw RbException( "Unknown type " + xType );
+    if ( typesInitialized == false && ! existsType( xTypeSp ) ) {
+        throw RbException( "Unknown type " + xTypeSp.getType() );
     }
-
-    if ( !existsType( xType ) )
-        throw RbException( "No type named '" + xType + "'" );
-
-    return findType( xType )->isType( yType );
-}
-
-
-/** Is type x convertible to type y using type names, assuming dim = 0 */
-bool Workspace::isXConvertibleToY( const std::string& xType, const std::string& yType ) const {
-
-    TypeSpec    xTypeSpec   = TypeSpec( xType );
-    TypeSpec    yTypeSpec   = TypeSpec( yType );
-
-    return isXConvertibleToY( xTypeSpec, yTypeSpec );
+    
+    if ( !existsType( xTypeSp ) )
+        throw RbException( "No type named '" + xTypeSp.getType() + "'" );
+    
+    return findType( xTypeSp )->isTypeSpec( yTypeSp );
 }
 
 
@@ -276,12 +269,9 @@ bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTyp
     if ( typesInitialized == false )
         return true;    // Cannot provide this service if type table is not filled
 
-    const std::string&  xType   = xTypeSp.getType();
-    const std::string&  yType   = yTypeSp.getType();
-
     bool retVal = false;
     
-    retVal = findType( xType )->isConvertibleTo( yType, false );
+    retVal = findType( xTypeSp )->isConvertibleTo( yTypeSp );
     
 
     return retVal;

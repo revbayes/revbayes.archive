@@ -18,7 +18,11 @@
 #include "ConstantNode.h"
 #include "RbLanguageObject.h"
 #include "SyntaxConstant.h"
+#include "VectorString.h"
 
+
+// Definition of the static type spec member
+const TypeSpec SyntaxConstant::typeSpec(SyntaxConstant_name);
 
 /** Construct from value */
 SyntaxConstant::SyntaxConstant(RbLanguageObject* val) : SyntaxElement(), value(val) {
@@ -86,14 +90,28 @@ SyntaxConstant* SyntaxConstant::clone (void) const {
 }
 
 
+/** Get class vector describing type of object */
+const VectorString& SyntaxConstant::getClass(void) const { 
+    
+    static VectorString rbClass = VectorString(SyntaxConstant_name) + SyntaxElement::getClass();
+	return rbClass; 
+}
+
+
 /** Get semantic value of element */
 Variable* SyntaxConstant::getContentAsVariable(Environment* env) const {
 
-    // We return a clone in case this function is called repeatedly. The ConstantNode manages the clone.
+    // We return a clone in case this function is called repeatedly.
     if (value == NULL)
         return new Variable(new ConstantNode(NULL));
     else
         return new Variable(new ConstantNode(value));
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxConstant::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

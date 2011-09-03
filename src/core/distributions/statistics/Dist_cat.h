@@ -37,12 +37,12 @@ class Dist_cat: public DistributionDiscrete {
 
     public:
                                     Dist_cat(void);                                                         //!< Parser constructor
-                                    Dist_cat(std::vector<double> m);                                        //!< Internal constructor
         virtual                    ~Dist_cat(void) {}                                                       //!< Virtual destructor
 
         // Basic utility functions
         Dist_cat*                   clone(void) const;                                                      //!< Clone object
         const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                             //!< Get member variable rules
@@ -54,7 +54,9 @@ class Dist_cat: public DistributionDiscrete {
         double                      lnPdf(const RbLanguageObject* value);                                   //!< Ln probability density
         double                      pdf(const RbLanguageObject* value);                                     //!< Probability density
         Categorical*                rv(void);                                                               //!< Generate random variable
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

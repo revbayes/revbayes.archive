@@ -33,15 +33,12 @@
 #include <cmath>
 #include <sstream>
 
+
+// Definition of the static type spec member
+const TypeSpec Dist_beta::typeSpec(Dist_beta_name);
+
 /** Default constructor for parser use */
 Dist_beta::Dist_beta( void ) : DistributionContinuous( getMemberRules() ) {
-    // Do nothing
-}
-
-
-/** Constructor for internal use */
-Dist_beta::Dist_beta( double shape, double rate )
-    : DistributionContinuous( getMemberRules() ) {
     // Do nothing
 }
 
@@ -95,6 +92,12 @@ const MemberRules& Dist_beta::getMemberRules( void ) const {
     }
 
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_beta::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

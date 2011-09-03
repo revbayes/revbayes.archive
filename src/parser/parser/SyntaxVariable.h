@@ -34,7 +34,7 @@ class VariableSlot;
  * if needed.
  *
  */
-const std::string SyntaxVariable_name = "Variable";
+const std::string SyntaxVariable_name = "Syntax Variable";
 
 class SyntaxVariable : public SyntaxElement {
 
@@ -54,6 +54,7 @@ class SyntaxVariable : public SyntaxElement {
         std::string                 briefInfo(void) const;                                                                  //!< Brief info about object
         SyntaxVariable*             clone(void) const;                                                                      //!< Clone object
         const VectorString&         getClass(void) const;                                                                   //!< Get class vector 
+        const TypeSpec&             getTypeSpec(void) const;                                                                //!< Get language type of the object
         void                        print(std::ostream& o) const;                                                           //!< Print info about object
 
         // Regular functions
@@ -69,6 +70,9 @@ class SyntaxVariable : public SyntaxElement {
         SyntaxFunctionCall*         functionCall;                                                                           //!< Function call giving a reference to a variable (we hope)
         std::list<SyntaxElement*>*  index;                                                                                  //!< Vector of int indices to variable element
         SyntaxVariable*             baseVariable;                                                                           //!< Base variable (pointing to a composite node)
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

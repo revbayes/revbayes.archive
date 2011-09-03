@@ -35,6 +35,7 @@ public:
 	// Basic utility functions
 	Func_size*                  clone(void) const;                                  //!< Clone the object
 	const VectorString&         getClass(void) const;                               //!< Get class vector
+    const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 	
 	// Regular functions
 	bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
@@ -42,6 +43,8 @@ public:
 	const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
 	const TypeSpec              getReturnType(void) const;                          //!< Get type of return value
 	
+private:
+    static const TypeSpec       typeSpec;
 };
 
 #endif
@@ -51,6 +54,11 @@ public:
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "Vector"
+
+
+// Definition of the static type spec member
+template <typename valType>
+const TypeSpec Func_size<valType>::typeSpec(Func_size_name, new TypeSpec(valType().getType()));
 
 
 /** Clone object */
@@ -104,6 +112,14 @@ const VectorString& Func_size<valType>::getClass( void ) const {
 template <typename valType> const TypeSpec Func_size<valType>::getReturnType( void ) const {
 	
     return valType().getTypeSpec();
+}
+
+
+/** Get return type */
+template <typename valType>
+const TypeSpec& Func_size<valType>::getTypeSpec( void ) const {
+    
+    return typeSpec;
 }
 
 

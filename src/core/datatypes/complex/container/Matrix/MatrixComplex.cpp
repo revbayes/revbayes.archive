@@ -30,6 +30,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec MatrixComplex::typeSpec(MatrixComplex_name);
+
 
 /** Default constructor resulting in an empty Complex matrix */
 MatrixComplex::MatrixComplex(void) : Matrix(Complex_name) {
@@ -133,6 +136,12 @@ Complex* MatrixComplex::getElement( size_t row , size_t col) {
     
     VectorComplex& tmp = matrix[row];
     return (Complex*) tmp.getElement(col);
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& MatrixComplex::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

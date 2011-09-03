@@ -30,16 +30,12 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec Dist_exp::typeSpec(Dist_exp_name);
+
 /** Default constructor for parser use */
 Dist_exp::Dist_exp( void ) : DistributionContinuous( getMemberRules() ) {
 
-}
-
-
-/** Constructor for internal use */
-Dist_exp::Dist_exp( double rate ) : DistributionContinuous( getMemberRules() ) {
-
-//    setMemberValue( "rate", new Real(rate) );
 }
 
 
@@ -90,6 +86,12 @@ const MemberRules& Dist_exp::getMemberRules( void ) const {
     }
 
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_exp::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

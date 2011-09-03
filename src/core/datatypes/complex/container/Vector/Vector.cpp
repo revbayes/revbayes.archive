@@ -24,16 +24,16 @@
 #include <algorithm>
 
 /** Set type of elements */
-Vector::Vector(void) : AbstractVector(TypeSpec(RbLanguageObject_name)) {
+Vector::Vector(void) : AbstractVector(TypeSpec(RbLanguageObject_name)), typeSpec(Vector_name, new TypeSpec(RbLanguageObject_name)) {
 }
 
 /** Set type of elements */
-Vector::Vector(const TypeSpec& elemType) : AbstractVector(elemType) {
+Vector::Vector(const TypeSpec& elemType) : AbstractVector(elemType), typeSpec(Vector_name, new TypeSpec(elemType)) {
 }
 
 
 /** Copy Constructor */
-Vector::Vector(const Vector &v) : AbstractVector(v) {
+Vector::Vector(const Vector &v) : AbstractVector(v), typeSpec(Vector_name, new TypeSpec(elementType)) {
     
     // copy all the elements by deep copy
     for (std::vector<RbLanguageObject*>::const_iterator it=v.elements.begin(); it!=v.elements.end(); it++) {
@@ -125,6 +125,12 @@ RbLanguageObject* Vector::getElement(size_t index) const {
 }
 
 
+/** Get the type spec of this class. We return a member variable because instances might have different element types. */
+const TypeSpec& Vector::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Print value for user */
 void Vector::printValue( std::ostream& o ) const {
     
@@ -134,12 +140,8 @@ void Vector::printValue( std::ostream& o ) const {
             o << ", ";
         if ( (*i) == NULL )
             o << "NULL";
-        else if ((*i)->isType(RbLanguageObject_name)) {
-            RbLanguageObject *rblo = static_cast<RbLanguageObject*>(*i);
-            rblo->printValue(o);
-        }
         else 
-            o << " ";
+            (*i)->printValue(o);
     }
     o <<  " ]";
     
@@ -174,9 +176,9 @@ void Vector::pop_back(void) {
 /** Push an int onto the back of the vector after checking */
 void Vector::push_back( RbObject *x ) {
     
-    if ( x->isType(RbLanguageObject_name) ) {
+    if ( x->isTypeSpec( TypeSpec(RbLanguageObject_name) ) ) {
         elements.push_back(static_cast<RbLanguageObject*>(x));
-    } else if ( x->isConvertibleTo(RbLanguageObject_name, true) ) {
+    } else if ( x->isConvertibleTo(RbLanguageObject_name) ) {
         elements.push_back(static_cast<RbLanguageObject*>(x->convertTo(RbLanguageObject_name)));
     }
     else {
@@ -188,9 +190,9 @@ void Vector::push_back( RbObject *x ) {
 /** Push an int onto the front of the vector after checking */
 void Vector::push_front( RbObject *x ) {
     
-    if ( x->isType(RbLanguageObject_name) ) {
+    if ( x->isTypeSpec( TypeSpec(RbLanguageObject_name) ) ) {
         elements.insert( elements.begin(), static_cast<RbLanguageObject*>(x));
-    } else if ( x->isConvertibleTo(RbLanguageObject_name, true) ) {
+    } else if ( x->isConvertibleTo(RbLanguageObject_name) ) {
         elements.insert( elements.begin(), static_cast<RbLanguageObject*>(x->convertTo(RbLanguageObject_name)));
     }
     else {
@@ -232,6 +234,10 @@ void Vector::setElement(const size_t index, RbLanguageObject *elem) {
     if (index >= elements.size()) {
         throw RbException("Cannot set element in Vector outside the current range.");
     }
+    
+    // remove first the old element at the index
+    elements.erase(elements.begin()+index);
+    
     elements.insert(elements.begin()+index, elem);
     
     // retain the element

@@ -49,9 +49,10 @@ class Natural : public Integer {
         // Basic utility functions
         std::string         briefInfo(void) const;                                                  //!< Brief info about the object
         Natural*            clone(void) const;                                                      //!< Clone object
-        RbLanguageObject*   convertTo(const std::string& type) const;                               //!< Convert to type and dim
+        RbObject*           convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         const VectorString& getClass(void) const;                                                   //!< Get class vector
-        bool                isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type and dim?
+        const TypeSpec&     getTypeSpec(void) const;                                                //!< Get language type of the object
+        bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         void                printValue(std::ostream& o) const;                                      //!< Print value (for user)
         std::string         richInfo(void) const;                                                   //!< Complete info about object
 
@@ -60,6 +61,10 @@ class Natural : public Integer {
         int                 getValue(void) const { return value; }                                  //!< Get value (int)
         void                setValue(int x);                                                        //!< Set value from int (after checking)
         void                setValue(unsigned int x);                                               //!< Set value from unsigned int
+    
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 

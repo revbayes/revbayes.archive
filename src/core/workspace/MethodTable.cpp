@@ -19,9 +19,13 @@
 #include "RbException.h"
 #include "RbFunction.h"
 #include "RbUtil.h"
+#include "VectorString.h"
 
 #include <sstream>
 
+
+// Definition of the static type spec member
+const TypeSpec MethodTable::typeSpec(MethodTable_name);
 
 /** Basic constructor, empty table with or without parent */
 MethodTable::MethodTable(MethodTable* parent)
@@ -62,6 +66,20 @@ std::string MethodTable::briefInfo () const {
     o << "MethodTable with " << table.size() << " functions";
 
     return o.str();
+}
+
+
+/** Get class vector describing type of object */
+const VectorString& MethodTable::getClass(void) const { 
+    
+    static VectorString rbClass = VectorString(MethodTable_name) + FunctionTable::getClass();
+	return rbClass; 
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& MethodTable::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

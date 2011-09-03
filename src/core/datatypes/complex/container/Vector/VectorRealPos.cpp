@@ -28,6 +28,10 @@
 #include <algorithm>
 #include <iomanip>
 
+
+// Definition of the static type spec member
+const TypeSpec VectorRealPos::typeSpec(VectorRealPos_name);
+
 /** Construct empty vector */
 VectorRealPos::VectorRealPos( void ) : AbstractVector( RealPos_name ) {
 }
@@ -132,7 +136,7 @@ VectorRealPos* VectorRealPos::clone( void ) const {
 }
 
 /** Can we convert this vector into another object? */
-RbLanguageObject* VectorRealPos::convertTo(std::string const &type) const {
+RbObject* VectorRealPos::convertTo(TypeSpec const &type) const {
     
     // test for type conversion
     if (type == VectorReal_name) {
@@ -140,7 +144,7 @@ RbLanguageObject* VectorRealPos::convertTo(std::string const &type) const {
         return new VectorReal( getValue() );
     }
     
-    return Vector::convertTo(type);
+    return AbstractVector::convertTo(type);
 }
 
 
@@ -163,6 +167,12 @@ RealPos* VectorRealPos::getElement(size_t index) const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& VectorRealPos::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Get value as an STL vector of double */
 std::vector<double> VectorRealPos::getValue( void ) const {
 
@@ -170,7 +180,7 @@ std::vector<double> VectorRealPos::getValue( void ) const {
 }
 
 /** Can we convert this vector into another object? */
-bool VectorRealPos::isConvertibleTo(std::string const &type, bool once) const {
+bool VectorRealPos::isConvertibleTo(TypeSpec const &type) const {
     
     // test for type conversion
     if (type == VectorReal_name) {
@@ -178,7 +188,7 @@ bool VectorRealPos::isConvertibleTo(std::string const &type, bool once) const {
         return true;
     }
     
-    return Vector::isConvertibleTo(type, once);
+    return AbstractVector::isConvertibleTo(type);
 }
 
 
@@ -217,9 +227,9 @@ void VectorRealPos::printValue(std::ostream& o) const {
 /** Push an int onto the back of the vector after checking */
 void VectorRealPos::push_back( RbObject *x ) {
     
-    if ( x->isType(RealPos_name) ) {
+    if ( x->isTypeSpec( TypeSpec(RealPos_name) ) ) {
         elements.push_back(static_cast<RealPos*>(x)->getValue());
-    } else if ( x->isConvertibleTo(RealPos_name, true) ) {
+    } else if ( x->isConvertibleTo(RealPos_name) ) {
         elements.push_back(static_cast<RealPos*>(x->convertTo(RealPos_name))->getValue());
     }
     else {
@@ -241,9 +251,9 @@ void VectorRealPos::push_back( double x ) {
 /** Push an int onto the front of the vector after checking */
 void VectorRealPos::push_front( RbObject *x ) {
     
-    if ( x->isType(RealPos_name) ) {
+    if ( x->isTypeSpec( TypeSpec(RealPos_name) ) ) {
         elements.insert( elements.begin(), static_cast<RealPos*>(x)->getValue());
-    } else if ( x->isConvertibleTo(RealPos_name, true) ) {
+    } else if ( x->isConvertibleTo(RealPos_name) ) {
         elements.insert( elements.begin(), static_cast<RealPos*>(x->convertTo(RealPos_name))->getValue());
     }
     else {
@@ -281,17 +291,21 @@ std::string VectorRealPos::richInfo( void ) const {
 void VectorRealPos::setElement(const size_t index, RbLanguageObject *x) {
     
     // check for type and convert if necessary
-    if ( x->isType(RealPos_name) ) {
+    if ( x->isTypeSpec( TypeSpec(RealPos_name) ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<RealPos*>(x)->getValue());
-    } else if ( x->isConvertibleTo(RealPos_name, true) ) {
+    } else if ( x->isConvertibleTo(RealPos_name) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
+        
+        // remove first the old element at the index
+        elements.erase(elements.begin()+index);
+        
         elements.insert( elements.begin() + index, static_cast<RealPos*>(x->convertTo(RealPos_name))->getValue());
     }
     else {

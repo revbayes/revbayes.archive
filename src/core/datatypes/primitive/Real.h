@@ -51,19 +51,22 @@ class Real : public RbLanguageObject {
         // Basic utility functions
         virtual std::string         briefInfo(void) const;                                                  //!< Brief info about the object
         virtual Real*               clone(void) const;                                                      //!< Clone object
-        RbLanguageObject*           convertTo(const std::string& type) const;                               //!< Convert to type and dim
+        virtual RbObject*           convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
-        double&                     getValueReference(void) { return value; }                               //!< Get value reference
-        bool                        isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type?
-        void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        virtual const TypeSpec&     getTypeSpec(void) const;                                                //!< Get language type of the object
+        virtual double&             getValueReference(void) { return value; }                               //!< Get value reference
+        virtual bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
+        virtual void                printValue(std::ostream& o) const;                                      //!< Print value (for user)
         virtual std::string         richInfo(void) const;                                                   //!< Complete info about object
 
         // Getters and setters
         virtual void                setValue(double x) { value = x; }                                       //!< Set value
-        double                      getValue(void) const { return value; }                                  //!< Get value
+        virtual double              getValue(void) const { return value; }                                  //!< Get value
 
 	protected:
         double                      value;                                                                  //!< Value member
+    
+        static const TypeSpec       typeSpec;
 };
 
         // Operators defined outside of the class

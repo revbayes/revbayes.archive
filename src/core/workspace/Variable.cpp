@@ -30,6 +30,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec Variable::typeSpec(Variable_name);
+
 /** Constructor of filled variable. */
 Variable::Variable(const std::string &n, DAGNode* dn) : RbInternal() {
     name = n;
@@ -129,6 +132,12 @@ const std::string& Variable::getName( void ) const {
 DAGNode* Variable::getDagNodePtr( void ) const {
     
     return node;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Variable::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

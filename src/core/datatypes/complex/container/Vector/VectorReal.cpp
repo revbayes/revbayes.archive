@@ -30,6 +30,8 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec VectorReal::typeSpec(VectorReal_name);
 
 /** Default constructor */
 VectorReal::VectorReal(void) : AbstractVector(Real_name) {
@@ -120,7 +122,7 @@ VectorReal* VectorReal::clone(void) const {
 
 
 /** Can we convert this vector into another object? */
-RbLanguageObject* VectorReal::convertTo(std::string const &type) const {
+RbObject* VectorReal::convertTo(TypeSpec const &type) const {
     
     // test for type conversion
     if (type == VectorRealPos_name) {
@@ -128,7 +130,7 @@ RbLanguageObject* VectorReal::convertTo(std::string const &type) const {
         return new VectorRealPos( getValue() );
     }
     
-    return Vector::convertTo(type);
+    return AbstractVector::convertTo(type);
 }
 
 
@@ -157,11 +159,17 @@ std::vector<double> VectorReal::getValue(void) const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& VectorReal::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Can we convert this vector into another object? */
-bool VectorReal::isConvertibleTo(std::string const &type, bool once) const {
+bool VectorReal::isConvertibleTo(TypeSpec const &type) const {
     
     // test for type conversion
-    if (type == VectorRealPos_name && once == true) {
+    if (type == VectorRealPos_name) {
         
         for (std::vector<double>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             
@@ -174,7 +182,7 @@ bool VectorReal::isConvertibleTo(std::string const &type, bool once) const {
         return true;
     }
     
-    return Vector::isConvertibleTo(type, once);
+    return AbstractVector::isConvertibleTo(type);
 }
 
 
@@ -214,9 +222,9 @@ void VectorReal::printValue(std::ostream& o) const {
 /** Push an int onto the back of the vector after checking */
 void VectorReal::push_back( RbObject *x ) {
     
-    if ( x->isType(Real_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
         elements.push_back(static_cast<Real*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Real_name, true) ) {
+    } else if ( x->isConvertibleTo(Real_name) ) {
         elements.push_back(static_cast<Real*>(x->convertTo(Real_name))->getValue());
     }
     else {
@@ -234,9 +242,9 @@ void VectorReal::push_back(double x) {
 /** Push an int onto the front of the vector after checking */
 void VectorReal::push_front( RbObject *x ) {
     
-    if ( x->isType(Real_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
         elements.insert( elements.begin(), static_cast<Real*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Real_name, true) ) {
+    } else if ( x->isConvertibleTo(Real_name) ) {
         elements.insert( elements.begin(), static_cast<Real*>(x->convertTo(Real_name))->getValue());
     }
     else {
@@ -271,17 +279,21 @@ std::string VectorReal::richInfo(void) const {
 void VectorReal::setElement(const size_t index, RbLanguageObject *x) {
     
     // check for type and convert if necessary
-    if ( x->isType(Real_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<Real*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Real_name, true) ) {
+    } else if ( x->isConvertibleTo(Real_name) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
+        
+        // remove first the old element at the index
+        elements.erase(elements.begin()+index);
+        
         elements.insert( elements.begin() + index, static_cast<Real*>(x->convertTo(Real_name))->getValue());
     }
     else {

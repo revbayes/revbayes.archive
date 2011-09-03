@@ -30,6 +30,10 @@
 
 #include <cassert>
 
+
+// Definition of the static type spec member
+const TypeSpec Func_clamp::typeSpec(Func_clamp_name);
+
 /** Clone object */
 Func_clamp* Func_clamp::clone( void ) const {
 
@@ -81,5 +85,11 @@ const VectorString& Func_clamp::getClass( void ) const {
 const TypeSpec Func_clamp::getReturnType( void ) const {
 
     return TypeSpec( RbVoid_name );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Func_clamp::getTypeSpec(void) const {
+    return typeSpec;
 }
 

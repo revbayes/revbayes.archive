@@ -44,6 +44,7 @@ class Model : public ConstantMemberObject {
         // Basic utility functions
         Model*                      clone(void) const;                                          //!< Make a copy (clone) of the Model.
         const VectorString&         getClass(void) const;                                       //!< Initialize the inheritance hierarchy for a Model object.
+        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
         void                        printValue(std::ostream& o) const;                          //!< Print the Model for the user as a list of the DAGNodes in the model graph.
         std::string                 richInfo(void) const;                                       //!< Complete info
     
@@ -58,6 +59,7 @@ class Model : public ConstantMemberObject {
         int                         findIndexInVector(const std::vector<DAGNode*>& v, const DAGNode* p) const;
 
     // Member variables
+    static const TypeSpec           typeSpec;
     std::vector<DAGNode*>           dagNodes;                
     std::map<const DAGNode*, DAGNode*>  nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
 };

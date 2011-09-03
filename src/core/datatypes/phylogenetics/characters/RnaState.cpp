@@ -20,6 +20,8 @@
 
 const std::string RnaState::stateLabels = "ACGU";
 
+// Definition of the static type spec member
+const TypeSpec RnaState::typeSpec(RnaState_name);
 
 
 /** Default constructor */
@@ -147,6 +149,12 @@ const char RnaState::getNucleotideCode(const std::vector<bool>& sSet) const {
 const char RnaState::getState(void) const {
 
     return getNucleotideCode(value);
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& RnaState::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

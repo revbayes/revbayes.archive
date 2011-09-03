@@ -40,6 +40,7 @@ class Move_mslide : public MoveSimple {
         // Basic utility functions
         Move_mslide*                clone(void) const;                                                      //!< Clone object
         const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // Member variable inits
         const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
@@ -49,6 +50,9 @@ class Move_mslide : public MoveSimple {
 
 	protected:
         double                      perform(std::set<StochasticNode*>& affectedNodes);                      //!< Perform move
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

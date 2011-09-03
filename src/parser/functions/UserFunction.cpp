@@ -27,6 +27,10 @@
 #include <list>
 #include <sstream>
 
+
+// Definition of the static type spec member
+const TypeSpec UserFunction::typeSpec(UserFunction_name);
+
 /** Basic constructor */
 UserFunction::UserFunction( const ArgumentRules&        argRules,
                             const TypeSpec&             retType,
@@ -143,6 +147,12 @@ const VectorString& UserFunction::getClass() const {
 const TypeSpec UserFunction::getReturnType() const {
 
     return returnType;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& UserFunction::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

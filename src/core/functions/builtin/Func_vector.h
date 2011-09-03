@@ -32,14 +32,17 @@ class Func_vector :  public RbFunction {
     public:
         // Basic utility functions
         Func_vector*                clone(void) const;                                          //!< Clone the object
-    	const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
         bool                        addAsChildOfArguments(void) { return false; }               //!< We do not wish that this function is added as a child of the arguments
     	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif
@@ -49,6 +52,11 @@ class Func_vector :  public RbFunction {
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"
+
+
+// Definition of the static type spec member
+template <typename valType, typename retType>
+const TypeSpec Func_vector<valType, retType>::typeSpec("Func_vector", new TypeSpec(valType().getType() + "," + retType().getType()));
 
 
 /** Clone object */
@@ -105,5 +113,13 @@ template <typename valType, typename retType>
 const TypeSpec Func_vector<valType, retType>::getReturnType( void ) const {
 
     return retType().getTypeSpec();
+}
+
+
+/** Get return type */
+template <typename valType, typename retType>
+const TypeSpec& Func_vector<valType, retType>::getTypeSpec( void ) const {
+    
+    return typeSpec;
 }
 

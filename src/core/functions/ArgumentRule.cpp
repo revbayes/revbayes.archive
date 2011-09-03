@@ -28,6 +28,8 @@
 
 #include <sstream>
 
+// Definition of the static type spec member
+const TypeSpec ArgumentRule::typeSpec(ArgumentRule_name);
 
 /** Construct rule based on default value; use "" for no label. */
 ArgumentRule::ArgumentRule(const std::string& argName, RbLanguageObject* defVal) : RbInternal(), label(argName), argSlot(argName, defVal->getTypeSpec()), hasDefaultVal(true) {
@@ -75,39 +77,31 @@ const VectorString& ArgumentRule::getClass(void) const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& ArgumentRule::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Test if argument is valid */
-bool ArgumentRule::isArgumentValid(DAGNode* var, bool& needsConversion, bool once) const {
+bool ArgumentRule::isArgumentValid(DAGNode* var, bool& needsConversion) const {
     
     needsConversion = false;
     if ( var == NULL )
         return true;
 
-    if ( once ) {
-        /* We are executing once and match based on current value; error will be thrown if arguments have not been evaluated already */
-        const RbLanguageObject* value = var->getValue();
-        if ( value->isTypeSpec( argSlot.getSlotTypeSpec() ) ) {
-            needsConversion = false;
-            return true;
-        }
+    
+   /* We need safe argument matching for repeated evaluation in a function node */
+   if ( Workspace::userWorkspace().isXOfTypeY( var->getValueType(), argSlot.getSlotTypeSpec().getType() ) == true ) {
+       needsConversion = false;
+       return true;
+   }
 
-        if ( value->isConvertibleTo( argSlot.getSlotTypeSpec(), once ) == true) {
-            needsConversion = true;
-            return true;
-        }
-    }
-    else {
-        /* We need safe argument matching for repeated evaluation in a function node */
-        if ( Workspace::userWorkspace().isXOfTypeY( var->getValueType(), argSlot.getSlotTypeSpec().getType() ) == true ) {
-            needsConversion = false;
-            return true;
-        }
-
-        if ( Workspace::userWorkspace().isXConvertibleToY( var->getValueTypeSpec(), argSlot.getSlotTypeSpec() ) == true) {
-            needsConversion = true;
-            return true;
-        }
-    }
-
+   if ( Workspace::userWorkspace().isXConvertibleToY( var->getValueTypeSpec(), argSlot.getSlotTypeSpec() ) == true) {
+       needsConversion = true;
+       return true;
+   }
+    
     return false;
 }
 

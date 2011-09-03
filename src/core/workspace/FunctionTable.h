@@ -46,7 +46,8 @@ class FunctionTable : public RbInternal {
         // Basic utility functions
         virtual std::string             briefInfo(void) const;                                                              //!< Brief info to string
         virtual FunctionTable*          clone(void) const { return new FunctionTable(*this); }                              //!< Clone object
-        const VectorString&             getClass() const;                                                                   //!< Get class vector
+        virtual const TypeSpec&         getTypeSpec(void) const;                                                            //!< Get language type of the object
+        virtual const VectorString&     getClass() const;                                                                   //!< Get class vector
         virtual std::string             richInfo(void) const;                                                               //!< Complete info to string
         void                            printValue(std::ostream& o) const;                                                  //!< Print table for user
 
@@ -63,12 +64,14 @@ class FunctionTable : public RbInternal {
 
     protected:
         RbFunction*                     findFunction(   const std::string&              name,
-                                                        const std::vector<Argument*>&   args,
-                                                        bool                            evaluateOnce) const;                //!< Find function, process args
+                                                        const std::vector<Argument*>&   args) const;                        //!< Find function, process args
         
         // Member variables
         std::multimap<std::string, RbFunction*>     table;                                                                  //!< Table of functions
         FunctionTable*                              parentTable;                                                            //!< Enclosing table
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

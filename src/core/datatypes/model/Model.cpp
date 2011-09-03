@@ -33,6 +33,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec Model::typeSpec(Model_name);
+
 /** Default constructor for a Model object. */
 Model::Model( void ) : ConstantMemberObject(getMemberRules()) {
 }
@@ -189,6 +192,12 @@ const MemberRules& Model::getMemberRules(void) const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Model::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Print value for user */
 void Model::printValue(std::ostream& o) const {
 
@@ -277,7 +286,7 @@ void Model::setMemberVariable(const std::string& name, Variable* var) {
     DAGNode *theNode = var->getDagNodePtr();
     if (name == "sinknode") {
         // test whether var is a DagNodeContainer
-        while (theNode->getValue()->isType(DagNodeContainer_name)) {
+        while (theNode->getValue()->isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
             DagNodeContainer* container = dynamic_cast<DagNodeContainer*>(theNode->getValuePtr());
             theNode = container->getElement(0)->getDagNodePtr();
         }

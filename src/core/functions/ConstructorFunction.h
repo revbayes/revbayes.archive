@@ -37,7 +37,8 @@ class ConstructorFunction :  public RbFunction {
 
         // Basic utility functions
         ConstructorFunction*        clone(void) const;                                                              //!< Clone the object
-    	const VectorString&         getClass(void) const;                                                           //!< Get class vector
+        const VectorString&         getClass(void) const;                                                           //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object
 
         // Regular functions
         bool                        addAsChildOfArguments(void) { return false; }                                   //!< We do not wish that a constructor functions is added as a child of the arguments.
@@ -49,6 +50,9 @@ class ConstructorFunction :  public RbFunction {
 	protected:
         ArgumentRules               argRules;                                                                       //!< Member rules converted to reference rules
         MemberObject*               templateObject;                                                                 //!< The template object
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

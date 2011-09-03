@@ -19,6 +19,9 @@
 #include <vector>
 
 
+// Definition of the static type spec member
+const TypeSpec Trace::typeSpec(Trace_name);
+
 Trace::Trace()
 {
     invalidate();
@@ -94,6 +97,12 @@ const VectorString& Trace::getClass() const {
     
     static VectorString rbClass = VectorString(Trace_name) + MemberObject::getClass();
     return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Trace::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

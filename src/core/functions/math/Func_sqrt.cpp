@@ -32,6 +32,10 @@
 #include <cassert>
 #include <cmath>
 
+
+// Definition of the static type spec member
+const TypeSpec Func_sqrt::typeSpec(Func_sqrt_name);
+
 /** Clone object */
 Func_sqrt* Func_sqrt::clone( void ) const {
 
@@ -79,5 +83,11 @@ const VectorString& Func_sqrt::getClass( void ) const {
 const TypeSpec Func_sqrt::getReturnType( void ) const {
 
     return TypeSpec( RealPos_name );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Func_sqrt::getTypeSpec(void) const {
+    return typeSpec;
 }
 

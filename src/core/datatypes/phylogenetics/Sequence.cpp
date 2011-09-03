@@ -22,8 +22,9 @@
 #include "RbString.h"
 #include "Sequence.h"
 
-#include <algorithm>
 
+// Definition of the static type spec member
+const TypeSpec Sequence::typeSpec(Sequence_name);
 
 /** Constructor with element type, used to properly construct vectors */
 Sequence::Sequence(const std::string& elemType, const std::string tname) : ConstantMemberObject(), characters(elemType), taxonName(tname), characterType(elemType) {
@@ -51,7 +52,7 @@ const Character& Sequence::operator[](size_t i) const {
 /** Push back a new character */
 void Sequence::addCharacter( Character* newChar ) {
     
-    if ( newChar == NULL || !newChar->isType( characterType ) )
+    if ( newChar == NULL || !newChar->isTypeSpec( characterType ) )
         throw RbException( "Inappropriate character type" );
     
     characters.push_back( newChar );
@@ -73,6 +74,12 @@ const VectorString& Sequence::getClass(void) const {
 
 Character* Sequence::getCharacter(size_t index) {
     return &static_cast<Character&>(characters[index]);
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Sequence::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

@@ -24,6 +24,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec Probability::typeSpec(Probability_name);
+
 /** Default constructor */
 Probability::Probability( void ) : RealPos( 1.0 ) {
 }
@@ -77,6 +80,12 @@ const VectorString& Probability::getClass() const {
     
     static VectorString rbClass = VectorString( Probability_name ) + RealPos::getClass();
     return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Probability::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

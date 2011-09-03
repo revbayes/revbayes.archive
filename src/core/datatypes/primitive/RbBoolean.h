@@ -32,19 +32,20 @@ const std::string RbBoolean_name = "Bool";
 class RbBoolean : public RbLanguageObject {
 
     public:
-                                RbBoolean(void);                                                          //!< Default constructor
-                                RbBoolean(const bool v);                                                  //!< Construct from bool
+                                RbBoolean(void);                                                        //!< Default constructor
+                                RbBoolean(const bool v);                                                //!< Construct from bool
 
         // Operators
                                 operator bool(void) const { return value; }                             //!< Type conversion to bool
 
         // Basic utility functions
         std::string             briefInfo(void) const;                                                  //!< Brief info about the object
-        RbBoolean*                clone(void) const;                                                      //!< Clone object
-        RbLanguageObject*       convertTo(const std::string& type) const;                               //!< Convert to type and dim
+        RbBoolean*              clone(void) const;                                                      //!< Clone object
+        RbObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         const VectorString&     getClass(void) const;                                                   //!< Get class vector
+        const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
         bool&                   getValueReference(void) { return value; }                               //!< Get value reference
-        bool                    isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type?
+        bool                    isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         void                    printValue(std::ostream& o) const;                                      //!< Print value (for user)
         std::string             richInfo(void) const;                                                   //!< Complete info about object
 
@@ -55,6 +56,8 @@ class RbBoolean : public RbLanguageObject {
     private:
 
         bool                    value;                                                                  //!< Value member
+
+        static const TypeSpec   typeSpec;
 };
 
 #endif

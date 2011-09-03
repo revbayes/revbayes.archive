@@ -41,6 +41,7 @@ class RnaState : public NucleotideState {
         // Basic utility functions you have to override
         RnaState*                       clone(void) const;                                  //!< Clone object
         const VectorString&             getClass(void) const;                               //!< Get class vector
+        const TypeSpec&                 getTypeSpec(void) const;                            //!< Get language type of the object
         std::string                     richInfo(void) const;                               //!< Complete info about object
 
         // Discrete character observation functions
@@ -53,6 +54,8 @@ class RnaState : public NucleotideState {
     private:
         const char                      getNucleotideCode(const std::set<char>& s) const;
         const char                      getNucleotideCode(const std::vector<bool>& sSet) const;
+    
+        static const TypeSpec           typeSpec;
 };
 
 #endif

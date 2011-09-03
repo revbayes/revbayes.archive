@@ -32,13 +32,16 @@ class Func__ne :  public RbFunction {
     public:
         // Basic utility functions
         Func__ne*                   clone(void) const;                                          //!< Clone the object
-    	const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
     	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif
@@ -53,6 +56,11 @@ class Func__ne :  public RbFunction {
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"
+
+
+// Definition of the static type spec member
+template <typename firstValType, typename secondValType>
+const TypeSpec Func__ne<firstValType, secondValType>::typeSpec("Func__ne", new TypeSpec(firstValType().getType() + "," + secondValType().getType()));
 
 
 /** Clone object */
@@ -107,5 +115,13 @@ template <typename firstValType, typename secondValType>
 const TypeSpec Func__ne<firstValType, secondValType>::getReturnType( void ) const {
 
     return TypeSpec( RbBoolean_name );
+}
+
+
+/** Get return spec */
+template <typename firstValType, typename secondValType>
+const TypeSpec& Func__ne<firstValType, secondValType>::getTypeSpec( void ) const {
+    
+    return typeSpec;
 }
 

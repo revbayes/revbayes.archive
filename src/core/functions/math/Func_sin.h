@@ -34,12 +34,15 @@ public:
     // Basic utility functions
     Func_sin*                   clone(void) const;                                          //!< Clone the object
     const VectorString&         getClass(void) const;                                       //!< Get class vector
+    const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
     
     // Regular functions
     RbLanguageObject*           execute(void);                                              //!< Execute function
     const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
     const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
     
+private:
+    static const TypeSpec       typeSpec;
 };
 
 #endif

@@ -26,6 +26,8 @@
 #include <string>
 
 
+const std::string SyntaxClassDef_name = "Class definition";
+
 class SyntaxClassDef : public SyntaxElement {
 
     public:
@@ -41,6 +43,8 @@ class SyntaxClassDef : public SyntaxElement {
         // Basic utility functions
         std::string                 briefInfo() const;                                  //!< Brief info about object
         SyntaxElement*              clone() const;                                      //!< Clone object
+        const VectorString&         getClass(void) const;                               //!< Get class vector 
+        const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
         void                        print(std::ostream& o) const;                       //!< Print info about object
 
         // Regular functions
@@ -50,6 +54,9 @@ class SyntaxClassDef : public SyntaxElement {
         RbString*                   className;                                          //!< The name of the class
         RbString*                   baseClass;                                          //!< The name of the base class
         std::list<SyntaxElement*>*  definitions;                                        //!< Defined member variables and functions
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

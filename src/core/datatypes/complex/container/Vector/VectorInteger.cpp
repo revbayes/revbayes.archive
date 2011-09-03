@@ -30,6 +30,8 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec VectorInteger::typeSpec(VectorInteger_name);
 
 /** Default constructor */
 VectorInteger::VectorInteger(void) : AbstractVector(Integer_name) {
@@ -132,7 +134,7 @@ VectorInteger* VectorInteger::clone() const {
 
 
 /** Can we convert this vector into another object? */
-RbLanguageObject* VectorInteger::convertTo(std::string const &type) const {
+RbObject* VectorInteger::convertTo(TypeSpec const &type) const {
     
     // test for type conversion
     if (type == VectorRealPos_name) {
@@ -160,7 +162,7 @@ RbLanguageObject* VectorInteger::convertTo(std::string const &type) const {
         return new VectorRealPos(d);
     }
     
-    return Vector::convertTo(type);
+    return AbstractVector::convertTo(type);
 }
 
 /** Get class vector describing type of object */
@@ -182,6 +184,12 @@ Integer* VectorInteger::getElement(size_t index) const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& VectorInteger::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Export value as STL vector */
 std::vector<int> VectorInteger::getValue(void) const {
 
@@ -190,10 +198,10 @@ std::vector<int> VectorInteger::getValue(void) const {
 
 
 /** Can we convert this vector into another object? */
-bool VectorInteger::isConvertibleTo(std::string const &type, bool once) const {
+bool VectorInteger::isConvertibleTo(TypeSpec const &type) const {
     
     // test for type conversion
-    if (type == VectorNatural_name && once == true) {
+    if (type == VectorNatural_name) {
         
         for (std::vector<int>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             
@@ -210,7 +218,7 @@ bool VectorInteger::isConvertibleTo(std::string const &type, bool once) const {
         return true;
     }
     
-    return Vector::isConvertibleTo(type, once);
+    return AbstractVector::isConvertibleTo(type);
 }
 
 
@@ -228,9 +236,9 @@ void VectorInteger::pop_front(void) {
 /** Push an int onto the back of the vector after checking */
 void VectorInteger::push_back( RbObject *x ) {
     
-    if ( x->isType(Integer_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Integer_name) ) ) {
         elements.push_back(static_cast<Integer*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Integer_name, true) ) {
+    } else if ( x->isConvertibleTo(Integer_name) ) {
         elements.push_back(static_cast<Integer*>(x->convertTo(Integer_name))->getValue());
     }
     else {
@@ -248,9 +256,9 @@ void VectorInteger::push_back(int x) {
 /** Push an int onto the front of the vector after checking */
 void VectorInteger::push_front( RbObject *x ) {
     
-    if ( x->isType(Integer_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Integer_name) ) ) {
         elements.insert( elements.begin(), static_cast<Integer*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Integer_name, true) ) {
+    } else if ( x->isConvertibleTo(Integer_name) ) {
         elements.insert( elements.begin(), static_cast<Integer*>(x->convertTo(Integer_name))->getValue());
     }
     else {
@@ -285,17 +293,21 @@ std::string VectorInteger::richInfo(void) const {
 void VectorInteger::setElement(const size_t index, RbLanguageObject *x) {
     
     // check for type and convert if necessary
-    if ( x->isType(Integer_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Integer_name) ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<Integer*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Integer_name, true) ) {
+    } else if ( x->isConvertibleTo(Integer_name) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
+        
+        // remove first the old element at the index
+        elements.erase(elements.begin()+index);
+        
         elements.insert( elements.begin() + index, static_cast<Integer*>(x->convertTo(Integer_name))->getValue());
     }
     else {

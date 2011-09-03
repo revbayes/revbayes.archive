@@ -31,6 +31,8 @@
 
 
 
+// Definition of the static type spec member
+const TypeSpec Func_readTraces::typeSpec(Func_readTraces_name);
 
 /** Clone object */
 Func_readTraces* Func_readTraces::clone( void ) const {
@@ -221,6 +223,12 @@ const VectorString& Func_readTraces::getClass( void ) const {
 const TypeSpec Func_readTraces::getReturnType( void ) const {
     
     return TypeSpec( Trace_name );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Func_readTraces::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

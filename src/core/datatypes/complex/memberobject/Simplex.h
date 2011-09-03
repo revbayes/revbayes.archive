@@ -42,33 +42,35 @@ const std::string Simplex_name = "Simplex";
 
 class Simplex : public VectorRealPos {
 
-    public:
-                                    Simplex(const size_t n = 2);                                //!< Simplex of length (size) n
-                                    Simplex(const std::vector<double>& x);                      //!< Simplex from double vector
-                                    Simplex(const VectorRealPos& x);                            //!< Simplex from positive real vector
-    
-        double                      operator[](size_t i);                                       //!< Index op
-        double                      operator[](size_t i) const;                                 //!< Const index op
-        bool                        operator==(const VectorReal& x) const;                      //!< Equals comparison
-        bool                        operator!=(const VectorReal& x) const;                      //!< Not equals comparison
-    
-        // Basic utility functions
-        Simplex*                    clone(void) const;                                          //!< Clone object
-        const VectorString&         getClass(void) const;                                       //!< Get class
-        void                        printValue(std::ostream& o) const;                          //!< Print value (for user)
-        std::string                 richInfo(void) const;                                       //!< Complete info about object
-    
-        // Vector functions, including STL-like functions
-        void                        push_back(double x);                                        //!< Append element to end
-        void                        push_front(double x);                                       //!< Add element in front
-        void                        setValue(const std::vector<double>& x);                         //!< Set the value using STL vector of int
-        void                        setValue(const VectorInteger& x);                               //!< Set the value using VectorInteger
-        void                        setValue(const VectorNatural& x);                               //!< Set the value using VectorNatural
-        void                        setValue(const VectorReal& x);                                  //!< Set the value using VectorReal
-        void                        setValue(const VectorRealPos& x);                               //!< Set the value using VectorRealPos
+public:
+                                Simplex(const size_t n = 2);                                //!< Simplex of length (size) n
+                                Simplex(const std::vector<double>& x);                      //!< Simplex from double vector
+                                Simplex(const VectorRealPos& x);                            //!< Simplex from positive real vector
 
-    private:
-        void                    rescale(void);                                                      //!< Rescale the simplex
+    double                      operator[](size_t i);                                       //!< Index op
+    double                      operator[](size_t i) const;                                 //!< Const index op
+    bool                        operator==(const VectorReal& x) const;                      //!< Equals comparison
+    bool                        operator!=(const VectorReal& x) const;                      //!< Not equals comparison
+
+    // Basic utility functions
+    Simplex*                    clone(void) const;                                          //!< Clone object
+    const VectorString&         getClass(void) const;                                       //!< Get class
+    const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
+    void                        printValue(std::ostream& o) const;                          //!< Print value (for user)
+    std::string                 richInfo(void) const;                                       //!< Complete info about object
+
+    // Vector functions, including STL-like functions
+    void                        push_back(double x);                                        //!< Append element to end
+    void                        push_front(double x);                                       //!< Add element in front
+    void                        setValue(const std::vector<double>& x);                     //!< Set the value using STL vector of int
+    void                        setValue(const VectorInteger& x);                           //!< Set the value using VectorInteger
+    void                        setValue(const VectorNatural& x);                           //!< Set the value using VectorNatural
+    void                        setValue(const VectorReal& x);                              //!< Set the value using VectorReal
+    void                        setValue(const VectorRealPos& x);                           //!< Set the value using VectorRealPos
+
+private:
+    void                        rescale(void);                                              //!< Rescale the simplex
+    static const TypeSpec       typeSpec;
 
 };
 

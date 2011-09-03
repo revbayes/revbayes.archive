@@ -41,6 +41,9 @@
 #include <cmath>
 
 
+// Definition of the static type spec member
+const TypeSpec Move_mlocal::typeSpec(Move_mlocal_name);
+
 /** Constructor for parser */
 Move_mlocal::Move_mlocal( void ) : MoveTree( getMemberRules() ) {
 }
@@ -80,6 +83,12 @@ const MemberRules& Move_mlocal::getMemberRules( void ) const {
 		}
 
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Move_mlocal::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

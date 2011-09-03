@@ -20,7 +20,7 @@
 #define VectorInteger_H
 
 #include "Integer.h"
-#include "Vector.h"
+#include "AbstractVector.h"
 
 #include <iostream>
 #include <vector>
@@ -47,9 +47,10 @@ class VectorInteger : public AbstractVector {
     
     // Basic utility functions
     VectorInteger*              clone(void) const;                                              //!< Clone object
-    RbLanguageObject*           convertTo(const std::string& type) const;                       //!< Convert to type
+    RbObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
     const VectorString&         getClass(void) const;                                           //!< Get class
-    bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
+    const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
+    bool                        isConvertibleTo(const TypeSpec& type) const;                    //!< Is convertible to type?
     std::string                 richInfo(void) const;                                           //!< Complete info about object
 
         // Vector functions, including STL-like functions
@@ -73,6 +74,7 @@ class VectorInteger : public AbstractVector {
 
     private:
     std::vector<int>            elements;
+    static const TypeSpec       typeSpec;
     
     
 };

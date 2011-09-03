@@ -26,6 +26,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec VectorString::typeSpec(VectorString_name);
+
 /** Construct empty string vector */
 VectorString::VectorString(void) : AbstractVector(RbString_name) {
 }
@@ -151,6 +154,12 @@ RbString* VectorString::getElement(size_t index) const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& VectorString::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Get STL vector of strings */
 std::vector<std::string> VectorString::getValue(void) const {	 
 
@@ -172,9 +181,9 @@ void VectorString::pop_front(void) {
 /** Push an int onto the back of the vector after checking */
 void VectorString::push_back( RbObject *x ) {
     
-    if ( x->isType(RbString_name) ) {
+    if ( x->isTypeSpec( TypeSpec(RbString_name) ) ) {
         elements.push_back(static_cast<RbString*>(x)->getValue());
-    } else if ( x->isConvertibleTo(RbString_name, true) ) {
+    } else if ( x->isConvertibleTo(RbString_name) ) {
         elements.push_back(static_cast<RbString*>(x->convertTo(RbString_name))->getValue());
     }
     else {
@@ -193,9 +202,9 @@ void VectorString::push_back(const std::string &x) {
 /** Push an int onto the front of the vector after checking */
 void VectorString::push_front( RbObject *x ) {
     
-    if ( x->isType(RbString_name) ) {
+    if ( x->isTypeSpec( TypeSpec(RbString_name) ) ) {
         elements.insert( elements.begin(), static_cast<RbString*>(x)->getValue());
-    } else if ( x->isConvertibleTo(RbString_name, true) ) {
+    } else if ( x->isConvertibleTo(RbString_name) ) {
         elements.insert( elements.begin(), static_cast<RbString*>(x->convertTo(RbString_name))->getValue());
     }
     else {
@@ -223,17 +232,21 @@ std::string VectorString::richInfo(void) const {
 void VectorString::setElement(const size_t index, RbLanguageObject *x) {
     
     // check for type and convert if necessary
-    if ( x->isType(RbString_name) ) {
+    if ( x->isTypeSpec( TypeSpec(RbString_name) ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<RbString*>(x)->getValue());
-    } else if ( x->isConvertibleTo(RbString_name, true) ) {
+    } else if ( x->isConvertibleTo(RbString_name) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
+        
+        // remove first the old element at the index
+        elements.erase(elements.begin()+index);
+        
         elements.insert( elements.begin() + index, static_cast<RbString*>(x->convertTo(RbString_name))->getValue());
     }
     else {

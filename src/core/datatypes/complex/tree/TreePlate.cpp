@@ -33,6 +33,8 @@
 #include "VectorString.h"
 
 
+// Definition of the static type spec member
+const TypeSpec TreePlate::typeSpec(TreePlate_name);
 
 /* Default constructor */
 TreePlate::TreePlate(void) : MutableMemberObject( getMemberRules() ) {
@@ -82,6 +84,12 @@ const VectorString& TreePlate::getClass(void) const {
     
     static VectorString rbClass = VectorString(TreePlate_name) + MemberObject::getClass();
     return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& TreePlate::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

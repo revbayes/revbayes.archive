@@ -32,6 +32,9 @@
 #include <cassert>
 
 
+// Definition of the static type spec member
+const TypeSpec VariableSlot::typeSpec(VariableSlot_name);
+
 /** Constructor of filled slot with type specification. */
 VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, Variable *var) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
     
@@ -132,14 +135,20 @@ DAGNode* VariableSlot::getDagNodePtr( void ) const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& VariableSlot::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Get the value of the variable */
 const RbLanguageObject* VariableSlot::getValue( void ) const {
     
     const RbLanguageObject *retVal = variable->getDagNodePtr()->getValue();
     
     // check the type and if we need conversion
-    if (!retVal->isType(varTypeSpec)) {
-        retVal = retVal->convertTo(varTypeSpec);
+    if (!retVal->isTypeSpec(varTypeSpec)) {
+        retVal = dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec));
     }
     
     return retVal;

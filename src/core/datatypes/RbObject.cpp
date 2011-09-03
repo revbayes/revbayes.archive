@@ -21,11 +21,17 @@
 #include "RbUtil.h"
 #include "RbObject.h"
 #include "TypeSpec.h"
+#include "Vector.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
 #include <cassert>
 #include <sstream>
+
+
+RbObject::RbObject(void) {
+    numReferences = 0;
+}
 
 /** Destructor */
 RbObject::~RbObject() {
@@ -37,21 +43,20 @@ RbObject::~RbObject() {
 
 
 
-/** Convert to object of language type typeSpec. We simply pass this
-    through to the function that uses just the type and the dim.     */
+/** Convert to object of language type typeSpec with base type and element type.
+    Here we just convert from scalar types to vectors and overwritten function do more fancy stuff. */
 RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
-    return convertTo( typeSpec.getType() );
+    if (typeSpec.getBaseType() == Vector_name) {
+        Vector *v = new Vector(typeSpec.getElementType()->getBaseType());
+        v->push_back(this->clone());
+        
+        return v;
+    }
+    
+    return NULL;
 }
 
-
-/** Convert to type and dim. The caller manages the returned object. */
-RbObject* RbObject::convertTo(const std::string& type) const {
-
-    std::ostringstream  msg;
-    msg << "Type conversion to " << TypeSpec(type) << " not supported";
-    throw RbException( msg );
-}
 
 /** Encode the object into a serializable xml-object */
 const XmlElement* RbObject::encode(XmlDocument *doc, const std::string& name) {    
@@ -79,57 +84,36 @@ RbObject* RbObject::getElement(size_t index) const {
 }
 
 
-/** Get object type (first entry in class vector) */
+/** Get object type */
 const std::string& RbObject::getType(void) const {
 
-    return getClass()[0];
-}
-
-
-/** Get language type spec for object */
-const TypeSpec RbObject::getTypeSpec(void) const {
-
-    return TypeSpec( getClass()[0] );
+    return getTypeSpec().toString();
 }
 
 
 /** Is convertible to type and dim? */
-bool RbObject::isConvertibleTo(const TypeSpec& typeSpec, bool once) const {
-
-    return isConvertibleTo( typeSpec.getType(), once );
-}
-
-
-/** Is convertible to type and dim? */
-bool RbObject::isConvertibleTo(const std::string& type, bool once) const {
+bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
+    
+    if (typeSpec.getBaseType() == Vector_name && isTypeSpec(*typeSpec.getElementType())) {
+        return true;
+    }
 
     return false;
 }
 
 
-/** Are we of specified object type? We need to check entire class vector in case we are derived from type.
- *  We provide a special case for Scalar_name to avoid having to introduce an extra class for primitive
- *  types. The function is overridden in RbComplex, so that complex objects are not of scalar type.
- */
-bool RbObject::isType(const std::string& type) const {
-
+/** Are we of specified language type? */
+bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
+    
     const VectorString& classVec = getClass();
-
+    const std::string&  type     = typeSpec.getType();
+    
     for (size_t i=0; i<classVec.size(); i++) {
         if (type == classVec[i])
             return true;
     }
 
-	return false;
-}
-
-
-/** Are we of specified language type? This version works for
- *  all objects except for containers.
- */
-bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
-
-    return isType( typeSpec.getType() );
+    return false;
 }
 
 

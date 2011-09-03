@@ -47,14 +47,14 @@ class DistributionFunction :  public RbFunction {
 
         // Basic utility functions
         DistributionFunction*       clone(void) const;                                                      //!< Clone object
-    	const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // DistributionFunction functions
         RbLanguageObject*           execute(void);                                                          //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                              //!< Get type spec of return value
         bool                        processArguments(   const std::vector<Argument*>&   args,
-                                                        bool                            evaluateOnce,
                                                         VectorInteger*                  matchScore=NULL);   //!< Process args, set member variables of distribution
 
 	protected:
@@ -62,6 +62,9 @@ class DistributionFunction :  public RbFunction {
         TypeSpec                    returnType;                                                             //!< Return type
         Distribution*               distribution;                                                           //!< The distribution
         FuncType                    functionType;                                                           //!< Function type
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

@@ -19,6 +19,9 @@
 #include "VectorString.h"
 
 
+// Definition of the static type spec member
+const TypeSpec RbString::typeSpec(RbString_name);
+
 /** Constructor from string */
 RbString::RbString(const std::string& v) : RbLanguageObject(), value(v) {
 }
@@ -81,6 +84,12 @@ const VectorString& RbString::getClass() const {
 
     static VectorString rbClass = VectorString(RbString_name) + RbLanguageObject::getClass();
     return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& RbString::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

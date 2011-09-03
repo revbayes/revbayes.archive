@@ -32,13 +32,16 @@ class Func_transpose :  public RbFunction {
     public:
         // Basic utility functions
         Func_transpose*             clone(void) const;                                          //!< Clone the object
-    	const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
     	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif
@@ -46,6 +49,11 @@ class Func_transpose :  public RbFunction {
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"
+
+
+// Definition of the static type spec member
+template <typename matrixType>
+const TypeSpec Func_transpose<matrixType>::typeSpec("Func_transpose", new TypeSpec(matrixType().getType()));
 
 
 /** Clone object */
@@ -106,5 +114,13 @@ template <typename matrixType>
 const TypeSpec Func_transpose<matrixType>::getReturnType( void ) const {
 
     return matrixType().getTypeSpec();
+}
+
+
+/** Get return type */
+template <typename matrixType>
+const TypeSpec& Func_transpose<matrixType>::getTypeSpec( void ) const {
+    
+    return typeSpec;
 }
 

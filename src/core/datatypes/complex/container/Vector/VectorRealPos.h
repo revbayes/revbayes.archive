@@ -19,8 +19,8 @@
 #ifndef VectorRealPos_H
 #define VectorRealPos_H
 
+#include "AbstractVector.h"
 #include "RealPos.h"
-#include "VectorInteger.h"
 #include "VectorReal.h"
 
 #include <iostream>
@@ -50,9 +50,10 @@ class VectorRealPos : public AbstractVector {
         
     // Basic utility functions, pure virtual in MemberObject and implemented here
     VectorRealPos*              clone(void) const;                                              //!< Clone object
-    RbLanguageObject*           convertTo(const std::string& type) const;                       //!< Convert to type
+    RbObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
     const VectorString&         getClass(void) const;                                           //!< Get class vector
-    bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
+    const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
+    bool                        isConvertibleTo(const TypeSpec& type) const;                    //!< Is convertible to type?
     void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
     std::string                 richInfo(void) const;                                           //!< Complete info about object
 
@@ -77,9 +78,11 @@ class VectorRealPos : public AbstractVector {
     size_t                      size(void) const;                                               //!< get the number of elements in the AbstractVector
     void                        unique(void);                                                   //!< removes consecutive duplicates
     
-    protected:
-
+protected:
     std::vector<double>         elements;
+    
+private:
+    static const TypeSpec       typeSpec;
 };
 
 #endif

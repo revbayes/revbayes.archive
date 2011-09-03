@@ -43,7 +43,8 @@ class MoveSchedule : public ConstantMemberObject {
 
         // Basic RbObject functions
         MoveSchedule*           clone() const;                                      //!< Clone object
- 		const VectorString&     getClass(void) const;                               //!< Get class
+        const VectorString&     getClass(void) const;                               //!< Get class
+        const TypeSpec&         getTypeSpec(void) const;                            //!< Get language type of the object
         void                    printValue(std::ostream& o) const;                  //!< Print value (for user)
         std::string             richInfo(void) const;                               //!< General info on object
 
@@ -58,6 +59,9 @@ class MoveSchedule : public ConstantMemberObject {
         VariableNode*           theNode;                        //!< The node to move
         std::vector<Move*>      schedule;                       //!< The move schedule
         double                  nodeUpdateWeight;               //!< Node update weight
+    
+    private:
+        static const TypeSpec   typeSpec;
 };
 
 #endif

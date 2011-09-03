@@ -35,15 +35,11 @@
 #include <vector>
 
 
+// Definition of the static type spec member
+const TypeSpec Dist_cat::typeSpec(Dist_cat_name);
+
 /** Default constructor for parser use */
 Dist_cat::Dist_cat( void ) : DistributionDiscrete( getMemberRules() ) {
-}
-
-
-/** Constructor for internal use */
-Dist_cat::Dist_cat( std::vector<double> m ) : DistributionDiscrete( getMemberRules() ) {
-
-//    setMemberValue( "m", new Simplex( m ) );
 }
 
 
@@ -90,6 +86,12 @@ size_t Dist_cat::getNumberOfStates( void ) const {
 const Simplex* Dist_cat::getProbabilityMassVector( void ) {
 
     return static_cast<const Simplex*>( getMemberValue("m") );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_cat::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

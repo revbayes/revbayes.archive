@@ -33,6 +33,9 @@
 #include <fstream>
 
 
+// Definition of the static type spec member
+const TypeSpec Func_source::typeSpec(Func_source_name);
+
 /** Clone object */
 Func_source* Func_source::clone( void ) const {
 
@@ -102,5 +105,11 @@ const VectorString& Func_source::getClass( void ) const {
 const TypeSpec Func_source::getReturnType( void ) const {
 
     return TypeSpec( RbVoid_name );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Func_source::getTypeSpec(void) const {
+    return typeSpec;
 }
 

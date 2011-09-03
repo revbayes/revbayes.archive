@@ -46,6 +46,7 @@ public:
     std::string                 briefInfo(void) const;                                                      //!< Brief info about object
     MemberFunction*             clone(void) const;                                                          //!< Clone the object
     const VectorString&         getClass(void) const;                                                       //!< Get class vector
+    const TypeSpec&             getTypeSpec(void) const;                                                    //!< Get language type of the object
     std::string                 richInfo(void) const;                                                       //!< Complete info about object
 
     // Regular functions
@@ -61,7 +62,8 @@ private:
     std::string                 funcName;                                                                   //!< Name of member method
     MemberObject                *object;                                                                    //!< The member object to which this function belongs
     const TypeSpec              returnType;                                                                 //!< Return type (different for different member functions)
-        
+    
+    static const TypeSpec       typeSpec;  
 };
 
 #endif

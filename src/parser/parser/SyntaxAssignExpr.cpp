@@ -34,6 +34,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec SyntaxAssignExpr::typeSpec(SyntaxAssignExpr_name);
+
 /** Static vector of strings giving names of operator types */
 std::string SyntaxAssignExpr::opCode[] = { "ARROW_ASSIGN", "TILDE_ASSIGN", "TILDIID_ASSIGN", "EQUATION_ASSIGN" };
 
@@ -294,6 +297,12 @@ Variable* SyntaxAssignExpr::getContentAsVariable( Environment* env ) const {
 #endif    
 
     return NULL;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxAssignExpr::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

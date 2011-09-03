@@ -29,6 +29,9 @@
 #include "VectorString.h"
 
 
+// Definition of the static type spec member
+const TypeSpec Func__range::typeSpec(Func__range_name);
+
 /** Clone object */
 Func__range* Func__range::clone( void ) const {
 
@@ -75,6 +78,12 @@ const VectorString& Func__range::getClass( void ) const {
 
     static VectorString rbClass = VectorString( Func__range_name ) + RbFunction::getClass();
     return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Func__range::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

@@ -46,9 +46,10 @@ public:
     // Basic utility functions
     bool                    allowsVariableInsertion(void) const { return true; }                        //!< Yes we do allow variable to be inserted
     DagNodeContainer*       clone(void) const;                                                          //!< Clone object
-    RbLanguageObject*       convertTo(const std::string& type) const;                                   //!< Convert to type
+    RbObject*               convertTo(const TypeSpec& type) const;                                      //!< Convert to type
     const VectorString&     getClass(void) const;                                                       //!< Get class vector
-    bool                    isConvertibleTo(const std::string& type, bool once) const;                  //!< Is convertible to type?
+    const TypeSpec&         getTypeSpec(void) const;                                                    //!< Get language type of the object
+    bool                    isConvertibleTo(const TypeSpec& type) const;                                //!< Is convertible to type?
     void                    printValue(std::ostream& o) const;                                          //!< Print value for user
     std::string             richInfo(void) const;                                                       //!< Complete info about object
 
@@ -70,7 +71,7 @@ public:
 private:
     
     std::vector<VariableSlot*>   elements;                                                              //!< The elements
-    
+    TypeSpec                typeSpec;                                                                   //!< The type of this instance
 };  
 
 #endif

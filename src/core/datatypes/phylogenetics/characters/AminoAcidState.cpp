@@ -21,6 +21,8 @@
 const std::string AminoAcidState::stateLabels = "ARNDCQEGHILKMFPSTWYV";
 
 
+// Definition of the static type spec member
+const TypeSpec AminoAcidState::typeSpec(AminoAcidState_name);
 
 
 /** Default constructor */
@@ -120,6 +122,12 @@ const char AminoAcidState::getState(void) const {
     if (numMatches > 1)
         c = '?';
     return c;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& AminoAcidState::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

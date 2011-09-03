@@ -36,6 +36,9 @@
 #include <vector>
 
 
+// Definition of the static type spec member
+const TypeSpec Dist_ctmm::typeSpec(Dist_ctmm_name);
+
 /** Default constructor for parser use */
 Dist_ctmm::Dist_ctmm( void ) : DistributionDiscrete( getMemberRules() ) {
 }
@@ -112,6 +115,12 @@ const Simplex* Dist_ctmm::getProbabilityMassVector( void ) {
     
     //
     return NULL; // TODO Return vector
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_ctmm::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

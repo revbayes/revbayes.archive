@@ -28,6 +28,8 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec VectorComplex::typeSpec(VectorComplex_name);
 
 /** Default constructor */
 VectorComplex::VectorComplex(void) : AbstractVector(Complex_name) {
@@ -155,6 +157,12 @@ Complex* VectorComplex::getElement(size_t index) const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& VectorComplex::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Export value as STL vector */
 std::vector<std::complex<double> > VectorComplex::getValue(void) const {
 
@@ -202,9 +210,9 @@ void VectorComplex::printValue(std::ostream& o) const {
 /** Push an int onto the back of the vector after checking */
 void VectorComplex::push_back( RbObject *x ) {
     
-    if ( x->isType(Complex_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
         elements.push_back(static_cast<Complex*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Complex_name, true) ) {
+    } else if ( x->isConvertibleTo(Complex_name) ) {
         elements.push_back(static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
     }
     else {
@@ -223,9 +231,9 @@ void VectorComplex::push_back(std::complex<double> x) {
 /** Push an int onto the front of the vector after checking */
 void VectorComplex::push_front( RbObject *x ) {
     
-    if ( x->isType(Complex_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
         elements.insert( elements.begin(), static_cast<Complex*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Complex_name, true) ) {
+    } else if ( x->isConvertibleTo(Complex_name) ) {
         elements.insert( elements.begin(), static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
     }
     else {
@@ -258,17 +266,21 @@ std::string VectorComplex::richInfo(void) const {
 void VectorComplex::setElement(const size_t index, RbLanguageObject *x) {
     
     // check for type and convert if necessary
-    if ( x->isType(Complex_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<Complex*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Complex_name, true) ) {
+    } else if ( x->isConvertibleTo(Complex_name) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
+        
+        // remove first the old element at the index
+        elements.erase(elements.begin()+index);
+        
         elements.insert( elements.begin() + index, static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
     }
     else {

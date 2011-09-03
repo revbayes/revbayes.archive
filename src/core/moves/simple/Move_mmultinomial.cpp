@@ -34,6 +34,9 @@
 #include <cmath>
 
 
+// Definition of the static type spec member
+const TypeSpec Move_mmultinomial::typeSpec(Move_mmultinomial_name);
+
 /** Constructor for parser */
 Move_mmultinomial::Move_mmultinomial(void) : MoveSimple(getMemberRules()) {
 
@@ -76,6 +79,12 @@ const MemberRules& Move_mmultinomial::getMemberRules(void) const {
 		}
 
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Move_mmultinomial::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

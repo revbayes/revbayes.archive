@@ -25,6 +25,10 @@
 
 #include <algorithm>
 
+
+// Definition of the static type spec member
+const TypeSpec VectorNatural::typeSpec(VectorNatural_name);
+
 /** Construct empty vector */
 VectorNatural::VectorNatural( void ) : AbstractVector( Natural_name ) {
 }
@@ -159,7 +163,7 @@ VectorNatural* VectorNatural::clone( void ) const {
 
 
 /** Can we convert this vector into another object? */
-RbLanguageObject* VectorNatural::convertTo(std::string const &type) const {
+RbObject* VectorNatural::convertTo(TypeSpec const &type) const {
     
     // test for type conversion
     if (type == VectorRealPos_name) {
@@ -187,7 +191,7 @@ RbLanguageObject* VectorNatural::convertTo(std::string const &type) const {
         return new VectorReal(d);
     }
     
-    return Vector::convertTo(type);
+    return AbstractVector::convertTo(type);
 }
 
 
@@ -196,6 +200,12 @@ const VectorString& VectorNatural::getClass( void ) const {
 
     static VectorString rbClass = VectorString( VectorNatural_name ) + AbstractVector::getClass();
     return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& VectorNatural::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 
@@ -218,7 +228,7 @@ Natural* VectorNatural::getElement(size_t index) const {
 
 
 /** Can we convert this vector into another object? */
-bool VectorNatural::isConvertibleTo(std::string const &type, bool once) const {
+bool VectorNatural::isConvertibleTo(TypeSpec const &type) const {
     
     // test for type conversion
     if (type == VectorRealPos_name || type == VectorInteger_name || type == VectorReal_name) {
@@ -226,7 +236,7 @@ bool VectorNatural::isConvertibleTo(std::string const &type, bool once) const {
         return true;
     }
     
-    return Vector::isConvertibleTo(type, once);
+    return AbstractVector::isConvertibleTo(type);
 }
 
 
@@ -245,9 +255,9 @@ void VectorNatural::pop_front(void) {
 /** Push an int onto the back of the vector after checking */
 void VectorNatural::push_back( RbObject *x ) {
     
-    if ( x->isType(Natural_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
         elements.push_back(static_cast<Natural*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Natural_name, true) ) {
+    } else if ( x->isConvertibleTo(Natural_name) ) {
         elements.push_back(static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
     }
     else {
@@ -266,9 +276,9 @@ void VectorNatural::push_back( unsigned int x ) {
 /** Push an int onto the front of the vector after checking */
 void VectorNatural::push_front( RbObject *x ) {
     
-    if ( x->isType(Natural_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
         elements.insert( elements.begin(), static_cast<Natural*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Natural_name, true) ) {
+    } else if ( x->isConvertibleTo(Natural_name) ) {
         elements.insert( elements.begin(), static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
     }
     else {
@@ -303,17 +313,21 @@ std::string VectorNatural::richInfo( void ) const {
 void VectorNatural::setElement(const size_t index, RbLanguageObject *x) {
     
     // check for type and convert if necessary
-    if ( x->isType(Natural_name) ) {
+    if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<Natural*>(x)->getValue());
-    } else if ( x->isConvertibleTo(Natural_name, true) ) {
+    } else if ( x->isConvertibleTo(Natural_name) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
+        
+        // remove first the old element at the index
+        elements.erase(elements.begin()+index);
+        
         elements.insert( elements.begin() + index, static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
     }
     else {

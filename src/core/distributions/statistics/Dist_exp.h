@@ -34,11 +34,11 @@ class Dist_exp: public DistributionContinuous {
 
     public:
                                     Dist_exp(void);                                                     //!< Parser constructor
-                                    Dist_exp(double rate);                                              //!< Internal constructor
 
         // Basic utility functions
         Dist_exp*                   clone(void) const;                                                  //!< Clone object
         const VectorString&         getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
@@ -50,6 +50,9 @@ class Dist_exp: public DistributionContinuous {
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         RealPos*                    quantile(const double p);                                           //!< Quantile
         RealPos*                    rv(void);                                                           //!< Generate random variable
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

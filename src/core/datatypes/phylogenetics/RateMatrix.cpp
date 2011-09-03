@@ -45,6 +45,9 @@
 #include <iomanip>
 
 
+// Definition of the static type spec member
+const TypeSpec RateMatrix::typeSpec(RateMatrix_name);
+
 /** Constructor passes member rules and method inits to base class */
 RateMatrix::RateMatrix(void) : MemberObject(getMemberRules()) {
 
@@ -296,6 +299,12 @@ const VectorString& RateMatrix::getClass(void) const {
 
     static VectorString rbClass = VectorString(RateMatrix_name) + MemberObject::getClass();
     return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& RateMatrix::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

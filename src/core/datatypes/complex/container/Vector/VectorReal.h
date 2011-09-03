@@ -20,7 +20,7 @@
 #define VectorReal_H
 
 #include "Real.h"
-#include "Vector.h"
+#include "AbstractVector.h"
 
 #include <iostream>
 #include <vector>
@@ -56,9 +56,10 @@ class VectorReal : public AbstractVector {
     
     // Basic utility functions
     VectorReal*                 clone(void) const;                                              //!< Clone object
-    RbLanguageObject*           convertTo(const std::string& type) const;                       //!< Convert to type
+    RbObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
     const VectorString&         getClass(void) const;                                           //!< Get class
-    bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
+    const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
+    bool                        isConvertibleTo(const TypeSpec& type) const;                    //!< Is convertible to type?
     void                        printValue(std::ostream& o) const;                              //!< Print value (for user)
     std::string                 richInfo(void) const;                                           //!< Complete info about object
 
@@ -82,6 +83,7 @@ class VectorReal : public AbstractVector {
     
     private:
     std::vector<double>         elements;
+    static const TypeSpec       typeSpec;
 };
 
 #endif

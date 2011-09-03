@@ -32,6 +32,9 @@
 #include <cassert>
 
 
+// Definition of the static type spec member
+const TypeSpec DeterministicNode::typeSpec(DeterministicNode_name);
+
 /** Constructor of empty deterministic node */
 DeterministicNode::DeterministicNode( const std::string& valType ) : VariableNode( valType ), changed( false ) {
 }
@@ -202,6 +205,12 @@ const VectorString& DeterministicNode::getClass() const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& DeterministicNode::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Get stored value */
 const RbLanguageObject* DeterministicNode::getStoredValue( void ) {
 
@@ -303,7 +312,7 @@ std::string DeterministicNode::richInfo( void ) const {
     
     std::ostringstream o;
     
-    o << "FunctionNode:" << std::endl;
+    o << "Deterministic Node:" << std::endl;
     
     o << "touched     = " << (touched ? "true" : "false") << std::endl;
     o << "changed     = " << (changed ? "true" : "false") << std::endl;

@@ -32,6 +32,9 @@
 #include <set>
 
 
+// Definition of the static type spec member
+const TypeSpec ConstantNode::typeSpec(ConstantNode_name);
+
 /** Constructor from value */
 ConstantNode::ConstantNode( RbLanguageObject* val ) : DAGNode( val ) {
 
@@ -81,6 +84,12 @@ const VectorString& ConstantNode::getClass() const {
 
     static VectorString rbClass = VectorString( ConstantNode_name ) + DAGNode::getClass();
     return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& ConstantNode::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

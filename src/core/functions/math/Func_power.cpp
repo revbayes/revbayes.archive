@@ -31,6 +31,10 @@
 #include <cassert>
 #include <cmath>
 
+
+// Definition of the static type spec member
+const TypeSpec Func_power::typeSpec(Func_power_name);
+
 /** Clone object */
 Func_power* Func_power::clone( void ) const {
     
@@ -77,5 +81,11 @@ const VectorString& Func_power::getClass( void ) const {
 const TypeSpec Func_power::getReturnType( void ) const {
     
     return TypeSpec( Real_name );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Func_power::getTypeSpec(void) const {
+    return typeSpec;
 }
 

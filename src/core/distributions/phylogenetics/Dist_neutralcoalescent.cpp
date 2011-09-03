@@ -42,6 +42,9 @@
 #include <vector>
 
 
+// Definition of the static type spec member
+const TypeSpec Dist_neutralcoalescent::typeSpec(Dist_neutralcoalescent_name);
+
 /** Default constructor for parser use */
 Dist_neutralcoalescent::Dist_neutralcoalescent( void ) : Distribution( getMemberRules() ) {
 
@@ -101,6 +104,12 @@ const MemberRules& Dist_neutralcoalescent::getMemberRules( void ) const {
     }
 
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_neutralcoalescent::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

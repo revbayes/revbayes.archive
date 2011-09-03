@@ -60,6 +60,7 @@ public:
     // Regular functions
     Variable*               clone(void) const;                                                      //!< Clone variable
     const VectorString&     getClass() const;                                                       //!< Get class vector
+    const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
     const std::string&      getName(void) const;                                                    //!< Get name of variable
     const RbLanguageObject* getValue(void) const;                                                   //!< Get the value of the variable (ptr, not copy)
     const DAGNode*          getDagNode(void) const { return node; }                                 //!< Get the variable pointer
@@ -75,6 +76,8 @@ private:
     // Member variables
     DAGNode*                node;                                                                   //!< Pointer to the variable (reference or not)
     std::string             name;                                                                   //!< the name of the variable
+
+    static const TypeSpec   typeSpec;
 };
 
 /* Global functions using the class */

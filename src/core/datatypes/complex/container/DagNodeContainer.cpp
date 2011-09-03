@@ -28,12 +28,12 @@
 
 
 /** Set type of elements */
-DagNodeContainer::DagNodeContainer(void) : Container(RbLanguageObject_name) {
+DagNodeContainer::DagNodeContainer(void) : Container(RbLanguageObject_name), typeSpec(DagNodeContainer_name) {
     
 }
 
 /** Set type of elements */
-DagNodeContainer::DagNodeContainer(size_t l) : Container(RbLanguageObject_name) {
+DagNodeContainer::DagNodeContainer(size_t l) : Container(RbLanguageObject_name), typeSpec(DagNodeContainer_name) {
     resize(l);
 }
 
@@ -63,71 +63,28 @@ DagNodeContainer* DagNodeContainer::clone(void) const {
     return new DagNodeContainer(*this);
 }
 
-RbLanguageObject* DagNodeContainer::convertTo(std::string const &type) const {
+RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
     
-    static const TypeSpec movesContainerType = TypeSpec(Vector_name,new TypeSpec(Move_name));
-    static const TypeSpec monitorsContainerType = TypeSpec(Vector_name,new TypeSpec(Monitor_name));
-    
-    // test for type conversion
-//    TypeSpec ts(type);
-//    if (ts.getType() == Vector_name) {
-//        // test whether each object in the container is actually a constant node holding a value
-//        Vector* valueVector = new Vector(*ts.getElementType());
-//        for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-//            DAGNode *theNode = (*it)->getDagNodePtr();
-//            if (theNode->isType(ConstantNode_name) && theNode->getValue()->isType(Move_name)) {
-//                RbLanguageObject* element = theNode->getValuePtr();
-//                valueVector->push_back(element);
-//            }
-//            else {
-//                return NULL;
-//            }
-//        }
-//        
-//        // return the moves
-//        return valueVector;
-//    }
-    
-    
-    
-    if (type == movesContainerType.getType()) {
-        
-        // test whether each object in the container is actually a constant node holding a move
-        Vector* moves = new Vector(TypeSpec(Move_name));
+    if (type.getBaseType() == Vector_name) {
+        // test whether each object in the container is actually a constant node holding a value
+        Vector* valueVector = new Vector(*type.getElementType());
         for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             DAGNode *theNode = (*it)->getDagNodePtr();
-            if (theNode->isType(ConstantNode_name) && theNode->getValue()->isType(Move_name)) {
-                Move* theMove = dynamic_cast<Move*>(theNode->getValuePtr());
-                moves->push_back(theMove);
+            if (theNode->isType(ConstantNode_name) && theNode->getValue()->isTypeSpec(*type.getElementType())) {
+                RbLanguageObject* element = theNode->getValuePtr();
+                valueVector->push_back(element);
             }
             else {
                 return NULL;
             }
         }
         
-        // return the moves
-        return moves;
-    }
-    else if (type == monitorsContainerType.getType()) {
-        
-        // test whether each object in the container is actually a constant node holding a move
-        Vector* monitors = new Vector(TypeSpec(Monitor_name));
-        for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            DAGNode *theNode = (*it)->getDagNodePtr();
-            if (theNode->isType(ConstantNode_name) && theNode->getValue()->isType(Monitor_name)) {
-                Monitor* theMonitor = dynamic_cast<Monitor*>(theNode->getValuePtr());
-                monitors->push_back(theMonitor);
-            }
-            else {
-                return NULL;
-            }
-        }
-        
-        // return the monitors
-        return monitors;
+        // return the vector
+        return valueVector;
     }
     
-    return NULL;
+    
+    return Container::convertTo(type);
 }
 
 /** Get class DagNodeContainer describing type of object */
@@ -150,42 +107,29 @@ VariableSlot* DagNodeContainer::getElement(const size_t index) const {
 }
 
 
+/** Get the type spec of this class. We return a member variable because instance might have different types of elements. */
+const TypeSpec& DagNodeContainer::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Can we convert this DAG node container into another object? */
-bool DagNodeContainer::isConvertibleTo(std::string const &type, bool once) const {
+bool DagNodeContainer::isConvertibleTo(TypeSpec const &type) const {
     
-    
-    static const TypeSpec movesContainerType = TypeSpec(Vector_name,new TypeSpec(Move_name));
-    static const TypeSpec monitorsContainerType = TypeSpec(Vector_name,new TypeSpec(Monitor_name));
-    
-    // test for type conversion
-    if (type == movesContainerType.getType()) {
-        
-        // test whether each object in the container is actually a constant node holding a move
+    if (type.getBaseType() == Vector_name) {
+        // test whether each object in the container is actually a constant node holding a value
         for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             DAGNode *theNode = (*it)->getDagNodePtr();
-            if (!theNode->isType(ConstantNode_name) || !theNode->getValue()->isType(Move_name)) {
+            if (!theNode->isType(ConstantNode_name) || !theNode->getValue()->isTypeSpec(*type.getElementType())) {
                 return false;
             }
         }
         
-        // return the moves
-        return true;
-    }
-    else if (type == monitorsContainerType.getType()) {
-        
-        // test whether each object in the container is actually a constant node holding a monitor
-        for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            DAGNode *theNode = (*it)->getDagNodePtr();
-            if (!theNode->isType(ConstantNode_name) || !theNode->getValue()->isType(Monitor_name)) {
-                return false;
-            }
-        }
-        
-        // return the monitors
+        // return the true
         return true;
     }
     
-    return false;
+    return Container::isConvertibleTo(type);
 }
 
 

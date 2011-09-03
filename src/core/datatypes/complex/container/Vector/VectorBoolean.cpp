@@ -27,6 +27,8 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec VectorBoolean::typeSpec(VectorBoolean_name);
 
 /** Default constructor */
 VectorBoolean::VectorBoolean(void) : AbstractVector(RbBoolean_name) {
@@ -126,6 +128,12 @@ const VectorString& VectorBoolean::getClass() const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& VectorBoolean::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 RbBoolean* VectorBoolean::getElement(size_t index) const {
     
     if ( index >= elements.size() )
@@ -156,9 +164,9 @@ void VectorBoolean::pop_front() {
 /** Append element to end of vector, updating length in process */
 void VectorBoolean::push_back(RbObject *x) {
  
-    if ( x->isType(RbBoolean_name) ) {
+    if ( x->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
         elements.push_back(static_cast<RbBoolean*>(x)->getValue());
-    } else if ( x->isConvertibleTo(RbBoolean_name, true) ) {
+    } else if ( x->isConvertibleTo(RbBoolean_name) ) {
         elements.push_back(static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
     }
     else {
@@ -176,9 +184,9 @@ void VectorBoolean::push_back(bool x) {
 /** Append element to front of vector, updating length in process */
 void VectorBoolean::push_front(RbObject *x) {
     
-    if ( x->isType(RbBoolean_name) ) {
+    if ( x->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
         elements.insert( elements.begin() , static_cast<RbBoolean*>(x)->getValue());
-    } else if ( x->isConvertibleTo(RbBoolean_name, true) ) {
+    } else if ( x->isConvertibleTo(RbBoolean_name) ) {
         elements.insert( elements.begin() , static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
     }
     else {
@@ -212,17 +220,21 @@ std::string VectorBoolean::richInfo(void) const {
 void VectorBoolean::setElement(const size_t index, RbLanguageObject *x) {
     
     // check for type and convert if necessary
-    if ( x->isType(RbBoolean_name) ) {
+    if ( x->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
         elements.insert( elements.begin() + index, static_cast<RbBoolean*>(x)->getValue());
-    } else if ( x->isConvertibleTo(RbBoolean_name, true) ) {
+    } else if ( x->isConvertibleTo(RbBoolean_name) ) {
         // resize if necessary
         if (index >= elements.size()) {
             elements.resize(index);
         }
+        
+        // remove first the old element at the index
+        elements.erase(elements.begin()+index);
+        
         elements.insert( elements.begin() + index, static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
     }
     else {

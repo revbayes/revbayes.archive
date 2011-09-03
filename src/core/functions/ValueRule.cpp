@@ -20,6 +20,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec ValueRule::typeSpec(ValueRule_name);
+
 /** Construct rule based on default value; use "" for no label. */
 ValueRule::ValueRule( const std::string& argName, RbLanguageObject* defVal ) : ArgumentRule( argName, defVal ) {
 }
@@ -48,6 +51,12 @@ const VectorString& ValueRule::getClass( void ) const {
 
     static VectorString rbClass = VectorString( ValueRule_name ) + ArgumentRule::getClass();
 	return rbClass; 
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& ValueRule::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

@@ -20,7 +20,7 @@
 #define VectorComplex_H
 
 #include "Complex.h"
-#include "Vector.h"
+#include "AbstractVector.h"
 #include <iostream>
 #include <vector>
 
@@ -49,6 +49,7 @@ class VectorComplex : public AbstractVector {
     // Basic utility functions
     VectorComplex*                      clone(void) const;                                          //!< Clone object
     const VectorString&                 getClass(void) const;                                       //!< Get class
+    const TypeSpec&                     getTypeSpec(void) const;                                    //!< Get language type of the object
     void                                printValue(std::ostream& o) const;                          //!< Print value (for user)
     std::string                         richInfo(void) const;                                       //!< Complete info about object
 
@@ -75,8 +76,7 @@ class VectorComplex : public AbstractVector {
     private:
     
     std::vector<std::complex<double> >  elements;
-   
-        static bool                         comparisonFunction (RbLanguageObject* i,RbLanguageObject* j);                                            //!< Utilitary function for sort
+    static const TypeSpec               typeSpec;                                           
 
 };
 

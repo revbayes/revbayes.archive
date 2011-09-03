@@ -25,6 +25,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec Ellipsis::typeSpec(Ellipsis_name);
+
 /** Constructor allowing all types; ref signals whether arguments should be values or references */
 Ellipsis::Ellipsis( void ) : ArgumentRule("", TypeSpec(RbObject_name)) {
 }
@@ -40,6 +43,12 @@ const VectorString& Ellipsis::getClass(void) const {
 
     static VectorString rbClass = VectorString(Ellipsis_name) + ArgumentRule::getClass();
     return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Ellipsis::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

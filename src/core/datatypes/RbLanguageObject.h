@@ -46,10 +46,9 @@ public:
     
     // Basic utility functions you may want to override
     virtual std::string         briefInfo(void) const;                                                  //!< Brief info about object
-    virtual RbLanguageObject*   convertTo(const std::string& type) const;                               //!< Convert to type and dim
+    virtual RbObject*           convertTo(const TypeSpec& type) const;                                  //!< Convert to type and dim
     virtual bool                isConstant(void) const { return true; }                                 //!< Is value a constant or does it include variables?
-    virtual bool                isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type and dim?
-    virtual bool                isType(const std::string& type) const;                                  //!< Is the object of type?
+    virtual bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type and dim?
     virtual bool                supportsIndex(void) const { return false; }                             //!< Supports indexing, as in operator[]
         
     // Basic utility functions you should not have to orverwrite

@@ -29,28 +29,31 @@ class RbException : public RbInternal {
 
     public:
         // Exception types
-        enum                exceptionT { DEFAULT, QUIT, MISSING_VARIABLE };         //!< Exception types
-        static std::string  exceptionName[];                                        //!< Exception type names
+        enum                        exceptionT { DEFAULT, QUIT, MISSING_VARIABLE };         //!< Exception types
+        static std::string          exceptionName[];                                        //!< Exception type names
 
-	                        RbException(void);                                      //!< Default constructor
-                            RbException(const std::string& msg);                    //!< Default with message 
-                            RbException(const std::ostringstream& msg);             //!< Default with message
-                            RbException(exceptionT type, const std::string& msg="");//!< General constructor
+                                    RbException(void);                                      //!< Default constructor
+                                    RbException(const std::string& msg);                    //!< Default with message 
+                                    RbException(const std::ostringstream& msg);             //!< Default with message
+                                    RbException(exceptionT type, const std::string& msg="");//!< General constructor
 
         // Implemented abstract/virtual functions from base classes
-        RbException*        clone(void) const;                                      //!< Clone this object
-        const VectorString& getClass() const;                                       //!< Get class vector
-        void                printValue(std::ostream& o) const;                      //!< Print value (for user)
-        std::string         richInfo(void) const;                                   //!< General info on object
+        RbException*                clone(void) const;                                      //!< Clone this object
+        const VectorString&         getClass() const;                                       //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                //!< Get language type of the object
+        void                        printValue(std::ostream& o) const;                      //!< Print value (for user)
+        std::string                 richInfo(void) const;                                   //!< General info on object
 
         // Regular functions
-        exceptionT          getExceptionType(void) { return exceptionType; }        //!< Get exception type 
-        void                setMessage(std::string msg);
-        std::string         getMessage(void) const;
+        exceptionT                  getExceptionType(void) { return exceptionType; }        //!< Get exception type 
+        void                        setMessage(std::string msg);
+        std::string                 getMessage(void) const;
      
     private:
-	    exceptionT          exceptionType;                                          //!< Exception type
-	    std::string         message;                                                //!< Error message
+	    exceptionT                  exceptionType;                                          //!< Exception type
+	    std::string                 message;                                                //!< Error message
+    
+        static const TypeSpec       typeSpec;
 };
 
 #endif

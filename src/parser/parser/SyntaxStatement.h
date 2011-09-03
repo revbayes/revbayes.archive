@@ -22,6 +22,8 @@
 #include <vector>
 
 
+const std::string SyntaxStatement_name = "Statement";
+
 class SyntaxStatement : public SyntaxElement {
 
     public:
@@ -49,6 +51,8 @@ class SyntaxStatement : public SyntaxElement {
         // Basic utility functions
         std::string                 briefInfo() const;                                              //!< Brief info about object
         SyntaxElement*              clone() const;                                                  //!< Clone object
+        const VectorString&         getClass(void) const;                                           //!< Get class vector 
+        const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
         void                        print(std::ostream& o) const;                                   //!< Print info about object
 
         // Regular functions
@@ -61,6 +65,9 @@ class SyntaxStatement : public SyntaxElement {
         SyntaxElement*              expression;                                                     //!< Expression, conditional expr, or for condition
         std::list<SyntaxElement*>*  statements1;                                                    //!< First set of statements
         std::list<SyntaxElement*>*  statements2;                                                    //!< Second set of statements
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

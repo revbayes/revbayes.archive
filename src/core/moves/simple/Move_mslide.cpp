@@ -29,6 +29,10 @@
 #include <cmath>
 #include <cassert>
 
+
+// Definition of the static type spec member
+const TypeSpec Move_mslide::typeSpec(Move_mslide_name);
+
 /** Constructor for parser */
 Move_mslide::Move_mslide( void ) : MoveSimple( getMemberRules() ) {
 }
@@ -76,6 +80,12 @@ const MemberRules& Move_mslide::getMemberRules( void ) const {
     }
 
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Move_mslide::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

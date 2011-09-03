@@ -33,6 +33,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec MatrixReal::typeSpec(MatrixReal_name);
+
 
 /** Default constructor resulting in an empty real matrix */
 MatrixReal::MatrixReal(void) : Matrix(Real_name) {
@@ -139,6 +142,12 @@ Real* MatrixReal::getElement( size_t row, size_t col ) {
     
     VectorReal& tmp = matrix[row];
     return (Real*) tmp.getElement(col);
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& MatrixReal::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

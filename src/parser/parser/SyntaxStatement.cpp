@@ -32,6 +32,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec SyntaxStatement::typeSpec(SyntaxStatement_name);
+
 /** Static vector of strings giving names of statement types */
 std::string SyntaxStatement::stmtName[] = { "IF", "IF_ELSE", "FOR", "WHILE", "NEXT", "BREAK", "RETURN" }; 
 
@@ -145,6 +148,14 @@ std::string SyntaxStatement::briefInfo () const {
 SyntaxElement* SyntaxStatement::clone () const {
 
     return (SyntaxElement*)(new SyntaxStatement(*this));
+}
+
+
+/** Get class vector describing type of object */
+const VectorString& SyntaxStatement::getClass(void) const { 
+    
+    static VectorString rbClass = VectorString(SyntaxStatement_name) + SyntaxElement::getClass();
+	return rbClass; 
 }
 
 
@@ -340,6 +351,12 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxStatement::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /**
  * This is a help function that evaluates the expression and then checks
  * whether the result is true or false, or can be interpreted as a RbBoolean
@@ -352,7 +369,7 @@ bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment* env ) cons
     if ( temp == NULL )
         return false;
     
-    if ( temp->getValue()->isType( RbBoolean_name ) ) {
+    if ( temp->getValue()->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
         
         bool retValue = static_cast<const RbBoolean*>( temp->getValue() )->getValue();
         

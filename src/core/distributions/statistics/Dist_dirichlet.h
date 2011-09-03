@@ -40,6 +40,7 @@ class Dist_dirichlet: public DistributionContinuous {
         // Basic utility functions
         Dist_dirichlet*             clone(void) const;                                                  //!< Clone object
         const VectorString&         getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
@@ -51,6 +52,9 @@ class Dist_dirichlet: public DistributionContinuous {
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         Simplex*                    quantile(const double p);                                           //!< Quantile
         Simplex*                    rv(void);                                                           //!< Generate random variable
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

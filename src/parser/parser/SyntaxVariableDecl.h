@@ -44,16 +44,20 @@ class SyntaxVariableDecl : public SyntaxElement {
         std::string                 briefInfo() const;                                              //!< Brief info about object
         SyntaxVariableDecl*         clone() const;                                                  //!< Clone object
         const VectorString&         getClass(void) const;                                           //!< Get class vector 
+        const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
         void                        print(std::ostream& o) const;                                   //!< Print info about object
         
         // Regular functions
-        Variable*                   getContentAsVariable(Environment* env) const;           //!< Get semantic value
+        Variable*                   getContentAsVariable(Environment* env) const;                   //!< Get semantic value
         
     protected:
         RbString*                   elementTypeName;                                                //!< Element type of the variable
         std::list<SyntaxElement*>*  lengthExpr;                                                     //!< Lengths in different dimensions
         RbString*                   referenceSymbol;                                                //!< Is reference? ("&" or "")
         RbString*                   variableName;                                                   //!< Variable name
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

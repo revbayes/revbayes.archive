@@ -41,6 +41,7 @@ class Argument : public RbInternal {
         // Basic utility functions
         Argument*               clone(void) const { return new Argument (*this); }                  //!< Clone object
         const VectorString&     getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&         getTypeSpec(void) const;                                            //!< Get language type of the object
         std::string             richInfo(void) const;                                               //!< Complete info about object
 
         // Regular functions
@@ -53,6 +54,9 @@ class Argument : public RbInternal {
     protected:
         std::string             label;                                                              //!< Label of argument
         Variable               *var;                                                                //!< Pointer to the variable slot containing the variable (and value)
+    
+    private:
+        static const TypeSpec   typeSpec;
 };
 
 #endif

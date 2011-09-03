@@ -29,14 +29,17 @@ class Func_source :  public RbFunction {
     public:
         // Basic utility functions
         Func_source*            clone(void) const;                  //!< Clone object
-    	const VectorString&     getClass(void) const;               //!< Get class vector
+        const VectorString&     getClass(void) const;               //!< Get class vector
+        const TypeSpec&         getTypeSpec(void) const;            //!< Get language type of the object
 
         // Func_source functions
     	RbLanguageObject*       execute(void);                      //!< Execute function
         const ArgumentRules&    getArgumentRules(void) const;       //!< Get argument rules
         const TypeSpec          getReturnType(void) const;          //!< Get type of return val
         bool                    throws(void) const { return true; }       //!< Function may throw exceptions
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

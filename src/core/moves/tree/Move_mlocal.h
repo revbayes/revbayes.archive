@@ -31,7 +31,6 @@
 #include "RandomNumberFactory.h"
 
 class Real;
-class RbObject;
 
 const std::string Move_mlocal_name = "mlocal move";
 
@@ -43,6 +42,7 @@ class Move_mlocal : public MoveTree {
         // Basic utility functions
         Move_mlocal*                clone(void) const;                                                      //!< Clone object
         const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // Member variable inits
         const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
@@ -51,7 +51,9 @@ class Move_mlocal : public MoveTree {
         double                      perform(std::set<StochasticNode*>&      movedNodes,
                                             std::set<StochasticNode*>&      affectedNodes,
                                             std::vector<TopologyChange>&    topologyChanges);               //!< Perform the move
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

@@ -33,6 +33,9 @@
 #include <cmath>
 
 
+// Definition of the static type spec member
+const TypeSpec Move_msimplex::typeSpec(Move_msimplex_name);
+
 /** Constructor for parser */
 Move_msimplex::Move_msimplex( void ) : MoveSimple( getMemberRules() ) {
 }
@@ -75,6 +78,12 @@ const MemberRules& Move_msimplex::getMemberRules( void ) const {
 		}
 
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Move_msimplex::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

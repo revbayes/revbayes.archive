@@ -38,6 +38,7 @@ class Dist_topologyunif: public DistributionDiscrete {
         // Basic utility functions
         Dist_topologyunif*          clone(void) const;                                                  //!< Clone object
         const VectorString&         getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
@@ -60,6 +61,7 @@ class Dist_topologyunif: public DistributionDiscrete {
         double                      lnTopologyProb;                                                     //!< The log probability of a topology
         size_t                      numberOfStates;                                                     //!< The number of states for this topology distribution
     
+        static const TypeSpec       typeSpec;
 };
 
 #endif

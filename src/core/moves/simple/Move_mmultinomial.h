@@ -33,21 +33,25 @@ const std::string Move_mmultinomial_name = "mmultinomial move";
 class Move_mmultinomial : public MoveSimple {
 
     public:
-                                    Move_mmultinomial(void);                                                             //!< Parser constructor
-                                    Move_mmultinomial(StochasticNode* node, double tuning, int nc, double weight = 1.0); //!< Internal constructor
+                                    Move_mmultinomial(void);                                                                //!< Parser constructor
+                                    Move_mmultinomial(StochasticNode* node, double tuning, int nc, double weight = 1.0);    //!< Internal constructor
 
         // Basic utility functions
-        Move_mmultinomial*          clone(void) const;                                                                   //!< Clone object
-        const VectorString&         getClass(void) const;                                                                //!< Get class vector
+        Move_mmultinomial*          clone(void) const;                                                                      //!< Clone object
+        const VectorString&         getClass(void) const;                                                                   //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                                //!< Get language type of the object
 
         // Member variable inits
-        const MemberRules&          getMemberRules(void) const;                                                          //!< Get member rules
+        const MemberRules&          getMemberRules(void) const;                                                             //!< Get member rules
 
         // Return variable type
-        const TypeSpec              getVariableType(void) const;                                                         //!< Get move variable type
+        const TypeSpec              getVariableType(void) const;                                                            //!< Get move variable type
 
 	protected:
-        double                      perform(std::set<StochasticNode*>& affectedNodes);                                   //!< Perform move
+        double                      perform(std::set<StochasticNode*>& affectedNodes);                                      //!< Perform move
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

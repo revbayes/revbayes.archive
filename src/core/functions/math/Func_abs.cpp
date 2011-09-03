@@ -31,6 +31,10 @@
 #include <cassert>
 #include <cmath>
 
+
+// Definition of the static type spec member
+const TypeSpec Func_abs::typeSpec(Func_abs_name);
+
 Func_abs::Func_abs(void) : RbFunction() {
     
 }
@@ -84,5 +88,11 @@ const VectorString& Func_abs::getClass( void ) const {
 const TypeSpec Func_abs::getReturnType( void ) const {
     
     return TypeSpec( RealPos_name );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Func_abs::getTypeSpec(void) const {
+    return typeSpec;
 }
 

@@ -39,6 +39,7 @@ class Dist_ctmm: public DistributionDiscrete {
         // Basic utility functions
         Dist_ctmm*                  clone(void) const;                                                  //!< Clone object
         const VectorString&         getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
@@ -51,6 +52,9 @@ class Dist_ctmm: public DistributionDiscrete {
         double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         CharacterStateDiscrete*     rv(void);                                                           //!< Generate random variable
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

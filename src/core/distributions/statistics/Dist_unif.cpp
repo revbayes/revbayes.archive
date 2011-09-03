@@ -33,17 +33,12 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec Dist_unif::typeSpec(Dist_unif_name);
+
 /** Default constructor for parser use */
 Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()) {
 
-}
-
-
-/** Constructor for test use */
-Dist_unif::Dist_unif(double min, double max) : DistributionContinuous(getMemberRules()) {
-
-//    setMemberValue( "min", new Real(min) );
-//    setMemberValue( "max", new Real(max) );
 }
 
 
@@ -116,6 +111,12 @@ const MemberRules& Dist_unif::getMemberRules(void) const {
 const Real* Dist_unif::getMin( void ) const {
 
     return static_cast<const Real*>( getMemberValue("min") );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_unif::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

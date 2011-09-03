@@ -27,6 +27,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec RbBoolean::typeSpec(RbBoolean_name);
+
 /** Default constructor */
 RbBoolean::RbBoolean(void) : RbLanguageObject(), value(false) {
 
@@ -54,8 +57,8 @@ RbBoolean* RbBoolean::clone(void) const {
 }
 
 
-/** Convert to type and dim. The caller manages the returned object. */
-RbLanguageObject* RbBoolean::convertTo(const std::string& type) const {
+/** Convert to type. The caller manages the returned object. */
+RbObject* RbBoolean::convertTo(const TypeSpec& type) const {
 
     if (type == Integer_name) {
         if (value)
@@ -82,15 +85,21 @@ const VectorString& RbBoolean::getClass() const {
 }
 
 
-/** Is convertible to type and dim? */
-bool RbBoolean::isConvertibleTo(const std::string& type, bool once) const {
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& RbBoolean::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
+/** Is convertible to type? */
+bool RbBoolean::isConvertibleTo(const TypeSpec& type) const {
 
     if (type == Integer_name)
         return true;
     else if (type == Real_name)
         return true;
 
-    return RbObject::isConvertibleTo(type, once);
+    return RbLanguageObject::isConvertibleTo(type);
 }
 
 

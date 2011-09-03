@@ -25,22 +25,21 @@
 
 class RbAbstract : public RbLanguageObject {
 
-    public:
-                                RbAbstract(const VectorString classVec,
-                                           const std::string& elemType = "");                           //!< Constructor
+public:
+                            RbAbstract(const VectorString classVec,
+                                       TypeSpec *elemType = NULL);                           //!< Constructor
 
-        // Basic utility functions
-        RbAbstract*             clone(void) const;                                                      //!< Clone object
-        RbLanguageObject*       convertTo(const std::string& type) const;                               //!< Convert to type and dim
-        const VectorString&     getClass(void) const { return classVector; }                            //!< Get class vector
-        const TypeSpec          getTypeSpec() const;                                                    //!< Get type spec
-        bool                    isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type and dim?
-        void                    printValue(std::ostream& o) const;                                      //!< Print value (for user)
-        std::string             richInfo(void) const;                                                   //!< Complete info about object
+    // Basic utility functions
+    RbAbstract*             clone(void) const;                                                      //!< Clone object
+    const VectorString&     getClass(void) const { return classVector; }                            //!< Get class vector
+    const TypeSpec&         getTypeSpec() const;                                                    //!< Get type spec
+    void                    printValue(std::ostream& o) const;                                      //!< Print value (for user)
+    std::string             richInfo(void) const;                                                   //!< Complete info about object
 
-    protected:
-        VectorString            classVector;                                                            //!< Class vector describing type
-        const std::string       elementType;                                                            //!< Element type, if any
+protected:
+    VectorString            classVector;                                                            //!< Class vector describing type
+    TypeSpec               *elementType;                                                            //!< Element type, if any
+    TypeSpec                typeSpec;
 };
 
 #endif

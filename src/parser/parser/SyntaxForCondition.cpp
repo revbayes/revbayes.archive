@@ -21,10 +21,14 @@
 #include "RbString.h"
 #include "SyntaxForCondition.h"
 #include "VectorNatural.h"
+#include "VectorString.h"
 
 #include <cassert>
 #include <sstream>
 
+
+// Definition of the static type spec member
+const TypeSpec SyntaxForCondition::typeSpec(SyntaxForCondition_name);
 
 /** Standard constructor */
 SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr) : SyntaxElement(), varName(identifier), inExpression(inExpr), vector(NULL), nextElement(-1) {
@@ -130,10 +134,24 @@ bool SyntaxForCondition::getNextLoopState(Environment* env) {
 }
 
 
+/** Get class vector describing type of object */
+const VectorString& SyntaxForCondition::getClass(void) const { 
+    
+    static VectorString rbClass = VectorString(SyntaxForCondition_name) + SyntaxElement::getClass();
+	return rbClass; 
+}
+
+
 /** Get semantic value (not applicable so return NULL) */
 Variable* SyntaxForCondition::getContentAsVariable(Environment* env) const {
 
     return NULL;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxForCondition::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 
@@ -147,7 +165,7 @@ void SyntaxForCondition::initializeLoop(Environment* env) {
     RbLanguageObject *theValue = theNode->getValue()->clone();
 
     // Check that it is a vector
-    if ( theValue->isType( AbstractVector_name ) == false ) {
+    if ( theValue->isTypeSpec( TypeSpec(AbstractVector_name) ) == false ) {
         if (theNode->isUnreferenced())
             delete theNode;             // this will also delete the value 
         throw ( RbException("The 'in' expression does not evaluate to a vector") );

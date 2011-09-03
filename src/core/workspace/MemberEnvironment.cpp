@@ -28,6 +28,9 @@
 #include <vector>
 
 
+// Definition of the static type spec member
+const TypeSpec MemberEnvironment::typeSpec(MemberEnvironment_name);
+
 /** Constructor of global workspace */
 MemberEnvironment::MemberEnvironment() : Environment() {
     
@@ -57,6 +60,13 @@ const VectorString& MemberEnvironment::getClass() const {
     static VectorString rbClass = VectorString(MemberEnvironment_name) + Environment::getClass();
     return rbClass;
 }
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& MemberEnvironment::getTypeSpec(void) const {
+    return typeSpec;
+}
+
 
 /** Print workspace */
 void MemberEnvironment::printValue(std::ostream& o) const {

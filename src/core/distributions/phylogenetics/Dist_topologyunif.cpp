@@ -37,6 +37,9 @@
 #include <vector>
 
 
+// Definition of the static type spec member
+const TypeSpec Dist_topologyunif::typeSpec(Dist_topologyunif_name);
+
 /** Default constructor for parser use */
 Dist_topologyunif::Dist_topologyunif( void ) : DistributionDiscrete( getMemberRules() ) {
 
@@ -201,6 +204,12 @@ const Simplex* Dist_topologyunif::getProbabilityMassVector( void ) {
         return new Simplex( getNumberOfStates() );
     else
         throw RbException( "Too many topologies to generate probability mass vector" );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_topologyunif::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

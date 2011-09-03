@@ -41,6 +41,7 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
         // Basic utility functions
         TransitionProbabilityMatrix*        clone(void) const;                                                 //!< Clone object
         const VectorString&                 getClass(void) const;                                              //!< Get class vector   
+        const TypeSpec&                     getTypeSpec(void) const;                                           //!< Get language type of the object
         void                                printValue(std::ostream& o) const;                                 //!< Print value for user
         std::string                         richInfo(void) const;                                              //!< Complete info
 
@@ -54,6 +55,8 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
     private:
         size_t                              numStates;                                                         //!< The number of character states
         MatrixReal*                         theMatrix;                                                         //!< Holds the transition probability matrix
+    
+        static const TypeSpec               typeSpec;
 };
 
 #endif

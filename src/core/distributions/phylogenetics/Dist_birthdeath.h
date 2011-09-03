@@ -36,6 +36,7 @@ public:
     // Basic utility functions
     Dist_birthdeath*            clone(void) const;                                                  //!< Clone object
     const VectorString&         getClass(void) const;                                               //!< Get class vector
+    const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
     
     // Member variable setup
     const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
@@ -48,6 +49,8 @@ public:
     
 private:
     void                        buildRandomBinaryTree(std::vector<TopologyNode *> &interior, std::vector<TopologyNode *> &tips, size_t numTaxa);
+
+    static const TypeSpec       typeSpec;
     
 };
 

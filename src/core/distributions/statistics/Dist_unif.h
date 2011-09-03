@@ -32,11 +32,11 @@ class Dist_unif: public DistributionContinuous {
 
     public:
                                     Dist_unif(void);                                                    //!< Parser constructor
-                                    Dist_unif(double min, double max);                                  //!< Internal constructor
 
         // Basic utility functions
         Dist_unif*                  clone(void) const;                                                  //!< Clone object
         const VectorString&         getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
@@ -50,6 +50,9 @@ class Dist_unif: public DistributionContinuous {
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         Real*                       quantile(const double p);                                           //!< Quantile
         Real*                       rv(void);                                                           //!< Generate random variable
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

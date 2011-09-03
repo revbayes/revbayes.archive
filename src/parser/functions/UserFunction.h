@@ -51,6 +51,7 @@ class UserFunction :  public RbFunction {
         std::string                 briefInfo() const;                  //!< Brief info about object
         UserFunction*               clone() const;                      //!< Clone object
         const VectorString&         getClass() const;                   //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;            //!< Get language type of the object
         std::string                 richInfo() const;                   //!< Complete info about object
 
         // Regular functions
@@ -63,7 +64,9 @@ class UserFunction :  public RbFunction {
         const TypeSpec              returnType;         //!< The return type (complete specification)
         std::list<SyntaxElement*>*  code;               //!< The code
         Environment*                defineEnvironment;  //!< The definition environment
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

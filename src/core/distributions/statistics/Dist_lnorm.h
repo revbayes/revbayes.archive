@@ -32,23 +32,26 @@ const std::string Dist_lnorm_name = "lognormal distribution";
 class Dist_lnorm: public DistributionContinuous {
 	
 public:
-								Dist_lnorm(void);                                                    //!< Parser constructor
-								Dist_lnorm(double m, double s);                                 //!< Internal constructor
+								Dist_lnorm(void);                                                   //!< Parser constructor
 	
 	// Basic utility functions
 	Dist_lnorm*                 clone(void) const;                                                  //!< Clone object
 	const VectorString&         getClass(void) const;                                               //!< Get class vector
+    const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 	
 	// Member variable setup
 	const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
 	
 	// Lognormal distribution functions
-	double                      cdf(const RbLanguageObject* value);                                         //!< Cumulative density
+	double                      cdf(const RbLanguageObject* value);                                 //!< Cumulative density
 	const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (RealPos)
 	double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
 	double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
 	Real*                       quantile(const double p);                                           //!< Quantile
 	Real*                       rv(void);                                                           //!< Generate random variable
+    
+private:
+    static const TypeSpec       typeSpec;
 };
 
 #endif

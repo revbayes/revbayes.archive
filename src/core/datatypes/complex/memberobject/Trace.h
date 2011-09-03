@@ -35,6 +35,7 @@ class Trace : public MemberObject {
     // overloaded functions from RbObject
     MemberObject*           clone(void) const;                                              //!< Clone object
     const VectorString&     getClass(void) const;                                           //!< Get class vector
+    const TypeSpec&         getTypeSpec(void) const;                                        //!< Get language type of the object
     void                    printValue(std::ostream& o) const;                              //!< Print value for user
     std::string             richInfo(void) const;                                           //!< Complete info about object
     const XmlElement*       encode(XmlDocument* doc, const std::string& name);
@@ -87,7 +88,8 @@ class Trace : public MemberObject {
     void                    invalidate();
     
 
-    private:
+private:
+    static const TypeSpec   typeSpec;
     
     std::vector<double>     values;                                     //!< the values of this trace
     

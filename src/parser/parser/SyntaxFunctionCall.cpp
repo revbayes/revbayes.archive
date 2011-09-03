@@ -31,6 +31,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec SyntaxFunctionCall::typeSpec(SyntaxFunctionCall_name);
+
 /** Construct global function call from function name and arguments */
 SyntaxFunctionCall::SyntaxFunctionCall(RbString* id, std::list<SyntaxLabeledExpr*>* args)
     : SyntaxElement(), arguments(args), functionName(id), variable(NULL) {
@@ -139,7 +142,7 @@ Variable* SyntaxFunctionCall::getContentAsVariable(Environment* env) const {
     else {
 
         DAGNode* theNode = variable->getContentAsVariable( env )->getDagNodePtr();
-        if ( theNode == NULL || !theNode->getValue()->isType(MemberObject_name) )
+        if ( theNode == NULL || !theNode->getValue()->isTypeSpec( TypeSpec(MemberObject_name) ) )
             throw RbException( "Variable does not have member functions" );
 
         MemberObject *theMemberObject = dynamic_cast<MemberObject*>(theNode->getValuePtr());
@@ -150,6 +153,12 @@ Variable* SyntaxFunctionCall::getContentAsVariable(Environment* env) const {
     }
 
     return new Variable(new DeterministicNode(func));
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxFunctionCall::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

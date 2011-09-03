@@ -23,6 +23,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec RealPos::typeSpec(RealPos_name);
+
 /** Default constructor */
 RealPos::RealPos( void ) : Real( 1.0 ) {
 }
@@ -72,6 +75,12 @@ const VectorString& RealPos::getClass() const {
 
     static VectorString rbClass = VectorString( RealPos_name ) + Real::getClass();
     return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& RealPos::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

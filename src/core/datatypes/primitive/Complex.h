@@ -35,8 +35,6 @@ const std::string Complex_name = "Complex";
 class Complex : public RbLanguageObject {
 
     public:
-//        friend class                VectorComplex;                                                          //!< Give VecorReal direct access to value
-
                                     Complex(void);                                                          //!< Default constructor (0.0, 0.0)
                                     Complex(const Complex& c);                                              //!< Copy constructor
                                     Complex(const double x);                                                //!< Construct from double
@@ -49,13 +47,12 @@ class Complex : public RbLanguageObject {
                                     operator std::complex<double>(void) const { return value; }             //!< Type conversion to double for convenience
         
         // Basic utility functions
-        virtual Complex*            clone(void) const;                                                      //!< Clone object
-        RbLanguageObject*           convertTo(const std::string& type) const;                               //!< Convert to type and dim
-        virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
+        Complex*                    clone(void) const;                                                      //!< Clone object
+        const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
         std::complex<double>&       getValueReference(void) { return value; }                               //!< Get value reference
-        bool                        isConvertibleTo(const std::string& type, bool once) const;              //!< Is convertible to type and dim?
         void                        printValue(std::ostream& o) const;                                      //!< Print value (for user)
-        virtual std::string         richInfo(void) const;                                                   //!< Complete info about object
+        std::string                 richInfo(void) const;                                                   //!< Complete info about object
 
         // Getters and setters
         void                        setValue(std::complex<double> x) { value = x; }                         //!< Set value
@@ -63,6 +60,9 @@ class Complex : public RbLanguageObject {
 
 	protected:
         std::complex<double>        value;                                                                  //!< Value member
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 // Operators defined outside of the class

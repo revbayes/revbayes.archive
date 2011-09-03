@@ -27,6 +27,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec SyntaxFunctionDef::typeSpec(SyntaxFunctionDef_name);
+
 /** Construct global function call from function name and arguments */
 SyntaxFunctionDef::SyntaxFunctionDef(   RbString* type,
                                         RbString* name,
@@ -168,6 +171,12 @@ Variable* SyntaxFunctionDef::getContentAsVariable(Environment* env) const {
 
     // No return value 
     return NULL;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxFunctionDef::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

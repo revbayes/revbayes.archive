@@ -32,18 +32,13 @@
 #include <cmath>
 
 
+// Definition of the static type spec member
+const TypeSpec Dist_lnorm::typeSpec(Dist_lnorm_name);
+
 /** Constructor for parser use */
 Dist_lnorm::Dist_lnorm( void ) : DistributionContinuous( getMemberRules() ) {
 	
 }
-
-
-/** Constructor for internal use */
-//Dist_lnorm::Dist_lnorm( double mu, double sigma ) : DistributionContinuous( getMemberRules() ) {
-	
-	//    setMemberValue( "mean",  new Real   ( mu    ) );
-	//    setMemberValue( "sigma", new RealPos( sigma ) );
-//}
 
 
 /**
@@ -96,6 +91,12 @@ const MemberRules& Dist_lnorm::getMemberRules( void ) const {
     }
 	
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_lnorm::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

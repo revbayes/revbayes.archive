@@ -26,6 +26,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec FunctionTable::typeSpec(FunctionTable_name);
+
 /** Basic constructor, empty table with or without parent */
 FunctionTable::FunctionTable(FunctionTable* parent)
     : RbInternal(), table(), parentTable(parent) {
@@ -125,7 +128,7 @@ void FunctionTable::eraseFunction(const std::string& name) {
 /** Execute function and get its variable value (evaluate once) */
 RbLanguageObject* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument*>& args) const {
 
-    RbFunction*         theFunction = findFunction(name, args, true);
+    RbFunction*         theFunction = findFunction(name, args);
     RbLanguageObject*   theValue    = theFunction->execute();
 
     theFunction->clearArguments();
@@ -166,7 +169,7 @@ std::vector<const RbFunction*> FunctionTable::findFunctions(const std::string& n
 
 
 /** Find function (also processes arguments) */
-RbFunction* FunctionTable::findFunction(const std::string& name, const std::vector<Argument*>& args, bool evaluateOnce) const {
+RbFunction* FunctionTable::findFunction(const std::string& name, const std::vector<Argument*>& args) const {
 
     std::pair<std::multimap<std::string, RbFunction*>::const_iterator,
               std::multimap<std::string, RbFunction*>::const_iterator> retVal;
@@ -174,13 +177,13 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
     size_t count = table.count(name);
     if (count == 0) {
         if (parentTable != NULL)
-            return parentTable->findFunction(name, args, evaluateOnce);
+            return parentTable->findFunction(name, args);
         else
             throw RbException("No function named '"+ name + "'");
     }
     retVal = table.equal_range(name);
     if (count == 1) {
-        if (retVal.first->second->processArguments(args, evaluateOnce) == false) {
+        if (retVal.first->second->processArguments(args) == false) {
             
             std::ostringstream msg;
             msg << "Argument mismatch for call to function '" << name << "'. Correct usage is:" << std::endl;
@@ -197,7 +200,7 @@ RbFunction* FunctionTable::findFunction(const std::string& name, const std::vect
         bool ambiguous = false;
         std::multimap<std::string, RbFunction*>::const_iterator it;
         for (it=retVal.first; it!=retVal.second; it++) {
-            if ( (*it).second->processArguments(args, evaluateOnce, &matchScore) == true ) {
+            if ( (*it).second->processArguments(args, &matchScore) == true ) {
                 if ( bestMatch == NULL ) {
                     bestScore = matchScore;
                     bestMatch = it->second;
@@ -254,11 +257,11 @@ const VectorString& FunctionTable::getClass() const {
 }
 
 
-/** Get function copy (for repeated evaluation in a FunctionNode) */
+/** Get function copy (for repeated evaluation in a DeterministicNode) */
 RbFunction* FunctionTable::getFunction(const std::string& name, const std::vector<Argument*>& args) const {
 
     // find the template function
-    RbFunction* theFunction = findFunction(name, args, false);
+    RbFunction* theFunction = findFunction(name, args);
 
     // we need a copy because we got the template function
     RbFunction* copy        = theFunction->clone();
@@ -267,6 +270,12 @@ RbFunction* FunctionTable::getFunction(const std::string& name, const std::vecto
     theFunction->clearArguments();
 
     return copy;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& FunctionTable::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

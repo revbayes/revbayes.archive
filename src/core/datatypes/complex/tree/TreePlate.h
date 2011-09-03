@@ -40,6 +40,7 @@ public:
     // Basic utility functions
     TreePlate*                      clone(void) const;                                                      //!< Clone object
     const VectorString&             getClass(void) const;                                                   //!< Get class vector
+    const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
     void                            printValue(std::ostream& o) const;                                      //!< Print value for user
     std::string                     richInfo(void) const;                                                   //!< Complete info
 
@@ -56,6 +57,8 @@ public:
     void                            setBranchLength(TopologyNode *n, double t);                             //!< Set the length of the branch
 
 private:
+    static const TypeSpec           typeSpec;
+    
     void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }           //!< Order the topology
     size_t                          getNodeIndex(const TopologyNode *theNode);                              //!< Get the index of the node
     size_t                          getTipIndex(const TopologyNode *theNode);                               //!< Get the index of the node

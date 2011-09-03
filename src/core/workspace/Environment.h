@@ -79,7 +79,8 @@ public:
     
     // Basic utility functions
     virtual Environment*            clone(void) const;                                                                      //!< Clone Environment
-    const VectorString&             getClass() const;                                                                       //!< Get class vector
+    virtual const VectorString&     getClass() const;                                                                       //!< Get class vector
+    virtual const TypeSpec&         getTypeSpec(void) const;                                                                //!< Get language type of the object
     virtual void                    printValue(std::ostream& o) const;                                                      //!< Print table for user
     virtual std::string             richInfo(void) const;                                                                   //!< Complete info to string
     
@@ -107,6 +108,9 @@ protected:
     VariableTable                   variableTable;                                                                          //!< Variable table
     Environment*                    parentEnvironment;                                                                      //!< Pointer to enclosing Environment
     std::vector<std::string>        varNames;
+    
+private:
+    static const TypeSpec           typeSpec;
 };
 
 #endif

@@ -33,24 +33,25 @@ class Dist_norm: public DistributionContinuous {
 
     public:
                                     Dist_norm(void);                                                    //!< Parser constructor
-                                    Dist_norm(double mu, double sigma);                                 //!< Internal constructor
 
         // Basic utility functions
         Dist_norm*                  clone(void) const;                                                  //!< Clone object
         const VectorString&         getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Normal distribution functions
-        double                      cdf(const RbLanguageObject* value);                                         //!< Cumulative density
-        const Real*                 getMax(void) const;                                                 //!< Get max value
-        const Real*                 getMin(void) const;                                                 //!< Get min value
+        double                      cdf(const RbLanguageObject* value);                                 //!< Cumulative density
         const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (RealPos)
         double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         Real*                       quantile(const double p);                                           //!< Quantile
         Real*                       rv(void);                                                           //!< Generate random variable
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

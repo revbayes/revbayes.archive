@@ -26,6 +26,9 @@
 class ValueRule;
 class RbString;
 
+
+const std::string SyntaxForCondition_name = "For loop";
+
 class SyntaxForCondition : public SyntaxElement {
 
     public:
@@ -39,6 +42,8 @@ class SyntaxForCondition : public SyntaxElement {
         // Basic utility functions
         std::string             briefInfo() const;                                                      //!< Brief info about object
         SyntaxElement*          clone() const;                                                          //!< Clone object
+        const VectorString&     getClass(void) const;                                                   //!< Get class vector 
+        const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
         void                    print(std::ostream& o) const;                                           //!< Print info about object
 
         // Regular functions
@@ -52,7 +57,9 @@ class SyntaxForCondition : public SyntaxElement {
         SyntaxElement*          inExpression;                                                           //!< The in expression (a vector of values)
         AbstractVector*         vector;                                                                 //!< Vector result of 'in' expression
         int                     nextElement;                                                            //!< Next element in vector
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

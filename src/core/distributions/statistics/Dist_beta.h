@@ -33,12 +33,12 @@ const std::string Dist_beta_name = "Dist_beta";
 class Dist_beta: public DistributionContinuous {
 
     public:
-                                    Dist_beta(void);                                                     //!< Parser constructor
-                                    Dist_beta(double shape, double rate);                                              //!< Internal constructor
+                                    Dist_beta(void);                                                    //!< Parser constructor
 
         // Basic utility functions
-        Dist_beta*                   clone(void) const;                                                  //!< Clone object
+        Dist_beta*                  clone(void) const;                                                  //!< Clone object
         const VectorString&         getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
@@ -50,7 +50,9 @@ class Dist_beta: public DistributionContinuous {
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         RealPos*                    quantile(const double p);                                           //!< Quantile
         RealPos*                    rv(void);                                                           //!< Generate random variable
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

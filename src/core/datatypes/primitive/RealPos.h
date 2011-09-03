@@ -28,20 +28,24 @@ const std::string RealPos_name = "+Real";
 class RealPos : public Real {
 
     public:
-                                RealPos(void);                          //!< Default constructor
-                                RealPos(double x);                      //!< Construct from double
-                                RealPos(int x);                         //!< Construct from int 
-                                RealPos(unsigned int x);                //!< Construct from unsigned int 
-                                RealPos(bool x);                        //!< Construct from bool
+                                        RealPos(void);                          //!< Default constructor
+                                        RealPos(double x);                      //!< Construct from double
+                                        RealPos(int x);                         //!< Construct from int 
+                                        RealPos(unsigned int x);                //!< Construct from unsigned int 
+                                        RealPos(bool x);                        //!< Construct from bool
 
         // Basic utility functions
-        virtual std::string     briefInfo(void) const;                  //!< Brief info about the object
-        RealPos*                clone(void) const;                      //!< Clone object
-        const VectorString&     getClass(void) const;                   //!< Get class vector
-        std::string             richInfo(void) const;                   //!< Complete info about object
+        virtual std::string             briefInfo(void) const;                  //!< Brief info about the object
+        virtual RealPos*                clone(void) const;                      //!< Clone object
+        virtual const VectorString&     getClass(void) const;                   //!< Get class vector
+        virtual const TypeSpec&         getTypeSpec(void) const;                //!< Get language type of the object
+        virtual std::string             richInfo(void) const;                   //!< Complete info about object
 
         // Setter disallowing nonpositive values
-        void                    setValue(double x);                     //!< Set value
+        virtual void                    setValue(double x);                     //!< Set value
+    
+    private:
+        static const TypeSpec           typeSpec;
 };
 
 #endif

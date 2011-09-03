@@ -23,6 +23,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec SyntaxClassDef::typeSpec(SyntaxClassDef_name);
+
 /** Construct definition from class name, base class name, and variable and function definitions */
 SyntaxClassDef::SyntaxClassDef( RbString* name, RbString* base, std::list<SyntaxElement*>* defs) : SyntaxElement(), className(name), baseClass(base), definitions(defs) {
     className->retain();
@@ -119,6 +122,14 @@ SyntaxElement* SyntaxClassDef::clone () const {
 }
 
 
+/** Get class vector describing type of object */
+const VectorString& SyntaxClassDef::getClass(void) const { 
+    
+    static VectorString rbClass = VectorString(SyntaxClassDef_name) + SyntaxElement::getClass();
+	return rbClass; 
+}
+
+
 /** Get semantic value: insert a user-defined class in the user workspace */
 Variable* SyntaxClassDef::getContentAsVariable(Environment* env) const {
 
@@ -126,6 +137,12 @@ Variable* SyntaxClassDef::getContentAsVariable(Environment* env) const {
 
     // No return value 
     return NULL;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxClassDef::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

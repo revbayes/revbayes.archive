@@ -32,6 +32,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec DistributionFunction::typeSpec(DistributionFunction_name);
+
 /** Constructor */
 DistributionFunction::DistributionFunction( Distribution* dist, FuncType funcType )
     : RbFunction(), returnType( funcType == DENSITY || funcType == PROB ? TypeSpec( funcType == DENSITY ? Real_name : RealPos_name ) : dist->getVariableType() ) {
@@ -214,10 +217,16 @@ const TypeSpec DistributionFunction::getReturnType(void) const {
     return returnType;
 }
 
-/** Process arguments */
-bool DistributionFunction::processArguments( const std::vector<Argument*>& args, bool evaluateOnce, VectorInteger* matchScore ) {
 
-    if ( !RbFunction::processArguments( args, evaluateOnce, matchScore ) )
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& DistributionFunction::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+/** Process arguments */
+bool DistributionFunction::processArguments( const std::vector<Argument*>& args, VectorInteger* matchScore ) {
+
+    if ( !RbFunction::processArguments( args, matchScore ) )
         return false;
 
     /* Set member variables of the distribution */

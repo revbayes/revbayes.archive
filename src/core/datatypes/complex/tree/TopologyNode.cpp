@@ -29,6 +29,8 @@
 #include <algorithm>
 
 
+// Definition of the static type spec member
+const TypeSpec TopologyNode::typeSpec(TopologyNode_name);
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
 TopologyNode::TopologyNode(int indx) : ConstantMemberObject( getMemberRules() ), name(""), index(indx) {
@@ -88,6 +90,12 @@ void TopologyNode::addChild(TopologyNode *c) {
 TopologyNode* TopologyNode::clone(void) const {
     
     return new TopologyNode(*this);
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& TopologyNode::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

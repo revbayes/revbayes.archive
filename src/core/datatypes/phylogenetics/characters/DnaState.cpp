@@ -21,6 +21,8 @@
 const std::string DnaState::stateLabels = "ACGT";
 
 
+// Definition of the static type spec member
+const TypeSpec DnaState::typeSpec(DnaState_name);
 
 /** Default constructor */
 DnaState::DnaState(void) : NucleotideState() {
@@ -147,6 +149,12 @@ const char DnaState::getNucleotideCode(const std::vector<bool>& sSet) const {
 const char DnaState::getState(void) const {
 
     return getNucleotideCode(value);
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& DnaState::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

@@ -42,6 +42,7 @@ public:
     // Basic utility functions
     Monitor*                    clone(void) const;                                                  //!< Clone object
     const VectorString&         getClass(void) const;                                               //!< Get class
+    const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
     void                        printValue(std::ostream& o) const;                                  //!< Print value (for user)
     std::string                 richInfo(void) const;                                               //!< Complete info about object
 
@@ -61,6 +62,8 @@ public:
 private:
     std::vector<VariableNode*>  nodes;                                                              //!< Vector of nodes which this monitors prints
     std::ofstream               outStream;
+    
+    static const TypeSpec       typeSpec;
 };
 
 #endif

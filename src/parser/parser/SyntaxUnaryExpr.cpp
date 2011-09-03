@@ -29,6 +29,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec SyntaxUnaryExpr::typeSpec(SyntaxUnaryExpr_name);
+
 /** Static vector of strings giving names of operator types */
 std::string SyntaxUnaryExpr::opCode[] = { "uminus", "uplus", "unot" };
 
@@ -110,6 +113,12 @@ Variable* SyntaxUnaryExpr::getContentAsVariable(Environment* env) const {
 
     // Return new function node
     return new Variable(new DeterministicNode(func));
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxUnaryExpr::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

@@ -47,6 +47,7 @@ class CharacterMatrix : public Matrix {
         // Basic utility functions
         CharacterMatrix*                    clone(void) const;                                                          //!< Clone object
         const VectorString&                 getClass(void) const;                                                       //!< Get class vector   
+        const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user
         std::string                         richInfo(void) const;                                                       //!< Complete info
 
@@ -105,6 +106,7 @@ class CharacterMatrix : public Matrix {
         std::string                         fileName;                                                                   //!< The path/filename from where this matrix originated
         VectorString                        sequenceNames;                                                              //!< names of the sequences
         std::string                         characterType;                                                              //!< Rule describing sequence type
+        TypeSpec                            typeSpec;                                                                   //!< The type of this character matrix including element type
 };
 
 #endif

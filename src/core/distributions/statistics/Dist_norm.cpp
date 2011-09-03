@@ -33,17 +33,12 @@
 #include <cmath>
 
 
+// Definition of the static type spec member
+const TypeSpec Dist_norm::typeSpec(Dist_norm_name);
+
 /** Constructor for parser use */
 Dist_norm::Dist_norm( void ) : DistributionContinuous( getMemberRules() ) {
 
-}
-
-
-/** Constructor for internal use */
-Dist_norm::Dist_norm( double mu, double sigma ) : DistributionContinuous( getMemberRules() ) {
-
-//    setMemberValue( "mean",  new Real   ( mu    ) );
-//    setMemberValue( "sigma", new RealPos( sigma ) );
 }
 
 
@@ -102,17 +97,9 @@ const MemberRules& Dist_norm::getMemberRules( void ) const {
 }
 
 
-/** Get max value of distribution */
-const Real* Dist_norm::getMax( void ) const {
-
-    return new Real(RbConstants::Double::max);
-}
-
-
-/** Get min value of distribution */
-const Real* Dist_norm::getMin( void ) const {
-
-    return new Real(-RbConstants::Double::max);
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_norm::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

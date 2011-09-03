@@ -30,6 +30,10 @@
 
 #include <cassert>
 
+
+// Definition of the static type spec member
+const TypeSpec Func_setval::typeSpec(Func_setval_name);
+
 /** Clone object */
 Func_setval* Func_setval::clone( void ) const {
 
@@ -84,5 +88,11 @@ const VectorString& Func_setval::getClass( void ) const {
 const TypeSpec Func_setval::getReturnType( void ) const {
 
     return TypeSpec( RbVoid_name );
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Func_setval::getTypeSpec(void) const {
+    return typeSpec;
 }
 

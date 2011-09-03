@@ -32,6 +32,9 @@ class MemberObject;
 class RbFunction;
 class RbObject;
 
+
+const std::string MethodTable_name = "Method table";
+
 class MethodTable : public FunctionTable {
 
     public:
@@ -44,10 +47,15 @@ class MethodTable : public FunctionTable {
         // Basic utility functions
         std::string                 briefInfo(void) const;                                                      //!< Brief info to string
         MethodTable*                clone(void) const { return new MethodTable(*this); }                        //!< Clone object
+        const VectorString&         getClass() const;                                                           //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                                    //!< Get language type of the object
         std::string                 richInfo(void) const;                                                       //!< Complete info to string
 
         // MethodTable function (we just set the name of MemberFunction objects here)
         void                        addFunction(const std::string name, RbFunction* func);                      //!< Add function; set name if appropriate
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

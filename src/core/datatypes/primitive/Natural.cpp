@@ -34,6 +34,10 @@
 #include <climits>
 
 
+
+// Definition of the static type spec member
+const TypeSpec Natural::typeSpec(Natural_name);
+
 /** Default constructor */
 Natural::Natural( void ) : Integer( 0 ) {
 }
@@ -114,8 +118,8 @@ Natural* Natural::clone( void ) const {
 }
 
 
-/** Convert to type and dim. The caller manages the returned object. */
-RbLanguageObject* Natural::convertTo( const std::string& type ) const {
+/** Convert to type. The caller manages the returned object. */
+RbObject* Natural::convertTo( const TypeSpec& type ) const {
 
     if ( type == RbBoolean_name )
         return new RbBoolean( value == 0 );
@@ -160,8 +164,14 @@ const VectorString& Natural::getClass() const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Natural::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Is convertible to type and dim? */
-bool Natural::isConvertibleTo( const std::string& type, bool once ) const {
+bool Natural::isConvertibleTo( const TypeSpec& type ) const {
 
     if ( type == RbBoolean_name )
         return true;
@@ -190,7 +200,7 @@ bool Natural::isConvertibleTo( const std::string& type, bool once ) const {
     if ( type == VectorRealPos_name )
         return true;
 
-    return Integer::isConvertibleTo( type, once );
+    return Integer::isConvertibleTo( type );
 }
 
 

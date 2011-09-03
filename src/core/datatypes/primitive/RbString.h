@@ -28,8 +28,6 @@ const std::string RbString_name = "String";
 class RbString : public RbLanguageObject {
 
     public:
-//        friend class                VectorString;                                       //!< Give VectorString modify access to value
-
                                     RbString(void) : RbLanguageObject(), value() {}     //!< Default: empty string
                                     RbString(int i);                                    //!< Constructor from int
                                     RbString(double i);                                 //!< Constructor from int
@@ -45,6 +43,7 @@ class RbString : public RbLanguageObject {
         std::string                 briefInfo(void) const;                              //!< Brief info about the object
 	    RbString*                   clone(void) const;                                  //!< Copy
         const VectorString&         getClass(void) const;                               //!< Get class
+        const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
         std::string&                getValueReference(void) { return value; }           //!< Get value reference
         void                        printValue(std::ostream& o) const;                  //!< Print value (for user)
         std::string                 richInfo(void) const;                               //!< General info on object
@@ -59,6 +58,8 @@ class RbString : public RbLanguageObject {
     private:
 
         std::string                 value;                                              //!< Value member
+    
+        static const TypeSpec       typeSpec;
 };
 
 std::string                         operator+(const std::string& A, const RbString& B);                     //!< Append to std::string

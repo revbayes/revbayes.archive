@@ -43,6 +43,8 @@
 #include <string>
 
 
+// Definition of the static type spec member
+const TypeSpec TransitionProbabilityMatrix::typeSpec(TransitionProbabilityMatrix_name);
 
 /** Constructor passes member rules and method inits to base class */
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : ConstantMemberObject(getMemberRules()) {
@@ -153,6 +155,12 @@ const MethodTable& TransitionProbabilityMatrix::getMethods(void) const {
         }
 
     return methods;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& TransitionProbabilityMatrix::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

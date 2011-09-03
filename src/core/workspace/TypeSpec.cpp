@@ -82,7 +82,7 @@ TypeSpec::operator std::string( void ) const {
 
 
 /** Convert to string */
-std::string TypeSpec::toString(void) const {
+const std::string& TypeSpec::toString(void) const {
 
     return type;
 }

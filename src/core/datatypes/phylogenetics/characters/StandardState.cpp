@@ -19,6 +19,8 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec StandardState::typeSpec(StandardState_name);
 
 /** Default constructor */
 StandardState::StandardState(void) : CharacterStateDiscrete(1) {
@@ -116,6 +118,12 @@ const char StandardState::getState(void) const {
     if (numMatches > 1)
         c = '?';
     return c;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& StandardState::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

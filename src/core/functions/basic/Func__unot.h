@@ -30,13 +30,16 @@ class Func__unot :  public RbFunction {
     public:
         // Basic utility functions
         Func__unot*                 clone(void) const;                                          //!< Clone the object
-    	const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const VectorString&         getClass(void) const;                                       //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
     	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
-
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif
@@ -47,6 +50,11 @@ class Func__unot :  public RbFunction {
 #include "TypeSpec.h"
 #include "ValueRule.h"
 #include "VectorString.h"
+
+
+// Definition of the static type spec member
+template <typename valType>
+const TypeSpec Func__unot<valType>::typeSpec("Func__unot", new TypeSpec(valType().getType()));
 
 
 /** Clone object */
@@ -101,5 +109,13 @@ template <typename valType>
 const TypeSpec Func__unot<valType>::getReturnType( void ) const {
 
     return TypeSpec( RbBoolean_name );
+}
+
+
+/** Get return spec */
+template <typename valType>
+const TypeSpec& Func__unot<valType>::getTypeSpec( void ) const {
+    
+    return typeSpec;
 }
 

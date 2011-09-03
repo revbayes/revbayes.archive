@@ -24,6 +24,9 @@
 #include "VectorString.h"
 
 
+// Definition of the static type spec member
+const TypeSpec Environment::typeSpec(Environment_name);
+
 /** Destructor */
 Environment::~Environment() {
     
@@ -232,6 +235,12 @@ void Environment::clear(void) {
     // empty the two vectors
     variableTable.clear();
     varNames.clear();
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Environment::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

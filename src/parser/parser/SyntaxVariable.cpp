@@ -35,6 +35,9 @@
 #include "SyntaxVariable.h"
 
 
+// Definition of the static type spec member
+const TypeSpec SyntaxVariable::typeSpec(SyntaxVariable_name);
+
 /** Construct from identifier and index */
 SyntaxVariable::SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx) :
     SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(NULL) {
@@ -194,7 +197,7 @@ VectorNatural SyntaxVariable::getIndex( Environment* env ) const {
             
             DAGNode* indexVar = (*i)->getContentAsVariable( env )->getDagNodePtr();
             
-            if ( indexVar->getValue()->isType( Integer_name ) ) {
+            if ( indexVar->getValue()->isTypeSpec( TypeSpec(Integer_name) ) ) {
                 
                 // Calculate (or get) an integer index
                 int intIndex = static_cast<const Integer*>( indexVar->getValue() )->getValue(); 
@@ -214,7 +217,7 @@ VectorNatural SyntaxVariable::getIndex( Environment* env ) const {
                 theIndex.push_back(intIndex-1);
             }
             
-            else if ( indexVar->getValue()->isType( RbString_name ) ) {
+            else if ( indexVar->getValue()->isTypeSpec( TypeSpec(RbString_name) ) ) {
                 
                 // Push string index onto index vector
 //                theIndex.push_back( indexVar->getValue()->clone() );
@@ -354,7 +357,7 @@ VariableSlot* SyntaxVariable::getSlot(Environment* env) const {
                 theSlot = NULL;
                 throw RbException("Missing slot in variable");
             }
-            else if (subElement->isType(VariableSlot_name)) {
+            else if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) )) {
                 theSlot = dynamic_cast<VariableSlot*>(subElement);
                 theDagNode = theSlot->getDagNodePtr();
                 theSlot->getVariable()->setName(name);
@@ -400,7 +403,7 @@ Variable* SyntaxVariable::getContentAsVariable(Environment* env) const {
             // The call to getValue of baseVariable either returns
             // a value or results in the throwing of an exception
             Variable* baseVar = baseVariable->getContentAsVariable( env );
-            if ( !baseVar->getValue()->isType( MemberObject_name ) )
+            if ( !baseVar->getValue()->isTypeSpec( TypeSpec(MemberObject_name) ) )
                 throw RbException( "Variable " + baseVariable->getFullName( env ) + " does not have members" );       
         
             if ( identifier == NULL )
@@ -424,12 +427,12 @@ Variable* SyntaxVariable::getContentAsVariable(Environment* env) const {
             SyntaxElement               *indexSyntaxElement     = *it;
             DAGNode                     *indexVar               = indexSyntaxElement->getContentAsVariable(env)->getDagNodePtr();
             const RbLanguageObject      *theValue               = indexVar->getValue();
-            if (!theValue->isConvertibleTo(Natural_name, true)) 
+            if ( !theValue->isConvertibleTo(Natural_name) ) 
                 throw RbException("Could not access index with type xxx because only natural indices are supported!");
             size_t                      indexValue              = dynamic_cast<const Natural*>(theValue->convertTo(Natural_name))->getValue() - 1;
             RbObject                    *subElement             = theVar->getDagNodePtr()->getElement(indexValue);
             
-            if (subElement->isType(VariableSlot_name))
+            if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) ))
                 theVar = dynamic_cast<VariableSlot*>(subElement)->getVariable();
             else 
                 theVar = new Variable( new ConstantNode((RbLanguageObject*)subElement) );
@@ -439,6 +442,12 @@ Variable* SyntaxVariable::getContentAsVariable(Environment* env) const {
         
     return theVar;
     
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxVariable::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

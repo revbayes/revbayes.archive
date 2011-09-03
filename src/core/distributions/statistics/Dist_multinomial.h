@@ -34,12 +34,12 @@ const std::string Dist_multinomial_name = "Dist_multinomial";
 class Dist_multinomial: public DistributionContinuous {
 
     public:
-                                    Dist_multinomial(void);                                               //!< Parser constructor
-                                    Dist_multinomial(std::vector<double> a);                              //!< Internal constructor
+                                    Dist_multinomial(void);                                            //!< Parser constructor
 
         // Basic utility functions
-        Dist_multinomial*           clone(void) const;                                                    //!< Clone object
-        const VectorString&         getClass(void) const;                                                 //!< Get class vector
+        Dist_multinomial*           clone(void) const;                                                 //!< Clone object
+        const VectorString&         getClass(void) const;                                              //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                           //!< Get language type of the object
 
         // Member variable setup
         const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
@@ -51,6 +51,9 @@ class Dist_multinomial: public DistributionContinuous {
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         VectorNatural*              quantile(const double p);                                           //!< Quantile
         VectorNatural*              rv(void);                                                           //!< Generate random variable
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

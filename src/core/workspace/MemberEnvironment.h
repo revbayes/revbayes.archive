@@ -39,10 +39,12 @@ public:
     // Basic utility functions
     MemberEnvironment*          clone(void) const { return new MemberEnvironment(*this); }           //!< Clone variable Environment
     const VectorString&         getClass() const;                                                    //!< Get class vector
+    const TypeSpec&             getTypeSpec(void) const;                                             //!< Get language type of the object
     void                        printValue(std::ostream& o) const;                                   //!< Print table for user
     std::string                 richInfo(void) const;                                                //!< Complete info to string
-        
-protected:
+    
+private:
+    static const TypeSpec       typeSpec;
 };
 
 #endif

@@ -24,6 +24,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec SyntaxLabeledExpr::typeSpec(SyntaxLabeledExpr_name);
+
 /** Constructor from label and expression */
 SyntaxLabeledExpr::SyntaxLabeledExpr(RbString* id, SyntaxElement* expr)
     : SyntaxElement(), label(id), expression(expr) {
@@ -100,6 +103,12 @@ const VectorString& SyntaxLabeledExpr::getClass(void) const {
 Variable* SyntaxLabeledExpr::getContentAsVariable(Environment* env) const {
 
     return NULL;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& SyntaxLabeledExpr::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

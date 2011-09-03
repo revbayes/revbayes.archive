@@ -137,7 +137,7 @@ void RbFunction::printValue(std::ostream& o) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
-bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, bool evaluateOnce, VectorInteger* matchScore) {
+bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, VectorInteger* matchScore) {
 
     bool    conversionNeeded;
     int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
@@ -200,7 +200,7 @@ bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, boo
             DAGNode* theDAGNode = theArgument->getDagNode();
             if ( theDAGNode == NULL )
                 return false;   // This should never happen
-            if ( !theRules[nRules-1]->isArgumentValid( theDAGNode, conversionNeeded, evaluateOnce ) )
+            if ( !theRules[nRules-1]->isArgumentValid( theDAGNode, conversionNeeded ) )
                 return false;
             
             // add this variable to the argument list
@@ -234,7 +234,7 @@ bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, boo
 
             if ( passedArgs[i]->getLabel() == theRules[j]->getArgumentLabel() ) {
 
-                if ( theRules[j]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded, evaluateOnce) && !filled[j] ) {
+                if ( theRules[j]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded) && !filled[j] ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
@@ -278,7 +278,7 @@ bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, boo
         if (nMatches != 1)
             return false;
  
-        if ( theRules[matchRule]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded, evaluateOnce) ) {
+        if ( theRules[matchRule]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded) ) {
             taken[i]                  = true;
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = static_cast<int>( i );
@@ -305,7 +305,7 @@ bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, boo
 
             if ( filled[j] == false ) {
                 DAGNode *argVar = passedArgs[i]->getDagNode();
-                if ( theRules[j]->isArgumentValid( argVar, conversionNeeded, evaluateOnce ) ) {
+                if ( theRules[j]->isArgumentValid( argVar, conversionNeeded ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );

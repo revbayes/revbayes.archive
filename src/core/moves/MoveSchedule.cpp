@@ -27,6 +27,9 @@
 #include <algorithm>
 
 
+// Definition of the static type spec member
+const TypeSpec MoveSchedule::typeSpec(MoveSchedule_name);
+
 /** Constructor */
 MoveSchedule::MoveSchedule(VariableNode* node, double weight)
     : ConstantMemberObject() {
@@ -94,6 +97,12 @@ const VectorString& MoveSchedule::getClass(void) const {
 
     static VectorString rbClass = VectorString(MoveSchedule_name) + ConstantMemberObject::getClass();
 	return rbClass;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& MoveSchedule::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

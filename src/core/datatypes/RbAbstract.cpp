@@ -28,8 +28,7 @@
 #include <sstream>
 
 /** Constructor */
-RbAbstract::RbAbstract( const VectorString classVec, const std::string& elemType )
-: RbLanguageObject(), classVector( classVec ), elementType( elemType ) {
+RbAbstract::RbAbstract( const VectorString classVec, TypeSpec *elemType ) : RbLanguageObject(), classVector( classVec ), elementType( elemType ), typeSpec( classVec[0], elemType) {
 }
 
 
@@ -40,23 +39,9 @@ RbAbstract* RbAbstract::clone( void ) const {
 }
 
 
-/** Convert to type and dim: no conversion possible. */
-RbLanguageObject* RbAbstract::convertTo( const std::string& type ) const {
-
-    return RbLanguageObject::convertTo( type );
-}
-
-
 /** Get language type specification of abstract class */
-const TypeSpec RbAbstract::getTypeSpec( void ) const {
-    return TypeSpec( getType() );
-}
-
-
-/** Is convertible to language object of type and dim? */
-bool RbAbstract::isConvertibleTo(const std::string& type, bool once) const {
-
-    return RbLanguageObject::isConvertibleTo(type, once);
+const TypeSpec& RbAbstract::getTypeSpec( void ) const {
+    return typeSpec;
 }
 
 

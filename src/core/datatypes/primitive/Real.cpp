@@ -29,6 +29,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec Real::typeSpec(Real_name);
+
 /** Default constructor */
 Real::Real(void) : RbLanguageObject(), value(0.0) {
 }
@@ -73,8 +76,8 @@ Real* Real::clone(void) const {
 }
 
 
-/** Convert to type and dim. The caller manages the returned object. */
-RbLanguageObject* Real::convertTo( const std::string& type ) const {
+/** Convert to type. The caller manages the returned object. */
+RbObject* Real::convertTo( const TypeSpec& type ) const {
 
     if ( type == RbBoolean_name )
         return new RbBoolean(value == 0.0);
@@ -95,17 +98,23 @@ const VectorString& Real::getClass(void) const {
 }
 
 
-/** Is convertible to type and dim? */
-bool Real::isConvertibleTo(const std::string& type, bool once) const {
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Real::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
+/** Is convertible to type? */
+bool Real::isConvertibleTo(const TypeSpec& type) const {
 
     if (type == RbBoolean_name)
         return true;
-    if (type == RealPos_name && once == true && value > 0.0)
+    if (type == RealPos_name && value > 0.0)
         return true;
-    if ( type == Probability_name && value >= 0.0 && value <= 1.0)
+    if (type == Probability_name && value >= 0.0 && value <= 1.0)
         return true;
 
-    return RbLanguageObject::isConvertibleTo(type, once);
+    return RbLanguageObject::isConvertibleTo(type);
 }
 
 

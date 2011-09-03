@@ -17,7 +17,7 @@
 #define VectorNatural_H
 
 #include "Natural.h"
-#include "Vector.h"
+#include "AbstractVector.h"
 
 #include <iostream>
 #include <vector>
@@ -51,9 +51,10 @@ class VectorNatural : public AbstractVector {
     
     // Basic utility functions
     VectorNatural*              clone(void) const;                                              //!< Clone object
-    RbLanguageObject*           convertTo(const std::string& type) const;                       //!< Convert to type
+    RbObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
     const VectorString&         getClass(void) const;                                           //!< Get class
-    bool                        isConvertibleTo(const std::string& type, bool once) const;      //!< Is convertible to type?
+    const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
+    bool                        isConvertibleTo(const TypeSpec& type) const;                    //!< Is convertible to type?
     std::string                 richInfo(void) const;                                           //!< Complete info about object
 
         // Vector functions, including STL-like functions
@@ -80,6 +81,7 @@ class VectorNatural : public AbstractVector {
     
     private:
     std::vector<unsigned int>   elements;
+    static const TypeSpec       typeSpec;
     
 };
 

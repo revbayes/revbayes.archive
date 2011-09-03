@@ -40,8 +40,12 @@ class Ellipsis : public ArgumentRule {
         // Basic utility functions
         Ellipsis*           clone(void) const { return new Ellipsis(*this); }   //!< Clone object
         const VectorString& getClass(void) const;                               //!< Get class vector
+        const TypeSpec&     getTypeSpec(void) const;                            //!< Get language type of the object
         void                printValue(std::ostream& o) const;                  //!< Print value for user
         std::string         richInfo(void) const;                               //!< Complete info 
+    
+    private:
+        static const TypeSpec       typeSpec;
 };
 
 #endif

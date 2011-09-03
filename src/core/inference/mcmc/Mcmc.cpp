@@ -34,6 +34,7 @@
 #include "RbString.h"
 #include "StochasticNode.h"
 #include "ValueRule.h"
+#include "Vector.h"
 #include "VectorString.h"
 #include "VariableNode.h"
 #include "Workspace.h"
@@ -43,6 +44,9 @@
 #include <sstream>
 #include <string>
 
+
+// Definition of the static type spec member
+const TypeSpec Mcmc::typeSpec(Mcmc_name);
 
 /** Constructor passes member rules and method inits to base class */
 Mcmc::Mcmc(void) : ConstantMemberObject(getMemberRules()) {
@@ -122,6 +126,12 @@ const MethodTable& Mcmc::getMethods(void) const {
 }
 
 
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Mcmc::getTypeSpec(void) const {
+    return typeSpec;
+}
+
+
 /** Allow only constant member variables */
 void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
 
@@ -133,7 +143,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
         // get the DAG nodes
         const Model* theModel = dynamic_cast<const Model*>(getMemberValue("model"));
         
-        Vector *moves = static_cast<Vector*>(var->getDagNodePtr()->getValuePtr());
+        Vector *moves = static_cast<Vector*>(var->getDagNodePtr()->getValuePtr()->convertTo(TypeSpec(Vector_name, new TypeSpec(Move_name))));
         for (size_t i=0; i<moves->size(); i++) {
             // get the move #i
             Move *theMove       = static_cast<Move*>(moves->getElement(i));
@@ -157,7 +167,7 @@ void Mcmc::setMemberVariable(const std::string& name, Variable* var) {
         // get the DAG nodes
         const Model* theModel = static_cast<const Model*>(getMemberValue("model"));
         
-        Vector *monitors = static_cast<Vector*>(var->getDagNodePtr()->getValuePtr());
+        Vector *monitors = static_cast<Vector*>(var->getDagNodePtr()->getValuePtr()->convertTo(TypeSpec(Vector_name, new TypeSpec(Monitor_name))));
         for (size_t i=0; i<monitors->size(); i++) {
             // get the monitor #i
             Monitor *theMonitor       = static_cast<Monitor*>(monitors->getElement(i));

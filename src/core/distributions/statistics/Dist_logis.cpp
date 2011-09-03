@@ -35,6 +35,11 @@
 
 #include "MatrixReal.h"
 #include "RbMathMatrix.h"
+
+
+// Definition of the static type spec member
+const TypeSpec Dist_logis::typeSpec(Dist_logis_name);
+
 /** Default constructor for parser use */
 Dist_logis::Dist_logis( void ) : DistributionContinuous( getMemberRules() ) {
 
@@ -70,6 +75,12 @@ const MemberRules& Dist_logis::getMemberRules( void ) const {
     }
 
     return memberRules;
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Dist_logis::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

@@ -42,6 +42,7 @@ public:
     // Basic utility functions
     Dist_neutralcoalescent*     clone(void) const;                                                  //!< Clone object
     const VectorString&         getClass(void) const;                                               //!< Get class vector
+    const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
     // Member variable setup
     const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
@@ -58,6 +59,8 @@ private:
     // Private variables
     TopologyNodeToRealMapType   nodeEdgeLengths;
     IntegerToRealMapType        numNodesToWaitingTimeMap;
+
+    static const TypeSpec       typeSpec;
 
 };
 

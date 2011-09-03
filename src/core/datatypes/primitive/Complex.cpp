@@ -27,6 +27,9 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec Complex::typeSpec(Complex_name);
+
 /** Default constructor */
 Complex::Complex(void) : RbLanguageObject() {
 
@@ -86,13 +89,6 @@ Complex* Complex::clone(void) const {
 }
 
 
-/** Convert to type and dim. The caller manages the returned object. */
-RbLanguageObject* Complex::convertTo(const std::string& type) const {
-
-    return RbLanguageObject::convertTo( type );
-}
-
-
 /** Get class vector describing type of object */
 const VectorString& Complex::getClass(void) const {
 
@@ -101,10 +97,9 @@ const VectorString& Complex::getClass(void) const {
 }
 
 
-/** Is convertible to type and dim? */
-bool Complex::isConvertibleTo(const std::string& type, bool once) const {
-
-    return RbLanguageObject::isConvertibleTo(type, once);
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Complex::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 
