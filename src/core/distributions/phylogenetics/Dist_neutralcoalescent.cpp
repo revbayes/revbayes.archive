@@ -44,6 +44,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_neutralcoalescent::typeSpec(Dist_neutralcoalescent_name);
+const TypeSpec Dist_neutralcoalescent::varTypeSpec(TreePlate_name);
 
 /** Default constructor for parser use */
 Dist_neutralcoalescent::Dist_neutralcoalescent( void ) : Distribution( getMemberRules() ) {
@@ -114,9 +115,9 @@ const TypeSpec& Dist_neutralcoalescent::getTypeSpec(void) const {
 
 
 /** Get random variable type */
-const TypeSpec Dist_neutralcoalescent::getVariableType( void ) const {
+const TypeSpec& Dist_neutralcoalescent::getVariableType( void ) const {
 
-    return TypeSpec( TreePlate_name );
+    return varTypeSpec;
 }
 
 // TODO

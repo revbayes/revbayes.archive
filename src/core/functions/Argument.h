@@ -46,7 +46,7 @@ class Argument : public RbInternal {
 
         // Regular functions
         Variable*               getVariable(void) { return var; }                                   //!< Get the variable contained in this argument
-        std::string             getLabel(void) const { return label; }                              //!< Get label of argument
+        const std::string&      getLabel(void) const { return label; }                              //!< Get label of argument
         DAGNode*                getDagNode(void) const { return var->getDagNodePtr(); }             //!< Get argument variable
         void                    setDagNode(DAGNode *newNode);                                       //!< set the DAG node of the argument; replaces the DAG node in the variable
         void                    setVariable(Variable *newVar);                                      //!< set the variable of the argument

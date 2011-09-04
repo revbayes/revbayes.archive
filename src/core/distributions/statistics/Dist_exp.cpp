@@ -32,6 +32,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_exp::typeSpec(Dist_exp_name);
+const TypeSpec Dist_exp::varTypeSpec(RealPos_name);
 
 /** Default constructor for parser use */
 Dist_exp::Dist_exp( void ) : DistributionContinuous( getMemberRules() ) {
@@ -96,9 +97,9 @@ const TypeSpec& Dist_exp::getTypeSpec(void) const {
 
 
 /** Get random variable type */
-const TypeSpec Dist_exp::getVariableType( void ) const {
+const TypeSpec& Dist_exp::getVariableType( void ) const {
 
-    return TypeSpec( RealPos_name );
+    return varTypeSpec;
 }
 
 

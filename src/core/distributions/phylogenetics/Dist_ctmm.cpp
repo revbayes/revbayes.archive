@@ -38,6 +38,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_ctmm::typeSpec(Dist_ctmm_name);
+const TypeSpec Dist_ctmm::varTypeSpec(CharacterStateDiscrete_name);
 
 /** Default constructor for parser use */
 Dist_ctmm::Dist_ctmm( void ) : DistributionDiscrete( getMemberRules() ) {
@@ -125,9 +126,9 @@ const TypeSpec& Dist_ctmm::getTypeSpec(void) const {
 
 
 /** Get random variable type */
-const TypeSpec Dist_ctmm::getVariableType( void ) const {
+const TypeSpec& Dist_ctmm::getVariableType( void ) const {
 
-    return TypeSpec( CharacterStateDiscrete_name );
+    return varTypeSpec;
 }
 
 

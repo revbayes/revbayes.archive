@@ -42,6 +42,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_birthdeath::typeSpec(Dist_birthdeath_name);
+const TypeSpec Dist_birthdeath::varTypeSpec(TreePlate_name);
 
 /** Default constructor for parser use */
 Dist_birthdeath::Dist_birthdeath( void ) : Distribution( getMemberRules() ) {
@@ -124,9 +125,9 @@ const TypeSpec& Dist_birthdeath::getTypeSpec(void) const {
 
 
 /** Get random variable type */
-const TypeSpec Dist_birthdeath::getVariableType( void ) const {
+const TypeSpec& Dist_birthdeath::getVariableType( void ) const {
     
-    return TypeSpec( TreePlate_name );
+    return varTypeSpec;
 }
 
 

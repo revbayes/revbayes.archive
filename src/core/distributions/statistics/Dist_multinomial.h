@@ -46,7 +46,7 @@ class Dist_multinomial: public DistributionContinuous {
 
         // Multinomial distribution functions
         double                      cdf(const RbLanguageObject* value);                                 //!< Cumulative density
-        const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (VectorNatural)
+        const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (VectorNatural)
         double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         VectorNatural*              quantile(const double p);                                           //!< Quantile
@@ -54,6 +54,7 @@ class Dist_multinomial: public DistributionContinuous {
     
     private:
         static const TypeSpec       typeSpec;
+        static const TypeSpec       varTypeSpec;
 };
 
 #endif

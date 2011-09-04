@@ -42,7 +42,7 @@ public:
     const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
     
     // Discrete distribution functions
-    const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Simplex)
+    const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
     double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
     double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
     TreePlate*                  rv(void);                                                           //!< Generate random variable
@@ -51,6 +51,7 @@ private:
     void                        buildRandomBinaryTree(std::vector<TopologyNode *> &interior, std::vector<TopologyNode *> &tips, size_t numTaxa);
 
     static const TypeSpec       typeSpec;
+    static const TypeSpec       varTypeSpec;
     
 };
 

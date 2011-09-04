@@ -36,6 +36,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_beta::typeSpec(Dist_beta_name);
+const TypeSpec Dist_beta::varTypeSpec(RealPos_name);
 
 /** Default constructor for parser use */
 Dist_beta::Dist_beta( void ) : DistributionContinuous( getMemberRules() ) {
@@ -102,9 +103,9 @@ const TypeSpec& Dist_beta::getTypeSpec(void) const {
 
 
 /** Get random variable type */
-const TypeSpec Dist_beta::getVariableType( void ) const {
+const TypeSpec& Dist_beta::getVariableType( void ) const {
 
-    return TypeSpec( RealPos_name );
+    return varTypeSpec;
 }
 
 

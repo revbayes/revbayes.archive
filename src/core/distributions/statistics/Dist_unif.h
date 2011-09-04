@@ -45,7 +45,7 @@ class Dist_unif: public DistributionContinuous {
         double                      cdf(const RbLanguageObject* value);                                 //!< Cumulative density
         const Real*                 getMax(void) const;                                                 //!< Get max value
         const Real*                 getMin(void) const;                                                 //!< Get min value
-        const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Real)
+        const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Real)
         double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         Real*                       quantile(const double p);                                           //!< Quantile
@@ -53,6 +53,7 @@ class Dist_unif: public DistributionContinuous {
     
     private:
         static const TypeSpec       typeSpec;
+        static const TypeSpec       varTypeSpec;
 };
 
 #endif

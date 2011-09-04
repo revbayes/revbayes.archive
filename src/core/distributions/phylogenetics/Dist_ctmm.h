@@ -48,13 +48,14 @@ class Dist_ctmm: public DistributionDiscrete {
         // Discrete distribution functions
         size_t                      getNumberOfStates(void) const;                                      //!< Get number of states
         virtual const Simplex*      getProbabilityMassVector(void);                                     //!< Get probability mass vector
-        const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Simplex)
+        const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
         double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         CharacterStateDiscrete*     rv(void);                                                           //!< Generate random variable
     
     private:
         static const TypeSpec       typeSpec;
+        static const TypeSpec       varTypeSpec;
 };
 
 #endif

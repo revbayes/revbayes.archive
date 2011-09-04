@@ -34,6 +34,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_lnorm::typeSpec(Dist_lnorm_name);
+const TypeSpec Dist_lnorm::varTypeSpec(Real_name);
 
 /** Constructor for parser use */
 Dist_lnorm::Dist_lnorm( void ) : DistributionContinuous( getMemberRules() ) {
@@ -101,9 +102,9 @@ const TypeSpec& Dist_lnorm::getTypeSpec(void) const {
 
 
 /** Get random variable type */
-const TypeSpec Dist_lnorm::getVariableType( void ) const {
+const TypeSpec& Dist_lnorm::getVariableType( void ) const {
 	
-    return TypeSpec( Real_name );
+    return varTypeSpec;
 }
 
 

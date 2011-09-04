@@ -39,6 +39,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_topologyunif::typeSpec(Dist_topologyunif_name);
+const TypeSpec Dist_topologyunif::varTypeSpec(Topology_name);
 
 /** Default constructor for parser use */
 Dist_topologyunif::Dist_topologyunif( void ) : DistributionDiscrete( getMemberRules() ) {
@@ -214,9 +215,9 @@ const TypeSpec& Dist_topologyunif::getTypeSpec(void) const {
 
 
 /** Get random variable type */
-const TypeSpec Dist_topologyunif::getVariableType( void ) const {
+const TypeSpec& Dist_topologyunif::getVariableType( void ) const {
 
-    return TypeSpec( Topology_name );
+    return varTypeSpec;
 }
 
 

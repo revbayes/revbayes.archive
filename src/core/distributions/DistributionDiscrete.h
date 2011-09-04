@@ -50,7 +50,7 @@ class DistributionDiscrete: public Distribution {
         // Categorical distribution functions you have to override
         virtual size_t                      getNumberOfStates(void) const = 0;                                          //!< Get number of states
         virtual const Simplex*              getProbabilityMassVector(void) = 0;                                         //!< Get probability mass vector
-        virtual const TypeSpec              getVariableType(void) const = 0;                                            //!< Get random variable type spec
+        virtual const TypeSpec&             getVariableType(void) const = 0;                                            //!< Get random variable type spec
         virtual double                      lnPdf(const RbLanguageObject* value) = 0;                                   //!< Ln probability density
         virtual double                      pdf(const RbLanguageObject* value) = 0;                                     //!< Probability density
         virtual RbLanguageObject*           rv(void) = 0;                                                               //!< Generate a random draw

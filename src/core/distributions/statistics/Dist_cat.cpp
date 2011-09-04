@@ -37,6 +37,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_cat::typeSpec(Dist_cat_name);
+const TypeSpec Dist_cat::varTypeSpec(Categorical_name);
 
 /** Default constructor for parser use */
 Dist_cat::Dist_cat( void ) : DistributionDiscrete( getMemberRules() ) {
@@ -96,10 +97,10 @@ const TypeSpec& Dist_cat::getTypeSpec(void) const {
 
 
 /** Get random variable type */
-const TypeSpec Dist_cat::getVariableType( void ) const {
+const TypeSpec& Dist_cat::getVariableType( void ) const {
     
     if (getMemberDagNode( "dummy" ) == NULL) 
-        return Categorical_name;
+        return varTypeSpec;
 
     return getMemberDagNode( "dummy" )->getValueTypeSpec();
 }

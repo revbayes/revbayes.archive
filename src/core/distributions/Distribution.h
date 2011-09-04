@@ -56,7 +56,7 @@ class Distribution: public ConstantMemberObject {
 
         // Distribution functions you have to override
 //        virtual Move*               getDefaultMove(StochasticNode* node) = 0;                                       //!< Get default move
-        virtual const TypeSpec      getVariableType(void) const = 0;                                                //!< Get random variable type
+        virtual const TypeSpec&     getVariableType(void) const = 0;                                                //!< Get random variable type
         virtual double              lnPdf(const RbLanguageObject* value) = 0;                                       //!< Ln probability density
         virtual double              pdf(const RbLanguageObject* value) = 0;                                         //!< Probability density function
         virtual RbLanguageObject*   rv(void) = 0;                                                                   //!< Generate a random draw

@@ -47,7 +47,7 @@ class Dist_dirichlet: public DistributionContinuous {
 
         // Real-valued distribution functions
         double                      cdf(const RbLanguageObject* value);                                 //!< Cumulative density
-        const TypeSpec              getVariableType(void) const;                                        //!< Get random variable type (Simplex)
+        const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
         double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
         double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
         Simplex*                    quantile(const double p);                                           //!< Quantile
@@ -55,6 +55,7 @@ class Dist_dirichlet: public DistributionContinuous {
     
     private:
         static const TypeSpec       typeSpec;
+        static const TypeSpec       varTypeSpec;
 };
 
 #endif

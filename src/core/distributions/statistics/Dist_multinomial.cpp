@@ -39,6 +39,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_multinomial::typeSpec(Dist_multinomial_name);
+const TypeSpec Dist_multinomial::varTypeSpec(Natural_name);
 
 /** Default constructor for parser use */
 Dist_multinomial::Dist_multinomial( void ) : DistributionContinuous( getMemberRules() ) {
@@ -91,9 +92,9 @@ const TypeSpec& Dist_multinomial::getTypeSpec(void) const {
 
 
 /** Get random variable type */
-const TypeSpec Dist_multinomial::getVariableType( void ) const {
+const TypeSpec& Dist_multinomial::getVariableType( void ) const {
 
-    return TypeSpec( Natural_name );
+    return varTypeSpec;
 }
 
 

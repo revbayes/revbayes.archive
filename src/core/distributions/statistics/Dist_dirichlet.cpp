@@ -37,6 +37,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_dirichlet::typeSpec(Dist_dirichlet_name);
+const TypeSpec Dist_dirichlet::varTypeSpec(Simplex_name);
 
 /** Default constructor for parser use */
 Dist_dirichlet::Dist_dirichlet( void ) : DistributionContinuous( getMemberRules() ) {
@@ -111,9 +112,9 @@ const TypeSpec& Dist_dirichlet::getTypeSpec(void) const {
 
 
 /** Get random variable type */
-const TypeSpec Dist_dirichlet::getVariableType( void ) const {
+const TypeSpec& Dist_dirichlet::getVariableType( void ) const {
 
-    return TypeSpec( Simplex_name );
+    return varTypeSpec;
 }
 
 /**

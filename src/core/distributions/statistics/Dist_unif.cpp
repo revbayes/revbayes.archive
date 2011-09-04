@@ -35,6 +35,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_unif::typeSpec(Dist_unif_name);
+const TypeSpec Dist_unif::varTypeSpec(Real_name);
 
 /** Default constructor for parser use */
 Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()) {
@@ -121,9 +122,9 @@ const TypeSpec& Dist_unif::getTypeSpec(void) const {
 
 
 /** Get random variable type */
-const TypeSpec Dist_unif::getVariableType( void ) const {
+const TypeSpec& Dist_unif::getVariableType( void ) const {
 
-    return TypeSpec( Real_name );
+    return varTypeSpec;
 }
 
 
