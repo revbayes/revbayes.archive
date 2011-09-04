@@ -69,6 +69,21 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 }
 
 
+const std::string& ArgumentRule::getArgumentLabel(void) const {
+    return label;
+}
+
+
+const std::string& ArgumentRule::getArgumentType(void) const {
+    return argSlot.getSlotType();
+}
+
+
+const TypeSpec& ArgumentRule::getArgumentTypeSpec(void) const {
+    return argSlot.getSlotTypeSpec();
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& ArgumentRule::getClass(void) const { 
 
@@ -77,9 +92,18 @@ const VectorString& ArgumentRule::getClass(void) const {
 }
 
 
+Variable* ArgumentRule::getDefaultVariable(void) const {
+    return argSlot.getVariable(); 
+}
+
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& ArgumentRule::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+bool ArgumentRule::hasDefault(void) const {
+    return hasDefaultVal;
 }
 
 
@@ -92,12 +116,12 @@ bool ArgumentRule::isArgumentValid(DAGNode* var, bool& needsConversion) const {
 
     
    /* We need safe argument matching for repeated evaluation in a function node */
-   if ( Workspace::userWorkspace().isXOfTypeY( var->getValueType(), argSlot.getSlotTypeSpec().getType() ) == true ) {
+   if ( var->getValue()->isTypeSpec(argSlot.getSlotTypeSpec()) == true ) {
        needsConversion = false;
        return true;
    }
 
-   if ( Workspace::userWorkspace().isXConvertibleToY( var->getValueTypeSpec(), argSlot.getSlotTypeSpec() ) == true) {
+   if ( var->getValue()->isConvertibleTo(argSlot.getSlotTypeSpec() ) == true) {
        needsConversion = true;
        return true;
    }

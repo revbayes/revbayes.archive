@@ -96,13 +96,11 @@ class Workspace : public Environment {
         RbLanguageObject*           executeFunction(    const std::string&              name,
                                                         const std::vector<Argument*>&   args) const;                    //!< Execute function
         bool                        existsType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
-        RbObject*                   findType(const TypeSpec& name) const;                                               //!< Does the type exist in the type table?
+//        RbObject*                   findType(const TypeSpec& name) const;                                               //!< Does the type exist in the type table?
         const VectorString&         getClassOfType(const TypeSpec& type) const;                                         //!< Get reference to class vector of type
         FunctionTable*              getFunctionTable(void) const { return functionTable; }                              //!< Get function table
         RbFunction*                 getFunction(const std::string& name, const std::vector<Argument*>& args);           //!< Get function copy
         void                        initializeGlobalWorkspace(void);                                                    //!< Initialize global workspace
-        bool                        isXOfTypeY(const TypeSpec& xTypeSp, const TypeSpec& yTypeSp) const;                 //!< Type checking using full type spec
-        bool                        isXConvertibleToY(const TypeSpec& xTypeSp, const TypeSpec& yTypeSp) const;          //!< Type conversion checking using full type spec
         static Workspace&           globalWorkspace(void)                                                               //!< Get global workspace
                                     {
                                         static Workspace globalSpace = Workspace();

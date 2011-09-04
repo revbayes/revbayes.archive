@@ -219,19 +219,19 @@ bool Workspace::existsType( const TypeSpec& name ) const {
 }
 
 
-/** Find type template object */
-RbObject* Workspace::findType( const TypeSpec& name ) const {
-
-    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
-    if ( it == typeTable.end() ) {
-        if ( parentEnvironment != NULL )
-            return static_cast<Workspace*>( parentEnvironment )->findType( name );
-        else
-            throw RbException( "Type '" + name + "' does not exist in environment" );
-    }
-    else
-        return it->second;
-}
+///** Find type template object */
+//RbObject* Workspace::findType( const TypeSpec& name ) const {
+//
+//    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
+//    if ( it == typeTable.end() ) {
+//        if ( parentEnvironment != NULL )
+//            return static_cast<Workspace*>( parentEnvironment )->findType( name );
+//        else
+//            throw RbException( "Type '" + name + "' does not exist in environment" );
+//    }
+//    else
+//        return it->second;
+//}
 
 
 /** Get function */
@@ -246,36 +246,6 @@ const TypeSpec& Workspace::getTypeSpec(void) const {
     return typeSpec;
 }
 
-
-/** Type checking using type table and full type spec */
-bool Workspace::isXOfTypeY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) const {
-    
-    // Cannot provide this service in standard way if type table is not filled with xType
-    // so hard code it instead
-    if ( typesInitialized == false && ! existsType( xTypeSp ) ) {
-        throw RbException( "Unknown type " + xTypeSp.getType() );
-    }
-    
-    if ( !existsType( xTypeSp ) )
-        throw RbException( "No type named '" + xTypeSp.getType() + "'" );
-    
-    return findType( xTypeSp )->isTypeSpec( yTypeSp );
-}
-
-
-/** Is type x convertible to type y? */
-bool Workspace::isXConvertibleToY( const TypeSpec& xTypeSp, const TypeSpec& yTypeSp ) const {
-
-    if ( typesInitialized == false )
-        return true;    // Cannot provide this service if type table is not filled
-
-    bool retVal = false;
-    
-    retVal = findType( xTypeSp )->isConvertibleTo( yTypeSp );
-    
-
-    return retVal;
-}
 
 
 /** Print workspace */

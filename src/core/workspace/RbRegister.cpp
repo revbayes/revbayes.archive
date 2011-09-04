@@ -357,6 +357,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "sort",    new Func_sort<VectorRealPos>()          );
         addFunction( "sort",    new Func_sort<VectorComplex>()          );
         addFunction( "sort",    new Func_sort<VectorString>()          );
+        addFunction( "sort",    new Func_sort<Vector>()          );
 
         /* Add math functions (alphabetical order) */
 

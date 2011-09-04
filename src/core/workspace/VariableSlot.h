@@ -54,7 +54,7 @@ public:
     const std::string&      getSlotType(void) const { return varTypeSpec.getType(); }               //!< Type of slot
     const TypeSpec&         getSlotTypeSpec(void) const { return varTypeSpec; }                     //!< Type specification for slot
     Variable*               getVariable(void) const { return variable; }                            //!< Get the argument
-    virtual bool            isValidVariable(DAGNode* newVariable ) const;                   //!< Is newVariable valid for the slot?
+    virtual bool            isValidVariable(DAGNode* newVariable ) const;                           //!< Is newVariable valid for the slot?
     void                    printValue(std::ostream& o) const;                                      //!< Print value of slot
     void                    setVariable(Variable *var);                                             //!< Set a slot with a variable
     

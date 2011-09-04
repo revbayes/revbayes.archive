@@ -43,11 +43,11 @@ class ArgumentRule : public RbInternal {
         std::string                 richInfo(void) const;                                                                               //!< General info on object
 
         // ArgumentRule functions
-        std::string                 getArgumentLabel(void) const { return label; }                                                      //!< Get label of argument
-        const std::string&          getArgumentType(void) const { return argSlot.getSlotType(); }                                       //!< Get argument type
-        const TypeSpec&             getArgumentTypeSpec(void) const { return argSlot.getSlotTypeSpec(); }                               //!< Get argument type spec
-        Variable*                   getDefaultVariable(void) { return argSlot.getVariable(); }                                          //!< Get default argument
-        bool                        hasDefault(void) const { return hasDefaultVal; }                                                    //!< Has default?
+        const std::string&          getArgumentLabel(void) const;                                                                       //!< Get label of argument
+        const std::string&          getArgumentType(void) const;                                                                        //!< Get argument type
+        const TypeSpec&             getArgumentTypeSpec(void) const;                                                                    //!< Get argument type spec
+        Variable*                   getDefaultVariable(void) const;                                                                     //!< Get default argument
+        bool                        hasDefault(void) const;                                                                             //!< Has default?
         virtual bool                isArgumentValid(DAGNode* var, bool& needsConversion) const;                                         //!< Is var valid argument?
 
     protected:

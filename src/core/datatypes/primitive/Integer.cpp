@@ -141,11 +141,11 @@ bool Integer::isConvertibleTo( const TypeSpec& type ) const {
     if ( type == VectorInteger_name )
         return true;
 
-    if ( type == RealPos_name && value > 0 )
-        return true;
-
-    if ( type == Natural_name && value >= 0 )
-        return true;
+//    if ( type == RealPos_name && value > 0 )
+//        return true;
+//
+//    if ( type == Natural_name && value >= 0 )
+//        return true;
 
     return RbLanguageObject::isConvertibleTo( type );
 }

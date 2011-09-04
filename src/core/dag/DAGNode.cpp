@@ -183,7 +183,7 @@ bool DAGNode::isParentInDAG( const DAGNode* x, std::list<DAGNode*>& done ) const
 /** Is the node of language type typeSpec? */
 bool DAGNode::isValueOfTypeSpec( const TypeSpec& typeSp ) const {
 
-    return Workspace::userWorkspace().isXOfTypeY( getValueTypeSpec(), typeSp );
+    return value->isTypeSpec( typeSp );
 }
 
 /** Print children */

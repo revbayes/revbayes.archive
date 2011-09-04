@@ -371,7 +371,7 @@ bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, Vec
     for ( ; argIndex < numFinalArgs; argIndex++ ) {
     
         
-        const VectorString& argClass = args[argIndex].getValue()->getClass();
+        const VectorString& argClass = args[argIndex].getDagNodePtr()->getValue()->getClass();
         size_t j;
         for (j=0; j<argClass.size(); j++)
             if ( argClass[j] == theRules[nRules-1]->getArgumentType() )

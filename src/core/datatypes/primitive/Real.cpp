@@ -109,10 +109,10 @@ bool Real::isConvertibleTo(const TypeSpec& type) const {
 
     if (type == RbBoolean_name)
         return true;
-    if (type == RealPos_name && value > 0.0)
-        return true;
-    if (type == Probability_name && value >= 0.0 && value <= 1.0)
-        return true;
+//    if (type == RealPos_name && value > 0.0)
+//        return true;
+//    if (type == Probability_name && value >= 0.0 && value <= 1.0)
+//        return true;
 
     return RbLanguageObject::isConvertibleTo(type);
 }

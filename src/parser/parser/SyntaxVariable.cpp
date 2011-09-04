@@ -427,7 +427,7 @@ Variable* SyntaxVariable::getContentAsVariable(Environment* env) const {
             SyntaxElement               *indexSyntaxElement     = *it;
             DAGNode                     *indexVar               = indexSyntaxElement->getContentAsVariable(env)->getDagNodePtr();
             const RbLanguageObject      *theValue               = indexVar->getValue();
-            if ( !theValue->isConvertibleTo(Natural_name) ) 
+            if ( !theValue->isTypeSpec(Natural_name) && !theValue->isConvertibleTo(Natural_name) ) 
                 throw RbException("Could not access index with type xxx because only natural indices are supported!");
             size_t                      indexValue              = dynamic_cast<const Natural*>(theValue->convertTo(Natural_name))->getValue() - 1;
             RbObject                    *subElement             = theVar->getDagNodePtr()->getElement(indexValue);

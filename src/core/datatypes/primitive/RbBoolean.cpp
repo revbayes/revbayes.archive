@@ -80,7 +80,7 @@ RbObject* RbBoolean::convertTo(const TypeSpec& type) const {
 /** Get class vector describing type of object */
 const VectorString& RbBoolean::getClass() const {
 
-    static VectorString rbClass = VectorString(RbBoolean_name) + RbObject::getClass();
+    static VectorString rbClass = VectorString(RbBoolean_name) + RbLanguageObject::getClass();
     return rbClass;
 }
 
