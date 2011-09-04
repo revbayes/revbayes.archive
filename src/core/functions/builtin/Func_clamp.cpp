@@ -33,6 +33,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_clamp::typeSpec(Func_clamp_name);
+const TypeSpec Func_clamp::returnTypeSpec(RbVoid_name);
 
 /** Clone object */
 Func_clamp* Func_clamp::clone( void ) const {
@@ -82,9 +83,9 @@ const VectorString& Func_clamp::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec Func_clamp::getReturnType( void ) const {
+const TypeSpec& Func_clamp::getReturnType( void ) const {
 
-    return TypeSpec( RbVoid_name );
+    return returnTypeSpec;
 }
 
 

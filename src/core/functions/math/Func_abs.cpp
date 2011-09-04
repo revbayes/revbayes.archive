@@ -34,6 +34,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_abs::typeSpec(Func_abs_name);
+const TypeSpec Func_abs::returnTypeSpec(RealPos_name);
 
 Func_abs::Func_abs(void) : RbFunction() {
     
@@ -85,9 +86,9 @@ const VectorString& Func_abs::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec Func_abs::getReturnType( void ) const {
+const TypeSpec& Func_abs::getReturnType( void ) const {
     
-    return TypeSpec( RealPos_name );
+    return returnTypeSpec;
 }
 
 

@@ -39,10 +39,11 @@ class Func__ge :  public RbFunction {
         // Regular functions
     	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
+        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
         static const TypeSpec       typeSpec;
+        static const TypeSpec       returnTypeSpec;
 };
 
 #endif
@@ -63,6 +64,8 @@ class Func__ge :  public RbFunction {
 // Definition of the static type spec member
 template <typename firstValType, typename secondValType>
 const TypeSpec Func__ge<firstValType, secondValType>::typeSpec("Func__ge", new TypeSpec(firstValType().getType() + "," + secondValType().getType()));
+template <typename firstValType, typename secondValType>
+const TypeSpec Func__ge<firstValType, secondValType>::returnTypeSpec(RbBoolean_name);
 
 
 /** Clone object */
@@ -114,9 +117,9 @@ const VectorString& Func__ge<firstValType, secondValType>::getClass( void ) cons
 
 /** Get return type */
 template <typename firstValType, typename secondValType>
-const TypeSpec Func__ge<firstValType, secondValType>::getReturnType( void ) const {
+const TypeSpec& Func__ge<firstValType, secondValType>::getReturnType( void ) const {
 
-    return TypeSpec( RbBoolean_name );
+    return returnTypeSpec;
 }
 
 

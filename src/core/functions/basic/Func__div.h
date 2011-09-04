@@ -38,7 +38,7 @@ class Func__div :  public RbFunction {
         // Regular functions
     	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
+        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
         static const TypeSpec       typeSpec;
@@ -124,7 +124,7 @@ const VectorString& Func__div<firstValType, secondValType, retType>::getClass(vo
 
 /** Get return type */
 template <typename firstValType, typename secondValType, typename retType>
-const TypeSpec Func__div<firstValType, secondValType, retType>::getReturnType(void) const {
+const TypeSpec& Func__div<firstValType, secondValType, retType>::getReturnType(void) const {
 
     return retType().getTypeSpec();
 }

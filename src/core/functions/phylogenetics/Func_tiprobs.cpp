@@ -34,6 +34,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_tiprobs::typeSpec(Func_tiprobs_name);
+const TypeSpec Func_tiprobs::returnTypeSpec(RbVoid_name);
 
 /** Clone object */
 Func_tiprobs* Func_tiprobs::clone(void) const {
@@ -97,9 +98,9 @@ const VectorString& Func_tiprobs::getClass(void) const {
 
 
 /** Get return type */
-const TypeSpec Func_tiprobs::getReturnType(void) const {
+const TypeSpec& Func_tiprobs::getReturnType(void) const {
 
-    return TypeSpec( RbVoid_name );
+    return returnTypeSpec;
 }
 
 

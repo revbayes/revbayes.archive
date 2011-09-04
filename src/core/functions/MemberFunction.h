@@ -53,7 +53,7 @@ public:
     RbLanguageObject*           execute(void);                                                              //!< Execute function
    
     const ArgumentRules&        getArgumentRules(void) const;                                               //!< Get argument rules
-    const TypeSpec              getReturnType(void) const;                                                  //!< Get type of return value
+    const TypeSpec&             getReturnType(void) const;                                                  //!< Get type of return value
     void                        setMemberObject(MemberObject *obj);                                         //!< Set the member object to which this function belongs
     void                        setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of member method
 

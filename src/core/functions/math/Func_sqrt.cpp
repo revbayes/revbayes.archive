@@ -35,6 +35,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_sqrt::typeSpec(Func_sqrt_name);
+const TypeSpec Func_sqrt::returnTypeSpec(RealPos_name);
 
 /** Clone object */
 Func_sqrt* Func_sqrt::clone( void ) const {
@@ -46,10 +47,7 @@ Func_sqrt* Func_sqrt::clone( void ) const {
 /** Execute function */
 RbLanguageObject* Func_sqrt::execute( void ) {
     
-    const Real* x = static_cast<const Real*>( args[0].getValue() );
-
-    if ( *x < 0.0 )
-		throw RbException( "Square root of negative number. RevBayes does not (yet) support complex numbers" );
+    const RealPos* x = static_cast<const RealPos*>( args[0].getValue() );
 
     return ( new RealPos( sqrt( *x ) ) );
 }
@@ -80,9 +78,9 @@ const VectorString& Func_sqrt::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec Func_sqrt::getReturnType( void ) const {
+const TypeSpec& Func_sqrt::getReturnType( void ) const {
 
-    return TypeSpec( RealPos_name );
+    return returnTypeSpec;
 }
 
 

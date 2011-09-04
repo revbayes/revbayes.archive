@@ -35,10 +35,11 @@ class Func_quit :  public RbFunction {
         // Func_quit functions
     	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                                  //!< Get type of return val
+        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return val
     
     private:
         static const TypeSpec       typeSpec;
+        static const TypeSpec       returnTypeSpec;
 };
 
 #endif

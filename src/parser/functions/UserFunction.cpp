@@ -144,7 +144,7 @@ const VectorString& UserFunction::getClass() const {
 
 
 /** Get return type */
-const TypeSpec UserFunction::getReturnType() const {
+const TypeSpec& UserFunction::getReturnType() const {
 
     return returnType;
 }

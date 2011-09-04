@@ -34,6 +34,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_log::typeSpec(Func_log_name);
+const TypeSpec Func_log::returnTypeSpec(Real_name);
 
 /** Clone object */
 Func_log* Func_log::clone( void ) const {
@@ -78,9 +79,9 @@ const VectorString& Func_log::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec Func_log::getReturnType( void ) const {
+const TypeSpec& Func_log::getReturnType( void ) const {
     
-    return TypeSpec( Real_name );
+    return returnTypeSpec;
 }
 
 

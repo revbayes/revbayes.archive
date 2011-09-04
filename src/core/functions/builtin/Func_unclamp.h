@@ -40,10 +40,11 @@ class Func_unclamp :  public RbFunction {
         bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
         RbLanguageObject*           execute(void);                                      //!< Execute operation
         const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                          //!< Get type of return value
+        const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
     
     private:
         static const TypeSpec       typeSpec;
+        static const TypeSpec       returnTypeSpec;
 };
 
 #endif

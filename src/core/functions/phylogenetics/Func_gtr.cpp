@@ -32,6 +32,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_gtr::typeSpec(Func_gtr_name);
+const TypeSpec Func_gtr::returnTypeSpec(RateMatrix_name);
 
 /** Clone object */
 Func_gtr* Func_gtr::clone(void) const {
@@ -136,9 +137,9 @@ const VectorString& Func_gtr::getClass(void) const {
 
 
 /** Get return type */
-const TypeSpec Func_gtr::getReturnType(void) const {
+const TypeSpec& Func_gtr::getReturnType(void) const {
 
-    return TypeSpec( RateMatrix_name );
+    return returnTypeSpec;
 }
 
 

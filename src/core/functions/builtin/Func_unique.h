@@ -41,7 +41,7 @@ public:
 	bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
 	RbLanguageObject*           execute(void);                                      //!< Execute operation
 	const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
-	const TypeSpec              getReturnType(void) const;                          //!< Get type of return value
+	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 	
 private:
     static const TypeSpec       typeSpec;
@@ -113,7 +113,8 @@ const VectorString& Func_unique<valType>::getClass( void ) const {
 
 
 /** Get return type */
-template <typename valType> const TypeSpec Func_unique<valType>::getReturnType( void ) const {
+template <typename valType> 
+const TypeSpec& Func_unique<valType>::getReturnType( void ) const {
 	
     return valType().getTypeSpec();
 }

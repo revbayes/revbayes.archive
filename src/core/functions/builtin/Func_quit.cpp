@@ -33,6 +33,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_quit::typeSpec(Func_quit_name);
+const TypeSpec Func_quit::returnTypeSpec(RbVoid_name);
 
 /** Clone object */
 Func_quit* Func_quit::clone( void ) const {
@@ -72,9 +73,9 @@ const VectorString& Func_quit::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec Func_quit::getReturnType( void ) const {
+const TypeSpec& Func_quit::getReturnType( void ) const {
 
-    return TypeSpec(RbVoid_name);
+    return returnTypeSpec;
 }
 
 

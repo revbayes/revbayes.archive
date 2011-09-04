@@ -57,7 +57,7 @@ class UserFunction :  public RbFunction {
         // Regular functions
 		RbLanguageObject*           execute(void);                      //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;       //!< Get arg rules
-        const TypeSpec              getReturnType(void) const;          //!< Get return type
+        const TypeSpec&             getReturnType(void) const;          //!< Get return type
 
 	protected:
         const ArgumentRules         argumentRules;      //!< The argument rules

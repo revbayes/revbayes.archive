@@ -23,6 +23,7 @@
 #include "Trace.h"
 #include "UserInterface.h"
 #include "ValueRule.h"
+#include "Vector.h"
 #include "VectorString.h"
 
 #include <map>
@@ -33,6 +34,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_readTraces::typeSpec(Func_readTraces_name);
+const TypeSpec Func_readTraces::returnTypeSpec(Vector_name, new TypeSpec(Trace_name));
 
 /** Clone object */
 Func_readTraces* Func_readTraces::clone( void ) const {
@@ -220,9 +222,9 @@ const VectorString& Func_readTraces::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec Func_readTraces::getReturnType( void ) const {
+const TypeSpec& Func_readTraces::getReturnType( void ) const {
     
-    return TypeSpec( Trace_name );
+    return returnTypeSpec;
 }
 
 

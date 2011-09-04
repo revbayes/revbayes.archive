@@ -73,7 +73,7 @@ const VectorString& ConstructorFunction::getClass(void) const {
 
 
 /** Get return type */
-const TypeSpec ConstructorFunction::getReturnType(void) const {
+const TypeSpec& ConstructorFunction::getReturnType(void) const {
 
     return templateObject->getTypeSpec();
 }

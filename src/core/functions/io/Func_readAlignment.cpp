@@ -37,6 +37,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_readAlignment::typeSpec(Func_readAlignment_name);
+const TypeSpec Func_readAlignment::returnTypeSpec(Vector_name, new TypeSpec(CharacterMatrix_name));
 
 /** Clone object */
 Func_readAlignment* Func_readAlignment::clone( void ) const {
@@ -261,9 +262,9 @@ const VectorString& Func_readAlignment::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec Func_readAlignment::getReturnType( void ) const {
+const TypeSpec& Func_readAlignment::getReturnType( void ) const {
     
-    return TypeSpec( MemberObject_name );
+    return returnTypeSpec;
 }
 
 

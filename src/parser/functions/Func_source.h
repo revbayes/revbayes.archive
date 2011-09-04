@@ -35,11 +35,12 @@ class Func_source :  public RbFunction {
         // Func_source functions
     	RbLanguageObject*       execute(void);                      //!< Execute function
         const ArgumentRules&    getArgumentRules(void) const;       //!< Get argument rules
-        const TypeSpec          getReturnType(void) const;          //!< Get type of return val
+        const TypeSpec&         getReturnType(void) const;          //!< Get type of return val
         bool                    throws(void) const { return true; }       //!< Function may throw exceptions
     
     private:
         static const TypeSpec       typeSpec;
+        static const TypeSpec       returnTypeSpec;
 };
 
 #endif

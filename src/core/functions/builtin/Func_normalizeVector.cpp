@@ -40,6 +40,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_normalizeVector::typeSpec(Func_normalizeVector_name);
+const TypeSpec Func_normalizeVector::returnTypeSpec(Simplex_name);
 
 /** Clone object */
 Func_normalizeVector* Func_normalizeVector::clone( void ) const {
@@ -88,9 +89,9 @@ const VectorString& Func_normalizeVector::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec Func_normalizeVector::getReturnType( void ) const {
+const TypeSpec& Func_normalizeVector::getReturnType( void ) const {
 
-    return TypeSpec( Simplex_name );
+    return returnTypeSpec;
 }
 
 

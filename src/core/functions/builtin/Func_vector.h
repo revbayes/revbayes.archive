@@ -39,7 +39,7 @@ class Func_vector :  public RbFunction {
         bool                        addAsChildOfArguments(void) { return false; }               //!< We do not wish that this function is added as a child of the arguments
     	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
+        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
         static const TypeSpec       typeSpec;
@@ -110,7 +110,7 @@ const VectorString& Func_vector<valType, retType>::getClass( void ) const {
 
 /** Get return type */
 template <typename valType, typename retType>
-const TypeSpec Func_vector<valType, retType>::getReturnType( void ) const {
+const TypeSpec& Func_vector<valType, retType>::getReturnType( void ) const {
 
     return retType().getTypeSpec();
 }

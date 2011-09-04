@@ -34,6 +34,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_sin::typeSpec(Func_sin_name);
+const TypeSpec Func_sin::returnTypeSpec(Real_name);
 
 /** Clone object */
 Func_sin* Func_sin::clone( void ) const {
@@ -76,9 +77,9 @@ const VectorString& Func_sin::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec Func_sin::getReturnType( void ) const {
+const TypeSpec& Func_sin::getReturnType( void ) const {
     
-    return TypeSpec( Real_name );
+    return returnTypeSpec;
 }
 
 

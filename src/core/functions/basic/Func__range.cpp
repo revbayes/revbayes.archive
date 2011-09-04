@@ -31,6 +31,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func__range::typeSpec(Func__range_name);
+const TypeSpec Func__range::returnTypeSpec(VectorInteger_name);
 
 /** Clone object */
 Func__range* Func__range::clone( void ) const {
@@ -88,8 +89,8 @@ const TypeSpec& Func__range::getTypeSpec(void) const {
 
 
 /** Get return type */
-const TypeSpec Func__range::getReturnType( void ) const {
+const TypeSpec& Func__range::getReturnType( void ) const {
 
-    return TypeSpec( VectorInteger_name );
+    return returnTypeSpec;
 }
 

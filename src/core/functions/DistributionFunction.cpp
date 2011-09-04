@@ -212,7 +212,7 @@ const VectorString& DistributionFunction::getClass(void) const {
 
 
 /** Get return type */
-const TypeSpec DistributionFunction::getReturnType(void) const {
+const TypeSpec& DistributionFunction::getReturnType(void) const {
 
     return returnType;
 }

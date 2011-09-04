@@ -41,10 +41,11 @@ public:
 	bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
 	RbLanguageObject*           execute(void);                                      //!< Execute operation
 	const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
-	const TypeSpec              getReturnType(void) const;                          //!< Get type of return value
+	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 	
 private:
     static const TypeSpec       typeSpec;
+    static const TypeSpec       returnTypeSpec;
 };
 
 #endif
@@ -59,6 +60,8 @@ private:
 // Definition of the static type spec member
 template <typename valType>
 const TypeSpec Func_size<valType>::typeSpec(Func_size_name, new TypeSpec(valType().getType()));
+template <typename valType>
+const TypeSpec Func_size<valType>::returnTypeSpec(Natural_name);
 
 
 /** Clone object */
@@ -74,8 +77,8 @@ template <typename valType>
 RbLanguageObject* Func_size<valType>::execute( void ) {
     
     const valType* val =  static_cast<const valType*> ( args[0].getValue() ) ;
-    Integer size ( val->size() ); 
-    return size.clone();
+    Natural *size = new Natural( val->size() ); 
+    return size;
     
 }
 
@@ -109,9 +112,10 @@ const VectorString& Func_size<valType>::getClass( void ) const {
 
 
 /** Get return type */
-template <typename valType> const TypeSpec Func_size<valType>::getReturnType( void ) const {
+template <typename valType> 
+const TypeSpec& Func_size<valType>::getReturnType( void ) const {
 	
-    return valType().getTypeSpec();
+    return returnTypeSpec;
 }
 
 

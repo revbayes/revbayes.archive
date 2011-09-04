@@ -75,7 +75,7 @@ class RbFunction :  public RbInternal {
         // RbFunction functions you have to override
         virtual RbLanguageObject*               execute(void) = 0;                                                                  //!< Execute function
         virtual const ArgumentRules&            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
-        virtual const TypeSpec                  getReturnType(void) const = 0;                                                      //!< Get type of return value
+        virtual const TypeSpec&                 getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // RbFunction function you may want to override
         virtual bool                            processArguments(const std::vector<Argument*>&   passedArgs,

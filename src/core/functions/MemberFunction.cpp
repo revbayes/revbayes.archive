@@ -93,7 +93,7 @@ const ArgumentRules& MemberFunction::getArgumentRules(void) const {
 
 
 /** Get return type */
-const TypeSpec MemberFunction::getReturnType(void) const {
+const TypeSpec& MemberFunction::getReturnType(void) const {
 
     return returnType;
 }

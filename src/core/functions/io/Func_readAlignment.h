@@ -71,12 +71,13 @@ class Func_readAlignment :  public RbFunction {
         // Regular functions
         RbLanguageObject*           execute(void);                                                          //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                                              //!< Get type of return value
+        const TypeSpec&             getReturnType(void) const;                                              //!< Get type of return value
     
     private:
         void                        formatError(RbFileManager& fm, std::string& errorStr);                  //!< Format the error string when (mis)reading files
 
         static const TypeSpec       typeSpec;
+        static const TypeSpec       returnTypeSpec;
 };
 
 #endif

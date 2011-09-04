@@ -38,11 +38,12 @@ class Func_simplex :  public RbFunction {
         // Regular functions
     	RbLanguageObject*           execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec              getReturnType(void) const;                                  //!< Get type of return value
+        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         bool                        throws(void) const;                                         //!< One variant needs to throw
     
     private:
         static const TypeSpec       typeSpec;
+        static const TypeSpec       returnTypeSpec;
 };
 
 #endif
@@ -61,6 +62,8 @@ class Func_simplex :  public RbFunction {
 // Definition of the static type spec member
 template <typename valType>
 const TypeSpec Func_simplex<valType>::typeSpec("Func_simplex", new TypeSpec(valType().getType()));
+template <typename valType>
+const TypeSpec Func_simplex<valType>::returnTypeSpec(Simplex_name);
 
 
 /** Clone object */
@@ -159,9 +162,9 @@ const VectorString& Func_simplex<valType>::getClass( void ) const {
 
 /** Get return type */
 template <typename valType>
-const TypeSpec Func_simplex<valType>::getReturnType( void ) const {
+const TypeSpec& Func_simplex<valType>::getReturnType( void ) const {
 
-    return TypeSpec( Simplex_name );
+    return returnTypeSpec;
 }
 
 

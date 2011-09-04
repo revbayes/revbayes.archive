@@ -34,6 +34,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_cos::typeSpec(Func_cos_name);
+const TypeSpec Func_cos::returnTypeSpec(Real_name);
 
 /** Clone object */
 Func_cos* Func_cos::clone( void ) const {
@@ -76,9 +77,9 @@ const VectorString& Func_cos::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec Func_cos::getReturnType( void ) const {
+const TypeSpec& Func_cos::getReturnType( void ) const {
 
-    return TypeSpec( Real_name );
+    return returnTypeSpec;
 }
 
 
