@@ -145,65 +145,6 @@ Topology* Topology::clone(void) const {
 }
 
 
-/* Get class information */
-const VectorString& Topology::getClass(void) const {
-    
-    static VectorString rbClass = VectorString(Topology_name) + ConstantMemberObject::getClass();
-    return rbClass;
-}
-
-
-/** Calculate the number of interior nodes in the tree by deducing the number of
-    tips from number of nodes, and then subtract 1 more if the tree is rooted. */
-size_t Topology::getNumberOfInteriorNodes(void) const {
-
-    size_t preliminaryNumIntNodes = getNumberOfNodes() - getNumberOfTips();
-
-    if ( isRooted )
-        return preliminaryNumIntNodes - 1;
-    else
-        return preliminaryNumIntNodes;
-}
-
-
-/** Calculate and return the number of tips on the tree by going through the vector
-    of nodes, querying each about its tip status. */
-size_t Topology::getNumberOfTips(void) const {
-
-    size_t n = 0;
-    for (size_t i=0; i<nodes.size(); i++)
-        {
-        if (nodes[i]->isTip() == true)
-            n++;
-        }
-    return n;
-}
-
-
-/** We provide this function to allow a caller to randomly pick one of the interior nodes.
-    This version assumes that the root is always the last and the tips the first in the nodes vector. */
-TopologyNode* Topology::getInteriorNode( int indx ) const {
-
-    // TODO: Bound checking, maybe draw from downpass array instead
-    return nodes[ indx + getNumberOfTips() ];
-}
-
-
-/** We provide this function to allow a caller to randomly pick one of the interior nodes.
-    This version assumes that the tips are first in the nodes vector. */
-TopologyNode* Topology::getTipNode( size_t indx ) const {
-
-    // TODO: Bound checking
-    return nodes[ indx ];
-}
-
-
-/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Topology::getTypeSpec(void) const {
-    return typeSpec;
-}
-
-
 /* Map calls to member methods */
 RbLanguageObject* Topology::executeOperation(const std::string& name, Environment& args) {
     
@@ -235,6 +176,29 @@ void Topology::fillNodesByPreorderTraversal(TopologyNode *node) {
 }
 
 
+/* Get class information */
+const VectorString& Topology::getClass(void) const {
+    
+    static VectorString rbClass = VectorString(Topology_name) + ConstantMemberObject::getClass();
+    return rbClass;
+}
+
+
+/* Get member rules */
+const MemberRules& Topology::getMemberRules(void) const {
+    
+    static MemberRules memberRules;
+    static bool        rulesSet = false;
+    
+    if (!rulesSet) 
+    {
+        rulesSet = true;
+    }
+    
+    return memberRules;
+}
+
+
 /* Get method specifications */
 const MethodTable& Topology::getMethods(void) const {
     
@@ -242,7 +206,7 @@ const MethodTable& Topology::getMethods(void) const {
     static ArgumentRules ntipsArgRules;
     static ArgumentRules nnodesArgRules;
     static bool          methodsSet = false;
-
+    
     if ( methodsSet == false ) 
     {
         methods.addFunction("ntips",  new MemberFunction(TypeSpec(Natural_name), ntipsArgRules)  );
@@ -252,23 +216,59 @@ const MethodTable& Topology::getMethods(void) const {
         methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
         methodsSet = true;
     }
-
+    
     return methods;
 }
 
 
-/* Get member rules */
-const MemberRules& Topology::getMemberRules(void) const {
+/** Calculate the number of interior nodes in the tree by deducing the number of
+ tips from number of nodes, and then subtract 1 more if the tree is rooted. */
+size_t Topology::getNumberOfInteriorNodes(void) const {
+    
+    size_t preliminaryNumIntNodes = getNumberOfNodes() - getNumberOfTips();
+    
+    if ( isRooted )
+        return preliminaryNumIntNodes - 1;
+    else
+        return preliminaryNumIntNodes;
+}
 
-    static MemberRules memberRules;
-    static bool        rulesSet = false;
 
-    if (!rulesSet) 
-        {
-        rulesSet = true;
-        }
+/** Calculate and return the number of tips on the tree by going through the vector
+ of nodes, querying each about its tip status. */
+size_t Topology::getNumberOfTips(void) const {
+    
+    size_t n = 0;
+    for (size_t i=0; i<nodes.size(); i++)
+    {
+        if (nodes[i]->isTip() == true)
+            n++;
+    }
+    return n;
+}
 
-    return memberRules;
+
+/** We provide this function to allow a caller to randomly pick one of the interior nodes.
+ This version assumes that the root is always the last and the tips the first in the nodes vector. */
+TopologyNode* Topology::getInteriorNode( int indx ) const {
+    
+    // TODO: Bound checking, maybe draw from downpass array instead
+    return nodes[ indx + getNumberOfTips() ];
+}
+
+
+/** We provide this function to allow a caller to randomly pick one of the interior nodes.
+ This version assumes that the tips are first in the nodes vector. */
+TopologyNode* Topology::getTipNode( size_t indx ) const {
+    
+    // TODO: Bound checking
+    return nodes[ indx ];
+}
+
+
+/** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
+const TypeSpec& Topology::getTypeSpec(void) const {
+    return typeSpec;
 }
 
 

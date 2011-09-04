@@ -16,15 +16,18 @@
  * $Id$
  */
 
+#include "Container.h"
+#include "MemberFunction.h"
+#include "Natural.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "Container.h"
 #include "VectorString.h"
+
 #include <algorithm>
 
 /** Set type of elements */
-Container::Container(const TypeSpec& elemType) : ConstantMemberObject(), elementType(elemType) {
+Container::Container(const TypeSpec& elemType) : ConstantMemberObject(getMemberRules()), elementType(elemType) {
     
 }
 
@@ -62,6 +65,52 @@ const VectorString& Container::getClass(void) const {
 }
 
 
+
+/* Get member rules */
+const MemberRules& Container::getMemberRules(void) const {
+    
+    static MemberRules memberRules;
+    static bool        rulesSet = false;
+    
+    if (!rulesSet) 
+    {
+        rulesSet = true;
+    }
+    
+    return memberRules;
+}
+
+
+/* Get method specifications */
+const MethodTable& Container::getMethods(void) const {
+    
+    static MethodTable   methods;
+    static ArgumentRules sizeArgRules;
+    static bool          methodsSet = false;
+    
+    if ( methodsSet == false ) 
+    {
+        methods.addFunction("size",  new MemberFunction(TypeSpec(Natural_name), sizeArgRules)  );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( const_cast<MethodTable*>( &ConstantMemberObject::getMethods() ) );
+        methodsSet = true;
+    }
+    
+    return methods;
+}
+
+
+/* Map calls to member methods */
+RbLanguageObject* Container::executeOperation(const std::string& name, Environment& args) {
+    
+    if (name == "size") {
+        
+        return ( new Natural(size()) );
+    }
+    
+    return ConstantMemberObject::executeOperation( name, args );
+}
 
 
 

@@ -34,7 +34,7 @@ DagNodeContainer::DagNodeContainer(void) : Container(RbLanguageObject_name), typ
 
 /** Set type of elements */
 DagNodeContainer::DagNodeContainer(size_t l) : Container(RbLanguageObject_name), typeSpec(DagNodeContainer_name) {
-    resize(l);
+    resize(l-1);
 }
 
 

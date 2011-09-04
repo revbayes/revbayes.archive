@@ -32,7 +32,7 @@ public:
     virtual                        ~Container(void);                                                    //!< Virtual destructor 
     
     // Basic utility functions you have to override
-    virtual Container*         clone(void) const = 0;                                                   //!< Clone object
+    virtual Container*              clone(void) const = 0;                                              //!< Clone object
     virtual const VectorString&     getClass(void) const;                                               //!< Get class
     virtual void                    printValue(std::ostream& o) const = 0;                              //!< Print value for user
     virtual std::string             richInfo(void) const = 0;                                           //!< Complete info about object
@@ -50,7 +50,14 @@ public:
     virtual void                    setElement(const size_t index, RbObject* elem) = 0;                 //!< Set element with type conversion
     virtual void                    sort(void) = 0;                                                     //!< sort the Container
     virtual void                    unique(void) = 0;                                                   //!< removes consecutive duplicates
+
+    // Member variable rules
+    virtual const MemberRules&      getMemberRules(void) const;                                         //!< Get member rules
     
+    // Member method inits
+    virtual RbLanguageObject*       executeOperation(const std::string& name, Environment& args);       //!< Execute method
+    virtual const MethodTable&      getMethods(void) const;                                             //!< Get methods
+
     // Container functions you do not have to override
     const TypeSpec&                 getElementType(void) const { return elementType; }                  //!< Get element type
     bool                            empty(void) { return size() == 0; }                                 //!< Test whether the container is empty
