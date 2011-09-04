@@ -84,6 +84,6 @@ const TypeSpec& Sequence::getTypeSpec(void) const {
 
 
 void Sequence::printValue(std::ostream &o) const {
-    o << taxonName << ":";
+    o << taxonName << ":" << std::endl;
     characters.printValue(o);
 }

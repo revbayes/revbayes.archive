@@ -68,6 +68,19 @@ RbLanguageObject* MemberObject::executeOperation(const std::string& name, Enviro
         
         return NULL;
     } 
+    else if (name == "get") {
+        // get the member with give name
+        const RbString *varName = static_cast<const RbString*>(args[0].getValue());
+        
+        // check if a member with that name exists
+        if (members.existsVariable(*varName)) {
+            return members[*varName].getDagNodePtr()->getValuePtr();
+        }
+        
+        // there was no variable with the given name
+        return NULL;
+        
+    }
     else {
         throw RbException( "No mapping from member method " + name + " to internal function call provided" );
     }
@@ -101,13 +114,17 @@ const MethodTable& MemberObject::getMethods(void) const {
 
     static MethodTable methods;
     static ArgumentRules getMemberNamesArgRules;
+    static ArgumentRules getArgRules;
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) {
         
         // add the 'memberNames()' method
-        
         methods.addFunction("memberNames",  new MemberFunction(RbVoid_name, getMemberNamesArgRules)  );
+        
+        // add the 'memberNames()' method
+        getArgRules.push_back( new ValueRule( "name"      , RbString_name      ) );
+        methods.addFunction("get",          new MemberFunction(RbLanguageObject_name, getArgRules)  );
         
     }   
     
