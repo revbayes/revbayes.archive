@@ -53,7 +53,6 @@ private:
 #include "RbUtil.h"
 #include "TypeSpec.h"
 #include "ValueRule.h"
-#include "Vector"
 
 
 // Definition of the static type spec member
