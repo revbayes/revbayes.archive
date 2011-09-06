@@ -155,7 +155,7 @@
 
 #include <sstream>
 #include <vector>
-
+#include <cstdlib>
 
 /** Initialize global workspace */
 void Workspace::initializeGlobalWorkspace(void) {

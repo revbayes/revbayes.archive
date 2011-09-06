@@ -30,6 +30,7 @@
 
 #include <cstring>
 #include <sstream>
+#include <cstdlib>
 
 /** Trigger printing of PRINTF debug statements by defining DEBUG_PARSER */
 #ifdef DEBUG_PARSER
