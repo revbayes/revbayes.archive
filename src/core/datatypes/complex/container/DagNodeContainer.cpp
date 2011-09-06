@@ -25,7 +25,7 @@
 #include "Vector.h"
 #include "VectorString.h"
 #include "ConstantNode.h"
-
+#include <algorithm>
 
 /** Set type of elements */
 DagNodeContainer::DagNodeContainer(void) : Container(RbLanguageObject_name), typeSpec(DagNodeContainer_name) {

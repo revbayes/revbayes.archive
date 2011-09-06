@@ -25,7 +25,7 @@
 #include "VectorString.h"
 
 #include <sstream>
-
+#include <algorithm>
 
 // Definition of the static type spec member
 const TypeSpec VectorBoolean::typeSpec(VectorBoolean_name);
