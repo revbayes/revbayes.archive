@@ -83,7 +83,7 @@ class Matrix : public Vector {
                                         Matrix(const std::string& elemType);                                //!< Set type of elements
                                         Matrix(const std::string& elemType, const MemberRules& memberRules);//!< Set type of elements
 
-        Vector                          matrix;                                                                     //!< We use vector of vectors instead of container internally 
+//        Vector                          matrix;                                                                     //!< We use vector of vectors instead of container internally 
    
 //        size_t                          rows;
 //        size_t                          cols;

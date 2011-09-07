@@ -49,7 +49,7 @@ MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, double x) : Matri
         throw RbException( "Nonpositive length(s) for " + Real_name + "[][]" );
 
     for ( size_t i = 0; i < nRows; i++ )
-        matrix.push_back( new VectorReal( nCols, x ) );
+        elements.push_back( new VectorReal( nCols, x ) );
 }
 
 
@@ -63,7 +63,7 @@ MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : Matrix(Real
     }
 
     for ( size_t i = 0; i < numCols; i++ )
-        matrix.push_back( new VectorReal( x[i] ) );
+        elements.push_back( new VectorReal( x[i] ) );
 }
 
 
@@ -73,7 +73,7 @@ const VectorReal& MatrixReal::operator[]( const size_t i ) const {
     if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
 
-    return static_cast<const VectorReal&>(matrix[i]);
+    return *static_cast<const VectorReal*>(elements[i]);
 }
 
 
@@ -83,7 +83,7 @@ VectorReal& MatrixReal::operator[]( const size_t i ) {
     if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
     
-    return static_cast<VectorReal&>(matrix[i]);
+    return *static_cast<VectorReal*>(elements[i]);
 }
 
 
@@ -118,7 +118,7 @@ const VectorString& MatrixReal::getClass(void) const {
 /** Overloaded container method to get element or subcontainer for parser */
 VectorReal* MatrixReal::getElement( size_t index ) const {
     
-    return static_cast<VectorReal*>(matrix.getElement(index));
+    return static_cast<VectorReal*>(elements[index]);
 }
 
 /** Overloaded container method to get element or subcontainer for parser */
@@ -141,7 +141,7 @@ std::vector<std::vector<double> > MatrixReal::getValue( void ) const {
     std::vector<std::vector<double> > temp;
 
     for ( size_t i = 0; i < size(); i++ )
-        temp.push_back(static_cast<const VectorReal&>(matrix[i]).getValue());
+        temp.push_back(static_cast<const VectorReal*>(elements[i])->getValue());
 
     return temp;
 }
@@ -202,8 +202,8 @@ void MatrixReal::printValue(std::ostream& o) const {
         else 
             lineStr += "  ";
         
-        const VectorReal &vec = static_cast<const VectorReal&>(matrix[i]);
-        lineStr += vec.briefInfo();
+        const VectorReal *vec = static_cast<const VectorReal*>(elements[i]);
+        lineStr += vec->briefInfo();
         if (i == size()-1)
             lineStr += " ]";
         else 
@@ -224,7 +224,7 @@ void MatrixReal::push_back(const VectorReal &x ) {
     if ( size() > 0 && x.size() != getNumberOfColumns() )
         throw RbException( "Cannot make matrix with rows of unequal size" );
 
-    matrix.push_back( x.clone() );
+    elements.push_back( x.clone() );
 }
 
 
@@ -293,9 +293,9 @@ void MatrixReal::setValue( const std::vector<std::vector<double> >& x ) {
             throw RbException( "Wrong number of columns in at least one row in setting value of " + Real_name + "[][]" );
     }
 
-    matrix.clear();
+    elements.clear();
     for ( size_t i = 0; i < size(); i++ )
-        matrix.push_back( new VectorReal( x[i] ) );
+        elements.push_back( new VectorReal( x[i] ) );
 }
 
 
@@ -309,7 +309,7 @@ void MatrixReal::setElement( size_t row, size_t col, RbLanguageObject* value ) {
         throw RbException( "Cannot set " + Real_name + "[][] element to NULL" );
     
     // We rely on the setElement of VectorReal for type cast and to throw an error with a meaningful message
-    static_cast<VectorReal&>(matrix[row]).setElement(col,value);
+    static_cast<VectorReal*>(elements[row])->setElement(col,value);
     
     
 }

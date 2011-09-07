@@ -97,10 +97,7 @@ const Sequence& Alignment::operator[]( const size_t i ) const {
 void Alignment::addSequence( Sequence* obs ) {
 
     // set the number of character per sequence
-    if (size() == 0) {
-        sequenceLength = obs->size();
-    }
-    else if ( obs->size() != getNumberOfCharacters() ) {
+    if ( size() > 0 && obs->size() != getNumberOfCharacters() ) {
 
         std::ostringstream msg;
         msg << "Invalid attempt to add sequence of length " << obs->size() << " to aligned character matrix of length " << getNumberOfCharacters();
@@ -112,6 +109,11 @@ void Alignment::addSequence( Sequence* obs ) {
     
     // add the sequence name to the list
     sequenceNames.push_back(obs->getTaxonName());
+    
+    // add the sequence also as a member so that we can access it by name
+//    members.addVariable(obs->getTaxonName(), new Variable( new ConstantNode(obs) ));
+    members.addVariable(obs->getTaxonName(), TypeSpec( characterType));
+    members[ obs->getTaxonName() ].setVariable( new Variable( new ConstantNode(obs) ) );
 }
 
 
@@ -299,8 +301,13 @@ const std::string& Alignment::getDataType(void) const {
 
 
 Character* Alignment::getElement(size_t row, size_t col) const {
-    const Sequence &sequence = dynamic_cast<const Sequence&>(matrix[row]);
-    return static_cast<Character*>(sequence.getElement(col));
+    const Sequence *sequence = dynamic_cast<const Sequence*>(elements[row]);
+    return static_cast<Character*>(sequence->getElement(col));
+}
+
+
+const std::string& Alignment::getFileName(void) const {
+    return fileName;
 }
 
 
@@ -369,7 +376,10 @@ const MethodTable& Alignment::getMethods(void) const {
 /** Return the number of characters in each vector of taxon observations */
 size_t Alignment::getNumberOfCharacters(void) const {
 
-    return sequenceLength;
+    if (size() > 0) {
+        return getSequence(0).size();
+    }
+    return 0;
 }
 
 
@@ -379,7 +389,7 @@ size_t Alignment::getNumberOfCharacters(void) const {
 size_t Alignment::getNumberOfStates(void) const {
 
     // Get the first character in the matrix
-    if ( members.size() == 0 )
+    if ( size() == 0 )
         return 0;
 
     const Sequence& sequence = getSequence( 0 );
@@ -401,7 +411,7 @@ const Sequence& Alignment::getSequence( size_t tn ) const {
     if ( tn >= getNumberOfTaxa() )
         throw RbException( "Taxon index out of range" );
 
-    const Sequence* sequence = static_cast<const Sequence*>( members[members.getName(tn)].getValue() );
+    const Sequence* sequence = static_cast<const Sequence*>( elements[tn] );
 
     return *sequence;
 }
@@ -410,7 +420,7 @@ const Sequence& Alignment::getSequence( size_t tn ) const {
 /** Get taxon with index idx */
 const std::string& Alignment::getTaxonNameWithIndex( size_t idx ) const {
 
-    return members.getName( idx );
+    return sequenceNames[idx];
 }
 
 
@@ -608,7 +618,10 @@ void Alignment::setElement( size_t index, RbLanguageObject* var ) {
         
         sequenceNames.erase(sequenceNames.begin() + index);
         sequenceNames.insert(sequenceNames.begin() + index,seq->getTaxonName());
-        matrix.setElement(index,seq);
+        setElement(index,seq);
+        
+        // add the sequence also as a member so that we can access it by name
+        members.addVariable(seq->getTaxonName(), new Variable( new ConstantNode(seq) ));
     }
 }
 

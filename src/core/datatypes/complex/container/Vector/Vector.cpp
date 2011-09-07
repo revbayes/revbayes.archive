@@ -103,6 +103,9 @@ void Vector::clear( void ) {
             delete ( *i );
     }
     elements.clear();
+    
+    // clear also the members if some might have been set
+    members.clear();
 }
 
 

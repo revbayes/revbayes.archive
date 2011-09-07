@@ -45,12 +45,12 @@ const VectorString& Matrix::getClass(void) const {
 
 
 size_t Matrix::getNumberOfColumns(void) const {
-    return static_cast<const Container&>(matrix[0]).size();
+    return static_cast<const Container*>(elements[0])->size();
 }
 
 
 size_t Matrix::getNumberOfRows(void) const {
-    return matrix.size();
+    return elements.size();
 }
 
 

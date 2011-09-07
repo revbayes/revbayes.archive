@@ -44,7 +44,7 @@ MatrixComplex::MatrixComplex(void) : Matrix(Complex_name) {
 MatrixComplex::MatrixComplex(const size_t nRows, const size_t nCols, std::complex<double> x) : Matrix(Complex_name) {
 
     for ( size_t i = 0; i < nRows; i++ )
-        matrix.push_back( new VectorComplex( nCols, x ) );
+        elements.push_back( new VectorComplex( nCols, x ) );
 }
 
 
@@ -60,7 +60,7 @@ MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> 
         }
 
     for ( size_t i = 0; i < numRows; i++ )
-        matrix.push_back( new VectorComplex( x[i] ) );
+        elements.push_back( new VectorComplex( x[i] ) );
 }
 
 
@@ -70,7 +70,7 @@ const VectorComplex& MatrixComplex::operator[]( const size_t i ) const {
     if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
 
-    return static_cast<const VectorComplex&>(matrix[i]);
+    return *static_cast<const VectorComplex*>(elements[i]);
 }
 
 
@@ -80,7 +80,7 @@ VectorComplex& MatrixComplex::operator[]( const size_t i ) {
     if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
     
-    return static_cast<VectorComplex&>(matrix[i]);
+    return *static_cast<VectorComplex*>(elements[i]);
 }
 
 /** Clone function */
@@ -102,7 +102,7 @@ const VectorString& MatrixComplex::getClass(void) const {
 /** Overloaded container method to get element or subcontainer for parser */
 VectorComplex* MatrixComplex::getElement( size_t index ) const {
     
-    return static_cast<VectorComplex*>(matrix.getElement(index));
+    return static_cast<VectorComplex*>(elements[index]);
 }
 
 /** Overloaded container method to get element or subcontainer for parser */
@@ -185,8 +185,8 @@ void MatrixComplex::printValue(std::ostream& o) const {
             lineStr += pad  + "  ";
         
         
-        const VectorComplex &vec = static_cast<const VectorComplex&>(matrix[i]);
-        lineStr += vec.briefInfo();
+        const VectorComplex *vec = static_cast<const VectorComplex*>(elements[i]);
+        lineStr += vec->briefInfo();
         if (i == size()-1)
             lineStr += " ]";
         else 
@@ -207,7 +207,7 @@ void MatrixComplex::push_back( const VectorComplex& x ) {
     if ( size() > 0 && x.size() != getNumberOfColumns() )
         throw RbException( "Cannot make matrix with rows of unequal size" );
     
-    matrix.push_back( x.clone() );
+    elements.push_back( x.clone() );
 }
 
 
@@ -258,9 +258,9 @@ void MatrixComplex::setValue( const std::vector<std::vector<std::complex<double>
             throw RbException( "Wrong number of columns in at least one row in setting value of " + Real_name + "[][]" );
     }
     
-    matrix.clear();
+    elements.clear();
     for ( size_t i = 0; i < size(); i++ )
-        matrix.push_back( new VectorComplex( x[i] ) );
+        elements.push_back( new VectorComplex( x[i] ) );
 }
 
 
@@ -274,7 +274,7 @@ void MatrixComplex::setElement( size_t row, size_t col, RbLanguageObject* value 
         throw RbException( "Cannot set " + Real_name + "[][] element to NULL" );
     
     // We rely on the setElement of VectorReal for type cast and to throw an error with a meaningful message
-    static_cast<VectorComplex&>(matrix[row]).setElement(col,value);
+    static_cast<VectorComplex*>(elements[row])->setElement(col,value);
     
 }
 
