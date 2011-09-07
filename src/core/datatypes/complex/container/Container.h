@@ -50,9 +50,6 @@ public:
     virtual void                    setElement(const size_t index, RbObject* elem) = 0;                 //!< Set element with type conversion
     virtual void                    sort(void) = 0;                                                     //!< sort the Container
     virtual void                    unique(void) = 0;                                                   //!< removes consecutive duplicates
-
-    // Member variable rules
-    virtual const MemberRules&      getMemberRules(void) const;                                         //!< Get member rules
     
     // Member method inits
     virtual RbLanguageObject*       executeOperation(const std::string& name, Environment& args);       //!< Execute method
@@ -67,6 +64,7 @@ public:
     
 protected:
     Container(const TypeSpec &elemType);                                                                //!< Set type spec of container from type of elements
+    Container(const TypeSpec &elemType, const MemberRules &memberRules);                                //!< Set type spec of container from type of elements
     Container(const Container &v);                                                                      //!< Copy Constructor
     
     Container&                      operator=(const Container& x);                                      //!< Assignment operator

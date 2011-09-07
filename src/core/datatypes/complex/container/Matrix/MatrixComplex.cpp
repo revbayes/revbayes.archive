@@ -43,11 +43,8 @@ MatrixComplex::MatrixComplex(void) : Matrix(Complex_name) {
 /** Construct matrix of specified dimensions (length), initialize it with double x (default 0.0) */
 MatrixComplex::MatrixComplex(const size_t nRows, const size_t nCols, std::complex<double> x) : Matrix(Complex_name) {
 
-    rows    = nRows;
-    cols    = nCols;
-
-    for ( size_t i = 0; i < rows; i++ )
-        matrix.push_back( VectorComplex( cols, x ) );
+    for ( size_t i = 0; i < nRows; i++ )
+        matrix.push_back( new VectorComplex( nCols, x ) );
 }
 
 
@@ -61,12 +58,9 @@ MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> 
         if ( x[i].size() != numCols )
             throw RbException( "Invalid attempt to initialize a matrix container using a jagged matrix" );
         }
-    
-    rows    = numRows;
-    cols    = numCols;
 
-    for ( size_t i = 0; i < rows; i++ )
-        matrix.push_back( VectorComplex( x[i] ) );
+    for ( size_t i = 0; i < numRows; i++ )
+        matrix.push_back( new VectorComplex( x[i] ) );
 }
 
 
@@ -76,7 +70,7 @@ const VectorComplex& MatrixComplex::operator[]( const size_t i ) const {
     if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
 
-    return matrix[i];
+    return static_cast<const VectorComplex&>(matrix[i]);
 }
 
 
@@ -85,19 +79,9 @@ VectorComplex& MatrixComplex::operator[]( const size_t i ) {
 
     if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
-
-    return matrix[i];
+    
+    return static_cast<VectorComplex&>(matrix[i]);
 }
-
-
-/** Overloaded container clear function */
-void MatrixComplex::clear( void ) {
-
-    matrix.clear();
-    rows    = 0;
-    cols    = 0;
-}
-
 
 /** Clone function */
 MatrixComplex* MatrixComplex::clone(void) const {
@@ -114,28 +98,18 @@ const VectorString& MatrixComplex::getClass(void) const {
 }
 
 
-/** Get matrix content as an STL vector of doubles */
-std::vector<std::complex<double> > MatrixComplex::getContent( void ) const {
-
-    std::vector<std::complex<double> > temp;
-    for (size_t i=0; i<rows; i++)
-        for (size_t j=0; j<cols; j++)
-            temp.push_back( matrix[i][j] );
-    return temp;
-}
-
 
 /** Overloaded container method to get element or subcontainer for parser */
-VectorComplex* MatrixComplex::getElement( size_t index ) {
+VectorComplex* MatrixComplex::getElement( size_t index ) const {
     
-    return &matrix[index];
+    return static_cast<VectorComplex*>(matrix.getElement(index));
 }
 
 /** Overloaded container method to get element or subcontainer for parser */
-Complex* MatrixComplex::getElement( size_t row , size_t col) {
+Complex* MatrixComplex::getElement( size_t row , size_t col) const {
     
-    VectorComplex& tmp = matrix[row];
-    return (Complex*) tmp.getElement(col);
+    VectorComplex *tmp = getElement(row);
+    return tmp->getElement(col);
 }
 
 
@@ -150,7 +124,7 @@ std::vector<std::vector<std::complex<double> > > MatrixComplex::getValue( void )
 
     std::vector<std::vector<std::complex<double> > > temp;
     for ( size_t i = 0; i < size(); i++ )
-        temp.push_back( matrix[i].getValue() );
+        temp.push_back( getElement(i)->getValue() );
     return temp;
 }
 
@@ -183,54 +157,41 @@ void MatrixComplex::printValue(std::ostream& o) const {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
     
-    // find the maximum number of digits to the left and right of the decimal place
-    int maxToLft = 0, maxToRht = 0;
-    bool foundDecimalPoint = false;
-    for (size_t i=0; i<rows; i++)
-        {
-        for (size_t j=0; j<cols; j++)
-            {
-            std::ostringstream v;
-            v << matrix[i][j];
-            int numToLft, numToRht;
-            if (numFmt(numToLft, numToRht, v.str()) == true)
-                foundDecimalPoint = true;
-            if (numToLft > maxToLft)
-                maxToLft = numToLft;
-            if (numToRht > maxToRht)
-                maxToRht = numToRht;
-            }
-        }
+//    // find the maximum number of digits to the left and right of the decimal place
+//    int maxToLft = 0, maxToRht = 0;
+//    bool foundDecimalPoint = false;
+//    for (size_t i=0; i<size(); i++)
+//        {
+//        for (size_t j=0; j<cols; j++)
+//            {
+//            std::ostringstream v;
+//            v << matrix[i][j];
+//            int numToLft, numToRht;
+//            if (numFmt(numToLft, numToRht, v.str()) == true)
+//                foundDecimalPoint = true;
+//            if (numToLft > maxToLft)
+//                maxToLft = numToLft;
+//            if (numToRht > maxToRht)
+//                maxToRht = numToRht;
+//            }
+//        }
         
     // print the matrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i<rows; i++)
-        {
+    for (size_t i=0; i<size(); i++) {
         std::string lineStr = "";
         if (i == 0)
-            lineStr += "[[ ";
+            lineStr += "[ ";
         else 
-            lineStr += pad  + " [ ";
-        for (size_t j=0; j<cols; j++)
-            {
-            std::ostringstream v;
-            v << matrix[i][j];
-            int numToLft, numToRht;
-            numFmt(numToLft, numToRht, v.str());
-            for (int k=0; k<maxToLft-numToLft; k++)
-                lineStr += " ";
-            lineStr += v.str();
-            if (numToRht == 0 && foundDecimalPoint == true)
-                lineStr += ".";
-            for (int k=0; k<maxToRht-numToRht; k++)
-                lineStr += "0";
-            if (j+1 < cols)
-                lineStr += ", ";
-            }
-        if (i == rows-1)
-            lineStr += " ]]";
+            lineStr += pad  + "  ";
+        
+        
+        const VectorComplex &vec = static_cast<const VectorComplex&>(matrix[i]);
+        lineStr += vec.briefInfo();
+        if (i == size()-1)
+            lineStr += " ]";
         else 
-            lineStr += " ],\n";
-
+            lineStr += " ,\n";
+        
         o << lineStr;
         //RBOUT(lineStr);
         }
@@ -242,39 +203,13 @@ void MatrixComplex::printValue(std::ostream& o) const {
 
 /** Push back a row vector */
 void MatrixComplex::push_back( const VectorComplex& x ) {
-
-    if ( size() == 0 )
-        cols = x.size();
-    else if ( x.size() != cols )
-        throw RbException( "Cannot make matrix with rows of unequal size" );
-
-    matrix.push_back( x );
-    rows++;
-}
-
-
-/** Overloaded container resize method */
-void MatrixComplex::resize( size_t len ) {
-
-//    if ( len.size() != 2 )
-//        throw RbException( "Invalid length specification in attempt to resize " + Complex_name + "[][]" );
-//
-//    if ( len[0] < rows || len[1] < cols )
-//        throw RbException( "Invalid attempt to shrink " + Complex_name + "[][]" );
-//
-//    // First add the new rows with the right number of columns
-//    for ( size_t i = rows; i < len[0]; i++ )
-//        matrix.push_back( VectorComplex( len[1] ) );
-//
-//    // Now add columns to the old rows
-//    for ( size_t i = 0; i < rows; i++ )
-//        matrix[i].resize( len[1] );
-//
-//    // Set new length specification
-//    length = len;
     
-    throw RbException("Not implemented method MatrixComplex::resize()");
+    if ( size() > 0 && x.size() != getNumberOfColumns() )
+        throw RbException( "Cannot make matrix with rows of unequal size" );
+    
+    matrix.push_back( x.clone() );
 }
+
 
 /** Overloaded container resize method */
 void MatrixComplex::resize( size_t rows, size_t cols ) {
@@ -312,104 +247,41 @@ std::string MatrixComplex::richInfo(void) const {
 }
 
 
-/** Set matrix content from single STL vector of doubles */
-void MatrixComplex::setContent( const std::vector<std::complex<double> >& x ) {
-    
-    if ( x.size() != rows*cols )
-        throw RbException( "Incorrect number of elements in setting " + Complex_name + "[][]" );
-    
-    matrix.clear();
-    
-    size_t index = 0;
-    for ( size_t i = 0; i < rows; i++ ) {
-        VectorComplex y;
-        for ( size_t j = 0; j < cols; j++ ) {
-            y.push_back( x[index++] );
-        }
-        matrix.push_back( y );
-    }
-}
-
-
 /** Set matrix value from an STL vector<vector> of complex values */
 void MatrixComplex::setValue( const std::vector<std::vector<std::complex<double> > >& x ) {
 
-    if ( x.size() != rows )
-        throw RbException( "Wrong number of rows in setting value of " + Complex_name + "[][]" );
-
+    if ( x.size() != size() )
+        throw RbException( "Wrong number of rows in setting value of " + Real_name + "[][]" );
+    
     for ( size_t i = 0; i < x.size(); i++ ) {
-        if ( x[i].size() != cols )
-            throw RbException( "Wrong number of columns in at least one row in setting value of " + Complex_name + "[][]" );
+        if ( x[i].size() != getNumberOfColumns() )
+            throw RbException( "Wrong number of columns in at least one row in setting value of " + Real_name + "[][]" );
     }
-
+    
     matrix.clear();
-    for ( size_t i = 0; i < rows; i++ )
-        matrix.push_back( VectorComplex( x[i] ) );
+    for ( size_t i = 0; i < size(); i++ )
+        matrix.push_back( new VectorComplex( x[i] ) );
 }
 
 
 /** Overloaded container setElement method */
-void MatrixComplex::setElement( size_t index, RbLanguageObject* var ) {
-
-//    if ( index.size() != 2 )
-//        throw RbException ( "Wrong number of indices for " + Complex_name + "[][]" );
-//
-//    if ( index[0] >= rows || index[1] >= cols )
-//        throw RbException( "Index out of bounds for " + Complex_name + "[][]" );
-//
-//    RbObject* value = var->getValue()->clone();
-//    if ( value == NULL )
-//        throw RbException( "Cannot set " + Complex_name + "[][] element to NULL" );
-//
-//    if ( value->isType( Complex_name ) )
-//        matrix[index[0]][index[1]] = static_cast<Complex*>( value )->getValue();
-//    else {
-//        // We rely on convertTo to throw an error with a meaningful message
-//        matrix[index[0]][index[1]] = static_cast<Complex*>( value->convertTo( Complex_name ) )->getValue();
-//    }
+void MatrixComplex::setElement( size_t row, size_t col, RbLanguageObject* value ) {
     
-    throw RbException("Not implemented method MatrixComplex::setElement()");
-}
-
-/** Overloaded container setElement method */
-void MatrixComplex::setElement( size_t row, size_t col, RbLanguageObject* var ) {
+    if ( row >= getNumberOfRows() || col >= getNumberOfColumns() )
+        throw RbException( "Index out of bounds for " + Real_name + "[][]" );
     
-    //    if ( index.size() != 2 )
-    //        throw RbException ( "Wrong number of indices for " + Complex_name + "[][]" );
-    //
-    //    if ( index[0] >= rows || index[1] >= cols )
-    //        throw RbException( "Index out of bounds for " + Complex_name + "[][]" );
-    //
-    //    RbObject* value = var->getValue()->clone();
-    //    if ( value == NULL )
-    //        throw RbException( "Cannot set " + Complex_name + "[][] element to NULL" );
-    //
-    //    if ( value->isType( Complex_name ) )
-    //        matrix[index[0]][index[1]] = static_cast<Complex*>( value )->getValue();
-    //    else {
-    //        // We rely on convertTo to throw an error with a meaningful message
-    //        matrix[index[0]][index[1]] = static_cast<Complex*>( value->convertTo( Complex_name ) )->getValue();
-    //    }
+    if ( value == NULL )
+        throw RbException( "Cannot set " + Real_name + "[][] element to NULL" );
     
-    throw RbException("Not implemented method MatrixComplex::setElement()");
-}
-
-
-
-/** Overloaded container size method */
-size_t MatrixComplex::size( void ) const {
-
-    return rows * cols;
+    // We rely on the setElement of VectorReal for type cast and to throw an error with a meaningful message
+    static_cast<VectorComplex&>(matrix[row]).setElement(col,value);
+    
 }
 
 
 /** Transpose the matrix */
 void MatrixComplex::transpose( void ) {
 
-    MatrixComplex temp(cols, rows);
-    for ( size_t i = 0; i < rows; i++ )
-        for ( size_t j = 0; j < cols; j++ )
-            temp[j][i] = matrix[i][j];
 }
 
 

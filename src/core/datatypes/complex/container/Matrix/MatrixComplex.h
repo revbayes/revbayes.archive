@@ -59,31 +59,37 @@ public:
     void                                                printValue(std::ostream& o) const;                                                      //!< Print value for user
     std::string                                         richInfo(void) const;                                                                   //!< Complete info about object
     
-    // Container and matrix functions
-    void                                                clear(void);                                                                            //!< Clear
-    VectorComplex*                                      getElement(size_t index);                                                               //!< Get element or subcontainer
-    Complex*                                            getElement(size_t row, size_t col);                                                     //!< Get element or subcontainer
-    void                                                setElement(size_t index, RbLanguageObject* var);                                        //!< Allow to set element
-    void                                                setElement(size_t row, size_t col, RbLanguageObject* var);                              //!< set element
-    void                                                resize(size_t nRows);                                                                   //!< Resize to new length vector
-    void                                                resize(size_t nRows, size_t nCols);                                                     //!< Resize to new length vector
-    size_t                                              size(void) const;                                                                       //!< Get total number of elements
-    void                                                transpose(void);                                                                        //!< Transpose the matrix
+//    // Container functions
+//    void                                                pop_back(void);                                                             //!< Drop element at back
+//    void                                                pop_front(void);                                                            //!< Drop element from front
+//    void                                                push_back(RbObject* x);                                                     //!< Append element to end
+//    void                                                push_front(RbObject* x);                                                    //!< Add element in front
+//    void                                                resize(size_t n);                                                           //!< Resize to new AbstractVector of length n
+//    size_t                                              size(void) const;                                                           //!< get the number of elements in the AbstractVector
+//    
+//    void                                                clear(void);                                                                //!< Clear
+    VectorComplex*                                      getElement(size_t index) const;                                             //!< Get element
+//    void                                                setElement(const size_t index, RbLanguageObject* elem);                     //!< Set element with type conversion
+//    void                                                sort(void);                                                                 //!< sort the AbstractVector
+//    void                                                unique(void);                                                               //!< removes consecutive duplicates
+    
+    // Matrix functions
+    Complex*                                            getElement(size_t row, size_t col) const;                                   //!< Get element or subcontainer
+    void                                                setElement(size_t row, size_t col, RbLanguageObject* var);                  //!< set element
+    void                                                resize(size_t nRows, size_t nCols);                                         //!< Resize to new length vector
+    void                                                transpose(void);                                                            //!< Transpose the matrix
 
     // Matrix functions
-    std::vector<std::complex<double> >                  getContent(void) const;                                                                  //!< Get content (all elements) in an STL vector
     std::vector<std::vector<std::complex<double> > >    getValue(void) const;                                                                    //!< Get value as STL vector<vector> of complex values
     void                                                push_back(const VectorComplex& x);                                                       //!< Push back a row vector
-    void                                                setContent(const std::vector<std::complex<double> >& x);                                 //!< Set content using STL vector of complex values
+//    void                                                setContent(const std::vector<std::complex<double> >& x);                                 //!< Set content using STL vector of complex values
     void                                                setValue(const std::vector<std::vector<std::complex<double> > >& x);                     //!< Set value using STL vector<vector> of complex values
 
 private:
     bool                                                numFmt(int& numToLft, int& numToRht, std::string s) const;                               //!< Calculates the number of digits to the left and right of the decimal
         
-
-    std::vector<VectorComplex>                          matrix;                                                                                  //!< We use vector of vectors instead of container internally
     
-    static const TypeSpec           typeSpec;
+    static const TypeSpec                               typeSpec;
 };
 
         // operators defined outside of the class

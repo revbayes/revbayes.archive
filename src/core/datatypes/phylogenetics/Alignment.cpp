@@ -1,24 +1,25 @@
 /**
  * @file
- * This file contains the declaration of CharacterMatrix, which is
+ * This file contains the declaration of Alignment, which is
  * class that holds a character matrix in RevBayes.
  *
- * @brief Implementation of CharacterMatrix
+ * @brief Implementation of Alignment
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2009-12-29 23:23:09 +0100 (Tis, 29 Dec 2009) $
+ * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
  * @since 2009-08-27, version 1.0
  * @interface Mcmc
- * @package distributions
+ * @package datatypes
  *
- * $Id: Mcmc.h 211 2009-12-29 22:23:09Z ronquist $
+ * $Id$
  */
 
+#include "AbstractVector.h"
+#include "Alignment.h"
 #include "Character.h"
-#include "CharacterMatrix.h"
 #include "ConstantNode.h"
 #include "DnaState.h"
 #include "MemberFunction.h"
@@ -42,13 +43,13 @@
 
 
 /** Constructor requires character type; passes member rules to base class */
-CharacterMatrix::CharacterMatrix( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec(CharacterMatrix_name, new TypeSpec(charType)) {
+Alignment::Alignment( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec(Alignment_name, new TypeSpec(charType)) {
     characterType = charType;
 }
 
 
 /** Copy constructor */
-CharacterMatrix::CharacterMatrix( const CharacterMatrix& x ) : Matrix( x ), typeSpec(CharacterMatrix_name, new TypeSpec(characterType)) {
+Alignment::Alignment( const Alignment& x ) : Matrix( x ), typeSpec(Alignment_name, new TypeSpec(characterType)) {
 
     characterType     = x.characterType;
     deletedTaxa       = x.deletedTaxa;
@@ -60,13 +61,13 @@ CharacterMatrix::CharacterMatrix( const CharacterMatrix& x ) : Matrix( x ), type
 
 
 /** Destructor */
-CharacterMatrix::~CharacterMatrix( void ) {
+Alignment::~Alignment( void ) {
 
 }
 
 
 /** Assignment operator */
-CharacterMatrix& CharacterMatrix::operator=( const CharacterMatrix& x ) {
+Alignment& Alignment::operator=( const Alignment& x ) {
 
     if ( this != &x ) {
 
@@ -86,61 +87,62 @@ CharacterMatrix& CharacterMatrix::operator=( const CharacterMatrix& x ) {
 
 
 /** Index (const) operator */
-const Sequence& CharacterMatrix::operator[]( const size_t i ) const {
+const Sequence& Alignment::operator[]( const size_t i ) const {
 
     return getSequence( i );
 }
 
 
 /** Add a sequence to the character matrix. For now, we require same data type and same length. */
-void CharacterMatrix::addSequence( const std::string tName, Sequence* obs ) {
+void Alignment::addSequence( Sequence* obs ) {
 
     // set the number of character per sequence
-    if (members.size() == 0) {
-        cols = obs->size();
+    if (size() == 0) {
+        sequenceLength = obs->size();
     }
-    else if ( obs->size() != getNumCharacters() ) {
+    else if ( obs->size() != getNumberOfCharacters() ) {
 
         std::ostringstream msg;
-        msg << "Invalid attempt to add sequence of length " << obs->size() << " to aligned character matrix of length " << getNumCharacters();
+        msg << "Invalid attempt to add sequence of length " << obs->size() << " to aligned character matrix of length " << getNumberOfCharacters();
         throw RbException( msg );
     }
 
 //    VariableSlot* slot = new VariableSlot( sequenceTypeRule );
-    members.addVariable(tName, TypeSpec( characterType));
-    members[ tName ].setVariable( new Variable( new ConstantNode(obs) ) );
+    push_back(obs);
     
     // add the sequence name to the list
-    sequenceNames.push_back(tName);
+    sequenceNames.push_back(obs->getTaxonName());
 }
 
 
 /** clear the oblect */
-void CharacterMatrix::clear( void ) {
+void Alignment::clear( void ) {
     
-    throw RbException("Clear of CharacterMatrix not implemented");
+    sequenceNames.clear();
+    
+    Matrix::clear();
 }
 
 
 /** Clone object */
-CharacterMatrix* CharacterMatrix::clone( void ) const {
+Alignment* Alignment::clone( void ) const {
 
-    return new CharacterMatrix( *this );
+    return new Alignment( *this );
 }
 
 
 /** Exclude a character */
-void CharacterMatrix::excludeCharacter(size_t i) {
+void Alignment::excludeCharacter(size_t i) {
 
-    if (i >= getNumCharacters() )
-        throw RbException( "Only " + RbString(int(getNumCharacters())) + " characters in matrix" );
+    if (i >= getNumberOfCharacters() )
+        throw RbException( "Only " + RbString(int(getNumberOfCharacters())) + " characters in matrix" );
 
     deletedCharacters.insert( i );
 }
 
 
 /** Exclude a taxon */
-void CharacterMatrix::excludeTaxon(size_t i) {
+void Alignment::excludeTaxon(size_t i) {
 
     if (i >= members.size())
         throw RbException( "Only " + RbString(int(members.size())) + " taxa in matrix" );
@@ -150,29 +152,33 @@ void CharacterMatrix::excludeTaxon(size_t i) {
 
 
 /** Exclude a taxon */
-void CharacterMatrix::excludeTaxon(std::string& s) {
+void Alignment::excludeTaxon(std::string& s) {
 
-//    size_t i = members.getIndex( s );
-//
-//    deletedTaxa.insert( i );
+    for (size_t i = 0; i < size(); i++) {
+        if (s == sequenceNames[i]) {
+            deletedTaxa.insert( i );
+            
+            break;
+        }
+    }
 }
 
 
 /** Map calls to member methods */
-RbLanguageObject* CharacterMatrix::executeOperation(const std::string& name, Environment& args) {
+RbLanguageObject* Alignment::executeOperation(const std::string& name, Environment& args) {
 
     if (name == "names") 
     {
-        return sequenceNames.clone();
+        return new VectorString(sequenceNames);
     }
     else if (name == "ntaxa") 
         {
-        int n = (int)getNumTaxa();
+        int n = (int)getNumberOfTaxa();
         return ( new Natural(n) );
         }
     else if (name == "nchar")
         {
-        int n = (int)getNumCharacters();
+        int n = (int)getNumberOfCharacters();
         return ( new Natural(n) );
         }
     else if (name == "chartype")
@@ -192,12 +198,12 @@ RbLanguageObject* CharacterMatrix::executeOperation(const std::string& name, Env
         }
     else if (name == "nincludedtaxa")
         {
-        int n = (int)(getNumTaxa() - deletedTaxa.size());
+        int n = (int)(getNumberOfTaxa() - deletedTaxa.size());
         return ( new Natural(n) );
         }
     else if (name == "nincludedchars")
         {
-        int n = (int)(getNumCharacters() - deletedCharacters.size());
+        int n = (int)(getNumberOfCharacters() - deletedCharacters.size());
         return ( new Natural(n) );
         }
     else if (name == "excludedtaxa")
@@ -205,7 +211,7 @@ RbLanguageObject* CharacterMatrix::executeOperation(const std::string& name, Env
         std::vector<std::string> et;
         for (std::set<size_t>::iterator it = deletedTaxa.begin(); it != deletedTaxa.end(); it++)
             {
-            std::string tn = getTaxonWithIndex(*it);
+            std::string tn = getTaxonNameWithIndex(*it);
             et.push_back( tn );
             }
         return ( new VectorString(et) );
@@ -220,17 +226,17 @@ RbLanguageObject* CharacterMatrix::executeOperation(const std::string& name, Env
     else if (name == "includedtaxa")
         {
         std::vector<std::string> it;
-        for (size_t i=0; i<getNumTaxa(); i++)
+        for (size_t i=0; i<getNumberOfTaxa(); i++)
             {
             if ( isTaxonExcluded(i) == false )
-                it.push_back( getTaxonWithIndex(i) );
+                it.push_back( getTaxonNameWithIndex(i) );
             }
         return ( new VectorString(it) );
         }
     else if (name == "includedchars")
         {
         std::vector<int> ic;
-        for (size_t i=0; i<getNumCharacters(); i++)
+        for (size_t i=0; i<getNumberOfCharacters(); i++)
             {
             if ( isCharacterExcluded(i) == false )
                 ic.push_back( (int)(i+1) );
@@ -270,9 +276,9 @@ RbLanguageObject* CharacterMatrix::executeOperation(const std::string& name, Env
 
 
 /** Return a pointer to a character element in the character matrix */
-const Character& CharacterMatrix::getCharacter( size_t tn, size_t cn ) const {
+const Character& Alignment::getCharacter( size_t tn, size_t cn ) const {
 
-    if ( cn >= getNumCharacters() )
+    if ( cn >= getNumberOfCharacters() )
         throw RbException( "Character index out of range" );
 
     return static_cast<const Character&>(getSequence( tn )[cn]);
@@ -280,25 +286,26 @@ const Character& CharacterMatrix::getCharacter( size_t tn, size_t cn ) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& CharacterMatrix::getClass(void) const {
+const VectorString& Alignment::getClass(void) const {
 
-    static VectorString rbClass = VectorString(CharacterMatrix_name) + Matrix::getClass();
+    static VectorString rbClass = VectorString(Alignment_name) + AbstractVector::getClass();
     return rbClass;
 }
 
 
-Vector* CharacterMatrix::getElement(size_t index) {
-    return dynamic_cast<Vector*>(members[index].getDagNodePtr()->getValuePtr());
+const std::string& Alignment::getDataType(void) const {
+    return characterType;
 }
 
-Character* CharacterMatrix::getElement(size_t row, size_t col) {
-    Vector *sequence = dynamic_cast<Vector*>(members[row].getDagNodePtr()->getValuePtr());
-    return static_cast<Character*>(sequence->getElement(col));
+
+Character* Alignment::getElement(size_t row, size_t col) const {
+    const Sequence &sequence = dynamic_cast<const Sequence&>(matrix[row]);
+    return static_cast<Character*>(sequence.getElement(col));
 }
 
 
 /** Get member rules */
-const MemberRules& CharacterMatrix::getMemberRules(void) const {
+const MemberRules& Alignment::getMemberRules(void) const {
 
     static MemberRules memberRules;
     return memberRules;
@@ -306,7 +313,7 @@ const MemberRules& CharacterMatrix::getMemberRules(void) const {
 
 
 /** Get methods */
-const MethodTable& CharacterMatrix::getMethods(void) const {
+const MethodTable& Alignment::getMethods(void) const {
 
     static MethodTable   methods;
     static ArgumentRules ncharArgRules;
@@ -360,16 +367,16 @@ const MethodTable& CharacterMatrix::getMethods(void) const {
 
 
 /** Return the number of characters in each vector of taxon observations */
-size_t CharacterMatrix::getNumCharacters(void) const {
+size_t Alignment::getNumberOfCharacters(void) const {
 
-    return cols;
+    return sequenceLength;
 }
 
 
 /** Get the number of states for the characters in this matrix. We
     assume that all of the characters in the matrix are of the same
     type and have the same number of potential states. */
-size_t CharacterMatrix::getNumStates(void) const {
+size_t Alignment::getNumberOfStates(void) const {
 
     // Get the first character in the matrix
     if ( members.size() == 0 )
@@ -383,10 +390,15 @@ size_t CharacterMatrix::getNumStates(void) const {
 }
 
 
-/** Get sequence with index tn */
-const Sequence& CharacterMatrix::getSequence( size_t tn ) const {
+size_t Alignment::getNumberOfTaxa(void) const {
+    return sequenceNames.size();
+}
 
-    if ( tn >= getNumTaxa() )
+
+/** Get sequence with index tn */
+const Sequence& Alignment::getSequence( size_t tn ) const {
+
+    if ( tn >= getNumberOfTaxa() )
         throw RbException( "Taxon index out of range" );
 
     const Sequence* sequence = static_cast<const Sequence*>( members[members.getName(tn)].getValue() );
@@ -396,20 +408,20 @@ const Sequence& CharacterMatrix::getSequence( size_t tn ) const {
 
 
 /** Get taxon with index idx */
-std::string CharacterMatrix::getTaxonWithIndex( size_t idx ) const {
+const std::string& Alignment::getTaxonNameWithIndex( size_t idx ) const {
 
     return members.getName( idx );
 }
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
-const TypeSpec& CharacterMatrix::getTypeSpec(void) const {
+const TypeSpec& Alignment::getTypeSpec(void) const {
     return typeSpec;
 }
 
 
 /** Return the index of the element ( the index of the taxon with name elemName ) */
-size_t CharacterMatrix::indexOfTaxonWithName( std::string& s ) const {
+size_t Alignment::indexOfTaxonWithName( std::string& s ) const {
     
     // search through all names
     for (size_t i=0; i<members.size(); i++) {
@@ -423,10 +435,10 @@ size_t CharacterMatrix::indexOfTaxonWithName( std::string& s ) const {
 
 
 /** Is this character pattern constant? */
-bool CharacterMatrix::isCharacterConstant(size_t idx) const {
+bool Alignment::isCharacterConstant(size_t idx) const {
 
     const Character* f = NULL;
-    for ( size_t i=0; i<getNumTaxa(); i++ ) {
+    for ( size_t i=0; i<getNumberOfTaxa(); i++ ) {
 
         if ( isTaxonExcluded(i) == false ) {
             
@@ -445,7 +457,7 @@ bool CharacterMatrix::isCharacterConstant(size_t idx) const {
 
 
 /** Is the character excluded */
-bool CharacterMatrix::isCharacterExcluded(size_t i) const {
+bool Alignment::isCharacterExcluded(size_t i) const {
 
 	std::set<size_t>::const_iterator it = deletedCharacters.find( i );
 	if ( it != deletedCharacters.end() )
@@ -455,9 +467,9 @@ bool CharacterMatrix::isCharacterExcluded(size_t i) const {
 
 
 /** Does the character have missing or ambiguous characters */
-bool CharacterMatrix::isCharacterMissingOrAmbiguous(size_t idx) const {
+bool Alignment::isCharacterMissingOrAmbiguous(size_t idx) const {
 
-    for ( size_t i=0; i<getNumTaxa(); i++ )
+    for ( size_t i=0; i<getNumberOfTaxa(); i++ )
         {
         if ( isTaxonExcluded(i) == false )
             {
@@ -471,7 +483,7 @@ bool CharacterMatrix::isCharacterMissingOrAmbiguous(size_t idx) const {
 
 
 /** Is the taxon excluded */
-bool CharacterMatrix::isTaxonExcluded(size_t i) const {
+bool Alignment::isTaxonExcluded(size_t i) const {
 
 	std::set<size_t>::const_iterator it = deletedTaxa.find( i );
 	if ( it != deletedTaxa.end() )
@@ -481,7 +493,7 @@ bool CharacterMatrix::isTaxonExcluded(size_t i) const {
 
 
 /** Is the taxon excluded */
-bool CharacterMatrix::isTaxonExcluded(std::string& s) const {
+bool Alignment::isTaxonExcluded(std::string& s) const {
 
     size_t i = indexOfTaxonWithName(s);
 	std::set<size_t>::const_iterator it = deletedTaxa.find( i );
@@ -492,17 +504,17 @@ bool CharacterMatrix::isTaxonExcluded(std::string& s) const {
 
 
 /** Make copy of site column with index cn */
-Vector* CharacterMatrix::makeSiteColumn( size_t cn ) const {
+Vector* Alignment::makeSiteColumn( size_t cn ) const {
 
-    if ( cn >= getNumCharacters() )
+    if ( cn >= getNumberOfCharacters() )
         throw RbException( "Site index out of range" );
 
-    if ( getNumTaxa() == 0 )
+    if ( getNumberOfTaxa() == 0 )
         throw RbException( "Character matrix is empty" );
 
     Vector* temp = static_cast<const Vector*>( members[0].getValue() )->clone();
     temp->clear();
-    for ( size_t i=0; i<getNumTaxa(); i++ )
+    for ( size_t i=0; i<getNumberOfTaxa(); i++ )
         temp->push_back( getCharacter( i, cn ).clone() );
 
     return temp;
@@ -510,10 +522,10 @@ Vector* CharacterMatrix::makeSiteColumn( size_t cn ) const {
 
 
 /** Calculates and returns the number of constant characters */
-size_t CharacterMatrix::numConstantPatterns(void) const {
+size_t Alignment::numConstantPatterns(void) const {
 
     size_t nc = 0;
-    for (size_t i=0; i<getNumCharacters(); i++)
+    for (size_t i=0; i<getNumberOfCharacters(); i++)
         {
         if ( isCharacterExcluded(i) == false && isCharacterConstant(i) == true )
             nc++;
@@ -523,10 +535,10 @@ size_t CharacterMatrix::numConstantPatterns(void) const {
 
 
 /** Returns the number of characters with missing or ambiguous data */
-size_t CharacterMatrix::numMissAmbig(void) const {
+size_t Alignment::numMissAmbig(void) const {
 
     size_t nma = 0;
-    for (size_t i=0; i<getNumCharacters(); i++)
+    for (size_t i=0; i<getNumberOfCharacters(); i++)
         {
         if ( isCharacterExcluded(i) == false && isCharacterMissingOrAmbiguous(i) == true )
             nma++;
@@ -536,32 +548,25 @@ size_t CharacterMatrix::numMissAmbig(void) const {
 
 
 /** Print value for user */
-void CharacterMatrix::printValue(std::ostream& o) const {
+void Alignment::printValue(std::ostream& o) const {
 
     o << "Origination:          " << fileName << std::endl;
     o << "Data type:            " << getDataType() << std::endl;
-    o << "Number of taxa:       " << getNumTaxa() << std::endl;
-    o << "Number of characters: " << getNumCharacters() << std::endl;
+    o << "Number of taxa:       " << getNumberOfTaxa() << std::endl;
+    o << "Number of characters: " << getNumberOfCharacters() << std::endl;
 }
 
-/** Overloaded container resize method */
-void CharacterMatrix::resize( size_t len ) {
+
+void Alignment::resize(size_t nRows, size_t nCols) {
     
-    throw RbException("Not implemented method CharacterMatrix::resize()");
+    throw RbException("Not implemented method Alignment::resize(rows,cols)");
 }
-
-/** Overloaded container resize method */
-void CharacterMatrix::resize( size_t rows, size_t cols ) {
-    
-    throw RbException("Not implemented method CharacterMatrix::resize()");
-}
-
 
 
 /** Restore a character */
-void CharacterMatrix::restoreCharacter(size_t i) {
+void Alignment::restoreCharacter(size_t i) {
 
-    if (i >= getNumCharacters() )
+    if (i >= getNumberOfCharacters() )
         throw RbException( "Character index out of range" );
 
     deletedCharacters.erase( i );
@@ -569,9 +574,9 @@ void CharacterMatrix::restoreCharacter(size_t i) {
 
 
 /** Restore a taxon */
-void CharacterMatrix::restoreTaxon(size_t i) {
+void Alignment::restoreTaxon(size_t i) {
 
-    if ( i >= getNumTaxa() )
+    if ( i >= getNumberOfTaxa() )
         return;
 
     deletedTaxa.erase( i );
@@ -579,7 +584,7 @@ void CharacterMatrix::restoreTaxon(size_t i) {
 
 
 /** Restore a taxon */
-void CharacterMatrix::restoreTaxon(std::string& s) {
+void Alignment::restoreTaxon(std::string& s) {
 
     size_t i = indexOfTaxonWithName( s );
 
@@ -588,7 +593,7 @@ void CharacterMatrix::restoreTaxon(std::string& s) {
 
 
 /** Complete info */
-std::string CharacterMatrix::richInfo(void) const {
+std::string Alignment::richInfo(void) const {
 
 	std::ostringstream o;
     printValue( o );
@@ -596,25 +601,27 @@ std::string CharacterMatrix::richInfo(void) const {
 }
 
 /** Overloaded container setElement method */
-void CharacterMatrix::setElement( size_t index, RbLanguageObject* var ) {
+void Alignment::setElement( size_t index, RbLanguageObject* var ) {
     
-    throw RbException("Not implemented method CharacterMatrix::setElement()");
+    if (var->isTypeSpec(TypeSpec(Sequence_name))) {
+        Sequence *seq = static_cast<Sequence*>(var);
+        
+        sequenceNames.erase(sequenceNames.begin() + index);
+        sequenceNames.insert(sequenceNames.begin() + index,seq->getTaxonName());
+        matrix.setElement(index,seq);
+    }
 }
 
 /** Overloaded container setElement method */
-void CharacterMatrix::setElement( size_t row, size_t col, RbLanguageObject* var ) {
+void Alignment::setElement( size_t row, size_t col, RbLanguageObject* var ) {
     
-    throw RbException("Not implemented method CharacterMatrix::setElement()");
+    throw RbException("Not implemented method Alignment::setElement()");
 }
 
-/** the number of elements in this matrix */
-size_t CharacterMatrix::size() const {
-    return getNumTaxa() * getNumCharacters();
-}
 
 /** transpose the matrix */
-void CharacterMatrix::transpose() {
-    throw RbException("Transpose of CharacterMatrix not supported.");
+void Alignment::transpose() {
+    throw RbException("Transpose of Alignment not supported.");
 }
 
 

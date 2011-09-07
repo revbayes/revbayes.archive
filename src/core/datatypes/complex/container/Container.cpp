@@ -27,7 +27,12 @@
 #include <algorithm>
 
 /** Set type of elements */
-Container::Container(const TypeSpec& elemType) : ConstantMemberObject(getMemberRules()), elementType(elemType) {
+Container::Container(const TypeSpec& elemType) : ConstantMemberObject(), elementType(elemType) {
+    
+}
+
+/** Set type of elements */
+Container::Container(const TypeSpec& elemType, const MemberRules &memberRules) : ConstantMemberObject(memberRules), elementType(elemType) {
     
 }
 
@@ -64,21 +69,6 @@ const VectorString& Container::getClass(void) const {
 	return rbClass;
 }
 
-
-
-/* Get member rules */
-const MemberRules& Container::getMemberRules(void) const {
-    
-    static MemberRules memberRules;
-    static bool        rulesSet = false;
-    
-    if (!rulesSet) 
-    {
-        rulesSet = true;
-    }
-    
-    return memberRules;
-}
 
 
 /* Get method specifications */

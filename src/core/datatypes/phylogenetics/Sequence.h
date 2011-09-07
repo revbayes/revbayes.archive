@@ -29,7 +29,7 @@ class Character;
 
 const std::string Sequence_name = "Sequence";
 
-class Sequence : public ConstantMemberObject {
+class Sequence : public AbstractVector {
     
 public:
     Sequence(const std::string& elemType, const std::string tname="");                              //!< Set type spec of container from type of elements
@@ -42,18 +42,32 @@ public:
     const VectorString&                     getClass(void) const;                                   //!< Get class
     const TypeSpec&                         getTypeSpec(void) const;                                //!< Get language type of the object
     void                                    printValue(std::ostream& o) const;                      //!< Print value for user
+    std::string                             richInfo(void) const;                                   //!< Complete info about object
+    
+    // Container functions you have to override
+    void                                    pop_back(void);                                         //!< Drop element at back
+    void                                    pop_front(void);                                        //!< Drop element from front
+    void                                    push_back(RbObject* x);                                 //!< Append element to end
+    void                                    push_front(RbObject* x);                                //!< Add element in front
+    void                                    resize(size_t n);                                       //!< Resize to new AbstractVector of length n
+    size_t                                  size(void) const;                                       //!< get the number of elements in the AbstractVector
+    
+    void                                    clear(void);                                            //!< Clear
+    Character*                              getElement(size_t index) const;                         //!< Get element
+    void                                    setElement(const size_t index, RbLanguageObject* elem); //!< Set element with type conversion
+    void                                    sort(void);                                             //!< sort the AbstractVector
+    void                                    unique(void);                                           //!< removes consecutive duplicates
+
     
     // Sequence functions
     void                                    addCharacter( Character* newChar );                     //!< Push back a new character
-    Character*                              getCharacter(size_t index);                             //!< Get the character at position index
+    Character*                              getCharacter(size_t index) const;                       //!< Get the character at position index
     size_t                                  getNumberOfCharacters(void) const;                      //!< How many characters
-    std::string                             getTaxonName(void) const { return taxonName; }          //!< Return the name of the character vector
-    void                                    setTaxonName(std::string tn) { taxonName = tn; }        //!< Set the taxon name
-    size_t                                  size(void) const { return characters.size(); }          //!< How long is the sequence
+    const std::string&                      getTaxonName(void) const;                               //!< Return the name of the character vector
+    void                                    setTaxonName(std::string tn);                           //!< Set the taxon name
     
     
 private:
-    std::string                             characterType;                                          //!< The type of characters this sequence holds
     std::string                             taxonName;                                              //!< Name of the taxon for this vector of characters               
     Vector                                  characters;                                             //!< The vector containing the characters of the sequence
     

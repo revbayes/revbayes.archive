@@ -39,8 +39,18 @@ Matrix::Matrix(const std::string& elemType, const MemberRules& memberRules) : Ve
 /** Get class vector describing type of object */
 const VectorString& Matrix::getClass(void) const {
 
-    static VectorString rbClass = VectorString(Matrix_name) + Vector::getClass();
+    static VectorString rbClass = VectorString(Matrix_name) + AbstractVector::getClass();
     return rbClass;
+}
+
+
+size_t Matrix::getNumberOfColumns(void) const {
+    return static_cast<const Container&>(matrix[0]).size();
+}
+
+
+size_t Matrix::getNumberOfRows(void) const {
+    return matrix.size();
 }
 
 

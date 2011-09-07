@@ -125,6 +125,11 @@ RbLanguageObject* Vector::getElement(size_t index) const {
 }
 
 
+const std::vector<RbLanguageObject*>& Vector::getValue(void) const {
+    return elements;
+}
+
+
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& Vector::getTypeSpec(void) const {
     return typeSpec;

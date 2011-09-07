@@ -30,6 +30,12 @@ AbstractVector::AbstractVector(const TypeSpec& elemType) : Container(elemType) {
 }
 
 
+/** Set type of elements */
+AbstractVector::AbstractVector(const TypeSpec& elemType, const MemberRules& memberRules) : Container(elemType,memberRules) {
+    
+}
+
+
 /** Copy Constructor */
 AbstractVector::AbstractVector(const AbstractVector &v) : Container(v) {
     

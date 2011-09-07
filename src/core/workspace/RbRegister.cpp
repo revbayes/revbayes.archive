@@ -65,7 +65,7 @@
 #include "VectorString.h"
 
 /* MemberObject types without auto-generated constructors(alphabetic order) */
-#include "CharacterMatrix.h"
+#include "Alignment.h"
 #include "Model.h"
 #include "Sequence.h"
 #include "Simplex.h"
@@ -207,7 +207,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new VectorString()                 );
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
-        addType( new CharacterMatrix(DnaState_name) );
+        addType( new Alignment(DnaState_name) );
         addType( new Simplex()                      );
         addType( new Topology()                     );
         addType( new TopologyNode()                 );

@@ -15,12 +15,12 @@
  * $Id$
  */
 
-#include "RbBoolean.h"
-#include "CharacterMatrix.h"
+#include "Alignment.h"
 #include "ConstantNode.h"
 #include "Func_readAlignment.h"
 #include "DagNodeContainer.h"
 #include "NclReader.h"
+#include "RbBoolean.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RbUtil.h"
@@ -29,6 +29,7 @@
 #include "UserInterface.h"
 #include "ValueRule.h"
 #include "VectorString.h"
+
 #include <map>
 #include <set>
 #include <sstream>
@@ -37,7 +38,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_readAlignment::typeSpec(Func_readAlignment_name);
-const TypeSpec Func_readAlignment::returnTypeSpec(Vector_name, new TypeSpec(CharacterMatrix_name));
+const TypeSpec Func_readAlignment::returnTypeSpec(Vector_name, new TypeSpec(Alignment_name));
 
 /** Clone object */
 Func_readAlignment* Func_readAlignment::clone( void ) const {
@@ -137,7 +138,7 @@ RbLanguageObject* Func_readAlignment::execute( void ) {
                 
     // read the files in the map containing the file names with the output being a vector of pointers to
     // the character matrices that have been read
-    std::vector<CharacterMatrix*> m = reader.readMatrices( fileMap );
+    std::vector<Alignment*> m = reader.readMatrices( fileMap );
     
     // print summary of results of file reading to the user
     if (readingDirectory == true)
@@ -194,14 +195,14 @@ RbLanguageObject* Func_readAlignment::execute( void ) {
         {
         DagNodeContainer* retList = new DagNodeContainer(m.size());
         size_t index = 0;
-        for (std::vector<CharacterMatrix*>::iterator it = m.begin(); it != m.end(); it++)
+        for (std::vector<Alignment*>::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
             retList->setElement( index, new Variable(new ConstantNode(*it)) );
             index++;
             }
         return retList;
-            throw RbException("Wanted to create a List of CharacterMatrix but List does not exist anymore. See Func_readAlignment");
+            throw RbException("Wanted to create a List of Alignment but List does not exist anymore. See Func_readAlignment");
         }
     else if ( m.size() == 1 ) 
         {
