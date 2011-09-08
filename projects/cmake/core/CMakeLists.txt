@@ -74,8 +74,8 @@ ${PROJECT_SOURCE_DIR}/core/datatypes/complex/tree/TreePlate.cpp
 ${PROJECT_SOURCE_DIR}/core/datatypes/complex/tree/TreePlate.h
 ${PROJECT_SOURCE_DIR}/core/datatypes/model/Model.cpp
 ${PROJECT_SOURCE_DIR}/core/datatypes/model/Model.h
-${PROJECT_SOURCE_DIR}/core/datatypes/phylogenetics/CharacterMatrix.cpp
-${PROJECT_SOURCE_DIR}/core/datatypes/phylogenetics/CharacterMatrix.h
+${PROJECT_SOURCE_DIR}/core/datatypes/phylogenetics/Alignment.cpp
+${PROJECT_SOURCE_DIR}/core/datatypes/phylogenetics/Alignment.h
 ${PROJECT_SOURCE_DIR}/core/datatypes/phylogenetics/characters/AminoAcidState.cpp
 ${PROJECT_SOURCE_DIR}/core/datatypes/phylogenetics/characters/AminoAcidState.h
 ${PROJECT_SOURCE_DIR}/core/datatypes/phylogenetics/characters/Character.cpp
