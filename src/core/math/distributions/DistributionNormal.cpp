@@ -78,7 +78,7 @@ double RbStatistics::Normal::lnPdf(double x) {
  */
 double RbStatistics::Normal::lnPdf(double mu, double sigma, double x) {
     
-	return -0.5 * std::log(2.0 * RbConstants::PI * sigma) - 0.5 * (x - mu) * (x - mu) / (sigma * sigma);
+	return -0.5 * std::log(2.0 * RbConstants::PI * sigma * sigma) - 0.5 * (x - mu) * (x - mu) / (sigma * sigma);
 }
 
 /*!
