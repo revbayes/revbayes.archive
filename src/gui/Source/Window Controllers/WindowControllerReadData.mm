@@ -7,7 +7,7 @@
 #include "NclReader.h"
 #include "RbFileManager.h"
 
-#import "CharacterMatrix.h"
+#import "Alignment.h"
 #import "RbData.h"
 #import "RbDataCell.h"
 #import "ToolReadData.h"
@@ -402,7 +402,7 @@ std::cerr << "readingDirectory = " << readingDirectory << std::endl;
                 
     // read the files in the map containing the file names with the output being a vector of pointers to
     // the character matrices that have been read
-    std::vector<CharacterMatrix*> myData = reader.readMatrices( fileMap );
+    std::vector<Alignment*> myData = reader.readMatrices( fileMap );
     
     // print summary of results of file reading to the user
     if (readingDirectory == true)
@@ -416,15 +416,15 @@ std::cerr << "readingDirectory = " << readingDirectory << std::endl;
 
 	// we have successfully read the data into computer memory
 	// add the matrices to the tool
-	for (std::vector<CharacterMatrix*>::iterator p = myData.begin(); p != myData.end(); p++)
+	for (std::vector<Alignment*>::iterator p = myData.begin(); p != myData.end(); p++)
 		{
 		//(*p)->print();
 		std::string fn = (*p)->getFileName();
 std::cerr << "Adding matrix " << fn << std::endl;
 		NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
 		RbData* m = [[RbData alloc] init];
-		[m setNumTaxa:(int)((*p)->getNumTaxa())];
-		[m setNumCharacters:(int)((*p)->getNumCharacters())];
+		[m setNumTaxa:(int)((*p)->getNumberOfTaxa())];
+		[m setNumCharacters:(int)((*p)->getNumberOfCharacters())];
 		[m setName:nsfn];
         if ( (*p)->getDataType() == "DNA" )
             [m setDataType:DNA];
@@ -437,11 +437,11 @@ std::cerr << "Adding matrix " << fn << std::endl;
         else if ( (*p)->getDataType() == "Continuous" )
             [m setDataType:CONTINUOUS];
 
-		for (int i=0; i<(*p)->getNumTaxa(); i++)
+		for (int i=0; i<(*p)->getNumberOfTaxa(); i++)
 			{
-			NSString* taxonName = [NSString stringWithCString:(*p)->getTaxonWithIndex(i).c_str() encoding:NSUTF8StringEncoding];
+			NSString* taxonName = [NSString stringWithCString:(*p)->getTaxonNameWithIndex(i).c_str() encoding:NSUTF8StringEncoding];
 			[m addTaxonName:taxonName];
-			for (int j=0; j<(*p)->getNumCharacters(); j++)
+			for (int j=0; j<(*p)->getNumberOfCharacters(); j++)
 				{
                 const Character& matrixCell = (*p)->getCharacter(i, j);
 				RbDataCell* cell = [[RbDataCell alloc] init];
