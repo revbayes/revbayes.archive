@@ -1678,7 +1678,6 @@
 		22666BD8141E87C0005E86F4 /* gui */ = {
 			isa = PBXGroup;
 			children = (
-				22667317141EAA38005E86F4 /* parser */,
 				22666BD9141E87C0005E86F4 /* Images */,
 				22666C5C141E87C1005E86F4 /* main.mm */,
 				22666C5D141E87C1005E86F4 /* RevBayesGUI-Info.plist */,
@@ -3009,8 +3008,7 @@
 				2266731D141EAA38005E86F4 /* parser */,
 				2266733F141EAA38005E86F4 /* RbMain.cpp */,
 			);
-			name = parser;
-			path = ../parser;
+			path = parser;
 			sourceTree = "<group>";
 		};
 		22667318141EAA38005E86F4 /* functions */ = {
@@ -3068,6 +3066,7 @@
 			isa = PBXGroup;
 			children = (
 				22666FD9141EAA06005E86F4 /* core */,
+				22667317141EAA38005E86F4 /* parser */,
 				22666BD8141E87C0005E86F4 /* gui */,
 				645EB76713FEE06200018F3A /* grammar */,
 				645EB76813FEE06200018F3A /* help */,
