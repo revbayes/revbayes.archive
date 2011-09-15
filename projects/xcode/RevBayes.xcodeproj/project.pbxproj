@@ -606,28 +606,28 @@
 		2222E23214227240006C3186 /* RbDataCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08314227240006C3186 /* RbDataCell.mm */; };
 		2222E23314227240006C3186 /* DistributionBetaBinomialGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08614227240006C3186 /* DistributionBetaBinomialGui.mm */; };
 		2222E23414227240006C3186 /* DistributionBinomialGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08814227240006C3186 /* DistributionBinomialGui.mm */; };
-		2222E23514227240006C3186 /* DistributionBirthDeath.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08A14227240006C3186 /* DistributionBirthDeath.mm */; };
-		2222E23614227240006C3186 /* DistributionCauchy.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08C14227240006C3186 /* DistributionCauchy.mm */; };
-		2222E23714227240006C3186 /* DistributionChiSquare.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08E14227240006C3186 /* DistributionChiSquare.mm */; };
-		2222E23814227240006C3186 /* DistributionDirichlet.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09014227240006C3186 /* DistributionDirichlet.mm */; };
-		2222E23914227240006C3186 /* DistributionDiscreteUniform.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09214227240006C3186 /* DistributionDiscreteUniform.mm */; };
-		2222E23A14227240006C3186 /* DistributionDiscreteUniformPos.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09414227240006C3186 /* DistributionDiscreteUniformPos.mm */; };
-		2222E23B14227240006C3186 /* DistributionExponential.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09614227240006C3186 /* DistributionExponential.mm */; };
-		2222E23C14227240006C3186 /* DistributionGamma.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09814227240006C3186 /* DistributionGamma.mm */; };
+		2222E23514227240006C3186 /* DistributionBirthDeathGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08A14227240006C3186 /* DistributionBirthDeathGui.mm */; };
+		2222E23614227240006C3186 /* DistributionCauchyGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08C14227240006C3186 /* DistributionCauchyGui.mm */; };
+		2222E23714227240006C3186 /* DistributionChiSquareGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08E14227240006C3186 /* DistributionChiSquareGui.mm */; };
+		2222E23814227240006C3186 /* DistributionDirichletGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09014227240006C3186 /* DistributionDirichletGui.mm */; };
+		2222E23914227240006C3186 /* DistributionDiscreteUniformGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09214227240006C3186 /* DistributionDiscreteUniformGui.mm */; };
+		2222E23A14227240006C3186 /* DistributionDiscreteUniformPosGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09414227240006C3186 /* DistributionDiscreteUniformPosGui.mm */; };
+		2222E23B14227240006C3186 /* DistributionExponentialGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09614227240006C3186 /* DistributionExponentialGui.mm */; };
+		2222E23C14227240006C3186 /* DistributionGammaGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09814227240006C3186 /* DistributionGammaGui.mm */; };
 		2222E23D14227240006C3186 /* DistributionGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09A14227240006C3186 /* DistributionGui.mm */; };
-		2222E23E14227240006C3186 /* DistributionHyperbolic.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09C14227240006C3186 /* DistributionHyperbolic.mm */; };
-		2222E23F14227240006C3186 /* DistributionList.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09E14227240006C3186 /* DistributionList.mm */; };
-		2222E24014227240006C3186 /* DistributionLogistic.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A014227240006C3186 /* DistributionLogistic.mm */; };
-		2222E24114227240006C3186 /* DistributionLogNormal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A214227240006C3186 /* DistributionLogNormal.mm */; };
-		2222E24214227240006C3186 /* DistributionMultinomial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A414227240006C3186 /* DistributionMultinomial.mm */; };
-		2222E24314227240006C3186 /* DistributionNeg.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A614227240006C3186 /* DistributionNeg.mm */; };
-		2222E24414227240006C3186 /* DistributionNegativeBinomial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A814227240006C3186 /* DistributionNegativeBinomial.mm */; };
+		2222E23E14227240006C3186 /* DistributionHyperbolicGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09C14227240006C3186 /* DistributionHyperbolicGui.mm */; };
+		2222E23F14227240006C3186 /* DistributionListGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E09E14227240006C3186 /* DistributionListGui.mm */; };
+		2222E24014227240006C3186 /* DistributionLogisticGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A014227240006C3186 /* DistributionLogisticGui.mm */; };
+		2222E24114227240006C3186 /* DistributionLogNormalGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A214227240006C3186 /* DistributionLogNormalGui.mm */; };
+		2222E24214227240006C3186 /* DistributionMultinomialGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A414227240006C3186 /* DistributionMultinomialGui.mm */; };
+		2222E24314227240006C3186 /* DistributionNegGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A614227240006C3186 /* DistributionNegGui.mm */; };
+		2222E24414227240006C3186 /* DistributionNegativeBinomialGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A814227240006C3186 /* DistributionNegativeBinomialGui.mm */; };
 		2222E24514227240006C3186 /* DistributionNormalGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0AA14227240006C3186 /* DistributionNormalGui.mm */; };
-		2222E24614227240006C3186 /* DistributionPoisson.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0AC14227240006C3186 /* DistributionPoisson.mm */; };
-		2222E24714227240006C3186 /* DistributionSkewNormal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0AE14227240006C3186 /* DistributionSkewNormal.mm */; };
-		2222E24814227240006C3186 /* DistributionStudent.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0B014227240006C3186 /* DistributionStudent.mm */; };
-		2222E24914227240006C3186 /* DistributionUniform.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0B214227240006C3186 /* DistributionUniform.mm */; };
-		2222E24A14227240006C3186 /* DistributionUniformPos.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0B414227240006C3186 /* DistributionUniformPos.mm */; };
+		2222E24614227240006C3186 /* DistributionPoissonGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0AC14227240006C3186 /* DistributionPoissonGui.mm */; };
+		2222E24714227240006C3186 /* DistributionSkewNormalGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0AE14227240006C3186 /* DistributionSkewNormalGui.mm */; };
+		2222E24814227240006C3186 /* DistributionStudentGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0B014227240006C3186 /* DistributionStudentGui.mm */; };
+		2222E24914227240006C3186 /* DistributionUniformGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0B214227240006C3186 /* DistributionUniformGui.mm */; };
+		2222E24A14227240006C3186 /* DistributionUniformPosGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0B414227240006C3186 /* DistributionUniformPosGui.mm */; };
 		2222E24B14227240006C3186 /* Parameter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0B614227240006C3186 /* Parameter.mm */; };
 		2222E24C14227240006C3186 /* PartitionConstant.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0B814227240006C3186 /* PartitionConstant.mm */; };
 		2222E24D14227240006C3186 /* PartitionModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0BA14227240006C3186 /* PartitionModel.mm */; };
@@ -1743,49 +1743,49 @@
 		2222E08714227240006C3186 /* DistributionBinomialGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionBinomialGui.h; sourceTree = "<group>"; };
 		2222E08814227240006C3186 /* DistributionBinomialGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionBinomialGui.mm; sourceTree = "<group>"; };
 		2222E08914227240006C3186 /* DistributionBirthDeathGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionBirthDeathGui.h; sourceTree = "<group>"; };
-		2222E08A14227240006C3186 /* DistributionBirthDeath.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionBirthDeath.mm; sourceTree = "<group>"; };
-		2222E08B14227240006C3186 /* DistributionCauchy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionCauchy.h; sourceTree = "<group>"; };
-		2222E08C14227240006C3186 /* DistributionCauchy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionCauchy.mm; sourceTree = "<group>"; };
-		2222E08D14227240006C3186 /* DistributionChiSquare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionChiSquare.h; sourceTree = "<group>"; };
-		2222E08E14227240006C3186 /* DistributionChiSquare.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionChiSquare.mm; sourceTree = "<group>"; };
-		2222E08F14227240006C3186 /* DistributionDirichlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionDirichlet.h; sourceTree = "<group>"; };
-		2222E09014227240006C3186 /* DistributionDirichlet.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionDirichlet.mm; sourceTree = "<group>"; };
-		2222E09114227240006C3186 /* DistributionDiscreteUniform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionDiscreteUniform.h; sourceTree = "<group>"; };
-		2222E09214227240006C3186 /* DistributionDiscreteUniform.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionDiscreteUniform.mm; sourceTree = "<group>"; };
-		2222E09314227240006C3186 /* DistributionDiscreteUniformPos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionDiscreteUniformPos.h; sourceTree = "<group>"; };
-		2222E09414227240006C3186 /* DistributionDiscreteUniformPos.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionDiscreteUniformPos.mm; sourceTree = "<group>"; };
-		2222E09514227240006C3186 /* DistributionExponential.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionExponential.h; sourceTree = "<group>"; };
-		2222E09614227240006C3186 /* DistributionExponential.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionExponential.mm; sourceTree = "<group>"; };
-		2222E09714227240006C3186 /* DistributionGamma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionGamma.h; sourceTree = "<group>"; };
-		2222E09814227240006C3186 /* DistributionGamma.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionGamma.mm; sourceTree = "<group>"; };
+		2222E08A14227240006C3186 /* DistributionBirthDeathGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionBirthDeathGui.mm; sourceTree = "<group>"; };
+		2222E08B14227240006C3186 /* DistributionCauchyGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionCauchyGui.h; sourceTree = "<group>"; };
+		2222E08C14227240006C3186 /* DistributionCauchyGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionCauchyGui.mm; sourceTree = "<group>"; };
+		2222E08D14227240006C3186 /* DistributionChiSquareGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionChiSquareGui.h; sourceTree = "<group>"; };
+		2222E08E14227240006C3186 /* DistributionChiSquareGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionChiSquareGui.mm; sourceTree = "<group>"; };
+		2222E08F14227240006C3186 /* DistributionDirichletGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionDirichletGui.h; sourceTree = "<group>"; };
+		2222E09014227240006C3186 /* DistributionDirichletGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionDirichletGui.mm; sourceTree = "<group>"; };
+		2222E09114227240006C3186 /* DistributionDiscreteUniformGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionDiscreteUniformGui.h; sourceTree = "<group>"; };
+		2222E09214227240006C3186 /* DistributionDiscreteUniformGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionDiscreteUniformGui.mm; sourceTree = "<group>"; };
+		2222E09314227240006C3186 /* DistributionDiscreteUniformPosGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionDiscreteUniformPosGui.h; sourceTree = "<group>"; };
+		2222E09414227240006C3186 /* DistributionDiscreteUniformPosGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionDiscreteUniformPosGui.mm; sourceTree = "<group>"; };
+		2222E09514227240006C3186 /* DistributionExponentialGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionExponentialGui.h; sourceTree = "<group>"; };
+		2222E09614227240006C3186 /* DistributionExponentialGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionExponentialGui.mm; sourceTree = "<group>"; };
+		2222E09714227240006C3186 /* DistributionGammaGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionGammaGui.h; sourceTree = "<group>"; };
+		2222E09814227240006C3186 /* DistributionGammaGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionGammaGui.mm; sourceTree = "<group>"; };
 		2222E09914227240006C3186 /* DistributionGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionGui.h; sourceTree = "<group>"; };
 		2222E09A14227240006C3186 /* DistributionGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionGui.mm; sourceTree = "<group>"; };
-		2222E09B14227240006C3186 /* DistributionHyperbolic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionHyperbolic.h; sourceTree = "<group>"; };
-		2222E09C14227240006C3186 /* DistributionHyperbolic.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionHyperbolic.mm; sourceTree = "<group>"; };
-		2222E09D14227240006C3186 /* DistributionList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionList.h; sourceTree = "<group>"; };
-		2222E09E14227240006C3186 /* DistributionList.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionList.mm; sourceTree = "<group>"; };
-		2222E09F14227240006C3186 /* DistributionLogistic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionLogistic.h; sourceTree = "<group>"; };
-		2222E0A014227240006C3186 /* DistributionLogistic.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionLogistic.mm; sourceTree = "<group>"; };
-		2222E0A114227240006C3186 /* DistributionLogNormal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionLogNormal.h; sourceTree = "<group>"; };
-		2222E0A214227240006C3186 /* DistributionLogNormal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionLogNormal.mm; sourceTree = "<group>"; };
-		2222E0A314227240006C3186 /* DistributionMultinomial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionMultinomial.h; sourceTree = "<group>"; };
-		2222E0A414227240006C3186 /* DistributionMultinomial.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionMultinomial.mm; sourceTree = "<group>"; };
-		2222E0A514227240006C3186 /* DistributionNeg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionNeg.h; sourceTree = "<group>"; };
-		2222E0A614227240006C3186 /* DistributionNeg.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNeg.mm; sourceTree = "<group>"; };
-		2222E0A714227240006C3186 /* DistributionNegativeBinomial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionNegativeBinomial.h; sourceTree = "<group>"; };
-		2222E0A814227240006C3186 /* DistributionNegativeBinomial.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNegativeBinomial.mm; sourceTree = "<group>"; };
+		2222E09B14227240006C3186 /* DistributionHyperbolicGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionHyperbolicGui.h; sourceTree = "<group>"; };
+		2222E09C14227240006C3186 /* DistributionHyperbolicGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionHyperbolicGui.mm; sourceTree = "<group>"; };
+		2222E09D14227240006C3186 /* DistributionListGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionListGui.h; sourceTree = "<group>"; };
+		2222E09E14227240006C3186 /* DistributionListGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionListGui.mm; sourceTree = "<group>"; };
+		2222E09F14227240006C3186 /* DistributionLogisticGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionLogisticGui.h; sourceTree = "<group>"; };
+		2222E0A014227240006C3186 /* DistributionLogisticGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionLogisticGui.mm; sourceTree = "<group>"; };
+		2222E0A114227240006C3186 /* DistributionLogNormalGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionLogNormalGui.h; sourceTree = "<group>"; };
+		2222E0A214227240006C3186 /* DistributionLogNormalGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionLogNormalGui.mm; sourceTree = "<group>"; };
+		2222E0A314227240006C3186 /* DistributionMultinomialGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionMultinomialGui.h; sourceTree = "<group>"; };
+		2222E0A414227240006C3186 /* DistributionMultinomialGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionMultinomialGui.mm; sourceTree = "<group>"; };
+		2222E0A514227240006C3186 /* DistributionNegGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionNegGui.h; sourceTree = "<group>"; };
+		2222E0A614227240006C3186 /* DistributionNegGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNegGui.mm; sourceTree = "<group>"; };
+		2222E0A714227240006C3186 /* DistributionNegativeBinomialGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionNegativeBinomialGui.h; sourceTree = "<group>"; };
+		2222E0A814227240006C3186 /* DistributionNegativeBinomialGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNegativeBinomialGui.mm; sourceTree = "<group>"; };
 		2222E0A914227240006C3186 /* DistributionNormalGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionNormalGui.h; sourceTree = "<group>"; };
 		2222E0AA14227240006C3186 /* DistributionNormalGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNormalGui.mm; sourceTree = "<group>"; };
-		2222E0AB14227240006C3186 /* DistributionPoisson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionPoisson.h; sourceTree = "<group>"; };
-		2222E0AC14227240006C3186 /* DistributionPoisson.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionPoisson.mm; sourceTree = "<group>"; };
-		2222E0AD14227240006C3186 /* DistributionSkewNormal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionSkewNormal.h; sourceTree = "<group>"; };
-		2222E0AE14227240006C3186 /* DistributionSkewNormal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionSkewNormal.mm; sourceTree = "<group>"; };
-		2222E0AF14227240006C3186 /* DistributionStudent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionStudent.h; sourceTree = "<group>"; };
-		2222E0B014227240006C3186 /* DistributionStudent.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionStudent.mm; sourceTree = "<group>"; };
-		2222E0B114227240006C3186 /* DistributionUniform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionUniform.h; sourceTree = "<group>"; };
-		2222E0B214227240006C3186 /* DistributionUniform.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionUniform.mm; sourceTree = "<group>"; };
-		2222E0B314227240006C3186 /* DistributionUniformPos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionUniformPos.h; sourceTree = "<group>"; };
-		2222E0B414227240006C3186 /* DistributionUniformPos.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionUniformPos.mm; sourceTree = "<group>"; };
+		2222E0AB14227240006C3186 /* DistributionPoissonGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionPoissonGui.h; sourceTree = "<group>"; };
+		2222E0AC14227240006C3186 /* DistributionPoissonGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionPoissonGui.mm; sourceTree = "<group>"; };
+		2222E0AD14227240006C3186 /* DistributionSkewNormalGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionSkewNormalGui.h; sourceTree = "<group>"; };
+		2222E0AE14227240006C3186 /* DistributionSkewNormalGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionSkewNormalGui.mm; sourceTree = "<group>"; };
+		2222E0AF14227240006C3186 /* DistributionStudentGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionStudentGui.h; sourceTree = "<group>"; };
+		2222E0B014227240006C3186 /* DistributionStudentGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionStudentGui.mm; sourceTree = "<group>"; };
+		2222E0B114227240006C3186 /* DistributionUniformGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionUniformGui.h; sourceTree = "<group>"; };
+		2222E0B214227240006C3186 /* DistributionUniformGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionUniformGui.mm; sourceTree = "<group>"; };
+		2222E0B314227240006C3186 /* DistributionUniformPosGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionUniformPosGui.h; sourceTree = "<group>"; };
+		2222E0B414227240006C3186 /* DistributionUniformPosGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionUniformPosGui.mm; sourceTree = "<group>"; };
 		2222E0B514227240006C3186 /* Parameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Parameter.h; sourceTree = "<group>"; };
 		2222E0B614227240006C3186 /* Parameter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Parameter.mm; sourceTree = "<group>"; };
 		2222E0B714227240006C3186 /* PartitionConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartitionConstant.h; sourceTree = "<group>"; };
@@ -3874,49 +3874,49 @@
 				2222E08714227240006C3186 /* DistributionBinomialGui.h */,
 				2222E08814227240006C3186 /* DistributionBinomialGui.mm */,
 				2222E08914227240006C3186 /* DistributionBirthDeathGui.h */,
-				2222E08A14227240006C3186 /* DistributionBirthDeath.mm */,
-				2222E08B14227240006C3186 /* DistributionCauchy.h */,
-				2222E08C14227240006C3186 /* DistributionCauchy.mm */,
-				2222E08D14227240006C3186 /* DistributionChiSquare.h */,
-				2222E08E14227240006C3186 /* DistributionChiSquare.mm */,
-				2222E08F14227240006C3186 /* DistributionDirichlet.h */,
-				2222E09014227240006C3186 /* DistributionDirichlet.mm */,
-				2222E09114227240006C3186 /* DistributionDiscreteUniform.h */,
-				2222E09214227240006C3186 /* DistributionDiscreteUniform.mm */,
-				2222E09314227240006C3186 /* DistributionDiscreteUniformPos.h */,
-				2222E09414227240006C3186 /* DistributionDiscreteUniformPos.mm */,
-				2222E09514227240006C3186 /* DistributionExponential.h */,
-				2222E09614227240006C3186 /* DistributionExponential.mm */,
-				2222E09714227240006C3186 /* DistributionGamma.h */,
-				2222E09814227240006C3186 /* DistributionGamma.mm */,
+				2222E08A14227240006C3186 /* DistributionBirthDeathGui.mm */,
+				2222E08B14227240006C3186 /* DistributionCauchyGui.h */,
+				2222E08C14227240006C3186 /* DistributionCauchyGui.mm */,
+				2222E08D14227240006C3186 /* DistributionChiSquareGui.h */,
+				2222E08E14227240006C3186 /* DistributionChiSquareGui.mm */,
+				2222E08F14227240006C3186 /* DistributionDirichletGui.h */,
+				2222E09014227240006C3186 /* DistributionDirichletGui.mm */,
+				2222E09114227240006C3186 /* DistributionDiscreteUniformGui.h */,
+				2222E09214227240006C3186 /* DistributionDiscreteUniformGui.mm */,
+				2222E09314227240006C3186 /* DistributionDiscreteUniformPosGui.h */,
+				2222E09414227240006C3186 /* DistributionDiscreteUniformPosGui.mm */,
+				2222E09514227240006C3186 /* DistributionExponentialGui.h */,
+				2222E09614227240006C3186 /* DistributionExponentialGui.mm */,
+				2222E09714227240006C3186 /* DistributionGammaGui.h */,
+				2222E09814227240006C3186 /* DistributionGammaGui.mm */,
 				2222E09914227240006C3186 /* DistributionGui.h */,
 				2222E09A14227240006C3186 /* DistributionGui.mm */,
-				2222E09B14227240006C3186 /* DistributionHyperbolic.h */,
-				2222E09C14227240006C3186 /* DistributionHyperbolic.mm */,
-				2222E09D14227240006C3186 /* DistributionList.h */,
-				2222E09E14227240006C3186 /* DistributionList.mm */,
-				2222E09F14227240006C3186 /* DistributionLogistic.h */,
-				2222E0A014227240006C3186 /* DistributionLogistic.mm */,
-				2222E0A114227240006C3186 /* DistributionLogNormal.h */,
-				2222E0A214227240006C3186 /* DistributionLogNormal.mm */,
-				2222E0A314227240006C3186 /* DistributionMultinomial.h */,
-				2222E0A414227240006C3186 /* DistributionMultinomial.mm */,
-				2222E0A514227240006C3186 /* DistributionNeg.h */,
-				2222E0A614227240006C3186 /* DistributionNeg.mm */,
-				2222E0A714227240006C3186 /* DistributionNegativeBinomial.h */,
-				2222E0A814227240006C3186 /* DistributionNegativeBinomial.mm */,
+				2222E09B14227240006C3186 /* DistributionHyperbolicGui.h */,
+				2222E09C14227240006C3186 /* DistributionHyperbolicGui.mm */,
+				2222E09D14227240006C3186 /* DistributionListGui.h */,
+				2222E09E14227240006C3186 /* DistributionListGui.mm */,
+				2222E09F14227240006C3186 /* DistributionLogisticGui.h */,
+				2222E0A014227240006C3186 /* DistributionLogisticGui.mm */,
+				2222E0A114227240006C3186 /* DistributionLogNormalGui.h */,
+				2222E0A214227240006C3186 /* DistributionLogNormalGui.mm */,
+				2222E0A314227240006C3186 /* DistributionMultinomialGui.h */,
+				2222E0A414227240006C3186 /* DistributionMultinomialGui.mm */,
+				2222E0A514227240006C3186 /* DistributionNegGui.h */,
+				2222E0A614227240006C3186 /* DistributionNegGui.mm */,
+				2222E0A714227240006C3186 /* DistributionNegativeBinomialGui.h */,
+				2222E0A814227240006C3186 /* DistributionNegativeBinomialGui.mm */,
 				2222E0A914227240006C3186 /* DistributionNormalGui.h */,
 				2222E0AA14227240006C3186 /* DistributionNormalGui.mm */,
-				2222E0AB14227240006C3186 /* DistributionPoisson.h */,
-				2222E0AC14227240006C3186 /* DistributionPoisson.mm */,
-				2222E0AD14227240006C3186 /* DistributionSkewNormal.h */,
-				2222E0AE14227240006C3186 /* DistributionSkewNormal.mm */,
-				2222E0AF14227240006C3186 /* DistributionStudent.h */,
-				2222E0B014227240006C3186 /* DistributionStudent.mm */,
-				2222E0B114227240006C3186 /* DistributionUniform.h */,
-				2222E0B214227240006C3186 /* DistributionUniform.mm */,
-				2222E0B314227240006C3186 /* DistributionUniformPos.h */,
-				2222E0B414227240006C3186 /* DistributionUniformPos.mm */,
+				2222E0AB14227240006C3186 /* DistributionPoissonGui.h */,
+				2222E0AC14227240006C3186 /* DistributionPoissonGui.mm */,
+				2222E0AD14227240006C3186 /* DistributionSkewNormalGui.h */,
+				2222E0AE14227240006C3186 /* DistributionSkewNormalGui.mm */,
+				2222E0AF14227240006C3186 /* DistributionStudentGui.h */,
+				2222E0B014227240006C3186 /* DistributionStudentGui.mm */,
+				2222E0B114227240006C3186 /* DistributionUniformGui.h */,
+				2222E0B214227240006C3186 /* DistributionUniformGui.mm */,
+				2222E0B314227240006C3186 /* DistributionUniformPosGui.h */,
+				2222E0B414227240006C3186 /* DistributionUniformPosGui.mm */,
 				2222E0B514227240006C3186 /* Parameter.h */,
 				2222E0B614227240006C3186 /* Parameter.mm */,
 				2222E0B714227240006C3186 /* PartitionConstant.h */,
@@ -4927,28 +4927,28 @@
 				2222E23214227240006C3186 /* RbDataCell.mm in Sources */,
 				2222E23314227240006C3186 /* DistributionBetaBinomialGui.mm in Sources */,
 				2222E23414227240006C3186 /* DistributionBinomialGui.mm in Sources */,
-				2222E23514227240006C3186 /* DistributionBirthDeath.mm in Sources */,
-				2222E23614227240006C3186 /* DistributionCauchy.mm in Sources */,
-				2222E23714227240006C3186 /* DistributionChiSquare.mm in Sources */,
-				2222E23814227240006C3186 /* DistributionDirichlet.mm in Sources */,
-				2222E23914227240006C3186 /* DistributionDiscreteUniform.mm in Sources */,
-				2222E23A14227240006C3186 /* DistributionDiscreteUniformPos.mm in Sources */,
-				2222E23B14227240006C3186 /* DistributionExponential.mm in Sources */,
-				2222E23C14227240006C3186 /* DistributionGamma.mm in Sources */,
+				2222E23514227240006C3186 /* DistributionBirthDeathGui.mm in Sources */,
+				2222E23614227240006C3186 /* DistributionCauchyGui.mm in Sources */,
+				2222E23714227240006C3186 /* DistributionChiSquareGui.mm in Sources */,
+				2222E23814227240006C3186 /* DistributionDirichletGui.mm in Sources */,
+				2222E23914227240006C3186 /* DistributionDiscreteUniformGui.mm in Sources */,
+				2222E23A14227240006C3186 /* DistributionDiscreteUniformPosGui.mm in Sources */,
+				2222E23B14227240006C3186 /* DistributionExponentialGui.mm in Sources */,
+				2222E23C14227240006C3186 /* DistributionGammaGui.mm in Sources */,
 				2222E23D14227240006C3186 /* DistributionGui.mm in Sources */,
-				2222E23E14227240006C3186 /* DistributionHyperbolic.mm in Sources */,
-				2222E23F14227240006C3186 /* DistributionList.mm in Sources */,
-				2222E24014227240006C3186 /* DistributionLogistic.mm in Sources */,
-				2222E24114227240006C3186 /* DistributionLogNormal.mm in Sources */,
-				2222E24214227240006C3186 /* DistributionMultinomial.mm in Sources */,
-				2222E24314227240006C3186 /* DistributionNeg.mm in Sources */,
-				2222E24414227240006C3186 /* DistributionNegativeBinomial.mm in Sources */,
+				2222E23E14227240006C3186 /* DistributionHyperbolicGui.mm in Sources */,
+				2222E23F14227240006C3186 /* DistributionListGui.mm in Sources */,
+				2222E24014227240006C3186 /* DistributionLogisticGui.mm in Sources */,
+				2222E24114227240006C3186 /* DistributionLogNormalGui.mm in Sources */,
+				2222E24214227240006C3186 /* DistributionMultinomialGui.mm in Sources */,
+				2222E24314227240006C3186 /* DistributionNegGui.mm in Sources */,
+				2222E24414227240006C3186 /* DistributionNegativeBinomialGui.mm in Sources */,
 				2222E24514227240006C3186 /* DistributionNormalGui.mm in Sources */,
-				2222E24614227240006C3186 /* DistributionPoisson.mm in Sources */,
-				2222E24714227240006C3186 /* DistributionSkewNormal.mm in Sources */,
-				2222E24814227240006C3186 /* DistributionStudent.mm in Sources */,
-				2222E24914227240006C3186 /* DistributionUniform.mm in Sources */,
-				2222E24A14227240006C3186 /* DistributionUniformPos.mm in Sources */,
+				2222E24614227240006C3186 /* DistributionPoissonGui.mm in Sources */,
+				2222E24714227240006C3186 /* DistributionSkewNormalGui.mm in Sources */,
+				2222E24814227240006C3186 /* DistributionStudentGui.mm in Sources */,
+				2222E24914227240006C3186 /* DistributionUniformGui.mm in Sources */,
+				2222E24A14227240006C3186 /* DistributionUniformPosGui.mm in Sources */,
 				2222E24B14227240006C3186 /* Parameter.mm in Sources */,
 				2222E24C14227240006C3186 /* PartitionConstant.mm in Sources */,
 				2222E24D14227240006C3186 /* PartitionModel.mm in Sources */,

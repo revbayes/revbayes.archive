@@ -1,14 +1,14 @@
-#import "DistributionChiSquareGui.h"
+#import "DistributionLogisticGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionChiSquareGui
+@implementation DistributionLogisticGui
 
 - (DistributionGui*)clone {
 
-    return [[DistributionChiSquare alloc] initWithDist:self];
+    return [[DistributionLogisticGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {
@@ -41,23 +41,31 @@
 
     if ( (self = [super initWithParm:p]) ) 
 		{
-		[self setDistributionName:@"Chi Square"];
-		[self setDistributionType:DISTRIBUTION_CHISQUARE];
-        [self setDistributionDomain:POSITIVE_REAL_NUMBER];
+		[self setDistributionName:@"Logistic"];
+		[self setDistributionType:DISTRIBUTION_LOGISTIC];
+        [self setDistributionDomain:REAL_NUMBER];
 		[self setDistributionDescription:@""];
         [self setAppliesExclusivelyToNodesOfUnrootedTrees:NO];
         [self setAppliesExclusivelyToBranchesOfUnrootedTrees:NO];
         [self setAppliesExclusivelyToNodesOfRootedTrees:NO];
         [self setAppliesExclusivelyToBranchsOfRootedTrees:NO];        
 
-		Parameter* dfParm = [[Parameter alloc] initWithDist:self];
-		unichar uc = 0x03BD;
+		Parameter* muParm = [[Parameter alloc] initWithDist:self];
+		unichar uc = 0x03BC;
 		NSString* pStr1 = [NSString stringWithFormat:@"%C:", uc];
-		[dfParm setParameterName:pStr1];
-		[dfParm setType:POSITIVE_REAL_NUMBER];
-		[dfParm setRefParm:nil];
+		[muParm setParameterName:pStr1];
+		[muParm setType:REAL_NUMBER];
+		[muParm setRefParm:nil];
+
+		Parameter* sigmaParm = [[Parameter alloc] initWithDist:self];
+		uc = 0x03C3;
+		NSString* pStr2 = [NSString stringWithFormat:@"%C:", uc];
+		[sigmaParm setParameterName:pStr2];
+		[sigmaParm setType:POSITIVE_REAL_NUMBER];
+		[sigmaParm setRefParm:nil];
 		
-		[parameters addObject:dfParm];
+		[parameters addObject:muParm];
+		[parameters addObject:sigmaParm];
 		}
     return self;
 }

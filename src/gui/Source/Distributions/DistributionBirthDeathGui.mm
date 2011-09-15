@@ -8,7 +8,7 @@
 
 - (DistributionGui*)clone {
 
-    return [[DistributionBirthDeath alloc] initWithDist:self];
+    return [[DistributionBirthDeathGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {

@@ -1,14 +1,14 @@
-#import "DistributionLogisticGui.h"
+#import "DistributionLogNormalGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionLogisticGui
+@implementation DistributionLogNormalGui
 
 - (DistributionGui*)clone {
 
-    return [[DistributionLogistic alloc] initWithDist:self];
+    return [[DistributionLogNormalGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {
@@ -41,9 +41,9 @@
 
     if ( (self = [super initWithParm:p]) ) 
 		{
-		[self setDistributionName:@"Logistic"];
-		[self setDistributionType:DISTRIBUTION_LOGISTIC];
-        [self setDistributionDomain:REAL_NUMBER];
+		[self setDistributionName:@"Log Normal"];
+		[self setDistributionType:DISTRIBUTION_LOGNORMAL];
+        [self setDistributionDomain:POSITIVE_REAL_NUMBER];
 		[self setDistributionDescription:@""];
         [self setAppliesExclusivelyToNodesOfUnrootedTrees:NO];
         [self setAppliesExclusivelyToBranchesOfUnrootedTrees:NO];

@@ -1,14 +1,14 @@
-#import "DistributionLogNormalGui.h"
+#import "DistributionChiSquareGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionLogNormalGui
+@implementation DistributionChiSquareGui
 
 - (DistributionGui*)clone {
 
-    return [[DistributionLogNormal alloc] initWithDist:self];
+    return [[DistributionChiSquareGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {
@@ -41,8 +41,8 @@
 
     if ( (self = [super initWithParm:p]) ) 
 		{
-		[self setDistributionName:@"Log Normal"];
-		[self setDistributionType:DISTRIBUTION_LOGNORMAL];
+		[self setDistributionName:@"Chi Square"];
+		[self setDistributionType:DISTRIBUTION_CHISQUARE];
         [self setDistributionDomain:POSITIVE_REAL_NUMBER];
 		[self setDistributionDescription:@""];
         [self setAppliesExclusivelyToNodesOfUnrootedTrees:NO];
@@ -50,22 +50,14 @@
         [self setAppliesExclusivelyToNodesOfRootedTrees:NO];
         [self setAppliesExclusivelyToBranchsOfRootedTrees:NO];        
 
-		Parameter* muParm = [[Parameter alloc] initWithDist:self];
-		unichar uc = 0x03BC;
+		Parameter* dfParm = [[Parameter alloc] initWithDist:self];
+		unichar uc = 0x03BD;
 		NSString* pStr1 = [NSString stringWithFormat:@"%C:", uc];
-		[muParm setParameterName:pStr1];
-		[muParm setType:REAL_NUMBER];
-		[muParm setRefParm:nil];
-
-		Parameter* sigmaParm = [[Parameter alloc] initWithDist:self];
-		uc = 0x03C3;
-		NSString* pStr2 = [NSString stringWithFormat:@"%C:", uc];
-		[sigmaParm setParameterName:pStr2];
-		[sigmaParm setType:POSITIVE_REAL_NUMBER];
-		[sigmaParm setRefParm:nil];
+		[dfParm setParameterName:pStr1];
+		[dfParm setType:POSITIVE_REAL_NUMBER];
+		[dfParm setRefParm:nil];
 		
-		[parameters addObject:muParm];
-		[parameters addObject:sigmaParm];
+		[parameters addObject:dfParm];
 		}
     return self;
 }

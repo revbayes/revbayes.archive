@@ -8,7 +8,7 @@
 
 - (DistributionGui*)clone {
 
-    return [[DistributionDiscreteUniform alloc] initWithDist:self];
+    return [[DistributionDiscreteUniformGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {

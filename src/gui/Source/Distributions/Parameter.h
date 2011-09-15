@@ -19,7 +19,7 @@
 @property (readwrite) int type;
 @property (readwrite,assign) DistributionGui* myDist;
 
-- (id)initWithDist:(Distribution*)d;
+- (id)initWithDist:(DistributionGui*)d;
 - (id)initWithParameter:(Parameter*)p;
 
 @end
