@@ -741,6 +741,8 @@
 		2222E2B914227240006C3186 /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2222E18014227240006C3186 /* TextEditorWindow.xib */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
+		BFD8669514227B5600360498 /* Func_dppSeat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFD8669314227B5600360498 /* Func_dppSeat.cpp */; };
+		BFD8669614227B5600360498 /* Func_dppSeat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFD8669314227B5600360498 /* Func_dppSeat.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1998,6 +2000,8 @@
 		85CD0235133948C400318200 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		85CD0236133948C400318200 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		85CD0237133948C400318200 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BFD8669314227B5600360498 /* Func_dppSeat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_dppSeat.cpp; sourceTree = "<group>"; };
+		BFD8669414227B5600360498 /* Func_dppSeat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_dppSeat.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3162,6 +3166,8 @@
 				2222DD0914227230006C3186 /* Func_unclamp.h */,
 				2222DD0A14227230006C3186 /* Func_unique.h */,
 				2222DD0B14227230006C3186 /* Func_vector.h */,
+				BFD8669314227B5600360498 /* Func_dppSeat.cpp */,
+				BFD8669414227B5600360498 /* Func_dppSeat.h */,
 			);
 			path = builtin;
 			sourceTree = "<group>";
@@ -4700,6 +4706,7 @@
 				2222DFB314227230006C3186 /* SyntaxVariable.cpp in Sources */,
 				2222DFB514227230006C3186 /* SyntaxVariableDecl.cpp in Sources */,
 				2222DFB714227230006C3186 /* RbMain.cpp in Sources */,
+				BFD8669614227B5600360498 /* Func_dppSeat.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5033,6 +5040,7 @@
 				2222E29C14227240006C3186 /* WindowControllerRateMatrix.mm in Sources */,
 				2222E29D14227240006C3186 /* WindowControllerReadData.mm in Sources */,
 				2222E29E14227240006C3186 /* WindowControllerRegistration.mm in Sources */,
+				BFD8669514227B5600360498 /* Func_dppSeat.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

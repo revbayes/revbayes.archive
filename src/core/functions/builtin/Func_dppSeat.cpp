@@ -73,8 +73,7 @@ RbLanguageObject* Func_dppSeat::execute( void ) {
 			double w = rng->uniform01();
 			if(w < prNewTable){
 				tables.push_back( 1 );
-				int temp = tables.size()-1;
-				clusters[i] = tables.size()-1;
+				clusters[i] = (int)tables.size()-1;
 			}
 			else{
 				double u = rng->uniform01();
