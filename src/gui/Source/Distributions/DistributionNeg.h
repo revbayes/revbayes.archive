@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionNeg : DistributionGui <NSCoding> {
+@interface DistributionNegGui : DistributionGui <NSCoding> {
 
 }
 

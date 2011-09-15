@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionStudent : DistributionGui <NSCoding> {
+@interface DistributionStudentGui : DistributionGui <NSCoding> {
 
 }
 

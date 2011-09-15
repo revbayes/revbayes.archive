@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionMultinomial : DistributionGui <NSCoding> {
+@interface DistributionMultinomialGui : DistributionGui <NSCoding> {
     
 }
 

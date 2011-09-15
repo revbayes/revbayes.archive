@@ -7,7 +7,7 @@
 @synthesize partition;
 @synthesize randomVariable;
 
-- (Distribution*)distribution {
+- (DistributionGui*)distribution {
 
     return distribution;
 }
@@ -48,11 +48,11 @@
     return self;
 }
 
-- (void)setDistribution:(Distribution *)d {
+- (void)setDistribution:(DistributionGui *)d {
 
     if (distribution == d)
         return;
-    Distribution* oldValue = distribution;
+    DistributionGui* oldValue = distribution;
     distribution = [d retain];
     [oldValue release];
 }

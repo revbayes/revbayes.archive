@@ -1,14 +1,14 @@
-#import "DistributionNormal.h"
+#import "DistributionNormalGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionNormal
+@implementation DistributionNormalGui
 
 - (DistributionGui*)clone {
 
-    return [[DistributionNormal alloc] initWithDist:self];
+    return [[DistributionNormalGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {

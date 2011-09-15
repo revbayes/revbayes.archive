@@ -1,14 +1,14 @@
-#import "DistributionNeg.h"
+#import "DistributionNegGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionNeg
+@implementation DistributionNegGui
 
 - (DistributionGui*)clone {
 
-    return [[DistributionNeg alloc] initWithDist:self];
+    return [[DistributionNegGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {

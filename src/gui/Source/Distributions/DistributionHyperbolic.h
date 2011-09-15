@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionHyperbolic : DistributionGui <NSCoding> {
+@interface DistributionHyperbolicGui : DistributionGui <NSCoding> {
 
 }
 

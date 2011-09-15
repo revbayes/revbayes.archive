@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionNegativeBinomial : DistributionGui <NSCoding> {
+@interface DistributionNegativeBinomialGui : DistributionGui <NSCoding> {
 
 }
 

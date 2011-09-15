@@ -1,14 +1,14 @@
-#import "DistributionSkewNormal.h"
+#import "DistributionSkewNormalGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionSkewNormal
+@implementation DistributionSkewNormalGui
 
 - (DistributionGui*)clone {
 
-    return [[DistributionSkewNormal alloc] initWithDist:self];
+    return [[DistributionSkewNormalGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {

@@ -1,10 +1,10 @@
-#import "DistributionDirichlet.h"
+#import "DistributionDirichletGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionDirichlet
+@implementation DistributionDirichletGui
 
 - (DistributionGui*)clone {
     

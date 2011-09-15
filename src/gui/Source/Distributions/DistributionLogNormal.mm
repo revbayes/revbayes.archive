@@ -1,10 +1,10 @@
-#import "DistributionLogNormal.h"
+#import "DistributionLogNormalGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionLogNormal
+@implementation DistributionLogNormalGui
 
 - (DistributionGui*)clone {
 

@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionPoisson : DistributionGui <NSCoding> {
+@interface DistributionPoissonGui : DistributionGui <NSCoding> {
 
 }
 

@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionUniform : DistributionGui <NSCoding> {
+@interface DistributionUniformGui : DistributionGui <NSCoding> {
 
 }
 

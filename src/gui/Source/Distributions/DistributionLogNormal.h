@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionLogNormal : DistributionGui <NSCoding> {
+@interface DistributionLogNormalGui : DistributionGui <NSCoding> {
 
 }
 

@@ -604,8 +604,8 @@
 		2222E23014227240006C3186 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E07E14227240006C3186 /* AppController.mm */; };
 		2222E23114227240006C3186 /* RbData.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08114227240006C3186 /* RbData.mm */; };
 		2222E23214227240006C3186 /* RbDataCell.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08314227240006C3186 /* RbDataCell.mm */; };
-		2222E23314227240006C3186 /* DistributionBetaBinomial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08614227240006C3186 /* DistributionBetaBinomial.mm */; };
-		2222E23414227240006C3186 /* DistributionBinomial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08814227240006C3186 /* DistributionBinomial.mm */; };
+		2222E23314227240006C3186 /* DistributionBetaBinomialGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08614227240006C3186 /* DistributionBetaBinomialGui.mm */; };
+		2222E23414227240006C3186 /* DistributionBinomialGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08814227240006C3186 /* DistributionBinomialGui.mm */; };
 		2222E23514227240006C3186 /* DistributionBirthDeath.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08A14227240006C3186 /* DistributionBirthDeath.mm */; };
 		2222E23614227240006C3186 /* DistributionCauchy.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08C14227240006C3186 /* DistributionCauchy.mm */; };
 		2222E23714227240006C3186 /* DistributionChiSquare.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E08E14227240006C3186 /* DistributionChiSquare.mm */; };
@@ -622,7 +622,7 @@
 		2222E24214227240006C3186 /* DistributionMultinomial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A414227240006C3186 /* DistributionMultinomial.mm */; };
 		2222E24314227240006C3186 /* DistributionNeg.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A614227240006C3186 /* DistributionNeg.mm */; };
 		2222E24414227240006C3186 /* DistributionNegativeBinomial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0A814227240006C3186 /* DistributionNegativeBinomial.mm */; };
-		2222E24514227240006C3186 /* DistributionNormal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0AA14227240006C3186 /* DistributionNormal.mm */; };
+		2222E24514227240006C3186 /* DistributionNormalGui.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0AA14227240006C3186 /* DistributionNormalGui.mm */; };
 		2222E24614227240006C3186 /* DistributionPoisson.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0AC14227240006C3186 /* DistributionPoisson.mm */; };
 		2222E24714227240006C3186 /* DistributionSkewNormal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0AE14227240006C3186 /* DistributionSkewNormal.mm */; };
 		2222E24814227240006C3186 /* DistributionStudent.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2222E0B014227240006C3186 /* DistributionStudent.mm */; };
@@ -1738,11 +1738,11 @@
 		2222E08114227240006C3186 /* RbData.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RbData.mm; sourceTree = "<group>"; };
 		2222E08214227240006C3186 /* RbDataCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RbDataCell.h; sourceTree = "<group>"; };
 		2222E08314227240006C3186 /* RbDataCell.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RbDataCell.mm; sourceTree = "<group>"; };
-		2222E08514227240006C3186 /* DistributionBetaBinomial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionBetaBinomial.h; sourceTree = "<group>"; };
-		2222E08614227240006C3186 /* DistributionBetaBinomial.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionBetaBinomial.mm; sourceTree = "<group>"; };
-		2222E08714227240006C3186 /* DistributionBinomial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionBinomial.h; sourceTree = "<group>"; };
-		2222E08814227240006C3186 /* DistributionBinomial.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionBinomial.mm; sourceTree = "<group>"; };
-		2222E08914227240006C3186 /* DistributionBirthDeath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionBirthDeath.h; sourceTree = "<group>"; };
+		2222E08514227240006C3186 /* DistributionBetaBinomialGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionBetaBinomialGui.h; sourceTree = "<group>"; };
+		2222E08614227240006C3186 /* DistributionBetaBinomialGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionBetaBinomialGui.mm; sourceTree = "<group>"; };
+		2222E08714227240006C3186 /* DistributionBinomialGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionBinomialGui.h; sourceTree = "<group>"; };
+		2222E08814227240006C3186 /* DistributionBinomialGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionBinomialGui.mm; sourceTree = "<group>"; };
+		2222E08914227240006C3186 /* DistributionBirthDeathGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionBirthDeathGui.h; sourceTree = "<group>"; };
 		2222E08A14227240006C3186 /* DistributionBirthDeath.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionBirthDeath.mm; sourceTree = "<group>"; };
 		2222E08B14227240006C3186 /* DistributionCauchy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionCauchy.h; sourceTree = "<group>"; };
 		2222E08C14227240006C3186 /* DistributionCauchy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionCauchy.mm; sourceTree = "<group>"; };
@@ -1774,8 +1774,8 @@
 		2222E0A614227240006C3186 /* DistributionNeg.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNeg.mm; sourceTree = "<group>"; };
 		2222E0A714227240006C3186 /* DistributionNegativeBinomial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionNegativeBinomial.h; sourceTree = "<group>"; };
 		2222E0A814227240006C3186 /* DistributionNegativeBinomial.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNegativeBinomial.mm; sourceTree = "<group>"; };
-		2222E0A914227240006C3186 /* DistributionNormal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionNormal.h; sourceTree = "<group>"; };
-		2222E0AA14227240006C3186 /* DistributionNormal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNormal.mm; sourceTree = "<group>"; };
+		2222E0A914227240006C3186 /* DistributionNormalGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionNormalGui.h; sourceTree = "<group>"; };
+		2222E0AA14227240006C3186 /* DistributionNormalGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNormalGui.mm; sourceTree = "<group>"; };
 		2222E0AB14227240006C3186 /* DistributionPoisson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionPoisson.h; sourceTree = "<group>"; };
 		2222E0AC14227240006C3186 /* DistributionPoisson.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionPoisson.mm; sourceTree = "<group>"; };
 		2222E0AD14227240006C3186 /* DistributionSkewNormal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionSkewNormal.h; sourceTree = "<group>"; };
@@ -3869,11 +3869,11 @@
 		2222E08414227240006C3186 /* Distributions */ = {
 			isa = PBXGroup;
 			children = (
-				2222E08514227240006C3186 /* DistributionBetaBinomial.h */,
-				2222E08614227240006C3186 /* DistributionBetaBinomial.mm */,
-				2222E08714227240006C3186 /* DistributionBinomial.h */,
-				2222E08814227240006C3186 /* DistributionBinomial.mm */,
-				2222E08914227240006C3186 /* DistributionBirthDeath.h */,
+				2222E08514227240006C3186 /* DistributionBetaBinomialGui.h */,
+				2222E08614227240006C3186 /* DistributionBetaBinomialGui.mm */,
+				2222E08714227240006C3186 /* DistributionBinomialGui.h */,
+				2222E08814227240006C3186 /* DistributionBinomialGui.mm */,
+				2222E08914227240006C3186 /* DistributionBirthDeathGui.h */,
 				2222E08A14227240006C3186 /* DistributionBirthDeath.mm */,
 				2222E08B14227240006C3186 /* DistributionCauchy.h */,
 				2222E08C14227240006C3186 /* DistributionCauchy.mm */,
@@ -3905,8 +3905,8 @@
 				2222E0A614227240006C3186 /* DistributionNeg.mm */,
 				2222E0A714227240006C3186 /* DistributionNegativeBinomial.h */,
 				2222E0A814227240006C3186 /* DistributionNegativeBinomial.mm */,
-				2222E0A914227240006C3186 /* DistributionNormal.h */,
-				2222E0AA14227240006C3186 /* DistributionNormal.mm */,
+				2222E0A914227240006C3186 /* DistributionNormalGui.h */,
+				2222E0AA14227240006C3186 /* DistributionNormalGui.mm */,
 				2222E0AB14227240006C3186 /* DistributionPoisson.h */,
 				2222E0AC14227240006C3186 /* DistributionPoisson.mm */,
 				2222E0AD14227240006C3186 /* DistributionSkewNormal.h */,
@@ -4925,8 +4925,8 @@
 				2222E23014227240006C3186 /* AppController.mm in Sources */,
 				2222E23114227240006C3186 /* RbData.mm in Sources */,
 				2222E23214227240006C3186 /* RbDataCell.mm in Sources */,
-				2222E23314227240006C3186 /* DistributionBetaBinomial.mm in Sources */,
-				2222E23414227240006C3186 /* DistributionBinomial.mm in Sources */,
+				2222E23314227240006C3186 /* DistributionBetaBinomialGui.mm in Sources */,
+				2222E23414227240006C3186 /* DistributionBinomialGui.mm in Sources */,
 				2222E23514227240006C3186 /* DistributionBirthDeath.mm in Sources */,
 				2222E23614227240006C3186 /* DistributionCauchy.mm in Sources */,
 				2222E23714227240006C3186 /* DistributionChiSquare.mm in Sources */,
@@ -4943,7 +4943,7 @@
 				2222E24214227240006C3186 /* DistributionMultinomial.mm in Sources */,
 				2222E24314227240006C3186 /* DistributionNeg.mm in Sources */,
 				2222E24414227240006C3186 /* DistributionNegativeBinomial.mm in Sources */,
-				2222E24514227240006C3186 /* DistributionNormal.mm in Sources */,
+				2222E24514227240006C3186 /* DistributionNormalGui.mm in Sources */,
 				2222E24614227240006C3186 /* DistributionPoisson.mm in Sources */,
 				2222E24714227240006C3186 /* DistributionSkewNormal.mm in Sources */,
 				2222E24814227240006C3186 /* DistributionStudent.mm in Sources */,

@@ -1,14 +1,14 @@
-#import "DistributionUniformPos.h"
+#import "DistributionUniformPosGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionUniformPos
+@implementation DistributionUniformPosGui
 
 - (DistributionGui*)clone {
 
-    return [[DistributionUniformPos alloc] initWithDist:self];
+    return [[DistributionUniformPosGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {

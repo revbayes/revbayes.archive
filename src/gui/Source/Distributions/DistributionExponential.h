@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionExponential : DistributionGui <NSCoding> {
+@interface DistributionExponentialGui : DistributionGui <NSCoding> {
 
 }
 

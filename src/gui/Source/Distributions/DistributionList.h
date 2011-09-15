@@ -4,7 +4,7 @@
 
 
 
-@interface DistributionList : NSObject {
+@interface DistributionListGui : NSObject {
 
     NSMutableArray*          distributionList;
 }

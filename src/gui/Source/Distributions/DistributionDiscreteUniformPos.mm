@@ -1,10 +1,10 @@
-#import "DistributionDiscreteUniformPos.h"
+#import "DistributionDiscreteUniformPosGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionDiscreteUniformPos
+@implementation DistributionDiscreteUniformPosGui
 
 - (DistributionGui*)clone {
 

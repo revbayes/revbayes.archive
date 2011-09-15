@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionDirichlet : DistributionGui {
+@interface DistributionDirichletGui : DistributionGui {
     
 }
 

@@ -1,10 +1,10 @@
-#import "DistributionCauchy.h"
+#import "DistributionCauchyGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionCauchy
+@implementation DistributionCauchyGui
 
 - (DistributionGui*)clone {
 

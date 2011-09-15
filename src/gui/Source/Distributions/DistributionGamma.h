@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionGamma : DistributionGui <NSCoding> {
+@interface DistributionGammaGui : DistributionGui <NSCoding> {
 
 }
 

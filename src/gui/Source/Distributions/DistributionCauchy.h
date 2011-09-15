@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionCauchy : DistributionGui <NSCoding> {
+@interface DistributionCauchyGui : DistributionGui <NSCoding> {
 
 }
 

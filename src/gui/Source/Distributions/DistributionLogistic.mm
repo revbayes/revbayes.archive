@@ -1,10 +1,10 @@
-#import "DistributionLogistic.h"
+#import "DistributionLogisticGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionLogistic
+@implementation DistributionLogisticGui
 
 - (DistributionGui*)clone {
 

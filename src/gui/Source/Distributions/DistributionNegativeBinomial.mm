@@ -1,14 +1,14 @@
-#import "DistributionNegativeBinomial.h"
+#import "DistributionNegativeBinomialGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionNegativeBinomial
+@implementation DistributionNegativeBinomialGui
 
 - (DistributionGui*)clone {
 
-    return [[DistributionNegativeBinomial alloc] initWithDist:self];
+    return [[DistributionNegativeBinomialGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {

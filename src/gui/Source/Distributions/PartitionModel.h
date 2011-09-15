@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-@class Distribution;
+@class DistributionGui;
 @class Parm;
 @class TaxonBipartition;
 
@@ -7,7 +7,7 @@
 
 @interface PartitionModel : NSObject <NSCoding> {
     
-    Distribution*            distribution;
+    DistributionGui*         distribution;
     TaxonBipartition*        partition;
     Parm*                    randomVariable;
 }
@@ -15,8 +15,8 @@
 @property (retain) TaxonBipartition* partition;
 @property (retain) Parm* randomVariable;
 
-- (Distribution*)distribution;
+- (DistributionGui*)distribution;
 - (id)initWithParm:(Parm*)p;
-- (void)setDistribution:(Distribution *)d;
+- (void)setDistribution:(DistributionGui *)d;
 
 @end

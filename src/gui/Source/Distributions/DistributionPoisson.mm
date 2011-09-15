@@ -1,14 +1,14 @@
-#import "DistributionPoisson.h"
+#import "DistributionPoissonGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionPoisson
+@implementation DistributionPoissonGui
 
 - (DistributionGui*)clone {
 
-    return [[DistributionPoisson alloc] initWithDist:self];
+    return [[DistributionPoissonGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {

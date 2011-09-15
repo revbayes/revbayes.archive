@@ -1,10 +1,10 @@
-#import "DistributionGamma.h"
+#import "DistributionGammaGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionGamma
+@implementation DistributionGammaGui
 
 - (DistributionGui*)clone {
 

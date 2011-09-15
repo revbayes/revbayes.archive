@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionSkewNormal : DistributionGui <NSCoding> {
+@interface DistributionSkewNormalGui : DistributionGui <NSCoding> {
 
 }
 

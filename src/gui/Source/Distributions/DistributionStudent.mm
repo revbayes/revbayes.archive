@@ -1,13 +1,13 @@
-#import "DistributionStudent.h"
+#import "DistributionStudentGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
-@implementation DistributionStudent
+@implementation DistributionStudentGui
 
 - (DistributionGui*)clone {
 
-    return [[DistributionStudent alloc] initWithDist:self];
+    return [[DistributionStudentGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {

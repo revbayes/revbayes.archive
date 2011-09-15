@@ -40,7 +40,7 @@
 	return self;
 }
 
-- (id)initWithDist:(Distribution*)d {
+- (id)initWithDist:(DistributionGui*)d {
 
     if ( (self = [super init]) ) 
 		{

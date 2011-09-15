@@ -1,10 +1,10 @@
-#import "DistributionBirthDeath.h"
+#import "DistributionBirthDeathGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionBirthDeath
+@implementation DistributionBirthDeathGui
 
 - (DistributionGui*)clone {
 

@@ -1,10 +1,10 @@
-#import "DistributionBetaBinomial.h"
+#import "DistributionBetaBinomialGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionBetaBinomial
+@implementation DistributionBetaBinomialGui
 
 - (DistributionGui*)clone {
 

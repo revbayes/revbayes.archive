@@ -1,10 +1,10 @@
-#import "DistributionHyperbolic.h"
+#import "DistributionHyperbolicGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionHyperbolic
+@implementation DistributionHyperbolicGui
 
 - (DistributionGui*)clone {
 

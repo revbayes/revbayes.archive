@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionBirthDeath : DistributionGui <NSCoding> {
+@interface DistributionBirthDeathGui : DistributionGui <NSCoding> {
     
 }
 

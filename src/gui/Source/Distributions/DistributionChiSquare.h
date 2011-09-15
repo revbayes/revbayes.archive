@@ -3,7 +3,7 @@
 
 
 
-@interface DistributionChiSquare : DistributionGui <NSCoding> {
+@interface DistributionChiSquareGui : DistributionGui <NSCoding> {
 
 }
 

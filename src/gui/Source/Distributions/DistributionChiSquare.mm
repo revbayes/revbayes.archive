@@ -1,10 +1,10 @@
-#import "DistributionChiSquare.h"
+#import "DistributionChiSquareGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionChiSquare
+@implementation DistributionChiSquareGui
 
 - (DistributionGui*)clone {
 

@@ -1,14 +1,14 @@
-#import "DistributionMultinomial.h"
+#import "DistributionMultinomialGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionMultinomial
+@implementation DistributionMultinomialGui
 
 - (DistributionGui*)clone {
     
-    return [[DistributionMultinomial alloc] initWithDist:self];
+    return [[DistributionMultinomialGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {

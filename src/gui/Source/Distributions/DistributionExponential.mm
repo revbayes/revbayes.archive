@@ -1,10 +1,10 @@
-#import "DistributionExponential.h"
+#import "DistributionExponentialGui.h"
 #import "Parameter.h"
 #import "RevBayes.h"
 
 
 
-@implementation DistributionExponential
+@implementation DistributionExponentialGui
 
 - (DistributionGui*)clone {
 
