@@ -51,28 +51,28 @@
 
 - (void)initializeDistributionList {
     
-    [distributionList addObject:[[DistributionBetaBinomial       alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionBinomial           alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionBirthDeath         alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionCauchy             alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionChiSquare          alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionDirichlet          alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionDiscreteUniform    alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionDiscreteUniformPos alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionExponential        alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionGamma              alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionHyperbolic         alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionLogistic           alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionLogNormal          alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionMultinomial        alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionNeg                alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionNegativeBinomial   alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionNormal             alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionPoisson            alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionSkewNormal         alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionStudent            alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionUniform            alloc] initWithParm:nil]];
-    [distributionList addObject:[[DistributionUniformPos         alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionBetaBinomialGui       alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionBinomialGui           alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionBirthDeathGui         alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionCauchyGui             alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionChiSquareGui          alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionDirichletGui          alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionDiscreteUniformGui    alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionDiscreteUniformPosGui alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionExponentialGui        alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionGammaGui              alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionHyperbolicGui         alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionLogisticGui           alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionLogNormalGui          alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionMultinomialGui        alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionNegGui                alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionNegativeBinomialGui   alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionNormalGui             alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionPoissonGui            alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionSkewNormalGui         alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionStudentGui            alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionUniformGui            alloc] initWithParm:nil]];
+    [distributionList addObject:[[DistributionUniformPosGui         alloc] initWithParm:nil]];
 }
 
 - (DistributionGui*)newDistributionWithName:(NSString*)distName andParm:(Parm*)prm {

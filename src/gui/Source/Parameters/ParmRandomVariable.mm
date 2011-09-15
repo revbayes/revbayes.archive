@@ -1,5 +1,5 @@
 #import "DistributionGui.h"
-#import "DistributionList.h"
+#import "DistributionListGui.h"
 #import "Parameter.h"
 #import "ParmRandomVariable.h"
 #import "ParmPlateTree.h"
@@ -28,7 +28,7 @@
 
     NSString* userSelectionName = [distributionSelector titleOfSelectedItem];
     ParmPlateTree* treePlate    = [self assignedTreePlate];
-    DistributionList* distList  = [myModel distributionList];
+    DistributionListGui* distList  = [myModel distributionList];
     
     if ( treePlate == nil )
         {
@@ -46,7 +46,7 @@
             return;
         DistributionGui* d = [distList newDistributionWithName:userSelectionName andParm:self];
         if (d != nil)
-            [pm setDistributionGui:d];
+            [pm setDistribution:d];
         else
             [pm setDistribution:nil];
         }
@@ -393,7 +393,7 @@
     
     // get a pointer to objects we need
     ParmPlateTree* treePlate = [self assignedTreePlate];
-    DistributionList* distList = [myModel distributionList];
+    DistributionListGui* distList = [myModel distributionList];
     
     // display the view
     [self chooseView];
@@ -426,7 +426,7 @@
                 [distributionSelector addItemWithTitle:[d distributionName]];
             }
         
-        Distribution* currentDist = nil;
+        DistributionGui* currentDist = nil;
         if ( [probabilityModel count] != 1 )
             currentDist = nil;
         else 
@@ -502,7 +502,7 @@
 
             // set the distribution for the selected partition
             PartitionModel* pm = [probabilityModel objectAtIndex:indexOfSelectedPartitionModel];
-            Distribution* pd = [pm distribution];
+            DistributionGui* pd = [pm distribution];
             
             [distributionSelector removeAllItems];
             [distributionSelector addItemWithTitle:@""];
@@ -607,7 +607,7 @@
     [NSApp runModalForWindow:[self window]];
 }
 
-- (void)showInformationForParameterIndexed:(int)idx withDistribution:(Distribution*)cd {
+- (void)showInformationForParameterIndexed:(int)idx withDistribution:(DistributionGui*)cd {
 
     if (cd == nil)
         return;

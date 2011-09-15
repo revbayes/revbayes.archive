@@ -8,7 +8,7 @@
 
 - (DistributionGui*)clone {
 
-    return [[DistributionBinomial alloc] initWithDist:self];
+    return [[DistributionBinomialGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {

@@ -1,4 +1,4 @@
-#import "DistributionList.h"
+#import "DistributionListGui.h"
 #import "InOutlet.h"
 #import "Parm.h"
 #import "ParmPlate.h"
@@ -233,7 +233,7 @@
 		touchOnRevival = YES;
         
         // allocate a list of possible distributions for parameters
-        distributionList = [[DistributionList alloc] init];
+        distributionList = [[DistributionListGui alloc] init];
 		}
     return self;
 }
@@ -261,7 +261,7 @@
 		modelSubmission = nil;
 
         // allocate a list of possible distributions for parameters
-        distributionList = [[DistributionList alloc] init];
+        distributionList = [[DistributionListGui alloc] init];
 		}
 	return self;
 }

@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "Parm.h"
-@class Distribution;
+@class DistributionGui;
 @class ViewControllerRandomVariable;
 
 #define BRANCH   0
@@ -64,6 +64,6 @@
 - (void)initializeImage;
 - (void)restoreWindowState;
 - (void)saveWindowState;
-- (void)showInformationForParameterIndexed:(int)idx withDistribution:(Distribution*)cd;
+- (void)showInformationForParameterIndexed:(int)idx withDistribution:(DistributionGui*)cd;
 
 @end

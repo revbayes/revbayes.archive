@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "Tool.h"
-@class DistributionList;
+@class DistributionListGui;
 @class WindowControllerModel;
 @class WindowControllerModelBrowser;
 @class WindowControllerModelSubmission;
@@ -16,11 +16,11 @@
 	NSMutableArray*                    dataMatrices;
     BOOL                               possibleInlets[4];
     NSModalSession                     mySession;
-    DistributionList*                  distributionList;
+    DistributionListGui*               distributionList;
 }
 
 @property (readwrite,assign) NSMutableArray* dataMatrices;
-@property (retain) DistributionList* distributionList;
+@property (retain) DistributionListGui* distributionList;
 @property (readwrite,assign) NSMutableArray* parms;
 
 - (NSMutableArray*)allocateParms;

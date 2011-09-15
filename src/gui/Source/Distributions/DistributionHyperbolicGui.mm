@@ -8,7 +8,7 @@
 
 - (DistributionGui*)clone {
 
-    return [[DistributionHyperbolic alloc] initWithDist:self];
+    return [[DistributionHyperbolicGui alloc] initWithDist:self];
 }
 
 - (void)dealloc {
