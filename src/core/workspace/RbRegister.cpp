@@ -120,6 +120,7 @@
 #include "Func_clamp.h"
 #include "Func_clear.h"
 #include "Func_dppConFromExpNumClusters.h"
+#include "Func_dppSeat.h"
 #include "Func_ls.h"
 #include "Func_normalizeVector.h"
 #include "Func_quit.h"
@@ -329,6 +330,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "clamp",     new Func_clamp()           );
         addFunction( "clear",     new Func_clear()           );
         addFunction( "dppConFromExpNumClusters",        new Func_dppConFromExpNumClusters()              );
+        addFunction( "dppSeat",   new Func_dppSeat()              );
         addFunction( "ls",        new Func_ls()              );
         addFunction( "normalize", new Func_normalizeVector() );
         addFunction( "q",         new Func_quit()            );
