@@ -6,6 +6,11 @@
 @implementation WindowControllerAlign
 
 @synthesize testGapPenalty;
+@synthesize gapPenalty;
+@synthesize wordLength;
+@synthesize windowVal;
+
+
 
 - (void)awakeFromNib {
 
@@ -25,7 +30,11 @@
 	if ( (self = [super initWithWindowNibName:@"ControlWindowAlign"]) )
         {
         myTool        = t;
-		
+
+        gapPenalty = 1.1;
+        wordLength = 2.2;
+        windowVal  = 3.3;
+
 		// set default values for the window
 		[self setTestGapPenalty:5.0];
         }
