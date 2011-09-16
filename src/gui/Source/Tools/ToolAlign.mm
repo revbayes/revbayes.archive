@@ -45,6 +45,8 @@
 		// initialize the inlet/outlet information
 		[self addInletOfColor:[NSColor cyanColor]];
 		[self addOutletOfColor:[NSColor greenColor]];
+            
+        // initialize Clustal variables here
 		
 		// initialize some variables
 		controlWindow = nil;
@@ -62,6 +64,8 @@
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
+            
+        // resuscitate Clustal variables here before recreating new windowcontroller
 
 		// initialize the control window
 		controlWindow = [[WindowControllerAlign alloc] initWithTool:self];

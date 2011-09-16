@@ -4,7 +4,7 @@
 #import "RevBayes.h"
 #import "ToolTreeSet.h"
 #include "NclReader.h" // TAH: for ncl trees
-#include "Tree.h"
+#include "Topology.h"
 
 
 
@@ -86,7 +86,7 @@
     [oPanel setAllowsMultipleSelection:NO];
     [oPanel setCanChooseDirectories:NO];
     
-	std::vector<Tree*>* myTrees;
+	std::vector<Topology*>* myTrees;
 	
     // open the panel
     NSString* fileToOpen;
