@@ -741,6 +741,8 @@
 		2222E2B914227240006C3186 /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2222E18014227240006C3186 /* TextEditorWindow.xib */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
+		BDD531FA1422D18D0035D42D /* Mixture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDD531F91422D18D0035D42D /* Mixture.cpp */; };
+		BDD531FB1422D18D0035D42D /* Mixture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDD531F91422D18D0035D42D /* Mixture.cpp */; };
 		BFD8669514227B5600360498 /* Func_dppSeat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFD8669314227B5600360498 /* Func_dppSeat.cpp */; };
 		BFD8669614227B5600360498 /* Func_dppSeat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFD8669314227B5600360498 /* Func_dppSeat.cpp */; };
 /* End PBXBuildFile section */
@@ -1744,7 +1746,7 @@
 		2222E08614227240006C3186 /* DistributionBetaBinomialGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionBetaBinomialGui.mm; sourceTree = "<group>"; };
 		2222E08714227240006C3186 /* DistributionBinomialGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionBinomialGui.h; sourceTree = "<group>"; };
 		2222E08814227240006C3186 /* DistributionBinomialGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionBinomialGui.mm; sourceTree = "<group>"; };
-		2222E08914227240006C3186 /* DistributionBirthDeathGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionBirthDeathGui.h; sourceTree = "<group>"; };
+		2222E08914227240006C3186 /* DistributionBirthDeathGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionBirthDeathGui.h; sourceTree = "<group>"; };
 		2222E08A14227240006C3186 /* DistributionBirthDeathGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionBirthDeathGui.mm; sourceTree = "<group>"; };
 		2222E08B14227240006C3186 /* DistributionCauchyGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionCauchyGui.h; sourceTree = "<group>"; };
 		2222E08C14227240006C3186 /* DistributionCauchyGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionCauchyGui.mm; sourceTree = "<group>"; };
@@ -1752,7 +1754,7 @@
 		2222E08E14227240006C3186 /* DistributionChiSquareGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionChiSquareGui.mm; sourceTree = "<group>"; };
 		2222E08F14227240006C3186 /* DistributionDirichletGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionDirichletGui.h; sourceTree = "<group>"; };
 		2222E09014227240006C3186 /* DistributionDirichletGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionDirichletGui.mm; sourceTree = "<group>"; };
-		2222E09114227240006C3186 /* DistributionDiscreteUniformGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionDiscreteUniformGui.h; sourceTree = "<group>"; };
+		2222E09114227240006C3186 /* DistributionDiscreteUniformGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionDiscreteUniformGui.h; sourceTree = "<group>"; };
 		2222E09214227240006C3186 /* DistributionDiscreteUniformGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionDiscreteUniformGui.mm; sourceTree = "<group>"; };
 		2222E09314227240006C3186 /* DistributionDiscreteUniformPosGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionDiscreteUniformPosGui.h; sourceTree = "<group>"; };
 		2222E09414227240006C3186 /* DistributionDiscreteUniformPosGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionDiscreteUniformPosGui.mm; sourceTree = "<group>"; };
@@ -1762,7 +1764,7 @@
 		2222E09814227240006C3186 /* DistributionGammaGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionGammaGui.mm; sourceTree = "<group>"; };
 		2222E09914227240006C3186 /* DistributionGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionGui.h; sourceTree = "<group>"; };
 		2222E09A14227240006C3186 /* DistributionGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionGui.mm; sourceTree = "<group>"; };
-		2222E09B14227240006C3186 /* DistributionHyperbolicGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionHyperbolicGui.h; sourceTree = "<group>"; };
+		2222E09B14227240006C3186 /* DistributionHyperbolicGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionHyperbolicGui.h; sourceTree = "<group>"; };
 		2222E09C14227240006C3186 /* DistributionHyperbolicGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionHyperbolicGui.mm; sourceTree = "<group>"; };
 		2222E09D14227240006C3186 /* DistributionListGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionListGui.h; sourceTree = "<group>"; };
 		2222E09E14227240006C3186 /* DistributionListGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionListGui.mm; sourceTree = "<group>"; };
@@ -1772,9 +1774,9 @@
 		2222E0A214227240006C3186 /* DistributionLogNormalGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionLogNormalGui.mm; sourceTree = "<group>"; };
 		2222E0A314227240006C3186 /* DistributionMultinomialGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionMultinomialGui.h; sourceTree = "<group>"; };
 		2222E0A414227240006C3186 /* DistributionMultinomialGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionMultinomialGui.mm; sourceTree = "<group>"; };
-		2222E0A514227240006C3186 /* DistributionNegGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionNegGui.h; sourceTree = "<group>"; };
+		2222E0A514227240006C3186 /* DistributionNegGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionNegGui.h; sourceTree = "<group>"; };
 		2222E0A614227240006C3186 /* DistributionNegGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNegGui.mm; sourceTree = "<group>"; };
-		2222E0A714227240006C3186 /* DistributionNegativeBinomialGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionNegativeBinomialGui.h; sourceTree = "<group>"; };
+		2222E0A714227240006C3186 /* DistributionNegativeBinomialGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionNegativeBinomialGui.h; sourceTree = "<group>"; };
 		2222E0A814227240006C3186 /* DistributionNegativeBinomialGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNegativeBinomialGui.mm; sourceTree = "<group>"; };
 		2222E0A914227240006C3186 /* DistributionNormalGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionNormalGui.h; sourceTree = "<group>"; };
 		2222E0AA14227240006C3186 /* DistributionNormalGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionNormalGui.mm; sourceTree = "<group>"; };
@@ -1784,7 +1786,7 @@
 		2222E0AE14227240006C3186 /* DistributionSkewNormalGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionSkewNormalGui.mm; sourceTree = "<group>"; };
 		2222E0AF14227240006C3186 /* DistributionStudentGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionStudentGui.h; sourceTree = "<group>"; };
 		2222E0B014227240006C3186 /* DistributionStudentGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionStudentGui.mm; sourceTree = "<group>"; };
-		2222E0B114227240006C3186 /* DistributionUniformGui.h */ = {isa = PBXFileReference; fileEncoding = 4; path = DistributionUniformGui.h; sourceTree = "<group>"; };
+		2222E0B114227240006C3186 /* DistributionUniformGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionUniformGui.h; sourceTree = "<group>"; };
 		2222E0B214227240006C3186 /* DistributionUniformGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionUniformGui.mm; sourceTree = "<group>"; };
 		2222E0B314227240006C3186 /* DistributionUniformPosGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionUniformPosGui.h; sourceTree = "<group>"; };
 		2222E0B414227240006C3186 /* DistributionUniformPosGui.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DistributionUniformPosGui.mm; sourceTree = "<group>"; };
@@ -2000,6 +2002,8 @@
 		85CD0235133948C400318200 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		85CD0236133948C400318200 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		85CD0237133948C400318200 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BDD531F91422D18D0035D42D /* Mixture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mixture.cpp; sourceTree = "<group>"; };
+		BDD531FC1422D1A90035D42D /* Mixture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mixture.h; sourceTree = "<group>"; };
 		BFD8669314227B5600360498 /* Func_dppSeat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_dppSeat.cpp; sourceTree = "<group>"; };
 		BFD8669414227B5600360498 /* Func_dppSeat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_dppSeat.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2865,6 +2869,7 @@
 		2222DC491422722F006C3186 /* complex */ = {
 			isa = PBXGroup;
 			children = (
+				BDD531F71422D0F00035D42D /* mixture */,
 				2222DC4A1422722F006C3186 /* container */,
 				2222DC6914227230006C3186 /* memberobject */,
 				2222DC7414227230006C3186 /* tree */,
@@ -4221,6 +4226,15 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
+		BDD531F71422D0F00035D42D /* mixture */ = {
+			isa = PBXGroup;
+			children = (
+				BDD531F91422D18D0035D42D /* Mixture.cpp */,
+				BDD531FC1422D1A90035D42D /* Mixture.h */,
+			);
+			name = mixture;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -4707,6 +4721,7 @@
 				2222DFB514227230006C3186 /* SyntaxVariableDecl.cpp in Sources */,
 				2222DFB714227230006C3186 /* RbMain.cpp in Sources */,
 				BFD8669614227B5600360498 /* Func_dppSeat.cpp in Sources */,
+				BDD531FB1422D18D0035D42D /* Mixture.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5041,6 +5056,7 @@
 				2222E29D14227240006C3186 /* WindowControllerReadData.mm in Sources */,
 				2222E29E14227240006C3186 /* WindowControllerRegistration.mm in Sources */,
 				BFD8669514227B5600360498 /* Func_dppSeat.cpp in Sources */,
+				BDD531FA1422D18D0035D42D /* Mixture.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
