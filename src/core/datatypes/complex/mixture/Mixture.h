@@ -19,15 +19,19 @@
 
 #include "MutableMemberObject.h"
 #include <string>
+#include "Vector.h"
+#include "VectorNatural.h"
+#include "VectorRealPos.h"
+
+const std::string Mixture_name = "Mixture";
 
 class Mixture: public MutableMemberObject {
     
 public:
     Mixture(void);                                                                                          //!< Default constructor
-    Mixture(VectorNatural allocationVector, Vector parameters);                                             //!< constructor
-    Mixture(int numberOfElements, Vector parameters);                                                       //!< constructor
-    Mixture(VectorNatural allocationVector, int numberOfClasses);                                           //!< constructor
-    Mixture(int numberOfElements, int numberOfClasses);                                                     //!< constructor
+    Mixture(VectorNatural& allocationVector, Vector& parameters);                                             //!< constructor
+    Mixture(VectorNatural& allocationVector, Vector& parameters, VectorRealPos& classProbabilities);        //!< constructor
+
     Mixture(const Mixture& m);                                                                              //!< Copy constructor
     ~Mixture(void);                                                                                         //!< Destructor
     
@@ -59,12 +63,15 @@ public:
     void                            allocateElement (int elementId, int classId);                           //!< Change the class of a particular element
     VectorRealPos                   getClassProbabilities();                                                //!< Get the vector containing class probabilities
     void                            setClassProbabilities();                                                //!< Set the vector containing class probabilities
+    void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
+    void                            computeNumberOfElementsInClasses();                                     //!<Compute the number of elements in each class by going through the allocation vector
+    void    indexAllocationVector();                                                                        //!< Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1
     
 private:
     static const TypeSpec           typeSpec_;                                                              
     VectorNatural                   allocationVector_;                                                      //!< Vector allocating elements to cluster indices
     Vector                          parameters_;                                                            //!< Vector of size the number of classes and containing parameters associated to the classes
-    Vector                          numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class
+    VectorNatural                   numberOfElementsInClasses_;                                             //!< Vector giving the number of elements in each class
     VectorRealPos                   classProbabilities_;                                                    //!< Vector giving class probabilities
 };
 
