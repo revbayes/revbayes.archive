@@ -18,7 +18,6 @@
 //
 #include <climits>
 #include "nxstaxablock.h"
-
 #include "nxsreader.h"
 
 using namespace std;
@@ -102,12 +101,12 @@ bool NxsTaxaBlock::AddNewPartition(const std::string &label, const NxsPartition 
 	return replaced;
 	}
 
-/* Initializes blockId to "TAXA" and dimNTax to 0.
+/* Initializes NCL_BLOCKTYPE_ATTR_NAME to "TAXA" and dimNTax to 0.
 */
 NxsTaxaBlock::NxsTaxaBlock()
   	{
 	dimNTax	= 0;
-	blockId		= "TAXA";
+	NCL_BLOCKTYPE_ATTR_NAME		= "TAXA";
 	}
 
 NxsTaxaBlock::~NxsTaxaBlock()
@@ -195,7 +194,7 @@ void NxsTaxaBlock::Report(
   std::ostream &out) NCL_COULD_BE_CONST /* the output stream to which to write the report */ /*v2.1to2.2 1 */
 	{
 	out << endl;
-	out << blockId << " block contains ";
+	out << NCL_BLOCKTYPE_ATTR_NAME << " block contains ";
 	if (dimNTax == 0)
 		{
 		out << "no taxa" << endl;
@@ -274,9 +273,10 @@ void NxsTaxaBlock::CheckCapitalizedTaxonLabel(
   const std::string &s) const /*!< potential taxon label to check */
   {
 	unsigned ind = (unsigned)taxLabels.size();
-	if (dimNTax <= ind)
+	if (dimNTax < ind)
 		{
-		NxsString e = "Number of stored labels exceeds the NTax specified.";
+		NxsString e;
+		e << "Number of stored labels (" << taxLabels.size() << ") exceeds the NTax specified (" << dimNTax<<").";
 		throw NxsException(e);
 		}
 	if (CapitalizedTaxLabelToNumber(s) != 0)

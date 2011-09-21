@@ -352,6 +352,8 @@ ${PROJECT_SOURCE_DIR}/core/ncl/nxssetreader.cpp
 ${PROJECT_SOURCE_DIR}/core/ncl/nxssetreader.h
 ${PROJECT_SOURCE_DIR}/core/ncl/nxsstring.cpp
 ${PROJECT_SOURCE_DIR}/core/ncl/nxsstring.h
+${PROJECT_SOURCE_DIR}/core/ncl/nxstaxaassociationblock.cpp
+${PROJECT_SOURCE_DIR}/core/ncl/nxstaxaassociationblock.h
 ${PROJECT_SOURCE_DIR}/core/ncl/nxstaxablock.cpp
 ${PROJECT_SOURCE_DIR}/core/ncl/nxstaxablock.h
 ${PROJECT_SOURCE_DIR}/core/ncl/nxstoken.cpp

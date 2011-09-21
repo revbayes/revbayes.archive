@@ -21,7 +21,6 @@
 #include <cstdlib>
 
 #include "nxsdistancesblock.h"
-
 #include "nxsreader.h"
 using namespace std;
 
@@ -59,6 +58,7 @@ void NxsDistancesBlock::WriteMatrixCommand(std::ostream &out) const
 	out << ";\n";
 	out.precision(prec);
 	}
+
 void NxsDistancesBlock::WriteAsNexus(std::ostream &out) const
 	{
 	out << "BEGIN DISTANCES;\n";
@@ -80,7 +80,7 @@ NxsDistancesBlock::NxsDistancesBlock(
   : NxsBlock(),
   NxsTaxaBlockSurrogate(t, NULL)
 	{
-	blockId = "DISTANCES";
+	NCL_BLOCKTYPE_ATTR_NAME = "DISTANCES";
 	Reset();
 	}
 
@@ -148,7 +148,7 @@ void NxsDistancesBlock::HandleDimensionsCommand(
 		if (ntaxinblock < ntaxRead)
 			{
 			errormsg = "NTAX in ";
-			errormsg << blockId << " block must be less than or equal to NTAX in TAXA block\nNote: one circumstance that can cause this error is \nforgetting to specify NTAX in DIMENSIONS command when \na TAXA block has not been provided";
+			errormsg << NCL_BLOCKTYPE_ATTR_NAME << " block must be less than or equal to NTAX in TAXA block\nNote: one circumstance that can cause this error is \nforgetting to specify NTAX in DIMENSIONS command when \na TAXA block has not been provided";
 			throw NxsException(errormsg, token.GetFilePosition(), token.GetFileLine(), token.GetFileColumn());
 			}
 		expectedNtax = (ntaxRead == 0 ? ntaxinblock : ntaxRead);;
@@ -426,7 +426,7 @@ void NxsDistancesBlock::HandleMatrixCommand(
 	unsigned nTaxInTaxBlock = taxa->GetNumTaxonLabels();
 	if (nTaxInTaxBlock < expectedNtax)
 		{
-		errormsg << "NTAX in " << blockId << " block must be less than or equal to NTAX in TAXA block\nNote: one circumstance that can cause this error is \nforgetting to specify NTAX in DIMENSIONS command when \na TAXA block has not been provided";
+		errormsg << "NTAX in " << NCL_BLOCKTYPE_ATTR_NAME << " block must be less than or equal to NTAX in TAXA block\nNote: one circumstance that can cause this error is \nforgetting to specify NTAX in DIMENSIONS command when \na TAXA block has not been provided";
 		throw NxsException(errormsg, token.GetFilePosition(), token.GetFileLine(), token.GetFileColumn());
 		}
 	NxsDistanceDatumRow row(nTaxInTaxBlock);
@@ -484,7 +484,7 @@ void NxsDistancesBlock::Report(
 	const unsigned ntaxTotal = taxa->GetNumTaxonLabels();
 
 	out << endl;
-	out << blockId << " block contains ";
+	out << NCL_BLOCKTYPE_ATTR_NAME << " block contains ";
 	if (ntaxTotal == 0)
 		{
 		out << "no taxa" << endl;

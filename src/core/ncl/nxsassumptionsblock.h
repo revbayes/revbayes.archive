@@ -228,6 +228,10 @@ class NxsAssumptionsBlock
 			createdSubBlocks = other.createdSubBlocks;
 			polyTCountValue = other.polyTCountValue;
 			gapsAsNewstate = other.gapsAsNewstate;
+            blockwideCharsLinkEstablished = other.blockwideCharsLinkEstablished;
+            blockwideTaxaLinkEstablished = other.blockwideTaxaLinkEstablished;
+            blockwideTreesLinkEstablished = other.blockwideTreesLinkEstablished;
+
 			codonPosSets = other.codonPosSets;
 			def_codonPosSet = other.def_codonPosSet;
 			codeSets = other.codeSets;
@@ -368,6 +372,9 @@ class NxsAssumptionsBlock
 			};
 		PolyTCountValue		polyTCountValue;
 		bool				gapsAsNewstate;
+		bool blockwideCharsLinkEstablished;
+		bool blockwideTaxaLinkEstablished;
+		bool blockwideTreesLinkEstablished;
 
 		friend class NxsAssumptionsBlockFactory;
 		friend class PublicNexusReader;
@@ -377,7 +384,7 @@ class NxsAssumptionsBlockFactory
 	:public NxsBlockFactory
 	{
 	public:
-		virtual NxsAssumptionsBlock * GetBlockReaderForID(const std::string & blockId, NxsReader *reader, NxsToken *token);
+		virtual NxsAssumptionsBlock * GetBlockReaderForID(const std::string & blockTypeName, NxsReader *reader, NxsToken *token);
 	};
 
 typedef NxsAssumptionsBlock AssumptionsBlock;	// for backward compatibility

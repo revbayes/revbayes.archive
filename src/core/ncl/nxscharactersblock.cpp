@@ -24,7 +24,6 @@
 #include <climits>
 
 #include "nxscharactersblock.h"
-
 #include "nxsreader.h"
 #include "nxsassumptionsblock.h"
 #include "nxssetreader.h"
@@ -1857,7 +1856,7 @@ void NxsCharactersBlock::HandleFormat(
 								dtv.push_back(protein);
 							else
 								{
-								errormsg << pIt->first <<  " is not a valid DATATYPE within a " <<  blockId << " block";
+								errormsg << pIt->first <<  " is not a valid DATATYPE within a " <<  NCL_BLOCKTYPE_ATTR_NAME << " block";
 								throw NxsException(errormsg, *wIt);
 								}
 							}
@@ -1865,7 +1864,7 @@ void NxsCharactersBlock::HandleFormat(
 					}
 				else
 					{
-					errormsg << wIt->GetToken() <<  " is not a valid DATATYPE within a " <<  blockId << " block";
+					errormsg << wIt->GetToken() <<  " is not a valid DATATYPE within a " <<  NCL_BLOCKTYPE_ATTR_NAME << " block";
 					throw NxsException(errormsg, *wIt);
 					}
 				datatypeReadFromFormat = true;
@@ -2733,7 +2732,10 @@ void NxsDiscreteDatatypeMapper::ValidateStateCode(NxsDiscreteStateCell c) const
 	if (c < sclOffset)
 		{
 		if (c == NXS_GAP_STATE_CODE)
-			throw NxsNCLAPIException("Illegal usage of NXS_GAP_STATE_CODE in a datatype without gaps");
+			{
+			if (gapChar == '\0')
+				throw NxsNCLAPIException("Illegal usage of NXS_GAP_STATE_CODE in a datatype without gaps");
+			}
 		if (c == NXS_INVALID_STATE_CODE)
 			throw NxsNCLAPIException("Illegal usage of NXS_INVALID_STATE_CODE as a state code");
 		throw NxsNCLAPIException("Illegal usage of unknown negative state index");
@@ -3503,7 +3505,7 @@ NxsCharactersBlock::NxsCharactersBlock(
   	:NxsTaxaBlockSurrogate(tb, NULL)
 	{
 	assumptionsBlock = ab;
-	blockId = "CHARACTERS";
+	NCL_BLOCKTYPE_ATTR_NAME = "CHARACTERS";
 	supportMixedDatatype = false;
 	convertAugmentedToMixed = false;
 	allowAugmentingOfSequenceSymbols = false;
@@ -4037,7 +4039,7 @@ void NxsCharactersBlock::HandleDimensions(
 			{
 			errormsg = ntaxLabel;
 			errormsg += " in ";
-			errormsg += blockId;
+			errormsg += NCL_BLOCKTYPE_ATTR_NAME;
 			errormsg += " block must be less than or equal to NTAX in TAXA block\nNote: one circumstance that can cause this error is \nforgetting to specify ";
 			errormsg += ntaxLabel;
 			errormsg += " in DIMENSIONS command when \na TAXA block has not been provided";
@@ -4499,7 +4501,7 @@ void NxsCharactersBlock::HandleMatrix(
 	if (ntax == 0)
 		{
 		errormsg = "Must precede ";
-		errormsg << blockId << " block with a TAXA block or specify NEWTAXA and NTAX in the DIMENSIONS command";
+		errormsg << NCL_BLOCKTYPE_ATTR_NAME << " block with a TAXA block or specify NEWTAXA and NTAX in the DIMENSIONS command";
 		throw NxsException(errormsg, token.GetFilePosition(), token.GetFileLine(), token.GetFileColumn());
 		}
 
@@ -4587,7 +4589,7 @@ void NxsCharactersBlock::Read(
 
 	NxsString s;
 	s = "BEGIN ";
-	s += blockId;
+	s += NCL_BLOCKTYPE_ATTR_NAME;
 	DemandEndSemicolon(token, s.c_str());
 	nTaxWithData = 0;
 
@@ -4600,7 +4602,7 @@ void NxsCharactersBlock::Read(
 			if (discreteMatrix.empty() && continuousMatrix.empty())
 				{
 				errormsg.clear();
-				errormsg << "\nA " << blockId << " block must contain a Matrix command";
+				errormsg << "\nA " << NCL_BLOCKTYPE_ATTR_NAME << " block must contain a Matrix command";
 				throw NxsException(errormsg, token);
 				}
 			return;
@@ -4636,7 +4638,7 @@ void NxsCharactersBlock::Read(
 void NxsCharactersBlock::Report(
   std::ostream &out) NCL_COULD_BE_CONST  /* the output stream to which to write the report */ /*v2.1to2.2 1 */
 	{
-	out << '\n' << blockId << " block contains ";
+	out << '\n' << NCL_BLOCKTYPE_ATTR_NAME << " block contains ";
 	if (nTaxWithData == 0)
 		out << "no taxa";
 	else if (nTaxWithData == 1)

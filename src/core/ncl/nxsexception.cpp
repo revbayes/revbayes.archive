@@ -18,7 +18,6 @@
 //
 
 #include "nxsexception.h"
-
 #include "nxstoken.h"
 
 using namespace std;

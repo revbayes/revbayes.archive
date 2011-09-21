@@ -436,6 +436,13 @@ class NxsToken
 			return embeddedComments;
 			}
 		char			PeekAtNextChar() const;
+		
+		/// Calling with `true` will force the NxsToken to only consider newick's
+		//		punctuation characters to be punctuation (newick's punctuation
+		//		chars are ()[]':;, this is a subset of NEXUS punctuation.
+		//	Calling with `false` will restore NEXUS punctuation rules.
+		void UseNewickTokenization(bool v);
+
 	protected:
 
 		void			AppendToComment(char ch);
@@ -470,6 +477,8 @@ class NxsToken
 		char			whitespace[4];		/* stores the 3 whitespace characters: blank space, tab and newline */
 		std::string 	currBlock;
 		std::vector<NxsComment>		embeddedComments;
+		typedef bool (* CharPredFunc)(const char);
+		CharPredFunc    isPunctuationFn;
 	};
 
 typedef NxsToken NexusToken;
@@ -551,43 +560,6 @@ inline void NxsToken::AppendToToken(
 	token.push_back(ch);
 	}
 
-/*!
-	Returns true if character supplied is considered a punctuation character. The following twenty characters are
-	considered punctuation characters:
->
-	()[]{}/\,;:=*'"`+-<>
->
-	Exceptions:
-~
-	o The tilde character ('~') is also considered punctuation if the tildeIsPunctuation labile flag is set
-	o The special punctuation character (specified using the SetSpecialPunctuationCharacter) is also considered
-	  punctuation if the useSpecialPunctuation labile flag is set
-	o The hyphen (i.e., minus sign) character ('-') is not considered punctuation if the hyphenNotPunctuation
-	  labile flag is set
-~
-	Use the SetLabileFlagBit method to set one or more NxsLabileFlags flags in `labileFlags'
-*/
-inline bool NxsToken::IsPunctuation(
-  char ch)	/* the character in question */
-	{
-	// PAUP 4.0b10
-	//  o allows ]`<> inside taxon names
-	//  o allows `<> inside taxset names
-	//
-	if (NxsString::IsNexusPunctuation(ch))
-		{
-		if  (labileFlags & hyphenNotPunctuation)
-#			if defined(NCL_VERSION_2_STYLE_HYPHEN) && NCL_VERSION_2_STYLE_HYPHEN
-				return (ch != '-');
-#			else
-				return (ch != '-'  && ch != '+');
-#			endif
-		return true;
-		}
-	if (labileFlags & tildeIsPunctuation  && ch == '~')
-		return true;
-	return (labileFlags & useSpecialPunctuation  && ch == special);
-	}
 
 /*!
 	Returns true if character supplied is considered a whitespace character. Note: treats '\n' as darkspace if labile
@@ -718,6 +690,47 @@ inline bool NxsToken::IsPlusMinusToken(const std::string &t)
 	{
 	return (t.size() == 1 && ( t[0] == '+' || t[0] == '-') );
 	}
+
+
+/*!
+	Returns true if character supplied is considered a punctuation character. The following twenty characters are
+	considered punctuation characters:
+>
+	()[]{}/\,;:=*'"`+-<>
+>
+	Exceptions:
+~
+	o The tilde character ('~') is also considered punctuation if the tildeIsPunctuation labile flag is set
+	o The special punctuation character (specified using the SetSpecialPunctuationCharacter) is also considered
+	  punctuation if the useSpecialPunctuation labile flag is set
+	o The hyphen (i.e., minus sign) character ('-') is not considered punctuation if the hyphenNotPunctuation
+	  labile flag is set
+~
+	Use the SetLabileFlagBit method to set one or more NxsLabileFlags flags in `labileFlags'
+*/
+inline bool NxsToken::IsPunctuation(
+  char ch)	/* the character in question */
+	{
+
+	// PAUP 4.0b10
+	//  o allows ]`<> inside taxon names
+	//  o allows `<> inside taxset names
+	//
+	if (isPunctuationFn(ch))
+		{
+		if  (labileFlags & hyphenNotPunctuation)
+#			if defined(NCL_VERSION_2_STYLE_HYPHEN) && NCL_VERSION_2_STYLE_HYPHEN
+				return (ch != '-');
+#			else
+				return (ch != '-'  && ch != '+');
+#			endif
+		return true;
+		}
+	if (labileFlags & tildeIsPunctuation  && ch == '~')
+		return true;
+	return (labileFlags & useSpecialPunctuation  && ch == special);
+	}
+
 
 /*!
 	Returns true if current token is a single character and this character is a punctuation character (as defined in

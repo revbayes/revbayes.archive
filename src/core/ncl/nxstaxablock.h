@@ -352,7 +352,7 @@ class NxsTaxaBlockFactory
 	:public NxsBlockFactory
 	{
 	public:
-		virtual NxsTaxaBlock  *	GetBlockReaderForID(const std::string & blockId, NxsReader *reader, NxsToken *token);
+		virtual NxsTaxaBlock  *	GetBlockReaderForID(const std::string & NCL_BLOCKTYPE_ATTR_NAME, NxsReader *reader, NxsToken *token);
 	};
 
 inline unsigned NxsTaxaBlock::GetNTax() const

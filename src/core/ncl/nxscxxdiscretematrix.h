@@ -187,6 +187,19 @@ class NxsCharacterPattern
         bool operator == (const NxsCharacterPattern & other) const {
             return this->stateCodes == other.stateCodes;
         }
+        // returns true if none of the state codes are the missing or gap codes (negative values
+        //  note this does not test if all of the state codes correspond to completely specified
+        //  cells that are only compatible with one state!
+        bool StateCodesAreNonNegative() const {
+            for (std::vector<NxsCDiscreteState_t>::const_iterator scIt = stateCodes.begin();
+                                                                  scIt != stateCodes.end(); 
+                                                                  ++scIt)
+                {
+                if (*scIt < 0)
+                    return false;
+                }
+            return true;
+        }
         std::vector<NxsCDiscreteState_t> stateCodes;
         mutable unsigned count;
         mutable unsigned patternIndex; // used as scratchspace not always valid!!!

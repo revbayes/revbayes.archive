@@ -19,14 +19,13 @@
 
 #include <climits>
 #include "nxsunalignedblock.h"
-
 #include "nxsreader.h"
 using namespace std;
 
 //@POL Note: This file is not yet ready for use (Paul Lewis, 19-May-2007)
 
 /*!
-	Initializes `blockId' to "UNALIGNED", `taxa' to `tb', `assumptionsBlock' to `ab', `ntax' and `ntaxTotal' to 0, `newtaxa'
+	Initializes `NCL_BLOCKTYPE_ATTR_NAME' to "UNALIGNED", `taxa' to `tb', `assumptionsBlock' to `ab', `ntax' and `ntaxTotal' to 0, `newtaxa'
 	and `respectingCase' to false, `labels' to true, `datatype' to `NxsUnalignedBlock::standard', `missing' to '?', and
 	`taxonPos' and `activeTaxon' to NULL. The `equates' map and `uMatrix' vector are both cleared. The ResetSymbols
 	function is called to reset the `symbols' data member.
@@ -36,7 +35,7 @@ NxsUnalignedBlock::NxsUnalignedBlock(
   : NxsBlock(),
   NxsTaxaBlockSurrogate(tb, NULL)
 	{
-	blockId = "UNALIGNED";
+	NCL_BLOCKTYPE_ATTR_NAME = "UNALIGNED";
 	Reset();
 	}
 
@@ -58,20 +57,36 @@ void NxsUnalignedBlock::Reset()
 	NxsBlock::Reset();
 	ResetSurrogate();
 	nTaxWithData = 0;
-	newtaxa				= false;
-	respectingCase		= false;
-	labels				= true;
+	newtaxa = false;
+	respectingCase = false;
+	labels = true;
 	originalDatatype = datatype = NxsCharactersBlock::standard;
-	missing				= '?';
+	missing = '?';
+	gap = '\0';
 	ResetSymbols();	// also resets equates
 	nChar = 0;
 	uMatrix.clear();
 	}
 
+bool NxsUnalignedBlock::TaxonIndHasData(
+  unsigned taxInd) const /* the character in question, in the range [0..`nchar') */
+	{
+	return (taxInd < uMatrix.size() && !uMatrix[taxInd].empty());
+	}
+
+std::string NxsUnalignedBlock::GetMatrixRowAsStr(const unsigned rowIndex) const /* output stream on which to print matrix */
+	{
+	if (!this->TaxonIndHasData(rowIndex))
+		return std::string();
+	std::ostringstream o;
+	WriteStatesForMatrixRow(o, rowIndex);
+	return o.str();
+	}
+
 
 void NxsUnalignedBlock::ResetDatatypeMapper()
 	{
-	mapper = NxsDiscreteDatatypeMapper(datatype, symbols, missing, '\0', matchchar, respectingCase, equates);
+	mapper = NxsDiscreteDatatypeMapper(datatype, symbols, missing, gap, matchchar, respectingCase, equates);
 	datatype = mapper.GetDatatype();
 	}
 /*!
@@ -270,7 +285,7 @@ void NxsUnalignedBlock::HandleFormat(
 				{
 				errormsg = token.GetToken();
 				errormsg += " is not a valid DATATYPE within a ";
-				errormsg += blockId;
+				errormsg += NCL_BLOCKTYPE_ATTR_NAME;
 				errormsg += " block";
 				throw NxsException(errormsg, token.GetFilePosition(), token.GetFileLine(), token.GetFileColumn());
 				}
@@ -440,7 +455,7 @@ void NxsUnalignedBlock::HandleFormat(
 					badEquateSymbol = true;
 
 				// Equate symbols cannot be same as matchchar, missing, or gap
-				if (ch == missing)
+				if (ch == missing || ch == gap)
 					badEquateSymbol = true;
 
 				// Equate symbols cannot be one of the state symbols currently defined
@@ -534,7 +549,7 @@ void NxsUnalignedBlock::HandleMatrix(
 		if (ntax == 0)
 			{
 			errormsg = "Must precede ";
-			errormsg += blockId;
+			errormsg += NCL_BLOCKTYPE_ATTR_NAME;
 			errormsg += " block with a TAXA block or specify NEWTAXA and NTAX in the DIMENSIONS command";
 			throw NxsException(errormsg, token.GetFilePosition(), token.GetFileLine(), token.GetFileColumn());
 			}
@@ -629,7 +644,7 @@ void NxsUnalignedBlock::Read(
 	if (!token.Equals(";"))
 		{
 		errormsg = "Expecting ';' after ";
-		errormsg += blockId;
+		errormsg += NCL_BLOCKTYPE_ATTR_NAME;
 		errormsg += " block name, but found ";
 		errormsg += token.GetToken();
 		errormsg += " instead";
@@ -666,7 +681,7 @@ void NxsUnalignedBlock::Read(
 void NxsUnalignedBlock::Report(
   std::ostream & out) NCL_COULD_BE_CONST /* is the output stream to which to write the report */ /*v2.1to2.2 1 */
 	{
-	out << '\n' << blockId << " block contains ";
+	out << '\n' << NCL_BLOCKTYPE_ATTR_NAME << " block contains ";
 	if (nTaxWithData == 0)
 		out << "no taxa";
 	else if (nTaxWithData == 1)

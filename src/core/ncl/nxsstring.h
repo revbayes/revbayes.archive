@@ -113,6 +113,7 @@ class NxsString
 		bool				IsInVector(const NxsStringVector &s, NxsString::CmpEnum mode = respect_case) const;
 		bool				IsStdAbbreviation(const NxsString &s, bool respectCase) const;
 		static bool			IsNexusPunctuation(const char c);
+		static bool         IsNewickPunctuation(const char c);
 		bool				QuotesNeeded() const;
 		NxsString 			UpperCasePrefix() const;
 		friend std::ostream &operator<<(std::ostream &out, const NxsString &s);
@@ -571,6 +572,27 @@ inline bool NxsString::IsNexusPunctuation(
 	{
 	return (strchr("()[]{}/\\,;:=*\'\"`-+<>", c) != NULL);
 	}
+
+
+/*! Returns true if `c' is any Newick punctuation character:
+>
+	()[]':;,
+>
+List of punctuation taken from the "unquoted labels may not contain" section 
+of http://evolution.genetics.washington.edu/phylip/newick_doc.html
+
+Thanks to Andrew Lenards for pointing out the need for this when dealing with
+non-NEXUS trees.
+ parentheses, square brackets,
+        single_quotes, colons, semicolons, or commas
+*/
+inline bool NxsString::IsNewickPunctuation(
+  const char c)	/* the character in question */
+	{
+	const bool v = (strchr("()[]':;,", c) != NULL);
+	return v;
+	}
+
 
 /*!
 	Creates a new string (and returns a reference to the new string) composed of the integer `i' followed by a space and

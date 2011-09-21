@@ -21,7 +21,6 @@
 #define NCL_NXSDISTANCESBLOCK_H
 
 #include "nxsdefs.h"
-
 #include "nxstaxablock.h"
 #include "nxsdistancedatum.h"
 
@@ -95,7 +94,7 @@ class NxsDistancesBlock
 			/*! \ref BlockTypeIDDiscussion */
         virtual const std::string & GetBlockName() const
             {
-            return blockId;
+            return NCL_BLOCKTYPE_ATTR_NAME;
             }
 
 		enum NxsDistancesBlockEnum		/* used by data member triangle to determine which triangle(s) of the distance matrix is/are occupied */
@@ -186,7 +185,7 @@ class NxsDistancesBlockFactory
 	:public NxsBlockFactory
 	{
 	public:
-		virtual NxsDistancesBlock  *	GetBlockReaderForID(const std::string & blockId, NxsReader *reader, NxsToken *token);
+		virtual NxsDistancesBlock  *	GetBlockReaderForID(const std::string & NCL_BLOCKTYPE_ATTR_NAME, NxsReader *reader, NxsToken *token);
 	};
 
 inline bool NxsDistancesBlock::IsBoth() NCL_COULD_BE_CONST /*v2.1to2.2 1 */

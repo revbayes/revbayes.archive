@@ -27,6 +27,7 @@
 #include "nxsdatablock.h"
 #include "nxsdistancesblock.h"
 #include "nxstaxablock.h"
+#include "nxstaxaassociationblock.h"
 #include "nxstreesblock.h"
 #include "nxsunalignedblock.h"
 #include "nxsreader.h"
@@ -42,7 +43,7 @@ class NxsStoreTokensBlockReader
 			:storeAllTokenInfo(storeTokenInfo),
 			tolerateEOFInBlock(false)
 			{
-			blockId = NxsString(blockName.c_str());
+			NCL_BLOCKTYPE_ATTR_NAME = NxsString(blockName.c_str());
 			}
 		void Read(NxsToken &token);
 		void Reset();
@@ -67,20 +68,20 @@ class NxsStoreTokensBlockReader
 
 		NxsStoreTokensBlockReader * Clone() const
 			{
-			NxsStoreTokensBlockReader * b = new NxsStoreTokensBlockReader(blockId, storeAllTokenInfo);
+			NxsStoreTokensBlockReader * b = new NxsStoreTokensBlockReader(NCL_BLOCKTYPE_ATTR_NAME, storeAllTokenInfo);
 			*b = *this;
 			return b;
 			}
 		/*! \ref BlockTypeIDDiscussion */
 		virtual bool CanReadBlockType(const NxsToken & token)
 			{
-			if (blockId.length() == 0)
+			if (NCL_BLOCKTYPE_ATTR_NAME.length() == 0)
 				{
-				blockId.assign(token.GetTokenReference().c_str());
-				blockId.ToUpper();
+				NCL_BLOCKTYPE_ATTR_NAME.assign(token.GetTokenReference().c_str());
+				NCL_BLOCKTYPE_ATTR_NAME.ToUpper();
 				return true;
 				}
-			return token.Equals(blockId);
+			return token.Equals(NCL_BLOCKTYPE_ATTR_NAME);
 			}
 		virtual bool TolerateEOFInBlock() const
 			{
@@ -129,7 +130,7 @@ class NxsDefaultPublicBlockFactory
 			:tokenizeUnknownBlocks(readUnknownBlocks),
 			storeTokenInfoArg(storeTokenInfo)
 			{}
-		virtual NxsBlock  *	GetBlockReaderForID(const std::string & blockId, NxsReader *reader, NxsToken *token);
+		virtual NxsBlock  *	GetBlockReaderForID(const std::string & NCL_BLOCKTYPE_ATTR_NAME, NxsReader *reader, NxsToken *token);
 
 	protected:
 		NxsAssumptionsBlockFactory assumpBlockFact;
@@ -137,6 +138,7 @@ class NxsDefaultPublicBlockFactory
 		NxsDataBlockFactory dataBlockFact;
 		NxsDistancesBlockFactory distancesBlockFact;
 		NxsTaxaBlockFactory taxaBlockFact;
+		NxsTaxaAssociationBlockFactory taxaAssociationBlockFact;
 		NxsTreesBlockFactory treesBlockFact;
 		NxsUnalignedBlockFactory unalignedBlockFact;
 
@@ -158,16 +160,16 @@ class NxsCloneBlockFactory
 			:defPrototype(NULL)
 			{}
 		/*! \returns a new NxsBlock instance (or NULL) to read the NEXUS content
-		in a block of name `blockId`.
+		in a block of name `NCL_BLOCKTYPE_ATTR_NAME`.
 
 			This function is called by the NxsReader during the parse if no
 			NxsBlock instances for this block ID type were added to the reader.
 		*/
-		virtual NxsBlock  *	GetBlockReaderForID(const std::string & blockId, /*!< The block ID \ref BlockTypeIDDiscussion */
+		virtual NxsBlock  *	GetBlockReaderForID(const std::string & NCL_BLOCKTYPE_ATTR_NAME, /*!< The block ID \ref BlockTypeIDDiscussion */
 								NxsReader *, /*!< pointer to the NxsReader that is conducting the parse */
 								NxsToken *) /*!< pointer to the current NxsToken object that wraps the istream (this function should not advance the token) */
 			{
-			std::string b(blockId.c_str());
+			std::string b(NCL_BLOCKTYPE_ATTR_NAME.c_str());
 			NxsString::to_upper(b);
 			std::map<std::string , const NxsBlock *>::const_iterator pIt = prototypes.find(b);
 			if (pIt == prototypes.end())
@@ -299,7 +301,8 @@ class PublicNexusReader: public ExceptionRaisingNxsReader
 			NEXUS_SETS_BLOCK_BIT = 0x10, /// Flags SETS blocks as a type to be read
 			NEXUS_UNALIGNED_BLOCK_BIT = 0x20, /// Flags UNALIGNED blocks as a type to be read
 			NEXUS_DISTANCES_BLOCK_BIT = 0x40, /// Flags DISTANCES blocks as a type to be read
-			NEXUS_UNKNOWN_BLOCK_BIT = 0x80 /// to be used internally
+			NEXUS_TAXAASSOCIATION_BLOCK_BIT = 0x80, /// Flags TAXAASSOCIATION blocks to be read
+			NEXUS_UNKNOWN_BLOCK_BIT = 0x100 /// to be used internally
 		};
 
 		/*!	Creates a new PublicNexusReader
@@ -373,6 +376,15 @@ class PublicNexusReader: public ExceptionRaisingNxsReader
 			the PublicNexusReader deletes its own templates)
 		*/
 		NxsTaxaBlock * GetTaxaBlockTemplate() {return taxaBlockTemplate;}
+		/*!	\returns a pointer to the template for the NxsTaxaAssociationBlock.
+			This object will be cloned whenever a TAXAASSOCIATION block is encountered,
+			so modifying the default behavior of this instance will change the behavior
+			of every NxsTaxaBlock created by the reader.
+
+			Do NOT DELETE the template! (the client has to delete all spawned blocks, but
+			the PublicNexusReader deletes its own templates)
+		*/
+		NxsTaxaAssociationBlock * GetTaxaAssociationBlockTemplate() {return taxaAssociationBlockTemplate;}
 		/*!	\returns a pointer to the template for the NxsTreesBlock.
 			This object will be cloned whenever a TREES block is encountered,
 			so modifying the default behavior of this instance will change the behavior
@@ -483,6 +495,23 @@ class PublicNexusReader: public ExceptionRaisingNxsReader
 		*/
 		NxsTaxaBlock * GetTaxaBlock(unsigned index) const;
 
+		/*! \returns the number of NxsTaxaAssociationBlock objects created during the parse which
+				refer to the taxa as their first of second taxa block
+			If `taxa` is 0L, then the total number of Trees blocks will be returned
+		*/
+		unsigned GetNumTaxaAssociationBlocks(const NxsTaxaBlock *taxa) const;
+		/*! \returns a pointer to the NxsTaxaAssociationBlock with index
+			Indexing starts at 0 and refers to the index in a list of NxsTaxaAssociationBlock
+			objects that refer to the NxsTaxaBlock `taxa`.  Thus, the index does not
+			necessarily represent the position among ALL of the NxsTaxaAssociationBlock objects
+
+			0L will be returned if the index is out of range. Indices should be <
+				the number returned by GetNumTreesBlocks(taxa).
+			If `taxa` is 0L, then the total block indexing scheme will refer to the
+				total number of Trees blocks read.
+		*/
+		NxsTaxaAssociationBlock * GetTaxaAssociationBlock(const NxsTaxaBlock *taxa, unsigned index) const;
+
 		/*! \returns the number of NxsTreesBlock objects created during the parse which
 				refer to the taxa in `taxa`
 			If `taxa` is 0L, then the total number of Trees blocks will be returned
@@ -550,6 +579,7 @@ class PublicNexusReader: public ExceptionRaisingNxsReader
 			distancesBlockVec.clear();
 			storerBlockVec.clear();
 			taxaBlockVec.clear();
+			taxaAssociationBlockVec.clear();
 			treesBlockVec.clear();
 			unalignedBlockVec.clear();
 			ExceptionRaisingNxsReader::ClearContent();
@@ -610,6 +640,17 @@ class PublicNexusReader: public ExceptionRaisingNxsReader
 			taxaBlockVec.push_back(block);
 			AddReadBlock("TAXA", block);
 			}
+		/*! Adds (or "registers") a NxsTaxaAssociationBlock with the reader. Can be
+			useful if you:
+				-# obtain references to blocks you want to keep,
+				-# call ClearContent()
+				-# add back the block instances that provide necessary context for additional parses.
+		*/
+		void AddReadTaxaAssociationBlock(NxsTaxaAssociationBlock * block)
+			{
+			taxaAssociationBlockVec.push_back(block);
+			AddReadBlock("TAXAASSOCIATION", block);
+			}
 		/*! Adds (or "registers") a NxsTreesBlock with the reader. Can be
 			useful if you:
 				-# obtain references to blocks you want to keep,
@@ -663,6 +704,7 @@ class PublicNexusReader: public ExceptionRaisingNxsReader
 		NxsDistancesBlock * distancesBlockTemplate;
 		NxsStoreTokensBlockReader * storerBlockTemplate;
 		NxsTaxaBlock * taxaBlockTemplate;
+		NxsTaxaAssociationBlock * taxaAssociationBlockTemplate;
 		NxsTreesBlock * treesBlockTemplate;
 		NxsUnalignedBlock * unalignedBlockTemplate;
 
@@ -672,6 +714,7 @@ class PublicNexusReader: public ExceptionRaisingNxsReader
 		std::vector<NxsDistancesBlock *> distancesBlockVec;
 		std::vector<NxsStoreTokensBlockReader *> storerBlockVec;
 		std::vector<NxsTaxaBlock *> taxaBlockVec;
+		std::vector<NxsTaxaAssociationBlock *> taxaAssociationBlockVec;
 		std::vector<NxsTreesBlock *> treesBlockVec;
 		std::vector<NxsUnalignedBlock *> unalignedBlockVec;
 

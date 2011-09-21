@@ -1110,7 +1110,7 @@ class NxsCharactersBlockFactory
 	:public NxsBlockFactory
 	{
 	public:
-		virtual NxsCharactersBlock	*	GetBlockReaderForID(const std::string & blockId, NxsReader *reader, NxsToken *token);
+		virtual NxsCharactersBlock	*	GetBlockReaderForID(const std::string & NCL_BLOCKTYPE_ATTR_NAME, NxsReader *reader, NxsToken *token);
 	};
 
 class NxsDiscreteStateSetInfo
@@ -1865,7 +1865,7 @@ inline VecBlockPtr NxsCharactersBlock::GetImpliedBlocks()
 	}
 inline const std::string & NxsCharactersBlock::GetBlockName() const
 	{
-	return blockId;
+	return NCL_BLOCKTYPE_ATTR_NAME;
 	}
 inline void NxsCharactersBlock::HandleLinkCommand(NxsToken & token)
 	{

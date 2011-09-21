@@ -114,7 +114,7 @@ void NxsStoreTokensBlockReader::Reset()
 
 void NxsStoreTokensBlockReader::ReportConst(std::ostream &out) const
 	{
-	out << blockId << " block contains ";
+	out << NCL_BLOCKTYPE_ATTR_NAME << " block contains ";
 	if (storeAllTokenInfo)
 		{
 		out << (unsigned)commandsRead.size() << " commands:\n";
@@ -161,7 +161,7 @@ void NxsStoreTokensBlockReader::Read(
 	isEmpty = false;
 	isUserSupplied = true;
 	NxsString begcmd("BEGIN ");
-	begcmd += this->blockId;
+	begcmd += this->NCL_BLOCKTYPE_ATTR_NAME;
 	DemandEndSemicolon(token, begcmd.c_str());
 
 	for(;;)
@@ -178,7 +178,7 @@ void NxsStoreTokensBlockReader::Read(
 
 void NxsStoreTokensBlockReader::WriteAsNexus(std::ostream &out) const
 	{
-	out << "BEGIN " << NxsString::GetEscaped(this->blockId) << ";\n";
+	out << "BEGIN " << NxsString::GetEscaped(this->NCL_BLOCKTYPE_ATTR_NAME) << ";\n";
 	if (storeAllTokenInfo)
 		{
 		for (std::list<ProcessedNxsCommand>::const_iterator cIt = commandsRead.begin(); cIt != commandsRead.end(); ++cIt)
@@ -203,30 +203,32 @@ void NxsStoreTokensBlockReader::WriteAsNexus(std::ostream &out) const
 	out << "END;\n";
 	}
 
-/*! Returns a new instance of a block  for the appropriate block type blockId. \ref BlockTypeIDDiscussion
+/*! Returns a new instance of a block  for the appropriate block type NCL_BLOCKTYPE_ATTR_NAME. \ref BlockTypeIDDiscussion
 */
 NxsBlock  *NxsDefaultPublicBlockFactory::GetBlockReaderForID(
-  const std::string & blockId, /*! \ref BlockTypeIDDiscussion */
+  const std::string & NCL_BLOCKTYPE_ATTR_NAME, /*! \ref BlockTypeIDDiscussion */
   NxsReader *reader,
   NxsToken *token)
 	{
-	if (blockId == "ASSUMPTIONS" || blockId == "SETS")
-		return assumpBlockFact.GetBlockReaderForID(blockId, reader, token);
-	if (blockId == "CHARACTERS")
-		return charBlockFact.GetBlockReaderForID(blockId, reader, token);
-	if (blockId == "DATA")
-		return dataBlockFact.GetBlockReaderForID(blockId, reader, token);
-	if (blockId == "DISTANCES")
-		return distancesBlockFact.GetBlockReaderForID(blockId, reader, token);
-	if (blockId == "TAXA")
-		return taxaBlockFact.GetBlockReaderForID(blockId, reader, token);
-	if (blockId == "TREES")
-		return treesBlockFact.GetBlockReaderForID(blockId, reader, token);
-	if (blockId == "UNALIGNED")
-		return unalignedBlockFact.GetBlockReaderForID(blockId, reader, token);
+	if (NCL_BLOCKTYPE_ATTR_NAME == "ASSUMPTIONS" || NCL_BLOCKTYPE_ATTR_NAME == "SETS")
+		return assumpBlockFact.GetBlockReaderForID(NCL_BLOCKTYPE_ATTR_NAME, reader, token);
+	if (NCL_BLOCKTYPE_ATTR_NAME == "CHARACTERS")
+		return charBlockFact.GetBlockReaderForID(NCL_BLOCKTYPE_ATTR_NAME, reader, token);
+	if (NCL_BLOCKTYPE_ATTR_NAME == "DATA")
+		return dataBlockFact.GetBlockReaderForID(NCL_BLOCKTYPE_ATTR_NAME, reader, token);
+	if (NCL_BLOCKTYPE_ATTR_NAME == "DISTANCES")
+		return distancesBlockFact.GetBlockReaderForID(NCL_BLOCKTYPE_ATTR_NAME, reader, token);
+	if (NCL_BLOCKTYPE_ATTR_NAME == "TAXA")
+		return taxaBlockFact.GetBlockReaderForID(NCL_BLOCKTYPE_ATTR_NAME, reader, token);
+	if (NCL_BLOCKTYPE_ATTR_NAME == "TREES")
+		return treesBlockFact.GetBlockReaderForID(NCL_BLOCKTYPE_ATTR_NAME, reader, token);
+	if (NCL_BLOCKTYPE_ATTR_NAME == "TAXAASSOCIATION")
+		return taxaAssociationBlockFact.GetBlockReaderForID(NCL_BLOCKTYPE_ATTR_NAME, reader, token);
+	if (NCL_BLOCKTYPE_ATTR_NAME == "UNALIGNED")
+		return unalignedBlockFact.GetBlockReaderForID(NCL_BLOCKTYPE_ATTR_NAME, reader, token);
 	if (tokenizeUnknownBlocks)
 		{
-		NxsStoreTokensBlockReader * nb = new NxsStoreTokensBlockReader(blockId, storeTokenInfoArg);
+		NxsStoreTokensBlockReader * nb = new NxsStoreTokensBlockReader(NCL_BLOCKTYPE_ATTR_NAME, storeTokenInfoArg);
 		nb->SetImplementsLinkAPI(false);
     	return nb;
         }
@@ -254,6 +256,7 @@ PublicNexusReader::PublicNexusReader(
 	distancesBlockTemplate(0L),
 	storerBlockTemplate(0L),
 	taxaBlockTemplate(0L),
+	taxaAssociationBlockTemplate(0L),
 	treesBlockTemplate(0L),
 	unalignedBlockTemplate(0L)
 {
@@ -312,6 +315,11 @@ PublicNexusReader::PublicNexusReader(
 		distancesBlockTemplate->SetImplementsLinkAPI(true);
 		cloneFactory.AddPrototype(distancesBlockTemplate);
 		}
+	if (blocksToRead & NEXUS_TAXAASSOCIATION_BLOCK_BIT)
+		{
+		taxaAssociationBlockTemplate = new NxsTaxaAssociationBlock();
+		cloneFactory.AddPrototype(taxaAssociationBlockTemplate);
+		}
 	if (blocksToRead & NEXUS_UNKNOWN_BLOCK_BIT)
 		{
 		std::string emptyString;
@@ -343,8 +351,8 @@ void PublicNexusReader::PostExecuteHook()
 	for (BlockReaderList::const_iterator bIt = blocks.begin(); bIt != blocks.end(); ++bIt)
 		{
 		NxsBlock * b = *bIt;
-		const std::string blockId = b->GetID();
-		const std::string capId = NxsString::get_upper(blockId);
+		const std::string NCL_BLOCKTYPE_ATTR_NAME = b->GetID();
+		const std::string capId = NxsString::get_upper(NCL_BLOCKTYPE_ATTR_NAME);
 		const char * capIdP = capId.c_str();
 		if (strcmp(capIdP, "TAXA") == 0)
 			taxaBlockVec.push_back(static_cast<NxsTaxaBlock *>(b));
@@ -356,6 +364,8 @@ void PublicNexusReader::PostExecuteHook()
 			assumptionsBlockVec.push_back(static_cast<NxsAssumptionsBlock *>(b));
 		else if (strcmp(capIdP, "DISTANCES") == 0)
 			distancesBlockVec.push_back(static_cast<NxsDistancesBlock *>(b));
+		else if (strcmp(capIdP, "TAXAASSOCIATION") == 0)
+			taxaAssociationBlockVec.push_back(static_cast<NxsTaxaAssociationBlock *>(b));
 		else if (strcmp(capIdP, "UNALIGNED") == 0)
 			unalignedBlockVec.push_back(static_cast<NxsUnalignedBlock *>(b));
 		else
@@ -383,6 +393,7 @@ PublicNexusReader::~PublicNexusReader()
 	delete distancesBlockTemplate;
 	delete storerBlockTemplate;
 	delete taxaBlockTemplate;
+	delete taxaAssociationBlockTemplate;
 	delete treesBlockTemplate;
 	delete unalignedBlockTemplate;
 }
@@ -568,6 +579,36 @@ NxsUnalignedBlock * PublicNexusReader::GetUnalignedBlock(const NxsTaxaBlock *tax
 	}
 
 
+unsigned PublicNexusReader::GetNumTaxaAssociationBlocks(const NxsTaxaBlock *taxa) const
+	{
+	unsigned n = 0;
+	std::vector<NxsTaxaAssociationBlock *>::const_iterator bIt = taxaAssociationBlockVec.begin();
+	for (; bIt != taxaAssociationBlockVec.end(); ++bIt)
+		{
+		NxsTaxaAssociationBlock * b = *bIt;
+		if (!taxa || taxa == b->GetFirstTaxaBlock() || taxa == b->GetSecondTaxaBlock())
+			n++;
+		}
+	return n;
+	}
+
+NxsTaxaAssociationBlock * PublicNexusReader::GetTaxaAssociationBlock(const NxsTaxaBlock *taxa, unsigned index) const
+	{
+	unsigned n = 0;
+	std::vector<NxsTaxaAssociationBlock *>::const_iterator bIt = taxaAssociationBlockVec.begin();
+	for (; bIt != taxaAssociationBlockVec.end(); ++bIt)
+		{
+		NxsTaxaAssociationBlock * b = *bIt;
+		if (!taxa || taxa == b->GetFirstTaxaBlock() || taxa == b->GetSecondTaxaBlock())
+			{
+			if (index == n)
+				return b;
+			n++;
+			}
+		}
+	return 0L;
+	}
+
 unsigned PublicNexusReader::GetNumTreesBlocks(const NxsTaxaBlock *taxa) const
 	{
 	unsigned n = 0;
@@ -631,6 +672,7 @@ void PublicNexusReader::ClearUsedBlockList()
 	distancesBlockVec.clear();
 	storerBlockVec.clear();
 	taxaBlockVec.clear();
+	taxaAssociationBlockVec.clear();
 	treesBlockVec.clear();
 	unalignedBlockVec.clear();
 	}

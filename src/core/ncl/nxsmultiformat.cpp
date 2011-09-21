@@ -353,7 +353,7 @@ bool  MultiFormatReader::readFastaSequences(
 			{
 			if (isgraph(ftcb.current()))
 				{
-				err << "Illegal non-whitespace occurring outside of a name/sequence pair.  Expecting the first name to startwith < but found \"" << ftcb.current() << "\".";
+				err << "Illegal non-whitespace occurring outside of a name/sequence pair.  Expecting the first name to startwith > but found \"" << ftcb.current() << "\".";
 				throw NxsException(err, ftcb.position(), ftcb.line(), ftcb.column());
 				}
 			if (!ftcb.advance())
@@ -921,7 +921,7 @@ void MultiFormatReader::addTaxaNames(const std::list<std::string> & taxaNames, N
 
 
 	// write out a name translation file if we need to
-	if (nameTransNeeded)
+	if (nameTransNeeded && this->conversionOutputRecord.writeNameTranslationFile)
 		this->conversionOutputRecord.writeNameTranslation(nameTrans, taxa);
 	}
 
@@ -1001,7 +1001,6 @@ void  MultiFormatReader::readFastaFile(std::istream & inf, NxsCharactersBlock::D
 		bool aligned = true;
 		try {
 			aligned = readFastaSequences(ftcb, *dm, taxaNames, matList, longest);
-			
 			}
 		catch (...)
 			{
@@ -1030,6 +1029,7 @@ void  MultiFormatReader::readFastaFile(std::istream & inf, NxsCharactersBlock::D
 			unalignedB->Reset();
 			unalignedB->datatype = dt;
 			unalignedB->ResetSymbols();
+			unalignedB->gap = '-';
 			unalignedB->ResetDatatypeMapper();
 			moveDataToUnalignedBlock(taxaNames, matList, unalignedB);
 			BlockReadHook(blockID, unalignedB);

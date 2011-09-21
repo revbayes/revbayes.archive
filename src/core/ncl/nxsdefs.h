@@ -28,11 +28,17 @@
 
 #define NCL_MAJOR_VERSION 2
 #define NCL_MINOR_VERSION 1
-#define NCL_NAME_AND_VERSION  "NCL version 2.1.10"
-#define NCL_COPYRIGHT         "Copyright (c) 1999-2010 by Paul O. Lewis"
+#define NCL_NAME_AND_VERSION  "NCL version 2.1.17"
+#define NCL_COPYRIGHT         "Copyright (c) 1999-2011 by Paul O. Lewis and Mark T. Holder"
 #define NCL_HOMEPAGEURL       "http://sourceforge.net/projects/ncl"
 
-
+// RevBayes protects the ObjectiveC keyword "id"
+#define RESERVE_ID_KEYWORD 
+#if defined(RESERVE_ID_KEYWORD)
+#	define NCL_BLOCKTYPE_ATTR_NAME blockTypeName
+#else
+#	define NCL_BLOCKTYPE_ATTR_NAME id
+#endif
 // NCL_COULD_BE_CONST is a mechanism for declaring some old (v < 2.1) functions
 // 	to be const without breaking old client code.
 // If you would like your code to be more const-correct, then define NCL_CONST_FUNCS

@@ -20,7 +20,6 @@
 #include <climits>
 
 #include "nxsassumptionsblock.h"
-
 #include "nxssetreader.h"
 #include "nxsreader.h"
 using namespace std;
@@ -573,19 +572,19 @@ bool NxsAssumptionsBlock::CanReadBlockType(const NxsToken & token)
 	{
 	if (token.Equals("ASSUMPTIONS"))
 		{
-		blockId = "ASSUMPTIONS";
+		NCL_BLOCKTYPE_ATTR_NAME = "ASSUMPTIONS";
 		readAs = ASSUMPTIONS_BLOCK_READ;
 		return true;
 		}
 	if (token.Equals("SETS"))
 		{
-		blockId = "SETS";
+		NCL_BLOCKTYPE_ATTR_NAME = "SETS";
 		readAs = SETS_BLOCK_READ;
 		return true;
 		}
 	if (token.Equals("CODONS"))
 		{
-		blockId = "CODONS";
+		NCL_BLOCKTYPE_ATTR_NAME = "CODONS";
 		readAs = CODONS_BLOCK_READ;
 		return true;
 		}
@@ -731,20 +730,15 @@ NxsAssumptionsBlockAPI	*NxsAssumptionsBlock::GetAssumptionsBlockForCharBlock(Nxs
 		if (!(cbstatus & NxsBlock::BLOCK_LINK_USED))
 			{
 			if (cbstatus == BLOCK_LINK_UNINITIALIZED || cbstatus == BLOCK_LINK_UNKNOWN_STATUS)
-				{
 				SetCharLinkStatus(status);
-				return this;
-				}
 			}
 		else
 			{
 			/* return the same block for these two link statuses since they are both "safe" */
-			if ((f | status) == (BLOCK_LINK_FROM_LINK_CMD | BLOCK_LINK_TO_ONLY_CHOICE))
-				{
-				charLinkStatus |= (BLOCK_LINK_FROM_LINK_CMD | BLOCK_LINK_TO_ONLY_CHOICE);
-				return this;
-				}
+			if ((f | status) == BLOCK_LINK_TO_ONLY_CHOICE)
+				charLinkStatus |= BLOCK_LINK_TO_ONLY_CHOICE;
 			}
+		return this;
 		}
 	for (VecAssumpBlockPtr::iterator bIt = createdSubBlocks.begin(); bIt != createdSubBlocks.end(); ++bIt)
 		{
@@ -752,6 +746,7 @@ NxsAssumptionsBlockAPI	*NxsAssumptionsBlock::GetAssumptionsBlockForCharBlock(Nxs
 		if (c && cb == c->GetCharBlockPtr(&cbstatus) && (cbstatus & BLOCK_LINK_UNUSED_MASK) == status)
 			return c;
 		}
+	
 	NxsAssumptionsBlockAPI	*effBlock = CreateNewAssumptionsBlock(token);
 	effBlock->SetCharBlockPtr(cb, status);
 	return effBlock;
@@ -846,17 +841,29 @@ NxsAssumptionsBlockAPI	*NxsAssumptionsBlock::GetAssumptionsBlockForCharTitle(con
 	{
 	if (!nexusReader)
 		NxsNCLAPIException("No NxsReader when reading Assumptions block.");
+	unsigned ncb = 0;
+	NxsCharactersBlockAPI * cb = nexusReader->GetCharBlockByTitle(charTitle, &ncb);
 	if (charTitle == NULL)
 		{
 		int cbstatus;
 		NxsCharactersBlockAPI * thisCB = GetCharBlockPtr(&cbstatus);
 		int ust = cbstatus & NxsBlock::BLOCK_LINK_UNUSED_MASK;
 		if (thisCB != NULL && ust != BLOCK_LINK_UNINITIALIZED && ust != BLOCK_LINK_UNKNOWN_STATUS)
+			{
+			if (ncb > 1 && !blockwideCharsLinkEstablished)
+				{
+				errormsg = "Multiple CHARACTERS blocks have been encountered, but a ";
+				errormsg += cmd;
+				errormsg += " command was found which does not specify which CHARACTERS block it uses.";
+				errormsg << "The first CHARACTERS block that was used by this " << this->GetID() << " block will be used";
+				if (nexusReader)
+					nexusReader->NexusWarnToken(errormsg, NxsReader::AMBIGUOUS_CONTENT_WARNING, token);
+				errormsg.clear();
+				}
 			return this;
+			}
 		}
-	unsigned ncb = 0;
-	NxsCharactersBlockAPI * cb = nexusReader->GetCharBlockByTitle(charTitle, &ncb);
-	NxsAssumptionsBlockAPI *effectiveB = NULL;
+	NxsAssumptionsBlockAPI * effectiveB = NULL;
 	if (cb == NULL)
 		{
 		if (charBlockPtr)
@@ -879,7 +886,7 @@ NxsAssumptionsBlockAPI	*NxsAssumptionsBlock::GetAssumptionsBlockForCharTitle(con
 			errormsg << "A CHARACTERS (or DATA) block ";
 			if (charTitle)
 				errormsg << "with the title " << NxsString::GetEscaped(charTitle);
-			errormsg << " must precede an " << blockId << " block with a " <<  cmd <<  " command.";
+			errormsg << " must precede an " << NCL_BLOCKTYPE_ATTR_NAME << " block with a " <<  cmd <<  " command.";
 			errormsg << "\n(If such a block exists, then this program may not be using an API for the NCL library that supports block linking).";
 			throw NxsException(errormsg, token);
 			}
@@ -940,7 +947,7 @@ NxsAssumptionsBlockAPI	*NxsAssumptionsBlock::GetAssumptionsBlockForTaxaTitle(con
 			errormsg <<  "A TAXA block ";
 			if (taxTitle)
 				errormsg << "with the title " << NxsString::GetEscaped(taxTitle);
-			errormsg << " must precede an " << blockId << " block with a " <<  cmd <<  " command.";
+			errormsg << " must precede an " << NCL_BLOCKTYPE_ATTR_NAME << " block with a " <<  cmd <<  " command.";
 			errormsg << "\n(If such a block exists, then this program may not be using an API for the NCL library that supports block linking).";
 			throw NxsException(errormsg, token);
 			}
@@ -1000,7 +1007,7 @@ NxsAssumptionsBlockAPI	*NxsAssumptionsBlock::GetAssumptionsBlockForTreesTitle(co
 			errormsg <<  "A TREES block";
 			if (treesTitle)
 				errormsg << "with the title " << NxsString::GetEscaped(treesTitle);
-			errormsg << " must precede an " << blockId << " block with a " <<  cmd <<  " command.";
+			errormsg << " must precede an " << NCL_BLOCKTYPE_ATTR_NAME << " block with a " <<  cmd <<  " command.";
 			errormsg << "\n(If such a block exists, then this program may not be using an API for the NCL library that supports block linking).";
 			throw NxsException(errormsg, token);
 			}
@@ -1069,7 +1076,7 @@ void NxsAssumptionsBlock::SetTreesBlockPtr(NxsTreesBlockAPI * c, NxsBlockLinkSta
 	}
 
 /*!
-	Sets blockId = "ASSUMPTIONS", charBlockPtr = NULL, and taxa = t. Assumes taxa is non-NULL.
+	Sets NCL_BLOCKTYPE_ATTR_NAME = "ASSUMPTIONS", charBlockPtr = NULL, and taxa = t. Assumes taxa is non-NULL.
 */
 NxsAssumptionsBlock::NxsAssumptionsBlock(
   NxsTaxaBlockAPI *t)	/* pointer to the taxa block */
@@ -1082,7 +1089,7 @@ NxsAssumptionsBlock::NxsAssumptionsBlock(
 	passedRefOfOwnedBlock(false)
 	{
 	taxaLinkStatus = (t == NULL ? NxsBlock::BLOCK_LINK_UNINITIALIZED : NxsBlock::BLOCK_LINK_UNKNOWN_STATUS);
-	blockId				= "ASSUMPTIONS";
+	NCL_BLOCKTYPE_ATTR_NAME = "ASSUMPTIONS";
 	Reset();
 	}
 
@@ -1251,7 +1258,7 @@ void NxsAssumptionsBlock::ApplyExset(
 	charBlockPtr->ApplyExset(exsets[nm]);
 	}
 
-NxsAssumptionsBlockAPI *NxsAssumptionsBlock::DealWithPossibleParensInCharDependentCmd(NxsToken &token, const char *cmd, const std::vector<std::string> *unsupported, bool * isVect)
+NxsAssumptionsBlockAPI * NxsAssumptionsBlock::DealWithPossibleParensInCharDependentCmd(NxsToken &token, const char *cmd, const std::vector<std::string> *unsupported, bool * isVect)
 	{
 	token.GetNextToken();
 	NxsString charblock_name;
@@ -1321,7 +1328,8 @@ NxsAssumptionsBlockAPI *NxsAssumptionsBlock::DealWithPossibleParensInCharDepende
 	NxsString u;
 	u << "in " << cmd << " definition";
 	DemandIsAtEquals(token, u.c_str());
-	return this->GetAssumptionsBlockForCharTitle(cbn, token, cmd);
+	NxsAssumptionsBlockAPI * naba = this->GetAssumptionsBlockForCharTitle(cbn, token, cmd);
+	return naba;
 	}
 
 
@@ -2370,15 +2378,27 @@ void NxsAssumptionsBlock::Read(
 	isEmpty = false;
 	isUserSupplied = true;
 	NxsString n = "BEGIN ";
-	n << blockId;
+	n << NCL_BLOCKTYPE_ATTR_NAME;
 	DemandEndSemicolon(token, n.c_str());
 
 	for(;;)
 		{
 		token.GetNextToken();
+		
+		int prevCharLinkStatus = charLinkStatus;
+		int prevTaxaLinkStatus = taxaLinkStatus;
+		int prevTreesLinkStatus = treesLinkStatus;
+
+		
 		NxsBlock::NxsCommandResult res = HandleBasicBlockCommands(token);
 		if (res == NxsBlock::NxsCommandResult(STOP_PARSING_BLOCK))
 			return;
+		if ((charLinkStatus & BLOCK_LINK_FROM_LINK_CMD) && !(prevCharLinkStatus & BLOCK_LINK_FROM_LINK_CMD))
+			blockwideCharsLinkEstablished = true;
+		if ((treesLinkStatus & BLOCK_LINK_FROM_LINK_CMD) && !(prevTreesLinkStatus & BLOCK_LINK_FROM_LINK_CMD))
+			blockwideTreesLinkEstablished = true;
+		if ((taxaLinkStatus & BLOCK_LINK_FROM_LINK_CMD) && !(prevTaxaLinkStatus & BLOCK_LINK_FROM_LINK_CMD))
+			blockwideTaxaLinkEstablished = true;
 		if (res != NxsBlock::NxsCommandResult(HANDLED_COMMAND))
 			{
 			if (token.Equals("CHARPARTITION"))
@@ -2483,7 +2503,7 @@ void NxsAssumptionsBlock::HandleOptions(NxsToken &token)
 			}
 		else if (nexusReader)
 			{
-			errormsg << "Skipping unknown subcommand (" << kvIt->first << ") in OPTIONS command of " << blockId << " Block";
+			errormsg << "Skipping unknown subcommand (" << kvIt->first << ") in OPTIONS command of " << NCL_BLOCKTYPE_ATTR_NAME << " Block";
 			nexusReader->NexusWarnToken(errormsg, NxsReader::SKIPPING_CONTENT_WARNING, token);
 			errormsg.clear();
 			}
@@ -2528,6 +2548,10 @@ void NxsAssumptionsBlock::Reset()
 	codesMgr.Reset();
 	polyTCountValue = POLY_T_COUNT_UNKNOWN;
 	gapsAsNewstate = false;
+	blockwideCharsLinkEstablished = false;
+	blockwideTaxaLinkEstablished = false;
+	blockwideTreesLinkEstablished = false;
+
 	codonPosSets.clear();
 	def_codonPosSet.clear();
 	codeSets.clear();
@@ -2542,7 +2566,7 @@ void NxsAssumptionsBlock::Report(
   std::ostream &out)  NCL_COULD_BE_CONST /* the output stream to which to write the report */ /*v2.1to2.2 1 */
 	{
 	out << endl;
-	out << blockId << " block contains the following:" << endl;
+	out << NCL_BLOCKTYPE_ATTR_NAME << " block contains the following:" << endl;
 
 	if (charsets.empty())
 		out << "  No character sets were defined" << endl;

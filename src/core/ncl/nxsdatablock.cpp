@@ -20,14 +20,14 @@
 #include "nxsdatablock.h"
 
 /*!
-	Sets `blockId' to "DATA" and `newtaxa' to true, and calls the base class (NxsCharactersBlock) constructor.
+	Sets `NCL_BLOCKTYPE_ATTR_NAME' to "DATA" and `newtaxa' to true, and calls the base class (NxsCharactersBlock) constructor.
 */
 NxsDataBlock::NxsDataBlock(
   NxsTaxaBlockAPI *tb,			/* the taxa block object for storing taxon labels */
   NxsAssumptionsBlockAPI *ab)	/* the assumptions block object for storing exsets */
   : NxsCharactersBlock(tb, ab)
 	{
-	blockId = "DATA";
+	NCL_BLOCKTYPE_ATTR_NAME = "DATA";
 	Reset();
 	}
 

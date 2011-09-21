@@ -530,6 +530,7 @@ NxsToken::NxsToken(
 		nextCharInStream = 'a';	//anything other than EOF will work
 		AdvanceToNextCharInStream();
 #	endif
+    this->isPunctuationFn = &(NxsString::IsNexusPunctuation);
 	}
 
 /*!
@@ -933,7 +934,6 @@ void NxsToken::GetNextToken()
 			}
 		else
 			ch = GetNextChar();
-
 		// Break now if we've hit EOF.
 		//
 		if (atEOF)
@@ -1044,3 +1044,15 @@ void NxsToken::ToUpper()
 		token[i] = (char)toupper(token[i]);
 	}
 
+
+void NxsToken::UseNewickTokenization(bool v)
+    {
+    if (v)
+        {
+        this->isPunctuationFn = &(NxsString::IsNewickPunctuation);
+        }
+    else
+        {
+        this->isPunctuationFn = &(NxsString::IsNexusPunctuation);
+        }
+    }    

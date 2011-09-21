@@ -25,7 +25,6 @@
 #include <iterator>
 #include "nxsreader.h"
 #include "nxsdefs.h"
-
 #include "nxscharactersblock.h"
 #include "nxstaxablock.h"
 #include "nxstreesblock.h"
@@ -202,7 +201,7 @@ NxsBlock *NxsReader::FindBlockByTitle(const BlockReaderList & chosenBlockList, c
 		}
 	if (nMatches)
 		*nMatches = (unsigned)found.size();
-	return (NxsBlock *) found.front();
+	return (NxsBlock *) found.back();
 	}
 
 

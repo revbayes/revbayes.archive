@@ -114,7 +114,7 @@ class NxsUnalignedBlock
 			}
 		virtual const std::string & GetBlockName() const
 			{
-			return blockId;
+			return NCL_BLOCKTYPE_ATTR_NAME;
 			}
 
 		void					WriteAsNexus(std::ostream & out) const;
@@ -164,6 +164,7 @@ class NxsUnalignedBlock
 			transposing = other.transposing;
 			labels = other.labels;
 			missing = other.missing;
+			gap = other.gap;
 			symbols = other.symbols;
 			equates = other.equates;
 			mapper = other.mapper;
@@ -182,7 +183,7 @@ class NxsUnalignedBlock
 		{
 			return SurrogateSwapEquivalentTaxaBlock(tb);
 		}
-
+        std::string GetMatrixRowAsStr(const unsigned rowIndex) const;
 	protected:
 		bool					IsInSymbols(char ch);
 		void					HandleDimensions(NxsToken & token);
@@ -205,6 +206,7 @@ class NxsUnalignedBlock
 		bool					labels;				/* indicates whether or not labels will appear on left side of matrix */
 
 		char					missing;			/* missing data symbol */
+		char                    gap; /* gap symbol, will often be \0, but can be - */
 
 		std::string				symbols;			/* list of valid character state symbols */
 		std::map<char, NxsString> equates;			/* list of associations defined by EQUATE attribute of FORMAT command */
@@ -228,7 +230,7 @@ class NxsUnalignedBlockFactory
 	:public NxsBlockFactory
 	{
 	public:
-		virtual NxsUnalignedBlock  *GetBlockReaderForID(const std::string & blockId, NxsReader *reader, NxsToken *token);
+		virtual NxsUnalignedBlock  *GetBlockReaderForID(const std::string & NCL_BLOCKTYPE_ATTR_NAME, NxsReader *reader, NxsToken *token);
 	};
 
 /*!
