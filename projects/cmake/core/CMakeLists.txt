@@ -187,6 +187,8 @@ ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_clear.cpp
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_clear.h
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_dppConFromExpNumClusters.cpp
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_dppConFromExpNumClusters.h
+${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_dppSeat.cpp
+${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_dppSeat.h
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_ls.cpp
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_ls.h
 ${PROJECT_SOURCE_DIR}/core/functions/builtin/Func_normalizeVector.cpp
