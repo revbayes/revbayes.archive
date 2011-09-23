@@ -22,6 +22,7 @@
     NSString *alignClustalMultipleAlignAr;
     NSString *alignClustalInfileAr;
     NSString *alignClustalOutfileAr;
+    NSString *alignClustalOutputAr;
     NSString *alignClustalGuideTreeAr;
     NSMutableArray *alignClustalArguments;
 
@@ -43,7 +44,7 @@
 
 }
 
-@property (readwrite,assign) NSString *alignClustalAlign;
+@property (readwrite, assign) NSString *alignClustalAlign;
 @property (readwrite) int alignClustalWordLength;
 @property (readwrite) int alignClustalWindow;
 @property (readwrite,assign) NSString *alignClustalScoreType;

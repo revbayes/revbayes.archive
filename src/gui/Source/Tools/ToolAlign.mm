@@ -64,18 +64,18 @@
         // initialize Clustal variables here
         // Default values taken from http://www.ebi.ac.uk/Tools/msa/clustalw2/help/
             
-        [self setAlignClustalAlign: @"FULL"];
+        [self setAlignClustalAlign: @"Full"];
         [self setAlignClustalWordLength: 1];
         [self setAlignClustalWindow: 5];
-        [self setAlignClustalScoreType: @"PERCENT"];
+        [self setAlignClustalScoreType: @"Percent"];
         [self setAlignClustalNumberDiagonals: 5];
         [self setAlignClustalPairGapPenalty: 3];
         [self setAlignClustalMatrix: @"Gonnet"];
         [self setAlignClustalGapOpenPenalty: 10.0];
-        [self setAlignClustalEndGaps: @"NO"];
+        [self setAlignClustalEndGaps: @"No"];
         [self setAlignClustalGapExtensionCost: 0.20];
         [self setAlignClustalGapSeparationPenalty: 5];
-        [self setAlignClustalIteration: @"NONE"];
+        [self setAlignClustalIteration: @"None"];
         [self setAlignClustalNumberOfIterations: 1];
        
         
@@ -185,7 +185,10 @@
     
     alignClustalOutfileAr = [NSString stringWithString: @"-OUTFILE="];
     alignClustalOutfileAr = [alignClustalOutfileAr stringByAppendingString: alignClustalUserTemporaryDirectory];
-    alignClustalOutfileAr = [alignClustalOutfileAr stringByAppendingString: @"clustaloutput.aln"];
+    alignClustalOutfileAr = [alignClustalOutfileAr stringByAppendingString: @"clustaloutput.fasta"];
+    
+    alignClustalOutputAr = [NSString stringWithString: @"-OUTPUT=FASTA"];    
+
    
     alignClustalGuideTreeAr = [NSString stringWithString: @"-NEWTREE="];
     alignClustalGuideTreeAr = [alignClustalGuideTreeAr stringByAppendingString: alignClustalUserTemporaryDirectory];
@@ -194,7 +197,7 @@
     
     NSString *alignClustalAlignAr = [NSString stringWithString: @""];
  
-    if (alignClustalAlign == @"FAST")
+    if ([alignClustalAlign isEqualToString: @"Fast"] == YES)
         {
             alignClustalAlignAr = [alignClustalAlignAr stringByAppendingString: @"-QUICKTREE"];
         }
@@ -207,16 +210,8 @@
     alignClustalWindowAr = [alignClustalWindowAr stringByAppendingFormat: @"%i", alignClustalWindow];
     
     NSString *alignClustalScoreTypeAr = [NSString stringWithString: @"-SCORE="];
-    if (alignClustalScoreType == @"ABSOLUTE")
-    {
-        alignClustalScoreTypeAr = [alignClustalScoreTypeAr stringByAppendingString: @"ABSOLUTE"];
-    }
-    else
-    {
-        alignClustalScoreTypeAr = [alignClustalScoreTypeAr stringByAppendingString: @"PERCENT"];
-
-    }
-    
+    alignClustalScoreTypeAr = [alignClustalScoreTypeAr stringByAppendingString: alignClustalScoreType];
+        
     NSString *alignClustalNumberDiagonalsAr = [NSString stringWithString: @"-TOPDIAGS="];
     alignClustalNumberDiagonalsAr = [alignClustalNumberDiagonalsAr stringByAppendingFormat: @"%i", alignClustalNumberDiagonals];
 
@@ -247,11 +242,12 @@
 
 
     alignClustalArguments = [NSArray arrayWithObjects: 
-//                             alignClustalReduceConsoleOutputAr, 
+                             alignClustalReduceConsoleOutputAr, 
                              alignClustalInfileAr, 
                              alignClustalOutfileAr, 
+                             alignClustalOutputAr,
                              alignClustalGuideTreeAr, 
-//                             alignClustalAlignAr, 
+                             alignClustalAlignAr, 
                              alignClustalWordLengthAr, 
                              alignClustalWindowAr, 
                              alignClustalScoreTypeAr, 

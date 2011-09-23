@@ -68,6 +68,8 @@
     NSLog (@"okButtonAction");
 
     [myTool setAlignClustalAlign: alignClustalAlign];
+    NSLog(@"controller align = %@, tool align = %@", alignClustalAlign, [myTool alignClustalAlign]);
+    
     [myTool setAlignClustalWordLength: alignClustalWordLength];            
     [myTool setAlignClustalWindow: alignClustalWindow];
     [myTool setAlignClustalScoreType: alignClustalScoreType];

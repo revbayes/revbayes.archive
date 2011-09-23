@@ -27,7 +27,7 @@
     
 }
 
-@property (readwrite,assign) NSString *alignClustalAlign;
+@property (readwrite, assign) NSString *alignClustalAlign;
 @property (readwrite) int alignClustalWordLength;
 @property (readwrite) int alignClustalWindow;
 @property (readwrite,assign) NSString *alignClustalScoreType;
