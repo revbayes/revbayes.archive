@@ -64,12 +64,18 @@ std::vector<Alignment*> NclReader::convertFromNcl(std::vector<std::string>& fnv)
 	std::vector<Alignment*> cmv;
     
 	int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
+    std::cout << "numTaxaBlocks = " << numTaxaBlocks << std::endl;
 	int k = 0;
 	for (int tBlck=0; tBlck<numTaxaBlocks; tBlck++)
         {
 		NxsTaxaBlock* taxaBlock = nexusReader.GetTaxaBlock(tBlck);
-		std::string taxaBlockTitle = taxaBlock->GetTitle();
-		const unsigned nCharBlocks = nexusReader.GetNumCharactersBlocks(taxaBlock);
+		std::string taxaBlockTitle          = taxaBlock->GetTitle();
+		const unsigned nCharBlocks          = nexusReader.GetNumCharactersBlocks(taxaBlock);
+        const unsigned nUnalignedCharBlocks = nexusReader.GetNumUnalignedBlocks(taxaBlock);
+        std::cout << "nCharBlocks          = " << nCharBlocks << std::endl;
+        std::cout << "nUnalignedCharBlocks = " << nUnalignedCharBlocks << std::endl;
+        
+        // make alignment objects
 		for (unsigned cBlck=0; cBlck<nCharBlocks; cBlck++)
             {
 			Alignment* m = NULL;
@@ -111,6 +117,51 @@ std::vector<Alignment*> NclReader::convertFromNcl(std::vector<std::string>& fnv)
 				cmv.push_back( m );
                 }
             }
+        
+        // create unaligned data objects
+		for (unsigned cBlck=0; cBlck<nUnalignedCharBlocks; cBlck++)
+            {
+			Alignment* m = NULL;
+			NxsUnalignedBlock* charBlock = nexusReader.GetUnalignedBlock(taxaBlock, cBlck);
+			std::string charBlockTitle = taxaBlock->GetTitle();
+			int dt = charBlock->GetDataType();
+			if (dt == NxsCharactersBlock::dna || dt == NxsCharactersBlock::nucleotide)
+                {
+                m = createUnalignedDnaMatrix(charBlock);
+                }
+			else if (dt == NxsCharactersBlock::rna)
+                {
+                //m = createRnaMatrix(charBlock);
+                }
+			else if (dt == NxsCharactersBlock::protein)
+                {
+                //m = createAminoAcidMatrix(charBlock);
+                }
+			else if (dt == NxsCharactersBlock::standard)
+                {
+                //m = createStandardMatrix(charBlock);
+                }
+			else if (dt == NxsCharactersBlock::continuous)
+                {
+                //m = createContinuousMatrix(charBlock);
+                }
+			else if (dt == NxsCharactersBlock::mixed)
+                {
+                addWarning("Mixed data types are not allowed");
+                }
+            else 
+                {
+                addWarning("Unknown data type");
+                }
+            
+			if (m != NULL)
+                {
+                m->setFileName( fnv[k++] );
+				cmv.push_back( m );
+                }
+            }
+
+        
         }
     
 	return cmv;
@@ -256,6 +307,7 @@ Alignment* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock) {
 /** Create an object to hold DNA data */
 Alignment* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 
+    std::cout << "createDnaMatrix" << std::endl;
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
         return NULL;
@@ -272,6 +324,7 @@ Alignment* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
     // instantiate the character matrix
 	Alignment* cMat = new Alignment( DnaState_name );
     
+    std::cout << "numOrigTaxa = " << numOrigTaxa << std::endl;
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
@@ -310,6 +363,71 @@ Alignment* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
     return cMat;
 }
 
+/** Create an object to hold DNA data */
+Alignment* NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* charblock) {
+    
+    std::cout << "createUnalignedDnaMatrix" << std::endl;
+    // check that the character block is of the correct type
+	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
+        return NULL;
+    
+    // get the set of characters (and the number of taxa)
+    /*NxsUnsignedSet charset;
+    for (unsigned int i=0; i<charblock->GetNumChar(); i++)
+        charset.insert(i);*/
+	int numOrigTaxa = charblock->GetNTax();
+    
+	// get the set of excluded characters
+	//NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
+    
+    // instantiate the character matrix
+	Alignment* cMat = new Alignment( DnaState_name );
+    
+    std::cout << "numOrigTaxa = " << numOrigTaxa << std::endl;
+	// read in the data, including taxon names
+	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+        {
+        // add the taxon name
+        //NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
+        //std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        
+        // allocate a vector of DNA states
+        //Sequence* dataVec = new Sequence(DnaState_name, tName);
+        //dataVec->setTaxonName(tName);
+        
+        // add the sequence information for the sequence associated with the taxon
+#       if 1
+        int nc = charblock->NumCharsForTaxon(origTaxIndex);
+        std::cout << "nc = " << nc << std::endl;
+        std::string row = charblock->GetMatrixRowAsStr(origTaxIndex);
+        std::cout << row << std::endl;
+#       else
+        for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
+            {	
+            // add the character state to the matrix
+            DnaState *dnaState = new DnaState();
+            if ( charblock->IsGapState(origTaxIndex, *cit) == true ) 
+                dnaState->setState('N');
+            else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
+                dnaState->setState('N');
+            else
+                {
+                dnaState->setState( charblock->GetState(origTaxIndex, *cit, 0) );                
+                for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+                    dnaState->addState( charblock->GetState(origTaxIndex, *cit, s) );
+                }
+            dataVec->addCharacter( dnaState );
+            }
+#       endif
+        
+        // add sequence to character matrix
+        //cMat->addSequence( dataVec );
+        }
+    
+    //setExcluded( charblock, cMat );
+    
+    return cMat;
+}
 
 /** Create an object to hold RNA data */
 Alignment* NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {

@@ -13,7 +13,6 @@ int main(int argc, char *argv[]) {
     RbSettings::userSettings().initializeUserSettings();
     Help::getHelp().initializeHelp("~/help/");
     Workspace::globalWorkspace().initializeGlobalWorkspace();
-//    Workspace::globalWorkspace().addFunction( "source", new Func_source() ); 
 
     return NSApplicationMain( argc, (const char **) argv );
 }
