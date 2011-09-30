@@ -61,6 +61,8 @@
 
 - (void)windowDidLoad {
     
+    NSLog (@"Window Did Load");
+    
 }
 
 - (IBAction)okButtonAction:(id)sender {

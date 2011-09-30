@@ -34,12 +34,46 @@
 
 - (void)dealloc {
 
+    [alignClustalReduceConsoleOutputAr release];
+    [alignClustalMultipleAlignAr release];
+    [alignClustalInfileAr release];
+    [alignClustalOutfileAr release];
+    [alignClustalOutputAr release];
+    [alignClustalGuideTreeAr release];
+    
+    [alignClustalAlign release];
+    [alignClustalScoreType release];
+    [alignClustalMatrix release];
+    [alignClustalEndGaps release];
+    [alignClustalIteration release];
+
 	[controlWindow release];
 	[super dealloc];
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
+	[aCoder encodeObject:alignClustalReduceConsoleOutputAr forKey:@"alignClustalReduceConsoleOutput"];
+	[aCoder encodeObject:alignClustalMultipleAlignAr forKey:@"alignClustalMultipleAlign"];
+	[aCoder encodeObject:alignClustalInfileAr forKey:@"alignClustalInfile"];
+	[aCoder encodeObject:alignClustalOutfileAr forKey:@"alignClustalOutfile"];
+	[aCoder encodeObject:alignClustalOutputAr forKey:@"alignClustalOutput"];
+	[aCoder encodeObject:alignClustalGuideTreeAr forKey:@"alignClustalGuideTree"];
+    
+	[aCoder encodeObject:alignClustalAlign forKey:@"alignClustalAlign"];
+	[aCoder encodeInt:alignClustalWordLength forKey:@"alignClustalWordLength"];
+ 	[aCoder encodeInt:alignClustalWindow forKey:@"alignClustalWindow"];
+	[aCoder encodeObject:alignClustalScoreType forKey:@"alignClustalScoreType"];
+	[aCoder encodeInt:alignClustalNumberDiagonals forKey:@"alignClustalNumberDiagonals"];
+	[aCoder encodeInt:alignClustalPairGapPenalty forKey:@"alignClustalPairGapPenalty"];
+	[aCoder encodeObject:alignClustalMatrix forKey:@"alignClustalMatrix"];
+	[aCoder encodeFloat:alignClustalGapOpenPenalty forKey:@"alignClustalGapOpenPenalty"];
+	[aCoder encodeObject:alignClustalEndGaps forKey:@"alignClustalEndGaps"];
+	[aCoder encodeFloat:alignClustalGapExtensionCost forKey:@"alignClustalGapExtensionCost"];
+	[aCoder encodeInt:alignClustalGapSeparationPenalty forKey:@"alignClustalGapSeparationPenalty"];
+	[aCoder encodeObject:alignClustalIteration forKey:@"alignClustalIteration"];
+	[aCoder encodeInt:alignClustalNumberOfIterations forKey:@"alignClustalNumberOfIterations"];
+       
 	[super encodeWithCoder:aCoder];
 }
 
@@ -93,13 +127,46 @@
 
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
-		// initialize the tool image
+            // initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
             
         // resuscitate Clustal variables here before recreating new windowcontroller
 
-		// initialize the control window
+        alignClustalReduceConsoleOutputAr = [aDecoder decodeObjectForKey:@"alignClustalReduceConsoleOutput"];
+            [alignClustalReduceConsoleOutputAr retain];
+        alignClustalMultipleAlignAr = [aDecoder decodeObjectForKey:@"alignClustalMultipleAlign"];
+            [alignClustalMultipleAlignAr retain];
+        alignClustalInfileAr = [aDecoder decodeObjectForKey:@"alignClustalInfile"];
+            [alignClustalInfileAr retain];
+        alignClustalOutfileAr = [aDecoder decodeObjectForKey:@"alignClustalOutfile"];
+            [alignClustalOutfileAr retain];
+        alignClustalOutputAr = [aDecoder decodeObjectForKey:@"alignClustalOutput"];
+            [alignClustalOutputAr retain];
+        alignClustalGuideTreeAr = [aDecoder decodeObjectForKey:@"alignClustalGuideTree"];
+            [alignClustalGuideTreeAr retain];
+        
+        alignClustalAlign = [aDecoder decodeObjectForKey:@"alignClustalAlign"];
+            [alignClustalAlign retain];
+        alignClustalWordLength = [aDecoder decodeIntForKey:@"alignClustalWordLength"];
+        alignClustalWindow = [aDecoder decodeIntForKey:@"alignClustalWindow"];
+        alignClustalScoreType = [aDecoder decodeObjectForKey:@"alignClustalScoreType"];
+            [alignClustalScoreType retain];
+        alignClustalNumberDiagonals = [aDecoder decodeIntForKey:@"alignClustalNumberDiagonals"];
+        alignClustalPairGapPenalty = [aDecoder decodeIntForKey:@"alignClustalPairGapPenalty"];
+        alignClustalMatrix = [aDecoder decodeObjectForKey:@"alignClustalMatrix"];
+            [alignClustalMatrix retain];
+        alignClustalGapOpenPenalty = [aDecoder decodeFloatForKey:@"alignClustalGapOpenPenalty"];
+        alignClustalEndGaps = [aDecoder decodeObjectForKey:@"alignClustalEndGaps"];
+            [alignClustalEndGaps retain];
+        alignClustalGapExtensionCost = [aDecoder decodeFloatForKey:@"alignClustalGapExtensionCost"];
+        alignClustalGapSeparationPenalty = [aDecoder decodeIntForKey:@"alignClustalGapSeparationPenalty"];
+        alignClustalIteration = [aDecoder decodeObjectForKey:@"alignClustalIteration"];
+            [alignClustalIteration retain];
+        alignClustalNumberOfIterations = [aDecoder decodeIntForKey:@"alignClustalNumberOfIterations"];
+        
+            
+            // initialize the control window
 		controlWindow = [[WindowControllerAlign alloc] initWithTool:self];
 		}
 	return self;

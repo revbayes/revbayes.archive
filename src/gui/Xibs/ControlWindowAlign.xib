@@ -726,23 +726,25 @@
 																<bool key="EncodedWithXMLCoder">YES</bool>
 																<string>allowsFloats</string>
 																<string>formatterBehavior</string>
-																<string>locale</string>
+																<string>lenient</string>
 																<string>negativeInfinitySymbol</string>
 																<string>nilSymbol</string>
+																<string>numberStyle</string>
 																<string>positiveInfinitySymbol</string>
 															</object>
 															<object class="NSMutableArray" key="dict.values">
 																<bool key="EncodedWithXMLCoder">YES</bool>
 																<boolean value="YES"/>
 																<integer value="1040"/>
-																<reference ref="878144568"/>
+																<boolean value="NO"/>
 																<string>-∞</string>
 																<string/>
+																<integer value="1"/>
 																<string>+∞</string>
 															</object>
 														</object>
-														<string key="NS.positiveformat">#</string>
-														<string key="NS.negativeformat">#</string>
+														<string key="NS.positiveformat">#,##0.###</string>
+														<string key="NS.negativeformat">#,##0.###</string>
 														<nil key="NS.positiveattrs"/>
 														<nil key="NS.negativeattrs"/>
 														<nil key="NS.zero"/>
@@ -763,8 +765,8 @@
 														</object>
 														<string key="NS.decimal">.</string>
 														<string key="NS.thousand">,</string>
-														<bool key="NS.hasthousands">NO</bool>
-														<bool key="NS.localized">NO</bool>
+														<bool key="NS.hasthousands">YES</bool>
+														<bool key="NS.localized">YES</bool>
 														<bool key="NS.allowsfloats">YES</bool>
 													</object>
 													<reference key="NSControlView" ref="698132096"/>
@@ -796,6 +798,7 @@
 																<string>locale</string>
 																<string>negativeInfinitySymbol</string>
 																<string>nilSymbol</string>
+																<string>numberStyle</string>
 																<string>positiveInfinitySymbol</string>
 															</object>
 															<object class="NSMutableArray" key="dict.values">
@@ -805,11 +808,12 @@
 																<reference ref="878144568"/>
 																<string>-∞</string>
 																<string/>
+																<integer value="1"/>
 																<string>+∞</string>
 															</object>
 														</object>
-														<string key="NS.positiveformat">#</string>
-														<string key="NS.negativeformat">#</string>
+														<string key="NS.positiveformat">#,##0.###</string>
+														<string key="NS.negativeformat">#,##0.###</string>
 														<nil key="NS.positiveattrs"/>
 														<nil key="NS.negativeattrs"/>
 														<nil key="NS.zero"/>
@@ -830,7 +834,7 @@
 														</object>
 														<string key="NS.decimal">.</string>
 														<string key="NS.thousand">,</string>
-														<bool key="NS.hasthousands">NO</bool>
+														<bool key="NS.hasthousands">YES</bool>
 														<bool key="NS.localized">NO</bool>
 														<bool key="NS.allowsfloats">YES</bool>
 													</object>
@@ -2698,6 +2702,7 @@
 					<string>222.IBPluginDependency</string>
 					<string>223.IBNumberFormatterBehaviorMetadataKey</string>
 					<string>223.IBNumberFormatterLocalizesFormatMetadataKey</string>
+					<string>223.IBNumberFormatterSampleNumberKey</string>
 					<string>223.IBPluginDependency</string>
 					<string>224.IBNumberFormatterBehaviorMetadataKey</string>
 					<string>224.IBNumberFormatterLocalizesFormatMetadataKey</string>
@@ -2891,6 +2896,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1041"/>
 					<boolean value="YES"/>
+					<real value="1234.7660000000001"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1041"/>
 					<boolean value="YES"/>
