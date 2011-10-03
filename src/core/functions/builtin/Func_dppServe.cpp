@@ -1,9 +1,10 @@
 /**
  * @file
- * This file contains the declaration of Func_dppSeat, which 
- * seats data elements at "tables" and returns an allocation vector
+ * This file contains the declaration of Func_dppServe, which 
+ * creates a vector of parameter classes and draws the value for each
+ * from the base distribution G_0
  *
- * @brief Implementation of Func_dppSeat
+ * @brief Implementation of Func_dppServe
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -39,6 +40,7 @@
 #include "VectorReal.h"
 #include "Workspace.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <vector>
@@ -58,9 +60,22 @@ Func_dppServe* Func_dppServe::clone( void ) const {
 /** Execute function */
 RbLanguageObject* Func_dppServe::execute( void ) {
     
+	// Expecting the allocation vector to be like: [0,0,1,0,1,2,2,2,2,2,3,0,3,1]
+	std::vector<unsigned int> allocVec = static_cast<const VectorNatural*>( args[0].getValue() )->getValue();
+
+	std::sort(allocVec.begin(), allocVec.end()); // this makes [0,0,0,0,1,1,1,2,2,2,2,2,3,3]
+
+	int numClusters = *allocVec.end() + 1; 
+	std::vector<double> paramValues( numClusters, 0.0 );
 	
-	std::vector<double> paramValues( 1, 0.0 );
+	StochasticNode* paramVar = dynamic_cast<StochasticNode*>( args[1].getDagNodePtr() );
+	const DistributionContinuous* baseDistribution = static_cast<const DistributionContinuous*>( paramVar->getDistribution() );
 	
+	// Question: should this function take a stochastic node as an argument, or a distribution? I think maybe it should be a distribution...
+	
+	for(int i=0; i<numClusters; i++){
+		// paramValues[i] = ...
+	}
     
 	return ( new VectorReal( paramValues ) );
 }

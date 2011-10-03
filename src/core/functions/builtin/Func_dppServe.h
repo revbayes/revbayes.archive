@@ -1,19 +1,22 @@
 /**
  * @file
- * This file contains the declaration of Func_dppSeat, which 
- * seats data elemts at "tables".
- * Returns an allocation vector
+ * This file contains the declaration of Func_dppServe, which 
+ * creates a vector of parameter classes and draws the value for each
+ * from the base distribution G_0
  *
- * @brief Declaration of Func_dppSeat
+ * @brief Implementation of Func_dppServe
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  * @version 1.0
+ * @package functions
+ * @since Version 1.0, 2009-09-03
  *
  * $Id$
  */
+
 
 #ifndef Func_dppServe_H
 #define Func_dppServe_H
