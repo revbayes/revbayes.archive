@@ -748,6 +748,8 @@
 		22C4F6DA142D3AB500883A06 /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22C4F5A0142D3AB400883A06 /* TextEditorWindow.xib */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
+		BF9DC532143A4DC5001E7DB8 /* Func_dppServe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9DC530143A4DC5001E7DB8 /* Func_dppServe.cpp */; };
+		BF9DC533143A4DC5001E7DB8 /* Func_dppServe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9DC530143A4DC5001E7DB8 /* Func_dppServe.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -2012,6 +2014,8 @@
 		85CD0235133948C400318200 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		85CD0236133948C400318200 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		85CD0237133948C400318200 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BF9DC530143A4DC5001E7DB8 /* Func_dppServe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_dppServe.cpp; sourceTree = "<group>"; };
+		BF9DC531143A4DC5001E7DB8 /* Func_dppServe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_dppServe.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3188,6 +3192,8 @@
 				22C4F11F142D3AAA00883A06 /* Func_unclamp.h */,
 				22C4F120142D3AAA00883A06 /* Func_unique.h */,
 				22C4F121142D3AAA00883A06 /* Func_vector.h */,
+				BF9DC530143A4DC5001E7DB8 /* Func_dppServe.cpp */,
+				BF9DC531143A4DC5001E7DB8 /* Func_dppServe.h */,
 			);
 			path = builtin;
 			sourceTree = "<group>";
@@ -4741,6 +4747,7 @@
 				22C4F3D1142D3AAB00883A06 /* SyntaxVariable.cpp in Sources */,
 				22C4F3D3142D3AAB00883A06 /* SyntaxVariableDecl.cpp in Sources */,
 				22C4F3D5142D3AAB00883A06 /* RbMain.cpp in Sources */,
+				BF9DC533143A4DC5001E7DB8 /* Func_dppServe.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5077,6 +5084,7 @@
 				22C4F6BD142D3AB500883A06 /* WindowControllerRateMatrix.mm in Sources */,
 				22C4F6BE142D3AB500883A06 /* WindowControllerReadData.mm in Sources */,
 				22C4F6BF142D3AB500883A06 /* WindowControllerRegistration.mm in Sources */,
+				BF9DC532143A4DC5001E7DB8 /* Func_dppServe.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
