@@ -126,6 +126,7 @@ const MethodTable& MemberObject::getMethods(void) const {
         getArgRules.push_back( new ValueRule( "name"      , RbString_name      ) );
         methods.addFunction("get",          new MemberFunction(RbLanguageObject_name, getArgRules)  );
         
+        methodsSet = true;
     }   
     
     return methods;

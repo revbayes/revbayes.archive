@@ -36,6 +36,12 @@ Matrix::Matrix(const std::string& elemType, const MemberRules& memberRules) : Ve
 }
 
 
+/** We only delegate to the base class */
+Matrix::Matrix(const Matrix &m) : Vector(m) {
+    
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& Matrix::getClass(void) const {
 

@@ -64,7 +64,7 @@ std::vector<Alignment*> NclReader::convertFromNcl(std::vector<std::string>& fnv)
 	std::vector<Alignment*> cmv;
     
 	int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-    std::cout << "numTaxaBlocks = " << numTaxaBlocks << std::endl;
+//    std::cout << "numTaxaBlocks = " << numTaxaBlocks << std::endl;
 	int k = 0;
 	for (int tBlck=0; tBlck<numTaxaBlocks; tBlck++)
         {
@@ -72,8 +72,8 @@ std::vector<Alignment*> NclReader::convertFromNcl(std::vector<std::string>& fnv)
 		std::string taxaBlockTitle          = taxaBlock->GetTitle();
 		const unsigned nCharBlocks          = nexusReader.GetNumCharactersBlocks(taxaBlock);
         const unsigned nUnalignedCharBlocks = nexusReader.GetNumUnalignedBlocks(taxaBlock);
-        std::cout << "nCharBlocks          = " << nCharBlocks << std::endl;
-        std::cout << "nUnalignedCharBlocks = " << nUnalignedCharBlocks << std::endl;
+//        std::cout << "nCharBlocks          = " << nCharBlocks << std::endl;
+//        std::cout << "nUnalignedCharBlocks = " << nUnalignedCharBlocks << std::endl;
         
         // make alignment objects
 		for (unsigned cBlck=0; cBlck<nCharBlocks; cBlck++)
@@ -307,7 +307,7 @@ Alignment* NclReader::createContinuousMatrix(NxsCharactersBlock* charblock) {
 /** Create an object to hold DNA data */
 Alignment* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 
-    std::cout << "createDnaMatrix" << std::endl;
+//    std::cout << "createDnaMatrix" << std::endl;
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
         return NULL;
@@ -324,7 +324,7 @@ Alignment* NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
     // instantiate the character matrix
 	Alignment* cMat = new Alignment( DnaState_name );
     
-    std::cout << "numOrigTaxa = " << numOrigTaxa << std::endl;
+//    std::cout << "numOrigTaxa = " << numOrigTaxa << std::endl;
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {

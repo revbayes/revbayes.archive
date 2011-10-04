@@ -410,8 +410,8 @@ Variable* SyntaxVariable::getContentAsVariable(Environment* env) const {
                 throw RbException( "Member variable identifier missing" );
 
             MemberObject* theMemberObject = static_cast<MemberObject*>( baseVar->getDagNodePtr()->getValuePtr() );
-            MemberEnvironment& members = const_cast<MemberEnvironment&>( theMemberObject->getMembers() );
-            theVar = members[ (*identifier) ].getVariable();
+            MemberEnvironment *members = theMemberObject->getMembersPtr();
+            theVar = (*members)[ (*identifier) ].getVariable();
         }
         else {
             

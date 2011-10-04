@@ -104,16 +104,13 @@ void Alignment::addSequence( Sequence* obs ) {
         throw RbException( msg );
     }
 
-//    VariableSlot* slot = new VariableSlot( sequenceTypeRule );
     push_back(obs);
     
     // add the sequence name to the list
     sequenceNames.push_back(obs->getTaxonName());
     
     // add the sequence also as a member so that we can access it by name
-//    members.addVariable(obs->getTaxonName(), new Variable( new ConstantNode(obs) ));
-    members.addVariable(obs->getTaxonName(), TypeSpec( characterType));
-    members[ obs->getTaxonName() ].setVariable( new Variable( new ConstantNode(obs) ) );
+    members.addVariable(obs->getTaxonName(), new Variable( new ConstantNode(obs) ));
 }
 
 
