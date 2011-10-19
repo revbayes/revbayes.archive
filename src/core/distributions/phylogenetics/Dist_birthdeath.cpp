@@ -42,44 +42,11 @@
 
 // Definition of the static type spec member
 const TypeSpec Dist_birthdeath::typeSpec(Dist_birthdeath_name);
-const TypeSpec Dist_birthdeath::varTypeSpec(TreePlate_name);
+const TypeSpec Dist_birthdeath::varTypeSpec(RealPos_name);
 
 /** Default constructor for parser use */
 Dist_birthdeath::Dist_birthdeath( void ) : Distribution( getMemberRules() ) {
     
-}
-
-void Dist_birthdeath::buildRandomBinaryTree(std::vector<TopologyNode *> &internalNodes, std::vector<TopologyNode *> &tips, size_t numTaxa) {
-    
-    if (tips.size() < numTaxa) {
-        // Get the rng
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        
-        // randomly draw one node from the list of tips
-        size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
-        
-        // get the node from the list
-        TopologyNode* parent = tips.at(index);
-        
-        // add the internal node
-        internalNodes.push_back(parent);
-        
-        // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+index);
-        
-        // add a left child
-        TopologyNode *leftChild = new TopologyNode(0);
-        parent->addChild(leftChild);
-        tips.push_back(leftChild);
-        
-        // add a right child
-        TopologyNode *rightChild = new TopologyNode(0);
-        parent->addChild(rightChild);
-        tips.push_back(rightChild);
-        
-        // recursive call to this function
-        buildRandomBinaryTree(internalNodes, tips, numTaxa);
-    }
 }
 
 
@@ -106,10 +73,12 @@ const MemberRules& Dist_birthdeath::getMemberRules( void ) const {
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ValueRule( "lambda"   , RealPos_name     ) );
-        memberRules.push_back( new ValueRule( "mu"       , RealPos_name     ) );
-        memberRules.push_back( new ValueRule( "rho"      , Probability_name ) );
-        memberRules.push_back( new ValueRule( "nSpecies" , Natural_name     ) );
+        memberRules.push_back( new ValueRule( "origin"          , RealPos_name     ) );
+        memberRules.push_back( new ValueRule( "T"               , RealPos_name     ) );
+        memberRules.push_back( new ValueRule( "lambda"          , RealPos_name     ) );
+        memberRules.push_back( new ValueRule( "mu"              , RealPos_name, new RealPos(0.0)) );
+        memberRules.push_back( new ValueRule( "rho"             , Probability_name, new Probability(1.0) ) );
+        memberRules.push_back( new ValueRule( "speciationEvent" , RbBoolean_name, new RbBoolean(true) ) );
         
         rulesSet = true;
     }
@@ -143,28 +112,37 @@ const TypeSpec& Dist_birthdeath::getVariableType( void ) const {
 double Dist_birthdeath::lnPdf( const RbLanguageObject* value ) {
     
     // Get the parameters
-    const VectorRealPos* times = static_cast<const VectorRealPos*>( value );
-    double                 b   = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
-    double                 d   = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
-    double                 p   = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
+    double t = static_cast<const RealPos*    >( value )->getValue();
+    double o = static_cast<const RealPos*    >( getMemberValue( "origin" ) )->getValue();
+    double T = static_cast<const RealPos*    >( getMemberValue( "T"      ) )->getValue();
+    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
+    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
+    double p = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
     
-    // get the number of speciation events
-    size_t events = times->size();
+    // have we observed a speciation event at time t or did we just stop the process without oberving an event?
+    // Internal nodes correspond to obsereved speciation events whereas tips correspond to no event and a stopped process.
+    bool speciationEvent = static_cast<const RbBoolean*>( getMemberValue( "speciationEvent" ) )->getValue();
     
-    // get the time of the orign. Note, we assume the process starts at the origin and not at the root. Further, we do not assume that the process starts with t_0 = 0.
-    double now   = (*times)[events-1];
-    double t_or  = now - (*times)[0] ;
+    // the probability of the current time is the probability of having observed no event until now
+    double log_p = log( pWaiting(o,t,T,b,d,p) );
     
-    // calculate the probability
-    double log_p = events * (2*log(b-d) - (log(p*b + (b*(1.0-p)-d)*exp((d-b)*t_or)) + log(1.0 - exp((d-b)*t_or))));
-    
-    // iterate over all speciation events
-    for (size_t i=1; i<events; i++){
-        double t = now - (*times)[i];
-        log_p += (d-b)*t - 2*log(p*b + (b*(1.0-p)-d)*exp((d-b)*t));
+    // if this is for an observed speciation event and not only that we haven't observed an event until now
+    // then we multiply with the probability of a speciation event which results into a surviving and sampled species.
+    if (speciationEvent) {
+        log_p += log( pBirth(t,T,b,d,p) );
     }
     
     return log_p;
+}
+
+
+double Dist_birthdeath::nj(double t, double t_prime, double T, double lambda, double mu, double rho) const {
+    return ut(t,t_prime,lambda,mu,rho) * pSurvival(t,T,lambda,mu,rho) / pSurvival(t,t_prime,lambda,mu,rho);
+}
+
+
+double Dist_birthdeath::pBirth(double t, double T, double lambda, double mu, double rho) const {
+    return pSurvival(t,T,lambda,mu,rho) * lambda; 
 }
 
 
@@ -180,28 +158,56 @@ double Dist_birthdeath::lnPdf( const RbLanguageObject* value ) {
 double Dist_birthdeath::pdf( const RbLanguageObject* value ) {
     
     // Get the parameters
-    const VectorRealPos* times = static_cast<const VectorRealPos*>( value );
-    double                 b   = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
-    double                 d   = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
-    double                 p   = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
+    double t = static_cast<const RealPos*    >( value )->getValue();
+    double o = static_cast<const RealPos*    >( getMemberValue( "origin" ) )->getValue();
+    double T = static_cast<const RealPos*    >( getMemberValue( "T"      ) )->getValue();
+    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
+    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
+    double p = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
     
-    // get the number of speciation events
-    size_t events = times->size();
+    // have we observed a speciation event at time t or did we just stop the process without oberving an event?
+    // Internal nodes correspond to obsereved speciation events whereas tips correspond to no event and a stopped process.
+    bool speciationEvent = static_cast<const RbBoolean*>( getMemberValue( "speciationEvent" ) )->getValue();
     
-    // get the time of the orign. Note, we assume the process starts at the origin and not at the root. Further, we do not assume that the process starts with t_0 = 0.
-    double now   = (*times)[events-1];
-    double t_or  = now - (*times)[0] ;
+    // the probability of the current time is the probability of having observed no event until now
+    double prob = pWaiting(o,t,T,b,d,p);
     
-    // calculate the probability
-    double log_p = events * (2*log(b-d) - (log(p*b + (b*(1.0-p)-d)*exp((d-b)*t_or)) + log(1.0 - exp((d-b)*t_or))));
-    
-    // iterate over all speciation events
-    for (size_t i=1; i<events; i++){
-        double t = now - (*times)[i];
-        log_p += (d-b)*t - 2*log(p*b + (b*(1.0-p)-d)*exp((d-b)*t));
+    // if this is for an observed speciation event and not only that we haven't observed an event until now
+    // then we multiply with the probability of a speciation event which results into a surviving and sampled species.
+    if (speciationEvent) {
+        prob *= pBirth(t,T,b,d,p);
     }
     
-    return exp(log_p);
+    return prob;
+}
+
+
+
+double Dist_birthdeath::pSurvival(double start, double end, double lambda, double mu, double rho) const {
+    
+    double xxx = ( exp( (mu - lambda) * (end - start) ) - 1.0 ) / (mu - lambda);
+    double den = 1.0 + mu * ( xxx ) - ( rho - 1.0 ) * exp( rate(start,end,lambda,mu,rho) );
+    
+    return (1.0 / den);
+}
+
+
+
+double Dist_birthdeath::pWaiting(double start, double observed, double end, double lambda, double mu, double rho) const {
+    return 1.0 - nj(start,observed,end,lambda,mu,rho);
+}
+
+
+double Dist_birthdeath::rate(double start, double end, double lambda, double mu, double rho) const {
+    
+    // birth-death with constant rate
+    return (mu - lambda) * (end - start);
+}
+
+
+
+double Dist_birthdeath::ut(double t, double t_prime, double lambda, double mu, double rho) const {
+    return 1.0 - pSurvival(t,t_prime,lambda,mu,rho) * exp( rate(t,t_prime,lambda,mu,rho) );
 }
 
 
@@ -212,81 +218,17 @@ double Dist_birthdeath::pdf( const RbLanguageObject* value ) {
  *
  * @return      Randomly drawn vector of speciation times
  */
-TreePlate* Dist_birthdeath::rv( void ) {
+RealPos* Dist_birthdeath::rv( void ) {
+    
+    // TODO needs implementation!!!
     
     // Get the parameters
     double b                    = static_cast<const RealPos*     >( getMemberValue( "lambda"   ) )->getValue();
     double d                    = static_cast<const RealPos*     >( getMemberValue( "mu"       ) )->getValue();
     double p                    = static_cast<const Probability* >( getMemberValue( "rho"      ) )->getValue();
-    size_t nSpecies             = static_cast<const Natural*     >( getMemberValue( "nSpecies" ) )->getValue();
-    const VectorString  *names  = static_cast<const VectorString*>( getMemberValue( "tipNames" ) );
     
-    double scale    = b - d;
-    b /= scale;
-    d /= scale;
     
-    // Get the rng
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-    
-    // get a new random number
-    double ran = rng->uniform01();
-    
-    // simulate the time of the origin
-	double t_or = log((-b * p - b * pow(ran,(1.0/nSpecies)) + d * pow(ran,(1.0/nSpecies)) + b * p * pow(ran,(1.0/nSpecies)))/(b * p * (-1.0 + pow(ran,(1.0/nSpecies))))) / (b - d);
-    
-    // tmp vector of speciation times. we need to sort this vector before we use it later
-    std::vector<double> times;
-    
-    // simulate speciation times
-    for (size_t i=0; i<nSpecies; i++) {
-        ran = rng->uniform01(); 
-        double t = 1.0/(p*b-(d-b*(1.0-p)))*log((p*b-(d-b*(1.0-p))* exp((-(p*b)+(d-b*(1.0-p)))*t_or) -(d-b*(1.0-p))*(1-exp((-(p*b)+(d-b*(1.0-p)))*t_or)) *ran )/(p*b-(d-b*(1.0-p))* exp((-(p*b)+(d-b*(1.0-p)))*t_or) -(p*b)*(1-exp((-(p*b)+(d-b*(1.0-p)))*t_or)) *ran )   ); 
-        times.push_back(t);
-    }
-    
-    // create a new random tree
-    Topology *top = new Topology();
-    // internally we treat unrooted topologies the same as rooted
-    top->setIsRooted(true);
-    
-    TopologyNode *root = new TopologyNode((int)pow(2.0,int(nSpecies))-1);
-    std::vector<TopologyNode*> tips;
-    std::vector<TopologyNode*> interior;
-    tips.push_back(root);
-    // recursively build the tree
-    buildRandomBinaryTree(interior, tips, nSpecies);
-    
-    // set tip names
-    for (size_t i=0; i<nSpecies; i++) {
-        size_t index = size_t( floor(rng->uniform01() * tips.size()) );
-        
-        // get the node from the list
-        TopologyNode* node = tips.at(index);
-        
-        // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+index);
-        
-        // set name
-        std::string name = (*names)[i];
-        node->setName(name);
-    }
-    
-    // initialize the topology by setting the root
-    top->setRoot(root);
-    
-    // sort the speciation times
-    sort (times.begin(), times.end());
-    
-    // create a tree plate
-    TreePlate *plate = new TreePlate();
-    plate->setMemberVariable("topology", new Variable(new ConstantNode(top)));
-    
-    // add the speciation time to the topology
-    for (size_t i=0; i<times.size(); i++) {
-        plate->setNodeTime(interior[i],times[i]*scale);
-    }
-    
-    return plate;
+    return new RealPos(1.0);
 }
 
 
