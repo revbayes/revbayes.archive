@@ -57,9 +57,9 @@ Dist_norm::Dist_norm( void ) : DistributionContinuous( getMemberRules() ) {
 double Dist_norm::cdf( const RbLanguageObject* value ) {
 
 	
-	double    mu    = static_cast<const Real*   >( getMemberValue("mean") )->getValue();
+	double mu    = static_cast<const Real*   >( getMemberValue("mean") )->getValue();
     double sigma = static_cast<const RealPos*>( getMemberValue("sd"  ) )->getValue();
-    double q   = static_cast<const Real*>( value           )->getValue();
+    double q     = static_cast<const Real*   >( value                  )->getValue();
 	return RbStatistics::Normal::cdf(mu, sigma, q);
 
 }
@@ -88,8 +88,8 @@ const MemberRules& Dist_norm::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
 
-        memberRules.push_back( new ValueRule( "mean", Real_name    ) );
-        memberRules.push_back( new ValueRule( "sd"  , RealPos_name ) );
+        memberRules.push_back( new ValueRule( "mean", Real_name   , new Real(0.0)    ) );
+        memberRules.push_back( new ValueRule( "sd"  , RealPos_name, new RealPos(1.0) ) );
 
         rulesSet = true;
     }
