@@ -34,7 +34,7 @@ RealPos::RealPos( void ) : Real( 1.0 ) {
 /** Construct from double */
 RealPos::RealPos( double x ) : Real( x ) {
 
-    if ( x <= 0.0 )
+    if ( x < 0.0 )
         throw RbException( "Nonpositive value for " + RealPos_name );
 }
 
@@ -42,7 +42,7 @@ RealPos::RealPos( double x ) : Real( x ) {
 /** Construct from int */
 RealPos::RealPos( int x ) : Real( x ) {
 
-    if ( x <= 0 )
+    if ( x < 0 )
         throw RbException( "Nonpositive value for " + RealPos_name );
 }
 
