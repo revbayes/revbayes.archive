@@ -45,7 +45,6 @@ RbBoolean::RbBoolean(const bool v) : RbLanguageObject(), value(v) {
 std::string RbBoolean::briefInfo(void) const {
     
 	std::ostringstream o;
-    o << "RbBoolean: value = ";
     printValue(o);
     return o.str();
 }
@@ -113,8 +112,9 @@ void RbBoolean::printValue(std::ostream &o) const {
 std::string RbBoolean::richInfo(void) const {
 
 	std::ostringstream o;
-    o << "RbBoolean: value = ";
+    o << "RbBoolean(";
     printValue(o);
+    o << ")";
     return o.str();
 }
 

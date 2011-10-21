@@ -123,7 +123,9 @@ void Complex::printValue(std::ostream &o) const {
 std::string Complex::richInfo(void) const {
 
 	std::ostringstream o;
+    o << "Complex(";
     printValue(o);
+    o << ")";
     return o.str();
 }
 

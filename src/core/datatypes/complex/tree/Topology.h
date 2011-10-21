@@ -29,15 +29,6 @@ class TopologyNode;
 class VectorString;
 
 
-/** TopologyChange: A struct describing a topology change
-    in terms of a parent shift */
-struct TopologyChange {
-    int node;
-    int oldParentNode;
-    int newParentNode;
-};
-
-
 const std::string Topology_name = "Tree Topology";
 
 class Topology: public ConstantMemberObject {
@@ -62,7 +53,6 @@ class Topology: public ConstantMemberObject {
         const MethodTable&              getMethods(void) const;                                                 //!< Get methods
         
         // Topology functions
-        void                            changeTopology(std::vector<TopologyChange>& topChanges);                //!< Change the topology according to instructions
         TopologyNode*                   cloneTree(TopologyNode *parent);                                        //!< Deep copy of the nodes
         bool                            getIsBinary(void) const { return isBinary; }                            //!< Is the tree rooted
         bool                            getIsRooted(void) const { return isRooted; }                            //!< Is the tree rooted
@@ -79,10 +69,8 @@ class Topology: public ConstantMemberObject {
 private:
         static const TypeSpec           typeSpec;
         void                            fillNodesByPreorderTraversal(TopologyNode *node);                       //!< fill the nodes vector by a preorder traversal recursively starting with this node.
-        std::string                     buildNewickString(TopologyNode *node);                                  //!< compute the newick string for a tree rooting at this node
     
         std::vector<TopologyNode*>      nodes;                                                                  //!< Vector of pointers to all nodes
-        std::string                     newick;                                                                 //!< the newick string
         TopologyNode*                   root;                                                                   //!< Pointer to the root node
         bool                            isRooted;                                                               //!< Is the topology rooted?
         bool                            isBinary;                                                               //!< Is the topology binary?

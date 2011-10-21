@@ -70,9 +70,7 @@ Integer::Integer(const unsigned long v) : RbLanguageObject(), value( int(v) ) {
 std::string Integer::briefInfo(void) const {
     
 	std::ostringstream o;
-    o << "Integer(";
     printValue(o);
-	o<< ")";
     
     return o.str();
 }

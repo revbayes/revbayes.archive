@@ -83,6 +83,30 @@ void TopologyNode::addChild(TopologyNode *c) {
     
     // add the child to our internal vector
     children.push_back(c);
+    
+    name = buildNewickString(this);
+}
+
+
+/* Build newick string */
+std::string TopologyNode::buildNewickString(const TopologyNode *node) const {
+    // create the newick string
+    std::string newick;
+    
+    // test whether this is a internal or external node
+    if (node->isTip()) {
+        // this is a tip so we just return the name of the node
+        newick = node->getName();
+    }
+    else {
+        newick = "(";
+        for (size_t i=0; i<(node->getNumberOfChildren()-1); i++) {
+            newick += buildNewickString(node->getChild(i)) + ",";
+        }
+        newick += buildNewickString(node->getChild(node->getNumberOfChildren()-1)) + ")";
+    }
+    
+    return newick;
 }
 
 
@@ -215,10 +239,18 @@ const MemberRules& TopologyNode::getMemberRules(void) const {
 /** Print value for user */
 void TopologyNode::printValue(std::ostream& o) const {
     
-    if (name != "")
-        o << name << ":";
-    else
-        o << "Unnamed Topology Node:";
+    o << name;
+}
+
+
+
+void TopologyNode::refreshNewickString(void) {
+    name = buildNewickString(this);
+    
+    // call the parent to refresh its newick string
+    if (parent != NULL) {
+        parent->refreshNewickString();
+    }
 }
 
 
@@ -235,6 +267,8 @@ void TopologyNode::removeAllChildren(void) {
     
     // empty the children vector
     children.clear();
+    
+    name = "";
 }
 
 /** Remove a child from the vector of children */
@@ -250,6 +284,8 @@ void TopologyNode::removeChild(TopologyNode* p) {
     }
     else 
         throw(RbException("Cannot find node in list of children nodes"));
+    
+    name = buildNewickString(this);
 }
 
 
@@ -259,6 +295,16 @@ std::string TopologyNode::richInfo(void) const {
     o <<  "Topology node: ";
     printValue(o);
     return o.str();
+}
+
+
+void TopologyNode::setName(std::string const &n) {
+    name = n;
+    
+    // call the parent to refresh its newick string
+    if (parent != NULL) {
+        parent->refreshNewickString();
+    }
 }
 
 
@@ -276,6 +322,8 @@ void TopologyNode::setParent(TopologyNode *p) {
         
         // set and retain the new parent
         parent = p;
+        
+        parent->refreshNewickString();
 //        parent->retain();
     }
 }

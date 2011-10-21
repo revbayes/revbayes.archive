@@ -56,7 +56,7 @@ MemberFunction::~MemberFunction() {
 std::string MemberFunction::briefInfo(void) const {
 
     std::ostringstream o;
-    o << "MemberFunction: " << getClass();
+    o << "MemberFunction: " << funcName;
 
     return o.str();
 }

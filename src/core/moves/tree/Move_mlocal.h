@@ -48,9 +48,9 @@ class Move_mlocal : public MoveTree {
         const MemberRules&          getMemberRules(void) const;                                             //!< Get member rules
 
     protected:
-        double                      perform(std::set<StochasticNode*>&      movedNodes,
-                                            std::set<StochasticNode*>&      affectedNodes,
-                                            std::vector<TopologyChange>&    topologyChanges);               //!< Perform the move
+//        double                      perform(std::set<StochasticNode*>&      movedNodes,
+//                                            std::set<StochasticNode*>&      affectedNodes,
+//                                            std::vector<TopologyChange>&    topologyChanges);               //!< Perform the move
     
     private:
         static const TypeSpec       typeSpec;

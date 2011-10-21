@@ -223,7 +223,18 @@ void StochasticNode::clamp( RbLanguageObject* observedVal ) {
             delete value;
         }
     }
-    value   = observedVal;
+    
+    // check for type conversion
+    if (observedVal->isTypeSpec(distribution->getVariableType())) {
+        value = observedVal;
+    }
+    else if (observedVal->isConvertibleTo(distribution->getVariableType())) {
+        value = static_cast<RbLanguageObject*>(observedVal->convertTo(distribution->getVariableType())); 
+    }
+    else {
+        throw RbException("Cannot clamp stochastic node with value of type \"" + observedVal->getType() + "\" because the distribution requires a \"" + distribution->getVariableType().toString() + "\".");
+    }
+
     value->retain();
     clamped = true;
     lnProb  = calculateLnProbability();

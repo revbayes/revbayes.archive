@@ -53,15 +53,18 @@ public:
     const MethodTable&              getMethods(void) const;                                                 //!< Get methods
 
     // Tree plate functions
-    void                            setNodeTime(TopologyNode* n, double t);                                 //!< Set the time of the node
-    void                            setBranchLength(TopologyNode *n, double t);                             //!< Set the length of the branch
-
+    Topology*                       getTopology(void) const;                                                //!< Get the topology for this tree
+    
 private:
     static const TypeSpec           typeSpec;
     
+    std::vector<std::string>        nodeVariableNames;                                                      //!< The vector of variables names for each node
+    
+    std::string                     buildNewickString(TopologyNode *node) const;                            //!< compute the newick string for a tree rooting at this node
+    
     void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }           //!< Order the topology
-    size_t                          getNodeIndex(const TopologyNode *theNode);                              //!< Get the index of the node
-    size_t                          getTipIndex(const TopologyNode *theNode);                               //!< Get the index of the node
+    size_t                          getNodeIndex(const TopologyNode *theNode) const;                        //!< Get the index of the node
+    size_t                          getTipIndex(const TopologyNode *theNode) const;                         //!< Get the index of the node
 
     Topology*                       orderingTopology;                                                       //!< The topology that orders the tree plate
 };

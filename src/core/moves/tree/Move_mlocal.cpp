@@ -104,9 +104,9 @@ const TypeSpec& Move_mlocal::getTypeSpec(void) const {
  *            for the Bayesian analysis of phylogenetic trees. Molecular Biology
  *            and Evolution 16:750-759.
  */
-double Move_mlocal::perform( std::set<StochasticNode*>& movedNodes, std::set<StochasticNode*>& affectedNodes,
-                            std::vector<TopologyChange>& topologyChanges) {
-
+//double Move_mlocal::perform( std::set<StochasticNode*>& movedNodes, std::set<StochasticNode*>& affectedNodes,
+//                            std::vector<TopologyChange>& topologyChanges) {
+//
 //    // Get random number generator    
 //    RandomNumberGenerator*       rng      = GLOBAL_RNG;
 //
@@ -269,7 +269,7 @@ double Move_mlocal::perform( std::set<StochasticNode*>& movedNodes, std::set<Sto
 //    double lnProposalRatio = 3.0 * log ( factor );
 //    
 //    return lnProposalRatio;
-    
-    return 0.0;
-}
+//    
+//    return 0.0;
+//}
 

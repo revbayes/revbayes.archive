@@ -60,9 +60,7 @@ Probability::Probability( unsigned int x ) : RealPos( x ) {
 std::string Probability::briefInfo( void ) const {
     
 	std::ostringstream o;
-    o << "Prob(";
     printValue( o );
-	o << ")";
     
     return o.str();
 }

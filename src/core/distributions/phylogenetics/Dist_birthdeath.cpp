@@ -223,12 +223,14 @@ RealPos* Dist_birthdeath::rv( void ) {
     // TODO needs implementation!!!
     
     // Get the parameters
-    double b                    = static_cast<const RealPos*     >( getMemberValue( "lambda"   ) )->getValue();
-    double d                    = static_cast<const RealPos*     >( getMemberValue( "mu"       ) )->getValue();
-    double p                    = static_cast<const Probability* >( getMemberValue( "rho"      ) )->getValue();
+    double o = static_cast<const RealPos*    >( getMemberValue( "origin" ) )->getValue();
+    double T = static_cast<const RealPos*    >( getMemberValue( "T"      ) )->getValue();
+    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
+    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
+    double p = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
     
     
-    return new RealPos(1.0);
+    return new RealPos( (T - o) / 2.0 + o);
 }
 
 

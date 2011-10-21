@@ -53,9 +53,9 @@ class MoveTree : public Move {
                                         MoveTree(const MemberRules& memberRules);                               //!< Parser constructor
 
         // Function you have to override
-        virtual double                  perform(std::set<StochasticNode*>&      movedNodes,
-                                                std::set<StochasticNode*>&      affectedNodes,
-                                                std::vector<TopologyChange>&    topologyChanges) = 0;           //!< Perform the move
+//        virtual double                  perform(std::set<StochasticNode*>&      movedNodes,
+//                                                std::set<StochasticNode*>&      affectedNodes,
+//                                                std::vector<TopologyChange>&    topologyChanges) = 0;           //!< Perform the move
 
         // Functions you may want to override for additional statistics purposes, e.g.
         virtual void                    accept(void) {}                                                         //!< Accept the move
@@ -63,12 +63,7 @@ class MoveTree : public Move {
 
         // Help functions
         const Topology*                 getTopology(void) const;                                                //!< Get topology
-        std::vector<StochasticNode*>    getTreeVariable(const std::string& name) const;                         //!< Get tree variable
-        void                            reconnectTreeVariables(Container* treeVars, std::vector<TopologyChange>& topChanges);        //!< Reconnect tree variables
 
-        // Member variables storing info about the move
-        std::set<StochasticNode*>       moved;
-        std::vector<TopologyChange>     topChanges;
 };
 
 #endif

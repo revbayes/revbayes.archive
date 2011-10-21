@@ -275,7 +275,7 @@ TreePlate* Dist_neutralcoalescent::rv( void ) {
     TreePlate *plate = new TreePlate();
     plate->setMemberVariable("topology", new Variable(new ConstantNode(top)));
     for (TopologyNodeToRealMapType::iterator ndi = this->nodeEdgeLengths.begin(); ndi !=  this->nodeEdgeLengths.end(); ++ndi) {
-        plate->setBranchLength(ndi->first, ndi->second);
+//        plate->setBranchLength(ndi->first, ndi->second);
     }
     return plate;
 }

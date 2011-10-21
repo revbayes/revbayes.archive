@@ -56,9 +56,7 @@ RealPos::RealPos( unsigned int x ) : Real( x ) {
 std::string RealPos::briefInfo( void ) const {
     
 	std::ostringstream o;
-    o << "+Real(";
     printValue( o );
-	o << ")";
     
     return o.str();
 }

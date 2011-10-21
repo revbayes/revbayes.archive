@@ -63,9 +63,7 @@ Real::Real(const bool v) : RbLanguageObject() {
 std::string Real::briefInfo(void) const {
     
 	std::ostringstream o;
-    o << "Real(";
     printValue(o);
-	o << ")";
     return o.str();
 }
 

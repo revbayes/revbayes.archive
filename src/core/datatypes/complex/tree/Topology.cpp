@@ -48,9 +48,6 @@ Topology::Topology(const Topology& t) : ConstantMemberObject( getMemberRules() )
     
     // fill the nodes vector
     fillNodesByPreorderTraversal(root);
-    
-    // build the newick string
-    newick = buildNewickString(root);
 }
 
 
@@ -68,53 +65,6 @@ Topology::~Topology(void) {
     nodes.clear();
 }
 
-
-/* Build newick string */
-std::string Topology::buildNewickString(TopologyNode *node) {
-    // create the newick string
-    std::string newick;
-    
-    // test whether this is a internal or external node
-    if (node->isTip()) {
-        // this is a tip so we just return the name of the node
-        newick = node->getName();
-    }
-    else {
-        newick = "(";
-        for (size_t i=0; i<(node->getNumberOfChildren()-1); i++) {
-            newick += buildNewickString(node->getChild(i)) + ",";
-        }
-        newick += buildNewickString(node->getChild(node->getNumberOfChildren()-1)) + ")";
-    }
-    
-    return newick;
-}
-
-/** 
- * Change topology according to the instructions given in the vector
- * of TopologyChange structs. This allows the topology move machinery
- * to do delayed updates of the topology and use the change instructions
- * to alos update tree variable DAGs.
- *
- * @note We assume here that indices of nodes correspond to their
- *       position in the nodes vector.
- * @note No consistency checking - should probably be introduced
- */
-void Topology::changeTopology( std::vector<TopologyChange>& topChanges ) {
-
-    for ( std::vector<TopologyChange>::iterator i=topChanges.begin(); i!=topChanges.end(); i++ ) {
-    
-        TopologyNode* childNode = nodes[ (*i).node ];
-        TopologyNode* oldParent = nodes[ (*i).oldParentNode ];
-        TopologyNode* newParent = nodes[ (*i).newParentNode ];
-
-        childNode->setParent  ( newParent );
-        oldParent->removeChild( childNode );
-        newParent->addChild   ( childNode );
-    }
-    
-    newick = buildNewickString(root);
-}
 
 
 TopologyNode* Topology::cloneTree(TopologyNode *parent) {
@@ -275,7 +225,7 @@ const TypeSpec& Topology::getTypeSpec(void) const {
 /* Print the tree */
 void Topology::printValue(std::ostream& o) const {
 
-    o << newick;
+    o << root->getName();
 }
 
 
@@ -304,8 +254,5 @@ void Topology::setRoot(TopologyNode *r) {
     
     // bootstrap all nodes from the root and add the in a pre-order traversal
     fillNodesByPreorderTraversal(r);
-    
-    // recalculate the newick string
-    newick = buildNewickString(root);
 }
 

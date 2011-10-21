@@ -74,14 +74,17 @@ public:
     size_t                          getNumberOfChildren(void) const { return children.size(); }                 //!< Returns the number of children
     TopologyNode*                   getParent(void) const { return parent; }                                    //!< Returns the node's parent
     int                             getParentIndex(void) const { return parent->getIndex(); }                   //!< Return parent index
-    bool                            isTip(void) { return children.size() == 0; }                                //!< Is node tip?
-    bool                            isRoot(void) { return parent == NULL; }                                     //!< Is node root?
-    void                            setName(const std::string& n) { name = n; }                                 //!< Set the name of this node
+    bool                            isTip(void) const { return children.size() == 0; }                          //!< Is node tip?
+    bool                            isRoot(void) const { return parent == NULL; }                               //!< Is node root?
+    void                            setName(const std::string& n);                                              //!< Set the name of this node
     void                            setParent(TopologyNode* p);                                                 //!< Sets the node's parent
     void                            removeAllChildren(void);                                                    //!< Removes all of the children of the node
     void                            removeChild(TopologyNode* p);                                               //!< Removes a specific child
         
 private:
+    std::string                     buildNewickString(const TopologyNode *node) const;                          //!< compute the newick string for a tree rooting at this node
+    void                            refreshNewickString(void);                                                  //!< recompute the newick string
+    
     static const TypeSpec           typeSpec;
     std::vector<TopologyNode*>      children;                                                                   //!< Vector holding the node's children
     TopologyNode*                   parent;                                                                     //!< Pointer to the parent of the node

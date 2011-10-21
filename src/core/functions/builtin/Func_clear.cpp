@@ -20,11 +20,13 @@
 #include "Func_clear.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "RealPos.h"
 #include "TypeSpec.h"
 #include "VectorString.h"
 #include "Workspace.h"
 
 #include <fstream>
+#include <memory>
 
 
 // Definition of the static type spec member
@@ -40,6 +42,8 @@ Func_clear* Func_clear::clone( void ) const {
 
 /** Execute function */
 RbLanguageObject* Func_clear::execute( void ) {
+    
+    auto_ptr<RealPos> test(new RealPos(1.0));
     
     // clear the user workspace
     Workspace::userWorkspace().clear();

@@ -104,9 +104,7 @@ Natural::Natural( const RbBoolean& x) : Integer() {
 std::string Natural::briefInfo( void ) const {
 
 	std::ostringstream o;
-    o << "Natural(";
     printValue( o );
-	o << ")";
 
     return o.str();
 }

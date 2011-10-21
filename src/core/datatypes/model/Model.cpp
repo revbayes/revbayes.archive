@@ -230,7 +230,7 @@ void Model::printValue(std::ostream& o) const {
 		msg.str("");
 		
         if ((*i)->isType(DeterministicNode_name))
-            msg << "   Function     = " << ((DeterministicNode*)(*i))->getFunction()->getType();
+            msg << "   Function     = " << ((DeterministicNode*)(*i))->getFunction()->briefInfo();
         else if ((*i)->isType(StochasticNode_name))
             msg << "   Distribution = " << ((StochasticNode*)(*i))->getDistribution()->getType();
 		if ( msg.str() != "" )

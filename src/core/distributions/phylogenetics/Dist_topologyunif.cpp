@@ -68,11 +68,13 @@ void Dist_topologyunif::buildRandomBinaryTree(std::vector<TopologyNode *> &tips,
         // add a left child
         TopologyNode *leftChild = new TopologyNode(0);
         parent->addChild(leftChild);
+        leftChild->setParent(parent);
         tips.push_back(leftChild);
         
         // add a right child
         TopologyNode *rightChild = new TopologyNode(0);
         parent->addChild(rightChild);
+        rightChild->setParent(parent);
         tips.push_back(rightChild);
         
         // recursive call to this function
