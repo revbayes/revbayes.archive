@@ -17,6 +17,7 @@
 #ifndef RbObject_H
 #define RbObject_H
 
+#include "RbPtr.h"
 #include "TypeSpec.h"
 
 #include <ostream>
@@ -45,24 +46,17 @@ class RbObject {
         // Basic utility functions you may want to override
         virtual bool                allowsVariableInsertion(void) const { return false; }                   //!< Do we allow variable to be inserted in this object (only appicable for some container, e.g. DagNodeContainer)
         virtual RbObject*           convertTo(const TypeSpec& type) const;                                  //!< Convert to type
-        virtual RbObject*           getElement(size_t index) const;                                         //!< Get element or subcontainer
+        virtual RbPtr<RbObject>     getElement(size_t index) const;                                         //!< Get element or subcontainer
 
         virtual bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         
 
         // Basic utility functions you should not have to override
-        size_t                      getNumberOfReferences(void) { return numReferences; }                   //!< Get the number how often this instance is referenced by other objects
         const std::string&          getType(void) const;                                                    //!< Get type of object
         bool                        isTypeSpec(const TypeSpec& typeSpec) const;                             //!< Does the language type of the object fit type specification typeSpec?
-        bool                        isUnreferenced(void) { return numReferences == 0; }                     //!< Test whether other objetcs still hold references to this object
-//        bool                        isUnreferenced(void) { return false; }                                  //!< Test whether other objetcs still hold references to this object
-        void                        release(void) { numReferences--; }                                      //!< release the object
-        void                        retain(void) { numReferences++; }                                       //!< retain the object
 
 protected:
     RbObject(void);                                                                                     //!< No objects of this class
     
-private:
-    size_t                      numReferences;
 };
 #endif

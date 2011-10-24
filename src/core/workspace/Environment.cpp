@@ -30,14 +30,6 @@ const TypeSpec Environment::typeSpec(Environment_name);
 /** Destructor */
 Environment::~Environment() {
     
-    // delete the parent environment
-    if (parentEnvironment != NULL) {
-        parentEnvironment->release();
-        if (parentEnvironment->isUnreferenced()){
-            delete parentEnvironment;
-        }
-    }
-    
     // clear the variable table
     clear();
 
@@ -50,20 +42,18 @@ Environment::Environment(void) : RbInternal(), parentEnvironment(NULL) {
 
 
 /** Construct Environment with parent */
-Environment::Environment(Environment* parentFr) : RbInternal(), parentEnvironment(parentFr) {
-    parentEnvironment->retain();
+Environment::Environment(RbPtr<Environment> parentFr) : RbInternal(), parentEnvironment(parentFr) {
+    
 }
 
 /** Copy Constructor */
 Environment::Environment(const Environment &x): RbInternal(x) {
     
     // make a deep copy of the parent environment
-    if (x.parentEnvironment != NULL) {
-        parentEnvironment = x.parentEnvironment->clone();
-        parentEnvironment->retain();
-    }
+    if (x.parentEnvironment.get() == NULL) {
+        parentEnvironment = RbPtr<Environment>(x.parentEnvironment->clone());    }
     else {
-        parentEnvironment = NULL;
+        parentEnvironment = RbPtr<Environment>::getNullPtr();
     }
     
     // make a deep copy of the variable names
@@ -75,13 +65,10 @@ Environment::Environment(const Environment &x): RbInternal(x) {
         const std::string &name = x.getName(i);
         
         // get a copy of the variable slot
-        VariableSlot *slotCopy = x[name].clone();
-        
-        // retain the slot
-        slotCopy->retain();
+        RbPtr<VariableSlot> slotCopy(x[name].clone());
         
         // add the copy
-        variableTable.insert( std::pair<std::string, VariableSlot*>( name, slotCopy ) );
+        variableTable.insert( std::pair<std::string, RbPtr<VariableSlot> >( name, slotCopy ) );
         
     }
     
@@ -90,7 +77,7 @@ Environment::Environment(const Environment &x): RbInternal(x) {
 /** Index operator to variable slot from string */
 VariableSlot& Environment::operator[]( const std::string& name ) {
     
-    std::map<std::string, VariableSlot*>::iterator it = variableTable.find(name);
+    std::map<std::string, RbPtr<VariableSlot> >::iterator it = variableTable.find(name);
     if ( variableTable.find(name) == variableTable.end() ) {
         if ( parentEnvironment != NULL )
             return parentEnvironment->operator []( name );
@@ -107,7 +94,7 @@ VariableSlot& Environment::operator[]( const std::string& name ) {
 /** Index operator (const) to variable slot from string */
 const VariableSlot& Environment::operator[]( const std::string& name ) const {
     
-    std::map<std::string, VariableSlot*>::const_iterator it = variableTable.find( name );
+    std::map<std::string, RbPtr<VariableSlot> >::const_iterator it = variableTable.find( name );
     if ( variableTable.find(name) == variableTable.end() ) {
         if ( parentEnvironment != NULL )
             return parentEnvironment->operator []( name );
@@ -141,7 +128,7 @@ const VariableSlot& Environment::operator[]( const size_t index ) const {
 }
 
 /** Add variable */
-void Environment::addVariable(const std::string& n, VariableSlot *theSlot) {
+void Environment::addVariable(const std::string& n, RbPtr<VariableSlot> theSlot) {
     
     std::string name = n;
     // we check if the name equals the empty string
@@ -151,7 +138,7 @@ void Environment::addVariable(const std::string& n, VariableSlot *theSlot) {
     // but it is their own fault if they tried to add it without a name to identify with
     if (name == EmptyString) {
         // we do not have a name for the variable so we use the memory address
-        long tmp = long(theSlot);
+        long tmp = long(theSlot.get());
         std::stringstream out;
         out << tmp;
         name = out.str();
@@ -162,11 +149,8 @@ void Environment::addVariable(const std::string& n, VariableSlot *theSlot) {
     if ( variableTable.find( name ) != variableTable.end() )
         throw RbException( "Variable " + name + " already exists in frame" );
     
-    // retain the slot
-    theSlot->retain();
-    
     /* Insert new slot in variable table */
-    variableTable.insert( std::pair<std::string, VariableSlot*>( name, theSlot ) );
+    variableTable.insert( std::pair<std::string, RbPtr<VariableSlot> >( name, theSlot ) );
     
     // add the name to the variable name list
     varNames.push_back(name);
@@ -176,10 +160,10 @@ void Environment::addVariable(const std::string& n, VariableSlot *theSlot) {
 
 
 /** Add variable */
-void Environment::addVariable(const std::string& name, const TypeSpec& typeSp, Variable *theVar) {
+void Environment::addVariable(const std::string& name, const TypeSpec& typeSp, RbPtr<Variable> theVar) {
     
     // create a new slot
-    VariableSlot *theSlot = new VariableSlot(name,typeSp,theVar);
+    RbPtr<VariableSlot> theSlot(new VariableSlot(name,typeSp,theVar));
     
     // call function to add the slot
     addVariable(name, theSlot);

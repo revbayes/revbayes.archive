@@ -21,8 +21,8 @@
 //  spinlock_pool<2> is reserved for shared_ptr atomic access
 //
 
-#include <boost/config.hpp>
-#include <boost/smart_ptr/detail/spinlock.hpp>
+#include "config.hpp"
+#include "spinlock.hpp"
 #include <cstddef>
 
 namespace boost

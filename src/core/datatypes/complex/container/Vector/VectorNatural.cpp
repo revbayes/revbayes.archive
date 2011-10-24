@@ -216,12 +216,12 @@ std::vector<unsigned int> VectorNatural::getValue( void ) const {
 }
 
 
-Natural* VectorNatural::getElement(size_t index) const {
+RbPtr<RbObject> VectorNatural::getElement(size_t index) const {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
-    Natural *n = new Natural(elements[index]);
+    RbPtr<RbObject> n( new Natural(elements[index]) );
     
     return n;
 }
@@ -253,10 +253,10 @@ void VectorNatural::pop_front(void) {
 
 
 /** Push an int onto the back of the vector after checking */
-void VectorNatural::push_back( RbObject *x ) {
+void VectorNatural::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
-        elements.push_back(static_cast<Natural*>(x)->getValue());
+        elements.push_back(static_cast<Natural*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Natural_name) ) {
         elements.push_back(static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
     }
@@ -274,10 +274,10 @@ void VectorNatural::push_back( unsigned int x ) {
 
 
 /** Push an int onto the front of the vector after checking */
-void VectorNatural::push_front( RbObject *x ) {
+void VectorNatural::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
-        elements.insert( elements.begin(), static_cast<Natural*>(x)->getValue());
+        elements.insert( elements.begin(), static_cast<Natural*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Natural_name) ) {
         elements.insert( elements.begin(), static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
     }
@@ -310,7 +310,7 @@ std::string VectorNatural::richInfo( void ) const {
 }
 
 
-void VectorNatural::setElement(const size_t index, RbLanguageObject *x) {
+void VectorNatural::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
     
     // check for type and convert if necessary
     if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
@@ -318,7 +318,7 @@ void VectorNatural::setElement(const size_t index, RbLanguageObject *x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<Natural*>(x)->getValue());
+        elements.insert( elements.begin() + index, static_cast<Natural*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Natural_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

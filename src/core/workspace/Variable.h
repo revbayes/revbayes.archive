@@ -35,6 +35,7 @@
 
 #include "RbInternal.h"
 #include "DAGNode.h"
+#include "RbPtr.h"
 #include "TypeSpec.h"
 
 #include <string>
@@ -48,36 +49,36 @@ const std::string Variable_name = "Variable";
 class Variable : public RbInternal {
     
 public:
-    Variable(const std::string &n, DAGNode* var);                                                   //!< Constructor of filled variable
-    Variable(DAGNode* var);                                                                         //!< Constructor of filled, unnamed variable
-    Variable(const std::string &n);                                                                 //!< Constructor with name only
-    Variable(const Variable& x);                                                                    //!< Copy value or reference correctly
-    virtual                ~Variable(void);                                                         //!< Manage variable (DAGNode) destruction
+    Variable(const std::string &n, RbPtr<DAGNode> var);                                     //!< Constructor of filled variable
+    Variable(RbPtr<DAGNode> var);                                                           //!< Constructor of filled, unnamed variable
+    Variable(const std::string &n);                                                         //!< Constructor with name only
+    Variable(const Variable& x);                                                            //!< Copy value or reference correctly
+    virtual                ~Variable(void);                                                 //!< Manage variable (DAGNode) destruction
     
     // Assignment operator
-    Variable&               operator=(const Variable& x);                                           //!< Assignment
+    Variable&                           operator=(const Variable& x);                       //!< Assignment
     
     // Regular functions
-    Variable*               clone(void) const;                                                      //!< Clone variable
-    const VectorString&     getClass() const;                                                       //!< Get class vector
-    const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
-    const std::string&      getName(void) const;                                                    //!< Get name of variable
-    const RbLanguageObject* getValue(void) const;                                                   //!< Get the value of the variable (ptr, not copy)
-    const DAGNode*          getDagNode(void) const { return node; }                                 //!< Get the variable pointer
-    DAGNode*                getDagNodePtr(void) const;                                              //!< Get a reference to the variable
-    void                    setName(const std::string &n);                                          //!< Replacing the name of the variable
-    void                    printValue(std::ostream& o) const;                                      //!< Print value of variable
-    void                    setDagNode(DAGNode* newVar);                                            //!< Set a variable with a variable
+    Variable*                           clone(void) const;                                  //!< Clone variable
+    const VectorString&                 getClass() const;                                   //!< Get class vector
+    const TypeSpec&                     getTypeSpec(void) const;                            //!< Get language type of the object
+    const std::string&                  getName(void) const;                                //!< Get name of variable
+    const RbPtr<RbLanguageObject>       getValue(void) const;                               //!< Get the value of the variable (ptr, not copy)
+    const RbPtr<DAGNode>                getDagNode(void) const { return node; }             //!< Get the variable pointer
+    RbPtr<DAGNode>                      getDagNodePtr(void) const;                          //!< Get a reference to the variable
+    void                                setName(const std::string &n);                      //!< Replacing the name of the variable
+    void                                printValue(std::ostream& o) const;                  //!< Print value of variable
+    void                                setDagNode(RbPtr<DAGNode> newVar);                  //!< Set a variable with a variable
     
 private:
     // Help functions
-    void                    replaceDagNode( DAGNode* newVariable );                                 //!< Replace the old DAG node with the new one and set the children and parent
+    void                                replaceDagNode(RbPtr<DAGNode> newVariable );        //!< Replace the old DAG node with the new one and set the children and parent
     
     // Member variables
-    DAGNode*                node;                                                                   //!< Pointer to the variable (reference or not)
-    std::string             name;                                                                   //!< the name of the variable
+    RbPtr<DAGNode>                      node;                                               //!< Pointer to the variable (reference or not)
+    std::string                         name;                                               //!< the name of the variable
 
-    static const TypeSpec   typeSpec;
+    static const TypeSpec               typeSpec;
 };
 
 /* Global functions using the class */

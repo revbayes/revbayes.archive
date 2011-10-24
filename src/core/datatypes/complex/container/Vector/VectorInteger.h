@@ -55,16 +55,16 @@ class VectorInteger : public AbstractVector {
 
         // Vector functions, including STL-like functions
     void                        clear(void);                                                    //!< Clear
-    Integer*                    getElement(size_t index) const;                                 //!< Get element
+    RbPtr<RbObject>             getElement(size_t index) const;                                 //!< Get element
     std::vector<int>            getValue(void) const;                                           //!< Get value as STL int vector
     void                        pop_back(void);                                                 //!< Drop element at back
     void                        pop_front(void);                                                //!< Drop element from front
-    void                        push_back(RbObject* x);                                         //!< Append element to end
+    void                        push_back(RbPtr<RbObject> x);                                         //!< Append element to end
     void                        push_back(int x);                                               //!< Append element to end
-    void                        push_front(RbObject* x);                                        //!< Add element in front
+    void                        push_front(RbPtr<RbObject> x);                                        //!< Add element in front
     void                        push_front(int x);                                              //!< Add element in front
     void                        resize(size_t n);                                               //!< Resize to new AbstractVector of length n
-    void                        setElement(const size_t index, RbLanguageObject* elem);         //!< Set element with type conversion
+    void                        setElement(const size_t index, RbPtr<RbLanguageObject> elem);         //!< Set element with type conversion
     void                        setValue(const VectorInteger& x);                               //!< Set the value
     void                        setValue(const std::vector<int>& x);                            //!< Set the value
     void                        sort(void);                                                     //!< sort the AbstractVector

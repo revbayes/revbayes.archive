@@ -21,6 +21,8 @@
 #define ConstantNode_H
 
 #include "DAGNode.h"
+#include "RbLanguageObject.h"
+#include "RbPtr.h"
 
 class RbObject;
 class VectorString;
@@ -30,33 +32,33 @@ const std::string ConstantNode_name = "Constant Node";
 class ConstantNode : public DAGNode {
 
 public:
-    ConstantNode(RbLanguageObject* val);                                                                    //!< Constructor from value
-    ConstantNode(const std::string& typeSpec);                                                              //!< Constructor from language object type
-    ConstantNode(const ConstantNode &x);                                                                    //!< Copy constructor
+    ConstantNode(RbPtr<RbLanguageObject> val);                                                                      //!< Constructor from value
+    ConstantNode(const std::string& typeSpec);                                                                      //!< Constructor from language object type
+    ConstantNode(const ConstantNode &x);                                                                            //!< Copy constructor
 
 
     // Basic utility functions
-    ConstantNode*               clone(void) const;                                                          //!< Clone this object
-    const VectorString&         getClass(void) const;                                                       //!< Get DAG node class vector
-    const TypeSpec&             getTypeSpec(void) const;                                                    //!< Get language type of the object
-    void                        printStruct(std::ostream& o) const;                                         //!< Print struct for user
-    void                        printValue(std::ostream& o);                                                //!< Print value for user (non-const fxn because of delayed evaluation in other DAG node classes)
-    std::string                 richInfo(void) const;                                                       //!< Complete info on object
+    ConstantNode*                       clone(void) const;                                                          //!< Clone this object
+    const VectorString&                 getClass(void) const;                                                       //!< Get DAG node class vector
+    const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+    void                                printStruct(std::ostream& o) const;                                         //!< Print struct for user
+    void                                printValue(std::ostream& o);                                                //!< Print value for user (non-const fxn because of delayed evaluation in other DAG node classes)
+    std::string                         richInfo(void) const;                                                       //!< Complete info on object
 
     // ConstantNode functions
-    const RbLanguageObject*     getStoredValue(void) { return value; }                                      //!< Get stored value (non-const fxn because of delayed evaluation in other DAG node classes)
-    const RbLanguageObject*     getValue(void) { return value; }                                            //!< Get value (non-const fxn because of delayed evaluation in other DAG node classes)
-    RbLanguageObject*           getValuePtr(void) { return value; }                                         //!< Get value pointer (non-const fxn because of delayed evaluation in other DAG node classes)
+    const RbPtr<RbLanguageObject>       getStoredValue(void) { return value; }                                      //!< Get stored value (non-const fxn because of delayed evaluation in other DAG node classes)
+    const RbPtr<RbLanguageObject>       getValue(void) { return value; }                                            //!< Get value (non-const fxn because of delayed evaluation in other DAG node classes)
+    RbPtr<RbLanguageObject>             getValuePtr(void) { return value; }                                         //!< Get value pointer (non-const fxn because of delayed evaluation in other DAG node classes)
 
     // DAG functions
-    ConstantNode*               cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
-    bool                        isTouched (void) const { return false; }                                    //!< Touched by a move?
-    void                        keep(void);                                                                 //!< Keep current state
-    void                        keepAffected(void);                                                         //!< Keep value of affected nodes
-    void                        touchAffected(void);                                                        //!< Tell affected nodes value is reset
+    ConstantNode*                       cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
+    bool                                isTouched (void) const { return false; }                                    //!< Touched by a move?
+    void                                keep(void);                                                                 //!< Keep current state
+    void                                keepAffected(void);                                                         //!< Keep value of affected nodes
+    void                                touchAffected(void);                                                        //!< Tell affected nodes value is reset
     
 private:
-    static const TypeSpec       typeSpec;
+    static const TypeSpec               typeSpec;
 };
 
 #endif

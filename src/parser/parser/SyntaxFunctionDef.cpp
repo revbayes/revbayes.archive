@@ -31,10 +31,10 @@
 const TypeSpec SyntaxFunctionDef::typeSpec(SyntaxFunctionDef_name);
 
 /** Construct global function call from function name and arguments */
-SyntaxFunctionDef::SyntaxFunctionDef(   RbString* type,
-                                        RbString* name,
-                                        std::list<SyntaxFormal*>* formals,
-                                        std::list<SyntaxElement*>* stmts)
+SyntaxFunctionDef::SyntaxFunctionDef(   RbPtr<RbString> type,
+                                        RbPtr<RbString> name,
+                                        RbPtr<std::list<RbPtr<SyntaxFormal> > > formals,
+                                        RbPtr<std::list<RbPtr<SyntaxElement> > > stmts)
     : SyntaxElement(), returnType(new TypeSpec(RbObject_name)), functionName(name), formalArgs(formals), code(stmts) {
 
     if (type != NULL) {
@@ -52,40 +52,28 @@ SyntaxFunctionDef::SyntaxFunctionDef(   RbString* type,
         }
 
         // Create the type specification
-        delete returnType;
-        returnType = new TypeSpec(tpName );
+        returnType = RbPtr<TypeSpec>( new TypeSpec( tpName ) );
     }
 }
 
 
 /** Deep copy constructor */
-SyntaxFunctionDef::SyntaxFunctionDef(const SyntaxFunctionDef& x)
-    : SyntaxElement(x) {
+SyntaxFunctionDef::SyntaxFunctionDef(const SyntaxFunctionDef& x) : SyntaxElement(x) {
 
-    returnType   = new TypeSpec(x.returnType->getType());
-    functionName = new RbString(*functionName);
+    returnType   = RbPtr<TypeSpec>( new TypeSpec(*x.returnType) );
+    functionName = RbPtr<RbString>( new RbString(*functionName) );
  
-    for (std::list<SyntaxFormal*>::const_iterator i=x.formalArgs->begin(); i!=x.formalArgs->end(); i++)
-        formalArgs->push_back((SyntaxFormal*)((*i)->clone()));
+    for (std::list<RbPtr<SyntaxFormal> >::const_iterator i=x.formalArgs->begin(); i!=x.formalArgs->end(); i++)
+        formalArgs->push_back(RbPtr<SyntaxFormal>((*i)->clone()));
 
-    for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
-        code->push_back((*i)->clone());
+    for (std::list<RbPtr<SyntaxElement> >::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
+        code->push_back(RbPtr<SyntaxElement>( (*i)->clone() ));
 }
 
 
 /** Destructor deletes members */
 SyntaxFunctionDef::~SyntaxFunctionDef() {
     
-    delete returnType;
-    delete functionName;
-
-    for (std::list<SyntaxFormal*>::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
-        delete (*i);
-    delete formalArgs;
-
-    for (std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++)
-        delete (*i);
-    delete code;
 }
 
 
@@ -94,27 +82,13 @@ SyntaxFunctionDef& SyntaxFunctionDef::operator=(const SyntaxFunctionDef& x) {
 
     if (&x != this) {
 
-        delete returnType;
-        delete functionName;
-
-        for (std::list<SyntaxFormal*>::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
-            delete (*i);
-        delete formalArgs;
-
-        for (std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++)
-            delete (*i);
-        delete code;
-
         SyntaxElement::operator=(x);
 
-        returnType   = new TypeSpec(x.returnType->getType());
-        functionName = new RbString(*functionName);
-     
-        for (std::list<SyntaxFormal*>::const_iterator i=x.formalArgs->begin(); i!=x.formalArgs->end(); i++)
-            formalArgs->push_back((SyntaxFormal*)((*i)->clone()));
-
-        for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
-            code->push_back((*i)->clone());
+        returnType   = x.returnType;
+        functionName = x.functionName;
+        formalArgs   = x.formalArgs;
+        code         = x.code;
+        
     }
 
     return (*this);
@@ -147,27 +121,27 @@ const VectorString& SyntaxFunctionDef::getClass(void) const {
 
 
 /** Get semantic value: insert a user-defined function in the user workspace */
-Variable* SyntaxFunctionDef::getContentAsVariable(Environment* env) const {
+RbPtr<Variable> SyntaxFunctionDef::getContentAsVariable(RbPtr<Environment> env) const {
 
     // Get argument rules from the formals
     static ArgumentRules argRules;
 
-    for (std::list<SyntaxFormal*>::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
+    for (std::list<RbPtr<SyntaxFormal> >::const_iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
         argRules.push_back( (*i)->getArgumentRule(env) );
 
     // Create copy of the statements
-    std::list<SyntaxElement*>* stmts = new std::list<SyntaxElement*>();
-    for(std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++)
+    RbPtr<std::list<RbPtr<SyntaxElement> > > stmts( new std::list<RbPtr<SyntaxElement> >() );
+    for(std::list<RbPtr<SyntaxElement> >::const_iterator i=code->begin(); i!=code->end(); i++)
         stmts->push_back((*i));
 
     // Create an environment with the parent environment being the one in which the function was defined
-    Environment* defineEnvironment = new Environment(env);
+    RbPtr<Environment> defineEnvironment( new Environment(env) );
 
     // Create the function
-    UserFunction* theFunction = new UserFunction(argRules, *returnType, stmts, defineEnvironment);
+    RbPtr<UserFunction> theFunction( new UserFunction(argRules, *returnType, stmts, defineEnvironment) );
 
     // Insert in the user workspace
-    Workspace::userWorkspace().addFunction(*functionName, theFunction);
+    Workspace::userWorkspace()->addFunction(*functionName, theFunction);
 
     // No return value 
     return NULL;

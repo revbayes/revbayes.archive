@@ -36,18 +36,16 @@
 const TypeSpec VariableSlot::typeSpec(VariableSlot_name);
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, Variable *var) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, RbPtr<Variable> var) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
     
     variable = var;
-    variable->retain();
     
 }
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, Variable *var) : RbInternal() , varTypeSpec( TypeSpec(RbObject_name) ), label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, RbPtr<Variable> var) : RbInternal() , varTypeSpec( TypeSpec(RbObject_name) ), label(lbl) {
     
     variable = var;
-    variable->retain();
     
 }
 
@@ -55,7 +53,7 @@ VariableSlot::VariableSlot(const std::string &lbl, Variable *var) : RbInternal()
 /** Constructor of empty slot based on type specification */
 VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbInternal(), varTypeSpec(typeSp), label(lbl) {
     
-    variable = NULL;
+    variable = RbPtr<Variable>::getNullPtr();
     
 }
 
@@ -63,9 +61,8 @@ VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbI
 /** Copy constructor (shallow copy). */
 VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), varTypeSpec(x.varTypeSpec), label(x.label) {
     
-    if ( x.variable != NULL ) {
+    if ( x.variable.get() != NULL ) {
         variable = x.variable;
-        variable->retain();
     }
 }
 
@@ -73,12 +70,6 @@ VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), varTypeSpec(x
 /** Call a help function to remove the variable intelligently */
 VariableSlot::~VariableSlot(void) {
     
-    if (variable != NULL) {
-        variable->release();
-        if (variable->isUnreferenced()) {
-            delete variable;
-        }
-    }
 }
 
 
@@ -93,7 +84,7 @@ VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
         
         // Copy the new variable
         if ( x.variable != NULL ) {
-            variable = x.variable->clone();
+            variable = RbPtr<Variable>(x.variable->clone());
         }
     }
     
@@ -116,7 +107,7 @@ const VectorString& VariableSlot::getClass() const {
 
 
 /** Get a const pointer to the dag node */
-const DAGNode* VariableSlot::getDagNode( void ) const {
+const RbPtr<DAGNode> VariableSlot::getDagNode( void ) const {
     
     if (variable == NULL) 
         return NULL;
@@ -126,7 +117,7 @@ const DAGNode* VariableSlot::getDagNode( void ) const {
 
 
 /** Get a reference to the slot variable */
-DAGNode* VariableSlot::getDagNodePtr( void ) const {
+RbPtr<DAGNode> VariableSlot::getDagNodePtr( void ) const {
     
     if (variable == NULL) 
         return NULL;
@@ -142,13 +133,15 @@ const TypeSpec& VariableSlot::getTypeSpec(void) const {
 
 
 /** Get the value of the variable */
-const RbLanguageObject* VariableSlot::getValue( void ) const {
+const RbPtr<RbLanguageObject> VariableSlot::getValue( void ) const {
     
-    const RbLanguageObject *retVal = variable->getDagNodePtr()->getValue();
+    const RbPtr<RbLanguageObject> retVal = variable->getDagNodePtr()->getValue();
     
     // check the type and if we need conversion
     if (!retVal->isTypeSpec(varTypeSpec)) {
-        retVal = dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec));
+        RbPtr<RbLanguageObject> convRetVal( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
+        
+        return convRetVal;
     }
     
     return retVal;
@@ -156,7 +149,7 @@ const RbLanguageObject* VariableSlot::getValue( void ) const {
 
 
 /** Is variable valid for the slot? Additional type checking here */
-bool VariableSlot::isValidVariable( DAGNode* newVariable ) const {
+bool VariableSlot::isValidVariable( RbPtr<DAGNode> newVariable ) const {
     
     return true;    // No additional requirements here, but see MemberSlot
 }
@@ -174,21 +167,12 @@ void VariableSlot::printValue(std::ostream& o) const {
 
 
 /** Set variable */
-void VariableSlot::setVariable(Variable *var) {
+void VariableSlot::setVariable(RbPtr<Variable> var) {
     
     // change the old variable with the new variable in the parent and children
     
-    // release the old variable
-    if (variable != NULL) {
-        variable->release();
-        if (variable->isUnreferenced()) {
-            delete variable;
-        }
-    }
-    
     // set and retain the new variable
     variable = var;
-    variable->retain();
     
 }
 

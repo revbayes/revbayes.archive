@@ -53,16 +53,16 @@ public:
 
     // Vector functions
     void                        clear(void);                                                    //!< Clear
-    RbString*                   getElement(size_t index) const;                                 //!< Get element
+    RbPtr<RbObject>             getElement(size_t index) const;                                 //!< Get element
     std::vector<std::string>    getValue(void) const;                                           //!< Get the value vector as a std::vector
     void                        pop_back(void);                                                 //!< Drop element at back
     void                        pop_front(void);                                                //!< Drop element from front
-    void                        push_back(RbObject* x);                                         //!< Append element to end
+    void                        push_back(RbPtr<RbObject> x);                                   //!< Append element to end
     void                        push_back(const std::string &x);                                //!< Append element to end
-    void                        push_front(RbObject* x);                                        //!< Add element in front
+    void                        push_front(RbPtr<RbObject> x);                                  //!< Add element in front
     void                        resize(size_t n);                                               //!< Resize to new AbstractVector of length n
-    void                        setElement(const size_t index, RbLanguageObject* elem);         //!< Set element with type conversion
-    void                        setValue(const VectorString& x);                               //!< Set the value
+    void                        setElement(const size_t index, RbPtr<RbLanguageObject> elem);   //!< Set element with type conversion
+    void                        setValue(const VectorString& x);                                //!< Set the value
     void                        setValue(const std::vector<std::string>& x);                    //!< Set the value
     void                        sort(void);                                                     //!< sort the AbstractVector
     size_t                      size(void) const;                                               //!< get the number of elements in the AbstractVector

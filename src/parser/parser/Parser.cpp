@@ -47,7 +47,7 @@ bool foundErrorBeforeEnd;
 
 
 /** This function causes recursive execution of a syntax tree by calling the root to get its value */
-int Parser::execute(SyntaxElement *root) const {
+int Parser::execute(RbPtr<SyntaxElement> root) const {
 
 #	ifdef DEBUG_PARSER
     // Print syntax tree
@@ -58,12 +58,12 @@ int Parser::execute(SyntaxElement *root) const {
 #	endif
 
     // Declare a variable for the result
-    Variable *result;
+    RbPtr<Variable> result;
     
     //! Execute syntax tree
     try {
         PRINTF("Parser getting the semantic value of the syntax tree...\n");
-        result = root->getContentAsVariable(&Workspace::userWorkspace());
+        result = root->getContentAsVariable(RbPtr<Environment>(Workspace::userWorkspace().get()));
     }
     catch(RbException& rbException) {
 
@@ -75,11 +75,12 @@ int Parser::execute(SyntaxElement *root) const {
 
         // Catch a missing variable exception that might be interpreted as a request for
         // usage help on a function
-        SyntaxVariable* theVariable = dynamic_cast<SyntaxVariable*>( root );
+        SyntaxVariable *rootPtr = dynamic_cast<SyntaxVariable*>(root.get());
+        RbPtr<SyntaxVariable> theVariable( rootPtr );
         if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL && !theVariable->isMemberVariable() ) {
 
-            RbString* fxnName = theVariable->getIdentifier()->clone();
-            std::vector<const RbFunction*> functions = Workspace::userWorkspace().getFunctionTable()->findFunctions( *fxnName );
+            RbPtr<RbString> fxnName = theVariable->getIdentifier();
+            std::vector<const RbFunction*> functions = Workspace::userWorkspace()->getFunctionTable()->findFunctions( *fxnName );
             if ( functions.size() != 0 ) {
                 RBOUT( "Usage:" );
                 for ( std::vector<const RbFunction*>::iterator i=functions.begin(); i!=functions.end(); i++ ) {
@@ -105,14 +106,6 @@ int Parser::execute(SyntaxElement *root) const {
         result->getDagNodePtr()->printValue(msg);
         RBOUT( msg.str() );
     }
-
-    // Delete syntax tree and result
-    if ( result != NULL ) {
-        if (result->isUnreferenced()) {
-            delete result;
-        }
-    }
-//    delete root;
 
     // Return success
     return 0;
@@ -154,7 +147,7 @@ void Parser::getline(char* buf, size_t maxsize) {
 
 
 /** This function gets help info about a symbol */
-int Parser::help(RbString *symbol) const {
+int Parser::help(RbPtr<RbString> symbol) const {
 
     std::ostringstream msg;
 
@@ -178,7 +171,7 @@ int Parser::help(RbString *symbol) const {
         else if ( userHelp.isHelpAvailableForQuery(std::string(*symbol)) == false )
             RBOUT("Help unavailable for \"" + std::string(*symbol) + "\"");
 
-        std::vector<const RbFunction*> functions = Workspace::userWorkspace().getFunctionTable()->findFunctions( *symbol );
+        std::vector<const RbFunction*> functions = Workspace::userWorkspace()->getFunctionTable()->findFunctions( *symbol );
         if ( functions.size() != 0 ) {
             RBOUT( "Usage:" );
             for ( std::vector<const RbFunction*>::iterator i=functions.begin(); i!=functions.end(); i++ ) {
@@ -187,16 +180,13 @@ int Parser::help(RbString *symbol) const {
         }
     }
 
-    // Delete the symbol
-    delete symbol;
-
     // Return success
     return 0;
 }
 
 
 /** This function prints help info about a function if it sees a function call */
-int Parser::help(SyntaxElement *root) const {
+int Parser::help(RbPtr<SyntaxElement> root) const {
 
     std::ostringstream msg;
 
@@ -208,19 +198,17 @@ int Parser::help(SyntaxElement *root) const {
     std::cerr << std::endl;
 #	endif
 
-    RbString* symbol;
+    RbPtr<RbString> symbol;
 
     if ( root->isType(SyntaxFunctionCall_name) ) {
-        symbol = static_cast<SyntaxFunctionCall*>( root )->getFunctionName()->clone();
+        symbol = RbPtr<RbString>( static_cast<SyntaxFunctionCall*>( root.get() )->getFunctionName() );
     }
     else {
         msg << "I have no clue -- Bison was not supposed to ask me about this!";
         RBOUT(msg.str());
-        delete root;
         return 1;
     }
 
-    delete root;
     return help( symbol );
 }
 

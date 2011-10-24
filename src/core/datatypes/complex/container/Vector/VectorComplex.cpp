@@ -147,12 +147,12 @@ const VectorString& VectorComplex::getClass(void) const {
 }
 
 
-Complex* VectorComplex::getElement(size_t index) const {
+RbPtr<RbObject> VectorComplex::getElement(size_t index) const {
     
     if (index >= elements.size())
         throw RbException("Index out of bounds");
     
-    Complex *c = new Complex(elements[index]);
+    RbPtr<RbObject> c( new Complex(elements[index]) );
     return c;
 }
 
@@ -208,10 +208,10 @@ void VectorComplex::printValue(std::ostream& o) const {
 
 
 /** Push an int onto the back of the vector after checking */
-void VectorComplex::push_back( RbObject *x ) {
+void VectorComplex::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
-        elements.push_back(static_cast<Complex*>(x)->getValue());
+        elements.push_back(static_cast<Complex*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Complex_name) ) {
         elements.push_back(static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
     }
@@ -229,10 +229,10 @@ void VectorComplex::push_back(std::complex<double> x) {
 
 
 /** Push an int onto the front of the vector after checking */
-void VectorComplex::push_front( RbObject *x ) {
+void VectorComplex::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
-        elements.insert( elements.begin(), static_cast<Complex*>(x)->getValue());
+        elements.insert( elements.begin(), static_cast<Complex*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Complex_name) ) {
         elements.insert( elements.begin(), static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
     }
@@ -263,7 +263,7 @@ std::string VectorComplex::richInfo(void) const {
 }
 
 
-void VectorComplex::setElement(const size_t index, RbLanguageObject *x) {
+void VectorComplex::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
     
     // check for type and convert if necessary
     if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
@@ -271,7 +271,7 @@ void VectorComplex::setElement(const size_t index, RbLanguageObject *x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<Complex*>(x)->getValue());
+        elements.insert( elements.begin() + index, static_cast<Complex*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Complex_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

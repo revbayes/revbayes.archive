@@ -36,37 +36,26 @@ VariableNode::VariableNode( const std::string& valType ) : DAGNode( valType ), t
 /** Copy Constructor */
 VariableNode::VariableNode(const VariableNode &v) : DAGNode(v) {
     touched = false;
-    storedValue = NULL;
+    storedValue = RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 
 /** Destructor */
 VariableNode::~VariableNode( void ) {
 
-    
-    if ( storedValue != NULL ) {
-        storedValue->release();
-        if (storedValue->isUnreferenced()) {
-            delete storedValue;
-        }
-    }
 
     /* Remove this node as a child node of parents and delete these if appropriate */
-    for ( std::set<DAGNode*>::iterator i = parents.begin(); i != parents.end(); i++ ) {
-        (*i)->removeChildNode( this );
-        (*i)->release();
-        if ((*i)->isUnreferenced()) {
-            delete (*i);
-        }
+    for ( std::set<RbPtr<DAGNode> >::iterator i = parents.begin(); i != parents.end(); i++ ) {
+        RbPtr<DAGNode> node = *i;
+        node->removeChildNode( this );
     }
 }
 
 /** add a child node */
-void VariableNode::addParentNode(DAGNode *p) {
+void VariableNode::addParentNode(RbPtr<DAGNode> p) {
     PRINTF("Adding parent with name \"%s\" to child with name \"%s\".\n",p->getName().c_str(),getName().c_str());
 
     // retain and add the parent
-    p->retain();
     parents.insert(p);
 }
 

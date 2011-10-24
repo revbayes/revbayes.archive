@@ -45,15 +45,9 @@ DagNodeContainer::~DagNodeContainer(void) {
 }
 
 
-/** Clear contents of value container and make length 0 in all dimensions */
+/** Clear contents of value container */
 void DagNodeContainer::clear( void ) {
     
-    for ( std::vector<VariableSlot*>::iterator i = elements.begin(); i != elements.end(); i++ ) {
-        (*i)->release();
-        if ((*i)->isUnreferenced()) {
-            delete ( *i );
-        }
-    }
     elements.clear();
 }
 
@@ -68,10 +62,10 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
     if (type.getBaseType() == Vector_name) {
         // test whether each object in the container is actually a constant node holding a value
         Vector* valueVector = new Vector(*type.getElementType());
-        for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            DAGNode *theNode = (*it)->getDagNodePtr();
+        for (std::vector<RbPtr<VariableSlot> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+            RbPtr<DAGNode> theNode = (*it)->getDagNodePtr();
             if (theNode->isType(ConstantNode_name) && theNode->getValue()->isTypeSpec(*type.getElementType())) {
-                RbLanguageObject* element = theNode->getValuePtr();
+                RbPtr<RbObject> element( theNode->getValuePtr().get() );
                 valueVector->push_back(element);
             }
             else {
@@ -95,7 +89,7 @@ const VectorString& DagNodeContainer::getClass(void) const {
 }
 
 /** Get element */
-VariableSlot* DagNodeContainer::getElement(const size_t index) const {
+RbPtr<RbObject> DagNodeContainer::getElement(const size_t index) const {
     
     // test if the index is outside the current range
     if (index >= size()) {
@@ -103,7 +97,7 @@ VariableSlot* DagNodeContainer::getElement(const size_t index) const {
         throw RbException("Index out of bounds in DagNodeContainer.");
     }
     
-    return elements[index];
+    return RbPtr<RbObject>(elements[index].get());
 }
 
 
@@ -118,8 +112,8 @@ bool DagNodeContainer::isConvertibleTo(TypeSpec const &type) const {
     
     if (type.getBaseType() == Vector_name) {
         // test whether each object in the container is actually a constant node holding a value
-        for (std::vector<VariableSlot*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            DAGNode *theNode = (*it)->getDagNodePtr();
+        for (std::vector<RbPtr<VariableSlot> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+            RbPtr<DAGNode> theNode = (*it)->getDagNodePtr();
             if (!theNode->isType(ConstantNode_name) || !theNode->getValue()->isTypeSpec(*type.getElementType())) {
                 return false;
             }
@@ -143,12 +137,12 @@ void DagNodeContainer::pop_front(void) {
 }
 
 
-void DagNodeContainer::push_back(RbObject *x) {
+void DagNodeContainer::push_back(RbPtr<RbObject> x) {
     
     // we expect to receive a parameter of type Variable
-    Variable *var           = dynamic_cast<Variable*>(x);
+    RbPtr<Variable> var( dynamic_cast<Variable*>(x.get()) );
     if (var != NULL) {
-        VariableSlot *theSlot   = new VariableSlot(EmptyString,var);
+        RbPtr<VariableSlot> theSlot( new VariableSlot(EmptyString,var) );
         elements.push_back(theSlot);
     }
     else {
@@ -158,12 +152,12 @@ void DagNodeContainer::push_back(RbObject *x) {
 }
 
 
-void DagNodeContainer::push_front(RbObject *x) {
+void DagNodeContainer::push_front(RbPtr<RbObject> x) {
     
     // we expect to receive a parameter of type Variable
-    Variable *var           = dynamic_cast<Variable*>(x);
+    RbPtr<Variable> var( dynamic_cast<Variable*>(x.get()) );
     if (var != NULL) {
-        VariableSlot *theSlot   = new VariableSlot(EmptyString,var);
+        RbPtr<VariableSlot> theSlot( new VariableSlot(EmptyString,var) );
         elements.insert( elements.begin(), theSlot );
     }
     else {
@@ -179,7 +173,7 @@ void DagNodeContainer::push_front(RbObject *x) {
 void DagNodeContainer::printValue( std::ostream& o ) const {
     
     o << "[ ";
-    for ( std::vector<VariableSlot*>::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
+    for ( std::vector<RbPtr<VariableSlot> >::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
         if ( i != elements.begin() )
             o << ", ";
         if ( (*i) == NULL )
@@ -201,9 +195,8 @@ void DagNodeContainer::resize( size_t n ) {
     
     // add NULL elements for each new element
     for ( size_t i = elements.size(); i <= n; i++ ) {
-        Variable *emptyVar = new Variable(EmptyString);
-        VariableSlot *emptySlot = new VariableSlot(EmptyString, emptyVar );
-        emptySlot->retain();
+        RbPtr<Variable> emptyVar( new Variable(EmptyString) );
+        RbPtr<VariableSlot> emptySlot( new VariableSlot( EmptyString, emptyVar ) );
         elements.push_back( emptySlot );
     }
     
@@ -222,14 +215,14 @@ std::string DagNodeContainer::richInfo(void) const {
 
 
 /** Set element */
-void DagNodeContainer::setElement(const size_t index, RbObject *elem) {
+void DagNodeContainer::setElement(const size_t index, RbPtr<RbObject> elem) {
     if (index >= size()) {
         throw RbException("Cannot set element in DagNodeContainer outside the current range.");
     }
     // we expect to receive a parameter of type Variable
-    Variable *var           = dynamic_cast<Variable*>(elem);
-    if (var != NULL) {
-        VariableSlot *theSlot = elements[index];
+    RbPtr<Variable> var( dynamic_cast<Variable*>(elem.get()) );
+    if (var.get() != NULL) {
+        RbPtr<VariableSlot> theSlot = elements[index];
         theSlot->setVariable(var);
     }
     else {
@@ -239,11 +232,11 @@ void DagNodeContainer::setElement(const size_t index, RbObject *elem) {
 
 
 /** Set element */
-void DagNodeContainer::setElement(const size_t index, Variable *elem) {
+void DagNodeContainer::setElement(const size_t index, RbPtr<Variable> elem) {
     if (index >= size()) {
         throw RbException("Cannot set element in DagNodeContainer outside the current range.");
     }
-    VariableSlot *theSlot = elements[index];
+    RbPtr<VariableSlot> theSlot = elements[index];
     theSlot->setVariable(elem);
 }
 
@@ -264,7 +257,7 @@ void DagNodeContainer::sort( void ) {
 void DagNodeContainer::unique(void) {
     
     sort();
-    std::vector<VariableSlot*> uniqueVector;
+    std::vector<RbPtr<VariableSlot> > uniqueVector;
     uniqueVector.push_back (elements[0]);
     for (size_t i = 1 ; i< elements.size() ; i++)
     {

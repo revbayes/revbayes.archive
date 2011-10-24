@@ -16,6 +16,7 @@
  */
 
 #include "ValueRule.h"
+#include "RbPtr.h"
 #include "RbUtil.h"
 #include "RbString.h"
 #include "Signals.h"
@@ -34,42 +35,31 @@ const TypeSpec UserFunction::typeSpec(UserFunction_name);
 /** Basic constructor */
 UserFunction::UserFunction( const ArgumentRules&        argRules,
                             const TypeSpec&             retType,
-                            std::list<SyntaxElement*>*  stmts,
-                            Environment*                defineEnv)
+                            RbPtr<std::list<RbPtr<SyntaxElement> > >  stmts,
+                            RbPtr<Environment>                defineEnv)
 : RbFunction(), argumentRules(argRules), returnType(retType), code(stmts), defineEnvironment(defineEnv) {
-    defineEnvironment->retain();
+    
 }
 
 
 /** Copy constructor */
-UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules(x.argumentRules), returnType(x.returnType) {
+UserFunction::UserFunction(const UserFunction &x) : RbFunction(x), argumentRules(x.argumentRules), returnType(x.returnType), code(RbPtr<std::list<RbPtr<SyntaxElement> > >::getNullPtr()), defineEnvironment(RbPtr<Environment>::getNullPtr()) {
 
     // clone the environment
-    defineEnvironment   = x.defineEnvironment->clone();
-    defineEnvironment->retain();
+    defineEnvironment   = RbPtr<Environment>( x.defineEnvironment->clone() );
     
     // create a new list for the code
-    code                = new std::list<SyntaxElement*>();
-    for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++) {
+    code = RbPtr<std::list<RbPtr<SyntaxElement> > >(new std::list<RbPtr<SyntaxElement> >());
+    for (std::list<RbPtr<SyntaxElement> >::const_iterator i=x.code->begin(); i!=x.code->end(); i++) {
 //        SyntaxElement *element = (*i)->clone();
-        SyntaxElement *element = *i;
+        RbPtr<SyntaxElement> element = *i;
         code->push_back(element);
-        element->retain();
     }
 }
 
 
 /** Destructor */
 UserFunction::~UserFunction() {
-
-    for (std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++) {
-        (*i)->release();
-        if ((*i)-isUnreferenced()) {
-            delete (*i);
-        }
-    }
-    
-    delete code;
 
     // defineEnvironment->destroyEnclosure();   //TODO: or something like that
 }
@@ -94,34 +84,25 @@ UserFunction* UserFunction::clone(void) const {
 
 
 /** Execute function */
-RbLanguageObject* UserFunction::execute( void ) {
+RbPtr<RbLanguageObject> UserFunction::execute( void ) {
 
     // Clear signals
     Signals::getSignals().clearFlags();
 
     // Set initial return value
-    Variable* retValue = NULL;
-    
-    // retain the arg because they will be destroyed otherwise when we destroy this function environment
-    args.retain();
+    RbPtr<Variable> retValue(NULL);
 
     // Create new variable frame
-    Environment* functionEnvironment = new Environment( &args );
+    RbPtr<Environment> functionEnvironment(new Environment( RbPtr<Environment>(&args) ) );
 
     // Execute code
-    for ( std::list<SyntaxElement*>::iterator i=code->begin(); i!=code->end(); i++ ) {
-    
-        if ( retValue != NULL && retValue->isUnreferenced() )
-            delete retValue;
+    for ( std::list<RbPtr<SyntaxElement> >::iterator i=code->begin(); i!=code->end(); i++ ) {
 
         retValue = (*i)->getContentAsVariable( functionEnvironment );
 
         if ( Signals::getSignals().isSet( Signals::RETURN ) )
             break;
     }
-
-    // Delete the variable frame of the function
-    delete functionEnvironment;
 
     // Return the return value
     return retValue->getDagNodePtr()->getValuePtr();

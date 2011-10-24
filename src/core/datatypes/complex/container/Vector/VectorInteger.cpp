@@ -173,12 +173,12 @@ const VectorString& VectorInteger::getClass() const {
 }
 
 
-Integer* VectorInteger::getElement(size_t index) const {
+RbPtr<RbObject> VectorInteger::getElement(size_t index) const {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
-    Integer *n = new Integer(elements[index]);
+    RbPtr<RbObject> n( new Integer(elements[index]) );
     
     return n;
 }
@@ -234,10 +234,10 @@ void VectorInteger::pop_front(void) {
 
 
 /** Push an int onto the back of the vector after checking */
-void VectorInteger::push_back( RbObject *x ) {
+void VectorInteger::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Integer_name) ) ) {
-        elements.push_back(static_cast<Integer*>(x)->getValue());
+        elements.push_back(static_cast<Integer*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Integer_name) ) {
         elements.push_back(static_cast<Integer*>(x->convertTo(Integer_name))->getValue());
     }
@@ -254,10 +254,10 @@ void VectorInteger::push_back(int x) {
 
 
 /** Push an int onto the front of the vector after checking */
-void VectorInteger::push_front( RbObject *x ) {
+void VectorInteger::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Integer_name) ) ) {
-        elements.insert( elements.begin(), static_cast<Integer*>(x)->getValue());
+        elements.insert( elements.begin(), static_cast<Integer*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Integer_name) ) {
         elements.insert( elements.begin(), static_cast<Integer*>(x->convertTo(Integer_name))->getValue());
     }
@@ -290,7 +290,7 @@ std::string VectorInteger::richInfo(void) const {
 }
 
 
-void VectorInteger::setElement(const size_t index, RbLanguageObject *x) {
+void VectorInteger::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
     
     // check for type and convert if necessary
     if ( x->isTypeSpec( TypeSpec(Integer_name) ) ) {
@@ -298,7 +298,7 @@ void VectorInteger::setElement(const size_t index, RbLanguageObject *x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<Integer*>(x)->getValue());
+        elements.insert( elements.begin() + index, static_cast<Integer*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Integer_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

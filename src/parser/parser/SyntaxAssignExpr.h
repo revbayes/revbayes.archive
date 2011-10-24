@@ -34,12 +34,12 @@ class SyntaxAssignExpr : public SyntaxElement {
         enum operatorT { ArrowAssign, TildeAssign, TildeIidAssign, EquationAssign };                    //!< Enum of operator types
         static std::string opCode[];                                                                    //!< Operator codes for printing
 
-                                    SyntaxAssignExpr(operatorT              op,
-                                                     SyntaxVariable*        var,
-                                                     SyntaxElement*         expr);                      //!< Constructor with lhs = variable
-                                    SyntaxAssignExpr(operatorT              op,
-                                                     SyntaxFunctionCall*    fxnCall,
-                                                     SyntaxElement*         expr);                      //!< Constructor with lhs = function call
+                                    SyntaxAssignExpr(operatorT                  op,
+                                                     RbPtr<SyntaxVariable>      var,
+                                                     RbPtr<SyntaxElement>       expr);                  //!< Constructor with lhs = variable
+                                    SyntaxAssignExpr(operatorT                  op,
+                                                     RbPtr<SyntaxFunctionCall>  fxnCall,
+                                                     RbPtr<SyntaxElement>       expr);                  //!< Constructor with lhs = function call
                                     SyntaxAssignExpr(const SyntaxAssignExpr& x);                        //!< Copy constructor
 	    virtual                    ~SyntaxAssignExpr();                                                 //!< Destructor
 
@@ -54,12 +54,12 @@ class SyntaxAssignExpr : public SyntaxElement {
         void                        print(std::ostream& o) const;                                       //!< Print info about object
 
     // Regular functions
-        Variable*                   getContentAsVariable(Environment* env) const;                       //!< Get semantic value
+        RbPtr<Variable>             getContentAsVariable(RbPtr<Environment> env) const;                 //!< Get semantic value
 
     protected:
-        SyntaxVariable*             variable;                                                           //!< A lhs variable (or NULL)
-        SyntaxFunctionCall*         functionCall;                                                       //!< A lhs function call (or NULL)
-        SyntaxElement*              expression;                                                         //!< The rhs expression
+        RbPtr<SyntaxVariable>       variable;                                                           //!< A lhs variable (or NULL)
+        RbPtr<SyntaxFunctionCall>   functionCall;                                                       //!< A lhs function call (or NULL)
+        RbPtr<SyntaxElement>        expression;                                                         //!< The rhs expression
         SyntaxAssignExpr::operatorT opType;                                                             //!< The type of assignment
     
     private:

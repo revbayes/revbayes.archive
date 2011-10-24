@@ -30,10 +30,10 @@ const std::string SyntaxVariableDecl_name = "Variable declaration";
 class SyntaxVariableDecl : public SyntaxElement {
     
     public:
-                                    SyntaxVariableDecl(RbString*                    typeName,
-                                                       std::list<SyntaxElement*>*   lengths,
-                                                       RbString*                    referenceChar,
-                                                       RbString*                    varName);       //!< Basic constructor
+                                    SyntaxVariableDecl(RbPtr<RbString>                    typeName,
+                                                       RbPtr<std::list<RbPtr<SyntaxElement> > >   lengths,
+                                                       RbPtr<RbString>                    referenceChar,
+                                                       RbPtr<RbString>                    varName);       //!< Basic constructor
                                     SyntaxVariableDecl(const SyntaxVariableDecl& x);                //!< Copy constructor
         virtual                    ~SyntaxVariableDecl();                                           //!< Destructor
         
@@ -48,13 +48,13 @@ class SyntaxVariableDecl : public SyntaxElement {
         void                        print(std::ostream& o) const;                                   //!< Print info about object
         
         // Regular functions
-        Variable*                   getContentAsVariable(Environment* env) const;                   //!< Get semantic value
+        RbPtr<Variable>             getContentAsVariable(RbPtr<Environment> env) const;                   //!< Get semantic value
         
     protected:
-        RbString*                   elementTypeName;                                                //!< Element type of the variable
-        std::list<SyntaxElement*>*  lengthExpr;                                                     //!< Lengths in different dimensions
-        RbString*                   referenceSymbol;                                                //!< Is reference? ("&" or "")
-        RbString*                   variableName;                                                   //!< Variable name
+        RbPtr<RbString>             elementTypeName;                                                //!< Element type of the variable
+        RbPtr<std::list<RbPtr<SyntaxElement> > >  lengthExpr;                                       //!< Lengths in different dimensions
+        RbPtr<RbString>             referenceSymbol;                                                //!< Is reference? ("&" or "")
+        RbPtr<RbString>             variableName;                                                   //!< Variable name
     
     private:
         static const TypeSpec       typeSpec;

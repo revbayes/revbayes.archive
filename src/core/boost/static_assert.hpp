@@ -14,8 +14,8 @@
 #ifndef BOOST_STATIC_ASSERT_HPP
 #define BOOST_STATIC_ASSERT_HPP
 
-#include <boost/config.hpp>
-#include <boost/detail/workaround.hpp>
+#include "config.hpp"
+#include "workaround.hpp"
 
 #ifndef BOOST_NO_STATIC_ASSERT
 #  define BOOST_STATIC_ASSERT_MSG( B, Msg ) static_assert(B, Msg)

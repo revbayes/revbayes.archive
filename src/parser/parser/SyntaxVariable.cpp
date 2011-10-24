@@ -39,25 +39,25 @@
 const TypeSpec SyntaxVariable::typeSpec(SyntaxVariable_name);
 
 /** Construct from identifier and index */
-SyntaxVariable::SyntaxVariable(RbString* id, std::list<SyntaxElement*>* indx) :
+SyntaxVariable::SyntaxVariable(RbPtr<RbString> id, RbPtr<std::list<RbPtr<SyntaxElement> > > indx) :
     SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(NULL) {
 }
 
 
 /** Construct from function call and index */
-SyntaxVariable::SyntaxVariable(SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx) :
+SyntaxVariable::SyntaxVariable(RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<std::list<RbPtr<SyntaxElement> > > indx) :
 SyntaxElement(), identifier(NULL), functionCall(fxnCall), index(indx), baseVariable(NULL) {
 }
 
 
 /** Construct from base variable (member object), identifier and index */
-SyntaxVariable::SyntaxVariable(SyntaxVariable* var, RbString* id, std::list<SyntaxElement*>* indx) :
+SyntaxVariable::SyntaxVariable(RbPtr<SyntaxVariable> var, RbPtr<RbString> id, RbPtr<std::list<RbPtr<SyntaxElement> > > indx) :
     SyntaxElement(), identifier(id), functionCall(NULL), index(indx), baseVariable(var) {
 }
 
 
 /** Construct from base variable (member object), function call and index */
-SyntaxVariable::SyntaxVariable(SyntaxVariable* var, SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx) :
+SyntaxVariable::SyntaxVariable(RbPtr<SyntaxVariable> var, RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<std::list<RbPtr<SyntaxElement> > > indx) :
     SyntaxElement(), identifier(NULL), functionCall(fxnCall), index(indx), baseVariable(var) {
 }
 
@@ -66,37 +66,29 @@ SyntaxVariable::SyntaxVariable(SyntaxVariable* var, SyntaxFunctionCall* fxnCall,
 SyntaxVariable::SyntaxVariable(const SyntaxVariable& x)
     : SyntaxElement(x) {
 
-    identifier = x.identifier->clone();
+    identifier = RbPtr<RbString>( x.identifier->clone() );
     if ( x.baseVariable != NULL )
-        baseVariable = x.baseVariable->clone();
+        baseVariable = RbPtr<SyntaxVariable>( x.baseVariable->clone() );
     else
-        baseVariable = NULL;
+        baseVariable = RbPtr<SyntaxVariable>::getNullPtr();
     if ( x.functionCall != NULL )
-        functionCall = x.functionCall->clone();
+        functionCall = RbPtr<SyntaxFunctionCall>( x.functionCall->clone() );
     else
-        functionCall = NULL;
+        functionCall = RbPtr<SyntaxFunctionCall>::getNullPtr();
     if ( x.index != NULL ) {
-        index = new std::list<SyntaxElement*>();
-        for (std::list<SyntaxElement*>::iterator i=x.index->begin(); i!=x.index->end(); i++) {
-            index->push_back((*i)->clone());
+        index = RbPtr<std::list<RbPtr<SyntaxElement> > >( new std::list<RbPtr<SyntaxElement> >() );
+        for (std::list<RbPtr<SyntaxElement> >::const_iterator i=x.index->begin(); i!=x.index->end(); i++) {
+            index->push_back(RbPtr<SyntaxElement>( (*i)->clone() ));
         }
     }
     else
-        index = NULL;
+        index = RbPtr<std::list<RbPtr<SyntaxElement> > >::getNullPtr();
 }
 
 
 /** Destructor deletes variable, identifier and index */
 SyntaxVariable::~SyntaxVariable() {
     
-    delete identifier;
-    delete functionCall;
-    delete baseVariable;
-    if ( index != NULL ) {
-        for (std::list<SyntaxElement*>::iterator i=(*index).begin(); i!=(*index).end(); i++)
-            delete (*i);
-        delete index;
-    }
 }
 
 
@@ -104,32 +96,14 @@ SyntaxVariable::~SyntaxVariable() {
 SyntaxVariable& SyntaxVariable::operator=(const SyntaxVariable& x) {
 
     if (&x != this) {
-    
-        delete identifier;
-        delete functionCall;
-        delete baseVariable;
-        for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++)
-            delete (*i);
-        delete index;
-
-        identifier   = NULL;
-        functionCall = NULL;
-        baseVariable = NULL;
-        index        = NULL;
 
         SyntaxElement::operator=(x);
 
-        if ( x.identifier != NULL )
-            identifier = x.identifier->clone();
-        if ( x.functionCall != NULL )
-            functionCall = x.functionCall->clone();
-        if ( baseVariable != NULL )
-            baseVariable = x.baseVariable->clone();
+        identifier = x.identifier;
+        functionCall = x.functionCall;
+        baseVariable = x.baseVariable;
 
-        index = new std::list<SyntaxElement*>();
-        for (std::list<SyntaxElement*>::iterator i=x.index->begin(); i!=x.index->end(); i++) {
-            index->push_back((*i)->clone());
-        }
+        index = x.index;
     }
 
     return (*this);
@@ -146,7 +120,7 @@ std::string SyntaxVariable::briefInfo () const {
     else
         o << "SyntaxVariable: <base>." << std::string(*identifier);
 
-    for (std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++)
+    for (std::list<RbPtr<SyntaxElement> >::const_iterator i=index->begin(); i!=index->end(); i++)
         o << "[<" << (*i) << ">]";
 
     return o.str();
@@ -169,7 +143,7 @@ const VectorString& SyntaxVariable::getClass(void) const {
 
 
 /** Return nice representation of the syntax element */
-std::string SyntaxVariable::getFullName(Environment* env) const {
+std::string SyntaxVariable::getFullName(RbPtr<Environment> env) const {
 
     std::ostringstream theName;
     if (baseVariable != NULL)
@@ -182,12 +156,12 @@ std::string SyntaxVariable::getFullName(Environment* env) const {
 
 
 /** Get index */
-VectorNatural SyntaxVariable::getIndex( Environment* env ) const {
+VectorNatural SyntaxVariable::getIndex( RbPtr<Environment> env ) const {
     
     VectorNatural   theIndex;
     
     int count = 1;
-    for ( std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++, count++ ) {
+    for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=index->begin(); i!=index->end(); i++, count++ ) {
         
         if ( (*i) == NULL )
             
@@ -195,12 +169,12 @@ VectorNatural SyntaxVariable::getIndex( Environment* env ) const {
         
         else {
             
-            DAGNode* indexVar = (*i)->getContentAsVariable( env )->getDagNodePtr();
+            RbPtr<DAGNode> indexVar = (*i)->getContentAsVariable( env )->getDagNodePtr();
             
             if ( indexVar->getValue()->isTypeSpec( TypeSpec(Integer_name) ) ) {
                 
                 // Calculate (or get) an integer index
-                int intIndex = static_cast<const Integer*>( indexVar->getValue() )->getValue(); 
+                int intIndex = static_cast<const Integer*>( indexVar->getValue().get() )->getValue(); 
                 
                 if ( intIndex < 1 ) {
                     
@@ -225,9 +199,6 @@ VectorNatural SyntaxVariable::getIndex( Environment* env ) const {
             
             else {
                 
-                if ( indexVar->isUnreferenced())
-                    delete indexVar;
-                
                 std::ostringstream msg;
                 msg << "Index " << count << " for ";
                 if ( baseVariable != NULL )
@@ -236,10 +207,6 @@ VectorNatural SyntaxVariable::getIndex( Environment* env ) const {
                 msg << " of wrong type (neither " << Integer_name << " nor " << RbString_name << ")";
                 throw RbException( msg );
             }
-            
-            // Avoid memory leak
-            if ( indexVar->isUnreferenced() )
-                delete indexVar;
         }
     }
     
@@ -257,29 +224,28 @@ VectorNatural SyntaxVariable::getIndex( Environment* env ) const {
  * frame; instead, we return a NULL pointer and set theSlot pointer
  * to NULL as well.
  */
-VariableSlot* SyntaxVariable::getSlot(Environment* env) const {
+RbPtr<VariableSlot> SyntaxVariable::getSlot(RbPtr<Environment> env) const {
     
     /* Get index */
     VectorNatural indices = getIndex(env);
     
-    VariableSlot *theSlot = NULL;
+    RbPtr<VariableSlot> theSlot( NULL );
     
     /* Get variable */
-    DAGNode* theDagNode = NULL;
+    RbPtr<DAGNode> theDagNode( NULL );
     if ( baseVariable == NULL ) {
         
         if ( functionCall == NULL ) {
 
             if ( !env->existsVariable( *identifier ) ) {
                 // create a new slot
-                theDagNode          = NULL;
-                Variable *theVar    = new Variable( *identifier );
+                RbPtr<Variable> theVar( new Variable( *identifier ) );
                 env->addVariable(*identifier,theVar);
             }
             
             // get the slot and variable
-            theSlot          = &( (*env)[ (*identifier) ] );
-            Variable *theVar = theSlot->getVariable();
+            theSlot          = ( (*env)[ (*identifier) ] );
+            RbPtr<Variable> theVar( theSlot->getVariable() );
             theDagNode       = theVar->getDagNodePtr();
                 
         }

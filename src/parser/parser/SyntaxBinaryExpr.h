@@ -41,8 +41,8 @@ class SyntaxBinaryExpr : public SyntaxElement {
 
         // Constructors and destructor
                                 SyntaxBinaryExpr(SyntaxBinaryExpr::operatorT    op,
-                                             SyntaxElement*                 lhs,
-                                             SyntaxElement*                 rhs);   //!< Standard constructor 
+                                             RbPtr<SyntaxElement>               lhs,
+                                             RbPtr<SyntaxElement>               rhs);   //!< Standard constructor 
                                 SyntaxBinaryExpr(const SyntaxBinaryExpr& x);            //!< Copy constructor
         virtual                ~SyntaxBinaryExpr();                                     //!< Destroy operands
 
@@ -57,11 +57,11 @@ class SyntaxBinaryExpr : public SyntaxElement {
         void                    print(std::ostream& o) const;                           //!< Print info about object
 
         // Regular functions
-        Variable*               getContentAsVariable(Environment* env) const;           //!< Get semantic value
+        RbPtr<Variable>         getContentAsVariable(RbPtr<Environment> env) const;     //!< Get semantic value
 
     protected:
-        SyntaxElement*          leftOperand;                                            //!< The left operand
-        SyntaxElement*          rightOperand;                                           //!< The right operand
+        RbPtr<SyntaxElement>    leftOperand;                                            //!< The left operand
+        RbPtr<SyntaxElement>    rightOperand;                                           //!< The right operand
         enum operatorT          operation;                                              //!< The type of operation
     
     private:

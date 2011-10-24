@@ -28,6 +28,7 @@
 #include "Argument.h"
 #include "Environment.h"
 #include "RbInternal.h"
+#include "RbPtr.h"
 
 class ArgumentRule;
 class DAGNode;
@@ -58,42 +59,42 @@ const std::string RbFunction_name = "function";
 class RbFunction :  public RbInternal {
 
     public:
-        virtual                                ~RbFunction(void) {}                                                                 //!< Destructor
-                                                RbFunction(const RbFunction &x);                                                    //!< Copy constuctor
+        virtual                                        ~RbFunction(void) {}                                                                 //!< Destructor
+                                                        RbFunction(const RbFunction &x);                                                    //!< Copy constuctor
 
         // Basic utility functions you have to override
-        virtual RbFunction*                     clone(void) const = 0;                                                              //!< Clone object
-    	virtual const VectorString&             getClass(void) const;                                                               //!< Get class vector
+        virtual RbFunction*                             clone(void) const = 0;                                                              //!< Clone object
+    	virtual const VectorString&                     getClass(void) const;                                                               //!< Get class vector
 
         // Basic utility functions you may want to override
-        virtual std::string                     briefInfo(void) const;                                                              //!< Brief info about object
-        virtual std::string                     richInfo(void) const;                                                               //!< Complete info about object
+        virtual std::string                             briefInfo(void) const;                                                              //!< Brief info about object
+        virtual std::string                             richInfo(void) const;                                                               //!< Complete info about object
 
         // Basic utility functions you should not have to override
-    	void                                    printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
+    	void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
 
         // RbFunction functions you have to override
-        virtual RbLanguageObject*               execute(void) = 0;                                                                  //!< Execute function
-        virtual const ArgumentRules&            getArgumentRules(void) const = 0;                                                   //!< Get argument rules
-        virtual const TypeSpec&                 getReturnType(void) const = 0;                                                      //!< Get type of return value
+        virtual RbPtr<RbLanguageObject>                 execute(void) = 0;                                                                  //!< Execute function
+        virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
+        virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // RbFunction function you may want to override
-        virtual bool                            processArguments(const std::vector<Argument*>&   passedArgs,
-                                                                 VectorInteger*                  matchScore=NULL);                  //!< Process args, return a match score if pointer is not null
-        virtual bool                            addAsChildOfArguments(void) { return true; }                                        //!< Should we add the node containing this function as a child of its parameters (arguments)? False in cases such as constructor functions and true in cases like math functions
-        virtual bool                            throws(void) const { return false; }                                                      //!< Does the function throw exceptions?
+        virtual bool                                    processArguments(const std::vector<RbPtr<Argument> >&   passedArgs,
+                                                                         RbPtr<VectorInteger>                  matchScore = RbPtr<VectorInteger>::getNullPtr());                  //!< Process args, return a match score if pointer is not null
+        virtual bool                                    addAsChildOfArguments(void) { return true; }                                        //!< Should we add the node containing this function as a child of its parameters (arguments)? False in cases such as constructor functions and true in cases like math functions
+        virtual bool                                    throws(void) const { return false; }                                                      //!< Does the function throw exceptions?
     
 
         // RbFunction functions you should not override
-        void                                    clearArguments(void);                                                               //!< Clear argument Environment "args"
-        const Environment&                      getArguments(void) const { return args; }                                           //!< Get processed arguments in argument Environment "args"
+        void                                            clearArguments(void);                                                               //!< Clear argument Environment "args"
+        const Environment&                              getArguments(void) const { return args; }                                           //!< Get processed arguments in argument Environment "args"
 
 	protected:
-                                                RbFunction(void);                                                                   //!< Basic constructor
+                                                        RbFunction(void);                                                                   //!< Basic constructor
 
         // Member variables
-        Environment                             args;                                                                               //!< Environment for passed arguments
-        bool                                    argsProcessed;                                                                      //!< Are arguments processed?
+        Environment                                     args;                                                                               //!< Environment for passed arguments
+        bool                                            argsProcessed;                                                                      //!< Are arguments processed?
 };
 
 #endif

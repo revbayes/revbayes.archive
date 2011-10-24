@@ -22,18 +22,18 @@
 # pragma warn -8027     // Functions containing try are not expanded inline
 #endif
 
-#include <boost/config.hpp>
-#include <boost/checked_delete.hpp>
-#include <boost/throw_exception.hpp>
-#include <boost/smart_ptr/bad_weak_ptr.hpp>
-#include <boost/smart_ptr/detail/sp_counted_base.hpp>
-#include <boost/smart_ptr/detail/sp_counted_impl.hpp>
-#include <boost/detail/workaround.hpp>
+#include "config.hpp"
+#include "checked_delete.hpp"
+#include "throw_exception.hpp"
+#include "bad_weak_ptr.hpp"
+#include "sp_counted_base.hpp"
+#include "sp_counted_impl.hpp"
+#include "workaround.hpp"
 // In order to avoid circular dependencies with Boost.TR1
 // we make sure that our include of <memory> doesn't try to
 // pull in the TR1 headers: that's why we use this header 
 // rather than including <memory> directly:
-#include <boost/config/no_tr1/memory.hpp>  // std::auto_ptr
+#include "memory.hpp"  // std::auto_ptr
 #include <functional>       // std::less
 #include <new>              // std::bad_alloc
 

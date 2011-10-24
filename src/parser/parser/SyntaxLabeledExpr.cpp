@@ -28,7 +28,7 @@
 const TypeSpec SyntaxLabeledExpr::typeSpec(SyntaxLabeledExpr_name);
 
 /** Constructor from label and expression */
-SyntaxLabeledExpr::SyntaxLabeledExpr(RbString* id, SyntaxElement* expr)
+SyntaxLabeledExpr::SyntaxLabeledExpr(RbPtr<RbString> id, RbPtr<SyntaxElement> expr)
     : SyntaxElement(), label(id), expression(expr) {
 }
 
@@ -37,16 +37,14 @@ SyntaxLabeledExpr::SyntaxLabeledExpr(RbString* id, SyntaxElement* expr)
 SyntaxLabeledExpr::SyntaxLabeledExpr(const SyntaxLabeledExpr& x)
     : SyntaxElement(x) {
 
-    label      = new RbString(*(x.label));
-    expression = x.expression->clone();
+    label      = RbPtr<RbString>( new RbString(*(x.label)) );
+    expression = RbPtr<SyntaxElement>( x.expression->clone() );
 }
 
 
 /** Destructor deletes members */
 SyntaxLabeledExpr::~SyntaxLabeledExpr() {
     
-    delete label;
-    delete expression;
 }
 
 
@@ -55,13 +53,10 @@ SyntaxLabeledExpr& SyntaxLabeledExpr::operator=(const SyntaxLabeledExpr& x) {
 
     if (&x != this) {
 
-        delete label;
-        delete expression;
-
         SyntaxElement::operator=(x);
 
-        label      = new RbString(*(x.label));
-        expression = x.expression->clone();
+        label      = x.label;
+        expression = x.expression;
     }
 
     return (*this);
@@ -100,9 +95,9 @@ const VectorString& SyntaxLabeledExpr::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-Variable* SyntaxLabeledExpr::getContentAsVariable(Environment* env) const {
+RbPtr<Variable> SyntaxLabeledExpr::getContentAsVariable(RbPtr<Environment> env) const {
 
-    return NULL;
+    return RbPtr<Variable>::getNullPtr();
 }
 
 

@@ -50,17 +50,17 @@ public:
     std::string                 richInfo(void) const;                                                       //!< Complete info about object
 
     // Regular functions
-    RbLanguageObject*           execute(void);                                                              //!< Execute function
+    RbPtr<RbLanguageObject>     execute(void);                                                              //!< Execute function
    
     const ArgumentRules&        getArgumentRules(void) const;                                               //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                                                  //!< Get type of return value
-    void                        setMemberObject(MemberObject *obj);                                         //!< Set the member object to which this function belongs
+    void                        setMemberObject(RbPtr<MemberObject> obj);                                   //!< Set the member object to which this function belongs
     void                        setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of member method
 
 private:
     const ArgumentRules&        argumentRules;                                                              //!< Argument rules (different for different member functions)
     std::string                 funcName;                                                                   //!< Name of member method
-    MemberObject                *object;                                                                    //!< The member object to which this function belongs
+    RbPtr<MemberObject>         object;                                                                    //!< The member object to which this function belongs
     const TypeSpec              returnType;                                                                 //!< Return type (different for different member functions)
     
     static const TypeSpec       typeSpec;  

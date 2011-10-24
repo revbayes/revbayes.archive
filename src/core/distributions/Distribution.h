@@ -43,22 +43,22 @@ class Distribution: public ConstantMemberObject {
         virtual                    ~Distribution(void) {}                                                           //!< Destructor
 
         // Basic utility functions
-        virtual Distribution*       clone(void) const = 0;                                                          //!< Clone object
-        virtual const VectorString& getClass(void) const;                                                           //!< Get class vector   
+        virtual Distribution*               clone(void) const = 0;                                                          //!< Clone object
+        virtual const VectorString&         getClass(void) const;                                                           //!< Get class vector   
 
         // Member object function you have to override
-        virtual const MemberRules&  getMemberRules(void) const = 0;                                                 //!< Get member rules
+        virtual const MemberRules&          getMemberRules(void) const = 0;                                                 //!< Get member rules
 
         // Member object functions you may want to override
-        virtual const MethodTable&  getMethods(void) const;                                                         //!< Get member methods
-        virtual RbLanguageObject*   executeOperation(const std::string& name, Environment& args);                   //!< Map member methods to internal functions
+        virtual const MethodTable&          getMethods(void) const;                                                         //!< Get member methods
+        virtual RbPtr<RbLanguageObject>     executeOperation(const std::string& name, Environment& args);                   //!< Map member methods to internal functions
 
 
         // Distribution functions you have to override
-        virtual const TypeSpec&     getVariableType(void) const = 0;                                                //!< Get random variable type
-        virtual double              lnPdf(const RbLanguageObject* value) = 0;                                       //!< Ln probability density
-        virtual double              pdf(const RbLanguageObject* value) = 0;                                         //!< Probability density function
-        virtual RbLanguageObject*   rv(void) = 0;                                                                   //!< Generate a random draw
+        virtual const TypeSpec&             getVariableType(void) const = 0;                                                //!< Get random variable type
+        virtual double                      lnPdf(const RbPtr<RbLanguageObject> value) = 0;                                       //!< Ln probability density
+        virtual double                      pdf(const RbPtr<RbLanguageObject> value) = 0;                                         //!< Probability density function
+        virtual RbPtr<RbLanguageObject>     rv(void) = 0;                                                                   //!< Generate a random draw
 
     protected:
 									Distribution(const MemberRules& memberRules);                                   //!< Simple constructor

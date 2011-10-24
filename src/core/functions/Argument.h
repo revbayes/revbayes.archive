@@ -33,27 +33,27 @@ const std::string Argument_name = "argument";
 class Argument : public RbInternal {
 
     public:
-                                Argument(Variable* arg);                                            //!< Constructor 
-                                Argument(const std::string& argLabel, Variable* arg);               //!< Constructor 
-                                Argument(const Argument &x);                                        //!< Copy constructor 
-    virtual                     ~Argument(void);                                                    //!< Destructor
+                                            Argument(RbPtr<Variable> arg);                                      //!< Constructor 
+                                            Argument(const std::string& argLabel, RbPtr<Variable> arg);         //!< Constructor 
+                                            Argument(const Argument &x);                                        //!< Copy constructor 
+    virtual                                ~Argument(void);                                                     //!< Destructor
 
         // Basic utility functions
-        Argument*               clone(void) const { return new Argument (*this); }                  //!< Clone object
-        const VectorString&     getClass(void) const;                                               //!< Get class vector
-        const TypeSpec&         getTypeSpec(void) const;                                            //!< Get language type of the object
-        std::string             richInfo(void) const;                                               //!< Complete info about object
+        Argument*                           clone(void) const { return new Argument (*this); }                  //!< Clone object
+        const VectorString&                 getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
+        std::string                         richInfo(void) const;                                               //!< Complete info about object
 
         // Regular functions
-        Variable*               getVariable(void) { return var; }                                   //!< Get the variable contained in this argument
-        const std::string&      getLabel(void) const { return label; }                              //!< Get label of argument
-        DAGNode*                getDagNode(void) const { return var->getDagNodePtr(); }             //!< Get argument variable
-        void                    setDagNode(DAGNode *newNode);                                       //!< set the DAG node of the argument; replaces the DAG node in the variable
-        void                    setVariable(Variable *newVar);                                      //!< set the variable of the argument
+        RbPtr<Variable>                     getVariable(void) { return var; }                                   //!< Get the variable contained in this argument
+        const std::string&                  getLabel(void) const { return label; }                              //!< Get label of argument
+        RbPtr<DAGNode>                      getDagNode(void) const { return var->getDagNodePtr(); }             //!< Get argument variable
+        void                                setDagNode(DAGNode *newNode);                                       //!< set the DAG node of the argument; replaces the DAG node in the variable
+        void                                setVariable(RbPtr<Variable> newVar);                                //!< set the variable of the argument
 
     protected:
-        std::string             label;                                                              //!< Label of argument
-        Variable               *var;                                                                //!< Pointer to the variable slot containing the variable (and value)
+        std::string                         label;                                                              //!< Label of argument
+        RbPtr<Variable>                     var;                                                                //!< Pointer to the variable slot containing the variable (and value)
     
     private:
         static const TypeSpec   typeSpec;

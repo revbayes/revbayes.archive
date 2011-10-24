@@ -29,13 +29,13 @@
 const TypeSpec SyntaxFormal::typeSpec(SyntaxFormal_name);
 
 /** Constructor with implicit type */
-SyntaxFormal::SyntaxFormal(RbString* id, SyntaxElement* defaultVal) : SyntaxElement(), argType(new TypeSpec(RbObject_name)), label(id), defaultExpr(defaultVal) {
+SyntaxFormal::SyntaxFormal(RbPtr<RbString> id, RbPtr<SyntaxElement> defaultVal) : SyntaxElement(), argType(new TypeSpec(RbObject_name)), label(id), defaultExpr(defaultVal) {
 
 }
 
 
 /** Constructor with explicit type */
-SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defaultVal)
+SyntaxFormal::SyntaxFormal(RbPtr<RbString> typeSpec, RbPtr<RbString> id, RbPtr<SyntaxElement> defaultVal)
 : SyntaxElement(), argType(NULL), label(id), defaultExpr(defaultVal) {
 
     // Convert to standard string
@@ -52,29 +52,22 @@ SyntaxFormal::SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defa
     }
 
     // Create the type specification
-    argType = new TypeSpec(tpName);
-    
-    // Avoid memory leak
-    delete typeSpec;
+    argType = RbPtr<TypeSpec>(new TypeSpec(tpName));
 }
 
 
 /** Deep copy constructor */
-SyntaxFormal::SyntaxFormal(const SyntaxFormal& x)
-    : SyntaxElement(x) {
+SyntaxFormal::SyntaxFormal(const SyntaxFormal& x) : SyntaxElement(x) {
 
-    argType     = new TypeSpec(x.argType->getType());
-    label       = new RbString(*(x.label));
-    defaultExpr = x.defaultExpr->clone();
+    argType     = RbPtr<TypeSpec>(new TypeSpec(*x.argType));
+    label       = RbPtr<RbString>(new RbString(*(x.label)));
+    defaultExpr = RbPtr<SyntaxElement>(x.defaultExpr->clone());
 }
 
 
 /** Destructor deletes pointer members */
 SyntaxFormal::~SyntaxFormal() {
     
-    delete argType;
-    delete label;
-    delete defaultExpr;
 }
 
 
@@ -83,15 +76,11 @@ SyntaxFormal& SyntaxFormal::operator=(const SyntaxFormal& x) {
 
     if (&x != this) {
 
-        delete argType;
-        delete label;
-        delete defaultExpr;
-
         SyntaxElement::operator=(x);
 
-        argType        = new TypeSpec(x.argType->getType());
-        label       = new RbString(*(x.label));
-        defaultExpr = x.defaultExpr->clone();
+        argType     = x.argType;
+        label       = x.label;
+        defaultExpr = x.defaultExpr;
     }
 
     return (*this);
@@ -122,13 +111,13 @@ SyntaxFormal* SyntaxFormal::clone () const {
 
 
 /** Make argument rule from element */
-ArgumentRule* SyntaxFormal::getArgumentRule(Environment* env) const {
+RbPtr<ArgumentRule> SyntaxFormal::getArgumentRule(RbPtr<Environment> env) const {
 
 
-    if (defaultExpr == NULL)
-        return new ValueRule(*label, *argType);
+    if (defaultExpr.get() == NULL)
+        return RbPtr<ArgumentRule>( new ValueRule(*label, *argType) );
     else
-        return new ValueRule(*label, *argType, defaultExpr->getContentAsVariable(env)->getDagNodePtr());
+        return RbPtr<ArgumentRule>( new ValueRule(*label, *argType, defaultExpr->getContentAsVariable(env)->getDagNodePtr()) );
 
 }
 
@@ -143,9 +132,9 @@ const VectorString& SyntaxFormal::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-Variable* SyntaxFormal::getContentAsVariable(Environment* env) const {
+RbPtr<Variable> SyntaxFormal::getContentAsVariable(RbPtr<Environment> env) const {
 
-    return NULL;
+    return RbPtr<Variable>::getNullPtr();
 }
 
 

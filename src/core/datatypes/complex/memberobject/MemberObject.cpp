@@ -50,7 +50,7 @@ MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
 
 
 /** Execute member method: delegate to method table. */
-RbLanguageObject* MemberObject::executeMethod(const std::string& name, const std::vector<Argument*>& args) {
+RbPtr<RbLanguageObject> MemberObject::executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
     return getMethods().executeFunction(name, args);
 }

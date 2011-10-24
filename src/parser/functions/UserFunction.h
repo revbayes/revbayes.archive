@@ -42,28 +42,28 @@ class UserFunction :  public RbFunction {
     public:
                 UserFunction(   const ArgumentRules&        argRules,
                                 const TypeSpec&             retType,
-                                std::list<SyntaxElement*>*  stmts,
-                                Environment*                defineEnv);     //!< Constructor
-                UserFunction(const UserFunction& x);                        //!< Copy constructor
-                virtual ~UserFunction();                                    //!< Delete the code
+                                RbPtr<std::list<RbPtr<SyntaxElement> > >  stmts,
+                                RbPtr<Environment>                defineEnv);           //!< Constructor
+                UserFunction(const UserFunction& x);                                    //!< Copy constructor
+                virtual ~UserFunction();                                                //!< Delete the code
 
         // Basic utility functions
-        std::string                 briefInfo() const;                  //!< Brief info about object
-        UserFunction*               clone() const;                      //!< Clone object
-        const VectorString&         getClass() const;                   //!< Get class vector
-        const TypeSpec&             getTypeSpec(void) const;            //!< Get language type of the object
-        std::string                 richInfo() const;                   //!< Complete info about object
+        std::string                                 briefInfo() const;                  //!< Brief info about object
+        UserFunction*                               clone() const;                      //!< Clone object
+        const VectorString&                         getClass() const;                   //!< Get class vector
+        const TypeSpec&                             getTypeSpec(void) const;            //!< Get language type of the object
+        std::string                                 richInfo() const;                   //!< Complete info about object
 
         // Regular functions
-		RbLanguageObject*           execute(void);                      //!< Execute function
-        const ArgumentRules&        getArgumentRules(void) const;       //!< Get arg rules
-        const TypeSpec&             getReturnType(void) const;          //!< Get return type
+		RbPtr<RbLanguageObject>                     execute(void);                      //!< Execute function
+        const ArgumentRules&                        getArgumentRules(void) const;       //!< Get arg rules
+        const TypeSpec&                             getReturnType(void) const;          //!< Get return type
 
 	protected:
-        const ArgumentRules         argumentRules;      //!< The argument rules
-        const TypeSpec              returnType;         //!< The return type (complete specification)
-        std::list<SyntaxElement*>*  code;               //!< The code
-        Environment*                defineEnvironment;  //!< The definition environment
+        const ArgumentRules                         argumentRules;                      //!< The argument rules
+        const TypeSpec                              returnType;                         //!< The return type (complete specification)
+        RbPtr<std::list<RbPtr<SyntaxElement> > >    code;                               //!< The code
+        RbPtr<Environment>                          defineEnvironment;                  //!< The definition environment
     
     private:
         static const TypeSpec       typeSpec;

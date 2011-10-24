@@ -35,13 +35,13 @@
 const TypeSpec SyntaxFunctionCall::typeSpec(SyntaxFunctionCall_name);
 
 /** Construct global function call from function name and arguments */
-SyntaxFunctionCall::SyntaxFunctionCall(RbString* id, std::list<SyntaxLabeledExpr*>* args)
+SyntaxFunctionCall::SyntaxFunctionCall(RbPtr<RbString> id, RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > > args)
     : SyntaxElement(), arguments(args), functionName(id), variable(NULL) {
 }
 
 
 /** Construct member function call from variable, function name and arguments */
-SyntaxFunctionCall::SyntaxFunctionCall(SyntaxVariable* var, RbString* id, std::list<SyntaxLabeledExpr*>* args)
+SyntaxFunctionCall::SyntaxFunctionCall(RbPtr<SyntaxVariable> var, RbPtr<RbString> id, RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > > args)
     : SyntaxElement(), arguments(args), functionName(id), variable(var) {
 }
 
@@ -50,21 +50,16 @@ SyntaxFunctionCall::SyntaxFunctionCall(SyntaxVariable* var, RbString* id, std::l
 SyntaxFunctionCall::SyntaxFunctionCall(const SyntaxFunctionCall& x)
     : SyntaxElement(x) {
 
-    functionName = new RbString(*functionName);
-    variable     = new SyntaxVariable(*x.variable);
-    for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        arguments->push_back(new SyntaxLabeledExpr(*(*i)));
+    functionName = RbPtr<RbString>(x.functionName);
+    variable     = RbPtr<SyntaxVariable>(new SyntaxVariable(*x.variable));
+    for (std::list<RbPtr<SyntaxLabeledExpr> >::iterator i=arguments->begin(); i!=arguments->end(); i++)
+        arguments->push_back( RbPtr<SyntaxLabeledExpr>(new SyntaxLabeledExpr(*(*i))) );
 }
 
 
 /** Destructor deletes members */
 SyntaxFunctionCall::~SyntaxFunctionCall() {
     
-    delete functionName;
-    delete variable;
-    for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-        delete (*i);
-    delete arguments;
 }
 
 
@@ -72,19 +67,13 @@ SyntaxFunctionCall::~SyntaxFunctionCall() {
 SyntaxFunctionCall& SyntaxFunctionCall::operator=(const SyntaxFunctionCall& x) {
 
     if (&x != this) {
-    
-        delete functionName;
-        delete variable;
-        for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-            delete (*i);
-        delete arguments;
 
         SyntaxElement::operator=(x);
 
-        functionName = new RbString(*functionName);
-        variable     = new SyntaxVariable(*x.variable);
-        for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
-            arguments->push_back(new SyntaxLabeledExpr(*(*i)));
+        functionName = x.functionName;
+        variable     = RbPtr<SyntaxVariable>( new SyntaxVariable(*x.variable) );
+        for (std::list<RbPtr<SyntaxLabeledExpr> >::iterator i=arguments->begin(); i!=arguments->end(); i++)
+            arguments->push_back(RbPtr<SyntaxLabeledExpr>(new SyntaxLabeledExpr(*(*i))) );
     }
 
     return (*this);
@@ -120,21 +109,20 @@ const VectorString& SyntaxFunctionCall::getClass(void) const {
 
 
 /** Convert element to a deterministic function node. */
-Variable* SyntaxFunctionCall::getContentAsVariable(Environment* env) const {
+Variable* SyntaxFunctionCall::getContentAsVariable(RbPtr<Environment> env) const {
 
     // Package arguments
-    std::vector<Argument*> args;
-    for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++) {
+    std::vector<RbPtr<Argument> > args;
+    for (std::list<RbPtr<SyntaxLabeledExpr> >::iterator i=arguments->begin(); i!=arguments->end(); i++) {
         PRINTF( "Adding argument with label \"%s\".\n", (*i)->getLabel()->getValue().c_str() );
-        Argument *theArg = new Argument(*(*i)->getLabel(), (*i)->getExpression()->getContentAsVariable(env) );
-        theArg->retain();
+        RbPtr<Argument> theArg = RbPtr<Argument>(new Argument(*(*i)->getLabel(), (*i)->getExpression()->getContentAsVariable(env) ) );
         args.push_back(theArg);
     }
 
     RbFunction* func;
     if (variable == NULL) {
 
-        func = Workspace::userWorkspace().getFunction(*functionName, args);
+        func = Workspace::userWorkspace()->getFunction(*functionName, args);
         if (func == NULL)
             throw(RbException("Could not find function called '" + functionName->getValue() +
                 "' taking specified arguments"));

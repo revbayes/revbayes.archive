@@ -42,7 +42,7 @@ RbFunction::RbFunction(const RbFunction &x) : RbInternal(x) {
     for (size_t i=0; i<x.args.size(); i++) {
         const std::string &name = x.args.getName(i);
         const VariableSlot &theSlot = x.args[i];
-        args.addVariable(name, theSlot.clone());
+        args.addVariable(name, RbPtr<VariableSlot>( theSlot.clone() ));
     }
     
     argsProcessed = x.argsProcessed;
@@ -137,7 +137,7 @@ void RbFunction::printValue(std::ostream& o) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
-bool  RbFunction::processArguments(const std::vector<Argument*>& passedArgs, VectorInteger* matchScore) {
+bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedArgs, RbPtr<VectorInteger> matchScore) {
 
     bool    conversionNeeded;
     int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy

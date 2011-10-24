@@ -75,7 +75,7 @@ class SyntaxElement : public RbInternal {
         virtual void                print(std::ostream& o) const = 0;                           //!< Print info about object
 
         // Regular functions
-        virtual Variable*           getContentAsVariable(Environment* env) const = 0;           //!< Get semantic value
+        virtual RbPtr<Variable>     getContentAsVariable(RbPtr<Environment> env) const = 0;     //!< Get semantic value
         virtual bool                isConstExpression(void) const { return false; }             //!< Is subtree constant expr?
 
     protected:

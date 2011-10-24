@@ -142,12 +142,12 @@ const VectorString& VectorReal::getClass(void) const {
 }
 
 
-Real* VectorReal::getElement(size_t index) const {
+RbPtr<RbObject> VectorReal::getElement(size_t index) const {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
-    Real *n = new Real(elements[index]);
+    RbPtr<RbObject> n( new Real(elements[index]) );
     
     return n;
 }
@@ -220,10 +220,10 @@ void VectorReal::printValue(std::ostream& o) const {
 
 
 /** Push an int onto the back of the vector after checking */
-void VectorReal::push_back( RbObject *x ) {
+void VectorReal::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
-        elements.push_back(static_cast<Real*>(x)->getValue());
+        elements.push_back(static_cast<Real*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Real_name) ) {
         elements.push_back(static_cast<Real*>(x->convertTo(Real_name))->getValue());
     }
@@ -240,10 +240,10 @@ void VectorReal::push_back(double x) {
 
 
 /** Push an int onto the front of the vector after checking */
-void VectorReal::push_front( RbObject *x ) {
+void VectorReal::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
-        elements.insert( elements.begin(), static_cast<Real*>(x)->getValue());
+        elements.insert( elements.begin(), static_cast<Real*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Real_name) ) {
         elements.insert( elements.begin(), static_cast<Real*>(x->convertTo(Real_name))->getValue());
     }
@@ -276,7 +276,7 @@ std::string VectorReal::richInfo(void) const {
 }
 
 
-void VectorReal::setElement(const size_t index, RbLanguageObject *x) {
+void VectorReal::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
     
     // check for type and convert if necessary
     if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
@@ -284,7 +284,7 @@ void VectorReal::setElement(const size_t index, RbLanguageObject *x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<Real*>(x)->getValue());
+        elements.insert( elements.begin() + index, static_cast<Real*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(Real_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

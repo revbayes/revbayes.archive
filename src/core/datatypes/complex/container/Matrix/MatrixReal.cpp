@@ -49,7 +49,7 @@ MatrixReal::MatrixReal(const size_t nRows, const size_t nCols, double x) : Matri
         throw RbException( "Nonpositive length(s) for " + Real_name + "[][]" );
 
     for ( size_t i = 0; i < nRows; i++ )
-        elements.push_back( new VectorReal( nCols, x ) );
+        elements.push_back( RbPtr<RbLanguageObject>( new VectorReal( nCols, x ) ) );
 }
 
 

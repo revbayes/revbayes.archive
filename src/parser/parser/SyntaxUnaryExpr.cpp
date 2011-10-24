@@ -37,7 +37,7 @@ std::string SyntaxUnaryExpr::opCode[] = { "uminus", "uplus", "unot" };
 
 
 /** Construct from operator type and operands */
-SyntaxUnaryExpr::SyntaxUnaryExpr(operatorT op, SyntaxElement* expr) 
+SyntaxUnaryExpr::SyntaxUnaryExpr(operatorT op, RbPtr<SyntaxElement> expr) 
     : SyntaxElement(), expression(expr), operation(op) {
 }
 
@@ -46,7 +46,7 @@ SyntaxUnaryExpr::SyntaxUnaryExpr(operatorT op, SyntaxElement* expr)
 SyntaxUnaryExpr::SyntaxUnaryExpr(const SyntaxUnaryExpr& x)
     : SyntaxElement(x) {
 
-    expression  = x.expression->clone();
+    expression  = RbPtr<SyntaxElement>( x.expression->clone() );
     operation   = x.operation;
 }
 
@@ -54,7 +54,6 @@ SyntaxUnaryExpr::SyntaxUnaryExpr(const SyntaxUnaryExpr& x)
 /** Destructor deletes expression */
 SyntaxUnaryExpr::~SyntaxUnaryExpr() {
     
-    delete expression;
 }
 
 
@@ -63,11 +62,9 @@ SyntaxUnaryExpr& SyntaxUnaryExpr::operator=(const SyntaxUnaryExpr& x) {
 
     if (&x != this) {
 
-        delete expression;
-
         SyntaxElement::operator=(x);
 
-        expression  = x.expression->clone();
+        expression  = x.expression;
         operation   = x.operation;
     }
 
@@ -101,18 +98,18 @@ const VectorString& SyntaxUnaryExpr::getClass(void) const {
 
 
 /** Convert element to DAG node expression */
-Variable* SyntaxUnaryExpr::getContentAsVariable(Environment* env) const {
+RbPtr<Variable> SyntaxUnaryExpr::getContentAsVariable(RbPtr<Environment> env) const {
 
     // Package the argument
-    std::vector<Argument*> arg;
-    arg.push_back(new Argument("", expression->getContentAsVariable(env) ));
+    std::vector<RbPtr<Argument> > arg;
+    arg.push_back(RbPtr<Argument>( new Argument("", expression->getContentAsVariable(env) ) ));
 
     // Find the function
     std::string funcName = "_" + opCode[operation];
-    RbFunction *func = Workspace::globalWorkspace().getFunction(funcName, arg);
+    RbPtr<RbFunction> func = Workspace::globalWorkspace()->getFunction(funcName, arg);
 
     // Return new function node
-    return new Variable(new DeterministicNode(func));
+    return RbPtr<Variable>( new Variable(RbPtr<DAGNode>( new DeterministicNode(func)) ) );
 }
 
 

@@ -59,16 +59,16 @@ class VectorRealPos : public AbstractVector {
 
     // Vector functions, including STL-like functions
     void                        clear(void);                                                    //!< Clear
-    RealPos*                    getElement(size_t index) const;                                 //!< Get element
+    RbPtr<RbObject>             getElement(size_t index) const;                                 //!< Get element
     std::vector<double>         getValue(void) const;                                           //!< Get value as STL double vector
     void                        pop_back(void);                                                 //!< Drop element at back
     void                        pop_front(void);                                                //!< Drop element from front
-    void                        push_back(RbObject* x);                                         //!< Append element to end
+    void                        push_back(RbPtr<RbObject> x);                                         //!< Append element to end
     void                        push_back(double x);                                            //!< Append element to end
-    void                        push_front(RbObject* x);                                        //!< Add element in front
+    void                        push_front(RbPtr<RbObject> x);                                        //!< Add element in front
     void                        push_front(double x);                                           //!< Add element in front
     void                        resize(size_t n);                                               //!< Resize to new AbstractVector of length n
-    void                        setElement(const size_t index, RbLanguageObject* elem);         //!< Set element with type conversion
+    void                        setElement(const size_t index, RbPtr<RbLanguageObject> elem);         //!< Set element with type conversion
     void                        setValue(const std::vector<double>& x);                         //!< Set the value using STL vector of int
     void                        setValue(const VectorInteger& x);                               //!< Set the value using VectorInteger
     void                        setValue(const VectorNatural& x);                               //!< Set the value using VectorNatural

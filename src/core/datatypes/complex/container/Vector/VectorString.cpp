@@ -143,12 +143,12 @@ const VectorString& VectorString::getClass() const {
 }
 
 
-RbString* VectorString::getElement(size_t index) const {
+RbPtr<RbObject> VectorString::getElement(size_t index) const {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
-    RbString *n = new RbString(elements[index]);
+    RbPtr<RbObject> n(new RbString(elements[index]));
     
     return n;
 }
@@ -179,10 +179,10 @@ void VectorString::pop_front(void) {
 
 
 /** Push an int onto the back of the vector after checking */
-void VectorString::push_back( RbObject *x ) {
+void VectorString::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RbString_name) ) ) {
-        elements.push_back(static_cast<RbString*>(x)->getValue());
+        elements.push_back(static_cast<RbString*>(x.get())->getValue() );
     } else if ( x->isConvertibleTo(RbString_name) ) {
         elements.push_back(static_cast<RbString*>(x->convertTo(RbString_name))->getValue());
     }
@@ -200,10 +200,10 @@ void VectorString::push_back(const std::string &x) {
 
 
 /** Push an int onto the front of the vector after checking */
-void VectorString::push_front( RbObject *x ) {
+void VectorString::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RbString_name) ) ) {
-        elements.insert( elements.begin(), static_cast<RbString*>(x)->getValue());
+        elements.insert( elements.begin(), static_cast<RbString*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(RbString_name) ) {
         elements.insert( elements.begin(), static_cast<RbString*>(x->convertTo(RbString_name))->getValue());
     }
@@ -229,7 +229,7 @@ std::string VectorString::richInfo(void) const {
 }
 
 
-void VectorString::setElement(const size_t index, RbLanguageObject *x) {
+void VectorString::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
     
     // check for type and convert if necessary
     if ( x->isTypeSpec( TypeSpec(RbString_name) ) ) {
@@ -237,7 +237,7 @@ void VectorString::setElement(const size_t index, RbLanguageObject *x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<RbString*>(x)->getValue());
+        elements.insert( elements.begin() + index, static_cast<RbString*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(RbString_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

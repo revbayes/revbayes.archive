@@ -51,7 +51,7 @@ const VectorString& Matrix::getClass(void) const {
 
 
 size_t Matrix::getNumberOfColumns(void) const {
-    return static_cast<const Container*>(elements[0])->size();
+    return static_cast<const Container*>(elements[0].get())->size();
 }
 
 

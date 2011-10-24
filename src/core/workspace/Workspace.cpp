@@ -43,24 +43,25 @@ const TypeSpec Workspace::typeSpec(Workspace_name);
 
 /** Constructor of global workspace */
 Workspace::Workspace() : Environment(), functionTable(new FunctionTable()), typesInitialized(false) {
-    // since we are a singleton we own ourselve
-    retain();
+
 }
 
 
 /** Constructor of user workspace */
-Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), functionTable(new FunctionTable(globalWorkspace().getFunctionTable())), typesInitialized(false) {
-    // since we are a singleton we own ourselve
-    retain();
+Workspace::Workspace(RbPtr<Environment> parentSpace) : Environment(parentSpace), functionTable(new FunctionTable(globalWorkspace()->getFunctionTable())), typesInitialized(false) {
+    
+}
+
+
+/** Constructor of user workspace */
+Workspace::Workspace(RbPtr<Workspace> parentSpace) : Environment(RbPtr<Environment>(parentSpace.get())), functionTable(new FunctionTable(globalWorkspace()->getFunctionTable())), typesInitialized(false) {
+
 }
 
 
 /** Destructor */
 Workspace::~Workspace() {
 
-    delete functionTable;
-    for (TypeTable::iterator i=typeTable.begin(); i!=typeTable.end(); i++)
-        delete (*i).second;
 }
 
 
@@ -69,8 +70,7 @@ Workspace& Workspace::operator=(const Workspace& x) {
 
     if (this != &x) {
 
-        delete functionTable;
-        functionTable = new FunctionTable(x.functionTable);
+        functionTable = x.functionTable;
     }
 
     return (*this);
@@ -78,7 +78,7 @@ Workspace& Workspace::operator=(const Workspace& x) {
 
 
 /** Add distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, Distribution* dist) {
+bool Workspace::addDistribution(const std::string& name, RbPtr<Distribution> dist) {
 
     PRINTF("Adding distribution %s to workspace\n", name.c_str());
 
@@ -86,9 +86,9 @@ bool Workspace::addDistribution(const std::string& name, Distribution* dist) {
         throw RbException("There is already a type named '" + dist->getType() + "' in the workspace");
 
     PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
-    typeTable.insert(std::pair<std::string, RbObject*>(dist->getType(), dist->clone()));
+    typeTable.insert(std::pair<std::string, RbPtr<RbObject> >(dist->getType(), RbPtr<RbObject>( dist->clone() )));
 
-    functionTable->addFunction(name, new ConstructorFunction(dist));
+    functionTable->addFunction(name, RbPtr<RbFunction>( new ConstructorFunction(dist) ));
     functionTable->addFunction("d" + name, new DistributionFunction(dist, DistributionFunction::DENSITY));
     functionTable->addFunction("r" + name, new DistributionFunction((Distribution*)(dist->clone()), DistributionFunction::RVALUE));
 

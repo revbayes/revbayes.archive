@@ -31,10 +31,9 @@
 const TypeSpec SyntaxForCondition::typeSpec(SyntaxForCondition_name);
 
 /** Standard constructor */
-SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inExpr) : SyntaxElement(), varName(identifier), inExpression(inExpr), vector(NULL), nextElement(-1) {
+SyntaxForCondition::SyntaxForCondition(RbPtr<RbString> identifier, RbPtr<SyntaxElement> inExpr) : SyntaxElement(), varName(identifier), inExpression(inExpr), vector(NULL), nextElement(-1) {
 
     if ( inExpression == NULL ) {
-        delete varName;
         throw RbException("The 'in' expression of for loop is empty");
     }
 }
@@ -43,20 +42,16 @@ SyntaxForCondition::SyntaxForCondition(RbString* identifier, SyntaxElement* inEx
 /** Deep copy constructor */
 SyntaxForCondition::SyntaxForCondition(const SyntaxForCondition& x) : SyntaxElement(x) {
 
-    varName                  = new RbString(*(x.varName));
-    inExpression             = x.inExpression->clone();
-    vector                   = NULL;
-    nextElement              = -1;
+    varName                 = RbPtr<RbString>( new RbString(*(x.varName)) );
+    inExpression            = RbPtr<SyntaxElement>( x.inExpression->clone() );
+    vector                  = RbPtr<AbstractVector>( NULL );
+    nextElement             = -1;
 }
 
 
 /** Destructor deletes members */
 SyntaxForCondition::~SyntaxForCondition() {
     
-    delete varName;
-    delete inExpression;
-    if ( nextElement >= 0 )
-        delete vector;
 }
 
 
@@ -67,14 +62,9 @@ SyntaxForCondition& SyntaxForCondition::operator=(const SyntaxForCondition& x) {
     
         SyntaxElement::operator=(x);
 
-        delete varName;
-        delete inExpression;
-        if ( nextElement >= 0 )
-            delete vector;
-
-        varName                  = new RbString(*(x.varName));
-        inExpression             = x.inExpression->clone();
-        vector                   = NULL;
+        varName                  = x.varName;
+        inExpression             = x.inExpression;
+        vector                   = RbPtr<AbstractVector>::getNullPtr();
         nextElement              = -1;
     }
 
@@ -103,21 +93,17 @@ SyntaxElement* SyntaxForCondition::clone () const {
 
 
 /** Finalize loop. */
-void SyntaxForCondition::finalizeLoop(Environment* env) {
+void SyntaxForCondition::finalizeLoop(RbPtr<Environment> env) {
 
     if ( nextElement < 0 )
         return;
-
-    vector->release();
-    if (vector->isUnreferenced())
-        delete vector;
     
     nextElement = -1;
 }
 
 
 /** Get next loop state */
-bool SyntaxForCondition::getNextLoopState(Environment* env) {
+bool SyntaxForCondition::getNextLoopState(RbPtr<Environment> env) {
 
     if ( nextElement < 0 )
         initializeLoop( env );
@@ -127,7 +113,7 @@ bool SyntaxForCondition::getNextLoopState(Environment* env) {
         return false;
     }
 
-    (*env)[ *varName ].getVariable()->setDagNode( new ConstantNode((RbLanguageObject*)vector->getElement( nextElement )) );
+    (*env)[ *varName ].getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>(static_cast<RbLanguageObject*>(vector->getElement( nextElement ).get() ))) ) );
     nextElement++;
 
     return true;
@@ -143,9 +129,9 @@ const VectorString& SyntaxForCondition::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-Variable* SyntaxForCondition::getContentAsVariable(Environment* env) const {
+RbPtr<Variable> SyntaxForCondition::getContentAsVariable(RbPtr<Environment> env) const {
 
-    return NULL;
+    return RbPtr<Variable>::getNullPtr();
 }
 
 
@@ -156,22 +142,19 @@ const TypeSpec& SyntaxForCondition::getTypeSpec(void) const {
 
 
 /** Initialize loop state */
-void SyntaxForCondition::initializeLoop(Environment* env) {
+void SyntaxForCondition::initializeLoop(RbPtr<Environment> env) {
 
     assert ( nextElement < 0 );
 
     // Evaluate expression and check that we get a vector
-    DAGNode *theNode = inExpression->getContentAsVariable(env)->getDagNodePtr();
-    RbLanguageObject *theValue = theNode->getValue()->clone();
+    RbPtr<DAGNode> theNode = inExpression->getContentAsVariable(env)->getDagNodePtr();
+    RbPtr<RbLanguageObject> theValue( theNode->getValue()->clone() );
 
     // Check that it is a vector
     if ( theValue->isTypeSpec( TypeSpec(AbstractVector_name) ) == false ) {
-        if (theNode->isUnreferenced())
-            delete theNode;             // this will also delete the value 
-        throw ( RbException("The 'in' expression does not evaluate to a vector") );
+       throw ( RbException("The 'in' expression does not evaluate to a vector") );
     }
-    vector = dynamic_cast<AbstractVector*>(theValue);
-    vector->retain();
+    vector = RbPtr<AbstractVector>( dynamic_cast<AbstractVector*>(theValue.get()) );
 
     // Initialize nextValue
     nextElement = 0;
@@ -181,9 +164,6 @@ void SyntaxForCondition::initializeLoop(Environment* env) {
         env->addVariable( *varName, TypeSpec( vector->getElementType() ) );
     }
     
-    // cleaning up
-    if (theNode->isUnreferenced())
-        delete theNode;             // this will also delete the value 
 }
 
 

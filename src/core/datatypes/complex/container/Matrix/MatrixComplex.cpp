@@ -100,13 +100,13 @@ const VectorString& MatrixComplex::getClass(void) const {
 
 
 /** Overloaded container method to get element or subcontainer for parser */
-VectorComplex* MatrixComplex::getElement( size_t index ) const {
+RbPtr<RbObject> MatrixComplex::getElement( size_t index ) const {
     
-    return static_cast<VectorComplex*>(elements[index]);
+    return RbPtr<RbObject>( elements[index]) ;
 }
 
 /** Overloaded container method to get element or subcontainer for parser */
-Complex* MatrixComplex::getElement( size_t row , size_t col) const {
+RbPtr<RbObject> MatrixComplex::getElement( size_t row , size_t col) const {
     
     VectorComplex *tmp = getElement(row);
     return tmp->getElement(col);

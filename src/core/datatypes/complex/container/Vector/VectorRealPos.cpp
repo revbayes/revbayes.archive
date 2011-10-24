@@ -156,12 +156,12 @@ const VectorString& VectorRealPos::getClass( void ) const {
 }
 
 
-RealPos* VectorRealPos::getElement(size_t index) const {
+RbPtr<RbObject> VectorRealPos::getElement(size_t index) const {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
-    RealPos *n = new RealPos(elements[index]);
+    RbPtr<RbObject> n( new RealPos(elements[index]) );
     
     return n;
 }
@@ -225,10 +225,10 @@ void VectorRealPos::printValue(std::ostream& o) const {
 
 
 /** Push an int onto the back of the vector after checking */
-void VectorRealPos::push_back( RbObject *x ) {
+void VectorRealPos::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RealPos_name) ) ) {
-        elements.push_back(static_cast<RealPos*>(x)->getValue());
+        elements.push_back(static_cast<RealPos*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(RealPos_name) ) {
         elements.push_back(static_cast<RealPos*>(x->convertTo(RealPos_name))->getValue());
     }
@@ -249,10 +249,10 @@ void VectorRealPos::push_back( double x ) {
 
 
 /** Push an int onto the front of the vector after checking */
-void VectorRealPos::push_front( RbObject *x ) {
+void VectorRealPos::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RealPos_name) ) ) {
-        elements.insert( elements.begin(), static_cast<RealPos*>(x)->getValue());
+        elements.insert( elements.begin(), static_cast<RealPos*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(RealPos_name) ) {
         elements.insert( elements.begin(), static_cast<RealPos*>(x->convertTo(RealPos_name))->getValue());
     }
@@ -288,7 +288,7 @@ std::string VectorRealPos::richInfo( void ) const {
 }
 
 
-void VectorRealPos::setElement(const size_t index, RbLanguageObject *x) {
+void VectorRealPos::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
     
     // check for type and convert if necessary
     if ( x->isTypeSpec( TypeSpec(RealPos_name) ) ) {
@@ -296,7 +296,7 @@ void VectorRealPos::setElement(const size_t index, RbLanguageObject *x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<RealPos*>(x)->getValue());
+        elements.insert( elements.begin() + index, static_cast<RealPos*>(x.get())->getValue());
     } else if ( x->isConvertibleTo(RealPos_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

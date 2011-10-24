@@ -28,23 +28,23 @@
 //  #define BOOST_DETAIL_SPINLOCK_INIT <unspecified>
 //
 
-#include <boost/config.hpp>
-#include <boost/smart_ptr/detail/sp_has_sync.hpp>
+#include "config.hpp"
+#include "sp_has_sync.hpp"
 
 #if defined(__GNUC__) && defined( __arm__ ) && !defined( __thumb__ )
-#  include <boost/smart_ptr/detail/spinlock_gcc_arm.hpp>
+#  include "spinlock_gcc_arm.hpp"
 
 #elif defined( BOOST_SP_HAS_SYNC )
-#  include <boost/smart_ptr/detail/spinlock_sync.hpp>
+#  include "spinlock_sync.hpp"
 
 #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
-#  include <boost/smart_ptr/detail/spinlock_w32.hpp>
+#  include "spinlock_w32.hpp"
 
 #elif defined(BOOST_HAS_PTHREADS)
-#  include <boost/smart_ptr/detail/spinlock_pt.hpp>
+#  include "spinlock_pt.hpp"
 
 #elif !defined(BOOST_HAS_THREADS)
-#  include <boost/smart_ptr/detail/spinlock_nt.hpp>
+#  include "spinlock_nt.hpp"
 
 #else
 #  error Unrecognized threading platform

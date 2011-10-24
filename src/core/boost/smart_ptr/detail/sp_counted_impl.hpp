@@ -18,17 +18,17 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <boost/config.hpp>
+#include "config.hpp"
 
 #if defined(BOOST_SP_USE_STD_ALLOCATOR) && defined(BOOST_SP_USE_QUICK_ALLOCATOR)
 # error BOOST_SP_USE_STD_ALLOCATOR and BOOST_SP_USE_QUICK_ALLOCATOR are incompatible.
 #endif
 
-#include <boost/checked_delete.hpp>
-#include <boost/smart_ptr/detail/sp_counted_base.hpp>
+#include "checked_delete.hpp"
+#include "sp_counted_base.hpp"
 
 #if defined(BOOST_SP_USE_QUICK_ALLOCATOR)
-#include <boost/smart_ptr/detail/quick_allocator.hpp>
+#include "quick_allocator.hpp"
 #endif
 
 #if defined(BOOST_SP_USE_STD_ALLOCATOR)

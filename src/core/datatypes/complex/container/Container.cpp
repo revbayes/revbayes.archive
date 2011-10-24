@@ -92,11 +92,11 @@ const MethodTable& Container::getMethods(void) const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* Container::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> Container::executeOperation(const std::string& name, Environment& args) {
     
     if (name == "size") {
         
-        return ( new Natural(size()) );
+        return RbPtr<RbLanguageObject>( new Natural(size()) );
     }
     
     return ConstantMemberObject::executeOperation( name, args );

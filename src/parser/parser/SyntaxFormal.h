@@ -33,8 +33,8 @@ const std::string SyntaxFormal_name = "Argument specification";
 class SyntaxFormal : public SyntaxElement {
 
     public:
-                                SyntaxFormal(RbString* id, SyntaxElement* defaultVal);                      //!< Implicit type
-                                SyntaxFormal(RbString* typeSpec, RbString* id, SyntaxElement* defaultVal);  //!< Explicit type
+                                SyntaxFormal(RbPtr<RbString> id, RbPtr<SyntaxElement> defaultVal);                      //!< Implicit type
+                                SyntaxFormal(RbPtr<RbString> typeSpec, RbPtr<RbString> id, RbPtr<SyntaxElement> defaultVal);  //!< Explicit type
                                 SyntaxFormal(const SyntaxFormal& x);                                        //!< Copy constructor
 	    virtual                ~SyntaxFormal();                                                             //!< Destructor
 
@@ -49,15 +49,15 @@ class SyntaxFormal : public SyntaxElement {
         void                    print(std::ostream& o) const;                                               //!< Print info about object
 
         // Regular functions
-        ArgumentRule*           getArgumentRule(Environment* env) const;                                    //!< Make an argument rule
-        RbString*               getLabel(void) const { return label; }                                      //!< Get label
-        TypeSpec*               getArgumentTypeSpec(void) const { return argType; }                         //!< Get type spec
-        Variable*               getContentAsVariable(Environment* env) const;                               //!< Get semantic value
+        RbPtr<ArgumentRule>     getArgumentRule(RbPtr<Environment> env) const;                              //!< Make an argument rule
+        RbPtr<RbString>         getLabel(void) const { return label; }                                      //!< Get label
+        RbPtr<TypeSpec>         getArgumentTypeSpec(void) const { return argType; }                         //!< Get type spec
+        RbPtr<Variable>         getContentAsVariable(RbPtr<Environment> env) const;                         //!< Get semantic value
     
     protected:
-        TypeSpec*               argType;                                                                    //!< The type of the argument
-        RbString*               label;                                                                      //!< The label of the argument
-        SyntaxElement*          defaultExpr;                                                                //!< Default value expression of argument
+        RbPtr<TypeSpec>         argType;                                                                    //!< The type of the argument
+        RbPtr<RbString>         label;                                                                      //!< The label of the argument
+        RbPtr<SyntaxElement>    defaultExpr;                                                                //!< Default value expression of argument
     
     private:
         static const TypeSpec   typeSpec;

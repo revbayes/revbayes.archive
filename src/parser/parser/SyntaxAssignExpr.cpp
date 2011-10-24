@@ -42,13 +42,13 @@ std::string SyntaxAssignExpr::opCode[] = { "ARROW_ASSIGN", "TILDE_ASSIGN", "TILD
 
 
 /** Construct from operator type, variable and expression */
-SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, SyntaxVariable* var, SyntaxElement* expr) 
+SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxVariable> var, RbPtr<SyntaxElement> expr) 
 : SyntaxElement(), variable(var), functionCall(NULL), expression(expr), opType(op) {
 }
 
 
 /** Construct from operator type, function call and expression */
-SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, SyntaxFunctionCall* fxnCall, SyntaxElement* expr) 
+SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<SyntaxElement> expr) 
 : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr), opType(op) {
 }
 
@@ -58,42 +58,19 @@ SyntaxAssignExpr::SyntaxAssignExpr(const SyntaxAssignExpr& x)
 : SyntaxElement(x) {
     
     if ( x.variable != NULL )
-        variable   = x.variable->clone();
+        variable   = RbPtr<SyntaxVariable>( x.variable->clone() );
 
     if ( x.functionCall != NULL )
-        functionCall = x.functionCall->clone();
+        functionCall = RbPtr<SyntaxFunctionCall>( x.functionCall->clone() );
 
-    expression = x.expression->clone();
+    expression = RbPtr<SyntaxElement>( x.expression->clone() );
     opType     = x.opType;
 }
 
 
 /** Destructor deletes operands */
 SyntaxAssignExpr::~SyntaxAssignExpr() {
-     
-    // delete functionCall;
-    if (functionCall != NULL) {
-        functionCall->release();
-        if (functionCall->isUnreferenced()) {
-            delete functionCall;
-        }
-    }
     
-    //delete variable;
-    if (variable != NULL) {
-        variable->release();
-        if (variable->isUnreferenced()) {
-            delete variable;
-        }
-    }
-    
-    // delete expression;
-    if (expression != NULL) {
-        expression->release();
-        if (expression->isUnreferenced()) {
-            delete expression;
-        }
-    }
 }
 
 
@@ -102,40 +79,16 @@ SyntaxAssignExpr& SyntaxAssignExpr::operator=(const SyntaxAssignExpr& x) {
     
     if ( this != &x ) {
         
-        // delete functionCall;
-        if (functionCall != NULL) {
-            functionCall->release();
-            if (functionCall->isUnreferenced()) {
-                delete functionCall;
-            }
-        }
+        functionCall = RbPtr<SyntaxFunctionCall>(NULL);
+        variable = RbPtr<SyntaxVariable>(NULL);
         
-        //delete variable;
-        if (variable != NULL) {
-            variable->release();
-            if (variable->isUnreferenced()) {
-                delete variable;
-            }
-        }
+        if ( x.variable.get() != NULL )
+            variable   = x.variable;
         
-        // delete expression;
-        if (expression != NULL) {
-            expression->release();
-            if (expression->isUnreferenced()) {
-                delete expression;
-            }
-        }
+        if ( x.functionCall.get() != NULL )
+            functionCall = x.functionCall;
         
-        functionCall = NULL;
-        variable = NULL;
-        
-        if ( x.variable != NULL )
-            variable   = x.variable->clone();
-        
-        if ( x.functionCall != NULL )
-            functionCall = x.functionCall->clone();
-        
-        expression = x.expression->clone();
+        expression = x.expression;
         opType     = x.opType;
     }
     
@@ -169,15 +122,15 @@ const VectorString& SyntaxAssignExpr::getClass(void) const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-Variable* SyntaxAssignExpr::getContentAsVariable( Environment* env ) const {
+RbPtr<Variable> SyntaxAssignExpr::getContentAsVariable( RbPtr<Environment> env ) const {
     
     PRINTF( "Evaluating assign expression\n" );
     
     // Get variable info from lhs
-    VariableSlot*       theSlot = variable->getSlot( env );
+    RbPtr<VariableSlot>       theSlot = variable->getSlot( env );
     
     // Declare variable storing the return value of the assignment expression
-    Variable* theVariable = NULL;
+    RbPtr<Variable> theVariable(NULL);
     
     // Deal with arrow assignments
     if ( opType == ArrowAssign ) {
@@ -186,12 +139,11 @@ Variable* SyntaxAssignExpr::getContentAsVariable( Environment* env ) const {
         
         // Calculate the value of the rhs expression
         theVariable = expression->getContentAsVariable( env );
-        theVariable->retain();
         if ( theVariable == NULL )
             throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
         // fill the slot with the new variable
-        theSlot->getVariable()->setDagNode( new ConstantNode( theVariable->getDagNodePtr()->getValue()->clone() ) );
+        theSlot->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>(theVariable->getDagNodePtr()->getValue()->clone() ) ) ) );
     }
     
     // Deal with equation assignments
@@ -203,7 +155,6 @@ Variable* SyntaxAssignExpr::getContentAsVariable( Environment* env ) const {
         // We allow direct references without lookup nodes
         // We also allow constant expressions
         theVariable = expression->getContentAsVariable( env );
-        theVariable->retain();
         PRINTF ( "Created %s with function \"%s\" and value %s \n", theVariable->getDagNode()->getType().c_str(), ((DeterministicNode*)theVariable->getDagNode())->getFunction()->getType().c_str(), theVariable->getDagNodePtr()->getValue() == NULL ? "NULL" : theVariable->getDagNodePtr()->getValue()->getTypeSpec().toString().c_str());
         
         // fill the slot with the new variable
@@ -217,40 +168,30 @@ Variable* SyntaxAssignExpr::getContentAsVariable( Environment* env ) const {
         
         // get the rhs expression wrapped and executed into a variable
         theVariable = expression->getContentAsVariable(env);
-        theVariable->retain();
         
         // Get distribution, which should be the return value of the rhs function
-        DAGNode* exprValue = theVariable->getDagNodePtr();
+        RbPtr<DAGNode> exprValue = theVariable->getDagNodePtr();
         if ( exprValue == NULL ) {
             throw RbException( "Distribution function returns NULL" );
         }
         
-        DeterministicNode* detNode = dynamic_cast<DeterministicNode*>( exprValue );
-        if ( detNode == NULL || detNode->getFunction() == NULL || !detNode->getFunction()->isType( ConstructorFunction_name ) ) {
-            // delete exprValue;
-            if (exprValue != NULL) {
-                exprValue->release();
-                if (exprValue->isUnreferenced()) {
-                    delete exprValue;
-                }
-            }
+        RbPtr<DeterministicNode> detNode( dynamic_cast<DeterministicNode*>( exprValue.get() ) );
+        if ( detNode.get() == NULL || detNode->getFunction() == NULL || !detNode->getFunction()->isType( ConstructorFunction_name ) ) {
+            
             throw RbException( "Function does not return a distribution" );
         }
         
         // Make an independent copy of the distribution and delete the exprVal
 //        Distribution* distribution = (Distribution*) detNode->getFunctionPtr()->execute();
-        Distribution* distribution = (Distribution*) detNode->getValue();
-        if ( distribution == NULL )
+        RbPtr<Distribution> distribution( (Distribution*) detNode->getValue().get() );
+        if ( distribution.get() == NULL )
             throw RbException( "Function returns a NULL distribution" );
         
         // Create new stochastic node
-        StochasticNode* node = new StochasticNode( distribution );
+        RbPtr<DAGNode> node(new StochasticNode( distribution ) );
         
         // fill the slot with the new variable
         theSlot->getVariable()->setDagNode( node );
-        
-//        clean up
-        
         
     }
 //    
@@ -285,18 +226,13 @@ Variable* SyntaxAssignExpr::getContentAsVariable( Environment* env ) const {
     
     theSlot->getDagNodePtr()->touchAffected();
     theSlot->getDagNodePtr()->keep();
-    
-    // release the return variable
-    theVariable->release();
-    if (theVariable->isUnreferenced()) {
-        delete theVariable;
-    }
+
     
 #ifdef DEBUG_PARSER
     env->printValue(std::cerr);
 #endif    
 
-    return NULL;
+    return theVariable;
 }
 
 

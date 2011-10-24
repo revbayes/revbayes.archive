@@ -27,29 +27,19 @@
 const TypeSpec SyntaxClassDef::typeSpec(SyntaxClassDef_name);
 
 /** Construct definition from class name, base class name, and variable and function definitions */
-SyntaxClassDef::SyntaxClassDef( RbString* name, RbString* base, std::list<SyntaxElement*>* defs) : SyntaxElement(), className(name), baseClass(base), definitions(defs) {
-    className->retain();
-    baseClass->retain();
-    for (std::list<SyntaxElement*>::iterator it=definitions->begin(); it!=definitions->end(); it++) {
-        (*it)->retain();
-    }
+SyntaxClassDef::SyntaxClassDef( RbPtr<RbString> name, RbPtr<RbString> base, RbPtr<std::list<RbPtr<SyntaxElement> > > defs) : SyntaxElement(), className(name), baseClass(base), definitions(defs) {
+    
 }
 
 
 /** Deep copy constructor */
 SyntaxClassDef::SyntaxClassDef(const SyntaxClassDef& x) : SyntaxElement(x) {
 
-    className   = new RbString(*className);
-    baseClass   = new RbString(*baseClass);
-    definitions = new std::list<SyntaxElement*>();
-    for (std::list<SyntaxElement*>::const_iterator i=x.definitions->begin(); i!=x.definitions->end(); i++)
-        definitions->push_back((*i)->clone());
-    
-    className->retain();
-    baseClass->retain();
-    for (std::list<SyntaxElement*>::iterator it=definitions->begin(); it!=definitions->end(); it++) {
-        (*it)->retain();
-    }
+    className = RbPtr<RbString>(new RbString(*className));
+    baseClass = RbPtr<RbString>(new RbString(*baseClass));
+    definitions = RbPtr<std::list<RbPtr<SyntaxElement> > >(new std::list<RbPtr<SyntaxElement> >() );
+    for (std::list<RbPtr<SyntaxElement> >::const_iterator i=x.definitions->begin(); i!=x.definitions->end(); i++)
+        definitions->push_back(RbPtr<SyntaxElement>( (*i)->clone() ));
  
 }
 
@@ -57,25 +47,6 @@ SyntaxClassDef::SyntaxClassDef(const SyntaxClassDef& x) : SyntaxElement(x) {
 /** Destructor deletes members */
 SyntaxClassDef::~SyntaxClassDef() {
     
-    // delete className;
-    if (className != NULL) {
-        className->release();
-        if (className->isUnreferenced()) {
-            delete className;
-        }
-    }
-    
-    // delete baseClass;
-    if (baseClass != NULL) {
-        baseClass->release();
-        if (baseClass->isUnreferenced()) {
-            delete baseClass;
-        }
-    }
-
-    for (std::list<SyntaxElement*>::iterator i=definitions->begin(); i!=definitions->end(); i++)
-        delete (*i);
-    delete definitions;
 }
 
 
@@ -86,19 +57,10 @@ SyntaxClassDef& SyntaxClassDef::operator=(const SyntaxClassDef& x) {
     
         SyntaxElement::operator=(x);
 
-        delete className;
-        delete baseClass;
-
-        for (std::list<SyntaxElement*>::iterator i=definitions->begin(); i!=definitions->end(); i++)
-            delete (*i);
-        delete definitions;
-
-        className   = new RbString(*className);
-        baseClass   = new RbString(*baseClass);
-        definitions = new std::list<SyntaxElement*>();
+        className   = x.className;
+        baseClass   = x.baseClass;
+        definitions = x.definitions;
      
-        for (std::list<SyntaxElement*>::const_iterator i=x.definitions->begin(); i!=x.definitions->end(); i++)
-            definitions->push_back((*i)->clone());
     }
 
     return *this;
@@ -131,12 +93,12 @@ const VectorString& SyntaxClassDef::getClass(void) const {
 
 
 /** Get semantic value: insert a user-defined class in the user workspace */
-Variable* SyntaxClassDef::getContentAsVariable(Environment* env) const {
+RbPtr<Variable> SyntaxClassDef::getContentAsVariable(RbPtr<Environment> env) const {
 
     std::cerr << "Sorry, user-defined classes are not implemented yet" << std::endl;
 
     // No return value 
-    return NULL;
+    return RbPtr<Variable>::getNullPtr();
 }
 
 

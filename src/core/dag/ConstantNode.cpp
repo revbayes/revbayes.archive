@@ -36,7 +36,7 @@
 const TypeSpec ConstantNode::typeSpec(ConstantNode_name);
 
 /** Constructor from value */
-ConstantNode::ConstantNode( RbLanguageObject* val ) : DAGNode( val ) {
+ConstantNode::ConstantNode( RbPtr<RbLanguageObject> val ) : DAGNode( val ) {
 
 }
 
@@ -70,8 +70,8 @@ ConstantNode* ConstantNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNod
     newNodes[ this ] = copy;
     
     /* Make sure the children clone themselves */
-    for( std::set<VariableNode*>::const_iterator i = children.begin(); i != children.end(); i++ ) {
-        VariableNode *child = *i;
+    for( std::set<RbPtr<VariableNode> >::const_iterator i = children.begin(); i != children.end(); i++ ) {
+        RbPtr<VariableNode> child = *i;
         child->cloneDAG( newNodes );
     }
  
@@ -101,8 +101,9 @@ void ConstantNode::keep(void) {
 /** Keep value of node and affected variable nodes */
 void ConstantNode::keepAffected( void ) {
     
-    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-            (*i)->keepAffected();
+    for ( std::set<RbPtr<VariableNode> >::iterator i = children.begin(); i != children.end(); i++ ) {
+        RbPtr<VariableNode> node = *i;
+        node->keepAffected();
     }
 }
 
@@ -143,8 +144,9 @@ std::string ConstantNode::richInfo( void ) const {
 /** Touch value of node and touch affected variable nodes */
 void ConstantNode::touchAffected( void ) {
     
-    for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-        (*i)->touchAffected();
+    for ( std::set<RbPtr<VariableNode> >::iterator i = children.begin(); i != children.end(); i++ ) {
+        RbPtr<VariableNode> node = *i;
+        node->touchAffected();
     }
 }
 

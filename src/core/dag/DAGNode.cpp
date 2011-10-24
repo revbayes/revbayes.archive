@@ -44,12 +44,11 @@ DAGNode::DAGNode(const std::string& valType) : children(), parents(), valueTypeS
 
 
 /** Constructor of filled node */
-DAGNode::DAGNode(RbLanguageObject* val) : children(), parents(), valueTypeSpec(val->getType()), value(val) {
+DAGNode::DAGNode(RbPtr<RbLanguageObject> val) : children(), parents(), valueTypeSpec(val->getType()), value(val) {
     
     // initialize the variable
     variable = NULL;
     
-    value->retain();
 }
 
 
@@ -63,14 +62,13 @@ DAGNode::DAGNode(RbLanguageObject* val) : children(), parents(), valueTypeSpec(v
  */
 DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.valueTypeSpec), value( NULL ) {
 
-    if ( x.value != NULL ) {
-        value = x.value->clone();
-        value->retain();
+    if ( x.value.get() != NULL ) {
+        value = RbPtr<RbLanguageObject>( x.value->clone() );
     }
     
-    if (x.variable != NULL) {
-        variable = x.variable;
-    }
+//    if (x.variable != NULL) {
+//        variable = x.variable->clone();
+//    }
     variable = NULL;
     
     // copy the name so that we still be able to identify the variable in a cloned DAG
@@ -82,20 +80,6 @@ DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.va
 /** Destructor deletes value if not NULL */
 DAGNode::~DAGNode( void ) {
 
-    if (value != NULL) {
-        value->release();
-        if ( value->isUnreferenced() )
-            delete value;
-    }
-    
-    // clear the children
-    while (!children.empty()) {
-        VariableNode *c = *children.begin();
-        c->removeParentNode(this);
-        removeChildNode(c);
-    }
-    
-    // we do not own the variable so we do not delete it
 }
 
 
@@ -103,10 +87,6 @@ DAGNode::~DAGNode( void ) {
 void DAGNode::addChildNode(VariableNode *c) {
     PRINTF("Adding child with name \"%s\" to parent with name \"%s\".\n",c->getName().c_str(),getName().c_str());
     
-    // For now we do not want to call retain for all children. The problem with retaining the children is that
-    // a DAG node with children will never result into destruction of the children and since the children
-    // retain the parent never in the destruction of the parents.
-    //c->retain();
     children.insert(c);
 }
 
@@ -134,7 +114,7 @@ const VectorString& DAGNode::getClass() const {
     return rbClass;
 }
 
-RbObject* DAGNode::getElement(size_t index) {
+RbPtr<RbObject> DAGNode::getElement(size_t index) {
     
     // test whether the value supports indexing, i.e. is a container
     if (value->supportsIndex()) {
@@ -166,9 +146,9 @@ bool DAGNode::isConst( void ) const {
 
 
 /** Check if node is a parent of node x in the DAG: needed to check for cycles in the DAG */
-bool DAGNode::isParentInDAG( const DAGNode* x, std::list<DAGNode*>& done ) const {
+bool DAGNode::isParentInDAG( const RbPtr<DAGNode> x, std::list<DAGNode*>& done ) const {
 
-    for( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
+    for( std::set<RbPtr<DAGNode> >::const_iterator i = parents.begin(); i != parents.end(); i++ ) {
 
         if ( std::find( done.begin(), done.end(), (*i) ) == done.end() ) {
             if ( (*i)->isParentInDAG( x, done ) )
@@ -208,7 +188,7 @@ void DAGNode::printParents( std::ostream& o ) const {
 
     o << "[ ";
 
-    for ( std::set<DAGNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
+    for ( std::set<RbPtr<DAGNode> >::const_iterator i = parents.begin(); i != parents.end(); i++) {
         if ( i != parents.begin() )
             o << ", ";
         if ( getName() == "" )

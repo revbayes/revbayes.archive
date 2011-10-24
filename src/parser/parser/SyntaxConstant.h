@@ -16,6 +16,7 @@
 #ifndef SyntaxConstant_H
 #define SyntaxConstant_H
 
+#include "RbPtr.h"
 #include "SyntaxElement.h"
 
 #include <iostream>
@@ -35,29 +36,29 @@ const std::string SyntaxConstant_name = "Constant";
 class SyntaxConstant : public SyntaxElement {
 
     public:
-                            SyntaxConstant(RbLanguageObject* val);                  //!< Constructor from value
-                            SyntaxConstant(const SyntaxConstant& sc);               //!< Copy constructor
-	    virtual            ~SyntaxConstant();                                       //!< Destructor deletes value
+                                                SyntaxConstant(RbPtr<RbLanguageObject> val);                        //!< Constructor from value
+                                                SyntaxConstant(const SyntaxConstant& sc);                           //!< Copy constructor
+	    virtual                                ~SyntaxConstant();                                                   //!< Destructor deletes value
 
         // Assignment operator
-        SyntaxConstant&     operator=(const SyntaxConstant& x);                     //!< Assignment operator
+        SyntaxConstant&                         operator=(const SyntaxConstant& x);                                 //!< Assignment operator
 
         // Basic utility functions
-        std::string         briefInfo(void) const;                                  //!< Brief info about object
-        SyntaxConstant*     clone(void) const;                                      //!< Clone object
-        const VectorString& getClass(void) const;                                   //!< Get class vector 
-        const TypeSpec&     getTypeSpec(void) const;                                //!< Get language type of the object
-        void                print(std::ostream& o) const;                           //!< Print info about object
+        std::string                             briefInfo(void) const;                                              //!< Brief info about object
+        SyntaxConstant*                         clone(void) const;                                                  //!< Clone object
+        const VectorString&                     getClass(void) const;                                               //!< Get class vector 
+        const TypeSpec&                         getTypeSpec(void) const;                                            //!< Get language type of the object
+        void                                    print(std::ostream& o) const;                                       //!< Print info about object
 
         // Regular functions
-        Variable*           getContentAsVariable(Environment* env) const;           //!< Get semantic value
-        bool                isConstExpression(void) const { return true; }          //!< Is subtree constant expr?
+        RbPtr<Variable>                         getContentAsVariable(RbPtr<Environment> env) const;                 //!< Get semantic value
+        bool                                    isConstExpression(void) const { return true; }                      //!< Is subtree constant expr?
 
     protected:
-        RbLanguageObject*   value;                                                  //!< The constant value
+        RbPtr<RbLanguageObject>                 value;                                                              //!< The constant value
     
     private:
-        static const TypeSpec       typeSpec;
+        static const TypeSpec                   typeSpec;
 };
 
 #endif

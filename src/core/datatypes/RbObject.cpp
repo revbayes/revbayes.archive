@@ -30,15 +30,12 @@
 
 
 RbObject::RbObject(void) {
-    numReferences = 0;
+    
 }
 
 /** Destructor */
 RbObject::~RbObject() {
 
-//    assert(isUnreferenced());
-//    if (!isUnreferenced())
-//        throw RbException("Cannot delete referenced object.");
 }
 
 
@@ -74,9 +71,9 @@ const VectorString& RbObject::getClass(void) const {
 	return rbClass; 
 }
 
-/** Get element or subcontainer at index. This is a convinience function implemented here so that we don't have to cast to container. 
+/** Get element or subcontainer at index. This is a convenience function implemented here so that we don't have to cast to container. 
  If this object is not a container, we throw an excpetion */
-RbObject* RbObject::getElement(size_t index) const {
+RbPtr<RbObject> RbObject::getElement(size_t index) const {
     
     std::ostringstream  msg;
     msg << "Illegal call to getElement in type \"" << getType() << "\"";

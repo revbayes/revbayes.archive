@@ -24,7 +24,7 @@
 //  formulation
 //
 
-#include <boost/detail/sp_typeinfo.hpp>
+#include "sp_typeinfo.hpp"
 
 namespace boost
 {

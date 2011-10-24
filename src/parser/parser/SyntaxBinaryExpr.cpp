@@ -37,19 +37,16 @@ std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", 
 
 
 /** Construct from operator type and operands */
-SyntaxBinaryExpr::SyntaxBinaryExpr(operatorT op, SyntaxElement* lhs, SyntaxElement* rhs) : SyntaxElement(), leftOperand(lhs), rightOperand(rhs), operation(op) {
-    leftOperand->retain();
-    rightOperand->retain();
+SyntaxBinaryExpr::SyntaxBinaryExpr(operatorT op, RbPtr<SyntaxElement> lhs, RbPtr<SyntaxElement> rhs) : SyntaxElement(), leftOperand(lhs), rightOperand(rhs), operation(op) {
+
 }
 
 
 /** Deep copy constructor */
 SyntaxBinaryExpr::SyntaxBinaryExpr(const SyntaxBinaryExpr& x) : SyntaxElement(x) {
 
-    leftOperand  = x.leftOperand->clone();
-    leftOperand->retain();
-    rightOperand = x.rightOperand->clone();
-    rightOperand->retain();
+    leftOperand  = RbPtr<SyntaxElement>( x.leftOperand->clone() );
+    rightOperand = RbPtr<SyntaxElement>( x.rightOperand->clone() );
     operation    = x.operation;
 }
 
@@ -57,21 +54,6 @@ SyntaxBinaryExpr::SyntaxBinaryExpr(const SyntaxBinaryExpr& x) : SyntaxElement(x)
 /** Destructor deletes operands */
 SyntaxBinaryExpr::~SyntaxBinaryExpr() {
     
-    // delete leftOperand;
-    if (leftOperand != NULL) {
-        leftOperand->release();
-        if (leftOperand->isUnreferenced()) {
-            delete leftOperand;
-        }
-    }
-    
-    //delete rightOperand;
-    if (rightOperand != NULL) {
-        rightOperand->release();
-        if (rightOperand->isUnreferenced()) {
-            delete rightOperand;
-        }
-    }
 }
 
 
@@ -79,29 +61,11 @@ SyntaxBinaryExpr::~SyntaxBinaryExpr() {
 SyntaxBinaryExpr& SyntaxBinaryExpr::operator=(const SyntaxBinaryExpr& x) {
 
     if (&x != this) {
-        
-        // delete leftOperand;
-        if (leftOperand != NULL) {
-            leftOperand->release();
-            if (leftOperand->isUnreferenced()) {
-                delete leftOperand;
-            }
-        }
-        
-        //delete rightOperand;
-        if (rightOperand != NULL) {
-            rightOperand->release();
-            if (rightOperand->isUnreferenced()) {
-                delete rightOperand;
-            }
-        }
 
         SyntaxElement::operator=(x);
 
-        leftOperand  = x.leftOperand->clone();
-        leftOperand->retain();
-        rightOperand = x.rightOperand->clone();
-        rightOperand->retain();
+        leftOperand  = RbPtr<SyntaxElement>( x.leftOperand->clone() );
+        rightOperand = RbPtr<SyntaxElement>( x.rightOperand->clone() );
         operation    = x.operation;
     }
 
@@ -140,20 +104,20 @@ const VectorString& SyntaxBinaryExpr::getClass(void) const {
  * We simply look up the function and calculate the value.
  *
  */
-Variable* SyntaxBinaryExpr::getContentAsVariable(Environment* env) const {
+RbPtr<Variable> SyntaxBinaryExpr::getContentAsVariable(RbPtr<Environment> env) const {
 
     // Package the arguments
-    std::vector<Argument*> args;
-    DAGNode *left = leftOperand->getContentAsVariable(env)->getDagNodePtr();
-    args.push_back(new Argument("", left->getVariable() ));
-    DAGNode *right = rightOperand->getContentAsVariable(env)->getDagNodePtr();
-    args.push_back(new Argument("", right->getVariable() ));
+    std::vector<RbPtr<Argument> > args;
+    RbPtr<DAGNode> left = leftOperand->getContentAsVariable(env)->getDagNodePtr();
+    args.push_back(RbPtr<Argument>(new Argument("", left->getVariable() ) ));
+    RbPtr<DAGNode> right = rightOperand->getContentAsVariable(env)->getDagNodePtr();
+    args.push_back(RbPtr<Argument>(new Argument("", right->getVariable() ) ));
 
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[operation];
-    RbFunction *theFunction = Workspace::globalWorkspace().getFunction(funcName, args);
+    RbPtr<RbFunction> theFunction = Workspace::globalWorkspace()->getFunction(funcName, args);
     
-    return new Variable(new DeterministicNode( theFunction ));
+    return RbPtr<Variable>(new Variable(RbPtr<DAGNode>(new DeterministicNode( theFunction )) ) );
 }
 
 

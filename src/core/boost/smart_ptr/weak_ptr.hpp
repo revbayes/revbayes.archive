@@ -14,8 +14,8 @@
 //
 
 #include <memory> // boost.TR1 include order fix
-#include <boost/smart_ptr/detail/shared_count.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
+#include "shared_count.hpp"
+#include "shared_ptr.hpp"
 
 #ifdef BOOST_MSVC  // moved here to work around VC++ compiler crash
 # pragma warning(push)

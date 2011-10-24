@@ -33,26 +33,26 @@ const std::string ConstructorFunction_name = "constructor function";
 class ConstructorFunction :  public RbFunction {
 
     public:
-                                    ConstructorFunction(MemberObject* obj);                                         //!< Object constructor
+                                                ConstructorFunction(RbPtr<MemberObject> obj);                                   //!< Object constructor
 
         // Basic utility functions
-        ConstructorFunction*        clone(void) const;                                                              //!< Clone the object
-        const VectorString&         getClass(void) const;                                                           //!< Get class vector
-        const TypeSpec&             getTypeSpec(void) const;                                                        //!< Get language type of the object
+        ConstructorFunction*                    clone(void) const;                                                              //!< Clone the object
+        const VectorString&                     getClass(void) const;                                                           //!< Get class vector
+        const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
 
         // Regular functions
-        bool                        addAsChildOfArguments(void) { return false; }                                   //!< We do not wish that a constructor functions is added as a child of the arguments.
-        RbLanguageObject*           execute(void);                                                                  //!< Execute function
-        const ArgumentRules&        getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                                      //!< Get type of return value
-        const std::string&          getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
+        bool                                    addAsChildOfArguments(void) { return false; }                                   //!< We do not wish that a constructor functions is added as a child of the arguments.
+        RbPtr<RbLanguageObject>                 execute(void);                                                                  //!< Execute function
+        const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
+        const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
+        const std::string&                      getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
 
 	protected:
-        ArgumentRules               argRules;                                                                       //!< Member rules converted to reference rules
-        MemberObject*               templateObject;                                                                 //!< The template object
+        ArgumentRules                           argRules;                                                                       //!< Member rules converted to reference rules
+        RbPtr<MemberObject>                     templateObject;                                                                 //!< The template object
     
     private:
-        static const TypeSpec       typeSpec;
+        static const TypeSpec                   typeSpec;
 };
 
 #endif

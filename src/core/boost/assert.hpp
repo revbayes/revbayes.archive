@@ -34,7 +34,7 @@
 
 #elif defined(BOOST_ENABLE_ASSERT_HANDLER)
 
-#include <boost/current_function.hpp>
+#include "current_function.hpp"
 
 namespace boost
 {
@@ -63,7 +63,7 @@ namespace boost
 
 #elif defined(BOOST_ENABLE_ASSERT_HANDLER)
 
-  #include <boost/current_function.hpp>
+  #include "current_function.hpp"
 
   namespace boost
   {
@@ -80,7 +80,7 @@ namespace boost
     #define BOOST_ASSERT_HPP
     #include <cstdlib>
     #include <iostream>
-    #include <boost/current_function.hpp>
+    #include "current_function.hpp"
 
     //  IDE's like Visual Studio perform better if output goes to std::cout or
     //  some other stream, so allow user to configure output stream:

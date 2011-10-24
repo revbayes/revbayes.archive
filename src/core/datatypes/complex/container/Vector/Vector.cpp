@@ -36,10 +36,9 @@ Vector::Vector(const TypeSpec& elemType) : AbstractVector(elemType), typeSpec(Ve
 Vector::Vector(const Vector &v) : AbstractVector(v), typeSpec(Vector_name, new TypeSpec(elementType)) {
     
     // copy all the elements by deep copy
-    for (std::vector<RbLanguageObject*>::const_iterator it=v.elements.begin(); it!=v.elements.end(); it++) {
+    for (std::vector<RbPtr<RbLanguageObject> >::const_iterator it=v.elements.begin(); it!=v.elements.end(); it++) {
         RbLanguageObject *copy = (*it)->clone();
-        copy->retain();
-        elements.push_back(copy);
+        elements.push_back(RbPtr<RbLanguageObject>( copy ));
     }
     
 }
@@ -65,10 +64,9 @@ Vector& Vector::operator=( const Vector& x ) {
         // just call clear which will free the memory of the objects
         clear();
         
-        for ( std::vector<RbLanguageObject*>::const_iterator i = x.elements.begin(); i != x.elements.end(); i++ ) {
+        for ( std::vector<RbPtr<RbLanguageObject> >::const_iterator i = x.elements.begin(); i != x.elements.end(); i++ ) {
             RbLanguageObject *element = (*i)->clone();
-            element->retain();
-            elements.push_back( element );
+            elements.push_back( RbPtr<RbLanguageObject>( element ) );
         }
     }
     
@@ -97,11 +95,6 @@ const RbLanguageObject& Vector::operator[](size_t i) const {
 /** Clear contents of value container and make length 0 in all dimensions */
 void Vector::clear( void ) {
     
-    for ( std::vector<RbLanguageObject*>::iterator i = elements.begin(); i != elements.end(); i++ ) {
-        (*i)->release();
-        if ((*i)->isUnreferenced())
-            delete ( *i );
-    }
     elements.clear();
     
     // clear also the members if some might have been set
@@ -122,13 +115,13 @@ const VectorString& Vector::getClass(void) const {
 }
 
 /** Get element */
-RbLanguageObject* Vector::getElement(size_t index) const {
+RbPtr<RbObject> Vector::getElement(size_t index) const {
     
-    return elements[index];
+    return RbPtr<RbObject>( elements[index].get() );
 }
 
 
-const std::vector<RbLanguageObject*>& Vector::getValue(void) const {
+const std::vector<RbPtr<RbLanguageObject> >& Vector::getValue(void) const {
     return elements;
 }
 
@@ -143,7 +136,7 @@ const TypeSpec& Vector::getTypeSpec(void) const {
 void Vector::printValue( std::ostream& o ) const {
     
     o << "[ ";
-    for ( std::vector<RbLanguageObject*>::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
+    for ( std::vector<RbPtr<RbLanguageObject> >::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
         if ( i != elements.begin() )
             o << ", ";
         if ( (*i) == NULL )
@@ -158,12 +151,6 @@ void Vector::printValue( std::ostream& o ) const {
 /** Pop element off of front of vector, updating length in process */
 void Vector::pop_front(void) {
 
-    // free the memory
-    RbObject *element = elements.front();
-    element->release();
-    if (element->isUnreferenced()) {
-        delete element;
-    }
     elements.erase(elements.begin());
 }
 
@@ -171,23 +158,17 @@ void Vector::pop_front(void) {
 /** Pop element off of back of vector, updating length in process */
 void Vector::pop_back(void) {
     
-    // free the memory
-    RbObject *element = elements.back();
-    element->release();
-    if (element->isUnreferenced()) {
-        delete element;
-    }
     elements.pop_back();
 }
 
 
 /** Push an int onto the back of the vector after checking */
-void Vector::push_back( RbObject *x ) {
+void Vector::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RbLanguageObject_name) ) ) {
-        elements.push_back(static_cast<RbLanguageObject*>(x));
+        elements.push_back(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>(x.get())) );
     } else if ( x->isConvertibleTo(RbLanguageObject_name) ) {
-        elements.push_back(static_cast<RbLanguageObject*>(x->convertTo(RbLanguageObject_name)));
+        elements.push_back(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>(x->convertTo(RbLanguageObject_name))) );
     }
     else {
         throw RbException( "Trying to set " + Vector_name + "[] with invalid value" );
@@ -196,12 +177,12 @@ void Vector::push_back( RbObject *x ) {
 
 
 /** Push an int onto the front of the vector after checking */
-void Vector::push_front( RbObject *x ) {
+void Vector::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RbLanguageObject_name) ) ) {
-        elements.insert( elements.begin(), static_cast<RbLanguageObject*>(x));
+        elements.insert( elements.begin(), RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>(x.get())) );
     } else if ( x->isConvertibleTo(RbLanguageObject_name) ) {
-        elements.insert( elements.begin(), static_cast<RbLanguageObject*>(x->convertTo(RbLanguageObject_name)));
+        elements.insert( elements.begin(), RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>(x->convertTo(RbLanguageObject_name))) );
     }
     else {
         throw RbException( "Trying to set " + Vector_name + "[] with invalid value" );
@@ -224,7 +205,7 @@ void Vector::resize( size_t n ) {
 std::string Vector::richInfo(void) const {
     
     std::string info = "Vector[ ";
-    for ( std::vector<RbLanguageObject*>::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
+    for ( std::vector<RbPtr<RbLanguageObject> >::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
         if ( i != elements.begin() )
             info += ", ";
         if ( (*i) == NULL )
@@ -238,7 +219,7 @@ std::string Vector::richInfo(void) const {
 }
 
 /** Set element */
-void Vector::setElement(const size_t index, RbLanguageObject *elem) {
+void Vector::setElement(const size_t index, RbPtr<RbLanguageObject> elem) {
     if (index >= elements.size()) {
         throw RbException("Cannot set element in Vector outside the current range.");
     }
@@ -247,9 +228,6 @@ void Vector::setElement(const size_t index, RbLanguageObject *elem) {
     elements.erase(elements.begin()+index);
     
     elements.insert(elements.begin()+index, elem);
-    
-    // retain the element
-    elem->retain();
 }
 
 /** Get the size of the vector */
@@ -272,7 +250,7 @@ void Vector::sort( void ) {
 void Vector::unique(void) {
     
     sort();
-    std::vector<RbLanguageObject*> uniqueVector;
+    std::vector<RbPtr<RbLanguageObject> > uniqueVector;
     uniqueVector.push_back (elements[0]);
     for (size_t i = 1 ; i< elements.size() ; i++)
     {

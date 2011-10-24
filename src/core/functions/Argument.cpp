@@ -28,20 +28,18 @@
 const TypeSpec Argument::typeSpec(Argument_name);
 
 /** Construct from argument label and DAG node */
-Argument::Argument(Variable* v) : RbInternal() {
+Argument::Argument(RbPtr<Variable> v) : RbInternal() {
     
     label   = "";
     var     = v;
-    var->retain();
 }
 
 
 /** Construct from argument label and DAG node */
-Argument::Argument(const std::string& argLabel, Variable* v) : RbInternal() {
+Argument::Argument(const std::string& argLabel, RbPtr<Variable> v) : RbInternal() {
 
     label   = argLabel;
     var     = v;
-    var->retain();
 }
 
 /** Copy Constructor. We keep the same pointer to the variable stored inside this argument. */
@@ -49,20 +47,12 @@ Argument::Argument(const Argument &x) : RbInternal(x) {
     
     label   = x.label;
     var     = x.var;
-    var->retain();
 }
 
 
 /** Destructor */
 Argument::~Argument() {
     
-    // delete the variable of the argument
-    if (var != NULL) {
-        var->release();
-        if (var->isUnreferenced()) {
-            delete var;
-        }
-    }
 }
 
 
