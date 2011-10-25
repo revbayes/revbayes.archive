@@ -38,7 +38,7 @@ class Trace : public MemberObject {
     const TypeSpec&         getTypeSpec(void) const;                                        //!< Get language type of the object
     void                    printValue(std::ostream& o) const;                              //!< Print value for user
     std::string             richInfo(void) const;                                           //!< Complete info about object
-    const XmlElement*       encode(XmlDocument* doc, const std::string& name);
+    const RbPtr<XmlElement> encode(RbPtr<XmlDocument> doc, const std::string& name);
     
     void                    addObject(double d);
     double                  objectAt(int index)                             { return values.at(index); }

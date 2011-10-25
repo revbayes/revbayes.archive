@@ -186,7 +186,7 @@ const TypeSpec& Mixture::getTypeSpec(void) const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* Mixture::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> Mixture::executeOperation(const std::string& name, Environment& args) {
     return NULL;
     /*
     // special handling for adding a variable
@@ -242,7 +242,7 @@ RbLanguageObject* Mixture::executeOperation(const std::string& name, Environment
 
 
 /** Catch setting of the mixture variable */
-void Mixture::setMemberVariable(const std::string& name, Variable* var) {
+void Mixture::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
     /*
     if ( name == "topology" )
         orderingTopology = (Topology*)(var->getValue());

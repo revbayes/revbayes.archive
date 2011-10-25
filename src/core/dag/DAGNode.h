@@ -77,7 +77,7 @@ class DAGNode : public RbInternal {
         RbPtr<RbObject>                                     getElement(size_t index);                                               //!< Get element at index (container function)
         const std::string&                                  getName(void) const;                                                    //!< get the name
 		std::set<RbPtr<DAGNode> >&                          getParents(void) { return parents; }                                    //!< Return parents
-        Variable*                                           getVariable(void) { return variable; }                                  //!< Get the variable owning this node
+        RbPtr<Variable>                                     getVariable(void) { return RbPtr<Variable>( variable ); }               //!< Get the variable owning this node
         bool                                                isParentInDAG(const RbPtr<DAGNode> x, std::list<DAGNode*>& done) const; //!< Is node x a parent of the caller in the DAG?
         size_t                                              numberOfChildren(void) const { return children.size(); }                //!< Number of children
         size_t                                              numberOfParents(void) const { return parents.size(); }                  //!< Number of parents
@@ -85,7 +85,7 @@ class DAGNode : public RbInternal {
         void                                                printParents(std::ostream& o) const;                                    //!< Print children DAG nodes
         void                                                removeChildNode(VariableNode *c);                                       //!< Remove a child node
         void                                                setName(const std::string &n) { name = n; }                             //!< Replace the name of the variable
-        void                                                setVariable(Variable *var);                                             //!< Set the variable owning this node
+        void                                                setVariable(RbPtr<Variable> var);                                       //!< Set the variable owning this node
 
 
 

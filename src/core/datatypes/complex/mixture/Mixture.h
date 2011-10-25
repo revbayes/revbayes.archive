@@ -44,10 +44,10 @@ public:
     
     // Member variable functions
     const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
-    void                            setMemberVariable(const std::string& name, Variable* var);              //!< Catch setting of the topology
+    void                            setMemberVariable(const std::string& name, RbPtr<Variable> var);        //!< Catch setting of the topology
     
     // Member method inits
-    RbLanguageObject*               executeOperation(const std::string& name, Environment& args);           //!< Execute method
+    RbPtr<RbLanguageObject>         executeOperation(const std::string& name, Environment& args);           //!< Execute method
     const MethodTable&              getMethods(void) const;                                                 //!< Get methods
     
     // Mixture functions
@@ -65,7 +65,7 @@ public:
     void                            setClassProbabilities();                                                //!< Set the vector containing class probabilities
     void                            estimateClassProbabilities();                                           //!< Set the vector containing class probabilities from the numbers of elements in each class
     void                            computeNumberOfElementsInClasses();                                     //!<Compute the number of elements in each class by going through the allocation vector
-    void    indexAllocationVector();                                                                        //!< Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1
+    void                            indexAllocationVector();                                                //!< Re-number the classes in the allocation vector so that they start from 0 and end at number_of_classes - 1
     
 private:
     static const TypeSpec           typeSpec_;                                                              

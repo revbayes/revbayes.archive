@@ -28,8 +28,8 @@
 const TypeSpec MethodTable::typeSpec(MethodTable_name);
 
 /** Basic constructor, empty table with or without parent */
-MethodTable::MethodTable(MethodTable* parent)
-    : FunctionTable(parent) {
+MethodTable::MethodTable(RbPtr<MethodTable> parent) : FunctionTable( RbPtr<FunctionTable>(parent.get()) ) {
+
 }
 
 /** Assignment operator */
@@ -38,7 +38,7 @@ MethodTable& MethodTable::operator=(const MethodTable& x) {
     if (this != &x) {
         
         table.clear();
-        for (std::multimap<std::string, RbFunction*>::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
+        for (std::multimap<std::string, RbPtr<RbFunction> >::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
             table.insert(std::pair<std::string, RbFunction*>((*i).first, (RbFunction*)((*i).second->clone())));
         
         parentTable = x.parentTable;
@@ -50,12 +50,12 @@ MethodTable& MethodTable::operator=(const MethodTable& x) {
 
 
 /** Add function to table */
-void MethodTable::addFunction( const std::string name, RbFunction* func ) {
+void MethodTable::addFunction( const std::string name, RbPtr<RbFunction> func ) {
 
     FunctionTable::addFunction( name, func );
 
     if ( func->isType( MemberFunction_name ) )
-        static_cast<MemberFunction*>( func )->setMethodName( name );
+        static_cast<MemberFunction*>( func.get() )->setMethodName( name );
 }
 
 

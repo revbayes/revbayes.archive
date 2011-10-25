@@ -76,20 +76,20 @@ void AbstractVector::printValue( std::ostream& o ) const {
     for ( size_t i = 0; i<size(); i++) {
         if ( i != 0 )
             o << ", ";
-        if ( getElement(i) == NULL )
+        if ( getElement(i).get() == NULL )
             o << "NULL";
         else
-            getElement(i)->printValue(o);
+            (dynamic_cast<RbLanguageObject*>( getElement(i).get() ))->printValue(o);
     }
     o <<  " ]";
     
 }
 
 
-void AbstractVector::setElement(const size_t index, RbObject *x) {
-    RbLanguageObject *elem = dynamic_cast<RbLanguageObject*>(x);
+void AbstractVector::setElement(const size_t index, RbPtr<RbObject> x) {
+    RbLanguageObject *elem = dynamic_cast<RbLanguageObject*>(x.get());
     if (elem != NULL)
-        setElement(index, elem);
+        setElement(index, RbPtr<RbLanguageObject>(elem) );
 }
 
 

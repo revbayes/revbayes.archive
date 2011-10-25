@@ -33,9 +33,9 @@ class TreePlate: public MutableMemberObject {
 
 public:
                                     TreePlate(void);                                                        //!< Default constructor
-                                    TreePlate(Topology* top);                                               //!< constructor
+                                    TreePlate(RbPtr<Topology> top);                                         //!< constructor
                                     TreePlate(const TreePlate& t);                                          //!< Copy constructor
-                                    ~TreePlate(void);                                                        //!< Destructor
+                                    ~TreePlate(void);                                                       //!< Destructor
 
     // Basic utility functions
     TreePlate*                      clone(void) const;                                                      //!< Clone object
@@ -46,27 +46,27 @@ public:
 
     // Member variable functions
     const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
-    void                            setMemberVariable(const std::string& name, Variable* var);              //!< Catch setting of the topology
+    void                            setMemberVariable(const std::string& name, RbPtr<Variable> var);        //!< Catch setting of the topology
 
     // Member method inits
-    RbLanguageObject*               executeOperation(const std::string& name, Environment& args);           //!< Execute method
-    const MethodTable&              getMethods(void) const;                                                 //!< Get methods
+    RbPtr<RbLanguageObject>         executeOperation(const std::string& name, Environment& args);           //!< Execute method
+    const RbPtr<MethodTable>        getMethods(void) const;                                                 //!< Get methods
 
     // Tree plate functions
-    Topology*                       getTopology(void) const;                                                //!< Get the topology for this tree
+    RbPtr<Topology>                 getTopology(void) const;                                                //!< Get the topology for this tree
     
 private:
     static const TypeSpec           typeSpec;
     
     std::vector<std::string>        nodeVariableNames;                                                      //!< The vector of variables names for each node
     
-    std::string                     buildNewickString(TopologyNode *node) const;                            //!< compute the newick string for a tree rooting at this node
+    std::string                     buildNewickString(RbPtr<TopologyNode> node) const;                      //!< compute the newick string for a tree rooting at this node
     
-    void                            orderPlateWithTopology(Topology* t) { orderingTopology = t; }           //!< Order the topology
-    size_t                          getNodeIndex(const TopologyNode *theNode) const;                        //!< Get the index of the node
-    size_t                          getTipIndex(const TopologyNode *theNode) const;                         //!< Get the index of the node
+    void                            orderPlateWithTopology(RbPtr<Topology> t) { orderingTopology = t; }     //!< Order the topology
+    size_t                          getNodeIndex(const RbPtr<TopologyNode> theNode) const;                  //!< Get the index of the node
+    size_t                          getTipIndex(const RbPtr<TopologyNode> theNode) const;                   //!< Get the index of the node
 
-    Topology*                       orderingTopology;                                                       //!< The topology that orders the tree plate
+    RbPtr<Topology>                 orderingTopology;                                                       //!< The topology that orders the tree plate
 };
 
 #endif

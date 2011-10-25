@@ -35,7 +35,7 @@ class DAGNode;
 class VectorInteger;
 class VectorString;
 
-typedef std::vector<ArgumentRule*> ArgumentRules;
+typedef std::vector<RbPtr<ArgumentRule> > ArgumentRules;
 
 /**
  * This is the interface and abstract base class for functions in

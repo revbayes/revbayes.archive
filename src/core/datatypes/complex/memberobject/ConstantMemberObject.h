@@ -32,18 +32,18 @@ const std::string ConstantMemberObject_name = "const MemberObject";
 class ConstantMemberObject : public MemberObject {
     
 public:
-    virtual                    ~ConstantMemberObject(void) {}                                        //!< Destructor
+    virtual                        ~ConstantMemberObject(void) {}                                    //!< Destructor
     
     // Basic utility functions you have to override
-    virtual ConstantMemberObject* clone(void) const = 0;                                             //!< Clone object
-    virtual const VectorString& getClass(void) const;                                                //!< Get class vector
+    virtual ConstantMemberObject*   clone(void) const = 0;                                           //!< Clone object
+    virtual const VectorString&     getClass(void) const;                                            //!< Get class vector
     
     // Basic utility functions you may want to override
-    virtual void                printValue(std::ostream& o) const;                                   //!< Print value for user
-    virtual std::string         richInfo(void) const;                                                //!< Complete info
+    virtual void                    printValue(std::ostream& o) const;                               //!< Print value for user
+    virtual std::string             richInfo(void) const;                                            //!< Complete info
     
     // Basic utility functions you do not have to override
-    bool                        isConstant(void) const;                                              //!< Is the object, including all member variables and elements, constant?
+    bool                            isConstant(void) const;                                          //!< Is the object, including all member variables and elements, constant?
     
 protected:
     ConstantMemberObject(const MemberRules& memberRules);                                            //!< Standard constructor

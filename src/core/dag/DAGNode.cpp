@@ -200,13 +200,13 @@ void DAGNode::printParents( std::ostream& o ) const {
 }
 
 
-void DAGNode::setVariable(Variable *var) {
+void DAGNode::setVariable(RbPtr<Variable> var) {
     // only do something if the old var is different to the new var
-    if (var != variable) {
+    if (var.get() != variable) {
         // the DAG node does not own the Variable so we do not release it
     
         // set the new variable
-        variable = var;
+        variable = var.get();
         
         name = var->getName();
         
@@ -220,11 +220,7 @@ void DAGNode::removeChildNode(VariableNode *c) {
     // test if we even have this node as a child
     if (children.find(c) != children.end()) {
         // we do not own our children! See addChildNode for explanation
-//        c->release();
-//        if (c->isUnreferenced()) {
-//            delete c;
-//        }
-        
+       
         // remove the child from our list
         children.erase(c);
     }

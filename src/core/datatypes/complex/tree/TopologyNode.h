@@ -37,6 +37,8 @@
 #define TopologyNode_H
 
 #include "ConstantMemberObject.h"
+#include "RbPtr.h"
+
 #include <vector>
 
 
@@ -46,50 +48,50 @@ const std::string TopologyNode_name = "Topology Node";
 class TopologyNode : public ConstantMemberObject {
     
 public:
-    TopologyNode(int indx=0);                                                                                   //!< Default constructor with optional index
-    TopologyNode(const std::string& n, int indx=0);                                                             //!< Constructor with name and optional index
-    TopologyNode(const TopologyNode &n);                                                                        //!< Copy constructor
-    virtual                         ~TopologyNode(void);                                                        //!< Destructor
+    TopologyNode(int indx=0);                                                                                       //!< Default constructor with optional index
+    TopologyNode(const std::string& n, int indx=0);                                                                 //!< Constructor with name and optional index
+    TopologyNode(const TopologyNode &n);                                                                            //!< Copy constructor
+    virtual                         ~TopologyNode(void);                                                            //!< Destructor
     // Basic utility functions
-    TopologyNode*                   clone(void) const;                                                          //!< Clone object
-    bool                            equals(TopologyNode *node) const;                                           //!< Test whether this is the same node
-    const VectorString&             getClass(void) const;                                                       //!< Get class vector
-    const TypeSpec&                 getTypeSpec(void) const;                                                    //!< Get language type of the object
-    void                            printValue(std::ostream& o) const;                                          //!< Print value for user
-    std::string                     richInfo(void) const;                                                       //!< Complete info
+    TopologyNode*                       clone(void) const;                                                          //!< Clone object
+    bool                                equals(RbPtr<TopologyNode> node) const;                                     //!< Test whether this is the same node
+    const VectorString&                 getClass(void) const;                                                       //!< Get class vector
+    const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+    void                                printValue(std::ostream& o) const;                                          //!< Print value for user
+    std::string                         richInfo(void) const;                                                       //!< Complete info
 
     // Member variable rules
-    const MemberRules&              getMemberRules(void) const;                                                 //!< Get member rules
+    const MemberRules&                  getMemberRules(void) const;                                                 //!< Get member rules
 
     // Member method inits
-    RbLanguageObject*               executeOperation(const std::string& name, Environment& args);               //!< Execute method
-    const MethodTable&              getMethods(void) const;                                                     //!< Get methods
+    RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);               //!< Execute method
+    const RbPtr<MethodTable>            getMethods(void) const;                                                     //!< Get methods
         
     // TopologyNode functions
-    void                            addChild(TopologyNode* c);                                                  //!< Adds a child node
-    TopologyNode*                   getChild(size_t i) const { return children[i]; }                            //!< Returns the i-th child
-    std::vector<int>                getChildrenIndices(void) const;                                             //!< Return children indices
-    int                             getIndex(void) const { return index; }                                      //!< Get index of node
-    std::string                     getName(void) const { return name; }                                        //!< Get name of node
-    size_t                          getNumberOfChildren(void) const { return children.size(); }                 //!< Returns the number of children
-    TopologyNode*                   getParent(void) const { return parent; }                                    //!< Returns the node's parent
-    int                             getParentIndex(void) const { return parent->getIndex(); }                   //!< Return parent index
-    bool                            isTip(void) const { return children.size() == 0; }                          //!< Is node tip?
-    bool                            isRoot(void) const { return parent == NULL; }                               //!< Is node root?
-    void                            setName(const std::string& n);                                              //!< Set the name of this node
-    void                            setParent(TopologyNode* p);                                                 //!< Sets the node's parent
-    void                            removeAllChildren(void);                                                    //!< Removes all of the children of the node
-    void                            removeChild(TopologyNode* p);                                               //!< Removes a specific child
+    void                                addChild(RbPtr<TopologyNode> c);                                            //!< Adds a child node
+    RbPtr<TopologyNode>                 getChild(size_t i) const { return children[i]; }                            //!< Returns the i-th child
+    std::vector<int>                    getChildrenIndices(void) const;                                             //!< Return children indices
+    int                                 getIndex(void) const { return index; }                                      //!< Get index of node
+    std::string                         getName(void) const { return name; }                                        //!< Get name of node
+    size_t                              getNumberOfChildren(void) const { return children.size(); }                 //!< Returns the number of children
+    RbPtr<TopologyNode>                 getParent(void) const { return RbPtr<TopologyNode>(parent); }               //!< Returns the node's parent
+    int                                 getParentIndex(void) const { return parent->getIndex(); }                   //!< Return parent index
+    bool                                isTip(void) const { return children.size() == 0; }                          //!< Is node tip?
+    bool                                isRoot(void) const { return parent == NULL; }                               //!< Is node root?
+    void                                setName(const std::string& n);                                              //!< Set the name of this node
+    void                                setParent(RbPtr<TopologyNode> p);                                           //!< Sets the node's parent
+    void                                removeAllChildren(void);                                                    //!< Removes all of the children of the node
+    void                                removeChild(RbPtr<TopologyNode> p);                                         //!< Removes a specific child
         
 private:
-    std::string                     buildNewickString(const TopologyNode *node) const;                          //!< compute the newick string for a tree rooting at this node
-    void                            refreshNewickString(void);                                                  //!< recompute the newick string
+    std::string                         buildNewickString(const RbPtr<TopologyNode> node) const;                    //!< compute the newick string for a tree rooting at this node
+    void                                refreshNewickString(void);                                                  //!< recompute the newick string
     
-    static const TypeSpec           typeSpec;
-    std::vector<TopologyNode*>      children;                                                                   //!< Vector holding the node's children
-    TopologyNode*                   parent;                                                                     //!< Pointer to the parent of the node
-    std::string                     name;                                                                       //!< Name of the node, i.e. identifier/taxon name
-    int                             index;                                                                      //!< Node index
+    static const TypeSpec               typeSpec;
+    std::vector<RbPtr<TopologyNode> >   children;                                                                   //!< Vector holding the node's children. Note that the parent owns the children but not the other way around. 
+    TopologyNode*                       parent;                                                                     //!< Pointer to the parent of the node. It is a regular pointer instead of a RbPtr to avoid loops in the reference counting.
+    std::string                         name;                                                                       //!< Name of the node, i.e. identifier/taxon name
+    int                                 index;                                                                      //!< Node index
 };
 
 #endif

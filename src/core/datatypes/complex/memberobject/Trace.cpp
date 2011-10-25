@@ -106,14 +106,14 @@ const TypeSpec& Trace::getTypeSpec(void) const {
 }
 
 
-const XmlElement* Trace::encode(XmlDocument *doc, const std::string& name) {    
+const RbPtr<XmlElement> Trace::encode(RbPtr<XmlDocument> doc, const std::string& name) {    
     // check if the document already contains this trace
     if (doc->hasXmlElementWithId((uintptr_t) this)) {
 //        return doc->getXmlElement((uintptr_t)this);
-        return new XmlElementReference(name,(uintptr_t)this);
+        return RbPtr<XmlElement>( new XmlElementReference(name,(uintptr_t)this) );
     }
     
-    XmlElementInstance* element = new XmlElementInstance(name,(uintptr_t)this);
+    XmlElementInstance *element = new XmlElementInstance(name,(uintptr_t)this);
     element->setAttribute("burnin",burnin);
     element->setAttribute("ess",ess);
     element->setAttribute("mean",mean);
@@ -131,7 +131,7 @@ const XmlElement* Trace::encode(XmlDocument *doc, const std::string& name) {
     element->setAttribute("fileName",fileName);
     element->setAttribute("values", values);
     
-    return element;
+    return RbPtr<XmlElement>( element );
 }
 
 

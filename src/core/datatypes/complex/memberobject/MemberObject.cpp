@@ -52,14 +52,14 @@ MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
 /** Execute member method: delegate to method table. */
 RbPtr<RbLanguageObject> MemberObject::executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
-    return getMethods().executeFunction(name, args);
+    return getMethods()->executeFunction(name, args);
 }
 
 
 /** Map member method call to internal function call. This is used as an alternative mechanism to providing a complete
  *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
  *  is used without the appropriate mapping to internal function calls being present. */
-RbLanguageObject* MemberObject::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> MemberObject::executeOperation(const std::string& name, Environment& args) {
     
     if (name == "memberNames") {
         for (size_t i=0; i<members.size(); i++) {
@@ -70,7 +70,7 @@ RbLanguageObject* MemberObject::executeOperation(const std::string& name, Enviro
     } 
     else if (name == "get") {
         // get the member with give name
-        const RbString *varName = static_cast<const RbString*>(args[0].getValue());
+        const RbPtr<RbString> varName( static_cast<RbString*>(args[0].getValue().get()) );
         
         // check if a member with that name exists
         if (members.existsVariable(*varName)) {
@@ -110,9 +110,9 @@ const TypeSpec MemberObject::getMemberTypeSpec(const std::string& name) const {
 
 
 /** Get method specifications (no methods) */
-const MethodTable& MemberObject::getMethods(void) const {
+const RbPtr<MethodTable> MemberObject::getMethods(void) const {
 
-    static MethodTable methods;
+    static RbPtr<MethodTable> methods( new MethodTable() );
     static ArgumentRules getMemberNamesArgRules;
     static ArgumentRules getArgRules;
     static bool          methodsSet = false;
@@ -120,11 +120,11 @@ const MethodTable& MemberObject::getMethods(void) const {
     if ( methodsSet == false ) {
         
         // add the 'memberNames()' method
-        methods.addFunction("memberNames",  new MemberFunction(RbVoid_name, getMemberNamesArgRules)  );
+        methods->addFunction("memberNames", RbPtr<RbFunction>( new MemberFunction(RbVoid_name, getMemberNamesArgRules) ) );
         
         // add the 'memberNames()' method
-        getArgRules.push_back( new ValueRule( "name"      , RbString_name      ) );
-        methods.addFunction("get",          new MemberFunction(RbLanguageObject_name, getArgRules)  );
+        getArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "name" , RbString_name ) ) );
+        methods->addFunction("get", RbPtr<RbFunction>( new MemberFunction(RbLanguageObject_name, getArgRules) ) );
         
         methodsSet = true;
     }   
@@ -134,21 +134,21 @@ const MethodTable& MemberObject::getMethods(void) const {
 
 
 /** Get const value of a member variable */
-const RbLanguageObject* MemberObject::getMemberValue(const std::string& name) const {
+const RbPtr<RbLanguageObject> MemberObject::getMemberValue(const std::string& name) const {
 
     return members.getValue(name);
 }
 
 
 /** Get a member variable */
-const DAGNode* MemberObject::getMemberDagNode(const std::string& name) const {
+const RbPtr<DAGNode> MemberObject::getMemberDagNode(const std::string& name) const {
 
     return members.getDagNode(name);
 }
 
 
 /** Get a member variable (non-const, for derived classes) */
-DAGNode* MemberObject::getMemberDagNodePtr(const std::string& name) {
+RbPtr<DAGNode> MemberObject::getMemberDagNodePtr(const std::string& name) {
 
     return members.getDagNodePtr(name);
 }
@@ -195,14 +195,14 @@ std::string MemberObject::richInfo(void) const {
 
 
 /** Set a member DAG node */
-void MemberObject::setMemberDagNode(const std::string& name, DAGNode* var) {
+void MemberObject::setMemberDagNode(const std::string& name, RbPtr<DAGNode> var) {
     
     members[name].getVariable()->setDagNode(var);
 }
 
 
 /** Set a member variable */
-void MemberObject::setMemberVariable(const std::string& name, Variable* var) {
+void MemberObject::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
 
     members[name].setVariable(var);
 }
