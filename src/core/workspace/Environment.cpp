@@ -65,7 +65,7 @@ Environment::Environment(const Environment &x): RbInternal(x) {
         const std::string &name = x.getName(i);
         
         // get a copy of the variable slot
-        RbPtr<VariableSlot> slotCopy(x[name].clone());
+        RbPtr<VariableSlot> slotCopy(x[name]->clone());
         
         // add the copy
         variableTable.insert( std::pair<std::string, RbPtr<VariableSlot> >( name, slotCopy ) );
@@ -75,7 +75,7 @@ Environment::Environment(const Environment &x): RbInternal(x) {
 }
 
 /** Index operator to variable slot from string */
-VariableSlot& Environment::operator[]( const std::string& name ) {
+RbPtr<VariableSlot> Environment::operator[]( const std::string& name ) {
     
     std::map<std::string, RbPtr<VariableSlot> >::iterator it = variableTable.find(name);
     if ( variableTable.find(name) == variableTable.end() ) {
@@ -87,12 +87,12 @@ VariableSlot& Environment::operator[]( const std::string& name ) {
     
     PRINTF( "Retrieving \"%s\" from frame\n", name.c_str() );
     
-    return *(*it).second;
+    return (*it).second;
 }
 
 
 /** Index operator (const) to variable slot from string */
-const VariableSlot& Environment::operator[]( const std::string& name ) const {
+const RbPtr<VariableSlot> Environment::operator[]( const std::string& name ) const {
     
     std::map<std::string, RbPtr<VariableSlot> >::const_iterator it = variableTable.find( name );
     if ( variableTable.find(name) == variableTable.end() ) {
@@ -104,12 +104,12 @@ const VariableSlot& Environment::operator[]( const std::string& name ) const {
     
     PRINTF( "Retrieving %s %s from frame\n", it->second->getTypeSpec().toString().c_str(), name.c_str() );
     
-    return *(*it).second;
+    return (*it).second;
 }
 
 
 /** Index operator to variable slot from int */
-VariableSlot& Environment::operator[]( const size_t index ) {
+RbPtr<VariableSlot> Environment::operator[]( const size_t index ) {
     
     // get the name at the index
     const std::string &name = getName(index);
@@ -119,7 +119,7 @@ VariableSlot& Environment::operator[]( const size_t index ) {
 
 
 /** Index operator (const) to variable slot from int */
-const VariableSlot& Environment::operator[]( const size_t index ) const {
+const RbPtr<VariableSlot> Environment::operator[]( const size_t index ) const {
     
     // get the name at the index
     const std::string &name = getName(index);
@@ -170,15 +170,15 @@ void Environment::addVariable(const std::string& name, const TypeSpec& typeSp, R
 }
 
 /** Add variable */
-void Environment::addVariable(const std::string& name, Variable *theVar) {
+void Environment::addVariable(const std::string& name, RbPtr<Variable> theVar) {
     
     addVariable( name, TypeSpec(RbObject_name), theVar );
 }
 
 /** Add variable to frame */
-void Environment::addVariable( const std::string& name, const TypeSpec& typeSp, DAGNode* dagNode ) {
+void Environment::addVariable( const std::string& name, const TypeSpec& typeSp, RbPtr<DAGNode> dagNode ) {
     // create a new variable object
-    Variable *var = new Variable(name, dagNode);
+    RbPtr<Variable> var( new Variable(name, dagNode) );
     
     // add the object to the list
     addVariable(name, typeSp, var );
@@ -187,7 +187,7 @@ void Environment::addVariable( const std::string& name, const TypeSpec& typeSp, 
 /** Add variable to frame */
 void Environment::addVariable( const std::string& name, const TypeSpec& typeSp ) {
     // create a new variable object
-    Variable *var = new Variable( name );
+    RbPtr<Variable> var( new Variable( name ) );
     
     // add the object to the list
     addVariable(name, typeSp, var );
@@ -207,13 +207,8 @@ void Environment::clear(void) {
         const std::string &name = getName(i);
         
         // get a copy of the variable slot
-        VariableSlot *theSlot = &operator[](name);
+        RbPtr<VariableSlot> theSlot = operator[](name);
         
-        // release the slot
-        theSlot->release();
-        if (theSlot->isUnreferenced()) {
-            delete theSlot;
-        }
     }
     
     // empty the two vectors
@@ -231,21 +226,13 @@ const TypeSpec& Environment::getTypeSpec(void) const {
 /** Erase variable */
 void Environment::eraseVariable( const std::string& name ) {
     
-    std::map<std::string, VariableSlot*>::iterator it = variableTable.find( name );
+    std::map<std::string, RbPtr<VariableSlot> >::iterator it = variableTable.find( name );
     if ( it == variableTable.end() )
         throw RbException( RbException::MISSING_VARIABLE, "Variable " + name + " does not exist in frame" );
     
     PRINTF( "Erasing %s %s from frame\n", name.c_str(), it->second->getTypeSpec().toString().c_str() );
     
     variableTable.erase( it );
-    
-    // free the memory
-    if (it->second != NULL) {
-        it->second->release();
-        if(it->second->isUnreferenced()) {
-            delete ( (*it).second );
-        }
-    }
     
     // remove the name from the var name list
     for (std::vector<std::string>::iterator it=varNames.begin(); it!=varNames.end(); it++) {
@@ -281,24 +268,24 @@ const VectorString& Environment::getClass() const {
 
 
 /** Get reference, alternative method */
-DAGNode* Environment::getDagNodePtr( const std::string& name ) const {
+RbPtr<DAGNode> Environment::getDagNodePtr( const std::string& name ) const {
     
-    return operator[]( name ).getDagNodePtr();
+    return operator[]( name )->getDagNodePtr();
 }
 
 
 /** Get variable, alternative method */
-const DAGNode* Environment::getDagNode( const std::string& name ) const {
+const RbPtr<DAGNode> Environment::getDagNode( const std::string& name ) const {
     
-    return operator[]( name ).getDagNode();
+    return operator[]( name )->getDagNode();
 }
 
 
 /** Get value, alternative method */
-const RbLanguageObject* Environment::getValue( const std::string& name ) const {
+const RbPtr<RbLanguageObject> Environment::getValue( const std::string& name ) const {
     
     // find the variable slot first
-    std::map<std::string, VariableSlot*>::const_iterator it = variableTable.find( name );
+    std::map<std::string, RbPtr<VariableSlot> >::const_iterator it = variableTable.find( name );
     if ( variableTable.find(name) == variableTable.end() ) {
         if ( parentEnvironment != NULL )
             return parentEnvironment-> getValue( name );
@@ -307,7 +294,7 @@ const RbLanguageObject* Environment::getValue( const std::string& name ) const {
     }
     
     // set the slot
-    VariableSlot *theSlot = it->second;
+    RbPtr<VariableSlot> theSlot = it->second;
     return theSlot->getValue();
 }
 
@@ -319,7 +306,7 @@ const RbLanguageObject* Environment::getValue( const std::string& name ) const {
  * that it is safe is when this Environment is identical to, or a parent of,
  * otherEnvironment.
  */
-bool Environment::isSameOrParentOf( Environment* otherEnvironment ) const {
+bool Environment::isSameOrParentOf( RbPtr<Environment> otherEnvironment ) const {
     
     if (otherEnvironment == NULL) 
         return false;
@@ -367,14 +354,13 @@ void Environment::setName(size_t i, const std::string &name) {
     const std::string &oldName = varNames[i];
     
     // get the variable slot associated with the old name
-    VariableSlot &theSlot = operator[](oldName);
-    theSlot.retain();
+    RbPtr<VariableSlot> theSlot = operator[](oldName);
     
     // remove the entry with the old name
     eraseVariable(oldName);
     
     // insert the slot with its new name
-    variableTable.insert( std::pair<std::string, VariableSlot*>( name, &theSlot ) );
+    variableTable.insert( std::pair<std::string, RbPtr<VariableSlot> >( name, theSlot ) );
     
     // insert the name at it's old position
     varNames.insert(varNames.begin() + i, name);

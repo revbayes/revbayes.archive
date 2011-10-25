@@ -66,19 +66,19 @@ const VectorString& Dist_birthdeath::getClass( void ) const {
 
 
 /** Get member variable rules */
-const MemberRules& Dist_birthdeath::getMemberRules( void ) const {
+const RbPtr<MemberRules> Dist_birthdeath::getMemberRules( void ) const {
     
-    static MemberRules memberRules;
+    static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ValueRule( "origin"          , RealPos_name     ) );
-        memberRules.push_back( new ValueRule( "T"               , RealPos_name     ) );
-        memberRules.push_back( new ValueRule( "lambda"          , RealPos_name     ) );
-        memberRules.push_back( new ValueRule( "mu"              , RealPos_name, new RealPos(0.0)) );
-        memberRules.push_back( new ValueRule( "rho"             , Probability_name, new Probability(1.0) ) );
-        memberRules.push_back( new ValueRule( "speciationEvent" , RbBoolean_name, new RbBoolean(true) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "origin"          , RealPos_name     ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "T"               , RealPos_name     ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "lambda"          , RealPos_name     ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "mu"              , RealPos_name, RbPtr<RbLanguageObject>( new RealPos(0.0) ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "rho"             , Probability_name, RbPtr<RbLanguageObject>( new Probability(1.0) ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "speciationEvent" , RbBoolean_name, RbPtr<RbLanguageObject>( new RbBoolean(true) ) ) ) );
         
         rulesSet = true;
     }
@@ -109,19 +109,19 @@ const TypeSpec& Dist_birthdeath::getVariableType( void ) const {
  * @param value Observed speciation times
  * @return      Natural log of the probability
  */
-double Dist_birthdeath::lnPdf( const RbLanguageObject* value ) {
+double Dist_birthdeath::lnPdf( const RbPtr<RbLanguageObject> value ) {
     
     // Get the parameters
-    double t = static_cast<const RealPos*    >( value )->getValue();
-    double o = static_cast<const RealPos*    >( getMemberValue( "origin" ) )->getValue();
-    double T = static_cast<const RealPos*    >( getMemberValue( "T"      ) )->getValue();
-    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
-    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
-    double p = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
+    double t = static_cast<const RealPos*    >( value.get() )->getValue();
+    double o = static_cast<const RealPos*    >( getMemberValue( "origin" ).get() )->getValue();
+    double T = static_cast<const RealPos*    >( getMemberValue( "T"      ).get() )->getValue();
+    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ).get() )->getValue();
+    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ).get() )->getValue();
+    double p = static_cast<const Probability*>( getMemberValue( "rho"    ).get() )->getValue();
     
     // have we observed a speciation event at time t or did we just stop the process without oberving an event?
     // Internal nodes correspond to obsereved speciation events whereas tips correspond to no event and a stopped process.
-    bool speciationEvent = static_cast<const RbBoolean*>( getMemberValue( "speciationEvent" ) )->getValue();
+    bool speciationEvent = static_cast<const RbBoolean*>( getMemberValue( "speciationEvent" ).get() )->getValue();
     
     // the probability of the current time is the probability of having observed no event until now
     double log_p = log( pWaiting(o,t,T,b,d,p) );
@@ -155,19 +155,19 @@ double Dist_birthdeath::pBirth(double t, double T, double lambda, double mu, dou
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_birthdeath::pdf( const RbLanguageObject* value ) {
+double Dist_birthdeath::pdf( const RbPtr<RbLanguageObject> value ) {
     
     // Get the parameters
-    double t = static_cast<const RealPos*    >( value )->getValue();
-    double o = static_cast<const RealPos*    >( getMemberValue( "origin" ) )->getValue();
-    double T = static_cast<const RealPos*    >( getMemberValue( "T"      ) )->getValue();
-    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
-    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
-    double p = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
+    double t = static_cast<const RealPos*    >( value.get() )->getValue();
+    double o = static_cast<const RealPos*    >( getMemberValue( "origin" ).get() )->getValue();
+    double T = static_cast<const RealPos*    >( getMemberValue( "T"      ).get() )->getValue();
+    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ).get() )->getValue();
+    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ).get() )->getValue();
+    double p = static_cast<const Probability*>( getMemberValue( "rho"    ).get() )->getValue();
     
     // have we observed a speciation event at time t or did we just stop the process without oberving an event?
     // Internal nodes correspond to obsereved speciation events whereas tips correspond to no event and a stopped process.
-    bool speciationEvent = static_cast<const RbBoolean*>( getMemberValue( "speciationEvent" ) )->getValue();
+    bool speciationEvent = static_cast<const RbBoolean*>( getMemberValue( "speciationEvent" ).get() )->getValue();
     
     // the probability of the current time is the probability of having observed no event until now
     double prob = pWaiting(o,t,T,b,d,p);
@@ -218,19 +218,19 @@ double Dist_birthdeath::ut(double t, double t_prime, double lambda, double mu, d
  *
  * @return      Randomly drawn vector of speciation times
  */
-RealPos* Dist_birthdeath::rv( void ) {
+RbPtr<RbLanguageObject> Dist_birthdeath::rv( void ) {
     
     // TODO needs implementation!!!
     
     // Get the parameters
-    double o = static_cast<const RealPos*    >( getMemberValue( "origin" ) )->getValue();
-    double T = static_cast<const RealPos*    >( getMemberValue( "T"      ) )->getValue();
-    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ) )->getValue();
-    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ) )->getValue();
-    double p = static_cast<const Probability*>( getMemberValue( "rho"    ) )->getValue();
+    double o = static_cast<const RealPos*    >( getMemberValue( "origin" ).get() )->getValue();
+    double T = static_cast<const RealPos*    >( getMemberValue( "T"      ).get() )->getValue();
+    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ).get() )->getValue();
+    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ).get() )->getValue();
+    double p = static_cast<const Probability*>( getMemberValue( "rho"    ).get() )->getValue();
     
     
-    return new RealPos( (T - o) / 2.0 + o);
+    return RbPtr<RbLanguageObject>( new RealPos( (T - o) / 2.0 + o) );
 }
 
 

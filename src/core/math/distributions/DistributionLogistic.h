@@ -14,6 +14,8 @@
  * $Id$
  */
 
+#include "RbPtr.h"
+
 class RandomNumberGenerator;
 
 #include <vector>
@@ -29,6 +31,6 @@ namespace RbStatistics {
         double      quantile(double p);                                                     /*!< Logistic quantile */
         double      quantile(double location, double scale, double p);                            /*!< Logistic(location, scale) quantile */
 
-        double      rv(double location, double scale, RandomNumberGenerator* rng);         /*!< Logistic(x) random variable */
+        double      rv(double location, double scale, RbPtr<RandomNumberGenerator> rng);         /*!< Logistic(x) random variable */
 	}
 }

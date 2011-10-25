@@ -42,8 +42,8 @@ public:
     void                                            printValue(std::ostream& o) const;                              //!< Print value for user
     std::string                                     richInfo(void) const;                                           //!< Complete info about object
     
-    RbLanguageObject&                               operator[](size_t i);                                           //!< Index op allowing change
-    const RbLanguageObject&                         operator[](size_t i) const;                                     //!< Const index op
+    RbPtr<RbLanguageObject>                         operator[](size_t i);                                           //!< Index op allowing change
+    const RbPtr<RbLanguageObject>                   operator[](size_t i) const;                                     //!< Const index op
     Vector&                                         operator=(const Vector& x);                                     //!< Assignment operator
     
     // Vector functions
@@ -63,7 +63,7 @@ public:
     protected:
     
     std::vector<RbPtr<RbLanguageObject> >           elements;
-    TypeSpec                                typeSpec;
+    TypeSpec                                        typeSpec;
 };
 
 #endif

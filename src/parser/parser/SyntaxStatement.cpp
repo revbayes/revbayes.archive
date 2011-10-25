@@ -46,22 +46,22 @@ SyntaxStatement::SyntaxStatement(statementT type)
 
 
 /** Construct from statement type and expression (RETURN expression) */
-SyntaxStatement::SyntaxStatement(statementT type, SyntaxElement* expr)
+SyntaxStatement::SyntaxStatement(statementT type, RbPtr<SyntaxElement> expr)
     : SyntaxElement(), statementType(type), expression(expr), statements1(NULL), statements2(NULL) {
 }
 
 
 /** Construct from statement type, condition and statement list */
-SyntaxStatement::SyntaxStatement(statementT type, SyntaxElement* cond, std::list<SyntaxElement*>* stmts)
+SyntaxStatement::SyntaxStatement(statementT type, RbPtr<SyntaxElement> cond, RbPtr<std::list<RbPtr<SyntaxElement> > > stmts)
     : SyntaxElement(), statementType(type), expression(cond), statements1(stmts), statements2(NULL) {
 }
 
 
 /** Construct from statement type, condition and itwo statement lists */
-SyntaxStatement::SyntaxStatement(statementT                 type,
-                                 SyntaxElement*             cond,
-                                 std::list<SyntaxElement*>* stmts1,
-                                 std::list<SyntaxElement*>* stmts2)
+SyntaxStatement::SyntaxStatement(statementT                                 type,
+                                 RbPtr<SyntaxElement>                       cond,
+                                 RbPtr<std::list<RbPtr<SyntaxElement> > >   stmts1,
+                                 RbPtr<std::list<RbPtr<SyntaxElement> > >   stmts2)
     : SyntaxElement(), statementType(type), expression(cond), statements1(stmts1), statements2(stmts2) {
 }
 
@@ -71,32 +71,19 @@ SyntaxStatement::SyntaxStatement(const SyntaxStatement& x)
     : SyntaxElement(x) {
 
     statementType   = x.statementType;
-    expression      = x.expression->clone();
+    expression      = RbPtr<SyntaxElement>( x.expression->clone() );
 
-    for (std::list<SyntaxElement*>::iterator i=x.statements1->begin(); i!=x.statements1->end(); i++)
-        statements1->push_back((*i)->clone());
+    for (std::list<RbPtr<SyntaxElement> >::const_iterator i=x.statements1->begin(); i!=x.statements1->end(); i++)
+        statements1->push_back(RbPtr<SyntaxElement>( (*i)->clone() ));
 
-    for (std::list<SyntaxElement*>::iterator i=x.statements2->begin(); i!=x.statements2->end(); i++)
-        statements2->push_back((*i)->clone());
+    for (std::list<RbPtr<SyntaxElement> >::const_iterator i=x.statements2->begin(); i!=x.statements2->end(); i++)
+        statements2->push_back(RbPtr<SyntaxElement>( (*i)->clone() ));
 }
 
 
 /** Destructor deletes expression and statements */
 SyntaxStatement::~SyntaxStatement() {
     
-    delete expression;
-
-    if (statements1 != NULL) {
-        for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++)
-            delete (*i);
-        delete statements1;
-    }
-
-    if (statements2 != NULL) {
-        for (std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++)
-            delete (*i);
-        delete statements2;
-    }
 }
 
 
@@ -104,30 +91,13 @@ SyntaxStatement::~SyntaxStatement() {
 SyntaxStatement& SyntaxStatement::operator= (const SyntaxStatement& x) {
 
     if (&x != this) {
-        delete expression;
-
-        if (statements1 != NULL) {
-            for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++)
-                delete (*i);
-            delete statements1;
-        }
-
-        if (statements2 != NULL) {
-            for (std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++)
-                delete (*i);
-            delete statements2;
-        }
 
         SyntaxElement::operator=(x);
 
         statementType   = x.statementType;
-        expression      = x.expression->clone();
-
-        for (std::list<SyntaxElement*>::iterator i=x.statements1->begin(); i!=x.statements1->end(); i++)
-            statements1->push_back((*i)->clone());
-
-        for (std::list<SyntaxElement*>::iterator i=x.statements2->begin(); i!=x.statements2->end(); i++)
-            statements2->push_back((*i)->clone());
+        expression      = x.expression;
+        statements1     = x.statements1;
+        statements2     = x.statements2;
     }
 
     return (*this);
@@ -145,9 +115,9 @@ std::string SyntaxStatement::briefInfo () const {
 
 
 /** Clone syntax element */
-SyntaxElement* SyntaxStatement::clone () const {
+SyntaxStatement* SyntaxStatement::clone () const {
 
-    return (SyntaxElement*)(new SyntaxStatement(*this));
+    return (new SyntaxStatement(*this));
 }
 
 
@@ -161,15 +131,15 @@ const VectorString& SyntaxStatement::getClass(void) const {
 
 
 /** Get semantic value: it is here that we execute the statement */
-Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
+RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) const {
 
-    Variable* result = NULL;
+    RbPtr<Variable> result( NULL );
     
     if (statementType == For) {
 
         // Convert expression to for condition
-        SyntaxForCondition* forCond = dynamic_cast<SyntaxForCondition*>(expression);
-        assert (forCond != NULL);
+        RbPtr<SyntaxForCondition> forCond( dynamic_cast<SyntaxForCondition*>(expression.get()) );
+        assert (forCond.get() != NULL);
 
         // Initialize for loop
         Signals::getSignals().clearFlags();
@@ -177,14 +147,14 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
         // create a new environment for the loop
         // we need a new environment so that the elements will nt be visible from the outside
 //        Environment *loopEnv = new Environment(env);
-        Environment *loopEnv = env;
+        RbPtr<Environment> loopEnv = env;
         
         forCond->initializeLoop(loopEnv);
 
         // Now loop over statements inside the for loop
         while (forCond->getNextLoopState(loopEnv)) {
 
-            for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
+            for (std::list<RbPtr<SyntaxElement> >::const_iterator i=statements1->begin(); i!=statements1->end(); i++) {
 
                 // Execute statement
                 result = (*i)->getContentAsVariable(loopEnv);
@@ -197,9 +167,8 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
                 }
 
                 // Free memory
-				if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && result->isUnreferenced()) {
-                    delete result;  // discard result
-                    result = NULL;
+				if ( !Signals::getSignals().isSet( Signals::RETURN ) && result.get() != NULL) {
+                    result = RbPtr<Variable>::getNullPtr();  // discard result
                 }
 
                 // Catch signal
@@ -218,8 +187,6 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
             }
         }
         
-        // destroy the loop environment
-//        delete loopEnv;
     }
     else if (statementType == Break) {
     
@@ -236,7 +203,7 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
         // Loop over statements inside the while loop, first checking the expression
         while ( isTrue( expression, env ) ) {
 
-            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
+            for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
 	 
                 // Execute statement
 	            result = (*i)->getContentAsVariable( env );
@@ -249,9 +216,8 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
                 }
 	 
 	            // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && result->isUnreferenced() ){
-                    delete result;  // discard result
-                    result = NULL;
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result.get() != NULL ){
+                    result = RbPtr<Variable>::getNullPtr();  // discard result
                 }
 	 
 	            // Catch signal
@@ -280,7 +246,7 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
         // Process statements inside the if clause if expression is true
         if ( isTrue( expression, env ) ) {
         	 	 
-            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
+            for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
 
                 // Execute statement
                 result = (*i)->getContentAsVariable(env);
@@ -293,9 +259,8 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
                 }
 
                 // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && result->isUnreferenced() ){
-                    delete result;  // discard result
-                    result = NULL;
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result.get() != NULL){
+                    result = RbPtr<Variable>::getNullPtr();  // discard result
                 }
             }
         }
@@ -306,7 +271,7 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
         // otherwise process statements in else clause
         if ( isTrue( expression, env ) ) {
             
-            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
+            for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
             
                 // Execute statement
                 result = (*i)->getContentAsVariable( env );
@@ -319,14 +284,13 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
                 }
                 
                 // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && result->isUnreferenced() ){
-                    delete result;  // discard result
-                    result = NULL;
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result.get() != NULL ){
+                    result = RbPtr<Variable>::getNullPtr();  // discard result
                 }
             }
         }
         else {	
-            for ( std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++ ) {
+            for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=statements2->begin(); i!=statements2->end(); i++ ) {
     
                 // Execute statement
                 result = (*i)->getContentAsVariable( env );
@@ -339,9 +303,8 @@ Variable* SyntaxStatement::getContentAsVariable(Environment* env) const {
                 }
                     
                 // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL && result->isUnreferenced() ) {
-                    delete result;  // discard result
-                    result = NULL;
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result.get() != NULL ) {
+                    result = RbPtr<Variable>::getNullPtr();  // discard result
                 }
             }
         }
@@ -362,19 +325,16 @@ const TypeSpec& SyntaxStatement::getTypeSpec(void) const {
  * whether the result is true or false, or can be interpreted as a RbBoolean
  * true or false value.
  */
-bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment* env ) const {
+bool SyntaxStatement::isTrue( RbPtr<SyntaxElement> expression, RbPtr<Environment> env ) const {
     
-    Variable* temp = expression->getContentAsVariable( env );
+    RbPtr<Variable> temp = expression->getContentAsVariable( env );
     
     if ( temp == NULL )
         return false;
     
     if ( temp->getValue()->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
         
-        bool retValue = static_cast<const RbBoolean*>( temp->getValue() )->getValue();
-        
-        if ( temp->isUnreferenced() )
-            delete   temp;
+        bool retValue = static_cast<const RbBoolean*>( temp->getValue().get() )->getValue();
         
         return retValue;
     }
@@ -382,10 +342,6 @@ bool SyntaxStatement::isTrue( SyntaxElement* expression, Environment* env ) cons
         
         RbBoolean* tempBool = static_cast<RbBoolean*>( temp->getValue()->convertTo( RbBoolean_name ) );
         bool     retValue = tempBool->getValue();
-        
-        delete   tempBool;
-        if ( temp->isUnreferenced() )
-            delete   temp;
         
         return   retValue;
     }
@@ -406,7 +362,7 @@ void SyntaxStatement::print(std::ostream& o) const {
     else {
         o << "statements1   = <" << statements1->size() << " statements>" << std::endl;
         int count=1;
-        for (std::list<SyntaxElement*>::const_iterator i=statements1->begin(); i!=statements1->end(); i++, count++) {
+        for (std::list<RbPtr<SyntaxElement> >::const_iterator i=statements1->begin(); i!=statements1->end(); i++, count++) {
             o << "   stmt " << count << " = [" << (*i) << "] " << (*i)->briefInfo() << std::endl;
         }
     }
@@ -415,7 +371,7 @@ void SyntaxStatement::print(std::ostream& o) const {
     else {
         o << "statements2   = <" << statements2->size() << " statements>" << std::endl;
         int count=1;
-        for (std::list<SyntaxElement*>::const_iterator i=statements2->begin(); i!=statements2->end(); i++, count++) {
+        for (std::list<RbPtr<SyntaxElement> >::const_iterator i=statements2->begin(); i!=statements2->end(); i++, count++) {
             o << "   stmt " << count << " = [" << (*i) << "] " << (*i)->briefInfo() << std::endl;
         }
     }
@@ -424,12 +380,12 @@ void SyntaxStatement::print(std::ostream& o) const {
     if (expression != NULL)
         expression->print(o);
     if (statements1 != NULL) {
-        for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
+        for (std::list<RbPtr<SyntaxElement> >::const_iterator i=statements1->begin(); i!=statements1->end(); i++) {
             (*i)->print(o);
         }
     }
     if (statements2 != NULL) {
-        for (std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++) {
+        for (std::list<RbPtr<SyntaxElement> >::const_iterator i=statements2->begin(); i!=statements2->end(); i++) {
             (*i)->print(o);
         }
     }

@@ -214,9 +214,9 @@ const RbPtr<MethodTable> TopologyNode::getMethods(void) const {
 }
 
 
-const MemberRules& TopologyNode::getMemberRules(void) const {
+const RbPtr<MemberRules> TopologyNode::getMemberRules(void) const {
 
-    static MemberRules memberRules;
+    static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
 
     if (!rulesSet) 

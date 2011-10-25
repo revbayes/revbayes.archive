@@ -18,6 +18,7 @@
 #define RbStatisticsHelper_H
 
 #include <vector>
+#include "RbPtr.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 
@@ -37,13 +38,13 @@ namespace RbStatistics {
         double                      rndGamma1(double s, RandomNumberGenerator& rng);
         double                      rndGamma2(double s, RandomNumberGenerator& rng);
 		
-        template <class T> void		randomlySelectFromVectorWithReplacement(std::vector<T>& sourceV, std::vector<T>& destV, int k, RandomNumberGenerator* rng) {
+        template <class T> void		randomlySelectFromVectorWithReplacement(std::vector<T>& sourceV, std::vector<T>& destV, int k, RbPtr<RandomNumberGenerator> rng) {
             
             destV.clear();
             for (int i=0; i<k; i++)
                 destV.push_back( sourceV[(int)(rng->uniform01()*(sourceV.size()))] );
         }
-        template <class T> void		randomlySelectFromVectorWithoutReplacement(std::vector<T>& sourceV, std::vector<T>& destV, int k, RandomNumberGenerator* rng) {
+        template <class T> void		randomlySelectFromVectorWithoutReplacement(std::vector<T>& sourceV, std::vector<T>& destV, int k, RbPtr<RandomNumberGenerator> rng) {
             
             if ( (int)sourceV.size() < k )
                 throw (RbException("Attempting to sample too many elements from source vector"));

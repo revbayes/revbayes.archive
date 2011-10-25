@@ -28,7 +28,7 @@
 #include <sstream>
 
 /** Constructor */
-RbAbstract::RbAbstract( const VectorString classVec, TypeSpec *elemType ) : RbLanguageObject(), classVector( classVec ), elementType( elemType ), typeSpec( classVec[0], elemType) {
+RbAbstract::RbAbstract( const VectorString classVec, RbPtr<TypeSpec> elemType ) : RbLanguageObject(), classVector( classVec ), elementType( elemType ), typeSpec( classVec[0], elemType) {
 }
 
 

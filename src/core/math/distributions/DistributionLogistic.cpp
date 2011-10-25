@@ -146,7 +146,7 @@ double RbStatistics::Logistic::quantile(double location, double scale, double p)
  * \throws Does not throw an error.
  */
 
-double RbStatistics::Logistic::rv(double location, double scale, RandomNumberGenerator* rng) {
+double RbStatistics::Logistic::rv(double location, double scale, RbPtr<RandomNumberGenerator> rng) {
 
     if (scale == 0){
         return (location);

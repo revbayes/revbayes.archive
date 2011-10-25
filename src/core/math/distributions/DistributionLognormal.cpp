@@ -145,13 +145,13 @@ double RbStatistics::Lognormal::quantile(double m, double s, double p) {
 	return exp(RbStatistics::Normal::quantile(m, s, p));
 }
 
-double RbStatistics::Lognormal::rv(RandomNumberGenerator* rng) {
+double RbStatistics::Lognormal::rv(RbPtr<RandomNumberGenerator> rng) {
 	
 	return exp(RbStatistics::Normal::rv(rng));
 	
 }
 
-double RbStatistics::Lognormal::rv(double m, double s, RandomNumberGenerator* rng) {
+double RbStatistics::Lognormal::rv(double m, double s, RbPtr<RandomNumberGenerator> rng) {
 	
 	return exp(RbStatistics::Normal::rv(m, s, rng));
 }

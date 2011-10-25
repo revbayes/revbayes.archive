@@ -46,7 +46,7 @@ public:
     bool                        isConstant(void) const;                                                             //!< Is the object, including all member variables and elements, constant?
     
     protected:
-    MutableMemberObject(const MemberRules& memberRules);                                                            //!< Standard constructor
+    MutableMemberObject(const RbPtr<MemberRules> memberRules);                                                            //!< Standard constructor
     MutableMemberObject(void);                                                                                      //!< Default constructor; no members or methods
     
 };

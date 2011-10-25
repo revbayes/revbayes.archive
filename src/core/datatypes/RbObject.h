@@ -35,25 +35,25 @@ const std::string RbObject_name = "Object";
 class RbObject {
 
     public:
-        virtual                    ~RbObject(void);                                                         //!< Virtual destructor
+        virtual                            ~RbObject(void);                                                         //!< Virtual destructor
 
         // Basic utility functions you have to override (also getClass()!)
-        virtual RbObject*           clone(void) const = 0;                                                  //!< Clone object
-        virtual const XmlElement*   encode(XmlDocument* doc, const std::string& name);                      //!< Function to encode this object into an XML string
-        virtual const VectorString& getClass(void) const;                                                   //!< Get class vector
-        virtual const TypeSpec&     getTypeSpec(void) const = 0;                                            //!< Get language type of the object
+        virtual RbObject*                   clone(void) const = 0;                                                  //!< Clone object
+        virtual const RbPtr<XmlElement>     encode(RbPtr<XmlDocument> doc, const std::string& name);                //!< Function to encode this object into an XML string
+        virtual const VectorString&         getClass(void) const;                                                   //!< Get class vector
+        virtual const TypeSpec&             getTypeSpec(void) const = 0;                                            //!< Get language type of the object
 
         // Basic utility functions you may want to override
-        virtual bool                allowsVariableInsertion(void) const { return false; }                   //!< Do we allow variable to be inserted in this object (only appicable for some container, e.g. DagNodeContainer)
-        virtual RbObject*           convertTo(const TypeSpec& type) const;                                  //!< Convert to type
-        virtual RbPtr<RbObject>     getElement(size_t index) const;                                         //!< Get element or subcontainer
+        virtual bool                        allowsVariableInsertion(void) const { return false; }                   //!< Do we allow variable to be inserted in this object (only appicable for some container, e.g. DagNodeContainer)
+        virtual RbObject*                   convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        virtual RbPtr<RbObject>             getElement(size_t index) const;                                         //!< Get element or subcontainer
 
-        virtual bool                isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
+        virtual bool                        isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         
 
         // Basic utility functions you should not have to override
-        const std::string&          getType(void) const;                                                    //!< Get type of object
-        bool                        isTypeSpec(const TypeSpec& typeSpec) const;                             //!< Does the language type of the object fit type specification typeSpec?
+        const std::string&                  getType(void) const;                                                    //!< Get type of object
+        bool                                isTypeSpec(const TypeSpec& typeSpec) const;                             //!< Does the language type of the object fit type specification typeSpec?
 
 protected:
     RbObject(void);                                                                                     //!< No objects of this class

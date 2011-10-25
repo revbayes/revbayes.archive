@@ -73,10 +73,10 @@ public:
     virtual                        ~Environment();                                                                          //!< Destrcutor
     
     // Operators
-    VariableSlot&                   operator[](const std::string& name);                                                    //!< Get named variable slot reference
-    const VariableSlot&             operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
-    VariableSlot&                   operator[](const size_t index);                                                         //!< Get named variable slot reference
-    const VariableSlot&             operator[](const size_t index) const;                                                   //!< Get named variable slot const reference
+    RbPtr<VariableSlot>             operator[](const std::string& name);                                                    //!< Get named variable slot reference
+    const RbPtr<VariableSlot>       operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
+    RbPtr<VariableSlot>             operator[](const size_t index);                                                         //!< Get named variable slot reference
+    const RbPtr<VariableSlot>       operator[](const size_t index) const;                                                   //!< Get named variable slot const reference
     
     // Basic utility functions
     virtual Environment*            clone(void) const;                                                                      //!< Clone Environment

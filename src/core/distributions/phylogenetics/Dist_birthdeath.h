@@ -39,13 +39,13 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
     
     // Member variable setup
-    const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
+    const RbPtr<MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
     
     // Discrete distribution functions
     const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-    double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
-    double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
-    RealPos*                    rv(void);                                                           //!< Generate random variable
+    double                      lnPdf(const RbPtr<RbLanguageObject> value);                         //!< Ln probability density
+    double                      pdf(const RbPtr<RbLanguageObject> value);                           //!< Probability density
+    RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
     
 private:
     double                      nj(double t, double t_prime, double T, double lambda, double mu, double rho) const;

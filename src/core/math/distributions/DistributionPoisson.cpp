@@ -116,7 +116,7 @@ double RbStatistics::Poisson::quantile(double lambda, double p) {
  * \return This function returns a Poisson-distributed integer.
  * \throws Does not throw an error.
  */
-int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator* rng) {
+int RbStatistics::Poisson::rv(double lambda, RbPtr<RandomNumberGenerator> rng) {
     
 	if (lambda < 17.0)
         {

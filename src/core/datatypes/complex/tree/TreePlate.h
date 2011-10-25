@@ -45,7 +45,7 @@ public:
     std::string                     richInfo(void) const;                                                   //!< Complete info
 
     // Member variable functions
-    const MemberRules&              getMemberRules(void) const;                                             //!< Get member rules
+    const RbPtr<MemberRules>        getMemberRules(void) const;                                             //!< Get member rules
     void                            setMemberVariable(const std::string& name, RbPtr<Variable> var);        //!< Catch setting of the topology
 
     // Member method inits

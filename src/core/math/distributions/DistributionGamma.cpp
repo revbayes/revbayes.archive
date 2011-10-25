@@ -133,7 +133,7 @@ double RbStatistics::Gamma::quantile(double a, double b, double p) {
 }
 
 
-double RbStatistics::Gamma::rv(double a, double b, RandomNumberGenerator* rng) {
+double RbStatistics::Gamma::rv(double a, double b, RbPtr<RandomNumberGenerator> rng) {
     
 	return (RbStatistics::Helper::rndGamma(a, *rng) / b);
 }

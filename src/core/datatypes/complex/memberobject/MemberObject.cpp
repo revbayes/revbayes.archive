@@ -31,10 +31,10 @@
 
 
 /** Constructor: we set member variables here from member rules */
-MemberObject::MemberObject(const MemberRules& memberRules) : RbLanguageObject() {
+MemberObject::MemberObject(const RbPtr<MemberRules> memberRules) : RbLanguageObject() {
 
     /* Fill member table (frame) based on member rules */
-    for ( MemberRules::const_iterator i = memberRules.begin(); i != memberRules.end(); i++ ) {
+    for ( MemberRules::const_iterator i = memberRules->begin(); i != memberRules->end(); i++ ) {
         // creare variable slots with name and type
         members.addVariable( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() );
     }
@@ -70,11 +70,11 @@ RbPtr<RbLanguageObject> MemberObject::executeOperation(const std::string& name, 
     } 
     else if (name == "get") {
         // get the member with give name
-        const RbPtr<RbString> varName( static_cast<RbString*>(args[0].getValue().get()) );
+        const RbPtr<RbString> varName( static_cast<RbString*>(args[0]->getValue().get()) );
         
         // check if a member with that name exists
         if (members.existsVariable(*varName)) {
-            return members[*varName].getDagNodePtr()->getValuePtr();
+            return members[*varName]->getDagNodePtr()->getValuePtr();
         }
         
         // there was no variable with the given name
@@ -96,7 +96,7 @@ const VectorString& MemberObject::getClass(void) const {
 
 
 /** Return member rules (no members) */
-const MemberRules& MemberObject::getMemberRules(void) const {
+const RbPtr<MemberRules> MemberObject::getMemberRules(void) const {
 
     throw RbException( "Object does not have members" );
 }
@@ -104,8 +104,7 @@ const MemberRules& MemberObject::getMemberRules(void) const {
 
 /** Get type specification for a member variable */
 const TypeSpec MemberObject::getMemberTypeSpec(const std::string& name) const {
-    // TODO Object can go out of scope before reference get returned.
-    return members[name].getTypeSpec();
+    return members[name]->getTypeSpec();
 }
 
 
@@ -174,10 +173,10 @@ void MemberObject::printValue(std::ostream& o) const {
     for ( size_t i = 0; i < members.size(); i++ ) {
 
         o << "." << members.getName(i) << std::endl;
-        if ( members[members.getName(i)].getValue() == NULL)
+        if ( members[members.getName(i)]->getValue() == NULL)
             o << "NULL";
         else
-            members[members.getName(i)].getValue()->printValue(o);
+            members[members.getName(i)]->getValue()->printValue(o);
         o << std::endl << std::endl;
     }
 }
@@ -197,14 +196,14 @@ std::string MemberObject::richInfo(void) const {
 /** Set a member DAG node */
 void MemberObject::setMemberDagNode(const std::string& name, RbPtr<DAGNode> var) {
     
-    members[name].getVariable()->setDagNode(var);
+    members[name]->getVariable()->setDagNode(var);
 }
 
 
 /** Set a member variable */
 void MemberObject::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
 
-    members[name].setVariable(var);
+    members[name]->setVariable(var);
 }
 
 

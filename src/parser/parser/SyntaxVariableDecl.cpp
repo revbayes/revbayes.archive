@@ -170,7 +170,7 @@ RbPtr<Variable> SyntaxVariableDecl::getContentAsVariable( RbPtr<Environment> env
         env->addVariable( *variableName, typeSpec );
     }
     
-    return NULL;
+    return RbPtr<Variable>::getNullPtr();
 }
 
 

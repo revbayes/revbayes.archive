@@ -34,34 +34,34 @@ const std::string Model_name = "Model";
 class Model : public ConstantMemberObject {
 
     public:
-                                    Model(void);                                                //!< Default constructor for a Model object
-                                    Model(const std::vector<DAGNode*>& sinkNodes);              //!< Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. 
-                                    Model(const Model& x);                                      //!< Copy constructor for a Model object.
+                                            Model(void);                                                //!< Default constructor for a Model object
+                                            Model(const std::vector<DAGNode*>& sinkNodes);              //!< Constructor for the Model object that takes as an argument a vector containing at least one of the DAGNodes in the graph representing the model. 
+                                            Model(const Model& x);                                      //!< Copy constructor for a Model object.
 
         // Assignment operator
-        Model&                      operator=(const Model& x);                                  //!< Assignment operator
+        Model&                              operator=(const Model& x);                                  //!< Assignment operator
 
         // Basic utility functions
-        Model*                      clone(void) const;                                          //!< Make a copy (clone) of the Model.
-        const VectorString&         getClass(void) const;                                       //!< Initialize the inheritance hierarchy for a Model object.
-        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
-        void                        printValue(std::ostream& o) const;                          //!< Print the Model for the user as a list of the DAGNodes in the model graph.
-        std::string                 richInfo(void) const;                                       //!< Complete info
+        Model*                              clone(void) const;                                          //!< Make a copy (clone) of the Model.
+        const VectorString&                 getClass(void) const;                                       //!< Initialize the inheritance hierarchy for a Model object.
+        const TypeSpec&                     getTypeSpec(void) const;                                    //!< Get language type of the object
+        void                                printValue(std::ostream& o) const;                          //!< Print the Model for the user as a list of the DAGNodes in the model graph.
+        std::string                         richInfo(void) const;                                       //!< Complete info
     
-        const MemberRules&          getMemberRules(void) const;                                 //!< Get member rules
+        const RbPtr<MemberRules>            getMemberRules(void) const;                                 //!< Get member rules
     
         // Model functions
-        std::vector<VariableNode*>  getClonedDagNodes(std::vector<VariableNode*> &orgNodes) const;   //!< Get cloned nodes corresponding to originals
-        std::vector<DAGNode*>&      getDAGNodes(void) { return dagNodes; }                      //!< Return the DAGNodes in the model graph.
-        void                        setMemberVariable(const std::string& name, Variable* var);  //!< set a new member with name. catch setting of sinknode
+        std::vector<RbPtr<VariableNode> >   getClonedDagNodes(std::vector<RbPtr<VariableNode> > &orgNodes) const;   //!< Get cloned nodes corresponding to originals
+        std::vector<RbPtr<DAGNode> >&       getDAGNodes(void) { return dagNodes; }                      //!< Return the DAGNodes in the model graph.
+        void                                setMemberVariable(const std::string& name, RbPtr<Variable> var);  //!< set a new member with name. catch setting of sinknode
 
 	private:
-        int                         findIndexInVector(const std::vector<DAGNode*>& v, const DAGNode* p) const;
+        int                                 findIndexInVector(const std::vector<RbPtr<DAGNode> >& v, const RbPtr<DAGNode> p) const;
 
     // Member variables
-    static const TypeSpec           typeSpec;
-    std::vector<DAGNode*>           dagNodes;                
-    std::map<const DAGNode*, DAGNode*>  nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
+    static const TypeSpec                   typeSpec;
+    std::vector<RbPtr<DAGNode> >            dagNodes;                
+    std::map<const DAGNode*, DAGNode*>      nodesMap;                                               //!< Map of node pointers between original nodes from the workspace to node in the model
 };
 
 #endif

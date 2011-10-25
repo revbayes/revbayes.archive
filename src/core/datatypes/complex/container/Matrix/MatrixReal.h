@@ -52,8 +52,8 @@ public:
                                         MatrixReal(const size_t nRows, const size_t nCols, const std::vector<double>& x);//!< Construct matrix from length specification and vector of content
 
     // Overoaded operators
-    VectorReal&                         operator[](size_t i);                                                       //!< Subscript operator
-    const VectorReal&                   operator[](size_t i) const;                                                 //!< Subscript operator (const)
+    RbPtr<VectorReal>                   operator[](size_t i);                                                       //!< Subscript operator
+    const RbPtr<VectorReal>             operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
     // Basic utility functions
     MatrixReal*                         clone(void) const;                                                          //!< Clone object
@@ -63,9 +63,6 @@ public:
     std::string                         richInfo(void) const;                                                       //!< Complete info about object
 
     
-//    // Container functions
-    RbPtr<RbObject>                     getElement(size_t index) const;                                             //!< Get element
-
     // Matrix functions
     RbPtr<RbObject>                     getElement(size_t row, size_t col) const;                                   //!< Get element or subcontainer
     void                                setElement(size_t row, size_t col, RbPtr<RbLanguageObject> var);            //!< set element

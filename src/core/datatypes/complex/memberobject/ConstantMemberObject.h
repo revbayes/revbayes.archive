@@ -46,7 +46,7 @@ public:
     bool                            isConstant(void) const;                                          //!< Is the object, including all member variables and elements, constant?
     
 protected:
-    ConstantMemberObject(const MemberRules& memberRules);                                            //!< Standard constructor
+    ConstantMemberObject(const RbPtr<MemberRules> memberRules);                                            //!< Standard constructor
     ConstantMemberObject(void);                                                                      //!< Default constructor; no members or methods
     
 };

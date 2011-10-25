@@ -17,6 +17,7 @@
 #define RbAbstract_H
 
 #include "RbLanguageObject.h"
+#include "RbPtr.h"
 #include "VectorString.h"
 
 #include <ostream>
@@ -27,7 +28,7 @@ class RbAbstract : public RbLanguageObject {
 
 public:
                             RbAbstract(const VectorString classVec,
-                                       TypeSpec *elemType = NULL);                           //!< Constructor
+                                       RbPtr<TypeSpec> elemType = RbPtr<TypeSpec>::getNullPtr());                           //!< Constructor
 
     // Basic utility functions
     RbAbstract*             clone(void) const;                                                      //!< Clone object
@@ -38,7 +39,7 @@ public:
 
 protected:
     VectorString            classVector;                                                            //!< Class vector describing type
-    TypeSpec               *elementType;                                                            //!< Element type, if any
+    RbPtr<TypeSpec>         elementType;                                                            //!< Element type, if any
     TypeSpec                typeSpec;
 };
 

@@ -55,7 +55,7 @@ class MemberObject: public RbLanguageObject {
         bool                                isConstant(void) const;                                                             //!< Is the object, including all member variables and elements, constant?
 
         // Member variable functions you do not have to override
-        const MemberEnvironment&            getMembers(void) const;                                                             //!< Get members
+        const RbPtr<MemberEnvironment>      getMembers(void) const;                                                             //!< Get members
         RbPtr<MemberEnvironment>            getMembersPtr(void);                                                                //!< Get members
         const TypeSpec                      getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
         const RbPtr<RbLanguageObject>       getMemberValue(const std::string& name) const;                                      //!< Get member value (const)
@@ -64,7 +64,7 @@ class MemberObject: public RbLanguageObject {
         bool                                hasMember(const std::string& name) const;                                           //!< Has this object a member with name
 
         // Member variable functions you may wish to override
-        virtual const MemberRules&          getMemberRules(void) const;                                                         //!< Get member rules
+        virtual const RbPtr<MemberRules>    getMemberRules(void) const;                                                         //!< Get member rules
         virtual void                        setMemberDagNode(const std::string& name, RbPtr<DAGNode> var);                      //!< Set member variable
         virtual void                        setMemberVariable(const std::string& name, RbPtr<Variable> var);                    //!< Set member variable
 
@@ -76,12 +76,12 @@ class MemberObject: public RbLanguageObject {
         virtual bool                        supportsIndex(void) const { return false; }                                         //!< Does object support index operator?
 
     protected:
-                                            MemberObject(const MemberRules& memberRules);                                       //!< Standard constructor
+                                            MemberObject(const RbPtr<MemberRules> memberRules);                                       //!< Standard constructor
                                             MemberObject(void){}                                                                //!< Default constructor; no members or methods
                                             MemberObject(const MemberObject &m);                                                //!< Copy constructor
  
         // Members is the variable frame that stores member variables
-        MemberEnvironment               members;                                                                                //!< Member variables
+        MemberEnvironment                   members;                                                                                //!< Member variables
 };
 
 #endif

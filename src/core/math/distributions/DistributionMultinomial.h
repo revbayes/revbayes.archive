@@ -14,7 +14,7 @@
  * $Id$
  */
 
-
+#include "RbPtr.h"
 #include <vector>
 
 class RandomNumberGenerator;
@@ -28,7 +28,7 @@ namespace RbStatistics {
         double                      lnPdf(const std::vector<double>& p, const std::vector<unsigned int>& x);/*!< Multinomial(p[]) log_e probability */
         double                      lnPdf(const std::vector<double>& p, const std::vector<int>& x);         /*!< Multinomial(p[]) log_e probability */
         double                      lnPdf(const std::vector<double>& p, const std::vector<double>& x);      /*!< Multinomial(p[]) log_e probability */
-        std::vector<int>            rv(const std::vector<double>& p, RandomNumberGenerator* rng);           /*!< Multinomial(p[]) random variable */
-        std::vector<int>            rv(const std::vector<double>& p, int n, RandomNumberGenerator* rng);    /*!< Multinomial(p[]) random variable */
+        std::vector<int>            rv(const std::vector<double>& p, RbPtr<RandomNumberGenerator> rng);     /*!< Multinomial(p[]) random variable */
+        std::vector<int>            rv(const std::vector<double>& p, int n, RbPtr<RandomNumberGenerator> rng);/*!< Multinomial(p[]) random variable */
 	}
 }

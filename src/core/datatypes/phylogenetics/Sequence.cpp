@@ -27,40 +27,35 @@
 const TypeSpec Sequence::typeSpec(Sequence_name);
 
 /** Constructor with element type, used to properly construct vectors */
-Sequence::Sequence(const std::string& elemType, const std::string tname) : AbstractVector(elemType), characters(elemType), taxonName(tname) {
+Sequence::Sequence(const std::string& elemType, const std::string tname) : Vector(elemType), taxonName(tname) {
     
 }
 
 
 /** Subscript operator */
-Character& Sequence::operator[](size_t i) {
+RbPtr<Character> Sequence::operator[](size_t i) {
     
-    if (i >= characters.size())
+    if (i >= elements.size())
         throw RbException("Index out of bounds");
-    return static_cast<Character&>(characters[i]);
+    return RbPtr<Character>(static_cast<Character*>(elements[i].get()));
 }
 
 
 /** Subscript const operator */
-const Character& Sequence::operator[](size_t i) const {
+const RbPtr<Character> Sequence::operator[](size_t i) const {
     
-    if (i >= characters.size())
+    if (i >= elements.size())
         throw RbException("Index out of bounds");
-    return static_cast<const Character&>(characters[i]);
+    return RbPtr<Character>( static_cast<Character*>(elements[i].get()) );
 }
 
 /** Push back a new character */
-void Sequence::addCharacter( Character* newChar ) {
+void Sequence::addCharacter( RbPtr<Character> newChar ) {
     
-    if ( newChar == NULL || !newChar->isTypeSpec( characters.getElementType() ) )
+    if ( newChar == NULL || !newChar->isTypeSpec( elementType ) )
         throw RbException( "Inappropriate character type" );
     
-    characters.push_back( newChar );
-}
-
-
-void Sequence::clear(void) {
-    characters.clear();
+    elements.push_back( RbPtr<RbLanguageObject>(newChar.get()) );
 }
 
 
@@ -77,13 +72,8 @@ const VectorString& Sequence::getClass(void) const {
 }
 
 
-Character* Sequence::getCharacter(size_t index) const {
-    return static_cast<Character*>(characters.getElement(index));
-}
-
-
-Character* Sequence::getElement(size_t index) const {
-    return static_cast<Character*>(characters.getElement(index));
+RbPtr<Character> Sequence::getCharacter(size_t index) const {
+    return operator[](index);
 }
 
 
@@ -99,45 +89,17 @@ const TypeSpec& Sequence::getTypeSpec(void) const {
 }
 
 
-void Sequence::pop_back(void) {
-    characters.pop_back();
-}
-
-
-void Sequence::pop_front(void) {
-    characters.pop_front();
-}
-
-
 void Sequence::printValue(std::ostream &o) const {
     o << taxonName << ":" << std::endl;
-    characters.printValue(o);
-}
-
-
-void Sequence::push_back(RbObject *x) {
-    characters.push_back(x);
-}
-
-
-void Sequence::push_front(RbObject *x) {
-    characters.push_front(x);
-}
-
-
-void Sequence::resize(size_t n) {
-    characters.resize(n);
+    Vector::printValue(o);
 }
 
 
 /** Print value for user */
 std::string Sequence::richInfo(void) const {
-    
-    // get the vector of characters
-    std::vector<RbLanguageObject*> elements = characters.getValue();
-    
+       
     std::string info = taxonName + " [ ";
-    for ( std::vector<RbLanguageObject*>::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
+    for ( std::vector<RbPtr<RbLanguageObject> >::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
         if ( i != elements.begin() )
             info += ", ";
         if ( (*i) == NULL )
@@ -151,26 +113,7 @@ std::string Sequence::richInfo(void) const {
 }
 
 
-void Sequence::setElement(const size_t index, RbLanguageObject *elem) {
-    characters.setElement(index, elem);
-}
-
-
 void Sequence::setTaxonName(std::string tn) {
     taxonName = tn;
 }
 
-
-size_t Sequence::size(void) const {
-    return characters.size();
-}
-
-
-void Sequence::sort(void) {
-    characters.sort();
-}
-
-
-void Sequence::unique(void) {
-    characters.unique();
-}

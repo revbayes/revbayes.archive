@@ -42,7 +42,7 @@ class Alignment : public Matrix {
 
         // Overloaded operators
         Alignment&                          operator=(const Alignment& x);                                              //!< Assignment operator
-        const Sequence&                     operator[](size_t i) const;                                                 //!< Subscript operator (const)
+        const RbPtr<Sequence>               operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
         // Basic utility functions
         Alignment*                          clone(void) const;                                                          //!< Clone object
@@ -52,39 +52,39 @@ class Alignment : public Matrix {
         std::string                         richInfo(void) const;                                                       //!< Complete info
 
         // Member variable rules
-        const MemberRules&                  getMemberRules(void) const;                                                 //!< Get member rules
+        const RbPtr<MemberRules>            getMemberRules(void) const;                                                 //!< Get member rules
 
         // Member method inits
-        const MethodTable&                  getMethods(void) const;                                                     //!< Get methods
-        RbLanguageObject*                   executeOperation(const std::string& name, Environment& args);               //!< Execute method
+        const RbPtr<MethodTable>            getMethods(void) const;                                                     //!< Get methods
+        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);               //!< Execute method
     
         // Container functions
         void                                clear();
-        void                                setElement(const size_t index, RbLanguageObject* elem);                     //!< Set element with type conversion
+        void                                setElement(const size_t index, RbPtr<RbLanguageObject> elem);               //!< Set element with type conversion
 
         // Matrix functions
-        Character*                          getElement(size_t row, size_t col) const;                                   //!< Get element or subcontainer
-        void                                setElement(size_t row, size_t col, RbLanguageObject* var);                  //!< set element
+        RbPtr<RbObject>                     getElement(size_t row, size_t col) const;                                   //!< Get element or subcontainer
+        void                                setElement(size_t row, size_t col, RbPtr<RbLanguageObject> var);            //!< set element
         void                                resize(size_t nRows, size_t nCols);                                         //!< Resize to new length vector
         void                                transpose(void);                                                            //!< Transpose the matrix
 
         // Alignment functions
-        void                                addSequence(Sequence* obs);                                                 //!< Add taxon name
+        void                                addSequence(RbPtr<Sequence> obs);                                           //!< Add taxon name
         void                                excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
-        const Character&                    getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
+        const RbPtr<Character>              getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         const std::string&                  getDataType(void) const;                                                    //!< Returns the data type for the matrix
         const std::string&                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         size_t                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
-        const Sequence&                     getSequence(size_t tn) const;                                               //!< Return a reference to a sequence in the character matrix
+        const RbPtr<Sequence>               getSequence(size_t tn) const;                                               //!< Return a reference to a sequence in the character matrix
         const std::string&                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
         bool                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
         bool                                isTaxonExcluded(std::string& s) const;                                      //!< Is the taxon excluded
-        Vector*                             makeSiteColumn(size_t cn) const;                                            //!< Return a reference to a sequence in the character matrix
+        RbPtr<Vector>                       makeSiteColumn(size_t cn) const;                                            //!< Return a reference to a sequence in the character matrix
         void                                restoreCharacter(size_t i);                                                 //!< Restore character
         void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
         void                                restoreTaxon(std::string& s);                                               //!< Restore taxon

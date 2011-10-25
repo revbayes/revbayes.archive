@@ -34,28 +34,28 @@ const std::string Dist_ctmm_name = "Dist_ctmm";
 class Dist_ctmm: public DistributionDiscrete {
 
     public:
-                                    Dist_ctmm(void);                                                    //!< Parser constructor
+                                        Dist_ctmm(void);                                                    //!< Parser constructor
 
         // Basic utility functions
-        Dist_ctmm*                  clone(void) const;                                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                               //!< Get class vector
-        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
+        Dist_ctmm*                      clone(void) const;                                                  //!< Clone object
+        const VectorString&             getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&                 getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
-        const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        void                        setMemberVariable(const std::string& name, Variable* var);          //!< Set member variable (ensure number of states is consistent)
+        const RbPtr<MemberRules>        getMemberRules(void) const;                                         //!< Get member variable rules
+        void                            setMemberVariable(const std::string& name, RbPtr<Variable> var);    //!< Set member variable (ensure number of states is consistent)
 
         // Discrete distribution functions
-        size_t                      getNumberOfStates(void) const;                                      //!< Get number of states
-        virtual const Simplex*      getProbabilityMassVector(void);                                     //!< Get probability mass vector
-        const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-        double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
-        double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
-        CharacterStateDiscrete*     rv(void);                                                           //!< Generate random variable
+        size_t                          getNumberOfStates(void) const;                                      //!< Get number of states
+        virtual const RbPtr<Simplex>    getProbabilityMassVector(void);                                     //!< Get probability mass vector
+        const TypeSpec&                 getVariableType(void) const;                                        //!< Get random variable type (Simplex)
+        double                          lnPdf(const RbPtr<RbLanguageObject> value);                         //!< Ln probability density
+        double                          pdf(const RbPtr<RbLanguageObject> value);                           //!< Probability density
+        RbPtr<RbLanguageObject>         rv(void);                                                           //!< Generate random variable
     
     private:
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       varTypeSpec;
+        static const TypeSpec           typeSpec;
+        static const TypeSpec           varTypeSpec;
 };
 
 #endif

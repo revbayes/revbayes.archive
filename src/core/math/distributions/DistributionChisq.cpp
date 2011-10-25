@@ -92,7 +92,7 @@ double RbStatistics::ChiSquare::quantile(double v, double prob) {
     return RbStatistics::Gamma::quantile(0.5 * v, 2.0, prob);    
 }
 
-double RbStatistics::ChiSquare::rv(double v, RandomNumberGenerator* rng) {
+double RbStatistics::ChiSquare::rv(double v, RbPtr<RandomNumberGenerator> rng) {
     
 	/* Cast the degrees of freedom parameter as an integer. We will see
      if there is a decimal remainder later. */

@@ -33,36 +33,36 @@ const std::string Dist_topologyunif_name = "Dist_topologyunif";
 class Dist_topologyunif: public DistributionDiscrete {
 
     public:
-                                    Dist_topologyunif(void);                                            //!< Parser constructor
+                                        Dist_topologyunif(void);                                            //!< Parser constructor
 
         // Basic utility functions
-        Dist_topologyunif*          clone(void) const;                                                  //!< Clone object
-        const VectorString&         getClass(void) const;                                               //!< Get class vector
-        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
-
+        Dist_topologyunif*              clone(void) const;                                                  //!< Clone object
+        const VectorString&             getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
+    
         // Member variable setup
-        const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
-        void                        setMemberVariable(const std::string& name, Variable* var);          //!< Set member variable (ensure topologyProb is updated)
+        const RbPtr<MemberRules>        getMemberRules(void) const;                                         //!< Get member variable rules
+        void                            setMemberVariable(const std::string& name, RbPtr<Variable> var);          //!< Set member variable (ensure topologyProb is updated)
 
         // Discrete distribution functions
-        size_t                      getNumberOfStates(void) const;                                      //!< Get number of states
-        virtual const Simplex*      getProbabilityMassVector(void);                                     //!< Get probability mass vector
-        const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-        double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
-        double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
-        Topology*                   rv(void);                                                           //!< Generate random variable
+        size_t                          getNumberOfStates(void) const;                                      //!< Get number of states
+        virtual const RbPtr<Simplex>    getProbabilityMassVector(void);                                     //!< Get probability mass vector
+        const TypeSpec&                 getVariableType(void) const;                                        //!< Get random variable type (Simplex)
+        double                          lnPdf(const RbPtr<RbLanguageObject> value);                               //!< Ln probability density
+        double                          pdf(const RbPtr<RbLanguageObject> value);                                 //!< Probability density
+        RbPtr<RbLanguageObject>         rv(void);                                                           //!< Generate random variable
 
     private:
-        void                        buildRandomBinaryTree(std::vector<TopologyNode*>& tips, size_t numTaxa);    //!< Build a random binary tree recursively until we have numTaxa tips
-        void                        calculateTopologyProb(void);                                        //!< Calculate and set probability member variables
-        void                        calculateNumberOfStates(void);                                      //!< Calculate and set number of states member variables
+        void                            buildRandomBinaryTree(std::vector<RbPtr<TopologyNode> >& tips, size_t numTaxa);    //!< Build a random binary tree recursively until we have numTaxa tips
+        void                            calculateTopologyProb(void);                                        //!< Calculate and set probability member variables
+        void                            calculateNumberOfStates(void);                                      //!< Calculate and set number of states member variables
 
-        double                      topologyProb;                                                       //!< The probability of a topology
-        double                      lnTopologyProb;                                                     //!< The log probability of a topology
-        size_t                      numberOfStates;                                                     //!< The number of states for this topology distribution
+        double                          topologyProb;                                                       //!< The probability of a topology
+        double                          lnTopologyProb;                                                     //!< The log probability of a topology
+        size_t                          numberOfStates;                                                     //!< The number of states for this topology distribution
     
-        static const TypeSpec       typeSpec;
-        static const TypeSpec       varTypeSpec;
+        static const TypeSpec           typeSpec;
+        static const TypeSpec           varTypeSpec;
 };
 
 #endif

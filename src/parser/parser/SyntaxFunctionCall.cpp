@@ -109,17 +109,17 @@ const VectorString& SyntaxFunctionCall::getClass(void) const {
 
 
 /** Convert element to a deterministic function node. */
-Variable* SyntaxFunctionCall::getContentAsVariable(RbPtr<Environment> env) const {
+RbPtr<Variable> SyntaxFunctionCall::getContentAsVariable(RbPtr<Environment> env) const {
 
     // Package arguments
     std::vector<RbPtr<Argument> > args;
-    for (std::list<RbPtr<SyntaxLabeledExpr> >::iterator i=arguments->begin(); i!=arguments->end(); i++) {
+    for (std::list<RbPtr<SyntaxLabeledExpr> >::const_iterator i=arguments->begin(); i!=arguments->end(); i++) {
         PRINTF( "Adding argument with label \"%s\".\n", (*i)->getLabel()->getValue().c_str() );
-        RbPtr<Argument> theArg = RbPtr<Argument>(new Argument(*(*i)->getLabel(), (*i)->getExpression()->getContentAsVariable(env) ) );
+        RbPtr<Argument> theArg( new Argument(*(*i)->getLabel(), (*i).get()->getExpression()->getContentAsVariable(env) ) );
         args.push_back(theArg);
     }
 
-    RbFunction* func;
+    RbPtr<RbFunction> func;
     if (variable == NULL) {
 
         func = Workspace::userWorkspace()->getFunction(*functionName, args);
@@ -129,18 +129,18 @@ Variable* SyntaxFunctionCall::getContentAsVariable(RbPtr<Environment> env) const
     }
     else {
 
-        DAGNode* theNode = variable->getContentAsVariable( env )->getDagNodePtr();
+        RbPtr<DAGNode> theNode = variable->getContentAsVariable( env )->getDagNodePtr();
         if ( theNode == NULL || !theNode->getValue()->isTypeSpec( TypeSpec(MemberObject_name) ) )
             throw RbException( "Variable does not have member functions" );
 
-        MemberObject *theMemberObject = dynamic_cast<MemberObject*>(theNode->getValuePtr());
+        RbPtr<MemberObject> theMemberObject( dynamic_cast<MemberObject*>(theNode->getValuePtr().get()) );
 //        args.insert( args.begin(), new Argument( "", memberNode ) );
-        MemberFunction *theMemberFunction = (MemberFunction*) theMemberObject->getMethods().getFunction( *functionName, args );
+        RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( theMemberObject->getMethods()->getFunction( *functionName, args ).get() ) );
         theMemberFunction->setMemberObject(theMemberObject);
-        func = theMemberFunction;
+        func = RbPtr<RbFunction>( theMemberFunction.get() );
     }
 
-    return new Variable(new DeterministicNode(func));
+    return RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new DeterministicNode( func ) ) ) );
 }
 
 
@@ -165,7 +165,7 @@ void SyntaxFunctionCall::print(std::ostream& o) const {
         o << "arguments     = []";
     else {
         int index = 1;
-        for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++, index++)
+        for (std::list<RbPtr<SyntaxLabeledExpr> >::const_iterator i=arguments->begin(); i!=arguments->end(); i++, index++)
             o << "arguments[" << index <<  "]  = [" << (*i) << "] " << (*i)->briefInfo() << std::endl;
     }
     o << std::endl;
@@ -173,7 +173,7 @@ void SyntaxFunctionCall::print(std::ostream& o) const {
     if (variable != NULL)
         variable->print(o);
 
-    for (std::list<SyntaxLabeledExpr*>::iterator i=arguments->begin(); i!=arguments->end(); i++)
+    for (std::list<RbPtr<SyntaxLabeledExpr> >::const_iterator i=arguments->begin(); i!=arguments->end(); i++)
         (*i)->print(o);
 }
 

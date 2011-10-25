@@ -74,21 +74,21 @@ Vector& Vector::operator=( const Vector& x ) {
 }
 
 /** Subscript operator */
-RbLanguageObject& Vector::operator[](size_t i) {
+RbPtr<RbLanguageObject> Vector::operator[](size_t i) {
     
     if (i > elements.size())
         throw RbException("Index out of bounds");
     
-    return *elements[i];
+    return elements[i];
 }
 
 
 /** Subscript const operator */
-const RbLanguageObject& Vector::operator[](size_t i) const {
+const RbPtr<RbLanguageObject> Vector::operator[](size_t i) const {
     
     if ( i >= elements.size() )
         throw RbException("Index out of bounds");
-    return *elements[i];
+    return elements[i];
 }
 
 

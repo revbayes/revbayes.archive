@@ -32,7 +32,7 @@ Container::Container(const TypeSpec& elemType) : ConstantMemberObject(), element
 }
 
 /** Set type of elements */
-Container::Container(const TypeSpec& elemType, const MemberRules &memberRules) : ConstantMemberObject(memberRules), elementType(elemType) {
+Container::Container(const TypeSpec& elemType, const RbPtr<MemberRules> memberRules) : ConstantMemberObject(memberRules), elementType(elemType) {
     
 }
 
@@ -72,18 +72,18 @@ const VectorString& Container::getClass(void) const {
 
 
 /* Get method specifications */
-const MethodTable& Container::getMethods(void) const {
+const RbPtr<MethodTable> Container::getMethods(void) const {
     
-    static MethodTable   methods;
+    static RbPtr<MethodTable> methods( new MethodTable() );
     static ArgumentRules sizeArgRules;
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) 
     {
-        methods.addFunction("size",  new MemberFunction(TypeSpec(Natural_name), sizeArgRules)  );
+        methods->addFunction("size",  RbPtr<RbFunction>(new MemberFunction(TypeSpec(Natural_name), sizeArgRules) ) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( const_cast<MethodTable*>( &ConstantMemberObject::getMethods() ) );
+        methods->setParentTable( RbPtr<FunctionTable>( ConstantMemberObject::getMethods().get() ) );
         methodsSet = true;
     }
     

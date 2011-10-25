@@ -38,30 +38,30 @@ class DistributionContinuous: public Distribution {
 	    virtual                        ~DistributionContinuous(void) {}                                             //!< Destructor
 
         // Basic utility function
-        virtual DistributionContinuous* clone(void) const = 0;                                                      //!< Clone object
-        virtual const VectorString&     getClass(void) const;                                                       //!< Get class vector   
+        virtual DistributionContinuous*         clone(void) const = 0;                                                      //!< Clone object
+        virtual const VectorString&             getClass(void) const;                                                       //!< Get class vector   
 
         // Member object function you have to override
-        virtual const MemberRules&      getMemberRules(void) const = 0;                                             //!< Get member rules
+        virtual const RbPtr<MemberRules>        getMemberRules(void) const = 0;                                             //!< Get member rules
 
         // Member object functions you should not have to override
-        const MethodTable&              getMethods(void) const;                                                     //!< Get member methods
-        RbLanguageObject*               executeOperation(const std::string& name, Environment& args);               //!< Direct call of member method
+        const RbPtr<MethodTable>                getMethods(void) const;                                                     //!< Get member methods
+        RbPtr<RbLanguageObject>                 executeOperation(const std::string& name, Environment& args);               //!< Direct call of member method
 
         // Interval distribution functions you probably want to override
-        virtual const RbLanguageObject* getMax(void) const;                                                         //!< Get max value of coverage
-        virtual const RbLanguageObject* getMin(void) const;                                                         //!< Get min value of coverage
+        virtual const RbPtr<RbLanguageObject>   getMax(void) const;                                                         //!< Get max value of coverage
+        virtual const RbPtr<RbLanguageObject>   getMin(void) const;                                                         //!< Get min value of coverage
 
         // Interval distribution functions you have to override
-        virtual double                  cdf(const RbLanguageObject* value) = 0;                                     //!< Cumulative probability
-        virtual const TypeSpec&         getVariableType(void) const = 0;                                            //!< Get random variable type spec
-        virtual double                  lnPdf(const RbLanguageObject* value) = 0;                                   //!< Ln probability density
-        virtual double                  pdf(const RbLanguageObject* value) = 0;                                     //!< Probability density
-        virtual RbLanguageObject*       quantile(const double p) = 0;                                               //!< Quantile
-        virtual RbLanguageObject*       rv(void) = 0;                                                               //!< Generate a random draw
+        virtual double                          cdf(const RbPtr<RbLanguageObject> value) = 0;                                     //!< Cumulative probability
+        virtual const TypeSpec&                 getVariableType(void) const = 0;                                            //!< Get random variable type spec
+        virtual double                          lnPdf(const RbPtr<RbLanguageObject> value) = 0;                                   //!< Ln probability density
+        virtual double                          pdf(const RbPtr<RbLanguageObject> value) = 0;                                     //!< Probability density
+        virtual RbPtr<Real>                     quantile(const double p) = 0;                                               //!< Quantile
+        virtual RbPtr<RbLanguageObject>         rv(void) = 0;                                                               //!< Generate a random draw
 
     protected:
-                                        DistributionContinuous(const MemberRules& memberRules);                     //!< Constructor
+                                        DistributionContinuous(const RbPtr<MemberRules> memberRules);                     //!< Constructor
 
 };
 

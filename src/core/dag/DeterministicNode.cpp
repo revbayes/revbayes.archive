@@ -47,7 +47,7 @@ DeterministicNode::DeterministicNode( RbPtr<RbFunction> func ) : VariableNode(fu
     std::list<DAGNode*> done;
     for ( size_t i = 0; i < arguments.size(); i++ ) {
         const std::string &name = arguments.getName(i);
-        if ( arguments[name].getDagNode() != NULL && arguments[name].getDagNode()->isParentInDAG( RbPtr<DAGNode>(this), done ) )
+        if ( arguments[name]->getDagNode() != NULL && arguments[name]->getDagNode()->isParentInDAG( RbPtr<DAGNode>(this), done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
     
@@ -57,7 +57,7 @@ DeterministicNode::DeterministicNode( RbPtr<RbFunction> func ) : VariableNode(fu
         for ( size_t i = 0; i < arguments.size(); i++ ) {
             const std::string &name = arguments.getName(i);
         
-            RbPtr<DAGNode> theArgument = arguments[name].getDagNodePtr();
+            RbPtr<DAGNode> theArgument = arguments[name]->getDagNodePtr();
             addParentNode( theArgument );
             theArgument->addChildNode( this );
         }
@@ -91,7 +91,7 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
     for ( size_t i = 0; i < args.size(); i++ ) {
         const std::string &name = args.getName(i);
         
-        RbPtr<DAGNode> theArgument = args[name].getDagNodePtr();
+        RbPtr<DAGNode> theArgument = args[name]->getDagNodePtr();
         addParentNode( theArgument );
         theArgument->addChildNode( this );
     }
@@ -148,8 +148,8 @@ DeterministicNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, DAGNode
         const std::string &name = args.getName(i);
         
         // clone the parameter DAG node
-        RbPtr<DAGNode> theArgClone( args[name].getDagNode()->cloneDAG(newNodes) );
-        copyArgs[name].setVariable(RbPtr<Variable>( new Variable(theArgClone) ) );
+        RbPtr<DAGNode> theArgClone( args[name]->getDagNode()->cloneDAG(newNodes) );
+        copyArgs[name]->setVariable(RbPtr<Variable>( new Variable(theArgClone) ) );
   
         // this is perhaps not necessary because we already set the parent child relationship automatically
         copy->addParentNode( theArgClone );

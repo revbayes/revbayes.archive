@@ -61,7 +61,7 @@ public:
     std::string                         richInfo(void) const;                                                       //!< Complete info
 
     // Member variable rules
-    const MemberRules&                  getMemberRules(void) const;                                                 //!< Get member rules
+    const RbPtr<MemberRules>            getMemberRules(void) const;                                                 //!< Get member rules
 
     // Member method inits
     RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);               //!< Execute method

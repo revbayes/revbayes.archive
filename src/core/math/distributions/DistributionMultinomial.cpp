@@ -179,7 +179,7 @@ double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std:
  * \return Returns a vector of integers containing the random variable.
  * \throws Does not throw an error.
  */
-std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, RandomNumberGenerator* rng) {
+std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, RbPtr<RandomNumberGenerator> rng) {
     
     std::vector<int> x(p.size(),0);
     double u = rng->uniform01();
@@ -206,7 +206,7 @@ std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, Ran
  * \return Returns a vector of integers containing the random variable.
  * \throws Does not throw an error.
  */
-std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, int n, RandomNumberGenerator* rng) {
+std::vector<int> RbStatistics::Multinomial::rv(const std::vector<double> &p, int n, RbPtr<RandomNumberGenerator> rng) {
     
     std::vector<int> x(p.size(),0);
     for (int i=0; i<n; i++)

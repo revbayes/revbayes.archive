@@ -49,8 +49,8 @@ public:
                                                         MatrixComplex(const std::vector<std::vector<std::complex<double> > >& x);                      //!< Construct matrix from a two-dimensional set of STL vectors
 
     // Overoaded operators
-    VectorComplex&                                      operator[](size_t i);                                                                           //!< Subscript operator
-    const VectorComplex&                                operator[](size_t i) const;                                                                     //!< Subscript operator (const)
+    RbPtr<VectorComplex>                                operator[](size_t i);                                                                           //!< Subscript operator
+    const RbPtr<VectorComplex>                          operator[](size_t i) const;                                                                     //!< Subscript operator (const)
 
     // Basic utility functions
     MatrixComplex*                                      clone(void) const;                                                                              //!< Clone object
@@ -58,9 +58,7 @@ public:
     const TypeSpec&                                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
     void                                                printValue(std::ostream& o) const;                                                              //!< Print value for user
     std::string                                         richInfo(void) const;                                                                           //!< Complete info about object
-    
-    RbPtr<RbObject>                                     getElement(size_t index) const;                                                                 //!< Get element
-    
+        
     // Matrix functions
     RbPtr<RbObject>                                     getElement(size_t row, size_t col) const;                                                       //!< Get element or subcontainer
     void                                                setElement(size_t row, size_t col, RbPtr<RbLanguageObject> var);                                //!< set element

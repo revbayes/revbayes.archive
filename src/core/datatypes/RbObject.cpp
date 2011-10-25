@@ -46,7 +46,7 @@ RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
     if (typeSpec.getBaseType() == Vector_name) {
         Vector *v = new Vector(typeSpec.getElementType()->getBaseType());
-        v->push_back(this->clone());
+        v->push_back(RbPtr<RbObject>( this->clone() ));
         
         return v;
     }
@@ -56,7 +56,7 @@ RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
 
 /** Encode the object into a serializable xml-object */
-const XmlElement* RbObject::encode(XmlDocument *doc, const std::string& name) {    
+const RbPtr<XmlElement> RbObject::encode(RbPtr<XmlDocument> doc, const std::string& name) {    
     
     //! @Sebatian TODO basic implementation which should return an empty xml object with only the name
     

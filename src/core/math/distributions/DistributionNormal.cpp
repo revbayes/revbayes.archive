@@ -260,7 +260,7 @@ double RbStatistics::Normal::quantile(double mu, double sigma, double p) {
 	return x;
 }
 
-double RbStatistics::Normal::rv(RandomNumberGenerator* rng) {
+double RbStatistics::Normal::rv(RbPtr<RandomNumberGenerator> rng) {
     
 	double v1 = 0.0;
 	double v2 = 0.0; // NOTE: We should eventually implement this so you generate and
@@ -278,7 +278,7 @@ double RbStatistics::Normal::rv(RandomNumberGenerator* rng) {
 	return ( v2 * fac );
 }
 
-double RbStatistics::Normal::rv(double mu, double sigma, RandomNumberGenerator* rng) {
+double RbStatistics::Normal::rv(double mu, double sigma, RbPtr<RandomNumberGenerator> rng) {
     
 	double v1 = 0.0;
 	double v2 = 0.0; // NOTE: We should eventually implement this so you generate and

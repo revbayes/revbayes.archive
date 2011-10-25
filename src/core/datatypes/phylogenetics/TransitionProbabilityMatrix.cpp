@@ -50,7 +50,7 @@ const TypeSpec TransitionProbabilityMatrix::typeSpec(TransitionProbabilityMatrix
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : ConstantMemberObject(getMemberRules()) {
 
     numStates = 2;
-    theMatrix = new MatrixReal(numStates, numStates);
+    theMatrix = RbPtr<MatrixReal>( new MatrixReal(numStates, numStates) );
 }
 
 
@@ -58,7 +58,7 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(void) : ConstantMemberO
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : ConstantMemberObject(getMemberRules()) {
 
     numStates = n;
-    theMatrix = new MatrixReal(numStates, numStates);
+    theMatrix = RbPtr<MatrixReal>( new MatrixReal(numStates, numStates) );
 }
 
 
@@ -66,19 +66,18 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : ConstantMem
 TransitionProbabilityMatrix::TransitionProbabilityMatrix(const TransitionProbabilityMatrix& m) {
 
     numStates = m.numStates;
-    theMatrix = new MatrixReal( *m.theMatrix );
+    theMatrix = RbPtr<MatrixReal>( m.theMatrix->clone() );
 }
 
 
 /** Destructor */
 TransitionProbabilityMatrix::~TransitionProbabilityMatrix(void) {
     
-    delete theMatrix;
 }
 
 
 /** Index operator (const) */
-const VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) const {
+const RbPtr<VectorReal> TransitionProbabilityMatrix::operator[]( const size_t i ) const {
 
     if ( i >= numStates )
         throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );
@@ -87,7 +86,7 @@ const VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) cons
 
 
 /** Index operator */
-VectorReal& TransitionProbabilityMatrix::operator[]( const size_t i ) {
+RbPtr<VectorReal> TransitionProbabilityMatrix::operator[]( const size_t i ) {
 
     if ( i >= numStates )
         throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );
@@ -103,11 +102,11 @@ TransitionProbabilityMatrix* TransitionProbabilityMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-RbLanguageObject* TransitionProbabilityMatrix::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> TransitionProbabilityMatrix::executeOperation(const std::string& name, Environment& args) {
 
     if (name == "nstates") 
         {
-        return ( new Natural((int)numStates) );
+        return RbPtr<RbLanguageObject>( new Natural((int)numStates) );
         }
 
     return MemberObject::executeOperation( name, args );
@@ -123,9 +122,9 @@ const VectorString& TransitionProbabilityMatrix::getClass(void) const {
 
 
 /** Get member rules */
-const MemberRules& TransitionProbabilityMatrix::getMemberRules(void) const {
+const RbPtr<MemberRules> TransitionProbabilityMatrix::getMemberRules(void) const {
 
-    static MemberRules memberRules;
+    static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
 
     if (!rulesSet) 
@@ -138,19 +137,19 @@ const MemberRules& TransitionProbabilityMatrix::getMemberRules(void) const {
 
 
 /** Get methods */
-const MethodTable& TransitionProbabilityMatrix::getMethods(void) const {
+const RbPtr<MethodTable> TransitionProbabilityMatrix::getMethods(void) const {
 
-    static MethodTable   methods;
+    static RbPtr<MethodTable> methods( new MethodTable() );
     static ArgumentRules nstatesArgRules;
     static bool          methodsSet = false;
 
     if ( methodsSet == false ) 
         {
         
-        methods.addFunction("nstates",         new MemberFunction(Natural_name, nstatesArgRules)         );
+        methods->addFunction("nstates", RbPtr<RbFunction>( new MemberFunction(Natural_name, nstatesArgRules) ) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( const_cast<MethodTable*>( &MemberObject::getMethods() ) );
+        methods->setParentTable( RbPtr<FunctionTable>( MemberObject::getMethods().get() ) );
         methodsSet = true;
         }
 

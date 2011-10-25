@@ -18,31 +18,33 @@
 #ifndef TypeSpec_H 
 #define TypeSpec_H
 
+#include "RbPtr.h"
+
 #include <string>
 
 class TypeSpec {
     
 public:
-                        TypeSpec(const std::string& objType, TypeSpec *elemType=NULL);      //!< Complete constructor
+    TypeSpec(const std::string& objType, RbPtr<TypeSpec> elemType = RbPtr<TypeSpec>::getNullPtr());      //!< Complete constructor
                         TypeSpec(const TypeSpec& ts);                                       //!< Copy Constructor
     
     // Operators
-    TypeSpec&           operator=(const TypeSpec& x);                                       //!< Assignment operator
-    bool                operator==(const TypeSpec& x) const;                                //!< Equals operator
-    bool                operator!=(const TypeSpec& x) const { return !operator==(x); }      //!< Not equals operator
-                        operator std::string(void) const;                                   //!< Type conversion to string
+    TypeSpec&                   operator=(const TypeSpec& x);                                       //!< Assignment operator
+    bool                        operator==(const TypeSpec& x) const;                                //!< Equals operator
+    bool                        operator!=(const TypeSpec& x) const { return !operator==(x); }      //!< Not equals operator
+                                operator std::string(void) const;                                   //!< Type conversion to string
 
     // Regular functions
-    const std::string&  getBaseType(void) const { return baseType; }                        //!< Get the element type
-    const TypeSpec*     getElementType(void) const { return elementType; }                  //!< Get the element type
-    const std::string&  getType(void) const { return type; }                                //!< Get object type
-    const std::string&  toString(void) const;                                               //!< Express as a string
+    const std::string&          getBaseType(void) const { return baseType; }                        //!< Get the element type
+    const RbPtr<TypeSpec>       getElementType(void) const { return elementType; }                  //!< Get the element type
+    const std::string&          getType(void) const { return type; }                                //!< Get object type
+    const std::string&          toString(void) const;                                               //!< Express as a string
 
 private:
     // Member variables
-    const std::string   baseType;                                                           //!< The base type of the object or objects
-    std::string         type;                                                               //!< The full type including base and element types
-    TypeSpec           *elementType;                                                        //!< The type of the elements if this is a container
+    const std::string           baseType;                                                           //!< The base type of the object or objects
+    std::string                 type;                                                               //!< The full type including base and element types
+    RbPtr<TypeSpec>             elementType;                                                        //!< The type of the elements if this is a container
 };
 
 

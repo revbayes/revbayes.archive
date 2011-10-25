@@ -138,13 +138,13 @@ RbPtr<Variable> SyntaxFunctionDef::getContentAsVariable(RbPtr<Environment> env) 
     RbPtr<Environment> defineEnvironment( new Environment(env) );
 
     // Create the function
-    RbPtr<UserFunction> theFunction( new UserFunction(argRules, *returnType, stmts, defineEnvironment) );
+    RbPtr<RbFunction> theFunction( new UserFunction(argRules, *returnType, stmts, defineEnvironment) );
 
     // Insert in the user workspace
     Workspace::userWorkspace()->addFunction(*functionName, theFunction);
 
     // No return value 
-    return NULL;
+    return RbPtr<Variable>::getNullPtr();
 }
 
 

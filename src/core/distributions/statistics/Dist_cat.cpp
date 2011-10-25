@@ -59,15 +59,15 @@ const VectorString& Dist_cat::getClass( void ) const {
 }
 
 /** Get member variable rules */
-const MemberRules& Dist_cat::getMemberRules( void ) const {
+const RbPtr<MemberRules> Dist_cat::getMemberRules( void ) const {
 
-    static MemberRules memberRules;
+    static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ValueRule( "m"    , Simplex_name ) );
-        memberRules.push_back( new ValueRule( "dummy", Categorical_name ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "m"    , Simplex_name ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "dummy", Categorical_name ) ) );
 
         rulesSet = true;
 		}
@@ -79,14 +79,14 @@ const MemberRules& Dist_cat::getMemberRules( void ) const {
 /** Get the number of states in the distribution */
 size_t Dist_cat::getNumberOfStates( void ) const {
 
-    return static_cast<const Simplex*>( getMemberValue("m") )->size();
+    return static_cast<const Simplex*>( getMemberValue("m").get() )->size();
 }
 
 
 /** Get the probability mass vector */
-const Simplex* Dist_cat::getProbabilityMassVector( void ) {
+const RbPtr<Simplex> Dist_cat::getProbabilityMassVector( void ) {
 
-    return static_cast<const Simplex*>( getMemberValue("m") );
+    return RbPtr<Simplex>( static_cast<Simplex*>( getMemberValue("m").get() ) );
 }
 
 
@@ -115,11 +115,11 @@ const TypeSpec& Dist_cat::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_cat::lnPdf( const RbLanguageObject* value ) {
+double Dist_cat::lnPdf( const RbPtr<RbLanguageObject> value ) {
 
 	// Get the value and the parameters of the categorical distribution
-    std::vector<double> m = static_cast<const Simplex*    >( getMemberValue("m") )->getValue();
-    int                 x = static_cast<const Categorical*>( value               )->getValue();
+    std::vector<double> m = static_cast<const Simplex*    >( getMemberValue("m").get() )->getValue();
+    int                 x = static_cast<const Categorical*>( value.get()               )->getValue();
 
     if ( x < 0 )
         return 0.0;
@@ -137,11 +137,11 @@ double Dist_cat::lnPdf( const RbLanguageObject* value ) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_cat::pdf( const RbLanguageObject* value ) {
+double Dist_cat::pdf( const RbPtr<RbLanguageObject> value ) {
 
 	// Get the value and the parameter of the categorical distribution
-    std::vector<double> m = static_cast<const Simplex*    >( getMemberValue("m") )->getValue();
-    int                 x = static_cast<const Categorical*>( value               )->getValue();
+    std::vector<double> m = static_cast<const Simplex*    >( getMemberValue("m").get() )->getValue();
+    int                 x = static_cast<const Categorical*>( value.get()               )->getValue();
 
 	if ( x < 0 )
         return 1.0;
@@ -158,14 +158,14 @@ double Dist_cat::pdf( const RbLanguageObject* value ) {
  *
  * @return      Random draw from categorical distribution
  */
-Categorical* Dist_cat::rv( void ) {
+RbPtr<RbLanguageObject> Dist_cat::rv( void ) {
 
 	// Get the parameter of the categorical distribution and the rng
-    std::vector<double>    m   = static_cast<const Simplex*    >( getMemberValue( "m" ) )->getValue();
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    std::vector<double>    m   = static_cast<const Simplex*    >( getMemberValue( "m" ).get() )->getValue();
+    RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
 
     // Get copy of reference object
-    Categorical* draw = static_cast<Categorical*>( getMemberValue( "dummy" )->clone() );
+    RbPtr<Categorical> draw( static_cast<Categorical*>( getMemberValue( "dummy" )->clone() ) );
 
     // Draw a random value
     double r   = rng->uniform01();
@@ -181,6 +181,6 @@ Categorical* Dist_cat::rv( void ) {
     draw->setValue( int( i ) );
 
     // Return draw
-    return draw;
+    return RbPtr<RbLanguageObject>( draw.get() );
 }
 

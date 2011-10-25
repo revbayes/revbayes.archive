@@ -124,9 +124,9 @@ const VectorString& Topology::getClass(void) const {
 
 
 /* Get member rules */
-const MemberRules& Topology::getMemberRules(void) const {
+const RbPtr<MemberRules> Topology::getMemberRules(void) const {
     
-    static MemberRules memberRules;
+    static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
     
     if (!rulesSet) 

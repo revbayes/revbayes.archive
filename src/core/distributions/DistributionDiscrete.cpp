@@ -32,21 +32,20 @@
 
 
 /** Constructor passes member rules to base class */
-DistributionDiscrete::DistributionDiscrete( const MemberRules& memberRules )
-    : Distribution( memberRules ) {
+DistributionDiscrete::DistributionDiscrete( const RbPtr<MemberRules> memberRules ) : Distribution( memberRules ) {
 }
 
 
 /** Map direct method calls to internal class methods. */
-RbLanguageObject* DistributionDiscrete::executeOperation( const std::string& name, Environment& args ) {
+RbPtr<RbLanguageObject> DistributionDiscrete::executeOperation( const std::string& name, Environment& args ) {
 
     if ( name == "probMassVector" ) {
 
-        return getProbabilityMassVector()->clone();
+        return RbPtr<RbLanguageObject>( getProbabilityMassVector()->clone() );
     }
     else if ( name == "numStates" ) {
 
-        return new Natural( int( getNumberOfStates() ) );
+        return RbPtr<RbLanguageObject>( new Natural( int( getNumberOfStates() ) ) );
     }
 
     return Distribution::executeOperation( name, args );
@@ -62,19 +61,19 @@ const VectorString& DistributionDiscrete::getClass( void ) const {
 
 
 /** Get method specifications */
-const MethodTable& DistributionDiscrete::getMethods( void ) const {
+const RbPtr<MethodTable> DistributionDiscrete::getMethods( void ) const {
 
-    static MethodTable   methods;
+    static RbPtr<MethodTable> methods( new MethodTable() );
     static ArgumentRules probMassVectorArgRules;
     static ArgumentRules numStatesArgRules;
     static bool          methodsSet = false;
 
     if ( !methodsSet ) {
 
-        methods.addFunction( "probMassVector", new MemberFunction( Simplex_name, probMassVectorArgRules ) );
-        methods.addFunction( "numStates",      new MemberFunction( Natural_name, numStatesArgRules ) );
+        methods->addFunction( "probMassVector", RbPtr<RbFunction>( new MemberFunction( Simplex_name, probMassVectorArgRules ) ) );
+        methods->addFunction( "numStates",      RbPtr<RbFunction>( new MemberFunction( Natural_name, numStatesArgRules ) ) );
 
-        methods.setParentTable( const_cast<MethodTable*>( &Distribution::getMethods() ) );
+        methods->setParentTable( RbPtr<FunctionTable>( Distribution::getMethods().get() ) );
 
         methodsSet = true;
     }

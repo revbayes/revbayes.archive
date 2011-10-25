@@ -55,7 +55,7 @@ Dist_dirichlet::Dist_dirichlet( void ) : DistributionContinuous( getMemberRules(
  * @return      Cumulative probability
  *
  */
-double Dist_dirichlet::cdf( const RbLanguageObject* value ) {
+double Dist_dirichlet::cdf( const RbPtr<RbLanguageObject> value ) {
 
 	/* TO DO: We should implement the cumulative probability for the Dirichlet. The most recent
 	   algorithms are discussed in:
@@ -89,14 +89,14 @@ const VectorString& Dist_dirichlet::getClass( void ) const {
 
 
 /** Get member variable rules */
-const MemberRules& Dist_dirichlet::getMemberRules( void ) const {
+const RbPtr<MemberRules> Dist_dirichlet::getMemberRules( void ) const {
 
-    static MemberRules memberRules;
+    static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ValueRule( "alpha", VectorRealPos_name ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "alpha", VectorRealPos_name ) ) );
 
         rulesSet = true;
 		}
@@ -126,11 +126,11 @@ const TypeSpec& Dist_dirichlet::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_dirichlet::lnPdf( const RbLanguageObject* value ) {
+double Dist_dirichlet::lnPdf( const RbPtr<RbLanguageObject> value ) {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> a = static_cast<const VectorReal*>( getMemberValue("alpha") )->getValue();
-    std::vector<double> x = static_cast<const Simplex*   >( value             )->getValue();
+    std::vector<double> a = static_cast<const VectorReal*>( getMemberValue("alpha").get() )->getValue();
+    std::vector<double> x = static_cast<const Simplex*   >( value.get()             )->getValue();
 
 	// Check that the vectors are both the same size
 	if ( a.size() != x.size() )
@@ -148,11 +148,11 @@ double Dist_dirichlet::lnPdf( const RbLanguageObject* value ) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_dirichlet::pdf( const RbLanguageObject* value ) {
+double Dist_dirichlet::pdf( const RbPtr<RbLanguageObject> value ) {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double> a = static_cast<const VectorReal*>( getMemberValue( "alpha" ) )->getValue();
-    std::vector<double> x = static_cast<const Simplex*   >( value                     )->getValue();
+    std::vector<double> a = static_cast<const VectorReal*>( getMemberValue( "alpha" ).get() )->getValue();
+    std::vector<double> x = static_cast<const Simplex*   >( value.get()                     )->getValue();
 
 	// Check that the vectors are both the same size
 	if ( a.size() != x.size() )
@@ -171,7 +171,7 @@ double Dist_dirichlet::pdf( const RbLanguageObject* value ) {
  * @return      Quantile
  *
  */
-Simplex* Dist_dirichlet::quantile( const double p ) {
+RbPtr<Real> Dist_dirichlet::quantile( const double p ) {
 
     /* TO DO: See notes (above) on the cdf function for a Dirichlet rv. */
     throw RbException( "Quantile function of Dirichlet distribution not implemented yet" );
@@ -186,13 +186,13 @@ Simplex* Dist_dirichlet::quantile( const double p ) {
  *
  * @return      Random draw from Dirichlet distribution
  */
-Simplex* Dist_dirichlet::rv( void ) {
+RbPtr<RbLanguageObject> Dist_dirichlet::rv( void ) {
 
-    std::vector<double> a      = static_cast<const VectorReal*>( getMemberValue("alpha") )->getValue();
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    std::vector<double> a      = static_cast<const VectorReal*>( getMemberValue("alpha").get() )->getValue();
+    RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
 	std::vector<double> r(a.size());
 
 	r = RbStatistics::Dirichlet::rv( a, rng );
-    return new Simplex( r );
+    return RbPtr<RbLanguageObject>( new Simplex( r ) );
 }
 

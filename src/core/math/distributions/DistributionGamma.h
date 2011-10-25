@@ -14,6 +14,8 @@
  * $Id$
  */
 
+#include "RbPtr.h"
+
 class RandomNumberGenerator;
 
 namespace RbStatistics {
@@ -25,6 +27,6 @@ namespace RbStatistics {
         double                      lnPdf(double a, double b, double x);                                  /*!< Log of the Gamma(a,b) probability density */  
         double                      cdf(double a, double b, double x);                                    /*!< Gamma(a,b) cumulative probability */
         double                      quantile(double a, double b, double p);                               /*!< Gamma(a,b) quantile */
-        double                      rv(double a, double b, RandomNumberGenerator* rng);                   /*!< Gamma(a,b) random variable */
+        double                      rv(double a, double b, RbPtr<RandomNumberGenerator> rng);             /*!< Gamma(a,b) random variable */
 	}
 }

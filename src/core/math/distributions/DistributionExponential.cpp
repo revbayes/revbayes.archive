@@ -90,7 +90,7 @@ double RbStatistics::Exponential::quantile(double lambda, double p) {
  * \return Returns an exponential random variable.
  * \throws Does not throw an error.
  */
-double RbStatistics::Exponential::rv(double lambda, RandomNumberGenerator* rng) {
+double RbStatistics::Exponential::rv(double lambda, RbPtr<RandomNumberGenerator> rng) {
     
 	double u = rng->uniform01();
 	return -(1.0/lambda) * std::log(u);

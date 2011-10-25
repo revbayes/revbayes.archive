@@ -94,7 +94,7 @@ double RbStatistics::Dirichlet::lnPdf(const std::vector<double> &a, const std::v
  * \return Returns a vector containing the Dirichlet random variable.
  * \throws Does not throw an error.
  */
-std::vector<double> RbStatistics::Dirichlet::rv(const std::vector<double> &a, RandomNumberGenerator* rng) {
+std::vector<double> RbStatistics::Dirichlet::rv(const std::vector<double> &a, RbPtr<RandomNumberGenerator> rng) {
     
 	size_t n = a.size();
     std::vector<double> z(n);

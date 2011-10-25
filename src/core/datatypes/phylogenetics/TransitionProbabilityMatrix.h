@@ -35,8 +35,8 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
                                             TransitionProbabilityMatrix(const TransitionProbabilityMatrix& m); //!< Copy constructor
                                             TransitionProbabilityMatrix(size_t n);                             //!< Construct rate matrix with n states
                                            ~TransitionProbabilityMatrix(void);                                 //!< Destructor
-        VectorReal&                         operator[](size_t i);                                              //!< Subscript operator
-        const VectorReal&                   operator[](size_t i) const;                                        //!< Subscript operator (const)
+        RbPtr<VectorReal>                   operator[](size_t i);                                              //!< Subscript operator
+        const RbPtr<VectorReal>             operator[](size_t i) const;                                        //!< Subscript operator (const)
     
         // Basic utility functions
         TransitionProbabilityMatrix*        clone(void) const;                                                 //!< Clone object
@@ -46,15 +46,15 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
         std::string                         richInfo(void) const;                                              //!< Complete info
 
         // Member variable rules
-        const MemberRules&                  getMemberRules(void) const;                                        //!< Get member rules
+        const RbPtr<MemberRules>            getMemberRules(void) const;                                        //!< Get member rules
 
         // Member method inits
-        const MethodTable&                  getMethods(void) const;                                            //!< Get methods
-        RbLanguageObject*                   executeOperation(const std::string& name, Environment& args);      //!< Map method call to internal functions
+        const RbPtr<MethodTable>            getMethods(void) const;                                            //!< Get methods
+        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);      //!< Map method call to internal functions
 
     private:
         size_t                              numStates;                                                         //!< The number of character states
-        MatrixReal*                         theMatrix;                                                         //!< Holds the transition probability matrix
+        RbPtr<MatrixReal>                   theMatrix;                                                         //!< Holds the transition probability matrix
     
         static const TypeSpec               typeSpec;
 };

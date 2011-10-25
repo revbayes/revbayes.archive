@@ -41,15 +41,15 @@ class Dist_exp: public DistributionContinuous {
         const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
-        const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
+        const RbPtr<MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Exponential distribution functions
-        double                      cdf(const RbLanguageObject* value);                                 //!< Cumulative density
+        double                      cdf(const RbPtr<RbLanguageObject> value);                           //!< Cumulative density
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (RealPos)
-        double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
-        double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
-        RealPos*                    quantile(const double p);                                           //!< Quantile
-        RealPos*                    rv(void);                                                           //!< Generate random variable
+        double                      lnPdf(const RbPtr<RbLanguageObject> value);                         //!< Ln probability density
+        double                      pdf(const RbPtr<RbLanguageObject> value);                           //!< Probability density
+        RbPtr<Real>                 quantile(const double p);                                           //!< Quantile
+        RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
     
     private:
         static const TypeSpec       typeSpec;

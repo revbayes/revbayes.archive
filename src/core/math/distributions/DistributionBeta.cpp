@@ -166,7 +166,7 @@ double RbStatistics::Beta::quantile(double a, double b, double p) {
  */
 #define expmax	(DBL_MAX_EXP * RbConstants::LN2)/* = log(DBL_MAX) */
 
-double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator* rng) {
+double RbStatistics::Beta::rv(double aa, double bb, RbPtr<RandomNumberGenerator> rng) {
     double a, b, alpha;
     double r, s, t, u1, u2, v, w, y, z;
 

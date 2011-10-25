@@ -44,6 +44,8 @@ class RbPtr {
         T*                          operator->(void);
         operator                    void*(void) const { return mPtr; }
         T*                          get(void) const { return mPtr; }
+//        const T*                    get(void) const { return mPtr; }
+//        T*                          get(void) { return mPtr; }
 
         static RbPtr<T>             getNullPtr(void)                                           //!< Get the null pointer
             {

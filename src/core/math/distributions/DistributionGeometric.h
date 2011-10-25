@@ -14,6 +14,8 @@
  * $Id$
  */
 
+#include "RbPtr.h"
+
 class RandomNumberGenerator;
 
 namespace RbStatistics {
@@ -25,6 +27,6 @@ namespace RbStatistics {
         double                      lnPdf(int n, double p);                                  /*!< Geometric(a,b) log_e probability density */
         double                      cdf(int n, double p);                                    /*!< Geometric(a,b) cumulative probability */
         double                      quantile(double q, double p);                            /*!< Geometric(a,b) quantile */
-        double                      rv(double a, double b, RandomNumberGenerator* rng);      /*!< Geometric(a,b) random variable */
+        double                      rv(double a, double b, RbPtr<RandomNumberGenerator> rng);/*!< Geometric(a,b) random variable */
 	}
 }

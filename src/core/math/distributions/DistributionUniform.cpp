@@ -91,7 +91,7 @@ double RbStatistics::Uniform::quantile(double a, double b, double p) {
 	return a + (b - a) * p;
 }
 
-double RbStatistics::Uniform::rv(double a, double b, RandomNumberGenerator* rng) {
+double RbStatistics::Uniform::rv(double a, double b, RbPtr<RandomNumberGenerator> rng) {
     
 	double u = rng->uniform01();
 	return (a + (b-a)*u);
@@ -160,7 +160,7 @@ double RbStatistics::Uniform::quantile(double p) {
 	return p;
 }
 
-double RbStatistics::Uniform::rv(RandomNumberGenerator* rng) {
+double RbStatistics::Uniform::rv(RbPtr<RandomNumberGenerator> rng) {
     
 	return rng->uniform01();
 }
