@@ -47,27 +47,27 @@ Func_dppConFromExpNumClusters* Func_dppConFromExpNumClusters::clone( void ) cons
 
 
 /** Execute function */
-RbLanguageObject* Func_dppConFromExpNumClusters::execute( void ) {
+RbPtr<RbLanguageObject> Func_dppConFromExpNumClusters::execute( void ) {
     
-	const RealPos* clust = static_cast<const RealPos*>( args[0].getValue() );
-	const RealPos* num = static_cast<const RealPos*>( args[1].getValue() );
+	const double clust = static_cast<const RealPos*>( args[0]->getValue().get() )->getValue();
+	const double num = static_cast<const RealPos*>( args[1]->getValue().get() )->getValue();
 		
-	double p = RbStatistics::Helper::dppConcParamFromNumTables(clust->getValue(), num->getValue());
+	double p = RbStatistics::Helper::dppConcParamFromNumTables(clust, num);
 		
-	return ( new RealPos( p ) );
+	return RbPtr<RbLanguageObject>( new RealPos( p ) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_dppConFromExpNumClusters::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_dppConFromExpNumClusters::getArgumentRules( void ) const {
 	
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 	
     if ( !rulesSet ) {
 		
-        argumentRules.push_back( new ValueRule( "clusters", RealPos_name ) );
-        argumentRules.push_back( new ValueRule( "number", RealPos_name ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "clusters", RealPos_name ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "number", RealPos_name ) ) );
         rulesSet = true;
     }
 	

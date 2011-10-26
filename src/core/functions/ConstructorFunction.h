@@ -43,12 +43,12 @@ class ConstructorFunction :  public RbFunction {
         // Regular functions
         bool                                    addAsChildOfArguments(void) { return false; }                                   //!< We do not wish that a constructor functions is added as a child of the arguments.
         RbPtr<RbLanguageObject>                 execute(void);                                                                  //!< Execute function
-        const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
+        const RbPtr<ArgumentRules>              getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
         const std::string&                      getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object
 
 	protected:
-        ArgumentRules                           argRules;                                                                       //!< Member rules converted to reference rules
+        RbPtr<ArgumentRules>                    argRules;                                                                       //!< Member rules converted to reference rules
         RbPtr<MemberObject>                     templateObject;                                                                 //!< The template object
     
     private:

@@ -32,7 +32,7 @@ class MemberEnvironment : public Environment {
     
 public:
     MemberEnvironment(void);                                                                         //!< Constructor of variable Environment with NULL parent
-    MemberEnvironment(Environment* parentFr);                                                        //!< Constructor of variable Environment with parent
+    MemberEnvironment(RbPtr<Environment> parentFr);                                                        //!< Constructor of variable Environment with parent
     MemberEnvironment(const MemberEnvironment &x);                                                   //!< Copy constructor
     virtual ~MemberEnvironment();                                                                    //!< Destructor
     

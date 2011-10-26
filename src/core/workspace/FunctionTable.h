@@ -59,7 +59,7 @@ class FunctionTable : public RbInternal {
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
         std::vector<const RbPtr<RbFunction> >   findFunctions(const std::string& name) const;                                           //!< Return functions matching name
         RbPtr<RbFunction>                       getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) const;  //!< Get function (a copy)
-        bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                 //!< Are formals unique?
+        bool                                    isDistinctFormal(const RbPtr<ArgumentRules> x, const RbPtr<ArgumentRules> y) const;                 //!< Are formals unique?
         void                                    setParentTable(RbPtr<FunctionTable> table) { parentTable = table; }                     //!< Set parent table
 
     protected:

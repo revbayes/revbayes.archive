@@ -39,19 +39,19 @@ Func_clear* Func_clear::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_clear::execute( void ) {
+RbPtr<RbLanguageObject> Func_clear::execute( void ) {
     
     // clear the user workspace
-    Workspace::userWorkspace().clear();
+    Workspace::userWorkspace()->clear();
     
-    return NULL;
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_clear::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_clear::getArgumentRules( void ) const {
     
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     
     return argumentRules;
 }

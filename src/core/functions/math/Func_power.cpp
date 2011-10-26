@@ -44,25 +44,25 @@ Func_power* Func_power::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_power::execute( void ) {
+RbPtr<RbLanguageObject> Func_power::execute( void ) {
     
-    const Real* a = static_cast<const Real*>( args[0].getValue() );
-    const Real* b = static_cast<const Real*>( args[1].getValue() );
+    const double a = static_cast<const Real*>( args[0]->getValue().get() )->getValue();
+    const double b = static_cast<const Real*>( args[1]->getValue().get() )->getValue();
     
-    return ( new Real( pow(a->getValue(),b->getValue()) ) );
+    return RbPtr<RbLanguageObject>( new Real( pow(a,b) ) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_power::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_power::getArgumentRules( void ) const {
     
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "a", Real_name ) );
-        argumentRules.push_back( new ValueRule( "b", Real_name ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "a", Real_name ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "b", Real_name ) ) );
         rulesSet = true;
     }
     

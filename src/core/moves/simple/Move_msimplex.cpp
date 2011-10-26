@@ -57,22 +57,22 @@ const VectorString& Move_msimplex::getClass() const {
 
 
 /** Return member rules */
-const MemberRules& Move_msimplex::getMemberRules( void ) const {
+const RbPtr<MemberRules> Move_msimplex::getMemberRules( void ) const {
 
-    static MemberRules memberRules;
+    static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
 
     if (!rulesSet) 
     {
         TypeSpec varType( Simplex_name );
-        memberRules.push_back( new ValueRule( "variable", varType ) );
+        memberRules->push_back( RbPtr<ArgumentRule>(new ValueRule( "variable", varType ) ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        const MemberRules& inheritedRules = MoveSimple::getMemberRules();
-        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        const RbPtr<MemberRules> inheritedRules = MoveSimple::getMemberRules();
+        memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
-        memberRules.push_back( new ValueRule( "tuning"  , RealPos_name ) );
-        memberRules.push_back( new ValueRule( "num_cats", Natural_name ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "tuning"  , RealPos_name ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "num_cats", Natural_name ) ) );
 
         rulesSet = true;
 		}
@@ -95,18 +95,18 @@ const TypeSpec Move_msimplex::getVariableType( void ) const {
 
 
 /** Perform the move */
-double Move_msimplex::perform( std::set<StochasticNode*>& affectedNodes ) {
+double Move_msimplex::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
 
     // Get random number generator    
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
+    RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
 
     // Get relevant values
 //    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
-    StochasticNode        *nodePtr = NULL;
-    double                 alpha0  = static_cast<const RealPos*>( getMemberValue("tuning")   )->getValue();
-    int                    k       = static_cast<const Natural*>( getMemberValue("num_cats") )->getValue();
+    RbPtr<StochasticNode> nodePtr( NULL );
+    double                 alpha0  = static_cast<const RealPos*>( getMemberValue("tuning").get()   )->getValue();
+    int                    k       = static_cast<const Natural*>( getMemberValue("num_cats").get() )->getValue();
 
-	std::vector<double> curVal = static_cast<const Simplex*>( nodePtr->getValue() )->getValue();
+	std::vector<double> curVal = static_cast<const Simplex*>( nodePtr->getValue().get() )->getValue();
 	std::vector<double> newVal = curVal;
     int                 n      = int( curVal.size() );
 
@@ -206,7 +206,7 @@ double Move_msimplex::perform( std::set<StochasticNode*>& affectedNodes ) {
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
 		}
 		
-    nodePtr->setValue( new Simplex( newVal ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbLanguageObject>( new Simplex( newVal ) ), affectedNodes );
 	
     return lnProposalRatio;
 }

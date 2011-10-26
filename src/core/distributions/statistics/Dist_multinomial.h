@@ -34,23 +34,23 @@ const std::string Dist_multinomial_name = "Dist_multinomial";
 class Dist_multinomial: public DistributionContinuous {
 
     public:
-                                    Dist_multinomial(void);                                            //!< Parser constructor
+                                    Dist_multinomial(void);                                             //!< constructor
 
         // Basic utility functions
-        Dist_multinomial*           clone(void) const;                                                 //!< Clone object
-        const VectorString&         getClass(void) const;                                              //!< Get class vector
-        const TypeSpec&             getTypeSpec(void) const;                                           //!< Get language type of the object
+        Dist_multinomial*           clone(void) const;                                                  //!< Clone object
+        const VectorString&         getClass(void) const;                                               //!< Get class vector
+        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
-        const MemberRules&          getMemberRules(void) const;                                         //!< Get member variable rules
+        const RbPtr<MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Multinomial distribution functions
-        double                      cdf(const RbLanguageObject* value);                                 //!< Cumulative density
+        double                      cdf(const RbPtr<RbLanguageObject> value);                           //!< Cumulative density
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (VectorNatural)
-        double                      lnPdf(const RbLanguageObject* value);                               //!< Ln probability density
-        double                      pdf(const RbLanguageObject* value);                                 //!< Probability density
-        VectorNatural*              quantile(const double p);                                           //!< Quantile
-        VectorNatural*              rv(void);                                                           //!< Generate random variable
+        double                      lnPdf(const RbPtr<RbLanguageObject> value);                         //!< Ln probability density
+        double                      pdf(const RbPtr<RbLanguageObject> value);                           //!< Probability density
+        RbPtr<Real>                 quantile(const double p);                                           //!< Quantile
+        RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
     
     private:
         static const TypeSpec       typeSpec;

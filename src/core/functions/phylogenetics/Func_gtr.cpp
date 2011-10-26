@@ -42,11 +42,11 @@ Func_gtr* Func_gtr::clone(void) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_gtr::execute(void) {
+RbPtr<RbLanguageObject> Func_gtr::execute(void) {
 
     // get the information from the arguments for reading the file
-    const Simplex* r = static_cast<const Simplex*>( args[0].getValue() );
-    const Simplex* f = static_cast<const Simplex*>( args[1].getValue() );
+    const RbPtr<Simplex> r( static_cast<Simplex*>( args[0]->getValue().get() ) );
+    const RbPtr<Simplex> f( static_cast<Simplex*>( args[1]->getValue().get() ) );
 
     // initialize the number of states
     const size_t nStates = 4;
@@ -71,15 +71,15 @@ RbLanguageObject* Func_gtr::execute(void) {
         }
 
     // construct a rate matrix of the correct dimensions
-    RateMatrix* m = new RateMatrix(nStates);
+    RbPtr<RateMatrix> m( new RateMatrix(nStates) );
 
     // set the off-diagonal portions of the rate matrix
     for (size_t i=0, k=0; i<nStates; i++)
         {
         for (size_t j=i+1; j<nStates; j++)
             {
-            (*m)[i][j] = (*r)[k] * (*f)[j];
-            (*m)[j][i] = (*r)[k] * (*f)[i];
+            (*(*m)[i])[j] = (*r)[k] * (*f)[j];
+            (*(*m)[j])[i] = (*r)[k] * (*f)[i];
             k++;
             }
         }
@@ -107,20 +107,20 @@ RbLanguageObject* Func_gtr::execute(void) {
     m->updateEigenSystem();
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return m;
+    return RbPtr<RbLanguageObject>( m.get() );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_gtr::getArgumentRules(void) const {
+const RbPtr<ArgumentRules> Func_gtr::getArgumentRules(void) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ValueRule( "rates", Simplex_name ) );
-        argumentRules.push_back( new ValueRule( "freqs", Simplex_name ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "rates", Simplex_name ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "freqs", Simplex_name ) ) );
         rulesSet = true;
         }
 

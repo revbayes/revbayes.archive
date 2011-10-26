@@ -134,9 +134,9 @@ RbPtr<RbLanguageObject> FunctionTable::executeFunction(const std::string& name, 
  *       are functions matching the name in the current
  *       workspace.
  */
-std::vector<const RbFunction*> FunctionTable::findFunctions(const std::string& name) const {
+std::vector<const RbPtr<RbFunction> > FunctionTable::findFunctions(const std::string& name) const {
 
-    std::vector<const RbFunction*>  theFunctions;
+    std::vector<const RbPtr<RbFunction> >  theFunctions;
 
     size_t count = table.count(name);
     if (count == 0) {
@@ -146,11 +146,11 @@ std::vector<const RbFunction*> FunctionTable::findFunctions(const std::string& n
             return theFunctions;
     }
 
-    std::pair<std::multimap<std::string, RbFunction*>::const_iterator,
-              std::multimap<std::string, RbFunction*>::const_iterator> retVal;
+    std::pair<std::multimap<std::string, RbPtr<RbFunction> >::const_iterator,
+              std::multimap<std::string, RbPtr<RbFunction> >::const_iterator> retVal;
     retVal = table.equal_range( name );
 
-    std::multimap<std::string, RbFunction*>::const_iterator it;
+    std::multimap<std::string, RbPtr<RbFunction> >::const_iterator it;
     for ( it=retVal.first; it!=retVal.second; it++ )
         theFunctions.push_back( (*it).second );
 
@@ -173,7 +173,7 @@ RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std
     }
     retVal = table.equal_range(name);
     if (count == 1) {
-        if (retVal.first->second->processArguments(args) == false) {
+        if (retVal.first->second.get()->processArguments(args) == false) {
             
             std::ostringstream msg;
             msg << "Argument mismatch for call to function '" << name << "'. Correct usage is:" << std::endl;
@@ -184,13 +184,14 @@ RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std
         return retVal.first->second;
     }
     else {
-        VectorInteger matchScore, bestScore;
+        RbPtr<VectorInteger> matchScore( new VectorInteger() );
+        RbPtr<VectorInteger> bestScore( new VectorInteger() );
         RbPtr<RbFunction> bestMatch;
 
         bool ambiguous = false;
         std::multimap<std::string, RbPtr<RbFunction> >::const_iterator it;
         for (it=retVal.first; it!=retVal.second; it++) {
-            if ( (*it).second->processArguments(args, &matchScore) == true ) {
+            if ( (*it).second.get()->processArguments(args, matchScore) == true ) {
                 if ( bestMatch == NULL ) {
                     bestScore = matchScore;
                     bestMatch = it->second;
@@ -198,17 +199,17 @@ RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std
                 }
                 else {
                     size_t j;
-                    for (j=0; j<matchScore.size() && j<bestScore.size(); j++) {
-                        if (matchScore[j] < bestScore[j]) {
+                    for (j=0; j<matchScore->size() && j<bestScore->size(); j++) {
+                        if ((*matchScore)[j] < (*bestScore)[j]) {
                             bestScore = matchScore;
                             bestMatch = it->second;
                             ambiguous = false;
                             break;
                         }
-                        else if (matchScore[j] > bestScore[j])
+                        else if ((*matchScore)[j] > (*bestScore)[j])
                             break;
                     }
-                    if (j==matchScore.size() || j==bestScore.size()) {
+                    if (j==matchScore->size() || j==bestScore->size()) {
                         ambiguous = true;   // Continue checking, there might be better matches ahead
                     }
                 }
@@ -217,7 +218,7 @@ RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std
         /* Delete all processed arguments except those of the best matching function, if it is ambiguous */
         for ( it = retVal.first; it != retVal.second; it++ ) {
             if ( !( (*it).second == bestMatch && ambiguous == false ) )
-                (*it).second->clearArguments();
+                (*it).second.get()->clearArguments();
         }
         if ( bestMatch == NULL || ambiguous == true ) {
             std::ostringstream msg;
@@ -270,34 +271,34 @@ const TypeSpec& FunctionTable::getTypeSpec(void) const {
 
 
 /** Check if two formals are unique */
-bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const  {
+bool FunctionTable::isDistinctFormal(const RbPtr<ArgumentRules> x, const RbPtr<ArgumentRules> y) const  {
 
     /* Check that all labels are unique in both sets of argument rules */
-    for (size_t i=0; i<x.size(); i++) {
-        for (size_t j=i+1; j < y.size(); j++) {
-            if (x[i]->getArgumentLabel().size() != 0 && x[j]->getArgumentLabel().size() != 0)
-            if (x[i]->getArgumentLabel() == x[j]->getArgumentLabel())
+    for (size_t i=0; i<x->size(); i++) {
+        for (size_t j=i+1; j < y->size(); j++) {
+            if ((*x)[i]->getArgumentLabel().size() != 0 && (*x)[j]->getArgumentLabel().size() != 0)
+            if ((*x)[i]->getArgumentLabel() == (*x)[j]->getArgumentLabel())
                 return false;
         }
     }
-    for (size_t i=0; i<y.size(); i++) {
-        for (size_t j=i+1; j<y.size(); j++) {
-            if (y[i]->getArgumentLabel().size() != 0 && y[j]->getArgumentLabel().size() != 0)
-            if (y[i]->getArgumentLabel() == y[j]->getArgumentLabel())
+    for (size_t i=0; i<y->size(); i++) {
+        for (size_t j=i+1; j<y->size(); j++) {
+            if ((*y)[i]->getArgumentLabel().size() != 0 && (*y)[j]->getArgumentLabel().size() != 0)
+            if ((*y)[i]->getArgumentLabel() == (*y)[j]->getArgumentLabel())
                 return false;
         }
     }
 
     /* Check that the same labels are not used for different positions */
-    for (size_t i=0; i<x.size(); i++) {
+    for (size_t i=0; i<x->size(); i++) {
 
-        const std::string& xLabel = x[i]->getArgumentLabel();
+        const std::string& xLabel = (*x)[i]->getArgumentLabel();
         if (xLabel.size() == 0)
             continue;
 
-        for (size_t j=0; j<y.size(); j++) {
+        for (size_t j=0; j<y->size(); j++) {
 
-            const std::string& yLabel = y[i]->getArgumentLabel();
+            const std::string& yLabel = (*y)[i]->getArgumentLabel();
             if (yLabel.size() == 0)
                 continue;
 
@@ -308,22 +309,22 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
 
     /* Check that types are different for at least one argument without default values */
     size_t i;
-    for (i=0; i<x.size() && i<y.size(); i++) {
-        if (x[i]->hasDefault() == false &&
-            y[i]->hasDefault() == false &&
-            !x[i]->isType(Ellipsis_name) &&
-            !y[i]->isType(Ellipsis_name) &&
-            x[i]->getArgumentType() != y[i]->getArgumentType())
+    for (i=0; i<x->size() && i<y->size(); i++) {
+        if ((*x)[i]->hasDefault() == false &&
+            (*y)[i]->hasDefault() == false &&
+            !(*x)[i]->isType(Ellipsis_name) &&
+            !(*y)[i]->isType(Ellipsis_name) &&
+            (*x)[i]->getArgumentType() != (*y)[i]->getArgumentType())
             return true;
     }
-    for (size_t j=i; j<x.size(); j++) {
-        if (x[j]->hasDefault() == false &&
-            !x[j]->isType(Ellipsis_name))
+    for (size_t j=i; j<x->size(); j++) {
+        if ((*x)[j]->hasDefault() == false &&
+            !(*x)[j]->isType(Ellipsis_name))
             return true;
     }
-    for (size_t j=i; j<y.size(); j++) {
-        if (y[j]->hasDefault() == false &&
-            !y[j]->isType(Ellipsis_name))
+    for (size_t j=i; j<y->size(); j++) {
+        if ((*y)[j]->hasDefault() == false &&
+            !(*y)[j]->isType(Ellipsis_name))
             return true;
     }
 

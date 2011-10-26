@@ -44,29 +44,29 @@ Func_ls* Func_ls::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_ls::execute( void ) {
+RbPtr<RbLanguageObject> Func_ls::execute( void ) {
 
     /* Open file */
-    const RbBoolean *printAll = static_cast<const RbBoolean*>( args[0].getValue() );
+    const bool printAll = static_cast<const RbBoolean*>( args[0]->getValue().get() )->getValue();
     
     std::cout << "User workspace:" << std::endl;
     std::cout << "===============" << std::endl;
     std::cout << std::endl;
 
-    Workspace::userWorkspace().printValue( std::cout );
+    Workspace::userWorkspace()->printValue( std::cout );
     std::cout << std::endl;
     
-    if ( *printAll == true ) {
+    if ( printAll == true ) {
         
         std::cout << "Global workspace:" << std::endl;
         std::cout << "===============" << std::endl;
         std::cout << std::endl;
 
-        Workspace::globalWorkspace().printValue( std::cout );
+        Workspace::globalWorkspace()->printValue( std::cout );
         std::cout << std::endl;
     }
 
-    return NULL;
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 

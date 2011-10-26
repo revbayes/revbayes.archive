@@ -39,8 +39,8 @@ public:
 	
 	// Regular functions
 	bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
-	RbLanguageObject*           execute(void);                                      //!< Execute operation
-	const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
+	RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute operation
+	const RbPtr<ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 	
 private:
@@ -70,15 +70,15 @@ Func_unique<valType>* Func_unique<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType> 
-RbLanguageObject* Func_unique<valType>::execute( void ) {
+RbPtr<RbLanguageObject> Func_unique<valType>::execute( void ) {
     
-    valType* val =  static_cast<const valType*> ( args[0].getValue() )->clone() ;
+    RbPtr<valType> val( args[0]->getValue()->clone() );
     
     if(val->size() == 0) 
-        return val;
+        return RbPtr<RbLanguageObject>( val );
     val->sort();
     val->unique();
-    return val;
+    return RbPtr<RbLanguageObject>( val );
 
 }
 

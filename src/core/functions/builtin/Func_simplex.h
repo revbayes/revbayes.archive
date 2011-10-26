@@ -36,8 +36,8 @@ class Func_simplex :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbLanguageObject*           execute(void);                                              //!< Execute function
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
+    	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
+        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         bool                        throws(void) const;                                         //!< One variant needs to throw
     
@@ -76,25 +76,25 @@ Func_simplex<valType>* Func_simplex<valType>::clone( void ) const {
 
 /** Execute function: Simplex <- ( Integer ) */
 template <>
-RbLanguageObject* Func_simplex<Integer>::execute( void ) {
+RbPtr<RbLanguageObject> Func_simplex<Integer>::execute( void ) {
 
-    int size = static_cast<const Integer*>( args[0].getValue() )->getValue();
+    int size = static_cast<const Integer*>( args[0]->getValue().get() )->getValue();
 
     if ( size < 2 )
         throw RbException( "Simplex size must be at least 2" );
 
-    Simplex* temp = new Simplex( size );
+    RbPtr<RbLanguageObject> temp( new Simplex( size ) );
     return temp;
 }
 
 
 /** Execute function: Simplex <- ( VectorRealPos ) */
 template <>
-RbLanguageObject* Func_simplex<VectorRealPos>::execute( void ) {
+RbPtr<RbLanguageObject> Func_simplex<VectorRealPos>::execute( void ) {
 
-    const VectorRealPos* tempVec = static_cast<const VectorRealPos*>( args[0].getValue() );
+    const RbPtr<VectorRealPos> tempVec( static_cast<VectorRealPos*>( args[0]->getValue().get() ) );
 
-    Simplex* temp = new Simplex( *tempVec );
+    RbPtr<RbLanguageObject> temp( new Simplex( *tempVec ) );
 
     return temp;
 }
@@ -102,27 +102,27 @@ RbLanguageObject* Func_simplex<VectorRealPos>::execute( void ) {
 
 /** Execute function: Simplex <- ( RealPos, RealPos, ... ) */
 template <>
-RbLanguageObject* Func_simplex<RealPos>::execute( void ) {
+RbPtr<RbLanguageObject> Func_simplex<RealPos>::execute( void ) {
 
     VectorReal  tempVec;
     for ( size_t i = 0; i < args.size(); i++ )
-        tempVec.push_back( *( static_cast<const RealPos*>( args[i].getValue() )->clone() ) );
+        tempVec.push_back( *( static_cast<const RealPos*>( args[i]->getValue().get() )->clone() ) );
 
     // Normalization is done by the Simplex constructor
-    return new Simplex( tempVec );
+    return RbPtr<RbLanguageObject>( new Simplex( tempVec ) );
 }
 
 
 /** Get argument rules for general case */
 template <typename valType>
-const ArgumentRules& Func_simplex<valType>::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_simplex<valType>::getArgumentRules( void ) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", valType().getTypeSpec() ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", valType().getTypeSpec() ) ) );
         rulesSet = true;
         }
 
@@ -132,16 +132,16 @@ const ArgumentRules& Func_simplex<valType>::getArgumentRules( void ) const {
 
 /** Get argument rules for: Simplex <- ( RealPos, RealPos, ... ) */
 template <>
-const ArgumentRules& Func_simplex<RealPos>::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_simplex<RealPos>::getArgumentRules( void ) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", RealPos_name ) );
-        argumentRules.push_back( new ValueRule( "", RealPos_name ) );
-        argumentRules.push_back( new Ellipsis (     RealPos_name ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", RealPos_name ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", RealPos_name ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new Ellipsis (     RealPos_name ) ) );
         rulesSet = true;
         }
 

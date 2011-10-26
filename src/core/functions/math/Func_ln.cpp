@@ -44,23 +44,23 @@ Func_ln* Func_ln::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_ln::execute( void ) {
+RbPtr<RbLanguageObject> Func_ln::execute( void ) {
     
-    const Real* x = static_cast<const Real*>( args[0].getValue() );
+    const double x = static_cast<const Real*>( args[0]->getValue().get() )->getValue();
     
-    return ( new Real( log(x->getValue()) ) );
+    return RbPtr<RbLanguageObject>( new Real( log(x) ) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_ln::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_ln::getArgumentRules( void ) const {
     
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "x", RealPos_name ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "x", RealPos_name ) ) );
         rulesSet = true;
     }
     

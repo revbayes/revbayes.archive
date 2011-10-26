@@ -156,11 +156,11 @@ double Dist_lnorm::pdf( const RbLanguageObject* value ) {
  * @return      Quantile
  *
  */
-Real* Dist_lnorm::quantile( const double p) {
+RbPtr<Real> Dist_lnorm::quantile( const double p) {
 	double m    = static_cast<const Real*   >( getMemberValue( "m" ) )->getValue();
     double s = static_cast<const RealPos*>( getMemberValue( "s"   ) )->getValue();
 	
-    return new Real (RbStatistics::Lognormal::quantile(m, s, p));
+    return RbPtr<Real>(new Real (RbStatistics::Lognormal::quantile(m, s, p) ) );
     
 }
 

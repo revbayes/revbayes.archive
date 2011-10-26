@@ -37,19 +37,13 @@
 const TypeSpec MemberFunction::typeSpec(MemberFunction_name);
 
 /** Constructor */
-MemberFunction::MemberFunction(const TypeSpec retType, const ArgumentRules& argRules) : 
+MemberFunction::MemberFunction(const TypeSpec retType, const RbPtr<ArgumentRules> argRules) : 
     RbFunction(), argumentRules(argRules), object(NULL), returnType(retType) {
 
 }
 
 MemberFunction::~MemberFunction() {
-    // delete the old object
-    if (object != NULL) {
-        object->release();
-        if (object->isUnreferenced()) {
-            delete object;
-        }
-    }
+    
 }
 
 /** Brief info on the function */
@@ -70,7 +64,7 @@ MemberFunction* MemberFunction::clone(void) const {
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RbLanguageObject* MemberFunction::execute( void ) {
+RbPtr<RbLanguageObject> MemberFunction::execute( void ) {
 
     return object->executeOperation( funcName, args );
 
@@ -86,7 +80,7 @@ const VectorString& MemberFunction::getClass(void) const {
 
 
 /** Get argument rules */
-const ArgumentRules& MemberFunction::getArgumentRules(void) const {
+const RbPtr<ArgumentRules> MemberFunction::getArgumentRules(void) const {
 
     return argumentRules;
 }
@@ -117,21 +111,13 @@ std::string MemberFunction::richInfo(void) const {
         o << "Arguments not processed" << std::endl;
     
     for( size_t i = 0; i < args.size(); i++ )
-        o << " args[" << i << "] = " << args[i].getValue() << std::endl;
+        o << " args[" << i << "] = " << args[i]->getValue() << std::endl;
 
     return o.str();
 }
 
-void MemberFunction::setMemberObject(MemberObject *obj) {
-    // delete the old object
-    if (object != NULL) {
-        object->release();
-        if (object->isUnreferenced()) {
-            delete object;
-        }
-    }
+void MemberFunction::setMemberObject(RbPtr<MemberObject> obj) {
     
     object = obj;
-    object->retain();
 }
 

@@ -39,7 +39,7 @@ const std::string MemberFunction_name = "Member function";
 class MemberFunction :  public RbFunction {
 
 public:
-    MemberFunction(const TypeSpec retType, const ArgumentRules& argRules);                                  //!< Constructor
+    MemberFunction(const TypeSpec retType, const RbPtr<ArgumentRules> argRules);                            //!< Constructor
     virtual ~MemberFunction(void);                                                                          //!< Destructor
 
     // Basic utility functions
@@ -52,13 +52,13 @@ public:
     // Regular functions
     RbPtr<RbLanguageObject>     execute(void);                                                              //!< Execute function
    
-    const ArgumentRules&        getArgumentRules(void) const;                                               //!< Get argument rules
+    const RbPtr<ArgumentRules>  getArgumentRules(void) const;                                               //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                                                  //!< Get type of return value
     void                        setMemberObject(RbPtr<MemberObject> obj);                                   //!< Set the member object to which this function belongs
     void                        setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of member method
 
 private:
-    const ArgumentRules&        argumentRules;                                                              //!< Argument rules (different for different member functions)
+    const RbPtr<ArgumentRules>  argumentRules;                                                              //!< Argument rules (different for different member functions)
     std::string                 funcName;                                                                   //!< Name of member method
     RbPtr<MemberObject>         object;                                                                    //!< The member object to which this function belongs
     const TypeSpec              returnType;                                                                 //!< Return type (different for different member functions)

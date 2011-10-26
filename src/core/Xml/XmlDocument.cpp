@@ -21,16 +21,16 @@ XmlDocument::XmlDocument() {
  * If there is such an element, its pointer in out hash map will be overwritten!
  *
  */
-void XmlDocument::addXmlElement(const XmlElement *element) {
+void XmlDocument::addXmlElement(const RbPtr<XmlElement> element) {
     elements.push_back(element);
-    entries[element->getId()] = element;
+    entries.insert(std::pair<uintptr_t, const RbPtr<XmlElement> >(element->getId(),element) );
 }
 
-const XmlElement* XmlDocument::getFirstXmlElement() const {
+const RbPtr<XmlElement> XmlDocument::getFirstXmlElement() const {
     return *(elements.begin());
 }
 
-const XmlElement* XmlDocument::getXmlElement(uintptr_t identifier) const {
+const RbPtr<XmlElement> XmlDocument::getXmlElement(uintptr_t identifier) const {
     return entries.find(identifier)->second;
 }
 
@@ -42,7 +42,7 @@ std::string XmlDocument::print() {
     // create a stream for the output
     std::stringstream out;
     // write every element into the stream
-    for (std::vector<const XmlElement*>::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+    for (std::vector<const RbPtr<XmlElement> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
         (*it)->writeToStream(out);
         out << std::endl;
     }

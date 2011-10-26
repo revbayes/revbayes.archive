@@ -17,6 +17,7 @@
 #ifndef XmlParser_H
 #define XmlParser_H
 
+#include "RbPtr.h"
 #include "XmlDocument.h"
 #include "XmlElementAttributed.h"
 #include "XmlTag.h"
@@ -29,17 +30,17 @@ class XmlParser {
 public:
     XmlParser();                                                                                                                //!< default constructor
     
-    XmlDocument*            parse(const char* inStream);                                                                        //!< parser with c-type input string
-    XmlDocument*            parse(std::string& inStream);                                                                       //!< parser reading from string
-    XmlDocument*            parse(std::istream& inStream);                                                                      //!< parser reading from input stream
+    RbPtr<XmlDocument>              parse(const char* inStream);                                                                        //!< parser with c-type input string
+    RbPtr<XmlDocument>              parse(std::string& inStream);                                                                       //!< parser reading from string
+    RbPtr<XmlDocument>              parse(std::istream& inStream);                                                                      //!< parser reading from input stream
     
     
 private:
-    XmlTag                  readTag(std::istream& instream);
-    XmlTag                  readObjectTag(std::istream& instream);
-    XmlTag                  readTextTag(std::istream& instream);
-    XmlElementAttributed*   readTagContents(std::istream& instream, const std::string& name, uintptr_t identifier);
-    void                    skipWhiteSpace(std::istream& inStream);
+    XmlTag                          readTag(std::istream& instream);
+    XmlTag                          readObjectTag(std::istream& instream);
+    XmlTag                          readTextTag(std::istream& instream);
+    RbPtr<XmlElementAttributed>     readTagContents(std::istream& instream, const std::string& name, uintptr_t identifier);
+    void                            skipWhiteSpace(std::istream& inStream);
     
     
     

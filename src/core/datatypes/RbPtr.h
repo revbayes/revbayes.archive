@@ -60,3 +60,4 @@ class RbPtr {
 };
 
 #endif
+

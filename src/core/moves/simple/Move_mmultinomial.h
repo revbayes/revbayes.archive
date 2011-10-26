@@ -42,13 +42,13 @@ class Move_mmultinomial : public MoveSimple {
         const TypeSpec&             getTypeSpec(void) const;                                                                //!< Get language type of the object
 
         // Member variable inits
-        const MemberRules&          getMemberRules(void) const;                                                             //!< Get member rules
+        const RbPtr<MemberRules>    getMemberRules(void) const;                                                             //!< Get member rules
 
         // Return variable type
         const TypeSpec              getVariableType(void) const;                                                            //!< Get move variable type
 
 	protected:
-        double                      perform(std::set<StochasticNode*>& affectedNodes);                                      //!< Perform move
+        double                      perform(std::set<RbPtr<StochasticNode> >& affectedNodes);                                      //!< Perform move
     
     private:
         static const TypeSpec       typeSpec;

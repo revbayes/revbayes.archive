@@ -159,16 +159,16 @@ int Parser::help(RbPtr<RbString> symbol) const {
 #	endif
 
     // Get some help
-    Help& userHelp = Help::getHelp();
-    if ( userHelp.isUserHelpAvailable() == true && userHelp.isHelpAvailableForQuery( std::string( *symbol ) ) == true )
+    RbPtr<Help> userHelp = Help::getHelp();
+    if ( userHelp->isUserHelpAvailable() == true && userHelp->isHelpAvailableForQuery( std::string( *symbol ) ) == true )
         {
-        std::string hStr = userHelp.formatHelpString(std::string(*symbol), 100);
+        std::string hStr = userHelp->formatHelpString(std::string(*symbol), 100);
         UserInterface::userInterface().output(hStr, false);
         }
     else {
-        if (userHelp.isUserHelpAvailable() == false)
+        if (userHelp->isUserHelpAvailable() == false)
             RBOUT("User help is unavailable");
-        else if ( userHelp.isHelpAvailableForQuery(std::string(*symbol)) == false )
+        else if ( userHelp->isHelpAvailableForQuery(std::string(*symbol)) == false )
             RBOUT("Help unavailable for \"" + std::string(*symbol) + "\"");
 
         std::vector<const RbPtr<RbFunction> > functions = Workspace::userWorkspace()->getFunctionTable()->findFunctions( *symbol );

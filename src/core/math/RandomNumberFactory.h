@@ -24,6 +24,8 @@
 #include <set>
 #include <vector>
 
+#include "RbPtr.h"
+
 #define GLOBAL_RNG RandomNumberFactory::randomNumberFactoryInstance().getGlobalRandomNumberGenerator()
 #define NEW_RNG    RandomNumberFactory::randomNumberFactoryInstance().getRandomNumberGenerator()
 

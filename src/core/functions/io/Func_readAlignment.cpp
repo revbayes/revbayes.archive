@@ -38,7 +38,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_readAlignment::typeSpec(Func_readAlignment_name);
-const TypeSpec Func_readAlignment::returnTypeSpec(Vector_name, new TypeSpec(Alignment_name));
+const TypeSpec Func_readAlignment::returnTypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(Alignment_name) ) );
 
 /** Clone object */
 Func_readAlignment* Func_readAlignment::clone( void ) const {
@@ -48,10 +48,10 @@ Func_readAlignment* Func_readAlignment::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readAlignment::execute( void ) {
+RbPtr<RbLanguageObject> Func_readAlignment::execute( void ) {
 
     // get the information from the arguments for reading the file
-    const RbString* fn       = static_cast<const RbString*>( args[0].getValue() );
+    const RbPtr<RbString> fn( static_cast<RbString*>( args[0]->getValue().get() ) );
 
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn->getValue() );
@@ -138,7 +138,7 @@ RbLanguageObject* Func_readAlignment::execute( void ) {
                 
     // read the files in the map containing the file names with the output being a vector of pointers to
     // the character matrices that have been read
-    std::vector<Alignment*> m = reader.readMatrices( fileMap );
+    std::vector<RbPtr<Alignment> > m = reader.readMatrices( fileMap );
     
     // print summary of results of file reading to the user
     if (readingDirectory == true)
@@ -193,12 +193,12 @@ RbLanguageObject* Func_readAlignment::execute( void ) {
     // return either a list of character matrices or a single character matrix wrapped up in a DAG node
     if ( m.size() > 1 )
         {
-        DagNodeContainer* retList = new DagNodeContainer(m.size());
+        RbPtr<DagNodeContainer> retList( new DagNodeContainer(m.size()) );
         size_t index = 0;
-        for (std::vector<Alignment*>::iterator it = m.begin(); it != m.end(); it++)
+        for (std::vector<RbPtr<Alignment> >::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-            retList->setElement( index, new Variable(new ConstantNode(*it)) );
+            retList->setElement( index, new Variable(RbPtr<DAGNode>( new ConstantNode(*it) ) ) );
             index++;
             }
         return retList;

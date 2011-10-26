@@ -84,15 +84,15 @@ RbPtr<RbLanguageObject> Func_source::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_source::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_source::getArgumentRules( void ) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "file", RbString_name ) ) );
-        argumentRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "echo.on", RbBoolean_name, RbPtr<RbLanguageObject>( new RbBoolean(false) ) ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "file", RbString_name ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "echo.on", RbBoolean_name, RbPtr<RbLanguageObject>( new RbBoolean(false) ) ) ) );
         rulesSet = true;
     }
 

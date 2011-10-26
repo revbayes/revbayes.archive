@@ -81,21 +81,14 @@ std::string Argument::richInfo(void) const {
 }
 
 /** Set the DAG node of the argument */
-void Argument::setDagNode(DAGNode *newNode) {
+void Argument::setDagNode(RbPtr<DAGNode> newNode) {
     var->setDagNode(newNode);
 }
 
 
 /** Set the variable of the argument */
-void Argument::setVariable(Variable *newVar) {
-    if (var != NULL) {
-        var->release();
-        if (var->isUnreferenced()) {
-            delete var;
-        }
-    }
+void Argument::setVariable(RbPtr<Variable> newVar) {
     
     var = newVar;
-    var->retain();
 }
 

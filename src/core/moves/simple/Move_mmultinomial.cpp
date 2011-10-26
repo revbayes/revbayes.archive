@@ -59,21 +59,21 @@ const VectorString& Move_mmultinomial::getClass() const {
 
 
 /** Return member rules */
-const MemberRules& Move_mmultinomial::getMemberRules(void) const {
+const RbPtr<MemberRules> Move_mmultinomial::getMemberRules(void) const {
 
-    static MemberRules memberRules;
+    static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
 
     if (!rulesSet) 
 		{
-        memberRules.push_back( new ValueRule( "variable", TypeSpec( VectorRealPos_name ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable", TypeSpec( VectorRealPos_name ) ) ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        const MemberRules& inheritedRules = MoveSimple::getMemberRules();
-        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        const RbPtr<MemberRules> inheritedRules = MoveSimple::getMemberRules();
+        memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
-        memberRules.push_back(new ValueRule("tuning", RealPos_name));
-        memberRules.push_back(new ValueRule("num_cats", Integer_name));
+        memberRules->push_back(RbPtr<ArgumentRule>( new ValueRule("tuning", RealPos_name) ) );
+        memberRules->push_back(RbPtr<ArgumentRule>( new ValueRule("num_cats", Integer_name) ) );
 
         rulesSet = true;
 		}
@@ -96,18 +96,18 @@ const TypeSpec Move_mmultinomial::getVariableType( void ) const {
 
 
 /** Perform the move */
-double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
+double Move_mmultinomial::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
 
     // Get random number generator    
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
+    RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
 
     // Get relevant values
 //    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
-    StochasticNode        *nodePtr = NULL;
-    double                 alpha0  = static_cast<const RealPos*>( getMemberValue("tuning")   )->getValue();
-    int                    k       = static_cast<const Integer*>( getMemberValue("num_cats") )->getValue();
+    RbPtr<StochasticNode>        nodePtr( NULL );
+    double                 alpha0  = static_cast<const RealPos*>( getMemberValue("tuning").get()   )->getValue();
+    int                    k       = static_cast<const Integer*>( getMemberValue("num_cats").get() )->getValue();
 
-    const VectorReal*      valPtr  = static_cast<const VectorReal*>( nodePtr->getValue() );
+    const RbPtr<VectorReal> valPtr( static_cast<VectorReal*>( nodePtr->getValue().get() ) );
 
     std::vector<double>    curVal  = valPtr->getValue();
     int                    n       = int( curVal.size() );
@@ -218,7 +218,7 @@ double Move_mmultinomial::perform( std::set<StochasticNode*>& affectedNodes ) {
     for ( size_t i = 0; i < valPtr->size(); i++ )
         newVal[i] *= sum;
 		
-    nodePtr->setValue( new VectorReal( newVal ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbLanguageObject>( new VectorReal( newVal ) ), affectedNodes );
 	
     return lnProposalRatio;
 }

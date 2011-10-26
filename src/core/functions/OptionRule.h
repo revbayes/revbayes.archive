@@ -32,7 +32,7 @@ class OptionRule : public ValueRule {
 
     public:
                                     OptionRule(const std::string& argName, VectorString optVals);                       //!< Constructor of rule without default value
-                                    OptionRule(const std::string& argName, RbString* defVal, VectorString optVals);     //!< Constructor of rule with default value
+                                    OptionRule(const std::string& argName, RbPtr<RbString> defVal, VectorString optVals);     //!< Constructor of rule with default value
 
         // Basic utility functions
         OptionRule*                 clone(void) const { return new OptionRule(*this); }                                 //!< Clone object
@@ -42,7 +42,7 @@ class OptionRule : public ValueRule {
         std::string                 richInfo(void) const;                                                               //!< General info on object
 
         // OptionRule functions
-        virtual bool                isArgValid(DAGNode* var, bool& needsConversion) const;                              //!< Is var valid argument?
+        virtual bool                isArgValid(RbPtr<DAGNode> var, bool& needsConversion) const;                              //!< Is var valid argument?
 
     protected:
         bool                        areOptionsUnique(const VectorString& optVals) const;                                //!< Test if options are unique

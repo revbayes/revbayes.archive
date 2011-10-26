@@ -18,6 +18,7 @@
 #ifndef Func__and_H
 #define Func__and_H
 
+#include "RbPtr.h"
 #include "RbFunction.h"
 
 #include <map>
@@ -36,7 +37,7 @@ class Func__and :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbLanguageObject*           execute(void);                                              //!< Execute function
+    	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
@@ -76,12 +77,12 @@ Func__and<firstValType, secondValType>* Func__and<firstValType, secondValType>::
 
 /** Execute function: We rely on operator overloading to provide the functionality */
 template <typename firstValType, typename secondValType>
-RbLanguageObject* Func__and<firstValType,secondValType>::execute( void ) {
+RbPtr<RbLanguageObject> Func__and<firstValType,secondValType>::execute( void ) {
 
-    const firstValType*  val1 = static_cast<const firstValType*> ( args[0].getValue() );
-    const secondValType* val2 = static_cast<const secondValType*>( args[1].getValue() );
+    const RbPtr<firstValType>  val1( static_cast<const firstValType*> ( args[0]->getValue().get() ) );
+    const RbPtr<secondValType> val2( static_cast<const secondValType*>( args[1]->getValue().get() ) );
     
-    return ( new RbBoolean( *val1 && *val2 ) );
+    return RbPtr<RbLanguageObject>( new RbBoolean( *val1 && *val2 ) );
 }
 
 

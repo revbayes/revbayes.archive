@@ -89,23 +89,23 @@ const TypeSpec Move_mscale::getVariableType( void ) const {
 
 
 /** Perform the move */
-double Move_mscale::perform( std::set<StochasticNode*>& affectedNodes ) {
+double Move_mscale::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
 
     // Get random number generator    
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
+    RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
 
     // Get relevant values
-    StochasticNode*        nodePtr =    static_cast<StochasticNode*>( members["variable"].getDagNodePtr() );
-    const RealPos          lambda  = *( static_cast<const RealPos*>( getMemberValue("lambda")  ) );
+    RbPtr<StochasticNode>  nodePtr( static_cast<StochasticNode*>( members["variable"]->getDagNodePtr().get() ) );
+    const RealPos          lambda  = *( static_cast<const RealPos*>( getMemberValue("lambda").get()  ) );
 
-    const RealPos          curVal  = *( static_cast<const RealPos*>( nodePtr->getValue() ) );
+    const RealPos          curVal  = *( static_cast<const RealPos*>( nodePtr->getValue().get() ) );
 
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     RealPos u      = rng->uniform01();
     RealPos newVal = curVal * std::exp( lambda * ( u - 0.5 ) );
 
     // Propose new value
-    nodePtr->setValue( newVal.clone(), affectedNodes );
+    nodePtr->setValue( RbPtr<RbLanguageObject>( newVal.clone() ), affectedNodes );
 
     // Return Hastings ratio
     return log( newVal / curVal );

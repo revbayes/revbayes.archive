@@ -38,7 +38,7 @@ class DistributionFunction :  public RbFunction {
     public:
         enum FuncType { DENSITY, RVALUE, PROB, QUANTILE };                                                  //!< Enum specifying function type
 
-                                    DistributionFunction(Distribution* dist, FuncType funcType);            //!< Constructor
+                                    DistributionFunction(RbPtr<Distribution> dist, FuncType funcType);      //!< Constructor
                                     DistributionFunction(const DistributionFunction& x);                    //!< Copy constructor
                                    ~DistributionFunction(void);                                             //!< Destructor
 
@@ -51,16 +51,16 @@ class DistributionFunction :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // DistributionFunction functions
-        RbLanguageObject*           execute(void);                                                          //!< Execute function
-        const ArgumentRules&        getArgumentRules(void) const;                                           //!< Get argument rules
+        RbPtr<RbLanguageObject>     execute(void);                                                          //!< Execute function
+        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type spec of return value
-        bool                        processArguments(   const std::vector<Argument*>&   args,
-                                                        VectorInteger*                  matchScore=NULL);   //!< Process args, set member variables of distribution
+        bool                        processArguments(   const std::vector<RbPtr<Argument> >&   args,
+                                                     RbPtr<VectorInteger>          matchScore=RbPtr<VectorInteger>::getNullPtr());   //!< Process args, set member variables of distribution
 
 	protected:
-        ArgumentRules               argumentRules;                                                          //!< Argument rules
+        RbPtr<ArgumentRules>        argumentRules;                                                          //!< Argument rules
         TypeSpec                    returnType;                                                             //!< Return type
-        Distribution*               distribution;                                                           //!< The distribution
+        RbPtr<Distribution>         distribution;                                                           //!< The distribution
         FuncType                    functionType;                                                           //!< Function type
     
     private:

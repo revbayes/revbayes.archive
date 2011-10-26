@@ -40,7 +40,7 @@ const std::string UserFunction_name = "user function";
 class UserFunction :  public RbFunction {
 
     public:
-                UserFunction(   const ArgumentRules&        argRules,
+                UserFunction(   const RbPtr<ArgumentRules>  argRules,
                                 const TypeSpec&             retType,
                                 RbPtr<std::list<RbPtr<SyntaxElement> > >  stmts,
                                 RbPtr<Environment>                defineEnv);           //!< Constructor
@@ -56,11 +56,11 @@ class UserFunction :  public RbFunction {
 
         // Regular functions
 		RbPtr<RbLanguageObject>                     execute(void);                      //!< Execute function
-        const ArgumentRules&                        getArgumentRules(void) const;       //!< Get arg rules
+        const RbPtr<ArgumentRules>                  getArgumentRules(void) const;       //!< Get arg rules
         const TypeSpec&                             getReturnType(void) const;          //!< Get return type
 
 	protected:
-        const ArgumentRules                         argumentRules;                      //!< The argument rules
+        const RbPtr<ArgumentRules>                  argumentRules;                      //!< The argument rules
         const TypeSpec                              returnType;                         //!< The return type (complete specification)
         RbPtr<std::list<RbPtr<SyntaxElement> > >    code;                               //!< The code
         RbPtr<Environment>                          defineEnvironment;                  //!< The definition environment

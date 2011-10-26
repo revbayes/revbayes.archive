@@ -34,7 +34,7 @@
 
 // Definition of the static type spec member
 const TypeSpec Func_readTraces::typeSpec(Func_readTraces_name);
-const TypeSpec Func_readTraces::returnTypeSpec(Vector_name, new TypeSpec(Trace_name));
+const TypeSpec Func_readTraces::returnTypeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(Trace_name) ) );
 
 /** Clone object */
 Func_readTraces* Func_readTraces::clone( void ) const {
@@ -44,9 +44,9 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readTraces::execute( void ) {
+RbPtr<RbLanguageObject> Func_readTraces::execute( void ) {
     // get the information from the arguments for reading the file
-    const RbString* fn       = static_cast<const RbString*>( args[0].getValue() );
+    const RbPtr<RbString> fn( static_cast<RbString*>( args[0]->getValue().get() ) );
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn->getValue() );
@@ -84,7 +84,7 @@ RbLanguageObject* Func_readTraces::execute( void ) {
         RBOUT(o1.str());
     }
     
-    std::vector<Trace*> data;
+    RbPtr<Vector> data( new Vector(Trace_name) );
     
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -95,7 +95,7 @@ RbLanguageObject* Func_readTraces::execute( void ) {
         bool hasHeaderBeenRead = false;
         
         /* Open file */
-        std::string filename = static_cast<const RbString*>( args[0].getValue() )->getValue();
+        std::string filename = static_cast<const RbString*>( args[0]->getValue().get() )->getValue();
         std::ifstream inFile( filename.c_str() );
         
         if ( !inFile )
@@ -144,13 +144,13 @@ RbLanguageObject* Func_readTraces::execute( void ) {
             if (!hasHeaderBeenRead) {
                 
                 for (size_t j=0; j<columns.size(); j++) {
-                    Trace* t = new Trace();
+                    RbPtr<Trace> t( new Trace() );
                     
                     std::string parmName = columns[j];
                     t->setParameterName(parmName);
                     t->setFileName(filename);
                     
-                    data.push_back(t);
+                    data->push_back( RbPtr<RbObject>( t.get() ) );
                 }
                 
                 hasHeaderBeenRead = true;
@@ -160,7 +160,7 @@ RbLanguageObject* Func_readTraces::execute( void ) {
             
             // adding values to the Tracess
             for (size_t j=0; j<columns.size(); j++) {
-                Trace* t = data[j];
+                RbPtr<Trace> t = RbPtr<Trace>( static_cast<Trace*>( (*data)[j].get() ) );
                 std::string tmp = columns[j];
                 double d = 1.0;
                 t->addObject(d);
@@ -198,14 +198,14 @@ void Func_readTraces::formatError(RbFileManager& fm, std::string& errorStr) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readTraces::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_readTraces::getArgumentRules( void ) const {
     
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ValueRule( "file", RbString_name ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "file", RbString_name ) ) );
         rulesSet = true;
     }
     

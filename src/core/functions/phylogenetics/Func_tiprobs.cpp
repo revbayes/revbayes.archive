@@ -44,11 +44,11 @@ Func_tiprobs* Func_tiprobs::clone(void) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_tiprobs::execute(void) {
+RbPtr<RbLanguageObject> Func_tiprobs::execute(void) {
 
     // get the information from the arguments for reading the file
-    const RateMatrix* q = static_cast<const RateMatrix*>( args[0].getValue() );
-    const RealPos*    t = static_cast<const RealPos*>(    args[1].getValue() );
+    const RbPtr<RateMatrix> q( static_cast<RateMatrix*>( args[0]->getValue().get() ) );
+    const RbPtr<RealPos>    t( static_cast<RealPos*>(    args[1]->getValue().get() ) );
 
     // initialize the number of states
     const size_t nStates = q->getNumberOfStates();
@@ -62,26 +62,26 @@ RbLanguageObject* Func_tiprobs::execute(void) {
         }
 
     // construct a rate matrix of the correct dimensions
-    TransitionProbabilityMatrix* m = new TransitionProbabilityMatrix(nStates);
+    RbPtr<TransitionProbabilityMatrix> m( new TransitionProbabilityMatrix(nStates) );
 
     // calculate the transition probabilities
-    q->calculateTransitionProbabilities( t->getValue(), *m );
+    q->calculateTransitionProbabilities( t->getValue(), m );
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return m;
+    return RbPtr<RbLanguageObject>( m.get() );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_tiprobs::getArgumentRules(void) const {
+const RbPtr<ArgumentRules> Func_tiprobs::getArgumentRules(void) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if (!rulesSet)
         {
-        argumentRules.push_back( new ValueRule( "q", RateMatrix_name ) );
-        argumentRules.push_back( new ValueRule( "t", RealPos_name    ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "q", RateMatrix_name ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "t", RealPos_name    ) ) );
         rulesSet = true;
         }
 

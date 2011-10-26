@@ -49,8 +49,8 @@ class DistributionContinuous: public Distribution {
         RbPtr<RbLanguageObject>                 executeOperation(const std::string& name, Environment& args);               //!< Direct call of member method
 
         // Interval distribution functions you probably want to override
-        virtual const RbPtr<RbLanguageObject>   getMax(void) const;                                                         //!< Get max value of coverage
-        virtual const RbPtr<RbLanguageObject>   getMin(void) const;                                                         //!< Get min value of coverage
+        virtual const RbPtr<Real>               getMax(void) const;                                                         //!< Get max value of coverage
+        virtual const RbPtr<Real>               getMin(void) const;                                                         //!< Get min value of coverage
 
         // Interval distribution functions you have to override
         virtual double                          cdf(const RbPtr<RbLanguageObject> value) = 0;                                     //!< Cumulative probability

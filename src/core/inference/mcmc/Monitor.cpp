@@ -41,23 +41,10 @@ Monitor::Monitor(const Monitor &x) : ConstantMemberObject(x) {
     // shallow copy
     nodes = x.nodes;
     
-    // retain each node
-    for (std::vector<VariableNode*>::iterator it=nodes.begin(); it!=nodes.end(); it++) {
-        (*it)->retain();
-    }
-    
 }
 
 Monitor::~Monitor() {
-    // release each node
-    for (std::vector<VariableNode*>::iterator it=nodes.begin(); it!=nodes.end(); it++) {
-        if ((*it) != NULL) {
-            (*it)->release();
-            if ((*it)->isUnreferenced()) {
-                delete *it;
-            }
-        }
-    }
+   
 }
 
 
@@ -76,17 +63,17 @@ const VectorString& Monitor::getClass() const {
 }
 
 /** Return member rules */
-const MemberRules& Monitor::getMemberRules( void ) const {
+const RbPtr<MemberRules> Monitor::getMemberRules( void ) const {
     
-    static MemberRules memberRules;
+    static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
     
     if (!rulesSet) 
     {
-        memberRules.push_back(new ValueRule( "filename" , TypeSpec(RbString_name)         ) );
-        memberRules.push_back(new ValueRule( "printgen" , TypeSpec(Integer_name)          ) );
-        memberRules.push_back(new ValueRule( "variable" , TypeSpec(RbLanguageObject_name) ) );
-        memberRules.push_back(new Ellipsis (              TypeSpec(RbLanguageObject_name) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "filename" , TypeSpec(RbString_name)         ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "printgen" , TypeSpec(Integer_name)          ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable" , TypeSpec(RbLanguageObject_name) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new Ellipsis (              TypeSpec(RbLanguageObject_name) ) ) );
         rulesSet = true;
     }
     
@@ -103,13 +90,13 @@ const TypeSpec& Monitor::getTypeSpec(void) const {
 /** Monitor value unconditionally */
 void Monitor::monitor(void) {
 
-    for (std::vector<VariableNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
         if ( it != nodes.begin() )
-            outStream << " ; ";
+            outStream << "\t";
         
         // print the value
-        (*it)->printValue(outStream);
+        (*it).get()->printValue(outStream);
     }
     
     outStream << std::endl;
@@ -122,16 +109,16 @@ void Monitor::monitor(void) {
 void Monitor::monitor(int gen) {
 
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>(getMemberValue("printgen"))->getValue();
+    int samplingFrequency = dynamic_cast<const Integer*>( getMemberValue("printgen").get() )->getValue();
     
     if (gen % samplingFrequency == 0) {
-        for (std::vector<VariableNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+        for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             // add a separator before every new element except the first element
             if ( it != nodes.begin() )
                 outStream << " ; ";
             
             // print the value
-            (*it)->printValue(outStream);
+            (*it).get()->printValue(outStream);
         }
 
 	outStream << std::endl;
@@ -143,7 +130,7 @@ void Monitor::monitor(int gen) {
 void Monitor::openStream(void) {
 
     // get the filename
-    std::string filename = dynamic_cast<const RbString*>(getMemberValue("filename"))->getValue();
+    std::string filename = dynamic_cast<const RbString*>( getMemberValue("filename").get() )->getValue();
     
     // open the stream to the file
     outStream.open(filename.c_str());
@@ -152,12 +139,12 @@ void Monitor::openStream(void) {
 
 /** Print header for monitored values */
 void Monitor::printHeader() {
-    for (std::vector<VariableNode*>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
         if ( it != nodes.begin() )
             outStream << " ; ";
         
-         VariableNode *theNode = *it;
+         RbPtr<VariableNode> theNode = *it;
         
         // print the header
         if (theNode->getName() != "")
@@ -174,30 +161,21 @@ void Monitor::printHeader() {
 void Monitor::printValue(std::ostream& o) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>(getMemberValue("printgen"))->getValue();
+    int samplingFrequency = dynamic_cast<const Integer*>( getMemberValue("printgen").get() )->getValue();
     
     o << "Monitor: interval = " << samplingFrequency;
 }
 
 
-void Monitor::replaceDagNodes(std::vector<VariableNode *> &n) {
+void Monitor::replaceDagNodes(std::vector<RbPtr<VariableNode> > &n) {
     
     // release all nodes
-    for (size_t i=0; i<nodes.size(); i++) {
-        VariableNode *theNode = nodes[i];
-        if (theNode != NULL) {
-            theNode->release();
-            if (theNode->isUnreferenced())
-                delete theNode;
-        }
-    }
     nodes.clear();
     
     // add all nodes
     for (size_t i=0; i<n.size(); i++) {
-        VariableNode *theNode = n[i];
+        RbPtr<VariableNode> theNode = n[i];
         if (theNode != NULL) {
-            theNode->retain();
             nodes.push_back(theNode);
         }
     }
@@ -209,7 +187,7 @@ void Monitor::replaceDagNodes(std::vector<VariableNode *> &n) {
 std::string Monitor::richInfo(void) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>(getMemberValue("printgen"))->getValue();
+    int samplingFrequency = dynamic_cast<const Integer*>( getMemberValue("printgen").get() )->getValue();
     
     std::ostringstream o;
     o << "Monitor: interval = " << samplingFrequency;
@@ -217,12 +195,11 @@ std::string Monitor::richInfo(void) const {
     return o.str();
 }
 
-void Monitor::setMemberVariable(std::string const &name, Variable *var) {
+void Monitor::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
     
     // catch setting of the variables 
     if (name == "variable" || name == "") {
-        var->retain();
-        nodes.push_back(dynamic_cast<VariableNode*>(var->getDagNodePtr()));
+        nodes.push_back(RbPtr<VariableNode>( dynamic_cast<VariableNode*>(var->getDagNodePtr().get() ) ) );
     }
     else {
         // call parent class to set member variable

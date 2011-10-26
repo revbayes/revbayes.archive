@@ -34,8 +34,8 @@ public:
     
     // Func_clear functions
     bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
-    RbLanguageObject*           execute(void);                                      //!< Execute function
-    const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
+    RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute function
+    const RbPtr<ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                          //!< Get type of return val
     
 private:

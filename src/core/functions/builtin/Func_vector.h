@@ -37,8 +37,8 @@ class Func_vector :  public RbFunction {
 
         // Regular functions
         bool                        addAsChildOfArguments(void) { return false; }               //!< We do not wish that this function is added as a child of the arguments
-    	RbLanguageObject*           execute(void);                                              //!< Execute function
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
+    	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
+        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
@@ -69,13 +69,13 @@ Func_vector<valType, retType>* Func_vector<valType, retType>::clone( void ) cons
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType, typename retType>
-RbLanguageObject* Func_vector<valType, retType>::execute( void ) {
+RbPtr<RbLanguageObject> Func_vector<valType, retType>::execute( void ) {
 
-    retType* tempVec = new retType();
+    RbPtr<retType> tempVec( new retType() );
     for ( size_t i = 0; i < args.size(); i++ )
-        tempVec->push_back( *( static_cast<const valType*>( args[i].getValue() ) ) );
+        tempVec->push_back( args[i]->getValue() );
 
-    return tempVec;
+    return RbPtr<RbLanguageObject>( tempVec );
 }
 
 

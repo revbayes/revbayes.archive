@@ -75,7 +75,7 @@ const VectorString& Container::getClass(void) const {
 const RbPtr<MethodTable> Container::getMethods(void) const {
     
     static RbPtr<MethodTable> methods( new MethodTable() );
-    static ArgumentRules sizeArgRules;
+    static RbPtr<ArgumentRules> sizeArgRules( new ArgumentRules() );
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) 

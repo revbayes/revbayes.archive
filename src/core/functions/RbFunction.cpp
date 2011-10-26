@@ -41,8 +41,8 @@ RbFunction::RbFunction(const RbFunction &x) : RbInternal(x) {
     
     for (size_t i=0; i<x.args.size(); i++) {
         const std::string &name = x.args.getName(i);
-        const VariableSlot &theSlot = x.args[i];
-        args.addVariable(name, RbPtr<VariableSlot>( theSlot.clone() ));
+        const RbPtr<VariableSlot> theSlot = x.args[i];
+        args.addVariable(name, RbPtr<VariableSlot>( theSlot->clone() ));
     }
     
     argsProcessed = x.argsProcessed;
@@ -79,13 +79,13 @@ const VectorString& RbFunction::getClass(void) const {
 /** Print value for user */
 void RbFunction::printValue(std::ostream& o) const {
 
-    const ArgumentRules& argRules = getArgumentRules();
+    const RbPtr<ArgumentRules> argRules = getArgumentRules();
 
     o << getReturnType() << " function (";
-    for (size_t i=0; i<argRules.size(); i++) {
+    for (size_t i=0; i<argRules->size(); i++) {
         if (i != 0)
             o << ", ";
-        argRules[i]->printValue(o);
+        (*argRules)[i]->printValue(o);
     }
     o << ")";
 }
@@ -145,10 +145,10 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
     /*********************  0. Initialization  **********************/
 
     /* Get the argument rules */
-    const ArgumentRules& theRules = getArgumentRules();
+    const RbPtr<ArgumentRules> theRules = getArgumentRules();
 
     /* Get the number of argument rules */
-    size_t nRules = theRules.size();
+    size_t nRules = theRules->size();
 
     /* Clear previously processed arguments */
     args.clear();
@@ -157,7 +157,7 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
        we expect and the number of non-ellipsis rules we have */
     size_t numFinalArgs;
     size_t numRegularRules;
-    if (nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name)) {
+    if (nRules > 0 && (*theRules)[nRules-1]->isType(Ellipsis_name)) {
         numRegularRules = nRules - 1;
         if ( passedArgs.size() < nRules )
             numFinalArgs = nRules - 1;
@@ -175,10 +175,10 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
 
     /* Fill processedArguments with empty variable slots */
     for (size_t i=0; i<numRegularRules; i++) {
-        args.addVariable( theRules[i]->getArgumentLabel(), new VariableSlot( theRules[i]->getArgumentLabel(), theRules[i]->getArgumentTypeSpec() ) );
+        args.addVariable( (*theRules)[i]->getArgumentLabel(), RbPtr<VariableSlot>( new VariableSlot( (*theRules)[i]->getArgumentLabel(), (*theRules)[i]->getArgumentTypeSpec() ) ) );
     }
     for (size_t i=numRegularRules; i<numFinalArgs; i++) {
-        VariableSlot *theEllipsisSlot = new VariableSlot( EmptyString, theRules[nRules-1]->getArgumentTypeSpec() );
+        RbPtr<VariableSlot> theEllipsisSlot( new VariableSlot( EmptyString, (*theRules)[nRules-1]->getArgumentTypeSpec() ) );
         args.addVariable( theEllipsisSlot->getLabel(), theEllipsisSlot );
     }
     
@@ -192,19 +192,19 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
     /* Process ellipsis arguments. If we have an ellipsis, all preceding arguments must be passed in;
        no default values are allowed. Note that the argument labels are discarded here, which is not
        correct. */
-    if ( nRules > 0 && theRules[nRules-1]->isType(Ellipsis_name) && passedArgs.size() >= nRules ) {
+    if ( nRules > 0 && (*theRules)[nRules-1]->isType(Ellipsis_name) && passedArgs.size() >= nRules ) {
 
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
 
-            Argument *theArgument = passedArgs[i];
-            DAGNode* theDAGNode = theArgument->getDagNode();
+            RbPtr<Argument> theArgument = passedArgs[i];
+            RbPtr<DAGNode> theDAGNode = theArgument->getDagNode();
             if ( theDAGNode == NULL )
                 return false;   // This should never happen
-            if ( !theRules[nRules-1]->isArgumentValid( theDAGNode, conversionNeeded ) )
+            if ( !(*theRules)[nRules-1]->isArgumentValid( theDAGNode, conversionNeeded ) )
                 return false;
             
             // add this variable to the argument list
-            args[i].setVariable( theArgument->getVariable() );
+            args[i]->setVariable( theArgument->getVariable() );
 
             if ( theArgument->getLabel() != "" )
                 args.setName( i, theArgument->getLabel() );
@@ -232,15 +232,15 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
         /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
         for (size_t j=0; j<numRegularRules; j++) {
 
-            if ( passedArgs[i]->getLabel() == theRules[j]->getArgumentLabel() ) {
+            if ( passedArgs[i]->getLabel() == (*theRules)[j]->getArgumentLabel() ) {
 
-                if ( theRules[j]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded) && !filled[j] ) {
+                if ( (*theRules)[j]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded) && !filled[j] ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     // add this variable to the argument list
-                    args[j].setVariable( passedArgs[i]->getVariable() );
+                    args[j]->setVariable( passedArgs[i]->getVariable() );
                 }
                 else
                     return false;
@@ -269,7 +269,7 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
         /* Try all rules */
         for (size_t j=0; j<numRegularRules; j++) {
 
-            if ( !filled[j] && theRules[j]->getArgumentLabel().compare(0, passedArgs[i]->getLabel().size(), passedArgs[i]->getLabel()) == 0 ) {
+            if ( !filled[j] && (*theRules)[j]->getArgumentLabel().compare(0, passedArgs[i]->getLabel().size(), passedArgs[i]->getLabel()) == 0 ) {
                 ++nMatches;
                 matchRule = static_cast<int>( j );
             }
@@ -278,13 +278,13 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
         if (nMatches != 1)
             return false;
  
-        if ( theRules[matchRule]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded) ) {
+        if ( (*theRules)[matchRule]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded) ) {
             taken[i]                  = true;
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = static_cast<int>( i );
             
             // add this variable to the argument list
-            args[matchRule].setVariable( passedArgs[i]->getVariable() );
+            args[matchRule]->setVariable( passedArgs[i]->getVariable() );
         }
         else
             return false;
@@ -304,14 +304,14 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
         for (size_t j=0; j<numRegularRules; j++) {
 
             if ( filled[j] == false ) {
-                DAGNode *argVar = passedArgs[i]->getDagNode();
-                if ( theRules[j]->isArgumentValid( argVar, conversionNeeded ) ) {
+                RbPtr<DAGNode> argVar = passedArgs[i]->getDagNode();
+                if ( (*theRules)[j]->isArgumentValid( argVar, conversionNeeded ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     // add this variable to the argument list
-                    args[j].setVariable( passedArgs[i]->getVariable() );
+                    args[j]->setVariable( passedArgs[i]->getVariable() );
                     
                     break;
                 }
@@ -329,10 +329,10 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
         if ( filled[i] == true )
             continue;
 
-        if ( !theRules[i]->hasDefault() )
+        if ( !(*theRules)[i]->hasDefault() )
             return false;
 
-        args[i].setVariable( theRules[i]->getDefaultVariable() );
+        args[i]->setVariable( (*theRules)[i]->getDefaultVariable() );
     }
 
     /*********************  6. Count match score and return  **********************/
@@ -354,7 +354,7 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
 
             size_t j;
             for (j=0; j<argClass.size(); j++)
-                if ( argClass[j] == theRules[argIndex]->getArgumentType() )
+                if ( argClass[j] == (*theRules)[argIndex]->getArgumentType() )
                     break;
 
             if ( j == argClass.size() )
@@ -371,10 +371,10 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
     for ( ; argIndex < numFinalArgs; argIndex++ ) {
     
         
-        const VectorString& argClass = args[argIndex].getDagNodePtr()->getValue()->getClass();
+        const VectorString& argClass = args[argIndex]->getDagNodePtr()->getValue()->getClass();
         size_t j;
         for (j=0; j<argClass.size(); j++)
-            if ( argClass[j] == theRules[nRules-1]->getArgumentType() )
+            if ( argClass[j] == (*theRules)[nRules-1]->getArgumentType() )
                 break;
 
         if ( j == argClass.size() )
@@ -400,7 +400,7 @@ std::string RbFunction::richInfo(void) const {
         o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
     
     for ( size_t i = 0;  i < args.size(); i++ ) {
-        o << " args[" << i << "] = " << *args[i].getValue() << std::endl;
+        o << " args[" << i << "] = " << *args[i]->getValue() << std::endl;
     }
 
     return o.str();

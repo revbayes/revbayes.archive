@@ -55,14 +55,14 @@ Func_dppSeat* Func_dppSeat::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_dppSeat::execute( void ) {
+RbPtr<RbLanguageObject> Func_dppSeat::execute( void ) {
     
-	double concentration = static_cast<const RealPos*>( args[0].getValue() )->getValue();
-	unsigned int num = static_cast<const Natural*>( args[1].getValue() )->getValue();
+	double concentration = static_cast<const RealPos*>( args[0]->getValue().get() )->getValue();
+	unsigned int num = static_cast<const Natural*>( args[1]->getValue().get() )->getValue();
 	std::vector<int> tables;
 	std::vector<int> clusters( num, 0 );
 	
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
 	for(int i=0; i<(size_t)num; i++){
 		if(i==0){
 			tables.push_back( 1 );
@@ -88,20 +88,20 @@ RbLanguageObject* Func_dppSeat::execute( void ) {
 			}
 		}
 	}
-	return ( new VectorNatural( clusters ) );
+	return RbPtr<RbLanguageObject>( new VectorNatural( clusters ) );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_dppSeat::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_dppSeat::getArgumentRules( void ) const {
 	
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 	
     if ( !rulesSet ) {
 		
-        argumentRules.push_back( new ValueRule( "concentration", RbObject_name ) );
-        argumentRules.push_back( new ValueRule( "number", Natural_name ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "concentration", RbObject_name ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "number", Natural_name ) ) );
         rulesSet = true;
     }
 	

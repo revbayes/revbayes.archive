@@ -43,29 +43,29 @@ Func_unclamp* Func_unclamp::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_unclamp::execute( void ) {
+RbPtr<RbLanguageObject> Func_unclamp::execute( void ) {
 
     // Get the stochastic node from the variable reference or lookup
-    StochasticNode* theNode = dynamic_cast<StochasticNode*>( args[0].getDagNodePtr() );
-    if ( !theNode )
+    RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( args[0]->getDagNodePtr().get() ) );
+    if ( !theNode.get() )
         throw RbException( "The variable is not a stochastic node" );
     
     // Now unclamp the node
     theNode->unclamp();
 
-    return NULL;
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_unclamp::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_unclamp::getArgumentRules( void ) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ValueRule( "variable",   RbObject_name ));
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable",   RbObject_name ) ) );
         rulesSet = true;
     }
 

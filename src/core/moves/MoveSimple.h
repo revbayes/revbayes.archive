@@ -34,31 +34,31 @@ const std::string MoveSimple_name = "MoveSimple";
 class MoveSimple : public Move {
 
 public:
-    virtual                    ~MoveSimple(void) {}                                             //!< Destructor
+    virtual                            ~MoveSimple(void) {}                                             //!< Destructor
 
     // Basic utility functions
-    virtual MoveSimple*         clone(void) const = 0;                                          //!< Clone the object
-    virtual const VectorString& getClass(void) const;                                           //!< Get class vector
+    virtual MoveSimple*                 clone(void) const = 0;                                          //!< Clone the object
+    virtual const VectorString&         getClass(void) const;                                           //!< Get class vector
 
     // Member variable rules
-    virtual const MemberRules&  getMemberRules(void) const;                                     //!< Get member rules
+    virtual const RbPtr<MemberRules>    getMemberRules(void) const;                                     //!< Get member rules
 
     // MoveSimple functions
-    void                        acceptMove(void);				                                //!< Accept the move, update statistics
-    double                      performMove(double& lnProbabilityRatio);                        //!< Call perform, calculate ratios
-    void                        rejectMove(void);                                               //!< Reject the move
+    void                                acceptMove(void);				                                //!< Accept the move, update statistics
+    double                              performMove(double& lnProbabilityRatio);                        //!< Call perform, calculate ratios
+    void                                rejectMove(void);                                               //!< Reject the move
 
 protected:
-    MoveSimple(const MemberRules& memberRules);                                                 //!< Default constructor
-    MoveSimple(const MoveSimple &ms);                                                           //!< Copy constructor
+    MoveSimple(const RbPtr<MemberRules> memberRules);                                                   //!< Default constructor
+    MoveSimple(const MoveSimple &ms);                                                                   //!< Copy constructor
 
     // Functions you have to override
-    virtual double              perform(std::set<StochasticNode*>& affectedNodes) = 0;          //!< Perform the move and fill in the affected stochastic nodes for probability calculations
-    virtual const TypeSpec      getVariableType(void) const = 0;                                //!< Get type of random variable appropriate for move
+    virtual double                      perform(std::set<RbPtr<StochasticNode> >& affectedNodes) = 0;   //!< Perform the move and fill in the affected stochastic nodes for probability calculations
+    virtual const TypeSpec              getVariableType(void) const = 0;                                //!< Get type of random variable appropriate for move
 
     // Functions you may want to override for additional statistics purposes, e.g.
-    virtual void                accept(void) {}                                                 //!< Accept the move
-    virtual void                reject(void) {}                                                 //!< Reject the move
+    virtual void                        accept(void) {}                                                 //!< Accept the move
+    virtual void                        reject(void) {}                                                 //!< Reject the move
 };
 
 #endif

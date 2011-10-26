@@ -33,7 +33,7 @@
 const TypeSpec UserFunction::typeSpec(UserFunction_name);
 
 /** Basic constructor */
-UserFunction::UserFunction( const ArgumentRules&        argRules,
+UserFunction::UserFunction( const RbPtr<ArgumentRules>  argRules,
                             const TypeSpec&             retType,
                             RbPtr<std::list<RbPtr<SyntaxElement> > >  stmts,
                             RbPtr<Environment>                defineEnv)
@@ -110,7 +110,7 @@ RbPtr<RbLanguageObject> UserFunction::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& UserFunction::getArgumentRules() const {
+const RbPtr<ArgumentRules> UserFunction::getArgumentRules() const {
 
     return argumentRules;
 }
@@ -142,7 +142,7 @@ std::string UserFunction::richInfo() const {
 
     std::ostringstream o;
     o << "User-defined function:" << std::endl;
-    o << "formals     = " << argumentRules.size() << " formal arguments" << std::endl;
+    o << "formals     = " << argumentRules->size() << " formal arguments" << std::endl;
     o << "return type = " << returnType << std::endl;
     o << "code        = " << code->size() << " lines of code" << std::endl;
     o << "definition environment:" << std::endl;

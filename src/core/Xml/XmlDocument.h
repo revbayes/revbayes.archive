@@ -22,6 +22,7 @@
 #ifndef XmlDocument_H
 #define XmlDocument_H
 
+#include "RbPtr.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -34,20 +35,20 @@ class XmlDocument {
 public:
     XmlDocument();
     
-    void                                    addXmlElement(const XmlElement* element);                               //!< add a root xml element
-    const XmlElement*                       getFirstXmlElement() const;                                             //!< get the first element of the document
-    int                                     getNumberOfElements() const { return (int)elements.size(); }
-    const XmlElement*                       getXmlElement(uintptr_t identifier) const;                              //!< get the element with identifier
-    bool                                    hasXmlElementWithId(uintptr_t identifier) const;                        //!< is there already a
-    std::string                             print();                                                                
+    void                                                addXmlElement(const RbPtr<XmlElement> element);                               //!< add a root xml element
+    const RbPtr<XmlElement>                             getFirstXmlElement() const;                                             //!< get the first element of the document
+    int                                                 getNumberOfElements() const { return (int)elements.size(); }
+    const RbPtr<XmlElement>                             getXmlElement(uintptr_t identifier) const;                              //!< get the element with identifier
+    bool                                                hasXmlElementWithId(uintptr_t identifier) const;                        //!< is there already a
+    std::string                                         print();                                                                
     
 protected:
     
 private:
-    std::vector<const XmlElement*>          referencedElements;
-    std::vector<const XmlElement*>          elements;                                                               //!< the elements contained in this document
+    std::vector<const RbPtr<XmlElement> >               referencedElements;
+    std::vector<const RbPtr<XmlElement> >               elements;                                                               //!< the elements contained in this document
     
-    std::map<uintptr_t,const XmlElement*>   entries;                                                                //!< the map of all elements to their ids
+    std::map<uintptr_t,const RbPtr<XmlElement> >  entries;                                                                //!< the map of all elements to their ids
     
     
 };

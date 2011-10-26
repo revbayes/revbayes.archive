@@ -32,8 +32,7 @@
 const TypeSpec OptionRule::typeSpec(OptionRule_name);
 
 /** Construct rule without default value; use "" for no label. */
-OptionRule::OptionRule( const std::string& argName, VectorString optVals )
-    : ValueRule( argName, TypeSpec( RbString_name ) ), options( optVals ) {
+OptionRule::OptionRule( const std::string& argName, VectorString optVals ) : ValueRule( argName, TypeSpec( RbString_name ) ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -41,8 +40,7 @@ OptionRule::OptionRule( const std::string& argName, VectorString optVals )
 
 
 /** Construct rule with default value; use "" for no label. */
-OptionRule::OptionRule(const std::string& argName, RbString* defVal, VectorString optVals )
-    : ValueRule( argName, defVal ), options( optVals ) {
+OptionRule::OptionRule(const std::string& argName, RbPtr<RbString> defVal, VectorString optVals ) : ValueRule( argName, RbPtr<RbLanguageObject>( defVal.get() ) ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -76,7 +74,7 @@ const TypeSpec& OptionRule::getTypeSpec(void) const {
 
 
 /** Test if argument is valid */
-bool OptionRule::isArgValid( DAGNode* var, bool& needsConversion ) const {
+bool OptionRule::isArgValid( RbPtr<DAGNode> var, bool& needsConversion ) const {
 
     // Initialize
     needsConversion = false;
@@ -91,11 +89,11 @@ bool OptionRule::isArgValid( DAGNode* var, bool& needsConversion ) const {
 
     // Make sure we have a valid option
     bool        valid = false;
-    RbString*   value;
+    RbPtr<RbString> value( NULL );
     if ( needsConversion )
-        value = static_cast<RbString*>( var->getValue()->convertTo( RbString_name ) );
+        value = RbPtr<RbString>( static_cast<RbString*>( var->getValue()->convertTo( RbString_name ) ) );
     else
-        value = static_cast<RbString*>( var->getValue()->clone() );
+        value = RbPtr<RbString>( static_cast<RbString*>( var->getValue()->clone() ) );
 
     std::string valString = value->getValue();
     for ( size_t i = 0; i < options.size(); i++ ) {
@@ -105,7 +103,6 @@ bool OptionRule::isArgValid( DAGNode* var, bool& needsConversion ) const {
         }
     }
     
-    delete value;
     return valid;
 }
 

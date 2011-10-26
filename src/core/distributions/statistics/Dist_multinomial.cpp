@@ -47,7 +47,7 @@ Dist_multinomial::Dist_multinomial( void ) : DistributionContinuous( getMemberRu
 
 
 /** Cdf function */
-double Dist_multinomial::cdf( const RbLanguageObject* value ) {
+double Dist_multinomial::cdf( const RbPtr<RbLanguageObject> value ) {
 
     throw RbException( "Cdf function of multinomial not implemented yet" );
 }
@@ -69,14 +69,14 @@ const VectorString& Dist_multinomial::getClass( void ) const {
 
 
 /** Get member variable rules */
-const MemberRules& Dist_multinomial::getMemberRules( void ) const {
+const RbPtr<MemberRules> Dist_multinomial::getMemberRules( void ) const {
 
-    static MemberRules memberRules;
+    static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
 
     if ( !rulesSet )
 		{
-        memberRules.push_back( new ValueRule( "p", Simplex_name ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "p", Simplex_name ) ) );
 
         rulesSet = true;
 		}
@@ -107,11 +107,11 @@ const TypeSpec& Dist_multinomial::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_multinomial::lnPdf( const RbLanguageObject* value ) {
+double Dist_multinomial::lnPdf( const RbPtr<RbLanguageObject> value ) {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double>       p = static_cast<const Simplex*      >( getMemberValue( "p" ) )->getValue();
-    std::vector<unsigned int> x = static_cast<const VectorNatural*>( value                 )->getValue();
+    std::vector<double>       p = static_cast<const Simplex*      >( getMemberValue( "p" ).get() )->getValue();
+    std::vector<unsigned int> x = static_cast<const VectorNatural*>( value.get()                 )->getValue();
 
 	// Check that the vectors are both the same size
 	if ( p.size() != x.size() )
@@ -130,11 +130,11 @@ double Dist_multinomial::lnPdf( const RbLanguageObject* value ) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_multinomial::pdf( const RbLanguageObject* value ) {
+double Dist_multinomial::pdf( const RbPtr<RbLanguageObject> value ) {
 
 	// Get the value and the parameters of the Dirichlet
-    std::vector<double>       p = static_cast<const Simplex*      >( getMemberValue( "p" ) )->getValue();
-    std::vector<unsigned int> x = static_cast<const VectorNatural*> (value                 )->getValue();
+    std::vector<double>       p = static_cast<const Simplex*      >( getMemberValue( "p" ).get() )->getValue();
+    std::vector<unsigned int> x = static_cast<const VectorNatural*> (value.get()                 )->getValue();
 
 	// check that the vectors are both the same size
 	if ( p.size() != x.size() )
@@ -145,7 +145,7 @@ double Dist_multinomial::pdf( const RbLanguageObject* value ) {
 
 
 /** Quantile function */
-VectorNatural* Dist_multinomial::quantile(const double p) {
+RbPtr<Real> Dist_multinomial::quantile(const double p) {
 
     throw RbException( "Quantile function of multinomial not implemented yet" );
 }
@@ -159,13 +159,13 @@ VectorNatural* Dist_multinomial::quantile(const double p) {
  *
  * @return      Random draw from multinomial distribution
  */
-VectorNatural* Dist_multinomial::rv( void ) {
+RbPtr<RbLanguageObject> Dist_multinomial::rv( void ) {
 
-    std::vector<double> p      = static_cast<const Simplex*>( getMemberValue( "p" ) )->getValue();
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    std::vector<double> p      = static_cast<const Simplex*>( getMemberValue( "p" ).get() )->getValue();
+    RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
 	std::vector<int>       r( p.size() );
 
 	r = RbStatistics::Multinomial::rv( p, rng );
-    return new VectorNatural( r );
+    return RbPtr<RbLanguageObject>( new VectorNatural( r ) );
 }
 

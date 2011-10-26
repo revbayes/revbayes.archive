@@ -36,8 +36,8 @@ class Func_transpose :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbLanguageObject*           execute(void);                                              //!< Execute function
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
+    	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
+        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
@@ -66,30 +66,30 @@ Func_transpose<matrixType>* Func_transpose<matrixType>::clone( void ) const {
 
 /** Execute function by simply rearranging elements in new matrix of same type */
 template <typename matrixType>
-RbLanguageObject* Func_transpose<matrixType>::execute( void ) {
+RbPtr<RbLanguageObject> Func_transpose<matrixType>::execute( void ) {
 
-    const matrixType* mat = static_cast<const matrixType*>( args[0].getValue() );
+    const RbPtr<matrixType> mat = static_cast<matrixType*>( args[0]->getValue().get() );
 
-    matrixType* matT = new matrixType( mat->getNumberOfColumns(), mat->getNumberOfRows() );
+    RbPtr<matrixType> matT( new matrixType( mat->getNumberOfColumns(), mat->getNumberOfRows() ) );
     
     for ( size_t i = 0; i < mat->getNumberOfRows(); i++ )
         for ( size_t j = 0; j < mat->getNumberOfColumns(); j++ )
-            (*matT)[j][i] = (*mat)[i][j];
+            (*(*matT)[j])[i] = (*(*mat)[i])[j];
 
-    return matT;
+    return RbPtr<RbLanguageObject>( matT );
 }
 
 
 /** Get argument rules */
 template <typename matrixType>
-const ArgumentRules& Func_transpose<matrixType>::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_transpose<matrixType>::getArgumentRules( void ) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if (!rulesSet) {
 
-        argumentRules.push_back( new ValueRule( "", matrixType().getType() ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", matrixType().getType() ) ) );
 
         rulesSet = true;
     }

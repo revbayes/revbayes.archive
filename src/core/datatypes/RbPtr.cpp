@@ -2,13 +2,12 @@
 //  RbPtr.cpp
 //  RevBayes
 //
-//  Created by Sebastian Hoehna on 10/24/11.
+//  Created by Sebastian Hoehna on 10/26/11.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
 #include "RbPtr.h"
 
-#include "RbException.h"
 #include "RbMemoryManager.h"
 
 template <typename T>

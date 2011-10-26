@@ -39,8 +39,8 @@ public:
 	
 	// Regular functions
 	bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
-	RbLanguageObject*           execute(void);                                      //!< Execute operation
-	const ArgumentRules&        getArgumentRules(void) const;                       //!< Get argument rules
+	RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute operation
+	const RbPtr<ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 	
 private:
@@ -73,10 +73,10 @@ Func_size<valType>* Func_size<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType> 
-RbLanguageObject* Func_size<valType>::execute( void ) {
+RbPtr<RbLanguageObject> Func_size<valType>::execute( void ) {
     
-    const valType* val =  static_cast<const valType*> ( args[0].getValue() ) ;
-    Natural *size = new Natural( val->size() ); 
+    const RbPtr<valType> val( static_cast<valType*> ( args[0]->getValue().get() ) ) ;
+    RbPtr<RbLanguageObject> size( new Natural( val->size() ) ); 
     return size;
     
 }
@@ -84,14 +84,14 @@ RbLanguageObject* Func_size<valType>::execute( void ) {
 
 /** Get argument rules */
 template <typename valType>
-const ArgumentRules& Func_size<valType>::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_size<valType>::getArgumentRules( void ) const {
     
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", valType() .getTypeSpec() ) ) );
         rulesSet = true;
     }
     

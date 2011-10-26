@@ -124,10 +124,10 @@ const VectorString& SyntaxFunctionDef::getClass(void) const {
 RbPtr<Variable> SyntaxFunctionDef::getContentAsVariable(RbPtr<Environment> env) const {
 
     // Get argument rules from the formals
-    static ArgumentRules argRules;
+    RbPtr<ArgumentRules> argRules( new ArgumentRules() );
 
     for (std::list<RbPtr<SyntaxFormal> >::const_iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
-        argRules.push_back( (*i)->getArgumentRule(env) );
+        argRules->push_back( (*i)->getArgumentRule(env) );
 
     // Create copy of the statements
     RbPtr<std::list<RbPtr<SyntaxElement> > > stmts( new std::list<RbPtr<SyntaxElement> >() );

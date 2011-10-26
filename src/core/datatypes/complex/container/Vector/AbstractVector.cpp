@@ -31,7 +31,7 @@ AbstractVector::AbstractVector(const TypeSpec& elemType) : Container(elemType) {
 
 
 /** Set type of elements */
-AbstractVector::AbstractVector(const TypeSpec& elemType, const MemberRules& memberRules) : Container(elemType,memberRules) {
+AbstractVector::AbstractVector(const TypeSpec& elemType, const RbPtr<MemberRules> memberRules) : Container(elemType,memberRules) {
     
 }
 

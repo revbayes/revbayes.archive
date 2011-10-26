@@ -24,16 +24,16 @@
 #include <algorithm>
 
 /** Set type of elements */
-Vector::Vector(void) : AbstractVector(TypeSpec(RbLanguageObject_name)), typeSpec(Vector_name, new TypeSpec(RbLanguageObject_name)) {
+Vector::Vector(void) : AbstractVector(TypeSpec(RbLanguageObject_name)), typeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec( RbLanguageObject_name ) ) ) {
 }
 
 /** Set type of elements */
-Vector::Vector(const TypeSpec& elemType) : AbstractVector(elemType), typeSpec(Vector_name, new TypeSpec(elemType)) {
+Vector::Vector(const TypeSpec& elemType) : AbstractVector(elemType), typeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(elemType) ) ) {
 }
 
 
 /** Copy Constructor */
-Vector::Vector(const Vector &v) : AbstractVector(v), typeSpec(Vector_name, new TypeSpec(elementType)) {
+Vector::Vector(const Vector &v) : AbstractVector(v), typeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(elementType) ) ) {
     
     // copy all the elements by deep copy
     for (std::vector<RbPtr<RbLanguageObject> >::const_iterator it=v.elements.begin(); it!=v.elements.end(); it++) {
@@ -197,7 +197,7 @@ void Vector::resize( size_t n ) {
         throw RbException( "Invalid attempt to shrink vector" );
 
     for ( size_t i = elements.size(); i < n; i++ )
-        elements.push_back( NULL );
+        elements.push_back( RbPtr<RbLanguageObject>::getNullPtr() );
 }
 
 

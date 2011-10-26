@@ -33,29 +33,25 @@ RandomNumberFactory::RandomNumberFactory(void) {
     std::vector<unsigned int> s;
     s.push_back(I1);
     s.push_back(I2);
-    seedGenerator = new RandomNumberGenerator(s);
+    seedGenerator = RbPtr<RandomNumberGenerator>( new RandomNumberGenerator(s) );
 }
 
 
 /** Destructor */
 RandomNumberFactory::~RandomNumberFactory(void) {
 
-    delete seedGenerator;
-    for (std::set<RandomNumberGenerator*>::iterator p=allocatedRandomNumbers.begin(); p != allocatedRandomNumbers.end(); p++)
-        delete (*p);
 }
 
 
 /** Delete a random number object (remove it from the pool too) */
-void RandomNumberFactory::deleteRandomNumberGenerator(RandomNumberGenerator* r) {
+void RandomNumberFactory::deleteRandomNumberGenerator(RbPtr<RandomNumberGenerator> r) {
 
     allocatedRandomNumbers.erase( r );
-    delete r;
 }
 
 
 /** Return a pointer to a random number object */
-RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(void) {
+RbPtr<RandomNumberGenerator> RandomNumberFactory::getRandomNumberGenerator(void) {
 
     unsigned int s1 = (unsigned int)(seedGenerator->uniform01()*UINT_MAX);
     unsigned int s2 = (unsigned int)(seedGenerator->uniform01()*UINT_MAX);
@@ -63,18 +59,18 @@ RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(void) {
     std::vector<unsigned int> s;
     s.push_back(s1);
     s.push_back(s2);
-    RandomNumberGenerator *r = new RandomNumberGenerator( s );
+    RbPtr<RandomNumberGenerator> r( new RandomNumberGenerator( s ) );
     allocatedRandomNumbers.insert( r );
     return r;
 }
 
 
 /** Return a pointer to a random number object with a specific set of seeds */
-RandomNumberGenerator* RandomNumberFactory::getRandomNumberGenerator(std::vector<unsigned int> s) {
+RbPtr<RandomNumberGenerator> RandomNumberFactory::getRandomNumberGenerator(std::vector<unsigned int> s) {
 
     if (s.size() != 2)
         throw(RbException("Problem returning random number generator: Too few seeds."));
-    RandomNumberGenerator *r = new RandomNumberGenerator( s );
+    RbPtr<RandomNumberGenerator> r( new RandomNumberGenerator( s ) );
     allocatedRandomNumbers.insert( r );
     return r;
 }

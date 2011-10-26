@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     UserInterface::userInterface().output("             Released under the GPL license, version 3\n\n", false);
 
     RbSettings::userSettings().initializeUserSettings();
-    Help::getHelp().initializeHelp("~/help/");
+    Help::getHelp()->initializeHelp("~/help/");
     Workspace::globalWorkspace()->initializeGlobalWorkspace();
 
     /* Add stuff that Sebastian does not want to have in the core */

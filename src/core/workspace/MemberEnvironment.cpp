@@ -38,7 +38,7 @@ MemberEnvironment::MemberEnvironment() : Environment() {
 
 
 /** Constructor of user workspace */
-MemberEnvironment::MemberEnvironment(Environment* parentSpace) : Environment(parentSpace) {
+MemberEnvironment::MemberEnvironment(RbPtr<Environment> parentSpace) : Environment(parentSpace) {
     
 }
 

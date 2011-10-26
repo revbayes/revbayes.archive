@@ -45,7 +45,7 @@ RbPtr<RbLanguageObject> DistributionContinuous::executeOperation( const std::str
     }
     else if ( name == "quantile" ) {
 
-        RbPtr<RbLanguageObject> quant = quantile( static_cast<Real*>( args[1]->getValue().get() )->getValue() );
+        RbPtr<RbLanguageObject> quant( quantile( static_cast<Real*>( args[1]->getValue().get() )->getValue() ).get() );
 
         return quant;
     }
@@ -63,16 +63,16 @@ const VectorString& DistributionContinuous::getClass( void ) const {
 
 
 /** Get max value of distribution */
-const RbPtr<RbLanguageObject> DistributionContinuous::getMax( void ) const {
+const RbPtr<Real> DistributionContinuous::getMax( void ) const {
 
-    return RbPtr<RbLanguageObject>( new Real(RbConstants::Double::max) );
+    return RbPtr<Real>( new Real(RbConstants::Double::max) );
 }
 
 
 /** Get min value of distribution */
-const RbPtr<RbLanguageObject> DistributionContinuous::getMin( void ) const {
+const RbPtr<Real> DistributionContinuous::getMin( void ) const {
 
-    return RbPtr<RbLanguageObject>( new Real(-RbConstants::Double::max) );
+    return RbPtr<Real>( new Real(-RbConstants::Double::max) );
 }
 
 
