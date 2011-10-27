@@ -71,14 +71,14 @@ RbPtr<RbLanguageObject> Func_ls::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_ls::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_ls::getArgumentRules( void ) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ValueRule( "all", new RbBoolean( false ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "all", RbPtr<RbLanguageObject>( new RbBoolean( false ) ) ) ) );
         rulesSet = true;
     }
 

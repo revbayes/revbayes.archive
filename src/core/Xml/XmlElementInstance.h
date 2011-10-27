@@ -44,7 +44,7 @@ protected:
     
 private:
     
-    std::vector<const RbPtr<XmlElement> >      subElements;
+    std::vector<RbPtr<XmlElement> >      subElements;
     
     
     

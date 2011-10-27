@@ -71,7 +71,7 @@ public:
 
     // Matrix functions
     std::vector<std::vector<double> >   getValue(void) const;                                                       //!< Get value as STL vector<vector> of doubles
-    void                                push_back(const VectorReal& x);                                             //!< Push back a row vector
+//    void                                push_back(const VectorReal& x);                                             //!< Push back a row vector
     void                                setValue(const std::vector<std::vector<double> >& x);                       //!< Set value using STL vector<vector> of doubles
 
 private:

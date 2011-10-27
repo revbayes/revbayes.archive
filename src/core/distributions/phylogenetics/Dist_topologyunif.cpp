@@ -285,7 +285,7 @@ double Dist_topologyunif::pdf( const RbPtr<RbLanguageObject> value ) {
 RbPtr<RbLanguageObject> Dist_topologyunif::rv( void ) {
 
     // Get the rng
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
     
     // Get the parameters
     int                 numTaxa  = static_cast<const Natural*>( getMemberValue( "numberTaxa"  ).get() )->getValue();

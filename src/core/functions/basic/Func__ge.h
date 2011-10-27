@@ -89,14 +89,14 @@ RbPtr<RbLanguageObject> Func__ge<firstValType,secondValType>::execute( void ) {
 
 /** Get argument rules */
 template <typename firstValType, typename secondValType>
-const ArgumentRules& Func__ge<firstValType, secondValType>::getArgumentRules(void) const {
+const RbPtr<ArgumentRules> Func__ge<firstValType, secondValType>::getArgumentRules(void) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
-        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", firstValType() .getTypeSpec() ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", secondValType().getTypeSpec() ) ) );
         rulesSet = true;
     }
 

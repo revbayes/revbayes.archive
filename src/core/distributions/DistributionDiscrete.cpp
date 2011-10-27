@@ -64,8 +64,8 @@ const VectorString& DistributionDiscrete::getClass( void ) const {
 const RbPtr<MethodTable> DistributionDiscrete::getMethods( void ) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
-    static ArgumentRules probMassVectorArgRules;
-    static ArgumentRules numStatesArgRules;
+    static RbPtr<ArgumentRules> probMassVectorArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> numStatesArgRules( new ArgumentRules() );
     static bool          methodsSet = false;
 
     if ( !methodsSet ) {

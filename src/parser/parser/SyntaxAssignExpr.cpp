@@ -52,6 +52,17 @@ SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxF
 : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr), opType(op) {
 }
 
+/** Construct from operator type, variable and expression */
+SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxVariable> var, RbPtr<SyntaxFunctionCall> expr) 
+: SyntaxElement(), variable(var), functionCall(NULL), expression(RbPtr<SyntaxElement>( expr.get()) ), opType(op) {
+}
+
+
+/** Construct from operator type, function call and expression */
+SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<SyntaxFunctionCall> expr) 
+: SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(RbPtr<SyntaxElement>( expr.get()) ), opType(op) {
+}
+
 
 /** Deep copy constructor */
 SyntaxAssignExpr::SyntaxAssignExpr(const SyntaxAssignExpr& x)

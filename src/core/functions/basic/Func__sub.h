@@ -75,8 +75,8 @@ Func__sub<firstValType, secondValType, retType>* Func__sub<firstValType, secondV
 template <typename firstValType, typename secondValType, typename retType>
 RbPtr<RbLanguageObject> Func__sub<firstValType,secondValType,retType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<const firstValType*> ( args[0]->getValue().get() ) );
-    const RbPtr<secondValType> val2( static_cast<const secondValType*>( args[1]->getValue().get() ) );
+    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( args[0]->getValue().get() ) );
+    const RbPtr<secondValType> val2( static_cast<secondValType*>( args[1]->getValue().get() ) );
     retType              diff = *val1 - *val2;
     
     return RbPtr<RbLanguageObject>( diff.clone() );

@@ -65,7 +65,7 @@ Dist_neutralcoalescent::Dist_neutralcoalescent( void ) : Distribution( getMember
     is in generations.
 */
 double Dist_neutralcoalescent::drawWaitingTime(unsigned long numNodes, unsigned long haploidPopSize) {
-    double rate = RbMath::kchoose2(numNodes);
+    double rate = RbMath::kchoose2( int(numNodes) );
     double tmrca = RbStatistics::Exponential::rv(rate, GLOBAL_RNG) * haploidPopSize;
     return tmrca;
 }

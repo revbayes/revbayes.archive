@@ -35,6 +35,7 @@
 
 class RbString;
 class SyntaxElement;
+class SyntaxFunctionCall;
 
 class Parser {
 
@@ -43,7 +44,7 @@ class Parser {
         int                 execute(RbPtr<SyntaxElement> root) const;   //!< Execute the syntax tree
         void                getline(char* buf, size_t maxsize);         //!< Give flex one line to process
         int                 help(RbPtr<RbString> symbol) const;         //!< Get help for a symbol
-        int                 help(RbPtr<SyntaxElement> root) const;      //!< Get help for a function call
+        int                 help(RbPtr<SyntaxFunctionCall> root) const;      //!< Get help for a function call
         int                 processCommand(std::string& command);       //!< Process command with help from Bison
         void                reset(void);                                //!< Reset the parser
 

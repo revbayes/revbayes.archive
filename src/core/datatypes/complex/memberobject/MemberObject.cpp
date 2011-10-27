@@ -33,10 +33,12 @@
 /** Constructor: we set member variables here from member rules */
 MemberObject::MemberObject(const RbPtr<MemberRules> memberRules) : RbLanguageObject() {
 
+    members = RbPtr<MemberEnvironment>( new MemberEnvironment() );
+    
     /* Fill member table (frame) based on member rules */
     for ( MemberRules::const_iterator i = memberRules->begin(); i != memberRules->end(); i++ ) {
         // creare variable slots with name and type
-        members.addVariable( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() );
+        members->addVariable( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() );
     }
 }
 
@@ -45,7 +47,7 @@ MemberObject::MemberObject(const RbPtr<MemberRules> memberRules) : RbLanguageObj
 MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
     
     // copy the members
-    members = MemberEnvironment(m.members);
+    members = RbPtr<MemberEnvironment>( m.members->clone() );
 }
 
 
@@ -62,23 +64,23 @@ RbPtr<RbLanguageObject> MemberObject::executeMethod(const std::string& name, con
 RbPtr<RbLanguageObject> MemberObject::executeOperation(const std::string& name, Environment& args) {
     
     if (name == "memberNames") {
-        for (size_t i=0; i<members.size(); i++) {
-            RBOUT(members.getName(i));
+        for (size_t i=0; i<members->size(); i++) {
+            RBOUT(members->getName(i));
         }
         
-        return NULL;
+        return RbPtr<RbLanguageObject>::getNullPtr();
     } 
     else if (name == "get") {
         // get the member with give name
         const RbPtr<RbString> varName( static_cast<RbString*>(args[0]->getValue().get()) );
         
         // check if a member with that name exists
-        if (members.existsVariable(*varName)) {
-            return members[*varName]->getDagNodePtr()->getValuePtr();
+        if (members->existsVariable(*varName)) {
+            return (*members)[*varName]->getDagNodePtr()->getValuePtr();
         }
         
         // there was no variable with the given name
-        return NULL;
+        return RbPtr<RbLanguageObject>::getNullPtr();
         
     }
     else {
@@ -104,7 +106,7 @@ const RbPtr<MemberRules> MemberObject::getMemberRules(void) const {
 
 /** Get type specification for a member variable */
 const TypeSpec MemberObject::getMemberTypeSpec(const std::string& name) const {
-    return members[name]->getTypeSpec();
+    return (*members)[name]->getTypeSpec();
 }
 
 
@@ -112,8 +114,8 @@ const TypeSpec MemberObject::getMemberTypeSpec(const std::string& name) const {
 const RbPtr<MethodTable> MemberObject::getMethods(void) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
-    static ArgumentRules getMemberNamesArgRules;
-    static ArgumentRules getArgRules;
+    static RbPtr<ArgumentRules> getMemberNamesArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> getArgRules( new ArgumentRules() );
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) {
@@ -122,7 +124,7 @@ const RbPtr<MethodTable> MemberObject::getMethods(void) const {
         methods->addFunction("memberNames", RbPtr<RbFunction>( new MemberFunction(RbVoid_name, getMemberNamesArgRules) ) );
         
         // add the 'memberNames()' method
-        getArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "name" , RbString_name ) ) );
+        getArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "name" , RbString_name ) ) );
         methods->addFunction("get", RbPtr<RbFunction>( new MemberFunction(RbLanguageObject_name, getArgRules) ) );
         
         methodsSet = true;
@@ -132,29 +134,40 @@ const RbPtr<MethodTable> MemberObject::getMethods(void) const {
 }
 
 
+const RbPtr<MemberEnvironment> MemberObject::getMembers(void) const {
+    return members;
+}
+
+
+RbPtr<MemberEnvironment> MemberObject::getMembersPtr(void) {
+    return members;
+}
+
+
+
 /** Get const value of a member variable */
 const RbPtr<RbLanguageObject> MemberObject::getMemberValue(const std::string& name) const {
 
-    return members.getValue(name);
+    return members->getValue(name);
 }
 
 
 /** Get a member variable */
 const RbPtr<DAGNode> MemberObject::getMemberDagNode(const std::string& name) const {
 
-    return members.getDagNode(name);
+    return members->getDagNode(name);
 }
 
 
 /** Get a member variable (non-const, for derived classes) */
 RbPtr<DAGNode> MemberObject::getMemberDagNodePtr(const std::string& name) {
 
-    return members.getDagNodePtr(name);
+    return members->getDagNodePtr(name);
 }
 
 /** Does this object have a member called "name" */
 bool MemberObject::hasMember(std::string const &name) const {
-    return members.existsVariable( name );
+    return members->existsVariable( name );
 }
 
 
@@ -170,13 +183,13 @@ void MemberObject::printValue(std::ostream& o) const {
     
     o << "Printing members of MemberObject ...." << std::endl;
 
-    for ( size_t i = 0; i < members.size(); i++ ) {
+    for ( size_t i = 0; i < members->size(); i++ ) {
 
-        o << "." << members.getName(i) << std::endl;
-        if ( members[members.getName(i)]->getValue() == NULL)
+        o << "." << members->getName(i) << std::endl;
+        if ( (*members)[members->getName(i)]->getValue() == NULL)
             o << "NULL";
         else
-            members[members.getName(i)]->getValue()->printValue(o);
+            (*members)[members->getName(i)]->getValue()->printValue(o);
         o << std::endl << std::endl;
     }
 }
@@ -196,14 +209,14 @@ std::string MemberObject::richInfo(void) const {
 /** Set a member DAG node */
 void MemberObject::setMemberDagNode(const std::string& name, RbPtr<DAGNode> var) {
     
-    members[name]->getVariable()->setDagNode(var);
+    (*members)[name]->getVariable()->setDagNode(var);
 }
 
 
 /** Set a member variable */
 void MemberObject::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
 
-    members[name]->setVariable(var);
+    (*members)[name]->setVariable(var);
 }
 
 

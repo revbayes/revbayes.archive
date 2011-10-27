@@ -88,7 +88,7 @@ bool Workspace::addDistribution(const std::string& name, RbPtr<Distribution> dis
     PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
     typeTable.insert(std::pair<std::string, RbPtr<RbObject> >(dist->getType(), RbPtr<RbObject>( dist->clone() )));
 
-    functionTable->addFunction(name, RbPtr<RbFunction>( new ConstructorFunction(dist) ));
+    functionTable->addFunction(name, new ConstructorFunction(RbPtr<MemberObject>( dist.get() ) ) );
     functionTable->addFunction("d" + name, new DistributionFunction(dist, DistributionFunction::DENSITY));
     functionTable->addFunction("r" + name, new DistributionFunction((Distribution*)(dist->clone()), DistributionFunction::RVALUE));
 
@@ -97,7 +97,7 @@ bool Workspace::addDistribution(const std::string& name, RbPtr<Distribution> dis
 
 
 /** Add real-valued distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, DistributionContinuous* dist) {
+bool Workspace::addDistribution(const std::string& name, RbPtr<DistributionContinuous> dist) {
 
     PRINTF("Adding real-valued distribution %s to workspace\n", name.c_str());
 
@@ -106,18 +106,18 @@ bool Workspace::addDistribution(const std::string& name, DistributionContinuous*
 
     typeTable.insert(std::pair<std::string, RbObject*>(name, dist->clone()));
 
-    functionTable->addFunction(name, new ConstructorFunction(dist));
-    functionTable->addFunction("d" + name, new DistributionFunction(dist, DistributionFunction::DENSITY));
-    functionTable->addFunction("r" + name, new DistributionFunction((Distribution*)(dist->clone()), DistributionFunction::RVALUE));
-    functionTable->addFunction("p" + name, new DistributionFunction((Distribution*)(dist->clone()), DistributionFunction::PROB));
-    functionTable->addFunction("q" + name, new DistributionFunction((Distribution*)(dist->clone()), DistributionFunction::QUANTILE));
+    functionTable->addFunction(name, new ConstructorFunction(RbPtr<MemberObject>( dist.get() )));
+    functionTable->addFunction("d" + name, new DistributionFunction(RbPtr<Distribution>( dist.get() ), DistributionFunction::DENSITY));
+    functionTable->addFunction("r" + name, new DistributionFunction(RbPtr<Distribution>(dist->clone()), DistributionFunction::RVALUE));
+    functionTable->addFunction("p" + name, new DistributionFunction(RbPtr<Distribution>(dist->clone()), DistributionFunction::PROB));
+    functionTable->addFunction("q" + name, new DistributionFunction(RbPtr<Distribution>(dist->clone()), DistributionFunction::QUANTILE));
 
     return true;
 }
 
 
 /** Add function to the workspace */
-bool Workspace::addFunction(const std::string& name, RbFunction* func) {
+bool Workspace::addFunction(const std::string& name, RbPtr<RbFunction> func) {
 
     PRINTF( "Adding function %s = %s to workspace\n", name.c_str(), func->briefInfo().c_str() );
     
@@ -131,7 +131,7 @@ bool Workspace::addFunction(const std::string& name, RbFunction* func) {
 
 
 /** Add type to the workspace */
-bool Workspace::addType(RbObject* exampleObj) {
+bool Workspace::addType(RbPtr<RbObject> exampleObj) {
 
     std::string name = exampleObj->getType();
 
@@ -140,34 +140,28 @@ bool Workspace::addType(RbObject* exampleObj) {
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, RbObject*>(name, exampleObj));
-    
-    // retain the object
-    exampleObj->retain();
+    typeTable.insert(std::pair<std::string, RbPtr<RbObject> >(name, exampleObj));
 
     return true;
 }
 
 
 /** Add abstract type to the workspace */
-bool Workspace::addType(const std::string& name, RbObject* exampleObj) {
+bool Workspace::addType(const std::string& name, RbPtr<RbObject> exampleObj) {
 
     PRINTF("Adding special abstract type %s to workspace\n", name.c_str());
 
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, RbObject*>( name, exampleObj));
-    
-    // retain the object
-    exampleObj->retain();
+    typeTable.insert(std::pair<std::string, RbPtr<RbObject> >( name, exampleObj));
 
     return true;
 }
 
 
 /** Add type with constructor to the workspace */
-bool Workspace::addTypeWithConstructor(const std::string& name, MemberObject* templ) {
+bool Workspace::addTypeWithConstructor(const std::string& name, RbPtr<MemberObject> templ) {
 
     PRINTF("Adding type %s with constructor to workspace\n", name.c_str());
 
@@ -196,7 +190,7 @@ const VectorString& Workspace::getClass() const {
 
 
 /** Execute function to get its value (workspaces only evaluate functions once) */
-RbLanguageObject* Workspace::executeFunction(const std::string& name, const std::vector<Argument*>& args) const {
+RbPtr<RbLanguageObject> Workspace::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) const {
 
     /* Using this calling convention indicates that we are only interested in
        evaluating the function once */
@@ -207,10 +201,10 @@ RbLanguageObject* Workspace::executeFunction(const std::string& name, const std:
 /** Is the type added to the workspace? */
 bool Workspace::existsType( const TypeSpec& name ) const {
 
-    std::map<std::string, RbObject*>::const_iterator it = typeTable.find( name );
+    std::map<std::string, RbPtr<RbObject> >::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) {
         if ( parentEnvironment != NULL )
-            return static_cast<Workspace*>( parentEnvironment )->existsType( name );
+            return static_cast<Workspace*>( parentEnvironment.get() )->existsType( name );
         else
             return false;
     }
@@ -235,7 +229,7 @@ bool Workspace::existsType( const TypeSpec& name ) const {
 
 
 /** Get function */
-RbFunction* Workspace::getFunction(const std::string& name, const std::vector<Argument*>& args) {
+RbPtr<RbFunction> Workspace::getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
     return functionTable->getFunction(name, args);
 }
@@ -265,7 +259,7 @@ void Workspace::printValue(std::ostream& o) const {
     o << std::endl;
 
     o << "Type table:" << std::endl;
-    std::map<std::string, RbObject*>::const_iterator i;
+    std::map<std::string, RbPtr<RbObject> >::const_iterator i;
     for (i=typeTable.begin(); i!=typeTable.end(); i++) {
         if ( (*i).second != NULL )
             o << (*i).first << " = " << (*i).second->getTypeSpec() << std::endl;

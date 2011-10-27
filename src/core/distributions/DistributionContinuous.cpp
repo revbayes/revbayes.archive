@@ -80,15 +80,15 @@ const RbPtr<Real> DistributionContinuous::getMin( void ) const {
 const RbPtr<MethodTable> DistributionContinuous::getMethods( void ) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
-    static ArgumentRules cdfArgRules;
-    static ArgumentRules quantileArgRules;
+    static RbPtr<ArgumentRules> cdfArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> quantileArgRules( new ArgumentRules() );
     static bool          methodsSet = false;
 
     if ( !methodsSet ) {
 
-        cdfArgRules.push_back     ( RbPtr<ArgumentRule>( new ValueRule    ( "q", RealPos_name      ) ) );
+        cdfArgRules->push_back     ( RbPtr<ArgumentRule>( new ValueRule    ( "q", RealPos_name      ) ) );
 
-        quantileArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule    ( "p", RealPos_name      ) ) );
+        quantileArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule    ( "p", RealPos_name      ) ) );
 
         methods->addFunction( "cdf",      RbPtr<RbFunction>( new MemberFunction( Real_name, cdfArgRules      ) ) );
         methods->addFunction( "quantile", RbPtr<RbFunction>( new MemberFunction( Real_name, quantileArgRules ) ) );

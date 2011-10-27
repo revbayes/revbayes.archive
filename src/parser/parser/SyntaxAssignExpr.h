@@ -40,6 +40,12 @@ class SyntaxAssignExpr : public SyntaxElement {
                                     SyntaxAssignExpr(operatorT                  op,
                                                      RbPtr<SyntaxFunctionCall>  fxnCall,
                                                      RbPtr<SyntaxElement>       expr);                  //!< Constructor with lhs = function call
+                                    SyntaxAssignExpr(operatorT                  op,
+                                                     RbPtr<SyntaxVariable>      var,
+                                                     RbPtr<SyntaxFunctionCall>  expr);                  //!< Constructor with lhs = variable
+                                    SyntaxAssignExpr(operatorT                  op,
+                                                     RbPtr<SyntaxFunctionCall>  fxnCall,
+                                                     RbPtr<SyntaxFunctionCall>  expr);                  //!< Constructor with lhs = function call
                                     SyntaxAssignExpr(const SyntaxAssignExpr& x);                        //!< Copy constructor
 	    virtual                    ~SyntaxAssignExpr();                                                 //!< Destructor
 

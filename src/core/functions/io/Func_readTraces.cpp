@@ -169,7 +169,7 @@ RbPtr<RbLanguageObject> Func_readTraces::execute( void ) {
     }
     
     
-    return NULL;
+    return RbPtr<RbLanguageObject>::getNullPtr();
     
 
 }

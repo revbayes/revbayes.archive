@@ -142,8 +142,8 @@ const RbPtr<MemberRules> Topology::getMemberRules(void) const {
 const RbPtr<MethodTable> Topology::getMethods(void) const {
     
     static RbPtr<MethodTable> methods(new MethodTable());
-    static ArgumentRules ntipsArgRules;
-    static ArgumentRules nnodesArgRules;
+    static RbPtr<ArgumentRules> ntipsArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> nnodesArgRules( new ArgumentRules() );
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) 

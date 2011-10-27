@@ -68,16 +68,16 @@ const VectorString& Distribution::getClass( void ) const {
 const RbPtr<MethodTable> Distribution::getMethods( void ) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
-    static ArgumentRules    lnPdfArgRules;
-    static ArgumentRules    pdfArgRules;
-    static ArgumentRules    rvArgRules;
+    static RbPtr<ArgumentRules>    lnPdfArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules>    pdfArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules>    rvArgRules( new ArgumentRules() );
     static bool             methodsSet = false;
 
     if ( !methodsSet ) {
 
-        lnPdfArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "x", RbObject_name ) ) );
+        lnPdfArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "x", RbObject_name ) ) );
 
-        pdfArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "x", RbObject_name ) ) );
+        pdfArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "x", RbObject_name ) ) );
 
         methods->addFunction( "lnPdf", RbPtr<RbFunction>( new MemberFunction( Real_name    , lnPdfArgRules ) ) );
         methods->addFunction( "pdf",   RbPtr<RbFunction>( new MemberFunction( Real_name    , pdfArgRules   ) ) );

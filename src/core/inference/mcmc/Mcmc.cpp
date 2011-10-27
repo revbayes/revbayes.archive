@@ -292,7 +292,7 @@ void Mcmc::run(size_t ngen) {
 
         /* Monitor */
         for (size_t i=0; i<monitors->size(); i++) {
-            static_cast<RbPtr<Monitor> >(monitors->getElement(i).get() )->monitor(gen);
+            static_cast<Monitor*>(monitors->getElement(i).get() )->monitor(gen);
         }
 
         /* Print to screen */

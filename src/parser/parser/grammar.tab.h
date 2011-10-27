@@ -124,21 +124,21 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 91 "./grammar.y"
+#line 92 "./grammar.y"
 {
-    char*                           string;
-    double                          realValue;
-    int                             intValue;
-    bool                            boolValue;
-    RbString*                       idString;
-    SyntaxElement*                  syntaxElement;
-    SyntaxVariable*                 syntaxVariable;
-    SyntaxFunctionCall*             syntaxFunctionCall;
-    SyntaxLabeledExpr*              syntaxLabeledExpr;
-    SyntaxFormal*                   syntaxFormal;
-    std::list<SyntaxElement *>*     syntaxElementList;
-    std::list<SyntaxLabeledExpr *>* argumentList;
-    std::list<SyntaxFormal *>*      formalList;
+    char*                                           string;
+    double                                          realValue;
+    int                                             intValue;
+    bool                                            boolValue;
+    RbPtr<RbString>*                                idString;
+    RbPtr<SyntaxElement>*                           syntaxElement;
+    RbPtr<SyntaxVariable>*                          syntaxVariable;
+    RbPtr<SyntaxFunctionCall>*                      syntaxFunctionCall;
+    RbPtr<SyntaxLabeledExpr>*                       syntaxLabeledExpr;
+    RbPtr<SyntaxFormal>*                            syntaxFormal;
+    RbPtr<std::list<RbPtr<SyntaxElement> > >*       syntaxElementList;
+    RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > >*   argumentList;
+    RbPtr<std::list<RbPtr<SyntaxFormal> > >*        formalList;
 }
 /* Line 1529 of yacc.c.  */
 #line 145 "./grammar.tab.h"

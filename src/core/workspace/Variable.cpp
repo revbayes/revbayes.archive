@@ -34,11 +34,10 @@
 const TypeSpec Variable::typeSpec(Variable_name);
 
 /** Constructor of filled variable. */
-Variable::Variable(const std::string &n, DAGNode* dn) : RbInternal() {
+Variable::Variable(const std::string &n, RbPtr<DAGNode> dn) : RbInternal() {
     name = n;
     
     // initialize the variable
-    node = NULL;
     setDagNode( dn );
     
     // notify the variable that this is the new variable
@@ -46,7 +45,7 @@ Variable::Variable(const std::string &n, DAGNode* dn) : RbInternal() {
 }
 
 /** Constructor of filled variable. */
-Variable::Variable(DAGNode* n) {
+Variable::Variable(RbPtr<DAGNode> n) {
     // we do not have a name for the variable so we ask the dag node
     name = n->getName();
     
@@ -70,8 +69,7 @@ Variable::Variable(const std::string &n) : node(NULL) {
 Variable::Variable(const Variable& x) : node(NULL)  {
     
     if ( x.node != NULL ) {
-        node = x.node->clone();
-        node->retain();
+        node = RbPtr<DAGNode>( x.node->clone() );
     }
     
     // copy the name too
@@ -82,12 +80,6 @@ Variable::Variable(const Variable& x) : node(NULL)  {
 /** Call a help function to remove the variable intelligently */
 Variable::~Variable(void) {
     
-    if (node != NULL) {
-        node->release();
-        if (node->isUnreferenced()) {
-            delete node;
-        }
-    }
 }
 
 
@@ -97,10 +89,8 @@ Variable& Variable::operator=(const Variable& x) {
     if ( &x != this ) {
         
         // Copy the new variable
-        if ( x.node != NULL ) {
-            node = x.node->clone();
-            node->retain();
-        }
+        node = x.node;
+        name = x.name;
     }
     
     return (*this);
@@ -129,7 +119,7 @@ const std::string& Variable::getName( void ) const {
 
 
 /** Get a reference to the variable variable */
-DAGNode* Variable::getDagNodePtr( void ) const {
+RbPtr<DAGNode> Variable::getDagNodePtr( void ) const {
     
     return node;
 }
@@ -142,9 +132,9 @@ const TypeSpec& Variable::getTypeSpec(void) const {
 
 
 /** Get the value of the variable */
-const RbLanguageObject* Variable::getValue( void ) const {
+const RbPtr<RbLanguageObject> Variable::getValue( void ) const {
     
-    const RbLanguageObject *retVal = node->getValue();
+    const RbPtr<RbLanguageObject> retVal = node.get()->getValue();
     
     return retVal;
 }
@@ -155,12 +145,12 @@ void Variable::printValue(std::ostream& o) const {
     if (node == NULL)
         o << "NULL";
     else
-        node->printValue( o );
+        node.get()->printValue( o );
 }
 
 
 /** Set variable */
-void Variable::setDagNode( DAGNode* newVariable ) {
+void Variable::setDagNode( RbPtr<DAGNode> newVariable ) {
     
     // change the old variable with the new variable in the parent and children
     replaceDagNode( newVariable );
@@ -171,7 +161,7 @@ void Variable::setDagNode( DAGNode* newVariable ) {
 
 
 /** Replace DAG node, only keep the children */
-void Variable::replaceDagNode(DAGNode *newVariable) {
+void Variable::replaceDagNode(RbPtr<DAGNode> newVariable) {
     
     if (node != NULL) {
         // replace the old variable with the new variable for the parents of the old variable
@@ -182,15 +172,10 @@ void Variable::replaceDagNode(DAGNode *newVariable) {
         for ( std::set<VariableNode*>::iterator it=children.begin(); it!=children.end(); it++ ) {
             (*it)->swapParentNode( node, newVariable );        // this will replace the parent
         }
-        
-        node->release();
-        if (node->isUnreferenced()) {
-            delete node;
-        }
+
     }
     
     node = newVariable;
-    node->retain();
     
 }
 

@@ -143,15 +143,12 @@ const RbPtr<MemberRules> Mixture::getMemberRules(void) const {
     
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
-    /*
     if (!rulesSet) 
     {
-        TypeSpec varType(Topology_name);
-        memberRules.push_back( new ValueRule( "topology" , varType ) );
         
         rulesSet = true;
     }
-    */
+    
     return memberRules;
 }
 
@@ -187,7 +184,7 @@ const TypeSpec& Mixture::getTypeSpec(void) const {
 
 /* Map calls to member methods */
 RbPtr<RbLanguageObject> Mixture::executeOperation(const std::string& name, Environment& args) {
-    return NULL;
+    return RbPtr<RbLanguageObject>::getNullPtr();
     /*
     // special handling for adding a variable
     if (name == "addVariable") {

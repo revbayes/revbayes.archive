@@ -98,7 +98,7 @@ void Vector::clear( void ) {
     elements.clear();
     
     // clear also the members if some might have been set
-    members.clear();
+    members->clear();
 }
 
 

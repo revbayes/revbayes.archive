@@ -60,7 +60,7 @@ const RbPtr<XmlElement> RbObject::encode(RbPtr<XmlDocument> doc, const std::stri
     
     //! @Sebatian TODO basic implementation which should return an empty xml object with only the name
     
-    return NULL;
+    return RbPtr<XmlElement>::getNullPtr();
 }
 
 

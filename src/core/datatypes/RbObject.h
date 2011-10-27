@@ -19,6 +19,8 @@
 
 #include "RbPtr.h"
 #include "TypeSpec.h"
+#include "XmlDocument.h"
+#include "XmlElement.h"
 
 #include <ostream>
 #include <string>
@@ -27,8 +29,6 @@
 class DAGNode;
 class VectorInteger;
 class VectorString;
-class XmlDocument;
-class XmlElement;
 
 const std::string RbObject_name = "Object";
 

@@ -42,7 +42,7 @@ std::string XmlDocument::print() {
     // create a stream for the output
     std::stringstream out;
     // write every element into the stream
-    for (std::vector<const RbPtr<XmlElement> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
+    for (std::vector<RbPtr<XmlElement> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
         (*it)->writeToStream(out);
         out << std::endl;
     }

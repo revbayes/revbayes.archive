@@ -198,20 +198,20 @@ RbPtr<RbLanguageObject> Func_readAlignment::execute( void ) {
         for (std::vector<RbPtr<Alignment> >::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-            retList->setElement( index, new Variable(RbPtr<DAGNode>( new ConstantNode(*it) ) ) );
+            retList->setElement( index, RbPtr<RbObject>( new Variable(RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( (*it).get() ) ) ) ) ) );
             index++;
             }
-        return retList;
+        return RbPtr<RbLanguageObject>( retList.get() );
             throw RbException("Wanted to create a List of Alignment but List does not exist anymore. See Func_readAlignment");
         }
     else if ( m.size() == 1 ) 
         {
-        return m[0];
+        return RbPtr<RbLanguageObject>( m[0].get() );
         }
     else
         {
         // Return null object
-        return NULL;
+            return RbPtr<RbLanguageObject>::getNullPtr();
         }
 }
 
@@ -239,14 +239,14 @@ void Func_readAlignment::formatError(RbFileManager& fm, std::string& errorStr) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readAlignment::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_readAlignment::getArgumentRules( void ) const {
     
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
     
     if (!rulesSet) 
         {
-        argumentRules.push_back( new ValueRule( "file", RbString_name ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "file", RbString_name ) ) );
         rulesSet = true;
         }
             

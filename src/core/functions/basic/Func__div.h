@@ -74,11 +74,11 @@ Func__div<firstValType, secondValType, retType>* Func__div<firstValType, secondV
 template <typename firstValType, typename secondValType, typename retType>
 RbPtr<RbLanguageObject> Func__div<firstValType,secondValType,retType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<const firstValType*> ( args[0]->getValue().get() ) );
-    const RbPtr<secondValType> val2( static_cast<const secondValType*>( args[1]->getValue().get() ) );
+    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( args[0]->getValue().get() ) );
+    const RbPtr<secondValType> val2( static_cast<secondValType*>( args[1]->getValue().get() ) );
     retType              quot = *val1 / *val2;
     
-    return RbPtr<RbLanguageObject>(quot);
+    return RbPtr<RbLanguageObject>(quot.clone());
 }
 
 
@@ -89,7 +89,7 @@ RbPtr<RbLanguageObject> Func__div<Integer,Integer,Real>::execute( void ) {
     double val1 = static_cast<const Integer*>( args[0]->getValue().get() )->getValue();
     double val2 = static_cast<const Integer*>( args[1]->getValue().get() )->getValue();
     
-    return RbPtr<RbLanguageObject>( new Real( val1 / val2 ) ) );
+    return RbPtr<RbLanguageObject>( new Real( val1 / val2 ) );
 }
 
 
@@ -102,8 +102,8 @@ const RbPtr<ArgumentRules> Func__div<firstValType, secondValType, retType>::getA
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "", firstValType() .getTypeSpec() ) ) );
-        argumentRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "", secondValType().getTypeSpec() ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", firstValType() .getTypeSpec() ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", secondValType().getTypeSpec() ) ) );
         rulesSet = true;
         }
 

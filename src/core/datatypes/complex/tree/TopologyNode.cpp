@@ -164,7 +164,7 @@ RbPtr<RbLanguageObject> TopologyNode::executeOperation(const std::string& name, 
     else
         throw RbException("No member method called '" + name + "'");
     
-    return NULL;
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 
@@ -192,10 +192,10 @@ const VectorString& TopologyNode::getClass() const {
 const RbPtr<MethodTable> TopologyNode::getMethods(void) const {
     
     static RbPtr<MethodTable> methods( new MethodTable() );
-    static ArgumentRules ancestorRules;
-    static ArgumentRules isTipArgRules;
-    static ArgumentRules isRootArgRules;
-    static ArgumentRules isInteriorArgRules;
+    static RbPtr<ArgumentRules> ancestorRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> isTipArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> isRootArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> isInteriorArgRules( new ArgumentRules() );
     static bool          methodsSet = false;
 
     if ( methodsSet == false ) {

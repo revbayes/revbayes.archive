@@ -62,7 +62,7 @@ class Func__add :  public RbFunction {
 
 // Definition of the static type spec member
 template <typename firstValType, typename secondValType, typename retType>
-const TypeSpec Func__add<firstValType, secondValType, retType>::typeSpec(Func__add_name, new TypeSpec(firstValType().getType() + "," + secondValType().getType() + "," + retType().getType()));
+const TypeSpec Func__add<firstValType, secondValType, retType>::typeSpec(Func__add_name, RbPtr<TypeSpec>( new TypeSpec(firstValType().getType() + "," + secondValType().getType() + "," + retType().getType() ) ) );
 
 /** Clone object */
 template <typename firstValType, typename secondValType, typename retType>
@@ -76,8 +76,8 @@ Func__add<firstValType, secondValType, retType>* Func__add<firstValType, secondV
 template <typename firstValType, typename secondValType, typename retType>
 RbPtr<RbLanguageObject> Func__add<firstValType,secondValType,retType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<const firstValType*> ( args[0]->getValue().get() ) );
-    const RbPtr<secondValType> val2( static_cast<const secondValType*>( args[1]->getValue().get() ) );
+    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( args[0]->getValue().get() ) );
+    const RbPtr<secondValType> val2( static_cast<secondValType*>( args[1]->getValue().get() ) );
     retType              sum  = *val1 + *val2;
 
     return sum.clone();

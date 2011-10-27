@@ -23,12 +23,12 @@
 #define XmlDocument_H
 
 #include "RbPtr.h"
+#include "XmlElement.h"
 #include <map>
 #include <string>
 #include <vector>
 #include <stdint.h>
 
-class XmlElement;
 
 class XmlDocument {
     
@@ -45,10 +45,10 @@ public:
 protected:
     
 private:
-    std::vector<const RbPtr<XmlElement> >               referencedElements;
-    std::vector<const RbPtr<XmlElement> >               elements;                                                               //!< the elements contained in this document
+    std::vector<RbPtr<XmlElement> >                     referencedElements;
+    std::vector<RbPtr<XmlElement> >                     elements;                                                               //!< the elements contained in this document
     
-    std::map<uintptr_t,const RbPtr<XmlElement> >  entries;                                                                //!< the map of all elements to their ids
+    std::map<uintptr_t, RbPtr<XmlElement> >        entries;                                                                //!< the map of all elements to their ids
     
     
 };

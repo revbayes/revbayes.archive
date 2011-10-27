@@ -53,7 +53,7 @@ RbPtr<HelpNode> HelpNode::getChildWithTag(const std::string& ts) {
         if ( (*it)->getTagName() == tn )
             return (*it);
         }
-    return NULL;
+    return RbPtr<HelpNode>::getNullPtr();
 }
 
 
@@ -72,7 +72,7 @@ RbPtr<HelpNode> HelpNode::getChildWithTag(const std::string& ts, size_t idx) {
             nMatches++;
             }
         }
-    return NULL;
+    return RbPtr<HelpNode>::getNullPtr();
 }
 
 

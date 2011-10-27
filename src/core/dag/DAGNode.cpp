@@ -200,13 +200,13 @@ void DAGNode::printParents( std::ostream& o ) const {
 }
 
 
-void DAGNode::setVariable(RbPtr<Variable> var) {
+void DAGNode::setVariable(Variable* var) {
     // only do something if the old var is different to the new var
-    if (var.get() != variable) {
+    if (var != variable) {
         // the DAG node does not own the Variable so we do not release it
     
         // set the new variable
-        variable = var.get();
+        variable = var;
         
         name = var->getName();
         

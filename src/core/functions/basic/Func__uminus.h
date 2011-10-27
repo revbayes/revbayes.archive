@@ -77,14 +77,14 @@ RbPtr<RbLanguageObject> Func__uminus<valType, retType>::execute( void ) {
 
 /** Get argument rules */
 template <typename valType, typename retType>
-const ArgumentRules& Func__uminus<valType, retType>::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func__uminus<valType, retType>::getArgumentRules( void ) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", valType() .getTypeSpec() ) ) );
         rulesSet = true;
         }
 

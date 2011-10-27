@@ -77,12 +77,12 @@ Func__eq<firstValType, secondValType>* Func__eq<firstValType, secondValType>::cl
 
 /** Execute function: We rely on operator overloading to provide the functionality */
 template <typename firstValType, typename secondValType>
-RbLanguageObject* Func__eq<firstValType,secondValType>::execute( void ) {
+RbPtr<RbLanguageObject> Func__eq<firstValType,secondValType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<const firstValType*> ( args[0]->getValue().get() ) );
-    const RbPtr<secondValType> val2( static_cast<const secondValType*>( args[1]->getValue().get() ) );
+    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( args[0]->getValue().get() ) );
+    const RbPtr<secondValType> val2( static_cast<secondValType*>( args[1]->getValue().get() ) );
     
-    return ( new RbBoolean( *val1 == *val2 ) );
+    return RbPtr<RbLanguageObject>( new RbBoolean( *val1 == *val2 ) );
 }
 
 

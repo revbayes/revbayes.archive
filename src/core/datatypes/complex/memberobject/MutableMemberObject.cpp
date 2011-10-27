@@ -54,13 +54,13 @@ bool MutableMemberObject::isConstant( void ) const {
 /** Print value for user */
 void MutableMemberObject::printValue(std::ostream& o) const {
     
-    for ( size_t i = 0; i < members.size(); i++ ) {
+    for ( size_t i = 0; i < members->size(); i++ ) {
         
-        o << "." << members[i]->getLabel() << std::endl;
-        if ( members[i]->getValue() == NULL)
+        o << "." << (*members)[i]->getLabel() << std::endl;
+        if ( (*members)[i]->getValue() == NULL)
             o << "NULL";
         else
-            members[i]->getValue()->printValue(o);
+            (*members)[i]->getValue()->printValue(o);
         o << std::endl << std::endl;
     }
 }

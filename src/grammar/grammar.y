@@ -26,6 +26,7 @@
 #include "Integer.h"
 #include "Natural.h"
 #include "Parser.h"
+#include "RbPtr.h"
 #include "RbString.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -89,19 +90,19 @@ typedef struct yyltype
 
 /* Bison needs a union of the types handled by the parser */
 %union {
-    char*                           string;
-    double                          realValue;
-    int                             intValue;
-    bool                            boolValue;
-    RbString*                       idString;
-    SyntaxElement*                  syntaxElement;
-    SyntaxVariable*                 syntaxVariable;
-    SyntaxFunctionCall*             syntaxFunctionCall;
-    SyntaxLabeledExpr*              syntaxLabeledExpr;
-    SyntaxFormal*                   syntaxFormal;
-    std::list<SyntaxElement *>*     syntaxElementList;
-    std::list<SyntaxLabeledExpr *>* argumentList;
-    std::list<SyntaxFormal *>*      formalList;
+    char*                                           string;
+    double                                          realValue;
+    int                                             intValue;
+    bool                                            boolValue;
+    RbPtr<RbString>                                 idString;
+    RbPtr<SyntaxElement>                            syntaxElement;
+    RbPtr<SyntaxVariable>                           syntaxVariable;
+    RbPtr<SyntaxFunctionCall>                       syntaxFunctionCall;
+    RbPtr<SyntaxLabeledExpr>                        syntaxLabeledExpr;
+    RbPtr<SyntaxFormal>                             syntaxFormal;
+    RbPtr<std::list<RbPtr<SyntaxElement> > >        syntaxElementList;
+    RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > >    argumentList;
+    RbPtr<std::list<RbPtr<SyntaxFormal> > >         formalList;
 };
 
 /* Return types of the elements handled by the parser */
@@ -136,18 +137,18 @@ typedef struct yyltype
 %token END_OF_INPUT
 
 /* Destructors */
-%destructor { for (std::list<SyntaxElement*    >::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting element list\n"); } elementList optElements stmts stmtList memberDefs 
-%destructor { for (std::list<SyntaxLabeledExpr*>::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting argument list\n"); } argumentList optArguments vectorList vector
-%destructor { for (std::list<SyntaxFormal*     >::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting formal list\n"); } formalList optFormals
-%destructor { delete ($$); PRINTF("Deleting identifier  ...\n"); } identifier typeSpec optDims dimList optRef
-%destructor { delete ($$); PRINTF("Deleting variable    ...\n"); } variable functionCall fxnCall argument formal constant
-%destructor { delete ($$); PRINTF("Deleting expression  ...\n"); } statement expression stmt_or_expr 
-%destructor { delete ($$); PRINTF("Deleting assignment  ...\n"); } arrowAssign tildeAssign tildeIidAssign equationAssign 
-%destructor { delete ($$); PRINTF("Deleting declaration ...\n"); } declaration classDef memberDef 
-%destructor { delete ($$); PRINTF("Deleting functiondef ...\n"); } functionDef 
-%destructor { delete ($$); PRINTF("Deleting for/if/while...\n"); } forStatement ifStatement whileStatement 
-%destructor { delete ($$); PRINTF("Deleting cond/return ...\n"); } forCond cond returnStatement
-%destructor { delete ($$); PRINTF("Deleting next/break  ...\n"); } nextStatement breakStatement
+//%destructor { for (std::list<SyntaxElement*    >::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting element list\n"); } elementList optElements stmts stmtList memberDefs 
+//%destructor { for (std::list<SyntaxLabeledExpr*>::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting argument list\n"); } argumentList optArguments vectorList vector
+//%destructor { for (std::list<SyntaxFormal*     >::iterator i=$$->begin(); i!=$$->end(); i++) delete (*i); delete ($$); PRINTF("Deleting formal list\n"); } formalList optFormals
+//%destructor { delete ($$); PRINTF("Deleting identifier  ...\n"); } identifier typeSpec optDims dimList optRef
+//%destructor { delete ($$); PRINTF("Deleting variable    ...\n"); } variable functionCall fxnCall argument formal constant
+//%destructor { delete ($$); PRINTF("Deleting expression  ...\n"); } statement expression stmt_or_expr 
+//%destructor { delete ($$); PRINTF("Deleting assignment  ...\n"); } arrowAssign tildeAssign tildeIidAssign equationAssign 
+//%destructor { delete ($$); PRINTF("Deleting declaration ...\n"); } declaration classDef memberDef 
+//%destructor { delete ($$); PRINTF("Deleting functiondef ...\n"); } functionDef 
+//%destructor { delete ($$); PRINTF("Deleting for/if/while...\n"); } forStatement ifStatement whileStatement 
+//%destructor { delete ($$); PRINTF("Deleting cond/return ...\n"); } forCond cond returnStatement
+//%destructor { delete ($$); PRINTF("Deleting next/break  ...\n"); } nextStatement breakStatement
 
 /* Use location tracking */
 %locations
@@ -283,34 +284,34 @@ prog    :       END_OF_INPUT
 
 expression  :   constant                    { $$ = $1; }
 
-            |   vector                      { $$ = new SyntaxFunctionCall(new RbString("v"), $1); }
+            |   vector                      { $$ = RbPtr<SyntaxElement>( new SyntaxFunctionCall(new RbString("v"), $1) ); }
 
             |   '(' expression ')'          { $$ = $2; }
 
-            |   '-' expression %prec UMINUS { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UMinus, $2); }
-            |   '+' expression %prec UPLUS  { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UPlus, $2); }
-            |   '!' expression %prec UNOT   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UNot, $2); }
-            |   AND expression %prec UAND   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UAnd, $2); }
+            |   '-' expression %prec UMINUS { $$ = RbPtr<SyntaxElement>( new SyntaxUnaryExpr(SyntaxUnaryExpr::UMinus, $2) ); }
+            |   '+' expression %prec UPLUS  { $$ = RbPtr<SyntaxElement>( new SyntaxUnaryExpr(SyntaxUnaryExpr::UPlus, $2) ); }
+            |   '!' expression %prec UNOT   { $$ = RbPtr<SyntaxElement>( new SyntaxUnaryExpr(SyntaxUnaryExpr::UNot, $2) ); }
+            |   AND expression %prec UAND   { $$ = RbPtr<SyntaxElement>( new SyntaxUnaryExpr(SyntaxUnaryExpr::UAnd, $2) ); }
 
-            |   expression ':' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Range, $1, $3); }
+            |   expression ':' expression   { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Range, $1, $3) ); }
 
-            |   expression '+' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Add, $1, $3); }
-            |   expression '-' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Sub, $1, $3); }
-            |   expression '*' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Mul, $1, $3); }
-            |   expression '/' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Div, $1, $3); }
-            |   expression '^' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Exp, $1, $3); }
+            |   expression '+' expression   { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Add, $1, $3) ); }
+            |   expression '-' expression   { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Sub, $1, $3) ); }
+            |   expression '*' expression   { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Mul, $1, $3) ); }
+            |   expression '/' expression   { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Div, $1, $3) ); }
+            |   expression '^' expression   { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Exp, $1, $3) ); }
 
-            |   expression LT expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Lt, $1, $3); }
-            |   expression LE expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Le, $1, $3); }
-            |   expression EQ expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Eq, $1, $3); }
-            |   expression NE expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Ne, $1, $3); }
-            |   expression GE expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Ge, $1, $3); }
-            |   expression GT expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Gt, $1, $3); }
+            |   expression LT expression    { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Lt, $1, $3) ); }
+            |   expression LE expression    { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Le, $1, $3) ); }
+            |   expression EQ expression    { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Eq, $1, $3) ); }
+            |   expression NE expression    { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Ne, $1, $3) ); }
+            |   expression GE expression    { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Ge, $1, $3) ); }
+            |   expression GT expression    { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Gt, $1, $3) ); }
 
-            |   expression AND expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::And, $1, $3); }
-            |   expression OR expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Or, $1, $3); }
-            |   expression AND2 expression  { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::And2, $1, $3); }
-            |   expression OR2 expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Or2, $1, $3); }
+            |   expression AND expression   { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::And, $1, $3) ); }
+            |   expression OR expression    { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Or, $1, $3) ); }
+            |   expression AND2 expression  { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::And2, $1, $3) ); }
+            |   expression OR2 expression   { $$ = RbPtr<SyntaxElement>( new SyntaxBinaryExpr(SyntaxBinaryExpr::Or2, $1, $3) ); }
 
             |   arrowAssign                 { $$ = $1; }
             |   equationAssign              { $$ = $1; }
@@ -325,88 +326,88 @@ expression  :   constant                    { $$ = $1; }
 arrowAssign     :   variable ARROW_ASSIGN expression
                     { 
                         PRINTF("Parser inserting arrow assignment (ARROW_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::ArrowAssign, $1, $3);
+                        $$ = RbPtr<SyntaxElement>( new SyntaxAssignExpr(SyntaxAssignExpr::ArrowAssign, $1, $3) );
                     }
                 |   functionCall ARROW_ASSIGN expression
                     { 
                         PRINTF("Parser inserting arrow assignment (ARROW_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::ArrowAssign, $1, $3);
+                        $$ = RbPtr<SyntaxElement>( new SyntaxAssignExpr(SyntaxAssignExpr::ArrowAssign, $1, $3) );
                     }
                 ;
 
 tildeAssign     :   variable TILDE_ASSIGN functionCall
                     {
                         PRINTF("Parser inserting tilde assignment (TILDE_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TildeAssign, $1, $3);
+                        $$ = RbPtr<SyntaxElement>( new SyntaxAssignExpr(SyntaxAssignExpr::TildeAssign, $1, $3) );
                     }
                 |   functionCall TILDE_ASSIGN functionCall
                     {
                         PRINTF("Parser inserting tilde assignment (TILDE_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TildeAssign, $1, $3);
+                        $$ = RbPtr<SyntaxElement>( new SyntaxAssignExpr(SyntaxAssignExpr::TildeAssign, $1, $3) );
                     }
                 ;
 
 tildeIidAssign  :   variable TILDEIID_ASSIGN functionCall
                     {
                         PRINTF("Parser inserting tilde iid assignment (TILDEIID_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TildeIidAssign, $1, $3);
+                        $$ = RbPtr<SyntaxElement>( new SyntaxAssignExpr(SyntaxAssignExpr::TildeIidAssign, $1, $3) );
                     }
                  |  functionCall TILDEIID_ASSIGN functionCall
                     {
                         PRINTF("Parser inserting tilde iid assignment (TILDEIID_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::TildeIidAssign, $1, $3);
+                        $$ = RbPtr<SyntaxElement>( new SyntaxAssignExpr(SyntaxAssignExpr::TildeIidAssign, $1, $3) );
                     }
                 ;
 
 equationAssign  :   variable EQUATION_ASSIGN expression
                     {
                         PRINTF("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::EquationAssign, $1, $3); 
+                        $$ = RbPtr<SyntaxElement>( new SyntaxAssignExpr(SyntaxAssignExpr::EquationAssign, $1, $3) ); 
                     }
                 |   functionCall EQUATION_ASSIGN expression
                     {
                         PRINTF("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
-                        $$ = new SyntaxAssignExpr(SyntaxAssignExpr::EquationAssign, $1, $3); 
+                        $$ = RbPtr<SyntaxElement>( new SyntaxAssignExpr(SyntaxAssignExpr::EquationAssign, $1, $3) ); 
                     }
                 ;
 
 variable    :   identifier optElements
                 {
                     PRINTF("Parser inserting variable (NAMED_VAR)in syntax tree\n");
-                    $$ = new SyntaxVariable($1, $2);
+                    $$ = RbPtr<SyntaxVariable>( new SyntaxVariable($1, $2) );
                 }
             |   fxnCall '[' expression ']' optElements
                 {
                     PRINTF("Parser inserting variable (FUNCTION_VAR) in syntax tree\n");
                     $5->push_front($3);
-                    $$ = new SyntaxVariable($1, $5);
+                    $$ = RbPtr<SyntaxVariable>( new SyntaxVariable($1, $5) );
                 }
             |   variable '.' identifier optElements
                 {
                     PRINTF("Parser inserting member variable (NAMED_VAR)in syntax tree\n");
-                    $$ = new SyntaxVariable($1, $3, $4);
+                    $$ = RbPtr<SyntaxVariable>( new SyntaxVariable($1, $3, $4) );
                 }
             |   variable '.' fxnCall '[' expression ']' optElements
                 {
                     PRINTF("Parser inserting member variable (FUNCTION_VAR) in syntax tree\n");
                     $7->push_front($5);
-                    $$ = new SyntaxVariable($1, $3, $7);
+                    $$ = RbPtr<SyntaxVariable>( new SyntaxVariable($1, $3, $7) );
                 }
             ;
 
-optElements :   /* empty */                     { $$ = new std::list<SyntaxElement*>(); }
+optElements :   /* empty */                     { $$ = RbPtr<std::list<RbPtr<SyntaxElement> > >( new std::list<RbPtr<SyntaxElement> >() ); }
             |   elementList                     { $$ = $1; }
             ;
             
-elementList :   '[' expression ']'              { $$ = new std::list<SyntaxElement*>(1, $2); }
-            |   '[' ']'                         { $$ = new std::list<SyntaxElement*>(1, NULL); }
+elementList :   '[' expression ']'              { $$ = RbPtr<std::list<RbPtr<SyntaxElement> > >( new std::list<RbPtr<SyntaxElement> >(1, $2) ); }
+            |   '[' ']'                         { $$ = RbPtr<std::list<RbPtr<SyntaxElement> > >( new std::list<RbPtr<SyntaxElement> >(1, NULL); }
             |   elementList '[' expression ']'  { $1->push_back($3); $$ = $1; }
             |   elementList '[' ']'             { $1->push_back(NULL); $$ = $1; }
             ;
 
 fxnCall     :   identifier '(' optArguments ')' 
                 {
-                    $$ = new SyntaxFunctionCall($1, $3);
+                    $$ = RbPtr<SyntaxFunctionCall>( new SyntaxFunctionCall($1, $3) );
                 }
             ;
 
@@ -423,97 +424,97 @@ functionCall    :   fxnCall
                     }
                 ;
 
-optArguments    :   /* empty */             { $$ = new std::list<SyntaxLabeledExpr *>(); }
+optArguments    :   /* empty */             { $$ = RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > >( new std::list<RbPtr<SyntaxLabeledExpr> >() ); }
                 |   argumentList            { $$ = $1; }
                 ;
 
-argumentList    :   argument                    { $$ = new std::list<SyntaxLabeledExpr *>(1,$1); }
+argumentList    :   argument                    { $$ = RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > >( new std::list<RbPtr<SyntaxLabeledExpr> >(1,$1); }
                 |   argumentList ',' argument   { $1->push_back($3); $$ = $1; }
                 ;
 
 argument   :    expression
                 {
                     PRINTF("Parser inserting unlabeled argument in syntax tree\n");
-                    $$ = new SyntaxLabeledExpr(new RbString(""), $1);
+                    $$ = RbPtr<SyntaxLabeledExpr>( new SyntaxLabeledExpr(RbPtr<RbString>( new RbString("") ), $1) );
                 }
             |   identifier EQUAL expression
                 { 
                     PRINTF("Parser inserting labeled argument in syntax tree\n");
-                    $$ = new SyntaxLabeledExpr($1, $3);
+                    $$ = RbPtr<SyntaxLabeledExpr>( new SyntaxLabeledExpr($1, $3) );
                 }
             ;
 
 functionDef :   FUNCTION identifier '(' optFormals ')' stmts
                 {
                 PRINTF("Parser inserting function definition in syntax tree\n");
-                $$ = new SyntaxFunctionDef(NULL, $2, $4, $6);
+                $$ = RbPtr<SyntaxElement>( new SyntaxFunctionDef(RbPtr<RbString>( NULL ), $2, $4, $6) );
                 }
  
             |   FUNCTION typeSpec identifier '(' optFormals ')' stmts
                 {
                 PRINTF("Parser inserting typed function definition in syntax tree\n");
-                $$ = new SyntaxFunctionDef($2, $3, $5, $7);
+                $$ = RbPtr<SyntaxElement>( new SyntaxFunctionDef($2, $3, $5, $7) );
                 }
             ;
 
-optFormals  :   /* empty */             { $$ = new std::list<SyntaxFormal *>(); }
+optFormals  :   /* empty */             { $$ = RbPtr<std::list<RbPtr<SyntaxFormal> > >( new std::list<RbPtr<SyntaxFormal> >() ); }
             |   formalList              { $$ = $1; }
             ;
 
-formalList  :   formal                  { $$ = new std::list<SyntaxFormal *>(1,$1); }
+formalList  :   formal                  { $$ = RbPtr<std::list<RbPtr<SyntaxFormal> > >( new std::list<RbPtr<SyntaxFormal> >(1,$1) ); }
             |   formalList ',' formal   { $1->push_back($3); $$ = $1; }
             ;
 
 formal      :   identifier
                 {
                     PRINTF("Inserting labeled formal argument without default in syntax tree\n");
-                    $$ = new SyntaxFormal($1, NULL);
+                    $$ = RbPtr<SyntaxFormal>( new SyntaxFormal($1, RbPtr<SyntaxElement>( NULL )) );
                 }
             |   identifier EQUAL expression
                 {
                     PRINTF("Inserting labeled formal argument with default in syntax tree\n");
-                    $$ = new SyntaxFormal($1, $3);
+                    $$ = RbPtr<SyntaxFormal>( new SyntaxFormal($1, $3) );
                 }
             |   typeSpec identifier
                 {
                     PRINTF("Inserting typed labeled formal argument without default in syntax tree\n");
-                    $$ = new SyntaxFormal($1, $2, NULL);
+                    $$ = RbPtr<SyntaxFormal>( new SyntaxFormal($1, $2, RbPtr<SyntaxElement>(NULL) ) );
                 }
             |   typeSpec identifier EQUAL expression
                 {
                     PRINTF("Inserting typed labeled formal argument with default in syntax tree\n");
-                    $$ = new SyntaxFormal($1, $2, $4);
+                    $$ = RbPtr<SyntaxFormal>( new SyntaxFormal($1, $2, $4) );
                 }
             ;
 
-typeSpec    :   identifier optDims optRef   { $1->append(*($2)); delete($2); $1->append(*($3)); delete($3); $$ = $1; }
+typeSpec    :   identifier optDims optRef   { $1->append(*($2)); $1->append(*($3)); $$ = $1; }
             ;
 
-optDims     :   /* empty */                 { $$ = new RbString(); }
+optDims     :   /* empty */                 { $$ = RbPtr<RbString>( new RbString() ); }
             |   dimList                     { $$ = $1; }
             ;
 
-dimList     :   '[' ']'                     { $$ = new RbString("[]"); }
-            |   '[' INT ']'                 { $$ = new RbString("["); $$->append(INT); $$->append("]"); }
+dimList     :   '[' ']'                     { $$ = RbPtr<RbString>( new RbString("[]") ); }
+            |   '[' INT ']'                 { $$ = RbPtr<RbString>( new RbString("[") ); $$->append(INT); $$->append("]"); }
             |   dimList '[' ']'             { $1->append("[]"); $$ = $1; }
             |   dimList '[' INT ']'         { $1->append("["); $1->append(INT); $1->append("]"); $$ = $1; }
             ;
 
-optRef      :   /* empty */                 { $$ = new RbString(); }
-            |   '&'                         { $$ = new RbString("&"); }
+optRef      :   /* empty */                 { $$ = RbPtr<RbString>( new RbString() ); }
+            |   '&'                         { $$ = RbPtr<RbString>( new RbString("&") ); }
             ;
 
 stmts       :   '{' stmtList '}'                { $$ = $2; }
             |   stmt_or_expr
                 {
-                    std::list<SyntaxElement*> stmts;
-                    stmts.push_back($1);
-                    $$ = &stmts;
+                    RbPtr<std::list<RbPtr<SyntaxElement> > > stmts( new std::list<RbPtr<SyntaxElement> >() );
+                    stmts->push_back($1);
+                    $$ = stmts;
                 }
             ;
 
-stmtList    :   /* empty */                 { $$ = new std::list<SyntaxElement*>(); }
-            |   stmt_or_expr                { $$ = new std::list<SyntaxElement*>(1, $1); }
+stmtList    :   /* empty */                 { $$ = RbPtr<std::list<RbPtr<SyntaxElement> > >( new std::list<RbPtr<SyntaxElement> >() ); }
+            |   stmt_or_expr                { $$ = RbPtr<std::list<RbPtr<SyntaxElement> > >( new std::list<RbPtr<SyntaxElement> >(1, $1) ); }
             |   stmtList ';' stmt_or_expr   { $1->push_back($3); $$ = $1; }
             |   stmtList ';'                { $$ = $1; }
             |   stmtList '\n' stmt_or_expr  { $1->push_back($3); $$ = $1; }
@@ -537,12 +538,12 @@ declaration     :   classDef            { $$ = $1; }
                 |   identifier optElements optRef identifier
                     {
                         PRINTF("Parser inserting variable declaration in syntax tree\n");
-                        $$ = new SyntaxVariableDecl($1, $2, $3, $4);
+                        $$ = RbPtr<SyntaxElement>( new SyntaxVariableDecl($1, $2, $3, $4) );
                     }
                 ;
 
-memberDefs      :   /* empty */                 { $$ = new std::list<SyntaxElement*>(); }
-                |   memberDef                   { $$ = new std::list<SyntaxElement*>(1, $1); }
+memberDefs      :   /* empty */                 { $$ = RbPtr<std::list<RbPtr<SyntaxElement> > >( new std::list<RbPtr<SyntaxElement> >() ); }
+                |   memberDef                   { $$ = RbPtr<std::list<RbPtr<SyntaxElement> > >( new std::list<RbPTr<SyntaxElement> >(1, $1) ); }
                 |   memberDefs ';' memberDef    { $1->push_back($3); $$ = $1; }
                 |   memberDefs ';'              { $$ = $1; }
                 |   memberDefs '\n' memberDef   { $1->push_back($3); $$ = $1; }
@@ -556,76 +557,76 @@ memberDef   :   formal      { $$ = $1; }
 classDef    :   CLASS identifier ':' identifier '{' memberDefs '}'
                 {
                 PRINTF("Parser inserting class definition (CLASS_DEF) in syntax tree\n");
-                $$ = new SyntaxClassDef($2, $4, $6);
+                $$ = RbPtr<SyntaxElement>( new SyntaxClassDef($2, $4, $6) );
                 }
             ;
 
-ifStatement :   IF cond stmts               { $$ = new SyntaxStatement(SyntaxStatement::If, $2, $3); }
-            |   IF cond stmts ELSE stmts    { $$ = new SyntaxStatement(SyntaxStatement::IfElse, $2, $3, $5); }
+ifStatement :   IF cond stmts               { $$ = RbPtr<SyntaxElement>( new SyntaxStatement(SyntaxStatement::If, $2, $3) ); }
+            |   IF cond stmts ELSE stmts    { $$ = RbPtr<SyntaxElement>( new SyntaxStatement(SyntaxStatement::IfElse, $2, $3, $5) ); }
 
 cond    :   '(' expression ')'    { $$ = $2; }
         ;
 
-forStatement    :   FOR forCond stmts   { $$ = new SyntaxStatement(SyntaxStatement::For, $2, $3); }
+forStatement    :   FOR forCond stmts   { $$ = RbPtr<SyntaxElement>( new SyntaxStatement(SyntaxStatement::For, $2, $3) ); }
                 ;
 
-forCond     :   '(' identifier IN expression ')'    { $$ = new SyntaxForCondition($2, $4); }
+forCond     :   '(' identifier IN expression ')'    { $$ = RbPtr<SyntaxElement>( new SyntaxForCondition($2, $4) ); }
             ;
 
-whileStatement  :   WHILE cond stmts    { $$ = new SyntaxStatement(SyntaxStatement::While, $2, $3); }
+whileStatement  :   WHILE cond stmts    { $$ = RbPtr<SyntaxElement>( new SyntaxStatement(SyntaxStatement::While, $2, $3) ); }
                 ;
 
-nextStatement   :   NEXT    { $$ = new SyntaxStatement(SyntaxStatement::Next); }
+nextStatement   :   NEXT    { $$ = RbPtr<SyntaxElement>( new SyntaxStatement(SyntaxStatement::Next) ); }
                 ;
 
-breakStatement  :   BREAK   { $$ = new SyntaxStatement(SyntaxStatement::Break); }
+breakStatement  :   BREAK   { $$ = RbPtr<SyntaxElement>( new SyntaxStatement(SyntaxStatement::Break) ); }
                 ;
 
-returnStatement :   RETURN              { $$ = new SyntaxStatement(SyntaxStatement::Return); }
-                |   RETURN expression   { $$ = new SyntaxStatement(SyntaxStatement::Return, $2); }
+returnStatement :   RETURN              { $$ = RbPtr<SyntaxElement>( new SyntaxStatement(SyntaxStatement::Return) ); }
+                |   RETURN expression   { $$ = RbPtr<SyntaxElement>( new SyntaxStatement(SyntaxStatement::Return, $2) ); }
                 ;
 
-identifier  :   NAME    { $$ = new RbString($1); }
+identifier  :   NAME    { $$ = RbPtr<RbString>( new RbString($1) ); }
             ;
 
 
 vector      :   '[' vectorList ']'      { $$ = $2; }
             ;
 
-vectorList  :   vectorList ',' expression   { $1->push_back(new SyntaxLabeledExpr(new RbString(""), $3)); $$ = $1; }
-            |   expression                  { $$ = new std::list<SyntaxLabeledExpr*>(1, new SyntaxLabeledExpr(new RbString(""), $1)); }
+vectorList  :   vectorList ',' expression   { $1->push_back(RbPtr<SyntaxLabeledExpr>( new SyntaxLabeledExpr( RbPtr<RbString>( new RbString("") ), $3) ) ); $$ = $1; }
+            |   expression                  { $$ = RbPtr<std::list<RbPtr<SyntaxLabeledExpr> > >( new std::list<RbPtr<SyntaxLabeledExpr> >(1, RbPtr<SyntaxLabeledExpr>( new SyntaxLabeledExpr(RbPtr<RbString>( new RbString("") ) ), $1) ) ); }
             ;
 
 constant    :   FALSE
                 {
                     PRINTF("Parser inserting bool constant (false) in syntax tree\n");
-                    $$ = new SyntaxConstant(new Boolean(false));
+                    $$ = RbPtr<SyntaxElement>( new SyntaxConstant(RbPtr<RbLanguageObject>( new Boolean(false) ) ) );
                 }
             |   TRUE
                 {
                     PRINTF("Parser inserting bool constant (true) in syntax tree\n");
-                    $$ = new SyntaxConstant(new Boolean(true));
+                    $$ = RbPtr<SyntaxElement>( new SyntaxConstant(RbPtr<RbLanguageObject>( new Boolean(true) ) ) );
                 }
             |   RBNULL
                 {
                     PRINTF("Parser inserting null constant in syntax tree\n");
-                    $$ = new SyntaxConstant(NULL);
+                    $$ = RbPtr<SyntaxElement>( new SyntaxConstant(RbPtr<RbLanguageObject>( NULL ) ) );
                 }
             |   INT
                 {
                     if ( $1 < 0 ) {
                         PRINTF("Parser inserting Integer constant in syntax tree\n");
-                        $$ = new SyntaxConstant(new Integer($1));
+                        $$ = RbPtr<SyntaxElement>( new SyntaxConstant(RbPtr<RbLanguageObject>( new Integer($1) ) ) );
                     }
                     else { 
                         PRINTF("Parser inserting Natural constant in syntax tree\n");
-                        $$ = new SyntaxConstant(new Natural($1));
+                        $$ = RbPtr<SyntaxElement>( new SyntaxConstant(RbPtr<RbLanguageObject>( new Natural($1) ) ) );
                     }
                 }
             |   STRING
                 {
                     PRINTF("Parser inserting String constant in syntax tree\n");
-                    $$ = new SyntaxConstant(new RbString($1));
+                    $$ = RbPtr<SyntaxElement>( new SyntaxConstant(RbPtr<RbLanguageObject>( new RbString($1) ) ) );
                 }
             |   REAL
                 {
@@ -668,11 +669,11 @@ constant    :   FALSE
                     */
                     if ($1 > 0.0) {
                         PRINTF("Parser inserting RealPos constant in syntax tree \n");
-                        $$ = new SyntaxConstant(new RealPos($1));
+                        $$ = RbPtr<SyntaxElement>( new SyntaxConstant(RbPtr<RbLanguageObject>( new RealPos($1) ) ) );
                     }
                     else {
                         PRINTF("Parser inserting Real constant in syntax tree \n");
-                        $$ = new SyntaxConstant(new Real($1));
+                        $$ = RbPtr<SyntaxElement>( new SyntaxConstant(RbPtr<RbLanguageObject>( new Real($1) ) ) );
                     }
                 }
             ;

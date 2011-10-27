@@ -93,8 +93,8 @@ size_t Dist_ctmm::getNumberOfStates( void ) const {
 const RbPtr<Simplex> Dist_ctmm::getProbabilityMassVector( void ) {
 
     // get the information from the arguments for reading the file
-    const RbPtr<RateMatrix>                q = RbPtr<RateMatrix>( static_cast<RateMatrix*>( members[0]->getValue().get() ) );
-    const RbPtr<RealPos>                   t = RbPtr<RealPos>( static_cast<RealPos*>( members[1]->getValue().get() ) );
+    const RbPtr<RateMatrix>                q = RbPtr<RateMatrix>( static_cast<RateMatrix*>( (*members)[0]->getValue().get() ) );
+    const RbPtr<RealPos>                   t = RbPtr<RealPos>( static_cast<RealPos*>( (*members)[1]->getValue().get() ) );
 //    const CharacterStateDiscrete*    c = static_cast<const CharacterStateDiscrete*>(    members[2].getValue() );
     
     // initialize the number of states

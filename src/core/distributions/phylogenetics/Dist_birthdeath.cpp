@@ -225,9 +225,9 @@ RbPtr<RbLanguageObject> Dist_birthdeath::rv( void ) {
     // Get the parameters
     double o = static_cast<const RealPos*    >( getMemberValue( "origin" ).get() )->getValue();
     double T = static_cast<const RealPos*    >( getMemberValue( "T"      ).get() )->getValue();
-    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ).get() )->getValue();
-    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ).get() )->getValue();
-    double p = static_cast<const Probability*>( getMemberValue( "rho"    ).get() )->getValue();
+//    double b = static_cast<const RealPos*    >( getMemberValue( "lambda" ).get() )->getValue();
+//    double d = static_cast<const RealPos*    >( getMemberValue( "mu"     ).get() )->getValue();
+//    double p = static_cast<const Probability*>( getMemberValue( "rho"    ).get() )->getValue();
     
     
     return RbPtr<RbLanguageObject>( new RealPos( (T - o) / 2.0 + o) );

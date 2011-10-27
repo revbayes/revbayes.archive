@@ -79,8 +79,8 @@ Func__lt<firstValType, secondValType>* Func__lt<firstValType, secondValType>::cl
 template <typename firstValType, typename secondValType>
 RbPtr<RbLanguageObject> Func__lt<firstValType,secondValType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<const firstValType*> ( args[0]->getValue().get() );
-    const RbPtr<secondValType> val2( static_cast<const secondValType*>( args[1]->getValue().get() );
+    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( args[0]->getValue().get() ) );
+    const RbPtr<secondValType> val2( static_cast<secondValType*>( args[1]->getValue().get() ) );
     
     return RbPtr<RbLanguageObject>( new RbBoolean( *val1 < *val2 ) );
 }

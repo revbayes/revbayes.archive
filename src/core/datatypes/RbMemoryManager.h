@@ -25,7 +25,7 @@ class RbMemoryManager {
 		                               }
         int                         countForAddress(void* qPtr);
         void                        incrementCountForAddress(void* qPtr);
-        void                        decrementCountForAddress(void* qPtr);
+        bool                        decrementCountForAddress(void* qPtr);
 
     protected:
                                     RbMemoryManager(void) { }                                       //!< Prevent construction

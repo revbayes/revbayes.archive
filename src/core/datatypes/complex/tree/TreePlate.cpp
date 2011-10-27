@@ -99,7 +99,7 @@ std::string TreePlate::buildNewickString(RbPtr<TopologyNode> node) const {
             const std::string &varName = *it;
             
             // get the container with the variables for this node
-            RbPtr<RbLanguageObject> vars( members[varName]->getDagNodePtr()->getValuePtr().get() );
+            RbPtr<RbLanguageObject> vars( (*members)[varName]->getDagNodePtr()->getValuePtr().get() );
             
             // get the index of the node
             size_t nodeIndex = getNodeIndex(node) - 1;
@@ -147,17 +147,17 @@ RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, Env
         std::string varName = static_cast<const RbString*>( args[0]->getValue().get() )->getValue();
         
         // check if a container already exists with that name
-        if (!members.existsVariable(varName)) {
+        if (!members->existsVariable(varName)) {
             // we don't have a container for this variable name yet
             // so we just create one
-            members.addVariable(varName, RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(orderingTopology->getNumberOfNodes() ) ) ) ) ) ) );
+            members->addVariable(varName, RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(orderingTopology->getNumberOfNodes() ) ) ) ) ) ) );
             
             // and we add it to our names list
             nodeVariableNames.push_back(varName);
         }
         
         // get the container with the variables for this node
-        DagNodeContainer *vars = static_cast<DagNodeContainer*>(members[varName]->getDagNodePtr()->getValuePtr().get());
+        DagNodeContainer *vars = static_cast<DagNodeContainer*>((*members)[varName]->getDagNodePtr()->getValuePtr().get());
         
         // get the variable
         RbPtr<Variable> var = args[1]->getVariable();
@@ -171,13 +171,13 @@ RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, Env
         // set the variable
         vars->setElement(nodeIndex - 1, RbPtr<RbObject>( var.get() ));
         
-        return NULL;
+        return RbPtr<RbLanguageObject>::getNullPtr();
     } else if (name == "getVariable") {
         // get the name of the variable
         std::string varName = static_cast<const RbString*>( args[0]->getValue().get() )->getValue();
         
         // check if a container already exists with that name
-        if (!members.existsVariable(varName)) {
+        if (!members->existsVariable(varName)) {
             // we don't have a container for this variable name yet
             // so we need to throw an error
             
@@ -185,7 +185,7 @@ RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, Env
         }
         else {
             // get the container with the variables for this node
-            DagNodeContainer *vars = static_cast<DagNodeContainer*>(members[varName]->getDagNodePtr()->getValuePtr().get() );
+            DagNodeContainer *vars = static_cast<DagNodeContainer*>((*members)[varName]->getDagNodePtr()->getValuePtr().get() );
         
             // get the node we want to associate it too
             const RbPtr<TopologyNode> theNode( static_cast<TopologyNode*>(args[1]->getDagNodePtr()->getValue().get()) );
@@ -225,41 +225,41 @@ RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, Env
 const RbPtr<MethodTable> TreePlate::getMethods(void) const {
     
     static RbPtr<MethodTable> methods( new MethodTable() );
-    static ArgumentRules addVariableArgRules;
-    static ArgumentRules getVariableArgRules;
-    static ArgumentRules getNodeIndexArgRules;
-    static ArgumentRules getTipIndexArgRules;
-    static ArgumentRules nnodesArgRules;
-    static ArgumentRules nodeArgRules;
+    static RbPtr<ArgumentRules> addVariableArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> getVariableArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> getNodeIndexArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> getTipIndexArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> nnodesArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> nodeArgRules( new ArgumentRules() );
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) {
         
         // add the 'addVariable()' method
-        addVariableArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "name"      , RbString_name )     ) );
-        addVariableArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule( ""          , RbObject_name )     ) );
-        addVariableArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "node"      , TopologyNode_name ) ) );
+        addVariableArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "name"      , RbString_name )     ) );
+        addVariableArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( ""          , RbObject_name )     ) );
+        addVariableArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "node"      , TopologyNode_name ) ) );
         
         methods->addFunction("addVariable", RbPtr<RbFunction>( new MemberFunction(RbVoid_name, addVariableArgRules) ) );
         
         // add the 'getVariable()' method
-        getVariableArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "name"      , RbString_name )     ) );
-        getVariableArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "node"      , TopologyNode_name ) ) );
+        getVariableArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "name"      , RbString_name )     ) );
+        getVariableArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "node"      , TopologyNode_name ) ) );
         
         methods->addFunction("getVariable", RbPtr<RbFunction>( new MemberFunction(RbObject_name, getVariableArgRules) ) );
         
         // add the 'index(node)' method
-        getNodeIndexArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "node", TopologyNode_name ) ));
+        getNodeIndexArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "node", TopologyNode_name ) ));
         
         methods->addFunction("index", RbPtr<RbFunction>( new MemberFunction(Natural_name, getNodeIndexArgRules)) );
         
         // add the 'tipIndex(node)' method
-        getTipIndexArgRules.push_back( RbPtr<ArgumentRule>(new ValueRule( "node", TopologyNode_name ) ));
+        getTipIndexArgRules->push_back( RbPtr<ArgumentRule>(new ValueRule( "node", TopologyNode_name ) ));
         
         methods->addFunction("tipIndex", RbPtr<RbFunction>( new MemberFunction(Natural_name, getTipIndexArgRules) ));
         
         // add the 'node(i)' method
-        nodeArgRules.push_back( RbPtr<ArgumentRule>( new ValueRule( "index" , Natural_name  ) ) );
+        nodeArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "index" , Natural_name  ) ) );
         
         methods->addFunction("node", RbPtr<RbFunction>( new MemberFunction(TopologyNode_name, nodeArgRules) ) );
         

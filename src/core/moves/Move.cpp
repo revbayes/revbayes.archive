@@ -184,7 +184,7 @@ const RbPtr<MethodTable> Move::getMethods(void) const {
  *  from its member variable "weight". */
 double Move::getUpdateWeight( void ) const {
 
-    return static_cast<const RealPos*>( members["weight"]->getValue().get() )->getValue();
+    return static_cast<const RealPos*>( (*members)["weight"]->getValue().get() )->getValue();
 }
 
 

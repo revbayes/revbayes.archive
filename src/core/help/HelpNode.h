@@ -19,10 +19,11 @@
 #ifndef HelpNode_H
 #define HelpNode_H
 
-#include "RbPtr.h"
 
 #include <string>
 #include <vector>
+
+#include "RbPtr.h"
 
 class HelpNode {
 

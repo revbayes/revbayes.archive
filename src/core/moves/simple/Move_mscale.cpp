@@ -53,20 +53,20 @@ const VectorString& Move_mscale::getClass() const {
 
 
 /** Return member rules */
-const MemberRules& Move_mscale::getMemberRules( void ) const {
+const RbPtr<MemberRules> Move_mscale::getMemberRules( void ) const {
 
-    static MemberRules memberRules;
+    static RbPtr<MemberRules> memberRules( new MemberRules );
     static bool        rulesSet = false;
 
     if ( !rulesSet ) {
         TypeSpec varType( RealPos_name );
-        memberRules.push_back( new ValueRule( "variable", varType ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable", varType ) ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        const MemberRules& inheritedRules = MoveSimple::getMemberRules();
-        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        const RbPtr<MemberRules> inheritedRules = MoveSimple::getMemberRules();
+        memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
-        memberRules.push_back( new ValueRule( "lambda", RealPos_name ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "lambda", RealPos_name ) ) );
 
         rulesSet = true;
     }
@@ -95,7 +95,7 @@ double Move_mscale::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
     RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
 
     // Get relevant values
-    RbPtr<StochasticNode>  nodePtr( static_cast<StochasticNode*>( members["variable"]->getDagNodePtr().get() ) );
+    RbPtr<StochasticNode>  nodePtr( static_cast<StochasticNode*>( (*members)["variable"]->getDagNodePtr().get() ) );
     const RealPos          lambda  = *( static_cast<const RealPos*>( getMemberValue("lambda").get()  ) );
 
     const RealPos          curVal  = *( static_cast<const RealPos*>( nodePtr->getValue().get() ) );

@@ -212,14 +212,14 @@ void MatrixReal::printValue(std::ostream& o) const {
 }
 
 
-/** Push back a row vector */
-void MatrixReal::push_back(const VectorReal &x ) {
-
-    if ( size() > 0 && x.size() != getNumberOfColumns() )
-        throw RbException( "Cannot make matrix with rows of unequal size" );
-
-    elements.push_back( RbPtr<RbLanguageObject>( x.clone() ) );
-}
+///** Push back a row vector */
+//void MatrixReal::push_back(const VectorReal &x ) {
+//
+//    if ( size() > 0 && x.size() != getNumberOfColumns() )
+//        throw RbException( "Cannot make matrix with rows of unequal size" );
+//
+//    elements.push_back( RbPtr<RbLanguageObject>( x.clone() ) );
+//}
 
 
 /** Overloaded container resize method */

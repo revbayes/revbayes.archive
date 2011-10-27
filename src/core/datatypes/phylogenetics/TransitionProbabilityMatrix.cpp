@@ -140,7 +140,7 @@ const RbPtr<MemberRules> TransitionProbabilityMatrix::getMemberRules(void) const
 const RbPtr<MethodTable> TransitionProbabilityMatrix::getMethods(void) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
-    static ArgumentRules nstatesArgRules;
+    static RbPtr<ArgumentRules> nstatesArgRules( new ArgumentRules() );
     static bool          methodsSet = false;
 
     if ( methodsSet == false ) 

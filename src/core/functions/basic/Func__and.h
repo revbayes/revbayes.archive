@@ -21,7 +21,6 @@
 #include "RbPtr.h"
 #include "RbFunction.h"
 
-#include <map>
 #include <string>
 
 class DAGNode;
@@ -31,6 +30,7 @@ template <typename firstValType, typename secondValType>
 class Func__and :  public RbFunction {
 
     public:
+    
         // Basic utility functions
         Func__and*                  clone(void) const;                                          //!< Clone the object
         const VectorString&         getClass(void) const;                                       //!< Get class vector
@@ -38,7 +38,7 @@ class Func__and :  public RbFunction {
 
         // Regular functions
     	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
+        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
@@ -63,9 +63,10 @@ class Func__and :  public RbFunction {
 
 // Definition of the static type spec member
 template <typename firstValType, typename secondValType>
-const TypeSpec Func__and<firstValType, secondValType>::typeSpec("Func__and", new TypeSpec(firstValType().getType() + "," + secondValType().getType()));
+const TypeSpec Func__and<firstValType, secondValType>::typeSpec("Func__and", RbPtr<TypeSpec>( new TypeSpec(firstValType().getType() + "," + secondValType().getType() ) ) );
 template <typename firstValType, typename secondValType>
 const TypeSpec Func__and<firstValType, secondValType>::returnTypeSpec(RbBoolean_name);
+
 
 /** Clone object */
 template <typename firstValType, typename secondValType>
@@ -79,8 +80,8 @@ Func__and<firstValType, secondValType>* Func__and<firstValType, secondValType>::
 template <typename firstValType, typename secondValType>
 RbPtr<RbLanguageObject> Func__and<firstValType,secondValType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<const firstValType*> ( args[0]->getValue().get() ) );
-    const RbPtr<secondValType> val2( static_cast<const secondValType*>( args[1]->getValue().get() ) );
+    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( args[0]->getValue().get() ) );
+    const RbPtr<secondValType> val2( static_cast<secondValType*>( args[1]->getValue().get() ) );
     
     return RbPtr<RbLanguageObject>( new RbBoolean( *val1 && *val2 ) );
 }
@@ -88,15 +89,15 @@ RbPtr<RbLanguageObject> Func__and<firstValType,secondValType>::execute( void ) {
 
 /** Get argument rules */
 template <typename firstValType, typename secondValType>
-const ArgumentRules& Func__and<firstValType, secondValType>::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func__and<firstValType, secondValType>::getArgumentRules( void ) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", firstValType() .getTypeSpec() ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", secondValType().getTypeSpec() ) ) );
         rulesSet = true;
         }
 

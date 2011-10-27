@@ -67,7 +67,7 @@ public:
 
     // Matrix functions
     std::vector<std::vector<std::complex<double> > >    getValue(void) const;                                                                           //!< Get value as STL vector<vector> of complex values
-    void                                                push_back(const VectorComplex& x);                                                              //!< Push back a row vector
+//    void                                                push_back(const VectorComplex& x);                                                              //!< Push back a row vector
     void                                                setValue(const std::vector<std::vector<std::complex<double> > >& x);                            //!< Set value using STL vector<vector> of complex values
 
 private:

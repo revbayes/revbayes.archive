@@ -76,7 +76,7 @@ RbPtr<RbLanguageObject> Func_transpose<matrixType>::execute( void ) {
         for ( size_t j = 0; j < mat->getNumberOfColumns(); j++ )
             (*(*matT)[j])[i] = (*(*mat)[i])[j];
 
-    return RbPtr<RbLanguageObject>( matT );
+    return RbPtr<RbLanguageObject>( matT.get() );
 }
 
 

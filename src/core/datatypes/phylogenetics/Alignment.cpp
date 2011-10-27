@@ -43,13 +43,13 @@
 
 
 /** Constructor requires character type; passes member rules to base class */
-Alignment::Alignment( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec(Alignment_name, new TypeSpec(charType)) {
+Alignment::Alignment( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec(Alignment_name, RbPtr<TypeSpec>( new TypeSpec(charType) ) ) {
     characterType = charType;
 }
 
 
 /** Copy constructor */
-Alignment::Alignment( const Alignment& x ) : Matrix( x ), typeSpec(Alignment_name, new TypeSpec(characterType)) {
+Alignment::Alignment( const Alignment& x ) : Matrix( x ), typeSpec(Alignment_name, RbPtr<TypeSpec>( new TypeSpec(characterType) ) ) {
 
     characterType     = x.characterType;
     deletedTaxa       = x.deletedTaxa;
@@ -110,7 +110,7 @@ void Alignment::addSequence( RbPtr<Sequence> obs ) {
     sequenceNames.push_back(obs->getTaxonName());
     
     // add the sequence also as a member so that we can access it by name
-    members.addVariable(obs->getTaxonName(), RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( obs.get() ) ) ) ) ));
+    members->addVariable(obs->getTaxonName(), RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( obs.get() ) ) ) ) ));
 }
 
 
@@ -143,8 +143,8 @@ void Alignment::excludeCharacter(size_t i) {
 /** Exclude a taxon */
 void Alignment::excludeTaxon(size_t i) {
 
-    if (i >= members.size())
-        throw RbException( "Only " + RbString(int(members.size())) + " taxa in matrix" );
+    if (i >= members->size())
+        throw RbException( "Only " + RbString(int(members->size())) + " taxa in matrix" );
 
     deletedTaxa.insert( i );
 }
@@ -320,29 +320,29 @@ const RbPtr<MemberRules> Alignment::getMemberRules(void) const {
 const RbPtr<MethodTable> Alignment::getMethods(void) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
-    static ArgumentRules ncharArgRules;
-    static ArgumentRules namesArgRules;
-    static ArgumentRules ntaxaArgRules;
-    static ArgumentRules chartypeArgRules;    
-    static ArgumentRules nexcludedtaxaArgRules;    
-    static ArgumentRules nexcludedcharsArgRules;    
-    static ArgumentRules nincludedtaxaArgRules;    
-    static ArgumentRules nincludedcharsArgRules;    
-    static ArgumentRules excludedtaxaArgRules;    
-    static ArgumentRules excludedcharsArgRules;    
-    static ArgumentRules includedtaxaArgRules;    
-    static ArgumentRules includedcharsArgRules;    
-    static ArgumentRules nconstantpatternsArgRules;    
-    static ArgumentRules ncharswithambiguityArgRules;
-    static ArgumentRules excludecharArgRules;
-    static ArgumentRules excludecharArgRules2;
+    static RbPtr<ArgumentRules> ncharArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> namesArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> ntaxaArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> chartypeArgRules( new ArgumentRules() );    
+    static RbPtr<ArgumentRules> nexcludedtaxaArgRules( new ArgumentRules() );    
+    static RbPtr<ArgumentRules> nexcludedcharsArgRules( new ArgumentRules() );    
+    static RbPtr<ArgumentRules> nincludedtaxaArgRules( new ArgumentRules() );    
+    static RbPtr<ArgumentRules> nincludedcharsArgRules( new ArgumentRules() );    
+    static RbPtr<ArgumentRules> excludedtaxaArgRules( new ArgumentRules() );    
+    static RbPtr<ArgumentRules> excludedcharsArgRules( new ArgumentRules() );    
+    static RbPtr<ArgumentRules> includedtaxaArgRules( new ArgumentRules() );    
+    static RbPtr<ArgumentRules> includedcharsArgRules( new ArgumentRules() );    
+    static RbPtr<ArgumentRules> nconstantpatternsArgRules( new ArgumentRules() );    
+    static RbPtr<ArgumentRules> ncharswithambiguityArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> excludecharArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> excludecharArgRules2( new ArgumentRules() );
     static bool          methodsSet = false;
 
     if ( methodsSet == false ) 
         {
 
-        excludecharArgRules.push_back(        RbPtr<ArgumentRule>( new ValueRule(     "", Natural_name       ) ) );
-        excludecharArgRules2.push_back(       RbPtr<ArgumentRule>( new ValueRule(     "", VectorNatural_name ) ) );
+        excludecharArgRules->push_back(        RbPtr<ArgumentRule>( new ValueRule(     "", Natural_name       ) ) );
+        excludecharArgRules2->push_back(       RbPtr<ArgumentRule>( new ValueRule(     "", VectorNatural_name ) ) );
             
         methods->addFunction("names",               RbPtr<RbFunction>( new MemberFunction(VectorString_name,  namesArgRules) ) );
         methods->addFunction("nchar",               RbPtr<RbFunction>( new MemberFunction(Natural_name,       ncharArgRules) ) );
@@ -431,8 +431,8 @@ const TypeSpec& Alignment::getTypeSpec(void) const {
 size_t Alignment::indexOfTaxonWithName( std::string& s ) const {
     
     // search through all names
-    for (size_t i=0; i<members.size(); i++) {
-        if (s == members.getName( i )) {
+    for (size_t i=0; i<members->size(); i++) {
+        if (s == members->getName( i )) {
             return i;
         }
     }
@@ -519,7 +519,7 @@ RbPtr<Vector> Alignment::makeSiteColumn( size_t cn ) const {
     if ( getNumberOfTaxa() == 0 )
         throw RbException( "Character matrix is empty" );
 
-    RbPtr<Vector> temp( static_cast<const Vector*>( members[0]->getValue().get() )->clone() );
+    RbPtr<Vector> temp( static_cast<const Vector*>( (*members)[0]->getValue().get() )->clone() );
     temp->clear();
     for ( size_t i=0; i<getNumberOfTaxa(); i++ )
         temp->push_back( RbPtr<RbObject>( getCharacter( i, cn )->clone() ) );
@@ -618,7 +618,7 @@ void Alignment::setElement( const size_t index, RbPtr<RbLanguageObject> var ) {
         elements.insert( elements.begin() + index, var );
         
         // add the sequence also as a member so that we can access it by name
-        members.addVariable(seq->getTaxonName(), RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(var) ) ) ) );
+        members->addVariable(seq->getTaxonName(), RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(var) ) ) ) );
     }
 }
 

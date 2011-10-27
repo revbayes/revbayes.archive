@@ -81,7 +81,7 @@ class MemberObject: public RbLanguageObject {
                                             MemberObject(const MemberObject &m);                                                //!< Copy constructor
  
         // Members is the variable frame that stores member variables
-        MemberEnvironment                   members;                                                                                //!< Member variables
+        RbPtr<MemberEnvironment>            members;                                                                                //!< Member variables
 };
 
 #endif

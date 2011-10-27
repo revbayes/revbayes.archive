@@ -72,27 +72,27 @@ Func_unique<valType>* Func_unique<valType>::clone( void ) const {
 template <typename valType> 
 RbPtr<RbLanguageObject> Func_unique<valType>::execute( void ) {
     
-    RbPtr<valType> val( args[0]->getValue()->clone() );
+    RbPtr<valType> val( static_cast<valType*>( args[0]->getValue()->clone() ) );
     
     if(val->size() == 0) 
-        return RbPtr<RbLanguageObject>( val );
+        return RbPtr<RbLanguageObject>( val.get() );
     val->sort();
     val->unique();
-    return RbPtr<RbLanguageObject>( val );
+    return RbPtr<RbLanguageObject>( val.get() );
 
 }
 
 
 /** Get argument rules */
 template <typename valType>
-const ArgumentRules& Func_unique<valType>::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_unique<valType>::getArgumentRules( void ) const {
     
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", valType() .getTypeSpec() ) ) );
         rulesSet = true;
     }
     

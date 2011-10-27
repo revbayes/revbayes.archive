@@ -38,7 +38,7 @@ MethodTable& MethodTable::operator=(const MethodTable& x) {
     if (this != &x) {
         
         table.clear();
-        for (std::multimap<std::string, RbPtr<RbFunction> >::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
+        for (std::multimap<std::string, RbFunction* >::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
             table.insert(std::pair<std::string, RbFunction*>((*i).first, (RbFunction*)((*i).second->clone())));
         
         parentTable = x.parentTable;

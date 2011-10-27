@@ -225,22 +225,22 @@ void Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "treeplate",    new TreePlate()         );
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
-        addDistribution( "beta",         new Dist_beta()  );
+        addDistribution( "beta",         RbPtr<DistributionContinuous>( new Dist_beta() )  );
         addDistribution( "birthdeath",   new Dist_birthdeath()  );
         addDistribution( "cat",          new Dist_cat()         );
         addDistribution( "ctmc",         new Dist_ctmm()        );
-        addDistribution( "dirichlet",    new Dist_dirichlet()   );
-        addDistribution( "exp",          new Dist_exp()         );
-        addDistribution( "logis",        new Dist_logis()       );
-        addDistribution( "multinomial",  new Dist_multinomial() );
-        addDistribution( "norm",         new Dist_norm()        );
-		addDistribution( "lnorm",        new Dist_lnorm()       );
+        addDistribution( "dirichlet",    RbPtr<DistributionContinuous>( new Dist_dirichlet() )   );
+        addDistribution( "exp",          RbPtr<DistributionContinuous>( new Dist_exp() )         );
+        addDistribution( "logis",        RbPtr<DistributionContinuous>( new Dist_logis() )       );
+        addDistribution( "multinomial",  RbPtr<DistributionContinuous>( new Dist_multinomial() ) );
+        addDistribution( "norm",         RbPtr<DistributionContinuous>( new Dist_norm() )        );
+		addDistribution( "lnorm",        RbPtr<DistributionContinuous>( new Dist_lnorm() )       );
         addDistribution( "unifTopology", new Dist_topologyunif());
-        addDistribution( "unif",         new Dist_unif()        );
+        addDistribution( "unif",         RbPtr<DistributionContinuous>( new Dist_unif() )        );
 
         /* Now we have added all primitive and complex data types and can start type checking */
-        Workspace::globalWorkspace().typesInitialized = true;
-        Workspace::userWorkspace().typesInitialized   = true;
+        Workspace::globalWorkspace()->typesInitialized = true;
+        Workspace::userWorkspace()->typesInitialized   = true;
 
         /* Add basic internal functions (alphabetic order) */
         addFunction( "_range",    new Func__range()       );

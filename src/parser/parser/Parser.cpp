@@ -75,15 +75,15 @@ int Parser::execute(RbPtr<SyntaxElement> root) const {
 
         // Catch a missing variable exception that might be interpreted as a request for
         // usage help on a function
-        SyntaxVariable *rootPtr = dynamic_cast<SyntaxVariable*>(root.get());
+        SyntaxVariable* rootPtr = dynamic_cast<SyntaxVariable*>(root.get());
         RbPtr<SyntaxVariable> theVariable( rootPtr );
-        if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL && !theVariable->isMemberVariable() ) {
+        if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable.get() != NULL && !theVariable->isMemberVariable() ) {
 
             RbPtr<RbString> fxnName = theVariable->getIdentifier();
-            std::vector<const RbPtr<RbFunction> > functions = Workspace::userWorkspace()->getFunctionTable()->findFunctions( *fxnName );
+            std::vector<const RbFunction* > functions = Workspace::userWorkspace()->getFunctionTable()->findFunctions( *fxnName );
             if ( functions.size() != 0 ) {
                 RBOUT( "Usage:" );
-                for ( std::vector<const RbPtr<RbFunction> >::iterator i=functions.begin(); i!=functions.end(); i++ ) {
+                for ( std::vector<const RbFunction* >::iterator i=functions.begin(); i!=functions.end(); i++ ) {
                     RBOUT( (*i)->briefInfo() );
                 }
                 return 0;
@@ -171,10 +171,10 @@ int Parser::help(RbPtr<RbString> symbol) const {
         else if ( userHelp->isHelpAvailableForQuery(std::string(*symbol)) == false )
             RBOUT("Help unavailable for \"" + std::string(*symbol) + "\"");
 
-        std::vector<const RbPtr<RbFunction> > functions = Workspace::userWorkspace()->getFunctionTable()->findFunctions( *symbol );
+        std::vector<const RbFunction* > functions = Workspace::userWorkspace()->getFunctionTable()->findFunctions( *symbol );
         if ( functions.size() != 0 ) {
             RBOUT( "Usage:" );
-            for ( std::vector<const RbPtr<RbFunction> >::iterator i=functions.begin(); i!=functions.end(); i++ ) {
+            for ( std::vector<const RbFunction* >::iterator i=functions.begin(); i!=functions.end(); i++ ) {
                 RBOUT( (*i)->briefInfo() );
             }
         }
@@ -186,7 +186,7 @@ int Parser::help(RbPtr<RbString> symbol) const {
 
 
 /** This function prints help info about a function if it sees a function call */
-int Parser::help(RbPtr<SyntaxElement> root) const {
+int Parser::help(RbPtr<SyntaxFunctionCall> root) const {
 
     std::ostringstream msg;
 

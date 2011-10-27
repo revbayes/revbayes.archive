@@ -194,14 +194,14 @@ void MatrixComplex::printValue(std::ostream& o) const {
 }
 
 
-/** Push back a row vector */
-void MatrixComplex::push_back( const VectorComplex& x ) {
-    
-    if ( size() > 0 && x.size() != getNumberOfColumns() )
-        throw RbException( "Cannot make matrix with rows of unequal size" );
-    
-    elements.push_back( RbPtr<RbLanguageObject>( x.clone() ) );
-}
+///** Push back a row vector */
+//void MatrixComplex::push_back( const VectorComplex& x ) {
+//    
+//    if ( size() > 0 && x.size() != getNumberOfColumns() )
+//        throw RbException( "Cannot make matrix with rows of unequal size" );
+//    
+//    elements.push_back( RbPtr<RbLanguageObject>( x.clone() ) );
+//}
 
 
 /** Overloaded container resize method */

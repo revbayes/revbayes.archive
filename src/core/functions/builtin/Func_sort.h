@@ -70,9 +70,9 @@ Func_sort<valType>* Func_sort<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType> 
-RbLanguageObject* Func_sort<valType>::execute( void ) {
+RbPtr<RbLanguageObject> Func_sort<valType>::execute( void ) {
     
-    RbPtr<valType> val( args[0]->getValue()->clone() );
+    RbPtr<valType> val( static_cast<valType*>( args[0]->getValue()->clone() ) );
     
     if(val->size() == 0) 
         return RbPtr<RbLanguageObject>( val.get() );
@@ -84,14 +84,14 @@ RbLanguageObject* Func_sort<valType>::execute( void ) {
 
 /** Get argument rules */
 template <typename valType>
-const ArgumentRules& Func_sort<valType>::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_sort<valType>::getArgumentRules( void ) const {
     
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        argumentRules.push_back( new ValueRule( "", valType() .getTypeSpec() ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", valType() .getTypeSpec() ) ) );
         rulesSet = true;
     }
     

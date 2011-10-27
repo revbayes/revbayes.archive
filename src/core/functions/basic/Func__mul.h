@@ -86,15 +86,15 @@ RbPtr<RbLanguageObject> Func__mul<firstValType,secondValType,retType>::execute( 
 
 /** Get argument rules */
 template <typename firstValType, typename secondValType, typename retType>
-const ArgumentRules& Func__mul<firstValType, secondValType, retType>::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func__mul<firstValType, secondValType, retType>::getArgumentRules( void ) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", firstValType() .getTypeSpec() ) );
-        argumentRules.push_back( new ValueRule( "", secondValType().getTypeSpec() ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", firstValType() .getTypeSpec() ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", secondValType().getTypeSpec() ) ) );
         rulesSet = true;
         }
 

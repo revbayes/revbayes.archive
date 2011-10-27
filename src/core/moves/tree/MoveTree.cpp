@@ -81,7 +81,7 @@ const RbPtr<MemberRules> MoveTree::getMemberRules( void ) const {
  */
 const RbPtr<Topology> MoveTree::getTopology( void ) const {
 
-    const RbPtr<TreePlate> tree( static_cast<TreePlate*>( members["tree"]->getValue().get() ) );
+    const RbPtr<TreePlate> tree( static_cast<TreePlate*>( (*members)["tree"]->getValue().get() ) );
     
     return tree->getTopology();
 }
@@ -115,6 +115,8 @@ double MoveTree::performMove(double& lnProbabilityRatio) {
     numTried++;
     
 //    return lnHastingsRatio;
+    
+    return  0.0;
 }
 
 
@@ -124,7 +126,7 @@ double MoveTree::performMove(double& lnProbabilityRatio) {
 void MoveTree::rejectMove(void) {
 
     // Get topology and tree variable info
-    RbPtr<StochasticNode> topNode      = static_cast<StochasticNode*>( members["topology"].getDagNodePtr() );
+    RbPtr<StochasticNode> topNode( static_cast<StochasticNode*>( (*members)["topology"]->getDagNodePtr().get() ) );
 
 
     // Send derived class a reject message

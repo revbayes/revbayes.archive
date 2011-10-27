@@ -85,7 +85,7 @@ class DAGNode : public RbInternal {
         void                                                printParents(std::ostream& o) const;                                    //!< Print children DAG nodes
         void                                                removeChildNode(VariableNode *c);                                       //!< Remove a child node
         void                                                setName(const std::string &n) { name = n; }                             //!< Replace the name of the variable
-        void                                                setVariable(RbPtr<Variable> var);                                       //!< Set the variable owning this node
+        void                                                setVariable(Variable* var);                                       //!< Set the variable owning this node
 
 
 

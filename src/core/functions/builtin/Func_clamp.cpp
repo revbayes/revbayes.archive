@@ -53,7 +53,7 @@ RbPtr<RbLanguageObject> Func_clamp::execute( void ) {
     // The following call will throw an error if the value type is wrong
     theNode->clamp( RbPtr<RbLanguageObject>( args[1]->getValue()->clone() ) );
 
-    return NULL;
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 

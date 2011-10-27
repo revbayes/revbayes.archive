@@ -61,15 +61,15 @@ RbPtr<RbLanguageObject> Func_setval::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_setval::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_setval::getArgumentRules( void ) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if ( !rulesSet ) {
 
-        argumentRules.push_back( new ValueRule ( "variable", RbObject_name ));
-        argumentRules.push_back( new ValueRule ( "value",    RbObject_name ));
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule ( "variable", RbObject_name ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule ( "value",    RbObject_name ) ) );
         rulesSet = true;
     }
 

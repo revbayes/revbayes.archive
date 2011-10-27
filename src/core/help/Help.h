@@ -21,12 +21,12 @@
 #ifndef Help_H
 #define Help_H
 
+#include "HelpNode.h"
 #include "RbPtr.h"
 
 #include <string>
 #include <vector>
 
-class HelpNode;
 
 class Help {
 

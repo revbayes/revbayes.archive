@@ -276,7 +276,7 @@ RbPtr<HelpNode> Help::getHelpNodeForQuery(const std::string& qs) {
             }
         }
 
-    return NULL;
+    return RbPtr<HelpNode>::getNullPtr();
 }
 
 

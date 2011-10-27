@@ -206,7 +206,7 @@ RbPtr<Alignment> NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
  
     // check that the character block is of the correct type
 	if (charblock->GetDataType() != NxsCharactersBlock::protein)
-        return NULL;
+        return RbPtr<Alignment>::getNullPtr();
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
@@ -508,7 +508,7 @@ RbPtr<Alignment> NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
     std::string sym = charblock->GetSymbols();
     int nStates = mapper->GetNumStates();
     if (nStates > 10)
-        return NULL;
+        return RbPtr<Alignment>::getNullPtr();
     
     // instantiate the character matrix
 	RbPtr<Alignment> cMat( new Alignment( StandardState_name ) );
@@ -1033,7 +1033,7 @@ RbPtr<std::vector<RbPtr<Topology> > > NclReader::readTrees(const std::string fn,
     if ( !fileExists(fn.c_str()) ) 
         {
         addWarning("Data file not found");
-        return NULL;
+            return RbPtr<std::vector<RbPtr<Topology> > >::getNullPtr();
         }
     
 	// allocate a vector of trees
@@ -1063,7 +1063,7 @@ RbPtr<std::vector<RbPtr<Topology> > > NclReader::readTrees(const char* fileName,
 	if ( !fileExists(fileName) ) 
         {
         addWarning("Data file not found");
-        return NULL;
+            return RbPtr<std::vector<RbPtr<Topology> > >::getNullPtr();
         }
 	
 	try 
@@ -1082,7 +1082,7 @@ RbPtr<std::vector<RbPtr<Topology> > > NclReader::readTrees(const char* fileName,
 	catch(NxsException err) 
         {
 		std::cout << "Nexus Error: " << err.msg << " (" << err.pos << ", " << err.line << ", " << err.col << ")" << std::endl;
-		return NULL;
+            return RbPtr<std::vector<RbPtr<Topology> > >::getNullPtr();
         }
 	
 	std::vector<std::string> fileNameVector;

@@ -73,23 +73,23 @@ RbPtr<RbLanguageObject> Func_vector<valType, retType>::execute( void ) {
 
     RbPtr<retType> tempVec( new retType() );
     for ( size_t i = 0; i < args.size(); i++ )
-        tempVec->push_back( args[i]->getValue() );
+        tempVec->push_back( RbPtr<RbObject>( args[i]->getValue().get() ) );
 
-    return RbPtr<RbLanguageObject>( tempVec );
+    return RbPtr<RbLanguageObject>( tempVec.get() );
 }
 
 
 /** Get argument rules */
 template <typename valType, typename retType>
-const ArgumentRules& Func_vector<valType, retType>::getArgumentRules( void ) const {
+const RbPtr<ArgumentRules> Func_vector<valType, retType>::getArgumentRules( void ) const {
 
-    static ArgumentRules argumentRules;
+    static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
 
     if ( !rulesSet ) 
         {
-        argumentRules.push_back( new ValueRule( "", valType().getTypeSpec() ) );
-        argumentRules.push_back( new Ellipsis (     valType().getTypeSpec() ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", valType().getTypeSpec() ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new Ellipsis (     valType().getTypeSpec() ) ) );
         rulesSet = true;
         }
 

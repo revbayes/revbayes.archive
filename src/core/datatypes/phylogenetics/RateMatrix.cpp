@@ -333,10 +333,10 @@ const RbPtr<MemberRules> RateMatrix::getMemberRules(void) const {
 const RbPtr<MethodTable> RateMatrix::getMethods(void) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
-    static ArgumentRules nstatesArgRules;
-    static ArgumentRules stationaryfreqsArgRules;
-    static ArgumentRules averateArgRules;
-    static ArgumentRules reversibleArgRules;
+    static RbPtr<ArgumentRules> nstatesArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> stationaryfreqsArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> averateArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> reversibleArgRules( new ArgumentRules() );
     static bool          methodsSet = false;
 
     if ( methodsSet == false ) 
