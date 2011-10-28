@@ -42,6 +42,9 @@ StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.
 /** Constructor from distribution */
 StochasticNode::StochasticNode( RbPtr<Distribution> dist ) : VariableNode( dist->getVariableType() ), clamped( false ), distribution( dist ) {
 
+    // increment the reference count for myself
+    RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
+    
     /* Get distribution parameters */
     const RbPtr<MemberEnvironment> params = dist->getMembers();
 
@@ -67,6 +70,10 @@ StochasticNode::StochasticNode( RbPtr<Distribution> dist ) : VariableNode( dist-
     
     /* Get initial probability */
     lnProb = calculateLnProbability();
+    
+    
+    // decrement the reference count for myself
+    RbMemoryManager::rbMemoryManager().decrementCountForAddress(this);
 }
 
 

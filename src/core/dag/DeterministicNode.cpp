@@ -23,6 +23,7 @@
 #include "DeterministicNode.h"
 #include "RbException.h"
 #include "RbFunction.h"
+#include "RbMemoryManager.h"
 #include "RbUtil.h"
 #include "UserInterface.h"
 #include "VectorString.h"
@@ -41,6 +42,9 @@ DeterministicNode::DeterministicNode( const std::string& valType ) : VariableNod
 
 /** Constructor of empty deterministic node */
 DeterministicNode::DeterministicNode( RbPtr<RbFunction> func ) : VariableNode(func->getReturnType()), changed( false ) {
+    
+    // increment the reference count for myself
+    RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
     
     /* Check for cycles */
     const Environment& arguments = func->getArguments();
@@ -71,6 +75,9 @@ DeterministicNode::DeterministicNode( RbPtr<RbFunction> func ) : VariableNode(fu
     
     value           = retVal;
     storedValue     = RbPtr<RbLanguageObject>::getNullPtr();
+    
+    // decrement the reference count for myself
+    RbMemoryManager::rbMemoryManager().decrementCountForAddress(this);
 }
 
 

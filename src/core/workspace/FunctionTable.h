@@ -57,7 +57,7 @@ class FunctionTable : public RbInternal {
         RbPtr<RbLanguageObject>                 executeFunction(const std::string&                   name,
                                                                 const std::vector<RbPtr<Argument> >& args) const;                       //!< Evaluate function (once)
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
-        std::vector<const RbFunction* >   findFunctions(const std::string& name) const;                                           //!< Return functions matching name
+        std::vector<RbPtr<RbFunction> >         findFunctions(const std::string& name) const;                                           //!< Return functions matching name
         RbPtr<RbFunction>                       getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) const;  //!< Get function (a copy)
         bool                                    isDistinctFormal(const RbPtr<ArgumentRules> x, const RbPtr<ArgumentRules> y) const;                 //!< Are formals unique?
         void                                    setParentTable(RbPtr<FunctionTable> table) { parentTable = table; }                     //!< Set parent table
@@ -67,7 +67,7 @@ class FunctionTable : public RbInternal {
                                                              const std::vector<RbPtr<Argument> >&   args) const;                        //!< Find function, process args
         
         // Member variables
-        std::multimap<std::string, RbFunction* >  table;                                                                          //!< Table of functions
+        std::multimap<std::string, RbPtr<RbFunction> >  table;                                                                          //!< Table of functions
         RbPtr<FunctionTable>                            parentTable;                                                                    //!< Enclosing table
     
     private:

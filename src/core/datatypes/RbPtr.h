@@ -56,7 +56,7 @@ protected:
     T*                          mPtr;
 };
 
-//#include "RbMemoryManager.h"
+#include "RbMemoryManager.h"
 
 template <typename T>
 RbPtr<T>::RbPtr(T* inPtr) {
@@ -93,18 +93,18 @@ template <typename T>
 void RbPtr<T>::initializePointer(T* inPtr) {
     
     mPtr = inPtr;
-//    RbMemoryManager& myMemoryManager = RbMemoryManager::rbMemoryManager();
-//    myMemoryManager.incrementCountForAddress(mPtr);
+    RbMemoryManager& myMemoryManager = RbMemoryManager::rbMemoryManager();
+    myMemoryManager.incrementCountForAddress(mPtr);
 }
 
 template <typename T>
 void RbPtr<T>::finalizePointer(void) {
     
-//    RbMemoryManager& myMemoryManager = RbMemoryManager::rbMemoryManager();
-//    
-//    if ( myMemoryManager.decrementCountForAddress(mPtr) ) { 
-//        delete mPtr;
-//    }
+    RbMemoryManager& myMemoryManager = RbMemoryManager::rbMemoryManager();
+    
+    if ( myMemoryManager.decrementCountForAddress(mPtr) ) { 
+        delete mPtr;
+    }
 }
 
 template <typename T>
