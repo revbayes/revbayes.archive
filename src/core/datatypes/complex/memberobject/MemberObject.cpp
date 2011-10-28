@@ -29,6 +29,14 @@
 #include "VariableNode.h"
 
 
+/** Constructor */
+MemberObject::MemberObject() : RbLanguageObject() {
+    
+    members = RbPtr<MemberEnvironment>( new MemberEnvironment() );
+    
+}
+
+
 
 /** Constructor: we set member variables here from member rules */
 MemberObject::MemberObject(const RbPtr<MemberRules> memberRules) : RbLanguageObject() {
@@ -41,6 +49,8 @@ MemberObject::MemberObject(const RbPtr<MemberRules> memberRules) : RbLanguageObj
         members->addVariable( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() );
     }
 }
+
+
 
 
 /** Copy constructor */

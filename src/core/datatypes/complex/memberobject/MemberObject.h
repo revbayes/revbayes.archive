@@ -76,8 +76,8 @@ class MemberObject: public RbLanguageObject {
         virtual bool                        supportsIndex(void) const { return false; }                                         //!< Does object support index operator?
 
     protected:
-                                            MemberObject(const RbPtr<MemberRules> memberRules);                                       //!< Standard constructor
-                                            MemberObject(void){}                                                                //!< Default constructor; no members or methods
+                                            MemberObject(const RbPtr<MemberRules> memberRules);                                 //!< Standard constructor
+                                            MemberObject(void);                                                                 //!< Default constructor; no members or methods
                                             MemberObject(const MemberObject &m);                                                //!< Copy constructor
  
         // Members is the variable frame that stores member variables

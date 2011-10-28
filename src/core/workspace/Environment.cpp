@@ -50,7 +50,7 @@ Environment::Environment(RbPtr<Environment> parentFr) : RbInternal(), parentEnvi
 Environment::Environment(const Environment &x): RbInternal(x) {
     
     // make a deep copy of the parent environment
-    if (x.parentEnvironment.get() == NULL) {
+    if (x.parentEnvironment.get() != NULL) {
         parentEnvironment = RbPtr<Environment>(x.parentEnvironment->clone());    }
     else {
         parentEnvironment = RbPtr<Environment>::getNullPtr();
