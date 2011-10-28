@@ -58,10 +58,16 @@ protected:
 
 #include "RbMemoryManager.h"
 
+#include <iostream>
+#include <typeinfo>
+
 template <typename T>
 RbPtr<T>::RbPtr(T* inPtr) {
     
     initializePointer(inPtr);
+//    if (RbMemoryManager::rbMemoryManager().countForAddress(inPtr) == 1) {
+//        std::cerr << "Initialize pointer " << mPtr << " of type " << typeid(mPtr).name() << "|" << typeid(*mPtr).name() << std::endl;
+//    }
 }
 
 template <typename T>
@@ -104,6 +110,7 @@ void RbPtr<T>::finalizePointer(void) {
     
     if ( myMemoryManager.decrementCountForAddress(mPtr) ) { 
         delete mPtr;
+//        std::cerr << "Destroying pointer " << mPtr << " of type " << typeid(mPtr).name() << std::endl;
     }
 }
 

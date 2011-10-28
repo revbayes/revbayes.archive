@@ -26,11 +26,11 @@
 #include <vector>
 
 #include "Argument.h"
+#include "ArgumentRule.h"
 #include "Environment.h"
 #include "RbInternal.h"
 #include "RbPtr.h"
 
-class ArgumentRule;
 class DAGNode;
 class VectorInteger;
 class VectorString;

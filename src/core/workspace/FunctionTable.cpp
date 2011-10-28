@@ -185,7 +185,7 @@ RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std
     }
     else {
         RbPtr<VectorInteger> matchScore( new VectorInteger() );
-        RbPtr<VectorInteger> bestScore( new VectorInteger() );
+        VectorInteger bestScore;
         RbPtr<RbFunction> bestMatch;
 
         bool ambiguous = false;
@@ -193,23 +193,23 @@ RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std
         for (it=retVal.first; it!=retVal.second; it++) {
             if ( (*it).second.get()->processArguments(args, matchScore) == true ) {
                 if ( bestMatch == NULL ) {
-                    bestScore = matchScore;
+                    bestScore = *matchScore;
                     bestMatch = it->second;
                     ambiguous = false;
                 }
                 else {
                     size_t j;
-                    for (j=0; j<matchScore->size() && j<bestScore->size(); j++) {
-                        if ((*matchScore)[j] < (*bestScore)[j]) {
-                            bestScore = matchScore;
+                    for (j=0; j<matchScore->size() && j<bestScore.size(); j++) {
+                        if ((*matchScore)[j] < bestScore[j]) {
+                            bestScore = *matchScore;
                             bestMatch = it->second;
                             ambiguous = false;
                             break;
                         }
-                        else if ((*matchScore)[j] > (*bestScore)[j])
+                        else if ((*matchScore)[j] > bestScore[j])
                             break;
                     }
-                    if (j==matchScore->size() || j==bestScore->size()) {
+                    if (j==matchScore->size() || j==bestScore.size()) {
                         ambiguous = true;   // Continue checking, there might be better matches ahead
                     }
                 }
