@@ -138,7 +138,7 @@ void RbFunction::printValue(std::ostream& o) const {
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
 bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedArgs, RbPtr<VectorInteger> matchScore) {
-
+    
     bool    conversionNeeded;
     int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
 

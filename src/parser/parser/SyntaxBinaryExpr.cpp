@@ -108,13 +108,14 @@ RbPtr<Variable> SyntaxBinaryExpr::getContentAsVariable(RbPtr<Environment> env) c
 
     // Package the arguments
     std::vector<RbPtr<Argument> > args;
-    RbPtr<DAGNode> left = leftOperand->getContentAsVariable(env)->getDagNodePtr();
-    args.push_back(RbPtr<Argument>(new Argument("", left->getVariable() ) ));
-    RbPtr<DAGNode> right = rightOperand->getContentAsVariable(env)->getDagNodePtr();
-    args.push_back(RbPtr<Argument>(new Argument("", right->getVariable() ) ));
+    RbPtr<Variable> left = leftOperand->getContentAsVariable(env);
+    args.push_back(RbPtr<Argument>(new Argument("", left ) ));
+    RbPtr<Variable> right = rightOperand->getContentAsVariable(env);
+    args.push_back(RbPtr<Argument>(new Argument("", right ) ));
 
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[operation];
+    
     RbPtr<RbFunction> theFunction = Workspace::globalWorkspace()->getFunction(funcName, args);
     
     return RbPtr<Variable>(new Variable(RbPtr<DAGNode>(new DeterministicNode( theFunction )) ) );

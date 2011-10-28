@@ -160,7 +160,7 @@ std::vector<RbPtr<RbFunction> > FunctionTable::findFunctions(const std::string& 
 
 /** Find function (also processes arguments) */
 RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) const {
-
+    
     std::pair<std::multimap<std::string, RbPtr<RbFunction> >::const_iterator,
               std::multimap<std::string, RbPtr<RbFunction> >::const_iterator> retVal;
 
@@ -250,7 +250,7 @@ const VectorString& FunctionTable::getClass() const {
 
 /** Get function copy (for repeated evaluation in a DeterministicNode) */
 RbPtr<RbFunction> FunctionTable::getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) const {
-
+    
     // find the template function
     RbPtr<RbFunction> theFunction = findFunction(name, args);
 
