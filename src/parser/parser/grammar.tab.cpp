@@ -2780,7 +2780,7 @@ yyreduce:
 
   case 128:
 #line 589 "./grammar.y"
-    { (yyval.idString) = new RbPtr<RbString>( new RbString(*(yyvsp[(1) - (1)].string)) ); }
+    { (yyval.idString) = new RbPtr<RbString>( new RbString((yyvsp[(1) - (1)].string)) ); }
     break;
 
   case 129:
