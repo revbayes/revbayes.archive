@@ -21,6 +21,7 @@
 #include "RbUtil.h"
 #include "Signals.h"
 #include "VectorString.h"
+#include "SyntaxAssignExpr.h"
 #include "SyntaxForCondition.h"
 #include "SyntaxStatement.h"
 #include "UserInterface.h"
@@ -160,7 +161,7 @@ RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) co
                 result = (*i)->getContentAsVariable(loopEnv);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if (result != NULL) {
+                if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
                     result->getDagNodePtr()->printValue(msg);
                     RBOUT( msg.str() );
@@ -209,7 +210,7 @@ RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) co
 	            result = (*i)->getContentAsVariable( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if (result != NULL) {
+                if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
                     result->getDagNodePtr()->printValue(msg);
                     RBOUT( msg.str() );
@@ -252,7 +253,7 @@ RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) co
                 result = (*i)->getContentAsVariable(env);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if (result != NULL) {
+                if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
                     result->getDagNodePtr()->printValue(msg);
                     RBOUT( msg.str() );
@@ -277,7 +278,7 @@ RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) co
                 result = (*i)->getContentAsVariable( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if (result != NULL) {
+                if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
                     result->getDagNodePtr()->printValue(msg);
                     RBOUT( msg.str() );
@@ -296,7 +297,7 @@ RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) co
                 result = (*i)->getContentAsVariable( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if (result != NULL) {
+                if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
                     result->getDagNodePtr()->printValue(msg);
                     RBOUT( msg.str() );
