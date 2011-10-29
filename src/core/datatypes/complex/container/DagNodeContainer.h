@@ -19,14 +19,13 @@
 #define DagNodeContainer_H
 
 #include "Container.h"
+#include "RbObject.h"
+#include "Variable.h"
 #include "VariableSlot.h"
 
 #include <ostream>
 #include <string>
 #include <vector>
-
-class DAGNode;
-class VectorString;
 
 
 /**

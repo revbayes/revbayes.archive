@@ -374,7 +374,7 @@ RbPtr<Variable> SyntaxVariable::getContentAsVariable(RbPtr<Environment> env) con
                 throw RbException( "Member variable identifier missing" );
 
             RbPtr<MemberObject> theMemberObject( static_cast<MemberObject*>( baseVar->getDagNodePtr()->getValuePtr().get() ) );
-            RbPtr<MemberEnvironment> members = theMemberObject->getMembersPtr();
+            RbPtr<Environment> members = theMemberObject->getMembersPtr();
             theVar = (*members)[ (*identifier) ]->getVariable();
         }
         else {

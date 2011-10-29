@@ -33,16 +33,13 @@
 #ifndef Variable_H 
 #define Variable_H
 
-#include "RbInternal.h"
 #include "DAGNode.h"
+#include "RbInternal.h"
+#include "RbLanguageObject.h"
 #include "RbPtr.h"
 #include "TypeSpec.h"
 
 #include <string>
-
-class DAGNode;
-class Frame;
-class RbObject;
 
 const std::string Variable_name = "Variable";
 
@@ -63,8 +60,8 @@ public:
     const VectorString&                 getClass() const;                                   //!< Get class vector
     const TypeSpec&                     getTypeSpec(void) const;                            //!< Get language type of the object
     const std::string&                  getName(void) const;                                //!< Get name of variable
-    const RbPtr<RbLanguageObject>       getValue(void) const;                               //!< Get the value of the variable (ptr, not copy)
-    const RbPtr<DAGNode>                getDagNode(void) const { return node; }             //!< Get the variable pointer
+    RbPtr<RbLanguageObject>             getValue(void) const;                               //!< Get the value of the variable (ptr, not copy)
+    RbPtr<DAGNode>                      getDagNode(void) const { return node; }             //!< Get the variable pointer
     RbPtr<DAGNode>                      getDagNodePtr(void) const;                          //!< Get a reference to the variable
     void                                setName(const std::string &n);                      //!< Replacing the name of the variable
     void                                printValue(std::ostream& o) const;                  //!< Print value of variable

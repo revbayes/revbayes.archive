@@ -215,7 +215,7 @@ const RbPtr<RbLanguageObject> DeterministicNode::getStoredValue( void ) {
 
 
 /** Get value */
-const RbPtr<RbLanguageObject> DeterministicNode::getValue( void ) {
+RbPtr<RbLanguageObject> DeterministicNode::getValue( void ) {
 
     if ( touched && !changed )
         update();

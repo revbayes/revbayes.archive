@@ -110,7 +110,8 @@ void Alignment::addSequence( RbPtr<Sequence> obs ) {
     sequenceNames.push_back(obs->getTaxonName());
     
     // add the sequence also as a member so that we can access it by name
-    members->addVariable(obs->getTaxonName(), RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( obs.get() ) ) ) ) ));
+    RbPtr<Variable> var( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( obs.get() ) ) ) ) );
+    members->addVariable(obs->getTaxonName(), var);
 }
 
 
@@ -618,7 +619,8 @@ void Alignment::setElement( const size_t index, RbPtr<RbLanguageObject> var ) {
         elements.insert( elements.begin() + index, var );
         
         // add the sequence also as a member so that we can access it by name
-        members->addVariable(seq->getTaxonName(), RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(var) ) ) ) );
+        RbPtr<Variable> variable( new Variable( RbPtr<DAGNode>( new ConstantNode(var) ) ) );
+        members->addVariable(seq->getTaxonName(), variable );
     }
 }
 

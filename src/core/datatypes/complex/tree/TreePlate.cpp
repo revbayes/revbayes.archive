@@ -30,6 +30,7 @@
 #include "TreePlate.h"
 #include "ValueRule.h"
 #include "VariableSlot.h"
+#include "Variable.h"
 #include "VectorString.h"
 
 
@@ -105,7 +106,7 @@ std::string TreePlate::buildNewickString(RbPtr<TopologyNode> node) const {
             size_t nodeIndex = getNodeIndex(node) - 1;
             
             // get the variable
-            RbPtr<Variable> var = static_cast<DAGNode*>( vars->getElement(nodeIndex).get() )->getVariable();
+            RbPtr<Variable> var = static_cast<VariableSlot*>( vars->getElement(nodeIndex).get() )->getVariable();
             
             newick += varName + ":" + var->getDagNodePtr()->getValue()->briefInfo();
         }
@@ -150,7 +151,9 @@ RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, Env
         if (!members->existsVariable(varName)) {
             // we don't have a container for this variable name yet
             // so we just create one
-            members->addVariable(varName, RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(orderingTopology->getNumberOfNodes() ) ) ) ) ) ) );
+            RbPtr<Variable> var( new Variable( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(orderingTopology->getNumberOfNodes() ) ) ) ) ) );
+            
+            members->addVariable(varName, var );
             
             // and we add it to our names list
             nodeVariableNames.push_back(varName);
@@ -185,7 +188,7 @@ RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, Env
         }
         else {
             // get the container with the variables for this node
-            DagNodeContainer *vars = static_cast<DagNodeContainer*>((*members)[varName]->getDagNodePtr()->getValuePtr().get() );
+            DagNodeContainer *vars = static_cast<DagNodeContainer*>((*members)[varName]->getVariable()->getValue().get() );
         
             // get the node we want to associate it too
             const RbPtr<TopologyNode> theNode( static_cast<TopologyNode*>(args[1]->getDagNodePtr()->getValue().get()) );
@@ -194,7 +197,7 @@ RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, Env
             size_t nodeIndex = getNodeIndex(theNode) - 1;
             
             // get the variable
-            RbPtr<Variable> var = static_cast<DAGNode*>(vars->getElement(nodeIndex).get() )->getVariable();
+            RbPtr<Variable> var = static_cast<VariableSlot*>( vars->getElement(nodeIndex).get() )->getVariable();
         
             return var->getDagNodePtr()->getValuePtr();
         }

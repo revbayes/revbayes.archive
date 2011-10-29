@@ -19,7 +19,6 @@
 #define MemberEnvironment_H
 
 #include "Environment.h"
-#include "VariableSlot.h"
 
 
 #include <string>

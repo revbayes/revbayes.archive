@@ -47,7 +47,7 @@ public:
     const VectorString&                 getClass(void) const;                                               //!< Get class vector
     const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
     const RbPtr<RbLanguageObject>       getStoredValue(void);                                               //!< Get stored value (non-const fxn because of delayed evaluation)
-    const RbPtr<RbLanguageObject>       getValue(void);                                                     //!< Get value (non-const fxn because of delayed evaluation)
+    RbPtr<RbLanguageObject>             getValue(void);                                                     //!< Get value (non-const fxn because of delayed evaluation)
     RbPtr<RbLanguageObject>             getValuePtr(void);                                                  //!< Get value pointer (non-const fxn because of delayed evaluation)
     void                                printStruct(std::ostream& o) const;                                 //!< Print struct for user
     void                                printValue(std::ostream& o);                                        //!< Print value for user  (non-const fxn because of delayed evaluation)

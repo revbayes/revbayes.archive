@@ -132,9 +132,9 @@ const TypeSpec& Variable::getTypeSpec(void) const {
 
 
 /** Get the value of the variable */
-const RbPtr<RbLanguageObject> Variable::getValue( void ) const {
+RbPtr<RbLanguageObject> Variable::getValue( void ) const {
     
-    const RbPtr<RbLanguageObject> retVal = node.get()->getValue();
+    RbPtr<RbLanguageObject> retVal = node.get()->getValue();
     
     return retVal;
 }

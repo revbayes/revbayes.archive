@@ -46,7 +46,7 @@ StochasticNode::StochasticNode( RbPtr<Distribution> dist ) : VariableNode( dist-
     RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
     
     /* Get distribution parameters */
-    const RbPtr<MemberEnvironment> params = dist->getMembers();
+    const RbPtr<Environment> params = dist->getMembers();
 
     /* Check for cycles */
     std::list<DAGNode*> done;
@@ -84,7 +84,7 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     distribution = RbPtr<Distribution>( x.distribution->clone() );
 
     /* Get distribution parameters */
-    const RbPtr<MemberEnvironment> params = distribution->getMembers();
+    const RbPtr<Environment> params = distribution->getMembers();
 
     /* Set parent(s) and add myself as a child to these */
     for ( size_t i = 0; i < params->size(); i++ ) {
@@ -138,7 +138,7 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         distribution = x.distribution;
 
         /* Get distribution parameters */
-        const RbPtr<MemberEnvironment> params = distribution->getMembers();
+        const RbPtr<Environment> params = distribution->getMembers();
 
         /* Set parent(s) and add myself as a child to these */
         for ( size_t i = 0; i < params->size(); i++ ) {
@@ -166,7 +166,7 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 /** Are any distribution params touched? Get distribution params and check if any one is touched */
 bool StochasticNode::areDistributionParamsTouched( void ) const {
 
-    const RbPtr<MemberEnvironment> params = distribution->getMembers();
+    const RbPtr<Environment> params = distribution->getMembers();
 
     for ( size_t i = 0; i < params->size(); i++ ) {
         
@@ -245,8 +245,8 @@ StochasticNode* StochasticNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& ne
     copy->storedLnProb = storedLnProb;
 
     /* Set the copy params to their matches in the new DAG */
-    const RbPtr<MemberEnvironment> params     = distribution->getMembers();
-    RbPtr<MemberEnvironment>       copyParams = copy->distribution->getMembers();
+    const RbPtr<Environment> params     = distribution->getMembers();
+    RbPtr<Environment>       copyParams = copy->distribution->getMembers();
 
     for ( size_t i = 0; i < params->size(); i++ ) {
 
@@ -334,7 +334,7 @@ const RbPtr<RbLanguageObject> StochasticNode::getStoredValue( void ) {
 
 
 /** Get const value; we always know our value. */
-const RbPtr<RbLanguageObject> StochasticNode::getValue( void ) {
+RbPtr<RbLanguageObject> StochasticNode::getValue( void ) {
 
     return value;
 }

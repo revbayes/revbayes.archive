@@ -20,7 +20,7 @@
 #ifndef MemberObject_H
 #define MemberObject_H
 
-#include "MemberEnvironment.h"
+#include "Environment.h"
 #include "MethodTable.h"
 #include "RbLanguageObject.h"
 
@@ -55,8 +55,8 @@ class MemberObject: public RbLanguageObject {
         bool                                isConstant(void) const;                                                             //!< Is the object, including all member variables and elements, constant?
 
         // Member variable functions you do not have to override
-        const RbPtr<MemberEnvironment>      getMembers(void) const;                                                             //!< Get members
-        RbPtr<MemberEnvironment>            getMembersPtr(void);                                                                //!< Get members
+        const RbPtr<Environment>            getMembers(void) const;                                                             //!< Get members
+        RbPtr<Environment>                  getMembersPtr(void);                                                                //!< Get members
         const TypeSpec                      getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
         const RbPtr<RbLanguageObject>       getMemberValue(const std::string& name) const;                                      //!< Get member value (const)
         const RbPtr<DAGNode>                getMemberDagNode(const std::string& name) const;                                    //!< Get member variable 
@@ -81,7 +81,7 @@ class MemberObject: public RbLanguageObject {
                                             MemberObject(const MemberObject &m);                                                //!< Copy constructor
  
         // Members is the variable frame that stores member variables
-        RbPtr<MemberEnvironment>            members;                                                                                //!< Member variables
+        RbPtr<Environment>                  members;                                                                                //!< Member variables
 };
 
 #endif

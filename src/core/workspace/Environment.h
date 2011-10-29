@@ -28,17 +28,17 @@
 #ifndef Environment_H 
 #define Environment_H
 
+#include "DAGNode.h"
 #include "RbInternal.h"
+#include "RbLanguageObject.h"
 #include "RbPtr.h"
+#include "Variable.h"
+#include "VariableSlot.h"
 
 #include <map>
 #include <string>
 #include <vector>
 
-class DAGNode;
-class RbLanguageObject;
-class Variable;
-class VariableSlot;
 
 typedef std::map<std::string, RbPtr<VariableSlot> > VariableTable;         //!< Typedef for convenience
 
@@ -87,7 +87,8 @@ public:
     
     // Regular functions
     void                            addVariable(const std::string& name, RbPtr<VariableSlot> slot);                         //!< Add variable
-    void                            addVariable(const std::string& name, RbPtr<Variable> var);                              //!< Add variable
+    void                            addVariable(const std::string& name, RbPtr<Variable>& var);                              //!< Add variable
+    void                            addVariable(const std::string& name, Variable* var);                              //!< Add variable
     void                            addVariable(const std::string& name, const TypeSpec &ts, RbPtr<Variable> var);          //!< Add variable
     void                            addVariable(const std::string& name, const TypeSpec& typeSp, RbPtr<DAGNode> variable);  //!< Add variable
     void                            addVariable(const std::string& name, const TypeSpec& typeSp);                           //!< Add variable

@@ -22,6 +22,7 @@
 #include "RbInternal.h"
 #include "RbPtr.h"
 #include "TypeSpec.h"
+#include "Variable.h"
 
 
 #include <list>
@@ -30,11 +31,9 @@
 #include <string>
 
 class ContainerNode;
-class Frame;
 class RbLanguageObject;
-class RbObject;
-class VariableNode;
 class Variable;
+class VariableNode;
 class VectorNatural;
 class VectorString;
 
@@ -59,7 +58,7 @@ class DAGNode : public RbInternal {
         virtual DAGNode*                                    clone(void) const = 0;                                                  //!< Clone this node
         virtual const VectorString&                         getClass(void) const;                                                   //!< Get DAG node class vector
         virtual const RbPtr<RbLanguageObject>               getStoredValue(void) = 0;                                               //!< Get stored value (non-const because of delayed evaluation)
-        virtual const RbPtr<RbLanguageObject>               getValue(void) = 0;                                                     //!< Get value (non-const because of delayed evaluation)
+        virtual RbPtr<RbLanguageObject>                     getValue(void) = 0;                                                     //!< Get value (non-const because of delayed evaluation)
         virtual RbPtr<RbLanguageObject>                     getValuePtr(void) = 0;                                                  //!< Get value pointer (non-const because of delayed evaluation)
         virtual void                                        printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
         virtual void                                        printValue(std::ostream& o) = 0;                                        //!< Print value for user (non-const fxn because of delayed evaluation)
@@ -77,7 +76,7 @@ class DAGNode : public RbInternal {
         RbPtr<RbObject>                                     getElement(size_t index);                                               //!< Get element at index (container function)
         const std::string&                                  getName(void) const;                                                    //!< get the name
 		std::set<RbPtr<DAGNode> >&                          getParents(void) { return parents; }                                    //!< Return parents
-        RbPtr<Variable>                                     getVariable(void) { return RbPtr<Variable>( variable ); }               //!< Get the variable owning this node
+        Variable*                                           getVariable(void) { return variable; }               //!< Get the variable owning this node
         bool                                                isParentInDAG(const RbPtr<DAGNode> x, std::list<DAGNode*>& done) const; //!< Is node x a parent of the caller in the DAG?
         size_t                                              numberOfChildren(void) const { return children.size(); }                //!< Number of children
         size_t                                              numberOfParents(void) const { return parents.size(); }                  //!< Number of parents

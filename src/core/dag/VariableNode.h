@@ -40,7 +40,7 @@ public:
     virtual VariableNode*                       clone(void) const = 0;                                                          //!< Clone this node
     virtual const VectorString&                 getClass(void) const;                                                           //!< Get DAG node class 
     virtual const RbPtr<RbLanguageObject>       getStoredValue(void) = 0;                                                       //!< Get stored value (non-const fxn because of delayed evaluation)
-    virtual const RbPtr<RbLanguageObject>       getValue(void) = 0;                                                             //!< Get value (non-const fxn because of delayed evaluation)
+    virtual RbPtr<RbLanguageObject>             getValue(void) = 0;                                                             //!< Get value (non-const fxn because of delayed evaluation)
     virtual RbPtr<RbLanguageObject>             getValuePtr(void) = 0;                                                          //!< Get value pointer (non-const fxn because of delayed evaluation)
     virtual void                                printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
     virtual void                                printValue(std::ostream& o) = 0;                                                //!< Print value for user (non-const fxn because of delayed evaluation)

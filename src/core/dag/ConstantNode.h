@@ -47,7 +47,7 @@ public:
 
     // ConstantNode functions
     const RbPtr<RbLanguageObject>       getStoredValue(void) { return value; }                                      //!< Get stored value (non-const fxn because of delayed evaluation in other DAG node classes)
-    const RbPtr<RbLanguageObject>       getValue(void) { return value; }                                            //!< Get value (non-const fxn because of delayed evaluation in other DAG node classes)
+    RbPtr<RbLanguageObject>             getValue(void) { return value; }                                            //!< Get value (non-const fxn because of delayed evaluation in other DAG node classes)
     RbPtr<RbLanguageObject>             getValuePtr(void) { return value; }                                         //!< Get value pointer (non-const fxn because of delayed evaluation in other DAG node classes)
 
     // DAG functions

@@ -170,9 +170,16 @@ void Environment::addVariable(const std::string& name, const TypeSpec& typeSp, R
 }
 
 /** Add variable */
-void Environment::addVariable(const std::string& name, RbPtr<Variable> theVar) {
+void Environment::addVariable(const std::string& name, RbPtr<Variable>& theVar) {
     
     addVariable( name, TypeSpec(RbObject_name), theVar );
+}
+
+
+/** Add variable */
+void Environment::addVariable(const std::string& name, Variable* theVar) {
+    
+    addVariable( name, TypeSpec(RbObject_name), RbPtr<Variable>(theVar) );
 }
 
 /** Add variable to frame */

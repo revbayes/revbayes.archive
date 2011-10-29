@@ -32,7 +32,7 @@
 /** Constructor */
 MemberObject::MemberObject() : RbLanguageObject() {
     
-    members = RbPtr<MemberEnvironment>( new MemberEnvironment() );
+    members = RbPtr<Environment>( new Environment() );
     
 }
 
@@ -41,7 +41,7 @@ MemberObject::MemberObject() : RbLanguageObject() {
 /** Constructor: we set member variables here from member rules */
 MemberObject::MemberObject(const RbPtr<MemberRules> memberRules) : RbLanguageObject() {
 
-    members = RbPtr<MemberEnvironment>( new MemberEnvironment() );
+    members = RbPtr<Environment>( new Environment() );
     
     /* Fill member table (frame) based on member rules */
     for ( MemberRules::const_iterator i = memberRules->begin(); i != memberRules->end(); i++ ) {
@@ -57,7 +57,7 @@ MemberObject::MemberObject(const RbPtr<MemberRules> memberRules) : RbLanguageObj
 MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
     
     // copy the members
-    members = RbPtr<MemberEnvironment>( m.members->clone() );
+    members = RbPtr<Environment>( m.members->clone() );
 }
 
 
@@ -144,12 +144,12 @@ const RbPtr<MethodTable> MemberObject::getMethods(void) const {
 }
 
 
-const RbPtr<MemberEnvironment> MemberObject::getMembers(void) const {
+const RbPtr<Environment> MemberObject::getMembers(void) const {
     return members;
 }
 
 
-RbPtr<MemberEnvironment> MemberObject::getMembersPtr(void) {
+RbPtr<Environment> MemberObject::getMembersPtr(void) {
     return members;
 }
 
