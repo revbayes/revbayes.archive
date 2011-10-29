@@ -12,7 +12,10 @@
 
 
 size_t RbMemoryManager::countForAddress(void* qPtr) {
-
+    
+    // check if we got the NULL pointer
+    if (qPtr == 0) return -1;
+    
     if ( refCountMap.find(qPtr) != refCountMap.end() ) {
         return refCountMap[qPtr];
     }
@@ -21,7 +24,10 @@ size_t RbMemoryManager::countForAddress(void* qPtr) {
 }
 
 void RbMemoryManager::incrementCountForAddress(void* qPtr) {
-
+    
+    // check if we got the NULL pointer
+    if (qPtr == 0) return;
+    
     if ( refCountMap.find(qPtr) == refCountMap.end() ) {
         refCountMap[qPtr] = 1;
     } 
@@ -31,6 +37,9 @@ void RbMemoryManager::incrementCountForAddress(void* qPtr) {
 }
 
 bool RbMemoryManager::decrementCountForAddress(void* qPtr) {
+    
+    // check if we got the NULL pointer
+    if (qPtr == 0) return false;
 
     if ( refCountMap.find(qPtr) == refCountMap.end() )
         {
@@ -39,6 +48,8 @@ bool RbMemoryManager::decrementCountForAddress(void* qPtr) {
     }
     
     refCountMap[qPtr]--;
+    
+    size_t newCount = refCountMap[qPtr];
     
     if ( refCountMap[qPtr] == 0 ) {
         refCountMap.erase(qPtr);
