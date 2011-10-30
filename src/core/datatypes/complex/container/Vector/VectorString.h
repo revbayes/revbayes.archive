@@ -53,7 +53,8 @@ public:
 
     // Vector functions
     void                        clear(void);                                                    //!< Clear
-    RbPtr<RbObject>             getElement(size_t index) const;                                 //!< Get element
+    RbPtr<const RbObject>       getElement(size_t index) const;                                 //!< Get element
+    RbPtr<RbObject>             getElement(size_t index);                                       //!< Get element (non-const to return non-const value)
     std::vector<std::string>    getValue(void) const;                                           //!< Get the value vector as a std::vector
     void                        pop_back(void);                                                 //!< Drop element at back
     void                        pop_front(void);                                                //!< Drop element from front

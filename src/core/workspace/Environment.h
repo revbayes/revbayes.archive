@@ -74,9 +74,9 @@ public:
     
     // Operators
     RbPtr<VariableSlot>             operator[](const std::string& name);                                                    //!< Get named variable slot reference
-    const RbPtr<VariableSlot>       operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
+    RbPtr<const VariableSlot>       operator[](const std::string& name) const;                                              //!< Get named variable slot const reference
     RbPtr<VariableSlot>             operator[](const size_t index);                                                         //!< Get named variable slot reference
-    const RbPtr<VariableSlot>       operator[](const size_t index) const;                                                   //!< Get named variable slot const reference
+    RbPtr<const VariableSlot>       operator[](const size_t index) const;                                                   //!< Get named variable slot const reference
     
     // Basic utility functions
     virtual Environment*            clone(void) const;                                                                      //!< Clone Environment
@@ -96,11 +96,12 @@ public:
     void                            eraseVariable(const std::string& name);                                                 //!< Erase a variable
     bool                            existsVariable(const std::string& name) const;                                          //!< Does variable exist?
     
-    RbPtr<DAGNode>                  getDagNodePtr(const std::string& name) const;                                           //!< Convenient alternative for [name]->getValue()
-    const RbPtr<DAGNode>            getDagNode(const std::string& name) const;                                              //!< Convenient alternative for [name]->getValue()
+    RbPtr<const DAGNode>            getDagNode(const std::string& name) const;                                              //!< Convenient alternative for [name]->getDagNode()
+    RbPtr<DAGNode>                  getDagNode(const std::string& name);                                                    //!< Convenient alternative for [name]->getDagNode() (non-const to return non-const node)
     const std::string&              getName(size_t i) const { return varNames[i]; }                                         //!< Get name at position i.
-    const RbPtr<RbLanguageObject>   getValue(const std::string& name) const;                                                //!< Convenient alternative for [name]->getValue()
-    virtual bool                    isSameOrParentOf(RbPtr<Environment> otherEnvironment) const;                                  //!< Is the Environment same or parent of other Environment?
+    RbPtr<const RbLanguageObject>   getValue(const std::string& name) const;                                                //!< Convenient alternative for [name]->getValue()
+    RbPtr<RbLanguageObject>         getValue(const std::string& name);                                                      //!< Convenient alternative for [name]->getValue() (non-const to return non-const value)
+    virtual bool                    isSameOrParentOf(RbPtr<Environment> otherEnvironment) const;                            //!< Is the Environment same or parent of other Environment?
     void                            setName(size_t i, const std::string &n);                                                //!< Replace the name of the i'th variable
     void                            setParentEnvironment(RbPtr<Environment> newEnvironment) { parentEnvironment = newEnvironment; }//!< Set parent Environment
     size_t                          size(void) const { return varNames.size(); }                                            //!< Get size of variable table 

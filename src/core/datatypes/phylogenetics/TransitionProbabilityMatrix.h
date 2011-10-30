@@ -36,7 +36,7 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
                                             TransitionProbabilityMatrix(size_t n);                             //!< Construct rate matrix with n states
                                            ~TransitionProbabilityMatrix(void);                                 //!< Destructor
         RbPtr<VectorReal>                   operator[](size_t i);                                              //!< Subscript operator
-        const RbPtr<VectorReal>             operator[](size_t i) const;                                        //!< Subscript operator (const)
+        RbPtr<const VectorReal>             operator[](size_t i) const;                                        //!< Subscript operator (const)
     
         // Basic utility functions
         TransitionProbabilityMatrix*        clone(void) const;                                                 //!< Clone object
@@ -46,10 +46,10 @@ class TransitionProbabilityMatrix : public ConstantMemberObject {
         std::string                         richInfo(void) const;                                              //!< Complete info
 
         // Member variable rules
-        const RbPtr<MemberRules>            getMemberRules(void) const;                                        //!< Get member rules
+        RbPtr<const MemberRules>            getMemberRules(void) const;                                        //!< Get member rules
 
         // Member method inits
-        const RbPtr<MethodTable>            getMethods(void) const;                                            //!< Get methods
+        RbPtr<const MethodTable>            getMethods(void) const;                                            //!< Get methods
         RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);      //!< Map method call to internal functions
 
     private:

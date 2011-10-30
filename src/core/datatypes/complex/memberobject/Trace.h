@@ -33,59 +33,59 @@ class Trace : public MemberObject {
     ~Trace();
     
     // overloaded functions from RbObject
-    MemberObject*           clone(void) const;                                              //!< Clone object
-    const VectorString&     getClass(void) const;                                           //!< Get class vector
-    const TypeSpec&         getTypeSpec(void) const;                                        //!< Get language type of the object
-    void                    printValue(std::ostream& o) const;                              //!< Print value for user
-    std::string             richInfo(void) const;                                           //!< Complete info about object
-    const RbPtr<XmlElement> encode(RbPtr<XmlDocument> doc, const std::string& name);
+    MemberObject*               clone(void) const;                                              //!< Clone object
+    const VectorString&         getClass(void) const;                                           //!< Get class vector
+    const TypeSpec&             getTypeSpec(void) const;                                        //!< Get language type of the object
+    void                        printValue(std::ostream& o) const;                              //!< Print value for user
+    std::string                 richInfo(void) const;                                           //!< Complete info about object
+    RbPtr<XmlElement>           encode(RbPtr<XmlDocument> doc, const std::string& name);
     
-    void                    addObject(double d);
-    double                  objectAt(int index)                             { return values.at(index); }
-    void                    removeLastObject();
-    void                    removeObjectAtIndex(int index);
-    int                     size() { return (int)values.size(); }
+    void                        addObject(double d);
+    double                      objectAt(int index)                             { return values.at(index); }
+    void                        removeLastObject();
+    void                        removeObjectAtIndex(int index);
+    int                         size() { return (int)values.size(); }
     
     
     // getters and setters
-    int                     getBurnin()                                     { return burnin; }
-    double                  getEss()                                        { return ess; }
-    std::string             getFileName()                                   { return fileName; }
-    double                  getMean()                                       { return mean; }
-    double                  getMedian()                                     { return median; }
-    std::string             getParameterName()                              { return parmName; }
-    int                     getSamples()                                    { return (int)values.size(); }
-    double                  getSem()                                        { return sem; }
-    int                     getStepSize()                                   { return stepSize; }
-    std::vector<double>     getValues()                                     { return values; }
-    int                     hasConverged()                                  { return converged; }
-    int                     hasPassedEssThreshold()                         { return passedEssThreshold; }
-    int                     hasPassedGelmanRubinTest()                      { return passedGelmanRubinTest; }
-    int                     hasPassedGewekeTest()                           { return passedGewekeTest; }
-    int                     hasPassedIidBetweenChainsStatistic()            { return passedIidBetweenChainsStatistic; }
-    int                     hasPassedSemThreshold()                         { return passedSemThreshold; }
-    int                     hasPassedStationarityTest()                     { return passedStationarityTest; }
+    int                         getBurnin()                                     { return burnin; }
+    double                      getEss()                                        { return ess; }
+    std::string                 getFileName()                                   { return fileName; }
+    double                      getMean()                                       { return mean; }
+    double                      getMedian()                                     { return median; }
+    std::string                 getParameterName()                              { return parmName; }
+    int                         getSamples()                                    { return (int)values.size(); }
+    double                      getSem()                                        { return sem; }
+    int                         getStepSize()                                   { return stepSize; }
+    std::vector<double>         getValues()                                     { return values; }
+    int                         hasConverged()                                  { return converged; }
+    int                         hasPassedEssThreshold()                         { return passedEssThreshold; }
+    int                         hasPassedGelmanRubinTest()                      { return passedGelmanRubinTest; }
+    int                         hasPassedGewekeTest()                           { return passedGewekeTest; }
+    int                         hasPassedIidBetweenChainsStatistic()            { return passedIidBetweenChainsStatistic; }
+    int                         hasPassedSemThreshold()                         { return passedSemThreshold; }
+    int                         hasPassedStationarityTest()                     { return passedStationarityTest; }
     
-    void                    setBurnin(int b)                                { burnin = b; }
-    void                    setEss(double e)                                { ess = e; }
-    void                    setFileName(std::string fn)                     { fileName = fn; }
-    void                    setMean(double m)                               { mean = m; }
-    void                    setMedian(double m)                             { median = m; }
-    void                    setParameterName(std::string pm)                { parmName = pm; }
-    void                    setSem(double s)                                { sem = s; }
-    void                    setStepSize( int s)                             { stepSize = s; }
-    void                    setValues(std::vector<double> v)                { values = v; }
-    void                    setConverged(bool c)                            { converged = c; }
-    void                    setPassedEssThreshold(int p)                    { passedEssThreshold = p; }
-    void                    setPassedGelmanRubinTest(int p)                 { passedGelmanRubinTest = p; }
-    void                    setPassedGewekeTest(int p)                      { passedGewekeTest = p; }
-    void                    setPassedIidBetweenChainsStatistic(int p)       { passedIidBetweenChainsStatistic = p; }
-    void                    setPassedSemThreshold(int p)                    { passedSemThreshold = p; }
-    void                    setPassedStationarityTest(int p)                { passedStationarityTest = p; }
+    void                        setBurnin(int b)                                { burnin = b; }
+    void                        setEss(double e)                                { ess = e; }
+    void                        setFileName(std::string fn)                     { fileName = fn; }
+    void                        setMean(double m)                               { mean = m; }
+    void                        setMedian(double m)                             { median = m; }
+    void                        setParameterName(std::string pm)                { parmName = pm; }
+    void                        setSem(double s)                                { sem = s; }
+    void                        setStepSize( int s)                             { stepSize = s; }
+    void                        setValues(std::vector<double> v)                { values = v; }
+    void                        setConverged(bool c)                            { converged = c; }
+    void                        setPassedEssThreshold(int p)                    { passedEssThreshold = p; }
+    void                        setPassedGelmanRubinTest(int p)                 { passedGelmanRubinTest = p; }
+    void                        setPassedGewekeTest(int p)                      { passedGewekeTest = p; }
+    void                        setPassedIidBetweenChainsStatistic(int p)       { passedIidBetweenChainsStatistic = p; }
+    void                        setPassedSemThreshold(int p)                    { passedSemThreshold = p; }
+    void                        setPassedStationarityTest(int p)                { passedStationarityTest = p; }
     
     protected:
     
-    void                    invalidate();
+    void                        invalidate();
     
 
 private:

@@ -48,7 +48,7 @@ class Model : public ConstantMemberObject {
         void                                printValue(std::ostream& o) const;                          //!< Print the Model for the user as a list of the DAGNodes in the model graph.
         std::string                         richInfo(void) const;                                       //!< Complete info
     
-        const RbPtr<MemberRules>            getMemberRules(void) const;                                 //!< Get member rules
+        RbPtr<const MemberRules>            getMemberRules(void) const;                                 //!< Get member rules
     
         // Model functions
         std::vector<RbPtr<VariableNode> >   getClonedDagNodes(std::vector<RbPtr<VariableNode> > &orgNodes) const;   //!< Get cloned nodes corresponding to originals

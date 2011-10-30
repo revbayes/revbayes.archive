@@ -39,7 +39,7 @@ MemberObject::MemberObject() : RbLanguageObject() {
 
 
 /** Constructor: we set member variables here from member rules */
-MemberObject::MemberObject(const RbPtr<MemberRules> memberRules) : RbLanguageObject() {
+MemberObject::MemberObject(RbPtr<const MemberRules> memberRules) : RbLanguageObject() {
 
     members = RbPtr<Environment>( new Environment() );
     
@@ -82,11 +82,11 @@ RbPtr<RbLanguageObject> MemberObject::executeOperation(const std::string& name, 
     } 
     else if (name == "get") {
         // get the member with give name
-        const RbPtr<RbString> varName( static_cast<RbString*>(args[0]->getValue().get()) );
+        RbPtr<const RbString> varName( static_cast<const RbString*>(args[0]->getValue().get()) );
         
         // check if a member with that name exists
         if (members->existsVariable(*varName)) {
-            return (*members)[*varName]->getDagNodePtr()->getValuePtr();
+            return (*members)[*varName]->getDagNode()->getValue();
         }
         
         // there was no variable with the given name
@@ -108,7 +108,7 @@ const VectorString& MemberObject::getClass(void) const {
 
 
 /** Return member rules (no members) */
-const RbPtr<MemberRules> MemberObject::getMemberRules(void) const {
+RbPtr<const MemberRules> MemberObject::getMemberRules(void) const {
 
     throw RbException( "Object does not have members" );
 }
@@ -121,7 +121,7 @@ const TypeSpec MemberObject::getMemberTypeSpec(const std::string& name) const {
 
 
 /** Get method specifications (no methods) */
-const RbPtr<MethodTable> MemberObject::getMethods(void) const {
+RbPtr<const MethodTable> MemberObject::getMethods(void) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
     static RbPtr<ArgumentRules> getMemberNamesArgRules( new ArgumentRules() );
@@ -140,7 +140,7 @@ const RbPtr<MethodTable> MemberObject::getMethods(void) const {
         methodsSet = true;
     }   
     
-    return methods;
+    return RbPtr<const MethodTable>( methods );
 }
 
 
@@ -156,23 +156,30 @@ RbPtr<Environment> MemberObject::getMembersPtr(void) {
 
 
 /** Get const value of a member variable */
-const RbPtr<RbLanguageObject> MemberObject::getMemberValue(const std::string& name) const {
+RbPtr<const RbLanguageObject> MemberObject::getMemberValue(const std::string& name) const {
 
     return members->getValue(name);
 }
 
 
+/** Get const value of a member variable */
+RbPtr<RbLanguageObject> MemberObject::getMemberValue(const std::string& name) {
+    
+    return members->getValue(name);
+}
+
+
 /** Get a member variable */
-const RbPtr<DAGNode> MemberObject::getMemberDagNode(const std::string& name) const {
+RbPtr<const DAGNode> MemberObject::getMemberDagNode(const std::string& name) const {
 
     return members->getDagNode(name);
 }
 
 
 /** Get a member variable (non-const, for derived classes) */
-RbPtr<DAGNode> MemberObject::getMemberDagNodePtr(const std::string& name) {
+RbPtr<DAGNode> MemberObject::getMemberDagNode(const std::string& name) {
 
-    return members->getDagNodePtr(name);
+    return members->getDagNode(name);
 }
 
 /** Does this object have a member called "name" */

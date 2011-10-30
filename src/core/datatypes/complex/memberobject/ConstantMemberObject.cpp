@@ -33,7 +33,7 @@ ConstantMemberObject::ConstantMemberObject() : MemberObject() {
 }
 
 /** Constructor: we set member variables here from member rules */
-ConstantMemberObject::ConstantMemberObject(const RbPtr<MemberRules> memberRules) : MemberObject(memberRules) {
+ConstantMemberObject::ConstantMemberObject(RbPtr<const MemberRules> memberRules) : MemberObject(memberRules) {
     
 }
 

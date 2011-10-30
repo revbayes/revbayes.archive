@@ -39,11 +39,11 @@ public:
     // Utility functions you have to override
     virtual VariableNode*                       clone(void) const = 0;                                                          //!< Clone this node
     virtual const VectorString&                 getClass(void) const;                                                           //!< Get DAG node class 
-    virtual const RbPtr<RbLanguageObject>       getStoredValue(void) = 0;                                                       //!< Get stored value (non-const fxn because of delayed evaluation)
-    virtual RbPtr<RbLanguageObject>             getValue(void) = 0;                                                             //!< Get value (non-const fxn because of delayed evaluation)
-    virtual RbPtr<RbLanguageObject>             getValuePtr(void) = 0;                                                          //!< Get value pointer (non-const fxn because of delayed evaluation)
+    virtual RbPtr<const RbLanguageObject>       getStoredValue(void) const = 0;                                                 //!< Get stored value
+    virtual RbPtr<const RbLanguageObject>       getValue(void) const = 0;                                                       //!< Get value
+    virtual RbPtr<RbLanguageObject>             getValue(void) = 0;                                                             //!< Get value (non-const to return non-const value)
     virtual void                                printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
-    virtual void                                printValue(std::ostream& o) = 0;                                                //!< Print value for user (non-const fxn because of delayed evaluation)
+    virtual void                                printValue(std::ostream& o) const = 0;                                          //!< Print value for user
     virtual std::string                         richInfo(void) const = 0;                                                       //!< Complete info about object
 
     // DAG function you should not override

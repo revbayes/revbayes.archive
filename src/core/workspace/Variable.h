@@ -60,9 +60,10 @@ public:
     const VectorString&                 getClass() const;                                   //!< Get class vector
     const TypeSpec&                     getTypeSpec(void) const;                            //!< Get language type of the object
     const std::string&                  getName(void) const;                                //!< Get name of variable
-    RbPtr<RbLanguageObject>             getValue(void) const;                               //!< Get the value of the variable (ptr, not copy)
-    RbPtr<DAGNode>                      getDagNode(void) const { return node; }             //!< Get the variable pointer
-    RbPtr<DAGNode>                      getDagNodePtr(void) const;                          //!< Get a reference to the variable
+    RbPtr<const DAGNode>                getDagNode(void) const;                             //!< Get the variable 
+    RbPtr<DAGNode>                      getDagNode(void);                                   //!< Get the variable (non-const to return non-const node)
+    RbPtr<const RbLanguageObject>       getValue(void) const;                               //!< Get the value of the variable
+    RbPtr<RbLanguageObject>             getValue(void);                                     //!< Get the value of the variable (non-const to return non-const value)
     void                                setName(const std::string &n);                      //!< Replacing the name of the variable
     void                                printValue(std::ostream& o) const;                  //!< Print value of variable
     void                                setDagNode(RbPtr<DAGNode> newVar);                  //!< Set a variable with a variable

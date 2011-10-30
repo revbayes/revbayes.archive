@@ -54,27 +54,27 @@ public:
     virtual                         ~TopologyNode(void);                                                            //!< Destructor
     // Basic utility functions
     TopologyNode*                       clone(void) const;                                                          //!< Clone object
-    bool                                equals(RbPtr<TopologyNode> node) const;                                     //!< Test whether this is the same node
+    bool                                equals(RbPtr<const TopologyNode> node) const;                               //!< Test whether this is the same node
     const VectorString&                 getClass(void) const;                                                       //!< Get class vector
     const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
     void                                printValue(std::ostream& o) const;                                          //!< Print value for user
     std::string                         richInfo(void) const;                                                       //!< Complete info
 
     // Member variable rules
-    const RbPtr<MemberRules>            getMemberRules(void) const;                                                 //!< Get member rules
+    RbPtr<const MemberRules>            getMemberRules(void) const;                                                 //!< Get member rules
 
     // Member method inits
     RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);               //!< Execute method
-    const RbPtr<MethodTable>            getMethods(void) const;                                                     //!< Get methods
+    RbPtr<const MethodTable>            getMethods(void) const;                                                     //!< Get methods
         
     // TopologyNode functions
     void                                addChild(RbPtr<TopologyNode> c);                                            //!< Adds a child node
-    RbPtr<TopologyNode>                 getChild(size_t i) const { return children[i]; }                            //!< Returns the i-th child
+    RbPtr<const TopologyNode>           getChild(size_t i) const;                                                   //!< Returns the i-th child
     std::vector<int>                    getChildrenIndices(void) const;                                             //!< Return children indices
     int                                 getIndex(void) const { return index; }                                      //!< Get index of node
     std::string                         getName(void) const { return name; }                                        //!< Get name of node
     size_t                              getNumberOfChildren(void) const { return children.size(); }                 //!< Returns the number of children
-    RbPtr<TopologyNode>                 getParent(void) const { return RbPtr<TopologyNode>(parent); }               //!< Returns the node's parent
+    RbPtr<const TopologyNode>           getParent(void) const;                                                      //!< Returns the node's parent
     int                                 getParentIndex(void) const { return parent->getIndex(); }                   //!< Return parent index
     bool                                isTip(void) const { return children.size() == 0; }                          //!< Is node tip?
     bool                                isRoot(void) const { return parent == NULL; }                               //!< Is node root?
@@ -84,7 +84,7 @@ public:
     void                                removeChild(RbPtr<TopologyNode> p);                                         //!< Removes a specific child
         
 private:
-    std::string                         buildNewickString(const RbPtr<TopologyNode> node) const;                    //!< compute the newick string for a tree rooting at this node
+    std::string                         buildNewickString(RbPtr<const TopologyNode> node) const;                    //!< compute the newick string for a tree rooting at this node
     void                                refreshNewickString(void);                                                  //!< recompute the newick string
     
     static const TypeSpec               typeSpec;

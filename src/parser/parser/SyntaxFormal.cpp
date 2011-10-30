@@ -113,11 +113,10 @@ SyntaxFormal* SyntaxFormal::clone () const {
 /** Make argument rule from element */
 RbPtr<ArgumentRule> SyntaxFormal::getArgumentRule(RbPtr<Environment> env) const {
 
-
-    if (defaultExpr.get() == NULL)
+    if (defaultExpr == NULL)
         return RbPtr<ArgumentRule>( new ValueRule(*label, *argType) );
     else
-        return RbPtr<ArgumentRule>( new ValueRule(*label, *argType, defaultExpr->getContentAsVariable(env)->getDagNodePtr()) );
+        return RbPtr<ArgumentRule>( new ValueRule(*label, *argType, defaultExpr->evaluateContent(env)->getDagNode()) );
 
 }
 
@@ -132,7 +131,7 @@ const VectorString& SyntaxFormal::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxFormal::getContentAsVariable(RbPtr<Environment> env) const {
+RbPtr<Variable> SyntaxFormal::evaluateContent(RbPtr<Environment> env) {
 
     return RbPtr<Variable>::getNullPtr();
 }

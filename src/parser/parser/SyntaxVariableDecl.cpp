@@ -109,7 +109,7 @@ const VectorString& SyntaxVariableDecl::getClass( void ) const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxVariableDecl::getContentAsVariable( RbPtr<Environment> env ) const {
+RbPtr<Variable> SyntaxVariableDecl::evaluateContent( RbPtr<Environment> env ) {
     
     PRINTF( "Evaluating variable declaration\n" );
     
@@ -123,7 +123,7 @@ RbPtr<Variable> SyntaxVariableDecl::getContentAsVariable( RbPtr<Environment> env
 
     // Evaluate length specification
     std::vector<int> length;
-    for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=lengthExpr->begin(); i!=lengthExpr->end(); i++ ) {
+    for ( std::list<RbPtr<SyntaxElement> >::iterator i=lengthExpr->begin(); i!=lengthExpr->end(); i++ ) {
         
         if ( (*i) == NULL ) {
 
@@ -131,7 +131,7 @@ RbPtr<Variable> SyntaxVariableDecl::getContentAsVariable( RbPtr<Environment> env
         }
         else {
             
-            RbPtr<DAGNode>        temp    = (*i)->getContentAsVariable( env )->getDagNodePtr();
+            RbPtr<DAGNode>        temp    = (*i)->evaluateContent( env )->getDagNode();
             const RbPtr<RbLanguageObject> value   = temp->getValue();
             
             if ( value->isTypeSpec( TypeSpec(Integer_name) ) )

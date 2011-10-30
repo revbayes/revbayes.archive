@@ -37,16 +37,16 @@ RbPtr<Character> Sequence::operator[](size_t i) {
     
     if (i >= elements.size())
         throw RbException("Index out of bounds");
-    return RbPtr<Character>(static_cast<Character*>(elements[i].get()));
+    return RbPtr<Character>(static_cast<Character*>( (RbLanguageObject*)elements[i]));
 }
 
 
 /** Subscript const operator */
-const RbPtr<Character> Sequence::operator[](size_t i) const {
+RbPtr<const Character> Sequence::operator[](size_t i) const {
     
     if (i >= elements.size())
         throw RbException("Index out of bounds");
-    return RbPtr<Character>( static_cast<Character*>(elements[i].get()) );
+    return RbPtr<const Character>( static_cast<const Character*>( (RbLanguageObject*)elements[i]) );
 }
 
 /** Push back a new character */
@@ -55,7 +55,7 @@ void Sequence::addCharacter( RbPtr<Character> newChar ) {
     if ( newChar == NULL || !newChar->isTypeSpec( elementType ) )
         throw RbException( "Inappropriate character type" );
     
-    elements.push_back( RbPtr<RbLanguageObject>(newChar.get()) );
+    elements.push_back( RbPtr<RbLanguageObject>(newChar) );
 }
 
 
@@ -72,7 +72,7 @@ const VectorString& Sequence::getClass(void) const {
 }
 
 
-RbPtr<Character> Sequence::getCharacter(size_t index) const {
+RbPtr<const Character> Sequence::getCharacter(size_t index) const {
     return operator[](index);
 }
 

@@ -65,12 +65,12 @@ MatrixComplex::MatrixComplex(const std::vector<std::vector<std::complex<double> 
 
 
 /** Index operator (const) */
-const RbPtr<VectorComplex> MatrixComplex::operator[]( const size_t i ) const {
+RbPtr<const VectorComplex> MatrixComplex::operator[]( const size_t i ) const {
 
     if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
 
-    return RbPtr<VectorComplex>( static_cast<VectorComplex*>(elements[i].get()) );
+    return RbPtr<const VectorComplex>( static_cast<const VectorComplex*>(elements[i].get()) );
 }
 
 
@@ -98,8 +98,16 @@ const VectorString& MatrixComplex::getClass(void) const {
 }
 
 
-/** Overloaded container method to get element or subcontainer for parser */
-RbPtr<RbObject> MatrixComplex::getElement( size_t row , size_t col) const {
+/** Overloaded container method to get element or subcontainer */
+RbPtr<const RbObject> MatrixComplex::getElement( size_t row , size_t col) const {
+    
+    RbPtr<const VectorComplex> tmp = operator[](row);
+    return tmp->getElement(col);
+}
+
+
+/** Overloaded container method to get element or subcontainer */
+RbPtr<RbObject> MatrixComplex::getElement( size_t row , size_t col) {
     
     RbPtr<VectorComplex> tmp = operator[](row);
     return tmp->getElement(col);
@@ -178,7 +186,7 @@ void MatrixComplex::printValue(std::ostream& o) const {
             lineStr += pad  + "  ";
         
         
-        const RbPtr<VectorComplex> vec = operator[](i);
+        RbPtr<const VectorComplex> vec = operator[](i);
         lineStr += vec->briefInfo();
         if (i == size()-1)
             lineStr += " ]";

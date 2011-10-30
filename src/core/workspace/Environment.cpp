@@ -92,7 +92,7 @@ RbPtr<VariableSlot> Environment::operator[]( const std::string& name ) {
 
 
 /** Index operator (const) to variable slot from string */
-const RbPtr<VariableSlot> Environment::operator[]( const std::string& name ) const {
+RbPtr<const VariableSlot> Environment::operator[]( const std::string& name ) const {
     
     std::map<std::string, RbPtr<VariableSlot> >::const_iterator it = variableTable.find( name );
     if ( variableTable.find(name) == variableTable.end() ) {
@@ -104,7 +104,7 @@ const RbPtr<VariableSlot> Environment::operator[]( const std::string& name ) con
     
     PRINTF( "Retrieving %s %s from frame\n", it->second->getTypeSpec().toString().c_str(), name.c_str() );
     
-    return (*it).second;
+    return RbPtr<const VariableSlot>( (*it).second );
 }
 
 
@@ -119,7 +119,7 @@ RbPtr<VariableSlot> Environment::operator[]( const size_t index ) {
 
 
 /** Index operator (const) to variable slot from int */
-const RbPtr<VariableSlot> Environment::operator[]( const size_t index ) const {
+RbPtr<const VariableSlot> Environment::operator[]( const size_t index ) const {
     
     // get the name at the index
     const std::string &name = getName(index);
@@ -275,21 +275,21 @@ const VectorString& Environment::getClass() const {
 
 
 /** Get reference, alternative method */
-RbPtr<DAGNode> Environment::getDagNodePtr( const std::string& name ) const {
+RbPtr<DAGNode> Environment::getDagNode( const std::string& name ) {
     
     return operator[]( name )->getDagNodePtr();
 }
 
 
 /** Get variable, alternative method */
-const RbPtr<DAGNode> Environment::getDagNode( const std::string& name ) const {
+RbPtr<const DAGNode> Environment::getDagNode( const std::string& name ) const {
     
     return operator[]( name )->getDagNode();
 }
 
 
 /** Get value, alternative method */
-const RbPtr<RbLanguageObject> Environment::getValue( const std::string& name ) const {
+RbPtr<const RbLanguageObject> Environment::getValue( const std::string& name ) const {
     
     // find the variable slot first
     std::map<std::string, RbPtr<VariableSlot> >::const_iterator it = variableTable.find( name );
@@ -302,8 +302,27 @@ const RbPtr<RbLanguageObject> Environment::getValue( const std::string& name ) c
     
     // set the slot
     RbPtr<VariableSlot> theSlot = it->second;
+    return RbPtr<const RbLanguageObject>( theSlot->getValue() );
+}
+
+
+/** Get value, alternative method */
+RbPtr<RbLanguageObject> Environment::getValue( const std::string& name ) {
+    
+    // find the variable slot first
+    std::map<std::string, RbPtr<VariableSlot> >::const_iterator it = variableTable.find( name );
+    if ( variableTable.find(name) == variableTable.end() ) {
+        if ( parentEnvironment != NULL )
+            return parentEnvironment->getValue( name );
+        else
+            throw RbException( RbException::MISSING_VARIABLE, "Variable " + name + " does not exist" );
+    }
+    
+    // set the slot
+    RbPtr<VariableSlot> theSlot = it->second;
     return theSlot->getValue();
 }
+
 
 
 /** 

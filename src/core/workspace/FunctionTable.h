@@ -60,7 +60,7 @@ class FunctionTable : public RbInternal {
         std::vector<RbPtr<RbFunction> >         findFunctions(const std::string& name) const;                                           //!< Return functions matching name
         RbPtr<RbFunction>                       getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) const;  //!< Get function (a copy)
         bool                                    isDistinctFormal(const RbPtr<ArgumentRules> x, const RbPtr<ArgumentRules> y) const;                 //!< Are formals unique?
-        void                                    setParentTable(RbPtr<FunctionTable> table) { parentTable = table; }                     //!< Set parent table
+        void                                    setParentTable(RbPtr<const FunctionTable> table) { parentTable = table; }                     //!< Set parent table
 
     protected:
         RbPtr<RbFunction>                       findFunction(const std::string&                     name,
@@ -68,7 +68,7 @@ class FunctionTable : public RbInternal {
         
         // Member variables
         std::multimap<std::string, RbPtr<RbFunction> >  table;                                                                          //!< Table of functions
-        RbPtr<FunctionTable>                            parentTable;                                                                    //!< Enclosing table
+        RbPtr<const FunctionTable>                      parentTable;                                                                    //!< Enclosing table
     
     private:
         static const TypeSpec       typeSpec;

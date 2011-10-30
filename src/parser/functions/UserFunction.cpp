@@ -98,14 +98,14 @@ RbPtr<RbLanguageObject> UserFunction::execute( void ) {
     // Execute code
     for ( std::list<RbPtr<SyntaxElement> >::iterator i=code->begin(); i!=code->end(); i++ ) {
 
-        retValue = (*i)->getContentAsVariable( functionEnvironment );
+        retValue = (*i)->evaluateContent( functionEnvironment );
 
         if ( Signals::getSignals().isSet( Signals::RETURN ) )
             break;
     }
 
     // Return the return value
-    return retValue->getDagNodePtr()->getValuePtr();
+    return retValue->getDagNode()->getValue();
 }
 
 

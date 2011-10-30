@@ -124,7 +124,7 @@ const VectorString& Topology::getClass(void) const {
 
 
 /* Get member rules */
-const RbPtr<MemberRules> Topology::getMemberRules(void) const {
+RbPtr<const MemberRules> Topology::getMemberRules(void) const {
     
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -134,12 +134,12 @@ const RbPtr<MemberRules> Topology::getMemberRules(void) const {
         rulesSet = true;
     }
     
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
 /* Get method specifications */
-const RbPtr<MethodTable> Topology::getMethods(void) const {
+RbPtr<const MethodTable> Topology::getMethods(void) const {
     
     static RbPtr<MethodTable> methods(new MethodTable());
     static RbPtr<ArgumentRules> ntipsArgRules( new ArgumentRules() );
@@ -152,11 +152,11 @@ const RbPtr<MethodTable> Topology::getMethods(void) const {
         methods->addFunction("nnodes", RbPtr<RbFunction>( new MemberFunction(TypeSpec(Natural_name), nnodesArgRules) ) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( RbPtr<FunctionTable>( MemberObject::getMethods().get() ) );
+        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
         methodsSet = true;
     }
     
-    return methods;
+    return RbPtr<const MethodTable>( methods );
 }
 
 
@@ -189,19 +189,25 @@ size_t Topology::getNumberOfTips(void) const {
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
  This version assumes that the root is always the last and the tips the first in the nodes vector. */
-RbPtr<TopologyNode> Topology::getInteriorNode( int indx ) const {
+RbPtr<const TopologyNode> Topology::getInteriorNode( int indx ) const {
     
     // TODO: Bound checking, maybe draw from downpass array instead
-    return nodes[ indx + getNumberOfTips() ];
+    return RbPtr<const TopologyNode>( nodes[ indx + getNumberOfTips() ] );
+}
+
+
+RbPtr<const TopologyNode> Topology::getRoot( void ) const {
+    
+    return RbPtr<const TopologyNode>( root );
 }
 
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
  This version assumes that the tips are first in the nodes vector. */
-RbPtr<TopologyNode> Topology::getTipNode( size_t indx ) const {
+RbPtr<const TopologyNode> Topology::getTipNode( size_t indx ) const {
     
     // TODO: Bound checking
-    return nodes[ indx ];
+    return RbPtr<const TopologyNode>( nodes[ indx ] );
 }
 
 

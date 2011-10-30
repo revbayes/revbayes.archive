@@ -160,7 +160,7 @@ std::vector<RbPtr<VariableNode> > Model::getClonedDagNodes(std::vector<RbPtr<Var
     
     // find each original node and add it to the map
     for (std::vector<RbPtr<VariableNode> >::iterator it=orgNodes.begin(); it!=orgNodes.end(); it++) {
-        std::map<const DAGNode*, DAGNode*>::const_iterator orgClonePair = nodesMap.find((*it).get());
+        std::map<const DAGNode*, DAGNode*>::const_iterator orgClonePair = nodesMap.find((*it));
         if (orgClonePair != nodesMap.end()) {
             clones.push_back(RbPtr<VariableNode>( dynamic_cast<VariableNode*>(orgClonePair->second) ) );
         }
@@ -174,7 +174,7 @@ std::vector<RbPtr<VariableNode> > Model::getClonedDagNodes(std::vector<RbPtr<Var
 }
 
 
-const RbPtr<MemberRules> Model::getMemberRules(void) const {
+RbPtr<const MemberRules> Model::getMemberRules(void) const {
     
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -186,7 +186,7 @@ const RbPtr<MemberRules> Model::getMemberRules(void) const {
         rulesSet = true;
     }
     
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
@@ -207,8 +207,7 @@ void Model::printValue(std::ostream& o) const {
 	msg.str("");
 	RBOUT("-------------------------------------");
 	int cnt = 0;
-    for (std::vector<RbPtr<DAGNode> >::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
-		{   	
+    for (std::vector<RbPtr<DAGNode> >::const_iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {   	
 		msg << "Vertex " << ++cnt;
 		std::string nameStr = msg.str();
 		size_t nameStrSize = nameStr.size();
@@ -227,45 +226,49 @@ void Model::printValue(std::ostream& o) const {
 		RBOUT(msg.str());
 		msg.str("");
 		
-        if ((*i)->isType(DeterministicNode_name))
-            msg << "   Function     = " << ((DeterministicNode*)(*i).get())->getFunction()->briefInfo();
-        else if ((*i)->isType(StochasticNode_name))
-            msg << "   Distribution = " << ((StochasticNode*)(*i).get())->getDistribution()->getType();
+        if ((*i)->isType(DeterministicNode_name)) {
+            DAGNode* dnode = *i;
+            DeterministicNode* node = static_cast<DeterministicNode*>( dnode );
+            msg << "   Function     = " << node->getFunction()->briefInfo();
+        } else if ((*i)->isType(StochasticNode_name)) {
+            DAGNode* dnode = *i;
+            StochasticNode* node = static_cast<StochasticNode*>( dnode );
+            msg << "   Distribution = " << node->getDistribution()->getType();
+        }
 		if ( msg.str() != "" )
 			RBOUT(msg.str());
 		msg.str("");
        
-        msg << "   Value        = " << (*i).get()->getValue()->richInfo();
+        msg << "   Value        = " << (*i)->getValue()->richInfo();
             
 		if ( msg.str() != "" )
 			RBOUT(msg.str());
 		msg.str("");
 		
 		msg << "   Parents      = ";
-		std::set<RbPtr<DAGNode> > &parents = (*i).get()->getParents();
-		for (std::set<RbPtr<DAGNode> >::const_iterator j=parents.begin(); j != parents.end(); j++) 
-			{   	
+		const std::set<RbPtr<DAGNode> > &parents = (*i)->getParents();
+		for (std::set<RbPtr<DAGNode> >::const_iterator j=parents.begin(); j != parents.end(); j++) {   	
 			int idx = findIndexInVector( dagNodes, (*j) );
 			msg << idx << " ";
-			}
+        }
 		if (parents.size() == 0)
 			msg << "No Parents";
 		RBOUT(msg.str());
 		msg.str("");
 		
 		msg << "   Children     = ";
-            std::set<VariableNode*> &children = (*i).get()->getChildren();
-		for (std::set<VariableNode*>::const_iterator j=children.begin(); j != children.end(); j++) 
-			{   	
+        const std::set<VariableNode*> &children = (*i)->getChildren();
+		for (std::set<VariableNode*>::const_iterator j=children.begin(); j != children.end(); j++) {   	
 			int idx = findIndexInVector( dagNodes, RbPtr<DAGNode>(*j) );
 			msg << idx << " ";
-			}
+        }
 		if (children.size() == 0)
 			msg << "No Children";
 		RBOUT(msg.str());
 		msg.str("");
-		}
-	RBOUT("-------------------------------------");
+    }
+	
+    RBOUT("-------------------------------------");
 }
 
 
@@ -281,12 +284,14 @@ std::string Model::richInfo(void) const {
 
 /** Set a member variable */
 void Model::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
-    RbPtr<DAGNode> theNode = var->getDagNodePtr();
+    RbPtr<DAGNode> theNode = var->getDagNode();
     if (name == "sinknode") {
         // test whether var is a DagNodeContainer
         while (theNode->getValue()->isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
-            DagNodeContainer* container = dynamic_cast<DagNodeContainer*>(theNode->getValuePtr().get());
-            theNode = static_cast<VariableSlot*>( container->getElement(0).get() )->getDagNodePtr();
+            RbLanguageObject* objPtr = theNode->getValue();
+            DagNodeContainer* container = dynamic_cast<DagNodeContainer*>( objPtr );
+            RbObject* elemPtr = container->getElement(0);
+            theNode = static_cast<VariableSlot*>( elemPtr )->getDagNode();
         }
         
         
@@ -302,16 +307,17 @@ void Model::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
             
             // do not add myself into the list of nodes
             if (theNewNode->isType(DeterministicNode_name)) {
-                RbPtr<DeterministicNode> theDetNode( dynamic_cast<DeterministicNode*>(theNewNode.get()) );
-                const RbPtr<RbFunction> theFunction = theDetNode->getFunction();
+                RbPtr<DeterministicNode> theDetNode( dynamic_cast<DeterministicNode*>((DAGNode*)theNewNode) );
+                RbPtr<RbFunction> theFunction = theDetNode->getFunction();
                 if (theFunction->isType(ConstructorFunction_name)) {
-                    const RbPtr<ConstructorFunction> theConstructorFunction( dynamic_cast<ConstructorFunction*>(theFunction.get()) );
+                    RbPtr<ConstructorFunction> theConstructorFunction( dynamic_cast<ConstructorFunction*>((RbFunction*)theFunction) );
                     if (theConstructorFunction->getTemplateObjectType() == Model_name) {
                         // remove the dag node holding the model constructor function from the dag
                         std::set<RbPtr<DAGNode> > parents = theDetNode->getParents();
                         for (std::set<RbPtr<DAGNode> >::iterator it=parents.begin(); it!=parents.end(); it++) {
-                            theDetNode->removeParentNode(*it);
-                            (*it).get()->removeChildNode( theDetNode.get() );
+                            RbPtr<DAGNode> node = *it;
+                            theDetNode->removeParentNode(node);
+                            node->removeChildNode( theDetNode );
                         }
                         // skip over adding the model node
                         continue;

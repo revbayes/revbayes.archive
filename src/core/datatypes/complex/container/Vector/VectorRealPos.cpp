@@ -156,7 +156,18 @@ const VectorString& VectorRealPos::getClass( void ) const {
 }
 
 
-RbPtr<RbObject> VectorRealPos::getElement(size_t index) const {
+RbPtr<const RbObject> VectorRealPos::getElement(size_t index) const {
+    
+    if (index > elements.size())
+        throw RbException("Index out of bounds");
+    
+    RbPtr<const RbObject> n( new RealPos(elements[index]) );
+    
+    return n;
+}
+
+
+RbPtr<RbObject> VectorRealPos::getElement(size_t index) {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");

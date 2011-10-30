@@ -11,7 +11,7 @@
 #include "RbMemoryManager.h"
 
 
-size_t RbMemoryManager::countForAddress(void* qPtr) {
+size_t RbMemoryManager::countForAddress(const void* qPtr) {
     
     // check if we got the NULL pointer
     if (qPtr == 0) return -1;
@@ -23,7 +23,7 @@ size_t RbMemoryManager::countForAddress(void* qPtr) {
     return 0;
 }
 
-void RbMemoryManager::incrementCountForAddress(void* qPtr) {
+void RbMemoryManager::incrementCountForAddress(const void* qPtr) {
     
     // check if we got the NULL pointer
     if (qPtr == 0) return;
@@ -36,7 +36,7 @@ void RbMemoryManager::incrementCountForAddress(void* qPtr) {
     }
 }
 
-bool RbMemoryManager::decrementCountForAddress(void* qPtr) {
+bool RbMemoryManager::decrementCountForAddress(const void* qPtr) {
     
     // check if we got the NULL pointer
     if (qPtr == 0) return false;
@@ -48,8 +48,6 @@ bool RbMemoryManager::decrementCountForAddress(void* qPtr) {
     }
     
     refCountMap[qPtr]--;
-    
-    size_t newCount = refCountMap[qPtr];
     
     if ( refCountMap[qPtr] == 0 ) {
         refCountMap.erase(qPtr);
@@ -63,7 +61,7 @@ bool RbMemoryManager::decrementCountForAddress(void* qPtr) {
 size_t RbMemoryManager::numberOfReferences(void) const {
     size_t refs = 0;
     
-    for (std::map<void*, size_t>::const_iterator it = refCountMap.begin(); it != refCountMap.end(); it++) {
+    for (std::map<const void*, size_t>::const_iterator it = refCountMap.begin(); it != refCountMap.end(); it++) {
         refs += it->second;
     }
     

@@ -142,7 +142,7 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 
         /* Set parent(s) and add myself as a child to these */
         for ( size_t i = 0; i < params->size(); i++ ) {
-            RbPtr<DAGNode> theParam = (*params)[params->getName(i)]->getVariable()->getDagNodePtr();
+            RbPtr<DAGNode> theParam = (*params)[params->getName(i)]->getVariable()->getDagNode();
             addParentNode( theParam );
             theParam->addChildNode(this);
         }
@@ -324,25 +324,26 @@ double StochasticNode::getLnProbabilityRatio( void ) {
 
 
 /** Get stored value */
-const RbPtr<RbLanguageObject> StochasticNode::getStoredValue( void ) {
+RbPtr<const RbLanguageObject> StochasticNode::getStoredValue( void ) const {
 
     if ( !touched )
-        return value;
+        return RbPtr<const RbLanguageObject>( value );
 
-    return storedValue;
+    return RbPtr<const RbLanguageObject>( storedValue );
+}
+
+
+/** Get const value; we always know our value. */
+RbPtr<const RbLanguageObject> StochasticNode::getValue( void ) const {
+
+    return RbPtr<const RbLanguageObject>( value );
 }
 
 
 /** Get const value; we always know our value. */
 RbPtr<RbLanguageObject> StochasticNode::getValue( void ) {
-
-    return value;
-}
-
-/** Get const value; we always know our value. */
-RbPtr<RbLanguageObject> StochasticNode::getValuePtr( void ) {
     
-    return value;
+    return ( value );
 }
 
 
@@ -404,7 +405,7 @@ void StochasticNode::printStruct( std::ostream& o ) const {
 
 
 /** Print value for user */
-void StochasticNode::printValue( std::ostream& o ) {
+void StochasticNode::printValue( std::ostream& o ) const {
 
     if ( touched )
         RBOUT( "Warning: Variable in touched state" );

@@ -118,13 +118,6 @@ const std::string& Variable::getName( void ) const {
 }
 
 
-/** Get a reference to the variable variable */
-RbPtr<DAGNode> Variable::getDagNodePtr( void ) const {
-    
-    return node;
-}
-
-
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Variable::getTypeSpec(void) const {
     return typeSpec;
@@ -132,9 +125,9 @@ const TypeSpec& Variable::getTypeSpec(void) const {
 
 
 /** Get the value of the variable */
-RbPtr<RbLanguageObject> Variable::getValue( void ) const {
+RbPtr<const RbLanguageObject> Variable::getValue( void ) const {
     
-    RbPtr<RbLanguageObject> retVal = node.get()->getValue();
+    RbPtr<const RbLanguageObject> retVal = node->getValue();
     
     return retVal;
 }
@@ -145,7 +138,7 @@ void Variable::printValue(std::ostream& o) const {
     if (node == NULL)
         o << "NULL";
     else
-        node.get()->printValue( o );
+        node->printValue( o );
 }
 
 

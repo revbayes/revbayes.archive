@@ -63,7 +63,7 @@ int Parser::execute(RbPtr<SyntaxElement> root) const {
     //! Execute syntax tree
     try {
         PRINTF("Parser getting the semantic value of the syntax tree...\n");
-        result = root->getContentAsVariable(RbPtr<Environment>(Workspace::userWorkspace().get()));
+        result = root->evaluateContent(RbPtr<Environment>(Workspace::userWorkspace().get()));
     }
     catch(RbException& rbException) {
 
@@ -101,9 +101,9 @@ int Parser::execute(RbPtr<SyntaxElement> root) const {
     }
 
     // Print result if the root is not an assign expression
-    if (result != NULL && result->getDagNodePtr() != NULL && !root->isType(SyntaxAssignExpr_name)) {
+    if (result != NULL && result->getDagNode() != NULL && !root->isType(SyntaxAssignExpr_name)) {
         std::ostringstream msg;
-        result->getDagNodePtr()->printValue(msg);
+        result->getDagNode()->printValue(msg);
         RBOUT( msg.str() );
     }
 

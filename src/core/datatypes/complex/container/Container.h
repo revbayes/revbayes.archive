@@ -47,18 +47,19 @@ public:
     virtual size_t                  size(void) const = 0;                                               //!< get the number of elements in the Container
     
     virtual void                    clear(void) = 0;                                                    //!< Clear
-    virtual RbPtr<RbObject>         getElement(size_t index) const = 0;                                 //!< Get element
+    virtual RbPtr<const RbObject>   getElement(size_t index) const = 0;                                 //!< Get element
+    virtual RbPtr<RbObject>         getElement(size_t index) = 0;                                       //!< Get element (non-const to return non-const element)
     virtual void                    setElement(const size_t index, RbPtr<RbObject> elem) = 0;           //!< Set element with type conversion
     virtual void                    sort(void) = 0;                                                     //!< sort the Container
     virtual void                    unique(void) = 0;                                                   //!< removes consecutive duplicates
     
     // Member method inits
     virtual RbPtr<RbLanguageObject> executeOperation(const std::string& name, Environment& args);       //!< Execute method
-    virtual const RbPtr<MethodTable> getMethods(void) const;                                             //!< Get methods
+    virtual RbPtr<const MethodTable> getMethods(void) const;                                             //!< Get methods
 
     // Container functions you do not have to override
     const TypeSpec&                 getElementType(void) const { return elementType; }                  //!< Get element type
-    bool                            empty(void) { return size() == 0; }                                 //!< Test whether the container is empty
+    bool                            empty(void) const { return size() == 0; }                           //!< Test whether the container is empty
     bool                            supportsIndex(void) const { return true; }                          //!< Does object support index operator?
     
     

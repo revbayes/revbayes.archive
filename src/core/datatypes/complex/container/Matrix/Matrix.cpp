@@ -32,7 +32,7 @@ Matrix::Matrix(const std::string& elemType) : Vector(TypeSpec(elemType)) {
 }
 
 /** Default constructor for matrix */
-Matrix::Matrix(const std::string& elemType, const RbPtr<MemberRules> memberRules) : Vector(TypeSpec(elemType)) {
+Matrix::Matrix(const std::string& elemType, RbPtr<const MemberRules> memberRules) : Vector(TypeSpec(elemType)) {
 }
 
 

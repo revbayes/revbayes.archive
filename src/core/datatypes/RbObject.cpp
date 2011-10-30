@@ -56,7 +56,7 @@ RbObject* RbObject::convertTo(const TypeSpec& typeSpec) const {
 
 
 /** Encode the object into a serializable xml-object */
-const RbPtr<XmlElement> RbObject::encode(RbPtr<XmlDocument> doc, const std::string& name) {    
+RbPtr<XmlElement> RbObject::encode(RbPtr<XmlDocument> doc, const std::string& name) {    
     
     //! @Sebatian TODO basic implementation which should return an empty xml object with only the name
     
@@ -73,7 +73,17 @@ const VectorString& RbObject::getClass(void) const {
 
 /** Get element or subcontainer at index. This is a convenience function implemented here so that we don't have to cast to container. 
  If this object is not a container, we throw an excpetion */
-RbPtr<RbObject> RbObject::getElement(size_t index) const {
+RbPtr<const RbObject> RbObject::getElement(size_t index) const {
+    
+    std::ostringstream  msg;
+    msg << "Illegal call to getElement in type \"" << getType() << "\"";
+    throw RbException( msg );
+}
+
+
+/** Get element or subcontainer at index. This is a convenience function implemented here so that we don't have to cast to container. 
+ If this object is not a container, we throw an excpetion */
+RbPtr<RbObject> RbObject::getElement(size_t index) {
     
     std::ostringstream  msg;
     msg << "Illegal call to getElement in type \"" << getType() << "\"";

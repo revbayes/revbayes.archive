@@ -114,13 +114,30 @@ const VectorString& DAGNode::getClass() const {
     return rbClass;
 }
 
-RbPtr<RbObject> DAGNode::getElement(size_t index) {
+RbPtr<const RbObject> DAGNode::getElement(size_t index) const {
     
     // test whether the value supports indexing, i.e. is a container
     if (value->supportsIndex()) {
         
         return value->getElement(index);
     
+    } else {
+        
+        std::ostringstream  msg;
+        msg << "Illegal access of element at index [" << index << "] in object with tpye \"" << value->getType() << "\"";
+        throw RbException( msg );
+    }
+    
+}
+
+
+RbPtr<RbObject> DAGNode::getElement(size_t index) {
+    
+    // test whether the value supports indexing, i.e. is a container
+    if (value->supportsIndex()) {
+        
+        return value->getElement(index);
+        
     } else {
         
         std::ostringstream  msg;

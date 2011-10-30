@@ -216,7 +216,18 @@ std::vector<unsigned int> VectorNatural::getValue( void ) const {
 }
 
 
-RbPtr<RbObject> VectorNatural::getElement(size_t index) const {
+RbPtr<const RbObject> VectorNatural::getElement(size_t index) const {
+    
+    if (index > elements.size())
+        throw RbException("Index out of bounds");
+    
+    RbPtr<const RbObject> n( new Natural(elements[index]) );
+    
+    return n;
+}
+
+
+RbPtr<RbObject> VectorNatural::getElement(size_t index) {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");

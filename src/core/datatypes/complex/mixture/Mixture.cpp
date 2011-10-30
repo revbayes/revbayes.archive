@@ -91,7 +91,7 @@ const VectorString& Mixture::getClass(void) const {
 
 
 /* Get method specifications */
-const RbPtr<MethodTable> Mixture::getMethods(void) const {
+RbPtr<const MethodTable> Mixture::getMethods(void) const {
     
     static RbPtr<MethodTable>   methods( new MethodTable() );
     /*
@@ -134,12 +134,12 @@ const RbPtr<MethodTable> Mixture::getMethods(void) const {
         methodsSet = true;
     }
     */
-    return methods;
+    return RbPtr<const MethodTable>( methods) ;
 }
 
 
 /* Get member rules */
-const RbPtr<MemberRules> Mixture::getMemberRules(void) const {
+RbPtr<const MemberRules> Mixture::getMemberRules(void) const {
     
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -149,7 +149,7 @@ const RbPtr<MemberRules> Mixture::getMemberRules(void) const {
         rulesSet = true;
     }
     
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 

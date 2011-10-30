@@ -134,7 +134,17 @@ const TypeSpec& VectorBoolean::getTypeSpec(void) const {
 }
 
 
-RbPtr<RbObject> VectorBoolean::getElement(size_t index) const {
+RbPtr<const RbObject> VectorBoolean::getElement(size_t index) const {
+    
+    if ( index >= elements.size() )
+        throw RbException("Index out of bounds");
+    
+    RbPtr<const RbObject> b( new RbBoolean(elements[index]) );
+    return b;
+}
+
+
+RbPtr<RbObject> VectorBoolean::getElement(size_t index) {
     
     if ( index >= elements.size() )
         throw RbException("Index out of bounds");

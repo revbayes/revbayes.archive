@@ -43,7 +43,7 @@ RbObject* RbLanguageObject::convertTo(const TypeSpec& type) const {
 }
 
 /** Encode the object into a serializable xml-object */
-const RbPtr<XmlElement> RbLanguageObject::encode(RbPtr<XmlDocument> doc, const std::string& name) {    
+RbPtr<XmlElement> RbLanguageObject::encode(RbPtr<XmlDocument> doc, const std::string& name) {    
     
     //! @Sebatian TODO basic implementation which should return an empty xml object with only the name
     

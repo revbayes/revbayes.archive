@@ -79,7 +79,7 @@ void AbstractVector::printValue( std::ostream& o ) const {
         if ( getElement(i).get() == NULL )
             o << "NULL";
         else
-            (dynamic_cast<RbLanguageObject*>( getElement(i).get() ))->printValue(o);
+            (dynamic_cast<const RbLanguageObject*>( getElement(i).get() ))->printValue(o);
     }
     o <<  " ]";
     

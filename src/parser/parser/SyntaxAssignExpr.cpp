@@ -133,7 +133,7 @@ const VectorString& SyntaxAssignExpr::getClass(void) const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxAssignExpr::getContentAsVariable( RbPtr<Environment> env ) const {
+RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
     
     PRINTF( "Evaluating assign expression\n" );
     
@@ -149,12 +149,12 @@ RbPtr<Variable> SyntaxAssignExpr::getContentAsVariable( RbPtr<Environment> env )
         PRINTF("Arrow assignment\n");
         
         // Calculate the value of the rhs expression
-        theVariable = expression->getContentAsVariable( env );
+        theVariable = expression->evaluateContent( env );
         if ( theVariable == NULL )
             throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
         // fill the slot with the new variable
-        theSlot->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>(theVariable->getDagNodePtr()->getValue()->clone() ) ) ) );
+        theSlot->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>(theVariable->getDagNode()->getValue()->clone() ) ) ) );
     }
     
     // Deal with equation assignments
@@ -165,11 +165,11 @@ RbPtr<Variable> SyntaxAssignExpr::getContentAsVariable( RbPtr<Environment> env )
         // Get DAG node representation of expression
         // We allow direct references without lookup nodes
         // We also allow constant expressions
-        theVariable = expression->getContentAsVariable( env );
+        theVariable = expression->evaluateContent( env );
         PRINTF ( "Created %s with function \"%s\" and value %s \n", theVariable->getDagNode()->getType().c_str(), ((DeterministicNode*)theVariable->getDagNode())->getFunction()->getType().c_str(), theVariable->getDagNodePtr()->getValue() == NULL ? "NULL" : theVariable->getDagNodePtr()->getValue()->getTypeSpec().toString().c_str());
         
         // fill the slot with the new variable
-        theSlot->getVariable()->setDagNode( theVariable->getDagNodePtr() );
+        theSlot->getVariable()->setDagNode( theVariable->getDagNode() );
     }
     
     // Deal with tilde assignments
@@ -178,15 +178,15 @@ RbPtr<Variable> SyntaxAssignExpr::getContentAsVariable( RbPtr<Environment> env )
         PRINTF( "Tilde assignment\n" );
         
         // get the rhs expression wrapped and executed into a variable
-        theVariable = expression->getContentAsVariable(env);
+        theVariable = expression->evaluateContent(env);
         
         // Get distribution, which should be the return value of the rhs function
-        RbPtr<DAGNode> exprValue = theVariable->getDagNodePtr();
+        RbPtr<DAGNode> exprValue = theVariable->getDagNode();
         if ( exprValue == NULL ) {
             throw RbException( "Distribution function returns NULL" );
         }
         
-        RbPtr<DeterministicNode> detNode( dynamic_cast<DeterministicNode*>( exprValue.get() ) );
+        RbPtr<const DeterministicNode> detNode( dynamic_cast<const DeterministicNode*>( exprValue.get() ) );
         if ( detNode.get() == NULL || detNode->getFunction() == NULL || !detNode->getFunction()->isType( ConstructorFunction_name ) ) {
             
             throw RbException( "Function does not return a distribution" );

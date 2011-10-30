@@ -142,7 +142,18 @@ const VectorString& VectorReal::getClass(void) const {
 }
 
 
-RbPtr<RbObject> VectorReal::getElement(size_t index) const {
+RbPtr<const RbObject> VectorReal::getElement(size_t index) const {
+    
+    if (index > elements.size())
+        throw RbException("Index out of bounds");
+    
+    RbPtr<const RbObject> n( new Real(elements[index]) );
+    
+    return n;
+}
+
+
+RbPtr<RbObject> VectorReal::getElement(size_t index) {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");

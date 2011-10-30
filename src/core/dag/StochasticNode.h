@@ -46,17 +46,18 @@ public:
 
     const VectorString&                 getClass(void) const;                                               //!< Get class vector
     const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
-    const RbPtr<RbLanguageObject>       getStoredValue(void);                                               //!< Get stored value (non-const fxn because of delayed evaluation)
-    RbPtr<RbLanguageObject>             getValue(void);                                                     //!< Get value (non-const fxn because of delayed evaluation)
-    RbPtr<RbLanguageObject>             getValuePtr(void);                                                  //!< Get value pointer (non-const fxn because of delayed evaluation)
+    RbPtr<const RbLanguageObject>       getStoredValue(void) const;                                         //!< Get stored value
+    RbPtr<const RbLanguageObject>       getValue(void) const;                                               //!< Get value 
+    RbPtr<RbLanguageObject>             getValue(void);                                                     //!< Get value (non-const to return non-const value)
     void                                printStruct(std::ostream& o) const;                                 //!< Print struct for user
-    void                                printValue(std::ostream& o);                                        //!< Print value for user  (non-const fxn because of delayed evaluation)
+    void                                printValue(std::ostream& o) const;                                  //!< Print value for user 
     std::string                         richInfo(void) const;                                               //!< Complete info about object
 
     // StochasticNode functions
     double                              calculateLnProbability(void);                                       //!< Calculate log conditional probability
-    void                                clamp(RbPtr<RbLanguageObject> observedVal);             //!< Clamp the node with an observed value
-    const RbPtr<Distribution>           getDistribution(void) const { return distribution; }                //!< Get distribution
+    void                                clamp(RbPtr<RbLanguageObject> observedVal);                         //!< Clamp the node with an observed value
+    RbPtr<const Distribution>           getDistribution(void) const;                                        //!< Get distribution
+    RbPtr<Distribution>                 getDistribution(void);                                              //!< Get distribution (non-const to return non-const distribution)
     double                              getLnProbabilityRatio(void);                                        //!< Get log probability ratio of new to stored state
     bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
     void                                setValue(RbPtr<RbLanguageObject> value, std::set<RbPtr<StochasticNode> >& affected);     //!< Set value but do not clamp; get affected nodes

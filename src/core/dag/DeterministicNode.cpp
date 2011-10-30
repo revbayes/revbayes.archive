@@ -201,36 +201,50 @@ const TypeSpec& DeterministicNode::getTypeSpec(void) const {
 }
 
 
+
+RbPtr<const RbFunction> DeterministicNode::getFunction(void) const {
+    return RbPtr<const RbFunction>(function);
+}
+
+
+RbPtr<RbFunction> DeterministicNode::getFunction(void) {
+    return (function);
+}
+
+
+
 /** Get stored value */
-const RbPtr<RbLanguageObject> DeterministicNode::getStoredValue( void ) {
+RbPtr<const RbLanguageObject> DeterministicNode::getStoredValue( void ) const {
 
     if ( !touched )
-        return value;
+        return RbPtr<const RbLanguageObject>(value.get());
 
     if ( !changed )
-        update();
+        throw RbException("Cannot return stored value of deterministic node when it was touched but not changed!");
+//        update();
     
-    return storedValue;
+    return RbPtr<const RbLanguageObject>(storedValue);
 }
 
 
 /** Get value */
-RbPtr<RbLanguageObject> DeterministicNode::getValue( void ) {
-
+RbPtr<const RbLanguageObject> DeterministicNode::getValue( void ) const {
+    
     if ( touched && !changed )
-        update();
-
-    return value;
+        throw RbException("Cannot return value of deterministic node when it was touched but not changed!");
+    //        update();
+    
+    return RbPtr<const RbLanguageObject>(value);
 }
 
-
-/** Get value pointer */
-RbPtr<RbLanguageObject> DeterministicNode::getValuePtr( void ) {
+/** Get value */
+RbPtr<RbLanguageObject> DeterministicNode::getValue( void ) {
     
     if ( touched && !changed )
-        update();
+        throw RbException("Cannot return value of deterministic node when it was touched but not changed!");
+    //        update();
     
-    return value;
+    return RbPtr<RbLanguageObject>(value);
 }
 
 
@@ -259,10 +273,11 @@ void DeterministicNode::keepAffected( void ) {
 
 
 /** Print value for user */
-void DeterministicNode::printValue( std::ostream& o ) {
+void DeterministicNode::printValue( std::ostream& o ) const {
 
     if ( touched && !changed )
-        update();
+        throw RbException("Cannot print value of deterministic node when it was touched but not changed!");
+//        update();
 
     if (value != NULL) 
         value->printValue(o);

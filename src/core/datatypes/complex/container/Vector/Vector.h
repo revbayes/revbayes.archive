@@ -48,7 +48,8 @@ public:
     
     // Vector functions
     virtual void                                    clear(void);                                                    //!< Clear
-    virtual RbPtr<RbObject>                         getElement(size_t index) const;                                 //!< Get element
+    virtual RbPtr<const RbObject>                   getElement(size_t index) const;                                 //!< Get element
+    virtual RbPtr<RbObject>                         getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
     const std::vector<RbPtr<RbLanguageObject> >&    getValue(void) const;                                           //!< Get the stl vector of elements
     void                                            pop_back(void);                                                 //!< Drop element at back
     void                                            pop_front(void);                                                //!< Drop element from front

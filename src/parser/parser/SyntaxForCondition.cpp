@@ -113,7 +113,7 @@ bool SyntaxForCondition::getNextLoopState(RbPtr<Environment> env) {
         return false;
     }
 
-    (*env)[ *varName ]->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>(static_cast<RbLanguageObject*>(vector->getElement( nextElement ).get() ))) ) );
+    (*env)[ *varName ]->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>(static_cast<RbLanguageObject*>(vector->getElement( nextElement ).get() ) ) ) ) );
     nextElement++;
 
     return true;
@@ -129,7 +129,7 @@ const VectorString& SyntaxForCondition::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxForCondition::getContentAsVariable(RbPtr<Environment> env) const {
+RbPtr<Variable> SyntaxForCondition::evaluateContent(RbPtr<Environment> env) {
 
     return RbPtr<Variable>::getNullPtr();
 }
@@ -147,8 +147,8 @@ void SyntaxForCondition::initializeLoop(RbPtr<Environment> env) {
     assert ( nextElement < 0 );
 
     // Evaluate expression and check that we get a vector
-    RbPtr<DAGNode> theNode = inExpression->getContentAsVariable(env)->getDagNodePtr();
-    RbPtr<RbLanguageObject> theValue( theNode->getValue()->clone() );
+    RbPtr<DAGNode> theNode = inExpression->evaluateContent(env)->getDagNode();
+    RbPtr<RbLanguageObject> theValue( theNode->getValue() );
 
     // Check that it is a vector
     if ( theValue->isTypeSpec( TypeSpec(AbstractVector_name) ) == false ) {

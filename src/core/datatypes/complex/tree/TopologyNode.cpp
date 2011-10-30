@@ -76,12 +76,12 @@ void TopologyNode::addChild(RbPtr<TopologyNode> c) {
     // add the child to our internal vector
     children.push_back(c);
     
-    name = buildNewickString(RbPtr<TopologyNode>( this ));
+    name = buildNewickString(RbPtr<const TopologyNode>( this ));
 }
 
 
 /* Build newick string */
-std::string TopologyNode::buildNewickString(const RbPtr<TopologyNode> node) const {
+std::string TopologyNode::buildNewickString(RbPtr<const TopologyNode> node) const {
     // create the newick string
     std::string newick;
     
@@ -115,7 +115,7 @@ const TypeSpec& TopologyNode::getTypeSpec(void) const {
 }
 
 
-bool TopologyNode::equals(RbPtr<TopologyNode> node) const {
+bool TopologyNode::equals(RbPtr<const TopologyNode> node) const {
     // test if the name is the same
     if (name != node->name) {
         return false;
@@ -168,6 +168,13 @@ RbPtr<RbLanguageObject> TopologyNode::executeOperation(const std::string& name, 
 }
 
 
+/** Get child at index i */
+RbPtr<const TopologyNode> TopologyNode::getChild(size_t i) const {
+    
+    return RbPtr<const TopologyNode>( children[i] );
+}
+
+
 /** Loop over children and get their indices */
 std::vector<int> TopologyNode::getChildrenIndices() const {
 
@@ -189,7 +196,7 @@ const VectorString& TopologyNode::getClass() const {
 
 
 /** Get method specifications */
-const RbPtr<MethodTable> TopologyNode::getMethods(void) const {
+RbPtr<const MethodTable> TopologyNode::getMethods(void) const {
     
     static RbPtr<MethodTable> methods( new MethodTable() );
     static RbPtr<ArgumentRules> ancestorRules( new ArgumentRules() );
@@ -206,15 +213,15 @@ const RbPtr<MethodTable> TopologyNode::getMethods(void) const {
         methods->addFunction("isInterior", RbPtr<RbFunction>( new MemberFunction(RbBoolean_name,      isInteriorArgRules) ) );
         
         // Necessary call for proper inheritance
-        methods->setParentTable( RbPtr<FunctionTable>( MemberObject::getMethods().get() ) );
+        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
         methodsSet = true;
     }
 
-    return methods;
+    return RbPtr<const MethodTable>( methods );
 }
 
 
-const RbPtr<MemberRules> TopologyNode::getMemberRules(void) const {
+RbPtr<const MemberRules> TopologyNode::getMemberRules(void) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -224,7 +231,13 @@ const RbPtr<MemberRules> TopologyNode::getMemberRules(void) const {
         rulesSet = true;
         }
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
+}
+
+
+RbPtr<const TopologyNode> TopologyNode::getParent(void) const { 
+    return RbPtr<const TopologyNode>(parent); 
+
 }
 
 
@@ -237,7 +250,7 @@ void TopologyNode::printValue(std::ostream& o) const {
 
 
 void TopologyNode::refreshNewickString(void) {
-    name = buildNewickString( RbPtr<TopologyNode>( this ) );
+    name = buildNewickString( RbPtr<const TopologyNode>( this ) );
     
     // call the parent to refresh its newick string
     if (parent != NULL) {
@@ -265,7 +278,7 @@ void TopologyNode::removeChild(RbPtr<TopologyNode> p) {
     else 
         throw(RbException("Cannot find node in list of children nodes"));
     
-    name = buildNewickString( RbPtr<TopologyNode>( this ) );
+    name = buildNewickString( RbPtr<const TopologyNode>( this ) );
 }
 
 
@@ -291,9 +304,9 @@ void TopologyNode::setName(std::string const &n) {
 void TopologyNode::setParent(RbPtr<TopologyNode> p) {
     
     // we only do something if this isn't already our parent
-    if (p.get() != parent) {
+    if (p != parent) {
         // we do not own the parent so we do not have to delete it
-        parent = p.get();
+        parent = p;
         
         parent->refreshNewickString();
     }

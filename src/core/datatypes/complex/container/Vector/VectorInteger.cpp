@@ -173,7 +173,18 @@ const VectorString& VectorInteger::getClass() const {
 }
 
 
-RbPtr<RbObject> VectorInteger::getElement(size_t index) const {
+RbPtr<const RbObject> VectorInteger::getElement(size_t index) const {
+    
+    if (index > elements.size())
+        throw RbException("Index out of bounds");
+    
+    RbPtr<RbObject> n( new Integer(elements[index]) );
+    
+    return n;
+}
+
+
+RbPtr<RbObject> VectorInteger::getElement(size_t index) {
     
     if (index > elements.size())
         throw RbException("Index out of bounds");

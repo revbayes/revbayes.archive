@@ -53,7 +53,7 @@ public:
 
     // Overoaded operators
     RbPtr<VectorReal>                   operator[](size_t i);                                                       //!< Subscript operator
-    const RbPtr<VectorReal>             operator[](size_t i) const;                                                 //!< Subscript operator (const)
+    RbPtr<const VectorReal>             operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
     // Basic utility functions
     MatrixReal*                         clone(void) const;                                                          //!< Clone object
@@ -64,7 +64,8 @@ public:
 
     
     // Matrix functions
-    RbPtr<RbObject>                     getElement(size_t row, size_t col) const;                                   //!< Get element or subcontainer
+    RbPtr<const RbObject>               getElement(size_t row, size_t col) const;                                   //!< Get element or subcontainer
+    RbPtr<RbObject>                     getElement(size_t row, size_t col);                                         //!< Get element or subcontainer (non-const to return non-const element)
     void                                setElement(size_t row, size_t col, RbPtr<RbLanguageObject> var);            //!< set element
     void                                resize(size_t nRows, size_t nCols);                                         //!< Resize to new length vector
     void                                transpose(void);                                                            //!< Transpose the matrix

@@ -57,11 +57,11 @@ class DAGNode : public RbInternal {
         // Basic utility functions you have to override
         virtual DAGNode*                                    clone(void) const = 0;                                                  //!< Clone this node
         virtual const VectorString&                         getClass(void) const;                                                   //!< Get DAG node class vector
-        virtual const RbPtr<RbLanguageObject>               getStoredValue(void) = 0;                                               //!< Get stored value (non-const because of delayed evaluation)
-        virtual RbPtr<RbLanguageObject>                     getValue(void) = 0;                                                     //!< Get value (non-const because of delayed evaluation)
-        virtual RbPtr<RbLanguageObject>                     getValuePtr(void) = 0;                                                  //!< Get value pointer (non-const because of delayed evaluation)
+        virtual RbPtr<const RbLanguageObject>               getStoredValue(void) const = 0;                                         //!< Get stored value
+        virtual RbPtr<const RbLanguageObject>               getValue(void) const = 0;                                               //!< Get value
+        virtual RbPtr<RbLanguageObject>                     getValue(void) = 0;                                                     //!< Get value (non-const to return non-const value)
         virtual void                                        printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
-        virtual void                                        printValue(std::ostream& o) = 0;                                        //!< Print value for user (non-const fxn because of delayed evaluation)
+        virtual void                                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
         virtual std::string                                 richInfo(void) const = 0;                                               //!< Complete info about object
     
         // DAG function you have to override
@@ -72,11 +72,12 @@ class DAGNode : public RbInternal {
 
         // DAG functions you should not have to override
         void                                                addChildNode(VariableNode *c);                                          //!< Add child node
-        std::set<VariableNode*>&                            getChildren(void) { return children; }                                  //!< Return children
+        const std::set<VariableNode*>&                      getChildren(void) const { return children; }                            //!< Return children
+        RbPtr<const RbObject>                               getElement(size_t index) const ;                                        //!< Get element at index (container function)
         RbPtr<RbObject>                                     getElement(size_t index);                                               //!< Get element at index (container function)
         const std::string&                                  getName(void) const;                                                    //!< get the name
-		std::set<RbPtr<DAGNode> >&                          getParents(void) { return parents; }                                    //!< Return parents
-        Variable*                                           getVariable(void) { return variable; }               //!< Get the variable owning this node
+		const std::set<RbPtr<DAGNode> >&                    getParents(void) const { return parents; }                              //!< Return parents
+        Variable*                                           getVariable(void) const { return variable; }                            //!< Get the variable owning this node
         bool                                                isParentInDAG(const RbPtr<DAGNode> x, std::list<DAGNode*>& done) const; //!< Is node x a parent of the caller in the DAG?
         size_t                                              numberOfChildren(void) const { return children.size(); }                //!< Number of children
         size_t                                              numberOfParents(void) const { return parents.size(); }                  //!< Number of parents

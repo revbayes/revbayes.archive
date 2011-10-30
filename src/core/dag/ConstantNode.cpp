@@ -106,7 +106,7 @@ void ConstantNode::keepAffected( void ) {
 }
 
 /** Print value for user */
-void ConstantNode::printValue( std::ostream& o ) {
+void ConstantNode::printValue( std::ostream& o ) const {
 
     if ( value )
         value->printValue(o);

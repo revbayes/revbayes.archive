@@ -132,7 +132,7 @@ const VectorString& SyntaxStatement::getClass(void) const {
 
 
 /** Get semantic value: it is here that we execute the statement */
-RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) const {
+RbPtr<Variable> SyntaxStatement::evaluateContent(RbPtr<Environment> env) {
 
     RbPtr<Variable> result( NULL );
     
@@ -155,15 +155,15 @@ RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) co
         // Now loop over statements inside the for loop
         while (forCond->getNextLoopState(loopEnv)) {
 
-            for (std::list<RbPtr<SyntaxElement> >::const_iterator i=statements1->begin(); i!=statements1->end(); i++) {
+            for (std::list<RbPtr<SyntaxElement> >::iterator i=statements1->begin(); i!=statements1->end(); i++) {
 
                 // Execute statement
-                result = (*i)->getContentAsVariable(loopEnv);
+                result = (*i)->evaluateContent(loopEnv);
                 
                 // Print result if it is not an assign expression (==NULL)
                 if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
-                    result->getDagNodePtr()->printValue(msg);
+                    result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
                 }
 
@@ -204,15 +204,15 @@ RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) co
         // Loop over statements inside the while loop, first checking the expression
         while ( isTrue( expression, env ) ) {
 
-            for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
+            for ( std::list<RbPtr<SyntaxElement> >::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
 	 
                 // Execute statement
-	            result = (*i)->getContentAsVariable( env );
+	            result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
                 if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
-                    result->getDagNodePtr()->printValue(msg);
+                    result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
                 }
 	 
@@ -240,22 +240,22 @@ RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) co
         
         // Set RETURN signal and return expression value
         Signals::getSignals().set(Signals::RETURN);
-        return expression->getContentAsVariable(env);
+        return expression->evaluateContent(env);
     }
     else if ( statementType == If ) {
 
         // Process statements inside the if clause if expression is true
         if ( isTrue( expression, env ) ) {
         	 	 
-            for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
+            for ( std::list<RbPtr<SyntaxElement> >::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
 
                 // Execute statement
-                result = (*i)->getContentAsVariable(env);
+                result = (*i)->evaluateContent(env);
                 
                 // Print result if it is not an assign expression (==NULL)
                 if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
-                    result->getDagNodePtr()->printValue(msg);
+                    result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
                 }
 
@@ -272,15 +272,15 @@ RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) co
         // otherwise process statements in else clause
         if ( isTrue( expression, env ) ) {
             
-            for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
+            for ( std::list<RbPtr<SyntaxElement> >::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
             
                 // Execute statement
-                result = (*i)->getContentAsVariable( env );
+                result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
                 if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
-                    result->getDagNodePtr()->printValue(msg);
+                    result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
                 }
                 
@@ -291,15 +291,15 @@ RbPtr<Variable> SyntaxStatement::getContentAsVariable(RbPtr<Environment> env) co
             }
         }
         else {	
-            for ( std::list<RbPtr<SyntaxElement> >::const_iterator i=statements2->begin(); i!=statements2->end(); i++ ) {
+            for ( std::list<RbPtr<SyntaxElement> >::iterator i=statements2->begin(); i!=statements2->end(); i++ ) {
     
                 // Execute statement
-                result = (*i)->getContentAsVariable( env );
+                result = (*i)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
                 if (result != NULL && !(*i)->isType(SyntaxAssignExpr_name) ) {
                     std::ostringstream msg;
-                    result->getDagNodePtr()->printValue(msg);
+                    result->getDagNode()->printValue(msg);
                     RBOUT( msg.str() );
                 }
                     
@@ -328,7 +328,7 @@ const TypeSpec& SyntaxStatement::getTypeSpec(void) const {
  */
 bool SyntaxStatement::isTrue( RbPtr<SyntaxElement> expression, RbPtr<Environment> env ) const {
     
-    RbPtr<Variable> temp = expression->getContentAsVariable( env );
+    RbPtr<Variable> temp = expression->evaluateContent( env );
     
     if ( temp == NULL )
         return false;

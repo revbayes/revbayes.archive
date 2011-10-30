@@ -121,7 +121,7 @@ const VectorString& SyntaxFunctionDef::getClass(void) const {
 
 
 /** Get semantic value: insert a user-defined function in the user workspace */
-RbPtr<Variable> SyntaxFunctionDef::getContentAsVariable(RbPtr<Environment> env) const {
+RbPtr<Variable> SyntaxFunctionDef::evaluateContent(RbPtr<Environment> env) {
 
     // Get argument rules from the formals
     RbPtr<ArgumentRules> argRules( new ArgumentRules() );

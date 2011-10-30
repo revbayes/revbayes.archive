@@ -101,7 +101,7 @@ RateMatrix::~RateMatrix(void) {
 
 
 /** Index operator (const) */
-const RbPtr<VectorReal> RateMatrix::operator[]( const size_t i ) const {
+RbPtr<const VectorReal> RateMatrix::operator[]( const size_t i ) const {
 
     if ( i >= numStates )
         throw RbException( "Index to " + RateMatrix_name + "[][] out of bounds" );
@@ -192,7 +192,7 @@ void RateMatrix::calculateCijk(void) {
     Stewart, W. J. 1999. Numerical methods for computing stationary distributions of 
        finite irreducible Markov chains. In "Advances in Computational
        Probability", W. Grassmann, ed. Kluwer Academic Publishers. */
-void RateMatrix::calculateStationaryFrequencies(void) const {
+void RateMatrix::calculateStationaryFrequencies(void) {
 
 	// transpose the rate matrix and put into QT
     MatrixReal QT(numStates, numStates);
@@ -224,7 +224,7 @@ void RateMatrix::calculateStationaryFrequencies(void) const {
 		pi[i] /= sum;
         
     // set the stationary frequencies
-    theStationaryFreqs.get()->setValue(pi);
+    theStationaryFreqs->setValue(pi);
 }
 
 
@@ -315,7 +315,7 @@ bool RateMatrix::getIsTimeReversible(void) {
 
 
 /** Get member rules */
-const RbPtr<MemberRules> RateMatrix::getMemberRules(void) const {
+RbPtr<const MemberRules> RateMatrix::getMemberRules(void) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -325,12 +325,12 @@ const RbPtr<MemberRules> RateMatrix::getMemberRules(void) const {
         rulesSet = true;
         }
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
 /** Get methods */
-const RbPtr<MethodTable> RateMatrix::getMethods(void) const {
+RbPtr<const MethodTable> RateMatrix::getMethods(void) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
     static RbPtr<ArgumentRules> nstatesArgRules( new ArgumentRules() );
@@ -348,11 +348,11 @@ const RbPtr<MethodTable> RateMatrix::getMethods(void) const {
         methods->addFunction("reversible",      RbPtr<RbFunction>( new MemberFunction(RbBoolean_name, reversibleArgRules)    ) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( RbPtr<FunctionTable>( MemberObject::getMethods().get() ) );
+        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
         methodsSet = true;
         }
 
-    return methods;
+    return RbPtr<const MethodTable>( methods );
 }
 
 

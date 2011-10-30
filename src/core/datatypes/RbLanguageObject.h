@@ -39,7 +39,7 @@ public:
     
     // Basic utility functions you have to override (also getClass()!)
     virtual RbLanguageObject*       clone(void) const = 0;                                                  //!< Clone object
-    virtual const RbPtr<XmlElement> encode(RbPtr<XmlDocument> doc, const std::string& name);                //!< Function to encode this object into an XML string
+    virtual RbPtr<XmlElement>       encode(RbPtr<XmlDocument> doc, const std::string& name);                //!< Function to encode this object into an XML string
     virtual const VectorString&     getClass(void) const;                                                   //!< Get class vector
     virtual void                    printValue(std::ostream& o) const = 0;                                  //!< Print value for user
     virtual std::string             richInfo(void) const = 0;                                               //!< Complete info about object

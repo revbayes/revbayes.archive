@@ -95,7 +95,7 @@ const VectorString& SyntaxLabeledExpr::getClass(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxLabeledExpr::getContentAsVariable(RbPtr<Environment> env) const {
+RbPtr<Variable> SyntaxLabeledExpr::evaluateContent(RbPtr<Environment> env) {
 
     return RbPtr<Variable>::getNullPtr();
 }

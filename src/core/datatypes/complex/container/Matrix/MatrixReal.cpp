@@ -68,12 +68,12 @@ MatrixReal::MatrixReal(const std::vector<std::vector<double> >& x) : Matrix(Real
 
 
 /** Index operator (const) */
-const RbPtr<VectorReal> MatrixReal::operator[]( const size_t i ) const {
+RbPtr<const VectorReal> MatrixReal::operator[]( const size_t i ) const {
 
     if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
 
-    return RbPtr<VectorReal>( static_cast<VectorReal*>(elements[i].get()) );
+    return RbPtr<const VectorReal>( static_cast<const VectorReal*>(elements[i].get()) );
 }
 
 
@@ -116,11 +116,20 @@ const VectorString& MatrixReal::getClass(void) const {
 
 
 /** Overloaded container method to get element or subcontainer for parser */
-RbPtr<RbObject> MatrixReal::getElement( size_t row, size_t col ) const {
+RbPtr<const RbObject> MatrixReal::getElement( size_t row, size_t col ) const {
+    
+    RbPtr<const VectorReal> tmp(static_cast<const VectorReal*>( Vector::getElement(row).get() ) );
+    return tmp->getElement(col);
+}
+
+
+/** Overloaded container method to get element or subcontainer for parser */
+RbPtr<RbObject> MatrixReal::getElement( size_t row, size_t col ) {
     
     RbPtr<VectorReal> tmp(static_cast<VectorReal*>( Vector::getElement(row).get() ) );
     return tmp->getElement(col);
 }
+
 
 
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
@@ -135,7 +144,7 @@ std::vector<std::vector<double> > MatrixReal::getValue( void ) const {
     std::vector<std::vector<double> > temp;
 
     for ( size_t i = 0; i < size(); i++ )
-        temp.push_back(static_cast<VectorReal*>(elements[i].get())->getValue());
+        temp.push_back(static_cast<const VectorReal*>(elements[i].get())->getValue());
 
     return temp;
 }
@@ -196,7 +205,7 @@ void MatrixReal::printValue(std::ostream& o) const {
         else 
             lineStr += "  ";
         
-        const VectorReal *vec = static_cast<VectorReal*>(elements[i].get());
+        const VectorReal *vec = static_cast<const VectorReal*>(elements[i].get());
         lineStr += vec->briefInfo();
         if (i == size()-1)
             lineStr += " ]";

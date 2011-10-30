@@ -45,12 +45,12 @@ public:
     std::string                     richInfo(void) const;                                                   //!< Complete info
 
     // Member variable functions
-    const RbPtr<MemberRules>        getMemberRules(void) const;                                             //!< Get member rules
+    RbPtr<const MemberRules>        getMemberRules(void) const;                                             //!< Get member rules
     void                            setMemberVariable(const std::string& name, RbPtr<Variable> var);        //!< Catch setting of the topology
 
     // Member method inits
     RbPtr<RbLanguageObject>         executeOperation(const std::string& name, Environment& args);           //!< Execute method
-    const RbPtr<MethodTable>        getMethods(void) const;                                                 //!< Get methods
+    RbPtr<const MethodTable>        getMethods(void) const;                                                 //!< Get methods
 
     // Tree plate functions
     RbPtr<Topology>                 getTopology(void) const;                                                //!< Get the topology for this tree
@@ -60,11 +60,11 @@ private:
     
     std::vector<std::string>        nodeVariableNames;                                                      //!< The vector of variables names for each node
     
-    std::string                     buildNewickString(RbPtr<TopologyNode> node) const;                      //!< compute the newick string for a tree rooting at this node
+    std::string                     buildNewickString(RbPtr<const TopologyNode> node) const;                      //!< compute the newick string for a tree rooting at this node
     
     void                            orderPlateWithTopology(RbPtr<Topology> t) { orderingTopology = t; }     //!< Order the topology
-    size_t                          getNodeIndex(const RbPtr<TopologyNode> theNode) const;                  //!< Get the index of the node
-    size_t                          getTipIndex(const RbPtr<TopologyNode> theNode) const;                   //!< Get the index of the node
+    size_t                          getNodeIndex(RbPtr<const TopologyNode> theNode) const;                  //!< Get the index of the node
+    size_t                          getTipIndex(RbPtr<const TopologyNode> theNode) const;                   //!< Get the index of the node
 
     RbPtr<Topology>                 orderingTopology;                                                       //!< The topology that orders the tree plate
 };

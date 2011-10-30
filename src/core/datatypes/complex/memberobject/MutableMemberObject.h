@@ -32,21 +32,21 @@ const std::string MutableMemberObject_name = "mutable MemberObject";
 class MutableMemberObject : public MemberObject {
     
 public:
-    virtual                    ~MutableMemberObject(void) {}                                                        //!< Destructor
+    virtual                        ~MutableMemberObject(void) {}                                                        //!< Destructor
     
     // Basic utility functions you have to override
-    virtual MutableMemberObject* clone(void) const = 0;                                                              //!< Clone object
-    virtual const VectorString& getClass(void) const;                                                               //!< Get class vector
+    virtual MutableMemberObject*    clone(void) const = 0;                                                              //!< Clone object
+    virtual const VectorString&     getClass(void) const;                                                               //!< Get class vector
     
     // Basic utility functions you may want to override
-    virtual void                printValue(std::ostream& o) const;                                                  //!< Print value for user
-    virtual std::string         richInfo(void) const;                                                               //!< Complete info
+    virtual void                    printValue(std::ostream& o) const;                                                  //!< Print value for user
+    virtual std::string             richInfo(void) const;                                                               //!< Complete info
     
     // Basic utility functions you do not have to override
-    bool                        isConstant(void) const;                                                             //!< Is the object, including all member variables and elements, constant?
+    bool                            isConstant(void) const;                                                             //!< Is the object, including all member variables and elements, constant?
     
     protected:
-    MutableMemberObject(const RbPtr<MemberRules> memberRules);                                                            //!< Standard constructor
+    MutableMemberObject(RbPtr<const MemberRules> memberRules);                                                            //!< Standard constructor
     MutableMemberObject(void);                                                                                      //!< Default constructor; no members or methods
     
 };

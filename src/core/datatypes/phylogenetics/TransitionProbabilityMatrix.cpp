@@ -77,7 +77,7 @@ TransitionProbabilityMatrix::~TransitionProbabilityMatrix(void) {
 
 
 /** Index operator (const) */
-const RbPtr<VectorReal> TransitionProbabilityMatrix::operator[]( const size_t i ) const {
+RbPtr<const VectorReal> TransitionProbabilityMatrix::operator[]( const size_t i ) const {
 
     if ( i >= numStates )
         throw RbException( "Index to " + TransitionProbabilityMatrix_name + "[][] out of bounds" );
@@ -122,7 +122,7 @@ const VectorString& TransitionProbabilityMatrix::getClass(void) const {
 
 
 /** Get member rules */
-const RbPtr<MemberRules> TransitionProbabilityMatrix::getMemberRules(void) const {
+RbPtr<const MemberRules> TransitionProbabilityMatrix::getMemberRules(void) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -132,12 +132,12 @@ const RbPtr<MemberRules> TransitionProbabilityMatrix::getMemberRules(void) const
         rulesSet = true;
         }
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
 /** Get methods */
-const RbPtr<MethodTable> TransitionProbabilityMatrix::getMethods(void) const {
+RbPtr<const MethodTable> TransitionProbabilityMatrix::getMethods(void) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
     static RbPtr<ArgumentRules> nstatesArgRules( new ArgumentRules() );
@@ -149,11 +149,11 @@ const RbPtr<MethodTable> TransitionProbabilityMatrix::getMethods(void) const {
         methods->addFunction("nstates", RbPtr<RbFunction>( new MemberFunction(Natural_name, nstatesArgRules) ) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( RbPtr<FunctionTable>( MemberObject::getMethods().get() ) );
+        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
         methodsSet = true;
         }
 
-    return methods;
+    return RbPtr<const MethodTable>( methods );
 }
 
 

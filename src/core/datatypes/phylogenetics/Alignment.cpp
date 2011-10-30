@@ -87,7 +87,7 @@ Alignment& Alignment::operator=( const Alignment& x ) {
 
 
 /** Index (const) operator */
-const RbPtr<Sequence> Alignment::operator[]( const size_t i ) const {
+RbPtr<const Sequence> Alignment::operator[]( const size_t i ) const {
 
     return getSequence( i );
 }
@@ -104,13 +104,13 @@ void Alignment::addSequence( RbPtr<Sequence> obs ) {
         throw RbException( msg );
     }
 
-    push_back(RbPtr<RbObject>( obs.get() ));
+    push_back(RbPtr<RbObject>( obs ));
     
     // add the sequence name to the list
     sequenceNames.push_back(obs->getTaxonName());
     
     // add the sequence also as a member so that we can access it by name
-    RbPtr<Variable> var( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( obs.get() ) ) ) ) );
+    RbPtr<Variable> var( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( obs ) ) ) ) );
     members->addVariable(obs->getTaxonName(), var);
 }
 
@@ -255,16 +255,16 @@ RbPtr<RbLanguageObject> Alignment::executeOperation(const std::string& name, Env
         }
     else if (name == "excludechar")
         {
-        const RbPtr<RbLanguageObject> argument = args[1]->getValue();
+        RbPtr<RbLanguageObject> argument = args[1]->getValue();
 
         if ( argument->isTypeSpec( TypeSpec(Natural_name) ) ) {
             
-            int n = static_cast<const Natural*>( argument.get() )->getValue();
+            int n = static_cast<const Natural*>( (RbLanguageObject*)argument )->getValue();
             deletedCharacters.insert( n );
         }
         else if ( argument->isTypeSpec( TypeSpec(VectorNatural_name) ) ) {
         
-            std::vector<unsigned int> x = static_cast<const VectorNatural*>( argument.get() )->getValue();
+            std::vector<unsigned int> x = static_cast<const VectorNatural*>( (RbLanguageObject*)argument )->getValue();
             for ( size_t i=0; i<x.size(); i++ )
                 deletedCharacters.insert( x[i] );
         }
@@ -276,12 +276,12 @@ RbPtr<RbLanguageObject> Alignment::executeOperation(const std::string& name, Env
 
 
 /** Return a pointer to a character element in the character matrix */
-const RbPtr<Character> Alignment::getCharacter( size_t tn, size_t cn ) const {
+RbPtr<const Character> Alignment::getCharacter( size_t tn, size_t cn ) const {
 
     if ( cn >= getNumberOfCharacters() )
         throw RbException( "Character index out of range" );
 
-    return RbPtr<Character>((*getSequence( tn ))[cn]);
+    return RbPtr<const Character>((*getSequence( tn ))[cn]);
 }
 
 
@@ -298,8 +298,14 @@ const std::string& Alignment::getDataType(void) const {
 }
 
 
-RbPtr<RbObject> Alignment::getElement(size_t row, size_t col) const {
-    const RbPtr<Sequence> sequence( dynamic_cast<Sequence*>(elements[row].get()) );
+RbPtr<const RbObject> Alignment::getElement(size_t row, size_t col) const {
+    const RbPtr<Sequence> sequence( dynamic_cast<Sequence*>( (RbLanguageObject*)elements[row]) );
+    return (sequence->getElement(col));
+}
+
+
+RbPtr<RbObject> Alignment::getElement(size_t row, size_t col) {
+    RbPtr<Sequence> sequence( dynamic_cast<Sequence*>( (RbLanguageObject*)elements[row]) );
     return (sequence->getElement(col));
 }
 
@@ -310,15 +316,15 @@ const std::string& Alignment::getFileName(void) const {
 
 
 /** Get member rules */
-const RbPtr<MemberRules> Alignment::getMemberRules(void) const {
+RbPtr<const MemberRules> Alignment::getMemberRules(void) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
 /** Get methods */
-const RbPtr<MethodTable> Alignment::getMethods(void) const {
+RbPtr<const MethodTable> Alignment::getMethods(void) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
     static RbPtr<ArgumentRules> ncharArgRules( new ArgumentRules() );
@@ -363,11 +369,11 @@ const RbPtr<MethodTable> Alignment::getMethods(void) const {
         methods->addFunction("excludechar",         RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        excludecharArgRules2) ) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( RbPtr<FunctionTable>( MemberObject::getMethods().get() ) );
+        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
         methodsSet = true;
         }
 
-    return methods;
+    return RbPtr<const MethodTable>( methods );
 }
 
 
@@ -390,11 +396,11 @@ size_t Alignment::getNumberOfStates(void) const {
     if ( size() == 0 )
         return 0;
 
-    const RbPtr<Sequence> sequence = getSequence( 0 );
+    RbPtr<const Sequence> sequence = getSequence( 0 );
     if ( sequence->size() == 0 )
         return 0;
 
-    return static_cast<Character*>((*sequence)[0].get())->getNumberOfStates();
+    return static_cast<const Character*>((*sequence)[0])->getNumberOfStates();
 }
 
 
@@ -404,12 +410,12 @@ size_t Alignment::getNumberOfTaxa(void) const {
 
 
 /** Get sequence with index tn */
-const RbPtr<Sequence> Alignment::getSequence( size_t tn ) const {
+RbPtr<const Sequence> Alignment::getSequence( size_t tn ) const {
 
     if ( tn >= getNumberOfTaxa() )
         throw RbException( "Taxon index out of range" );
 
-    const RbPtr<Sequence> sequence( static_cast<Sequence*>( elements[tn].get() ) );
+    RbPtr<const Sequence> sequence( static_cast<const Sequence*>( (RbLanguageObject*)elements[tn] ) );
 
     return sequence;
 }
@@ -445,7 +451,7 @@ size_t Alignment::indexOfTaxonWithName( std::string& s ) const {
 /** Is this character pattern constant? */
 bool Alignment::isCharacterConstant(size_t idx) const {
 
-    RbPtr<Character> f( NULL );
+    RbPtr<const Character> f( NULL );
     for ( size_t i=0; i<getNumberOfTaxa(); i++ ) {
 
         if ( isTaxonExcluded(i) == false ) {
@@ -453,7 +459,7 @@ bool Alignment::isCharacterConstant(size_t idx) const {
             if ( f == NULL )
                 f = getCharacter( i, idx );
             else {
-                const RbPtr<Character> s = getCharacter( i , idx );
+                RbPtr<const Character> s = getCharacter( i , idx );
                 if ( (*f) != (*s) )
                     return false;
             }
@@ -481,7 +487,7 @@ bool Alignment::isCharacterMissingOrAmbiguous(size_t idx) const {
         {
         if ( isTaxonExcluded(i) == false )
             {
-            const RbPtr<Character> c = getCharacter( i, idx );
+            RbPtr<const Character> c = getCharacter( i, idx );
             if ( c->isMissingOrAmbiguous() == true )
                 return true;
             }
@@ -520,7 +526,7 @@ RbPtr<Vector> Alignment::makeSiteColumn( size_t cn ) const {
     if ( getNumberOfTaxa() == 0 )
         throw RbException( "Character matrix is empty" );
 
-    RbPtr<Vector> temp( static_cast<const Vector*>( (*members)[0]->getValue().get() )->clone() );
+    RbPtr<Vector> temp( static_cast<Vector*>( ( (const RbLanguageObject*)(*members)[0]->getValue() )->clone() ) );
     temp->clear();
     for ( size_t i=0; i<getNumberOfTaxa(); i++ )
         temp->push_back( RbPtr<RbObject>( getCharacter( i, cn )->clone() ) );
@@ -612,7 +618,7 @@ std::string Alignment::richInfo(void) const {
 void Alignment::setElement( const size_t index, RbPtr<RbLanguageObject> var ) {
     
     if (var->isTypeSpec(TypeSpec(Sequence_name))) {
-        RbPtr<Sequence> seq( static_cast<Sequence*>(var.get()) );
+        RbPtr<Sequence> seq( static_cast<Sequence*>( (RbLanguageObject*)var ) );
         
         sequenceNames.erase(sequenceNames.begin() + index);
         sequenceNames.insert(sequenceNames.begin() + index,seq->getTaxonName());

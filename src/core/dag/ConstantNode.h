@@ -42,13 +42,13 @@ public:
     const VectorString&                 getClass(void) const;                                                       //!< Get DAG node class vector
     const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
     void                                printStruct(std::ostream& o) const;                                         //!< Print struct for user
-    void                                printValue(std::ostream& o);                                                //!< Print value for user (non-const fxn because of delayed evaluation in other DAG node classes)
+    void                                printValue(std::ostream& o) const;                                          //!< Print value for user
     std::string                         richInfo(void) const;                                                       //!< Complete info on object
 
     // ConstantNode functions
-    const RbPtr<RbLanguageObject>       getStoredValue(void) { return value; }                                      //!< Get stored value (non-const fxn because of delayed evaluation in other DAG node classes)
-    RbPtr<RbLanguageObject>             getValue(void) { return value; }                                            //!< Get value (non-const fxn because of delayed evaluation in other DAG node classes)
-    RbPtr<RbLanguageObject>             getValuePtr(void) { return value; }                                         //!< Get value pointer (non-const fxn because of delayed evaluation in other DAG node classes)
+    RbPtr<const RbLanguageObject>       getStoredValue(void) const;                                                 //!< Get stored value
+    RbPtr<const RbLanguageObject>       getValue(void) const;                                                       //!< Get value 
+    RbPtr<RbLanguageObject>             getValue(void);                                                             //!< Get value (non-const to return non-const value)
 
     // DAG functions
     ConstantNode*                       cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph

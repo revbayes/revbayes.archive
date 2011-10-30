@@ -60,7 +60,8 @@ class VectorNatural : public AbstractVector {
         // Vector functions, including STL-like functions
     void                        clear(void);                                                    //!< Clear
     std::vector<unsigned int>   getValue(void) const;                                           //!< Get value as STL unsigned int vector
-    RbPtr<RbObject>             getElement(size_t index) const;                                 //!< Get element
+    RbPtr<const RbObject>       getElement(size_t index) const;                                 //!< Get element
+    RbPtr<RbObject>             getElement(size_t index);                                       //!< Get element
     void                        pop_back(void);                                                 //!< Drop element at back
     void                        pop_front(void);                                                //!< Drop element from front
     void                        push_back(RbPtr<RbObject> x);                                   //!< Append element to end

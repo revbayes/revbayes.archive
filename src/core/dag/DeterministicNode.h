@@ -38,12 +38,12 @@ public:
     virtual                                ~DeterministicNode(void);                                            //!< Destructor
 
     // Utility functions implemented here
-    const RbPtr<RbLanguageObject>           getStoredValue(void);                                               //!< Get stored value (non-const fxn because of delayed evaluation
-    RbPtr<RbLanguageObject>                 getValue(void);                                                     //!< Get value (non-const fxn because of delayed evaluation)
-    RbPtr<RbLanguageObject>                 getValuePtr(void);                                                  //!< Get value pointer (non-const fxn because of delayed evaluation)
-    void                                    printValue(std::ostream& o);                                        //!< Print value for user (non-const fxn because of delayed evaluation)
-    const RbPtr<RbFunction>                 getFunction(void) const { return function; }
-    RbPtr<RbFunction>                       getFunctionPtr(void) const { return function; }
+    RbPtr<const RbLanguageObject>           getStoredValue(void) const;                                         //!< Get stored value 
+    RbPtr<const RbLanguageObject>           getValue(void) const;                                               //!< Get value 
+    RbPtr<RbLanguageObject>                 getValue(void);                                                     //!< Get value (non-const to return non-const value)
+    void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
+    RbPtr<const RbFunction>                 getFunction(void) const;
+    RbPtr<RbFunction>                       getFunction(void);
 
     // Utility functions you have to override
     DeterministicNode*                      clone(void) const;                                                  //!< Clone this node
@@ -53,7 +53,7 @@ public:
     std::string                             richInfo(void) const;                                               //!< Complete info about object
 
     // DAG functions implemented here
-    void                                    getAffected(std::set<RbPtr<StochasticNode> >& affected);                   //!< Mark and get affected nodes
+    void                                    getAffected(std::set<RbPtr<StochasticNode> >& affected);            //!< Mark and get affected nodes
     void                                    keep(void);                                                         //!< Update and then keep current value
     void                                    keepAffected(void);                                                 //!< Keep value of affected nodes
     void                                    restoreAffected(void);                                              //!< Restore value of affected nodes

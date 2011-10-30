@@ -109,13 +109,13 @@ const VectorString& SyntaxFunctionCall::getClass(void) const {
 
 
 /** Convert element to a deterministic function node. */
-RbPtr<Variable> SyntaxFunctionCall::getContentAsVariable(RbPtr<Environment> env) const {
+RbPtr<Variable> SyntaxFunctionCall::evaluateContent(RbPtr<Environment> env) {
 
     // Package arguments
     std::vector<RbPtr<Argument> > args;
     for (std::list<RbPtr<SyntaxLabeledExpr> >::const_iterator i=arguments->begin(); i!=arguments->end(); i++) {
         PRINTF( "Adding argument with label \"%s\".\n", (*i)->getLabel()->getValue().c_str() );
-        RbPtr<Argument> theArg( new Argument(*(*i)->getLabel(), (*i).get()->getExpression()->getContentAsVariable(env) ) );
+        RbPtr<Argument> theArg( new Argument(*(*i)->getLabel(), (*i)->getExpression()->evaluateContent(env) ) );
         args.push_back(theArg);
     }
 
@@ -129,11 +129,11 @@ RbPtr<Variable> SyntaxFunctionCall::getContentAsVariable(RbPtr<Environment> env)
     }
     else {
 
-        RbPtr<DAGNode> theNode = variable->getContentAsVariable( env )->getDagNodePtr();
+        RbPtr<DAGNode> theNode = variable->evaluateContent( env )->getDagNode();
         if ( theNode == NULL || !theNode->getValue()->isTypeSpec( TypeSpec(MemberObject_name) ) )
             throw RbException( "Variable does not have member functions" );
 
-        RbPtr<MemberObject> theMemberObject( dynamic_cast<MemberObject*>(theNode->getValuePtr().get()) );
+        RbPtr<MemberObject> theMemberObject( dynamic_cast<MemberObject*>(theNode->getValue().get()) );
 //        args.insert( args.begin(), new Argument( "", memberNode ) );
         RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( theMemberObject->getMethods()->getFunction( *functionName, args ).get() ) );
         theMemberFunction->setMemberObject(theMemberObject);

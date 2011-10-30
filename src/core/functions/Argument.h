@@ -45,10 +45,10 @@ class Argument : public RbInternal {
         std::string                         richInfo(void) const;                                               //!< Complete info about object
 
         // Regular functions
-        RbPtr<Variable>                     getVariable(void) const { return var; }                             //!< Get the variable contained in this argument
-        const std::string&                  getLabel(void) const { return label; }                              //!< Get label of argument
-        RbPtr<DAGNode>                      getDagNode(void) const { return var->getDagNodePtr(); }             //!< Get argument variable
-        void                                setDagNode(RbPtr<DAGNode> newNode);                                       //!< set the DAG node of the argument; replaces the DAG node in the variable
+        RbPtr<const Variable>               getVariable(void) const;                                            //!< Get the variable contained in this argument
+        const std::string&                  getLabel(void) const;                                               //!< Get label of argument
+        RbPtr<const DAGNode>                getDagNode(void) const;                                             //!< Get argument variable
+        void                                setDagNode(RbPtr<DAGNode> newNode);                                 //!< set the DAG node of the argument; replaces the DAG node in the variable
         void                                setVariable(RbPtr<Variable> newVar);                                //!< set the variable of the argument
 
     protected:

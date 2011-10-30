@@ -58,25 +58,26 @@ class MemberObject: public RbLanguageObject {
         const RbPtr<Environment>            getMembers(void) const;                                                             //!< Get members
         RbPtr<Environment>                  getMembersPtr(void);                                                                //!< Get members
         const TypeSpec                      getMemberTypeSpec(const std::string& name) const;                                   //!< Get type spec for a member variable
-        const RbPtr<RbLanguageObject>       getMemberValue(const std::string& name) const;                                      //!< Get member value (const)
-        const RbPtr<DAGNode>                getMemberDagNode(const std::string& name) const;                                    //!< Get member variable 
-        RbPtr<DAGNode>                      getMemberDagNodePtr(const std::string& name);                                       //!< Get member variable (non-const ptr)
+        RbPtr<const RbLanguageObject>       getMemberValue(const std::string& name) const;                                      //!< Get member value (const)
+        RbPtr<RbLanguageObject>             getMemberValue(const std::string& name);                                            //!< Get member value (non-const to return non-const value)
+        RbPtr<const DAGNode>                getMemberDagNode(const std::string& name) const;                                    //!< Get member variable 
+        RbPtr<DAGNode>                      getMemberDagNode(const std::string& name);                                          //!< Get member variable (non-const node)
         bool                                hasMember(const std::string& name) const;                                           //!< Has this object a member with name
 
         // Member variable functions you may wish to override
-        virtual const RbPtr<MemberRules>    getMemberRules(void) const;                                                         //!< Get member rules
+        virtual RbPtr<const MemberRules>    getMemberRules(void) const;                                                         //!< Get member rules
         virtual void                        setMemberDagNode(const std::string& name, RbPtr<DAGNode> var);                      //!< Set member variable
         virtual void                        setMemberVariable(const std::string& name, RbPtr<Variable> var);                    //!< Set member variable
 
         // Member method functions
         RbPtr<RbLanguageObject>             executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args);  //!< Direct call of member method
         virtual RbPtr<RbLanguageObject>     executeOperation(const std::string& name, Environment& args);                       //!< Override to map member methods to internal functions
-        virtual const RbPtr<MethodTable>    getMethods(void) const;                                                             //!< Get member methods
+        virtual RbPtr<const MethodTable>    getMethods(void) const;                                                             //!< Get member methods
 
         virtual bool                        supportsIndex(void) const { return false; }                                         //!< Does object support index operator?
 
     protected:
-                                            MemberObject(const RbPtr<MemberRules> memberRules);                                 //!< Standard constructor
+                                            MemberObject(RbPtr<const MemberRules> memberRules);                                 //!< Standard constructor
                                             MemberObject(void);                                                                 //!< Default constructor; no members or methods
                                             MemberObject(const MemberObject &m);                                                //!< Copy constructor
  

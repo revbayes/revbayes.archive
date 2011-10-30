@@ -55,13 +55,14 @@ class VectorComplex : public AbstractVector {
 
     // Vector functions, including STL-like functions
     void                                clear(void);                                                //!< Clear
-    RbPtr<RbObject>                     getElement(size_t index) const;                             //!< Get element
+    RbPtr<const RbObject>               getElement(size_t index) const;                             //!< Get element
+    RbPtr<RbObject>                     getElement(size_t index);                                   //!< Get element (non-const to return non-const element)
     std::vector<std::complex<double> >  getValue(void) const;                                       //!< Get value
     void                                pop_back(void);                                             //!< Drop element at back
     void                                pop_front(void);                                            //!< Drop element from front
-    void                                push_back(RbPtr<RbObject> x);                                     //!< Append element to end
+    void                                push_back(RbPtr<RbObject> x);                               //!< Append element to end
     void                                push_back(std::complex<double> x);                          //!< Append element to end
-    void                                push_front(RbPtr<RbObject> x);                                    //!< Add element in front
+    void                                push_front(RbPtr<RbObject> x);                              //!< Add element in front
     void                                push_front(std::complex<double> x);                         //!< Add element in front
     void                                resize(size_t n);                                           //!< Resize to new AbstractVector of length n
     void                                setElement(const size_t index, RbPtr<RbLanguageObject> elem);     //!< Set element with type conversion

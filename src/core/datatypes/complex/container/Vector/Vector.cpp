@@ -114,10 +114,18 @@ const VectorString& Vector::getClass(void) const {
 	return rbClass;
 }
 
+
 /** Get element */
-RbPtr<RbObject> Vector::getElement(size_t index) const {
+RbPtr<const RbObject> Vector::getElement(size_t index) const {
     
-    return RbPtr<RbObject>( elements[index].get() );
+    return RbPtr<const RbObject>( elements[index] );
+}
+
+
+/** Get element */
+RbPtr<RbObject> Vector::getElement(size_t index) {
+    
+    return RbPtr<RbObject>( elements[index] );
 }
 
 

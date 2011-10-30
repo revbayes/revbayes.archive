@@ -46,11 +46,11 @@ class Topology: public ConstantMemberObject {
         std::string                         richInfo(void) const;                                                   //!< Complete info
 
         // Member variable rules
-        const RbPtr<MemberRules>            getMemberRules(void) const;                                             //!< Get member rules
+        RbPtr<const MemberRules>            getMemberRules(void) const;                                             //!< Get member rules
 
         // Member method inits
         RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);           //!< Execute method
-        const RbPtr<MethodTable>            getMethods(void) const;                                                 //!< Get methods
+        RbPtr<const MethodTable>            getMethods(void) const;                                                 //!< Get methods
         
         // Topology functions
         RbPtr<TopologyNode>                 cloneTree(RbPtr<TopologyNode> parent);                                  //!< Deep copy of the nodes
@@ -60,9 +60,9 @@ class Topology: public ConstantMemberObject {
         size_t                              getNumberOfInteriorNodes(void) const;                                   //!< Get the number of nodes in the tree
         size_t                              getNumberOfNodes(void) const { return nodes.size(); }                   //!< Get the number of nodes in the tree
         size_t                              getNumberOfTips(void) const;                                            //!< Get the number of tip nodes in the tree
-        RbPtr<TopologyNode>                 getInteriorNode(int indx) const;                                        //!< Get a pointer to interior node i
-        RbPtr<TopologyNode>                 getRoot(void) const { return root; }                                    //!< Get a pointer to the root node of the tree
-        RbPtr<TopologyNode>                 getTipNode(size_t indx) const;                                          //!< Get a pointer to tip node i
+        RbPtr<const TopologyNode>           getInteriorNode(int indx) const;                                        //!< Get a pointer to interior node i
+        RbPtr<const TopologyNode>           getRoot(void) const;                                                    //!< Get a pointer to the root node of the tree
+        RbPtr<const TopologyNode>           getTipNode(size_t indx) const;                                          //!< Get a pointer to tip node i
         void                                setIsRooted(bool tf) { isRooted = tf; }                                 //!< Set the rootedness of the tree
         void                                setRoot(RbPtr<TopologyNode> r);                                         //!< Set the root and bootstrap the tree from it
         

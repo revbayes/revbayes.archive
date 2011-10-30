@@ -72,7 +72,7 @@ const VectorString& Container::getClass(void) const {
 
 
 /* Get method specifications */
-const RbPtr<MethodTable> Container::getMethods(void) const {
+RbPtr<const MethodTable> Container::getMethods(void) const {
     
     static RbPtr<MethodTable> methods( new MethodTable() );
     static RbPtr<ArgumentRules> sizeArgRules( new ArgumentRules() );
@@ -83,11 +83,11 @@ const RbPtr<MethodTable> Container::getMethods(void) const {
         methods->addFunction("size",  RbPtr<RbFunction>(new MemberFunction(TypeSpec(Natural_name), sizeArgRules) ) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( RbPtr<FunctionTable>( ConstantMemberObject::getMethods().get() ) );
+        methods->setParentTable( RbPtr<const FunctionTable>( ConstantMemberObject::getMethods().get() ) );
         methodsSet = true;
     }
     
-    return methods;
+    return RbPtr<const MethodTable>( methods );
 }
 
 

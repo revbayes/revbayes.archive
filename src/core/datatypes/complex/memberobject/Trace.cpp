@@ -106,7 +106,7 @@ const TypeSpec& Trace::getTypeSpec(void) const {
 }
 
 
-const RbPtr<XmlElement> Trace::encode(RbPtr<XmlDocument> doc, const std::string& name) {    
+RbPtr<XmlElement> Trace::encode(RbPtr<XmlDocument> doc, const std::string& name) {    
     // check if the document already contains this trace
     if (doc->hasXmlElementWithId((uintptr_t) this)) {
 //        return doc->getXmlElement((uintptr_t)this);

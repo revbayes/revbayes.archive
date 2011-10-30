@@ -60,7 +60,7 @@ public:
 private:
     const RbPtr<ArgumentRules>  argumentRules;                                                              //!< Argument rules (different for different member functions)
     std::string                 funcName;                                                                   //!< Name of member method
-    RbPtr<MemberObject>         object;                                                                    //!< The member object to which this function belongs
+    MemberObject*               object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
     const TypeSpec              returnType;                                                                 //!< Return type (different for different member functions)
     
     static const TypeSpec       typeSpec;  

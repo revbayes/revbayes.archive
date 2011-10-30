@@ -35,7 +35,7 @@ public:
     Sequence(const std::string& elemType, const std::string tname="");                              //!< Set type spec of container from type of elements
     
     RbPtr<Character>                        operator[](size_t i);                                   //!< Index op allowing change
-    const RbPtr<Character>                  operator[](size_t i) const;                             //!< Const index op
+    RbPtr<const Character>                  operator[](size_t i) const;                             //!< Const index op
     
     // Basic utility functions you have to override
     Sequence*                               clone(void) const;                                      //!< Clone object
@@ -46,8 +46,9 @@ public:
     
     
     // Sequence functions
-    void                                    addCharacter( RbPtr<Character> newChar );                     //!< Push back a new character
-    RbPtr<Character>                        getCharacter(size_t index) const;                       //!< Get the character at position index
+    void                                    addCharacter( RbPtr<Character> newChar );               //!< Push back a new character
+    RbPtr<const Character>                  getCharacter(size_t index) const;                       //!< Get the character at position index
+    RbPtr<Character>                        getCharacter(size_t index);                             //!< Get the character at position index (non-const to return non-const character)
     size_t                                  getNumberOfCharacters(void) const;                      //!< How many characters
     const std::string&                      getTaxonName(void) const;                               //!< Return the name of the character vector
     void                                    setTaxonName(std::string tn);                           //!< Set the taxon name

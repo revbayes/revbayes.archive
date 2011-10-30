@@ -107,7 +107,7 @@ const VectorString& VariableSlot::getClass() const {
 
 
 /** Get a const pointer to the dag node */
-const RbPtr<DAGNode> VariableSlot::getDagNode( void ) const {
+RbPtr<const DAGNode> VariableSlot::getDagNode( void ) const {
     
     if (variable == NULL) 
         return NULL;
@@ -117,12 +117,12 @@ const RbPtr<DAGNode> VariableSlot::getDagNode( void ) const {
 
 
 /** Get a reference to the slot variable */
-RbPtr<DAGNode> VariableSlot::getDagNodePtr( void ) const {
+RbPtr<DAGNode> VariableSlot::getDagNode( void ) {
     
     if (variable == NULL) 
         return NULL;
     else
-        return variable->getDagNodePtr();
+        return variable->getDagNode();
 }
 
 
@@ -133,9 +133,25 @@ const TypeSpec& VariableSlot::getTypeSpec(void) const {
 
 
 /** Get the value of the variable */
-const RbPtr<RbLanguageObject> VariableSlot::getValue( void ) const {
+RbPtr<const RbLanguageObject> VariableSlot::getValue( void ) const {
     
-    const RbPtr<RbLanguageObject> retVal = variable->getDagNodePtr()->getValue();
+    RbPtr<const RbLanguageObject> retVal = variable->getDagNode()->getValue();
+    
+    // check the type and if we need conversion
+    if (!retVal->isTypeSpec(varTypeSpec)) {
+        RbPtr<const RbLanguageObject> convRetVal( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
+        
+        return convRetVal;
+    }
+    
+    return retVal;
+}
+
+
+/** Get the value of the variable */
+RbPtr<RbLanguageObject> VariableSlot::getValue( void ) {
+    
+    RbPtr<RbLanguageObject> retVal = variable->getDagNode()->getValue();
     
     // check the type and if we need conversion
     if (!retVal->isTypeSpec(varTypeSpec)) {
@@ -145,6 +161,16 @@ const RbPtr<RbLanguageObject> VariableSlot::getValue( void ) const {
     }
     
     return retVal;
+}
+
+
+RbPtr<const Variable> VariableSlot::getVariable(void) const {
+    return RbPtr<const Variable>( variable );
+}
+
+
+RbPtr<Variable> VariableSlot::getVariable(void) {
+    return ( variable );
 }
 
 

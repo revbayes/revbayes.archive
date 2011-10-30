@@ -65,7 +65,7 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
         for (std::vector<RbPtr<VariableSlot> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
             RbPtr<DAGNode> theNode = (*it)->getDagNodePtr();
             if (theNode->isType(ConstantNode_name) && theNode->getValue()->isTypeSpec(*type.getElementType())) {
-                RbPtr<RbObject> element( theNode->getValuePtr().get() );
+                RbPtr<RbObject> element( theNode->getValue().get() );
                 valueVector->push_back(element);
             }
             else {
@@ -89,7 +89,20 @@ const VectorString& DagNodeContainer::getClass(void) const {
 }
 
 /** Get element */
-RbPtr<RbObject> DagNodeContainer::getElement(const size_t index) const {
+RbPtr<const RbObject> DagNodeContainer::getElement(const size_t index) const {
+    
+    // test if the index is outside the current range
+    if (index >= size()) {
+        // Yes, it is outside the range and we through a error
+        throw RbException("Index out of bounds in DagNodeContainer.");
+    }
+    
+    return RbPtr<const RbObject>(elements[index].get());
+}
+
+
+/** Get element */
+RbPtr<RbObject> DagNodeContainer::getElement(const size_t index) {
     
     // test if the index is outside the current range
     if (index >= size()) {

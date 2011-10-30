@@ -98,11 +98,11 @@ const VectorString& SyntaxUnaryExpr::getClass(void) const {
 
 
 /** Convert element to DAG node expression */
-RbPtr<Variable> SyntaxUnaryExpr::getContentAsVariable(RbPtr<Environment> env) const {
+RbPtr<Variable> SyntaxUnaryExpr::evaluateContent(RbPtr<Environment> env) {
 
     // Package the argument
     std::vector<RbPtr<Argument> > arg;
-    arg.push_back(RbPtr<Argument>( new Argument("", expression->getContentAsVariable(env) ) ));
+    arg.push_back(RbPtr<Argument>( new Argument("", expression->evaluateContent(env) ) ));
 
     // Find the function
     std::string funcName = "_" + opCode[operation];
