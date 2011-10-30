@@ -32,7 +32,7 @@
 
 
 /** Constructor passes member rules to base class */
-DistributionContinuous::DistributionContinuous( const RbPtr<MemberRules> memberRules ) : Distribution( memberRules ) {
+DistributionContinuous::DistributionContinuous( RbPtr<const MemberRules> memberRules ) : Distribution( memberRules ) {
 }
 
 
@@ -41,11 +41,11 @@ RbPtr<RbLanguageObject> DistributionContinuous::executeOperation( const std::str
 
     if ( name == "cdf" ) {
 
-        return RbPtr<RbLanguageObject>( new RealPos( cdf( args[1]->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new RealPos( cdf( (const RbLanguageObject*)args[1]->getValue() ) ) );
     }
     else if ( name == "quantile" ) {
 
-        RbPtr<RbLanguageObject> quant( quantile( static_cast<Real*>( args[1]->getValue().get() )->getValue() ).get() );
+        RbPtr<RbLanguageObject> quant( quantile( static_cast<Real*>( (RbLanguageObject*)args[1]->getValue() )->getValue() ) );
 
         return quant;
     }
@@ -63,21 +63,21 @@ const VectorString& DistributionContinuous::getClass( void ) const {
 
 
 /** Get max value of distribution */
-const RbPtr<Real> DistributionContinuous::getMax( void ) const {
+RbPtr<const Real> DistributionContinuous::getMax( void ) const {
 
-    return RbPtr<Real>( new Real(RbConstants::Double::max) );
+    return RbPtr<const Real>( new Real(RbConstants::Double::max) );
 }
 
 
 /** Get min value of distribution */
-const RbPtr<Real> DistributionContinuous::getMin( void ) const {
+RbPtr<const Real> DistributionContinuous::getMin( void ) const {
 
-    return RbPtr<Real>( new Real(-RbConstants::Double::max) );
+    return RbPtr<const Real>( new Real(-RbConstants::Double::max) );
 }
 
 
 /** Get method specifications */
-const RbPtr<MethodTable> DistributionContinuous::getMethods( void ) const {
+RbPtr<const MethodTable> DistributionContinuous::getMethods( void ) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
     static RbPtr<ArgumentRules> cdfArgRules( new ArgumentRules() );
@@ -93,11 +93,11 @@ const RbPtr<MethodTable> DistributionContinuous::getMethods( void ) const {
         methods->addFunction( "cdf",      RbPtr<RbFunction>( new MemberFunction( Real_name, cdfArgRules      ) ) );
         methods->addFunction( "quantile", RbPtr<RbFunction>( new MemberFunction( Real_name, quantileArgRules ) ) );
 
-        methods->setParentTable( RbPtr<FunctionTable>( Distribution::getMethods().get() ) );
+        methods->setParentTable( RbPtr<const FunctionTable>( Distribution::getMethods() ) );
 
         methodsSet = true;
     }
 
-    return methods;
+    return RbPtr<const MethodTable>( methods );
 }
 

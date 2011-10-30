@@ -45,14 +45,14 @@ class Dist_cat: public DistributionDiscrete {
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // Member variable setup
-        const RbPtr<MemberRules>        getMemberRules(void) const;                                             //!< Get member variable rules
+        RbPtr<const MemberRules>        getMemberRules(void) const;                                             //!< Get member variable rules
 
         // Discrete distribution functions
         virtual size_t                  getNumberOfStates(void) const;                                          //!< Get number of states
-        virtual const RbPtr<Simplex>    getProbabilityMassVector(void);                                         //!< Get probability mass vector
+        virtual RbPtr<Simplex>          getProbabilityMassVector(void);                                         //!< Get probability mass vector
         const TypeSpec&                 getVariableType(void) const;                                            //!< Get random variable type (Simplex)
-        double                          lnPdf(const RbPtr<RbLanguageObject> value);                             //!< Ln probability density
-        double                          pdf(const RbPtr<RbLanguageObject> value);                               //!< Probability density
+        double                          lnPdf(RbPtr<const RbLanguageObject> value);                             //!< Ln probability density
+        double                          pdf(RbPtr<const RbLanguageObject> value);                               //!< Probability density
         RbPtr<RbLanguageObject>         rv(void);                                                               //!< Generate random variable
     
     private:

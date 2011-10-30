@@ -61,7 +61,7 @@ const VectorString& DistributionDiscrete::getClass( void ) const {
 
 
 /** Get method specifications */
-const RbPtr<MethodTable> DistributionDiscrete::getMethods( void ) const {
+RbPtr<const MethodTable> DistributionDiscrete::getMethods( void ) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
     static RbPtr<ArgumentRules> probMassVectorArgRules( new ArgumentRules() );
@@ -73,11 +73,11 @@ const RbPtr<MethodTable> DistributionDiscrete::getMethods( void ) const {
         methods->addFunction( "probMassVector", RbPtr<RbFunction>( new MemberFunction( Simplex_name, probMassVectorArgRules ) ) );
         methods->addFunction( "numStates",      RbPtr<RbFunction>( new MemberFunction( Natural_name, numStatesArgRules ) ) );
 
-        methods->setParentTable( RbPtr<FunctionTable>( Distribution::getMethods().get() ) );
+        methods->setParentTable( RbPtr<const FunctionTable>( Distribution::getMethods() ) );
 
         methodsSet = true;
     }
 
-    return methods;
+    return RbPtr<const MethodTable>( methods );
 }
 

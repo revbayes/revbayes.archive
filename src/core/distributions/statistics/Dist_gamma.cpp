@@ -79,7 +79,7 @@ const VectorString& Dist_gamma::getClass( void ) const {
 }
 
 /** Get member variable rules */
-const RbPtr<MemberRules> Dist_gamma::getMemberRules( void ) const {
+RbPtr<const MemberRules> Dist_gamma::getMemberRules( void ) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -92,7 +92,7 @@ const RbPtr<MemberRules> Dist_gamma::getMemberRules( void ) const {
         rulesSet = true;
     }
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 

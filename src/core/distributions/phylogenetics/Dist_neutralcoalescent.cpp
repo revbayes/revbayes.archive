@@ -86,7 +86,7 @@ const VectorString& Dist_neutralcoalescent::getClass( void ) const {
 
 
 /** Get member variable rules */
-const RbPtr<MemberRules> Dist_neutralcoalescent::getMemberRules( void ) const {
+RbPtr<const MemberRules> Dist_neutralcoalescent::getMemberRules( void ) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -104,7 +104,7 @@ const RbPtr<MemberRules> Dist_neutralcoalescent::getMemberRules( void ) const {
         rulesSet = true;
     }
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
@@ -139,12 +139,12 @@ const TypeSpec& Dist_neutralcoalescent::getVariableType( void ) const {
  * @param value Observed speciation times
  * @return      Natural log of the probability
  */
-double Dist_neutralcoalescent::lnPdf( const RbPtr<RbLanguageObject> value ) {
+double Dist_neutralcoalescent::lnPdf( RbPtr<const RbLanguageObject> value ) {
 
-    const RbPtr<VectorRealPos> waitingTimes = RbPtr<VectorRealPos>( static_cast<VectorRealPos*>( value.get() ) );
-    size_t haploidPopSize                   = static_cast<const Natural*>( getMemberValue( "haploidPopSize" ).get() )->getValue();
-    size_t nWaitingTimes                    = waitingTimes->size();
-    size_t k                                = nWaitingTimes + 1;
+    RbPtr<const VectorRealPos> waitingTimes     = RbPtr<const VectorRealPos>( static_cast<const VectorRealPos*>( (const RbLanguageObject*)value ) );
+    size_t haploidPopSize                       = static_cast<Natural*>( (RbLanguageObject*)getMemberValue( "haploidPopSize" ) )->getValue();
+    size_t nWaitingTimes                        = waitingTimes->size();
+    size_t k                                    = nWaitingTimes + 1;
 
     double log_p = 0.0;
 
@@ -167,7 +167,7 @@ double Dist_neutralcoalescent::lnPdf( const RbPtr<RbLanguageObject> value ) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_neutralcoalescent::pdf( const RbPtr<RbLanguageObject> value ) {
+double Dist_neutralcoalescent::pdf( RbPtr<const RbLanguageObject> value ) {
 
     // // get the number of speciation events
     // size_t events = times->size();

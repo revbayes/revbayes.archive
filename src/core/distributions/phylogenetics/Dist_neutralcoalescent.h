@@ -45,12 +45,12 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
     // Member variable setup
-    const RbPtr<MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
+    RbPtr<const MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
 
     // Discrete distribution functions
     const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-    double                      lnPdf(const RbPtr<RbLanguageObject> value);                         //!< Ln probability density
-    double                      pdf(const RbPtr<RbLanguageObject> value);                           //!< Probability density
+    double                      lnPdf(RbPtr<const RbLanguageObject> value);                         //!< Ln probability density
+    double                      pdf(RbPtr<const RbLanguageObject> value);                           //!< Probability density
     RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate tree from the coalescent
 
 private:

@@ -42,13 +42,13 @@ class Dist_multinomial: public DistributionContinuous {
         const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
-        const RbPtr<MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
+        RbPtr<const MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Multinomial distribution functions
-        double                      cdf(const RbPtr<RbLanguageObject> value);                           //!< Cumulative density
+        double                      cdf(RbPtr<const RbLanguageObject> value);                           //!< Cumulative density
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (VectorNatural)
-        double                      lnPdf(const RbPtr<RbLanguageObject> value);                         //!< Ln probability density
-        double                      pdf(const RbPtr<RbLanguageObject> value);                           //!< Probability density
+        double                      lnPdf(RbPtr<const RbLanguageObject> value);                         //!< Ln probability density
+        double                      pdf(RbPtr<const RbLanguageObject> value);                           //!< Probability density
         RbPtr<Real>                 quantile(const double p);                                           //!< Quantile
         RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
     

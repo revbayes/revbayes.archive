@@ -54,12 +54,11 @@ Dist_norm::Dist_norm( void ) : DistributionContinuous( getMemberRules() ) {
  *
  * @see Adams, A. G. 1969. Areas under the normal curve. Computer J. 12:197-198.
  */
-double Dist_norm::cdf( const RbPtr<RbLanguageObject> value ) {
+double Dist_norm::cdf( RbPtr<const RbLanguageObject> value ) {
 
-	
-	double mu    = static_cast<const Real*   >( getMemberValue("mean").get() )->getValue();
-    double sigma = static_cast<const RealPos*>( getMemberValue("sd"  ).get() )->getValue();
-    double q     = static_cast<const Real*   >( value.get()                  )->getValue();
+	double mu    = static_cast<      Real*   >( (      RbLanguageObject*)getMemberValue("mean") )->getValue();
+    double sigma = static_cast<      RealPos*>( (      RbLanguageObject*)getMemberValue("sd"  ) )->getValue();
+    double q     = static_cast<const Real*   >( (const RbLanguageObject*)value                  )->getValue();
 	return RbStatistics::Normal::cdf(mu, sigma, q);
 
 }
@@ -81,7 +80,7 @@ const VectorString& Dist_norm::getClass( void ) const {
 
 
 /** Get member variable rules */
-const RbPtr<MemberRules> Dist_norm::getMemberRules( void ) const {
+RbPtr<const MemberRules> Dist_norm::getMemberRules( void ) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -94,7 +93,7 @@ const RbPtr<MemberRules> Dist_norm::getMemberRules( void ) const {
         rulesSet = true;
     }
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
@@ -120,11 +119,11 @@ const TypeSpec& Dist_norm::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_norm::lnPdf(const RbPtr<RbLanguageObject> value) {
+double Dist_norm::lnPdf(RbPtr<const RbLanguageObject> value) {
 
-    double mu    = static_cast<const Real*   >( getMemberValue( "mean" ).get() )->getValue();
-    double sigma = static_cast<const RealPos*>( getMemberValue( "sd"   ).get() )->getValue();
-    double x     = static_cast<const Real*   >( value.get()                    )->getValue();
+    double mu    = static_cast<      Real*   >( (      RbLanguageObject*)getMemberValue( "mean" ) )->getValue();
+    double sigma = static_cast<      RealPos*>( (      RbLanguageObject*)getMemberValue( "sd"   ) )->getValue();
+    double x     = static_cast<const Real*   >( (const RbLanguageObject*)value                    )->getValue();
 
 
     return RbStatistics::Normal::lnPdf(mu, sigma, x);
@@ -141,11 +140,11 @@ double Dist_norm::lnPdf(const RbPtr<RbLanguageObject> value) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_norm::pdf( const RbPtr<RbLanguageObject> value ) {
+double Dist_norm::pdf( RbPtr<const RbLanguageObject> value ) {
 
-    double mu    = static_cast<const Real*   >( getMemberValue( "mean" ).get() )->getValue();
-    double sigma = static_cast<const RealPos*>( getMemberValue( "sd"   ).get() )->getValue();
-    double x     = static_cast<const Real*   >( value.get()                    )->getValue();
+    double mu    = static_cast<      Real*   >( (      RbLanguageObject*)getMemberValue( "mean" ) )->getValue();
+    double sigma = static_cast<      RealPos*>( (      RbLanguageObject*)getMemberValue( "sd"   ) )->getValue();
+    double x     = static_cast<const Real*   >( (const RbLanguageObject*)value                    )->getValue();
 
     return RbStatistics::Normal::pdf(mu, sigma, x);
 
@@ -170,9 +169,10 @@ double Dist_norm::pdf( const RbPtr<RbLanguageObject> value ) {
  */
 RbPtr<Real> Dist_norm::quantile( const double p) {
 
-    double mu    = static_cast<const Real*   >( getMemberValue( "mean" ).get() )->getValue();
-    double sigma = static_cast<const RealPos*>( getMemberValue( "sd"   ).get() )->getValue();
-	return RbPtr<Real>( new Real( RbStatistics::Normal::quantile(mu, sigma, p) ) );
+    double mu    = static_cast<Real*   >( (RbLanguageObject*)getMemberValue( "mean" ) )->getValue();
+    double sigma = static_cast<RealPos*>( (RbLanguageObject*)getMemberValue( "sd"   ) )->getValue();
+	
+    return RbPtr<Real>( new Real( RbStatistics::Normal::quantile(mu, sigma, p) ) );
 }
 
 

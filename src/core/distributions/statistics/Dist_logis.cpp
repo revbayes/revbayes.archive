@@ -64,7 +64,7 @@ const VectorString& Dist_logis::getClass( void ) const {
 
 
 /** Get member variable rules */
-const RbPtr<MemberRules> Dist_logis::getMemberRules( void ) const {
+RbPtr<const MemberRules> Dist_logis::getMemberRules( void ) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -75,7 +75,7 @@ const RbPtr<MemberRules> Dist_logis::getMemberRules( void ) const {
         rulesSet = true;
     }
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
@@ -100,11 +100,11 @@ const TypeSpec& Dist_logis::getVariableType( void ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_logis::pdf( const RbPtr<RbLanguageObject> value ) {
+double Dist_logis::pdf( RbPtr<const RbLanguageObject> value ) {
 
-    double location =   static_cast<const Real*     >( getMemberValue("location").get()   )->getValue();
-    double scale =      static_cast<const RealPos*  >( getMemberValue("scale").get()      )->getValue();
-    double x =          static_cast<const Real*     >( value.get()                        )->getValue();
+    double location =   static_cast<      Real*     >( (      RbLanguageObject*)getMemberValue("location")   )->getValue();
+    double scale =      static_cast<      RealPos*  >( (      RbLanguageObject*)getMemberValue("scale")      )->getValue();
+    double x =          static_cast<const Real*     >( (const RbLanguageObject*)value                        )->getValue();
 
 	return RbStatistics::Logistic::pdf( location, scale, x );
 
@@ -121,12 +121,12 @@ double Dist_logis::pdf( const RbPtr<RbLanguageObject> value ) {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_logis::lnPdf( const RbPtr<RbLanguageObject> value ) {
+double Dist_logis::lnPdf( RbPtr<const RbLanguageObject> value ) {
 
 	// Get the value and the parameters of the Logistic
-    double location =   static_cast<const Real*     >( getMemberValue("location").get()   )->getValue();
-    double scale =      static_cast<const RealPos*  >( getMemberValue("scale").get()      )->getValue();
-    double x =          static_cast<const Real*     >( value.get()                        )->getValue();
+    double location =   static_cast<      Real*     >( (      RbLanguageObject*)getMemberValue("location")   )->getValue();
+    double scale =      static_cast<      RealPos*  >( (      RbLanguageObject*)getMemberValue("scale")      )->getValue();
+    double x =          static_cast<const Real*     >( (const RbLanguageObject*)value                        )->getValue();
 
 	return RbStatistics::Logistic::lnPdf( location, scale, x );
 }
@@ -142,11 +142,11 @@ double Dist_logis::lnPdf( const RbPtr<RbLanguageObject> value ) {
  * @return      Cumulative probability
  *
  */
-double Dist_logis::cdf( const RbPtr<RbLanguageObject> value ) {
+double Dist_logis::cdf( RbPtr<const RbLanguageObject> value ) {
 
-    double location =   static_cast<const Real*     >( getMemberValue("location").get()   )->getValue();
-    double scale =      static_cast<const RealPos*  >( getMemberValue("scale").get()      )->getValue();
-    double x =          static_cast<const Real*     >( value.get()                        )->getValue();
+    double location =   static_cast<      Real*     >( (RbLanguageObject*)getMemberValue("location")   )->getValue();
+    double scale =      static_cast<      RealPos*  >( (RbLanguageObject*)getMemberValue("scale")      )->getValue();
+    double x =          static_cast<const Real*     >( (const RbLanguageObject*)value                        )->getValue();
 
 	return RbStatistics::Logistic::cdf( location, scale, x );
 }
@@ -165,8 +165,8 @@ double Dist_logis::cdf( const RbPtr<RbLanguageObject> value ) {
  */
 RbPtr<Real> Dist_logis::quantile( const double p ) {
 
-    double location =   static_cast<const Real*     >( getMemberValue("location").get()   )->getValue();
-    double scale =      static_cast<const RealPos*  >( getMemberValue("scale").get()      )->getValue();
+    double location =   static_cast<Real*     >( (RbLanguageObject*)getMemberValue("location")   )->getValue();
+    double scale =      static_cast<RealPos*  >( (RbLanguageObject*)getMemberValue("scale")      )->getValue();
 
 	double q = RbStatistics::Logistic::quantile(location, scale, p);
 	return RbPtr<Real>( new Real (q) );
@@ -187,8 +187,8 @@ RbPtr<Real> Dist_logis::quantile( const double p ) {
 
 RbPtr<RbLanguageObject> Dist_logis::rv(void) {
 
-    double location =   static_cast<const Real*     >( getMemberValue("location").get()   )->getValue();
-    double scale =      static_cast<const RealPos*  >( getMemberValue("scale").get()      )->getValue();
+    double location =   static_cast<Real*     >( (RbLanguageObject*)getMemberValue("location") )->getValue();
+    double scale =      static_cast<RealPos*  >( (RbLanguageObject*)getMemberValue("scale")    )->getValue();
 
     RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
 	return RbPtr<RbLanguageObject>( new Real( RbStatistics::Logistic::rv(location, scale, rng) ) );

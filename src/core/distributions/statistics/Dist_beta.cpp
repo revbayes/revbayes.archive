@@ -54,11 +54,11 @@ Dist_beta::Dist_beta( void ) : DistributionContinuous( getMemberRules() ) {
  * @return      Cumulative probability
  *
  */
-double Dist_beta::cdf( const RbPtr<RbLanguageObject> value ) {
+double Dist_beta::cdf( RbPtr<const RbLanguageObject> value ) {
 
-    const double shape1  = static_cast<const RealPos*>(getMemberValue("shape1").get())->getValue();
-    const double shape2 = static_cast<const RealPos*>(getMemberValue("shape2").get())->getValue();
-    const double x      = static_cast<const RealPos*>(value.get())->getValue();
+    double shape1 = static_cast<RealPos*>((RbLanguageObject*)getMemberValue("shape1"))->getValue();
+    double shape2 = static_cast<RealPos*>((RbLanguageObject*)getMemberValue("shape2"))->getValue();
+    double x      = static_cast<const RealPos*>((const RbLanguageObject*)value)->getValue();
 
     return RbStatistics::Beta::cdf(shape1, shape2, x);
 }
@@ -79,7 +79,7 @@ const VectorString& Dist_beta::getClass( void ) const {
 }
 
 /** Get member variable rules */
-const RbPtr<MemberRules> Dist_beta::getMemberRules( void ) const {
+RbPtr<const MemberRules> Dist_beta::getMemberRules( void ) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -92,7 +92,7 @@ const RbPtr<MemberRules> Dist_beta::getMemberRules( void ) const {
         rulesSet = true;
     }
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
@@ -118,11 +118,11 @@ const TypeSpec& Dist_beta::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_beta::lnPdf( const RbPtr<RbLanguageObject> value ) {
+double Dist_beta::lnPdf( RbPtr<const RbLanguageObject> value ) {
 
-    const double shape1  = static_cast<const RealPos*>(getMemberValue("shape1").get())->getValue();
-    const double shape2 = static_cast<const RealPos*>(getMemberValue("shape2").get())->getValue();
-    const double x      = static_cast<const RealPos*>(value.get())->getValue();
+    double shape1 = static_cast<RealPos*>((RbLanguageObject*)getMemberValue("shape1"))->getValue();
+    double shape2 = static_cast<RealPos*>((RbLanguageObject*)getMemberValue("shape2"))->getValue();
+    double x      = static_cast<const RealPos*>((const RbLanguageObject*)value)->getValue();
 
     return RbStatistics::Beta::lnPdf(shape1, shape2, x);
 }
@@ -137,11 +137,11 @@ double Dist_beta::lnPdf( const RbPtr<RbLanguageObject> value ) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_beta::pdf( const RbPtr<RbLanguageObject> value ) {
+double Dist_beta::pdf( RbPtr<const RbLanguageObject> value ) {
 
-    const double shape1  = static_cast<const RealPos*>(getMemberValue("shape1").get())->getValue();
-    const double shape2 = static_cast<const RealPos*>(getMemberValue("shape2").get())->getValue();
-    const double x      = static_cast<const RealPos*>(value.get())->getValue();
+    double shape1 = static_cast<const RealPos*>((RbLanguageObject*)getMemberValue("shape1"))->getValue();
+    double shape2 = static_cast<const RealPos*>((RbLanguageObject*)getMemberValue("shape2"))->getValue();
+    double x      = static_cast<const RealPos*>((const RbLanguageObject*)value)->getValue();
 
     return RbStatistics::Beta::pdf(shape1, shape2, x);
 }
@@ -159,8 +159,8 @@ double Dist_beta::pdf( const RbPtr<RbLanguageObject> value ) {
  */
 RbPtr<Real> Dist_beta::quantile(const double p) {
 
-    const double shape1  = static_cast<const RealPos*>(getMemberValue("shape1").get())->getValue();
-    const double shape2 = static_cast<const RealPos*>(getMemberValue("shape2").get())->getValue();
+    double shape1 = static_cast<RealPos*>((RbLanguageObject*)getMemberValue("shape1"))->getValue();
+    double shape2 = static_cast<RealPos*>((RbLanguageObject*)getMemberValue("shape2"))->getValue();
 
     double quantile = RbStatistics::Beta::quantile(shape1, shape2, p);
     return RbPtr<Real>( new RealPos(quantile) );
@@ -177,8 +177,8 @@ RbPtr<Real> Dist_beta::quantile(const double p) {
  */
 RbPtr<RbLanguageObject> Dist_beta::rv( void ) {
 
-    const double shape1  = static_cast<const RealPos*>(getMemberValue("shape1").get())->getValue();
-    const double shape2 = static_cast<const RealPos*>(getMemberValue("shape2").get())->getValue();
+    double shape1 = static_cast<RealPos*>((RbLanguageObject*)getMemberValue("shape1"))->getValue();
+    double shape2 = static_cast<RealPos*>((RbLanguageObject*)getMemberValue("shape2"))->getValue();
 
     RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
     double rv = RbStatistics::Beta::rv(shape1, shape2, rng);

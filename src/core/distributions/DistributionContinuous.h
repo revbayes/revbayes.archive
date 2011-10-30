@@ -42,26 +42,26 @@ class DistributionContinuous: public Distribution {
         virtual const VectorString&             getClass(void) const;                                                       //!< Get class vector   
 
         // Member object function you have to override
-        virtual const RbPtr<MemberRules>        getMemberRules(void) const = 0;                                             //!< Get member rules
+        virtual RbPtr<const MemberRules>        getMemberRules(void) const = 0;                                             //!< Get member rules
 
         // Member object functions you should not have to override
-        const RbPtr<MethodTable>                getMethods(void) const;                                                     //!< Get member methods
+        RbPtr<const MethodTable>                getMethods(void) const;                                                     //!< Get member methods
         RbPtr<RbLanguageObject>                 executeOperation(const std::string& name, Environment& args);               //!< Direct call of member method
 
         // Interval distribution functions you probably want to override
-        virtual const RbPtr<Real>               getMax(void) const;                                                         //!< Get max value of coverage
-        virtual const RbPtr<Real>               getMin(void) const;                                                         //!< Get min value of coverage
+        virtual RbPtr<const Real>               getMax(void) const;                                                         //!< Get max value of coverage
+        virtual RbPtr<const Real>               getMin(void) const;                                                         //!< Get min value of coverage
 
         // Interval distribution functions you have to override
-        virtual double                          cdf(const RbPtr<RbLanguageObject> value) = 0;                                     //!< Cumulative probability
+        virtual double                          cdf( RbPtr<const RbLanguageObject> value) = 0;                                     //!< Cumulative probability
         virtual const TypeSpec&                 getVariableType(void) const = 0;                                            //!< Get random variable type spec
-        virtual double                          lnPdf(const RbPtr<RbLanguageObject> value) = 0;                                   //!< Ln probability density
-        virtual double                          pdf(const RbPtr<RbLanguageObject> value) = 0;                                     //!< Probability density
+        virtual double                          lnPdf( RbPtr<const RbLanguageObject> value) = 0;                                   //!< Ln probability density
+        virtual double                          pdf( RbPtr<const RbLanguageObject> value) = 0;                                     //!< Probability density
         virtual RbPtr<Real>                     quantile(const double p) = 0;                                               //!< Quantile
         virtual RbPtr<RbLanguageObject>         rv(void) = 0;                                                               //!< Generate a random draw
 
     protected:
-                                        DistributionContinuous(const RbPtr<MemberRules> memberRules);                     //!< Constructor
+                                        DistributionContinuous( RbPtr<const MemberRules> memberRules);                     //!< Constructor
 
 };
 
