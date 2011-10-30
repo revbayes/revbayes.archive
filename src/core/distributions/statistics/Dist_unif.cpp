@@ -137,10 +137,10 @@ const TypeSpec& Dist_unif::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_unif::lnPdf(RbPtr<const RbLanguageObject> value) {
+double Dist_unif::lnPdf(RbPtr<const RbLanguageObject> value) const {
 
-    double min = static_cast<      Real*>( (      RbLanguageObject*)getMemberValue("min") )->getValue();
-    double max = static_cast<      Real*>( (      RbLanguageObject*)getMemberValue("max") )->getValue();
+    double min = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("min") )->getValue();
+    double max = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("max") )->getValue();
     double x   = static_cast<const Real*>( (const RbLanguageObject*)value                 )->getValue();
 
     if ( x < min || x > max )
@@ -159,10 +159,10 @@ double Dist_unif::lnPdf(RbPtr<const RbLanguageObject> value) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_unif::pdf(RbPtr<const RbLanguageObject> value) {
+double Dist_unif::pdf(RbPtr<const RbLanguageObject> value) const {
     
-    double min = static_cast<      Real*>( (      RbLanguageObject*)getMemberValue("min") )->getValue();
-    double max = static_cast<      Real*>( (      RbLanguageObject*)getMemberValue("max") )->getValue();
+    double min = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("min") )->getValue();
+    double max = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("max") )->getValue();
     double x   = static_cast<const Real*>( (const RbLanguageObject*)value                 )->getValue();
 
     if ( x < min || x > max )
@@ -201,8 +201,8 @@ RbPtr<Real> Dist_unif::quantile(const double p) {
  */
 RbPtr<RbLanguageObject> Dist_unif::rv(void) {
     
-    double min = static_cast<const Real*>( getMemberValue("min").get() )->getValue();
-    double max = static_cast<const Real*>( getMemberValue("max").get() )->getValue();
+    double min = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("min") )->getValue();
+    double max = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("max") )->getValue();
     RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
 
     double u = rng->uniform01();

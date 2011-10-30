@@ -31,7 +31,7 @@ AbstractVector::AbstractVector(const TypeSpec& elemType) : Container(elemType) {
 
 
 /** Set type of elements */
-AbstractVector::AbstractVector(const TypeSpec& elemType, const RbPtr<MemberRules> memberRules) : Container(elemType,memberRules) {
+AbstractVector::AbstractVector(const TypeSpec& elemType, RbPtr<const MemberRules> memberRules) : Container(elemType,memberRules) {
     
 }
 
@@ -76,10 +76,10 @@ void AbstractVector::printValue( std::ostream& o ) const {
     for ( size_t i = 0; i<size(); i++) {
         if ( i != 0 )
             o << ", ";
-        if ( getElement(i).get() == NULL )
+        if ( getElement(i) == NULL )
             o << "NULL";
         else
-            (dynamic_cast<const RbLanguageObject*>( getElement(i).get() ))->printValue(o);
+            (dynamic_cast<const RbLanguageObject*>( (const RbObject*)getElement(i) ))->printValue(o);
     }
     o <<  " ]";
     
@@ -87,7 +87,7 @@ void AbstractVector::printValue( std::ostream& o ) const {
 
 
 void AbstractVector::setElement(const size_t index, RbPtr<RbObject> x) {
-    RbLanguageObject *elem = dynamic_cast<RbLanguageObject*>(x.get());
+    RbLanguageObject *elem = dynamic_cast<RbLanguageObject*>( (RbObject*)x );
     if (elem != NULL)
         setElement(index, RbPtr<RbLanguageObject>(elem) );
 }

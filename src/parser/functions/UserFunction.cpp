@@ -33,7 +33,7 @@
 const TypeSpec UserFunction::typeSpec(UserFunction_name);
 
 /** Basic constructor */
-UserFunction::UserFunction( const RbPtr<ArgumentRules>  argRules,
+UserFunction::UserFunction( RbPtr<const ArgumentRules>  argRules,
                             const TypeSpec&             retType,
                             RbPtr<std::list<RbPtr<SyntaxElement> > >  stmts,
                             RbPtr<Environment>                defineEnv)
@@ -93,7 +93,7 @@ RbPtr<RbLanguageObject> UserFunction::execute( void ) {
     RbPtr<Variable> retValue(NULL);
 
     // Create new variable frame
-    RbPtr<Environment> functionEnvironment(new Environment( RbPtr<Environment>(&args) ) );
+    RbPtr<Environment> functionEnvironment(new Environment( RbPtr<Environment>(args) ) );
 
     // Execute code
     for ( std::list<RbPtr<SyntaxElement> >::iterator i=code->begin(); i!=code->end(); i++ ) {
@@ -110,7 +110,7 @@ RbPtr<RbLanguageObject> UserFunction::execute( void ) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> UserFunction::getArgumentRules() const {
+RbPtr<const ArgumentRules> UserFunction::getArgumentRules() const {
 
     return argumentRules;
 }

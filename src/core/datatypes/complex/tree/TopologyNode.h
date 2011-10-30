@@ -70,6 +70,7 @@ public:
     // TopologyNode functions
     void                                addChild(RbPtr<TopologyNode> c);                                            //!< Adds a child node
     RbPtr<const TopologyNode>           getChild(size_t i) const;                                                   //!< Returns the i-th child
+    RbPtr<TopologyNode>                 getChild(size_t i);                                                         //!< Returns the i-th child (non-const to return non-const node)
     std::vector<int>                    getChildrenIndices(void) const;                                             //!< Return children indices
     int                                 getIndex(void) const { return index; }                                      //!< Get index of node
     std::string                         getName(void) const { return name; }                                        //!< Get name of node
@@ -81,7 +82,7 @@ public:
     void                                setName(const std::string& n);                                              //!< Set the name of this node
     void                                setParent(RbPtr<TopologyNode> p);                                           //!< Sets the node's parent
     void                                removeAllChildren(void);                                                    //!< Removes all of the children of the node
-    void                                removeChild(RbPtr<TopologyNode> p);                                         //!< Removes a specific child
+    void                                removeChild(RbPtr<const TopologyNode> p);                                   //!< Removes a specific child
         
 private:
     std::string                         buildNewickString(RbPtr<const TopologyNode> node) const;                    //!< compute the newick string for a tree rooting at this node

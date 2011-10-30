@@ -32,7 +32,7 @@ Container::Container(const TypeSpec& elemType) : ConstantMemberObject(), element
 }
 
 /** Set type of elements */
-Container::Container(const TypeSpec& elemType, const RbPtr<MemberRules> memberRules) : ConstantMemberObject(memberRules), elementType(elemType) {
+Container::Container(const TypeSpec& elemType, RbPtr<const MemberRules> memberRules) : ConstantMemberObject(memberRules), elementType(elemType) {
     
 }
 
@@ -83,7 +83,7 @@ RbPtr<const MethodTable> Container::getMethods(void) const {
         methods->addFunction("size",  RbPtr<RbFunction>(new MemberFunction(TypeSpec(Natural_name), sizeArgRules) ) );
         
         // necessary call for proper inheritance
-        methods->setParentTable( RbPtr<const FunctionTable>( ConstantMemberObject::getMethods().get() ) );
+        methods->setParentTable( RbPtr<const FunctionTable>( ConstantMemberObject::getMethods() ) );
         methodsSet = true;
     }
     
@@ -92,7 +92,7 @@ RbPtr<const MethodTable> Container::getMethods(void) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> Container::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> Container::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
     
     if (name == "size") {
         

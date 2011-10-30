@@ -45,14 +45,14 @@ class DistributionDiscrete: public Distribution {
 
         // Member object functions you should not have to override
         RbPtr<const MethodTable>            getMethods(void) const;                                                     //!< Get member methods
-        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);               //!< Direct call of member method
+        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Direct call of member method
 
         // Categorical distribution functions you have to override
         virtual size_t                      getNumberOfStates(void) const = 0;                                          //!< Get number of states
         virtual RbPtr<Simplex>              getProbabilityMassVector(void) = 0;                                         //!< Get probability mass vector
         virtual const TypeSpec&             getVariableType(void) const = 0;                                            //!< Get random variable type spec
-        virtual double                      lnPdf( RbPtr<const RbLanguageObject> value) = 0;                             //!< Ln probability density
-        virtual double                      pdf( RbPtr<const RbLanguageObject> value) = 0;                               //!< Probability density
+        virtual double                      lnPdf( RbPtr<const RbLanguageObject> value) const = 0;                      //!< Ln probability density
+        virtual double                      pdf( RbPtr<const RbLanguageObject> value) const = 0;                        //!< Probability density
         virtual RbPtr<RbLanguageObject>     rv(void) = 0;                                                               //!< Generate a random draw
 
     protected:

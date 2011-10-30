@@ -178,7 +178,7 @@ RbPtr<const RbObject> VectorInteger::getElement(size_t index) const {
     if (index > elements.size())
         throw RbException("Index out of bounds");
     
-    RbPtr<RbObject> n( new Integer(elements[index]) );
+    RbPtr<const RbObject> n( new Integer(elements[index]) );
     
     return n;
 }
@@ -248,7 +248,7 @@ void VectorInteger::pop_front(void) {
 void VectorInteger::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Integer_name) ) ) {
-        elements.push_back(static_cast<Integer*>(x.get())->getValue());
+        elements.push_back(static_cast<Integer*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Integer_name) ) {
         elements.push_back(static_cast<Integer*>(x->convertTo(Integer_name))->getValue());
     }
@@ -268,7 +268,7 @@ void VectorInteger::push_back(int x) {
 void VectorInteger::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Integer_name) ) ) {
-        elements.insert( elements.begin(), static_cast<Integer*>(x.get())->getValue());
+        elements.insert( elements.begin(), static_cast<Integer*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Integer_name) ) {
         elements.insert( elements.begin(), static_cast<Integer*>(x->convertTo(Integer_name))->getValue());
     }
@@ -309,7 +309,7 @@ void VectorInteger::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<Integer*>(x.get())->getValue());
+        elements.insert( elements.begin() + index, static_cast<Integer*>( (RbLanguageObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Integer_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

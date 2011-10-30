@@ -193,7 +193,7 @@ void VectorString::pop_front(void) {
 void VectorString::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RbString_name) ) ) {
-        elements.push_back(static_cast<RbString*>(x.get())->getValue() );
+        elements.push_back(static_cast<RbString*>( (RbObject*)x )->getValue() );
     } else if ( x->isConvertibleTo(RbString_name) ) {
         elements.push_back(static_cast<RbString*>(x->convertTo(RbString_name))->getValue());
     }
@@ -214,7 +214,7 @@ void VectorString::push_back(const std::string &x) {
 void VectorString::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RbString_name) ) ) {
-        elements.insert( elements.begin(), static_cast<RbString*>(x.get())->getValue());
+        elements.insert( elements.begin(), static_cast<RbString*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(RbString_name) ) {
         elements.insert( elements.begin(), static_cast<RbString*>(x->convertTo(RbString_name))->getValue());
     }
@@ -248,7 +248,7 @@ void VectorString::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<RbString*>(x.get())->getValue());
+        elements.insert( elements.begin() + index, static_cast<RbString*>( (RbLanguageObject*)x )->getValue());
     } else if ( x->isConvertibleTo(RbString_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

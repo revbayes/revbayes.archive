@@ -232,13 +232,13 @@ const TypeSpec& Dist_topologyunif::getVariableType( void ) const {
  * @param value Observed topology
  * @return      Natural log of the probability
  */
-double Dist_topologyunif::lnPdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_topologyunif::lnPdf( RbPtr<const RbLanguageObject> value ) const {
 
     // Get the parameters
     RbPtr<const Topology> top( static_cast<const Topology*>( (const RbLanguageObject*)value ) );
-    unsigned int numTaxa   = static_cast<const Natural*>( (RbLanguageObject*)getMemberValue( "numberTaxa"  ) )->getValue();
-    bool         isRooted  = static_cast<const RbBoolean*>( (RbLanguageObject*)getMemberValue( "isRooted"  ) )->getValue();
-    bool         isBinary  = static_cast<const RbBoolean*>( (RbLanguageObject*)getMemberValue( "isBinary"  ) )->getValue();
+    unsigned int numTaxa   = static_cast<const Natural*>( (const RbLanguageObject*)getMemberValue( "numberTaxa"  ) )->getValue();
+    bool         isRooted  = static_cast<const RbBoolean*>( (const RbLanguageObject*)getMemberValue( "isRooted"  ) )->getValue();
+    bool         isBinary  = static_cast<const RbBoolean*>( (const RbLanguageObject*)getMemberValue( "isBinary"  ) )->getValue();
 
     // If numTaxa, isRooted and isBinary fits top, then return precalculated probability stored in the class
     // Otherwise return negative infinity
@@ -258,13 +258,13 @@ double Dist_topologyunif::lnPdf( RbPtr<const RbLanguageObject> value ) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_topologyunif::pdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_topologyunif::pdf( RbPtr<const RbLanguageObject> value ) const {
 
     // Get the parameters
     RbPtr<const Topology> top( static_cast<const Topology*>( (const RbLanguageObject*)value ) );
-    unsigned int    numTaxa   = static_cast<const Natural*>( (RbLanguageObject*)getMemberValue( "numberTaxa"  ) )->getValue();
-    bool            isRooted  = static_cast<const RbBoolean*>( (RbLanguageObject*)getMemberValue( "isRooted"  ) )->getValue();
-    bool            isBinary  = static_cast<const RbBoolean*>( (RbLanguageObject*)getMemberValue( "isBinary"  ) )->getValue();
+    unsigned int numTaxa   = static_cast<const Natural*>( (const RbLanguageObject*)getMemberValue( "numberTaxa"  ) )->getValue();
+    bool         isRooted  = static_cast<const RbBoolean*>( (const RbLanguageObject*)getMemberValue( "isRooted"  ) )->getValue();
+    bool         isBinary  = static_cast<const RbBoolean*>( (const RbLanguageObject*)getMemberValue( "isBinary"  ) )->getValue();
 
     // If numTaxa, isRooted and isBinary fits top, then return precalculated probability stored in the class
     // Otherwise return 0.0

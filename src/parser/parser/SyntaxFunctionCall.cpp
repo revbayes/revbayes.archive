@@ -133,11 +133,11 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(RbPtr<Environment> env) {
         if ( theNode == NULL || !theNode->getValue()->isTypeSpec( TypeSpec(MemberObject_name) ) )
             throw RbException( "Variable does not have member functions" );
 
-        RbPtr<MemberObject> theMemberObject( dynamic_cast<MemberObject*>(theNode->getValue().get()) );
+        RbPtr<MemberObject> theMemberObject( dynamic_cast<MemberObject*>((RbLanguageObject*)theNode->getValue()) );
 //        args.insert( args.begin(), new Argument( "", memberNode ) );
-        RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( theMemberObject->getMethods()->getFunction( *functionName, args ).get() ) );
+        RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( (RbFunction*)theMemberObject->getMethods()->getFunction( *functionName, args ) ) );
         theMemberFunction->setMemberObject(theMemberObject);
-        func = RbPtr<RbFunction>( theMemberFunction.get() );
+        func = RbPtr<RbFunction>( theMemberFunction );
     }
 
     return RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new DeterministicNode( func ) ) ) );

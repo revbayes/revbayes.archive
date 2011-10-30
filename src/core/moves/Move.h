@@ -36,12 +36,12 @@ class Move : public ConstantMemberObject {
         virtual const VectorString&         getClass(void) const;                                                   //!< Get class vector
 
         // Member variable rules
-        virtual const RbPtr<MemberRules>    getMemberRules(void) const;                                             //!< Get member rules
+        virtual RbPtr<const MemberRules>    getMemberRules(void) const;                                             //!< Get member rules
 
         // Member methods
-        virtual const RbPtr<MethodTable>    getMethods(void) const;                                                 //!< Get methods
-        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);           //!< Map method call to internal functions
-        void                                setMemberVariable(const std::string& name, RbPtr<Variable> var);              //!< set the member variables
+        virtual RbPtr<const MethodTable>    getMethods(void) const;                                                 //!< Get methods
+        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const RbPtr<const Environment>& args); //!< Map method call to internal functions
+        void                                setMemberVariable(const std::string& name, RbPtr<Variable> var);        //!< set the member variables
 
         // Move functions you have to override
         virtual void                        acceptMove(void) = 0;                                                   //!< Accept the move
@@ -57,7 +57,7 @@ class Move : public ConstantMemberObject {
         void                                resetCounters(void);                                                    //!< Reset numTried/numAccepted
 
 	protected:
-        Move(const RbPtr<MemberRules> memberRules);                                                                   //!< Default constructor
+        Move(RbPtr<const MemberRules> memberRules);                                                                   //!< Default constructor
         Move(const Move& m);                                                                                    //!< Copy constructor
 
         // Hidden member variables

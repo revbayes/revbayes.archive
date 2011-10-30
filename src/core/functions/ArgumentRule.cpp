@@ -91,7 +91,7 @@ const VectorString& ArgumentRule::getClass(void) const {
 }
 
 
-RbPtr<Variable> ArgumentRule::getDefaultVariable(void) const {
+RbPtr<const Variable> ArgumentRule::getDefaultVariable(void) const {
     return argSlot.getVariable(); 
 }
 
@@ -107,7 +107,7 @@ bool ArgumentRule::hasDefault(void) const {
 
 
 /** Test if argument is valid */
-bool ArgumentRule::isArgumentValid(RbPtr<DAGNode> var, bool& needsConversion) const {
+bool ArgumentRule::isArgumentValid(RbPtr<const DAGNode> var, bool& needsConversion) const {
     
     needsConversion = false;
     if ( var == NULL )

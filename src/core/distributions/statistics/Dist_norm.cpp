@@ -119,10 +119,10 @@ const TypeSpec& Dist_norm::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_norm::lnPdf(RbPtr<const RbLanguageObject> value) {
-
-    double mu    = static_cast<      Real*   >( (      RbLanguageObject*)getMemberValue( "mean" ) )->getValue();
-    double sigma = static_cast<      RealPos*>( (      RbLanguageObject*)getMemberValue( "sd"   ) )->getValue();
+double Dist_norm::lnPdf(RbPtr<const RbLanguageObject> value) const {
+    
+    double mu    = static_cast<const Real*   >( (const RbLanguageObject*)getMemberValue( "mean" ) )->getValue();
+    double sigma = static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue( "sd"   ) )->getValue();
     double x     = static_cast<const Real*   >( (const RbLanguageObject*)value                    )->getValue();
 
 
@@ -140,10 +140,10 @@ double Dist_norm::lnPdf(RbPtr<const RbLanguageObject> value) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_norm::pdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_norm::pdf( RbPtr<const RbLanguageObject> value ) const {
 
-    double mu    = static_cast<      Real*   >( (      RbLanguageObject*)getMemberValue( "mean" ) )->getValue();
-    double sigma = static_cast<      RealPos*>( (      RbLanguageObject*)getMemberValue( "sd"   ) )->getValue();
+    double mu    = static_cast<const Real*   >( (const RbLanguageObject*)getMemberValue( "mean" ) )->getValue();
+    double sigma = static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue( "sd"   ) )->getValue();
     double x     = static_cast<const Real*   >( (const RbLanguageObject*)value                    )->getValue();
 
     return RbStatistics::Normal::pdf(mu, sigma, x);
@@ -197,9 +197,9 @@ RbPtr<RbLanguageObject> Dist_norm::rv(void) {
         availableNormalRv = false;
         return RbPtr<RbLanguageObject>( new Real( extraNormalRv ) );
     }
-
-    double mu    = static_cast<const Real*   >( getMemberValue( "mean" ).get() )->getValue();
-    double sigma = static_cast<const RealPos*>( getMemberValue( "sd"   ).get() )->getValue();
+    
+    double mu    = static_cast<const Real*   >( (const RbLanguageObject*)getMemberValue( "mean" ) )->getValue();
+    double sigma = static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue( "sd"   ) )->getValue();
 
     RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
 	return RbPtr<RbLanguageObject>( new Real( RbStatistics::Normal::rv(mu, sigma, rng) ) );

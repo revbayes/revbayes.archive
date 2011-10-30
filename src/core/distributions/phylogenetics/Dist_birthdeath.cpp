@@ -109,19 +109,19 @@ const TypeSpec& Dist_birthdeath::getVariableType( void ) const {
  * @param value Observed speciation times
  * @return      Natural log of the probability
  */
-double Dist_birthdeath::lnPdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_birthdeath::lnPdf( RbPtr<const RbLanguageObject> value ) const {
     
     // Get the parameters
     double t = static_cast<const RealPos*    >( (const RbLanguageObject*)value )->getValue();
-    double o = static_cast<RealPos*    >( (RbLanguageObject*)getMemberValue( "origin" ) )->getValue();
-    double T = static_cast<RealPos*    >( (RbLanguageObject*)getMemberValue( "T"      ) )->getValue();
-    double b = static_cast<RealPos*    >( (RbLanguageObject*)getMemberValue( "lambda" ) )->getValue();
-    double d = static_cast<RealPos*    >( (RbLanguageObject*)getMemberValue( "mu"     ) )->getValue();
-    double p = static_cast<Probability*>( (RbLanguageObject*)getMemberValue( "rho"    ) )->getValue();
+    double o = static_cast<const RealPos*    >( (const RbLanguageObject*)getMemberValue( "origin" ) )->getValue();
+    double T = static_cast<const RealPos*    >( (const RbLanguageObject*)getMemberValue( "T"      ) )->getValue();
+    double b = static_cast<const RealPos*    >( (const RbLanguageObject*)getMemberValue( "lambda" ) )->getValue();
+    double d = static_cast<const RealPos*    >( (const RbLanguageObject*)getMemberValue( "mu"     ) )->getValue();
+    double p = static_cast<const Probability*>( (const RbLanguageObject*)getMemberValue( "rho"    ) )->getValue();
     
     // have we observed a speciation event at time t or did we just stop the process without oberving an event?
     // Internal nodes correspond to obsereved speciation events whereas tips correspond to no event and a stopped process.
-    bool speciationEvent = static_cast<RbBoolean*>( (RbLanguageObject*)getMemberValue( "speciationEvent" ) )->getValue();
+    bool speciationEvent = static_cast<const RbBoolean*>( (const RbLanguageObject*)getMemberValue( "speciationEvent" ) )->getValue();
     
     // the probability of the current time is the probability of having observed no event until now
     double log_p = log( pWaiting(o,t,T,b,d,p) );
@@ -155,19 +155,19 @@ double Dist_birthdeath::pBirth(double t, double T, double lambda, double mu, dou
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_birthdeath::pdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_birthdeath::pdf( RbPtr<const RbLanguageObject> value ) const {
     
     // Get the parameters
     double t = static_cast<const RealPos*    >( (const RbLanguageObject*)value )->getValue();
-    double o = static_cast<RealPos*    >( (RbLanguageObject*)getMemberValue( "origin" ) )->getValue();
-    double T = static_cast<RealPos*    >( (RbLanguageObject*)getMemberValue( "T"      ) )->getValue();
-    double b = static_cast<RealPos*    >( (RbLanguageObject*)getMemberValue( "lambda" ) )->getValue();
-    double d = static_cast<RealPos*    >( (RbLanguageObject*)getMemberValue( "mu"     ) )->getValue();
-    double p = static_cast<Probability*>( (RbLanguageObject*)getMemberValue( "rho"    ) )->getValue();
+    double o = static_cast<const RealPos*    >( (const RbLanguageObject*)getMemberValue( "origin" ) )->getValue();
+    double T = static_cast<const RealPos*    >( (const RbLanguageObject*)getMemberValue( "T"      ) )->getValue();
+    double b = static_cast<const RealPos*    >( (const RbLanguageObject*)getMemberValue( "lambda" ) )->getValue();
+    double d = static_cast<const RealPos*    >( (const RbLanguageObject*)getMemberValue( "mu"     ) )->getValue();
+    double p = static_cast<const Probability*>( (const RbLanguageObject*)getMemberValue( "rho"    ) )->getValue();
     
     // have we observed a speciation event at time t or did we just stop the process without oberving an event?
     // Internal nodes correspond to obsereved speciation events whereas tips correspond to no event and a stopped process.
-    bool speciationEvent = static_cast<RbBoolean*>( (RbLanguageObject*)getMemberValue( "speciationEvent" ) )->getValue();
+    bool speciationEvent = static_cast<const RbBoolean*>( (const RbLanguageObject*)getMemberValue( "speciationEvent" ) )->getValue();
     
     // the probability of the current time is the probability of having observed no event until now
     double prob = pWaiting(o,t,T,b,d,p);

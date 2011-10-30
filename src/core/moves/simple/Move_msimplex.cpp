@@ -57,7 +57,7 @@ const VectorString& Move_msimplex::getClass() const {
 
 
 /** Return member rules */
-const RbPtr<MemberRules> Move_msimplex::getMemberRules( void ) const {
+RbPtr<const MemberRules> Move_msimplex::getMemberRules( void ) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -68,7 +68,7 @@ const RbPtr<MemberRules> Move_msimplex::getMemberRules( void ) const {
         memberRules->push_back( RbPtr<ArgumentRule>(new ValueRule( "variable", varType ) ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        const RbPtr<MemberRules> inheritedRules = MoveSimple::getMemberRules();
+        RbPtr<const MemberRules> inheritedRules = MoveSimple::getMemberRules();
         memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "tuning"  , RealPos_name ) ) );
@@ -77,7 +77,7 @@ const RbPtr<MemberRules> Move_msimplex::getMemberRules( void ) const {
         rulesSet = true;
 		}
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
@@ -103,10 +103,10 @@ double Move_msimplex::perform( std::set<RbPtr<StochasticNode> >& affectedNodes )
     // Get relevant values
 //    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
     RbPtr<StochasticNode> nodePtr( NULL );
-    double                 alpha0  = static_cast<const RealPos*>( getMemberValue("tuning").get()   )->getValue();
-    int                    k       = static_cast<const Natural*>( getMemberValue("num_cats").get() )->getValue();
+    double                 alpha0  = static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue("tuning")   )->getValue();
+    int                    k       = static_cast<const Natural*>( (const RbLanguageObject*)getMemberValue("num_cats") )->getValue();
 
-	std::vector<double> curVal = static_cast<const Simplex*>( nodePtr->getValue().get() )->getValue();
+	std::vector<double> curVal = static_cast<const Simplex*>( (const RbLanguageObject*)nodePtr->getValue() )->getValue();
 	std::vector<double> newVal = curVal;
     int                 n      = int( curVal.size() );
 

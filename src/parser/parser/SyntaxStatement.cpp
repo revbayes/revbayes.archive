@@ -139,8 +139,8 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(RbPtr<Environment> env) {
     if (statementType == For) {
 
         // Convert expression to for condition
-        RbPtr<SyntaxForCondition> forCond( dynamic_cast<SyntaxForCondition*>(expression.get()) );
-        assert (forCond.get() != NULL);
+        RbPtr<SyntaxForCondition> forCond( dynamic_cast<SyntaxForCondition*>( (SyntaxElement*)expression) );
+        assert (forCond != NULL);
 
         // Initialize for loop
         Signals::getSignals().clearFlags();
@@ -168,7 +168,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(RbPtr<Environment> env) {
                 }
 
                 // Free memory
-				if ( !Signals::getSignals().isSet( Signals::RETURN ) && result.get() != NULL) {
+				if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL) {
                     result = RbPtr<Variable>::getNullPtr();  // discard result
                 }
 
@@ -217,7 +217,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(RbPtr<Environment> env) {
                 }
 	 
 	            // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result.get() != NULL ){
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ){
                     result = RbPtr<Variable>::getNullPtr();  // discard result
                 }
 	 
@@ -260,7 +260,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(RbPtr<Environment> env) {
                 }
 
                 // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result.get() != NULL){
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL){
                     result = RbPtr<Variable>::getNullPtr();  // discard result
                 }
             }
@@ -285,7 +285,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(RbPtr<Environment> env) {
                 }
                 
                 // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result.get() != NULL ){
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ){
                     result = RbPtr<Variable>::getNullPtr();  // discard result
                 }
             }
@@ -304,7 +304,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(RbPtr<Environment> env) {
                 }
                     
                 // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result.get() != NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
                     result = RbPtr<Variable>::getNullPtr();  // discard result
                 }
             }
@@ -335,7 +335,7 @@ bool SyntaxStatement::isTrue( RbPtr<SyntaxElement> expression, RbPtr<Environment
     
     if ( temp->getValue()->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
         
-        bool retValue = static_cast<const RbBoolean*>( temp->getValue().get() )->getValue();
+        bool retValue = static_cast<const RbBoolean*>( (RbLanguageObject*)temp->getValue() )->getValue();
         
         return retValue;
     }

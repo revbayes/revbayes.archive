@@ -37,15 +37,15 @@ DistributionContinuous::DistributionContinuous( RbPtr<const MemberRules> memberR
 
 
 /** Map direct method calls to internal class methods. */
-RbPtr<RbLanguageObject> DistributionContinuous::executeOperation( const std::string& name, Environment& args ) {
+RbPtr<RbLanguageObject> DistributionContinuous::executeOperation( const std::string& name, const RbPtr<Environment>& args ) {
 
     if ( name == "cdf" ) {
 
-        return RbPtr<RbLanguageObject>( new RealPos( cdf( (const RbLanguageObject*)args[1]->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new RealPos( cdf( (const RbLanguageObject*)(*args)[1]->getValue() ) ) );
     }
     else if ( name == "quantile" ) {
 
-        RbPtr<RbLanguageObject> quant( quantile( static_cast<Real*>( (RbLanguageObject*)args[1]->getValue() )->getValue() ) );
+        RbPtr<RbLanguageObject> quant( quantile( static_cast<const Real*>( (const RbLanguageObject*)(*args)[1]->getValue() )->getValue() ) );
 
         return quant;
     }

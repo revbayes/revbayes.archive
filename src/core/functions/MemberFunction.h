@@ -52,7 +52,7 @@ public:
     // Regular functions
     RbPtr<RbLanguageObject>     execute(void);                                                              //!< Execute function
    
-    const RbPtr<ArgumentRules>  getArgumentRules(void) const;                                               //!< Get argument rules
+    RbPtr<const ArgumentRules>  getArgumentRules(void) const;                                               //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                                                  //!< Get type of return value
     void                        setMemberObject(RbPtr<MemberObject> obj);                                   //!< Set the member object to which this function belongs
     void                        setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of member method

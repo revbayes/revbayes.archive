@@ -165,7 +165,7 @@ void Alignment::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> Alignment::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> Alignment::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
 
     if (name == "names") 
     {
@@ -255,16 +255,16 @@ RbPtr<RbLanguageObject> Alignment::executeOperation(const std::string& name, Env
         }
     else if (name == "excludechar")
         {
-        RbPtr<RbLanguageObject> argument = args[1]->getValue();
+        RbPtr<const RbLanguageObject> argument = (*args)[1]->getValue();
 
         if ( argument->isTypeSpec( TypeSpec(Natural_name) ) ) {
             
-            int n = static_cast<const Natural*>( (RbLanguageObject*)argument )->getValue();
+            int n = static_cast<const Natural*>( (const RbLanguageObject*)argument )->getValue();
             deletedCharacters.insert( n );
         }
         else if ( argument->isTypeSpec( TypeSpec(VectorNatural_name) ) ) {
         
-            std::vector<unsigned int> x = static_cast<const VectorNatural*>( (RbLanguageObject*)argument )->getValue();
+            std::vector<unsigned int> x = static_cast<const VectorNatural*>( (const RbLanguageObject*)argument )->getValue();
             for ( size_t i=0; i<x.size(); i++ )
                 deletedCharacters.insert( x[i] );
         }

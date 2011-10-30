@@ -100,10 +100,10 @@ const TypeSpec& Dist_logis::getVariableType( void ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_logis::pdf( RbPtr<const RbLanguageObject> value ) {
-
-    double location =   static_cast<      Real*     >( (      RbLanguageObject*)getMemberValue("location")   )->getValue();
-    double scale =      static_cast<      RealPos*  >( (      RbLanguageObject*)getMemberValue("scale")      )->getValue();
+double Dist_logis::pdf( RbPtr<const RbLanguageObject> value ) const {
+    
+    double location =   static_cast<const Real*     >( (const RbLanguageObject*)getMemberValue("location")   )->getValue();
+    double scale =      static_cast<const RealPos*  >( (const RbLanguageObject*)getMemberValue("scale")      )->getValue();
     double x =          static_cast<const Real*     >( (const RbLanguageObject*)value                        )->getValue();
 
 	return RbStatistics::Logistic::pdf( location, scale, x );
@@ -121,11 +121,11 @@ double Dist_logis::pdf( RbPtr<const RbLanguageObject> value ) {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_logis::lnPdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_logis::lnPdf( RbPtr<const RbLanguageObject> value ) const {
 
 	// Get the value and the parameters of the Logistic
-    double location =   static_cast<      Real*     >( (      RbLanguageObject*)getMemberValue("location")   )->getValue();
-    double scale =      static_cast<      RealPos*  >( (      RbLanguageObject*)getMemberValue("scale")      )->getValue();
+    double location =   static_cast<const Real*     >( (const RbLanguageObject*)getMemberValue("location")   )->getValue();
+    double scale =      static_cast<const RealPos*  >( (const RbLanguageObject*)getMemberValue("scale")      )->getValue();
     double x =          static_cast<const Real*     >( (const RbLanguageObject*)value                        )->getValue();
 
 	return RbStatistics::Logistic::lnPdf( location, scale, x );

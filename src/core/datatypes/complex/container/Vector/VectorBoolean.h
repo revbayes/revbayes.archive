@@ -61,7 +61,7 @@ class VectorBoolean : public AbstractVector {
     void                                push_front(RbPtr<RbObject> x);                                  //!< Add element in front
     void                                push_front(bool x);                                             //!< Add element in front
     void                                resize(size_t n);                                               //!< Resize to new AbstractVector of length n
-    void                                setElement(const size_t index, RbPtr<RbLanguageObject> elem);         //!< Set element with type conversion
+    void                                setElement(const size_t index, RbPtr<RbLanguageObject> elem);   //!< Set element with type conversion
     void                                setValue(const VectorBoolean& x);                               //!< Set the value
     void                                setValue(const std::vector<bool>& x);                           //!< Set the value
     void                                sort(void);                                                     //!< sort the AbstractVector

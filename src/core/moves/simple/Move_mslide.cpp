@@ -60,7 +60,7 @@ const VectorString& Move_mslide::getClass() const {
 
 
 /** Return member rules */
-const RbPtr<MemberRules> Move_mslide::getMemberRules( void ) const {
+RbPtr<const MemberRules> Move_mslide::getMemberRules( void ) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -71,7 +71,7 @@ const RbPtr<MemberRules> Move_mslide::getMemberRules( void ) const {
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable", varType ) ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        const RbPtr<MemberRules> inheritedRules = MoveSimple::getMemberRules();
+        RbPtr<const MemberRules> inheritedRules = MoveSimple::getMemberRules();
         memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "delta", RealPos_name ) ) );
@@ -79,7 +79,7 @@ const RbPtr<MemberRules> Move_mslide::getMemberRules( void ) const {
         rulesSet = true;
     }
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
@@ -103,12 +103,12 @@ double Move_mslide::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
     RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
 
     // Get relevant values
-    RbPtr<StochasticNode> nodePtr( static_cast<StochasticNode*>( nodes[0].get() ) );
-    const RbPtr<RealPos> delta( static_cast<RealPos*>( getMemberValue("delta").get() ) );
+    RbPtr<StochasticNode> nodePtr( static_cast<StochasticNode*>( (DAGNode*)nodes[0] ) );
+    RbPtr<const RealPos> delta( static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue("delta") ) );
 
-    double curVal  =  ( static_cast<const Real*>( nodePtr->getValue().get() ) )->getValue();
-    const RbPtr<Real> minPtr = static_cast<const DistributionContinuous*>( nodePtr->getDistribution().get() )->getMin();
-    const RbPtr<Real> maxPtr = static_cast<const DistributionContinuous*>( nodePtr->getDistribution().get() )->getMax();
+    double curVal  =  ( static_cast<const Real*>( (const RbLanguageObject*)nodePtr->getValue() ) )->getValue();
+    RbPtr<const Real> minPtr = static_cast<const DistributionContinuous*>( (const Distribution*)nodePtr->getDistribution() )->getMin();
+    RbPtr<const Real> maxPtr = static_cast<const DistributionContinuous*>( (const Distribution*)nodePtr->getDistribution() )->getMax();
     double minVal  = minPtr->getValue();
     double maxVal  = maxPtr->getValue();
 

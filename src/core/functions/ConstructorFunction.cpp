@@ -48,18 +48,18 @@ RbPtr<RbLanguageObject> ConstructorFunction::execute(void) {
 
    RbPtr<MemberObject> copy( templateObject->clone() );
 
-    for ( size_t i = 0; i < args.size(); i++ ) {
-        copy->setMemberVariable( args[i]->getLabel(), args[i]->getVariable() );
+    for ( size_t i = 0; i < args->size(); i++ ) {
+        copy->setMemberVariable( (*args)[i]->getLabel(), (*args)[i]->getVariable() );
     }
  
-    return RbPtr<RbLanguageObject>( copy.get() );
+    return RbPtr<RbLanguageObject>( copy );
 }
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> ConstructorFunction::getArgumentRules(void) const {
+RbPtr<const ArgumentRules> ConstructorFunction::getArgumentRules(void) const {
 
-    return argRules;
+    return ( argRules );
 }
 
 

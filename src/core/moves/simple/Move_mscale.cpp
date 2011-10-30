@@ -53,7 +53,7 @@ const VectorString& Move_mscale::getClass() const {
 
 
 /** Return member rules */
-const RbPtr<MemberRules> Move_mscale::getMemberRules( void ) const {
+RbPtr<const MemberRules> Move_mscale::getMemberRules( void ) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules );
     static bool        rulesSet = false;
@@ -63,7 +63,7 @@ const RbPtr<MemberRules> Move_mscale::getMemberRules( void ) const {
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable", varType ) ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        const RbPtr<MemberRules> inheritedRules = MoveSimple::getMemberRules();
+        RbPtr<const MemberRules> inheritedRules = MoveSimple::getMemberRules();
         memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "lambda", RealPos_name ) ) );
@@ -71,7 +71,7 @@ const RbPtr<MemberRules> Move_mscale::getMemberRules( void ) const {
         rulesSet = true;
     }
 
-    return memberRules;
+    return RbPtr<MemberRules>( memberRules );
 }
 
 
@@ -95,10 +95,9 @@ double Move_mscale::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
     RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
 
     // Get relevant values
-    RbPtr<StochasticNode>  nodePtr( static_cast<StochasticNode*>( (*members)["variable"]->getDagNodePtr().get() ) );
-    const RealPos          lambda  = *( static_cast<const RealPos*>( getMemberValue("lambda").get()  ) );
-
-    const RealPos          curVal  = *( static_cast<const RealPos*>( nodePtr->getValue().get() ) );
+    RbPtr<StochasticNode>  nodePtr( static_cast<StochasticNode*>( (DAGNode*)(*members)["variable"]->getDagNode() ) );
+    const RealPos          lambda  = *( static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue("lambda")  ) );
+    const RealPos          curVal  = *( static_cast<const RealPos*>( (const RbLanguageObject*)nodePtr->getValue() ) );
 
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     RealPos u      = rng->uniform01();

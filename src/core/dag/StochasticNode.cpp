@@ -46,7 +46,7 @@ StochasticNode::StochasticNode( RbPtr<Distribution> dist ) : VariableNode( dist-
     RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
     
     /* Get distribution parameters */
-    const RbPtr<Environment> params = dist->getMembers();
+    RbPtr<Environment> params = dist->getMembers();
 
     /* Check for cycles */
     std::list<DAGNode*> done;
@@ -84,7 +84,7 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     distribution = RbPtr<Distribution>( x.distribution->clone() );
 
     /* Get distribution parameters */
-    const RbPtr<Environment> params = distribution->getMembers();
+    RbPtr<Environment> params = distribution->getMembers();
 
     /* Set parent(s) and add myself as a child to these */
     for ( size_t i = 0; i < params->size(); i++ ) {
@@ -138,7 +138,7 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         distribution = x.distribution;
 
         /* Get distribution parameters */
-        const RbPtr<Environment> params = distribution->getMembers();
+        RbPtr<Environment> params = distribution->getMembers();
 
         /* Set parent(s) and add myself as a child to these */
         for ( size_t i = 0; i < params->size(); i++ ) {
@@ -166,7 +166,7 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
 /** Are any distribution params touched? Get distribution params and check if any one is touched */
 bool StochasticNode::areDistributionParamsTouched( void ) const {
 
-    const RbPtr<Environment> params = distribution->getMembers();
+    RbPtr<Environment> params = distribution->getMembers();
 
     for ( size_t i = 0; i < params->size(); i++ ) {
         
@@ -176,7 +176,7 @@ bool StochasticNode::areDistributionParamsTouched( void ) const {
         if ( !theNode->isType( VariableNode_name ) )
             continue;
 
-        if ( static_cast<const VariableNode*>( theNode.get() )->isTouched() )
+        if ( static_cast<const VariableNode*>( (DAGNode*)theNode )->isTouched() )
             return true;
     }
 
@@ -245,8 +245,8 @@ StochasticNode* StochasticNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& ne
     copy->storedLnProb = storedLnProb;
 
     /* Set the copy params to their matches in the new DAG */
-    const RbPtr<Environment> params     = distribution->getMembers();
-    RbPtr<Environment>       copyParams = copy->distribution->getMembers();
+    RbPtr<Environment> params     = distribution->getMembers();
+    RbPtr<Environment> copyParams = copy->distribution->getMembers();
 
     for ( size_t i = 0; i < params->size(); i++ ) {
 
@@ -297,12 +297,12 @@ const TypeSpec& StochasticNode::getTypeSpec(void) const {
 /** Get the conditional ln probability of the node; do not rely on stored values */
 double StochasticNode::calculateLnProbability( void ) {
 
-	return distribution->lnPdf( value );
+	return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) );
 }
 
 
 /** Get the ln probability ratio of this node */
-double StochasticNode::getLnProbabilityRatio( void ) {
+double StochasticNode::getLnProbabilityRatio( void ) const {
 
     if ( !isTouched() && !areDistributionParamsTouched() ) {
 
@@ -310,15 +310,15 @@ double StochasticNode::getLnProbabilityRatio( void ) {
     }
     else if ( isTouched() && !areDistributionParamsTouched() ) {
 
-        return distribution->lnPdf( value ) - storedLnProb;
+        return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) ) - storedLnProb;
     }
     else if ( !isTouched() && areDistributionParamsTouched() ) {
 
-        return distribution->lnPdf( value) - lnProb;
+        return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) ) - lnProb;
     }
     else /* if ( isTouched() && areDistributionParamsTouched() ) */ {
 
-        return distribution->lnPdf( value ) - storedLnProb;
+        return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) ) - storedLnProb;
     }
 }
 

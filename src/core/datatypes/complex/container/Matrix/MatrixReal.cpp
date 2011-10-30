@@ -73,7 +73,7 @@ RbPtr<const VectorReal> MatrixReal::operator[]( const size_t i ) const {
     if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
 
-    return RbPtr<const VectorReal>( static_cast<const VectorReal*>(elements[i].get()) );
+    return RbPtr<const VectorReal>( static_cast<const VectorReal*>( (RbLanguageObject*)elements[i] ) );
 }
 
 
@@ -83,7 +83,7 @@ RbPtr<VectorReal> MatrixReal::operator[]( const size_t i ) {
     if ( i >= size() )
         throw RbException( "Index to " + Real_name + "[][] out of bounds" );
     
-    return RbPtr<VectorReal>( static_cast<VectorReal*>(elements[i].get()) );
+    return RbPtr<VectorReal>( static_cast<VectorReal*>( (RbLanguageObject*)elements[i] ) );
 }
 
 
@@ -115,18 +115,18 @@ const VectorString& MatrixReal::getClass(void) const {
 //}
 
 
-/** Overloaded container method to get element or subcontainer for parser */
+/** Overloaded container method to get element or subcontainer */
 RbPtr<const RbObject> MatrixReal::getElement( size_t row, size_t col ) const {
     
-    RbPtr<const VectorReal> tmp(static_cast<const VectorReal*>( Vector::getElement(row).get() ) );
+    RbPtr<const VectorReal> tmp(static_cast<const VectorReal*>( (const RbObject*)Vector::getElement(row) ) );
     return tmp->getElement(col);
 }
 
 
-/** Overloaded container method to get element or subcontainer for parser */
+/** Overloaded container method to get element or subcontainer */
 RbPtr<RbObject> MatrixReal::getElement( size_t row, size_t col ) {
     
-    RbPtr<VectorReal> tmp(static_cast<VectorReal*>( Vector::getElement(row).get() ) );
+    RbPtr<VectorReal> tmp(static_cast<VectorReal*>( (RbObject*)Vector::getElement(row) ) );
     return tmp->getElement(col);
 }
 
@@ -144,7 +144,7 @@ std::vector<std::vector<double> > MatrixReal::getValue( void ) const {
     std::vector<std::vector<double> > temp;
 
     for ( size_t i = 0; i < size(); i++ )
-        temp.push_back(static_cast<const VectorReal*>(elements[i].get())->getValue());
+        temp.push_back(static_cast<const VectorReal*>( (const RbLanguageObject*)elements[i])->getValue());
 
     return temp;
 }
@@ -205,7 +205,7 @@ void MatrixReal::printValue(std::ostream& o) const {
         else 
             lineStr += "  ";
         
-        const VectorReal *vec = static_cast<const VectorReal*>(elements[i].get());
+        const VectorReal *vec = static_cast<const VectorReal*>( (const RbLanguageObject*)elements[i]);
         lineStr += vec->briefInfo();
         if (i == size()-1)
             lineStr += " ]";
@@ -312,7 +312,7 @@ void MatrixReal::setElement( size_t row, size_t col, RbPtr<RbLanguageObject> val
         throw RbException( "Cannot set " + Real_name + "[][] element to NULL" );
     
     // We rely on the setElement of VectorReal for type cast and to throw an error with a meaningful message
-    static_cast<VectorReal*>(elements[row].get())->setElement(col,value);
+    static_cast<VectorReal*>( (RbLanguageObject*)elements[row])->setElement(col,value);
     
     
 }

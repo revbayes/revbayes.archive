@@ -39,10 +39,10 @@ RbFunction::RbFunction(void) : RbInternal() {
 /** Copy constructor. */
 RbFunction::RbFunction(const RbFunction &x) : RbInternal(x) {
     
-    for (size_t i=0; i<x.args.size(); i++) {
-        const std::string &name = x.args.getName(i);
-        const RbPtr<VariableSlot> theSlot = x.args[i];
-        args.addVariable(name, RbPtr<VariableSlot>( theSlot->clone() ));
+    for (size_t i=0; i<x.args->size(); i++) {
+        const std::string &name = x.args->getName(i);
+        RbPtr<const VariableSlot> theSlot = (*x.args)[i];
+        args->addVariable(name, RbPtr<VariableSlot>( theSlot->clone() ));
     }
     
     argsProcessed = x.argsProcessed;
@@ -62,9 +62,19 @@ std::string RbFunction::briefInfo(void) const {
 /* Delete processed args */
 void RbFunction::clearArguments(void) {
 
-    args.clear();
+    args->clear();
     
     argsProcessed = false;
+}
+
+
+RbPtr<const Environment> RbFunction::getArguments(void) const {
+    return RbPtr<const Environment>( args );
+}
+
+
+RbPtr<Environment> RbFunction::getArguments(void) {
+    return args;
 }
 
 
@@ -79,7 +89,7 @@ const VectorString& RbFunction::getClass(void) const {
 /** Print value for user */
 void RbFunction::printValue(std::ostream& o) const {
 
-    const RbPtr<ArgumentRules> argRules = getArgumentRules();
+    const RbPtr<const ArgumentRules>& argRules = getArgumentRules();
 
     o << getReturnType() << " function (";
     for (size_t i=0; i<argRules->size(); i++) {
@@ -145,13 +155,13 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
     /*********************  0. Initialization  **********************/
 
     /* Get the argument rules */
-    const RbPtr<ArgumentRules> theRules = getArgumentRules();
+    const RbPtr<const ArgumentRules>& theRules = getArgumentRules();
 
     /* Get the number of argument rules */
     size_t nRules = theRules->size();
 
     /* Clear previously processed arguments */
-    args.clear();
+    args->clear();
 
     /* Check the number of arguments and rules; get the final number of arguments
        we expect and the number of non-ellipsis rules we have */
@@ -175,11 +185,11 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
 
     /* Fill processedArguments with empty variable slots */
     for (size_t i=0; i<numRegularRules; i++) {
-        args.addVariable( (*theRules)[i]->getArgumentLabel(), RbPtr<VariableSlot>( new VariableSlot( (*theRules)[i]->getArgumentLabel(), (*theRules)[i]->getArgumentTypeSpec() ) ) );
+        args->addVariable( (*theRules)[i]->getArgumentLabel(), RbPtr<VariableSlot>( new VariableSlot( (*theRules)[i]->getArgumentLabel(), (*theRules)[i]->getArgumentTypeSpec() ) ) );
     }
     for (size_t i=numRegularRules; i<numFinalArgs; i++) {
         RbPtr<VariableSlot> theEllipsisSlot( new VariableSlot( EmptyString, (*theRules)[nRules-1]->getArgumentTypeSpec() ) );
-        args.addVariable( theEllipsisSlot->getLabel(), theEllipsisSlot );
+        args->addVariable( theEllipsisSlot->getLabel(), theEllipsisSlot );
     }
     
     /* Keep track of which arguments we have used, and which argument slots we have filled, and with what passed arguments */
@@ -204,10 +214,10 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
                 return false;
             
             // add this variable to the argument list
-            args[i]->setVariable( theArgument->getVariable() );
+            (*args)[i]->setVariable( theArgument->getVariable() );
 
             if ( theArgument->getLabel() != "" )
-                args.setName( i, theArgument->getLabel() );
+                args->setName( i, theArgument->getLabel() );
 
             taken[i]          = true;
             filled[i]         = true;

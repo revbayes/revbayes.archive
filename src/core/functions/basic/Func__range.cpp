@@ -58,7 +58,7 @@ RbPtr<RbLanguageObject> Func__range::execute( void ) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func__range::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func__range::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -70,7 +70,7 @@ const RbPtr<ArgumentRules> Func__range::getArgumentRules( void ) const {
         rulesSet = true;
     }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

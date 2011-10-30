@@ -45,8 +45,8 @@ class Dist_logis: public DistributionContinuous {
         // Normal distribution functions
         double                      cdf(RbPtr<const RbLanguageObject> value);                           //!< Cumulative density
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (RealPos)
-        double                      lnPdf(RbPtr<const RbLanguageObject> value);                         //!< Ln probability density
-        double                      pdf(RbPtr<const RbLanguageObject> value);                           //!< Probability density
+        double                      lnPdf(RbPtr<const RbLanguageObject> value) const;                   //!< Ln probability density
+        double                      pdf(RbPtr<const RbLanguageObject> value) const;                     //!< Probability density
         RbPtr<Real>                 quantile(const double p);                                           //!< Quantile
         RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
     

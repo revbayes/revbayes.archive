@@ -71,7 +71,7 @@ RbPtr<RbLanguageObject> MemberObject::executeMethod(const std::string& name, con
 /** Map member method call to internal function call. This is used as an alternative mechanism to providing a complete
  *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
  *  is used without the appropriate mapping to internal function calls being present. */
-RbPtr<RbLanguageObject> MemberObject::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> MemberObject::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
     
     if (name == "memberNames") {
         for (size_t i=0; i<members->size(); i++) {
@@ -82,7 +82,7 @@ RbPtr<RbLanguageObject> MemberObject::executeOperation(const std::string& name, 
     } 
     else if (name == "get") {
         // get the member with give name
-        RbPtr<const RbString> varName( static_cast<const RbString*>(args[0]->getValue().get()) );
+        RbPtr<const RbString> varName( static_cast<const RbString*>( (const RbLanguageObject*)(*args)[0]->getValue()) );
         
         // check if a member with that name exists
         if (members->existsVariable(*varName)) {

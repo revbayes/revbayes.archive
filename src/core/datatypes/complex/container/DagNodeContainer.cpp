@@ -63,10 +63,10 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
         // test whether each object in the container is actually a constant node holding a value
         Vector* valueVector = new Vector(*type.getElementType());
         for (std::vector<RbPtr<VariableSlot> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            RbPtr<DAGNode> theNode = (*it)->getDagNodePtr();
+            RbPtr<const DAGNode> theNode = (*it)->getDagNode();
             if (theNode->isType(ConstantNode_name) && theNode->getValue()->isTypeSpec(*type.getElementType())) {
-                RbPtr<RbObject> element( theNode->getValue().get() );
-                valueVector->push_back(element);
+                RbPtr<const RbObject> element( theNode->getValue() );
+                valueVector->push_back(element->clone());
             }
             else {
                 return NULL;
@@ -97,7 +97,7 @@ RbPtr<const RbObject> DagNodeContainer::getElement(const size_t index) const {
         throw RbException("Index out of bounds in DagNodeContainer.");
     }
     
-    return RbPtr<const RbObject>(elements[index].get());
+    return RbPtr<const RbObject>(elements[index]);
 }
 
 
@@ -110,7 +110,7 @@ RbPtr<RbObject> DagNodeContainer::getElement(const size_t index) {
         throw RbException("Index out of bounds in DagNodeContainer.");
     }
     
-    return RbPtr<RbObject>(elements[index].get());
+    return RbPtr<RbObject>(elements[index]);
 }
 
 
@@ -126,7 +126,7 @@ bool DagNodeContainer::isConvertibleTo(TypeSpec const &type) const {
     if (type.getBaseType() == Vector_name) {
         // test whether each object in the container is actually a constant node holding a value
         for (std::vector<RbPtr<VariableSlot> >::const_iterator it=elements.begin(); it!=elements.end(); it++) {
-            RbPtr<DAGNode> theNode = (*it)->getDagNodePtr();
+            RbPtr<const DAGNode> theNode = (*it)->getDagNode();
             if (!theNode->isType(ConstantNode_name) || !theNode->getValue()->isTypeSpec(*type.getElementType())) {
                 return false;
             }
@@ -153,7 +153,7 @@ void DagNodeContainer::pop_front(void) {
 void DagNodeContainer::push_back(RbPtr<RbObject> x) {
     
     // we expect to receive a parameter of type Variable
-    RbPtr<Variable> var( dynamic_cast<Variable*>(x.get()) );
+    RbPtr<Variable> var( dynamic_cast<Variable*>( (RbObject*)x ) );
     if (var != NULL) {
         RbPtr<VariableSlot> theSlot( new VariableSlot(EmptyString,var) );
         elements.push_back(theSlot);
@@ -168,7 +168,7 @@ void DagNodeContainer::push_back(RbPtr<RbObject> x) {
 void DagNodeContainer::push_front(RbPtr<RbObject> x) {
     
     // we expect to receive a parameter of type Variable
-    RbPtr<Variable> var( dynamic_cast<Variable*>(x.get()) );
+    RbPtr<Variable> var( dynamic_cast<Variable*>( (RbObject*)x ) );
     if (var != NULL) {
         RbPtr<VariableSlot> theSlot( new VariableSlot(EmptyString,var) );
         elements.insert( elements.begin(), theSlot );
@@ -233,8 +233,8 @@ void DagNodeContainer::setElement(const size_t index, RbPtr<RbObject> elem) {
         throw RbException("Cannot set element in DagNodeContainer outside the current range.");
     }
     // we expect to receive a parameter of type Variable
-    RbPtr<Variable> var( dynamic_cast<Variable*>(elem.get()) );
-    if (var.get() != NULL) {
+    RbPtr<Variable> var( dynamic_cast<Variable*>( (RbObject*)elem ) );
+    if (var != NULL) {
         RbPtr<VariableSlot> theSlot = elements[index];
         theSlot->setVariable(var);
     }

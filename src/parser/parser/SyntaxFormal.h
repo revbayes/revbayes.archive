@@ -35,32 +35,34 @@ class SyntaxFormal : public SyntaxElement {
     public:
                                 SyntaxFormal(RbPtr<RbString> id, RbPtr<SyntaxElement> defaultVal);                      //!< Implicit type
                                 SyntaxFormal(RbPtr<RbString> typeSpec, RbPtr<RbString> id, RbPtr<SyntaxElement> defaultVal);  //!< Explicit type
-                                SyntaxFormal(const SyntaxFormal& x);                                        //!< Copy constructor
-	    virtual                ~SyntaxFormal();                                                             //!< Destructor
+                                SyntaxFormal(const SyntaxFormal& x);                                            //!< Copy constructor
+	    virtual                ~SyntaxFormal();                                                                 //!< Destructor
 
         // Assignment operator
-        SyntaxFormal&           operator=(const SyntaxFormal& x);                                           //!< Assignment operator
+        SyntaxFormal&           operator=(const SyntaxFormal& x);                                               //!< Assignment operator
 
         // Basic utility functions
-        std::string             briefInfo() const;                                                          //!< Brief info about object
-        SyntaxFormal*           clone() const;                                                              //!< Clone object
-        const VectorString&     getClass(void) const;                                                       //!< Get class vector 
-        const TypeSpec&         getTypeSpec(void) const;                                                    //!< Get language type of the object
-        void                    print(std::ostream& o) const;                                               //!< Print info about object
+        std::string             briefInfo() const;                                                              //!< Brief info about object
+        SyntaxFormal*           clone() const;                                                                  //!< Clone object
+        const VectorString&     getClass(void) const;                                                           //!< Get class vector 
+        const TypeSpec&         getTypeSpec(void) const;                                                        //!< Get language type of the object
+        void                    print(std::ostream& o) const;                                                   //!< Print info about object
 
         // Regular functions
-        RbPtr<ArgumentRule>     getArgumentRule(RbPtr<Environment> env) const;                              //!< Make an argument rule
-        RbPtr<RbString>         getLabel(void) const { return label; }                                      //!< Get label
-        RbPtr<TypeSpec>         getArgumentTypeSpec(void) const { return argType; }                         //!< Get type spec
-        RbPtr<Variable>         evaluateContent(RbPtr<Environment> env);                                    //!< Get semantic value
+        RbPtr<const ArgumentRule>   getArgumentRule(void) const;                                                //!< Get the argument rule
+        RbPtr<ArgumentRule>         getArgumentRule(void);                                                      //!< Get the argument rule (non-const to return non-const rule)
+        RbPtr<const RbString>       getLabel(void) const;                                                       //!< Get label
+        RbPtr<const TypeSpec>       getArgumentTypeSpec(void) const;                                            //!< Get type spec
+        RbPtr<Variable>             evaluateContent(RbPtr<Environment> env);                                    //!< Get semantic value
     
     protected:
-        RbPtr<TypeSpec>         argType;                                                                    //!< The type of the argument
-        RbPtr<RbString>         label;                                                                      //!< The label of the argument
-        RbPtr<SyntaxElement>    defaultExpr;                                                                //!< Default value expression of argument
+        RbPtr<ArgumentRule>         argRule;
+        RbPtr<TypeSpec>             argType;                                                                    //!< The type of the argument
+        RbPtr<RbString>             label;                                                                      //!< The label of the argument
+        RbPtr<SyntaxElement>        defaultExpr;                                                                //!< Default value expression of argument
     
     private:
-        static const TypeSpec   typeSpec;
+        static const TypeSpec       typeSpec;
 };
 
 #endif

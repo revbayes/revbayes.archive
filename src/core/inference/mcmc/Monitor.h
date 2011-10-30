@@ -47,7 +47,7 @@ public:
     std::string                         richInfo(void) const;                                               //!< Complete info about object
 
     // Member Object Functions
-    const RbPtr<MemberRules>            getMemberRules( void ) const;                                       //!< The member rules for a monitor
+    RbPtr<const MemberRules>            getMemberRules( void ) const;                                       //!< The member rules for a monitor
     void                                setMemberVariable(const std::string &name, RbPtr<Variable> var);    //!< Set a member variable. We catch here setting of variable nodes
 
     // Monitor functions

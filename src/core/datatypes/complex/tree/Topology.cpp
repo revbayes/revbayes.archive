@@ -59,14 +59,14 @@ Topology::~Topology(void) {
 
 
 
-RbPtr<TopologyNode> Topology::cloneTree(RbPtr<TopologyNode> parent) {
+RbPtr<TopologyNode> Topology::cloneTree(RbPtr<const TopologyNode> parent) {
     // get first a shallow copy
     RbPtr<TopologyNode> node( parent->clone() );
     
     // replace all children by depp copies of the children
     for (size_t i=0; i<node->getNumberOfChildren(); i++) {
         // get the old child
-        RbPtr<TopologyNode> oldChild = node->getChild(0);
+        RbPtr<const TopologyNode> oldChild( node->getChild(0) );
         
         // get a deep copy of the child
         RbPtr<TopologyNode> newChild = cloneTree(oldChild);
@@ -88,7 +88,7 @@ Topology* Topology::clone(void) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> Topology::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> Topology::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
     
     if (name == "ntips") {
     

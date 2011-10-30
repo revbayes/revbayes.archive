@@ -139,10 +139,10 @@ const TypeSpec& Dist_neutralcoalescent::getVariableType( void ) const {
  * @param value Observed speciation times
  * @return      Natural log of the probability
  */
-double Dist_neutralcoalescent::lnPdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_neutralcoalescent::lnPdf( RbPtr<const RbLanguageObject> value ) const {
 
     RbPtr<const VectorRealPos> waitingTimes     = RbPtr<const VectorRealPos>( static_cast<const VectorRealPos*>( (const RbLanguageObject*)value ) );
-    size_t haploidPopSize                       = static_cast<Natural*>( (RbLanguageObject*)getMemberValue( "haploidPopSize" ) )->getValue();
+    size_t haploidPopSize                       =                             static_cast<const Natural*      >( (const RbLanguageObject*)getMemberValue( "haploidPopSize" ) )->getValue();
     size_t nWaitingTimes                        = waitingTimes->size();
     size_t k                                    = nWaitingTimes + 1;
 
@@ -167,7 +167,7 @@ double Dist_neutralcoalescent::lnPdf( RbPtr<const RbLanguageObject> value ) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_neutralcoalescent::pdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_neutralcoalescent::pdf( RbPtr<const RbLanguageObject> value ) const {
 
     // // get the number of speciation events
     // size_t events = times->size();

@@ -174,7 +174,7 @@ VectorNatural SyntaxVariable::computeIndex( RbPtr<Environment> env ) {
             if ( indexVar->getValue()->isTypeSpec( TypeSpec(Integer_name) ) ) {
                 
                 // Calculate (or get) an integer index
-                int intIndex = static_cast<const Integer*>( indexVar->getValue().get() )->getValue(); 
+                int intIndex = static_cast<Integer*>( (RbLanguageObject*)indexVar->getValue() )->getValue(); 
                 
                 if ( intIndex < 1 ) {
                     
@@ -215,123 +215,123 @@ VectorNatural SyntaxVariable::computeIndex( RbPtr<Environment> env ) {
 }
 
 
-///**
-// * @brief Get semantic value (l-value)
-// *
-// * This function is similar to getValue(), but we only get the
-// * slot and index of the variable. Another difference is that we
-// * do not throw an error if the variable does not exist in the
-// * frame; instead, we return a NULL pointer and set theSlot pointer
-// * to NULL as well.
-// */
-//RbPtr<VariableSlot> SyntaxVariable::getSlot(RbPtr<Environment> env) const {
-//    
-//    /* Get index */
-//    VectorNatural indices = computeIndex(env);
-//    
-//    RbPtr<VariableSlot> theSlot( NULL );
-//    
-//    /* Get variable */
-//    RbPtr<DAGNode> theDagNode( NULL );
-//    if ( baseVariable == NULL ) {
-//        
-//        if ( functionCall == NULL ) {
+/**
+ * @brief Get semantic value (l-value)
+ *
+ * This function is similar to getValue(), but we only get the
+ * slot and index of the variable. Another difference is that we
+ * do not throw an error if the variable does not exist in the
+ * frame; instead, we return a NULL pointer and set theSlot pointer
+ * to NULL as well.
+ */
+RbPtr<VariableSlot> SyntaxVariable::createVariable(RbPtr<Environment> env) {
+    
+    /* Get index */
+    VectorNatural indices = computeIndex(env);
+    
+    RbPtr<VariableSlot> theSlot( NULL );
+    
+    /* Get variable */
+    RbPtr<DAGNode> theDagNode( NULL );
+    if ( baseVariable == NULL ) {
+        
+        if ( functionCall == NULL ) {
+
+            if ( !env->existsVariable( *identifier ) ) {
+                // create a new slot
+                RbPtr<Variable> theVar( new Variable( *identifier ) );
+                env->addVariable(*identifier,theVar);
+            }
+            
+            // get the slot and variable
+            theSlot          = RbPtr<VariableSlot>( (*env)[ (*identifier) ] );
+            RbPtr<Variable> theVar( theSlot->getVariable() );
+            theDagNode       = theVar->getDagNode();
+                
+        }
+        else {
+
+//            theDagNode  = functionCall->getContentAsDagNode( env );
+//            theVar      = theDagNode->getVariable();
+        }
+    }
+    else {
+
+        // The call to getValue of baseVariable either returns
+        // a value or results in the throwing of an exception
+//        DAGNode* baseVar = baseVariable->getContentAsVariable( env )->getDagNodePtr();
+//        if ( !baseVar->isType( MemberNode_name ) )
+            throw RbException( "Variable " + baseVariable->getFullName( env ) + " does not have members. Missing implementation in SyntaxVariable::getLValue()" );       
+    
+//        if ( identifier == NULL )
+//            throw RbException( "Member variable identifier missing" );
 //
-//            if ( !env->existsVariable( *identifier ) ) {
-//                // create a new slot
-//                RbPtr<Variable> theVar( new Variable( *identifier ) );
-//                env->addVariable(*identifier,theVar);
-//            }
-//            
-//            // get the slot and variable
-//            theSlot          = RbPtr<VariableSlot>( (*env)[ (*identifier) ] );
-//            RbPtr<Variable> theVar( theSlot->getVariable() );
-//            theDagNode       = theVar->getDagNodePtr();
-//                
-//        }
-//        else {
+//        MemberObject* theMemberObject = static_cast<MemberNode*>( baseVar )->getMemberObject();
+//        if ( !theMemberObject->getMembers().existsVariable( *identifier ) )
+//            throw RbException( "Variable " + baseVariable->getFullName( frame ) + " does not have a member called '" + *identifier + "'" );       
 //
-////            theDagNode  = functionCall->getContentAsDagNode( env );
-////            theVar      = theDagNode->getVariable();
-//        }
-//    }
-//    else {
-//
-//        // The call to getValue of baseVariable either returns
-//        // a value or results in the throwing of an exception
-////        DAGNode* baseVar = baseVariable->getContentAsVariable( env )->getDagNodePtr();
-////        if ( !baseVar->isType( MemberNode_name ) )
-//            throw RbException( "Variable " + baseVariable->getFullName( env ) + " does not have members. Missing implementation in SyntaxVariable::getLValue()" );       
-//    
-////        if ( identifier == NULL )
-////            throw RbException( "Member variable identifier missing" );
-////
-////        MemberObject* theMemberObject = static_cast<MemberNode*>( baseVar )->getMemberObject();
-////        if ( !theMemberObject->getMembers().existsVariable( *identifier ) )
-////            throw RbException( "Variable " + baseVariable->getFullName( frame ) + " does not have a member called '" + *identifier + "'" );       
-////
-////        MemberFrame& members = const_cast<MemberFrame&>( theMemberObject->getMembers() );
-////        theSlot = &members[ (*identifier) ];
-////        theVar  = theSlot->getParserVariable();
-//    }
-//    
-//    std::string name = identifier->getValue();
-//    
-//    if (!indices.empty() && theSlot != NULL) {
-//        
-//        // iterate over the each index
-//        while (!indices.empty()) {
-//            // test whether the value of the DAG node allows assignment of variable to its elemens
-//            // e.g.: A simplex might not allow assignment of its elements whereas a DagNodeContainer does
-//            if (theDagNode != NULL && !theDagNode->getValue()->allowsVariableInsertion()) {
-//                // throw expection because we don't allow insertion of variable
-//                std::ostringstream msg;
-//                msg << "Object of type " << theDagNode->getValue()->getType() << " does not allow insertion of variables.";
-//                throw RbException(msg);
-//            }
-//            
-//            // test whether this element support subscipting
-//            if (theDagNode != NULL && !theDagNode->getValue()->supportsIndex()) {
-//                throw RbException("DAG node does not support indexing.");
-//            }
-//            
-//            // take the first index and remove it
-//            size_t                      indexValue              = indices[0];
-//            indices.pop_front();
-//            
-//            // add the index to the name
-//            std::stringstream out;
-//            out << (indexValue+1);
-//            name += "[" + out.str() + "]";
-//            
-//            // get the element at the index
-//            if (theDagNode == NULL) {
-//                theDagNode = RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(indexValue+1) )) );
-//                theSlot->getVariable()->setDagNode(theDagNode);
-//            }
-//            
-//            RbPtr<Container> con( static_cast<Container*>(theDagNode->getValuePtr().get()) );
-//            // test if the container is large enough
-//            if (con->size() <= indexValue) {
-//                con->resize(indexValue);
-//            }
-//            RbPtr<const RbObject> subElement = con->getElement(indexValue);
-//            
-//            // test whether the element exists and needs 
-//            if (subElement.get() == NULL) {
-//                throw RbException("Missing slot in variable");
-//            }
-//            else if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) )) {
-//                theSlot = RbPtr<const VariableSlot>( dynamic_cast<const VariableSlot*>(subElement.get()) );
-//                theDagNode = theSlot->getDagNodePtr();
-//                theSlot->getVariable()->setName(name);
-//            }
-//
-//        }
-//    }
-//
-//    return theSlot;
-//}
+//        MemberFrame& members = const_cast<MemberFrame&>( theMemberObject->getMembers() );
+//        theSlot = &members[ (*identifier) ];
+//        theVar  = theSlot->getParserVariable();
+    }
+    
+    std::string name = identifier->getValue();
+    
+    if (!indices.empty() && theSlot != NULL) {
+        
+        // iterate over the each index
+        while (!indices.empty()) {
+            // test whether the value of the DAG node allows assignment of variable to its elemens
+            // e.g.: A simplex might not allow assignment of its elements whereas a DagNodeContainer does
+            if (theDagNode != NULL && !theDagNode->getValue()->allowsVariableInsertion()) {
+                // throw expection because we don't allow insertion of variable
+                std::ostringstream msg;
+                msg << "Object of type " << theDagNode->getValue()->getType() << " does not allow insertion of variables.";
+                throw RbException(msg);
+            }
+            
+            // test whether this element support subscipting
+            if (theDagNode != NULL && !theDagNode->getValue()->supportsIndex()) {
+                throw RbException("DAG node does not support indexing.");
+            }
+            
+            // take the first index and remove it
+            size_t                      indexValue              = indices[0];
+            indices.pop_front();
+            
+            // add the index to the name
+            std::stringstream out;
+            out << (indexValue+1);
+            name += "[" + out.str() + "]";
+            
+            // get the element at the index
+            if (theDagNode == NULL) {
+                theDagNode = RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(indexValue+1) )) );
+                theSlot->getVariable()->setDagNode(theDagNode);
+            }
+            
+            RbPtr<Container> con( static_cast<Container*>((RbLanguageObject*)theDagNode->getValue()) );
+            // test if the container is large enough
+            if (con->size() <= indexValue) {
+                con->resize(indexValue);
+            }
+            RbPtr<RbObject> subElement = con->getElement(indexValue);
+            
+            // test whether the element exists and needs 
+            if (subElement == NULL) {
+                throw RbException("Missing slot in variable");
+            }
+            else if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) )) {
+                theSlot = RbPtr<VariableSlot>( dynamic_cast<VariableSlot*>((RbObject*)subElement) );
+                theDagNode = theSlot->getDagNode();
+                theSlot->getVariable()->setName(name);
+            }
+
+        }
+    }
+
+    return theSlot;
+}
 
 
 /**
@@ -352,9 +352,9 @@ RbPtr<Variable> SyntaxVariable::evaluateContent(RbPtr<Environment> env) {
     RbPtr<Variable> theVar;
     
     // if the base variable is not set we have a simple object, otherwise a member object 
-    if ( baseVariable.get() == NULL ) {
+    if ( baseVariable == NULL ) {
         
-        if ( functionCall.get() == NULL ) {
+        if ( functionCall == NULL ) {
             theVar = (*env)[ (*identifier) ]->getVariable();
         } else {
             theVar = functionCall->evaluateContent( env );
@@ -362,7 +362,7 @@ RbPtr<Variable> SyntaxVariable::evaluateContent(RbPtr<Environment> env) {
     }
     else {
         
-        if ( functionCall.get() == NULL ) {
+        if ( functionCall == NULL ) {
 
             // The call to getValue of baseVariable either returns
             // a value or results in the throwing of an exception
@@ -373,13 +373,13 @@ RbPtr<Variable> SyntaxVariable::evaluateContent(RbPtr<Environment> env) {
             if ( identifier == NULL )
                 throw RbException( "Member variable identifier missing" );
 
-            RbPtr<MemberObject> theMemberObject( static_cast<MemberObject*>( baseVar->getDagNode()->getValue().get() ) );
+            RbPtr<MemberObject> theMemberObject( static_cast<MemberObject*>( (RbLanguageObject*)baseVar->getDagNode()->getValue() ) );
             RbPtr<Environment> members = theMemberObject->getMembersPtr();
             theVar = (*members)[ (*identifier) ]->getVariable();
         }
         else {
             
-            functionCall.get()->setBaseVariable( baseVariable );
+            functionCall->setBaseVariable( baseVariable );
             theVar = functionCall->evaluateContent( env );
         }
     }
@@ -397,9 +397,9 @@ RbPtr<Variable> SyntaxVariable::evaluateContent(RbPtr<Environment> env) {
             RbPtr<RbObject>                   subElement              = theVar->getDagNode()->getElement(indexValue);
             
             if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) ))
-                theVar = dynamic_cast<VariableSlot*>( subElement.get() )->getVariable();
+                theVar = dynamic_cast<VariableSlot*>( (RbObject*)subElement )->getVariable();
             else 
-                theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( subElement.get() ) ) ) ) ) );
+                theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)subElement ) ) ) ) ) );
             
         }
     }

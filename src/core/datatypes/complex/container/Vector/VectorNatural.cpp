@@ -267,7 +267,7 @@ void VectorNatural::pop_front(void) {
 void VectorNatural::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
-        elements.push_back(static_cast<Natural*>(x.get())->getValue());
+        elements.push_back(static_cast<Natural*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Natural_name) ) {
         elements.push_back(static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
     }
@@ -288,7 +288,7 @@ void VectorNatural::push_back( unsigned int x ) {
 void VectorNatural::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Natural_name) ) ) {
-        elements.insert( elements.begin(), static_cast<Natural*>(x.get())->getValue());
+        elements.insert( elements.begin(), static_cast<Natural*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Natural_name) ) {
         elements.insert( elements.begin(), static_cast<Natural*>(x->convertTo(Natural_name))->getValue());
     }
@@ -329,7 +329,7 @@ void VectorNatural::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<Natural*>(x.get())->getValue());
+        elements.insert( elements.begin() + index, static_cast<Natural*>( (RbLanguageObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Natural_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

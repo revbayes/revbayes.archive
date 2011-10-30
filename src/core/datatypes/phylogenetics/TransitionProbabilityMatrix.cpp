@@ -102,7 +102,7 @@ TransitionProbabilityMatrix* TransitionProbabilityMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> TransitionProbabilityMatrix::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> TransitionProbabilityMatrix::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
 
     if (name == "nstates") 
         {

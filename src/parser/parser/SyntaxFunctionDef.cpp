@@ -126,8 +126,8 @@ RbPtr<Variable> SyntaxFunctionDef::evaluateContent(RbPtr<Environment> env) {
     // Get argument rules from the formals
     RbPtr<ArgumentRules> argRules( new ArgumentRules() );
 
-    for (std::list<RbPtr<SyntaxFormal> >::const_iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
-        argRules->push_back( (*i)->getArgumentRule(env) );
+    for (std::list<RbPtr<SyntaxFormal> >::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++)
+        argRules->push_back( (*i)->getArgumentRule() );
 
     // Create copy of the statements
     RbPtr<std::list<RbPtr<SyntaxElement> > > stmts( new std::list<RbPtr<SyntaxElement> >() );
@@ -138,7 +138,7 @@ RbPtr<Variable> SyntaxFunctionDef::evaluateContent(RbPtr<Environment> env) {
     RbPtr<Environment> defineEnvironment( new Environment(env) );
 
     // Create the function
-    RbPtr<RbFunction> theFunction( new UserFunction(argRules, *returnType, stmts, defineEnvironment) );
+    RbPtr<RbFunction> theFunction( new UserFunction(RbPtr<const ArgumentRules>( argRules ), *returnType, stmts, defineEnvironment) );
 
     // Insert in the user workspace
     Workspace::userWorkspace()->addFunction(*functionName, theFunction);

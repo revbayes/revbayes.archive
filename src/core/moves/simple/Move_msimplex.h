@@ -42,7 +42,7 @@ class Move_msimplex : public MoveSimple {
         const TypeSpec&             getTypeSpec(void) const;                                                            //!< Get language type of the object
 
         // Member variable inits
-        const RbPtr<MemberRules>    getMemberRules(void) const;                                                         //!< Get member rules
+        RbPtr<const MemberRules>    getMemberRules(void) const;                                                         //!< Get member rules
 
         // Return variable type
         const TypeSpec              getVariableType(void) const;                                                        //!< Get variable type for move

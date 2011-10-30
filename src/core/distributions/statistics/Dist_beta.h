@@ -38,16 +38,16 @@ class Dist_beta: public DistributionContinuous {
         // Basic utility functions
         Dist_beta*                  clone(void) const;                                                  //!< Clone object
         const VectorString&         getClass(void) const;                                               //!< Get class vector
-        const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
+        const TypeSpec&             getTypeSpec(void) const;                                            //!< Get language type of the object
 
         // Member variable setup
         RbPtr<const MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Exponential distribution functions
-        double                      cdf(RbPtr<const RbLanguageObject> value);                                 //!< Cumulative density
+        double                      cdf(RbPtr<const RbLanguageObject> value);                           //!< Cumulative density
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (RealPos)
-        double                      lnPdf(RbPtr<const RbLanguageObject> value);                               //!< Ln probability density
-        double                      pdf(RbPtr<const RbLanguageObject> value);                                 //!< Probability density
+        double                      lnPdf(RbPtr<const RbLanguageObject> value) const;                   //!< Ln probability density
+        double                      pdf(RbPtr<const RbLanguageObject> value) const;                     //!< Probability density
         RbPtr<Real>                 quantile(const double p);                                           //!< Quantile
         RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
     

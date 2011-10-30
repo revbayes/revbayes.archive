@@ -174,7 +174,7 @@ void Vector::pop_back(void) {
 void Vector::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RbLanguageObject_name) ) ) {
-        elements.push_back(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>(x.get())) );
+        elements.push_back(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)x )) );
     } else if ( x->isConvertibleTo(RbLanguageObject_name) ) {
         elements.push_back(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>(x->convertTo(RbLanguageObject_name))) );
     }
@@ -188,7 +188,7 @@ void Vector::push_back( RbPtr<RbObject> x ) {
 void Vector::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RbLanguageObject_name) ) ) {
-        elements.insert( elements.begin(), RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>(x.get())) );
+        elements.insert( elements.begin(), RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)x )) );
     } else if ( x->isConvertibleTo(RbLanguageObject_name) ) {
         elements.insert( elements.begin(), RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>(x->convertTo(RbLanguageObject_name))) );
     }

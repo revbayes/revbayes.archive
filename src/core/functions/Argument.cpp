@@ -64,9 +64,29 @@ const VectorString& Argument::getClass(void) const {
 }
 
 
+RbPtr<const DAGNode> Argument::getDagNode(void) const {
+    return var->getDagNode();
+}
+
+
+RbPtr<DAGNode> Argument::getDagNode(void) {
+    return var->getDagNode();
+}
+
+
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Argument::getTypeSpec(void) const {
     return typeSpec;
+}
+
+
+RbPtr<const Variable> Argument::getVariable(void) const {
+    return RbPtr<const Variable>( var );
+}
+
+
+RbPtr<Variable> Argument::getVariable(void) {
+    return var;
 }
 
 

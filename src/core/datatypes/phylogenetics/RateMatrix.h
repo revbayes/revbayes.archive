@@ -55,7 +55,7 @@ class RateMatrix : public MemberObject {
 
         // Member method inits
         RbPtr<const MethodTable>            getMethods(void) const;                                                             //!< Get methods
-        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);                       //!< Map method call to internal functions
+        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args);                       //!< Map method call to internal functions
     
         // RateMatrix functions
         double                              averageRate(void) const;                                                            //!< Calculate the average rate

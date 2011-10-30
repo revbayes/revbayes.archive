@@ -117,11 +117,11 @@ const TypeSpec& Dist_lnorm::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_lnorm::lnPdf(RbPtr<const RbLanguageObject> value) {
+double Dist_lnorm::lnPdf(RbPtr<const RbLanguageObject> value) const {
 	
-    double m = static_cast<      Real*   >( (RbLanguageObject*)getMemberValue( "m" ) )->getValue();
-    double s = static_cast<      RealPos*>( (RbLanguageObject*)getMemberValue( "s" ) )->getValue();
-    double x = static_cast<const Real*   >( (const RbLanguageObject*)value           )->getValue();
+    double m = static_cast<const Real*   >( (const RbLanguageObject*)getMemberValue( "m" ) )->getValue();
+    double s = static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue( "s" ) )->getValue();
+    double x = static_cast<const Real*   >( (const RbLanguageObject*)value                 )->getValue();
 	
     return RbStatistics::Lognormal::lnPdf(m, s, x);
 }
@@ -136,11 +136,11 @@ double Dist_lnorm::lnPdf(RbPtr<const RbLanguageObject> value) {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_lnorm::pdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_lnorm::pdf( RbPtr<const RbLanguageObject> value ) const {
 	
-    double m = static_cast<      Real*   >( (RbLanguageObject*)getMemberValue( "m" ) )->getValue();
-    double s = static_cast<      RealPos*>( (RbLanguageObject*)getMemberValue( "s" ) )->getValue();
-    double x = static_cast<const Real*   >( (const RbLanguageObject*)value           )->getValue();
+    double m = static_cast<const Real*   >( (const RbLanguageObject*)getMemberValue( "m" ) )->getValue();
+    double s = static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue( "s" ) )->getValue();
+    double x = static_cast<const Real*   >( (const RbLanguageObject*)value                 )->getValue();
 	
     return RbStatistics::Lognormal::pdf(m, s, x);
 }

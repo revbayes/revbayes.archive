@@ -175,7 +175,7 @@ void VectorBoolean::pop_front() {
 void VectorBoolean::push_back(RbPtr<RbObject> x) {
  
     if ( x->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
-        elements.push_back(static_cast<RbBoolean*>(x.get())->getValue());
+        elements.push_back(static_cast<RbBoolean*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(RbBoolean_name) ) {
         elements.push_back(static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
     }
@@ -195,7 +195,7 @@ void VectorBoolean::push_back(bool x) {
 void VectorBoolean::push_front(RbPtr<RbObject> x) {
     
     if ( x->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
-        elements.insert( elements.begin() , static_cast<RbBoolean*>(x.get())->getValue());
+        elements.insert( elements.begin() , static_cast<RbBoolean*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(RbBoolean_name) ) {
         elements.insert( elements.begin() , static_cast<RbBoolean*>(x->convertTo(RbBoolean_name))->getValue());
     }
@@ -235,7 +235,7 @@ void VectorBoolean::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<RbBoolean*>(x.get())->getValue());
+        elements.insert( elements.begin() + index, static_cast<RbBoolean*>( (RbLanguageObject*)x )->getValue());
     } else if ( x->isConvertibleTo(RbBoolean_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

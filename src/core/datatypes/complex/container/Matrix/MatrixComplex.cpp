@@ -70,7 +70,7 @@ RbPtr<const VectorComplex> MatrixComplex::operator[]( const size_t i ) const {
     if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
 
-    return RbPtr<const VectorComplex>( static_cast<const VectorComplex*>(elements[i].get()) );
+    return RbPtr<const VectorComplex>( static_cast<const VectorComplex*>( (RbLanguageObject*)elements[i] ) );
 }
 
 
@@ -80,7 +80,7 @@ RbPtr<VectorComplex> MatrixComplex::operator[]( const size_t i ) {
     if ( i >= size() )
         throw RbException( "Index to " + Complex_name + "[][] out of bounds" );
     
-    return RbPtr<VectorComplex>( static_cast<VectorComplex*>(elements[i].get()) );
+    return RbPtr<VectorComplex>( static_cast<VectorComplex*>( (RbLanguageObject*)elements[i] ) );
 }
 
 /** Clone function */

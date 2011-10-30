@@ -31,46 +31,46 @@ const std::string VectorComplex_name = "Complex vector";
 class VectorComplex : public AbstractVector {
 
     public:
-                                        VectorComplex(void);                                        //!< Default constructor (empty vector)
-                                        VectorComplex(const std::string& elemType);                 //!< Default constructor for derived classes
-                                        VectorComplex(double x);                                    //!< Construct vector with one double x
-                                        VectorComplex(size_t n, double x);                          //!< Construct vector with n doubles x
-                                        VectorComplex(const std::vector<double>& x);                //!< Constructor from double vector
-                                        VectorComplex(const std::vector<std::complex<double> >& x); //!< Constructor from double vector
-                                        VectorComplex(const VectorComplex& x);                      //!< Constructor from VectorComplex
-                                        VectorComplex(size_t n, std::complex<double> x);            //!< Construct vector with n complex x
+                                        VectorComplex(void);                                            //!< Default constructor (empty vector)
+                                        VectorComplex(const std::string& elemType);                     //!< Default constructor for derived classes
+                                        VectorComplex(double x);                                        //!< Construct vector with one double x
+                                        VectorComplex(size_t n, double x);                              //!< Construct vector with n doubles x
+                                        VectorComplex(const std::vector<double>& x);                    //!< Constructor from double vector
+                                        VectorComplex(const std::vector<std::complex<double> >& x);     //!< Constructor from double vector
+                                        VectorComplex(const VectorComplex& x);                          //!< Constructor from VectorComplex
+                                        VectorComplex(size_t n, std::complex<double> x);                //!< Construct vector with n complex x
 
     // Overloaded operators
-    std::complex<double>&               operator[](size_t i);                                       //!< Index op allowing change
-    const std::complex<double>&         operator[](size_t i) const;                                 //!< Const index op
-    bool                                operator==(const VectorComplex& x) const;                   //!< Equals comparison
-    bool                                operator!=(const VectorComplex& x) const;                   //!< Not equals comparison
+    std::complex<double>&               operator[](size_t i);                                           //!< Index op allowing change
+    const std::complex<double>&         operator[](size_t i) const;                                     //!< Const index op
+    bool                                operator==(const VectorComplex& x) const;                       //!< Equals comparison
+    bool                                operator!=(const VectorComplex& x) const;                       //!< Not equals comparison
         
     // Basic utility functions
-    VectorComplex*                      clone(void) const;                                          //!< Clone object
-    const VectorString&                 getClass(void) const;                                       //!< Get class
-    const TypeSpec&                     getTypeSpec(void) const;                                    //!< Get language type of the object
-    void                                printValue(std::ostream& o) const;                          //!< Print value (for user)
-    std::string                         richInfo(void) const;                                       //!< Complete info about object
+    VectorComplex*                      clone(void) const;                                              //!< Clone object
+    const VectorString&                 getClass(void) const;                                           //!< Get class
+    const TypeSpec&                     getTypeSpec(void) const;                                        //!< Get language type of the object
+    void                                printValue(std::ostream& o) const;                              //!< Print value (for user)
+    std::string                         richInfo(void) const;                                           //!< Complete info about object
 
     // Vector functions, including STL-like functions
-    void                                clear(void);                                                //!< Clear
-    RbPtr<const RbObject>               getElement(size_t index) const;                             //!< Get element
-    RbPtr<RbObject>                     getElement(size_t index);                                   //!< Get element (non-const to return non-const element)
-    std::vector<std::complex<double> >  getValue(void) const;                                       //!< Get value
-    void                                pop_back(void);                                             //!< Drop element at back
-    void                                pop_front(void);                                            //!< Drop element from front
-    void                                push_back(RbPtr<RbObject> x);                               //!< Append element to end
-    void                                push_back(std::complex<double> x);                          //!< Append element to end
-    void                                push_front(RbPtr<RbObject> x);                              //!< Add element in front
-    void                                push_front(std::complex<double> x);                         //!< Add element in front
-    void                                resize(size_t n);                                           //!< Resize to new AbstractVector of length n
-    void                                setElement(const size_t index, RbPtr<RbLanguageObject> elem);     //!< Set element with type conversion
-    void                                setValue(const VectorComplex& x);                           //!< Set the value
-    void                                setValue(const std::vector<std::complex<double> >& x);      //!< Set the value
-    void                                sort(void);                                                 //!< sort the AbstractVector
-    size_t                              size(void) const;                                           //!< get the number of elements in the AbstractVector
-    void                                unique(void);                                               //!< removes consecutive duplicates
+    void                                clear(void);                                                    //!< Clear
+    RbPtr<const RbObject>               getElement(size_t index) const;                                 //!< Get element
+    RbPtr<RbObject>                     getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+    std::vector<std::complex<double> >  getValue(void) const;                                           //!< Get value
+    void                                pop_back(void);                                                 //!< Drop element at back
+    void                                pop_front(void);                                                //!< Drop element from front
+    void                                push_back(RbPtr<RbObject> x);                                   //!< Append element to end
+    void                                push_back(std::complex<double> x);                              //!< Append element to end
+    void                                push_front(RbPtr<RbObject> x);                                  //!< Add element in front
+    void                                push_front(std::complex<double> x);                             //!< Add element in front
+    void                                resize(size_t n);                                               //!< Resize to new AbstractVector of length n
+    void                                setElement(const size_t index, RbPtr<RbLanguageObject> elem);   //!< Set element with type conversion
+    void                                setValue(const VectorComplex& x);                               //!< Set the value
+    void                                setValue(const std::vector<std::complex<double> >& x);          //!< Set the value
+    void                                sort(void);                                                     //!< sort the AbstractVector
+    size_t                              size(void) const;                                               //!< get the number of elements in the AbstractVector
+    void                                unique(void);                                                   //!< removes consecutive duplicates
         
     
     

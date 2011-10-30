@@ -221,7 +221,7 @@ void VectorComplex::printValue(std::ostream& o) const {
 void VectorComplex::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
-        elements.push_back(static_cast<Complex*>(x.get())->getValue());
+        elements.push_back(static_cast<Complex*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Complex_name) ) {
         elements.push_back(static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
     }
@@ -242,7 +242,7 @@ void VectorComplex::push_back(std::complex<double> x) {
 void VectorComplex::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Complex_name) ) ) {
-        elements.insert( elements.begin(), static_cast<Complex*>(x.get())->getValue());
+        elements.insert( elements.begin(), static_cast<Complex*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Complex_name) ) {
         elements.insert( elements.begin(), static_cast<Complex*>(x->convertTo(Complex_name))->getValue());
     }
@@ -281,7 +281,7 @@ void VectorComplex::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<Complex*>(x.get())->getValue());
+        elements.insert( elements.begin() + index, static_cast<Complex*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Complex_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

@@ -63,7 +63,7 @@ int Parser::execute(RbPtr<SyntaxElement> root) const {
     //! Execute syntax tree
     try {
         PRINTF("Parser getting the semantic value of the syntax tree...\n");
-        result = root->evaluateContent(RbPtr<Environment>(Workspace::userWorkspace().get()));
+        result = root->evaluateContent(RbPtr<Environment>(Workspace::userWorkspace()));
     }
     catch(RbException& rbException) {
 
@@ -75,9 +75,9 @@ int Parser::execute(RbPtr<SyntaxElement> root) const {
 
         // Catch a missing variable exception that might be interpreted as a request for
         // usage help on a function
-        SyntaxVariable* rootPtr = dynamic_cast<SyntaxVariable*>(root.get());
+        SyntaxVariable* rootPtr = dynamic_cast<SyntaxVariable*>( (SyntaxElement*)root);
         RbPtr<SyntaxVariable> theVariable( rootPtr );
-        if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable.get() != NULL && !theVariable->isMemberVariable() ) {
+        if ( rbException.getExceptionType() == RbException::MISSING_VARIABLE && theVariable != NULL && !theVariable->isMemberVariable() ) {
 
             RbPtr<RbString> fxnName = theVariable->getIdentifier();
             std::vector<RbPtr<RbFunction> > functions = Workspace::userWorkspace()->getFunctionTable()->findFunctions( *fxnName );
@@ -201,7 +201,7 @@ int Parser::help(RbPtr<SyntaxFunctionCall> root) const {
     RbPtr<RbString> symbol;
 
     if ( root->isType(SyntaxFunctionCall_name) ) {
-        symbol = RbPtr<RbString>( static_cast<SyntaxFunctionCall*>( root.get() )->getFunctionName() );
+        symbol = RbPtr<RbString>( static_cast<SyntaxFunctionCall*>( root )->getFunctionName() );
     }
     else {
         msg << "I have no clue -- Bison was not supposed to ask me about this!";

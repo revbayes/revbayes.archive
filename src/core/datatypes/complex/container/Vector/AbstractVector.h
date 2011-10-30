@@ -58,7 +58,7 @@ public:
     
 protected:
     AbstractVector(const TypeSpec &elemType);                                                           //!< Set type spec of container from type of elements
-    AbstractVector(const TypeSpec &elemType, const RbPtr<MemberRules> memberRules);                     //!< Set type spec of container from type of elements
+    AbstractVector(const TypeSpec &elemType, RbPtr<const MemberRules> memberRules);                     //!< Set type spec of container from type of elements
     AbstractVector(const AbstractVector &v);                                                            //!< Copy Constructor
     
     AbstractVector&                 operator=(const AbstractVector& x);                                 //!< Assignment operator

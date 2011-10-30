@@ -32,12 +32,12 @@
 
 
 /** Constructor passes member rules to base class */
-DistributionDiscrete::DistributionDiscrete( const RbPtr<MemberRules> memberRules ) : Distribution( memberRules ) {
+DistributionDiscrete::DistributionDiscrete( RbPtr<const MemberRules> memberRules ) : Distribution( memberRules ) {
 }
 
 
 /** Map direct method calls to internal class methods. */
-RbPtr<RbLanguageObject> DistributionDiscrete::executeOperation( const std::string& name, Environment& args ) {
+RbPtr<RbLanguageObject> DistributionDiscrete::executeOperation( const std::string& name, const RbPtr<Environment>& args ) {
 
     if ( name == "probMassVector" ) {
 

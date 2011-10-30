@@ -75,7 +75,7 @@ class RbFunction :  public RbInternal {
 
         // RbFunction functions you have to override
         virtual RbPtr<RbLanguageObject>                 execute(void) = 0;                                                                  //!< Execute function
-        virtual const RbPtr<ArgumentRules>              getArgumentRules(void) const = 0;                                                   //!< Get argument rules
+        virtual RbPtr<const ArgumentRules>              getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // RbFunction function you may want to override
@@ -87,13 +87,14 @@ class RbFunction :  public RbInternal {
 
         // RbFunction functions you should not override
         void                                            clearArguments(void);                                                               //!< Clear argument Environment "args"
-        const Environment&                              getArguments(void) const { return args; }                                           //!< Get processed arguments in argument Environment "args"
+        RbPtr<const Environment>                        getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
+        RbPtr<Environment>                              getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
 
 	protected:
                                                         RbFunction(void);                                                                   //!< Basic constructor
 
         // Member variables
-        Environment                                     args;                                                                               //!< Environment for passed arguments
+        RbPtr<Environment>                              args;                                                                               //!< Environment for passed arguments
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?
 };
 

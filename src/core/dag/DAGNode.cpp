@@ -62,7 +62,7 @@ DAGNode::DAGNode(RbPtr<RbLanguageObject> val) : children(), parents(), valueType
  */
 DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.valueTypeSpec), value( NULL ) {
 
-    if ( x.value.get() != NULL ) {
+    if ( x.value != NULL ) {
         value = RbPtr<RbLanguageObject>( x.value->clone() );
     }
     

@@ -37,7 +37,7 @@
 
 
 /** Constructor */
-Move::Move( const RbPtr<MemberRules> memberRules ) : ConstantMemberObject( memberRules ) {
+Move::Move( RbPtr<const MemberRules> memberRules ) : ConstantMemberObject( memberRules ) {
 
     numAccepted = 0;
     numTried    = 0;
@@ -60,7 +60,7 @@ Move::~Move() {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> Move::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> Move::executeOperation(const std::string& name, const RbPtr<const Environment>& args) {
 
     static ArgumentRules acceptArgRules;
     static ArgumentRules acceptanceRatioArgRules;    
@@ -93,7 +93,7 @@ RbPtr<RbLanguageObject> Move::executeOperation(const std::string& name, Environm
         RbPtr<Real> tmp( new Real(performMove( (*temp)[0] ) ) );
         
         // return the Hastings ratio
-        return RbPtr<RbLanguageObject>( tmp.get() );
+        return RbPtr<RbLanguageObject>( tmp );
     }
     else if ( name == "reject" ) {
 
@@ -127,7 +127,7 @@ const VectorString& Move::getClass( void ) const {
 
 
 /** Return member rules */
-const RbPtr<MemberRules> Move::getMemberRules( void ) const {
+RbPtr<const MemberRules> Move::getMemberRules( void ) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -138,12 +138,12 @@ const RbPtr<MemberRules> Move::getMemberRules( void ) const {
         rulesSet = true;
 		}
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
 /** Get move methods */
-const RbPtr<MethodTable> Move::getMethods(void) const {
+RbPtr<const MethodTable> Move::getMethods(void) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
     
@@ -172,11 +172,11 @@ const RbPtr<MethodTable> Move::getMethods(void) const {
         methods->addFunction( "resetCounters",   RbPtr<RbFunction>( new MemberFunction( RbVoid_name,     resetCountersArgRules ) ) );
         
         // Set parent table for proper inheritance
-        methods->setParentTable( RbPtr<FunctionTable>( MemberObject::getMethods().get() ) );
+        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
         methodsSet = true;
     }
 
-    return methods;
+    return RbPtr<const MethodTable>( methods );
 }
 
 
@@ -184,7 +184,7 @@ const RbPtr<MethodTable> Move::getMethods(void) const {
  *  from its member variable "weight". */
 double Move::getUpdateWeight( void ) const {
 
-    return static_cast<const RealPos*>( (*members)["weight"]->getValue().get() )->getValue();
+    return static_cast<const RealPos*>( (const RbLanguageObject*)(*members)["weight"]->getValue() )->getValue();
 }
 
 
@@ -205,7 +205,7 @@ void Move::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
         
         // test whether we want to set multiple variable
         if (var->getValue()->isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
-            RbPtr<DagNodeContainer> container( dynamic_cast<DagNodeContainer*>(var->getDagNodePtr()->getValuePtr().get() ) );
+            RbPtr<DagNodeContainer> container( dynamic_cast<DagNodeContainer*>( (RbLanguageObject*)var->getValue() ) );
             
             // add all moves
             for (size_t i=0; i<container->size(); i++) {
@@ -214,7 +214,7 @@ void Move::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
                 // check if it is a stochastic node
                 if (theElement->isTypeSpec( TypeSpec(VariableNode_name) )) {
                     // cast to stochastic node
-                    RbPtr<VariableNode> theNode( dynamic_cast<VariableNode*>(theElement.get()) );
+                    RbPtr<VariableNode> theNode( dynamic_cast<VariableNode*>( (RbObject*)theElement) );
                     
                     // add
                     nodes.push_back(theNode);
@@ -226,7 +226,7 @@ void Move::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
         }
         else if (var->getDagNode()->isType(VariableNode_name)) {
             // cast to stochastic node
-            RbPtr<VariableNode> theNode( dynamic_cast<VariableNode*>(var->getDagNodePtr().get() ) );
+            RbPtr<VariableNode> theNode( dynamic_cast<VariableNode*>( (DAGNode*)var->getDagNode() ) );
             
             // add
             nodes.push_back(theNode);

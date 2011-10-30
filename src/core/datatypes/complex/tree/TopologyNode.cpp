@@ -175,6 +175,13 @@ RbPtr<const TopologyNode> TopologyNode::getChild(size_t i) const {
 }
 
 
+/** Get child at index i */
+RbPtr<TopologyNode> TopologyNode::getChild(size_t i) {
+    
+    return ( children[i] );
+}
+
+
 /** Loop over children and get their indices */
 std::vector<int> TopologyNode::getChildrenIndices() const {
 
@@ -269,7 +276,7 @@ void TopologyNode::removeAllChildren(void) {
 }
 
 /** Remove a child from the vector of children */
-void TopologyNode::removeChild(RbPtr<TopologyNode> p) {
+void TopologyNode::removeChild(RbPtr<const TopologyNode> p) {
     
     std::vector<RbPtr<TopologyNode> >::iterator it = find(children.begin(), children.end(), p);
     if ( it != children.end() ) {

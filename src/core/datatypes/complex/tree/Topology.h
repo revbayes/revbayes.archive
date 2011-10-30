@@ -49,11 +49,11 @@ class Topology: public ConstantMemberObject {
         RbPtr<const MemberRules>            getMemberRules(void) const;                                             //!< Get member rules
 
         // Member method inits
-        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);           //!< Execute method
+        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
         RbPtr<const MethodTable>            getMethods(void) const;                                                 //!< Get methods
         
         // Topology functions
-        RbPtr<TopologyNode>                 cloneTree(RbPtr<TopologyNode> parent);                                  //!< Deep copy of the nodes
+        RbPtr<TopologyNode>                 cloneTree(RbPtr<const TopologyNode> parent);                                  //!< Deep copy of the nodes
         bool                                getIsBinary(void) const { return isBinary; }                            //!< Is the tree rooted
         bool                                getIsRooted(void) const { return isRooted; }                            //!< Is the tree rooted
         std::vector<RbPtr<TopologyNode> >   getNodes(void) const { return nodes; }                                  //!< Get a pointer to the nodes in the tree

@@ -35,7 +35,7 @@ class Func_source :  public RbFunction {
 
         // Func_source functions
     	RbPtr<RbLanguageObject>                 execute(void);                      //!< Execute function
-        const RbPtr<ArgumentRules>              getArgumentRules(void) const;       //!< Get argument rules
+        RbPtr<const ArgumentRules>              getArgumentRules(void) const;       //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;          //!< Get type of return val
         bool                                    throws(void) const { return true; } //!< Function may throw exceptions
     

@@ -47,21 +47,20 @@ DeterministicNode::DeterministicNode( RbPtr<RbFunction> func ) : VariableNode(fu
     RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
     
     /* Check for cycles */
-    const Environment& arguments = func->getArguments();
+    RbPtr<Environment> arguments = func->getArguments();
     std::list<DAGNode*> done;
-    for ( size_t i = 0; i < arguments.size(); i++ ) {
-        const std::string &name = arguments.getName(i);
-        if ( arguments[name]->getDagNode() != NULL && arguments[name]->getDagNode()->isParentInDAG( RbPtr<DAGNode>(this), done ) )
+    for ( size_t i = 0; i < arguments->size(); i++ ) {
+        const std::string &name = arguments->getName(i);
+        if ( (*arguments)[name]->getDagNode() != NULL && (*arguments)[name]->getDagNode()->isParentInDAG( RbPtr<DAGNode>(this), done ) )
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
     
     // only add myself as a child of the arguments if the functions says so
     if (func->addAsChildOfArguments()) {
         /* Set parents and add this node as a child node of these */
-        for ( size_t i = 0; i < arguments.size(); i++ ) {
-            const std::string &name = arguments.getName(i);
-        
-            RbPtr<DAGNode> theArgument = arguments[name]->getDagNodePtr();
+        for ( size_t i = 0; i < arguments->size(); i++ ) {
+            const std::string &name = arguments->getName(i);
+            RbPtr<DAGNode> theArgument = (*arguments)[name]->getDagNode();
             addParentNode( theArgument );
             theArgument->addChildNode( this );
         }
@@ -87,18 +86,18 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
     function         = RbPtr<RbFunction>( x.function->clone() );
     touched          = x.touched;
     changed          = x.changed;
-    if ( x.storedValue.get() != NULL ) {
+    if ( x.storedValue != NULL ) {
         storedValue  = RbPtr<RbLanguageObject>( x.storedValue->clone() );
     }
     else
         storedValue  = RbPtr<RbLanguageObject>::getNullPtr();
     
     /* Set parents and add this node as a child node of these */
-    const Environment& args = function->getArguments();
-    for ( size_t i = 0; i < args.size(); i++ ) {
-        const std::string &name = args.getName(i);
+    RbPtr<Environment> args = function->getArguments();
+    for ( size_t i = 0; i < args->size(); i++ ) {
+        const std::string &name = args->getName(i);
         
-        RbPtr<DAGNode> theArgument = args[name]->getDagNodePtr();
+        RbPtr<DAGNode> theArgument = (*args)[name]->getDagNode();
         addParentNode( theArgument );
         theArgument->addChildNode( this );
     }
@@ -148,15 +147,15 @@ DeterministicNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, DAGNode
         copy->storedValue = RbPtr<RbLanguageObject>( storedValue->clone() );
     
     /* Set the copy arguments to their matches in the new DAG */
-    const Environment& args     = function->getArguments();
-    Environment&       copyArgs = const_cast<Environment&>( copy->function->getArguments() );
+    RbPtr<const Environment> args     = function->getArguments();
+    RbPtr<Environment> copyArgs       = ( copy->function->getArguments() );
     
-    for ( size_t i = 0; i < args.size(); i++ ) {
-        const std::string &name = args.getName(i);
+    for ( size_t i = 0; i < args->size(); i++ ) {
+        const std::string &name = args->getName(i);
         
         // clone the parameter DAG node
-        RbPtr<DAGNode> theArgClone( args[name]->getDagNode()->cloneDAG(newNodes) );
-        copyArgs[name]->setVariable(RbPtr<Variable>( new Variable(theArgClone) ) );
+        RbPtr<DAGNode> theArgClone( (*args)[name]->getDagNode()->cloneDAG(newNodes) );
+        (*copyArgs)[name]->setVariable(RbPtr<Variable>( new Variable(theArgClone) ) );
   
         // this is perhaps not necessary because we already set the parent child relationship automatically
         copy->addParentNode( theArgClone );
@@ -217,7 +216,7 @@ RbPtr<RbFunction> DeterministicNode::getFunction(void) {
 RbPtr<const RbLanguageObject> DeterministicNode::getStoredValue( void ) const {
 
     if ( !touched )
-        return RbPtr<const RbLanguageObject>(value.get());
+        return RbPtr<const RbLanguageObject>(value);
 
     if ( !changed )
         throw RbException("Cannot return stored value of deterministic node when it was touched but not changed!");

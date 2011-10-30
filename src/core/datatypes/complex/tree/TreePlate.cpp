@@ -141,14 +141,12 @@ const TypeSpec& TreePlate::getTypeSpec(void) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
     
     // special handling for adding a variable
     if (name == "addVariable") {
         // get the name of the variable
-        const RbPtr<RbLanguageObject>& obj = args[0]->getValue();
-        RbLanguageObject* objPtr = obj;
-        std::string varName = static_cast<RbString*>( objPtr )->getValue();
+        const std::string& varName = static_cast<const RbString*>( (const RbLanguageObject*)(*args)[0]->getValue() )->getValue();
         
         // check if a container already exists with that name
         if (!members->existsVariable(varName)) {
@@ -163,30 +161,25 @@ RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, Env
         }
         
         // get the container with the variables for this node
-        const RbPtr<RbLanguageObject>& obj2 = (*members)[varName]->getValue();
-        RbLanguageObject *objPtr2 = obj2;
-        DagNodeContainer *vars = static_cast<DagNodeContainer*>( objPtr2 );
+        DagNodeContainer *vars = static_cast<DagNodeContainer*>( (RbLanguageObject*)(*members)[varName]->getValue() );
         
         // get the variable
-        RbPtr<Variable> var = args[1]->getVariable();
+        RbPtr<Environment> args2 = args;
+        RbPtr<Variable> var = (*args2)[1]->getVariable();
         
         // get the node we want to associate it too
-        const RbPtr<RbLanguageObject>& obj3 = args[2]->getValue();
-        RbLanguageObject *objPtr3 = obj3;
-        RbPtr<const TopologyNode> theNode( static_cast<TopologyNode*>( objPtr3 ) );
+        RbPtr<const TopologyNode> theNode( static_cast<const TopologyNode*>( (const RbLanguageObject*)(*args)[2]->getValue() ) );
         
         // get the index of the node
         size_t nodeIndex = getNodeIndex(theNode);
         
         // set the variable
-        vars->setElement(nodeIndex - 1, RbPtr<RbObject>( var ));
+        vars->setElement(nodeIndex - 1, RbPtr<RbObject>( var ) );
         
         return RbPtr<RbLanguageObject>::getNullPtr();
     } else if (name == "getVariable") {
         // get the name of the variable
-        const RbPtr<RbLanguageObject>& obj = args[0]->getValue();
-        RbLanguageObject* objPtr = obj;
-        std::string varName = static_cast<RbString*>( objPtr )->getValue();
+        const std::string& varName = static_cast<const RbString*>( (const RbLanguageObject*)(*args)[0]->getValue() )->getValue();
         
         // check if a container already exists with that name
         if (!members->existsVariable(varName)) {
@@ -197,22 +190,16 @@ RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, Env
         }
         else {
             // get the container with the variables for this node
-            const RbPtr<RbLanguageObject>& obj2 = (*members)[varName]->getValue();
-            RbLanguageObject *objPtr2 = obj2;
-            DagNodeContainer *vars = static_cast<DagNodeContainer*>( objPtr2 );
+            DagNodeContainer *vars = static_cast<DagNodeContainer*>( (RbLanguageObject*)(*members)[varName]->getValue() );
         
             // get the node we want to associate it too
-            const RbPtr<RbLanguageObject>& obj3 = args[2]->getValue();
-            RbLanguageObject *objPtr3 = obj3;
-            RbPtr<const TopologyNode> theNode( static_cast<TopologyNode*>( objPtr3 ) );
+            RbPtr<const TopologyNode> theNode( static_cast<const TopologyNode*>( (const RbLanguageObject*)(*args)[2]->getValue() ) );
         
             // get the index of the node
             size_t nodeIndex = getNodeIndex(theNode) - 1;
             
             // get the variable
-            const RbPtr<RbObject>& obj4 = vars->getElement(nodeIndex);
-            RbObject* objPtr4 = obj4;
-            RbPtr<Variable> var = static_cast<VariableSlot*>( objPtr4 )->getVariable();
+            RbPtr<Variable> var = static_cast<VariableSlot*>( (RbObject*)vars->getElement(nodeIndex) )->getVariable();
         
             return var->getValue();
         }
@@ -222,22 +209,16 @@ RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, Env
     }
     else if (name == "node") {
         // we assume that the node indices in the RevLanguage are from 1:nnodes()
-        const RbPtr<RbLanguageObject>& obj = args.getValue("index");
-        RbLanguageObject* objPtr = obj;
-        int index = dynamic_cast<Natural *>( objPtr )->getValue() - 1;
+        int index = dynamic_cast<const Natural *>( (const RbLanguageObject*)args->getValue("index") )->getValue() - 1;
         
         return RbPtr<RbLanguageObject>( orderingTopology->getNodes()[index] );
     }
     else if (name == "index") {
-        const RbPtr<RbLanguageObject>& obj = args[0]->getValue();
-        RbLanguageObject* objPtr = obj;
-        RbPtr<const TopologyNode> theNode( dynamic_cast<const TopologyNode*>( objPtr ) );
+        RbPtr<const TopologyNode> theNode( dynamic_cast<const TopologyNode*>( (const RbLanguageObject*)(*args)[0]->getValue() ) );
         return RbPtr<RbLanguageObject>( new Natural(getNodeIndex(theNode)) );
     }
     else if (name == "tipIndex") {
-        const RbPtr<RbLanguageObject>& obj = args[0]->getValue();
-        RbLanguageObject* objPtr = obj;
-        RbPtr<const TopologyNode> theNode( dynamic_cast<const TopologyNode*>( objPtr ) );
+        RbPtr<const TopologyNode> theNode( dynamic_cast<const TopologyNode*>( (const RbLanguageObject*)(*args)[0]->getValue() ) );
         return RbPtr<RbLanguageObject>( new Natural(getTipIndex(theNode)) );
     }
     else {

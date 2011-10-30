@@ -56,7 +56,7 @@ class Alignment : public Matrix {
 
         // Member method inits
         RbPtr<const MethodTable>            getMethods(void) const;                                                     //!< Get methods
-        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, Environment& args);               //!< Execute method
+        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Execute method
     
         // Container functions
         void                                clear();

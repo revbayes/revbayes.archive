@@ -48,11 +48,11 @@ Func_source* Func_source::clone( void ) const {
 RbPtr<RbLanguageObject> Func_source::execute( void ) {
 
     /* Open file */
-    std::string filename = static_cast<const RbString*>( args[0]->getValue().get() )->getValue();
+    std::string filename = static_cast<RbString*>( (RbLanguageObject*)(*args)[0]->getValue() )->getValue();
     std::ifstream inFile( filename.c_str() );
     
     
-    bool echo = static_cast<const RbBoolean*>( args[1]->getValue().get() )->getValue();
+    bool echo = static_cast<RbBoolean*>( (RbLanguageObject*)(*args)[1]->getValue() )->getValue();
     
     if ( !inFile )
         throw RbException( "Could not open file \"" + filename + "\"" );
@@ -84,7 +84,7 @@ RbPtr<RbLanguageObject> Func_source::execute( void ) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_source::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_source::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -96,7 +96,7 @@ const RbPtr<ArgumentRules> Func_source::getArgumentRules( void ) const {
         rulesSet = true;
     }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

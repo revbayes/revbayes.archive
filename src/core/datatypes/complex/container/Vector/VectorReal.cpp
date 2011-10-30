@@ -234,7 +234,7 @@ void VectorReal::printValue(std::ostream& o) const {
 void VectorReal::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
-        elements.push_back(static_cast<Real*>(x.get())->getValue());
+        elements.push_back(static_cast<Real*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Real_name) ) {
         elements.push_back(static_cast<Real*>(x->convertTo(Real_name))->getValue());
     }
@@ -254,7 +254,7 @@ void VectorReal::push_back(double x) {
 void VectorReal::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(Real_name) ) ) {
-        elements.insert( elements.begin(), static_cast<Real*>(x.get())->getValue());
+        elements.insert( elements.begin(), static_cast<Real*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Real_name) ) {
         elements.insert( elements.begin(), static_cast<Real*>(x->convertTo(Real_name))->getValue());
     }
@@ -295,7 +295,7 @@ void VectorReal::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<Real*>(x.get())->getValue());
+        elements.insert( elements.begin() + index, static_cast<Real*>( (RbLanguageObject*)x )->getValue());
     } else if ( x->isConvertibleTo(Real_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

@@ -239,7 +239,7 @@ void VectorRealPos::printValue(std::ostream& o) const {
 void VectorRealPos::push_back( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RealPos_name) ) ) {
-        elements.push_back(static_cast<RealPos*>(x.get())->getValue());
+        elements.push_back(static_cast<RealPos*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(RealPos_name) ) {
         elements.push_back(static_cast<RealPos*>(x->convertTo(RealPos_name))->getValue());
     }
@@ -263,7 +263,7 @@ void VectorRealPos::push_back( double x ) {
 void VectorRealPos::push_front( RbPtr<RbObject> x ) {
     
     if ( x->isTypeSpec( TypeSpec(RealPos_name) ) ) {
-        elements.insert( elements.begin(), static_cast<RealPos*>(x.get())->getValue());
+        elements.insert( elements.begin(), static_cast<RealPos*>( (RbObject*)x )->getValue());
     } else if ( x->isConvertibleTo(RealPos_name) ) {
         elements.insert( elements.begin(), static_cast<RealPos*>(x->convertTo(RealPos_name))->getValue());
     }
@@ -307,7 +307,7 @@ void VectorRealPos::setElement(const size_t index, RbPtr<RbLanguageObject> x) {
         if (index >= elements.size()) {
             elements.resize(index);
         }
-        elements.insert( elements.begin() + index, static_cast<RealPos*>(x.get())->getValue());
+        elements.insert( elements.begin() + index, static_cast<RealPos*>( (RbLanguageObject*)x )->getValue());
     } else if ( x->isConvertibleTo(RealPos_name) ) {
         // resize if necessary
         if (index >= elements.size()) {

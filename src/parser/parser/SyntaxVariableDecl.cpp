@@ -135,7 +135,7 @@ RbPtr<Variable> SyntaxVariableDecl::evaluateContent( RbPtr<Environment> env ) {
             const RbPtr<RbLanguageObject> value   = temp->getValue();
             
             if ( value->isTypeSpec( TypeSpec(Integer_name) ) )
-                length.push_back( static_cast<const Integer*>( value.get() )->getValue() );
+                length.push_back( static_cast<const Integer*>( (RbLanguageObject*)value )->getValue() );
             else
                 throw RbException( "Expression in length specification of variable declaration does not evaluate to an integer" );
         }

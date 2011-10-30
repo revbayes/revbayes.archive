@@ -48,25 +48,21 @@ SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxV
 
 
 /** Construct from operator type, function call and expression */
-SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<SyntaxElement> expr) 
-: SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr), opType(op) {
+SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<SyntaxElement> expr) : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr), opType(op) {
 }
 
 /** Construct from operator type, variable and expression */
-SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxVariable> var, RbPtr<SyntaxFunctionCall> expr) 
-: SyntaxElement(), variable(var), functionCall(NULL), expression(RbPtr<SyntaxElement>( expr.get()) ), opType(op) {
+SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxVariable> var, RbPtr<SyntaxFunctionCall> expr)  : SyntaxElement(), variable(var), functionCall(NULL), expression(RbPtr<SyntaxElement>( expr ) ), opType(op) {
 }
 
 
 /** Construct from operator type, function call and expression */
-SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<SyntaxFunctionCall> expr) 
-: SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(RbPtr<SyntaxElement>( expr.get()) ), opType(op) {
+SyntaxAssignExpr::SyntaxAssignExpr(SyntaxAssignExpr::operatorT op, RbPtr<SyntaxFunctionCall> fxnCall, RbPtr<SyntaxFunctionCall> expr) : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(RbPtr<SyntaxElement>( expr ) ), opType(op) {
 }
 
 
 /** Deep copy constructor */
-SyntaxAssignExpr::SyntaxAssignExpr(const SyntaxAssignExpr& x)
-: SyntaxElement(x) {
+SyntaxAssignExpr::SyntaxAssignExpr(const SyntaxAssignExpr& x) : SyntaxElement(x) {
     
     if ( x.variable != NULL )
         variable   = RbPtr<SyntaxVariable>( x.variable->clone() );
@@ -93,10 +89,10 @@ SyntaxAssignExpr& SyntaxAssignExpr::operator=(const SyntaxAssignExpr& x) {
         functionCall = RbPtr<SyntaxFunctionCall>(NULL);
         variable = RbPtr<SyntaxVariable>(NULL);
         
-        if ( x.variable.get() != NULL )
+        if ( x.variable != NULL )
             variable   = x.variable;
         
-        if ( x.functionCall.get() != NULL )
+        if ( x.functionCall != NULL )
             functionCall = x.functionCall;
         
         expression = x.expression;
@@ -138,7 +134,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
     PRINTF( "Evaluating assign expression\n" );
     
     // Get variable info from lhs
-    RbPtr<VariableSlot>       theSlot = variable->getSlot( env );
+    RbPtr<VariableSlot> theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
     RbPtr<Variable> theVariable(NULL);
@@ -186,16 +182,16 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
             throw RbException( "Distribution function returns NULL" );
         }
         
-        RbPtr<const DeterministicNode> detNode( dynamic_cast<const DeterministicNode*>( exprValue.get() ) );
-        if ( detNode.get() == NULL || detNode->getFunction() == NULL || !detNode->getFunction()->isType( ConstructorFunction_name ) ) {
+        RbPtr<DeterministicNode> detNode( dynamic_cast<DeterministicNode*>( (DAGNode*)exprValue ) );
+        if ( detNode == NULL || detNode->getFunction() == NULL || !detNode->getFunction()->isType( ConstructorFunction_name ) ) {
             
             throw RbException( "Function does not return a distribution" );
         }
         
         // Make an independent copy of the distribution and delete the exprVal
 //        Distribution* distribution = (Distribution*) detNode->getFunctionPtr()->execute();
-        RbPtr<Distribution> distribution( (Distribution*) detNode->getValue().get() );
-        if ( distribution.get() == NULL )
+        RbPtr<Distribution> distribution( dynamic_cast<Distribution*>( (RbLanguageObject*)detNode->getValue() ) );
+        if ( distribution == NULL )
             throw RbException( "Function returns a NULL distribution" );
         
         // Create new stochastic node
@@ -235,8 +231,8 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
 //        throw RbException( "Support of ~iid not complete yet" );
 //    }
     
-    theSlot->getDagNodePtr()->touchAffected();
-    theSlot->getDagNodePtr()->keep();
+    theSlot->getDagNode()->touchAffected();
+    theSlot->getDagNode()->keep();
 
     
 #ifdef DEBUG_PARSER
