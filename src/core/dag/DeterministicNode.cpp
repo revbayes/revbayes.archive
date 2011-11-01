@@ -270,8 +270,7 @@ void DeterministicNode::keepAffected( void ) {
 void DeterministicNode::printValue( std::ostream& o ) const {
 
     if ( touched && !changed )
-        throw RbException("Cannot print value of deterministic node when it was touched but not changed!");
-//        update();
+        const_cast<DeterministicNode*>(this)->update();
 
     if (value != NULL) 
         value->printValue(o);
