@@ -26,7 +26,6 @@
 #include "Integer.h"
 #include "Natural.h"
 #include "Parser.h"
-#include "RbMemoryManager.h"
 #include "RbPtr.h"
 #include "RbString.h"
 #include "Real.h"
@@ -335,9 +334,9 @@ expression  :   constant                    { $$ = $1; }
             |   tildeAssign                 { $$ = $1; }
             |   tildeIidAssign              { $$ = $1; }
 
-            |   functionCall                { $$ = new RbPtr<SyntaxElement>((SyntaxFunctionCall*)(*$1)); RbMemoryManager::rbMemoryManager().decrementCountForAddress($1); }
+            |   functionCall                { $$ = new RbPtr<SyntaxElement>((SyntaxFunctionCall*)(*$1)); delete $1; }
 
-            |   variable                    { $$ = new RbPtr<SyntaxElement>((SyntaxVariable*)(*$1)); RbMemoryManager::rbMemoryManager().decrementCountForAddress($1); }
+            |   variable                    { $$ = new RbPtr<SyntaxElement>((SyntaxVariable*)(*$1)); delete $1; }
             ;
 
 arrowAssign     :   variable ARROW_ASSIGN expression
