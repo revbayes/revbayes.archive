@@ -124,6 +124,13 @@ const char AminoAcidState::getState(void) const {
     return c;
 }
 
+std::string AminoAcidState::getStringValue(void) const  {
+
+    char c = getState();
+    std::string s = "";
+    s += c;
+    return s;
+}
 
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& AminoAcidState::getTypeSpec(void) const {

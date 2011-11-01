@@ -256,19 +256,38 @@ RbPtr<RbLanguageObject> Alignment::executeOperation(const std::string& name, con
     else if (name == "excludechar")
         {
         RbPtr<const RbLanguageObject> argument = (*args)[1]->getValue();
-
-        if ( argument->isTypeSpec( TypeSpec(Natural_name) ) ) {
-            
+        if ( argument->isTypeSpec( TypeSpec(Natural_name) ) ) 
+            {
             int n = static_cast<const Natural*>( (const RbLanguageObject*)argument )->getValue();
             deletedCharacters.insert( n );
-        }
-        else if ( argument->isTypeSpec( TypeSpec(VectorNatural_name) ) ) {
-        
+            }
+        else if ( argument->isTypeSpec( TypeSpec(VectorNatural_name) ) ) 
+            {
             std::vector<unsigned int> x = static_cast<const VectorNatural*>( (const RbLanguageObject*)argument )->getValue();
             for ( size_t i=0; i<x.size(); i++ )
                 deletedCharacters.insert( x[i] );
+            }
+        return NULL;
         }
-            return RbPtr<RbLanguageObject>::getNullPtr();
+    else if (name == "show")
+        {
+        int nt = (int)getNumberOfTaxa();
+        int nc = (int)getNumberOfCharacters();
+        for (int i=0; i<nt; i++)
+            {
+            std::string taxonName = getTaxonNameWithIndex(i);
+            std::cout << "   " << taxonName << std::endl;
+            std::cout << "   ";
+            for (int j=0; j<nc; j++)
+                {
+                //std::string s = getElement(i, j)->getStringValue();
+                //std::cout << s;
+                //if ( (j+1) % 100 == 0 && (j+1) != nc )
+                //    std::cout << std::endl << "   ";
+                }
+            std::cout << std::endl;
+            }
+        return NULL;
         }
 
     return ConstantMemberObject::executeOperation( name, args );
@@ -327,23 +346,24 @@ RbPtr<const MemberRules> Alignment::getMemberRules(void) const {
 RbPtr<const MethodTable> Alignment::getMethods(void) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
-    static RbPtr<ArgumentRules> ncharArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> namesArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> ntaxaArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> chartypeArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> nexcludedtaxaArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> nexcludedcharsArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> nincludedtaxaArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> nincludedcharsArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> excludedtaxaArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> excludedcharsArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> includedtaxaArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> includedcharsArgRules( new ArgumentRules() );    
-    static RbPtr<ArgumentRules> nconstantpatternsArgRules( new ArgumentRules() );    
+    static RbPtr<ArgumentRules> ncharArgRules( new ArgumentRules()               );
+    static RbPtr<ArgumentRules> namesArgRules( new ArgumentRules()               );
+    static RbPtr<ArgumentRules> ntaxaArgRules( new ArgumentRules()               );
+    static RbPtr<ArgumentRules> chartypeArgRules( new ArgumentRules()            );    
+    static RbPtr<ArgumentRules> nexcludedtaxaArgRules( new ArgumentRules()       );    
+    static RbPtr<ArgumentRules> nexcludedcharsArgRules( new ArgumentRules()      );    
+    static RbPtr<ArgumentRules> nincludedtaxaArgRules( new ArgumentRules()       );    
+    static RbPtr<ArgumentRules> nincludedcharsArgRules( new ArgumentRules()      );    
+    static RbPtr<ArgumentRules> excludedtaxaArgRules( new ArgumentRules()        );    
+    static RbPtr<ArgumentRules> excludedcharsArgRules( new ArgumentRules()       );    
+    static RbPtr<ArgumentRules> includedtaxaArgRules( new ArgumentRules()        );    
+    static RbPtr<ArgumentRules> includedcharsArgRules( new ArgumentRules()       );    
+    static RbPtr<ArgumentRules> nconstantpatternsArgRules( new ArgumentRules()   );    
     static RbPtr<ArgumentRules> ncharswithambiguityArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> excludecharArgRules( new ArgumentRules() );
-    static RbPtr<ArgumentRules> excludecharArgRules2( new ArgumentRules() );
-    static bool          methodsSet = false;
+    static RbPtr<ArgumentRules> excludecharArgRules( new ArgumentRules()         );
+    static RbPtr<ArgumentRules> excludecharArgRules2( new ArgumentRules()        );
+    static RbPtr<ArgumentRules> showdataArgRules( new ArgumentRules()            );
+    static bool methodsSet = false;
 
     if ( methodsSet == false ) 
         {
@@ -351,22 +371,23 @@ RbPtr<const MethodTable> Alignment::getMethods(void) const {
         excludecharArgRules->push_back(        RbPtr<ArgumentRule>( new ValueRule(     "", Natural_name       ) ) );
         excludecharArgRules2->push_back(       RbPtr<ArgumentRule>( new ValueRule(     "", VectorNatural_name ) ) );
             
-        methods->addFunction("names",               RbPtr<RbFunction>( new MemberFunction(VectorString_name,  namesArgRules) ) );
-        methods->addFunction("nchar",               RbPtr<RbFunction>( new MemberFunction(Natural_name,       ncharArgRules) ) );
-        methods->addFunction("ntaxa",               RbPtr<RbFunction>( new MemberFunction(Natural_name,       ntaxaArgRules) ) );
-        methods->addFunction("chartype",            RbPtr<RbFunction>( new MemberFunction(RbString_name,      chartypeArgRules) ) );
-        methods->addFunction("nexcludedtaxa",       RbPtr<RbFunction>( new MemberFunction(Natural_name,       nexcludedtaxaArgRules) ) );
-        methods->addFunction("nexcludedchars",      RbPtr<RbFunction>( new MemberFunction(Natural_name,       nexcludedcharsArgRules) ) );
-        methods->addFunction("nincludedtaxa",       RbPtr<RbFunction>( new MemberFunction(Natural_name,       nincludedtaxaArgRules) ) );
-        methods->addFunction("nincludedchars",      RbPtr<RbFunction>( new MemberFunction(Natural_name,       nincludedcharsArgRules) ) );
-        methods->addFunction("excludedtaxa",        RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, excludedtaxaArgRules) ) );
-        methods->addFunction("excludedchars",       RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, excludedcharsArgRules) ) );
-        methods->addFunction("includedtaxa",        RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, includedtaxaArgRules) ) );
-        methods->addFunction("includedchars",       RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, includedcharsArgRules) ) );
-        methods->addFunction("nconstantpatterns",   RbPtr<RbFunction>( new MemberFunction(Natural_name,       nconstantpatternsArgRules) ) );
+        methods->addFunction("names",               RbPtr<RbFunction>( new MemberFunction(VectorString_name,  namesArgRules              ) ) );
+        methods->addFunction("nchar",               RbPtr<RbFunction>( new MemberFunction(Natural_name,       ncharArgRules              ) ) );
+        methods->addFunction("ntaxa",               RbPtr<RbFunction>( new MemberFunction(Natural_name,       ntaxaArgRules              ) ) );
+        methods->addFunction("chartype",            RbPtr<RbFunction>( new MemberFunction(RbString_name,      chartypeArgRules           ) ) );
+        methods->addFunction("nexcludedtaxa",       RbPtr<RbFunction>( new MemberFunction(Natural_name,       nexcludedtaxaArgRules      ) ) );
+        methods->addFunction("nexcludedchars",      RbPtr<RbFunction>( new MemberFunction(Natural_name,       nexcludedcharsArgRules     ) ) );
+        methods->addFunction("nincludedtaxa",       RbPtr<RbFunction>( new MemberFunction(Natural_name,       nincludedtaxaArgRules      ) ) );
+        methods->addFunction("nincludedchars",      RbPtr<RbFunction>( new MemberFunction(Natural_name,       nincludedcharsArgRules     ) ) );
+        methods->addFunction("excludedtaxa",        RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, excludedtaxaArgRules       ) ) );
+        methods->addFunction("excludedchars",       RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, excludedcharsArgRules      ) ) );
+        methods->addFunction("includedtaxa",        RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, includedtaxaArgRules       ) ) );
+        methods->addFunction("includedchars",       RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, includedcharsArgRules      ) ) );
+        methods->addFunction("nconstantpatterns",   RbPtr<RbFunction>( new MemberFunction(Natural_name,       nconstantpatternsArgRules  ) ) );
         methods->addFunction("ncharswithambiguity", RbPtr<RbFunction>( new MemberFunction(Natural_name,       ncharswithambiguityArgRules) ) );
-        methods->addFunction("excludechar",         RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        excludecharArgRules) ) );
-        methods->addFunction("excludechar",         RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        excludecharArgRules2) ) );
+        methods->addFunction("excludechar",         RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        excludecharArgRules        ) ) );
+        methods->addFunction("excludechar",         RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        excludecharArgRules2       ) ) );
+        methods->addFunction("show",                RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        showdataArgRules           ) ) );
         
         // necessary call for proper inheritance
         methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
@@ -636,6 +657,9 @@ void Alignment::setElement( size_t row, size_t col, RbPtr<RbLanguageObject> var 
     throw RbException("Not implemented method Alignment::setElement()");
 }
 
+void Alignment::showData(void) {
+
+}
 
 /** transpose the matrix */
 void Alignment::transpose() {

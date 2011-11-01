@@ -90,6 +90,7 @@ class Alignment : public Matrix {
         void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
         void                                restoreTaxon(std::string& s);                                               //!< Restore taxon
         void                                setFileName(const std::string fn) { fileName = fn; }                        //!< Set the file name
+        void                                showData(void);                                                             //!< Show the data in the character matrix
 
     private:
         // Utility functions

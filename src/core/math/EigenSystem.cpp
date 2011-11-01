@@ -1309,7 +1309,7 @@ bool EigenSystem::update(void) {
 	complex = checkForComplexEigenvalues();
 	
 	// invert eigenvectors
-	if (isComplex == false) 
+	if ( isComplex() == false ) 
         {
 		//A.inject(eigenvectors);
         A = eigenvectors;

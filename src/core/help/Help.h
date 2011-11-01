@@ -31,6 +31,7 @@
 class Help {
 
 	public:
+                                       ~Help(void);                                                                                         //!< Destructor
         std::string                     formatHelpString(const std::string& qs, size_t columnWidth);                                        //!< Format the help information for printing to the terminal
 		static RbPtr<Help>              getHelp(void)                                                                                       //!< Return a reference to the singleton help
                                            {
@@ -46,7 +47,6 @@ class Help {
 	private:
                                         Help(void);                                                                                         //!< Default constructor
                                         Help(const Help&);                                                                                  //!< Copy constructor (hidden away as this is a singleton class)
-                                       ~Help(void);                                                                                         //!< Destructor
         Help&                           operator=(const Help&);                                                                             //!< Assignment operator (hidden away as this is a singleton class)
         size_t                          getNumHelpEntries(void);                                                                            //!< Returns the number of help entries for a command
         std::string                     formatStringWithBreaks(const std::string s, std::string padding, size_t w);                         //!< Used for formatting a string for printing to the screen

@@ -121,6 +121,15 @@ const char StandardState::getState(void) const {
 }
 
 
+std::string StandardState::getStringValue(void) const  {
+
+    char c = getState();
+    std::string s = "";
+    s += c;
+    return s;
+}
+
+
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& StandardState::getTypeSpec(void) const {
     return typeSpec;

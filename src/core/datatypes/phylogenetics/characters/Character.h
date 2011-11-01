@@ -19,7 +19,7 @@
 
 #include "Categorical.h"
 #include <ostream>
-
+#include <string>
 
 
 const std::string Character_name = "Character";
@@ -41,6 +41,7 @@ class Character : public Categorical {
         virtual size_t                  getNumberOfStates(void) const { return 0; }//!< Get the number states for a character (return 0 in base class)
         virtual double                  getRealValue(void) const { return 0.0; }   //!< Return the double representation of the character
         virtual unsigned                getUnsignedValue(void) const { return 0; } //!< Get an unsigned representation of the bool set
+        virtual std::string             getStringValue(void) const { return ""; }  //!< Get a representation of the character as a string
         virtual bool                    isMissingOrAmbiguous(void) const = 0;      //!< Is the character missing or ambiguous
 
     protected:

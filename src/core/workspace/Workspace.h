@@ -77,6 +77,7 @@ const std::string Workspace_name = "Workspace";
 class Workspace : public Environment {
 
     public:
+                                   ~Workspace(void);                                                                     //!< Delete function table
     
         // Frame functions you have to override
         Workspace*                  clone(void) const;                                                                  //!< Clone frame
@@ -117,7 +118,6 @@ class Workspace : public Environment {
                                     Workspace(RbPtr<Workspace> parentSpace);                                             //!< Workspace with parent
                                     Workspace(RbPtr<Environment> parentSpace);                                           //!< Workspace with parent
                                     Workspace(const Workspace& w) {}                                                     //!< Prevent copy
-                                   ~Workspace(void);                                                                     //!< Delete function table
         Workspace&                  operator=(const Workspace& w);                                                       //! Prevent assignment
 
         RbPtr<FunctionTable>        functionTable;                                                                       //!< Table holding functions

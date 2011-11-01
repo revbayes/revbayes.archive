@@ -47,6 +47,7 @@ class StandardState : public CharacterStateDiscrete {
         void                            addState(const char s);                                    //!< Add a character state to the set of character states
         const std::string&              getStateLabels(void) const { return stateLabels; }         //!< Get valid state labels
         const char                      getState(void) const;                                      //!< Get the discrete observation
+        virtual std::string             getStringValue(void) const;                                //!< Get a representation of the character as a string
         void                            setState(const char s);                                    //!< Set the discrete observation
         void                            setStateLabels(const std::string ss) { stateLabels = ss; } //!< Set the labels for the possible states
 

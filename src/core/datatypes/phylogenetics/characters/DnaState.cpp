@@ -151,6 +151,13 @@ const char DnaState::getState(void) const {
     return getNucleotideCode(value);
 }
 
+std::string DnaState::getStringValue(void) const  {
+
+    char c = getState();
+    std::string s = "";
+    s += c;
+    return s;
+}
 
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& DnaState::getTypeSpec(void) const {

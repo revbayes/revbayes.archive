@@ -253,9 +253,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_uminus",   new Func__uminus<         Integer,        Integer >() );
         addFunction( "_uminus",   new Func__uminus<            Real,           Real >() );
         addFunction( "_uminus",   new Func__uminus<      MatrixReal,     MatrixReal >() );
-        addFunction( "_unot",     new Func__unot  <         RbBoolean >() );
-        addFunction( "_unot",     new Func__unot  <         Integer >() );
-        addFunction( "_unot",     new Func__unot  <            Real >() );
+        addFunction( "_unot",     new Func__unot  <       RbBoolean                 >() );
+        addFunction( "_unot",     new Func__unot  <         Integer                 >() );
+        addFunction( "_unot",     new Func__unot  <            Real                 >() );
 
         /* Add basic arithmetic templated functions */
         addFunction( "_add",      new Func__add<            Integer,        Integer,    Integer >() );
@@ -329,41 +329,40 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_or",       new Func__or<           RbBoolean,      RbBoolean >()             );
 
         /* Add builtin functions (alphabetical order) */
-        addFunction( "clamp",     new Func_clamp()           );
-        addFunction( "clear",     new Func_clear()           );
-        addFunction( "dppConFromExpNumClusters",        new Func_dppConFromExpNumClusters()              );
-        addFunction( "dppSeat",   new Func_dppSeat()              );
-        addFunction( "dppServe",  new Func_dppServe()              );
-        addFunction( "ls",        new Func_ls()              );
-        addFunction( "memory",    new Func_memoryAllocations() );
-        addFunction( "normalize", new Func_normalizeVector() );
-        addFunction( "q",         new Func_quit()            );
-        addFunction( "quit",      new Func_quit()            );
-        addFunction( "setval",    new Func_setval()          );
-        addFunction( "structure", new Func_structure()       );
-        addFunction( "unclamp",   new Func_unclamp()         );
-        addFunction( "unique",    new Func_unique<VectorBoolean>()          );
-        addFunction( "unique",    new Func_unique<VectorInteger>()          );
-        addFunction( "unique",    new Func_unique<VectorNatural>()          );
-        addFunction( "unique",    new Func_unique<VectorReal>()          );
-        addFunction( "unique",    new Func_unique<VectorRealPos>()          );
-        addFunction( "unique",    new Func_unique<VectorComplex>()          );
-        addFunction( "unique",    new Func_unique<VectorString>()          );
-        addFunction( "size",    new Func_size<VectorBoolean>()          );
-        addFunction( "size",    new Func_size<VectorInteger>()          );
-        addFunction( "size",    new Func_size<VectorNatural>()          );
-        addFunction( "size",    new Func_size<VectorReal>()          );
-        addFunction( "size",    new Func_size<VectorRealPos>()          );
-        addFunction( "size",    new Func_size<VectorComplex>()          );
-        addFunction( "size",    new Func_size<VectorString>()          );
-        addFunction( "sort",    new Func_sort<VectorBoolean>()          );
-        addFunction( "sort",    new Func_sort<VectorInteger>()          );
-        addFunction( "sort",    new Func_sort<VectorNatural>()          );
-        addFunction( "sort",    new Func_sort<VectorReal>()          );
-        addFunction( "sort",    new Func_sort<VectorRealPos>()          );
-        addFunction( "sort",    new Func_sort<VectorComplex>()          );
-        addFunction( "sort",    new Func_sort<VectorString>()          );
-        addFunction( "sort",    new Func_sort<Vector>()          );
+        addFunction( "clamp",                    new Func_clamp()                    );
+        addFunction( "clear",                    new Func_clear()                    );
+        addFunction( "dppConFromExpNumClusters", new Func_dppConFromExpNumClusters() );
+        addFunction( "dppSeat",                  new Func_dppSeat()                  );
+        addFunction( "dppServe",                 new Func_dppServe()                 );
+        addFunction( "ls",                       new Func_ls()                       );
+        addFunction( "normalize",                new Func_normalizeVector()          );
+        addFunction( "q",                        new Func_quit()                     );
+        addFunction( "quit",                     new Func_quit()                     );
+        addFunction( "setval",                   new Func_setval()                   );
+        addFunction( "structure",                new Func_structure()                );
+        addFunction( "unclamp",                  new Func_unclamp()                  );
+        addFunction( "unique",                   new Func_unique<VectorBoolean>()    );
+        addFunction( "unique",                   new Func_unique<VectorInteger>()    );
+        addFunction( "unique",                   new Func_unique<VectorNatural>()    );
+        addFunction( "unique",                   new Func_unique<VectorReal>()       );
+        addFunction( "unique",                   new Func_unique<VectorRealPos>()    );
+        addFunction( "unique",                   new Func_unique<VectorComplex>()    );
+        addFunction( "unique",                   new Func_unique<VectorString>()     );
+        addFunction( "size",                     new Func_size<VectorBoolean>()      );
+        addFunction( "size",                     new Func_size<VectorInteger>()      );
+        addFunction( "size",                     new Func_size<VectorNatural>()      );
+        addFunction( "size",                     new Func_size<VectorReal>()         );
+        addFunction( "size",                     new Func_size<VectorRealPos>()      );
+        addFunction( "size",                     new Func_size<VectorComplex>()      );
+        addFunction( "size",                     new Func_size<VectorString>()       );
+        addFunction( "sort",                     new Func_sort<VectorBoolean>()      );
+        addFunction( "sort",                     new Func_sort<VectorInteger>()      );
+        addFunction( "sort",                     new Func_sort<VectorNatural>()      );
+        addFunction( "sort",                     new Func_sort<VectorReal>()         );
+        addFunction( "sort",                     new Func_sort<VectorRealPos>()      );
+        addFunction( "sort",                     new Func_sort<VectorComplex>()      );
+        addFunction( "sort",                     new Func_sort<VectorString>()       );
+        addFunction( "sort",                     new Func_sort<Vector>()             );
 
         /* Add math functions (alphabetical order) */
 

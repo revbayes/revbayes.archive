@@ -18,6 +18,7 @@
 
 #include "CharacterStateDiscrete.h"
 #include <ostream>
+#include <string>
 #include <vector>
 
 
@@ -46,6 +47,7 @@ class AminoAcidState : public CharacterStateDiscrete {
         void                            addState(const char s);                             //!< Add a character state to the set of character states
         const std::string&              getStateLabels(void) const { return stateLabels; }  //!< Get valid state labels
         const char                      getState(void) const;                               //!< Get the amino acid observation
+        virtual std::string             getStringValue(void) const;                         //!< Get a representation of the amino acid as a string
         void                            setState(const char s);                             //!< Set the amino acid observation
 
     protected:
