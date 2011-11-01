@@ -37,7 +37,7 @@ class Func_transpose :  public RbFunction {
 
         // Regular functions
     	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
-        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
+        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
@@ -68,7 +68,7 @@ Func_transpose<matrixType>* Func_transpose<matrixType>::clone( void ) const {
 template <typename matrixType>
 RbPtr<RbLanguageObject> Func_transpose<matrixType>::execute( void ) {
 
-    const RbPtr<matrixType> mat = static_cast<matrixType*>( args[0]->getValue().get() );
+    const RbPtr<matrixType> mat = static_cast<matrixType*>( (RbLanguageObject*)(*args)[0]->getValue() );
 
     RbPtr<matrixType> matT( new matrixType( mat->getNumberOfColumns(), mat->getNumberOfRows() ) );
     
@@ -76,13 +76,13 @@ RbPtr<RbLanguageObject> Func_transpose<matrixType>::execute( void ) {
         for ( size_t j = 0; j < mat->getNumberOfColumns(); j++ )
             (*(*matT)[j])[i] = (*(*mat)[i])[j];
 
-    return RbPtr<RbLanguageObject>( matT.get() );
+    return RbPtr<RbLanguageObject>( (matrixType*)matT );
 }
 
 
 /** Get argument rules */
 template <typename matrixType>
-const RbPtr<ArgumentRules> Func_transpose<matrixType>::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_transpose<matrixType>::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -94,7 +94,7 @@ const RbPtr<ArgumentRules> Func_transpose<matrixType>::getArgumentRules( void ) 
         rulesSet = true;
     }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

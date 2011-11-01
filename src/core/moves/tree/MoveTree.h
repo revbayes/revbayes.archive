@@ -38,19 +38,19 @@ class MoveTree : public Move {
         virtual                        ~MoveTree(void) {}                                                       //!< Destructor
 
         // Basic utility functions
-        virtual MoveTree*               clone(void) const = 0;                                                  //!< Clone the object
-        virtual const VectorString&     getClass(void) const;                                                   //!< Get class vector
+        virtual MoveTree*                   clone(void) const = 0;                                                  //!< Clone the object
+        virtual const VectorString&         getClass(void) const;                                                   //!< Get class vector
 
         // Member variable rules
-        virtual const RbPtr<MemberRules> getMemberRules(void) const;                                             //!< Get member rules
+        virtual RbPtr<const MemberRules>    getMemberRules(void) const;                                             //!< Get member rules
 
         // MoveTree functions
-        void                            acceptMove(void);				                                        //!< Accept the move, update statistics
-        double                          performMove(double& lnProbabilityRatio);                                //!< Call perform, calculate ratios
-        void                            rejectMove(void);                                                       //!< Reject the move
+        void                                acceptMove(void);				                                        //!< Accept the move, update statistics
+        double                              performMove(double& lnProbabilityRatio);                                //!< Call perform, calculate ratios
+        void                                rejectMove(void);                                                       //!< Reject the move
 
 	protected:
-                                        MoveTree(const RbPtr<MemberRules> memberRules);                               //!< Parser constructor
+                                            MoveTree(RbPtr<const MemberRules> memberRules);                               //!< Parser constructor
 
         // Function you have to override
 //        virtual double                  perform(std::set<StochasticNode*>&      movedNodes,
@@ -62,7 +62,7 @@ class MoveTree : public Move {
         virtual void                    reject(void) {}                                                         //!< Reject the move
 
         // Help functions
-        const RbPtr<Topology>           getTopology(void) const;                                                //!< Get topology
+        RbPtr<const Topology>           getTopology(void) const;                                                //!< Get topology
 
 };
 

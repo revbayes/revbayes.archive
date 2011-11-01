@@ -47,8 +47,8 @@ Func_tiprobs* Func_tiprobs::clone(void) const {
 RbPtr<RbLanguageObject> Func_tiprobs::execute(void) {
 
     // get the information from the arguments for reading the file
-    const RbPtr<RateMatrix> q( static_cast<RateMatrix*>( args[0]->getValue().get() ) );
-    const RbPtr<RealPos>    t( static_cast<RealPos*>(    args[1]->getValue().get() ) );
+    RbPtr<RateMatrix> q( static_cast<RateMatrix*>( (RbLanguageObject*)(*args)[0]->getValue() ) );
+    RbPtr<RealPos>    t( static_cast<RealPos*>(    (RbLanguageObject*)(*args)[1]->getValue() ) );
 
     // initialize the number of states
     const size_t nStates = q->getNumberOfStates();
@@ -68,12 +68,12 @@ RbPtr<RbLanguageObject> Func_tiprobs::execute(void) {
     q->calculateTransitionProbabilities( t->getValue(), m );
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return RbPtr<RbLanguageObject>( m.get() );
+    return RbPtr<RbLanguageObject>( m );
 }
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_tiprobs::getArgumentRules(void) const {
+RbPtr<const ArgumentRules> Func_tiprobs::getArgumentRules(void) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -85,7 +85,7 @@ const RbPtr<ArgumentRules> Func_tiprobs::getArgumentRules(void) const {
         rulesSet = true;
         }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

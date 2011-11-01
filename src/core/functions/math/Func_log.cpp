@@ -46,15 +46,15 @@ Func_log* Func_log::clone( void ) const {
 /** Execute function */
 RbPtr<RbLanguageObject> Func_log::execute( void ) {
     
-    const double a = static_cast<const RealPos*>( args[0]->getValue().get() )->getValue();
-    const double b = static_cast<const RealPos*>( args[1]->getValue().get() )->getValue();
+    const double a = static_cast<const RealPos*>( (const RbLanguageObject*)(*args)[0]->getValue() )->getValue();
+    const double b = static_cast<const RealPos*>( (const RbLanguageObject*)(*args)[1]->getValue() )->getValue();
     
     return RbPtr<RbLanguageObject>( new Real( log10(a)/log10(b) ) );
 }
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_log::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_log::getArgumentRules( void ) const {
     
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -66,7 +66,7 @@ const RbPtr<ArgumentRules> Func_log::getArgumentRules( void ) const {
         rulesSet = true;
     }
     
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

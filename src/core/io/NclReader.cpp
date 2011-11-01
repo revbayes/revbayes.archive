@@ -244,7 +244,7 @@ RbPtr<Alignment> NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
                 for(int s=1; s<nStates; s++)
                     aaState->addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
-            dataVec->addCharacter( RbPtr<Character>( aaState.get() ) );
+            dataVec->addCharacter( RbPtr<Character>( aaState ) );
             }
 
         // add sequence to character matrix
@@ -352,7 +352,7 @@ RbPtr<Alignment> NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
                 for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                     dnaState->addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
-            dataVec->addCharacter( RbPtr<Character>( dnaState.get() ) );
+            dataVec->addCharacter( RbPtr<Character>( dnaState ) );
             }
 
         // add sequence to character matrix
@@ -474,7 +474,7 @@ RbPtr<Alignment> NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
                 for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                     rnaState->addState( charblock->GetState(origTaxIndex, *cit, s) );
                 }
-            dataVec->addCharacter( RbPtr<Character>( rnaState.get() ) );
+            dataVec->addCharacter( RbPtr<Character>( rnaState ) );
             }
             
         // add sequence to character matrix
@@ -538,7 +538,7 @@ RbPtr<Alignment> NclReader::createStandardMatrix(NxsCharactersBlock* charblock) 
                         //cMat->setState(origTaxIndex, *cit, i);
                     }
                 }
-            dataVec->addCharacter( RbPtr<Character>( stdState.get() ) );
+            dataVec->addCharacter( RbPtr<Character>( stdState ) );
             }
 
         // add sequence to character matrix
@@ -1043,7 +1043,7 @@ RbPtr<std::vector<RbPtr<Topology> > > NclReader::readTrees(const std::string fn,
     
     // read the data files
  	RbPtr<std::vector<RbPtr<Topology> > > f = readTrees( fn.c_str(), fileFormat);
-	if (f.get() != NULL) {
+	if (f != NULL) {
 		for (std::vector<RbPtr<Topology> >::iterator m = f->begin(); m != f->end(); m++)
 			trees->push_back( (*m) );
 	}

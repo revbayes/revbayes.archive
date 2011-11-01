@@ -53,8 +53,8 @@ Func_normalizeVector* Func_normalizeVector::clone( void ) const {
 RbPtr<RbLanguageObject> Func_normalizeVector::execute( void ) {
 
     // Get first element
-    std::vector<double> tempVec    = static_cast<const VectorRealPos*>( args[0]->getValue().get() )->getValue();
-    double              desiredSum = static_cast<const RealPos*      >( args[1]->getValue().get() )->getValue();
+    std::vector<double> tempVec    = static_cast<const VectorRealPos*>( (RbLanguageObject*)(*args)[0]->getValue() )->getValue();
+    double              desiredSum = static_cast<const RealPos*      >( (RbLanguageObject*)(*args)[1]->getValue() )->getValue();
     
     // normalize the vector
     RbMath::normalize(tempVec, desiredSum);
@@ -64,7 +64,7 @@ RbPtr<RbLanguageObject> Func_normalizeVector::execute( void ) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_normalizeVector::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_normalizeVector::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -76,7 +76,7 @@ const RbPtr<ArgumentRules> Func_normalizeVector::getArgumentRules( void ) const 
         rulesSet = true;
 		}
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

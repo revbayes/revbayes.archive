@@ -47,7 +47,7 @@ Func_ls* Func_ls::clone( void ) const {
 RbPtr<RbLanguageObject> Func_ls::execute( void ) {
 
     /* Open file */
-    const bool printAll = static_cast<const RbBoolean*>( args[0]->getValue().get() )->getValue();
+    const bool printAll = static_cast<const RbBoolean*>( (RbLanguageObject*)(*args)[0]->getValue() )->getValue();
     
     std::cout << "User workspace:" << std::endl;
     std::cout << "===============" << std::endl;
@@ -71,7 +71,7 @@ RbPtr<RbLanguageObject> Func_ls::execute( void ) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_ls::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_ls::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -82,7 +82,7 @@ const RbPtr<ArgumentRules> Func_ls::getArgumentRules( void ) const {
         rulesSet = true;
     }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

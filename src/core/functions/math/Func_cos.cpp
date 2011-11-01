@@ -46,14 +46,14 @@ Func_cos* Func_cos::clone( void ) const {
 /** Execute function */
 RbPtr<RbLanguageObject> Func_cos::execute( void ) {
     
-    const double x = static_cast<const Real*>( args[0]->getValue().get() )->getValue();
+    const double x = static_cast<const Real*>( (RbLanguageObject*)(*args)[0]->getValue() )->getValue();
     
     return RbPtr<RbLanguageObject>( new Real( cos( x ) ) );
 }
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_cos::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_cos::getArgumentRules( void ) const {
     
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -64,7 +64,7 @@ const RbPtr<ArgumentRules> Func_cos::getArgumentRules( void ) const {
         rulesSet = true;
     }
     
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

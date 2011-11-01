@@ -60,7 +60,7 @@ Move::~Move() {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> Move::executeOperation(const std::string& name, const RbPtr<const Environment>& args) {
+RbPtr<RbLanguageObject> Move::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
 
     static ArgumentRules acceptArgRules;
     static ArgumentRules acceptanceRatioArgRules;    
@@ -248,7 +248,7 @@ void Move::replaceDagNodes(std::vector<RbPtr<VariableNode> > &n) {
     // add all nodes
     for (size_t i=0; i<n.size(); i++) {
         RbPtr<VariableNode> theNode = n[i];
-        if (theNode.get() != NULL) {
+        if (theNode != NULL) {
             nodes.push_back(theNode);
         }
     }

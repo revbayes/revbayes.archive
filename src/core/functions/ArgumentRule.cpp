@@ -95,6 +95,11 @@ RbPtr<const Variable> ArgumentRule::getDefaultVariable(void) const {
     return argSlot.getVariable(); 
 }
 
+
+RbPtr<Variable> ArgumentRule::getDefaultVariable(void) {
+    return argSlot.getVariable(); 
+}
+
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& ArgumentRule::getTypeSpec(void) const {
     return typeSpec;

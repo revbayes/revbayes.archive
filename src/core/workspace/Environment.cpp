@@ -50,7 +50,7 @@ Environment::Environment(RbPtr<Environment> parentFr) : RbInternal(), parentEnvi
 Environment::Environment(const Environment &x): RbInternal(x) {
     
     // make a deep copy of the parent environment
-    if (x.parentEnvironment.get() != NULL) {
+    if (x.parentEnvironment != NULL) {
         parentEnvironment = RbPtr<Environment>(x.parentEnvironment->clone());    }
     else {
         parentEnvironment = RbPtr<Environment>::getNullPtr();
@@ -138,7 +138,7 @@ void Environment::addVariable(const std::string& n, RbPtr<VariableSlot> theSlot)
     // but it is their own fault if they tried to add it without a name to identify with
     if (name == EmptyString) {
         // we do not have a name for the variable so we use the memory address
-        long tmp = long(theSlot.get());
+        long tmp = long((VariableSlot*)theSlot);
         std::stringstream out;
         out << tmp;
         name = out.str();
@@ -277,7 +277,7 @@ const VectorString& Environment::getClass() const {
 /** Get reference, alternative method */
 RbPtr<DAGNode> Environment::getDagNode( const std::string& name ) {
     
-    return operator[]( name )->getDagNodePtr();
+    return operator[]( name )->getDagNode();
 }
 
 

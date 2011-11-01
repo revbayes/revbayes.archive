@@ -58,11 +58,11 @@ RbPtr<RbLanguageObject> Func_memoryAllocations::execute( void ) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_memoryAllocations::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_memoryAllocations::getArgumentRules( void ) const {
     
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

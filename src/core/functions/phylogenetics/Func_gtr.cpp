@@ -45,8 +45,8 @@ Func_gtr* Func_gtr::clone(void) const {
 RbPtr<RbLanguageObject> Func_gtr::execute(void) {
 
     // get the information from the arguments for reading the file
-    const RbPtr<Simplex> r( static_cast<Simplex*>( args[0]->getValue().get() ) );
-    const RbPtr<Simplex> f( static_cast<Simplex*>( args[1]->getValue().get() ) );
+    RbPtr<Simplex> r( static_cast<Simplex*>( (RbLanguageObject*)(*args)[0]->getValue() ) );
+    RbPtr<Simplex> f( static_cast<Simplex*>( (RbLanguageObject*)(*args)[1]->getValue() ) );
 
     // initialize the number of states
     const size_t nStates = 4;
@@ -107,12 +107,12 @@ RbPtr<RbLanguageObject> Func_gtr::execute(void) {
     m->updateEigenSystem();
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return RbPtr<RbLanguageObject>( m.get() );
+    return RbPtr<RbLanguageObject>( m );
 }
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_gtr::getArgumentRules(void) const {
+RbPtr<const ArgumentRules> Func_gtr::getArgumentRules(void) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -124,7 +124,7 @@ const RbPtr<ArgumentRules> Func_gtr::getArgumentRules(void) const {
         rulesSet = true;
         }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

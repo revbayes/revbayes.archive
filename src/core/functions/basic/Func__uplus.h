@@ -35,7 +35,7 @@ class Func__uplus :  public RbFunction {
 
         // Regular functions
     	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
-        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
+        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
@@ -68,7 +68,7 @@ Func__uplus<valType, retType>* Func__uplus<valType, retType>::clone( void ) cons
 template <typename valType, typename retType>
 RbPtr<RbLanguageObject> Func__uplus<valType, retType>::execute( void ) {
 
-    const RbPtr<valType> val( static_cast<valType*> ( args[0]->getValue().get() ) );
+    const RbPtr<valType> val( static_cast<valType*> ( (RbLanguageObject*)(*args)[0]->getValue() ) );
 
     return RbPtr<RbLanguageObject>( val->clone() );
 }
@@ -76,7 +76,7 @@ RbPtr<RbLanguageObject> Func__uplus<valType, retType>::execute( void ) {
 
 /** Get argument rules */
 template <typename valType, typename retType>
-const RbPtr<ArgumentRules> Func__uplus<valType, retType>::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func__uplus<valType, retType>::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -87,7 +87,7 @@ const RbPtr<ArgumentRules> Func__uplus<valType, retType>::getArgumentRules( void
         rulesSet = true;
         }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

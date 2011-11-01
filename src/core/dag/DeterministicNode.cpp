@@ -183,6 +183,11 @@ void DeterministicNode::getAffected( std::set<RbPtr<StochasticNode> >& affected 
             (*i)->getAffected( affected );
         }
     }
+    
+    
+    // TODO: for now we call an immediate update after each touch
+    update();
+    
 }
 
 
@@ -376,6 +381,10 @@ void DeterministicNode::touchAffected( void ) {
         for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
             (*i)->touchAffected();
     }
+    
+    
+    // TODO: for now we call an immediate update after each touch
+    update();
 }
 
 /** Update value and stored value after node and its surroundings have been touched by a move */

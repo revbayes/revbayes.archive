@@ -193,7 +193,7 @@ RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, con
             DagNodeContainer *vars = static_cast<DagNodeContainer*>( (RbLanguageObject*)(*members)[varName]->getValue() );
         
             // get the node we want to associate it too
-            RbPtr<const TopologyNode> theNode( static_cast<const TopologyNode*>( (const RbLanguageObject*)(*args)[2]->getValue() ) );
+            RbPtr<const TopologyNode> theNode( static_cast<const TopologyNode*>( (const RbLanguageObject*) (*args)[1]->getValue()) );
         
             // get the index of the node
             size_t nodeIndex = getNodeIndex(theNode) - 1;
@@ -335,8 +335,8 @@ size_t TreePlate::getTipIndex(RbPtr<const TopologyNode> theNode) const {
 
 
 
-RbPtr<Topology> TreePlate::getTopology(void) const {
-    return orderingTopology;
+RbPtr<const Topology> TreePlate::getTopology(void) const {
+    return RbPtr<const Topology>( orderingTopology );
 }
 
 

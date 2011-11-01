@@ -37,7 +37,7 @@ class Func__gt :  public RbFunction {
 
         // Regular functions
     	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
-        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
+        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
@@ -79,8 +79,8 @@ Func__gt<firstValType, secondValType>* Func__gt<firstValType, secondValType>::cl
 template <typename firstValType, typename secondValType>
 RbPtr<RbLanguageObject> Func__gt<firstValType,secondValType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1 = static_cast<firstValType*> ( args[0]->getValue().get() );
-    const RbPtr<secondValType> val2 = static_cast<secondValType*>( args[1]->getValue().get() );
+    const RbPtr<firstValType>  val1 = static_cast<firstValType*> ( (RbLanguageObject*)(*args)[0]->getValue() );
+    const RbPtr<secondValType> val2 = static_cast<secondValType*>( (RbLanguageObject*)(*args)[1]->getValue() );
     
     return RbPtr<RbLanguageObject>( new RbBoolean( *val1 > *val2 ) );
 }
@@ -88,7 +88,7 @@ RbPtr<RbLanguageObject> Func__gt<firstValType,secondValType>::execute( void ) {
 
 /** Get argument rules */
 template <typename firstValType, typename secondValType>
-const RbPtr<ArgumentRules> Func__gt<firstValType, secondValType>::getArgumentRules(void) const {
+RbPtr<const ArgumentRules> Func__gt<firstValType, secondValType>::getArgumentRules(void) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -99,7 +99,7 @@ const RbPtr<ArgumentRules> Func__gt<firstValType, secondValType>::getArgumentRul
         rulesSet = true;
     }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

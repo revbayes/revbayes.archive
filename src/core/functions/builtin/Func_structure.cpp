@@ -45,14 +45,14 @@ Func_structure* Func_structure::clone( void ) const {
 /** Execute function */
 RbPtr<RbLanguageObject> Func_structure::execute( void ) {
 
-    args[0]->getDagNodePtr()->printStruct( std::cout );
+    (*args)[0]->getDagNode()->printStruct( std::cout );
 
     return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_structure::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_structure::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -63,7 +63,7 @@ const RbPtr<ArgumentRules> Func_structure::getArgumentRules( void ) const {
         rulesSet = true;
     }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

@@ -40,7 +40,7 @@ OptionRule::OptionRule( const std::string& argName, VectorString optVals ) : Val
 
 
 /** Construct rule with default value; use "" for no label. */
-OptionRule::OptionRule(const std::string& argName, RbPtr<RbString> defVal, VectorString optVals ) : ValueRule( argName, RbPtr<RbLanguageObject>( defVal.get() ) ), options( optVals ) {
+OptionRule::OptionRule(const std::string& argName, RbPtr<RbString> defVal, VectorString optVals ) : ValueRule( argName, RbPtr<RbLanguageObject>( defVal ) ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -84,7 +84,7 @@ bool OptionRule::isArgValid( RbPtr<DAGNode> var, bool& needsConversion ) const {
         return false;
 
     // This will make sure we have a string variable
-    if ( !ArgumentRule::isArgumentValid( var, needsConversion ) )
+    if ( !ArgumentRule::isArgumentValid( RbPtr<const DAGNode>( var ), needsConversion ) )
         return false;
 
     // Make sure we have a valid option

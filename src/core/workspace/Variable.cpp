@@ -111,6 +111,16 @@ const VectorString& Variable::getClass() const {
 }
 
 
+RbPtr<const DAGNode> Variable::getDagNode(void) const {
+    return RbPtr<const DAGNode>( node );
+}
+
+
+RbPtr<DAGNode> Variable::getDagNode(void) {
+    return ( node );
+}
+
+
 /** Get name of the variable from frame */
 const std::string& Variable::getName( void ) const {
     
@@ -125,12 +135,15 @@ const TypeSpec& Variable::getTypeSpec(void) const {
 
 
 /** Get the value of the variable */
-RbPtr<const RbLanguageObject> Variable::getValue( void ) const {
-    
-    RbPtr<const RbLanguageObject> retVal = node->getValue();
-    
-    return retVal;
+RbPtr<const RbLanguageObject> Variable::getValue(void) const {
+    return node->getValue();
 }
+
+/** Get the value of the variable */
+RbPtr<RbLanguageObject> Variable::getValue(void) {
+    return node->getValue();
+}
+
 
 /* Print value of the variable variable */
 void Variable::printValue(std::ostream& o) const {

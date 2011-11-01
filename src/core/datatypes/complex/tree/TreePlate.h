@@ -53,7 +53,7 @@ public:
     RbPtr<const MethodTable>        getMethods(void) const;                                                 //!< Get methods
 
     // Tree plate functions
-    RbPtr<Topology>                 getTopology(void) const;                                                //!< Get the topology for this tree
+    RbPtr<const Topology>           getTopology(void) const;                                                //!< Get the topology for this tree
     
 private:
     static const TypeSpec           typeSpec;

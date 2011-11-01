@@ -59,7 +59,7 @@ const VectorString& Move_mmultinomial::getClass() const {
 
 
 /** Return member rules */
-const RbPtr<MemberRules> Move_mmultinomial::getMemberRules(void) const {
+RbPtr<const MemberRules> Move_mmultinomial::getMemberRules(void) const {
 
     static RbPtr<MemberRules> memberRules( new MemberRules() );
     static bool        rulesSet = false;
@@ -69,7 +69,7 @@ const RbPtr<MemberRules> Move_mmultinomial::getMemberRules(void) const {
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable", TypeSpec( VectorRealPos_name ) ) ) );
 
         /* Inherit weight from MoveSimple, put it after variable */
-        const RbPtr<MemberRules> inheritedRules = MoveSimple::getMemberRules();
+        RbPtr<const MemberRules> inheritedRules = MoveSimple::getMemberRules();
         memberRules->insert( memberRules->end(), inheritedRules->begin(), inheritedRules->end() ); 
 
         memberRules->push_back(RbPtr<ArgumentRule>( new ValueRule("tuning", RealPos_name) ) );
@@ -78,7 +78,7 @@ const RbPtr<MemberRules> Move_mmultinomial::getMemberRules(void) const {
         rulesSet = true;
 		}
 
-    return memberRules;
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 
@@ -104,10 +104,10 @@ double Move_mmultinomial::perform( std::set<RbPtr<StochasticNode> >& affectedNod
     // Get relevant values
 //    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
     RbPtr<StochasticNode>        nodePtr( NULL );
-    double                 alpha0  = static_cast<const RealPos*>( getMemberValue("tuning").get()   )->getValue();
-    int                    k       = static_cast<const Integer*>( getMemberValue("num_cats").get() )->getValue();
+    double                 alpha0  = static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue("tuning")   )->getValue();
+    int                    k       = static_cast<const Integer*>( (const RbLanguageObject*)getMemberValue("num_cats") )->getValue();
 
-    const RbPtr<VectorReal> valPtr( static_cast<VectorReal*>( nodePtr->getValue().get() ) );
+    const RbPtr<VectorReal> valPtr( static_cast<VectorReal*>( (RbLanguageObject*)nodePtr->getValue() ) );
 
     std::vector<double>    curVal  = valPtr->getValue();
     int                    n       = int( curVal.size() );

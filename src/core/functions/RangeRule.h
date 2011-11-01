@@ -96,7 +96,7 @@ bool RangeRule<valType>::isArgumentValid( RbPtr<DAGNode> var, bool& needsConvers
     if ( !var->isType( ConstantNode_name ) )
         return false;
 
-    const RbPtr<valType> val( static_cast<valType*> ( var->getValue().get() ) );
+    const RbPtr<valType> val( static_cast<valType*> ( var->getValue() ) );
 
     if ( *val >= minVal && *val <= maxVal )
         return true;

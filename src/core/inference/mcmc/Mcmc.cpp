@@ -66,11 +66,11 @@ Mcmc* Mcmc::clone(void) const {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> Mcmc::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> Mcmc::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
 
     if (name == "run") {
-        const RbPtr<RbLanguageObject> argument = args[0]->getValue();
-        int n = static_cast<const Natural*>( argument.get() )->getValue();
+        const RbPtr<const RbLanguageObject>& argument = (*args)[0]->getValue();
+        int n = static_cast<const Natural*>( (const RbLanguageObject*)argument )->getValue();
         run(n);
         return RbPtr<RbLanguageObject>::getNullPtr();
     }
@@ -88,7 +88,7 @@ const VectorString& Mcmc::getClass(void) const {
 
 
 /** Get member rules */
-const RbPtr<MemberRules> Mcmc::getMemberRules(void) const {
+RbPtr<const MemberRules> Mcmc::getMemberRules(void) const {
 
     static RbPtr<MemberRules> memberRules( new ArgumentRules() );
     static bool        rulesSet = false;
@@ -102,12 +102,12 @@ const RbPtr<MemberRules> Mcmc::getMemberRules(void) const {
         rulesSet = true;
     }
 
-    return memberRules;
+    return RbPtr<const ArgumentRules>( memberRules );
 }
 
 
 /** Get methods */
-const RbPtr<MethodTable> Mcmc::getMethods(void) const {
+RbPtr<const MethodTable> Mcmc::getMethods(void) const {
 
     static RbPtr<MethodTable> methods( new MethodTable() );
     static RbPtr<ArgumentRules> updateArgRules( new ArgumentRules() );
@@ -118,11 +118,11 @@ const RbPtr<MethodTable> Mcmc::getMethods(void) const {
         updateArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "generations", Natural_name     ) ) );
         methods->addFunction("run", RbPtr<RbFunction>( new MemberFunction( RbVoid_name, updateArgRules) ) );
 
-        methods->setParentTable( RbPtr<FunctionTable>( MemberObject::getMethods().get() ) );
+        methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
         methodsSet = true;
     }
 
-    return methods;
+    return RbPtr<const MethodTable>( methods );
 }
 
 
@@ -141,12 +141,12 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
     // Hence we need to set the DAG nodes of the moves to these clones.
     if ( name == "moves" ) {
         // get the DAG nodes
-        const RbPtr<Model> theModel( dynamic_cast<Model*>( getMemberValue("model").get() ) );
+        const RbPtr<Model> theModel( dynamic_cast<Model*>( (RbLanguageObject*)getMemberValue("model") ) );
         
-        RbPtr<Vector> moves( static_cast<Vector*>(var->getDagNodePtr()->getValuePtr()->convertTo(TypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(Move_name) ) ) ) ) );
+        RbPtr<Vector> moves( static_cast<Vector*>(var->getValue()->convertTo(TypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(Move_name) ) ) ) ) );
         for (size_t i=0; i<moves->size(); i++) {
             // get the move #i
-            RbPtr<Move> theMove( static_cast<Move*>(moves->getElement(i).get() ) );
+            RbPtr<Move> theMove( static_cast<Move*>( (RbObject*)moves->getElement(i) ) );
             
             // get the DAG node for this move
             std::vector<RbPtr<VariableNode> > &theOldNodes = theMove->getDagNodes();
@@ -157,20 +157,20 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
             // clone the move and replace the node
             RbPtr<Move> newMove( theMove->clone() );
             newMove->replaceDagNodes(theNewNodes);
-            moves->setElement(i, RbPtr<RbLanguageObject>( newMove.get() ) );
+            moves->setElement(i, RbPtr<RbLanguageObject>( newMove ) );
             
         }
         
-        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( moves.get() ) ) ) );
+        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( moves ) ) ) );
     }
     else if ( name == "monitors" ) {
         // get the DAG nodes
-        const RbPtr<Model> theModel( static_cast<Model*>(getMemberValue("model").get() ) );
+        const RbPtr<Model> theModel( static_cast<Model*>( (RbLanguageObject*)getMemberValue("model") ) );
         
-        RbPtr<Vector> monitors( static_cast<Vector*>(var->getDagNodePtr()->getValuePtr()->convertTo(TypeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(Monitor_name) ) ) ) ) );
+        RbPtr<Vector> monitors( static_cast<Vector*>(var->getValue()->convertTo(TypeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(Monitor_name) ) ) ) ) );
         for (size_t i=0; i<monitors->size(); i++) {
             // get the monitor #i
-            RbPtr<Monitor> theMonitor( static_cast<Monitor*>(monitors->getElement(i).get() ) );
+            RbPtr<Monitor> theMonitor( static_cast<Monitor*>( (RbObject*)monitors->getElement(i) ) );
             
             // get the DAG node for this monitor
             std::vector<RbPtr<VariableNode> > &theOldNodes = theMonitor->getDagNodes();
@@ -181,11 +181,11 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
             // clone the move and replace the node
             RbPtr<Monitor> newMonitor( theMonitor->clone() );
             newMonitor->replaceDagNodes(theNewNodes);
-            monitors->setElement(i, RbPtr<RbLanguageObject>( newMonitor.get() ) );
+            monitors->setElement(i, RbPtr<RbLanguageObject>( newMonitor ) );
             
         }
         
-        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( monitors.get() ) ) ) );
+        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( monitors ) ) ) );
     }
     else {
         ConstantMemberObject::setMemberVariable(name, var);
@@ -199,11 +199,11 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Initializing mcmc chain ..." << std::endl;
 
     /* Get the dag nodes from the model */
-    std::vector<RbPtr<DAGNode> >& dagNodes = (static_cast<Model*>(getMemberValue("model").get() ) )->getDAGNodes();
+    std::vector<RbPtr<DAGNode> >& dagNodes = (static_cast<Model*>( (RbLanguageObject*)getMemberValue("model") ) )->getDAGNodes();
 
     /* Get the moves and monitors */
-    RbPtr<Vector> monitors( static_cast<Vector*>(getMemberDagNodePtr( "monitors" )->getValuePtr().get() ) );
-    RbPtr<Vector>    moves( static_cast<Vector*>(getMemberDagNodePtr( "moves"    )->getValuePtr().get() ) );
+    RbPtr<Vector> monitors( static_cast<Vector*>( (RbLanguageObject*)getMemberDagNode( "monitors" )->getValue() ) );
+    RbPtr<Vector>    moves( static_cast<Vector*>( (RbLanguageObject*)getMemberDagNode( "moves"    )->getValue() ) );
 
     /* Get the chain settings */
     std::cerr << "Getting the chain settings ..." << std::endl;
@@ -214,7 +214,7 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Opening file and printing headers ..." << std::endl;
     for (size_t i=0; i<monitors->size(); i++) {
         // get the monitor
-        RbPtr<Monitor> theMonitor( static_cast<Monitor*>(monitors->getElement(i).get() ) );
+        RbPtr<Monitor> theMonitor( static_cast<Monitor*>( (RbObject*)monitors->getElement(i) ) );
         
         // open the file stream for the monitor
         theMonitor->openStream();
@@ -229,7 +229,7 @@ void Mcmc::run(size_t ngen) {
     std::vector<double> initProb;
     for (std::vector<RbPtr<DAGNode> >::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
         if ((*i)->isType(StochasticNode_name)) {
-            RbPtr<StochasticNode> stochNode( dynamic_cast<StochasticNode*>( (*i).get() ) );
+            RbPtr<StochasticNode> stochNode( dynamic_cast<StochasticNode*>( (DAGNode*)(*i) ) );
             double lnProb = stochNode->calculateLnProbability();
             lnProbability += lnProb;
 //            initProb.push_back(lnProb);
@@ -247,7 +247,7 @@ void Mcmc::run(size_t ngen) {
 
         for (size_t i=0; i<moves->size(); i++) {
             /* Get the move */
-            RbPtr<Move> theMove( static_cast<Move*>(moves->getElement(i).get() ) );
+            RbPtr<Move> theMove( static_cast<Move*>( (RbObject*)moves->getElement(i) ) );
 
             /* Propose a new value */
             double lnProbabilityRatio;
@@ -279,7 +279,7 @@ void Mcmc::run(size_t ngen) {
             std::vector<double> lnRatio;
             for (std::vector<RbPtr<DAGNode> >::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
                 if ((*i)->isType(StochasticNode_name)) {
-                    RbPtr<StochasticNode> stochNode( dynamic_cast<StochasticNode*>( (*i).get() ) );
+                    RbPtr<StochasticNode> stochNode( dynamic_cast<StochasticNode*>( (DAGNode*)(*i) ) );
                     double lnProb = stochNode->calculateLnProbability();
                     curLnProb += lnProb;
                     //                lnRatio.push_back(initProb[stochNode-dagNodes.begin()] - lnProb);
@@ -292,7 +292,7 @@ void Mcmc::run(size_t ngen) {
 
         /* Monitor */
         for (size_t i=0; i<monitors->size(); i++) {
-            static_cast<Monitor*>(monitors->getElement(i).get() )->monitor(gen);
+            static_cast<Monitor*>( (RbObject*)monitors->getElement(i) )->monitor(gen);
         }
 
         /* Print to screen */

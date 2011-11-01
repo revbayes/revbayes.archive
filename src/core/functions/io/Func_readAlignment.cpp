@@ -51,7 +51,7 @@ Func_readAlignment* Func_readAlignment::clone( void ) const {
 RbPtr<RbLanguageObject> Func_readAlignment::execute( void ) {
 
     // get the information from the arguments for reading the file
-    const RbPtr<RbString> fn( static_cast<RbString*>( args[0]->getValue().get() ) );
+    RbPtr<RbString> fn( static_cast<RbString*>( (RbLanguageObject*)(*args)[0]->getValue() ) );
 
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn->getValue() );
@@ -198,15 +198,15 @@ RbPtr<RbLanguageObject> Func_readAlignment::execute( void ) {
         for (std::vector<RbPtr<Alignment> >::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-            retList->setElement( index, RbPtr<RbObject>( new Variable(RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( (*it).get() ) ) ) ) ) );
+            retList->setElement( index, RbPtr<RbObject>( new Variable(RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( (*it) ) ) ) ) ) );
             index++;
             }
-        return RbPtr<RbLanguageObject>( retList.get() );
+        return RbPtr<RbLanguageObject>( retList );
             throw RbException("Wanted to create a List of Alignment but List does not exist anymore. See Func_readAlignment");
         }
     else if ( m.size() == 1 ) 
         {
-        return RbPtr<RbLanguageObject>( m[0].get() );
+        return RbPtr<RbLanguageObject>( m[0] );
         }
     else
         {
@@ -239,7 +239,7 @@ void Func_readAlignment::formatError(RbFileManager& fm, std::string& errorStr) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_readAlignment::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_readAlignment::getArgumentRules( void ) const {
     
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -250,7 +250,7 @@ const RbPtr<ArgumentRules> Func_readAlignment::getArgumentRules( void ) const {
         rulesSet = true;
         }
             
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

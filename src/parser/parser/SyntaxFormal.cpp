@@ -131,6 +131,11 @@ RbPtr<const ArgumentRule> SyntaxFormal::getArgumentRule(void ) const {
 }
 
 
+RbPtr<ArgumentRule> SyntaxFormal::getArgumentRule(void ) {
+    return ( argRule );
+}
+
+
 RbPtr<const TypeSpec> SyntaxFormal::getArgumentTypeSpec(void) const {
     return RbPtr<const TypeSpec>( argType );
 }

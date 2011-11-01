@@ -40,7 +40,7 @@ public:
 	// Regular functions
 	bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
 	RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute operation
-	const RbPtr<ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
+    RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 	
 private:
@@ -75,7 +75,7 @@ Func_size<valType>* Func_size<valType>::clone( void ) const {
 template <typename valType> 
 RbPtr<RbLanguageObject> Func_size<valType>::execute( void ) {
     
-    const RbPtr<valType> val( static_cast<valType*> ( args[0]->getValue().get() ) ) ;
+    const RbPtr<valType> val( static_cast<valType*> ( (RbLanguageObject*)(*args)[0]->getValue() ) ) ;
     RbPtr<RbLanguageObject> size( new Natural( val->size() ) ); 
     return size;
     
@@ -84,7 +84,7 @@ RbPtr<RbLanguageObject> Func_size<valType>::execute( void ) {
 
 /** Get argument rules */
 template <typename valType>
-const RbPtr<ArgumentRules> Func_size<valType>::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_size<valType>::getArgumentRules( void ) const {
     
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -95,7 +95,7 @@ const RbPtr<ArgumentRules> Func_size<valType>::getArgumentRules( void ) const {
         rulesSet = true;
     }
     
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

@@ -135,7 +135,9 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(RbPtr<Environment> env) {
 
         RbPtr<MemberObject> theMemberObject( dynamic_cast<MemberObject*>((RbLanguageObject*)theNode->getValue()) );
 //        args.insert( args.begin(), new Argument( "", memberNode ) );
-        RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( (RbFunction*)theMemberObject->getMethods()->getFunction( *functionName, args ) ) );
+        // TODO: We shouldn't allow static casts!!!
+        MethodTable* mt = const_cast<MethodTable*>((const MethodTable*)theMemberObject->getMethods());
+        RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( (RbFunction*)mt->getFunction( *functionName, args ) ) );
         theMemberFunction->setMemberObject(theMemberObject);
         func = RbPtr<RbFunction>( theMemberFunction );
     }

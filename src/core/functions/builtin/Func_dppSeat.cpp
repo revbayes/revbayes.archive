@@ -57,8 +57,8 @@ Func_dppSeat* Func_dppSeat::clone( void ) const {
 /** Execute function */
 RbPtr<RbLanguageObject> Func_dppSeat::execute( void ) {
     
-	double concentration = static_cast<const RealPos*>( args[0]->getValue().get() )->getValue();
-	unsigned int num = static_cast<const Natural*>( args[1]->getValue().get() )->getValue();
+	double concentration = static_cast<const RealPos*>( (RbLanguageObject*)(*args)[0]->getValue() )->getValue();
+	unsigned int num = static_cast<const Natural*>( (RbLanguageObject*)(*args)[1]->getValue() )->getValue();
 	std::vector<int> tables;
 	std::vector<int> clusters( num, 0 );
 	
@@ -93,7 +93,7 @@ RbPtr<RbLanguageObject> Func_dppSeat::execute( void ) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_dppSeat::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_dppSeat::getArgumentRules( void ) const {
 	
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -105,7 +105,7 @@ const RbPtr<ArgumentRules> Func_dppSeat::getArgumentRules( void ) const {
         rulesSet = true;
     }
 	
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

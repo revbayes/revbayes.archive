@@ -147,7 +147,7 @@ bool TopologyNode::equals(RbPtr<const TopologyNode> node) const {
 }
 
 
-RbPtr<RbLanguageObject> TopologyNode::executeOperation(const std::string& name, Environment& args) {
+RbPtr<RbLanguageObject> TopologyNode::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
     
     if (name == "isTip") {
         return RbPtr<RbLanguageObject>( new RbBoolean(isTip()) );

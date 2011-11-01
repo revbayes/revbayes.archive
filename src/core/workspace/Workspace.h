@@ -94,7 +94,7 @@ class Workspace : public Environment {
         bool                        addTypeWithConstructor(const std::string& name, RbPtr<MemberObject> templ);         //!< Add type with constructor
         bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
         RbPtr<RbLanguageObject>     executeFunction(    const std::string&              name,
-                                                        const std::vector<RbPtr<Argument> >&   args) const;             //!< Execute function
+                                                        const std::vector<RbPtr<Argument> >&   args);                   //!< Execute function
         bool                        existsType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
 //        RbObject*                   findType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
         const VectorString&         getClassOfType(const TypeSpec& type) const;                                         //!< Get reference to class vector of type

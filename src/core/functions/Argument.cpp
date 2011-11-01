@@ -74,6 +74,11 @@ RbPtr<DAGNode> Argument::getDagNode(void) {
 }
 
 
+const std::string& Argument::getLabel(void) const {
+    return label;
+}
+
+
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& Argument::getTypeSpec(void) const {
     return typeSpec;

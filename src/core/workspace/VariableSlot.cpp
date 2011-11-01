@@ -61,7 +61,7 @@ VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp) : RbI
 /** Copy constructor (shallow copy). */
 VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), varTypeSpec(x.varTypeSpec), label(x.label) {
     
-    if ( x.variable.get() != NULL ) {
+    if ( x.variable != NULL ) {
         variable = x.variable;
     }
 }

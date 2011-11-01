@@ -47,14 +47,14 @@ Func_sqrt* Func_sqrt::clone( void ) const {
 /** Execute function */
 RbPtr<RbLanguageObject> Func_sqrt::execute( void ) {
     
-    const double x = static_cast<const RealPos*>( args[0]->getValue().get() )->getValue();
+    const double x = static_cast<const RealPos*>( (const RbLanguageObject*)(*args)[0]->getValue() )->getValue();
 
     return RbPtr<RbLanguageObject>( new RealPos( sqrt( x ) ) );
 }
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_sqrt::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_sqrt::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -65,7 +65,7 @@ const RbPtr<ArgumentRules> Func_sqrt::getArgumentRules( void ) const {
         rulesSet = true;
 		}
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

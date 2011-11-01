@@ -40,7 +40,7 @@ public:
 	// Regular functions
 	bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
 	RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute operation
-	const RbPtr<ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
+    RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 	
 private:
@@ -72,20 +72,20 @@ Func_unique<valType>* Func_unique<valType>::clone( void ) const {
 template <typename valType> 
 RbPtr<RbLanguageObject> Func_unique<valType>::execute( void ) {
     
-    RbPtr<valType> val( static_cast<valType*>( args[0]->getValue()->clone() ) );
+    RbPtr<valType> val( static_cast<valType*>( (*args)[0]->getValue()->clone() ) );
     
     if(val->size() == 0) 
-        return RbPtr<RbLanguageObject>( val.get() );
+        return RbPtr<RbLanguageObject>( (valType*)val );
     val->sort();
     val->unique();
-    return RbPtr<RbLanguageObject>( val.get() );
+    return RbPtr<RbLanguageObject>( (valType*)val );
 
 }
 
 
 /** Get argument rules */
 template <typename valType>
-const RbPtr<ArgumentRules> Func_unique<valType>::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_unique<valType>::getArgumentRules( void ) const {
     
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -96,7 +96,7 @@ const RbPtr<ArgumentRules> Func_unique<valType>::getArgumentRules( void ) const 
         rulesSet = true;
     }
     
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

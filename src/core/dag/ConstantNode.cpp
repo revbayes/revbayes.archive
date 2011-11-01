@@ -86,10 +86,27 @@ const VectorString& ConstantNode::getClass() const {
 }
 
 
+RbPtr<const RbLanguageObject> ConstantNode::getStoredValue(void) const {
+    return RbPtr<const RbLanguageObject>( value );
+}
+
+
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
 const TypeSpec& ConstantNode::getTypeSpec(void) const {
     return typeSpec;
 }
+
+
+RbPtr<const RbLanguageObject> ConstantNode::getValue(void) const {
+    return RbPtr<const RbLanguageObject>( value );
+}
+
+
+
+RbPtr<RbLanguageObject> ConstantNode::getValue(void) {
+    return ( value );
+}
+
 
 
 /** Keep the value. This should be only called when the variable is reassigned. We only call keep affected which calls keep for all children. */

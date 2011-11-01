@@ -38,7 +38,7 @@ class Func_vector :  public RbFunction {
         // Regular functions
         bool                        addAsChildOfArguments(void) { return false; }               //!< We do not wish that this function is added as a child of the arguments
     	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
-        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
+        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
@@ -72,16 +72,16 @@ template <typename valType, typename retType>
 RbPtr<RbLanguageObject> Func_vector<valType, retType>::execute( void ) {
 
     RbPtr<retType> tempVec( new retType() );
-    for ( size_t i = 0; i < args.size(); i++ )
-        tempVec->push_back( RbPtr<RbObject>( args[i]->getValue().get() ) );
+    for ( size_t i = 0; i < args->size(); i++ )
+        tempVec->push_back( RbPtr<RbObject>( (*args)[i]->getValue() ) );
 
-    return RbPtr<RbLanguageObject>( tempVec.get() );
+    return RbPtr<RbLanguageObject>( (retType*)tempVec );
 }
 
 
 /** Get argument rules */
 template <typename valType, typename retType>
-const RbPtr<ArgumentRules> Func_vector<valType, retType>::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_vector<valType, retType>::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -93,7 +93,7 @@ const RbPtr<ArgumentRules> Func_vector<valType, retType>::getArgumentRules( void
         rulesSet = true;
         }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

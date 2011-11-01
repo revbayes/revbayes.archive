@@ -54,7 +54,7 @@ Workspace::Workspace(RbPtr<Environment> parentSpace) : Environment(parentSpace),
 
 
 /** Constructor of user workspace */
-Workspace::Workspace(RbPtr<Workspace> parentSpace) : Environment(RbPtr<Environment>(parentSpace.get())), functionTable(new FunctionTable(globalWorkspace()->getFunctionTable())), typesInitialized(false) {
+Workspace::Workspace(RbPtr<Workspace> parentSpace) : Environment(RbPtr<Environment>(parentSpace)), functionTable(new FunctionTable(globalWorkspace()->getFunctionTable())), typesInitialized(false) {
 
 }
 
@@ -88,7 +88,7 @@ bool Workspace::addDistribution(const std::string& name, RbPtr<Distribution> dis
     PRINTF("Adding type %s to workspace\n", dist->getType().c_str());
     typeTable.insert(std::pair<std::string, RbPtr<RbObject> >(dist->getType(), RbPtr<RbObject>( dist->clone() )));
 
-    functionTable->addFunction(name, new ConstructorFunction(RbPtr<MemberObject>( dist.get() ) ) );
+    functionTable->addFunction(name, new ConstructorFunction(RbPtr<MemberObject>( dist ) ) );
     functionTable->addFunction("d" + name, new DistributionFunction(dist, DistributionFunction::DENSITY));
     functionTable->addFunction("r" + name, new DistributionFunction((Distribution*)(dist->clone()), DistributionFunction::RVALUE));
 
@@ -106,8 +106,8 @@ bool Workspace::addDistribution(const std::string& name, RbPtr<DistributionConti
 
     typeTable.insert(std::pair<std::string, RbObject*>(name, dist->clone()));
 
-    functionTable->addFunction(name, new ConstructorFunction(RbPtr<MemberObject>( dist.get() )));
-    functionTable->addFunction("d" + name, new DistributionFunction(RbPtr<Distribution>( dist.get() ), DistributionFunction::DENSITY));
+    functionTable->addFunction(name, new ConstructorFunction(RbPtr<MemberObject>( dist )));
+    functionTable->addFunction("d" + name, new DistributionFunction(RbPtr<Distribution>( dist ), DistributionFunction::DENSITY));
     functionTable->addFunction("r" + name, new DistributionFunction(RbPtr<Distribution>(dist->clone()), DistributionFunction::RVALUE));
     functionTable->addFunction("p" + name, new DistributionFunction(RbPtr<Distribution>(dist->clone()), DistributionFunction::PROB));
     functionTable->addFunction("q" + name, new DistributionFunction(RbPtr<Distribution>(dist->clone()), DistributionFunction::QUANTILE));
@@ -190,7 +190,7 @@ const VectorString& Workspace::getClass() const {
 
 
 /** Execute function to get its value (workspaces only evaluate functions once) */
-RbPtr<RbLanguageObject> Workspace::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) const {
+RbPtr<RbLanguageObject> Workspace::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
     /* Using this calling convention indicates that we are only interested in
        evaluating the function once */
@@ -204,7 +204,7 @@ bool Workspace::existsType( const TypeSpec& name ) const {
     std::map<std::string, RbPtr<RbObject> >::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) {
         if ( parentEnvironment != NULL )
-            return static_cast<Workspace*>( parentEnvironment.get() )->existsType( name );
+            return static_cast<Workspace*>( (Environment*)parentEnvironment )->existsType( name );
         else
             return false;
     }

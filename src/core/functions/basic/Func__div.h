@@ -37,7 +37,7 @@ class Func__div :  public RbFunction {
 
         // Regular functions
     	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
-        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
+        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
@@ -74,8 +74,8 @@ Func__div<firstValType, secondValType, retType>* Func__div<firstValType, secondV
 template <typename firstValType, typename secondValType, typename retType>
 RbPtr<RbLanguageObject> Func__div<firstValType,secondValType,retType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( args[0]->getValue().get() ) );
-    const RbPtr<secondValType> val2( static_cast<secondValType*>( args[1]->getValue().get() ) );
+    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( (RbLanguageObject*)(*args)[0]->getValue() ) );
+    const RbPtr<secondValType> val2( static_cast<secondValType*>( (RbLanguageObject*)(*args)[1]->getValue() ) );
     retType              quot = *val1 / *val2;
     
     return RbPtr<RbLanguageObject>(quot.clone());
@@ -86,8 +86,8 @@ RbPtr<RbLanguageObject> Func__div<firstValType,secondValType,retType>::execute( 
 template <>
 RbPtr<RbLanguageObject> Func__div<Integer,Integer,Real>::execute( void ) {
 
-    double val1 = static_cast<const Integer*>( args[0]->getValue().get() )->getValue();
-    double val2 = static_cast<const Integer*>( args[1]->getValue().get() )->getValue();
+    double val1 = static_cast<const Integer*>( (const RbLanguageObject*)(*args)[0]->getValue() )->getValue();
+    double val2 = static_cast<const Integer*>( (const RbLanguageObject*)(*args)[1]->getValue() )->getValue();
     
     return RbPtr<RbLanguageObject>( new Real( val1 / val2 ) );
 }
@@ -95,7 +95,7 @@ RbPtr<RbLanguageObject> Func__div<Integer,Integer,Real>::execute( void ) {
 
 /** Get argument rules */
 template <typename firstValType, typename secondValType, typename retType>
-const RbPtr<ArgumentRules> Func__div<firstValType, secondValType, retType>::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func__div<firstValType, secondValType, retType>::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -107,7 +107,7 @@ const RbPtr<ArgumentRules> Func__div<firstValType, secondValType, retType>::getA
         rulesSet = true;
         }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

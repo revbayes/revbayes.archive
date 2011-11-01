@@ -46,13 +46,13 @@ Func_setval* Func_setval::clone( void ) const {
 RbPtr<RbLanguageObject> Func_setval::execute( void ) {
 
     // Get the stochastic node from the variable reference
-    RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( args[0]->getDagNodePtr().get() ) );
+    RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( (DAGNode*)(*args)[0]->getDagNode() ) );
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
     // The following call will throw an error if the value type is wrong
     std::set<RbPtr<StochasticNode> > affected;
-    theNode->setValue( RbPtr<RbLanguageObject>( args[1]->getValue()->clone() ), affected );
+    theNode->setValue( RbPtr<RbLanguageObject>( (RbLanguageObject*)(*args)[1]->getValue()->clone() ), affected );
 
     // todo: Do we want to update the affected nodes?
 
@@ -61,7 +61,7 @@ RbPtr<RbLanguageObject> Func_setval::execute( void ) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_setval::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_setval::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -73,7 +73,7 @@ const RbPtr<ArgumentRules> Func_setval::getArgumentRules( void ) const {
         rulesSet = true;
     }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

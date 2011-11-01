@@ -28,7 +28,7 @@
 const TypeSpec MethodTable::typeSpec(MethodTable_name);
 
 /** Basic constructor, empty table with or without parent */
-MethodTable::MethodTable(RbPtr<MethodTable> parent) : FunctionTable( RbPtr<FunctionTable>(parent.get()) ) {
+MethodTable::MethodTable(RbPtr<MethodTable> parent) : FunctionTable( RbPtr<FunctionTable>(parent) ) {
 
 }
 
@@ -55,7 +55,7 @@ void MethodTable::addFunction( const std::string name, RbPtr<RbFunction> func ) 
     FunctionTable::addFunction( name, func );
 
     if ( func->isType( MemberFunction_name ) )
-        static_cast<MemberFunction*>( func.get() )->setMethodName( name );
+        static_cast<MemberFunction*>( (RbFunction*)func )->setMethodName( name );
 }
 
 

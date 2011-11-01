@@ -71,7 +71,7 @@ RbPtr<const MemberRules> Move_mscale::getMemberRules( void ) const {
         rulesSet = true;
     }
 
-    return RbPtr<MemberRules>( memberRules );
+    return RbPtr<const MemberRules>( memberRules );
 }
 
 

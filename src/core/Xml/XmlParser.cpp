@@ -78,7 +78,7 @@ RbPtr<XmlDocument> XmlParser::parse(std::istream &instream) {
                     instNode->setAttribute(it->first, it->second);
                     }
                 // add this element to the document on the top level
-                doc->addXmlElement( RbPtr<XmlElement>( instNode.get() ) );
+                doc->addXmlElement( RbPtr<XmlElement>( instNode ) );
                 }
             }
         else if (tag.isClosingTag()) 
@@ -99,7 +99,7 @@ RbPtr<XmlDocument> XmlParser::parse(std::istream &instream) {
                 }
                 
             // add this element to the document on the top level
-            doc->addXmlElement( RbPtr<XmlElement>( element.get() ) );
+            doc->addXmlElement( RbPtr<XmlElement>( element ) );
             }
         
         skipWhiteSpace(instream);
@@ -175,7 +175,7 @@ RbPtr<XmlElementAttributed> XmlParser::readTagContents(std::istream &instream, c
             throw RbException("Excpected closing tag after text content while reading xml file but didn't get one.");
         }
         // return the xml element
-        return RbPtr<XmlElementAttributed>( element.get() );
+        return RbPtr<XmlElementAttributed>( element );
     }
     else {
         // this element contains children, i.e. it is a xml element attributed instance
@@ -201,7 +201,7 @@ RbPtr<XmlElementAttributed> XmlParser::readTagContents(std::istream &instream, c
                         child->setAttribute(it->first,it->second);
                     }
                     // add the child to the parent
-                    element->addSubElement( RbPtr<XmlElement>( child.get() ) );
+                    element->addSubElement( RbPtr<XmlElement>( child ) );
                 }
             }
             else {
@@ -212,13 +212,13 @@ RbPtr<XmlElementAttributed> XmlParser::readTagContents(std::istream &instream, c
                     child->setAttribute(it->first,it->second);
                 }
                 // add the child to the parent
-                element->addSubElement(RbPtr<XmlElement>( child.get() ) );
+                element->addSubElement(RbPtr<XmlElement>( child ) );
             }
             
             // read the next tag
             tag = readTag(instream);
         }
-        return RbPtr<XmlElementAttributed>( element.get() );
+        return RbPtr<XmlElementAttributed>( element );
     }
 }
 

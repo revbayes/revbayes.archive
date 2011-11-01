@@ -31,13 +31,13 @@
 
 
 /** Basic constructor. */
-RbFunction::RbFunction(void) : RbInternal() {
+RbFunction::RbFunction(void) : RbInternal(), args( new Environment() ) {
 
     argsProcessed = false;
 }
 
 /** Copy constructor. */
-RbFunction::RbFunction(const RbFunction &x) : RbInternal(x) {
+RbFunction::RbFunction(const RbFunction &x) : RbInternal(x), args( new Environment() ) {
     
     for (size_t i=0; i<x.args->size(); i++) {
         const std::string &name = x.args->getName(i);
@@ -147,7 +147,7 @@ void RbFunction::printValue(std::ostream& o) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
-bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedArgs, RbPtr<VectorInteger> matchScore) {
+bool  RbFunction::processArguments( std::vector<RbPtr<Argument> > passedArgs, RbPtr<VectorInteger> matchScore) {
     
     bool    conversionNeeded;
     int     aLargeNumber = 10000;   // Needs to be larger than the max depth of the class hierarchy
@@ -155,7 +155,7 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
     /*********************  0. Initialization  **********************/
 
     /* Get the argument rules */
-    const RbPtr<const ArgumentRules>& theRules = getArgumentRules();
+    RbPtr<const ArgumentRules> theRules = getArgumentRules();
 
     /* Get the number of argument rules */
     size_t nRules = theRules->size();
@@ -207,7 +207,7 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
         for (size_t i=nRules-1; i<passedArgs.size(); i++) {
 
             RbPtr<Argument> theArgument = passedArgs[i];
-            RbPtr<DAGNode> theDAGNode = theArgument->getDagNode();
+            RbPtr<const DAGNode> theDAGNode( (const DAGNode*)theArgument->getDagNode() );
             if ( theDAGNode == NULL )
                 return false;   // This should never happen
             if ( !(*theRules)[nRules-1]->isArgumentValid( theDAGNode, conversionNeeded ) )
@@ -244,13 +244,13 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
 
             if ( passedArgs[i]->getLabel() == (*theRules)[j]->getArgumentLabel() ) {
 
-                if ( (*theRules)[j]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded) && !filled[j] ) {
+                if ( (*theRules)[j]->isArgumentValid((const DAGNode*)passedArgs[i]->getDagNode(), conversionNeeded) && !filled[j] ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     // add this variable to the argument list
-                    args[j]->setVariable( passedArgs[i]->getVariable() );
+                    (*args)[j]->setVariable( passedArgs[i]->getVariable() );
                 }
                 else
                     return false;
@@ -288,13 +288,13 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
         if (nMatches != 1)
             return false;
  
-        if ( (*theRules)[matchRule]->isArgumentValid(passedArgs[i]->getDagNode(), conversionNeeded) ) {
+        if ( (*theRules)[matchRule]->isArgumentValid((const DAGNode*)passedArgs[i]->getDagNode(), conversionNeeded) ) {
             taken[i]                  = true;
             filled[matchRule]         = true;
             passedArgIndex[matchRule] = static_cast<int>( i );
             
             // add this variable to the argument list
-            args[matchRule]->setVariable( passedArgs[i]->getVariable() );
+            (*args)[matchRule]->setVariable( passedArgs[i]->getVariable() );
         }
         else
             return false;
@@ -315,13 +315,13 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
 
             if ( filled[j] == false ) {
                 RbPtr<DAGNode> argVar = passedArgs[i]->getDagNode();
-                if ( (*theRules)[j]->isArgumentValid( argVar, conversionNeeded ) ) {
+                if ( (*theRules)[j]->isArgumentValid( (const DAGNode*)argVar, conversionNeeded ) ) {
                     taken[i]          = true;
                     filled[j]         = true;
                     passedArgIndex[j] = static_cast<int>( i );
                     
                     // add this variable to the argument list
-                    args[j]->setVariable( passedArgs[i]->getVariable() );
+                    (*args)[j]->setVariable( passedArgs[i]->getVariable() );
                     
                     break;
                 }
@@ -342,7 +342,9 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
         if ( !(*theRules)[i]->hasDefault() )
             return false;
 
-        args[i]->setVariable( (*theRules)[i]->getDefaultVariable() );
+        // TODO: We shouldn't use const-cast but instead implement a non-const function
+        RbPtr<ArgumentRule> theRule = (*theRules)[i];
+        (*args)[i]->setVariable( theRule->getDefaultVariable() );
     }
 
     /*********************  6. Count match score and return  **********************/
@@ -381,7 +383,7 @@ bool  RbFunction::processArguments(const std::vector<RbPtr<Argument> >& passedAr
     for ( ; argIndex < numFinalArgs; argIndex++ ) {
     
         
-        const VectorString& argClass = args[argIndex]->getDagNodePtr()->getValue()->getClass();
+        const VectorString& argClass = (*args)[argIndex]->getValue()->getClass();
         size_t j;
         for (j=0; j<argClass.size(); j++)
             if ( argClass[j] == (*theRules)[nRules-1]->getArgumentType() )
@@ -405,12 +407,12 @@ std::string RbFunction::richInfo(void) const {
     o << getType() << ": " << std::endl;
     
     if (argsProcessed)
-        o << "Arguments processed; there are " << args.size() << " values." << std::endl;
+        o << "Arguments processed; there are " << args->size() << " values." << std::endl;
     else
-        o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
+        o << "Arguments not processed; there are " << args->size() << " slots in the frame." << std::endl;
     
-    for ( size_t i = 0;  i < args.size(); i++ ) {
-        o << " args[" << i << "] = " << *args[i]->getValue() << std::endl;
+    for ( size_t i = 0;  i < args->size(); i++ ) {
+        o << " args[" << i << "] = " << *(*args)[i]->getValue() << std::endl;
     }
 
     return o.str();

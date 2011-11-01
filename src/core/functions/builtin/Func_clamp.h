@@ -39,7 +39,7 @@ class Func_clamp :  public RbFunction {
         // Regular functions
         bool                        addAsChildOfArguments(void) { return false; }       //!< We do not wish that this function is added as a child of the arguments
         RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute operation
-        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
+        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
     
     private:

@@ -79,7 +79,7 @@ class RbFunction :  public RbInternal {
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // RbFunction function you may want to override
-        virtual bool                                    processArguments(const std::vector<RbPtr<Argument> >&   passedArgs,
+        virtual bool                                    processArguments(std::vector<RbPtr<Argument> >   passedArgs,
                                                                          RbPtr<VectorInteger>                  matchScore = RbPtr<VectorInteger>::getNullPtr());                  //!< Process args, return a match score if pointer is not null
         virtual bool                                    addAsChildOfArguments(void) { return true; }                                        //!< Should we add the node containing this function as a child of its parameters (arguments)? False in cases such as constructor functions and true in cases like math functions
         virtual bool                                    throws(void) const { return false; }                                                      //!< Does the function throw exceptions?

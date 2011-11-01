@@ -37,7 +37,7 @@ class Func__sub :  public RbFunction {
 
         // Regular functions
     	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
-        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
+        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
@@ -75,8 +75,8 @@ Func__sub<firstValType, secondValType, retType>* Func__sub<firstValType, secondV
 template <typename firstValType, typename secondValType, typename retType>
 RbPtr<RbLanguageObject> Func__sub<firstValType,secondValType,retType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( args[0]->getValue().get() ) );
-    const RbPtr<secondValType> val2( static_cast<secondValType*>( args[1]->getValue().get() ) );
+    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( (RbLanguageObject*)(*args)[0]->getValue() ) );
+    const RbPtr<secondValType> val2( static_cast<secondValType*>( (RbLanguageObject*)(*args)[1]->getValue() ) );
     retType              diff = *val1 - *val2;
     
     return RbPtr<RbLanguageObject>( diff.clone() );
@@ -85,7 +85,7 @@ RbPtr<RbLanguageObject> Func__sub<firstValType,secondValType,retType>::execute( 
 
 /** Get argument rules */
 template <typename firstValType, typename secondValType, typename retType>
-const RbPtr<ArgumentRules> Func__sub<firstValType, secondValType, retType>::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func__sub<firstValType, secondValType, retType>::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -97,7 +97,7 @@ const RbPtr<ArgumentRules> Func__sub<firstValType, secondValType, retType>::getA
         rulesSet = true;
         }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

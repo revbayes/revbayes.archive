@@ -52,7 +52,7 @@ class DistributionFunction :  public RbFunction {
 
         // DistributionFunction functions
         RbPtr<RbLanguageObject>     execute(void);                                                          //!< Execute function
-        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                                           //!< Get argument rules
+        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type spec of return value
         bool                        processArguments(   const std::vector<RbPtr<Argument> >&   args,
                                                      RbPtr<VectorInteger>          matchScore=RbPtr<VectorInteger>::getNullPtr());   //!< Process args, set member variables of distribution

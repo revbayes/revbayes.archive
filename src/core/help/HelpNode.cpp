@@ -125,7 +125,7 @@ void HelpNode::print(void) {
 /** Used for printing the help tree in a nicely indented manner */
 void HelpNode::showNode(RbPtr<HelpNode> p, size_t indent) {
 
-    if (p.get() != NULL)
+    if (p != NULL)
         {
         for (size_t i=0; i<indent; i++)
             std::cout << " ";

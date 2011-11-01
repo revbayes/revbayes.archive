@@ -35,7 +35,7 @@ class Func__unot :  public RbFunction {
 
         // Regular functions
     	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
-        const RbPtr<ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
+        RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     private:
@@ -72,7 +72,7 @@ Func__unot<valType>* Func__unot<valType>::clone( void ) const {
 template <typename valType>
 RbPtr<RbLanguageObject> Func__unot<valType>::execute( void ) {
 
-    const RbPtr<valType> val( static_cast<valType*> ( args[0]->getValue().get() ) );
+    const RbPtr<valType> val( static_cast<valType*> ( (RbLanguageObject*)(*args)[0]->getValue() ) );
     RbBoolean         res = ! (*val);
 
     return RbPtr<RbLanguageObject>( res.clone() );
@@ -81,7 +81,7 @@ RbPtr<RbLanguageObject> Func__unot<valType>::execute( void ) {
 
 /** Get argument rules */
 template <typename valType>
-const RbPtr<ArgumentRules> Func__unot<valType>::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func__unot<valType>::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -92,7 +92,7 @@ const RbPtr<ArgumentRules> Func__unot<valType>::getArgumentRules( void ) const {
         rulesSet = true;
         }
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

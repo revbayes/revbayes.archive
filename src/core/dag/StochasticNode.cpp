@@ -301,6 +301,17 @@ double StochasticNode::calculateLnProbability( void ) {
 }
 
 
+
+RbPtr<const Distribution> StochasticNode::getDistribution(void) const {
+    return RbPtr<const Distribution>( distribution );
+}
+
+
+RbPtr<Distribution> StochasticNode::getDistribution(void) {
+    return ( distribution );
+}
+
+
 /** Get the ln probability ratio of this node */
 double StochasticNode::getLnProbabilityRatio( void ) const {
 

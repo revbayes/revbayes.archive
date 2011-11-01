@@ -49,11 +49,11 @@ RbPtr<RbLanguageObject> Func_clear::execute( void ) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_clear::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_clear::getArgumentRules( void ) const {
     
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

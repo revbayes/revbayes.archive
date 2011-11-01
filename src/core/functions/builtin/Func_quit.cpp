@@ -57,10 +57,10 @@ RbPtr<RbLanguageObject> Func_quit::execute( void ) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_quit::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_quit::getArgumentRules( void ) const {
 
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

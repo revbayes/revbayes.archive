@@ -56,13 +56,13 @@ Func_abs* Func_abs::clone( void ) const {
 /** Execute function */
 RbPtr<RbLanguageObject> Func_abs::execute( void ) {
     
-    const double x = static_cast<const Real*>( args[0]->getValue().get() )->getValue();
+    const double x = static_cast<const Real*>( (RbLanguageObject*)(*args)[0]->getValue() )->getValue();
     return RbPtr<RbLanguageObject>( new RealPos( fabs(x) ) );
 }
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_abs::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_abs::getArgumentRules( void ) const {
     
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -73,7 +73,7 @@ const RbPtr<ArgumentRules> Func_abs::getArgumentRules( void ) const {
         rulesSet = true;
     }
     
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

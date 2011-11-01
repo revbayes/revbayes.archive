@@ -80,9 +80,9 @@ const VectorString& MemberFunction::getClass(void) const {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> MemberFunction::getArgumentRules(void) const {
+RbPtr<const ArgumentRules> MemberFunction::getArgumentRules(void) const {
 
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 
@@ -106,12 +106,12 @@ std::string MemberFunction::richInfo(void) const {
     o << "MemberFunction: " << std::endl;
     
     if ( argsProcessed )
-        o << "Arguments processed; there are " << args.size() << " arguments." << std::endl;
+        o << "Arguments processed; there are " << args->size() << " arguments." << std::endl;
     else
         o << "Arguments not processed" << std::endl;
     
-    for( size_t i = 0; i < args.size(); i++ )
-        o << " args[" << i << "] = " << args[i]->getValue() << std::endl;
+    for( size_t i = 0; i < args->size(); i++ )
+        o << " args[" << i << "] = " << (*args)[i]->getValue() << std::endl;
 
     return o.str();
 }

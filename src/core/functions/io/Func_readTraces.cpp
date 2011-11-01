@@ -46,7 +46,7 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 /** Execute function */
 RbPtr<RbLanguageObject> Func_readTraces::execute( void ) {
     // get the information from the arguments for reading the file
-    const RbPtr<RbString> fn( static_cast<RbString*>( args[0]->getValue().get() ) );
+    RbPtr<RbString> fn( static_cast<RbString*>( (RbLanguageObject*)(*args)[0]->getValue() ) );
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn->getValue() );
@@ -95,7 +95,7 @@ RbPtr<RbLanguageObject> Func_readTraces::execute( void ) {
         bool hasHeaderBeenRead = false;
         
         /* Open file */
-        std::string filename = static_cast<const RbString*>( args[0]->getValue().get() )->getValue();
+        std::string filename = static_cast<const RbString*>( (const RbLanguageObject*)(*args)[0]->getValue() )->getValue();
         std::ifstream inFile( filename.c_str() );
         
         if ( !inFile )
@@ -150,7 +150,7 @@ RbPtr<RbLanguageObject> Func_readTraces::execute( void ) {
                     t->setParameterName(parmName);
                     t->setFileName(filename);
                     
-                    data->push_back( RbPtr<RbObject>( t.get() ) );
+                    data->push_back( RbPtr<RbObject>( t ) );
                 }
                 
                 hasHeaderBeenRead = true;
@@ -160,7 +160,7 @@ RbPtr<RbLanguageObject> Func_readTraces::execute( void ) {
             
             // adding values to the Tracess
             for (size_t j=0; j<columns.size(); j++) {
-                RbPtr<Trace> t = RbPtr<Trace>( static_cast<Trace*>( (*data)[j].get() ) );
+                RbPtr<Trace> t = RbPtr<Trace>( static_cast<Trace*>( (RbLanguageObject*)(*data)[j] ) );
                 std::string tmp = columns[j];
                 double d = 1.0;
                 t->addObject(d);
@@ -198,7 +198,7 @@ void Func_readTraces::formatError(RbFileManager& fm, std::string& errorStr) {
 
 
 /** Get argument rules */
-const RbPtr<ArgumentRules> Func_readTraces::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_readTraces::getArgumentRules( void ) const {
     
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -209,7 +209,7 @@ const RbPtr<ArgumentRules> Func_readTraces::getArgumentRules( void ) const {
         rulesSet = true;
     }
     
-    return argumentRules;
+    return RbPtr<const ArgumentRules>( argumentRules );
 }
 
 

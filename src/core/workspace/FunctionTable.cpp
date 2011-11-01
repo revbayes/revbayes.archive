@@ -83,7 +83,7 @@ void FunctionTable::addFunction(const std::string name, RbPtr<RbFunction> func) 
             throw RbException(msg.str());
         }
     }
-    table.insert(std::pair<std::string, RbPtr<RbFunction> >(name, func.get()));
+    table.insert(std::pair<std::string, RbPtr<RbFunction> >(name, func));
 }
 
 
@@ -116,7 +116,7 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 /** Execute function and get its variable value (evaluate once) */
-RbPtr<RbLanguageObject> FunctionTable::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) const {
+RbPtr<RbLanguageObject> FunctionTable::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
     RbPtr<RbFunction>         theFunction = findFunction(name, args);
     RbPtr<RbLanguageObject>   theValue    = theFunction->execute();
@@ -159,21 +159,23 @@ std::vector<RbPtr<RbFunction> > FunctionTable::findFunctions(const std::string& 
 
 
 /** Find function (also processes arguments) */
-RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) const {
+RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
-    std::pair<std::multimap<std::string, RbPtr<RbFunction> >::const_iterator,
-              std::multimap<std::string, RbPtr<RbFunction> >::const_iterator> retVal;
+    std::pair<std::multimap<std::string, RbPtr<RbFunction> >::iterator,
+              std::multimap<std::string, RbPtr<RbFunction> >::iterator> retVal;
 
     size_t count = table.count(name);
     if (count == 0) {
-        if (parentTable != NULL)
-            return parentTable->findFunction(name, args);
+        if (parentTable != NULL) {// TODO: We shouldn't allow static casts!!!
+            FunctionTable* pt = const_cast<FunctionTable*>((const FunctionTable*)parentTable);
+            return pt->findFunction(name, args);
+        }
         else
             throw RbException("No function named '"+ name + "'");
     }
     retVal = table.equal_range(name);
     if (count == 1) {
-        if (retVal.first->second.get()->processArguments(args) == false) {
+        if (retVal.first->second->processArguments(args) == false) {
             
             std::ostringstream msg;
             msg << "Argument mismatch for call to function '" << name << "'. Correct usage is:" << std::endl;
@@ -189,9 +191,9 @@ RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std
         RbPtr<RbFunction> bestMatch;
 
         bool ambiguous = false;
-        std::multimap<std::string, RbPtr<RbFunction> >::const_iterator it;
+        std::multimap<std::string, RbPtr<RbFunction> >::iterator it;
         for (it=retVal.first; it!=retVal.second; it++) {
-            if ( (*it).second.get()->processArguments(args, matchScore) == true ) {
+            if ( (*it).second->processArguments(args, matchScore) == true ) {
                 if ( bestMatch == NULL ) {
                     bestScore = *matchScore;
                     bestMatch = it->second;
@@ -218,7 +220,7 @@ RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std
         /* Delete all processed arguments except those of the best matching function, if it is ambiguous */
         for ( it = retVal.first; it != retVal.second; it++ ) {
             if ( !( (*it).second == bestMatch && ambiguous == false ) )
-                (*it).second.get()->clearArguments();
+                (*it).second->clearArguments();
         }
         if ( bestMatch == NULL || ambiguous == true ) {
             std::ostringstream msg;
@@ -249,7 +251,7 @@ const VectorString& FunctionTable::getClass() const {
 
 
 /** Get function copy (for repeated evaluation in a DeterministicNode) */
-RbPtr<RbFunction> FunctionTable::getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) const {
+RbPtr<RbFunction> FunctionTable::getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     
     // find the template function
     RbPtr<RbFunction> theFunction = findFunction(name, args);
@@ -271,7 +273,7 @@ const TypeSpec& FunctionTable::getTypeSpec(void) const {
 
 
 /** Check if two formals are unique */
-bool FunctionTable::isDistinctFormal(const RbPtr<ArgumentRules> x, const RbPtr<ArgumentRules> y) const  {
+bool FunctionTable::isDistinctFormal(RbPtr<const ArgumentRules> x, RbPtr<const ArgumentRules> y) const  {
 
     /* Check that all labels are unique in both sets of argument rules */
     for (size_t i=0; i<x->size(); i++) {

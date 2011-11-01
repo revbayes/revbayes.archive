@@ -16,6 +16,7 @@
 #ifndef SyntaxBinaryExpr_H
 #define SyntaxBinaryExpr_H
 
+#include "RbPtr.h"
 #include "SyntaxElement.h"
 
 #include <iostream>

@@ -43,8 +43,8 @@ Func__range* Func__range::clone( void ) const {
 /** Execute function */
 RbPtr<RbLanguageObject> Func__range::execute( void ) {
 
-    int first = static_cast<const Integer*>( args[0]->getValue().get() )->getValue();
-    int last  = static_cast<const Integer*>( args[1]->getValue().get() )->getValue();
+    int first = static_cast<const Integer*>( (RbLanguageObject*)(*args)[0]->getValue() )->getValue();
+    int last  = static_cast<const Integer*>( (RbLanguageObject*)(*args)[1]->getValue() )->getValue();
 
     std::vector<int> temp;
     for ( int i = first; i <= last; i++ )

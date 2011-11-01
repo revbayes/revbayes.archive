@@ -40,7 +40,7 @@ class Move : public ConstantMemberObject {
 
         // Member methods
         virtual RbPtr<const MethodTable>    getMethods(void) const;                                                 //!< Get methods
-        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const RbPtr<const Environment>& args); //!< Map method call to internal functions
+        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args); //!< Map method call to internal functions
         void                                setMemberVariable(const std::string& name, RbPtr<Variable> var);        //!< set the member variables
 
         // Move functions you have to override

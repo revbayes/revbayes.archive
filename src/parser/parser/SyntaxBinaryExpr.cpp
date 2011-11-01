@@ -16,6 +16,7 @@
 #include <iostream>
 #include <list>
 #include <sstream>
+#include <vector>
 
 #include "Argument.h"
 #include "ConstantNode.h"

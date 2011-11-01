@@ -55,16 +55,16 @@ class FunctionTable : public RbInternal {
         virtual void                            addFunction(const std::string name, RbPtr<RbFunction> func);                            //!< Add function
         void                                    clear(void);                                                                            //!< Clear table
         RbPtr<RbLanguageObject>                 executeFunction(const std::string&                   name,
-                                                                const std::vector<RbPtr<Argument> >& args) const;                       //!< Evaluate function (once)
+                                                                const std::vector<RbPtr<Argument> >& args);                             //!< Evaluate function (once)
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
         std::vector<RbPtr<RbFunction> >         findFunctions(const std::string& name) const;                                           //!< Return functions matching name
-        RbPtr<RbFunction>                       getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) const;  //!< Get function (a copy)
-        bool                                    isDistinctFormal(const RbPtr<ArgumentRules> x, const RbPtr<ArgumentRules> y) const;                 //!< Are formals unique?
-        void                                    setParentTable(RbPtr<const FunctionTable> table) { parentTable = table; }                     //!< Set parent table
+        RbPtr<RbFunction>                       getFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args);        //!< Get function (a copy)
+        bool                                    isDistinctFormal(RbPtr<const ArgumentRules> x, RbPtr<const ArgumentRules> y) const;     //!< Are formals unique?
+        void                                    setParentTable(RbPtr<const FunctionTable> table) { parentTable = table; }               //!< Set parent table
 
     protected:
         RbPtr<RbFunction>                       findFunction(const std::string&                     name,
-                                                             const std::vector<RbPtr<Argument> >&   args) const;                        //!< Find function, process args
+                                                             const std::vector<RbPtr<Argument> >&   args);                              //!< Find function, process args
         
         // Member variables
         std::multimap<std::string, RbPtr<RbFunction> >  table;                                                                          //!< Table of functions
