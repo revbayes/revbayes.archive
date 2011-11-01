@@ -184,10 +184,6 @@ void DeterministicNode::getAffected( std::set<RbPtr<StochasticNode> >& affected 
         }
     }
     
-    
-    // TODO: for now we call an immediate update after each touch
-    update();
-    
 }
 
 
@@ -222,10 +218,6 @@ RbPtr<const RbLanguageObject> DeterministicNode::getStoredValue( void ) const {
 
     if ( !touched )
         return RbPtr<const RbLanguageObject>(value);
-
-    if ( !changed )
-        throw RbException("Cannot return stored value of deterministic node when it was touched but not changed!");
-//        update();
     
     return RbPtr<const RbLanguageObject>(storedValue);
 }
@@ -235,8 +227,7 @@ RbPtr<const RbLanguageObject> DeterministicNode::getStoredValue( void ) const {
 RbPtr<const RbLanguageObject> DeterministicNode::getValue( void ) const {
     
     if ( touched && !changed )
-        throw RbException("Cannot return value of deterministic node when it was touched but not changed!");
-    //        update();
+        const_cast<DeterministicNode*>(this)->update();
     
     return RbPtr<const RbLanguageObject>(value);
 }
@@ -245,8 +236,7 @@ RbPtr<const RbLanguageObject> DeterministicNode::getValue( void ) const {
 RbPtr<RbLanguageObject> DeterministicNode::getValue( void ) {
     
     if ( touched && !changed )
-        throw RbException("Cannot return value of deterministic node when it was touched but not changed!");
-    //        update();
+        update();
     
     return RbPtr<RbLanguageObject>(value);
 }
@@ -372,7 +362,7 @@ void DeterministicNode::swapParentNode( RbPtr<DAGNode> oldParent, RbPtr<DAGNode>
 
 /** Tell affected nodes that upstream value has been reset */
 void DeterministicNode::touchAffected( void ) {
-
+    
     // only if this node is not touched we start touching all affected nodes
     // this pervents infinite recursion in statement like "a <- a + b"
     if (!touched) {
@@ -382,15 +372,12 @@ void DeterministicNode::touchAffected( void ) {
             (*i)->touchAffected();
     }
     
-    
-    // TODO: for now we call an immediate update after each touch
-    update();
 }
 
 /** Update value and stored value after node and its surroundings have been touched by a move */
 void DeterministicNode::update( void ) {
     
-//    if ( touched && !changed ) {
+    if ( touched && !changed ) {
         
 //        assert( storedValue == NULL );
         
@@ -404,7 +391,7 @@ void DeterministicNode::update( void ) {
         // mark as changed
         changed         = true;
         
-//    }
+    }
 }
 
 
