@@ -390,7 +390,7 @@ void DeterministicNode::touchAffected( void ) {
 /** Update value and stored value after node and its surroundings have been touched by a move */
 void DeterministicNode::update( void ) {
     
-    if ( touched && !changed ) {
+//    if ( touched && !changed ) {
         
 //        assert( storedValue == NULL );
         
@@ -404,7 +404,7 @@ void DeterministicNode::update( void ) {
         // mark as changed
         changed         = true;
         
-    }
+//    }
 }
 
 
