@@ -335,9 +335,9 @@ expression  :   constant                    { $$ = $1; }
             |   tildeAssign                 { $$ = $1; }
             |   tildeIidAssign              { $$ = $1; }
 
-|   functionCall                { $$ = new RbPtr<SyntaxElement>($1->get()); RbMemoryManager::rbMemoryManager().decrementCountForAddress($1->get()); }
+            |   functionCall                { $$ = new RbPtr<SyntaxElement>((SyntaxFunctionCall*)(*$1)); RbMemoryManager::rbMemoryManager().decrementCountForAddress($1); }
 
-            |   variable                    { $$ = new RbPtr<SyntaxElement>($1->get()); RbMemoryManager::rbMemoryManager().decrementCountForAddress($1->get()); }
+            |   variable                    { $$ = new RbPtr<SyntaxElement>((SyntaxVariable*)(*$1)); RbMemoryManager::rbMemoryManager().decrementCountForAddress($1); }
             ;
 
 arrowAssign     :   variable ARROW_ASSIGN expression
@@ -591,7 +591,7 @@ memberDefs      :   /* empty */                 { $$ = new RbPtr<std::list<RbPtr
                 |   memberDefs '\n'             { $$ = $1; }
                 ;
 
-memberDef   :   formal      { $$ = new RbPtr<SyntaxElement>( $1->get() ); }
+memberDef   :   formal      { $$ = new RbPtr<SyntaxElement>( (SyntaxFormal*)$1 ); }
             |   functionDef { $$ = $1; }
             ;
 

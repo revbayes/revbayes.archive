@@ -2286,12 +2286,12 @@ yyreduce:
 
   case 42:
 #line 338 "./grammar.y"
-    { (yyval.syntaxElement) = new RbPtr<SyntaxElement>((yyvsp[(1) - (1)].syntaxFunctionCall)->get()); RbMemoryManager::rbMemoryManager().decrementCountForAddress((yyvsp[(1) - (1)].syntaxFunctionCall)->get()); }
+    { (yyval.syntaxElement) = new RbPtr<SyntaxElement>((SyntaxFunctionCall*)(*(yyvsp[(1) - (1)].syntaxFunctionCall))); RbMemoryManager::rbMemoryManager().decrementCountForAddress((yyvsp[(1) - (1)].syntaxFunctionCall)); }
     break;
 
   case 43:
 #line 340 "./grammar.y"
-    { (yyval.syntaxElement) = new RbPtr<SyntaxElement>((yyvsp[(1) - (1)].syntaxVariable)->get()); RbMemoryManager::rbMemoryManager().decrementCountForAddress((yyvsp[(1) - (1)].syntaxVariable)->get()); }
+    { (yyval.syntaxElement) = new RbPtr<SyntaxElement>((SyntaxVariable*)(*(yyvsp[(1) - (1)].syntaxVariable))); RbMemoryManager::rbMemoryManager().decrementCountForAddress((yyvsp[(1) - (1)].syntaxVariable)); }
     break;
 
   case 44:
@@ -2753,7 +2753,7 @@ yyreduce:
 
   case 115:
 #line 594 "./grammar.y"
-    { (yyval.syntaxElement) = new RbPtr<SyntaxElement>( (yyvsp[(1) - (1)].syntaxFormal)->get() ); }
+    { (yyval.syntaxElement) = new RbPtr<SyntaxElement>( (SyntaxFormal*)(yyvsp[(1) - (1)].syntaxFormal) ); }
     break;
 
   case 116:
