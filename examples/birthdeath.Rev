@@ -1,0 +1,30 @@
+# Test file for mcmc on normal distribution
+# E mu   should be 0
+# E e    should be 0.
+# E x[i] should be 0.
+
+a <- -1.0
+b <- 1.0
+mu ~ unif(a, b)
+moves[1] <- mslide(mu,weight=1.0,delta=8.0)
+
+
+c <- 0
+d <- 1.0
+e ~ norm(c,d)
+moves[2] <- mslide(e,weight=1.0,delta=8.0)
+sigma := expf(e)
+ 
+n <- 2
+for (i in 1:n) {
+    x[i] ~ norm(mu, sigma)
+    moves[2+i] <- mslide(x[i],weight=1.0,delta=10.0)
+}
+
+filemonitors <- monitor(filename="normaltest.out",printgen=1,mu,e,sigma,x[1])
+
+mymodel <- model(a)
+ 
+mymcmc <- mcmc(mymodel, moves=moves, monitors=filemonitors)
+
+mymcmc.run(generations=10000)
