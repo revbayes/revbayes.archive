@@ -402,7 +402,7 @@ std::cerr << "readingDirectory = " << readingDirectory << std::endl;
                 
     // read the files in the map containing the file names with the output being a vector of pointers to
     // the character matrices that have been read
-    std::vector<Alignment*> myData = reader.readMatrices( fileMap );
+    std::vector<RbPtr<Alignment> > myData = reader.readMatrices( fileMap );
     
     // print summary of results of file reading to the user
     if (readingDirectory == true)
@@ -416,7 +416,7 @@ std::cerr << "readingDirectory = " << readingDirectory << std::endl;
 
 	// we have successfully read the data into computer memory
 	// add the matrices to the tool
-	for (std::vector<Alignment*>::iterator p = myData.begin(); p != myData.end(); p++)
+	for (std::vector<RbPtr<Alignment> >::iterator p = myData.begin(); p != myData.end(); p++)
 		{
 		//(*p)->print();
 		std::string fn = (*p)->getFileName();
@@ -443,25 +443,25 @@ std::cerr << "Adding matrix " << fn << std::endl;
 			[m addTaxonName:taxonName];
 			for (int j=0; j<(*p)->getNumberOfCharacters(); j++)
 				{
-                const Character& matrixCell = (*p)->getCharacter(i, j);
+                RbPtr<const Character> matrixCell = (*p)->getCharacter(i, j);
 				RbDataCell* cell = [[RbDataCell alloc] init];
                 bool isDiscrete = true;
-                if ( matrixCell.getNumberOfStates() == 0 )
+                if ( matrixCell->getNumberOfStates() == 0 )
                     isDiscrete = false;
 				if ( isDiscrete == true )
 					{
-					unsigned x = matrixCell.getUnsignedValue();
+					unsigned x = matrixCell->getUnsignedValue();
 					NSNumber* n = [NSNumber numberWithUnsignedInt:x];
 					[cell setVal:n];
 					[cell setIsDiscrete:YES];
                     [cell setDataType:[m dataType]];
-					[cell setNumStates:(int)(matrixCell.getNumberOfStates())];
-					if ( matrixCell.isMissingOrAmbiguous() == true )
+					[cell setNumStates:(int)(matrixCell->getNumberOfStates())];
+					if ( matrixCell->isMissingOrAmbiguous() == true )
 						[cell setIsAmbig:YES];
 					}
 				else 
 					{
-					double x = matrixCell.getRealValue();
+					double x = matrixCell->getRealValue();
 					NSNumber* n = [NSNumber numberWithDouble:x];
 					[cell setVal:n];
 					[cell setIsDiscrete:NO];

@@ -88,7 +88,7 @@
     for (int i=0; i<(int)data->size(); i++) {
         XmlDocument* doc = new XmlDocument();
         NSString* traceName = [NSString stringWithFormat:@"Trace%lu",i];
-        const XmlElement *element = data->at(i)->encode(doc,[traceName cStringUsingEncoding:NSUTF8StringEncoding]);
+        const RbPtr<XmlElement> element = data->at(i)->encode(doc,[traceName cStringUsingEncoding:NSUTF8StringEncoding]);
         doc->addXmlElement(element);
         NSString* tmp_str = [NSString stringWithUTF8String:doc->print().c_str()];
         NSString* key = [NSString stringWithFormat:@"Trace%lu", i];
@@ -146,9 +146,11 @@
             XmlParser* parser = new XmlParser();
             XmlDocument* doc = parser->parse([xmlString cStringUsingEncoding:NSUTF8StringEncoding]);
             
-            const XmlElementAttributed* element = (const XmlElementAttributed*) doc->getFirstXmlElement();
-            Trace* t = new Trace(*doc,*element);
-            data->push_back(t);
+            // NOTE: The next three lines were commented out by JPH on 11/1/11 to get the program to compile. Hopefully,
+            // Sebastian or I will fix it before it causes too much trouble...
+            //const RbPtr<XmlElementAttributed> element = (const RbPtr<XmlElementAttributed>) doc->getFirstXmlElement();
+            //Trace* t = new Trace(*doc,*element);
+            //data->push_back(t);
         }
     
     }
