@@ -11,6 +11,7 @@
 
 #import "InOutlet.h"
 #import "RevBayes.h"
+#import "RbPtr.h"
 #import "Trace.h"
 #import "WindowControllerNumberMatrix.h"
 #import "XmlParser.h"
@@ -118,7 +119,7 @@
 		source = [[NSString alloc] initWithString:@"MCMC"];
         
         // initialize the data
-        data = new std::vector<Trace*>;
+        data = new std::vector<RbPtr<Trace> >;
         
         // note that the state of this tool is, by default, resolved
         [self setIsResolved:YES];
@@ -137,7 +138,7 @@
         // initialize the settings
         
         // initialize the data
-        data = new std::vector<Trace*>;
+        data = new std::vector<RbPtr<Trace> >;
         int traces = [aDecoder decodeIntForKey:@"nTraces"];
         for (int i=0; i<traces; i++) {
             NSString* key = [NSString stringWithFormat:@"Trace%lu", i];

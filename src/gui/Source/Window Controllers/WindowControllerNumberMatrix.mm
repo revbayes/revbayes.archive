@@ -80,7 +80,7 @@
 - (int)numberOfRowsInTableView:(NSTableView *)tableView
 {
     // HACK: check if the number of columns is correct; if not, reset columns
-    std::vector<Trace*>* data   = [myTool data];
+    std::vector<RbPtr<Trace> >* data   = [myTool data];
     int dataSize                = (int) data->size();
     
     if ([[table tableColumns] count] != dataSize) 
@@ -119,11 +119,11 @@
     float minWidth = 100;
     
     // adding a column for each trace
-    std::vector<Trace*>* data = [myTool data];
+    std::vector<RbPtr<Trace> >* data = [myTool data];
     
     for (int i=0; i<data->size(); i++) {
         // get the trace i
-        Trace* t = data->at(i);
+        RbPtr<Trace> t = data->at(i);
         // get the name for the trace
         NSString* identifier = [[NSString alloc] initWithCString:t->getParameterName().c_str() encoding:NSUTF8StringEncoding];
         [identifier autorelease];
@@ -150,7 +150,7 @@
         [self setTableColumns];
     }
     
-    std::vector<Trace*>* d = [myTool data];
+    std::vector<RbPtr<Trace> >* d = [myTool data];
     
     for (int i=0; i<d->size(); i++) 
     {
