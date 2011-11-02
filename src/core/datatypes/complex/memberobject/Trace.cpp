@@ -52,23 +52,23 @@ Trace::Trace(const Trace& t) {
     values                          = t.values;
 }
 
-Trace::Trace(const XmlDocument& doc, const XmlElementAttributed& element) {
-    burnin                              = element.getAttributeInt("burnin");
-    ess                                 = element.getAttributeInt("ess");
-    mean                                = element.getAttributeDouble("mean");
-    median                              = element.getAttributeDouble("median");
-    sem                                 = element.getAttributeDouble("sem");
-    stepSize                            = element.getAttributeInt("stepSize");
-    converged                           = element.getAttributeInt("converged");
-    passedStationarityTest              = element.getAttributeInt("passedStationarityTest");
-    passedGewekeTest                    = element.getAttributeInt("passedGewekeTest");
-    passedEssThreshold                  = element.getAttributeInt("passedEssThreshold");
-    passedSemThreshold                  = element.getAttributeInt("passedSemThreshold");
-    passedIidBetweenChainsStatistic     = element.getAttributeInt("passedIidBetweenChainsStatistic");
-    passedGelmanRubinTest               = element.getAttributeInt("passedGelmanRubinTest");
-    parmName                            = element.getAttribute("parmName");
-    fileName                            = element.getAttribute("fileName");
-    values                              = element.getAttributeVectorDouble("values");
+Trace::Trace(RbPtr<const XmlDocument> doc, RbPtr<const XmlElementAttributed> element) {
+    burnin                              = element->getAttributeInt("burnin");
+    ess                                 = element->getAttributeInt("ess");
+    mean                                = element->getAttributeDouble("mean");
+    median                              = element->getAttributeDouble("median");
+    sem                                 = element->getAttributeDouble("sem");
+    stepSize                            = element->getAttributeInt("stepSize");
+    converged                           = element->getAttributeInt("converged");
+    passedStationarityTest              = element->getAttributeInt("passedStationarityTest");
+    passedGewekeTest                    = element->getAttributeInt("passedGewekeTest");
+    passedEssThreshold                  = element->getAttributeInt("passedEssThreshold");
+    passedSemThreshold                  = element->getAttributeInt("passedSemThreshold");
+    passedIidBetweenChainsStatistic     = element->getAttributeInt("passedIidBetweenChainsStatistic");
+    passedGelmanRubinTest               = element->getAttributeInt("passedGelmanRubinTest");
+    parmName                            = element->getAttribute("parmName");
+    fileName                            = element->getAttribute("fileName");
+    values                              = element->getAttributeVectorDouble("values");
     
 }
 

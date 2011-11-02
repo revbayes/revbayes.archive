@@ -26,12 +26,12 @@ void XmlDocument::addXmlElement(const RbPtr<XmlElement> element) {
     entries.insert(std::pair<uintptr_t, const RbPtr<XmlElement> >(element->getId(),element) );
 }
 
-const RbPtr<XmlElement> XmlDocument::getFirstXmlElement() const {
-    return *(elements.begin());
+RbPtr<const XmlElement> XmlDocument::getFirstXmlElement() const {
+    return RbPtr<const XmlElement>( *(elements.begin()) );
 }
 
-const RbPtr<XmlElement> XmlDocument::getXmlElement(uintptr_t identifier) const {
-    return entries.find(identifier)->second;
+RbPtr<const XmlElement> XmlDocument::getXmlElement(uintptr_t identifier) const {
+    return RbPtr<const XmlElement>( entries.find(identifier)->second );
 }
 
 bool XmlDocument::hasXmlElementWithId(uintptr_t identifier) const {

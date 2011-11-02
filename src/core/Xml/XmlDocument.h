@@ -36,9 +36,9 @@ public:
     XmlDocument();
     
     void                                                addXmlElement(const RbPtr<XmlElement> element);                               //!< add a root xml element
-    const RbPtr<XmlElement>                             getFirstXmlElement() const;                                             //!< get the first element of the document
+    RbPtr<const XmlElement>                             getFirstXmlElement() const;                                             //!< get the first element of the document
     int                                                 getNumberOfElements() const { return (int)elements.size(); }
-    const RbPtr<XmlElement>                             getXmlElement(uintptr_t identifier) const;                              //!< get the element with identifier
+    RbPtr<const XmlElement>                             getXmlElement(uintptr_t identifier) const;                              //!< get the element with identifier
     bool                                                hasXmlElementWithId(uintptr_t identifier) const;                        //!< is there already a
     std::string                                         print();                                                                
     

@@ -143,14 +143,12 @@
             NSString* key = [NSString stringWithFormat:@"Trace%lu", i];
             NSString* xmlString = [aDecoder decodeObjectForKey:key];
             
-            XmlParser* parser = new XmlParser();
-            XmlDocument* doc = parser->parse([xmlString cStringUsingEncoding:NSUTF8StringEncoding]);
+            RbPtr<XmlParser> parser( new XmlParser() );
+            RbPtr<const XmlDocument> doc( parser->parse([xmlString cStringUsingEncoding:NSUTF8StringEncoding]) );
             
-            // NOTE: The next three lines were commented out by JPH on 11/1/11 to get the program to compile. Hopefully,
-            // Sebastian or I will fix it before it causes too much trouble...
-            //const RbPtr<XmlElementAttributed> element = (const RbPtr<XmlElementAttributed>) doc->getFirstXmlElement();
-            //Trace* t = new Trace(*doc,*element);
-            //data->push_back(t);
+            RbPtr<const XmlElementAttributed> element( static_cast<const XmlElementAttributed*>( (const XmlElement*)doc->getFirstXmlElement() ) );
+            RbPtr<Trace> t(new Trace( doc, element ) );
+            data->push_back(t);
         }
     
     }

@@ -29,7 +29,7 @@ class Trace : public MemberObject {
     Trace(void);
 //    Trace(int capacity);
     Trace(const Trace& t);                                                                        //!< copy constructor
-    Trace(const XmlDocument& doc, const XmlElementAttributed& element);
+    Trace(RbPtr<const XmlDocument> doc, RbPtr<const XmlElementAttributed> element);
     ~Trace();
     
     // overloaded functions from RbObject
