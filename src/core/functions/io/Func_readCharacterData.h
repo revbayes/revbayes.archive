@@ -14,8 +14,8 @@
  * $Id$
  */
 
-#ifndef Func_readAlignment_H
-#define Func_readAlignment_H
+#ifndef Func_readCharacterData_H
+#define Func_readCharacterData_H
 
 #include "RbFunction.h"
 
@@ -44,12 +44,22 @@ class VectorString;
  *    Phylip  Y   Y   Y   Y   N   Y   Y   Y   Y   N   N   N   N   N   N   N   N
  *    Fasta   Y   Y   Y   N   N   N   N   N   N   N   N   N   N   N   N   N   N
  *
- *    A: Aligned DNA (not interleaved); B: Aligned RNA (not interleaved); C: Aligned Amino Acid (not interleaved); 
- *    D: Standard (discrete) data (not interleaved); E: Continuous data (not interleaved);
- *    F: Aligned DNA (interleaved); G: Aligned RNA (interleaved); H: Aligned Amino Acid (interleaved); 
- *    I: Standard (discrete) data (interleaved); J: Continuous data (interleaved);
- *    K: Unaligned DNA (not interleaved); L: Unaligned RNA (not interleaved); M: Unaligned Amino Acid (not interleaved);
- *    O: Unaligned DNA (interleaved); P: Unaligned RNA (interleaved); Q: Unaligned Amino Acid (interleaved).
+ *    A: Aligned DNA (not interleaved); 
+ *    B: Aligned RNA (not interleaved); 
+ *    C: Aligned Amino Acid (not interleaved); 
+ *    D: Standard (discrete) data (not interleaved); 
+ *    E: Continuous data (not interleaved);
+ *    F: Aligned DNA (interleaved); 
+ *    G: Aligned RNA (interleaved); 
+ *    H: Aligned Amino Acid (interleaved); 
+ *    I: Standard (discrete) data (interleaved); 
+ *    J: Continuous data (interleaved);
+ *    K: Unaligned DNA (not interleaved); 
+ *    L: Unaligned RNA (not interleaved); 
+ *    M: Unaligned Amino Acid (not interleaved);
+ *    O: Unaligned DNA (interleaved); 
+ *    P: Unaligned RNA (interleaved); 
+ *    Q: Unaligned Amino Acid (interleaved).
  * 
  * Note that some data formats do not support interleaving of data (such as Fasta) or reading of certain data types, so
  * the table is unlikely to complete with Yes's (Y) in all of the cells. However, Nexus and Fasta support
@@ -60,11 +70,11 @@ class VectorString;
  */
 const std::string Func_readAlignment_name = "Read alignment function";
 
-class Func_readAlignment :  public RbFunction {
+class Func_readCharacterData :  public RbFunction {
     
     public:
         // Basic utility functions
-        Func_readAlignment*         clone(void) const;                                                      //!< Clone the object
+        Func_readCharacterData*     clone(void) const;                                                      //!< Clone the object
         const VectorString&         getClass(void) const;                                                   //!< Get class vector
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
         

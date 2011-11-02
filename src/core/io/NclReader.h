@@ -28,7 +28,7 @@
 #include <string>
 #include <vector>
 
-class Alignment;
+class CharacterData;
 class Topology;
 
 class NclReader{
@@ -41,9 +41,8 @@ class NclReader{
         size_t                                  getNumWarnings(void) { return warningsSummary.size(); }                         //!< Return the number of warnings
         std::set<std::string>&                  getWarnings(void) { return warningsSummary; }                                   //!< Get a reference to the warnings vector
         static NclReader&                       getInstance(void);                                                              //!< Get a reference to this singleton class
-        std::vector<RbPtr<Alignment> >          readMatrices(const std::map<std::string,std::string>& fileMap);                 //!< Read a list of file names contained in a map (with file format info too)
-        std::vector<RbPtr<Alignment> >          readMatrices(const std::vector<std::string> fn, const std::string 
-                                                         fileFormat, const std::string dataType, const bool isInterleaved);              //!< Read a list of file names contained in a vector of strings
+        std::vector<RbPtr<CharacterData> >      readMatrices(const std::map<std::string,std::string>& fileMap);                 //!< Read a list of file names contained in a map (with file format info too)
+        std::vector<RbPtr<CharacterData> >      readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved);              //!< Read a list of file names contained in a vector of strings
         
         bool                                    isFastaFile(std::string& fn, std::string& dType);                               //!< Checks if the file is in Fasta format
         bool                                    isNexusFile(std::string& fn);                                                   //!< Checks if the file is in NEXUS format
@@ -58,20 +57,19 @@ class NclReader{
                                                 NclReader(const NclReader& r) { }                                               //!< Copy constructor
         virtual                                ~NclReader(void) { }                                                             //!< Destructor
         
-        RbPtr<Alignment>                        createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
-        RbPtr<Alignment>                        createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data
-        RbPtr<Alignment>                        createDnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold DNA data
-        RbPtr<Alignment>                        createRnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold RNA data
-        RbPtr<Alignment>                        createStandardMatrix(NxsCharactersBlock* charblock);                            //!< Create an object to hold standard data
-        RbPtr<Alignment>                        createUnalignedDnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold DNA data
+        RbPtr<CharacterData>                    createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
+        RbPtr<CharacterData>                    createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data
+        RbPtr<CharacterData>                    createDnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold DNA data
+        RbPtr<CharacterData>                    createRnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold RNA data
+        RbPtr<CharacterData>                    createStandardMatrix(NxsCharactersBlock* charblock);                            //!< Create an object to hold standard data
+        RbPtr<CharacterData>                    createUnalignedDnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold DNA data
         bool                                    fileExists(const char *fn) const;                                               //!< Returns whether a file exists
         std::string                             intuitDataType(std::string& s);                                                 //!< Attempt to determine the type of data
 
         // methods for reading sequence alignments
-        std::vector<RbPtr<Alignment> >          convertFromNcl(std::vector<std::string>& fnv);                                  //!< Reads the blocks stored by NCL and converts them to RevBayes character matrices 
-        std::vector<RbPtr<Alignment> >          readMatrices(const char* fileName, const std::string fileFormat, 
-                                                             const std::string dataType, const bool isInterleaved);                          //!< Reads a single file using NCL
-        void                                    setExcluded(const NxsCharactersBlock* charblock, RbPtr<Alignment> cMat ) const;       //!< Set excluded taxa and excluded characters
+        std::vector<RbPtr<CharacterData> >      convertFromNcl(std::vector<std::string>& fnv);                                  //!< Reads the blocks stored by NCL and converts them to RevBayes character matrices 
+        std::vector<RbPtr<CharacterData> >      readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved);                          //!< Reads a single file using NCL
+        void                                    setExcluded(const NxsCharactersBlock* charblock, RbPtr<CharacterData> cMat ) const;       //!< Set excluded taxa and excluded characters
 
         // methods for reading trees
         void                                    constructTreefromNclRecursively(RbPtr<TopologyNode> tn, const NxsSimpleNode* tnNcl);  //!< Constructs a tree from NCL

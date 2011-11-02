@@ -7,7 +7,7 @@
 #include "NclReader.h"
 #include "RbFileManager.h"
 
-#import "Alignment.h"
+#import "CharacterData.h"
 #import "RbData.h"
 #import "RbDataCell.h"
 #import "ToolReadData.h"
@@ -402,7 +402,7 @@ std::cerr << "readingDirectory = " << readingDirectory << std::endl;
                 
     // read the files in the map containing the file names with the output being a vector of pointers to
     // the character matrices that have been read
-    std::vector<RbPtr<Alignment> > myData = reader.readMatrices( fileMap );
+    std::vector<RbPtr<CharacterData> > myData = reader.readMatrices( fileMap );
     
     // print summary of results of file reading to the user
     if (readingDirectory == true)
@@ -416,7 +416,7 @@ std::cerr << "readingDirectory = " << readingDirectory << std::endl;
 
 	// we have successfully read the data into computer memory
 	// add the matrices to the tool
-	for (std::vector<RbPtr<Alignment> >::iterator p = myData.begin(); p != myData.end(); p++)
+	for (std::vector<RbPtr<CharacterData> >::iterator p = myData.begin(); p != myData.end(); p++)
 		{
 		//(*p)->print();
 		std::string fn = (*p)->getFileName();

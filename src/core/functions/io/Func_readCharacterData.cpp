@@ -15,9 +15,9 @@
  * $Id$
  */
 
-#include "Alignment.h"
+#include "CharacterData.h"
 #include "ConstantNode.h"
-#include "Func_readAlignment.h"
+#include "Func_readCharacterData.h"
 #include "DagNodeContainer.h"
 #include "NclReader.h"
 #include "RbBoolean.h"
@@ -37,18 +37,18 @@
 
 
 // Definition of the static type spec member
-const TypeSpec Func_readAlignment::typeSpec(Func_readAlignment_name);
-const TypeSpec Func_readAlignment::returnTypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(Alignment_name) ) );
+const TypeSpec Func_readCharacterData::typeSpec(Func_readAlignment_name);
+const TypeSpec Func_readCharacterData::returnTypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(CharacterData_name) ) );
 
 /** Clone object */
-Func_readAlignment* Func_readAlignment::clone( void ) const {
+Func_readCharacterData* Func_readCharacterData::clone( void ) const {
     
-    return new Func_readAlignment( *this );
+    return new Func_readCharacterData( *this );
 }
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_readAlignment::execute( void ) {
+RbPtr<RbLanguageObject> Func_readCharacterData::execute( void ) {
 
     // get the information from the arguments for reading the file
     RbPtr<RbString> fn( static_cast<RbString*>( (RbLanguageObject*)(*args)[0]->getValue() ) );
@@ -138,7 +138,7 @@ RbPtr<RbLanguageObject> Func_readAlignment::execute( void ) {
                 
     // read the files in the map containing the file names with the output being a vector of pointers to
     // the character matrices that have been read
-    std::vector<RbPtr<Alignment> > m = reader.readMatrices( fileMap );
+    std::vector<RbPtr<CharacterData> > m = reader.readMatrices( fileMap );
     
     // print summary of results of file reading to the user
     if (readingDirectory == true)
@@ -195,7 +195,7 @@ RbPtr<RbLanguageObject> Func_readAlignment::execute( void ) {
         {
         RbPtr<DagNodeContainer> retList( new DagNodeContainer(m.size()) );
         size_t index = 0;
-        for (std::vector<RbPtr<Alignment> >::iterator it = m.begin(); it != m.end(); it++)
+        for (std::vector<RbPtr<CharacterData> >::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
             retList->setElement( index, RbPtr<RbObject>( new Variable(RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( (*it) ) ) ) ) ) );
@@ -217,7 +217,7 @@ RbPtr<RbLanguageObject> Func_readAlignment::execute( void ) {
 
 
 /** Format the error exception string for problems specifying the file/path name */
-void Func_readAlignment::formatError(RbFileManager& fm, std::string& errorStr) {
+void Func_readCharacterData::formatError(RbFileManager& fm, std::string& errorStr) {
 
     bool fileNameProvided    = fm.isFileNamePresent();
     bool isFileNameGood      = fm.testFile();
@@ -239,7 +239,7 @@ void Func_readAlignment::formatError(RbFileManager& fm, std::string& errorStr) {
 
 
 /** Get argument rules */
-RbPtr<const ArgumentRules> Func_readAlignment::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_readCharacterData::getArgumentRules( void ) const {
     
     static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
     static bool          rulesSet = false;
@@ -255,7 +255,7 @@ RbPtr<const ArgumentRules> Func_readAlignment::getArgumentRules( void ) const {
 
 
 /** Get class vector describing type of object */
-const VectorString& Func_readAlignment::getClass( void ) const {
+const VectorString& Func_readCharacterData::getClass( void ) const {
     
     static VectorString rbClass = VectorString( Func_readAlignment_name ) + RbFunction::getClass();
     return rbClass;
@@ -263,14 +263,14 @@ const VectorString& Func_readAlignment::getClass( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readAlignment::getReturnType( void ) const {
+const TypeSpec& Func_readCharacterData::getReturnType( void ) const {
     
     return returnTypeSpec;
 }
 
 
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Func_readAlignment::getTypeSpec(void) const {
+const TypeSpec& Func_readCharacterData::getTypeSpec(void) const {
     return typeSpec;
 }
 

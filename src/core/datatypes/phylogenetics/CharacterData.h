@@ -13,8 +13,8 @@
  * $Id$
  */
 
-#ifndef Alignment_H
-#define Alignment_H
+#ifndef CharacterData_H
+#define CharacterData_H
 
 #include "Character.h"
 #include "Matrix.h"
@@ -31,21 +31,21 @@ class ArgumentRule;
 class DAGNode;
 
 
-const std::string Alignment_name = "Alignment";
+const std::string CharacterData_name = "CharacterData";
 
-class Alignment : public Matrix {
+class CharacterData : public Matrix {
 
     public:
-                                            Alignment(const std::string& characterType);                                //!< Constructor requires character type
-                                            Alignment(const Alignment& x);                                              //!< Copy constructor to deal with sequenceTypeRule
-        virtual                            ~Alignment(void);                                                            //!< Destructor to deal with sequenceTypeRule
+                                            CharacterData(const std::string& characterType);                            //!< Constructor requires character type
+                                            CharacterData(const CharacterData& x);                                      //!< Copy constructor to deal with sequenceTypeRule
+        virtual                            ~CharacterData(void);                                                        //!< Destructor to deal with sequenceTypeRule
 
         // Overloaded operators
-        Alignment&                          operator=(const Alignment& x);                                              //!< Assignment operator
+        CharacterData&                      operator=(const CharacterData& x);                                          //!< Assignment operator
         RbPtr<const Sequence>               operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
         // Basic utility functions
-        Alignment*                          clone(void) const;                                                          //!< Clone object
+        CharacterData*                      clone(void) const;                                                          //!< Clone object
         const VectorString&                 getClass(void) const;                                                       //!< Get class vector   
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         void                                printValue(std::ostream& o) const;                                          //!< Print value for user

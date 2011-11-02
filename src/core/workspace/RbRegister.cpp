@@ -65,7 +65,7 @@
 #include "VectorString.h"
 
 /* MemberObject types without auto-generated constructors(alphabetic order) */
-#include "Alignment.h"
+#include "CharacterData.h"
 #include "Model.h"
 #include "Sequence.h"
 #include "Simplex.h"
@@ -152,7 +152,7 @@
 
 /* Phylogeny functions */
 #include "Func_gtr.h"
-#include "Func_readAlignment.h"
+#include "Func_readCharacterData.h"
 #include "Func_tiprobs.h"
 
 
@@ -210,7 +210,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new VectorString()                 );
 
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
-        addType( new Alignment(DnaState_name) );
+        addType( new CharacterData(DnaState_name)   );
         addType( new Simplex()                      );
         addType( new Topology()                     );
         addType( new TopologyNode()                 );
@@ -376,9 +376,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         addFunction( "sqrt",      new Func_sqrt()  );
 
         /* Add phylogeny-related functions (alphabetical order) */
-        addFunction( "gtr",       new Func_gtr()           );
-        addFunction( "read",      new Func_readAlignment() );
-        addFunction( "tiprobs",   new Func_tiprobs()       );
+        addFunction( "gtr",       new Func_gtr()               );
+        addFunction( "read",      new Func_readCharacterData() );
+        addFunction( "tiprobs",   new Func_tiprobs()           );
 
         /* Add builtin templated functions */
 //        addFunction( "simplex",   new Func_simplex<         Integer                                                         >() );

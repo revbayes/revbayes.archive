@@ -83,8 +83,8 @@
 		228C5E7C14607C6400A21DB2 /* TreePlate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5C9014607C6400A21DB2 /* TreePlate.cpp */; };
 		228C5E7D14607C6400A21DB2 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5C9314607C6400A21DB2 /* Model.cpp */; };
 		228C5E7E14607C6400A21DB2 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5C9314607C6400A21DB2 /* Model.cpp */; };
-		228C5E7F14607C6400A21DB2 /* Alignment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5C9614607C6400A21DB2 /* Alignment.cpp */; };
-		228C5E8014607C6400A21DB2 /* Alignment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5C9614607C6400A21DB2 /* Alignment.cpp */; };
+		228C5E7F14607C6400A21DB2 /* CharacterData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5C9614607C6400A21DB2 /* CharacterData.cpp */; };
+		228C5E8014607C6400A21DB2 /* CharacterData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5C9614607C6400A21DB2 /* CharacterData.cpp */; };
 		228C5E8114607C6400A21DB2 /* AminoAcidState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5C9914607C6400A21DB2 /* AminoAcidState.cpp */; };
 		228C5E8214607C6400A21DB2 /* AminoAcidState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5C9914607C6400A21DB2 /* AminoAcidState.cpp */; };
 		228C5E8314607C6400A21DB2 /* Character.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5C9B14607C6400A21DB2 /* Character.cpp */; };
@@ -207,8 +207,8 @@
 		228C5EF814607C6400A21DB2 /* DistributionFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5D2B14607C6400A21DB2 /* DistributionFunction.cpp */; };
 		228C5EF914607C6400A21DB2 /* Ellipsis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5D2D14607C6400A21DB2 /* Ellipsis.cpp */; };
 		228C5EFA14607C6400A21DB2 /* Ellipsis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5D2D14607C6400A21DB2 /* Ellipsis.cpp */; };
-		228C5EFB14607C6400A21DB2 /* Func_readAlignment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5D3014607C6400A21DB2 /* Func_readAlignment.cpp */; };
-		228C5EFC14607C6400A21DB2 /* Func_readAlignment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5D3014607C6400A21DB2 /* Func_readAlignment.cpp */; };
+		228C5EFB14607C6400A21DB2 /* Func_readCharacterData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5D3014607C6400A21DB2 /* Func_readCharacterData.cpp */; };
+		228C5EFC14607C6400A21DB2 /* Func_readCharacterData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5D3014607C6400A21DB2 /* Func_readCharacterData.cpp */; };
 		228C5EFD14607C6400A21DB2 /* Func_readTraces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5D3214607C6400A21DB2 /* Func_readTraces.cpp */; };
 		228C5EFE14607C6400A21DB2 /* Func_readTraces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5D3214607C6400A21DB2 /* Func_readTraces.cpp */; };
 		228C5EFF14607C6400A21DB2 /* Func_abs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 228C5D3514607C6400A21DB2 /* Func_abs.cpp */; };
@@ -844,8 +844,8 @@
 		228C5C9114607C6400A21DB2 /* TreePlate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TreePlate.h; sourceTree = "<group>"; };
 		228C5C9314607C6400A21DB2 /* Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
 		228C5C9414607C6400A21DB2 /* Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
-		228C5C9614607C6400A21DB2 /* Alignment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Alignment.cpp; sourceTree = "<group>"; };
-		228C5C9714607C6400A21DB2 /* Alignment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Alignment.h; sourceTree = "<group>"; };
+		228C5C9614607C6400A21DB2 /* CharacterData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CharacterData.cpp; sourceTree = "<group>"; };
+		228C5C9714607C6400A21DB2 /* CharacterData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharacterData.h; sourceTree = "<group>"; };
 		228C5C9914607C6400A21DB2 /* AminoAcidState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AminoAcidState.cpp; sourceTree = "<group>"; };
 		228C5C9A14607C6400A21DB2 /* AminoAcidState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AminoAcidState.h; sourceTree = "<group>"; };
 		228C5C9B14607C6400A21DB2 /* Character.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Character.cpp; sourceTree = "<group>"; };
@@ -989,8 +989,8 @@
 		228C5D2C14607C6400A21DB2 /* DistributionFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DistributionFunction.h; sourceTree = "<group>"; };
 		228C5D2D14607C6400A21DB2 /* Ellipsis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Ellipsis.cpp; sourceTree = "<group>"; };
 		228C5D2E14607C6400A21DB2 /* Ellipsis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ellipsis.h; sourceTree = "<group>"; };
-		228C5D3014607C6400A21DB2 /* Func_readAlignment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_readAlignment.cpp; sourceTree = "<group>"; };
-		228C5D3114607C6400A21DB2 /* Func_readAlignment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_readAlignment.h; sourceTree = "<group>"; };
+		228C5D3014607C6400A21DB2 /* Func_readCharacterData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_readCharacterData.cpp; sourceTree = "<group>"; };
+		228C5D3114607C6400A21DB2 /* Func_readCharacterData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_readCharacterData.h; sourceTree = "<group>"; };
 		228C5D3214607C6400A21DB2 /* Func_readTraces.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_readTraces.cpp; sourceTree = "<group>"; };
 		228C5D3314607C6400A21DB2 /* Func_readTraces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Func_readTraces.h; sourceTree = "<group>"; };
 		228C5D3514607C6400A21DB2 /* Func_abs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Func_abs.cpp; sourceTree = "<group>"; };
@@ -1897,8 +1897,8 @@
 		228C5C9514607C6400A21DB2 /* phylogenetics */ = {
 			isa = PBXGroup;
 			children = (
-				228C5C9614607C6400A21DB2 /* Alignment.cpp */,
-				228C5C9714607C6400A21DB2 /* Alignment.h */,
+				228C5C9614607C6400A21DB2 /* CharacterData.cpp */,
+				228C5C9714607C6400A21DB2 /* CharacterData.h */,
 				228C5C9814607C6400A21DB2 /* characters */,
 				228C5CA914607C6400A21DB2 /* RateMatrix.cpp */,
 				228C5CAA14607C6400A21DB2 /* RateMatrix.h */,
@@ -2111,8 +2111,8 @@
 		228C5D2F14607C6400A21DB2 /* io */ = {
 			isa = PBXGroup;
 			children = (
-				228C5D3014607C6400A21DB2 /* Func_readAlignment.cpp */,
-				228C5D3114607C6400A21DB2 /* Func_readAlignment.h */,
+				228C5D3014607C6400A21DB2 /* Func_readCharacterData.cpp */,
+				228C5D3114607C6400A21DB2 /* Func_readCharacterData.h */,
 				228C5D3214607C6400A21DB2 /* Func_readTraces.cpp */,
 				228C5D3314607C6400A21DB2 /* Func_readTraces.h */,
 			);
@@ -3482,7 +3482,7 @@
 				228C5E7A14607C6400A21DB2 /* TopologyNode.cpp in Sources */,
 				228C5E7C14607C6400A21DB2 /* TreePlate.cpp in Sources */,
 				228C5E7E14607C6400A21DB2 /* Model.cpp in Sources */,
-				228C5E8014607C6400A21DB2 /* Alignment.cpp in Sources */,
+				228C5E8014607C6400A21DB2 /* CharacterData.cpp in Sources */,
 				228C5E8214607C6400A21DB2 /* AminoAcidState.cpp in Sources */,
 				228C5E8414607C6400A21DB2 /* Character.cpp in Sources */,
 				228C5E8614607C6400A21DB2 /* CharacterContinuous.cpp in Sources */,
@@ -3544,7 +3544,7 @@
 				228C5EF614607C6400A21DB2 /* ConstructorFunction.cpp in Sources */,
 				228C5EF814607C6400A21DB2 /* DistributionFunction.cpp in Sources */,
 				228C5EFA14607C6400A21DB2 /* Ellipsis.cpp in Sources */,
-				228C5EFC14607C6400A21DB2 /* Func_readAlignment.cpp in Sources */,
+				228C5EFC14607C6400A21DB2 /* Func_readCharacterData.cpp in Sources */,
 				228C5EFE14607C6400A21DB2 /* Func_readTraces.cpp in Sources */,
 				228C5F0014607C6400A21DB2 /* Func_abs.cpp in Sources */,
 				228C5F0214607C6400A21DB2 /* Func_cos.cpp in Sources */,
@@ -3704,7 +3704,7 @@
 				228C5E7914607C6400A21DB2 /* TopologyNode.cpp in Sources */,
 				228C5E7B14607C6400A21DB2 /* TreePlate.cpp in Sources */,
 				228C5E7D14607C6400A21DB2 /* Model.cpp in Sources */,
-				228C5E7F14607C6400A21DB2 /* Alignment.cpp in Sources */,
+				228C5E7F14607C6400A21DB2 /* CharacterData.cpp in Sources */,
 				228C5E8114607C6400A21DB2 /* AminoAcidState.cpp in Sources */,
 				228C5E8314607C6400A21DB2 /* Character.cpp in Sources */,
 				228C5E8514607C6400A21DB2 /* CharacterContinuous.cpp in Sources */,
@@ -3766,7 +3766,7 @@
 				228C5EF514607C6400A21DB2 /* ConstructorFunction.cpp in Sources */,
 				228C5EF714607C6400A21DB2 /* DistributionFunction.cpp in Sources */,
 				228C5EF914607C6400A21DB2 /* Ellipsis.cpp in Sources */,
-				228C5EFB14607C6400A21DB2 /* Func_readAlignment.cpp in Sources */,
+				228C5EFB14607C6400A21DB2 /* Func_readCharacterData.cpp in Sources */,
 				228C5EFD14607C6400A21DB2 /* Func_readTraces.cpp in Sources */,
 				228C5EFF14607C6400A21DB2 /* Func_abs.cpp in Sources */,
 				228C5F0114607C6400A21DB2 /* Func_cos.cpp in Sources */,
