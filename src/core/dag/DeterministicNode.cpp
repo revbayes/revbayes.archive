@@ -55,15 +55,12 @@ DeterministicNode::DeterministicNode( RbPtr<RbFunction> func ) : VariableNode(fu
             throw RbException( "Invalid assignment: cycles in the DAG" );
     }
     
-    // only add myself as a child of the arguments if the functions says so
-    if (func->addAsChildOfArguments()) {
-        /* Set parents and add this node as a child node of these */
-        for ( size_t i = 0; i < arguments->size(); i++ ) {
-            const std::string &name = arguments->getName(i);
-            RbPtr<DAGNode> theArgument = (*arguments)[name]->getDagNode();
-            addParentNode( theArgument );
-            theArgument->addChildNode( this );
-        }
+    /* Set parents and add this node as a child node of these */
+    for ( size_t i = 0; i < arguments->size(); i++ ) {
+        const std::string &name = arguments->getName(i);
+        RbPtr<DAGNode> theArgument = (*arguments)[name]->getDagNode();
+        addParentNode( theArgument );
+        theArgument->addChildNode( this );
     }
     
     /* Set the function */

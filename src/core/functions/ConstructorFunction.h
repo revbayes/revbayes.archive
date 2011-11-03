@@ -41,7 +41,6 @@ class ConstructorFunction :  public RbFunction {
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
 
         // Regular functions
-        bool                                    addAsChildOfArguments(void) { return false; }                                   //!< We do not wish that a constructor functions is added as a child of the arguments.
         RbPtr<RbLanguageObject>                 execute(void);                                                                  //!< Execute function
         RbPtr<const ArgumentRules>              getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
