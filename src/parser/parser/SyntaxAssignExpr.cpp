@@ -18,6 +18,7 @@
 #include "DagNodeContainer.h"
 #include "DeterministicNode.h"
 #include "Distribution.h"
+#include "Func_reference.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -163,6 +164,16 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
         // We also allow constant expressions
         theVariable = expression->evaluateContent( env );
         PRINTF ( "Created %s with function \"%s\" and value %s \n", theVariable->getDagNode()->getType().c_str(), ((DeterministicNode*)theVariable->getDagNode())->getFunction()->getType().c_str(), theVariable->getDagNodePtr()->getValue() == NULL ? "NULL" : theVariable->getDagNodePtr()->getValue()->getTypeSpec().toString().c_str());
+        
+        // if the right-hand-side was not a function then we interpret it as the user wanted a reference to the original object (e.g. b := a)
+        // we therefore create a new reference function which will lookup the value of the original node each time. Hence, the new node (left-hand-side) is just a reference of the original node (right-hand-side).
+        if ( !theVariable->getDagNode()->isType(DeterministicNode_name) ) {
+            RbPtr<RbFunction> func( new Func_reference() );
+            std::vector<RbPtr<Argument> > args;
+            args.push_back( RbPtr<Argument>( new Argument( theVariable ) ) );
+            func->processArguments(args);
+            theVariable = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new DeterministicNode( func ) ) ) );
+        }
         
         // fill the slot with the new variable
         theSlot->getVariable()->setDagNode( theVariable->getDagNode() );

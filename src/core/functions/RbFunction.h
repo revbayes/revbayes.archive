@@ -79,8 +79,8 @@ class RbFunction :  public RbInternal {
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // RbFunction function you may want to override
-        virtual bool                                    processArguments(std::vector<RbPtr<Argument> >   passedArgs,
-                                                                         RbPtr<VectorInteger>                  matchScore = RbPtr<VectorInteger>::getNullPtr());                  //!< Process args, return a match score if pointer is not null
+        virtual bool                                    processArguments(std::vector<RbPtr<Argument> > passedArgs,
+                                                                         RbPtr<VectorInteger>          matchScore = RbPtr<VectorInteger>::getNullPtr());                  //!< Process args, return a match score if pointer is not null
         virtual bool                                    throws(void) const { return false; }                                                      //!< Does the function throw exceptions?
     
 
