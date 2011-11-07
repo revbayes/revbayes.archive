@@ -11,7 +11,7 @@ e ~ norm(c,d)
 moves[2] <- mslide(e,weight=1.0,delta=1.0)
 sigma := expf(e)
  
-filemonitors <- monitor(filename="normaltest.out",printgen=1, separator = "\t" ,mu,e,sigma)
+filemonitors <- monitor(filename="normaltest.out",printgen=1, separator = "	" ,mu,e,sigma)
 
 for (i in 1:2) {
     x[i] ~ norm(mu, sigma)
