@@ -228,8 +228,9 @@ void Mcmc::run(size_t ngen) {
     double lnProbability = 0.0;
     std::vector<double> initProb;
     for (std::vector<RbPtr<DAGNode> >::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
-        if ((*i)->isType(StochasticNode_name)) {
-            RbPtr<StochasticNode> stochNode( dynamic_cast<StochasticNode*>( (DAGNode*)(*i) ) );
+        RbPtr<DAGNode> node = (*i);
+        if (node->isType(StochasticNode_name)) {
+            RbPtr<StochasticNode> stochNode( dynamic_cast<StochasticNode*>( (DAGNode*)node ) );
             double lnProb = stochNode->calculateLnProbability();
             lnProbability += lnProb;
 //            initProb.push_back(lnProb);

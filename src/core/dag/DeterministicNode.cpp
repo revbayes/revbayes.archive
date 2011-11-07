@@ -120,10 +120,10 @@ DeterministicNode* DeterministicNode::clone() const {
 
 
 /** Clone the entire graph: clone children, swap parents */
-DeterministicNode* DeterministicNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes ) const {
+RbPtr<DAGNode> DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes ) const {
     
     if ( newNodes.find( this ) != newNodes.end() )
-        return static_cast<DeterministicNode*>( newNodes[ this ] );
+        return newNodes[ this ];
     
     /* Get pristine copy */
     DeterministicNode* copy = new DeterministicNode( getValueType() );

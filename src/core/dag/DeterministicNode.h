@@ -61,7 +61,7 @@ public:
     void                                    touchAffected(void);                                                //!< Tell affected nodes value is reset
 
     // DAG function you have to override
-    virtual DeterministicNode*              cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;       //!< Clone entire graph
+    virtual RbPtr<DAGNode>                  cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;//!< Clone entire graph
 
 protected:
 

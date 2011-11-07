@@ -217,10 +217,10 @@ StochasticNode* StochasticNode::clone( void ) const {
 
 
 /** Clone the entire graph: clone children, swap parents */
-StochasticNode* StochasticNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& newNodes ) const {
+RbPtr<DAGNode> StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes ) const {
 
     if ( newNodes.find( this ) != newNodes.end() )
-        return static_cast<StochasticNode*>( newNodes[ this ] );
+        return ( newNodes[ this ] );
 
     /* Get pristine copy */
     StochasticNode* copy = new StochasticNode( valueTypeSpec );
@@ -255,6 +255,7 @@ StochasticNode* StochasticNode::cloneDAG( std::map<const DAGNode*, DAGNode*>& ne
         
         // clone the member and get the clone back
         const RbPtr<DAGNode> theParam = (*params)[name]->getDagNode();
+        // if we already have cloned this parent (parameter), then we will get the previously created clone
         RbPtr<DAGNode> theParamClone( theParam->cloneDAG( newNodes ) );
         
         // set the clone of the member as the member of the clone

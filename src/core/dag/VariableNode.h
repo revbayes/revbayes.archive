@@ -55,7 +55,7 @@ public:
     virtual bool                                isConst(void) const { return false; }                                           //!< Is DAG node const value?
 
     // DAG functions you have to override
-    virtual VariableNode*                       cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const = 0;               //!< Clone entire graph
+    virtual RbPtr<DAGNode>                      cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const = 0;        //!< Clone entire graph
     virtual void                                getAffected(std::set<RbPtr<StochasticNode> >& affected) = 0;                    //!< Mark and get affected nodes
     virtual void                                keep(void) = 0;                                                                 //!< Keep current state
     virtual void                                keepAffected(void) = 0;                                                         //!< Keep value of affected nodes

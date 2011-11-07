@@ -51,7 +51,7 @@ public:
     RbPtr<RbLanguageObject>             getValue(void);                                                             //!< Get value (non-const to return non-const value)
 
     // DAG functions
-    ConstantNode*                       cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;               //!< Clone entire graph
+    RbPtr<DAGNode>                      cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;        //!< Clone entire graph
     bool                                isTouched (void) const { return false; }                                    //!< Touched by a move?
     void                                keep(void);                                                                 //!< Keep current state
     void                                keepAffected(void);                                                         //!< Keep value of affected nodes

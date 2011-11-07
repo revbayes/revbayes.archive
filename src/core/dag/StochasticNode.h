@@ -58,13 +58,13 @@ public:
     void                                clamp(RbPtr<RbLanguageObject> observedVal);                         //!< Clamp the node with an observed value
     RbPtr<const Distribution>           getDistribution(void) const;                                        //!< Get distribution
     RbPtr<Distribution>                 getDistribution(void);                                              //!< Get distribution (non-const to return non-const distribution)
-    double                              getLnProbabilityRatio(void) const;                                        //!< Get log probability ratio of new to stored state
+    double                              getLnProbabilityRatio(void) const;                                  //!< Get log probability ratio of new to stored state
     bool                                isClamped(void) const { return clamped; }                           //!< Is the node clamped?
     void                                setValue(RbPtr<RbLanguageObject> value, std::set<RbPtr<StochasticNode> >& affected);     //!< Set value but do not clamp; get affected nodes
     void                                unclamp(void);                                                      //!< Unclamp the node
     
     // DAG functions
-    StochasticNode*                     cloneDAG(std::map<const DAGNode*, DAGNode*>& newNodes) const;       //!< Clone entire graph
+    RbPtr<DAGNode>                      cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;//!< Clone entire graph
     void                                getAffected(std::set<RbPtr<StochasticNode> >& affected);            //!< Mark and get affected nodes
     void                                keep(void);                                                         //!< Keep value of this and affected nodes
     void                                keepAffected(void);                                                 //!< Keep value of affected nodes recursively
