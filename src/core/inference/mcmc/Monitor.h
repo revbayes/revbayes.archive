@@ -62,6 +62,7 @@ public:
 private:
     std::vector<RbPtr<VariableNode> >   nodes;                                                              //!< Vector of nodes which this monitors prints
     std::ofstream                       outStream;
+    std::string                         separator;                                                          //!< The separator between different variables
     
     static const TypeSpec               typeSpec;
 };

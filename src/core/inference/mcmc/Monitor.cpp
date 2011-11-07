@@ -40,6 +40,7 @@ Monitor::Monitor(const Monitor &x) : ConstantMemberObject(x) {
     
     // shallow copy
     nodes = x.nodes;
+    separator = x.separator;
     
 }
 
@@ -70,10 +71,11 @@ RbPtr<const MemberRules> Monitor::getMemberRules( void ) const {
     
     if (!rulesSet) 
     {
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "filename" , TypeSpec(RbString_name)         ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "printgen" , TypeSpec(Integer_name)          ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable" , TypeSpec(RbLanguageObject_name) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new Ellipsis (              TypeSpec(RbLanguageObject_name) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "filename"  , TypeSpec(RbString_name)         ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "separator" , TypeSpec(RbString_name), RbPtr<RbLanguageObject>(new RbString("\t") ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) ) );
         rulesSet = true;
     }
     
@@ -93,7 +95,7 @@ void Monitor::monitor(void) {
     for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
         if ( it != nodes.begin() )
-            outStream << "\t";
+            outStream << separator;
         
         // print the value
         (*it)->printValue(outStream);
@@ -115,7 +117,7 @@ void Monitor::monitor(int gen) {
         for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
             // add a separator before every new element except the first element
             if ( it != nodes.begin() )
-                outStream << " ; ";
+                outStream << separator;
             
             // print the value
             (*it)->printValue(outStream);
@@ -142,7 +144,7 @@ void Monitor::printHeader() {
     for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
         // add a separator before every new element except the first element
         if ( it != nodes.begin() )
-            outStream << " ; ";
+            outStream << separator;
         
          RbPtr<VariableNode> theNode = *it;
         
@@ -200,7 +202,13 @@ void Monitor::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
     // catch setting of the variables 
     if (name == "variable" || name == "") {
         nodes.push_back(RbPtr<VariableNode>( dynamic_cast<VariableNode*>( (DAGNode*)var->getDagNode() ) ) );
-    }
+    } 
+    else if (name == "separator") {
+        separator = static_cast<RbString*>( (RbLanguageObject*)var->getValue() )->getValue();
+        
+        // call parent class to set member variable
+        ConstantMemberObject::setMemberVariable( name, var );
+    } 
     else {
         // call parent class to set member variable
         ConstantMemberObject::setMemberVariable( name, var );
