@@ -249,9 +249,14 @@ void Mixture::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
 
 
 void Mixture::estimateClassProbabilities() {
-    
-    
-    
+    for (unsigned int i = 0 ; i <  numberOfElementsInClasses_.size() ; i++) {
+        if (classProbabilities_.size() <= i ) {
+            classProbabilities_.push_back( (double) numberOfElementsInClasses_[i] / (double) allocationVector_.size() );
+        }
+        else {
+        classProbabilities_.setElement(i, new RealPos ( (double) numberOfElementsInClasses_[i] / (double) allocationVector_.size() ) );
+        }
+    }
 }
 
 void Mixture::computeNumberOfElementsInClasses() {
