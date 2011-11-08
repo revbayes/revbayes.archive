@@ -62,8 +62,8 @@ MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
 
 
 /** Execute member method: delegate to method table. */
-RbPtr<RbLanguageObject> MemberObject::executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
-    // TODO: We shouldn't allow static casts!!!
+RbPtr<RbObject> MemberObject::executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+    // TODO: We shouldn't allow const casts!!!
     MethodTable* mt = const_cast<MethodTable*>((const MethodTable*)getMethods());
     return mt->executeFunction(name, args);
 }
@@ -72,18 +72,18 @@ RbPtr<RbLanguageObject> MemberObject::executeMethod(const std::string& name, con
 /** Map member method call to internal function call. This is used as an alternative mechanism to providing a complete
  *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
  *  is used without the appropriate mapping to internal function calls being present. */
-RbPtr<RbLanguageObject> MemberObject::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbObject> MemberObject::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
     
     if (name == "memberNames") {
         for (size_t i=0; i<members->size(); i++) {
             RBOUT(members->getName(i));
         }
         
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return RbPtr<RbObject>::getNullPtr();
     } 
     else if (name == "get") {
         // get the member with give name
-        RbPtr<const RbString> varName( static_cast<const RbString*>( (const RbLanguageObject*)(*args)[0]->getValue()) );
+        RbPtr<const RbString> varName( static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue()) );
         
         // check if a member with that name exists
         if (members->existsVariable(*varName)) {
@@ -91,7 +91,7 @@ RbPtr<RbLanguageObject> MemberObject::executeOperation(const std::string& name, 
         }
         
         // there was no variable with the given name
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return RbPtr<RbObject>::getNullPtr();
         
     }
     else {
@@ -150,21 +150,21 @@ const RbPtr<Environment> MemberObject::getMembers(void) const {
 }
 
 
-RbPtr<Environment> MemberObject::getMembersPtr(void) {
+RbPtr<Environment> MemberObject::getMembers(void) {
     return members;
 }
 
 
 
 /** Get const value of a member variable */
-RbPtr<const RbLanguageObject> MemberObject::getMemberValue(const std::string& name) const {
+RbPtr<const RbObject> MemberObject::getMemberValue(const std::string& name) const {
 
     return members->getValue(name);
 }
 
 
 /** Get const value of a member variable */
-RbPtr<RbLanguageObject> MemberObject::getMemberValue(const std::string& name) {
+RbPtr<RbObject> MemberObject::getMemberValue(const std::string& name) {
     
     return members->getValue(name);
 }

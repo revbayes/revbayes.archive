@@ -41,7 +41,7 @@ class ConstructorFunction :  public RbFunction {
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
 
         // Regular functions
-        RbPtr<RbLanguageObject>                 execute(void);                                                                  //!< Execute function
+        RbPtr<RbObject>                         execute(void);                                                                  //!< Execute function
         RbPtr<const ArgumentRules>              getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
         const std::string&                      getTemplateObjectType(void) const { return templateObject->getType(); }         //!< Get the type of the template object

@@ -48,9 +48,9 @@ class Dist_topologyunif: public DistributionDiscrete {
         size_t                          getNumberOfStates(void) const;                                      //!< Get number of states
         virtual RbPtr<Simplex>          getProbabilityMassVector(void);                                     //!< Get probability mass vector
         const TypeSpec&                 getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-        double                          lnPdf(RbPtr<const RbLanguageObject> value) const;                   //!< Ln probability density
-        double                          pdf(RbPtr<const RbLanguageObject> value) const;                     //!< Probability density
-        RbPtr<RbLanguageObject>         rv(void);                                                           //!< Generate random variable
+        double                          lnPdf(RbPtr<const RbObject> value) const;                           //!< Ln probability density
+        double                          pdf(RbPtr<const RbObject> value) const;                             //!< Probability density
+        RbPtr<RbObject>                 rv(void);                                                           //!< Generate random variable
 
     private:
         void                            buildRandomBinaryTree(std::vector<RbPtr<TopologyNode> >& tips, size_t numTaxa);    //!< Build a random binary tree recursively until we have numTaxa tips

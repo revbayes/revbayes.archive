@@ -96,15 +96,15 @@ double Move_mscale::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
 
     // Get relevant values
     RbPtr<StochasticNode>  nodePtr( static_cast<StochasticNode*>( (DAGNode*)(*members)["variable"]->getDagNode() ) );
-    const RealPos          lambda  = *( static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue("lambda")  ) );
-    const RealPos          curVal  = *( static_cast<const RealPos*>( (const RbLanguageObject*)nodePtr->getValue() ) );
+    const RealPos          lambda  = *( static_cast<const RealPos*>( (const RbObject*)getMemberValue("lambda")  ) );
+    const RealPos          curVal  = *( static_cast<const RealPos*>( (const RbObject*)nodePtr->getValue() ) );
 
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     RealPos u      = rng->uniform01();
     RealPos newVal = curVal * std::exp( lambda * ( u - 0.5 ) );
 
     // Propose new value
-    nodePtr->setValue( RbPtr<RbLanguageObject>( newVal.clone() ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbObject>( newVal.clone() ), affectedNodes );
 
     // Return Hastings ratio
     return log( newVal / curVal );

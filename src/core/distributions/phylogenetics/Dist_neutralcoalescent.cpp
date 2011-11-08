@@ -98,7 +98,7 @@ RbPtr<const MemberRules> Dist_neutralcoalescent::getMemberRules( void ) const {
         // memberRules.push_back( new ValueRule( "mu"       , RealPos_name     ) );
         // memberRules.push_back( new ValueRule( "rho"      , Probability_name ) );
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "tipNames", VectorString_name) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "haploidPopSize" , Natural_name, RbPtr<RbLanguageObject>( new Natural(1) ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "haploidPopSize" , Natural_name, RbPtr<RbObject>( new Natural(1) ) ) ) );
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "noTaxa" , RealPos_name ) ) );
 
         rulesSet = true;
@@ -139,10 +139,10 @@ const TypeSpec& Dist_neutralcoalescent::getVariableType( void ) const {
  * @param value Observed speciation times
  * @return      Natural log of the probability
  */
-double Dist_neutralcoalescent::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_neutralcoalescent::lnPdf( RbPtr<const RbObject> value ) const {
 
-    RbPtr<const VectorRealPos> waitingTimes     = RbPtr<const VectorRealPos>( static_cast<const VectorRealPos*>( (const RbLanguageObject*)value ) );
-    size_t haploidPopSize                       =                             static_cast<const Natural*      >( (const RbLanguageObject*)getMemberValue( "haploidPopSize" ) )->getValue();
+    RbPtr<const VectorRealPos> waitingTimes     = RbPtr<const VectorRealPos>( static_cast<const VectorRealPos*>( (const RbObject*)value ) );
+    size_t haploidPopSize                       =                             static_cast<const Natural*      >( (const RbObject*)getMemberValue( "haploidPopSize" ) )->getValue();
     size_t nWaitingTimes                        = waitingTimes->size();
     size_t k                                    = nWaitingTimes + 1;
 
@@ -167,7 +167,7 @@ double Dist_neutralcoalescent::lnPdf( RbPtr<const RbLanguageObject> value ) cons
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_neutralcoalescent::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_neutralcoalescent::pdf( RbPtr<const RbObject> value ) const {
 
     // // get the number of speciation events
     // size_t events = times->size();
@@ -197,7 +197,7 @@ double Dist_neutralcoalescent::pdf( RbPtr<const RbLanguageObject> value ) const 
  *
  * @return      Generate random coalescent tree
  */
-RbPtr<RbLanguageObject> Dist_neutralcoalescent::rv( void ) {
+RbPtr<RbObject> Dist_neutralcoalescent::rv( void ) {
 
 //    // Get the parameters
 //    // double b                    = static_cast<const RealPos*     >( getMemberValue( "lambda"   ) )->getValue();
@@ -279,7 +279,7 @@ RbPtr<RbLanguageObject> Dist_neutralcoalescent::rv( void ) {
 //    }
 //    return plate;
     
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return RbPtr<RbObject>::getNullPtr();
 }
 
 

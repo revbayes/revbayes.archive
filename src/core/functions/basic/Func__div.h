@@ -36,7 +36,7 @@ class Func__div :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
+    	RbPtr<RbObject>             execute(void);                                              //!< Execute function
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
@@ -72,24 +72,24 @@ Func__div<firstValType, secondValType, retType>* Func__div<firstValType, secondV
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality for most data types */
 template <typename firstValType, typename secondValType, typename retType>
-RbPtr<RbLanguageObject> Func__div<firstValType,secondValType,retType>::execute( void ) {
+RbPtr<RbObject> Func__div<firstValType,secondValType,retType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( (RbLanguageObject*)(*args)[0]->getValue() ) );
-    const RbPtr<secondValType> val2( static_cast<secondValType*>( (RbLanguageObject*)(*args)[1]->getValue() ) );
+    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( (RbObject*)(*args)[0]->getValue() ) );
+    const RbPtr<secondValType> val2( static_cast<secondValType*>( (RbObject*)(*args)[1]->getValue() ) );
     retType              quot = *val1 / *val2;
     
-    return RbPtr<RbLanguageObject>(quot.clone());
+    return RbPtr<RbObject>(quot.clone());
 }
 
 
 /** Execute function: Special case for integer division */
 template <>
-RbPtr<RbLanguageObject> Func__div<Integer,Integer,Real>::execute( void ) {
+RbPtr<RbObject> Func__div<Integer,Integer,Real>::execute( void ) {
 
-    double val1 = static_cast<const Integer*>( (const RbLanguageObject*)(*args)[0]->getValue() )->getValue();
-    double val2 = static_cast<const Integer*>( (const RbLanguageObject*)(*args)[1]->getValue() )->getValue();
+    double val1 = static_cast<const Integer*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
+    double val2 = static_cast<const Integer*>( (const RbObject*)(*args)[1]->getValue() )->getValue();
     
-    return RbPtr<RbLanguageObject>( new Real( val1 / val2 ) );
+    return RbPtr<RbObject>( new Real( val1 / val2 ) );
 }
 
 

@@ -45,14 +45,14 @@ Func_source* Func_source::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_source::execute( void ) {
+RbPtr<RbObject> Func_source::execute( void ) {
 
     /* Open file */
-    std::string filename = static_cast<RbString*>( (RbLanguageObject*)(*args)[0]->getValue() )->getValue();
+    std::string filename = static_cast<RbString*>( (RbObject*)(*args)[0]->getValue() )->getValue();
     std::ifstream inFile( filename.c_str() );
     
     
-    bool echo = static_cast<RbBoolean*>( (RbLanguageObject*)(*args)[1]->getValue() )->getValue();
+    bool echo = static_cast<RbBoolean*>( (RbObject*)(*args)[1]->getValue() )->getValue();
     
     if ( !inFile )
         throw RbException( "Could not open file \"" + filename + "\"" );
@@ -79,7 +79,7 @@ RbPtr<RbLanguageObject> Func_source::execute( void ) {
     /* Return control */
     RBOUT("Processing of file \"" + filename + "\" completed");
 
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return RbPtr<RbObject>::getNullPtr();
 }
 
 
@@ -92,7 +92,7 @@ RbPtr<const ArgumentRules> Func_source::getArgumentRules( void ) const {
     if ( !rulesSet ) {
 
         argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "file", RbString_name ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "echo.on", RbBoolean_name, RbPtr<RbLanguageObject>( new RbBoolean(false) ) ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "echo.on", RbBoolean_name, RbPtr<RbObject>( new RbBoolean(false) ) ) ) );
         rulesSet = true;
     }
 

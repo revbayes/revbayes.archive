@@ -124,4 +124,12 @@ bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
 }
 
 
+/** Make sure we can print the value of the object easily */
+std::ostream& operator<<(std::ostream& o, const RbObject& x) {
+    
+    x.printValue(o);
+    return o;
+}
+
+
 

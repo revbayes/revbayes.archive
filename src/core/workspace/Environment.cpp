@@ -289,7 +289,7 @@ RbPtr<const DAGNode> Environment::getDagNode( const std::string& name ) const {
 
 
 /** Get value, alternative method */
-RbPtr<const RbLanguageObject> Environment::getValue( const std::string& name ) const {
+RbPtr<const RbObject> Environment::getValue( const std::string& name ) const {
     
     // find the variable slot first
     std::map<std::string, RbPtr<VariableSlot> >::const_iterator it = variableTable.find( name );
@@ -302,12 +302,12 @@ RbPtr<const RbLanguageObject> Environment::getValue( const std::string& name ) c
     
     // set the slot
     RbPtr<VariableSlot> theSlot = it->second;
-    return RbPtr<const RbLanguageObject>( theSlot->getValue() );
+    return RbPtr<const RbObject>( theSlot->getValue() );
 }
 
 
 /** Get value, alternative method */
-RbPtr<RbLanguageObject> Environment::getValue( const std::string& name ) {
+RbPtr<RbObject> Environment::getValue( const std::string& name ) {
     
     // find the variable slot first
     std::map<std::string, RbPtr<VariableSlot> >::const_iterator it = variableTable.find( name );

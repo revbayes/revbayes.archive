@@ -29,18 +29,24 @@ const std::string RbInternal_name = "internal";
 class RbInternal : public RbObject { 
 
     public:
-		virtual                    ~RbInternal(void) {}                     //! Virtual destructor
+		virtual                        ~RbInternal(void) {}                     //! Virtual destructor
 
         // Basic utility functions you have to override
-        virtual RbInternal*         clone(void) const = 0;                  //!< Clone object
-        virtual const VectorString& getClass(void) const;                   //!< Get class vector
+        virtual RbInternal*             clone(void) const = 0;                  //!< Clone object
+        virtual const VectorString&     getClass(void) const;                   //!< Get class vector
+
+    
+        // Basic utility functions you can overwrite
+        virtual std::string             briefInfo(void) const;                  //!< Brief info about object
+        virtual void                    printValue(std::ostream& o) const;      //!< Print value for user
+        virtual std::string             richInfo(void) const;                   //!< Complete info about object
 
         // Basic utility functions you do not have to override
-        const std::string&          getType(void) const;                    //!< Get type
-        bool                        isType(const std::string& type) const;  //!< Is the object of type?
+        const std::string&              getType(void) const;                    //!< Get type
+        bool                            isType(const std::string& type) const;  //!< Is the object of type?
 
    protected:
-		                            RbInternal(void) {}                     //!< No objects of this class
+                                        RbInternal(void) {}                     //!< No objects of this class
 };
 
 #endif

@@ -95,12 +95,12 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     }
 
     clamped      = x.clamped;
-    value        = RbPtr<RbLanguageObject>( x.value->clone() );
+    value        = RbPtr<RbObject>( x.value->clone() );
     touched      = x.touched;
     if ( x.touched == true ) {
-        storedValue  = RbPtr<RbLanguageObject>( x.storedValue->clone() );
+        storedValue  = RbPtr<RbObject>( x.storedValue->clone() );
     } else
-        storedValue = RbPtr<RbLanguageObject>::getNullPtr();
+        storedValue = RbPtr<RbObject>::getNullPtr();
     
     lnProb       = x.lnProb;
     storedLnProb = x.storedLnProb;
@@ -185,7 +185,7 @@ bool StochasticNode::areDistributionParamsTouched( void ) const {
 
 
 /** Clamp the node to an observed value */
-void StochasticNode::clamp( RbPtr<RbLanguageObject> observedVal ) {
+void StochasticNode::clamp( RbPtr<RbObject> observedVal ) {
 
     if ( touched )
         throw RbException( "Cannot clamp stochastic node in volatile state" );
@@ -195,7 +195,7 @@ void StochasticNode::clamp( RbPtr<RbLanguageObject> observedVal ) {
         value = observedVal;
     }
     else if (observedVal->isConvertibleTo(distribution->getVariableType())) {
-        value = RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>(observedVal->convertTo(distribution->getVariableType())) ); 
+        value = RbPtr<RbObject>( static_cast<RbLanguageObject*>(observedVal->convertTo(distribution->getVariableType())) ); 
     }
     else {
         throw RbException("Cannot clamp stochastic node with value of type \"" + observedVal->getType() + "\" because the distribution requires a \"" + distribution->getVariableType().toString() + "\".");
@@ -234,12 +234,12 @@ RbPtr<DAGNode> StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode>
     copy->clamped      = clamped;
     copy->touched      = touched;
     if (value != NULL) {
-        copy->value    = RbPtr<RbLanguageObject>( value->clone() );
+        copy->value    = RbPtr<RbObject>( value->clone() );
     }
     if (storedValue == NULL)
-        copy->storedValue = RbPtr<RbLanguageObject>::getNullPtr();
+        copy->storedValue = RbPtr<RbObject>::getNullPtr();
     else {
-        copy->storedValue = RbPtr<RbLanguageObject>( storedValue->clone() );
+        copy->storedValue = RbPtr<RbObject>( storedValue->clone() );
     }
     copy->lnProb       = lnProb;
     copy->storedLnProb = storedLnProb;
@@ -298,7 +298,7 @@ const TypeSpec& StochasticNode::getTypeSpec(void) const {
 /** Get the conditional ln probability of the node; do not rely on stored values */
 double StochasticNode::calculateLnProbability( void ) {
 
-	return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) );
+	return distribution->lnPdf( RbPtr<const RbObject>( value ) );
 }
 
 
@@ -322,38 +322,38 @@ double StochasticNode::getLnProbabilityRatio( void ) const {
     }
     else if ( isTouched() && !areDistributionParamsTouched() ) {
 
-        return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) ) - storedLnProb;
+        return distribution->lnPdf( RbPtr<const RbObject>( value ) ) - storedLnProb;
     }
     else if ( !isTouched() && areDistributionParamsTouched() ) {
 
-        return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) ) - lnProb;
+        return distribution->lnPdf( RbPtr<const RbObject>( value ) ) - lnProb;
     }
     else /* if ( isTouched() && areDistributionParamsTouched() ) */ {
 
-        return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) ) - storedLnProb;
+        return distribution->lnPdf( RbPtr<const RbObject>( value ) ) - storedLnProb;
     }
 }
 
 
 /** Get stored value */
-RbPtr<const RbLanguageObject> StochasticNode::getStoredValue( void ) const {
+RbPtr<const RbObject> StochasticNode::getStoredValue( void ) const {
 
     if ( !touched )
-        return RbPtr<const RbLanguageObject>( value );
+        return RbPtr<const RbObject>( value );
 
-    return RbPtr<const RbLanguageObject>( storedValue );
+    return RbPtr<const RbObject>( storedValue );
 }
 
 
 /** Get const value; we always know our value. */
-RbPtr<const RbLanguageObject> StochasticNode::getValue( void ) const {
+RbPtr<const RbObject> StochasticNode::getValue( void ) const {
 
-    return RbPtr<const RbLanguageObject>( value );
+    return RbPtr<const RbObject>( value );
 }
 
 
 /** Get const value; we always know our value. */
-RbPtr<RbLanguageObject> StochasticNode::getValue( void ) {
+RbPtr<RbObject> StochasticNode::getValue( void ) {
     
     return ( value );
 }
@@ -367,7 +367,7 @@ void StochasticNode::keep() {
 
     if ( touched ) {
 
-        storedValue = RbPtr<RbLanguageObject>::getNullPtr();
+        storedValue = RbPtr<RbObject>::getNullPtr();
         storedLnProb = 1.0E6;       // An almost impossible value for the density
         lnProb = calculateLnProbability();
     }
@@ -432,7 +432,7 @@ void StochasticNode::restore() {
     if ( touched ) {
         
         value           = storedValue;
-        storedValue     = RbPtr<RbLanguageObject>::getNullPtr();
+        storedValue     = RbPtr<RbObject>::getNullPtr();
         lnProb          = storedLnProb;
         storedLnProb    = 1.0E6;    // An almost impossible value for the density
     }
@@ -476,7 +476,7 @@ std::string StochasticNode::richInfo(void) const {
  * Set value: same as clamp, but do not clamp. This function will
  * also be used by moves to propose a new value.
  */
-void StochasticNode::setValue( RbPtr<RbLanguageObject> val, std::set<RbPtr<StochasticNode> >& affected ) {
+void StochasticNode::setValue( RbPtr<RbObject> val, std::set<RbPtr<StochasticNode> >& affected ) {
 
     if ( clamped )
         throw RbException( "Cannot change value of clamped node" );
@@ -521,7 +521,7 @@ void StochasticNode::swapParentNode( RbPtr<DAGNode> oldNode, RbPtr<DAGNode> newN
     if ( clamped == false ) {
 
         if ( !touched ) {
-            storedValue = RbPtr<RbLanguageObject>( value->clone() );
+            storedValue = RbPtr<RbObject>( value->clone() );
             storedLnProb = lnProb;
             touched = true;
         }

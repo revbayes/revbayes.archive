@@ -54,11 +54,11 @@ Dist_gamma::Dist_gamma( void ) : DistributionContinuous( getMemberRules() ) {
  * @return      Cumulative probability
  *
  */
-double Dist_gamma::cdf( RbPtr<const RbLanguageObject> value ) {
+double Dist_gamma::cdf( RbPtr<const RbObject> value ) {
     
-    double shape  = static_cast<      RealPos*>((      RbLanguageObject*)getMemberValue("shape") )->getValue();
-    double lambda = static_cast<      RealPos*>((      RbLanguageObject*)getMemberValue("rate")  )->getValue();
-    double x      = static_cast<const RealPos*>((const RbLanguageObject*)value                   )->getValue();    
+    double shape  = static_cast<      RealPos*>((      RbObject*)getMemberValue("shape") )->getValue();
+    double lambda = static_cast<      RealPos*>((      RbObject*)getMemberValue("rate")  )->getValue();
+    double x      = static_cast<const RealPos*>((const RbObject*)value                   )->getValue();    
 
     return RbStatistics::Gamma::cdf(shape, lambda, x);
 }
@@ -118,11 +118,11 @@ const TypeSpec& Dist_gamma::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_gamma::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_gamma::lnPdf( RbPtr<const RbObject> value ) const {
     
-    double shape  = static_cast<const RealPos*>((const RbLanguageObject*)getMemberValue("shape") )->getValue();
-    double lambda = static_cast<const RealPos*>((const RbLanguageObject*)getMemberValue("rate")  )->getValue();
-    double x      = static_cast<const RealPos*>((const RbLanguageObject*)value                   )->getValue();  
+    double shape  = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape") )->getValue();
+    double lambda = static_cast<const RealPos*>((const RbObject*)getMemberValue("rate")  )->getValue();
+    double x      = static_cast<const RealPos*>((const RbObject*)value                   )->getValue();  
   
     return RbStatistics::Gamma::lnPdf(shape, lambda, x); 
 }
@@ -137,11 +137,11 @@ double Dist_gamma::lnPdf( RbPtr<const RbLanguageObject> value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_gamma::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_gamma::pdf( RbPtr<const RbObject> value ) const {
     
-    double shape  = static_cast<const RealPos*>((const RbLanguageObject*)getMemberValue("shape") )->getValue();
-    double lambda = static_cast<const RealPos*>((const RbLanguageObject*)getMemberValue("rate")  )->getValue();
-    double x      = static_cast<const RealPos*>((const RbLanguageObject*)value                   )->getValue();   
+    double shape  = static_cast<const RealPos*>((const RbObject*)getMemberValue("shape") )->getValue();
+    double lambda = static_cast<const RealPos*>((const RbObject*)getMemberValue("rate")  )->getValue();
+    double x      = static_cast<const RealPos*>((const RbObject*)value                   )->getValue();   
     
     return RbStatistics::Gamma::pdf(shape, lambda, x, false);    
 }
@@ -159,8 +159,8 @@ double Dist_gamma::pdf( RbPtr<const RbLanguageObject> value ) const {
  */
 RbPtr<Real> Dist_gamma::quantile(const double p) {
     
-    double shape  = static_cast<      RealPos*>((      RbLanguageObject*)getMemberValue("shape") )->getValue();
-    double lambda = static_cast<      RealPos*>((      RbLanguageObject*)getMemberValue("rate")  )->getValue();
+    double shape  = static_cast<      RealPos*>((      RbObject*)getMemberValue("shape") )->getValue();
+    double lambda = static_cast<      RealPos*>((      RbObject*)getMemberValue("rate")  )->getValue();
     
     double quantile = RbStatistics::Gamma::quantile(shape, lambda, p);     
     return RbPtr<Real>( new RealPos(quantile) );
@@ -175,14 +175,14 @@ RbPtr<Real> Dist_gamma::quantile(const double p) {
  *
  * @return      Random draw from gamma distribution
  */
-RbPtr<RbLanguageObject> Dist_gamma::rv( void ) {
+RbPtr<RbObject> Dist_gamma::rv( void ) {
     
-    double shape  = static_cast<      RealPos*>((      RbLanguageObject*)getMemberValue("shape") )->getValue();
-    double lambda = static_cast<      RealPos*>((      RbLanguageObject*)getMemberValue("rate")  )->getValue();
+    double shape  = static_cast<      RealPos*>((      RbObject*)getMemberValue("shape") )->getValue();
+    double lambda = static_cast<      RealPos*>((      RbObject*)getMemberValue("rate")  )->getValue();
     
     RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;        
     double rv = RbStatistics::Gamma::rv(shape, lambda, rng);
-    return RbPtr<RbLanguageObject>( new RealPos(rv) );
+    return RbPtr<RbObject>( new RealPos(rv) );
 }
 
 

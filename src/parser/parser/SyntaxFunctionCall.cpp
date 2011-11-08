@@ -133,9 +133,9 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(RbPtr<Environment> env) {
         if ( theNode == NULL || !theNode->getValue()->isTypeSpec( TypeSpec(MemberObject_name) ) )
             throw RbException( "Variable does not have member functions" );
 
-        RbPtr<MemberObject> theMemberObject( dynamic_cast<MemberObject*>((RbLanguageObject*)theNode->getValue()) );
+        RbPtr<MemberObject> theMemberObject( dynamic_cast<MemberObject*>((RbObject*)theNode->getValue()) );
 //        args.insert( args.begin(), new Argument( "", memberNode ) );
-        // TODO: We shouldn't allow static casts!!!
+        // TODO: We shouldn't allow const casts!!!
         MethodTable* mt = const_cast<MethodTable*>((const MethodTable*)theMemberObject->getMethods());
         RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( (RbFunction*)mt->getFunction( *functionName, args ) ) );
         theMemberFunction->setMemberObject(theMemberObject);

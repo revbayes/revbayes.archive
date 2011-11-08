@@ -44,11 +44,11 @@ Func_sin* Func_sin::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_sin::execute( void ) {
+RbPtr<RbObject> Func_sin::execute( void ) {
     
-    const double x = static_cast<const Real*>( (const RbLanguageObject*)(*args)[0]->getValue() )->getValue();
+    const double x = static_cast<const Real*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
     
-    return RbPtr<RbLanguageObject>( new RealPos( sin(x) ) );
+    return RbPtr<RbObject>( new RealPos( sin(x) ) );
 }
 
 

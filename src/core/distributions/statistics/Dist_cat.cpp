@@ -79,14 +79,14 @@ RbPtr<const MemberRules> Dist_cat::getMemberRules( void ) const {
 /** Get the number of states in the distribution */
 size_t Dist_cat::getNumberOfStates( void ) const {
 
-    return static_cast<const Simplex*>( (const RbLanguageObject*)getMemberValue("m") )->size();
+    return static_cast<const Simplex*>( (const RbObject*)getMemberValue("m") )->size();
 }
 
 
 /** Get the probability mass vector */
 RbPtr<Simplex> Dist_cat::getProbabilityMassVector( void ) {
 
-    return RbPtr<Simplex>( static_cast<Simplex*>( (RbLanguageObject*)getMemberValue("m") ) );
+    return RbPtr<Simplex>( static_cast<Simplex*>( (RbObject*)getMemberValue("m") ) );
 }
 
 
@@ -115,11 +115,11 @@ const TypeSpec& Dist_cat::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_cat::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_cat::lnPdf( RbPtr<const RbObject> value ) const {
 
 	// Get the value and the parameters of the categorical distribution
-    std::vector<double> m = static_cast<const Simplex*    >( (const RbLanguageObject*)getMemberValue("m") )->getValue();
-    int                 x = static_cast<const Categorical*>( (const RbLanguageObject*)value               )->getValue();
+    std::vector<double> m = static_cast<const Simplex*    >( (const RbObject*)getMemberValue("m") )->getValue();
+    int                 x = static_cast<const Categorical*>( (const RbObject*)value               )->getValue();
 
     if ( x < 0 )
         return 0.0;
@@ -137,11 +137,11 @@ double Dist_cat::lnPdf( RbPtr<const RbLanguageObject> value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_cat::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_cat::pdf( RbPtr<const RbObject> value ) const {
 
 	// Get the value and the parameter of the categorical distribution
-    std::vector<double> m = static_cast<const Simplex*    >( (const RbLanguageObject*)getMemberValue("m") )->getValue();
-    int                 x = static_cast<const Categorical*>( (const RbLanguageObject*)value               )->getValue();
+    std::vector<double> m = static_cast<const Simplex*    >( (const RbObject*)getMemberValue("m") )->getValue();
+    int                 x = static_cast<const Categorical*>( (const RbObject*)value               )->getValue();
 
 	if ( x < 0 )
         return 1.0;
@@ -158,10 +158,10 @@ double Dist_cat::pdf( RbPtr<const RbLanguageObject> value ) const {
  *
  * @return      Random draw from categorical distribution
  */
-RbPtr<RbLanguageObject> Dist_cat::rv( void ) {
+RbPtr<RbObject> Dist_cat::rv( void ) {
 
 	// Get the parameter of the categorical distribution and the rng
-    std::vector<double>    m   = static_cast<Simplex*>( (RbLanguageObject*)getMemberValue( "m" ) )->getValue();
+    std::vector<double>    m   = static_cast<Simplex*>( (RbObject*)getMemberValue( "m" ) )->getValue();
     RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
 
     // Get copy of reference object
@@ -181,6 +181,6 @@ RbPtr<RbLanguageObject> Dist_cat::rv( void ) {
     draw->setValue( int( i ) );
 
     // Return draw
-    return RbPtr<RbLanguageObject>( draw );
+    return RbPtr<RbObject>( draw );
 }
 

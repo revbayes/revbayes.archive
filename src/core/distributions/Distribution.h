@@ -51,14 +51,14 @@ class Distribution: public ConstantMemberObject {
 
         // Member object functions you may want to override
         virtual RbPtr<const MethodTable>    getMethods(void) const;                                                         //!< Get member methods
-        virtual RbPtr<RbLanguageObject>     executeOperation(const std::string& name, const RbPtr<Environment>& args);      //!< Map member methods to internal functions
+        virtual RbPtr<RbObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args);      //!< Map member methods to internal functions
 
 
         // Distribution functions you have to override
         virtual const TypeSpec&             getVariableType(void) const = 0;                                                //!< Get random variable type
-        virtual double                      lnPdf( RbPtr<const RbLanguageObject> value) const = 0;                          //!< Ln probability density
-        virtual double                      pdf( RbPtr<const RbLanguageObject> value) const = 0;                            //!< Probability density function
-        virtual RbPtr<RbLanguageObject>     rv(void) = 0;                                                                   //!< Generate a random draw
+        virtual double                      lnPdf( RbPtr<const RbObject> value) const = 0;                          //!< Ln probability density
+        virtual double                      pdf( RbPtr<const RbObject> value) const = 0;                            //!< Probability density function
+        virtual RbPtr<RbObject>             rv(void) = 0;                                                                   //!< Generate a random draw
 
     protected:
                                             Distribution( RbPtr<const MemberRules> memberRules);                            //!< Simple constructor

@@ -66,13 +66,13 @@ Mcmc* Mcmc::clone(void) const {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> Mcmc::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbObject> Mcmc::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
 
     if (name == "run") {
-        const RbPtr<const RbLanguageObject>& argument = (*args)[0]->getValue();
-        int n = static_cast<const Natural*>( (const RbLanguageObject*)argument )->getValue();
+        const RbPtr<const RbObject>& argument = (*args)[0]->getValue();
+        int n = static_cast<const Natural*>( (const RbObject*)argument )->getValue();
         run(n);
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return RbPtr<RbObject>::getNullPtr();
     }
 
     return MemberObject::executeOperation( name, args );
@@ -141,7 +141,7 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
     // Hence we need to set the DAG nodes of the moves to these clones.
     if ( name == "moves" ) {
         // get the DAG nodes
-        const RbPtr<Model> theModel( dynamic_cast<Model*>( (RbLanguageObject*)getMemberValue("model") ) );
+        const RbPtr<Model> theModel( dynamic_cast<Model*>( (RbObject*)getMemberValue("model") ) );
         
         RbPtr<Vector> moves( static_cast<Vector*>(var->getValue()->convertTo(TypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(Move_name) ) ) ) ) );
         for (size_t i=0; i<moves->size(); i++) {
@@ -161,11 +161,11 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
             
         }
         
-        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( moves ) ) ) );
+        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbObject>( moves ) ) ) );
     }
     else if ( name == "monitors" ) {
         // get the DAG nodes
-        const RbPtr<Model> theModel( static_cast<Model*>( (RbLanguageObject*)getMemberValue("model") ) );
+        const RbPtr<Model> theModel( static_cast<Model*>( (RbObject*)getMemberValue("model") ) );
         
         RbPtr<Vector> monitors( static_cast<Vector*>(var->getValue()->convertTo(TypeSpec(Vector_name, RbPtr<TypeSpec>( new TypeSpec(Monitor_name) ) ) ) ) );
         for (size_t i=0; i<monitors->size(); i++) {
@@ -185,7 +185,7 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
             
         }
         
-        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( monitors ) ) ) );
+        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbObject>( monitors ) ) ) );
     }
     else {
         ConstantMemberObject::setMemberVariable(name, var);
@@ -199,11 +199,11 @@ void Mcmc::run(size_t ngen) {
     std::cerr << "Initializing mcmc chain ..." << std::endl;
 
     /* Get the dag nodes from the model */
-    std::vector<RbPtr<DAGNode> >& dagNodes = (static_cast<Model*>( (RbLanguageObject*)getMemberValue("model") ) )->getDAGNodes();
+    std::vector<RbPtr<DAGNode> >& dagNodes = (static_cast<Model*>( (RbObject*)getMemberValue("model") ) )->getDAGNodes();
 
     /* Get the moves and monitors */
-    RbPtr<Vector> monitors( static_cast<Vector*>( (RbLanguageObject*)getMemberDagNode( "monitors" )->getValue() ) );
-    RbPtr<Vector>    moves( static_cast<Vector*>( (RbLanguageObject*)getMemberDagNode( "moves"    )->getValue() ) );
+    RbPtr<Vector> monitors( static_cast<Vector*>( (RbObject*)getMemberDagNode( "monitors" )->getValue() ) );
+    RbPtr<Vector>    moves( static_cast<Vector*>( (RbObject*)getMemberDagNode( "moves"    )->getValue() ) );
 
     /* Get the chain settings */
     std::cerr << "Getting the chain settings ..." << std::endl;

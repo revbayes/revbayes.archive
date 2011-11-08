@@ -58,10 +58,10 @@ Func_dppServe* Func_dppServe::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_dppServe::execute( void ) {
+RbPtr<RbObject> Func_dppServe::execute( void ) {
     
 	// Expecting the allocation vector to be like: [0,0,1,0,1,2,2,2,2,2,3,0,3,1]
-	std::vector<unsigned int> allocVec = static_cast<const VectorNatural*>( (const RbLanguageObject*)(*args)[0]->getValue() )->getValue();
+	std::vector<unsigned int> allocVec = static_cast<const VectorNatural*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
 
 	std::sort(allocVec.begin(), allocVec.end()); // this makes [0,0,0,0,1,1,1,2,2,2,2,2,3,3]
 
@@ -77,7 +77,7 @@ RbPtr<RbLanguageObject> Func_dppServe::execute( void ) {
 		// paramValues[i] = ...
 	}
     
-	return RbPtr<RbLanguageObject>( new VectorReal( paramValues ) );
+	return RbPtr<RbObject>( new VectorReal( paramValues ) );
 }
 
 

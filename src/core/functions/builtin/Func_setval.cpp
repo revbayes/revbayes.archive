@@ -43,7 +43,7 @@ Func_setval* Func_setval::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_setval::execute( void ) {
+RbPtr<RbObject> Func_setval::execute( void ) {
 
     // Get the stochastic node from the variable reference
     RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( (DAGNode*)(*args)[0]->getDagNode() ) );
@@ -52,11 +52,11 @@ RbPtr<RbLanguageObject> Func_setval::execute( void ) {
     
     // The following call will throw an error if the value type is wrong
     std::set<RbPtr<StochasticNode> > affected;
-    theNode->setValue( RbPtr<RbLanguageObject>( (RbLanguageObject*)(*args)[1]->getValue()->clone() ), affected );
+    theNode->setValue( RbPtr<RbObject>( (*args)[1]->getValue()->clone() ), affected );
 
     // todo: Do we want to update the affected nodes?
 
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return RbPtr<RbObject>::getNullPtr();
 }
 
 

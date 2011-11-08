@@ -55,7 +55,7 @@ class UserFunction :  public RbFunction {
         std::string                                 richInfo() const;                   //!< Complete info about object
 
         // Regular functions
-		RbPtr<RbLanguageObject>                     execute(void);                      //!< Execute function
+		RbPtr<RbObject>                             execute(void);                      //!< Execute function
         RbPtr<const ArgumentRules>                  getArgumentRules(void) const;       //!< Get arg rules
         const TypeSpec&                             getReturnType(void) const;          //!< Get return type
 

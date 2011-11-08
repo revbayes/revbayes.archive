@@ -44,9 +44,9 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_readTraces::execute( void ) {
+RbPtr<RbObject> Func_readTraces::execute( void ) {
     // get the information from the arguments for reading the file
-    RbPtr<RbString> fn( static_cast<RbString*>( (RbLanguageObject*)(*args)[0]->getValue() ) );
+    RbPtr<RbString> fn( static_cast<RbString*>( (RbObject*)(*args)[0]->getValue() ) );
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn->getValue() );
@@ -95,7 +95,7 @@ RbPtr<RbLanguageObject> Func_readTraces::execute( void ) {
         bool hasHeaderBeenRead = false;
         
         /* Open file */
-        std::string filename = static_cast<const RbString*>( (const RbLanguageObject*)(*args)[0]->getValue() )->getValue();
+        std::string filename = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
         std::ifstream inFile( filename.c_str() );
         
         if ( !inFile )
@@ -169,7 +169,7 @@ RbPtr<RbLanguageObject> Func_readTraces::execute( void ) {
     }
     
     
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return RbPtr<RbObject>::getNullPtr();
     
 
 }

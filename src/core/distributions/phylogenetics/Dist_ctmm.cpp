@@ -82,7 +82,7 @@ RbPtr<const MemberRules> Dist_ctmm::getMemberRules( void ) const {
 /** Get the number of states in the distribution */
 size_t Dist_ctmm::getNumberOfStates( void ) const {
 
-    size_t numStates  = static_cast<const CharacterStateDiscrete*>( (const RbLanguageObject*)getMemberValue( "a"  ) )->getNumberOfStates();
+    size_t numStates  = static_cast<const CharacterStateDiscrete*>( (const RbObject*)getMemberValue( "a"  ) )->getNumberOfStates();
     
     return numStates;
 }
@@ -92,8 +92,8 @@ size_t Dist_ctmm::getNumberOfStates( void ) const {
 RbPtr<Simplex> Dist_ctmm::getProbabilityMassVector( void ) {
 
     // get the information from the arguments for reading the file
-    RbPtr<RateMatrix>                q = RbPtr<RateMatrix>( static_cast<RateMatrix*>( (RbLanguageObject*)(*members)[0]->getValue() ) );
-    RbPtr<RealPos>                   t = RbPtr<RealPos>( static_cast<RealPos*>( (RbLanguageObject*)(*members)[1]->getValue() ) );
+    RbPtr<RateMatrix>                q = RbPtr<RateMatrix>( static_cast<RateMatrix*>( (RbObject*)(*members)[0]->getValue() ) );
+    RbPtr<RealPos>                   t = RbPtr<RealPos>( static_cast<RealPos*>( (RbObject*)(*members)[1]->getValue() ) );
 //    const CharacterStateDiscrete*    c = static_cast<const CharacterStateDiscrete*>(    members[2].getValue() );
     
     // initialize the number of states
@@ -140,13 +140,13 @@ const TypeSpec& Dist_ctmm::getVariableType( void ) const {
  * @param value Observed character state
  * @return      Natural log of the probability
  */
-double Dist_ctmm::lnPdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_ctmm::lnPdf( RbPtr<const RbObject> value ) const {
 
     // Get the parameters
-    RbPtr<const RateMatrix>             Q      = RbPtr<const RateMatrix            >( static_cast<const RateMatrix*            >( (const RbLanguageObject*)getMemberValue( "Q" ) ) );
-    double                              t      =                                      static_cast<const RealPos*               >( (const RbLanguageObject*)getMemberValue( "v" ) )->getValue();
-    RbPtr<const CharacterStateDiscrete> start  = RbPtr<const CharacterStateDiscrete>( static_cast<const CharacterStateDiscrete*>( (const RbLanguageObject*)getMemberValue( "a" ) ) );
-    RbPtr<const CharacterStateDiscrete> stop   = RbPtr<const CharacterStateDiscrete>( static_cast<const CharacterStateDiscrete*>( (const RbLanguageObject*)value ) );
+    RbPtr<const RateMatrix>             Q      = RbPtr<const RateMatrix            >( static_cast<const RateMatrix*            >( (const RbObject*)getMemberValue( "Q" ) ) );
+    double                              t      =                                      static_cast<const RealPos*               >( (const RbObject*)getMemberValue( "v" ) )->getValue();
+    RbPtr<const CharacterStateDiscrete> start  = RbPtr<const CharacterStateDiscrete>( static_cast<const CharacterStateDiscrete*>( (const RbObject*)getMemberValue( "a" ) ) );
+    RbPtr<const CharacterStateDiscrete> stop   = RbPtr<const CharacterStateDiscrete>( static_cast<const CharacterStateDiscrete*>( (const RbObject*)value ) );
     
     // calculate the transition probability matrix
     
@@ -189,13 +189,13 @@ double Dist_ctmm::lnPdf( RbPtr<const RbLanguageObject> value ) const {
  * @param value Observed character state
  * @return      Probability
  */
-double Dist_ctmm::pdf( RbPtr<const RbLanguageObject> value ) const {
+double Dist_ctmm::pdf( RbPtr<const RbObject> value ) const {
 
     // Get the parameters
-    RbPtr<const RateMatrix>             Q      = RbPtr<const RateMatrix            >( static_cast<const RateMatrix*            >( (const RbLanguageObject*)getMemberValue( "Q" ) ) );
-    double                              t      =                                      static_cast<const RealPos*               >( (const RbLanguageObject*)getMemberValue( "v" ) )->getValue();
-    RbPtr<const CharacterStateDiscrete> start  = RbPtr<const CharacterStateDiscrete>( static_cast<const CharacterStateDiscrete*>( (const RbLanguageObject*)getMemberValue( "a" ) ) );
-    RbPtr<const CharacterStateDiscrete> stop   = RbPtr<const CharacterStateDiscrete>( static_cast<const CharacterStateDiscrete*>( (const RbLanguageObject*)value ) );
+    RbPtr<const RateMatrix>             Q      = RbPtr<const RateMatrix            >( static_cast<const RateMatrix*            >( (const RbObject*)getMemberValue( "Q" ) ) );
+    double                              t      =                                      static_cast<const RealPos*               >( (const RbObject*)getMemberValue( "v" ) )->getValue();
+    RbPtr<const CharacterStateDiscrete> start  = RbPtr<const CharacterStateDiscrete>( static_cast<const CharacterStateDiscrete*>( (const RbObject*)getMemberValue( "a" ) ) );
+    RbPtr<const CharacterStateDiscrete> stop   = RbPtr<const CharacterStateDiscrete>( static_cast<const CharacterStateDiscrete*>( (const RbObject*)value ) );
 
     // calculate the transition probability matrix
     
@@ -236,15 +236,15 @@ double Dist_ctmm::pdf( RbPtr<const RbLanguageObject> value ) const {
  *
  * @return      Randomly drawn character state
  */
-RbPtr<RbLanguageObject> Dist_ctmm::rv( void ) {
+RbPtr<RbObject> Dist_ctmm::rv( void ) {
 
     // Get the rng
     RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
     
     // Get the parameters
-    RbPtr<RateMatrix>             Q      = RbPtr<RateMatrix>(             static_cast<RateMatrix*            >( (RbLanguageObject*)getMemberValue( "Q" ) ) );
-    double                        t      =                                static_cast<const RealPos*         >( (RbLanguageObject*)getMemberValue( "v" ) )->getValue();
-    RbPtr<CharacterStateDiscrete> start  = RbPtr<CharacterStateDiscrete>( static_cast<CharacterStateDiscrete*>( (RbLanguageObject*)getMemberValue( "a" ) ) );
+    RbPtr<RateMatrix>             Q      = RbPtr<RateMatrix>(             static_cast<RateMatrix*            >( (RbObject*)getMemberValue( "Q" ) ) );
+    double                        t      =                                static_cast<const RealPos*         >( (RbObject*)getMemberValue( "v" ) )->getValue();
+    RbPtr<CharacterStateDiscrete> start  = RbPtr<CharacterStateDiscrete>( static_cast<CharacterStateDiscrete*>( (RbObject*)getMemberValue( "a" ) ) );
     
     // calculate the transition probability matrix
     
@@ -277,7 +277,7 @@ RbPtr<RbLanguageObject> Dist_ctmm::rv( void ) {
         }
     }
     
-    return RbPtr<RbLanguageObject>( draw );
+    return RbPtr<RbObject>( draw );
 }
 
 

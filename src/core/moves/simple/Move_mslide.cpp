@@ -104,9 +104,9 @@ double Move_mslide::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
 
     // Get relevant values
     RbPtr<StochasticNode> nodePtr( static_cast<StochasticNode*>( (DAGNode*)nodes[0] ) );
-    RbPtr<const RealPos> delta( static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue("delta") ) );
+    RbPtr<const RealPos> delta( static_cast<const RealPos*>( (const RbObject*)getMemberValue("delta") ) );
 
-    double curVal  =  ( static_cast<const Real*>( (const RbLanguageObject*)nodePtr->getValue() ) )->getValue();
+    double curVal  =  ( static_cast<const Real*>( (const RbObject*)nodePtr->getValue() ) )->getValue();
     RbPtr<const Real> minPtr = static_cast<const DistributionContinuous*>( (const Distribution*)nodePtr->getDistribution() )->getMin();
     RbPtr<const Real> maxPtr = static_cast<const DistributionContinuous*>( (const Distribution*)nodePtr->getDistribution() )->getMax();
     double minVal  = minPtr->getValue();
@@ -125,7 +125,7 @@ double Move_mslide::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
 
     // FIXME: not the most efficient way of handling multiple reflections :-P
 
-    nodePtr->setValue( RbPtr<RbLanguageObject>( newVal.clone() ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbObject>( newVal.clone() ), affectedNodes );
 	
     return 0.0;
 }

@@ -88,15 +88,15 @@ Topology* Topology::clone(void) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> Topology::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbObject> Topology::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
     
     if (name == "ntips") {
     
-        return RbPtr<RbLanguageObject>( new Natural((int)getNumberOfTips()) );
+        return RbPtr<RbObject>( new Natural((int)getNumberOfTips()) );
     }
     else if (name == "nnodes") {
     
-        return RbPtr<RbLanguageObject>( new Natural((int)getNumberOfNodes()) );
+        return RbPtr<RbObject>( new Natural((int)getNumberOfNodes()) );
     }
 
     return MemberObject::executeOperation( name, args );

@@ -49,9 +49,9 @@ public:
 
     // Discrete distribution functions
     const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-    double                      lnPdf(RbPtr<const RbLanguageObject> value) const;                   //!< Ln probability density
-    double                      pdf(RbPtr<const RbLanguageObject> value) const;                     //!< Probability density
-    RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate tree from the coalescent
+    double                      lnPdf(RbPtr<const RbObject> value) const;                           //!< Ln probability density
+    double                      pdf(RbPtr<const RbObject> value) const;                             //!< Probability density
+    RbPtr<RbObject>             rv(void);                                                           //!< Generate tree from the coalescent
 
 private:
     double                      drawWaitingTime(unsigned long numNodes, unsigned long haploidPopSize);

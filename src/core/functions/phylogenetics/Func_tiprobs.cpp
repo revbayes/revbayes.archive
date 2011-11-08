@@ -44,11 +44,11 @@ Func_tiprobs* Func_tiprobs::clone(void) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_tiprobs::execute(void) {
+RbPtr<RbObject> Func_tiprobs::execute(void) {
 
     // get the information from the arguments for reading the file
-    RbPtr<RateMatrix> q( static_cast<RateMatrix*>( (RbLanguageObject*)(*args)[0]->getValue() ) );
-    RbPtr<RealPos>    t( static_cast<RealPos*>(    (RbLanguageObject*)(*args)[1]->getValue() ) );
+    RbPtr<RateMatrix> q( static_cast<RateMatrix*>( (RbObject*)(*args)[0]->getValue() ) );
+    RbPtr<RealPos>    t( static_cast<RealPos*>(    (RbObject*)(*args)[1]->getValue() ) );
 
     // initialize the number of states
     const size_t nStates = q->getNumberOfStates();
@@ -68,7 +68,7 @@ RbPtr<RbLanguageObject> Func_tiprobs::execute(void) {
     q->calculateTransitionProbabilities( t->getValue(), m );
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return RbPtr<RbLanguageObject>( m );
+    return RbPtr<RbObject>( m );
 }
 
 

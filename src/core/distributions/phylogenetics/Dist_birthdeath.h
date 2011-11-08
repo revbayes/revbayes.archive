@@ -43,9 +43,9 @@ public:
     
     // Discrete distribution functions
     const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Simplex)
-    double                      lnPdf( RbPtr<const RbLanguageObject> value) const;                  //!< Ln probability density
-    double                      pdf( RbPtr<const RbLanguageObject> value) const;                    //!< Probability density
-    RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
+    double                      lnPdf( RbPtr<const RbObject> value) const;                          //!< Ln probability density
+    double                      pdf( RbPtr<const RbObject> value) const;                            //!< Probability density
+    RbPtr<RbObject>             rv(void);                                                           //!< Generate random variable
     
 private:
     double                      nj(double t, double t_prime, double T, double lambda, double mu, double rho) const;

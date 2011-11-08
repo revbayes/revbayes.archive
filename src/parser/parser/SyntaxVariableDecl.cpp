@@ -132,10 +132,10 @@ RbPtr<Variable> SyntaxVariableDecl::evaluateContent( RbPtr<Environment> env ) {
         else {
             
             RbPtr<DAGNode>        temp    = (*i)->evaluateContent( env )->getDagNode();
-            const RbPtr<RbLanguageObject> value   = temp->getValue();
+            const RbPtr<RbObject> value   = temp->getValue();
             
             if ( value->isTypeSpec( TypeSpec(Integer_name) ) )
-                length.push_back( static_cast<const Integer*>( (RbLanguageObject*)value )->getValue() );
+                length.push_back( static_cast<const Integer*>( (RbObject*)value )->getValue() );
             else
                 throw RbException( "Expression in length specification of variable declaration does not evaluate to an integer" );
         }

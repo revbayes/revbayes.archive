@@ -20,8 +20,11 @@
 #include "MemberFunction.h"
 #include "Natural.h"
 #include "RbException.h"
+#include "RbObject.h"
+#include "RbPtr.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 
 #include <algorithm>
@@ -76,11 +79,16 @@ RbPtr<const MethodTable> Container::getMethods(void) const {
     
     static RbPtr<MethodTable> methods( new MethodTable() );
     static RbPtr<ArgumentRules> sizeArgRules( new ArgumentRules() );
+    static RbPtr<ArgumentRules> squareBracketArgRules( new ArgumentRules() );
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) 
     {
         methods->addFunction("size",  RbPtr<RbFunction>(new MemberFunction(TypeSpec(Natural_name), sizeArgRules) ) );
+        
+        // add method for call "x[]" as a function
+        squareBracketArgRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "index" , Natural_name ) ) );
+        methods->addFunction("[]",  RbPtr<RbFunction>(new MemberFunction(TypeSpec(RbObject_name), squareBracketArgRules) ) );
         
         // necessary call for proper inheritance
         methods->setParentTable( RbPtr<const FunctionTable>( ConstantMemberObject::getMethods() ) );
@@ -92,11 +100,22 @@ RbPtr<const MethodTable> Container::getMethods(void) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbLanguageObject> Container::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbObject> Container::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
     
     if (name == "size") {
         
-        return RbPtr<RbLanguageObject>( new Natural(size()) );
+        return RbPtr<RbObject>( new Natural(size()) );
+    } else if ( name == "[]") {
+        // get the member with give index
+        RbPtr<const Natural> index( static_cast<const Natural*>( (const RbObject*)(*args)[0]->getValue()) );
+
+        if (size() < index->getValue()) {
+            throw RbException("Index out of bounds in []");
+        }
+        
+        // TODO: Check what happens with DAGNodeContainers
+        RbPtr<RbObject> element = getElement(index->getValue() - 1);
+        return element;
     }
     
     return ConstantMemberObject::executeOperation( name, args );

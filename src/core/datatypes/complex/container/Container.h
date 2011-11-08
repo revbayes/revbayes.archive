@@ -54,7 +54,7 @@ public:
     virtual void                        unique(void) = 0;                                                   //!< removes consecutive duplicates
     
     // Member method inits
-    virtual RbPtr<RbLanguageObject>     executeOperation(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
+    virtual RbPtr<RbObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
     virtual RbPtr<const MethodTable>    getMethods(void) const;                                             //!< Get methods
 
     // Container functions you do not have to override

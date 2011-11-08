@@ -151,7 +151,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
             throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
         // fill the slot with the new variable
-        theSlot->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>(theVariable->getDagNode()->getValue()->clone() ) ) ) );
+        theSlot->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbObject>(theVariable->getDagNode()->getValue()->clone() ) ) ) );
     }
     
     // Deal with equation assignments
@@ -201,7 +201,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
         
         // Make an independent copy of the distribution and delete the exprVal
 //        Distribution* distribution = (Distribution*) detNode->getFunctionPtr()->execute();
-        RbPtr<Distribution> distribution( dynamic_cast<Distribution*>( (RbLanguageObject*)detNode->getValue() ) );
+        RbPtr<Distribution> distribution( dynamic_cast<Distribution*>( (RbObject*)detNode->getValue() ) );
         if ( distribution == NULL )
             throw RbException( "Function returns a NULL distribution" );
         

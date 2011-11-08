@@ -34,7 +34,7 @@ class Func__unot :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
+    	RbPtr<RbObject>             execute(void);                                              //!< Execute function
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
@@ -70,12 +70,12 @@ Func__unot<valType>* Func__unot<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType>
-RbPtr<RbLanguageObject> Func__unot<valType>::execute( void ) {
+RbPtr<RbObject> Func__unot<valType>::execute( void ) {
 
-    const RbPtr<valType> val( static_cast<valType*> ( (RbLanguageObject*)(*args)[0]->getValue() ) );
+    const RbPtr<valType> val( static_cast<valType*> ( (RbObject*)(*args)[0]->getValue() ) );
     RbBoolean         res = ! (*val);
 
-    return RbPtr<RbLanguageObject>( res.clone() );
+    return RbPtr<RbObject>( res.clone() );
 }
 
 

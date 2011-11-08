@@ -44,12 +44,12 @@ class Dist_gamma: public DistributionContinuous {
         RbPtr<const MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Exponential distribution functions
-        double                      cdf(RbPtr<const RbLanguageObject> value);                           //!< Cumulative density
+        double                      cdf(RbPtr<const RbObject> value);                           //!< Cumulative density
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (RealPos)
-        double                      lnPdf(RbPtr<const RbLanguageObject> value) const;                   //!< Ln probability density
-        double                      pdf(RbPtr<const RbLanguageObject> value) const;                     //!< Probability density
+        double                      lnPdf(RbPtr<const RbObject> value) const;                   //!< Ln probability density
+        double                      pdf(RbPtr<const RbObject> value) const;                     //!< Probability density
         RbPtr<Real>                 quantile(const double p);                                           //!< Quantile
-        RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
+        RbPtr<RbObject>             rv(void);                                                           //!< Generate random variable
     
     private:
         static const TypeSpec       typeSpec;

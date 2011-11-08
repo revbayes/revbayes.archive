@@ -15,7 +15,7 @@
  * @version 1.0
  * @interface RbFunction
  * @package functions
- * @since Version 1.0, 2009-09-03
+ * @since Version 1.0, 2011-11-07
  *
  * $Id$
  */
@@ -36,7 +36,7 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
     
     // Func_reference functions
-    RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute function
+    RbPtr<RbObject>             execute(void);                                      //!< Execute function
     RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                          //!< Get type of return val
     

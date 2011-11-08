@@ -73,7 +73,7 @@ RbPtr<const MemberRules> Monitor::getMemberRules( void ) const {
     {
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "filename"  , TypeSpec(RbString_name)         ) ) );
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "separator" , TypeSpec(RbString_name), RbPtr<RbLanguageObject>(new RbString("\t") ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "separator" , TypeSpec(RbString_name), RbPtr<RbObject>(new RbString("\t") ) ) ) );
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) ) );
         memberRules->push_back( RbPtr<ArgumentRule>( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) ) );
         rulesSet = true;
@@ -111,7 +111,7 @@ void Monitor::monitor(void) {
 void Monitor::monitor(int gen) {
 
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( (const RbLanguageObject*)getMemberValue("printgen") )->getValue();
+    int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
     
     if (gen % samplingFrequency == 0) {
         for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
@@ -132,7 +132,7 @@ void Monitor::monitor(int gen) {
 void Monitor::openStream(void) {
 
     // get the filename
-    std::string filename = dynamic_cast<const RbString*>( (const RbLanguageObject*)getMemberValue("filename") )->getValue();
+    std::string filename = dynamic_cast<const RbString*>( (const RbObject*)getMemberValue("filename") )->getValue();
     
     // open the stream to the file
     outStream.open(filename.c_str());
@@ -163,7 +163,7 @@ void Monitor::printHeader() {
 void Monitor::printValue(std::ostream& o) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( (const RbLanguageObject*)getMemberValue("printgen") )->getValue();
+    int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
     
     o << "Monitor: interval = " << samplingFrequency;
 }
@@ -189,7 +189,7 @@ void Monitor::replaceDagNodes(std::vector<RbPtr<VariableNode> > &n) {
 std::string Monitor::richInfo(void) const {
     
     // get the printing frequency
-    int samplingFrequency = dynamic_cast<const Integer*>( (const RbLanguageObject*)getMemberValue("printgen") )->getValue();
+    int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
     
     std::ostringstream o;
     o << "Monitor: interval = " << samplingFrequency;
@@ -204,7 +204,7 @@ void Monitor::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
         nodes.push_back(RbPtr<VariableNode>( dynamic_cast<VariableNode*>( (DAGNode*)var->getDagNode() ) ) );
     } 
     else if (name == "separator") {
-        separator = static_cast<RbString*>( (RbLanguageObject*)var->getValue() )->getValue();
+        separator = static_cast<RbString*>( (RbObject*)var->getValue() )->getValue();
         
         // call parent class to set member variable
         ConstantMemberObject::setMemberVariable( name, var );

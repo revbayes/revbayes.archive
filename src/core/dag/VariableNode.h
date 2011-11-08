@@ -39,9 +39,9 @@ public:
     // Utility functions you have to override
     virtual VariableNode*                       clone(void) const = 0;                                                          //!< Clone this node
     virtual const VectorString&                 getClass(void) const;                                                           //!< Get DAG node class 
-    virtual RbPtr<const RbLanguageObject>       getStoredValue(void) const = 0;                                                 //!< Get stored value
-    virtual RbPtr<const RbLanguageObject>       getValue(void) const = 0;                                                       //!< Get value
-    virtual RbPtr<RbLanguageObject>             getValue(void) = 0;                                                             //!< Get value (non-const to return non-const value)
+    virtual RbPtr<const RbObject>               getStoredValue(void) const = 0;                                                 //!< Get stored value
+    virtual RbPtr<const RbObject>               getValue(void) const = 0;                                                       //!< Get value
+    virtual RbPtr<RbObject>                     getValue(void) = 0;                                                             //!< Get value (non-const to return non-const value)
     virtual void                                printStruct(std::ostream& o) const = 0;                                         //!< Print struct for user
     virtual void                                printValue(std::ostream& o) const = 0;                                          //!< Print value for user
     virtual std::string                         richInfo(void) const = 0;                                                       //!< Complete info about object
@@ -69,7 +69,7 @@ protected:
 
     // Member variables
     bool                                        touched;                                                                        //!< Is touched by move?
-    RbPtr<RbLanguageObject>                     storedValue;                                                                    //!< Stored value
+    RbPtr<RbObject>                             storedValue;                                                                    //!< Stored value
 };
 
 #endif

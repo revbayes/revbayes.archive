@@ -51,7 +51,7 @@ class DistributionFunction :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
 
         // DistributionFunction functions
-        RbPtr<RbLanguageObject>     execute(void);                                                          //!< Execute function
+        RbPtr<RbObject>             execute(void);                                                          //!< Execute function
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type spec of return value
         bool                        processArguments(   const std::vector<RbPtr<Argument> >&   args,

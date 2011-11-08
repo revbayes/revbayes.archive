@@ -31,7 +31,7 @@ const std::string Dist_unif_name = "Dist_unif";
 class Dist_unif: public DistributionContinuous {
 
     public:
-                                    Dist_unif(void);                                                    //!< Parser constructor
+                                    Dist_unif(void);                                                    //!< constructor
 
         // Basic utility functions
         Dist_unif*                  clone(void) const;                                                  //!< Clone object
@@ -42,14 +42,14 @@ class Dist_unif: public DistributionContinuous {
         RbPtr<const MemberRules>    getMemberRules(void) const;                                         //!< Get member variable rules
 
         // Real-valued distribution functions
-        double                      cdf(RbPtr<const RbLanguageObject> value);                           //!< Cumulative density
+        double                      cdf(RbPtr<const RbObject> value);                                   //!< Cumulative density
         RbPtr<const Real>           getMax(void) const;                                                 //!< Get max value
         RbPtr<const Real>           getMin(void) const;                                                 //!< Get min value
         const TypeSpec&             getVariableType(void) const;                                        //!< Get random variable type (Real)
-        double                      lnPdf(RbPtr<const RbLanguageObject> value) const;                   //!< Ln probability density
-        double                      pdf(RbPtr<const RbLanguageObject> value) const;                     //!< Probability density
+        double                      lnPdf(RbPtr<const RbObject> value) const;                           //!< Ln probability density
+        double                      pdf(RbPtr<const RbObject> value) const;                             //!< Probability density
         RbPtr<Real>                 quantile(const double p);                                           //!< Quantile
-        RbPtr<RbLanguageObject>     rv(void);                                                           //!< Generate random variable
+        RbPtr<RbObject>             rv(void);                                                           //!< Generate random variable
     
     private:
         static const TypeSpec       typeSpec;

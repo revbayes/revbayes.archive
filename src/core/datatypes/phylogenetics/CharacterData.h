@@ -56,7 +56,7 @@ class CharacterData : public Matrix {
 
         // Member method inits
         RbPtr<const MethodTable>            getMethods(void) const;                                                     //!< Get methods
-        RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Execute method
+        RbPtr<RbObject>                     executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Execute method
     
         // Container functions
         void                                clear();

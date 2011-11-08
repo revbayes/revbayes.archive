@@ -113,7 +113,7 @@ bool SyntaxForCondition::getNextLoopState(RbPtr<Environment> env) {
         return false;
     }
 
-    (*env)[ *varName ]->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>(static_cast<RbLanguageObject*>((RbObject*)vector->getElement( nextElement ) ) ) ) ) );
+    (*env)[ *varName ]->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode( vector->getElement( nextElement ) ) ) );
     nextElement++;
 
     return true;
@@ -148,13 +148,13 @@ void SyntaxForCondition::initializeLoop(RbPtr<Environment> env) {
 
     // Evaluate expression and check that we get a vector
     RbPtr<DAGNode> theNode = inExpression->evaluateContent(env)->getDagNode();
-    RbPtr<RbLanguageObject> theValue( theNode->getValue() );
+    RbPtr<RbObject> theValue( theNode->getValue() );
 
     // Check that it is a vector
     if ( theValue->isTypeSpec( TypeSpec(AbstractVector_name) ) == false ) {
        throw ( RbException("The 'in' expression does not evaluate to a vector") );
     }
-    vector = RbPtr<AbstractVector>( dynamic_cast<AbstractVector*>((RbLanguageObject*)theValue) );
+    vector = RbPtr<AbstractVector>( dynamic_cast<AbstractVector*>((RbObject*)theValue) );
 
     // Initialize nextValue
     nextElement = 0;

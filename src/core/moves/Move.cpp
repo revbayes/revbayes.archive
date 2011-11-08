@@ -60,7 +60,7 @@ Move::~Move() {
 
 
 /** Map calls to member methods */
-RbPtr<RbLanguageObject> Move::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbObject> Move::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
 
     static ArgumentRules acceptArgRules;
     static ArgumentRules acceptanceRatioArgRules;    
@@ -73,19 +73,19 @@ RbPtr<RbLanguageObject> Move::executeOperation(const std::string& name, const Rb
     if ( name == "accept" ) {
 
         acceptMove();
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return RbPtr<RbObject>::getNullPtr();
     }
     else if ( name == "acceptanceRatio" ) {
 
-        return RbPtr<RbLanguageObject>( new Real( getAcceptanceRatio() ) );
+        return RbPtr<RbObject>( new Real( getAcceptanceRatio() ) );
     }
     else if ( name == "numAccepted" ) {
 
-        return RbPtr<RbLanguageObject>( new Natural( numAccepted ) );
+        return RbPtr<RbObject>( new Natural( numAccepted ) );
     }
     else if ( name == "numTried" ) {
 
-        return RbPtr<RbLanguageObject>( new Natural( numTried ) );
+        return RbPtr<RbObject>( new Natural( numTried ) );
     }
     else if ( name == "propose" ) {
 
@@ -93,17 +93,17 @@ RbPtr<RbLanguageObject> Move::executeOperation(const std::string& name, const Rb
         RbPtr<Real> tmp( new Real(performMove( (*temp)[0] ) ) );
         
         // return the Hastings ratio
-        return RbPtr<RbLanguageObject>( tmp );
+        return RbPtr<RbObject>( tmp );
     }
     else if ( name == "reject" ) {
 
         rejectMove();
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return RbPtr<RbObject>::getNullPtr();
     }
     else if ( name == "resetCounters" ) {
 
         resetCounters();
-        return RbPtr<RbLanguageObject>::getNullPtr();
+        return RbPtr<RbObject>::getNullPtr();
     }
 
     // No hit yet; we hope there is a mapped function call in the base class
@@ -134,7 +134,7 @@ RbPtr<const MemberRules> Move::getMemberRules( void ) const {
 
     if (!rulesSet) 
 		{
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "weight"  , RbPtr<RbLanguageObject>( new RealPos(1.0) ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "weight"  , RbPtr<RbObject>( new RealPos(1.0) ) ) ) );
         rulesSet = true;
 		}
 
@@ -184,7 +184,7 @@ RbPtr<const MethodTable> Move::getMethods(void) const {
  *  from its member variable "weight". */
 double Move::getUpdateWeight( void ) const {
 
-    return static_cast<const RealPos*>( (const RbLanguageObject*)(*members)["weight"]->getValue() )->getValue();
+    return static_cast<const RealPos*>( (const RbObject*)(*members)["weight"]->getValue() )->getValue();
 }
 
 
@@ -205,7 +205,7 @@ void Move::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
         
         // test whether we want to set multiple variable
         if (var->getValue()->isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
-            RbPtr<DagNodeContainer> container( dynamic_cast<DagNodeContainer*>( (RbLanguageObject*)var->getValue() ) );
+            RbPtr<DagNodeContainer> container( dynamic_cast<DagNodeContainer*>( (RbObject*)var->getValue() ) );
             
             // add all moves
             for (size_t i=0; i<container->size(); i++) {

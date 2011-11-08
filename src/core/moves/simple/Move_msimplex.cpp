@@ -103,10 +103,10 @@ double Move_msimplex::perform( std::set<RbPtr<StochasticNode> >& affectedNodes )
     // Get relevant values
 //    StochasticNode*        nodePtr = static_cast<StochasticNode*>( members["variable"].getVariablePtr() );
     RbPtr<StochasticNode> nodePtr( NULL );
-    double                 alpha0  = static_cast<const RealPos*>( (const RbLanguageObject*)getMemberValue("tuning")   )->getValue();
-    int                    k       = static_cast<const Natural*>( (const RbLanguageObject*)getMemberValue("num_cats") )->getValue();
+    double                 alpha0  = static_cast<const RealPos*>( (const RbObject*)getMemberValue("tuning")   )->getValue();
+    int                    k       = static_cast<const Natural*>( (const RbObject*)getMemberValue("num_cats") )->getValue();
 
-	std::vector<double> curVal = static_cast<const Simplex*>( (const RbLanguageObject*)nodePtr->getValue() )->getValue();
+	std::vector<double> curVal = static_cast<const Simplex*>( (const RbObject*)nodePtr->getValue() )->getValue();
 	std::vector<double> newVal = curVal;
     int                 n      = int( curVal.size() );
 
@@ -206,7 +206,7 @@ double Move_msimplex::perform( std::set<RbPtr<StochasticNode> >& affectedNodes )
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
 		}
 		
-    nodePtr->setValue( RbPtr<RbLanguageObject>( new Simplex( newVal ) ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbObject>( new Simplex( newVal ) ), affectedNodes );
 	
     return lnProposalRatio;
 }

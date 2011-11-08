@@ -43,11 +43,11 @@ Func_structure* Func_structure::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_structure::execute( void ) {
+RbPtr<RbObject> Func_structure::execute( void ) {
 
     (*args)[0]->getDagNode()->printStruct( std::cout );
 
-    return RbPtr<RbLanguageObject>::getNullPtr();
+    return RbPtr<RbObject>::getNullPtr();
 }
 
 

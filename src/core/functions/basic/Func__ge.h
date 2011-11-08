@@ -37,7 +37,7 @@ class Func__ge :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
+    	RbPtr<RbObject>             execute(void);                                              //!< Execute function
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
@@ -78,12 +78,12 @@ Func__ge<firstValType, secondValType>* Func__ge<firstValType, secondValType>::cl
 
 /** Execute function: We rely on operator overloading to provide the functionality */
 template <typename firstValType, typename secondValType>
-RbPtr<RbLanguageObject> Func__ge<firstValType,secondValType>::execute( void ) {
+RbPtr<RbObject> Func__ge<firstValType,secondValType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( (RbLanguageObject*)(*args)[0]->getValue() ) );
-    const RbPtr<secondValType> val2( static_cast<secondValType*>( (RbLanguageObject*)(*args)[1]->getValue() ) );
+    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( (RbObject*)(*args)[0]->getValue() ) );
+    const RbPtr<secondValType> val2( static_cast<secondValType*>( (RbObject*)(*args)[1]->getValue() ) );
     
-    return RbPtr<RbLanguageObject>( new RbBoolean( *val1 >= *val2 ) );
+    return RbPtr<RbObject>( new RbBoolean( *val1 >= *val2 ) );
 }
 
 

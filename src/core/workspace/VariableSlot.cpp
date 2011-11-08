@@ -133,13 +133,13 @@ const TypeSpec& VariableSlot::getTypeSpec(void) const {
 
 
 /** Get the value of the variable */
-RbPtr<const RbLanguageObject> VariableSlot::getValue( void ) const {
+RbPtr<const RbObject> VariableSlot::getValue( void ) const {
     
-    RbPtr<const RbLanguageObject> retVal = variable->getDagNode()->getValue();
+    RbPtr<const RbObject> retVal = variable->getDagNode()->getValue();
     
     // check the type and if we need conversion
     if (!retVal->isTypeSpec(varTypeSpec)) {
-        RbPtr<const RbLanguageObject> convRetVal( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
+        RbPtr<const RbObject> convRetVal( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
         
         return convRetVal;
     }
@@ -149,13 +149,13 @@ RbPtr<const RbLanguageObject> VariableSlot::getValue( void ) const {
 
 
 /** Get the value of the variable */
-RbPtr<RbLanguageObject> VariableSlot::getValue( void ) {
+RbPtr<RbObject> VariableSlot::getValue( void ) {
     
-    RbPtr<RbLanguageObject> retVal = variable->getDagNode()->getValue();
+    RbPtr<RbObject> retVal = variable->getDagNode()->getValue();
     
     // check the type and if we need conversion
     if (!retVal->isTypeSpec(varTypeSpec)) {
-        RbPtr<RbLanguageObject> convRetVal( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
+        RbPtr<RbObject> convRetVal( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
         
         return convRetVal;
     }

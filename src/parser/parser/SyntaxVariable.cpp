@@ -23,6 +23,7 @@
 #include "DeterministicNode.h"
 #include "Environment.h"
 #include "Integer.h"
+#include "MemberFunction.h"
 #include "MemberObject.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -174,7 +175,7 @@ VectorNatural SyntaxVariable::computeIndex( RbPtr<Environment> env ) {
             if ( indexVar->getValue()->isTypeSpec( TypeSpec(Integer_name) ) ) {
                 
                 // Calculate (or get) an integer index
-                int intIndex = static_cast<Integer*>( (RbLanguageObject*)indexVar->getValue() )->getValue(); 
+                int intIndex = static_cast<Integer*>( (RbObject*)indexVar->getValue() )->getValue(); 
                 
                 if ( intIndex < 1 ) {
                     
@@ -306,11 +307,11 @@ RbPtr<VariableSlot> SyntaxVariable::createVariable(RbPtr<Environment> env) {
             
             // get the element at the index
             if (theDagNode == NULL) {
-                theDagNode = RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(indexValue+1) )) );
+                theDagNode = RbPtr<DAGNode>( new ConstantNode( RbPtr<RbObject>( new DagNodeContainer(indexValue+1) )) );
                 theSlot->getVariable()->setDagNode(theDagNode);
             }
             
-            RbPtr<Container> con( static_cast<Container*>((RbLanguageObject*)theDagNode->getValue()) );
+            RbPtr<Container> con( static_cast<Container*>((RbObject*)theDagNode->getValue()) );
             // test if the container is large enough
             if (con->size() <= indexValue) {
                 con->resize(indexValue);
@@ -373,8 +374,8 @@ RbPtr<Variable> SyntaxVariable::evaluateContent(RbPtr<Environment> env) {
             if ( identifier == NULL )
                 throw RbException( "Member variable identifier missing" );
 
-            RbPtr<MemberObject> theMemberObject( static_cast<MemberObject*>( (RbLanguageObject*)baseVar->getDagNode()->getValue() ) );
-            RbPtr<Environment> members = theMemberObject->getMembersPtr();
+            RbPtr<MemberObject> theMemberObject( static_cast<MemberObject*>( (RbObject*)baseVar->getDagNode()->getValue() ) );
+            RbPtr<Environment> members = theMemberObject->getMembers();
             theVar = (*members)[ (*identifier) ]->getVariable();
         }
         else {
@@ -389,17 +390,37 @@ RbPtr<Variable> SyntaxVariable::evaluateContent(RbPtr<Environment> env) {
         // iterate over the each index
         for (std::list<RbPtr<SyntaxElement> >::const_iterator it=index->begin(); it!=index->end(); it++) {
             RbPtr<SyntaxElement>               indexSyntaxElement     = *it;
-            RbPtr<DAGNode>                     indexVar               = indexSyntaxElement->evaluateContent(env)->getDagNode();
-            const RbPtr<RbLanguageObject>      theValue               = indexVar->getValue();
-            if ( !theValue->isTypeSpec(Natural_name) && !theValue->isConvertibleTo(Natural_name) ) 
-                throw RbException("Could not access index with type xxx because only natural indices are supported!");
-            size_t                             indexValue             = dynamic_cast<const Natural*>(theValue->convertTo(Natural_name))->getValue() - 1;
-            RbPtr<RbObject>                   subElement              = theVar->getDagNode()->getElement(indexValue);
+            RbPtr<Variable>                    indexVar               = indexSyntaxElement->evaluateContent(env);
+//            const RbPtr<RbLanguageObject>      theValue               = indexVar->getValue();
+//            if ( !theValue->isTypeSpec(Natural_name) && !theValue->isConvertibleTo(Natural_name) ) 
+//                throw RbException("Could not access index with type xxx because only natural indices are supported!");
+//            size_t                             indexValue             = dynamic_cast<const Natural*>(theValue->convertTo(Natural_name))->getValue() - 1;
+//            RbPtr<RbObject>                   subElement              = theVar->getDagNode()->getElement(indexValue);
+
+            // convert the value into a member object
+            RbPtr<MemberObject> mObject( static_cast<MemberObject*>( (RbObject*)theVar->getValue() ) );
             
-            if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) ))
-                theVar = dynamic_cast<VariableSlot*>( (RbObject*)subElement )->getVariable();
-            else 
-                theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)subElement ) ) ) ) ) );
+            // get the method table for this member object
+            // TODO: We shouldn't allow const casts!!!
+            MethodTable* mt = const_cast<MethodTable*>( (const MethodTable*)mObject->getMethods() );
+            
+            // create the arguments which consist only of the single paramater inside the square brackets
+            std::vector<RbPtr<Argument> > args;
+            args.push_back( RbPtr<Argument>( new Argument( indexVar ) ) );
+            
+            // get the member function with name "[]"
+            RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( (RbFunction*)mt->getFunction( "[]", args ) ) );
+            
+            // set the member object for the member function
+            theMemberFunction->setMemberObject(mObject);
+            RbPtr<RbFunction> func( theMemberFunction );
+
+            theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new DeterministicNode( func ) ) ) );
+            
+//            if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) ))
+//                theVar = dynamic_cast<VariableSlot*>( (RbObject*)subElement )->getVariable();
+//            else 
+//                theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)subElement ) ) ) ) ) );
             
         }
     }

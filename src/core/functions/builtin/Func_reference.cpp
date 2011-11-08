@@ -40,10 +40,10 @@ Func_reference* Func_reference::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> Func_reference::execute( void ) {
+RbPtr<RbObject> Func_reference::execute( void ) {
     
     // reference to the original variable
-    RbPtr<RbLanguageObject> val = (*args)[0]->getValue();
+    RbPtr<RbObject> val = (*args)[0]->getValue();
     
     return val;
 }

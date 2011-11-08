@@ -36,7 +36,7 @@ class Func__mul :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
+    	RbPtr<RbObject>             execute(void);                                              //!< Execute function
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
@@ -73,14 +73,14 @@ Func__mul<firstValType, secondValType, retType>* Func__mul<firstValType, secondV
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename firstValType, typename secondValType, typename retType>
-RbPtr<RbLanguageObject> Func__mul<firstValType,secondValType,retType>::execute( void ) {
+RbPtr<RbObject> Func__mul<firstValType,secondValType,retType>::execute( void ) {
 
-    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( (RbLanguageObject*)(*args)[0]->getValue() ) );
-    const RbPtr<secondValType> val2( static_cast<secondValType*>( (RbLanguageObject*)(*args)[1]->getValue() ) );
+    const RbPtr<firstValType>  val1( static_cast<firstValType*> ( (RbObject*)(*args)[0]->getValue() ) );
+    const RbPtr<secondValType> val2( static_cast<secondValType*>( (RbObject*)(*args)[1]->getValue() ) );
 
     retType              prod = *val1 * *val2;
         
-    return RbPtr<RbLanguageObject>( prod.clone() );
+    return RbPtr<RbObject>( prod.clone() );
 }
 
 

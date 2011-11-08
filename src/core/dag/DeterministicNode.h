@@ -38,9 +38,9 @@ public:
     virtual                                ~DeterministicNode(void);                                            //!< Destructor
 
     // Utility functions implemented here
-    RbPtr<const RbLanguageObject>           getStoredValue(void) const;                                         //!< Get stored value 
-    RbPtr<const RbLanguageObject>           getValue(void) const;                                               //!< Get value 
-    RbPtr<RbLanguageObject>                 getValue(void);                                                     //!< Get value (non-const to return non-const value)
+    RbPtr<const RbObject>                   getStoredValue(void) const;                                         //!< Get stored value 
+    RbPtr<const RbObject>                   getValue(void) const;                                               //!< Get value 
+    RbPtr<RbObject>                         getValue(void);                                                     //!< Get value (non-const to return non-const value)
     void                                    printValue(std::ostream& o) const;                                  //!< Print value for user 
     RbPtr<const RbFunction>                 getFunction(void) const;
     RbPtr<RbFunction>                       getFunction(void);

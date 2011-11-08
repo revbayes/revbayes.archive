@@ -49,7 +49,7 @@ public:
     void                            setMemberVariable(const std::string& name, RbPtr<Variable> var);        //!< Catch setting of the topology
 
     // Member method inits
-    RbPtr<RbLanguageObject>         executeOperation(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
+    RbPtr<RbObject>                 executeOperation(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
     RbPtr<const MethodTable>        getMethods(void) const;                                                 //!< Get methods
 
     // Tree plate functions

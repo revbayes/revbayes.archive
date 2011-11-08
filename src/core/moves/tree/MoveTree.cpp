@@ -81,7 +81,7 @@ RbPtr<const MemberRules> MoveTree::getMemberRules( void ) const {
  */
 RbPtr<const Topology> MoveTree::getTopology( void ) const {
 
-    RbPtr<const TreePlate> tree( static_cast<const TreePlate*>( (const RbLanguageObject*)(*members)["tree"]->getValue() ) );
+    RbPtr<const TreePlate> tree( static_cast<const TreePlate*>( (const RbObject*)(*members)["tree"]->getValue() ) );
     
     return tree->getTopology();
 }

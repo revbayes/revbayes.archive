@@ -64,7 +64,7 @@ public:
     RbPtr<const MemberRules>            getMemberRules(void) const;                                                 //!< Get member rules
 
     // Member method inits
-    RbPtr<RbLanguageObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Execute method
+    RbPtr<RbObject>                     executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Execute method
     RbPtr<const MethodTable>            getMethods(void) const;                                                     //!< Get methods
         
     // TopologyNode functions

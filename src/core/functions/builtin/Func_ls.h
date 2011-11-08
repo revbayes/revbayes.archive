@@ -33,7 +33,7 @@ class Func_ls :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 
         // Func_ls functions
-    	RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute function
+    	RbPtr<RbObject>             execute(void);                                      //!< Execute function
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                          //!< Get type of return val
     

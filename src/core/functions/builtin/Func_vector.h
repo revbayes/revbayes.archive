@@ -36,7 +36,7 @@ class Func_vector :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbPtr<RbLanguageObject>     execute(void);                                              //!< Execute function
+    	RbPtr<RbObject>             execute(void);                                              //!< Execute function
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
@@ -68,13 +68,13 @@ Func_vector<valType, retType>* Func_vector<valType, retType>::clone( void ) cons
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType, typename retType>
-RbPtr<RbLanguageObject> Func_vector<valType, retType>::execute( void ) {
+RbPtr<RbObject> Func_vector<valType, retType>::execute( void ) {
 
     RbPtr<retType> tempVec( new retType() );
     for ( size_t i = 0; i < args->size(); i++ )
         tempVec->push_back( RbPtr<RbObject>( (*args)[i]->getValue() ) );
 
-    return RbPtr<RbLanguageObject>( (retType*)tempVec );
+    return RbPtr<RbObject>( (retType*)tempVec );
 }
 
 

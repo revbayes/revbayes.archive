@@ -38,7 +38,7 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 	
 	// Regular functions
-	RbPtr<RbLanguageObject>     execute(void);                                      //!< Execute operation
+	RbPtr<RbObject>             execute(void);                                      //!< Execute operation
     RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
 	
@@ -72,10 +72,10 @@ Func_size<valType>* Func_size<valType>::clone( void ) const {
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType> 
-RbPtr<RbLanguageObject> Func_size<valType>::execute( void ) {
+RbPtr<RbObject> Func_size<valType>::execute( void ) {
     
-    const RbPtr<valType> val( static_cast<valType*> ( (RbLanguageObject*)(*args)[0]->getValue() ) ) ;
-    RbPtr<RbLanguageObject> size( new Natural( val->size() ) ); 
+    const RbPtr<valType> val( static_cast<valType*> ( (RbObject*)(*args)[0]->getValue() ) ) ;
+    RbPtr<RbObject> size( new Natural( val->size() ) ); 
     return size;
     
 }

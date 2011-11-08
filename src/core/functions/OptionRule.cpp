@@ -40,7 +40,7 @@ OptionRule::OptionRule( const std::string& argName, VectorString optVals ) : Val
 
 
 /** Construct rule with default value; use "" for no label. */
-OptionRule::OptionRule(const std::string& argName, RbPtr<RbString> defVal, VectorString optVals ) : ValueRule( argName, RbPtr<RbLanguageObject>( defVal ) ), options( optVals ) {
+OptionRule::OptionRule(const std::string& argName, RbPtr<RbString> defVal, VectorString optVals ) : ValueRule( argName, RbPtr<RbObject>( defVal ) ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );

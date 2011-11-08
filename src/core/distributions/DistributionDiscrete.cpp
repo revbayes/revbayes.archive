@@ -37,15 +37,15 @@ DistributionDiscrete::DistributionDiscrete( RbPtr<const MemberRules> memberRules
 
 
 /** Map direct method calls to internal class methods. */
-RbPtr<RbLanguageObject> DistributionDiscrete::executeOperation( const std::string& name, const RbPtr<Environment>& args ) {
+RbPtr<RbObject> DistributionDiscrete::executeOperation( const std::string& name, const RbPtr<Environment>& args ) {
 
     if ( name == "probMassVector" ) {
 
-        return RbPtr<RbLanguageObject>( getProbabilityMassVector()->clone() );
+        return RbPtr<RbObject>( getProbabilityMassVector()->clone() );
     }
     else if ( name == "numStates" ) {
 
-        return RbPtr<RbLanguageObject>( new Natural( int( getNumberOfStates() ) ) );
+        return RbPtr<RbObject>( new Natural( int( getNumberOfStates() ) ) );
     }
 
     return Distribution::executeOperation( name, args );

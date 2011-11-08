@@ -288,7 +288,7 @@ void Model::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
     if (name == "sinknode") {
         // test whether var is a DagNodeContainer
         while (theNode->getValue()->isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
-            RbLanguageObject* objPtr = theNode->getValue();
+            RbObject* objPtr = theNode->getValue();
             DagNodeContainer* container = dynamic_cast<DagNodeContainer*>( objPtr );
             RbObject* elemPtr = container->getElement(0);
             theNode = static_cast<VariableSlot*>( elemPtr )->getDagNode();

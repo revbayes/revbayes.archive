@@ -335,7 +335,7 @@ bool SyntaxStatement::isTrue( RbPtr<SyntaxElement> expression, RbPtr<Environment
     
     if ( temp->getValue()->isTypeSpec( TypeSpec(RbBoolean_name) ) ) {
         
-        bool retValue = static_cast<const RbBoolean*>( (RbLanguageObject*)temp->getValue() )->getValue();
+        bool retValue = static_cast<const RbBoolean*>( (RbObject*)temp->getValue() )->getValue();
         
         return retValue;
     }

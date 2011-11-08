@@ -84,7 +84,7 @@ UserFunction* UserFunction::clone(void) const {
 
 
 /** Execute function */
-RbPtr<RbLanguageObject> UserFunction::execute( void ) {
+RbPtr<RbObject> UserFunction::execute( void ) {
 
     // Clear signals
     Signals::getSignals().clearFlags();

@@ -116,10 +116,10 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 /** Execute function and get its variable value (evaluate once) */
-RbPtr<RbLanguageObject> FunctionTable::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbObject> FunctionTable::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
-    RbPtr<RbFunction>         theFunction = findFunction(name, args);
-    RbPtr<RbLanguageObject>   theValue    = theFunction->execute();
+    RbPtr<RbFunction> theFunction = findFunction(name, args);
+    RbPtr<RbObject>   theValue    = theFunction->execute();
 
     theFunction->clearArguments();
 
@@ -166,7 +166,7 @@ RbPtr<RbFunction> FunctionTable::findFunction(const std::string& name, const std
 
     size_t count = table.count(name);
     if (count == 0) {
-        if (parentTable != NULL) {// TODO: We shouldn't allow static casts!!!
+        if (parentTable != NULL) {// TODO: We shouldn't allow const casts!!!
             FunctionTable* pt = const_cast<FunctionTable*>((const FunctionTable*)parentTable);
             return pt->findFunction(name, args);
         }

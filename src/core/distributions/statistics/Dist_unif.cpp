@@ -53,11 +53,11 @@ Dist_unif::Dist_unif(void) : DistributionContinuous(getMemberRules()) {
  * @return      Cumulative probability
  *
  */
-double Dist_unif::cdf(RbPtr<const RbLanguageObject> value) {
+double Dist_unif::cdf(RbPtr<const RbObject> value) {
 
-    double min = static_cast<      Real*>( (      RbLanguageObject*)getMemberValue("min") )->getValue();
-    double max = static_cast<      Real*>( (      RbLanguageObject*)getMemberValue("max") )->getValue();
-    double q   = static_cast<const Real*>( (const RbLanguageObject*)value                 )->getValue();
+    double min = static_cast<      Real*>( (      RbObject*)getMemberValue("min") )->getValue();
+    double max = static_cast<      Real*>( (      RbObject*)getMemberValue("max") )->getValue();
+    double q   = static_cast<const Real*>( (const RbObject*)value                 )->getValue();
 
     if ( q < min )
         return 0.0;
@@ -86,7 +86,7 @@ const VectorString& Dist_unif::getClass(void) const {
 /** Get max value of distribution */
 RbPtr<const Real> Dist_unif::getMax( void ) const {
 
-    return RbPtr<const Real>( static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("max") ) );
+    return RbPtr<const Real>( static_cast<const Real*>( (const RbObject*)getMemberValue("max") ) );
 }
 
 
@@ -111,7 +111,7 @@ RbPtr<const MemberRules> Dist_unif::getMemberRules(void) const {
 /** Get min value of distribution */
 RbPtr<const Real> Dist_unif::getMin( void ) const {
 
-    return RbPtr<const Real>( static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("min") ) );
+    return RbPtr<const Real>( static_cast<const Real*>( (const RbObject*)getMemberValue("min") ) );
 }
 
 
@@ -137,11 +137,11 @@ const TypeSpec& Dist_unif::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_unif::lnPdf(RbPtr<const RbLanguageObject> value) const {
+double Dist_unif::lnPdf(RbPtr<const RbObject> value) const {
 
-    double min = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("min") )->getValue();
-    double max = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("max") )->getValue();
-    double x   = static_cast<const Real*>( (const RbLanguageObject*)value                 )->getValue();
+    double min = static_cast<const Real*>( (const RbObject*)getMemberValue("min") )->getValue();
+    double max = static_cast<const Real*>( (const RbObject*)getMemberValue("max") )->getValue();
+    double x   = static_cast<const Real*>( (const RbObject*)value                 )->getValue();
 
     if ( x < min || x > max )
         return RbConstants::Double::neginf;
@@ -159,11 +159,11 @@ double Dist_unif::lnPdf(RbPtr<const RbLanguageObject> value) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_unif::pdf(RbPtr<const RbLanguageObject> value) const {
+double Dist_unif::pdf(RbPtr<const RbObject> value) const {
     
-    double min = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("min") )->getValue();
-    double max = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("max") )->getValue();
-    double x   = static_cast<const Real*>( (const RbLanguageObject*)value                 )->getValue();
+    double min = static_cast<const Real*>( (const RbObject*)getMemberValue("min") )->getValue();
+    double max = static_cast<const Real*>( (const RbObject*)getMemberValue("max") )->getValue();
+    double x   = static_cast<const Real*>( (const RbObject*)value                 )->getValue();
 
     if ( x < min || x > max )
         return 0.0;
@@ -184,8 +184,8 @@ double Dist_unif::pdf(RbPtr<const RbLanguageObject> value) const {
  */
 RbPtr<Real> Dist_unif::quantile(const double p) {
     
-    double min = static_cast<Real*>( (RbLanguageObject*)getMemberValue("min") )->getValue();
-    double max = static_cast<Real*>( (RbLanguageObject*)getMemberValue("max") )->getValue();
+    double min = static_cast<Real*>( (RbObject*)getMemberValue("min") )->getValue();
+    double max = static_cast<Real*>( (RbObject*)getMemberValue("max") )->getValue();
 
     return RbPtr<Real>( new Real( min + ( max - min ) * p ) );
 }
@@ -199,15 +199,15 @@ RbPtr<Real> Dist_unif::quantile(const double p) {
  *
  * @return      Random draw from uniform distribution
  */
-RbPtr<RbLanguageObject> Dist_unif::rv(void) {
+RbPtr<RbObject> Dist_unif::rv(void) {
     
-    double min = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("min") )->getValue();
-    double max = static_cast<const Real*>( (const RbLanguageObject*)getMemberValue("max") )->getValue();
+    double min = static_cast<const Real*>( (const RbObject*)getMemberValue("min") )->getValue();
+    double max = static_cast<const Real*>( (const RbObject*)getMemberValue("max") )->getValue();
     RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
 
     double u = rng->uniform01();
 
-    return RbPtr<RbLanguageObject>( new Real( min + ( max - min ) * u ) );
+    return RbPtr<RbObject>( new Real( min + ( max - min ) * u ) );
 }
 
 
