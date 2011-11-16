@@ -85,7 +85,7 @@
     [myTool setAlignClustalIteration: alignClustalIteration];
     [myTool setAlignClustalNumberOfIterations: alignClustalNumberOfIterations];        
 
-    [myTool helperRunClustal];
+    [myTool helperRunClustal: (id)sender];
     
     [myTool closeControlPanel];
 }

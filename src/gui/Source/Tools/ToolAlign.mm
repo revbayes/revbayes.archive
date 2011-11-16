@@ -109,7 +109,7 @@
         [self setAlignClustalEndGaps: @"No"];
         [self setAlignClustalGapExtensionCost: 0.20];
         [self setAlignClustalGapSeparationPenalty: 5];
-        [self setAlignClustalIteration: @"None"];
+        [self setAlignClustalIteration: @"none"];
         [self setAlignClustalNumberOfIterations: 1];
        
         
@@ -222,8 +222,12 @@
     [NSApp runModalForWindow:[controlWindow window]];
 }
 
-- (void)helperRunClustal
+- (void)helperRunClustal: (id)sender
 {
+    alignClustalTask = [[NSTask alloc] init];
+    
+// SET LAUNCH PATH
+ 
     NSFileManager *alignClustalFileManager;
     alignClustalFileManager = [[NSFileManager alloc] init];
     
@@ -239,9 +243,13 @@
     NSString *alignClustalPath = @"";
     NSString *alignClustalExecutable = @"clustalw2";
     
-    
     alignClustalPath = [[NSBundle mainBundle] pathForResource:alignClustalExecutable ofType:nil];
     NSLog (@"alignClustalPath = %@", alignClustalPath);
+    
+    
+    [alignClustalTask setCurrentDirectoryPath: alignClustalPath];
+    [alignClustalTask setLaunchPath: alignClustalPath];
+// SET ARGUMENTS
     
 // String values for clustal arguments
     alignClustalReduceConsoleOutputAr = [NSString stringWithString: @"-QUIET"];
@@ -253,7 +261,7 @@
     alignClustalOutfileAr = [NSString stringWithString: @"-OUTFILE="];
     alignClustalOutfileAr = [alignClustalOutfileAr stringByAppendingString: alignClustalUserTemporaryDirectory];
     alignClustalOutfileAr = [alignClustalOutfileAr stringByAppendingString: @"clustaloutput.fasta"];
-    
+
     alignClustalOutputAr = [NSString stringWithString: @"-OUTPUT=FASTA"];    
 
    
@@ -307,6 +315,9 @@
     alignClustalNumberOfIterationsAr = [alignClustalNumberOfIterationsAr stringByAppendingFormat: @"%i", alignClustalNumberOfIterations];
     
 
+    
+    if (alignClustalAlignAr == @"-QUICKTREE")
+    {
 
     alignClustalArguments = [NSArray arrayWithObjects: 
                              alignClustalReduceConsoleOutputAr, 
@@ -329,25 +340,49 @@
                              alignClustalNumberOfIterationsAr,
                              alignClustalMultipleAlignAr,
                              nil];
+    }
+    
+    else
+    {
+        alignClustalArguments = [NSArray arrayWithObjects: 
+                             alignClustalReduceConsoleOutputAr, 
+                                 alignClustalInfileAr, 
+                                 alignClustalOutfileAr, 
+                                 alignClustalOutputAr,
+                                 alignClustalGuideTreeAr, 
+                                 alignClustalWordLengthAr, 
+                                 alignClustalWindowAr, 
+                                 alignClustalScoreTypeAr, 
+                                 alignClustalNumberDiagonalsAr, 
+                                 alignClustalPairGapPenaltyAr, 
+                                 alignClustalMatrixAr, 
+                                 alignClustalGapOpenPenaltyAr, 
+                                 alignClustalEndGapsAr,
+                                 alignClustalGapExtensionCostAr,
+                                 alignClustalGapSeparationPenaltyAr,
+                                 alignClustalIterationAr,
+                                 alignClustalNumberOfIterationsAr,
+                                 alignClustalMultipleAlignAr,
+                                 nil];
+
+    }
     
     NSLog(@"array: %@", alignClustalArguments);
     
-    alignClustalTask = [[NSTask alloc] init];
-    [alignClustalTask setLaunchPath: alignClustalPath];
-    [alignClustalTask setCurrentDirectoryPath: alignClustalPath];
     [alignClustalTask setArguments: alignClustalArguments];
     
     alignClustalFromPipe = [NSPipe pipe];
     alignClustalFromClustal = [alignClustalFromPipe fileHandleForReading];
     [alignClustalTask setStandardOutput: alignClustalFromPipe];
     
-    NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
     
+    NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
+   
     [defaultCenter addObserver: self
                       selector: @selector(receiveData:)
                           name: NSFileHandleReadCompletionNotification
                         object: alignClustalFromClustal];
-    
+
     alignClustalToPipe = [NSPipe pipe];
     alignClustalToClustal = [alignClustalToPipe fileHandleForWriting];
     [alignClustalTask setStandardInput: alignClustalToPipe];
@@ -355,24 +390,25 @@
     alignClustalErrorPipe = [NSPipe pipe];
     alignClustalErrorData = [alignClustalErrorPipe fileHandleForReading];
     [alignClustalTask setStandardError: alignClustalErrorPipe];
-    
+/*    
     [defaultCenter addObserver: self
                       selector: @selector(alignClustalErrorDataAvailable:)
                           name: NSFileHandleReadCompletionNotification
-                        object: alignClustalErrorData];
-    
-    
+                        object: alignClustalErrorData];    
+*/    
     [alignClustalTask launch];
     
     [alignClustalFromClustal readInBackgroundAndNotify];
-    //    [alignClustalErrorData readInBackgroundAndNotify];
+    [alignClustalErrorData readInBackgroundAndNotify];
 
     
     NSLog(@"Running Clustal from ToolAlign");
 }
 
+
 /* Pipe Clustal error messages to an alert box */
-- (void)errorDataAvailable: (NSNotification *) aNotification
+/*
+- (void)alignClustalErrorDataAvailable: (NSNotification *) aNotification
 {
 	NSData *incomingError;
 	
@@ -415,33 +451,40 @@
     [alignClustalErrorData readInBackgroundAndNotify];
     return;
 }
-
+*/
 
 
 /* Receive Clustal data */ 
 - (void)receiveData: (NSNotification *) aNotification
 {
-    NSLog(@"Clustal data received");
-    /*	NSData *incomingData;
-     NSString *incomingText;
+    NSData *incomingData;
+    NSString *incomingText;
      
-     incomingData = [[aNotification userInfo] objectForKey: NSFileHandleNotificationDataItem];
+    incomingData = [[aNotification userInfo] objectForKey: NSFileHandleNotificationDataItem];
      
-     incomingText = [[NSString alloc] initWithData: incomingData
-     encoding: NSASCIIStringEncoding];
+    incomingText = [[NSString alloc] initWithData: incomingData
+    encoding: NSASCIIStringEncoding];
+    
+    NSLog(@"%@", incomingText);
      
-     [clustalView appendString: incomingText];
-     [clustalView scrollRangeToVisible: NSMakeRange ([[clustalView textStorage] length], 0)];
-     [clustalView setNeedsDisplay: YES];
+    [alignClustalFromClustal readInBackgroundAndNotify];
+    
+    NSString *completionText;
+    completionText = @"FASTA file created!";
+    
+    if ([incomingText rangeOfString: completionText].length > 0)
+    {
+        [self taskCompleted];
+    }
      
-     [self returnFocus];
-     
-     [fromClustal readInBackgroundAndNotify];
-     
-     [incomingText release];
-*/
+    [incomingText release];
 }
     
+
+- (void)taskCompleted;
+{
+    NSLog (@"Clustal task completed");
+}
 
 
 @end

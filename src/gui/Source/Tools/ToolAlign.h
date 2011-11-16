@@ -66,6 +66,8 @@
 - (void)setInletsAndOutlets;
 - (void)showControlPanel;
 
-- (void)helperRunClustal;
+- (void)helperRunClustal: (id)sender;
+- (void)taskCompleted;
+
 
 @end

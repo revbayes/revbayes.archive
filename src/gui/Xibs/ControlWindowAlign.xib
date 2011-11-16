@@ -2,10 +2,10 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1060</int>
-		<string key="IBDocument.SystemVersion">11B26</string>
+		<string key="IBDocument.SystemVersion">11C74</string>
 		<string key="IBDocument.InterfaceBuilderVersion">1617</string>
-		<string key="IBDocument.AppKitVersion">1138</string>
-		<string key="IBDocument.HIToolboxVersion">566.00</string>
+		<string key="IBDocument.AppKitVersion">1138.23</string>
+		<string key="IBDocument.HIToolboxVersion">567.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			<string key="NS.object.0">1617</string>
@@ -1147,16 +1147,15 @@
 													<string key="NSKeyEquivalent"/>
 													<int key="NSPeriodicDelay">400</int>
 													<int key="NSPeriodicInterval">75</int>
-													<object class="NSMenuItem" key="NSMenuItem" id="261652510">
+													<object class="NSMenuItem" key="NSMenuItem" id="170893661">
 														<reference key="NSMenu" ref="1040578475"/>
-														<string key="NSTitle">Alignment</string>
-														<string key="NSKeyEquiv"/>
+														<string key="NSTitle">none</string>
+														<string type="base64-UTF8" key="NSKeyEquiv">DQ</string>
 														<int key="NSMnemonicLoc">2147483647</int>
 														<int key="NSState">1</int>
 														<reference key="NSOnImage" ref="128419460"/>
 														<reference key="NSMixedImage" ref="855880836"/>
 														<string key="NSAction">_popUpItemAction:</string>
-														<int key="NSTag">2</int>
 														<reference key="NSTarget" ref="505917627"/>
 													</object>
 													<bool key="NSMenuItemRespectAlignment">YES</bool>
@@ -1164,19 +1163,10 @@
 														<string key="NSTitle">OtherViews</string>
 														<object class="NSMutableArray" key="NSMenuItems">
 															<bool key="EncodedWithXMLCoder">YES</bool>
-															<object class="NSMenuItem" id="170893661">
-																<reference key="NSMenu" ref="1040578475"/>
-																<string key="NSTitle">None</string>
-																<string key="NSKeyEquiv">N</string>
-																<int key="NSMnemonicLoc">2147483647</int>
-																<reference key="NSOnImage" ref="128419460"/>
-																<reference key="NSMixedImage" ref="855880836"/>
-																<string key="NSAction">_popUpItemAction:</string>
-																<reference key="NSTarget" ref="505917627"/>
-															</object>
+															<reference ref="170893661"/>
 															<object class="NSMenuItem" id="780462573">
 																<reference key="NSMenu" ref="1040578475"/>
-																<string key="NSTitle">Tree</string>
+																<string key="NSTitle">tree</string>
 																<string key="NSKeyEquiv"/>
 																<int key="NSKeyEquivModMask">1048576</int>
 																<int key="NSMnemonicLoc">2147483647</int>
@@ -1186,11 +1176,20 @@
 																<int key="NSTag">1</int>
 																<reference key="NSTarget" ref="505917627"/>
 															</object>
-															<reference ref="261652510"/>
+															<object class="NSMenuItem" id="261652510">
+																<reference key="NSMenu" ref="1040578475"/>
+																<string key="NSTitle">alignment</string>
+																<string key="NSKeyEquiv"/>
+																<int key="NSMnemonicLoc">2147483647</int>
+																<reference key="NSOnImage" ref="128419460"/>
+																<reference key="NSMixedImage" ref="855880836"/>
+																<string key="NSAction">_popUpItemAction:</string>
+																<int key="NSTag">2</int>
+																<reference key="NSTarget" ref="505917627"/>
+															</object>
 														</object>
 														<reference key="NSMenuFont" ref="639729997"/>
 													</object>
-													<int key="NSSelectedIndex">2</int>
 													<int key="NSPreferredEdge">1</int>
 													<bool key="NSUsesItemFromMenu">YES</bool>
 													<bool key="NSAltersState">YES</bool>
