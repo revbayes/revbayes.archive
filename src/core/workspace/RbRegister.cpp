@@ -67,8 +67,8 @@
 /* MemberObject types without auto-generated constructors(alphabetic order) */
 #include "CharacterData.h"
 #include "Model.h"
-#include "Sequence.h"
 #include "Simplex.h"
+#include "TaxonData.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 

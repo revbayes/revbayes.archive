@@ -34,6 +34,7 @@ class Topology;
 class NclReader{
     
         friend class NxsBlock;
+        friend class NxsUnalignedBlock;
         
     public:
         void                                    addWarning(std::string s) { warningsSummary.insert(s); }                        //!< Add a warning to the warnings vector

@@ -99,6 +99,7 @@ void Categorical::printValue( std::ostream& o ) const {
 /** Set value from int */
 void Categorical::setValue( int x ) {
 
+    std::cout << "Categorical::setValue" << std::endl;
     if ( !isValidState( x ) )
         throw RbException( "Invalid state of categorical value" );
 

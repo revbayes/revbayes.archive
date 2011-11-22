@@ -24,9 +24,9 @@
 #include "NclReader.h"
 #include "RbUtil.h"
 #include "RnaState.h"
-#include "Sequence.h"
 #include "StandardState.h"
 #include "StringUtilities.h"
+#include "TaxonData.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 #include "UserInterface.h"
@@ -228,7 +228,7 @@ RbPtr<CharacterData> NclReader::createAminoAcidMatrix(NxsCharactersBlock* charbl
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
-        RbPtr<Sequence> dataVec( new Sequence(AminoAcidState_name,tName) );
+        RbPtr<TaxonData> dataVec( new TaxonData(AminoAcidState_name,tName) );
             
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
             {	
@@ -248,7 +248,7 @@ RbPtr<CharacterData> NclReader::createAminoAcidMatrix(NxsCharactersBlock* charbl
             }
 
         // add sequence to character matrix
-        cMat->addSequence( dataVec );
+        cMat->addTaxonData( dataVec );
         }
 
     setExcluded( charblock, cMat );
@@ -284,7 +284,7 @@ RbPtr<CharacterData> NclReader::createContinuousMatrix(NxsCharactersBlock* charb
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
-        RbPtr<Sequence> dataVec( new Sequence(CharacterContinuous_name,tName) );
+        RbPtr<TaxonData> dataVec( new TaxonData(CharacterContinuous_name, tName) );
 
         // add the real-valued observation
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
@@ -296,7 +296,7 @@ RbPtr<CharacterData> NclReader::createContinuousMatrix(NxsCharactersBlock* charb
             }
 
         // add sequence to character matrix
-        cMat->addSequence( dataVec );
+        cMat->addTaxonData( dataVec );
         }
     
     setExcluded( charblock, cMat );
@@ -308,7 +308,6 @@ RbPtr<CharacterData> NclReader::createContinuousMatrix(NxsCharactersBlock* charb
 /** Create an object to hold DNA data */
 RbPtr<CharacterData> NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 
-//    std::cout << "createDnaMatrix" << std::endl;
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
         return RbPtr<CharacterData>::getNullPtr();
@@ -325,7 +324,6 @@ RbPtr<CharacterData> NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
     // instantiate the character matrix
 	RbPtr<CharacterData> cMat( new CharacterData( DnaState_name ) );
     
-//    std::cout << "numOrigTaxa = " << numOrigTaxa << std::endl;
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
@@ -334,7 +332,7 @@ RbPtr<CharacterData> NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of DNA states
-        RbPtr<Sequence> dataVec( new Sequence(DnaState_name,tName) );
+        RbPtr<TaxonData> dataVec( new TaxonData(DnaState_name,tName) );
         dataVec->setTaxonName(tName);
         
         // add the sequence information for the sequence associated with the taxon
@@ -356,7 +354,7 @@ RbPtr<CharacterData> NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
             }
 
         // add sequence to character matrix
-        cMat->addSequence( dataVec );
+        cMat->addTaxonData( dataVec );
         }
     
     setExcluded( charblock, cMat );
@@ -367,66 +365,41 @@ RbPtr<CharacterData> NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 /** Create an object to hold DNA data */
 RbPtr<CharacterData> NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* charblock) {
     
-    std::cout << "createUnalignedDnaMatrix" << std::endl;
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
         return RbPtr<CharacterData>::getNullPtr();
     
     // get the set of characters (and the number of taxa)
-    /*NxsUnsignedSet charset;
-    for (unsigned int i=0; i<charblock->GetNumChar(); i++)
-        charset.insert(i);*/
 	int numOrigTaxa = charblock->GetNTax();
-    
-	// get the set of excluded characters
-	//NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
-    
+    NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
+        
     // instantiate the character matrix
 	RbPtr<CharacterData> cMat( new CharacterData( DnaState_name ) );
     
-    std::cout << "numOrigTaxa = " << numOrigTaxa << std::endl;
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
         {
         // add the taxon name
-        //NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
-        //std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
+        std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of DNA states
-        //RbPtr<Sequence> dataVec( new Sequence(DnaState_name, tName) );
-        //dataVec->setTaxonName(tName);
+        RbPtr<TaxonData> dataVec( new TaxonData(DnaState_name, tName) );
+        dataVec->setTaxonName(tName);
         
         // add the sequence information for the sequence associated with the taxon
-#       if 1
-        int nc = charblock->NumCharsForTaxon(origTaxIndex);
-        std::cout << "nc = " << nc << std::endl;
-        std::string row = charblock->GetMatrixRowAsStr(origTaxIndex);
-        std::cout << row << std::endl;
-#       else
-        for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
-            {	
-            // add the character state to the matrix
+        std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
+        for (int i=0; i<rowDataAsString.size(); i++)
+            {
             RbPtr<DnaState> dnaState( new DnaState() );
-            if ( charblock->IsGapState(origTaxIndex, *cit) == true ) 
-                dnaState->setState('N');
-            else if (charblock->IsMissingState(origTaxIndex, *cit) == true) 
-                dnaState->setState('N');
-            else
-                {
-                dnaState->setState( charblock->GetState(origTaxIndex, *cit, 0) );                
-                for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
-                    dnaState->addState( charblock->GetState(origTaxIndex, *cit, s) );
-                }
-            dataVec->addCharacter( dnaState );
+            dnaState->setState(rowDataAsString[i]);
+            dataVec->addCharacter( RbPtr<Character>( dnaState ) );
             }
-#       endif
         
         // add sequence to character matrix
-        //cMat->addSequence( dataVec );
+        cMat->addTaxonData( dataVec, true );
         }
-    
-    //setExcluded( charblock, cMat );
-    
+        
     return cMat;
 }
 
@@ -457,7 +430,7 @@ RbPtr<CharacterData> NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of RNA states
-        RbPtr<Sequence> dataVec( new Sequence(RnaState_name,tName) );
+        RbPtr<TaxonData> dataVec( new TaxonData(RnaState_name,tName) );
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
@@ -478,7 +451,7 @@ RbPtr<CharacterData> NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
             }
             
         // add sequence to character matrix
-        cMat->addSequence( dataVec );
+        cMat->addTaxonData( dataVec );
         }
     
     setExcluded( charblock, cMat );
@@ -521,7 +494,7 @@ RbPtr<CharacterData> NclReader::createStandardMatrix(NxsCharactersBlock* charblo
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
-        RbPtr<Sequence> dataVec( new Sequence(StandardState_name,tName) );
+        RbPtr<TaxonData> dataVec( new TaxonData(StandardState_name,tName) );
         
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
@@ -542,7 +515,7 @@ RbPtr<CharacterData> NclReader::createStandardMatrix(NxsCharactersBlock* charblo
             }
 
         // add sequence to character matrix
-        cMat->addSequence( dataVec );
+        cMat->addTaxonData( dataVec );
         }
     
     setExcluded( charblock, cMat );
@@ -896,6 +869,8 @@ std::vector<RbPtr<CharacterData> > NclReader::readMatrices(const std::map<std::s
             addWarning("Data file not found");
             continue;
             }
+            
+        std::cout << "reading file \"" << p->first << "\"" << std::endl;
             
         // Extract information on the file format from the value of the key/value pair. Note that we expect the 
         // fileFmt string to be in the format file_type|data_type|interleave_type with pipes ('|') separating

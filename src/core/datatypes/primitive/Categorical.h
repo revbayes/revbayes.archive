@@ -48,8 +48,7 @@ class Categorical : public RbLanguageObject {
         void                            setValue(int x);                                                    //!< Set value from int
 
         // Categorical functions you have to override
-        virtual const std::string&      getStateLabels(void) const { return  EmptyString; }                                     //!< Get valid state labels
-//        virtual const std::string&      getNALabels(void) const = 0;                                        //!< Get NA labels corresponding to value = -1, -2, etc
+        virtual const std::string&      getStateLabels(void) const { return  EmptyString; }                 //!< Get valid state labels
 
     protected:
                                         Categorical(void);                                                  //!< Default constructor

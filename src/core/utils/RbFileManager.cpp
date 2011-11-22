@@ -38,22 +38,28 @@
     path equal to the current (default) directory and an empty file name */
 RbFileManager::RbFileManager(void) {
 
+    // make certain the current file/path information is empty
 	setFileName("");
 	setFilePath("");
-	setCurDirectory( findCurrentDirectory() );
-	setFilePath( getCurDirectory() );
+    
+    // initialize the current directory to be the directory the binary is sitting in
+    setCurDirectory( findCurrentDirectory() );
 }
 
 
 /** Constructor taking as an argument a string containing a file path and (maybe) a file name */
 RbFileManager::RbFileManager(std::string s) {
 
+    // make certain the current file/path information is empty
+    setCurDirectory("");
 	setFileName("");
 	setFilePath("");
-	parsePathFileNames(s);
-	setCurDirectory( findCurrentDirectory() );
-	if ( getFilePath() == "" )
-		setFilePath( getCurDirectory() );
+
+    // initialize the current directory to be the directory the binary is sitting in
+    setCurDirectory( findCurrentDirectory() );
+    
+    // set the path and file for the string
+    parsePathFileNames(s);
 }
 
 
@@ -72,10 +78,10 @@ bool RbFileManager::parsePathFileNames(std::string s) {
     if (isDPresent == true && isFPresent == false)
         {
         fileName = "";
-        filePath = s;
         int location = (int)s.find_last_of( "/" );
         if ( location == (int)s.length() - 1 )
             s.erase( location );
+        filePath = s;
         return true;
         }
     
@@ -101,10 +107,12 @@ bool RbFileManager::parsePathFileNames(std::string s) {
 	else if ( location == (int)s.length() - 1 )
 		{
 		/* It looks like the last character is "/", which
-		   means that no file name has been provided. */
-		s.erase( location );
+		   means that no file name has been provided. However,
+           it also means that the directory that has been provided
+           is not valid, otherwise it would have tested as 
+           being present (above). */
 		fileName = "";
-		filePath = s;
+		filePath = "";
 		return false;
 		}
 	else
@@ -113,6 +121,8 @@ bool RbFileManager::parsePathFileNames(std::string s) {
 		fileName = s.substr( location+1, s.length()-location-1 );
 		s.erase( location );
 		filePath = s;
+        if ( isDirectoryPresent(filePath) == false )
+            filePath = "";
 		}
 
 	return true;

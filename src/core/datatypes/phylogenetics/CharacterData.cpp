@@ -27,8 +27,8 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
-#include "Sequence.h"
 #include "StochasticNode.h"
+#include "TaxonData.h"
 #include "ValueRule.h"
 #include "VariableNode.h"
 #include "Vector.h"
@@ -87,22 +87,14 @@ CharacterData& CharacterData::operator=( const CharacterData& x ) {
 
 
 /** Index (const) operator */
-RbPtr<const Sequence> CharacterData::operator[]( const size_t i ) const {
+RbPtr<const TaxonData> CharacterData::operator[]( const size_t i ) const {
 
-    return getSequence( i );
+    return getTaxonData( i );
 }
 
 
 /** Add a sequence to the character matrix. For now, we require same data type and same length. */
-void CharacterData::addSequence( RbPtr<Sequence> obs ) {
-
-    // set the number of character per sequence
-    if ( size() > 0 && obs->size() != getNumberOfCharacters() ) {
-
-        std::ostringstream msg;
-        msg << "Invalid attempt to add sequence of length " << obs->size() << " to aligned character matrix of length " << getNumberOfCharacters();
-        throw RbException( msg );
-    }
+void CharacterData::addTaxonData(RbPtr<TaxonData> obs, bool forceAdd) {
 
     push_back(RbPtr<RbObject>( obs ));
     
@@ -112,6 +104,19 @@ void CharacterData::addSequence( RbPtr<Sequence> obs ) {
     // add the sequence also as a member so that we can access it by name
     RbPtr<Variable> var( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbObject>( obs ) ) ) ) );
     members->addVariable(obs->getTaxonName(), var);
+}
+
+void CharacterData::addTaxonData( RbPtr<TaxonData> obs ) {
+
+    // set the number of character per sequence
+    if ( size() > 0 && obs->size() != getNumberOfCharacters() ) 
+        {
+        std::ostringstream msg;
+        msg << "Invalid attempt to add sequence of length " << obs->size() << " to aligned character matrix of length " << getNumberOfCharacters();
+        throw RbException( msg );
+        }
+        
+    addTaxonData(obs, true);
 }
 
 
@@ -300,7 +305,7 @@ RbPtr<const Character> CharacterData::getCharacter( size_t tn, size_t cn ) const
     if ( cn >= getNumberOfCharacters() )
         throw RbException( "Character index out of range" );
 
-    return RbPtr<const Character>((*getSequence( tn ))[cn]);
+    return RbPtr<const Character>((*getTaxonData( tn ))[cn]);
 }
 
 
@@ -318,13 +323,15 @@ const std::string& CharacterData::getDataType(void) const {
 
 
 RbPtr<const RbObject> CharacterData::getElement(size_t row, size_t col) const {
-    const RbPtr<Sequence> sequence( dynamic_cast<Sequence*>( (RbLanguageObject*)elements[row]) );
+
+    const RbPtr<TaxonData> sequence( dynamic_cast<TaxonData*>( (RbLanguageObject*)elements[row]) );
     return (sequence->getElement(col));
 }
 
 
 RbPtr<RbObject> CharacterData::getElement(size_t row, size_t col) {
-    RbPtr<Sequence> sequence( dynamic_cast<Sequence*>( (RbLanguageObject*)elements[row]) );
+
+    RbPtr<TaxonData> sequence( dynamic_cast<TaxonData*>( (RbLanguageObject*)elements[row]) );
     return (sequence->getElement(col));
 }
 
@@ -402,7 +409,7 @@ RbPtr<const MethodTable> CharacterData::getMethods(void) const {
 size_t CharacterData::getNumberOfCharacters(void) const {
 
     if (size() > 0) {
-        return getSequence(0)->size();
+        return getTaxonData(0)->size();
     }
     return 0;
 }
@@ -417,7 +424,7 @@ size_t CharacterData::getNumberOfStates(void) const {
     if ( size() == 0 )
         return 0;
 
-    RbPtr<const Sequence> sequence = getSequence( 0 );
+    RbPtr<const TaxonData> sequence = getTaxonData( 0 );
     if ( sequence->size() == 0 )
         return 0;
 
@@ -431,12 +438,12 @@ size_t CharacterData::getNumberOfTaxa(void) const {
 
 
 /** Get sequence with index tn */
-RbPtr<const Sequence> CharacterData::getSequence( size_t tn ) const {
+RbPtr<const TaxonData> CharacterData::getTaxonData( size_t tn ) const {
 
     if ( tn >= getNumberOfTaxa() )
         throw RbException( "Taxon index out of range" );
 
-    RbPtr<const Sequence> sequence( static_cast<const Sequence*>( (RbLanguageObject*)elements[tn] ) );
+    RbPtr<const TaxonData> sequence( static_cast<const TaxonData*>( (RbLanguageObject*)elements[tn] ) );
 
     return sequence;
 }
@@ -638,8 +645,8 @@ std::string CharacterData::richInfo(void) const {
 /** Overloaded container setElement method */
 void CharacterData::setElement( const size_t index, RbPtr<RbLanguageObject> var ) {
     
-    if (var->isTypeSpec(TypeSpec(Sequence_name))) {
-        RbPtr<Sequence> seq( static_cast<Sequence*>( (RbLanguageObject*)var ) );
+    if (var->isTypeSpec(TypeSpec(TaxonData_name))) {
+        RbPtr<TaxonData> seq( static_cast<TaxonData*>( (RbLanguageObject*)var ) );
         
         sequenceNames.erase(sequenceNames.begin() + index);
         sequenceNames.insert(sequenceNames.begin() + index,seq->getTaxonName());

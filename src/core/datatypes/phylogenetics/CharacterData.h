@@ -18,7 +18,7 @@
 
 #include "Character.h"
 #include "Matrix.h"
-#include "Sequence.h"
+#include "TaxonData.h"
 #include "ValueRule.h"
 #include "Vector.h"
 #include "VectorString.h"
@@ -42,7 +42,7 @@ class CharacterData : public Matrix {
 
         // Overloaded operators
         CharacterData&                      operator=(const CharacterData& x);                                          //!< Assignment operator
-        RbPtr<const Sequence>               operator[](size_t i) const;                                                 //!< Subscript operator (const)
+        RbPtr<const TaxonData>              operator[](size_t i) const;                                                 //!< Subscript operator (const)
 
         // Basic utility functions
         CharacterData*                      clone(void) const;                                                          //!< Clone object
@@ -70,7 +70,8 @@ class CharacterData : public Matrix {
         void                                transpose(void);                                                            //!< Transpose the matrix
 
         // Alignment functions
-        void                                addSequence(RbPtr<Sequence> obs);                                           //!< Add taxon name
+        void                                addTaxonData(RbPtr<TaxonData> obs);                                         //!< Add taxon data
+        void                                addTaxonData(RbPtr<TaxonData> obs, bool forceAdd);                          //!< Add taxon data
         void                                excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
@@ -80,7 +81,7 @@ class CharacterData : public Matrix {
         size_t                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
-        RbPtr<const Sequence>               getSequence(size_t tn) const;                                               //!< Return a reference to a sequence in the character matrix
+        RbPtr<const TaxonData>              getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         const std::string&                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
         bool                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded

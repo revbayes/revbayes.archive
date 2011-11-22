@@ -20,20 +20,20 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbString.h"
-#include "Sequence.h"
+#include "TaxonData.h"
 
 
 // Definition of the static type spec member
-const TypeSpec Sequence::typeSpec(Sequence_name);
+const TypeSpec TaxonData::typeSpec(TaxonData_name);
 
 /** Constructor with element type, used to properly construct vectors */
-Sequence::Sequence(const std::string& elemType, const std::string tname) : Vector(elemType), taxonName(tname) {
+TaxonData::TaxonData(const std::string& elemType, const std::string tname) : Vector(elemType), taxonName(tname) {
     
 }
 
 
 /** Subscript operator */
-RbPtr<Character> Sequence::operator[](size_t i) {
+RbPtr<Character> TaxonData::operator[](size_t i) {
     
     if (i >= elements.size())
         throw RbException("Index out of bounds");
@@ -42,7 +42,7 @@ RbPtr<Character> Sequence::operator[](size_t i) {
 
 
 /** Subscript const operator */
-RbPtr<const Character> Sequence::operator[](size_t i) const {
+RbPtr<const Character> TaxonData::operator[](size_t i) const {
     
     if (i >= elements.size())
         throw RbException("Index out of bounds");
@@ -50,7 +50,7 @@ RbPtr<const Character> Sequence::operator[](size_t i) const {
 }
 
 /** Push back a new character */
-void Sequence::addCharacter( RbPtr<Character> newChar ) {
+void TaxonData::addCharacter( RbPtr<Character> newChar ) {
     
     if ( newChar == NULL || !newChar->isTypeSpec( elementType ) )
         throw RbException( "Inappropriate character type" );
@@ -59,44 +59,48 @@ void Sequence::addCharacter( RbPtr<Character> newChar ) {
 }
 
 
-Sequence* Sequence::clone(void) const {
-    return new Sequence(*this);
+TaxonData* TaxonData::clone(void) const {
+
+    return new TaxonData(*this);
 }
 
 
 /** Get class vector describing type of object */
-const VectorString& Sequence::getClass(void) const {
+const VectorString& TaxonData::getClass(void) const {
     
-    static VectorString rbClass = VectorString(Sequence_name) + ConstantMemberObject::getClass();
+    static VectorString rbClass = VectorString(TaxonData_name) + ConstantMemberObject::getClass();
     return rbClass;
 }
 
 
-RbPtr<const Character> Sequence::getCharacter(size_t index) const {
+RbPtr<const Character> TaxonData::getCharacter(size_t index) const {
+
     return operator[](index);
 }
 
 
-const std::string& Sequence::getTaxonName(void) const {
+const std::string& TaxonData::getTaxonName(void) const {
+
     return taxonName;
 }
 
 
-
 /** Get the type spec of this class. We return a static class variable because all instances will be exactly from this type. */
-const TypeSpec& Sequence::getTypeSpec(void) const {
+const TypeSpec& TaxonData::getTypeSpec(void) const {
+
     return typeSpec;
 }
 
 
-void Sequence::printValue(std::ostream &o) const {
+void TaxonData::printValue(std::ostream &o) const {
+
     o << taxonName << ":" << std::endl;
     Vector::printValue(o);
 }
 
 
 /** Print value for user */
-std::string Sequence::richInfo(void) const {
+std::string TaxonData::richInfo(void) const {
        
     std::string info = taxonName + " [ ";
     for ( std::vector<RbPtr<RbLanguageObject> >::const_iterator i = elements.begin(); i != elements.end(); i++ ) {
@@ -113,7 +117,8 @@ std::string Sequence::richInfo(void) const {
 }
 
 
-void Sequence::setTaxonName(std::string tn) {
+void TaxonData::setTaxonName(std::string tn) {
+
     taxonName = tn;
 }
 

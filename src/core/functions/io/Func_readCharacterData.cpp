@@ -55,16 +55,17 @@ RbPtr<RbObject> Func_readCharacterData::execute( void ) {
 
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn->getValue() );
-    if ( (myFileManager.isFileNamePresent() == false && myFileManager.testDirectory() == false) ||
-         (myFileManager.isFileNamePresent() == true  && (myFileManager.testFile() == false || myFileManager.testDirectory() == false)) )
+    if ( myFileManager.getFileName() == "" && myFileManager.getFilePath() == "" )
         {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
-        //throw( RbException(errorStr) );
+        throw RbException("Could not find file or path with name \"" + fn->getValue() + "\"");
         }
 
     // are we reading a single file or are we reading the contents of a directory?
-    bool readingDirectory = myFileManager.isDirectory(fn->getValue());
+    bool readingDirectory = false;
+    if ( myFileManager.getFilePath() != "" && myFileManager.getFileName() == "")
+        readingDirectory = true;
     if (readingDirectory == true)
         RBOUT("Recursively reading the contents of a directory");
     else
