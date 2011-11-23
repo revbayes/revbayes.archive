@@ -2,9 +2,8 @@
 #include <vector>
 #include <string>
 #include "Character.h"
-//#include "CharacterContinuous.h"
-//#include "CharacterDiscrete.h"
 #include "NclReader.h"
+#include "Parser.h"
 #include "RbFileManager.h"
 
 #import "CharacterData.h"
@@ -200,10 +199,8 @@
 	if ( [tabViewLabel isEqualToString:@"Data Matrix"] == YES )
         {
 		// user selected "OK" for a data matrix (to be read into computer memory)
-        
 		[myTool removeAllDataMatrices];
 		BOOL isSuccessful = [self readDataFile];
-		
 		if (isSuccessful == YES)
 			{
 			[myTool closeControlPanel];
@@ -291,6 +288,17 @@
 		
     NSLog(@"fileToOpen = %@", fileToOpen);
     NSLog(@"isDir = %d", isDir);
+    
+    const char* cmdAsCStr = [fileToOpen UTF8String];
+    std::string cmdAsStlStr = cmdAsCStr;
+
+    std::string line = "guiDataVector <- read(\"" + cmdAsStlStr + "\");";
+    std::cout << "line = \"" << line << "\"" << std::endl;
+    int coreResult = Parser::getParser().processCommand(line);
+
+    getchar();
+    
+
     
 	// Get the file format information from the ReadData tool panel. Note that if the file format is NEXUS,
     // that we don't need the format/datatype information because the NCL parser can figure that out.
