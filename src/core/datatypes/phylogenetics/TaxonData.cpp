@@ -79,6 +79,12 @@ RbPtr<const Character> TaxonData::getCharacter(size_t index) const {
 }
 
 
+size_t TaxonData::getNumberOfCharacters(void) const {
+
+    return elements.size();
+}
+
+
 const std::string& TaxonData::getTaxonName(void) const {
 
     return taxonName;

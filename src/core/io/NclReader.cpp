@@ -219,6 +219,7 @@ RbPtr<CharacterData> NclReader::createAminoAcidMatrix(NxsCharactersBlock* charbl
     
     // instantiate the character matrix
 	RbPtr<CharacterData> cMat( new CharacterData( AminoAcidState_name ) );
+    cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
@@ -275,6 +276,7 @@ RbPtr<CharacterData> NclReader::createContinuousMatrix(NxsCharactersBlock* charb
     
     // instantiate the character matrix
 	RbPtr<CharacterData> cMat( new CharacterData( CharacterContinuous_name ) );
+    cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
@@ -323,6 +325,7 @@ RbPtr<CharacterData> NclReader::createDnaMatrix(NxsCharactersBlock* charblock) {
 
     // instantiate the character matrix
 	RbPtr<CharacterData> cMat( new CharacterData( DnaState_name ) );
+    cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
@@ -375,6 +378,7 @@ RbPtr<CharacterData> NclReader::createUnalignedDnaMatrix(NxsUnalignedBlock* char
         
     // instantiate the character matrix
 	RbPtr<CharacterData> cMat( new CharacterData( DnaState_name ) );
+    cMat->setIsHomologyEstablished(false);
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
@@ -421,6 +425,7 @@ RbPtr<CharacterData> NclReader::createRnaMatrix(NxsCharactersBlock* charblock) {
 
     // instantiate the character matrix
 	RbPtr<CharacterData> cMat( new CharacterData( RnaState_name ) );
+    cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
@@ -485,6 +490,7 @@ RbPtr<CharacterData> NclReader::createStandardMatrix(NxsCharactersBlock* charblo
     
     // instantiate the character matrix
 	RbPtr<CharacterData> cMat( new CharacterData( StandardState_name ) );
+    cMat->setIsHomologyEstablished(true);
     
 	// read in the data, including taxon names
 	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 

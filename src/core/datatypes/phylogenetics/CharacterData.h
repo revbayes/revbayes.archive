@@ -69,7 +69,7 @@ class CharacterData : public Matrix {
         void                                resize(size_t nRows, size_t nCols);                                         //!< Resize to new length vector
         void                                transpose(void);                                                            //!< Transpose the matrix
 
-        // Alignment functions
+        // CharacterData functions
         void                                addTaxonData(RbPtr<TaxonData> obs);                                         //!< Add taxon data
         void                                addTaxonData(RbPtr<TaxonData> obs, bool forceAdd);                          //!< Add taxon data
         void                                excludeCharacter(size_t i);                                                 //!< Exclude character
@@ -78,6 +78,7 @@ class CharacterData : public Matrix {
         RbPtr<const Character>              getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         const std::string&                  getDataType(void) const;                                                    //!< Returns the data type for the matrix
         const std::string&                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
+        bool                                getIsHomologyEstablished(void) { return isHomologyEstablished; }            //!< Returns whether the homology of the characters has been established
         size_t                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
@@ -91,6 +92,7 @@ class CharacterData : public Matrix {
         void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
         void                                restoreTaxon(std::string& s);                                               //!< Restore taxon
         void                                setFileName(const std::string fn) { fileName = fn; }                        //!< Set the file name
+        void                                setIsHomologyEstablished(bool tf) { isHomologyEstablished = tf; }           //!< Set whether the homology of the characters has been established
         void                                showData(void);                                                             //!< Show the data in the character matrix
 
     private:
@@ -109,6 +111,7 @@ class CharacterData : public Matrix {
         size_t                              sequenceLength;                                                             //!< The length of each sequence
         std::string                         characterType;                                                              //!< Rule describing sequence type
         TypeSpec                            typeSpec;                                                                   //!< The type of this character matrix including element type
+        bool                                isHomologyEstablished;                                                      //!< Whether the homology of the characters has been established
 };
 
 #endif

@@ -159,13 +159,14 @@ void CharacterData::excludeTaxon(size_t i) {
 /** Exclude a taxon */
 void CharacterData::excludeTaxon(std::string& s) {
 
-    for (size_t i = 0; i < size(); i++) {
-        if (s == sequenceNames[i]) {
+    for (size_t i = 0; i < size(); i++) 
+        {
+        if (s == sequenceNames[i]) 
+            {
             deletedTaxa.insert( i );
-            
             break;
+            }
         }
-    }
 }
 
 
@@ -173,9 +174,9 @@ void CharacterData::excludeTaxon(std::string& s) {
 RbPtr<RbObject> CharacterData::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
 
     if (name == "names") 
-    {
+        {
         return RbPtr<RbObject>( new VectorString(sequenceNames) );
-    }
+        }
     else if (name == "ntaxa") 
         {
         int n = (int)getNumberOfTaxa();
@@ -183,8 +184,19 @@ RbPtr<RbObject> CharacterData::executeOperation(const std::string& name, const R
         }
     else if (name == "nchar")
         {
-        int n = (int)getNumberOfCharacters();
-        return RbPtr<RbObject>( new Natural(n) );
+        std::vector<int> nc;
+        
+        for (size_t i=0; i<getNumberOfTaxa(); i++)
+            {
+            if ( isTaxonExcluded(i) == false )
+                {
+                if (isHomologyEstablished == true)
+                    nc.push_back( (int)getNumberOfCharacters() );
+                else
+                    nc.push_back( (int)getTaxonData(i)->getNumberOfCharacters() );
+                }
+            }
+        return RbPtr<RbObject>( new VectorNatural(nc) );
         }
     else if (name == "chartype")
         {
@@ -277,22 +289,33 @@ RbPtr<RbObject> CharacterData::executeOperation(const std::string& name, const R
     else if (name == "show")
         {
         int nt = (int)getNumberOfTaxa();
-        int nc = (int)getNumberOfCharacters();
         for (int i=0; i<nt; i++)
             {
+            RbPtr<const TaxonData> taxonData = getTaxonData(i);
             std::string taxonName = getTaxonNameWithIndex(i);
+            int nc = (int)taxonData->getNumberOfCharacters();
             std::cout << "   " << taxonName << std::endl;
             std::cout << "   ";
             for (int j=0; j<nc; j++)
                 {
-                //std::string s = getElement(i, j)->getStringValue();
-                //std::cout << s;
-                //if ( (j+1) % 100 == 0 && (j+1) != nc )
-                //    std::cout << std::endl << "   ";
+                RbObject* o = getElement(i, j);
+                Character* c = dynamic_cast<Character*>(o);
+                if (c == NULL)
+                    throw RbException( "Problem retreiving character from Character Data object" );
+                std::string s = c->getStringValue();
+                
+                std::cout << s;
+                if ( (j+1) % 100 == 0 && (j+1) != nc )
+                    std::cout << std::endl << "   ";
                 }
             std::cout << std::endl;
             }
         return NULL;
+        }
+    else if (name == "ishomologous")
+        {
+        bool ih = getIsHomologyEstablished();
+        return RbPtr<RbObject>( new RbBoolean(ih) );
         }
 
     return ConstantMemberObject::executeOperation( name, args );
@@ -370,6 +393,7 @@ RbPtr<const MethodTable> CharacterData::getMethods(void) const {
     static RbPtr<ArgumentRules> excludecharArgRules( new ArgumentRules()         );
     static RbPtr<ArgumentRules> excludecharArgRules2( new ArgumentRules()        );
     static RbPtr<ArgumentRules> showdataArgRules( new ArgumentRules()            );
+    static RbPtr<ArgumentRules> ishomologousArgRules( new ArgumentRules()        );    
     static bool methodsSet = false;
 
     if ( methodsSet == false ) 
@@ -379,7 +403,7 @@ RbPtr<const MethodTable> CharacterData::getMethods(void) const {
         excludecharArgRules2->push_back(       RbPtr<ArgumentRule>( new ValueRule(     "", VectorNatural_name ) ) );
             
         methods->addFunction("names",               RbPtr<RbFunction>( new MemberFunction(VectorString_name,  namesArgRules              ) ) );
-        methods->addFunction("nchar",               RbPtr<RbFunction>( new MemberFunction(Natural_name,       ncharArgRules              ) ) );
+        methods->addFunction("nchar",               RbPtr<RbFunction>( new MemberFunction(VectorNatural_name, ncharArgRules              ) ) );
         methods->addFunction("ntaxa",               RbPtr<RbFunction>( new MemberFunction(Natural_name,       ntaxaArgRules              ) ) );
         methods->addFunction("chartype",            RbPtr<RbFunction>( new MemberFunction(RbString_name,      chartypeArgRules           ) ) );
         methods->addFunction("nexcludedtaxa",       RbPtr<RbFunction>( new MemberFunction(Natural_name,       nexcludedtaxaArgRules      ) ) );
@@ -395,6 +419,7 @@ RbPtr<const MethodTable> CharacterData::getMethods(void) const {
         methods->addFunction("excludechar",         RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        excludecharArgRules        ) ) );
         methods->addFunction("excludechar",         RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        excludecharArgRules2       ) ) );
         methods->addFunction("show",                RbPtr<RbFunction>( new MemberFunction(RbVoid_name,        showdataArgRules           ) ) );
+        methods->addFunction("ishomologous",        RbPtr<RbFunction>( new MemberFunction(RbBoolean_name,     ishomologousArgRules       ) ) );
         
         // necessary call for proper inheritance
         methods->setParentTable( RbPtr<const FunctionTable>( MemberObject::getMethods() ) );
@@ -408,9 +433,10 @@ RbPtr<const MethodTable> CharacterData::getMethods(void) const {
 /** Return the number of characters in each vector of taxon observations */
 size_t CharacterData::getNumberOfCharacters(void) const {
 
-    if (size() > 0) {
+    if (size() > 0) 
+        {
         return getTaxonData(0)->size();
-    }
+        }
     return 0;
 }
 

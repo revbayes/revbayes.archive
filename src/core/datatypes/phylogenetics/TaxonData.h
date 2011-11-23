@@ -45,7 +45,7 @@ class TaxonData : public Vector {
         std::string                             richInfo(void) const;                                               //!< Complete info about object
         
         
-        // Sequence functions
+        // TaxonData functions
         void                                    addCharacter( RbPtr<Character> newChar );                           //!< Push back a new character
         RbPtr<const Character>                  getCharacter(size_t index) const;                                   //!< Get the character at position index
         RbPtr<Character>                        getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
