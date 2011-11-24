@@ -63,6 +63,8 @@ VariableSlot::VariableSlot(const VariableSlot& x) : RbInternal(x), varTypeSpec(x
     
     if ( x.variable != NULL ) {
         variable = x.variable;
+    } else {
+        variable = RbPtr<Variable>::getNullPtr();
     }
 }
 
@@ -86,6 +88,8 @@ VariableSlot& VariableSlot::operator=(const VariableSlot& x) {
         if ( x.variable != NULL ) {
             variable = RbPtr<Variable>(x.variable->clone());
         }
+        
+        label = x.label;
     }
     
     return (*this);
@@ -195,9 +199,7 @@ void VariableSlot::printValue(std::ostream& o) const {
 /** Set variable */
 void VariableSlot::setVariable(RbPtr<Variable> var) {
     
-    // change the old variable with the new variable in the parent and children
-    
-    // set and retain the new variable
+    // set the new variable
     variable = var;
     
 }

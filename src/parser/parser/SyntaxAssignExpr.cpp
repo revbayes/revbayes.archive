@@ -163,7 +163,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
         // We allow direct references without lookup nodes
         // We also allow constant expressions
         theVariable = expression->evaluateContent( env );
-        PRINTF ( "Created %s with function \"%s\" and value %s \n", theVariable->getDagNode()->getType().c_str(), ((DeterministicNode*)theVariable->getDagNode())->getFunction()->getType().c_str(), theVariable->getDagNodePtr()->getValue() == NULL ? "NULL" : theVariable->getDagNodePtr()->getValue()->getTypeSpec().toString().c_str());
+        PRINTF ( "Created %s with function \"%s\" and value %s \n", theVariable->getDagNode()->getType().c_str(), (static_cast<DeterministicNode*>((DAGNode*)theVariable->getDagNode())->getFunction()->getType().c_str()), theVariable->getDagNode()->getValue() == NULL ? "NULL" : theVariable->getDagNode()->getValue()->getTypeSpec().toString().c_str());
         
         // if the right-hand-side was not a function then we interpret it as the user wanted a reference to the original object (e.g. b := a)
         // we therefore create a new reference function which will lookup the value of the original node each time. Hence, the new node (left-hand-side) is just a reference of the original node (right-hand-side).

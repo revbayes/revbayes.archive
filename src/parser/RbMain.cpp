@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
 #	if defined DEBUG_PARSER
     std::cerr << "Global workspace after initialization:" << std::endl;
-    Workspace::globalWorkspace().printValue(std::cerr);
+    Workspace::globalWorkspace()->printValue(std::cerr);
     std::cerr << std::endl;
 #	endif
 

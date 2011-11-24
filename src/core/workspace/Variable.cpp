@@ -64,12 +64,14 @@ Variable::Variable(const std::string &n) : node(NULL) {
 }
 
 
-/** Copy constructor. We need to copy intelligently based on whether the value is a reference, a temp reference or a regular value.
- We set frame to NULL here and let caller worry about setting it to something appropriate. */
+/** Copy constructor. */
 Variable::Variable(const Variable& x) : node(NULL)  {
     
     if ( x.node != NULL ) {
-        node = RbPtr<DAGNode>( x.node->clone() );
+        setDagNode( RbPtr<DAGNode>( x.node->clone() ) );
+        
+        // notify the variable that this is the new variable
+        node->setVariable( this );
     }
     
     // copy the name too
@@ -89,7 +91,7 @@ Variable& Variable::operator=(const Variable& x) {
     if ( &x != this ) {
         
         // Copy the new variable
-        node = x.node;
+        node = x.node->clone();
         name = x.name;
     }
     
