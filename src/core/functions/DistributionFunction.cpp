@@ -82,7 +82,12 @@ DistributionFunction::DistributionFunction( RbPtr<Distribution> dist, FuncType f
 /** Copy constructor */
 DistributionFunction::DistributionFunction( const DistributionFunction& x ) : RbFunction(x), returnType( x.returnType ) {
 
-    argumentRules = x.argumentRules;
+    // copy the argument rules
+    argumentRules = RbPtr<ArgumentRules>( new ArgumentRules() );
+    for (std::vector<RbPtr<ArgumentRule> >::const_iterator it = x.argumentRules->begin(); it != x.argumentRules->end(); it++) {
+        argumentRules->push_back( (*it)->clone() );
+    }
+    
     distribution  = RbPtr<Distribution>( x.distribution->clone() );
     functionType  = x.functionType;
 
@@ -118,12 +123,18 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
 
     if (this != &x) {
         
+        // call the assignment operator of the base class
+        this->RbFunction::operator=(x);
+        
         if ( returnType != x.returnType )
             throw RbException( "Invalid assignment involving distributions on different types of random variables" );
         
+        // copy the argument rules
+        argumentRules = RbPtr<ArgumentRules>( new ArgumentRules() );
+        for (std::vector<RbPtr<ArgumentRule> >::const_iterator it = x.argumentRules->begin(); it != x.argumentRules->end(); it++) {
+            argumentRules->push_back( (*it)->clone() );
+        }
         
-
-        argumentRules = x.argumentRules;
         distribution  = RbPtr<Distribution>( x.distribution->clone() );
         functionType  = x.functionType;
 
@@ -218,7 +229,7 @@ const TypeSpec& DistributionFunction::getTypeSpec(void) const {
 }
 
 /** Process arguments */
-bool DistributionFunction::processArguments( const std::vector<RbPtr<Argument> >& args, RbPtr<VectorInteger> matchScore ) {
+bool DistributionFunction::processArguments( std::vector<RbPtr<Argument> > args, RbPtr<VectorInteger> matchScore ) {
 
     if ( !RbFunction::processArguments( args, matchScore ) )
         return false;

@@ -54,7 +54,7 @@ class DistributionFunction :  public RbFunction {
         RbPtr<RbObject>             execute(void);                                                          //!< Execute function
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                              //!< Get type spec of return value
-        bool                        processArguments(   const std::vector<RbPtr<Argument> >&   args,
+        bool                        processArguments(std::vector<RbPtr<Argument> > passedArgs,
                                                      RbPtr<VectorInteger>          matchScore=RbPtr<VectorInteger>::getNullPtr());   //!< Process args, set member variables of distribution
 
 	protected:
