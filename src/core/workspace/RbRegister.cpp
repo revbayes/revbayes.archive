@@ -153,6 +153,7 @@
 /* Phylogeny functions */
 #include "Func_gtr.h"
 #include "Func_readCharacterData.h"
+#include "Func_readTrees.h"
 #include "Func_tiprobs.h"
 
 
@@ -378,6 +379,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         /* Add phylogeny-related functions (alphabetical order) */
         addFunction( "gtr",       new Func_gtr()               );
         addFunction( "read",      new Func_readCharacterData() );
+        addFunction( "readTrees", new Func_readTrees()         );
         addFunction( "tiprobs",   new Func_tiprobs()           );
 
         /* Add builtin templated functions */

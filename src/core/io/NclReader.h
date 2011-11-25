@@ -23,6 +23,7 @@
 #include "nxsmultiformat.h"
 #include "RbPtr.h"
 #include "TopologyNode.h"
+#include "TreePlate.h"
 #include <map>
 #include <set>
 #include <string>
@@ -50,7 +51,7 @@ class NclReader{
         bool                                    isPhylipFile(std::string& fn, std::string& dType, bool& isInterleaved);         //!< Checks if the file is in Phylip format
 
         // TAH: stuff for reading trees
-        RbPtr<std::vector<RbPtr<Topology> > >   readTrees(const std::string fn, const std::string fileFormat);                  //!< Read trees
+        RbPtr<std::vector<RbPtr<TreePlate> > >  readTrees(const std::string fn, const std::string fileFormat);                  //!< Read trees
         void                                    clearContent(void) { nexusReader.ClearContent(); }                              //!< Clear the content of the NCL object
         
     private:
@@ -74,9 +75,9 @@ class NclReader{
 
         // methods for reading trees
         void                                    constructTreefromNclRecursively(RbPtr<TopologyNode> tn, const NxsSimpleNode* tnNcl);  //!< Constructs a tree from NCL
-        RbPtr<std::vector<RbPtr<Topology> > >   readTrees(const char* fileName, const std::string fileFormat);                  //!< Reads trees contained in a file
-        RbPtr<std::vector<RbPtr<Topology> > >   convertTreesFromNcl(void);                                                      //!< Converts trees stored by NCL into RevBayes formatted trees
-        RbPtr<Topology>                         translateNclSimpleTreeToTree(NxsSimpleTree &nTree);                             //!< Translate a single NCL tree into a RevBayes tree
+        RbPtr<std::vector<RbPtr<TreePlate> > >  readTrees(const char* fileName, const std::string fileFormat);                  //!< Reads trees contained in a file
+        RbPtr<std::vector<RbPtr<TreePlate> > >  convertTreesFromNcl(void);                                                      //!< Converts trees stored by NCL into RevBayes formatted trees
+        RbPtr<TreePlate>                        translateNclSimpleTreeToTree(NxsSimpleTree &nTree);                             //!< Translate a single NCL tree into a RevBayes tree
         
         MultiFormatReader                       nexusReader;                                                                    //!< The NCL object that reads the files
         std::set<std::string>                   warningsSummary;                                                                //!< A vector that contains the warnings that acumulate

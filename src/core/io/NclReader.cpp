@@ -170,10 +170,10 @@ std::vector<RbPtr<CharacterData> > NclReader::convertFromNcl(std::vector<std::st
 
 
 /** Converts trees stored by NCL into RevBayes formatted trees */
-RbPtr<std::vector<RbPtr<Topology> > > NclReader::convertTreesFromNcl(void) {
+RbPtr<std::vector<RbPtr<TreePlate> > > NclReader::convertTreesFromNcl(void) {
 	
 	const unsigned nTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-	RbPtr<std::vector<RbPtr<Topology> > > rbTreesFromFile( NULL );
+	RbPtr<std::vector<RbPtr<TreePlate> > > rbTreesFromFile( NULL );
 	for (unsigned t = 0; t < nTaxaBlocks; ++t) 
         {
 		const NxsTaxaBlock *tb = nexusReader.GetTaxaBlock(t);
@@ -189,9 +189,9 @@ RbPtr<std::vector<RbPtr<Topology> > > NclReader::convertTreesFromNcl(void) {
                 {
 				const NxsFullTreeDescription & ftd = trb->GetFullTreeDescription(j);
 				NxsSimpleTree tree(ftd, -1, -1.0);
-				RbPtr<Topology> rbTree = translateNclSimpleTreeToTree(tree);
+				RbPtr<TreePlate> rbTree = translateNclSimpleTreeToTree(tree);
                 //! @todo Tracy: Make sure rbTreesFromFile is properly initialized before being used -- Fredrik
-                rbTreesFromFile = RbPtr<std::vector<RbPtr<Topology> > >( new std::vector<RbPtr<Topology> >() ); // Temporary fix making the compiler happy
+                rbTreesFromFile = RbPtr<std::vector<RbPtr<TreePlate> > >( new std::vector<RbPtr<TreePlate> >() ); // Temporary fix making the compiler happy
 				rbTreesFromFile->push_back( rbTree );
                 }
             }
@@ -1008,28 +1008,28 @@ std::vector<RbPtr<CharacterData> > NclReader::readMatrices(const char* fileName,
 
 
 /** Read trees */
-RbPtr<std::vector<RbPtr<Topology> > > NclReader::readTrees(const std::string fn, const std::string fileFormat) {
+RbPtr<std::vector<RbPtr<TreePlate> > > NclReader::readTrees(const std::string fn, const std::string fileFormat) {
 	
 	// check that the file exist
     if ( !fileExists(fn.c_str()) ) 
         {
         addWarning("Data file not found");
-            return RbPtr<std::vector<RbPtr<Topology> > >::getNullPtr();
+            return RbPtr<std::vector<RbPtr<TreePlate> > >::getNullPtr();
         }
     
 	// allocate a vector of trees
-	RbPtr<std::vector<RbPtr<Topology> > > trees( new std::vector<RbPtr<Topology> >() );
+	RbPtr<std::vector<RbPtr<TreePlate> > > trees( new std::vector<RbPtr<TreePlate> >() );
 	
     // TODO @Tracy: Why do we read a vector of trees, then copy every single tree into a new vector; instead of returning the vector straight away?!? (Sebastian)
     
     // read the data files
- 	RbPtr<std::vector<RbPtr<Topology> > > f = readTrees( fn.c_str(), fileFormat);
+ 	RbPtr<std::vector<RbPtr<TreePlate> > > f = readTrees( fn.c_str(), fileFormat);
 	if (f != NULL) {
-		for (std::vector<RbPtr<Topology> >::iterator m = f->begin(); m != f->end(); m++)
+		for (std::vector<RbPtr<TreePlate> >::iterator m = f->begin(); m != f->end(); m++)
 			trees->push_back( (*m) );
 	}
 	else 
-		return RbPtr<std::vector<RbPtr<Topology> > >::getNullPtr();
+		return RbPtr<std::vector<RbPtr<TreePlate> > >::getNullPtr();
     
 	nexusReader.ClearContent();
 	
@@ -1038,13 +1038,13 @@ RbPtr<std::vector<RbPtr<Topology> > > NclReader::readTrees(const std::string fn,
 
 
 /** Read trees */
-RbPtr<std::vector<RbPtr<Topology> > > NclReader::readTrees(const char* fileName, const std::string fileFormat) {
+RbPtr<std::vector<RbPtr<TreePlate> > > NclReader::readTrees(const char* fileName, const std::string fileFormat) {
 	
 	// check that the file exists
 	if ( !fileExists(fileName) ) 
         {
         addWarning("Data file not found");
-            return RbPtr<std::vector<RbPtr<Topology> > >::getNullPtr();
+            return RbPtr<std::vector<RbPtr<TreePlate> > >::getNullPtr();
         }
 	
 	try 
@@ -1063,14 +1063,14 @@ RbPtr<std::vector<RbPtr<Topology> > > NclReader::readTrees(const char* fileName,
 	catch(NxsException err) 
         {
 		std::cout << "Nexus Error: " << err.msg << " (" << err.pos << ", " << err.line << ", " << err.col << ")" << std::endl;
-            return RbPtr<std::vector<RbPtr<Topology> > >::getNullPtr();
+            return RbPtr<std::vector<RbPtr<TreePlate> > >::getNullPtr();
         }
 	
 	std::vector<std::string> fileNameVector;
 	std::string str = fileName;
 	fileNameVector.push_back( str );
 	
-	RbPtr<std::vector<RbPtr<Topology> > > cvm = convertTreesFromNcl();
+	RbPtr<std::vector<RbPtr<TreePlate> > > cvm = convertTreesFromNcl();
 	return cvm;
 }
 
@@ -1092,7 +1092,7 @@ void NclReader::setExcluded( const NxsCharactersBlock* charblock, RbPtr<Characte
 
 
 /** Translate a single NCL tree into a RevBayes tree */
-RbPtr<Topology> NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree) {
+RbPtr<TreePlate> NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree) {
     
     // get the root from the ncl tree
     const NxsSimpleNode* rn = nTree.GetRootConst();
@@ -1112,8 +1112,9 @@ RbPtr<Topology> NclReader::translateNclSimpleTreeToTree(NxsSimpleTree& nTree) {
     // values too. Hence, we probably need to return a tree plate object here. Minimally, the function would create a
     // tree plate object and then populate that tree plate with (minimally) the topology that you are reading and (perhaps)
     // some variables that are contained on the tree.
-    //Topology* myTreeFromNcl = new Topology(root); <- Your old code
+    RbPtr<Topology> myTreeFromNcl( new Topology() );
+    myTreeFromNcl->setRoot(root);
     
-    RbPtr<Topology> myTreeFromNcl( NULL );
-	return myTreeFromNcl;
+    RbPtr<TreePlate> myTreePlateFromNcl( new TreePlate(myTreeFromNcl) );
+	return myTreePlateFromNcl;
 }
