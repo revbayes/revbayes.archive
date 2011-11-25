@@ -46,7 +46,12 @@ Func_clamp* Func_clamp::clone( void ) const {
 RbPtr<RbLanguageObject> Func_clamp::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference
-    RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( (DAGNode*)(*args)[0]->getDagNode() ) );
+    RbPtr<DAGNode> theDagNode = (*args)[0]->getDagNode();
+    while (theDagNode->isType(DeterministicNode_name)) {
+        theDagNode = static_cast<DeterministicNode*>( (DAGNode*)theDagNode )->getFunction()->execute();
+    }
+    
+    RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( (DAGNode*) theDagNode) );
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
