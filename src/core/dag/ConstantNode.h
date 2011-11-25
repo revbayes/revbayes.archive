@@ -32,7 +32,7 @@ const std::string ConstantNode_name = "Constant Node";
 class ConstantNode : public DAGNode {
 
 public:
-    ConstantNode(RbPtr<RbObject> val);                                                                              //!< Constructor from value
+    ConstantNode(RbPtr<RbLanguageObject> val);                                                                      //!< Constructor from value
     ConstantNode(const std::string& typeSpec);                                                                      //!< Constructor from language object type
     ConstantNode(const ConstantNode &x);                                                                            //!< Copy constructor
 
@@ -46,9 +46,9 @@ public:
     std::string                         richInfo(void) const;                                                       //!< Complete info on object
 
     // ConstantNode functions
-    RbPtr<const RbObject>               getStoredValue(void) const;                                                 //!< Get stored value
-    RbPtr<const RbObject>               getValue(void) const;                                                       //!< Get value 
-    RbPtr<RbObject>                     getValue(void);                                                             //!< Get value (non-const to return non-const value)
+    RbPtr<const RbLanguageObject>       getStoredValue(void) const;                                                 //!< Get stored value
+    RbPtr<const RbLanguageObject>       getValue(void) const;                                                       //!< Get value 
+    RbPtr<RbLanguageObject>             getValue(void);                                                             //!< Get value (non-const to return non-const value)
 
     // DAG functions
     RbPtr<DAGNode>                      cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;        //!< Clone entire graph

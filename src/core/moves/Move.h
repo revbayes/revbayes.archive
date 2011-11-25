@@ -40,7 +40,6 @@ class Move : public ConstantMemberObject {
 
         // Member methods
         virtual RbPtr<const MethodTable>    getMethods(void) const;                                                 //!< Get methods
-        RbPtr<RbObject>                     executeOperation(const std::string& name, const RbPtr<Environment>& args); //!< Map method call to internal functions
         void                                setMemberVariable(const std::string& name, RbPtr<Variable> var);        //!< set the member variables
 
         // Move functions you have to override
@@ -52,14 +51,17 @@ class Move : public ConstantMemberObject {
         double                              getAcceptanceRatio(void) const;                                         //!< Get acceptance ratio
         std::vector<RbPtr<VariableNode> >&  getDagNodes(void) { return nodes;}                                      //!< Get the nodes vector
         double                              getUpdateWeight(void) const;                                            //!< Get update weight of move
-//        void                            setDagNodes(std::vector<StochasticNode*> n);                            //!< Set the nodes vector
+//        void                            setDagNodes(std::vector<StochasticNode*> n);                              //!< Set the nodes vector
         void                                replaceDagNodes(std::vector<RbPtr<VariableNode> > &n);                         //!< Set the nodes vector
         void                                resetCounters(void);                                                    //!< Reset numTried/numAccepted
 
 	protected:
         Move(RbPtr<const MemberRules> memberRules);                                                                   //!< Default constructor
-        Move(const Move& m);                                                                                    //!< Copy constructor
+        Move(const Move& m);                                                                                        //!< Copy constructor
 
+        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const RbPtr<Environment>& args); //!< Map method call to internal functions
+
+    
         // Hidden member variables
         int                                 numAccepted;                                                            //!< Number of times accepted
         int                                 numTried;                                                               //!< Number of times tried

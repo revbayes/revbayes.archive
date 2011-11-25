@@ -43,7 +43,7 @@ Func_unclamp* Func_unclamp::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_unclamp::execute( void ) {
+RbPtr<RbLanguageObject> Func_unclamp::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference or lookup
     RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( (DAGNode*)(*args)[0]->getDagNode() ) );
@@ -53,7 +53,7 @@ RbPtr<RbObject> Func_unclamp::execute( void ) {
     // Now unclamp the node
     theNode->unclamp();
 
-    return RbPtr<RbObject>::getNullPtr();
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 

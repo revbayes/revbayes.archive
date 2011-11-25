@@ -54,11 +54,11 @@ Dist_norm::Dist_norm( void ) : DistributionContinuous( getMemberRules() ) {
  *
  * @see Adams, A. G. 1969. Areas under the normal curve. Computer J. 12:197-198.
  */
-double Dist_norm::cdf( RbPtr<const RbObject> value ) {
+double Dist_norm::cdf( RbPtr<const RbLanguageObject> value ) {
 
 	double mu    = static_cast<      Real*   >( (      RbObject*)getMemberValue("mean") )->getValue();
     double sigma = static_cast<      RealPos*>( (      RbObject*)getMemberValue("sd"  ) )->getValue();
-    double q     = static_cast<const Real*   >( (const RbObject*)value                  )->getValue();
+    double q     = static_cast<const Real*   >( (const RbLanguageObject*)value                  )->getValue();
 	return RbStatistics::Normal::cdf(mu, sigma, q);
 
 }
@@ -87,8 +87,8 @@ RbPtr<const MemberRules> Dist_norm::getMemberRules( void ) const {
 
     if ( !rulesSet ) {
 
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "mean", Real_name   , RbPtr<RbObject>( new Real(0.0)    ) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "sd"  , RealPos_name, RbPtr<RbObject>( new RealPos(1.0) ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "mean", Real_name   , RbPtr<RbLanguageObject>( new Real(0.0)    ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "sd"  , RealPos_name, RbPtr<RbLanguageObject>( new RealPos(1.0) ) ) ) );
 
         rulesSet = true;
     }
@@ -119,11 +119,11 @@ const TypeSpec& Dist_norm::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_norm::lnPdf(RbPtr<const RbObject> value) const {
+double Dist_norm::lnPdf(RbPtr<const RbLanguageObject> value) const {
     
     double mu    = static_cast<const Real*   >( (const RbObject*)getMemberValue( "mean" ) )->getValue();
     double sigma = static_cast<const RealPos*>( (const RbObject*)getMemberValue( "sd"   ) )->getValue();
-    double x     = static_cast<const Real*   >( (const RbObject*)value                    )->getValue();
+    double x     = static_cast<const Real*   >( (const RbLanguageObject*)value                    )->getValue();
 
 
     return RbStatistics::Normal::lnPdf(mu, sigma, x);
@@ -140,11 +140,11 @@ double Dist_norm::lnPdf(RbPtr<const RbObject> value) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_norm::pdf( RbPtr<const RbObject> value ) const {
+double Dist_norm::pdf( RbPtr<const RbLanguageObject> value ) const {
 
     double mu    = static_cast<const Real*   >( (const RbObject*)getMemberValue( "mean" ) )->getValue();
     double sigma = static_cast<const RealPos*>( (const RbObject*)getMemberValue( "sd"   ) )->getValue();
-    double x     = static_cast<const Real*   >( (const RbObject*)value                    )->getValue();
+    double x     = static_cast<const Real*   >( (const RbLanguageObject*)value                    )->getValue();
 
     return RbStatistics::Normal::pdf(mu, sigma, x);
 
@@ -188,21 +188,21 @@ RbPtr<Real> Dist_norm::quantile( const double p) {
  *
  * @return      Random draw
  */
-RbPtr<RbObject> Dist_norm::rv(void) {
+RbPtr<RbLanguageObject> Dist_norm::rv(void) {
 
     static bool   availableNormalRv = false;
     static double extraNormalRv;
 
     if ( availableNormalRv ) {
         availableNormalRv = false;
-        return RbPtr<RbObject>( new Real( extraNormalRv ) );
+        return RbPtr<RbLanguageObject>( new Real( extraNormalRv ) );
     }
     
     double mu    = static_cast<const Real*   >( (const RbObject*)getMemberValue( "mean" ) )->getValue();
     double sigma = static_cast<const RealPos*>( (const RbObject*)getMemberValue( "sd"   ) )->getValue();
 
     RbPtr<RandomNumberGenerator> rng = GLOBAL_RNG;
-	return RbPtr<RbObject>( new Real( RbStatistics::Normal::rv(mu, sigma, rng) ) );
+	return RbPtr<RbLanguageObject>( new Real( RbStatistics::Normal::rv(mu, sigma, rng) ) );
 
 }
 

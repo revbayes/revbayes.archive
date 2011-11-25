@@ -45,11 +45,11 @@ Func_sqrt* Func_sqrt::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_sqrt::execute( void ) {
+RbPtr<RbLanguageObject> Func_sqrt::executeFunction( void ) {
     
     const double x = static_cast<const RealPos*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
 
-    return RbPtr<RbObject>( new RealPos( sqrt( x ) ) );
+    return RbPtr<RbLanguageObject>( new RealPos( sqrt( x ) ) );
 }
 
 

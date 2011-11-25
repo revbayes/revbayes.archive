@@ -100,11 +100,11 @@ RbPtr<const MethodTable> Container::getMethods(void) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbObject> Container::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbLanguageObject> Container::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
     
     if (name == "size") {
         
-        return RbPtr<RbObject>( new Natural(size()) );
+        return RbPtr<RbLanguageObject>( new Natural(size()) );
     } else if ( name == "[]") {
         // get the member with give index
         RbPtr<const Natural> index( static_cast<const Natural*>( (const RbObject*)(*args)[0]->getValue()) );
@@ -114,11 +114,11 @@ RbPtr<RbObject> Container::executeOperation(const std::string& name, const RbPtr
         }
         
         // TODO: Check what happens with DAGNodeContainers
-        RbPtr<RbObject> element = getElement(index->getValue() - 1);
+        RbPtr<RbLanguageObject> element( static_cast<RbLanguageObject*>( (RbObject*)getElement(index->getValue() - 1) ) );
         return element;
     }
     
-    return ConstantMemberObject::executeOperation( name, args );
+    return ConstantMemberObject::executeOperationSimple( name, args );
 }
 
 

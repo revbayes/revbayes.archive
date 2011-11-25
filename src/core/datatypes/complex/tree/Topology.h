@@ -49,7 +49,6 @@ class Topology: public ConstantMemberObject {
         RbPtr<const MemberRules>            getMemberRules(void) const;                                             //!< Get member rules
 
         // Member method inits
-        RbPtr<RbObject>                     executeOperation(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
         RbPtr<const MethodTable>            getMethods(void) const;                                                 //!< Get methods
         
         // Topology functions
@@ -65,7 +64,10 @@ class Topology: public ConstantMemberObject {
         RbPtr<const TopologyNode>           getTipNode(size_t indx) const;                                          //!< Get a pointer to tip node i
         void                                setIsRooted(bool tf) { isRooted = tf; }                                 //!< Set the rootedness of the tree
         void                                setRoot(RbPtr<TopologyNode> r);                                         //!< Set the root and bootstrap the tree from it
-        
+
+protected:
+        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
+    
 private:
         static const TypeSpec               typeSpec;
         void                                fillNodesByPreorderTraversal(RbPtr<TopologyNode> node);                 //!< fill the nodes vector by a preorder traversal recursively starting with this node.

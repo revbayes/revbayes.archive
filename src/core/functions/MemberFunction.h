@@ -49,13 +49,13 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                                                    //!< Get language type of the object
     std::string                 richInfo(void) const;                                                       //!< Complete info about object
 
-    // Regular functions
-    RbPtr<RbObject>             execute(void);                                                              //!< Execute function
-   
+    // Regular functions   
+    RbPtr<DAGNode>              execute(void);                                                              //!< Execute function
     RbPtr<const ArgumentRules>  getArgumentRules(void) const;                                               //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                                                  //!< Get type of return value
     void                        setMemberObject(RbPtr<MemberObject> obj);                                   //!< Set the member object to which this function belongs
     void                        setMethodName(const std::string& name) { funcName = name; }                 //!< Set name of member method
+
 
 private:
     const RbPtr<ArgumentRules>  argumentRules;                                                              //!< Argument rules (different for different member functions)

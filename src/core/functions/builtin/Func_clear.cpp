@@ -39,12 +39,12 @@ Func_clear* Func_clear::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_clear::execute( void ) {
+RbPtr<RbLanguageObject> Func_clear::executeFunction( void ) {
     
     // clear the user workspace
     Workspace::userWorkspace()->clear();
     
-    return RbPtr<RbObject>::getNullPtr();
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 

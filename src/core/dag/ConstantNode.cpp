@@ -36,7 +36,7 @@
 const TypeSpec ConstantNode::typeSpec(ConstantNode_name);
 
 /** Constructor from value */
-ConstantNode::ConstantNode( RbPtr<RbObject> val ) : DAGNode( val ) {
+ConstantNode::ConstantNode( RbPtr<RbLanguageObject> val ) : DAGNode( val ) {
 
 }
 
@@ -86,8 +86,8 @@ const VectorString& ConstantNode::getClass() const {
 }
 
 
-RbPtr<const RbObject> ConstantNode::getStoredValue(void) const {
-    return RbPtr<const RbObject>( value );
+RbPtr<const RbLanguageObject> ConstantNode::getStoredValue(void) const {
+    return RbPtr<const RbLanguageObject>( value );
 }
 
 
@@ -97,13 +97,13 @@ const TypeSpec& ConstantNode::getTypeSpec(void) const {
 }
 
 
-RbPtr<const RbObject> ConstantNode::getValue(void) const {
-    return RbPtr<const RbObject>( value );
+RbPtr<const RbLanguageObject> ConstantNode::getValue(void) const {
+    return RbPtr<const RbLanguageObject>( value );
 }
 
 
 
-RbPtr<RbObject> ConstantNode::getValue(void) {
+RbPtr<RbLanguageObject> ConstantNode::getValue(void) {
     return ( value );
 }
 

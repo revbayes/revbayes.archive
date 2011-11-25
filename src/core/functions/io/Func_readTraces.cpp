@@ -44,7 +44,7 @@ Func_readTraces* Func_readTraces::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_readTraces::execute( void ) {
+RbPtr<RbLanguageObject> Func_readTraces::executeFunction( void ) {
     // get the information from the arguments for reading the file
     RbPtr<RbString> fn( static_cast<RbString*>( (RbObject*)(*args)[0]->getValue() ) );
     
@@ -169,7 +169,7 @@ RbPtr<RbObject> Func_readTraces::execute( void ) {
     }
     
     
-    return RbPtr<RbObject>::getNullPtr();
+    return RbPtr<RbLanguageObject>::getNullPtr();
     
 
 }

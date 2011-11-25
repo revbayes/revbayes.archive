@@ -42,7 +42,7 @@ Func_gtr* Func_gtr::clone(void) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_gtr::execute(void) {
+RbPtr<RbLanguageObject> Func_gtr::executeFunction(void) {
 
     // get the information from the arguments for reading the file
     RbPtr<Simplex> r( static_cast<Simplex*>( (RbObject*)(*args)[0]->getValue() ) );
@@ -107,7 +107,7 @@ RbPtr<RbObject> Func_gtr::execute(void) {
     m->updateEigenSystem();
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return RbPtr<RbObject>( m );
+    return RbPtr<RbLanguageObject>( m );
 }
 
 

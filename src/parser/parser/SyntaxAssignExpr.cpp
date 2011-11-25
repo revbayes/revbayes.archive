@@ -151,7 +151,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
             throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
         // fill the slot with the new variable
-        theSlot->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbObject>(theVariable->getDagNode()->getValue()->clone() ) ) ) );
+        theSlot->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>(theVariable->getDagNode()->getValue()->clone() ) ) ) );
     }
     
     // Deal with equation assignments

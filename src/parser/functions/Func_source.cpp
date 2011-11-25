@@ -45,7 +45,7 @@ Func_source* Func_source::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_source::execute( void ) {
+RbPtr<RbLanguageObject> Func_source::executeFunction( void ) {
 
     /* Open file */
     std::string filename = static_cast<RbString*>( (RbObject*)(*args)[0]->getValue() )->getValue();
@@ -79,7 +79,7 @@ RbPtr<RbObject> Func_source::execute( void ) {
     /* Return control */
     RBOUT("Processing of file \"" + filename + "\" completed");
 
-    return RbPtr<RbObject>::getNullPtr();
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 
@@ -92,7 +92,7 @@ RbPtr<const ArgumentRules> Func_source::getArgumentRules( void ) const {
     if ( !rulesSet ) {
 
         argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "file", RbString_name ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "echo.on", RbBoolean_name, RbPtr<RbObject>( new RbBoolean(false) ) ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "echo.on", RbBoolean_name, RbPtr<RbLanguageObject>( new RbBoolean(false) ) ) ) );
         rulesSet = true;
     }
 

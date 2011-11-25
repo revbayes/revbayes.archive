@@ -76,9 +76,9 @@ RbPtr<const MemberRules> Dist_birthdeath::getMemberRules( void ) const {
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "origin"          , RealPos_name     ) ) );
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "T"               , RealPos_name     ) ) );
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "lambda"          , RealPos_name     ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "mu"              , RealPos_name, RbPtr<RbObject>( new RealPos(0.0) ) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "rho"             , Probability_name, RbPtr<RbObject>( new Probability(1.0) ) ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "speciationEvent" , RbBoolean_name, RbPtr<RbObject>( new RbBoolean(true) ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "mu"              , RealPos_name, RbPtr<RbLanguageObject>( new RealPos(0.0) ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "rho"             , Probability_name, RbPtr<RbLanguageObject>( new Probability(1.0) ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "speciationEvent" , RbBoolean_name, RbPtr<RbLanguageObject>( new RbBoolean(true) ) ) ) );
         
         rulesSet = true;
     }
@@ -109,10 +109,10 @@ const TypeSpec& Dist_birthdeath::getVariableType( void ) const {
  * @param value Observed speciation times
  * @return      Natural log of the probability
  */
-double Dist_birthdeath::lnPdf( RbPtr<const RbObject> value ) const {
+double Dist_birthdeath::lnPdf( RbPtr<const RbLanguageObject> value ) const {
     
     // Get the parameters
-    double t = static_cast<const RealPos*    >( (const RbObject*)value )->getValue();
+    double t = static_cast<const RealPos*    >( (const RbLanguageObject*)value )->getValue();
     double o = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "origin" ) )->getValue();
     double T = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "T"      ) )->getValue();
     double b = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "lambda" ) )->getValue();
@@ -155,10 +155,10 @@ double Dist_birthdeath::pBirth(double t, double T, double lambda, double mu, dou
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_birthdeath::pdf( RbPtr<const RbObject> value ) const {
+double Dist_birthdeath::pdf( RbPtr<const RbLanguageObject> value ) const {
     
     // Get the parameters
-    double t = static_cast<const RealPos*    >( (const RbObject*)value )->getValue();
+    double t = static_cast<const RealPos*    >( (const RbLanguageObject*)value )->getValue();
     double o = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "origin" ) )->getValue();
     double T = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "T"      ) )->getValue();
     double b = static_cast<const RealPos*    >( (const RbObject*)getMemberValue( "lambda" ) )->getValue();
@@ -218,7 +218,7 @@ double Dist_birthdeath::ut(double t, double t_prime, double lambda, double mu, d
  *
  * @return      Randomly drawn vector of speciation times
  */
-RbPtr<RbObject> Dist_birthdeath::rv( void ) {
+RbPtr<RbLanguageObject> Dist_birthdeath::rv( void ) {
     
     // TODO needs implementation!!!
     
@@ -230,7 +230,7 @@ RbPtr<RbObject> Dist_birthdeath::rv( void ) {
 //    double p = static_cast<const Probability*>( getMemberValue( "rho"    ).get() )->getValue();
     
     
-    return RbPtr<RbObject>( new RealPos( (T - o) / 2.0 + o) );
+    return RbPtr<RbLanguageObject>( new RealPos( (T - o) / 2.0 + o) );
 }
 
 

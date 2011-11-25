@@ -55,7 +55,6 @@ class RateMatrix : public MemberObject {
 
         // Member method inits
         RbPtr<const MethodTable>            getMethods(void) const;                                                             //!< Get methods
-        RbPtr<RbObject>                     executeOperation(const std::string& name, const RbPtr<Environment>& args);                       //!< Map method call to internal functions
     
         // RateMatrix functions
         double                              averageRate(void) const;                                                            //!< Calculate the average rate
@@ -69,6 +68,9 @@ class RateMatrix : public MemberObject {
         void                                setIsTimeReversible(const bool tf);                                                 //!< Directly set whether the rate matrix is time reversible
         void                                setStationaryFrequencies(const std::vector<double>& f);                             //!< Directly set the stationary frequencies
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
+
+    protected:
+        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const RbPtr<Environment>& args);                       //!< Map method call to internal functions
 
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse

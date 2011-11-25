@@ -44,7 +44,11 @@ DAGNode::DAGNode(const std::string& valType) : children(), parents(), valueTypeS
 
 
 /** Constructor of filled node */
-DAGNode::DAGNode(RbPtr<RbObject> val) : children(), parents(), valueTypeSpec(val->getType()), value(val) {
+DAGNode::DAGNode(RbPtr<RbLanguageObject> val) : children(), parents(), value(val), valueTypeSpec(RbObject_name) {
+    
+//    if (val != NULL) {
+//        valueTypeSpec = val->getTypeSpec();
+//    }
     
     // initialize the variable
     variable = NULL;
@@ -63,7 +67,7 @@ DAGNode::DAGNode(RbPtr<RbObject> val) : children(), parents(), valueTypeSpec(val
 DAGNode::DAGNode( const DAGNode& x ) : children(), parents(), valueTypeSpec(x.valueTypeSpec), value( NULL ) {
 
     if ( x.value != NULL ) {
-        value = RbPtr<RbObject>( x.value->clone() );
+        value = RbPtr<RbLanguageObject>( x.value->clone() );
     }
     
 //    if (x.variable != NULL) {

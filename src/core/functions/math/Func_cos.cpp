@@ -44,11 +44,11 @@ Func_cos* Func_cos::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_cos::execute( void ) {
+RbPtr<RbLanguageObject> Func_cos::executeFunction( void ) {
     
     const double x = static_cast<const Real*>( (RbObject*)(*args)[0]->getValue() )->getValue();
     
-    return RbPtr<RbObject>( new Real( cos( x ) ) );
+    return RbPtr<RbLanguageObject>( new Real( cos( x ) ) );
 }
 
 

@@ -307,7 +307,7 @@ RbPtr<VariableSlot> SyntaxVariable::createVariable(RbPtr<Environment> env) {
             
             // get the element at the index
             if (theDagNode == NULL) {
-                theDagNode = RbPtr<DAGNode>( new ConstantNode( RbPtr<RbObject>( new DagNodeContainer(indexValue+1) )) );
+                theDagNode = RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(indexValue+1) )) );
                 theSlot->getVariable()->setDagNode(theDagNode);
             }
             

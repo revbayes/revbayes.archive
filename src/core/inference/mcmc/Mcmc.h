@@ -50,10 +50,13 @@ public:
 
     // Member method inits
     RbPtr<const MethodTable>    getMethods(void) const;                                                         //!< Get methods
-    RbPtr<RbObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args);                   //!< Execute method
         
     // Mcmc functions
     void                        run(size_t ngen);                                                               //!< Update the chain
+
+protected:
+    RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const RbPtr<Environment>& args);//!< Execute method
+
     
 private:
     static const TypeSpec       typeSpec;

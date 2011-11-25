@@ -36,11 +36,13 @@ class Func_simplex :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbPtr<RbObject>             execute(void);                                              //!< Execute function
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         bool                        throws(void) const;                                         //!< One variant needs to throw
-    
+
+    protected:
+        RbPtr<RbLanguageObject>     executeFunction(void);                                      //!< Execute function
+
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;
@@ -76,25 +78,25 @@ Func_simplex<valType>* Func_simplex<valType>::clone( void ) const {
 
 /** Execute function: Simplex <- ( Integer ) */
 template <>
-RbPtr<RbObject> Func_simplex<Integer>::execute( void ) {
+RbPtr<RbLanguageObject> Func_simplex<Integer>::executeFunction( void ) {
 
     int size = static_cast<const Integer*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
 
     if ( size < 2 )
         throw RbException( "Simplex size must be at least 2" );
 
-    RbPtr<RbObject> temp( new Simplex( size ) );
+    RbPtr<RbLanguageObject> temp( new Simplex( size ) );
     return temp;
 }
 
 
 /** Execute function: Simplex <- ( VectorRealPos ) */
 template <>
-RbPtr<RbObject> Func_simplex<VectorRealPos>::execute( void ) {
+RbPtr<RbLanguageObject> Func_simplex<VectorRealPos>::executeFunction( void ) {
 
     const RbPtr<VectorRealPos> tempVec( static_cast<VectorRealPos*>( (RbObject*)(*args)[0]->getValue() ) );
 
-    RbPtr<RbObject> temp( new Simplex( *tempVec ) );
+    RbPtr<RbLanguageObject> temp( new Simplex( *tempVec ) );
 
     return temp;
 }
@@ -102,14 +104,14 @@ RbPtr<RbObject> Func_simplex<VectorRealPos>::execute( void ) {
 
 /** Execute function: Simplex <- ( RealPos, RealPos, ... ) */
 template <>
-RbPtr<RbObject> Func_simplex<RealPos>::execute( void ) {
+RbPtr<RbLanguageObject> Func_simplex<RealPos>::executeFunction( void ) {
 
     VectorReal  tempVec;
     for ( size_t i = 0; i < args->size(); i++ )
         tempVec.push_back( *( static_cast<const RealPos*>( (const RbObject*)(*args)[i]->getValue() )->clone() ) );
 
     // Normalization is done by the Simplex constructor
-    return RbPtr<RbObject>( new Simplex( tempVec ) );
+    return RbPtr<RbLanguageObject>( new Simplex( tempVec ) );
 }
 
 

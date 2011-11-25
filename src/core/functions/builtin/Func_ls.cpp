@@ -44,7 +44,7 @@ Func_ls* Func_ls::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_ls::execute( void ) {
+RbPtr<RbLanguageObject> Func_ls::executeFunction( void ) {
 
     /* Open file */
     const bool printAll = static_cast<const RbBoolean*>( (RbObject*)(*args)[0]->getValue() )->getValue();
@@ -66,7 +66,7 @@ RbPtr<RbObject> Func_ls::execute( void ) {
         std::cout << std::endl;
     }
 
-    return RbPtr<RbObject>::getNullPtr();
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 
@@ -78,7 +78,7 @@ RbPtr<const ArgumentRules> Func_ls::getArgumentRules( void ) const {
 
     if ( !rulesSet ) {
 
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "all", RbPtr<RbObject>( new RbBoolean( false ) ) ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "all", RbPtr<RbLanguageObject>( new RbBoolean( false ) ) ) ) );
         rulesSet = true;
     }
 

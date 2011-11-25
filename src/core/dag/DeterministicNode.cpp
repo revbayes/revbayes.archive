@@ -67,10 +67,10 @@ DeterministicNode::DeterministicNode( RbPtr<RbFunction> func ) : VariableNode(fu
     function = func;
     
     /* Set value and stored value */
-    RbPtr<RbObject> retVal = function->execute();
+    RbPtr<RbLanguageObject> retVal = function->execute()->getValue();
     
     value           = retVal;
-    storedValue     = RbPtr<RbObject>::getNullPtr();
+    storedValue     = RbPtr<RbLanguageObject>::getNullPtr();
     
     // decrement the reference count for myself
     RbMemoryManager::rbMemoryManager().decrementCountForAddress(this);
@@ -84,10 +84,10 @@ DeterministicNode::DeterministicNode( const DeterministicNode& x ) : VariableNod
     touched          = x.touched;
     changed          = x.changed;
     if ( x.storedValue != NULL ) {
-        storedValue  = RbPtr<RbObject>( x.storedValue->clone() );
+        storedValue  = RbPtr<RbLanguageObject>( x.storedValue->clone() );
     }
     else
-        storedValue  = RbPtr<RbObject>::getNullPtr();
+        storedValue  = RbPtr<RbLanguageObject>::getNullPtr();
     
     /* Set parents and add this node as a child node of these */
     RbPtr<Environment> args = function->getArguments();
@@ -137,11 +137,11 @@ RbPtr<DAGNode> DeterministicNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNo
     copy->touched  = touched;
     copy->changed  = changed;
     if (value != NULL)
-        copy->value    = RbPtr<RbObject>( value->clone() );
+        copy->value    = RbPtr<RbLanguageObject>( value->clone() );
     if (storedValue == NULL)
-        copy->storedValue = RbPtr<RbObject>::getNullPtr();
+        copy->storedValue = RbPtr<RbLanguageObject>::getNullPtr();
     else
-        copy->storedValue = RbPtr<RbObject>( storedValue->clone() );
+        copy->storedValue = RbPtr<RbLanguageObject>( storedValue->clone() );
     
     /* Set the copy arguments to their matches in the new DAG */
     RbPtr<const Environment> args     = function->getArguments();
@@ -211,31 +211,31 @@ RbPtr<RbFunction> DeterministicNode::getFunction(void) {
 
 
 /** Get stored value */
-RbPtr<const RbObject> DeterministicNode::getStoredValue( void ) const {
+RbPtr<const RbLanguageObject> DeterministicNode::getStoredValue( void ) const {
 
     if ( !touched )
-        return RbPtr<const RbObject>(value);
+        return RbPtr<const RbLanguageObject>(value);
     
-    return RbPtr<const RbObject>(storedValue);
+    return RbPtr<const RbLanguageObject>(storedValue);
 }
 
 
 /** Get value */
-RbPtr<const RbObject> DeterministicNode::getValue( void ) const {
+RbPtr<const RbLanguageObject> DeterministicNode::getValue( void ) const {
     
     if ( touched && !changed )
         const_cast<DeterministicNode*>(this)->update();
     
-    return RbPtr<const RbObject>(value);
+    return RbPtr<const RbLanguageObject>(value);
 }
 
 /** Get value */
-RbPtr<RbObject> DeterministicNode::getValue( void ) {
+RbPtr<RbLanguageObject> DeterministicNode::getValue( void ) {
     
     if ( touched && !changed )
         update();
     
-    return RbPtr<RbObject>(value);
+    return RbPtr<RbLanguageObject>(value);
 }
 
 
@@ -253,7 +253,7 @@ void DeterministicNode::keepAffected( void ) {
         if ( !changed )
             update();
         
-        storedValue = RbPtr<RbObject>::getNullPtr();
+        storedValue = RbPtr<RbLanguageObject>::getNullPtr();
         
         for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
             (*i)->keepAffected();
@@ -331,7 +331,7 @@ void DeterministicNode::restoreAffected( void ) {
     if ( touched ) {
         if ( changed ) {
             value       = storedValue;
-            storedValue = RbPtr<RbObject>::getNullPtr();
+            storedValue = RbPtr<RbLanguageObject>::getNullPtr();
         }
         for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
             (*i)->restoreAffected();
@@ -382,7 +382,7 @@ void DeterministicNode::update( void ) {
         storedValue     = value;
         
         // compute a new value, set and retain it
-        value = function->execute();
+        value = function->execute()->getValue();
         
         // mark as changed
         changed         = true;

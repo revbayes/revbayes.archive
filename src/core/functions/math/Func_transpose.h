@@ -36,10 +36,12 @@ class Func_transpose :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbPtr<RbObject>             execute(void);                                              //!< Execute function
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
-    
+
+    protected:
+        RbPtr<RbLanguageObject>     executeFunction(void);                                      //!< Execute function
+
     private:
         static const TypeSpec       typeSpec;
 };
@@ -66,7 +68,7 @@ Func_transpose<matrixType>* Func_transpose<matrixType>::clone( void ) const {
 
 /** Execute function by simply rearranging elements in new matrix of same type */
 template <typename matrixType>
-RbPtr<RbObject> Func_transpose<matrixType>::execute( void ) {
+RbPtr<RbLanguageObject> Func_transpose<matrixType>::executeFunction( void ) {
 
     const RbPtr<matrixType> mat = static_cast<matrixType*>( (RbObject*)(*args)[0]->getValue() );
 
@@ -76,7 +78,7 @@ RbPtr<RbObject> Func_transpose<matrixType>::execute( void ) {
         for ( size_t j = 0; j < mat->getNumberOfColumns(); j++ )
             (*(*matT)[j])[i] = (*(*mat)[i])[j];
 
-    return RbPtr<RbObject>( (matrixType*)matT );
+    return RbPtr<RbLanguageObject>( (matrixType*)matT );
 }
 
 

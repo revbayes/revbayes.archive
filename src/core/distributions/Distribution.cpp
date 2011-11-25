@@ -35,24 +35,24 @@ Distribution::Distribution( RbPtr<const MemberRules> memberRules ) : ConstantMem
 
 
 /** Map direct method calls to internal class methods. */
-RbPtr<RbObject> Distribution::executeOperation( const std::string& name, const RbPtr<Environment>& args ) {
+RbPtr<RbLanguageObject> Distribution::executeOperationSimple( const std::string& name, const RbPtr<Environment>& args ) {
 
     if ( name == "lnPdf" ) {
 
-        return RbPtr<RbObject>( new RealPos( lnPdf( (const RbObject*)(*args)[1]->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new RealPos( lnPdf( (const RbLanguageObject*)(*args)[1]->getValue() ) ) );
     }
     else if ( name == "pdf" ) {
 
-        return RbPtr<RbObject>( new RealPos( pdf  ( (const RbObject*)(*args)[1]->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new RealPos( pdf  ( (const RbLanguageObject*)(*args)[1]->getValue() ) ) );
     }
     else if ( name == "rv" ) {
 
-        RbPtr<RbObject> draw = rv();
+        RbPtr<RbLanguageObject> draw = rv();
 
         return draw;
     }
     else
-        return MemberObject::executeOperation( name, args );
+        return MemberObject::executeOperationSimple( name, args );
 }
 
 

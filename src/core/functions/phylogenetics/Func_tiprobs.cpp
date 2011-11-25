@@ -44,7 +44,7 @@ Func_tiprobs* Func_tiprobs::clone(void) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_tiprobs::execute(void) {
+RbPtr<RbLanguageObject> Func_tiprobs::executeFunction(void) {
 
     // get the information from the arguments for reading the file
     RbPtr<RateMatrix> q( static_cast<RateMatrix*>( (RbObject*)(*args)[0]->getValue() ) );
@@ -68,7 +68,7 @@ RbPtr<RbObject> Func_tiprobs::execute(void) {
     q->calculateTransitionProbabilities( t->getValue(), m );
 
     // wrap up the rate matrix object and send it on its way to parser-ville
-    return RbPtr<RbObject>( m );
+    return RbPtr<RbLanguageObject>( m );
 }
 
 

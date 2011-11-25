@@ -84,9 +84,9 @@ RbPtr<Variable> SyntaxConstant::evaluateContent(RbPtr<Environment> env) {
 
     // We return a clone in case this function is called repeatedly.
     if (value == NULL)
-        return RbPtr<Variable>( new Variable(RbPtr<DAGNode>( new ConstantNode( RbPtr<RbObject>( NULL ) ) ) ) );
+        return RbPtr<Variable>( new Variable(RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( NULL ) ) ) ) );
     else
-        return RbPtr<Variable>( new Variable(RbPtr<DAGNode>( new ConstantNode(RbPtr<RbObject>( value ) ) ) ) );
+        return RbPtr<Variable>( new Variable(RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( value ) ) ) ) );
 }
 
 

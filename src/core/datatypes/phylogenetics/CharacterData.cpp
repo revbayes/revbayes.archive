@@ -102,7 +102,7 @@ void CharacterData::addTaxonData(RbPtr<TaxonData> obs, bool forceAdd) {
     sequenceNames.push_back(obs->getTaxonName());
     
     // add the sequence also as a member so that we can access it by name
-    RbPtr<Variable> var( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbObject>( obs ) ) ) ) );
+    RbPtr<Variable> var( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( obs ) ) ) ) );
     members->addVariable(obs->getTaxonName(), var);
 }
 
@@ -171,16 +171,16 @@ void CharacterData::excludeTaxon(std::string& s) {
 
 
 /** Map calls to member methods */
-RbPtr<RbObject> CharacterData::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbLanguageObject> CharacterData::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
 
     if (name == "names") 
         {
-        return RbPtr<RbObject>( new VectorString(sequenceNames) );
+        return RbPtr<RbLanguageObject>( new VectorString(sequenceNames) );
         }
     else if (name == "ntaxa") 
         {
         int n = (int)getNumberOfTaxa();
-        return RbPtr<RbObject>( new Natural(n) );
+        return RbPtr<RbLanguageObject>( new Natural(n) );
         }
     else if (name == "nchar")
         {
@@ -196,32 +196,32 @@ RbPtr<RbObject> CharacterData::executeOperation(const std::string& name, const R
                     nc.push_back( (int)getTaxonData(i)->getNumberOfCharacters() );
                 }
             }
-        return RbPtr<RbObject>( new VectorNatural(nc) );
+        return RbPtr<RbLanguageObject>( new VectorNatural(nc) );
         }
     else if (name == "chartype")
         {
         std::string ct = getDataType();
-        return RbPtr<RbObject>( new RbString(ct) );
+        return RbPtr<RbLanguageObject>( new RbString(ct) );
         }
     else if (name == "nexcludedtaxa")
         {
         int n = (int)deletedTaxa.size();
-        return RbPtr<RbObject>( new Natural(n) );
+        return RbPtr<RbLanguageObject>( new Natural(n) );
         }
     else if (name == "nexcludedchars")
         {
         int n = (int)deletedCharacters.size();
-        return RbPtr<RbObject>( new Natural(n) );
+        return RbPtr<RbLanguageObject>( new Natural(n) );
         }
     else if (name == "nincludedtaxa")
         {
         int n = (int)(getNumberOfTaxa() - deletedTaxa.size());
-        return RbPtr<RbObject>( new Natural(n) );
+        return RbPtr<RbLanguageObject>( new Natural(n) );
         }
     else if (name == "nincludedchars")
         {
         int n = (int)(getNumberOfCharacters() - deletedCharacters.size());
-        return RbPtr<RbObject>( new Natural(n) );
+        return RbPtr<RbLanguageObject>( new Natural(n) );
         }
     else if (name == "excludedtaxa")
         {
@@ -231,14 +231,14 @@ RbPtr<RbObject> CharacterData::executeOperation(const std::string& name, const R
             std::string tn = getTaxonNameWithIndex(*it);
             et.push_back( tn );
             }
-        return RbPtr<RbObject>( new VectorString(et) );
+        return RbPtr<RbLanguageObject>( new VectorString(et) );
         }
     else if (name == "excludedchars")
         {
         std::vector<int> ec;
         for (std::set<size_t>::iterator it = deletedCharacters.begin(); it != deletedCharacters.end(); it++)
             ec.push_back( (int)(*it) );
-        return RbPtr<RbObject>( new VectorNatural(ec) );
+        return RbPtr<RbLanguageObject>( new VectorNatural(ec) );
         }
     else if (name == "includedtaxa")
         {
@@ -248,7 +248,7 @@ RbPtr<RbObject> CharacterData::executeOperation(const std::string& name, const R
             if ( isTaxonExcluded(i) == false )
                 it.push_back( getTaxonNameWithIndex(i) );
             }
-        return RbPtr<RbObject>( new VectorString(it) );
+        return RbPtr<RbLanguageObject>( new VectorString(it) );
         }
     else if (name == "includedchars")
         {
@@ -258,21 +258,21 @@ RbPtr<RbObject> CharacterData::executeOperation(const std::string& name, const R
             if ( isCharacterExcluded(i) == false )
                 ic.push_back( (int)(i+1) );
             }
-        return RbPtr<RbObject>( new VectorNatural(ic) );
+        return RbPtr<RbLanguageObject>( new VectorNatural(ic) );
         }
     else if (name == "nconstantpatterns")
         {
         int n = (int)numConstantPatterns();
-        return RbPtr<RbObject>( new Natural(n) );
+        return RbPtr<RbLanguageObject>( new Natural(n) );
         }
     else if (name == "ncharswithambiguity")
         {
         int n = (int)numMissAmbig();
-        return RbPtr<RbObject>( new Natural(n) );
+        return RbPtr<RbLanguageObject>( new Natural(n) );
         }
     else if (name == "excludechar")
         {
-        RbPtr<const RbObject> argument = (*args)[1]->getValue();
+        RbPtr<const RbLanguageObject> argument = (*args)[1]->getValue();
         if ( argument->isTypeSpec( TypeSpec(Natural_name) ) ) 
             {
             int n = static_cast<const Natural*>( (const RbObject*)argument )->getValue();
@@ -315,10 +315,10 @@ RbPtr<RbObject> CharacterData::executeOperation(const std::string& name, const R
     else if (name == "ishomologous")
         {
         bool ih = getIsHomologyEstablished();
-        return RbPtr<RbObject>( new RbBoolean(ih) );
+        return RbPtr<RbLanguageObject>( new RbBoolean(ih) );
         }
 
-    return ConstantMemberObject::executeOperation( name, args );
+    return ConstantMemberObject::executeOperationSimple( name, args );
 }
 
 
@@ -679,7 +679,7 @@ void CharacterData::setElement( const size_t index, RbPtr<RbLanguageObject> var 
         elements.insert( elements.begin() + index, var );
         
         // add the sequence also as a member so that we can access it by name
-        RbPtr<Variable> variable( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbObject>(var) ) ) ) );
+        RbPtr<Variable> variable( new Variable( RbPtr<DAGNode>( new ConstantNode(var ) ) ) );
         members->addVariable(seq->getTaxonName(), variable );
     }
 }

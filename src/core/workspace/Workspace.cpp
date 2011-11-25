@@ -190,7 +190,7 @@ const VectorString& Workspace::getClass() const {
 
 
 /** Execute function to get its value (workspaces only evaluate functions once) */
-RbPtr<RbObject> Workspace::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<DAGNode> Workspace::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
     /* Using this calling convention indicates that we are only interested in
        evaluating the function once */

@@ -37,10 +37,12 @@ class Func_unclamp :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 
         // Regular functions
-        RbPtr<RbObject>             execute(void);                                      //!< Execute operation
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
-    
+
+    protected:
+        RbPtr<RbLanguageObject>     executeFunction(void);                              //!< Execute operation
+
     private:
         static const TypeSpec       typeSpec;
         static const TypeSpec       returnTypeSpec;

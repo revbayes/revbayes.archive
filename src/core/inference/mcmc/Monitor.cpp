@@ -73,7 +73,7 @@ RbPtr<const MemberRules> Monitor::getMemberRules( void ) const {
     {
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "filename"  , TypeSpec(RbString_name)         ) ) );
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "printgen"  , TypeSpec(Integer_name)          ) ) );
-        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "separator" , TypeSpec(RbString_name), RbPtr<RbObject>(new RbString("\t") ) ) ) );
+        memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "separator" , TypeSpec(RbString_name), RbPtr<RbLanguageObject>(new RbString("\t") ) ) ) );
         memberRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "variable"  , TypeSpec(RbLanguageObject_name) ) ) );
         memberRules->push_back( RbPtr<ArgumentRule>( new Ellipsis (               TypeSpec(RbLanguageObject_name) ) ) );
         rulesSet = true;

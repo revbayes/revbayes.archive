@@ -48,7 +48,7 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_readCharacterData::execute( void ) {
+RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( void ) {
 
     // get the information from the arguments for reading the file
     RbPtr<RbString> fn( static_cast<RbString*>( (RbObject*)(*args)[0]->getValue() ) );
@@ -199,20 +199,20 @@ RbPtr<RbObject> Func_readCharacterData::execute( void ) {
         for (std::vector<RbPtr<CharacterData> >::iterator it = m.begin(); it != m.end(); it++)
             {
             std::string eName = "Data from file \"" + StringUtilities::getLastPathComponent( (*it)->getFileName() ) + "\"";
-            retList->setElement( index, RbPtr<RbObject>( new Variable(RbPtr<DAGNode>( new ConstantNode(RbPtr<RbObject>( (*it) ) ) ) ) ) );
+            retList->setElement( index, RbPtr<RbObject>( new Variable(RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( (*it) ) ) ) ) ) );
             index++;
             }
-        return RbPtr<RbObject>( retList );
+        return RbPtr<RbLanguageObject>( retList );
             throw RbException("Wanted to create a List of Alignment but List does not exist anymore. See Func_readAlignment");
         }
     else if ( m.size() == 1 ) 
         {
-        return RbPtr<RbObject>( m[0] );
+        return RbPtr<RbLanguageObject>( m[0] );
         }
     else
         {
         // Return null object
-            return RbPtr<RbObject>::getNullPtr();
+            return RbPtr<RbLanguageObject>::getNullPtr();
         }
 }
 

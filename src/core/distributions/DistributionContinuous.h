@@ -46,22 +46,22 @@ class DistributionContinuous: public Distribution {
 
         // Member object functions you should not have to override
         RbPtr<const MethodTable>                getMethods(void) const;                                                     //!< Get member methods
-        RbPtr<RbObject>                         executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Direct call of member method
 
         // Interval distribution functions you probably want to override
         virtual RbPtr<const Real>               getMax(void) const;                                                         //!< Get max value of coverage
         virtual RbPtr<const Real>               getMin(void) const;                                                         //!< Get min value of coverage
 
         // Interval distribution functions you have to override
-        virtual double                          cdf( RbPtr<const RbObject> value) = 0;                                      //!< Cumulative probability
+        virtual double                          cdf( RbPtr<const RbLanguageObject> value) = 0;                              //!< Cumulative probability
         virtual const TypeSpec&                 getVariableType(void) const = 0;                                            //!< Get random variable type spec
-        virtual double                          lnPdf( RbPtr<const RbObject> value) const = 0;                              //!< Ln probability density
-        virtual double                          pdf( RbPtr<const RbObject> value) const = 0;                                //!< Probability density
+        virtual double                          lnPdf( RbPtr<const RbLanguageObject> value) const = 0;                      //!< Ln probability density
+        virtual double                          pdf( RbPtr<const RbLanguageObject> value) const = 0;                        //!< Probability density
         virtual RbPtr<Real>                     quantile(const double p) = 0;                                               //!< Quantile
-        virtual RbPtr<RbObject>                 rv(void) = 0;                                                               //!< Generate a random draw
+        virtual RbPtr<RbLanguageObject>         rv(void) = 0;                                                               //!< Generate a random draw
 
     protected:
                                         DistributionContinuous( RbPtr<const MemberRules> memberRules);                      //!< Constructor
+        RbPtr<RbLanguageObject>                 executeOperationSimple(const std::string& name, const RbPtr<Environment>& args);  //!< Direct call of member method
 
 };
 

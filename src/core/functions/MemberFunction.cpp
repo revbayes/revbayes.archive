@@ -64,7 +64,7 @@ MemberFunction* MemberFunction::clone(void) const {
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RbPtr<RbObject> MemberFunction::execute( void ) {
+RbPtr<DAGNode> MemberFunction::execute( void ) {
 
     return object->executeOperation( funcName, args );
 

@@ -218,7 +218,7 @@ double Move_mmultinomial::perform( std::set<RbPtr<StochasticNode> >& affectedNod
     for ( size_t i = 0; i < valPtr->size(); i++ )
         newVal[i] *= sum;
 		
-    nodePtr->setValue( RbPtr<RbObject>( new VectorReal( newVal ) ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbLanguageObject>( new VectorReal( newVal ) ), affectedNodes );
 	
     return lnProposalRatio;
 }

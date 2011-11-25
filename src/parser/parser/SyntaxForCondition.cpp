@@ -113,7 +113,7 @@ bool SyntaxForCondition::getNextLoopState(RbPtr<Environment> env) {
         return false;
     }
 
-    (*env)[ *varName ]->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode( vector->getElement( nextElement ) ) ) );
+    (*env)[ *varName ]->getVariable()->setDagNode( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)vector->getElement( nextElement ) ) ) ) ) );
     nextElement++;
 
     return true;

@@ -40,7 +40,7 @@ Func_memoryAllocations* Func_memoryAllocations::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_memoryAllocations::execute( void ) {
+RbPtr<RbLanguageObject> Func_memoryAllocations::executeFunction( void ) {
     
     size_t nObjects = RbMemoryManager::rbMemoryManager().numberOfRegisteredObjects();
     size_t nReferences = RbMemoryManager::rbMemoryManager().numberOfReferences();
@@ -53,7 +53,7 @@ RbPtr<RbObject> Func_memoryAllocations::execute( void ) {
     
     RBOUT(s);
     
-    return RbPtr<RbObject>::getNullPtr();
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 

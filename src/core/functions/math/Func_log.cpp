@@ -44,12 +44,12 @@ Func_log* Func_log::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_log::execute( void ) {
+RbPtr<RbLanguageObject> Func_log::executeFunction( void ) {
     
     const double a = static_cast<const RealPos*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
     const double b = static_cast<const RealPos*>( (const RbObject*)(*args)[1]->getValue() )->getValue();
     
-    return RbPtr<RbObject>( new Real( log10(a)/log10(b) ) );
+    return RbPtr<RbLanguageObject>( new Real( log10(a)/log10(b) ) );
 }
 
 
@@ -62,7 +62,7 @@ RbPtr<const ArgumentRules> Func_log::getArgumentRules( void ) const {
     if (!rulesSet) 
     {
         argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "x", RealPos_name ) ) );
-        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "base", RealPos_name, RbPtr<RbObject>( new RealPos(10.0) ) ) ) );
+        argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "base", RealPos_name, RbPtr<RbLanguageObject>( new RealPos(10.0) ) ) ) );
         rulesSet = true;
     }
     

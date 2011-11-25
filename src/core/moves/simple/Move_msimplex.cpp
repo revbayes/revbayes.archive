@@ -206,7 +206,7 @@ double Move_msimplex::perform( std::set<RbPtr<StochasticNode> >& affectedNodes )
 		lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
 		}
 		
-    nodePtr->setValue( RbPtr<RbObject>( new Simplex( newVal ) ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbLanguageObject>( new Simplex( newVal ) ), affectedNodes );
 	
     return lnProposalRatio;
 }

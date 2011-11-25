@@ -34,10 +34,12 @@ class Func__uminus :  public RbFunction {
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
 
         // Regular functions
-    	RbPtr<RbObject>             execute(void);                                              //!< Execute function
         RbPtr<const ArgumentRules>  getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
-    
+
+    protected:
+        RbPtr<RbLanguageObject>     executeFunction(void);                                      //!< Execute function
+
     private:
         static const TypeSpec       typeSpec;
 };
@@ -66,12 +68,12 @@ Func__uminus<valType, retType>* Func__uminus<valType, retType>::clone( void ) co
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
 template <typename valType, typename retType>
-RbPtr<RbObject> Func__uminus<valType, retType>::execute( void ) {
+RbPtr<RbLanguageObject> Func__uminus<valType, retType>::executeFunction( void ) {
 
     const RbPtr<valType> val( static_cast<valType*> ( (RbObject*)(*args)[0]->getValue() ) );
     retType         res = -( *val );
 
-    return RbPtr<RbObject>( res.clone() );
+    return RbPtr<RbLanguageObject>( res.clone() );
 }
 
 

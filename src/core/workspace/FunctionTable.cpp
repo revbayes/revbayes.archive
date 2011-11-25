@@ -116,10 +116,10 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 /** Execute function and get its variable value (evaluate once) */
-RbPtr<RbObject> FunctionTable::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<DAGNode> FunctionTable::executeFunction(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
 
-    RbPtr<RbFunction> theFunction = findFunction(name, args);
-    RbPtr<RbObject>   theValue    = theFunction->execute();
+    RbPtr<RbFunction>   theFunction = findFunction(name, args);
+    RbPtr<DAGNode>      theValue    = theFunction->execute();
 
     theFunction->clearArguments();
 

@@ -40,28 +40,29 @@ const std::string Distribution_name = "Distribution";
 class Distribution: public ConstantMemberObject {
 
     public:
-        virtual                    ~Distribution(void) {}                                                           //!< Destructor
+        virtual                    ~Distribution(void) {}                                                                       //!< Destructor
 
         // Basic utility functions
-        virtual Distribution*               clone(void) const = 0;                                                          //!< Clone object
-        virtual const VectorString&         getClass(void) const;                                                           //!< Get class vector   
+        virtual Distribution*               clone(void) const = 0;                                                              //!< Clone object
+        virtual const VectorString&         getClass(void) const;                                                               //!< Get class vector   
 
         // Member object function you have to override
-        virtual RbPtr<const MemberRules>    getMemberRules(void) const = 0;                                                 //!< Get member rules
+        virtual RbPtr<const MemberRules>    getMemberRules(void) const = 0;                                                     //!< Get member rules
 
         // Member object functions you may want to override
-        virtual RbPtr<const MethodTable>    getMethods(void) const;                                                         //!< Get member methods
-        virtual RbPtr<RbObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args);      //!< Map member methods to internal functions
+        virtual RbPtr<const MethodTable>    getMethods(void) const;                                                             //!< Get member methods
 
 
         // Distribution functions you have to override
-        virtual const TypeSpec&             getVariableType(void) const = 0;                                                //!< Get random variable type
-        virtual double                      lnPdf( RbPtr<const RbObject> value) const = 0;                          //!< Ln probability density
-        virtual double                      pdf( RbPtr<const RbObject> value) const = 0;                            //!< Probability density function
-        virtual RbPtr<RbObject>             rv(void) = 0;                                                                   //!< Generate a random draw
+        virtual const TypeSpec&             getVariableType(void) const = 0;                                                    //!< Get random variable type
+        virtual double                      lnPdf( RbPtr<const RbLanguageObject> value) const = 0;                              //!< Ln probability density
+        virtual double                      pdf( RbPtr<const RbLanguageObject> value) const = 0;                                //!< Probability density function
+        virtual RbPtr<RbLanguageObject>     rv(void) = 0;                                                                       //!< Generate a random draw
 
     protected:
-                                            Distribution( RbPtr<const MemberRules> memberRules);                            //!< Simple constructor
+                                            Distribution( RbPtr<const MemberRules> memberRules);                                //!< Simple constructor
+
+        virtual RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const RbPtr<Environment>& args);    //!< Map member methods to internal functions
 
 };
 

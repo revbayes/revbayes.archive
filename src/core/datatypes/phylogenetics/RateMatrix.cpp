@@ -267,27 +267,23 @@ RateMatrix* RateMatrix::clone(void) const {
 
 
 /** Map calls to member methods */
-RbPtr<RbObject> RateMatrix::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbLanguageObject> RateMatrix::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
 
-    if (name == "nstates") 
-        {
-        return RbPtr<RbObject>( new Natural((int)numStates) );
-        }
-    else if (name == "stationaryfreqs")
-        {
-        RbPtr<RbObject> s( theStationaryFreqs->clone() );
+    if (name == "nstates") {
+        return RbPtr<RbLanguageObject>( new Natural((int)numStates) );
+    }
+    else if (name == "stationaryfreqs") {
+        RbPtr<RbLanguageObject> s( theStationaryFreqs->clone() );
         return s;
-        }
-    else if (name == "averate")
-        {
-        return RbPtr<RbObject>( new RealPos(averageRate()) );
-        }        
-    else if (name == "reversible")
-        {
-        return RbPtr<RbObject>( new RbBoolean(isReversible) );
-        }        
+    }
+    else if (name == "averate") {
+        return RbPtr<RbLanguageObject>( new RealPos(averageRate()) );
+    }        
+    else if (name == "reversible") {
+        return RbPtr<RbLanguageObject>( new RbBoolean(isReversible) );
+    }        
 
-    return MemberObject::executeOperation( name, args );
+    return MemberObject::executeOperationSimple( name, args );
 }
 
 

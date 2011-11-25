@@ -49,12 +49,14 @@ public:
     void                            setMemberVariable(const std::string& name, RbPtr<Variable> var);        //!< Catch setting of the topology
 
     // Member method inits
-    RbPtr<RbObject>                 executeOperation(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
     RbPtr<const MethodTable>        getMethods(void) const;                                                 //!< Get methods
 
     // Tree plate functions
     RbPtr<const Topology>           getTopology(void) const;                                                //!< Get the topology for this tree
     
+protected:
+    RbPtr<RbLanguageObject>         executeOperationSimple(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
+
 private:
     static const TypeSpec           typeSpec;
     

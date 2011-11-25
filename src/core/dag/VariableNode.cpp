@@ -36,7 +36,7 @@ VariableNode::VariableNode( const std::string& valType ) : DAGNode( valType ), t
 /** Copy Constructor */
 VariableNode::VariableNode(const VariableNode &v) : DAGNode(v) {
     touched = false;
-    storedValue = RbPtr<RbObject>::getNullPtr();
+    storedValue = RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 

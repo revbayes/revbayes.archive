@@ -68,6 +68,34 @@ void RbFunction::clearArguments(void) {
 }
 
 
+/* Execute the Function. This is the default implementation which calls executeFunction and wraps the return value 
+ * (which is of type RbLanguageObject) into a ConstantNode.
+ * If you do not wish to wrap the return value into a constant node, then you need to overwrite this function.
+ */
+RbPtr<DAGNode> RbFunction::execute(void) {
+    
+    // get the value by executing the internal function
+    RbPtr<RbLanguageObject> value = executeFunction();
+    
+    // wrap the value into a constant node
+    RbPtr<DAGNode> theNode( new ConstantNode(value) );
+    
+    return theNode;
+}
+
+
+/* Execute the Function. This is the default implementation which is called by calls execute. This function returns a basic RbLanguageObject
+ * that is wraped into a ConstantNode by the calling execute function.
+ * If you write your own execute function, you do not need to overwrite this function, otherwise you should.
+ */
+RbPtr<RbLanguageObject> RbFunction::executeFunction(void) {
+    
+    // TODO: We might want to throw an error!
+    
+    return RbPtr<RbLanguageObject>::getNullPtr();
+}
+
+
 RbPtr<const Environment> RbFunction::getArguments(void) const {
     return RbPtr<const Environment>( args );
 }

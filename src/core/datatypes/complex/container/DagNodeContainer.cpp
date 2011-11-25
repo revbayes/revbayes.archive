@@ -17,6 +17,7 @@
  */
 
 #include "DagNodeContainer.h"
+#include "Natural.h"
 #include "Move.h"
 #include "Monitor.h"
 #include "RbException.h"
@@ -79,6 +80,23 @@ RbObject* DagNodeContainer::convertTo(TypeSpec const &type) const {
     
     
     return Container::convertTo(type);
+}
+
+
+/** Execute a member method. We overwrite the executeOperation function here because we return DAG nodes directly. */
+RbPtr<DAGNode> DagNodeContainer::executeOperation(std::string const &name, const RbPtr<Environment> &args) {
+    if ( name == "[]") {
+        // get the member with give index
+        RbPtr<const Natural> index( static_cast<const Natural*>( (const RbObject*)(*args)[0]->getValue()) );
+        
+        if (size() < index->getValue()) {
+            throw RbException("Index out of bounds in []");
+        }
+        
+        return elements[index->getValue() - 1]->getDagNode();
+    }
+    
+    return ConstantMemberObject::executeOperation( name, args );
 }
 
 /** Get class DagNodeContainer describing type of object */

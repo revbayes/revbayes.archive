@@ -55,7 +55,7 @@ Func_dppSeat* Func_dppSeat::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_dppSeat::execute( void ) {
+RbPtr<RbLanguageObject> Func_dppSeat::executeFunction( void ) {
     
 	double concentration = static_cast<const RealPos*>( (RbObject*)(*args)[0]->getValue() )->getValue();
 	unsigned int num = static_cast<const Natural*>( (RbObject*)(*args)[1]->getValue() )->getValue();
@@ -88,7 +88,7 @@ RbPtr<RbObject> Func_dppSeat::execute( void ) {
 			}
 		}
 	}
-	return RbPtr<RbObject>( new VectorNatural( clusters ) );
+	return RbPtr<RbLanguageObject>( new VectorNatural( clusters ) );
 }
 
 

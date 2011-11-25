@@ -47,8 +47,8 @@ public:
     VariableSlot*                   clone(void) const;                                                      //!< Clone slot
     const VectorString&             getClass() const;                                                       //!< Get class vector
     const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
-    RbPtr<const RbObject>           getValue(void) const;                                                   //!< Get the value of the variable
-    RbPtr<RbObject>                 getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
+    RbPtr<const RbLanguageObject>   getValue(void) const;                                                   //!< Get the value of the variable
+    RbPtr<RbLanguageObject>         getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
     RbPtr<const DAGNode>            getDagNode(void) const;                                                 //!< Get the DAG node
     RbPtr<DAGNode>                  getDagNode(void);                                                       //!< Get the DAG node (non-const to return non-const node)
     const std::string&              getLabel(void) const { return label; }                                  //!< Get the label of the slot

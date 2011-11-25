@@ -52,7 +52,7 @@ DistributionFunction::DistributionFunction( RbPtr<Distribution> dist, FuncType f
     for ( ArgumentRules::const_iterator i = memberRules->begin(); i != memberRules->end(); i++ ) {
         // check if this rule has a default value
         if ((*i)->hasDefault()) {
-            argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec(), RbPtr<RbObject>( (*i)->getDefaultVariable()->getValue()->clone() ) ) ) );
+            argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec(), RbPtr<RbLanguageObject>( (*i)->getDefaultVariable()->getValue()->clone() ) ) ) );
         } else {
             argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( (*i)->getArgumentLabel(), (*i)->getArgumentTypeSpec() ) ) );
         }
@@ -62,7 +62,7 @@ DistributionFunction::DistributionFunction( RbPtr<Distribution> dist, FuncType f
     if (functionType == DENSITY) {
 
         argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "x"  , distribution->getVariableType() ) ) );
-        argumentRules->push_back(                     RbPtr<ArgumentRule>( new ValueRule( "log", RbPtr<RbObject>( new RbBoolean(false) ) ) ) );
+        argumentRules->push_back(                     RbPtr<ArgumentRule>( new ValueRule( "log", RbPtr<RbLanguageObject>( new RbBoolean(false) ) ) ) );
     }
     else if (functionType == RVALUE) {
 
@@ -95,7 +95,7 @@ DistributionFunction::DistributionFunction( const DistributionFunction& x ) : Rb
     if (functionType == DENSITY) {
         
         argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "x"  , distribution->getVariableType() ) ) );
-        argumentRules->push_back(                     RbPtr<ArgumentRule>( new ValueRule( "log", RbPtr<RbObject>( new RbBoolean(false) ) ) ) );
+        argumentRules->push_back(                     RbPtr<ArgumentRule>( new ValueRule( "log", RbPtr<RbLanguageObject>( new RbBoolean(false) ) ) ) );
     }
     else if (functionType == RVALUE) {
         
@@ -142,7 +142,7 @@ DistributionFunction& DistributionFunction::operator=( const DistributionFunctio
         if (functionType == DENSITY) {
             
             argumentRules->insert( argumentRules->begin(), RbPtr<ArgumentRule>( new ValueRule( "x"  , distribution->getVariableType() ) ) );
-            argumentRules->push_back(                     RbPtr<ArgumentRule>( new ValueRule( "log", RbPtr<RbObject>( new RbBoolean(false) ) ) ) );
+            argumentRules->push_back(                     RbPtr<ArgumentRule>( new ValueRule( "log", RbPtr<RbLanguageObject>( new RbBoolean(false) ) ) ) );
         }
         else if (functionType == RVALUE) {
             
@@ -170,29 +170,29 @@ DistributionFunction* DistributionFunction::clone( void ) const {
 
 
 /** Execute operation: switch based on type */
-RbPtr<RbObject> DistributionFunction::execute( void ) {
+RbPtr<RbLanguageObject> DistributionFunction::executeFunction( void ) {
 
     if ( functionType == DENSITY ) {
 
         if ( static_cast<const RbBoolean*>( (RbObject*)(*args)["log"]->getValue() )->getValue() == false )
-            return RbPtr<RbObject>( new RealPos( distribution->pdf  ( (const RbObject*)(*args)[0]->getValue() ) ) );
+            return RbPtr<RbLanguageObject>( new RealPos( distribution->pdf  ( (const RbLanguageObject*)(*args)[0]->getValue() ) ) );
         else
-            return RbPtr<RbObject>( new Real   ( distribution->lnPdf( (const RbObject*)(*args)[0]->getValue() ) ) );
+            return RbPtr<RbLanguageObject>( new Real   ( distribution->lnPdf( (const RbLanguageObject*)(*args)[0]->getValue() ) ) );
     }
     else if (functionType == RVALUE) {
 
-        RbPtr<RbObject> draw = distribution->rv();
+        RbPtr<RbLanguageObject> draw = distribution->rv();
         
         return draw;
     }
     else if (functionType == PROB) {
 
-        return RbPtr<RbObject>( new RealPos( static_cast<DistributionContinuous*>( (Distribution*)distribution )->cdf( (const RbObject*)(*args)[0]->getValue() ) ) );
+        return RbPtr<RbLanguageObject>( new RealPos( static_cast<DistributionContinuous*>( (Distribution*)distribution )->cdf( (const RbLanguageObject*)(*args)[0]->getValue() ) ) );
     }
     else if (functionType == QUANTILE) {
 
         double    prob  = static_cast<const RealPos*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
-        RbPtr<RbObject> quant( static_cast<DistributionContinuous*>( (Distribution*)distribution )->quantile( prob ) );
+        RbPtr<RbLanguageObject> quant( static_cast<DistributionContinuous*>( (Distribution*)distribution )->quantile( prob ) );
         
         return quant;
     }

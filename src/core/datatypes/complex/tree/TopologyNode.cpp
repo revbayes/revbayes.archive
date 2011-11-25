@@ -147,24 +147,24 @@ bool TopologyNode::equals(RbPtr<const TopologyNode> node) const {
 }
 
 
-RbPtr<RbObject> TopologyNode::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbLanguageObject> TopologyNode::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
     
     if (name == "isTip") {
-        return RbPtr<RbObject>( new RbBoolean(isTip()) );
+        return RbPtr<RbLanguageObject>( new RbBoolean(isTip()) );
     }
     else if (name == "isRoot") {
-        return RbPtr<RbObject>( new RbBoolean(isRoot()) );
+        return RbPtr<RbLanguageObject>( new RbBoolean(isRoot()) );
     }
     else if (name == "isInterior") {
-        return RbPtr<RbObject>( new RbBoolean(!isTip()) );
+        return RbPtr<RbLanguageObject>( new RbBoolean(!isTip()) );
     }
     else if (name == "ancestor") {
-        return RbPtr<RbObject>( parent );
+        return RbPtr<RbLanguageObject>( parent );
     }
     else
         throw RbException("No member method called '" + name + "'");
     
-    return RbPtr<RbObject>::getNullPtr();
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 

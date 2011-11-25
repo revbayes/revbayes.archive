@@ -41,7 +41,7 @@ Func__range* Func__range::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func__range::execute( void ) {
+RbPtr<RbLanguageObject> Func__range::executeFunction( void ) {
 
     int first = static_cast<const Integer*>( (RbObject*)(*args)[0]->getValue() )->getValue();
     int last  = static_cast<const Integer*>( (RbObject*)(*args)[1]->getValue() )->getValue();
@@ -51,9 +51,9 @@ RbPtr<RbObject> Func__range::execute( void ) {
         temp.push_back(i);
     
     if (first >= 0 && last >= 0) 
-        return RbPtr<RbObject>( new VectorNatural(temp) );
+        return RbPtr<RbLanguageObject>( new VectorNatural(temp) );
     else
-        return RbPtr<RbObject>( new VectorInteger(temp) );
+        return RbPtr<RbLanguageObject>( new VectorInteger(temp) );
 }
 
 

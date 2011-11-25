@@ -141,7 +141,7 @@ const TypeSpec& TreePlate::getTypeSpec(void) const {
 
 
 /* Map calls to member methods */
-RbPtr<RbObject> TreePlate::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbLanguageObject> TreePlate::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
     
     // special handling for adding a variable
     if (name == "addVariable") {
@@ -152,7 +152,7 @@ RbPtr<RbObject> TreePlate::executeOperation(const std::string& name, const RbPtr
         if (!members->existsVariable(varName)) {
             // we don't have a container for this variable name yet
             // so we just create one
-            RbPtr<Variable> var( new Variable( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbObject>( new DagNodeContainer(orderingTopology->getNumberOfNodes() ) ) ) ) ) );
+            RbPtr<Variable> var( new Variable( RbPtr<DAGNode>( new ConstantNode( RbPtr<RbLanguageObject>( new DagNodeContainer(orderingTopology->getNumberOfNodes() ) ) ) ) ) );
             
             members->addVariable(varName, var );
             
@@ -176,7 +176,7 @@ RbPtr<RbObject> TreePlate::executeOperation(const std::string& name, const RbPtr
         // set the variable
         vars->setElement(nodeIndex - 1, RbPtr<RbObject>( var ) );
         
-        return RbPtr<RbObject>::getNullPtr();
+        return RbPtr<RbLanguageObject>::getNullPtr();
     } else if (name == "getVariable") {
         // get the name of the variable
         const std::string& varName = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
@@ -205,24 +205,24 @@ RbPtr<RbObject> TreePlate::executeOperation(const std::string& name, const RbPtr
         }
     }
     else if (name == "nnodes") {
-        return RbPtr<RbObject>( new Natural( orderingTopology->getNumberOfNodes() ) );
+        return RbPtr<RbLanguageObject>( new Natural( orderingTopology->getNumberOfNodes() ) );
     }
     else if (name == "node") {
         // we assume that the node indices in the RevLanguage are from 1:nnodes()
         int index = dynamic_cast<const Natural *>( (const RbObject*)args->getValue("index") )->getValue() - 1;
         
-        return RbPtr<RbObject>( orderingTopology->getNodes()[index] );
+        return RbPtr<RbLanguageObject>( orderingTopology->getNodes()[index] );
     }
     else if (name == "index") {
         RbPtr<const TopologyNode> theNode( dynamic_cast<const TopologyNode*>( (const RbObject*)(*args)[0]->getValue() ) );
-        return RbPtr<RbObject>( new Natural(getNodeIndex(theNode)) );
+        return RbPtr<RbLanguageObject>( new Natural(getNodeIndex(theNode)) );
     }
     else if (name == "tipIndex") {
         RbPtr<const TopologyNode> theNode( dynamic_cast<const TopologyNode*>( (const RbObject*)(*args)[0]->getValue() ) );
-        return RbPtr<RbObject>( new Natural(getTipIndex(theNode)) );
+        return RbPtr<RbLanguageObject>( new Natural(getTipIndex(theNode)) );
     }
     else {
-        return MemberObject::executeOperation( name, args );
+        return MemberObject::executeOperationSimple( name, args );
     }
 }
 
@@ -365,8 +365,8 @@ std::string TreePlate::richInfo(void) const {
 void TreePlate::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
     
     if ( name == "topology" ) {
-        const RbPtr<RbObject>& obj = var->getValue();
-        RbObject* objPtr = obj;
+        const RbPtr<RbLanguageObject>& obj = var->getValue();
+        RbLanguageObject* objPtr = obj;
         orderingTopology = RbPtr<Topology>( static_cast<Topology*>( objPtr ) );
     }
     

@@ -54,7 +54,6 @@ public:
     virtual void                        unique(void) = 0;                                                   //!< removes consecutive duplicates
     
     // Member method inits
-    virtual RbPtr<RbObject>             executeOperation(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
     virtual RbPtr<const MethodTable>    getMethods(void) const;                                             //!< Get methods
 
     // Container functions you do not have to override
@@ -69,10 +68,12 @@ protected:
     Container(const TypeSpec &elemType, RbPtr<const MemberRules> memberRules);                              //!< Set type spec of container from type of elements
     Container(const Container &v);                                                                          //!< Copy Constructor
     
-    Container&                      operator=(const Container& x);                                          //!< Assignment operator
-    
+    Container&                          operator=(const Container& x);                                          //!< Assignment operator
+
+    virtual RbPtr<RbLanguageObject>     executeOperationSimple(const std::string& name, const RbPtr<Environment>& args); //!< Execute method
+
     // Member variables
-    const TypeSpec                  elementType;                                                            //!< Type of elements
+    const TypeSpec                      elementType;                                                            //!< Type of elements
 };
 
 #endif

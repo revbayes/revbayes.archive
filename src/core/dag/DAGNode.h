@@ -57,9 +57,9 @@ class DAGNode : public RbInternal {
         // Basic utility functions you have to override
         virtual DAGNode*                                    clone(void) const = 0;                                                  //!< Clone this node
         virtual const VectorString&                         getClass(void) const;                                                   //!< Get DAG node class vector
-        virtual RbPtr<const RbObject>                       getStoredValue(void) const = 0;                                         //!< Get stored value
-        virtual RbPtr<const RbObject>                       getValue(void) const = 0;                                               //!< Get value
-        virtual RbPtr<RbObject>                             getValue(void) = 0;                                                     //!< Get value (non-const to return non-const value)
+        virtual RbPtr<const RbLanguageObject>               getStoredValue(void) const = 0;                                         //!< Get stored value
+        virtual RbPtr<const RbLanguageObject>               getValue(void) const = 0;                                               //!< Get value
+        virtual RbPtr<RbLanguageObject>                     getValue(void) = 0;                                                     //!< Get value (non-const to return non-const value)
         virtual void                                        printStruct(std::ostream& o) const = 0;                                 //!< Print struct for user
         virtual void                                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
         virtual std::string                                 richInfo(void) const = 0;                                               //!< Complete info about object
@@ -90,7 +90,7 @@ class DAGNode : public RbInternal {
 
 
     protected:
-                                                            DAGNode(RbPtr<RbObject> value);                                         //!< Constructor of filled node
+                                                            DAGNode(RbPtr<RbLanguageObject> value);                                 //!< Constructor of filled node
                                                             DAGNode(const std::string& valType);                                    //!< Constructor of empty node
                                                             DAGNode(const DAGNode& x);                                              //!< Copy constructor
 
@@ -102,7 +102,7 @@ class DAGNode : public RbInternal {
 
         // Member value variables
         const TypeSpec                                      valueTypeSpec;                                                          //!< the TypeSpec of the value
-        RbPtr<RbObject>                                     value;                                                                  //!< Value
+        RbPtr<RbLanguageObject>                             value;                                                                  //!< Value
         std::string                                         name;                                                                   //!< The name/identifier of the DAG node
 };
 

@@ -43,7 +43,7 @@ Func_quit* Func_quit::clone( void ) const {
 
 
 /** Execute operation */
-RbPtr<RbObject> Func_quit::execute( void ) {
+RbPtr<RbLanguageObject> Func_quit::executeFunction( void ) {
 
     /* Ask if user really wants to quit */
     //bool wantToQuit = UserInterface::userInterface().ask("Do you really want to quit"); // TEMP: Getting tired of typing 'y' (JPH)
@@ -52,7 +52,7 @@ RbPtr<RbObject> Func_quit::execute( void ) {
     if ( wantToQuit )
         throw RbException( RbException::QUIT );
 
-    return RbPtr<RbObject>::getNullPtr();
+    return RbPtr<RbLanguageObject>::getNullPtr();
 }
 
 

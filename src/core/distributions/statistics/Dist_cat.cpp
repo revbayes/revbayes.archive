@@ -115,11 +115,11 @@ const TypeSpec& Dist_cat::getVariableType( void ) const {
  * @param value Observed value
  * @return      Natural log of the probability density
  */
-double Dist_cat::lnPdf( RbPtr<const RbObject> value ) const {
+double Dist_cat::lnPdf( RbPtr<const RbLanguageObject> value ) const {
 
 	// Get the value and the parameters of the categorical distribution
     std::vector<double> m = static_cast<const Simplex*    >( (const RbObject*)getMemberValue("m") )->getValue();
-    int                 x = static_cast<const Categorical*>( (const RbObject*)value               )->getValue();
+    int                 x = static_cast<const Categorical*>( (const RbLanguageObject*)value               )->getValue();
 
     if ( x < 0 )
         return 0.0;
@@ -137,11 +137,11 @@ double Dist_cat::lnPdf( RbPtr<const RbObject> value ) const {
  * @param value Observed value
  * @return      Probability density
  */
-double Dist_cat::pdf( RbPtr<const RbObject> value ) const {
+double Dist_cat::pdf( RbPtr<const RbLanguageObject> value ) const {
 
 	// Get the value and the parameter of the categorical distribution
     std::vector<double> m = static_cast<const Simplex*    >( (const RbObject*)getMemberValue("m") )->getValue();
-    int                 x = static_cast<const Categorical*>( (const RbObject*)value               )->getValue();
+    int                 x = static_cast<const Categorical*>( (const RbLanguageObject*)value               )->getValue();
 
 	if ( x < 0 )
         return 1.0;
@@ -158,7 +158,7 @@ double Dist_cat::pdf( RbPtr<const RbObject> value ) const {
  *
  * @return      Random draw from categorical distribution
  */
-RbPtr<RbObject> Dist_cat::rv( void ) {
+RbPtr<RbLanguageObject> Dist_cat::rv( void ) {
 
 	// Get the parameter of the categorical distribution and the rng
     std::vector<double>    m   = static_cast<Simplex*>( (RbObject*)getMemberValue( "m" ) )->getValue();
@@ -181,6 +181,6 @@ RbPtr<RbObject> Dist_cat::rv( void ) {
     draw->setValue( int( i ) );
 
     // Return draw
-    return RbPtr<RbObject>( draw );
+    return RbPtr<RbLanguageObject>( draw );
 }
 

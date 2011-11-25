@@ -104,7 +104,7 @@ double Move_mscale::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
     RealPos newVal = curVal * std::exp( lambda * ( u - 0.5 ) );
 
     // Propose new value
-    nodePtr->setValue( RbPtr<RbObject>( newVal.clone() ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbLanguageObject>( newVal.clone() ), affectedNodes );
 
     // Return Hastings ratio
     return log( newVal / curVal );

@@ -64,7 +64,6 @@ public:
     RbPtr<const MemberRules>            getMemberRules(void) const;                                                 //!< Get member rules
 
     // Member method inits
-    RbPtr<RbObject>                     executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Execute method
     RbPtr<const MethodTable>            getMethods(void) const;                                                     //!< Get methods
         
     // TopologyNode functions
@@ -83,7 +82,10 @@ public:
     void                                setParent(RbPtr<TopologyNode> p);                                           //!< Sets the node's parent
     void                                removeAllChildren(void);                                                    //!< Removes all of the children of the node
     void                                removeChild(RbPtr<const TopologyNode> p);                                   //!< Removes a specific child
-        
+     
+protected:
+    RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const RbPtr<Environment>& args);  //!< Execute method
+    
 private:
     std::string                         buildNewickString(RbPtr<const TopologyNode> node) const;                    //!< compute the newick string for a tree rooting at this node
     void                                refreshNewickString(void);                                                  //!< recompute the newick string

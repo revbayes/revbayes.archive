@@ -44,11 +44,11 @@ Func_ln* Func_ln::clone( void ) const {
 
 
 /** Execute function */
-RbPtr<RbObject> Func_ln::execute( void ) {
+RbPtr<RbLanguageObject> Func_ln::executeFunction( void ) {
     
     const double x = static_cast<const Real*>( (RbObject*)(*args)[0]->getValue() )->getValue();
     
-    return RbPtr<RbObject>( new Real( log(x) ) );
+    return RbPtr<RbLanguageObject>( new Real( log(x) ) );
 }
 
 

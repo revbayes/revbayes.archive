@@ -33,10 +33,12 @@ public:
     const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
     
     // Func_clear functions
-    RbPtr<RbObject>             execute(void);                                      //!< Execute function
     RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
     const TypeSpec&             getReturnType(void) const;                          //!< Get type of return val
-    
+
+protected:
+    RbPtr<RbLanguageObject>     executeFunction(void);                              //!< Execute function
+
 private:
     static const TypeSpec       typeSpec;
     static const TypeSpec       returnTypeSpec;

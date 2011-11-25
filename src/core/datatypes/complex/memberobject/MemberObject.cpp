@@ -62,24 +62,39 @@ MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
 
 
 /** Execute member method: delegate to method table. */
-RbPtr<RbObject> MemberObject::executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<DAGNode> MemberObject::executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     // TODO: We shouldn't allow const casts!!!
     MethodTable* mt = const_cast<MethodTable*>((const MethodTable*)getMethods());
     return mt->executeFunction(name, args);
 }
 
 
+/* Execute method. This method just delegate the call to executeOperationSimple and wraps the return value into
+ * a constant node. If you don't want this, you have to overwrite this method.
+ */
+RbPtr<DAGNode> MemberObject::executeOperation(std::string const &name, const RbPtr<Environment> &args) {
+    
+    // get the return value
+    RbPtr<RbLanguageObject> value = executeOperationSimple(name, args);
+    
+    // wrap into constant node
+    RbPtr<DAGNode> theNode( new ConstantNode( value ) );
+    
+    return theNode;
+}
+
+
 /** Map member method call to internal function call. This is used as an alternative mechanism to providing a complete
  *  RbFunction object to execute a member method call. We throw an error here to capture cases where this mechanism
  *  is used without the appropriate mapping to internal function calls being present. */
-RbPtr<RbObject> MemberObject::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbLanguageObject> MemberObject::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
     
     if (name == "memberNames") {
         for (size_t i=0; i<members->size(); i++) {
             RBOUT(members->getName(i));
         }
         
-        return RbPtr<RbObject>::getNullPtr();
+        return RbPtr<RbLanguageObject>::getNullPtr();
     } 
     else if (name == "get") {
         // get the member with give name
@@ -91,7 +106,7 @@ RbPtr<RbObject> MemberObject::executeOperation(const std::string& name, const Rb
         }
         
         // there was no variable with the given name
-        return RbPtr<RbObject>::getNullPtr();
+        return RbPtr<RbLanguageObject>::getNullPtr();
         
     }
     else {
@@ -157,14 +172,14 @@ RbPtr<Environment> MemberObject::getMembers(void) {
 
 
 /** Get const value of a member variable */
-RbPtr<const RbObject> MemberObject::getMemberValue(const std::string& name) const {
+RbPtr<const RbLanguageObject> MemberObject::getMemberValue(const std::string& name) const {
 
     return members->getValue(name);
 }
 
 
 /** Get const value of a member variable */
-RbPtr<RbObject> MemberObject::getMemberValue(const std::string& name) {
+RbPtr<RbLanguageObject> MemberObject::getMemberValue(const std::string& name) {
     
     return members->getValue(name);
 }

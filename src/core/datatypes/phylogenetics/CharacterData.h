@@ -56,7 +56,6 @@ class CharacterData : public Matrix {
 
         // Member method inits
         RbPtr<const MethodTable>            getMethods(void) const;                                                     //!< Get methods
-        RbPtr<RbObject>                     executeOperation(const std::string& name, const RbPtr<Environment>& args);  //!< Execute method
     
         // Container functions
         void                                clear();
@@ -94,6 +93,9 @@ class CharacterData : public Matrix {
         void                                setFileName(const std::string fn) { fileName = fn; }                        //!< Set the file name
         void                                setIsHomologyEstablished(bool tf) { isHomologyEstablished = tf; }           //!< Set whether the homology of the characters has been established
         void                                showData(void);                                                             //!< Show the data in the character matrix
+
+    protected:
+        RbPtr<RbLanguageObject>             executeOperationSimple(const std::string& name, const RbPtr<Environment>& args);  //!< Execute method
 
     private:
         // Utility functions

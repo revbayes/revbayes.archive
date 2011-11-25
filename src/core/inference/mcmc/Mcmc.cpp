@@ -66,16 +66,16 @@ Mcmc* Mcmc::clone(void) const {
 
 
 /** Map calls to member methods */
-RbPtr<RbObject> Mcmc::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+RbPtr<RbLanguageObject> Mcmc::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
 
     if (name == "run") {
-        const RbPtr<const RbObject>& argument = (*args)[0]->getValue();
+        const RbPtr<const RbLanguageObject>& argument = (*args)[0]->getValue();
         int n = static_cast<const Natural*>( (const RbObject*)argument )->getValue();
         run(n);
-        return RbPtr<RbObject>::getNullPtr();
+        return RbPtr<RbLanguageObject>::getNullPtr();
     }
 
-    return MemberObject::executeOperation( name, args );
+    return MemberObject::executeOperationSimple( name, args );
 }
 
 
@@ -161,7 +161,7 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
             
         }
         
-        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbObject>( moves ) ) ) );
+        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( moves ) ) ) );
     }
     else if ( name == "monitors" ) {
         // get the DAG nodes
@@ -185,7 +185,7 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
             
         }
         
-        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbObject>( monitors ) ) ) );
+        setMemberDagNode(name, RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( monitors ) ) ) );
     }
     else {
         ConstantMemberObject::setMemberVariable(name, var);

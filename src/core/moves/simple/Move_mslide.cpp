@@ -125,7 +125,7 @@ double Move_mslide::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
 
     // FIXME: not the most efficient way of handling multiple reflections :-P
 
-    nodePtr->setValue( RbPtr<RbObject>( newVal.clone() ), affectedNodes );
+    nodePtr->setValue( RbPtr<RbLanguageObject>( newVal.clone() ), affectedNodes );
 	
     return 0.0;
 }
