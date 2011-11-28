@@ -1,5 +1,6 @@
 #import "RbData.h"
 #import "RbDataCell.h"
+#import "RbTaxonData.h"
 
 
 
@@ -10,9 +11,9 @@
 @synthesize numCharacters;
 @synthesize numTaxa;
 
-- (void)addCell:(RbDataCell*)cell {
+- (void)addTaxonData:(RbTaxonData*)td {
 
-	[data addObject:cell];
+    [data addObject:td];
 }
 
 - (void)addTaxonName:(NSString*)n {
@@ -22,12 +23,8 @@
 
 - (RbDataCell*)cellWithRow:(int)r andColumn:(int)c {
 
-	return [data objectAtIndex:(r * numCharacters + c)];
-}
-
-- (RbDataCell*)dataCellIndexed:(int)idx {
-
-	return [data objectAtIndex:idx];
+    RbTaxonData* td = [data objectAtIndex:r];
+    return [td dataCellIndexed:c];
 }
 
 - (int)dataSize {

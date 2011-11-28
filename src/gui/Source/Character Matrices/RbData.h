@@ -1,5 +1,6 @@
 #import <Cocoa/Cocoa.h>
 @class RbDataCell;
+@class RbTaxonData;
 
 
 
@@ -20,10 +21,9 @@
 @property (readwrite) int numCharacters;
 @property (readwrite) int numTaxa;
 
-- (void)addCell:(RbDataCell*)cell;
+- (void)addTaxonData:(RbTaxonData*)td;
 - (void)addTaxonName:(NSString*)n;
 - (RbDataCell*)cellWithRow:(int)r andColumn:(int)c;
-- (RbDataCell*)dataCellIndexed:(int)idx;
 - (int)dataSize;
 - (void)excludeTaxonIndexed:(int)idx;
 - (void)excludeCharacterIndexed:(int)idx;

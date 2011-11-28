@@ -2,13 +2,18 @@
 #include <vector>
 #include <string>
 #include "Character.h"
+#include "CharacterData.h"
+#include "DagNodeContainer.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
+#include "VariableSlot.h"
+#include "Workspace.h"
 
 #import "CharacterData.h"
 #import "RbData.h"
 #import "RbDataCell.h"
+#import "RbTaxonData.h"
 #import "ToolReadData.h"
 #import "WindowControllerReadData.h"
 
@@ -62,6 +67,8 @@
         {
         NSString* tn = [NSString stringWithFormat:@"Taxon_%d", i+1];
         [m addTaxonName:tn];
+        RbTaxonData* td = [[RbTaxonData alloc] init];
+        [td setTaxonName:tn];
         for (int j=0; j<[m numCharacters]; j++)
             {
             RbDataCell* cell = [[RbDataCell alloc] init];
@@ -97,9 +104,10 @@
                 }
             [cell setRow:i];
             [cell setColumn:j];
-            [m addCell:cell];
+            [td addObservation:cell];
             [cell release];
             }
+        [m addTaxonData:td];
         }
         
     // add the matrix to the tool
@@ -175,6 +183,66 @@
 	return self;
 }
 
+- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd {
+
+    std::string fn = cd->getFileName();
+    NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
+    RbData* m = [[RbData alloc] init];
+    [m setNumTaxa:(int)(cd->getNumberOfTaxa())];
+    [m setNumCharacters:(int)(cd->getNumberOfCharacters())];
+    [m setName:nsfn];
+    if ( cd->getDataType() == "dna" )
+        [m setDataType:DNA];
+    else if ( cd->getDataType() == "rna" )
+        [m setDataType:RNA];
+    else if ( cd->getDataType() == "amino acid" )
+        [m setDataType:AA];
+    else if ( cd->getDataType() == "standard" )
+        [m setDataType:STANDARD];
+    else if ( cd->getDataType() == "continuous" )
+        [m setDataType:CONTINUOUS];
+
+    for (int i=0; i<cd->getNumberOfTaxa(); i++)
+        {        
+        RbPtr<const TaxonData> td = cd->getTaxonData(i);
+        NSString* taxonName = [NSString stringWithCString:td->getTaxonName().c_str() encoding:NSUTF8StringEncoding];
+        [m addTaxonName:taxonName];
+        RbTaxonData* rbTaxonData = [[RbTaxonData alloc] init];
+        [rbTaxonData setTaxonName:taxonName];
+        for (int j=0; j<cd->getNumberOfCharacters(); j++)
+            {
+            RbPtr<const Character> theChar = td->getCharacter(j);
+            RbDataCell* cell = [[RbDataCell alloc] init];
+            [cell setDataType:[m dataType]];
+            if ( [m dataType] != CONTINUOUS )
+                {
+                unsigned x = theChar->getUnsignedValue();
+                NSNumber* n = [NSNumber numberWithUnsignedInt:x];
+                [cell setVal:n];
+                [cell setIsDiscrete:YES];
+                [cell setNumStates:((int)theChar->getNumberOfStates())];
+                if ( theChar->isMissingOrAmbiguous() == true )
+                    [cell setIsAmbig:YES];
+                }
+            else 
+                {
+                double x = theChar->getRealValue();
+                NSNumber* n = [NSNumber numberWithDouble:x];
+                [cell setVal:n];
+                [cell setIsDiscrete:NO];
+                [cell setNumStates:0];
+                }
+            [cell setRow:i];
+            [cell setColumn:j];
+            [rbTaxonData addObservation:cell];
+            [cell release];
+            }
+        [m addTaxonData:rbTaxonData];
+        }
+        
+    return m;
+}
+
 - (unsigned)missingForNumStates:(int)n {
 
 	unsigned val = 0;
@@ -199,11 +267,10 @@
 	if ( [tabViewLabel isEqualToString:@"Data Matrix"] == YES )
         {
 		// user selected "OK" for a data matrix (to be read into computer memory)
-		[myTool removeAllDataMatrices];
+        [myTool closeControlPanel];
 		BOOL isSuccessful = [self readDataFile];
 		if (isSuccessful == YES)
 			{
-			[myTool closeControlPanel];
 			[myTool updateForConnectionChange];
             [myTool setIsResolved:YES];
 			}
@@ -214,9 +281,9 @@
 	else 
 		{
 		// user selected "OK" for a blank data matrix
+		[myTool closeControlPanel];
 		[myTool removeAllDataMatrices];
         [self addBlankDataMatrix];
-		[myTool closeControlPanel];
 		[myTool updateForConnectionChange];
         [myTool setIsResolved:YES];
 		}
@@ -233,7 +300,6 @@
     [oPanel setCanChooseDirectories:YES];
 
     // open the panel
-#   if 1
     NSString* fileToOpen;
     [oPanel setAllowedFileTypes:fileTypes];
     int result = (int)[oPanel runModal];
@@ -243,26 +309,10 @@
         int count = (int)[filesToOpen count];
         for (int i=0; i<count; i++) 
             {
-            NSLog(@"%d -- %@\n", i, [[filesToOpen objectAtIndex:i] path]);
             fileToOpen = [[filesToOpen objectAtIndex:i] path];
             }
         }
-    
-#   else
-    NSString* fileToOpen;
-    int result = (int)[oPanel runModalForDirectory:nil file:nil types:fileTypes];
-    if ( result == NSOKButton ) 
-        {
-        NSArray* filesToOpen = [oPanel filenames];
-        int count = (int)[filesToOpen count];
-        for (int i=0; i<count; i++) 
-            {
-            NSLog(@"%d -- %@\n", i, [filesToOpen objectAtIndex:i]);
-            fileToOpen = [filesToOpen objectAtIndex:i];
-            }
-        }
-#   endif
-        
+            
 	// check to see if the selection is a file or a directory
     NSFileManager* fileManager = [NSFileManager defaultManager];
 	BOOL isDir;
@@ -285,393 +335,89 @@
 	// set the information in the tool
 	[myTool setFileName:fileName];
 	[myTool setPathName:pathName];
-		
-    NSLog(@"fileToOpen = %@", fileToOpen);
-    NSLog(@"isDir = %d", isDir);
     
+    // check the workspace and make certain that we use an unused name for the
+    // data variable
+    std::string variableName = Workspace::userWorkspace()->generateUniqueVariableName();
+		    
+    // format a string command to read the data file(s) and send the
+    // formatted string to the parser
     const char* cmdAsCStr = [fileToOpen UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-
-    std::string line = "guiDataVector <- read(\"" + cmdAsStlStr + "\");";
+    std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\");";
     std::cout << "line = \"" << line << "\"" << std::endl;
     int coreResult = Parser::getParser().processCommand(line);
-
-    getchar();
-    
-
-    
-	// Get the file format information from the ReadData tool panel. Note that if the file format is NEXUS,
-    // that we don't need the format/datatype information because the NCL parser can figure that out.
-	std::string localFormat = "", localDataType = "";
-	bool localIsInterleaved = true;
-	if ( [[dataFormatButton titleOfSelectedItem] isEqualToString:@"NEXUS"] == YES ) 
-		localFormat = "nexus";
-	else if ( [[dataFormatButton titleOfSelectedItem] isEqualToString:@"PHYLIP"] == YES )
-		localFormat = "phylip";
-	else if ( [[dataFormatButton titleOfSelectedItem] isEqualToString:@"FASTA"] == YES )
-		localFormat = "fasta";
-	if ( [[dataTypeButton1 titleOfSelectedItem] isEqualToString:@"DNA"] == YES )
-		localDataType = "dna";
-	else if ( [[dataTypeButton1 titleOfSelectedItem] isEqualToString:@"RNA"] == YES )
-		localDataType = "rna";
-	else if ( [[dataTypeButton1 titleOfSelectedItem] isEqualToString:@"Protein"] == YES )
-		localDataType = "protein";
-	else if ( [[dataTypeButton1 titleOfSelectedItem] isEqualToString:@"Standard"] == YES )
-		localDataType = "standard";
-	if ( [[interleavedFormatButton selectedCell] tag] == 0 )
-		localIsInterleaved = false;
-    
-    std::cerr << "localFormat = " << localFormat << std::endl;
-    std::cerr << "localDataType = " << localDataType << std::endl;
-
-    // ^
-    // |
-    // Objective-C++
-    //
-    int strLen = (int)[fileToOpen length];
-    char* cStr = new char[strLen+10];
-    [fileToOpen getCString:cStr maxLength:(strLen+10)  encoding:NSUTF8StringEncoding];
-    std::string fn = cStr;
-    delete [] cStr;
-    //
-    // C++
-    // |
-    // v
-
-    // Get an instance of RbFileManager. From here on out, we use the RevBayes C++ classes to read the
-    // directory contents, etc.
-    RbFileManager myFileManager( fn );
-
-    // are we reading a single file or are we reading the contents of a directory?
-    bool readingDirectory = myFileManager.isDirectory(fn);
-
-    // set up a vector of strings containing the name or names of the files to be read
-    std::vector<std::string> vectorOfFileNames;
-    if (readingDirectory == true)
-        myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-    else 
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
-    if (readingDirectory == true)
+    if (coreResult != 0)
         {
-        //std::stringstream o1;
-        //o1 << "Found " << vectorOfFileNames.size() << " files in directory";
-        //RBOUT(o1.str());
+        [self readDataError:@"Data could not be read"];
+        return NO;
+        }
+
+    // retrieve the value (character data matrix or matrices) from the workspace
+    RbPtr<RbObject> dv = NULL;
+    dv = Workspace::userWorkspace()->getValue(variableName);
+    std::cout << "dv = " << dv << std::endl;
+    if ( dv == NULL )
+        {
+        [self readDataError:@"Data could not be read"];
+        return NO;
         }
     
-std::cerr << "readingDirectory = " << readingDirectory << std::endl;
-    // get the global instance of the NCL reader and clear warnings from its warnings buffer
-    NclReader& reader = NclReader::getInstance();
-    reader.clearWarnings();
-            
-    // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
-    // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
-    // that can be read.
-    std::map<std::string,std::string> fileMap;
-    for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
+    // instantiate data matrices for the gui, by reading the matrices that were 
+    // read in by the core
+    std::cout << "dv type = " << dv->getType() << std::endl;
+    DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( (RbObject*)dv );
+    CharacterData* cd = dynamic_cast<CharacterData*>( (RbObject*)dv );
+    if ( dnc != NULL )
         {
-        std::cerr << "Checking file " << (*p) << std::endl;
-        bool isInterleaved = false;
-        std::string myFileType = "unknown", dType = "unknown";
-        if (reader.isNexusFile(*p) == true)
-            myFileType = "nexus";
-        else if (reader.isPhylipFile(*p, dType, isInterleaved) == true)
-            myFileType = "phylip";
-        else if (reader.isFastaFile(*p, dType) == true)
-            myFileType = "fasta";
-            
-        if (myFileType != "unknown")
+        if (dnc != NULL)
             {
-            std::string suffix = "|" + dType;
-            if ( myFileType == "phylip" )
+            [myTool removeAllDataMatrices];
+            for (int i=0; i<dnc->size(); i++)
                 {
-                if (isInterleaved == true)
-                    suffix += "|interleaved";
-                else
-                    suffix += "|noninterleaved";
+                VariableSlot* vs = static_cast<VariableSlot*>( (RbObject*)(dnc->getElement(i)) );
+                RbPtr<RbObject> theDagNode = vs->getDagNode()->getValue();
+                CharacterData* cd = static_cast<CharacterData*>( (RbObject*)theDagNode );
+                RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+                [myTool addMatrix:newMatrix];
                 }
-            else if ( myFileType == "fasta" )
-                suffix += "|noninterleaved";
-            else
-                suffix += "|unknown";
-            myFileType += suffix;
-            fileMap.insert( std::make_pair(*p,myFileType) );
             }
         else
             {
-            reader.addWarning("Unknown file type");
+            [self readDataError:@"Failure reading in a set of character matrices"];
+            return NO;
             }
-        std::cerr << "Finished checking file " << (*p) << std::endl;
         }
-#   if 1
-    std::cout << "File map (" << fileMap.size() << ")" << std::endl;
-    for (std::map<std::string,std::string>::iterator it = fileMap.begin(); it != fileMap.end(); it++)
-        std::cout << it->first << " -- " << it->second << std::endl;
-#   endif
-                
-    // read the files in the map containing the file names with the output being a vector of pointers to
-    // the character matrices that have been read
-    std::vector<RbPtr<CharacterData> > myData = reader.readMatrices( fileMap );
-    
-    // print summary of results of file reading to the user
-    if (readingDirectory == true)
+    else if ( cd != NULL )
         {
-
+        std::cout << "cd = " << cd << std::endl;
+        if (cd != NULL)
+            {
+            [myTool removeAllDataMatrices];
+            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
+            [myTool addMatrix:newMatrix];
+            }
+        else
+            {
+            [self readDataError:@"Failed to read character matrix"];
+            return NO;
+            }
         }
     else
         {
-
+        [self readDataError:@"Data could not be read"];
+        return NO;
         }
 
-	// we have successfully read the data into computer memory
-	// add the matrices to the tool
-	for (std::vector<RbPtr<CharacterData> >::iterator p = myData.begin(); p != myData.end(); p++)
-		{
-		//(*p)->print();
-		std::string fn = (*p)->getFileName();
-std::cerr << "Adding matrix " << fn << std::endl;
-		NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
-		RbData* m = [[RbData alloc] init];
-		[m setNumTaxa:(int)((*p)->getNumberOfTaxa())];
-		[m setNumCharacters:(int)((*p)->getNumberOfCharacters())];
-		[m setName:nsfn];
-        if ( (*p)->getDataType() == "DNA" )
-            [m setDataType:DNA];
-        else if ( (*p)->getDataType() == "RNA" )
-            [m setDataType:RNA];
-        else if ( (*p)->getDataType() == "Amino Acid" )
-            [m setDataType:AA];
-        else if ( (*p)->getDataType() == "Standard" )
-            [m setDataType:STANDARD];
-        else if ( (*p)->getDataType() == "Continuous" )
-            [m setDataType:CONTINUOUS];
-
-		for (int i=0; i<(*p)->getNumberOfTaxa(); i++)
-			{
-			NSString* taxonName = [NSString stringWithCString:(*p)->getTaxonNameWithIndex(i).c_str() encoding:NSUTF8StringEncoding];
-			[m addTaxonName:taxonName];
-			for (int j=0; j<(*p)->getNumberOfCharacters(); j++)
-				{
-                RbPtr<const Character> matrixCell = (*p)->getCharacter(i, j);
-				RbDataCell* cell = [[RbDataCell alloc] init];
-                bool isDiscrete = true;
-                if ( matrixCell->getNumberOfStates() == 0 )
-                    isDiscrete = false;
-				if ( isDiscrete == true )
-					{
-					unsigned x = matrixCell->getUnsignedValue();
-					NSNumber* n = [NSNumber numberWithUnsignedInt:x];
-					[cell setVal:n];
-					[cell setIsDiscrete:YES];
-                    [cell setDataType:[m dataType]];
-					[cell setNumStates:(int)(matrixCell->getNumberOfStates())];
-					if ( matrixCell->isMissingOrAmbiguous() == true )
-						[cell setIsAmbig:YES];
-					}
-				else 
-					{
-					double x = matrixCell->getRealValue();
-					NSNumber* n = [NSNumber numberWithDouble:x];
-					[cell setVal:n];
-					[cell setIsDiscrete:NO];
-					[cell setDataType:CONTINUOUS];
-					[cell setNumStates:0];
-					}
-				[cell setRow:i];
-				[cell setColumn:j];
-				//[cell setVal:n];
-				[m addCell:cell];
-				[cell release];
-				}
-			}
-			
-		//[m print];
-		[myTool addMatrix:m];
-		
-		//(*p)->print();
-		}
-
-
-
-
-#   if 0
-	
-	// read the file(s)
-	std::vector<CharacterMatrix*>* myData;
-	if (isDir == YES)
-		{
-		// read the contents of a directory
-		
-		// make a list of all of the files in the directory
-		NSString* dirToOpen = [NSString stringWithString:pathName];
-		dirToOpen = [dirToOpen stringByAppendingString:@"/"];
-		NSError* error = nil;
-		NSArray* tempFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirToOpen error:&error];
-		if (error != nil)
-			return NO;
-						
-		// initialize the list of files
-		std::vector<std::string> fileNames;
-		id element;
-		NSEnumerator* fileEnum = [tempFiles objectEnumerator];
-		while ( (element = [fileEnum nextObject]) )
-			{
-			if ( [element characterAtIndex:0] != '.' )
-				{
-				NSString* fn = [NSString stringWithString:dirToOpen];
-				fn = [fn stringByAppendingString:element];
-				
-				BOOL dirQuery;
-				[[NSFileManager defaultManager] fileExistsAtPath:fn isDirectory:&dirQuery];
-				if ( dirQuery == NO )
-					{
-					int strLen = (int)[fn length];
-					char* cStr = new char[strLen+10];
-					[fn getCString:cStr maxLength:(strLen+10)  encoding:NSUTF8StringEncoding];
-					fileNames.push_back( cStr );
-					delete [] cStr;
-					}
-				}
-			}
-		
-		// instantiate an NCL reader object
-		NclReader& myReader = NclReader::getInstance();
-		
-		// read the file(s)
-		try 
-			{
-			myData = myReader.readData(fileNames, localFormat, localDataType, localIsInterleaved);
-			if (myData == NULL)
-				throw NxsException("help");
-			}
-		catch (NxsException& x) 
-			{
-			NxsString m = x.msg;
-			NSString* errFile = [NSString stringWithString:pathName];
-			NSAlert* alert = [NSAlert alertWithMessageText:@"Error Reading Directory Contents" 
-			                                 defaultButton:@"OK" 
-										   alternateButton:nil 
-										       otherButton:nil 
-								 informativeTextWithFormat:@"Could not read directory \"%@\". Check the settings in the control window to make certain that the file and data types are set correctly. Also, check that the data is formatted correctly in the files.", errFile];
-			[alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
-			return NO;
-			}
-		myReader.clearContent();
-		}
-	else 
-		{
-		// read a single file
-
-		// get the file path/name to the file
-		NSString* fileToOpen = [NSString stringWithString:pathName];
-		fileToOpen = [fileToOpen stringByAppendingString:@"/"];
-		fileToOpen = [fileToOpen stringByAppendingString:fileName];
-				
-		// open and read the data file using the RbReader object (that inherits from an NCL class)
-		int strLen = (int)[fileToOpen length];
-		char* inFile = new char[strLen+10];
-		[fileToOpen getCString:inFile maxLength:(strLen+10)  encoding:NSUTF8StringEncoding];
-
-		// instantiate an NCL reader object
-		NclReader& myReader = NclReader::getInstance();
-				
-		// read the file
-		try 
-			{
-			myData = myReader.readData(inFile, localFormat, localDataType, localIsInterleaved);
-			if (myData == NULL)
-				throw NxsException("help");
-			}
-		catch (NxsException& x)
-			{
-			NxsString m = x.msg;
-			NSString* errFile = [NSString stringWithString:fileName];
-			NSAlert* alert = [NSAlert alertWithMessageText:@"Error Reading Data File" 
-			                                 defaultButton:@"OK" 
-										   alternateButton:nil 
-										       otherButton:nil 
-								 informativeTextWithFormat:@"Could not read file \"%@\". Check the settings in the control window to make certain that the file and data types are set correctly. Also, check that the data is formatted correctly in the file.", errFile];
-			[alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
-			return NO;
-			}
-			
-		// free memory 
-		delete [] inFile;
-		myReader.clearContent();
-		}
-		
-	// we have successfully read the data into computer memory
-	// add the matrix to the tool
-	for (std::vector<CharacterMatrix*>::iterator p = myData->begin(); p != myData->end(); p++)
-		{
-		//(*p)->print();
-		std::string fn = (*p)->getName();
-		NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
-		RbData* m = [[RbData alloc] init];
-		[m setNumTaxa:((*p)->getNumTaxa())];
-		[m setNumCharacters:((*p)->getNumCharacters())];
-		[m setName:nsfn];
-        if ( (*p)->getDataType() == "dna" )
-            [m setDataType:DNA];
-        else if ( (*p)->getDataType() == "rna" )
-            [m setDataType:RNA];
-        else if ( (*p)->getDataType() == "amino acid" )
-            [m setDataType:AA];
-        else if ( (*p)->getDataType() == "standard" )
-            [m setDataType:STANDARD];
-        else if ( (*p)->getDataType() == "continuous" )
-            [m setDataType:CONTINUOUS];
-
-		for (int i=0; i<(*p)->getNumTaxa(); i++)
-			{
-			NSString* taxonName = [NSString stringWithCString:(*p)->getTaxonIndexed(i).c_str() encoding:NSUTF8StringEncoding];
-			[m addTaxonName:taxonName];
-			for (int j=0; j<(*p)->getNumCharacters(); j++)
-				{
-				RbDataCell* cell = [[RbDataCell alloc] init];
-				if ((*p)->getIsDiscrete() == true)
-					{
-					unsigned x = (*p)->getUnsignedValue(i, j);
-					NSNumber* n = [NSNumber numberWithUnsignedInt:x];
-					[cell setVal:n];
-					[cell setIsDiscrete:YES];
-					if ( (*p)->getDataType() == "dna" )
-						[cell setDataType:DNA];
-					else if ( (*p)->getDataType() == "rna" )
-						[cell setDataType:RNA];
-					else if ( (*p)->getDataType() == "amino acid" )
-						[cell setDataType:AA];
-					else if ( (*p)->getDataType() == "standard" )
-						[cell setDataType:STANDARD];
-					[cell setNumStates:((*p)->getNumStates())];
-					if ( (*p)->getIsAmbig(i, j) == true )
-						[cell setIsAmbig:YES];
-					}
-				else 
-					{
-					double x = (*p)->getDoubleValue(i, j);
-					NSNumber* n = [NSNumber numberWithDouble:x];
-					[cell setVal:n];
-					[cell setIsDiscrete:NO];
-					[cell setDataType:CONTINUOUS];
-					[cell setNumStates:0];
-					}
-				[cell setRow:i];
-				[cell setColumn:j];
-				//[cell setVal:n];
-				[m addCell:cell];
-				[cell release];
-				}
-			}
-			
-		//[m print];
-		[myTool addMatrix:m];
-		
-		//(*p)->print();
-		}
-
-#   endif
-
 	return YES;
+}
+
+- (void)readDataError:(NSString*)errStr {
+
+    NSRunAlertPanel(@"Problem Reading Data", errStr, @"OK", nil, nil);
+    if ( Workspace::userWorkspace()->existsVariable("guiDataVector") )
+        Workspace::userWorkspace()->eraseVariable("guiDataVector");
+    [myTool removeAllDataMatrices];
 }
 
 - (void)setControlWindowSize {

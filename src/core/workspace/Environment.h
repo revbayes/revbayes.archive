@@ -95,6 +95,7 @@ public:
     void                            clear(void);                                                                            //!< clears the variable table
     void                            eraseVariable(const std::string& name);                                                 //!< Erase a variable
     bool                            existsVariable(const std::string& name) const;                                          //!< Does variable exist?
+    std::string                     generateUniqueVariableName(void);                                                       //!< Automatically generate a unique variable name
     
     RbPtr<const DAGNode>            getDagNode(const std::string& name) const;                                              //!< Convenient alternative for [name]->getDagNode()
     RbPtr<DAGNode>                  getDagNode(const std::string& name);                                                    //!< Convenient alternative for [name]->getDagNode() (non-const to return non-const node)

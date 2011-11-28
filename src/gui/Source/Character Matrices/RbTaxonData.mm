@@ -9,6 +9,11 @@
 @synthesize taxonName;
 @synthesize numCharacters;
 
+- (void)addObservation:(RbDataCell*)dc {
+
+    [data addObject:dc];
+}
+
 - (RbDataCell*)dataCellIndexed:(int)idx {
 
 	return [data objectAtIndex:idx];

@@ -10,6 +10,7 @@
 
 	NSString*                          fileName;
 	NSString*                          pathName;
+    NSString*                          dataWorkspaceName;
 	int                                matrixType;
     int                                dataAlignment;
     int                                dataFormat;
@@ -26,6 +27,7 @@
 
 @property (readwrite,retain) NSString* fileName;
 @property (readwrite,retain) NSString* pathName;
+@property (readwrite,retain) NSString* dataWorkspaceName;
 @property (readwrite) int dataAlignment;
 @property (readwrite) int dataFormat;
 @property (readwrite) int dataInterleaved;

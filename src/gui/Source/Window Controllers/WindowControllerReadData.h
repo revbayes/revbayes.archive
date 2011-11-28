@@ -1,7 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #include <vector>
 @class ToolReadData;
-class CharacterMatrix;
+class CharacterData;
 
 
 
@@ -60,6 +60,8 @@ class CharacterMatrix;
 - (unsigned)missingForNumStates:(int)n;
 - (IBAction)okButtonAction:(id)sender;
 - (BOOL)readDataFile;
+- (void)readDataError:(NSString*)errStr;
+- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(CharacterData*)cd;
 - (void)setControlsEnabledState;
 - (void)setControlWindowSize;
 - (void)setToolValues;

@@ -60,6 +60,10 @@ RbFileManager::RbFileManager(std::string s) {
     
     // set the path and file for the string
     parsePathFileNames(s);
+        
+    if (isDirectoryPresent(s) == false)
+        {
+        }
 }
 
 
@@ -186,7 +190,6 @@ bool RbFileManager::isDirectoryPresent(const std::string mp) {
     
 #	endif
 }
-
 
 /** Checks whether the file, passed in as its path and file name components, is present */
 bool RbFileManager::isFilePresent(const std::string mp, const std::string mf) {

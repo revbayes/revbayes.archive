@@ -37,20 +37,20 @@ const std::string DagNodeContainer_name = "DAG Node Container";
 
 class DagNodeContainer : public Container {
     
-public: 
-    DagNodeContainer(void);                                                                             //!< Default constructor 
-    DagNodeContainer(size_t length);                                                                    //!< Default constructor with number of elements
-    virtual                 ~DagNodeContainer(void);                                                    //!< Virtual destructor
-    
-    // Basic utility functions
-    bool                    allowsVariableInsertion(void) const { return true; }                        //!< Yes we do allow variable to be inserted
-    DagNodeContainer*       clone(void) const;                                                          //!< Clone object
-    RbObject*               convertTo(const TypeSpec& type) const;                                      //!< Convert to type
-    const VectorString&     getClass(void) const;                                                       //!< Get class vector
-    const TypeSpec&         getTypeSpec(void) const;                                                    //!< Get language type of the object
-    bool                    isConvertibleTo(const TypeSpec& type) const;                                //!< Is convertible to type?
-    void                    printValue(std::ostream& o) const;                                          //!< Print value for user
-    std::string             richInfo(void) const;                                                       //!< Complete info about object
+    public: 
+                                            DagNodeContainer(void);                                                                             //!< Default constructor 
+                                            DagNodeContainer(size_t length);                                                                    //!< Default constructor with number of elements
+        virtual                            ~DagNodeContainer(void);                                       //!< Virtual destructor
+        
+        // Basic utility functions
+        bool                                allowsVariableInsertion(void) const { return true; }          //!< Yes we do allow variable to be inserted
+        DagNodeContainer*                   clone(void) const;                                            //!< Clone object
+        RbObject*                           convertTo(const TypeSpec& type) const;                        //!< Convert to type
+        const VectorString&                 getClass(void) const;                                         //!< Get class vector
+        const TypeSpec&                     getTypeSpec(void) const;                                      //!< Get language type of the object
+        bool                                isConvertibleTo(const TypeSpec& type) const;                  //!< Is convertible to type?
+        void                                printValue(std::ostream& o) const;                            //!< Print value for user
+        std::string                         richInfo(void) const;                                         //!< Complete info about object
 
     // Container functions
     void                    clear(void);                                                                //!< Clear
@@ -68,11 +68,9 @@ public:
     size_t                  size(void) const;                                                           //!< get the number of elements in the AbstractVector
     void                    unique(void);                                                               //!< removes consecutive duplicates
 
-    
-private:
-    
-    std::vector<RbPtr<VariableSlot> >   elements;                                                              //!< The elements
-    TypeSpec                typeSpec;                                                                   //!< The type of this instance
+    private:
+        std::vector<RbPtr<VariableSlot> >   elements;                                                     //!< The elements
+        TypeSpec                            typeSpec;                                                     //!< The type of this instance
 };  
 
 #endif

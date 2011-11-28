@@ -203,7 +203,7 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( void ) {
             index++;
             }
         return RbPtr<RbLanguageObject>( retList );
-            throw RbException("Wanted to create a List of Alignment but List does not exist anymore. See Func_readAlignment");
+        throw RbException("Wanted to create a List of Alignment but List does not exist anymore. See Func_readAlignment");
         }
     else if ( m.size() == 1 ) 
         {

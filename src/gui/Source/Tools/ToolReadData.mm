@@ -14,6 +14,7 @@
 @synthesize dataInterleaved;
 @synthesize dataType;
 @synthesize dataTypeSimulated;
+@synthesize dataWorkspaceName;
 @synthesize fileName;
 @synthesize matrixType;
 @synthesize numberOfOutlets;
@@ -51,6 +52,7 @@
 
 	[fileName release];
 	[pathName release];
+    [dataWorkspaceName release];
 	[controlWindow release];
 	[dataMatrices release];
     if (dataInspector != nil)
@@ -60,18 +62,19 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
-    [aCoder encodeObject:fileName        forKey:@"fileName"];
-    [aCoder encodeObject:pathName        forKey:@"pathName"];
-	[aCoder encodeInt:dataAlignment      forKey:@"dataAlignment"];
-	[aCoder encodeInt:dataFormat         forKey:@"dataFormat"];
-	[aCoder encodeInt:dataInterleaved    forKey:@"dataInterleaved"];
-	[aCoder encodeInt:dataType           forKey:@"dataType"];
-	[aCoder encodeInt:dataTypeSimulated  forKey:@"dataTypeSimulated"];
-	[aCoder encodeInt:numberOfOutlets    forKey:@"numberOfOutlets"];
-	[aCoder encodeInt:numberOfCharacters forKey:@"numberOfCharacters"];
-	[aCoder encodeInt:numberOfTaxa       forKey:@"numberOfTaxa"];
-	[aCoder encodeInt:matrixType         forKey:@"matrixType"];
-	[aCoder encodeObject:dataMatrices    forKey:@"dataMatrices"];
+    [aCoder encodeObject:fileName          forKey:@"fileName"];
+    [aCoder encodeObject:pathName          forKey:@"pathName"];
+    [aCoder encodeObject:dataWorkspaceName forKey:@"dataWorkspaceName"];
+	[aCoder encodeInt:dataAlignment        forKey:@"dataAlignment"];
+	[aCoder encodeInt:dataFormat           forKey:@"dataFormat"];
+	[aCoder encodeInt:dataInterleaved      forKey:@"dataInterleaved"];
+	[aCoder encodeInt:dataType             forKey:@"dataType"];
+	[aCoder encodeInt:dataTypeSimulated    forKey:@"dataTypeSimulated"];
+	[aCoder encodeInt:numberOfOutlets      forKey:@"numberOfOutlets"];
+	[aCoder encodeInt:numberOfCharacters   forKey:@"numberOfCharacters"];
+	[aCoder encodeInt:numberOfTaxa         forKey:@"numberOfTaxa"];
+	[aCoder encodeInt:matrixType           forKey:@"matrixType"];
+	[aCoder encodeObject:dataMatrices      forKey:@"dataMatrices"];
 
 	[super encodeWithCoder:aCoder];
 }
@@ -96,6 +99,7 @@
 		// initialize the data
 		fileName           = [[NSString alloc] initWithString:@""];
 		pathName           = [[NSString alloc] initWithString:@""];
+        dataWorkspaceName  = [[NSString alloc] initWithString:@""];
 		dataAlignment      = 0;
         dataFormat         = 0;
 		dataType           = 1;
@@ -127,6 +131,7 @@
 		// read from file
         fileName           = [aDecoder decodeObjectForKey:@"fileName"];
         pathName           = [aDecoder decodeObjectForKey:@"pathName"];
+        dataWorkspaceName  = [aDecoder decodeObjectForKey:@"dataWorkspaceName"];
 		dataAlignment      = [aDecoder decodeIntForKey:@"dataAlignment"];
 		dataFormat         = [aDecoder decodeIntForKey:@"dataFormat"];
 		dataInterleaved    = [aDecoder decodeIntForKey:@"dataInterleaved"];
@@ -139,6 +144,7 @@
 		dataMatrices       = [aDecoder decodeObjectForKey:@"dataMatrices"];
         [fileName retain];
         [pathName retain];
+        [dataWorkspaceName retain];
 		[dataMatrices retain];
         
         // check to see if there are any data matrices stored in the tool

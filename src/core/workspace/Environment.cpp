@@ -265,6 +265,24 @@ bool Environment::existsVariable( const std::string& name ) const {
 }
 
 
+std::string Environment::generateUniqueVariableName(void) {
+
+    std::string prefix = "var";
+    std::string theName = "";
+    bool uniqueName = false;
+    int i = 1;
+    do {
+        char tempCharStr[20];
+        sprintf(tempCharStr, "%d", i++);
+        std::string tempStlStr = tempCharStr;
+        theName = prefix + tempStlStr;
+        if (existsVariable(theName) == false)
+            uniqueName = true;
+        } while (uniqueName == false);
+    return theName;
+}
+
+
 /** Get class vector describing type of object */
 const VectorString& Environment::getClass() const {
     

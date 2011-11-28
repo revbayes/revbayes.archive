@@ -85,16 +85,19 @@ void CharacterStateDiscrete::setNumberOfStates(size_t n) {
 
 /** Set the values */
 void CharacterStateDiscrete::setValue(const std::vector<bool> &v) {
+
     value = v;
 }
 
 
 /** Set value with single index */
 void CharacterStateDiscrete::setValue(int x) {
+
     // reset all values
-    for (size_t i=0; i<value.size(); i++) {
+    for (size_t i=0; i<value.size(); i++) 
+        {
         value[i] = false;
-    }
+        }
     
     // set the value with given index to true
     value[x] = true;

@@ -17,5 +17,6 @@
 
 - (RbDataCell*)dataCellIndexed:(int)idx;
 - (id)initWithRbTaxonData:(RbTaxonData*)d;
+- (void)addObservation:(RbDataCell*)dc;
 
 @end

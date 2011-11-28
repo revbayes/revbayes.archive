@@ -58,7 +58,7 @@ class CharacterData : public Matrix {
         RbPtr<const MethodTable>            getMethods(void) const;                                                     //!< Get methods
     
         // Container functions
-        void                                clear();
+        void                                clear(void);
         void                                setElement(const size_t index, RbPtr<RbLanguageObject> elem);               //!< Set element with type conversion
 
         // Matrix functions
