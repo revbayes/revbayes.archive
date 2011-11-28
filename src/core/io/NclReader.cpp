@@ -875,9 +875,7 @@ std::vector<RbPtr<CharacterData> > NclReader::readMatrices(const std::map<std::s
             addWarning("Data file not found");
             continue;
             }
-            
-        std::cout << "reading file \"" << p->first << "\"" << std::endl;
-            
+                        
         // Extract information on the file format from the value of the key/value pair. Note that we expect the 
         // fileFmt string to be in the format file_type|data_type|interleave_type with pipes ('|') separating
         // the format components. It might be better to make an object value in the key/value pair that contains

@@ -347,6 +347,7 @@
     std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\");";
     std::cout << "line = \"" << line << "\"" << std::endl;
     int coreResult = Parser::getParser().processCommand(line);
+    std::cout << "finished parsing, coreResult = " << coreResult << std::endl;
     if (coreResult != 0)
         {
         [self readDataError:@"Data could not be read"];
@@ -354,7 +355,7 @@
         }
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    RbPtr<RbObject> dv = NULL;
+    RbPtr<RbLanguageObject> dv = NULL;
     dv = Workspace::userWorkspace()->getValue(variableName);
     std::cout << "dv = " << dv << std::endl;
     if ( dv == NULL )
@@ -376,7 +377,7 @@
             for (int i=0; i<dnc->size(); i++)
                 {
                 VariableSlot* vs = static_cast<VariableSlot*>( (RbObject*)(dnc->getElement(i)) );
-                RbPtr<RbObject> theDagNode = vs->getDagNode()->getValue();
+                RbPtr<RbLanguageObject> theDagNode = vs->getDagNode()->getValue();
                 CharacterData* cd = static_cast<CharacterData*>( (RbObject*)theDagNode );
                 RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd];
                 [myTool addMatrix:newMatrix];

@@ -50,6 +50,7 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 /** Execute function */
 RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( void ) {
 
+std::cout << "1" << std::endl;
     // get the information from the arguments for reading the file
     RbPtr<RbString> fn( static_cast<RbString*>( (RbObject*)(*args)[0]->getValue() ) );
 
