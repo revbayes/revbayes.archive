@@ -74,7 +74,7 @@ class RbFunction :  public RbInternal {
     	void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
 
         // RbFunction functions you have to override
-        virtual RbPtr<DAGNode>                          execute(void);                                                                      //!< Execute function
+        virtual RbPtr<RbLanguageObject>                 execute(void);                                                                      //!< Execute function
         virtual RbPtr<const ArgumentRules>              getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 

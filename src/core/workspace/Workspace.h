@@ -94,7 +94,7 @@ class Workspace : public Environment {
         bool                        addType(const std::string& name, RbPtr<RbObject> exampleObj);                       //!< Add special abstract type (synonym)
         bool                        addTypeWithConstructor(const std::string& name, RbPtr<MemberObject> templ);         //!< Add type with constructor
         bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
-        RbPtr<DAGNode>              executeFunction(    const std::string&              name,
+        RbPtr<RbLanguageObject>     executeFunction(    const std::string&              name,
                                                         const std::vector<RbPtr<Argument> >&   args);                   //!< Execute function
         bool                        existsType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?
 //        RbObject*                   findType(const TypeSpec& name) const;                                             //!< Does the type exist in the type table?

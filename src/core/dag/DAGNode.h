@@ -19,7 +19,7 @@
 #ifndef DAGNode_H
 #define DAGNode_H
 
-#include "RbInternal.h"
+#include "RbLanguageObject.h"
 #include "RbPtr.h"
 #include "TypeSpec.h"
 #include "Variable.h"
@@ -31,7 +31,6 @@
 #include <string>
 
 class ContainerNode;
-class RbLanguageObject;
 class Variable;
 class VariableNode;
 class VectorNatural;
@@ -40,7 +39,7 @@ class VectorString;
 
 const std::string DAGNode_name = "DAG Node";
 
-class DAGNode : public RbInternal {
+class DAGNode : public RbLanguageObject {
 
     public:
         virtual                                            ~DAGNode(void);                                                          //!< Virtual destructor

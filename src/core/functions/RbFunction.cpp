@@ -72,15 +72,17 @@ void RbFunction::clearArguments(void) {
  * (which is of type RbLanguageObject) into a ConstantNode.
  * If you do not wish to wrap the return value into a constant node, then you need to overwrite this function.
  */
-RbPtr<DAGNode> RbFunction::execute(void) {
+RbPtr<RbLanguageObject> RbFunction::execute(void) {
     
     // get the value by executing the internal function
     RbPtr<RbLanguageObject> value = executeFunction();
+  
+    return value;
     
-    // wrap the value into a constant node
-    RbPtr<DAGNode> theNode( new ConstantNode(value) );
-    
-    return theNode;
+//    // wrap the value into a constant node
+//    RbPtr<DAGNode> theNode( new ConstantNode(value) );
+//    
+//    return theNode;
 }
 
 

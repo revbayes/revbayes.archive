@@ -62,7 +62,7 @@ MemberObject::MemberObject(const MemberObject &m) : RbLanguageObject() {
 
 
 /** Execute member method: delegate to method table. */
-RbPtr<DAGNode> MemberObject::executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
+RbPtr<RbLanguageObject> MemberObject::executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args) {
     // TODO: We shouldn't allow const casts!!!
     MethodTable* mt = const_cast<MethodTable*>((const MethodTable*)getMethods());
     return mt->executeFunction(name, args);
@@ -72,15 +72,17 @@ RbPtr<DAGNode> MemberObject::executeMethod(const std::string& name, const std::v
 /* Execute method. This method just delegate the call to executeOperationSimple and wraps the return value into
  * a constant node. If you don't want this, you have to overwrite this method.
  */
-RbPtr<DAGNode> MemberObject::executeOperation(std::string const &name, const RbPtr<Environment> &args) {
+RbPtr<RbLanguageObject> MemberObject::executeOperation(std::string const &name, const RbPtr<Environment> &args) {
     
     // get the return value
     RbPtr<RbLanguageObject> value = executeOperationSimple(name, args);
+  
+    return value;
     
-    // wrap into constant node
-    RbPtr<DAGNode> theNode( new ConstantNode( value ) );
-    
-    return theNode;
+//    // wrap into constant node
+//    RbPtr<DAGNode> theNode( new ConstantNode( value ) );
+//    
+//    return theNode;
 }
 
 

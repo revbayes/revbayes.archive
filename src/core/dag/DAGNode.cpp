@@ -114,7 +114,7 @@ std::string DAGNode::briefInfo( void ) const {
 /** Get class vector describing type of DAG node */
 const VectorString& DAGNode::getClass() const {
 
-    static VectorString rbClass = VectorString( DAGNode_name ) + RbInternal::getClass();
+    static VectorString rbClass = VectorString( DAGNode_name ) + RbLanguageObject::getClass();
     return rbClass;
 }
 

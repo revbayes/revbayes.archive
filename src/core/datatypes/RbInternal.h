@@ -41,10 +41,6 @@ class RbInternal : public RbObject {
         virtual void                    printValue(std::ostream& o) const;      //!< Print value for user
         virtual std::string             richInfo(void) const;                   //!< Complete info about object
 
-        // Basic utility functions you do not have to override
-        const std::string&              getType(void) const;                    //!< Get type
-        bool                            isType(const std::string& type) const;  //!< Is the object of type?
-
    protected:
                                         RbInternal(void) {}                     //!< No objects of this class
 };

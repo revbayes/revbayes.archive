@@ -91,11 +91,6 @@ std::string TreePlate::buildNewickString(RbPtr<const TopologyNode> node) const {
         // add each variable as a name-value pari
         for (std::vector<std::string>::const_iterator it = nodeVariableNames.begin(); it != nodeVariableNames.end(); it++) {
             
-            // for every except the first element we need to add a delimiter
-            if (it != nodeVariableNames.begin()) {
-                newick += ",";
-            }
-            
             // get the name of the variable
             const std::string &varName = *it;
             
@@ -109,7 +104,14 @@ std::string TreePlate::buildNewickString(RbPtr<const TopologyNode> node) const {
             const RbObject* obj = vars->getElement(nodeIndex);
             RbPtr<const Variable> var = static_cast<const VariableSlot*>( obj )->getVariable();
             
-            newick += varName + ":" + var->getDagNode()->getValue()->briefInfo();
+            // check if this node also has the parameter (already) set and only if so, add it
+            if (var->getDagNode() != NULL) {
+                // for every except the first element we need to add a delimiter
+                if (it != nodeVariableNames.begin()) {
+                    newick += ",";
+                }
+                newick += varName + ":" + var->getDagNode()->getValue()->briefInfo();
+            }
         }
         
         newick += "]";
@@ -139,6 +141,41 @@ const TypeSpec& TreePlate::getTypeSpec(void) const {
     return typeSpec;
 }
 
+
+/* Map calls to member methods */
+RbPtr<RbLanguageObject> TreePlate::executeOperation(const std::string& name, const RbPtr<Environment>& args) {
+
+    if (name == "getVariable") {
+        // get the name of the variable
+        const std::string& varName = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
+        
+        // check if a container already exists with that name
+        if (!members->existsVariable(varName)) {
+            // we don't have a container for this variable name yet
+            // so we need to throw an error
+            
+            throw RbException("Variable with name \"" + varName + "\" does not exist.");
+        }
+        else {
+            // get the container with the variables for this node
+            DagNodeContainer *vars = static_cast<DagNodeContainer*>( (RbObject*)(*members)[varName]->getValue() );
+            
+            // get the node we want to associate it too
+            RbPtr<const TopologyNode> theNode( static_cast<const TopologyNode*>( (const RbObject*) (*args)[1]->getValue()) );
+            
+            // get the index of the node
+            size_t nodeIndex = getNodeIndex(theNode) - 1;
+            
+            // get the variable
+            RbPtr<Variable> var = static_cast<VariableSlot*>( (RbObject*)vars->getElement(nodeIndex) )->getVariable();
+            
+            return RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (DAGNode*)var->getDagNode() ) );
+        }
+    }
+
+    
+    return MutableMemberObject::executeOperation(name, args);
+}
 
 /* Map calls to member methods */
 RbPtr<RbLanguageObject> TreePlate::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
@@ -177,32 +214,6 @@ RbPtr<RbLanguageObject> TreePlate::executeOperationSimple(const std::string& nam
         vars->setElement(nodeIndex - 1, RbPtr<RbObject>( var ) );
         
         return RbPtr<RbLanguageObject>::getNullPtr();
-    } else if (name == "getVariable") {
-        // get the name of the variable
-        const std::string& varName = static_cast<const RbString*>( (const RbObject*)(*args)[0]->getValue() )->getValue();
-        
-        // check if a container already exists with that name
-        if (!members->existsVariable(varName)) {
-            // we don't have a container for this variable name yet
-            // so we need to throw an error
-            
-            throw RbException("Variable with name \"" + varName + "\" does not exist.");
-        }
-        else {
-            // get the container with the variables for this node
-            DagNodeContainer *vars = static_cast<DagNodeContainer*>( (RbObject*)(*members)[varName]->getValue() );
-        
-            // get the node we want to associate it too
-            RbPtr<const TopologyNode> theNode( static_cast<const TopologyNode*>( (const RbObject*) (*args)[1]->getValue()) );
-        
-            // get the index of the node
-            size_t nodeIndex = getNodeIndex(theNode) - 1;
-            
-            // get the variable
-            RbPtr<Variable> var = static_cast<VariableSlot*>( (RbObject*)vars->getElement(nodeIndex) )->getVariable();
-        
-            return var->getValue();
-        }
     }
     else if (name == "nnodes") {
         return RbPtr<RbLanguageObject>( new Natural( orderingTopology->getNumberOfNodes() ) );

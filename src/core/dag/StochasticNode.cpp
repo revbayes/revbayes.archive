@@ -393,6 +393,7 @@ void StochasticNode::keepAffected() {
 void StochasticNode::printStruct( std::ostream& o ) const {
 
     o << "_Class        = " << getClass() << std::endl;
+    o << "_Adress       = " << this << std::endl;
     o << "_valueType    = " << getValueType() << std::endl;
     o << "_distribution = " << distribution->briefInfo() << std::endl;
     o << "_touched      = " << ( touched ? RbBoolean( true ) : RbBoolean( false ) ) << std::endl;
@@ -402,7 +403,7 @@ void StochasticNode::printStruct( std::ostream& o ) const {
         o << "_storedValue  = " << storedValue->briefInfo() << std::endl;
     o << "_lnProb       = " << lnProb << std::endl;
     if ( touched )
-        o << "_storedLnProb = " << storedValue->briefInfo() << std::endl;    
+        o << "_storedLnProb = " << storedLnProb << std::endl;    
 
     o << "_parents      = ";
     printParents(o);

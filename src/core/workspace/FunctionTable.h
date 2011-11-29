@@ -54,7 +54,7 @@ class FunctionTable : public RbInternal {
         // FunctionTable functions
         virtual void                            addFunction(const std::string name, RbPtr<RbFunction> func);                            //!< Add function
         void                                    clear(void);                                                                            //!< Clear table
-        RbPtr<DAGNode>                          executeFunction(const std::string&                   name,
+        RbPtr<RbLanguageObject>                 executeFunction(const std::string&                   name,
                                                                 const std::vector<RbPtr<Argument> >& args);                             //!< Evaluate function (once)
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
         std::vector<RbPtr<RbFunction> >         findFunctions(const std::string& name) const;                                           //!< Return functions matching name

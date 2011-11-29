@@ -40,27 +40,6 @@ const VectorString& RbInternal::getClass(void) const {
 }
 
 
-/** Get type (first entry in class vector) */
-const std::string& RbInternal::getType(void) const {
-
-    return getClass()[0];
-}
-
-
-/** Are we of specified type? We need to check entire class vector in case we are derived from type. */
-bool RbInternal::isType(const std::string& type) const {
-
-    const VectorString& classVec = getClass();
-
-    for (size_t i=0; i<classVec.size(); i++) {
-        if (type == classVec[i])
-            return true;
-    }
-
-	return false;
-}
-
-
 /** Print info about object simply by using richInfo function */
 void RbInternal::printValue(std::ostream& o) const {
     

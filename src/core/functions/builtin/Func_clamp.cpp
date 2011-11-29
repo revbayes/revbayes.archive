@@ -47,9 +47,10 @@ RbPtr<RbLanguageObject> Func_clamp::executeFunction( void ) {
 
     // Get the stochastic node from the variable reference
     RbPtr<DAGNode> theDagNode = (*args)[0]->getDagNode();
-    while (theDagNode->isType(DeterministicNode_name)) {
-        theDagNode = static_cast<DeterministicNode*>( (DAGNode*)theDagNode )->getFunction()->execute();
-    }
+//    while (theDagNode->isType(DeterministicNode_name)) {
+//        RbPtr<RbLanguageObject> val = static_cast<DeterministicNode*>( (DAGNode*)theDagNode )->getFunction()->execute();
+//        theDagNode = 
+//    }
     
     RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( (DAGNode*) theDagNode) );
     if ( !theNode )

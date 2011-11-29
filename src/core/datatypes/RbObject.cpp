@@ -109,6 +109,20 @@ bool RbObject::isConvertibleTo(const TypeSpec& typeSpec) const {
 }
 
 
+/** Are we of specified type? We need to check entire class vector in case we are derived from type. */
+bool RbObject::isType(const std::string& type) const {
+    
+    const VectorString& classVec = getClass();
+    
+    for (size_t i=0; i<classVec.size(); i++) {
+        if (type == classVec[i])
+            return true;
+    }
+    
+	return false;
+}
+
+
 /** Are we of specified language type? */
 bool RbObject::isTypeSpec(const TypeSpec& typeSpec) const {
     

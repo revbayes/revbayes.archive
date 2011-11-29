@@ -391,37 +391,37 @@ RbPtr<Variable> SyntaxVariable::evaluateContent(RbPtr<Environment> env) {
         for (std::list<RbPtr<SyntaxElement> >::const_iterator it=index->begin(); it!=index->end(); it++) {
             RbPtr<SyntaxElement>               indexSyntaxElement     = *it;
             RbPtr<Variable>                    indexVar               = indexSyntaxElement->evaluateContent(env);
-//            const RbPtr<RbLanguageObject>      theValue               = indexVar->getValue();
-//            if ( !theValue->isTypeSpec(Natural_name) && !theValue->isConvertibleTo(Natural_name) ) 
-//                throw RbException("Could not access index with type xxx because only natural indices are supported!");
-//            size_t                             indexValue             = dynamic_cast<const Natural*>(theValue->convertTo(Natural_name))->getValue() - 1;
-//            RbPtr<RbObject>                   subElement              = theVar->getDagNode()->getElement(indexValue);
+            const RbPtr<RbLanguageObject>      theValue               = indexVar->getValue();
+            if ( !theValue->isTypeSpec(Natural_name) && !theValue->isConvertibleTo(Natural_name) ) 
+                throw RbException("Could not access index with type xxx because only natural indices are supported!");
+            size_t                             indexValue             = dynamic_cast<const Natural*>(theValue->convertTo(Natural_name))->getValue() - 1;
+            RbPtr<RbObject>                   subElement              = theVar->getDagNode()->getElement(indexValue);
+            
+            if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) ))
+                theVar = dynamic_cast<VariableSlot*>( (RbObject*)subElement )->getVariable();
+            else 
+                theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)subElement ) ) ) ) ) );
 
-            // convert the value into a member object
-            RbPtr<MemberObject> mObject( static_cast<MemberObject*>( (RbObject*)theVar->getValue() ) );
-            
-            // get the method table for this member object
-            // TODO: We shouldn't allow const casts!!!
-            MethodTable* mt = const_cast<MethodTable*>( (const MethodTable*)mObject->getMethods() );
-            
-            // create the arguments which consist only of the single paramater inside the square brackets
-            std::vector<RbPtr<Argument> > args;
-            args.push_back( RbPtr<Argument>( new Argument( indexVar ) ) );
-            
-            // get the member function with name "[]"
-            RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( (RbFunction*)mt->getFunction( "[]", args ) ) );
-            
-            // set the member object for the member function
-            theMemberFunction->setMemberObject(mObject);
-            RbPtr<RbFunction> func( theMemberFunction );
+//            // convert the value into a member object
+//            RbPtr<MemberObject> mObject( static_cast<MemberObject*>( (RbObject*)theVar->getValue() ) );
+//            
+//            // get the method table for this member object
+//            // TODO: We shouldn't allow const casts!!!
+//            MethodTable* mt = const_cast<MethodTable*>( (const MethodTable*)mObject->getMethods() );
+//            
+//            // create the arguments which consist only of the single paramater inside the square brackets
+//            std::vector<RbPtr<Argument> > args;
+//            args.push_back( RbPtr<Argument>( new Argument( indexVar ) ) );
+//            
+//            // get the member function with name "[]"
+//            RbPtr<MemberFunction> theMemberFunction( static_cast<MemberFunction*>( (RbFunction*)mt->getFunction( "[]", args ) ) );
+//            
+//            // set the member object for the member function
+//            theMemberFunction->setMemberObject(mObject);
+//            RbPtr<RbFunction> func( theMemberFunction );
+//            
+//            theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new DeterministicNode( func ) ) ) );
 
-            theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new DeterministicNode( func ) ) ) );
-            
-//            if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) ))
-//                theVar = dynamic_cast<VariableSlot*>( (RbObject*)subElement )->getVariable();
-//            else 
-//                theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)subElement ) ) ) ) ) );
-            
         }
     }
         

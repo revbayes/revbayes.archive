@@ -70,8 +70,8 @@ class MemberObject: public RbLanguageObject {
         virtual void                        setMemberVariable(const std::string& name, RbPtr<Variable> var);                    //!< Set member variable
 
         // Member method functions
-        RbPtr<DAGNode>                      executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args);  //!< Direct call of member method
-        virtual RbPtr<DAGNode>              executeOperation(const std::string& name, const RbPtr<Environment>& args);          //!< Override to map member methods to internal functions
+        RbPtr<RbLanguageObject>             executeMethod(const std::string& name, const std::vector<RbPtr<Argument> >& args);  //!< Direct call of member method
+        virtual RbPtr<RbLanguageObject>     executeOperation(const std::string& name, const RbPtr<Environment>& args);          //!< Override to map member methods to internal functions
         virtual RbPtr<const MethodTable>    getMethods(void) const;                                                             //!< Get member methods
 
         virtual bool                        supportsIndex(void) const { return false; }                                         //!< Does object support index operator?

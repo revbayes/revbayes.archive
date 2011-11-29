@@ -67,7 +67,7 @@ DeterministicNode::DeterministicNode( RbPtr<RbFunction> func ) : VariableNode(fu
     function = func;
     
     /* Set value and stored value */
-    RbPtr<RbLanguageObject> retVal = function->execute()->getValue();
+    RbPtr<RbLanguageObject> retVal = function->execute();
     
     value           = retVal;
     storedValue     = RbPtr<RbLanguageObject>::getNullPtr();
@@ -381,8 +381,8 @@ void DeterministicNode::update( void ) {
         // set the stored value and release the old stored value
         storedValue     = value;
         
-        // compute a new value, set and retain it
-        value = function->execute()->getValue();
+        // compute a new value
+        value = function->execute();
         
         // mark as changed
         changed         = true;
