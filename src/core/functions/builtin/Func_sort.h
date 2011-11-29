@@ -115,7 +115,8 @@ const VectorString& Func_sort<valType>::getClass( void ) const {
 template <typename valType> 
 const TypeSpec& Func_sort<valType>::getReturnType( void ) const {
 	
-    return valType().getTypeSpec();
+    static TypeSpec retType = valType().getTypeSpec();
+    return retType;
 }
 
 
