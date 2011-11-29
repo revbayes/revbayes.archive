@@ -344,7 +344,7 @@
     // formatted string to the parser
     const char* cmdAsCStr = [fileToOpen UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\");";
+    std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
     std::cout << "line = \"" << line << "\"" << std::endl;
     int coreResult = Parser::getParser().processCommand(line);
     std::cout << "finished parsing, coreResult = " << coreResult << std::endl;

@@ -279,6 +279,7 @@ std::string Environment::generateUniqueVariableName(void) {
         if (existsVariable(theName) == false)
             uniqueName = true;
         } while (uniqueName == false);
+    
     return theName;
 }
 
