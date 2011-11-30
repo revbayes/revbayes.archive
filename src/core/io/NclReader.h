@@ -64,6 +64,7 @@ class NclReader{
         RbPtr<CharacterData>                    createDnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold DNA data
         RbPtr<CharacterData>                    createRnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold RNA data
         RbPtr<CharacterData>                    createStandardMatrix(NxsCharactersBlock* charblock);                            //!< Create an object to hold standard data
+        RbPtr<CharacterData>                    createUnalignedAminoAcidMatrix(NxsUnalignedBlock* charblock);                   //!< Create an object to hold amino acid data
         RbPtr<CharacterData>                    createUnalignedDnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold DNA data
         bool                                    fileExists(const char *fn) const;                                               //!< Returns whether a file exists
         std::string                             intuitDataType(std::string& s);                                                 //!< Attempt to determine the type of data

@@ -79,6 +79,7 @@ class CharacterData : public Matrix {
         const std::string&                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         bool                                getIsHomologyEstablished(void) { return isHomologyEstablished; }            //!< Returns whether the homology of the characters has been established
         size_t                              getNumberOfCharacters(void) const;                                          //!< Number of characters
+        size_t                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
         size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
         RbPtr<const TaxonData>              getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix

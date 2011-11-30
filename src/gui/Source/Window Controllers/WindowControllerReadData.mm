@@ -189,6 +189,10 @@
     NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
     RbData* m = [[RbData alloc] init];
     [m setNumTaxa:(int)(cd->getNumberOfTaxa())];
+    if ( cd->getIsHomologyEstablished() == true )
+        [m setIsHomologyEstablished:YES];
+    else
+        [m setIsHomologyEstablished:NO];
     [m setNumCharacters:(int)(cd->getNumberOfCharacters())];
     [m setName:nsfn];
     if ( cd->getDataType() == "dna" )
@@ -209,7 +213,7 @@
         [m addTaxonName:taxonName];
         RbTaxonData* rbTaxonData = [[RbTaxonData alloc] init];
         [rbTaxonData setTaxonName:taxonName];
-        for (int j=0; j<cd->getNumberOfCharacters(); j++)
+        for (int j=0; j<cd->getNumberOfCharacters(i); j++)
             {
             RbPtr<const Character> theChar = td->getCharacter(j);
             RbDataCell* cell = [[RbDataCell alloc] init];

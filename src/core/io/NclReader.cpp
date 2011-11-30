@@ -65,7 +65,6 @@ std::vector<RbPtr<CharacterData> > NclReader::convertFromNcl(std::vector<std::st
 	std::vector<RbPtr<CharacterData> > cmv;
     
 	int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-//    std::cout << "numTaxaBlocks = " << numTaxaBlocks << std::endl;
 	int k = 0;
 	for (int tBlck=0; tBlck<numTaxaBlocks; tBlck++)
         {
@@ -73,8 +72,6 @@ std::vector<RbPtr<CharacterData> > NclReader::convertFromNcl(std::vector<std::st
 		std::string taxaBlockTitle          = taxaBlock->GetTitle();
 		const unsigned nCharBlocks          = nexusReader.GetNumCharactersBlocks(taxaBlock);
         const unsigned nUnalignedCharBlocks = nexusReader.GetNumUnalignedBlocks(taxaBlock);
-//        std::cout << "nCharBlocks          = " << nCharBlocks << std::endl;
-//        std::cout << "nUnalignedCharBlocks = " << nUnalignedCharBlocks << std::endl;
         
         // make alignment objects
 		for (unsigned cBlck=0; cBlck<nCharBlocks; cBlck++)
@@ -136,7 +133,7 @@ std::vector<RbPtr<CharacterData> > NclReader::convertFromNcl(std::vector<std::st
                 }
 			else if (dt == NxsCharactersBlock::protein)
                 {
-                //m = createAminoAcidMatrix(charBlock);
+                m = createUnalignedAminoAcidMatrix(charBlock);
                 }
 			else if (dt == NxsCharactersBlock::standard)
                 {
@@ -200,7 +197,6 @@ RbPtr<std::vector<RbPtr<TreePlate> > > NclReader::convertTreesFromNcl(void) {
 	return rbTreesFromFile;
 }
 
-
 /** Create an object to hold amino acid data */
 RbPtr<CharacterData> NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock) {
  
@@ -257,6 +253,46 @@ RbPtr<CharacterData> NclReader::createAminoAcidMatrix(NxsCharactersBlock* charbl
     return cMat;
 }
 
+RbPtr<CharacterData> NclReader::createUnalignedAminoAcidMatrix(NxsUnalignedBlock* charblock) {
+
+    // check that the character block is of the correct type
+	if ( charblock->GetDataType() != NxsCharactersBlock::protein )
+        return RbPtr<CharacterData>::getNullPtr();
+    
+    // get the set of characters (and the number of taxa)
+	int numOrigTaxa = charblock->GetNTax();
+    NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
+        
+    // instantiate the character matrix
+	RbPtr<CharacterData> cMat( new CharacterData( AminoAcidState_name ) );
+    cMat->setIsHomologyEstablished(false);
+    
+	// read in the data, including taxon names
+	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+        {
+        // add the taxon name
+        NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
+        std::string tName  = NxsString::GetEscaped(tLabel).c_str();
+        
+        // allocate a vector of amino acid states
+        RbPtr<TaxonData> dataVec( new TaxonData(AminoAcidState_name, tName) );
+        dataVec->setTaxonName(tName);
+        
+        // add the sequence information for the sequence associated with the taxon
+        std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
+        for (int i=0; i<rowDataAsString.size(); i++)
+            {
+            RbPtr<AminoAcidState> aaState( new AminoAcidState() );
+            aaState->setState(rowDataAsString[i]);
+            dataVec->addCharacter( RbPtr<Character>( aaState ) );
+            }
+        
+        // add sequence to character matrix
+        cMat->addTaxonData( dataVec, true );
+        }
+        
+    return cMat;
+}
 
 /** Create an object to hold continuous data */
 RbPtr<CharacterData> NclReader::createContinuousMatrix(NxsCharactersBlock* charblock) {
@@ -860,7 +896,7 @@ bool NclReader::isPhylipFile(std::string& fn, std::string& dType, bool& isInterl
 /** Read a list of file names contained in a map (with file format info too) */
 std::vector<RbPtr<CharacterData> > NclReader::readMatrices(const std::map<std::string,std::string>& fileMap) {
 
-    // allocate a vector of matrices
+    // instantiate a vector of matrices
     std::vector<RbPtr<CharacterData> > cmv;
 
     // We loop through the map that contains as the key the path and name of the file to be read and as the

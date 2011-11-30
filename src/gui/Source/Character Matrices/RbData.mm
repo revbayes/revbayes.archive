@@ -7,6 +7,7 @@
 @implementation RbData
 
 @synthesize dataType;
+@synthesize isHomologyEstablished;
 @synthesize name;
 @synthesize numCharacters;
 @synthesize numTaxa;
@@ -45,6 +46,7 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
     [aCoder encodeInt:dataType               forKey:@"dataType"];
+    [aCoder encodeBool:isHomologyEstablished forKey:@"isHomologyEstablished"];
 	[aCoder encodeInt:numTaxa                forKey:@"numTaxa"];
 	[aCoder encodeInt:numCharacters          forKey:@"numCharacters"];
 	[aCoder encodeObject:data                forKey:@"data"];
@@ -108,8 +110,9 @@
 		excludedCharacters  = [[NSMutableSet alloc] init];
         
         // initialize some variables
-		numTaxa            = 0;
-		numCharacters      = 0;
+		numTaxa               = 0;
+		numCharacters         = 0;
+        isHomologyEstablished = NO;
 		}
     return self;
 }
@@ -118,14 +121,15 @@
 
     if ( (self = [super init]) ) 
 		{
-        dataType            = [aDecoder decodeIntForKey:@"dataType"];
-		numTaxa             = [aDecoder decodeIntForKey:@"numTaxa"];
-		numCharacters       = [aDecoder decodeIntForKey:@"numCharacters"];
-		data                = [aDecoder decodeObjectForKey:@"data"];
-		name                = [aDecoder decodeObjectForKey:@"name"];
-		taxonNames          = [aDecoder decodeObjectForKey:@"taxonNames"];
-		excludedTaxa        = [aDecoder decodeObjectForKey:@"excludedTaxa"];
-		excludedCharacters  = [aDecoder decodeObjectForKey:@"excludedCharacters"];
+        dataType              = [aDecoder decodeIntForKey:@"dataType"];
+        isHomologyEstablished = [aDecoder decodeBoolForKey:@"isHomologyEstablished"];
+		numTaxa               = [aDecoder decodeIntForKey:@"numTaxa"];
+		numCharacters         = [aDecoder decodeIntForKey:@"numCharacters"];
+		data                  = [aDecoder decodeObjectForKey:@"data"];
+		name                  = [aDecoder decodeObjectForKey:@"name"];
+		taxonNames            = [aDecoder decodeObjectForKey:@"taxonNames"];
+		excludedTaxa          = [aDecoder decodeObjectForKey:@"excludedTaxa"];
+		excludedCharacters    = [aDecoder decodeObjectForKey:@"excludedCharacters"];
 		[data retain];
 		[name retain];
 		[taxonNames retain];
@@ -216,6 +220,12 @@
 			return YES;
 		}
 	return NO;
+}
+
+- (int)numCharactersForTaxon:(int)idx {
+
+    RbTaxonData* td = [data objectAtIndex:idx];
+    return [td numCharacters];
 }
 
 - (int)numExcludedCharacters {

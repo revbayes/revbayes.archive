@@ -8,6 +8,7 @@
 
 	NSMutableArray*      data;
     int                  dataType;
+    BOOL                 isHomologyEstablished;
 	NSString*            name;
 	int                  numCharacters;
 	int                  numTaxa;
@@ -17,6 +18,7 @@
 }
 
 @property (readwrite) int dataType;
+@property (readwrite) BOOL isHomologyEstablished;
 @property (readwrite,retain) NSString* name;
 @property (readwrite) int numCharacters;
 @property (readwrite) int numTaxa;
@@ -36,6 +38,7 @@
 - (BOOL)isCharacterMissAmbig:(int)idx;
 - (int)numExcludedCharacters;
 - (int)numExcludedTaxa;
+- (int)numCharactersForTaxon:(int)idx;
 - (void)print;
 - (void)restoreTaxonIndexed:(int)idx;
 - (void)restoreCharacterIndexed:(int)idx;

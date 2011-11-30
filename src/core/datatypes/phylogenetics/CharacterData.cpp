@@ -441,6 +441,17 @@ size_t CharacterData::getNumberOfCharacters(void) const {
 }
 
 
+/** Return the number of characters in each vector of taxon observations */
+size_t CharacterData::getNumberOfCharacters(size_t idx) const {
+
+    if (size() > 0) 
+        {
+        return getTaxonData(idx)->size();
+        }
+    return 0;
+}
+
+
 /** Get the number of states for the characters in this matrix. We
     assume that all of the characters in the matrix are of the same
     type and have the same number of potential states. */

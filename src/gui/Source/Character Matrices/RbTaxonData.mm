@@ -7,7 +7,6 @@
 
 @synthesize dataType;
 @synthesize taxonName;
-@synthesize numCharacters;
 
 - (void)addObservation:(RbDataCell*)dc {
 
@@ -29,7 +28,6 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
     [aCoder encodeInt:dataType      forKey:@"dataType"];
-	[aCoder encodeInt:numCharacters forKey:@"numCharacters"];
 	[aCoder encodeObject:data       forKey:@"data"];
 	[aCoder encodeObject:taxonName  forKey:@"taxonName"];
 }
@@ -44,7 +42,6 @@
 		
         // initialize some variables
 		dataType           = 0;
-		numCharacters      = 0;
         }
     return self;
 }
@@ -54,7 +51,6 @@
     if ( (self = [super init]) ) 
 		{
         dataType            = [aDecoder decodeIntForKey:@"dataType"];
-		numCharacters       = [aDecoder decodeIntForKey:@"numCharacters"];
 		data                = [aDecoder decodeObjectForKey:@"data"];
 		taxonName           = [aDecoder decodeObjectForKey:@"taxonName"];
 		[data retain];
@@ -71,16 +67,12 @@
 		data      = [[NSMutableArray alloc] init];
 		taxonName = [[NSString alloc] init];
 		
-        // initialize some variables
-		numCharacters = 0;
-
 		// copy information
 		if (d != nil)
 			{
-			numCharacters = [d numCharacters];
 			dataType      = [d dataType];
 			taxonName     = [NSString stringWithString:[d taxonName]];
-			for (int i=0; i<numCharacters; i++)
+			for (int i=0; i<[d numCharacters]; i++)
 				{
 				RbDataCell* c = [d dataCellIndexed:i]; 
 				RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
@@ -89,6 +81,11 @@
 			}
 		}
     return self;
+}
+
+- (int)numCharacters {
+
+    return (int)[data count];
 }
 
 @end
