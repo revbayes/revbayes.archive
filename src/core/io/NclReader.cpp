@@ -225,7 +225,7 @@ RbPtr<CharacterData> NclReader::createAminoAcidMatrix(NxsCharactersBlock* charbl
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
         
         // allocate a vector of Standard states
-        RbPtr<TaxonData> dataVec( new TaxonData(AminoAcidState_name,tName) );
+        RbPtr<TaxonData> dataVec( new TaxonData(AminoAcidState_name, tName) );
             
         for (NxsUnsignedSet::const_iterator cit = charset.begin(); cit != charset.end();cit++)
             {	

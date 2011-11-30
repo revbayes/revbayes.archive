@@ -44,6 +44,7 @@
 
 /** Constructor requires character type; passes member rules to base class */
 CharacterData::CharacterData( const std::string& charType ) : Matrix( charType, getMemberRules() ), typeSpec(CharacterData_name, RbPtr<TypeSpec>( new TypeSpec(charType) ) ) {
+
     characterType = charType;
 }
 
@@ -55,7 +56,6 @@ CharacterData::CharacterData( const CharacterData& x ) : Matrix( x ), typeSpec(C
     deletedTaxa       = x.deletedTaxa;
     deletedCharacters = x.deletedCharacters;
     fileName          = x.fileName;
-
     sequenceNames     = x.sequenceNames;
 }
 
@@ -341,6 +341,7 @@ const VectorString& CharacterData::getClass(void) const {
 
 
 const std::string& CharacterData::getDataType(void) const {
+
     return characterType;
 }
 

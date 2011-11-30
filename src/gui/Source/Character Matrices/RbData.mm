@@ -24,7 +24,11 @@
 
 - (RbDataCell*)cellWithRow:(int)r andColumn:(int)c {
 
+    if (r >= [data count])
+        NSLog(@"Error: Attempting to find RbTaxonData that is out-of-range");
     RbTaxonData* td = [data objectAtIndex:r];
+    if (c >= [td numCharacters])
+        NSLog(@"Error: Attempting to find RbDataCell that is out-of-range (%d)", [td numCharacters]);
     return [td dataCellIndexed:c];
 }
 
@@ -70,6 +74,11 @@
 
 	if ( [self isCharacterExcluded:idx] == NO )
 		[excludedCharacters addObject:[NSNumber numberWithInt:idx]];
+}
+
+- (RbTaxonData*)getDataForTaxonIndexed:(int)idx {
+
+    return [data objectAtIndex:idx];
 }
 
 - (void)includeAllCharacters {
@@ -175,12 +184,12 @@
 				if ( [d isCharacterExcluded:i] == YES )
 					[excludedCharacters addObject:[NSNumber numberWithInt:i]];
 				}
-			for (int i=0; i<[d dataSize]; i++)
-				{
-				RbDataCell* c = [d dataCellIndexed:i]; 
-				RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
-				[data addObject:newC];
-				}
+            for (int i=0; i<[d numTaxa]; i++)
+                {
+                RbTaxonData* td = [d getDataForTaxonIndexed:i];
+                RbTaxonData* newTd = [[RbTaxonData alloc] initWithRbTaxonData:td];
+                [data addObject:newTd];
+                }
 			}
 		}
     return self;
@@ -220,6 +229,20 @@
 			return YES;
 		}
 	return NO;
+}
+
+- (int)maxNumCharacters {
+
+    int n = 0;
+	id element;
+	NSEnumerator* tdEnumerator = [data objectEnumerator];
+	while ( (element = [tdEnumerator nextObject]) )
+		{
+        int x = [element numCharacters];
+        if (x > n)
+            n = x;
+		}
+    return n;
 }
 
 - (int)numCharactersForTaxon:(int)idx {
@@ -292,6 +315,37 @@
 - (NSString*)taxonWithIndex:(int)i {
 
 	return [taxonNames objectAtIndex:i];
+}
+
+- (void)writeToFile:(NSString*)fn {
+
+    if ( [self isHomologyEstablished] == YES )
+        {
+        // write out as NEXUS file
+        
+        }
+    else
+        {
+        // write out as FASTA file
+        NSMutableString* outStr = [NSMutableString stringWithCapacity:100];
+        for (int i=0; i<numTaxa; i++)
+            {
+            RbTaxonData* td = [self getDataForTaxonIndexed:i];
+            [outStr appendString:@"<"];
+            [outStr appendString:[td taxonName]];
+            [outStr appendString:@"\n"];
+            for (int j=0; j<[td numCharacters]; j++)
+                {
+                RbDataCell* dc = [td dataCellIndexed:j];
+                char c = [dc getDiscreteState];
+                [outStr appendString:[NSString stringWithFormat:@"%c", c]];
+                }
+            [outStr appendString:@"\n"];
+            }
+        
+        NSError* myError;
+        [outStr writeToFile:fn atomically:YES encoding:NSUTF8StringEncoding error:&myError];
+        }
 }
 
 @end

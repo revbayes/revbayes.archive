@@ -116,9 +116,8 @@
 }
 
 - (BOOL)initDataMatrixWithMatrix:(RbData*)matrix {
-	
+
 	int nRows = [matrix numTaxa];
-	int nCols = [matrix numCharacters];
 	nRows += 2;
 	
 	// create taxa matrix
@@ -163,6 +162,11 @@
 	[taxaMatrix setFrame:NSMakeRect(0.0,0.0,nameWidth,(cellHeight*nRows))];
 	
 	// create data matrix
+	int nCols = 0;
+    if ( [matrix isHomologyEstablished] == YES )
+        nCols = [matrix numCharacters];
+    else
+        nCols = [matrix maxNumCharacters];
 	BOOL isContinuous = NO;
 	if ( [[matrix cellWithRow:0 andColumn:0] dataType] == CONTINUOUS )
 		isContinuous = YES;
@@ -179,7 +183,12 @@
 	allCells = [dataMatrix cells];
 	for (int i=0; i<nRows; i++)
 		{
-		for (int j=0; j<nCols; j++)
+        int nc = 0;
+        if (i == 0 || i == 1)
+            nc = nCols;
+        else
+            nc = [matrix numCharactersForTaxon:(i-2)];
+		for (int j=0; j<nc; j++)
 			{
 			if (i == 0)
 				{
@@ -268,6 +277,30 @@
 					}
 				}
 			}
+        for (int j=nc; j<nCols; j++)
+            {
+			if (i == 0)
+				{
+
+				}
+			else if (i == 1)
+				{
+
+				}
+			else 
+				{
+				// add place-holder 
+                NSTextFieldCell* aCell = [allCells objectAtIndex:(i*nCols)+j];
+                [aCell setTag:1];
+                [aCell setEditable:NO];
+                [aCell setSelectable:NO];
+                [aCell setDrawsBackground:YES];
+                [aCell setBackgroundColor:headerBackground];
+                [aCell setTextColor:headerTextColor];
+                [aCell setAlignment:NSCenterTextAlignment];
+                [aCell setStringValue:@""];
+				}
+            }
 		}
 
 	for (int j=0; j<nCols; j++)

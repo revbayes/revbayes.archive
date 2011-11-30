@@ -45,6 +45,7 @@
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
+- (void)instantiateDataInCore;
 - (NSString*)nameOfMatrixIndexed:(int)idx;
 - (int)numDataMatrices;
 - (void)removeAllDataMatrices;

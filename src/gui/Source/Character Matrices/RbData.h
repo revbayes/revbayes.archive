@@ -29,6 +29,7 @@
 - (int)dataSize;
 - (void)excludeTaxonIndexed:(int)idx;
 - (void)excludeCharacterIndexed:(int)idx;
+- (RbTaxonData*)getDataForTaxonIndexed:(int)idx;
 - (void)includeAllCharacters;
 - (void)includeAllTaxa;
 - (int)indexOfTaxonNamed:(NSString*)nme;
@@ -36,12 +37,14 @@
 - (BOOL)isCharacterExcluded:(int)idx;
 - (BOOL)isTaxonExcluded:(int)idx;
 - (BOOL)isCharacterMissAmbig:(int)idx;
+- (int)maxNumCharacters;
 - (int)numExcludedCharacters;
 - (int)numExcludedTaxa;
 - (int)numCharactersForTaxon:(int)idx;
 - (void)print;
 - (void)restoreTaxonIndexed:(int)idx;
 - (void)restoreCharacterIndexed:(int)idx;
+- (void)writeToFile:(NSString*)fn;
 - (NSString*)taxonWithIndex:(int)i;
 
 @end

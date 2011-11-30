@@ -154,8 +154,28 @@
 		// initialize the control window
 		controlWindow = [[WindowControllerReadData alloc] initWithTool:self];
         dataInspector = nil;
+        
+        // make certain that the data matrices are instantiated in the core
+        [self instantiateDataInCore];
 		}
 	return self;
+}
+
+- (void)instantiateDataInCore {
+
+    // get a path to a temporary directory
+    NSString* myTemporaryDirectory = NSTemporaryDirectory();
+    NSLog(@"temporary directory = %@", myTemporaryDirectory);
+
+    // save all of the data matrices to the temporary directory
+    for (int i=0; i<[dataMatrices count]; i++)
+        {
+        NSMutableString* fn = [NSMutableString stringWithString:myTemporaryDirectory];
+        [fn appendString:@"xxx"];
+        
+        RbData* d = [dataMatrices objectAtIndex:i];
+        [d writeToFile:fn];
+        }
 }
 
 - (void)initializeImage {

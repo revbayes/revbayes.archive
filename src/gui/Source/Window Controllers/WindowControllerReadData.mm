@@ -1,12 +1,17 @@
 #include <map>
 #include <vector>
 #include <string>
+#include "AminoAcidState.h"
 #include "Character.h"
 #include "CharacterData.h"
+#include "CharacterContinuous.h"
 #include "DagNodeContainer.h"
+#include "DnaState.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
+#include "RnaState.h"
+#include "StandardState.h"
 #include "VariableSlot.h"
 #include "Workspace.h"
 
@@ -195,15 +200,15 @@
         [m setIsHomologyEstablished:NO];
     [m setNumCharacters:(int)(cd->getNumberOfCharacters())];
     [m setName:nsfn];
-    if ( cd->getDataType() == "dna" )
+    if ( cd->getDataType() == DnaState_name )
         [m setDataType:DNA];
-    else if ( cd->getDataType() == "rna" )
+    else if ( cd->getDataType() == RnaState_name )
         [m setDataType:RNA];
-    else if ( cd->getDataType() == "amino acid" )
+    else if ( cd->getDataType() == AminoAcidState_name )
         [m setDataType:AA];
-    else if ( cd->getDataType() == "standard" )
+    else if ( cd->getDataType() == StandardState_name )
         [m setDataType:STANDARD];
-    else if ( cd->getDataType() == "continuous" )
+    else if ( cd->getDataType() == CharacterContinuous_name )
         [m setDataType:CONTINUOUS];
 
     for (int i=0; i<cd->getNumberOfTaxa(); i++)
@@ -349,9 +354,7 @@
     const char* cmdAsCStr = [fileToOpen UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-    std::cout << "line = \"" << line << "\"" << std::endl;
     int coreResult = Parser::getParser().processCommand(line);
-    std::cout << "finished parsing, coreResult = " << coreResult << std::endl;
     if (coreResult != 0)
         {
         [self readDataError:@"Data could not be read"];
@@ -361,7 +364,6 @@
     // retrieve the value (character data matrix or matrices) from the workspace
     RbPtr<RbLanguageObject> dv = NULL;
     dv = Workspace::userWorkspace()->getValue(variableName);
-    std::cout << "dv = " << dv << std::endl;
     if ( dv == NULL )
         {
         [self readDataError:@"Data could not be read"];
@@ -370,7 +372,6 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
-    std::cout << "dv type = " << dv->getType() << std::endl;
     DagNodeContainer* dnc = dynamic_cast<DagNodeContainer*>( (RbObject*)dv );
     CharacterData* cd = dynamic_cast<CharacterData*>( (RbObject*)dv );
     if ( dnc != NULL )
@@ -395,7 +396,6 @@
         }
     else if ( cd != NULL )
         {
-        std::cout << "cd = " << cd << std::endl;
         if (cd != NULL)
             {
             [myTool removeAllDataMatrices];
@@ -413,6 +413,9 @@
         [self readDataError:@"Data could not be read"];
         return NO;
         }
+        
+    // set the name of the variable in the tool
+    [myTool setDataWorkspaceName:[NSString stringWithUTF8String:(variableName.c_str())]];
 
 	return YES;
 }
