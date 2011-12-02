@@ -1,3 +1,7 @@
+#include <string>
+#include "Parser.h"
+#include "Workspace.h"
+
 #import "InOutlet.h"
 #import "RbData.h"
 #import "RevBayes.h"
@@ -167,15 +171,49 @@
     NSString* myTemporaryDirectory = NSTemporaryDirectory();
     NSLog(@"temporary directory = %@", myTemporaryDirectory);
 
-    // save all of the data matrices to the temporary directory
-    for (int i=0; i<[dataMatrices count]; i++)
+    if ( [dataMatrices count] == 1 )
         {
-        NSMutableString* fn = [NSMutableString stringWithString:myTemporaryDirectory];
-        [fn appendString:@"xxx"];
+        // there is only a single matrix that the core needs to
+        // read in
+        RbData* d = [dataMatrices objectAtIndex:0];
         
-        RbData* d = [dataMatrices objectAtIndex:i];
+        NSMutableString* fn = [NSMutableString stringWithString:myTemporaryDirectory];
+        [fn appendString:[d name]];
         [d writeToFile:fn];
+
+        const char* cStr = [dataWorkspaceName UTF8String];
+        std::string variableName = cStr;
+        
+        //std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+        //int coreResult = Parser::getParser().processCommand(line);
+        //if (coreResult != 0)
+        //    {
+        //    [self readDataError:@"Data could not be read"];
+        //    return NO;
+        //    }
         }
+    else if ( [dataMatrices count] > 1 )
+        {
+        // if there are more than one data matrix in this tool, then we
+        // save all of the data matrices to a directory that we create in the
+        // temporary directory, and then have the core read them all
+        NSMutableString* tempDir = [NSMutableString stringWithString:myTemporaryDirectory];
+        [tempDir appendString:@"/"];
+        [tempDir appendString:@"tempDir"];
+        NSFileManager* fileManager= [NSFileManager defaultManager]; 
+        BOOL isDir = NO;
+        if ( ![fileManager fileExistsAtPath:tempDir isDirectory:&isDir] )
+            if ( ![fileManager createDirectoryAtPath:tempDir withIntermediateDirectories:YES attributes:nil error:NULL] )
+                NSLog(@"Error: Create folder failed %@", tempDir);
+
+        for (int i=0; i<[dataMatrices count]; i++)
+            {
+            RbData* d = [dataMatrices objectAtIndex:i];
+            
+            }
+        }
+
+
 }
 
 - (void)initializeImage {

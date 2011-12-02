@@ -62,6 +62,11 @@ void NclReader::constructTreefromNclRecursively(RbPtr<TopologyNode> tn, const Nx
 /** Reads the blocks stored by NCL and converts them to RevBayes character matrices */
 std::vector<RbPtr<CharacterData> > NclReader::convertFromNcl(std::vector<std::string>& fnv) {
     
+    for (std::vector<std::string>::iterator p = fnv.begin(); p != fnv.end(); p++)
+        {
+        std::cout << "fnv = \"" << *p << "\" \"" << findFileNameFromPath(*p) << "\"" << std::endl;
+        }
+    
 	std::vector<RbPtr<CharacterData> > cmv;
     
 	int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
@@ -111,7 +116,8 @@ std::vector<RbPtr<CharacterData> > NclReader::convertFromNcl(std::vector<std::st
                         
 			if (m != NULL)
                 {
-                m->setFileName( fnv[k++] );
+                std::string tempFileName = findFileNameFromPath(fnv[k++]);
+                m->setFileName( tempFileName );
 				cmv.push_back( m );
                 }
             }
@@ -577,6 +583,18 @@ bool NclReader::fileExists(const char* fn) const {
 		exists = true;
         }
 	return exists;
+}
+
+
+std::string NclReader::findFileNameFromPath(const std::string& fp) const {
+
+    std::string::size_type pos = fp.find_last_of('/');
+    if ( pos != std::string::npos )
+        {
+        std::string fn = fp.substr(pos+1, fp.size()-pos-1);
+        return fn;
+        }
+    return "";
 }
 
 
