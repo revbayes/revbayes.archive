@@ -322,7 +322,39 @@
     if ( [self isHomologyEstablished] == YES )
         {
         // write out as NEXUS file
-        
+        NSMutableString* outStr = [NSMutableString stringWithCapacity:100];
+        [outStr appendString:@"#NEXUS\n\n"];
+        [outStr appendString:@"begin data;\n"];
+        [outStr appendFormat:@"   dimensions ntax=%d nchar=%d;\n", numTaxa, numCharacters];
+        [outStr appendString:@"   format datatype="];
+        if ( dataType == DNA )
+            [outStr appendString:@"DNA;\n"];
+        else if ( dataType == RNA )
+            [outStr appendString:@"RNA;\n"];
+        else if ( dataType == AA )
+            [outStr appendString:@"protein;\n"];
+        else if ( dataType == STANDARD )
+            [outStr appendString:@"standard;\n"];
+        [outStr appendString:@"   matrix\n"];
+        for (int i=0; i<numTaxa; i++)
+            {
+            RbTaxonData* td = [self getDataForTaxonIndexed:i];
+            [outStr appendString:@"   "];
+            [outStr appendString:[td taxonName]];
+            [outStr appendString:@"   "];
+            for (int j=0; j<[td numCharacters]; j++)
+                {
+                RbDataCell* dc = [td dataCellIndexed:j];
+                char c = [dc getDiscreteState];
+                [outStr appendString:[NSString stringWithFormat:@"%c", c]];
+                }
+            [outStr appendString:@"\n"];
+            }
+        [outStr appendString:@"   ;\n"];
+        [outStr appendString:@"end;\n\n"];
+
+        NSError* myError;
+        [outStr writeToFile:fn atomically:YES encoding:NSUTF8StringEncoding error:&myError];
         }
     else
         {

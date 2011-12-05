@@ -180,17 +180,18 @@
         NSMutableString* fn = [NSMutableString stringWithString:myTemporaryDirectory];
         [fn appendString:[d name]];
         [d writeToFile:fn];
+        NSLog(@"file name = %@", fn);
 
         const char* cStr = [dataWorkspaceName UTF8String];
         std::string variableName = cStr;
-        
-        //std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
-        //int coreResult = Parser::getParser().processCommand(line);
-        //if (coreResult != 0)
-        //    {
-        //    [self readDataError:@"Data could not be read"];
-        //    return NO;
-        //    }
+        const char* cmdAsCStr = [fn UTF8String];
+        std::string cmdAsStlStr = cmdAsCStr;
+        std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+        int coreResult = Parser::getParser().processCommand(line);
+        if (coreResult != 0)
+            NSLog(@"Error: Could not create data in workspace");
+        if ( !Workspace::userWorkspace()->existsVariable(variableName) )
+            NSLog(@"Error: Could not create data in workspace");
         }
     else if ( [dataMatrices count] > 1 )
         {
@@ -198,8 +199,8 @@
         // save all of the data matrices to a directory that we create in the
         // temporary directory, and then have the core read them all
         NSMutableString* tempDir = [NSMutableString stringWithString:myTemporaryDirectory];
-        [tempDir appendString:@"/"];
         [tempDir appendString:@"tempDir"];
+        [tempDir appendString:@"/"];
         NSFileManager* fileManager= [NSFileManager defaultManager]; 
         BOOL isDir = NO;
         if ( ![fileManager fileExistsAtPath:tempDir isDirectory:&isDir] )
@@ -209,11 +210,24 @@
         for (int i=0; i<[dataMatrices count]; i++)
             {
             RbData* d = [dataMatrices objectAtIndex:i];
-            
+
+            NSMutableString* fn = [NSMutableString stringWithString:tempDir];
+            [fn appendString:[d name]];
+            [d writeToFile:fn];
+            NSLog(@"file name = %@", fn);
             }
+            
+        const char* cStr = [dataWorkspaceName UTF8String];
+        std::string variableName = cStr;
+        const char* cmdAsCStr = [tempDir UTF8String];
+        std::string cmdAsStlStr = cmdAsCStr;
+        std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+        int coreResult = Parser::getParser().processCommand(line);
+        if (coreResult != 0)
+            NSLog(@"Error: Could not create data in workspace");
+        if ( !Workspace::userWorkspace()->existsVariable(variableName) )
+            NSLog(@"Error: Could not create data in workspace");
         }
-
-
 }
 
 - (void)initializeImage {
