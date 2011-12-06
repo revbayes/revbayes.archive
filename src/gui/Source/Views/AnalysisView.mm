@@ -1,7 +1,9 @@
 #import "AnalysisDocument.h"
 #import "AnalysisView.h"
+#import "Connection.h"
 #import "ConnectionPair.h"
 #import "InOutlet.h"
+#import "Outlet.h"
 #import "ScalingScrollView.h"
 #import "Tool.h"
 #import "ToolAlign.h"
@@ -172,6 +174,50 @@
 	itemEnumerator = [itemsPtr objectEnumerator];
 	while ( (element = [itemEnumerator nextObject]) )
 		{
+        // loop over the outlets
+		for (int i=0; i<[element numOutlets]; i++)
+            {
+			Outlet* theOutlet = [element outletIndexed:i];
+            for (int j=0; j<[theOutlet numberOfConnections]; j++)
+                {
+                NSLog(@"we are drawing a connection");
+                // get the tools at either end of the connecton and their size
+                Connection* c = [theOutlet connectionWithIndex:j];
+                Tool* t1 = [[c outlet] toolOwner];
+                Tool* t2 = [[c inlet] toolOwner];
+                NSSize s1 = [[t1 itemImageWithIndex:scaleIdx] size];
+                NSSize s2 = [[t2 itemImageWithIndex:scaleIdx] size];
+
+                // origin for tool 1
+                NSPoint p1 = [t1 itemLocation];
+				[self transformToBottomLeftCoordinates:&p1];
+                p1.x += s1.width * [[c outlet] position].x;
+                p1.y += s1.height * [[c outlet] position].y;
+                
+                // origin for tool 2
+                NSPoint p2 = [t2 itemLocation];
+				[self transformToBottomLeftCoordinates:&p2];
+                p2.x += s2.width * [[c outlet] position].x;
+                p2.y += s2.height * [[c outlet] position].y;
+                
+                // draw the connection, with kinks
+				NSBezierPath* connection = [NSBezierPath bezierPath];
+				[connection setLineJoinStyle:NSRoundLineJoinStyle];
+				[connection moveToPoint:p1];
+				[connection lineToPoint:p2];
+				[[theOutlet toolColor] set];
+				if ([c isSelected] == YES)
+					[connection setLineWidth:(6.0 * scaleFactor)];
+				else
+					[connection setLineWidth:(4.0 * scaleFactor)];
+				[connection stroke];
+                }
+            }
+        }
+#   if 0
+	itemEnumerator = [itemsPtr objectEnumerator];
+	while ( (element = [itemEnumerator nextObject]) )
+		{
 		for (int i=0; i<[element numOutlets]; i++)
 			{
 			InOutlet* ol = [element outletIndexed:i];
@@ -215,8 +261,55 @@
 				}
 			}
         }
+#   endif
 
     // draw the inlets and outlets
+    itemEnumerator = [itemsPtr objectEnumerator];
+	while ( (element = [itemEnumerator nextObject]) )
+		{
+        NSLog(@"drawing inlet/outlet for tool %@", element);
+        // get the rectangle for the tool
+        NSRect drawingRect;
+        drawingRect.origin = [element itemLocation];
+        drawingRect.size = [[element itemImageWithIndex:scaleIdx] size];
+        [self transformToBottomLeftCoordinates:(&drawingRect.origin)];
+        
+        NSPoint p1, p2, p3;
+        
+        // draw the inlets
+		for (int i=0; i<[element numInlets]; i++)
+			{
+			Inlet* theInlet = [element inletIndexed:i];
+            [theInlet pointsForToolWithRect:drawingRect atVertex1:&p1 andVertex2:&p2 andVertex3:&p3];
+			NSBezierPath *triangle = [NSBezierPath bezierPath];
+			[triangle moveToPoint:p1];
+			[triangle lineToPoint:p2];
+			[triangle lineToPoint:p3];
+			[triangle lineToPoint:p1];
+			[[element colorOfInletIndexed:i] set];
+			[triangle fill];
+            [[NSColor blackColor] set];
+            [triangle stroke];
+            }
+            
+        // draw the outlets
+        NSLog(@"number of oulets = %d", [element numOutlets]);
+		for (int i=0; i<[element numOutlets]; i++)
+			{
+			Outlet* theOutlet = [element outletIndexed:i];
+            [theOutlet pointsForToolWithRect:drawingRect atVertex1:&p1 andVertex2:&p2 andVertex3:&p3];
+			NSBezierPath *triangle = [NSBezierPath bezierPath];
+			[triangle moveToPoint:p1];
+			[triangle lineToPoint:p2];
+			[triangle lineToPoint:p3];
+			[triangle lineToPoint:p1];
+			[[element colorOfOutletIndexed:i] set];
+			[triangle fill];
+            [[NSColor blackColor] set];
+            [triangle stroke];
+            }
+        }
+#   if 0
     itemEnumerator = [itemsPtr objectEnumerator];
 	while ( (element = [itemEnumerator nextObject]) )
 		{
@@ -267,7 +360,7 @@
             [triangle stroke];
 			}
 		}
-        
+#   endif
     [NSGraphicsContext restoreGraphicsState];
         
     // draw the tool tip
@@ -305,6 +398,7 @@
         }
         
 	// draw an active drag between inlet/outlet
+#   if 0
 	if ( selection.selectedItem != nil && (selection.selectionType == INLET_SELECTION || selection.selectionType == OUTLET_SELECTION) )
 		{
 		InOutlet* ilol = selection.selectedItem;
@@ -337,7 +431,8 @@
 		[connection setLineWidth:(4.0 * scaleFactor)];
 		[connection stroke];
 		}
-		
+#   endif
+
 	// draw a sweep for multiple selection
 	if (sweepAction == YES)
 		{
@@ -847,16 +942,14 @@
 	while ( (element = [enumerator nextObject]) )
 		{
         [element setIsSelected:NO];
-		for (int i=0; i<[element numInlets]; i++)
+        for (int i=0; i<[element numOutlets]; i++)
             {
-			InOutlet* iolet = [element inletIndexed:i];
-			[iolet setIsSelected:NO];
-			}
-		for (int i=0; i<[element numOutlets]; i++)
-            {
-			InOutlet* iolet = [element outletIndexed:i];
-			[iolet setIsSelected:NO];
-			}
+            Outlet* ol = [element outletIndexed:i];
+            for (int j=0; j<[ol numberOfConnections]; j++)
+                {
+                [[ol connectionWithIndex:j] setIsSelected:NO];
+                }
+            }
 		}
     [self setNeedsDisplay:YES];
 }
@@ -992,6 +1085,7 @@
         inspRect.origin.y += toolRect.size.height * 0.05;
 
 		// 1, check to see if the point is in any of the inlets 
+#if 0
 		for (int i=0; i<[element numInlets]; i++)
 			{
 			InOutlet* il = [element inletIndexed:i];
@@ -1016,7 +1110,7 @@
 				return mySelection;
 				}
 			}
-            
+#endif
         // 3, check if the point is the information button (opening the control window)
         if ( CGRectContainsPoint( NSRectToCGRect(infoRect), NSPointToCGPoint(p) ) )
             {
@@ -1047,6 +1141,7 @@
             }
             
         // 6, check if the point is any of the connections between objects
+#if 0
 		for (int i=0; i<[element numOutlets]; i++)
             {
 			InOutlet* ol = [element outletIndexed:i];
@@ -1092,7 +1187,7 @@
                     }
                }
             }
-			
+#endif			
 		}
 		
 	return mySelection;
@@ -1140,6 +1235,7 @@
             }
             
         // decide if any of the tool's connections are in the sweep rectangle
+#if 0
 		for (int i=0; i<[element numOutlets]; i++)
 			{
 			InOutlet* ol = [element outletIndexed:i];
@@ -1205,6 +1301,7 @@
 
 				}
 			}
+#endif
         }
         
     // update the view to reflect the possible selections

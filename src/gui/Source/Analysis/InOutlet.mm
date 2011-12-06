@@ -1,16 +1,24 @@
 #import "InOutlet.h"
+#import "RevBayes.h"
 #import "Tool.h"
 
 
 
 @implementation InOutlet
 
-@synthesize amInlet;
-@synthesize isSelected;
-@synthesize inOutletRect;
-@synthesize partner;
+@synthesize position;
 @synthesize toolColor;
 @synthesize toolOwner;
+
+- (BOOL)amInlet {
+
+    return NO;
+}
+
+- (BOOL)amOutlet {
+
+    return NO;
+}
 
 - (void)dealloc {
 
@@ -19,37 +27,9 @@
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
-	[aCoder encodeBool:amInlet        forKey:@"amInlet"];
-	[aCoder encodeBool:isSelected     forKey:@"isSelected"];
-	[aCoder encodeObject:toolColor    forKey:@"toolColor"];
-	[aCoder encodeObject:toolOwner    forKey:@"toolOwner"];
-	[aCoder encodeRect:inOutletRect   forKey:@"inOutletRect"];
-	[aCoder encodePoint:inOutletPoint forKey:@"inOutletPoint"];
-	[aCoder encodeObject:partner      forKey:@"partner"];
-}
-
-- (void)flipSelected {
-
-	if (isSelected == YES)
-		isSelected = NO;
-	else 
-		isSelected = YES;
-}
-
-- (NSPoint)getInOutletPointFromPoint:(NSPoint)p {
-
-	NSPoint mp = inOutletRect.origin;
-	mp.x += p.x + inOutletRect.size.width*0.5;
-	mp.y += p.y + inOutletRect.size.height*0.5;
-	return mp;
-}
-
-- (NSRect)getInOutletRectFromPoint:(NSPoint)p {
-
-	NSRect r = inOutletRect;
-	r.origin.x += p.x;
-	r.origin.y += p.y;
-	return r;
+    [aCoder encodePoint:position   forKey:@"position"];
+	[aCoder encodeObject:toolColor forKey:@"toolColor"];
+	[aCoder encodeObject:toolOwner forKey:@"toolOwner"];
 }
 
 - (id)init {
@@ -62,13 +42,9 @@
 
     if ( (self = [super init]) ) 
 		{
-		amInlet       = [aDecoder decodeBoolForKey:@"amInlet"];
-		isSelected    = [aDecoder decodeBoolForKey:@"isSelected"];
-		toolColor     = [aDecoder decodeObjectForKey:@"toolColor"];
-		toolOwner     = [aDecoder decodeObjectForKey:@"toolOwner"];
-		inOutletRect  = [aDecoder decodeRectForKey:@"inOutletRect"];
-		inOutletPoint = [aDecoder decodePointForKey:@"inOutletPoint"];
-		partner       = [aDecoder decodeObjectForKey:@"partner"];
+		toolColor = [aDecoder decodeObjectForKey:@"toolColor"];
+		toolOwner = [aDecoder decodeObjectForKey:@"toolOwner"];
+		position  = [aDecoder decodePointForKey:@"position"];
 		}
 	return self;
 }
@@ -78,9 +54,46 @@
     if ( (self = [super init]) ) 
 		{
 		toolOwner = t;
-		partner   = nil;
+        position = NSMakePoint(1.0, 0.5);
 		}
     return self;
+}
+
+- (int)numberOfConnections {
+
+    return 0;
+}
+
+- (void)pointsForToolWithRect:(NSRect)r atVertex1:(NSPoint*)v1 andVertex2:(NSPoint*)v2 andVertex3:(NSPoint*)v3 {
+    
+}
+
+- (NSRect)rectForToolWithRect:(NSRect)r {
+
+    // the rect that will be returned, containing the inlet/outlet's position
+    NSRect myRect;
+
+    // calculate the size of the rectangle's sides
+    float mySideLength = r.size.width * 0.2;
+    
+    // we assume that the coordinate system or r is bottom-left
+    // first, set the origin of the rectangle
+    myRect.origin.x = r.origin.x + r.size.width * position.x;
+    myRect.origin.y = r.origin.y + r.size.height * position.y;
+    if (position.x < 0.01)
+        myRect.origin.x -= mySideLength * BURY_FRACTION;
+    else
+        myRect.origin.x -= mySideLength * (1.0 - BURY_FRACTION);
+    if (position.y < 0.01)
+        myRect.origin.y -= mySideLength * BURY_FRACTION;
+    else
+        myRect.origin.y -= mySideLength * (1.0 - BURY_FRACTION);
+    
+    // then, set the size of the rectangle
+    myRect.size.width = mySideLength;
+    myRect.size.height = mySideLength;
+    
+    return myRect;
 }
 
 @end

@@ -754,6 +754,9 @@
 		227E35FF1486A10E00B81680 /* PreferencesPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 227E34C51486A10E00B81680 /* PreferencesPanel.xib */; };
 		227E36001486A10E00B81680 /* RegistrationPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 227E34C61486A10E00B81680 /* RegistrationPanel.xib */; };
 		227E36011486A10E00B81680 /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 227E34C71486A10E00B81680 /* TextEditorWindow.xib */; };
+		22FF568D148D4400005A395D /* Inlet.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22FF568C148D4400005A395D /* Inlet.mm */; };
+		22FF5691148D4417005A395D /* Outlet.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22FF5690148D4417005A395D /* Outlet.mm */; };
+		22FF5694148D4437005A395D /* Connection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 22FF5693148D4437005A395D /* Connection.mm */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -1670,6 +1673,12 @@
 		227E34C51486A10E00B81680 /* PreferencesPanel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PreferencesPanel.xib; sourceTree = "<group>"; };
 		227E34C61486A10E00B81680 /* RegistrationPanel.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RegistrationPanel.xib; sourceTree = "<group>"; };
 		227E34C71486A10E00B81680 /* TextEditorWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextEditorWindow.xib; sourceTree = "<group>"; };
+		22FF568B148D4400005A395D /* Inlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Inlet.h; sourceTree = "<group>"; };
+		22FF568C148D4400005A395D /* Inlet.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Inlet.mm; sourceTree = "<group>"; };
+		22FF568F148D4417005A395D /* Outlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Outlet.h; sourceTree = "<group>"; };
+		22FF5690148D4417005A395D /* Outlet.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Outlet.mm; sourceTree = "<group>"; };
+		22FF5692148D4436005A395D /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = "<group>"; };
+		22FF5693148D4437005A395D /* Connection.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Connection.mm; sourceTree = "<group>"; };
 		6441D49714030FCF00A2A760 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../../scripts; sourceTree = "<group>"; };
 		6454895513FEDF13002ED337 /* RevBayes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RevBayes; sourceTree = BUILT_PRODUCTS_DIR; };
 		645EB76713FEE06200018F3A /* grammar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = grammar; sourceTree = "<group>"; };
@@ -2816,6 +2825,12 @@
 				227E33BF1486A10E00B81680 /* ConnectionPair.mm */,
 				227E33C01486A10E00B81680 /* InOutlet.h */,
 				227E33C11486A10E00B81680 /* InOutlet.mm */,
+				22FF568B148D4400005A395D /* Inlet.h */,
+				22FF568C148D4400005A395D /* Inlet.mm */,
+				22FF568F148D4417005A395D /* Outlet.h */,
+				22FF5690148D4417005A395D /* Outlet.mm */,
+				22FF5692148D4436005A395D /* Connection.h */,
+				22FF5693148D4437005A395D /* Connection.mm */,
 			);
 			path = Analysis;
 			sourceTree = "<group>";
@@ -4015,6 +4030,9 @@
 				227E35E41486A10E00B81680 /* WindowControllerRateMatrix.mm in Sources */,
 				227E35E51486A10E00B81680 /* WindowControllerReadData.mm in Sources */,
 				227E35E61486A10E00B81680 /* WindowControllerRegistration.mm in Sources */,
+				22FF568D148D4400005A395D /* Inlet.mm in Sources */,
+				22FF5691148D4417005A395D /* Outlet.mm in Sources */,
+				22FF5694148D4437005A395D /* Connection.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

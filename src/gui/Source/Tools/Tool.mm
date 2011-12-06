@@ -1,6 +1,9 @@
 #import "AnalysisDocument.h"
 #import "AnalysisView.h"
+#import "Connection.h"
+#import "Inlet.h"
 #import "InOutlet.h"
+#import "Outlet.h"
 #import "RevBayes.h"
 #import "Tool.h"
 
@@ -13,8 +16,7 @@
 
 - (void)addInletOfColor:(NSColor*)c {
 
-	InOutlet* il = [[InOutlet alloc] initWithTool:self];
-	[il setAmInlet:YES];
+	Inlet* il = [[Inlet alloc] initWithTool:self];
 	[il setToolColor:c];
 	[inlets addObject:il];
     [il release];
@@ -23,8 +25,7 @@
 
 - (void)addOutletOfColor:(NSColor*)c {
 
-	InOutlet* ol = [[InOutlet alloc] initWithTool:self];
-	[ol setAmInlet:NO];
+	Outlet* ol = [[Outlet alloc] initWithTool:self];
 	[ol setToolColor:c];
 	[outlets addObject:ol];
     [ol release];
@@ -82,10 +83,12 @@
 	return nil;
 }
 
-- (Tool*)getToolOfInlet:(InOutlet*)inlt {
+- (Tool*)getToolOfInlet:(Inlet*)inlt {
 
-    InOutlet* partnerOutlet = [inlt partner];
-    Tool* t = [partnerOutlet toolOwner];
+    Connection* c = [inlt connection];
+    if ( c == nil )
+        return nil;
+    Tool* t = [[c outlet] toolOwner];
     return t;
 }
 
@@ -116,12 +119,12 @@
 - (id)initWithScaleFactor:(float)sf andWindowNibName:(NSString*)wNibName {
     
     if ( (self = [super initWithScaleFactor:sf andWindowNibName:wNibName]) ) 
-    {
+        {
         inlets           = [[NSMutableArray alloc] init];
         outlets          = [[NSMutableArray alloc] init];
 		flagCount        = 0;
 		touchOnRevival   = NO;
-    }
+        }
     return self;
 }
 
@@ -144,25 +147,28 @@
 
 }
 
-- (InOutlet*)inletIndexed:(int)idx {
+- (Inlet*)inletIndexed:(int)idx {
 
 	return [inlets objectAtIndex:idx];
 }
 
 - (BOOL)isFullyConnected {
 
+    // we check the number of connections for the inlets and outlets
+    // if any inlet or outlet has 0 connections, then the tool is not fully
+    // connected
 	NSEnumerator* enumerator = [inlets objectEnumerator];
 	id element;
 	while ( (element = [enumerator nextObject]) )
         {
-        if ([element partner] == nil)
+        if ([element numberOfConnections] == 0)
             return NO;
         }
     
 	enumerator = [outlets objectEnumerator];
 	while ( (element = [enumerator nextObject]) )
         {
-        if ([element partner] == nil)
+        if ([element numberOfConnections] == 0)
             return NO;
         }
 
@@ -226,28 +232,64 @@
     return p;
 }
 
-- (InOutlet*)outletIndexed:(int)idx {
+- (Outlet*)outletIndexed:(int)idx {
 
 	return [outlets objectAtIndex:idx];
 }
 
 - (void)removeAllConnections {
 
+    // we always remove connections from the outlets. We first fill in a dictionary (map)
+    // with the key (connection address) and value (outlet address) of connections to remove
+    NSMutableDictionary* myMap = [NSMutableDictionary dictionaryWithCapacity:0];
+    
+    // we also keep track of tools downstream from the tool from which connections are removed
+    // so we can signal them to update their state
+    NSMutableArray* myToolSet = [NSMutableArray arrayWithCapacity:0];
+        
+    // add all of the connections to the inlets to the map of connections to remove
 	NSEnumerator* enumerator = [inlets objectEnumerator];
 	id element;
 	while ( (element = [enumerator nextObject]) )
         {
-        [[element partner] setPartner:nil];
-        [element setPartner:nil];
+        for (int i=0; i<[element numberOfConnections]; i++)
+            {
+            Connection* c = [element connectionWithIndex:i];
+            Outlet* theOutlet = [c outlet];
+            [myMap setObject:theOutlet forKey:c];
+            }
         }
     
+    // add all of the connections of the outlets to the map of connections to remove
 	enumerator = [outlets objectEnumerator];
 	while ( (element = [enumerator nextObject]) )
         {
-		Tool* t = [[element partner] toolOwner];
-        [[element partner] setPartner:nil];
-        [element setPartner:nil];
-		[t updateForConnectionChange];
+        for (int i=0; i<[element numberOfConnections]; i++)
+            {
+            Connection* c = [element connectionWithIndex:i];
+            Outlet* theOutlet = element;
+            [myMap setObject:theOutlet forKey:c];
+            Tool* t = [theOutlet toolOwner];
+            [myToolSet addObject:t];
+            }
+        }
+        
+    // now we remove the connections
+    NSEnumerator* keyEnumerator = [myMap keyEnumerator];
+    id key;
+	while ( (key = [keyEnumerator nextObject]) )
+        {
+        Connection* c = key;
+        Outlet* theOutlet = [key objectForKey:key];
+        [theOutlet removeConnection:c];
+        }
+        
+    // finally, we update the tools downstream from this tool
+	enumerator = [myToolSet objectEnumerator];
+	while ( (element = [enumerator nextObject]) )
+        {
+        Tool* t = element;
+        [t updateForConnectionChange];
         }
 }
 
@@ -340,24 +382,13 @@
 
 - (void)setInletLocationsForItemSized:(NSSize)s {
 
-    float itemWidth = s.width;
-    float inletSize = itemWidth * 0.2;
-
-	int n = [self numInlets];
-	NSPoint p = NSZeroPoint;
-	float space = (itemWidth - n * inletSize) / (n + 1);
-	float altitude = sqrt(inletSize*inletSize - (0.5*inletSize)*(0.5*inletSize));
-	
+    int n = [self numInlets];
 	for (int i=0; i<n; i++)
 		{
-		InOutlet* il = [self inletIndexed:i];
-		float y = p.y + i * (space + inletSize);
-		NSRect r;
-		r.origin = NSMakePoint( p.x - altitude * BURY_FRACTION, y + space );
-		r.size.width = altitude;
-		r.size.height = inletSize;
-		[il setInOutletRect:r];
-		}
+		Inlet* il = [self inletIndexed:i];
+        NSPoint p = NSMakePoint( 0.0, (double)(i+1)/(n+1) );
+        [il setPosition:p];
+        }
 }
 
 - (void)setInletLocations {
@@ -367,24 +398,13 @@
 
 - (void)setOutletLocationsForItemSized:(NSSize)s {
 
-    float itemWidth = s.width;
-    float inletSize = itemWidth * 0.2;
-
-	int n = [self numOutlets];
-	NSPoint p = NSZeroPoint;
-	float space = (itemWidth - n * inletSize) / (n + 1);
-	float altitude = sqrt(inletSize*inletSize - (0.5*inletSize)*(0.5*inletSize));
-	
+    int n = [self numOutlets];
 	for (int i=0; i<n; i++)
 		{
-		InOutlet* ol = [self outletIndexed:i];
-		float y = p.y + i * (space + inletSize);
-		NSRect r;
-		r.origin = NSMakePoint( p.x + itemWidth - altitude * (1.0-BURY_FRACTION), y + space );
-		r.size.width = altitude;
-		r.size.height = inletSize;
-		[ol setInOutletRect:r];
-		}
+		Outlet* il = [self outletIndexed:i];
+        NSPoint p = NSMakePoint( 1.0, (double)(i+1)/(n+1) );
+        [il setPosition:p];
+        }
 }
 
 - (void)setOutletLocations {
@@ -406,8 +426,12 @@
 	id element;
 	while ( (element = [enumerator nextObject]) )
         {
-		Tool* t = [[element partner] toolOwner];
-		[t updateForConnectionChange];
+        for (int i=0; i<[element numberOfConnections]; i++)
+            {
+            Connection* c = [element connectionWithIndex:i];
+            Tool* t = [[c inlet] toolOwner];
+            [t updateForConnectionChange];
+            }
         }
 }
 
@@ -417,8 +441,12 @@
 	id element;
 	while ( (element = [enumerator nextObject]) )
         {
-		Tool* t = [[element partner] toolOwner];
-		[t updateForConnectionChange];
+        for (int i=0; i<[element numberOfConnections]; i++)
+            {
+            Connection* c = [element connectionWithIndex:i];
+            Tool* t = [[c inlet] toolOwner];
+            [t updateForConnectionChange];
+            }
         }
 }
 

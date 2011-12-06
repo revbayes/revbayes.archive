@@ -1,6 +1,8 @@
 #import <Cocoa/Cocoa.h>
 #import "RbItem.h"
+@class Inlet;
 @class InOutlet;
+@class Outlet;
 
 
 
@@ -21,12 +23,12 @@
 - (NSColor*)colorOfOutletIndexed:(int)idx;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (InOutlet*)findInOutletWithColor:(NSColor*)c;
-- (Tool*)getToolOfInlet:(InOutlet*)inlt;
+- (Tool*)getToolOfInlet:(Inlet*)inlt;
 - (Tool*)getToolOfInletIndexed:(int)idx;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (id)initWithScaleFactor:(float)sf andWindowNibName:(NSString*)wNibName;
-- (InOutlet*)inletIndexed:(int)idx;
+- (Inlet*)inletIndexed:(int)idx;
 - (void)initializeImage;
 - (BOOL)isFullyConnected;
 - (int)numInlets;
@@ -34,7 +36,7 @@
 - (int)numOutlets;
 - (int)numOutletsOfColor:(NSColor*)c;
 - (NSPoint)originForControlWindow:(NSWindow*)win;
-- (InOutlet*)outletIndexed:(int)idx;
+- (Outlet*)outletIndexed:(int)idx;
 - (void)removeAllConnections;
 - (void)removeAllConnectionsToInlets;
 - (void)removeAllConnectionsToOutlets;
