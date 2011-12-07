@@ -20,10 +20,12 @@ typedef struct {
 
 }
 
+- (NSPoint)centerPointBetweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2;
 - (NSPoint)centerPointBetweenTool:(Tool*)t1 andTool:(Tool*)t2;
 - (float)distanceFromPoint:(NSPoint)a toPoint:(NSPoint)b;
 - (NSPoint)findClosestPointOnEdgeOfRect:(NSRect)r fromPoint:(NSPoint)p2;
 - (NSRect)getBoundsRectForInOutlet:(InOutlet*)iolet withCenterPoint:(NSPoint)cp whileInitializingAutomaton:(RbAutomaton*)a;
+- (NSRect)getBoundingRectForToolWithRect:(NSRect)r connectionOriginationPoint:(NSPoint)op andGoalPoint:(NSPoint)cp;
 - (void)mouseDown:(NSEvent*)event;
 - (NSPoint)newPointDistance:(float)d betweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2;
 - (BOOL)readFromPasteboard:(NSPasteboard*)pb;

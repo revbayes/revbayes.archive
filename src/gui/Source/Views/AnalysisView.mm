@@ -23,6 +23,24 @@
 
 @implementation AnalysisView
 
+- (NSPoint)centerPointBetweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2 {
+    
+    float h = fabsf(p1.x - p2.x) * 0.5;
+    float v = fabsf(p1.y - p2.y) * 0.5;
+    
+    NSPoint cp;
+    if (p1.x < p2.x)
+        cp.x = p1.x + h;
+    else
+        cp.x = p2.x + h;
+    if (p1.y < p2.y)
+        cp.y = p1.y + v;
+    else
+        cp.y = p2.y + v;
+    
+    return cp;
+}
+
 - (NSPoint)centerPointBetweenTool:(Tool*)t1 andTool:(Tool*)t2 {
 
     NSRect toolRect1;
@@ -211,6 +229,15 @@
 	itemEnumerator = [itemsPtr objectEnumerator];
 	while ( (element = [itemEnumerator nextObject]) )
 		{
+        // get the size for a standard tool...we assume all tools are the same size
+        NSSize toolSize = [[element itemImageWithIndex:scaleIdx] size]; 
+        NSRect r1, r2;
+        r1.size = toolSize;
+        r2.size = toolSize;
+        float vInc = toolSize.height * 0.2;
+        float hInc = toolSize.width  * 0.2;
+        
+        // loop over the outlets for this tool
 		for (int i=0; i<[element numOutlets]; i++)
             {
 			Outlet* theOutlet = [element outletIndexed:i];
@@ -219,23 +246,72 @@
                 // get the connection
                 Connection* c = [theOutlet connectionWithIndex:j];
 
-                // get the tools at either end of the connecton and their center
+                // get the rectangles for the two tools
                 Tool* t1 = [[c outlet] toolOwner];
                 Tool* t2 = [[c inlet] toolOwner];
-                NSPoint center = [self centerPointBetweenTool:t1 andTool:t2];
+                r1.origin = [t1 itemLocation];
+                r2.origin = [t2 itemLocation];
+				[self transformToBottomLeftCoordinates:&r1.origin];
+				[self transformToBottomLeftCoordinates:&r2.origin];
                 
+                // get the center of the outlet and inlet
+                NSPoint p1 = [[c outlet] pointForToolWithRect:r1];
+                NSPoint p2 = [[c inlet]  pointForToolWithRect:r2];
+                if ( [[c outlet] isOnUpperEdge] == YES )
+                    p1.y += vInc;
+                else if ( [[c outlet] isOnLowerEdge] == YES )
+                    p1.y -= vInc;
+                else if ( [[c outlet] isOnLeftEdge] == YES )
+                    p1.x -= hInc;
+                else
+                    p1.x += hInc;
+                if ( [[c inlet] isOnUpperEdge] == YES )
+                    p2.y += vInc;
+                else if ( [[c inlet] isOnLowerEdge] == YES )
+                    p2.y -= vInc;
+                else if ( [[c inlet] isOnLeftEdge] == YES )
+                    p2.x -= hInc;
+                else
+                    p2.x += hInc;
+                NSPoint center = [self centerPointBetweenPoint:p1 andPoint:p2];
+
+                // expand the rectangles a bit
+                r1.origin.x -= hInc;
+                r1.origin.y -= vInc;
+                r1.size.width += 2.0 * hInc;
+                r1.size.height += 2.0 * vInc;
+                r2.origin.x -= hInc;
+                r2.origin.y -= vInc;
+                r2.size.width += 2.0 * hInc;
+                r2.size.height += 2.0 * vInc;
+                    
                 // get the rectangles for each tool
                 RbAutomaton myAutomaton;
-				NSRect r1 = [self getBoundsRectForInOutlet:[c outlet] withCenterPoint:center whileInitializingAutomaton:&myAutomaton];
-				NSRect r2 = [self getBoundsRectForInOutlet:[c inlet]  withCenterPoint:center whileInitializingAutomaton:&myAutomaton];
+				//NSRect r1 = [self getBoundsRectForInOutlet:[c outlet] withCenterPoint:center whileInitializingAutomaton:&myAutomaton];
+				//NSRect r2 = [self getBoundsRectForInOutlet:[c inlet]  withCenterPoint:center whileInitializingAutomaton:&myAutomaton];
+                NSRect br1 = [self getBoundingRectForToolWithRect:r1 connectionOriginationPoint:p1 andGoalPoint:center];
+                NSRect br2 = [self getBoundingRectForToolWithRect:r2 connectionOriginationPoint:p2 andGoalPoint:center];
 
                 [[NSColor blueColor] set];
-                [NSBezierPath strokeRect:r1];
+                [NSBezierPath strokeRect:br1];
                 [[NSColor redColor] set];
-                [NSBezierPath strokeRect:r2];
-
+                [NSBezierPath strokeRect:br2];
+                NSPoint a = center;
+                NSPoint b = center;
+                a.x -= 10.0;
+                b.x += 10.0;
+                NSBezierPath* connection = [NSBezierPath bezierPath];
+                [connection moveToPoint:a];
+                [connection lineToPoint:b];
+                [connection stroke];
+                a = center;
+                b = center;
+                a.y -= 10.0;
+                b.y += 10.0;
+                [connection moveToPoint:a];
+                [connection lineToPoint:b];
+                [connection stroke];
                 
-
                 }
             }
         }
@@ -530,28 +606,20 @@
             travelRect.size.width += toolRect.size.width * 0.2;
         }
         
-    if (toolRect.origin.y < cp.y)
-        {
-        travelRect.origin.y = toolRect.origin.y;
-        if ( [iolet isOnLowerEdge] == YES )
-            {
-            travelRect.origin.y -= toolRect.size.height * 0.2;
-            if (travelRect.origin.y < 0.0)
-                travelRect.origin.y = 0.0;
-            }
-        travelRect.size.height = cp.y - travelRect.origin.y;
-        if ( [iolet isOnUpperEdge] == YES && travelRect.size.height < toolRect.size.height + toolRect.size.height * 0.2 )
-            travelRect.size.height = toolRect.size.height + toolRect.size.height * 0.2;
-        }
-    else
-        {
+    travelRect.origin.y = toolRect.origin.y;
+    if ( [iolet isOnLowerEdge] == YES )
+        travelRect.origin.y -= toolRect.size.height * 0.2;
+    if (travelRect.origin.y > cp.y)
         travelRect.origin.y = cp.y;
-        if ( [iolet isOnLowerEdge] == YES && toolRect.origin.y - toolRect.size.height * 0.2 < cp.y )
-            travelRect.origin.y = toolRect.origin.y - toolRect.size.height * 0.2;
-        travelRect.size.height = toolRect.origin.y - cp.y + toolRect.size.height;
-        if ( [iolet isOnUpperEdge] == YES )
-            travelRect.size.height += toolRect.size.height * 0.2;
-        }
+    
+    float h1 = cp.y - travelRect.origin.y;
+    float h2 = toolRect.origin.y + toolRect.size.height - travelRect.origin.y;
+    if (h1 > h2)
+        travelRect.size.height = h1;
+    else
+        travelRect.size.height = h2;
+    if ( [iolet isOnUpperEdge] == YES && cp.y < travelRect.origin.y + travelRect.size.height )
+        travelRect.size.height += toolRect.size.height * 0.2;
         
     a->location = [iolet pointForToolWithRect:toolRect];
     if ( [iolet isOnUpperEdge] == YES )
@@ -576,6 +644,31 @@
     return travelRect;
 }
                 
+- (NSRect)getBoundingRectForToolWithRect:(NSRect)r connectionOriginationPoint:(NSPoint)op andGoalPoint:(NSPoint)cp {
+
+    NSRect br;
+    
+    br.origin.x = r.origin.x;
+    if (cp.x < br.origin.x)
+        br.origin.x = cp.x;
+        
+    float x = r.origin.x + r.size.width;
+    if (x < cp.x)
+        x = cp.x;
+    br.size.width = x - br.origin.x;
+
+    br.origin.y = r.origin.y;
+    if (cp.y < br.origin.y)
+        br.origin.y = cp.y;
+        
+    float y = r.origin.y + r.size.height;
+    if (y < cp.y)
+        y = cp.y;
+    br.size.height = y - br.origin.y;
+    
+    return br;
+}
+
 - (id)initWithFrame:(NSRect)frame {
 
     if ( (self = [super initWithFrame:frame]) ) 
