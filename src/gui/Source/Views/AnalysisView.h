@@ -25,6 +25,7 @@ typedef struct {
 - (float)distanceFromPoint:(NSPoint)a toPoint:(NSPoint)b;
 - (NSPoint)findClosestPointOnEdgeOfRect:(NSRect)r fromPoint:(NSPoint)p2;
 - (NSRect)getBoundsRectForInOutlet:(InOutlet*)iolet withCenterPoint:(NSPoint)cp whileInitializingAutomaton:(RbAutomaton*)a;
+- (void)getBoundingRectForToolWithRect:(NSRect*)r1 andRect:(NSRect*)r2 andCenterPoint:(NSPoint*)cp;
 - (NSRect)getBoundingRectForToolWithRect:(NSRect)r connectionOriginationPoint:(NSPoint)op andGoalPoint:(NSPoint)cp;
 - (void)mouseDown:(NSEvent*)event;
 - (NSPoint)newPointDistance:(float)d betweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2;

@@ -275,22 +275,9 @@
                     p2.x += hInc;
                 NSPoint center = [self centerPointBetweenPoint:p1 andPoint:p2];
 
-                // expand the rectangles a bit
-                r1.origin.x -= hInc;
-                r1.origin.y -= vInc;
-                r1.size.width += 2.0 * hInc;
-                r1.size.height += 2.0 * vInc;
-                r2.origin.x -= hInc;
-                r2.origin.y -= vInc;
-                r2.size.width += 2.0 * hInc;
-                r2.size.height += 2.0 * vInc;
-                    
-                // get the rectangles for each tool
-                RbAutomaton myAutomaton;
-				//NSRect r1 = [self getBoundsRectForInOutlet:[c outlet] withCenterPoint:center whileInitializingAutomaton:&myAutomaton];
-				//NSRect r2 = [self getBoundsRectForInOutlet:[c inlet]  withCenterPoint:center whileInitializingAutomaton:&myAutomaton];
-                NSRect br1 = [self getBoundingRectForToolWithRect:r1 connectionOriginationPoint:p1 andGoalPoint:center];
-                NSRect br2 = [self getBoundingRectForToolWithRect:r2 connectionOriginationPoint:p2 andGoalPoint:center];
+                NSRect br1 = r1;
+                NSRect br2 = r2;
+                [self getBoundingRectForToolWithRect:&br1 andRect:&br2 andCenterPoint:&center];
 
                 [[NSColor blueColor] set];
                 [NSBezierPath strokeRect:br1];
@@ -643,7 +630,58 @@
     
     return travelRect;
 }
-                
+
+- (void)getBoundingRectForToolWithRect:(NSRect*)r1 andRect:(NSRect*)r2 andCenterPoint:(NSPoint*)cp {
+
+    // expand both rectangles a bit
+    float vInc = r1->size.height * 0.2;
+    float hInc = r1->size.width  * 0.2;
+    r1->origin.x -= hInc;
+    r1->origin.y -= vInc;
+    r1->size.width += 2.0 * hInc;
+    r1->size.height += 2.0 * vInc;
+    r2->origin.x -= hInc;
+    r2->origin.y -= vInc;
+    r2->size.width += 2.0 * hInc;
+    r2->size.height += 2.0 * vInc;
+    
+    // check that the rectangles haven't gone off the analysis view area
+    if ( r1->origin.x < 0.0 )
+        {
+        float excess = -r1->origin.x;
+        r1->origin.x = 0.0;
+        r1->size.width -= excess;
+        }
+    if ( r2->origin.x < 0.0 )
+        {
+        float excess = -r2->origin.x;
+        r2->origin.x = 0.0;
+        r2->size.width -= excess;
+        }
+	NSRect bounds = [self bounds];
+    if ( r1->origin.y + r1->size.height > bounds.size.height )
+        {
+        float excess = r1->origin.y + r1->size.height - bounds.size.height;
+        r1->size.height -= excess;
+        }
+    if ( r2->origin.y + r2->size.height > bounds.size.height )
+        {
+        float excess = r2->origin.y + r2->size.height - bounds.size.height;
+        r2->size.height -= excess;
+        }
+    
+    // check that the rectangles do not overlap
+    if ( CGRectIntersectsRect( NSRectToCGRect(*r1), NSRectToCGRect(*r2) ) == YES )
+        {
+        NSLog(@"Rectangles collided!");
+        }
+    
+
+
+
+
+}
+
 - (NSRect)getBoundingRectForToolWithRect:(NSRect)r connectionOriginationPoint:(NSPoint)op andGoalPoint:(NSPoint)cp {
 
     NSRect br;
