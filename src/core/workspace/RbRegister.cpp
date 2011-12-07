@@ -132,6 +132,7 @@
 #include "Func_unique.h"
 #include "Func_size.h"
 #include "Func_sort.h"
+#include "Func_resize.h"
 
 
 
@@ -236,7 +237,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "logis",        RbPtr<DistributionContinuous>( new Dist_logis() )       );
         addDistribution( "multinomial",  RbPtr<DistributionContinuous>( new Dist_multinomial() ) );
         addDistribution( "norm",         RbPtr<DistributionContinuous>( new Dist_norm() )        );
-		addDistribution( "lnorm",        RbPtr<DistributionContinuous>( new Dist_lnorm() )       );
+		    addDistribution( "lnorm",        RbPtr<DistributionContinuous>( new Dist_lnorm() )       );
         addDistribution( "unifTopology", new Dist_topologyunif());
         addDistribution( "unif",         RbPtr<DistributionContinuous>( new Dist_unif() )        );
 
@@ -386,6 +387,8 @@ void Workspace::initializeGlobalWorkspace(void) {
 //        addFunction( "simplex",   new Func_simplex<         Integer                                                         >() );
         addFunction( "simplex",   new Func_simplex<         RealPos                                                         >() );
 //        addFunction( "simplex",   new Func_simplex<         VectorRealPos                                                   >() );
+        addFunction( "resize",    new Func_resize<          MatrixReal, Integer,        Integer                                      >() );
+
         addFunction( "transpose", new Func_transpose<       MatrixReal                                                      >() );
         addFunction( "v",         new Func_vector<          RbBoolean,                      VectorBoolean                   >() );
         addFunction( "v",         new Func_vector<          Integer,                        VectorInteger                   >() );

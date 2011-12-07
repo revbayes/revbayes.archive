@@ -31,8 +31,14 @@ dummyState <- D[1][1]
 
 lambda <- 1
 
+
 nodeCount <- tree.nnodes()
 charCount <- D.nchar()
+
+dna_state <- v(v(1.0,2.0),v(3.0,4.0))
+dna_state.resize(nodeCount, charCount) 
+
+
 
 for (i in 1:nodeCount) {
    for (j in 1:charCount) {  

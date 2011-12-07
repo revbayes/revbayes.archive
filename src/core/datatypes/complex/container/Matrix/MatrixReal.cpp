@@ -234,24 +234,26 @@ void MatrixReal::printValue(std::ostream& o) const {
 /** Overloaded container resize method */
 void MatrixReal::resize( size_t rows, size_t cols ) {
     
-    //    if ( len.size() != 2 )
-    //        throw RbException( "Invalid length specification in attempt to resize " + Real_name + "[][]" );
-    //
-    //    if ( len[0] < rows || len[1] < cols )
-    //        throw RbException( "Invalid attempt to shrink " + Real_name + "[][]" );
-    //
-    //    // First add the new rows with the right number of columns
-    //    for ( size_t i = rows; i < len[0]; i++ )
-    //        matrix.push_back( VectorReal( len[1] ) );
-    //
-    //    // Now add columns to the old rows
-    //    for ( size_t i = 0; i < rows; i++ )
-    //        matrix[i].resize( len[1] );
-    //
-    //    // Set new length specification
-    //    length = len;
+//    if ( len.size() != 2 )
+//        throw RbException( "Invalid length specification in attempt to resize " + Real_name + "[][]" );
+    size_t numRows = getNumberOfRows();
+    size_t numCols = getNumberOfColumns();
+    if ( numRows > rows || numCols > cols )
+        throw RbException( "Invalid attempt to shrink " + Real_name + "[][]" );
+
+    // First add the new rows with the right number of columns
+    for ( size_t i = numRows; i < rows; i++ )
+        elements.push_back( RbPtr<RbLanguageObject>( new VectorReal( cols ) ) );
+
+    // Now add columns to the old rows
+    for ( size_t i = 0; i < numRows; i++ )
+      static_cast<VectorReal*>( (RbLanguageObject*)elements[i])->resize( cols );
+
+  
+    // Set new length specification
+  //  length = len;
     
-    throw RbException("Cannot resize MatrixReal");
+   // throw RbException("Cannot resize MatrixReal");
 }
 
 
