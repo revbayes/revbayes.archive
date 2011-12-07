@@ -2,6 +2,7 @@
 #import "AnalysisView.h"
 #import "Connection.h"
 #import "ConnectionPair.h"
+#import "Inlet.h"
 #import "InOutlet.h"
 #import "Outlet.h"
 #import "ScalingScrollView.h"
@@ -22,9 +23,46 @@
 
 @implementation AnalysisView
 
+- (NSPoint)centerPointBetweenTool:(Tool*)t1 andTool:(Tool*)t2 {
+
+    NSRect toolRect1;
+    toolRect1.origin = [t1 itemLocation];
+    toolRect1.size   = [[t1 itemImageWithIndex:scaleIdx] size]; 
+    [self transformToBottomLeftCoordinates:(&toolRect1.origin)];
+
+    NSRect toolRect2;
+    toolRect2.origin = [t2 itemLocation];
+    toolRect2.size   = [[t2 itemImageWithIndex:scaleIdx] size]; 
+    [self transformToBottomLeftCoordinates:(&toolRect2.origin)];
+    
+    float leftX = toolRect1.origin.x;
+    if (toolRect2.origin.x < leftX)
+        leftX = toolRect2.origin.x;
+    float rightX = toolRect1.origin.x + toolRect1.size.width;
+    if (toolRect2.origin.x + toolRect2.size.width > rightX)
+        rightX = toolRect2.origin.x + toolRect2.size.width;
+
+    float lowerY = toolRect1.origin.y;
+    if (toolRect2.origin.y < lowerY)
+        lowerY = toolRect2.origin.y;
+    float upperY = toolRect1.origin.y + toolRect1.size.height;
+    if (toolRect2.origin.y + toolRect2.size.height > upperY)
+        upperY = toolRect2.origin.y + toolRect2.size.height;
+        
+    NSPoint cp = NSMakePoint( leftX + 0.5*(rightX-leftX), lowerY + 0.5*(upperY-lowerY) );
+    return cp;
+}
+
 - (void)dealloc {
 
 	[super dealloc];
+}
+
+- (float)distanceFromPoint:(NSPoint)a toPoint:(NSPoint)b {
+
+    float dX = a.x - b.x;
+    float dY = a.y - b.y;
+    return sqrt( dX*dX + dY*dY );
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -167,10 +205,41 @@
 			{
 			[unselectedAttributedString[scaleIdx] drawAtPoint:p];
 			}
-
         }
 
     // draw the connections
+	itemEnumerator = [itemsPtr objectEnumerator];
+	while ( (element = [itemEnumerator nextObject]) )
+		{
+		for (int i=0; i<[element numOutlets]; i++)
+            {
+			Outlet* theOutlet = [element outletIndexed:i];
+            for (int j=0; j<[theOutlet numberOfConnections]; j++)
+                {
+                // get the connection
+                Connection* c = [theOutlet connectionWithIndex:j];
+
+                // get the tools at either end of the connecton and their center
+                Tool* t1 = [[c outlet] toolOwner];
+                Tool* t2 = [[c inlet] toolOwner];
+                NSPoint center = [self centerPointBetweenTool:t1 andTool:t2];
+                
+                // get the rectangles for each tool
+                RbAutomaton myAutomaton;
+				NSRect r1 = [self getBoundsRectForInOutlet:[c outlet] withCenterPoint:center whileInitializingAutomaton:&myAutomaton];
+				NSRect r2 = [self getBoundsRectForInOutlet:[c inlet]  withCenterPoint:center whileInitializingAutomaton:&myAutomaton];
+
+                [[NSColor blueColor] set];
+                [NSBezierPath strokeRect:r1];
+                [[NSColor redColor] set];
+                [NSBezierPath strokeRect:r2];
+
+                
+
+                }
+            }
+        }
+#if 0
 	itemEnumerator = [itemsPtr objectEnumerator];
 	while ( (element = [itemEnumerator nextObject]) )
 		{
@@ -180,7 +249,6 @@
 			Outlet* theOutlet = [element outletIndexed:i];
             for (int j=0; j<[theOutlet numberOfConnections]; j++)
                 {
-                NSLog(@"we are drawing a connection");
                 // get the tools at either end of the connecton and their size
                 Connection* c = [theOutlet connectionWithIndex:j];
                 Tool* t1 = [[c outlet] toolOwner];
@@ -197,9 +265,9 @@
                 // origin for tool 2
                 NSPoint p2 = [t2 itemLocation];
 				[self transformToBottomLeftCoordinates:&p2];
-                p2.x += s2.width * [[c outlet] position].x;
-                p2.y += s2.height * [[c outlet] position].y;
-                
+                p2.x += s2.width * [[c inlet] position].x;
+                p2.y += s2.height * [[c inlet] position].y;
+                                
                 // draw the connection, with kinks
 				NSBezierPath* connection = [NSBezierPath bezierPath];
 				[connection setLineJoinStyle:NSRoundLineJoinStyle];
@@ -214,6 +282,7 @@
                 }
             }
         }
+#   endif
 #   if 0
 	itemEnumerator = [itemsPtr objectEnumerator];
 	while ( (element = [itemEnumerator nextObject]) )
@@ -267,7 +336,6 @@
     itemEnumerator = [itemsPtr objectEnumerator];
 	while ( (element = [itemEnumerator nextObject]) )
 		{
-        NSLog(@"drawing inlet/outlet for tool %@", element);
         // get the rectangle for the tool
         NSRect drawingRect;
         drawingRect.origin = [element itemLocation];
@@ -293,7 +361,6 @@
             }
             
         // draw the outlets
-        NSLog(@"number of oulets = %d", [element numOutlets]);
 		for (int i=0; i<[element numOutlets]; i++)
 			{
 			Outlet* theOutlet = [element outletIndexed:i];
@@ -309,58 +376,6 @@
             [triangle stroke];
             }
         }
-#   if 0
-    itemEnumerator = [itemsPtr objectEnumerator];
-	while ( (element = [itemEnumerator nextObject]) )
-		{
-		NSImage* itemImage = [element itemImageWithIndex:scaleIdx];
-		NSRect imageRect;
-		imageRect.origin = NSZeroPoint;
-		imageRect.size = [itemImage size];
-		NSRect drawingRect = imageRect;
-		drawingRect.origin = [element itemLocation];
-		drawingRect.size = [itemImage size];
-		[self transformToBottomLeftCoordinates:(&drawingRect.origin)];
-		
-		// draw the inlets
-		for (int i=0; i<[element numInlets]; i++)
-			{
-			InOutlet* il = [element inletIndexed:i];
-			NSRect r = [il getInOutletRectFromPoint:drawingRect.origin];
-			NSPoint p1 = NSMakePoint(r.origin.x, r.origin.y);
-			NSPoint p2 = NSMakePoint(r.origin.x, r.origin.y + r.size.height);
-			NSPoint p3 = NSMakePoint(r.origin.x + r.size.width, r.origin.y + 0.5*r.size.height);
-			NSBezierPath *triangle = [NSBezierPath bezierPath];
-			[triangle moveToPoint:p1];
-			[triangle lineToPoint:p2];
-			[triangle lineToPoint:p3];
-			[triangle lineToPoint:p1];
-			[[element colorOfInletIndexed:i] set];
-			[triangle fill];
-            [[NSColor blackColor] set];
-            [triangle stroke];
-			}
-		
-		// draw the outlets
-		for (int i=0; i<[element numOutlets]; i++)
-			{
-			InOutlet* ol = [element outletIndexed:i];
-			NSRect r = [ol getInOutletRectFromPoint:drawingRect.origin];
-			NSPoint p1 = NSMakePoint(r.origin.x, r.origin.y);
-			NSPoint p2 = NSMakePoint(r.origin.x, r.origin.y + r.size.height);
-			NSPoint p3 = NSMakePoint(r.origin.x + r.size.width, r.origin.y + 0.5*r.size.height);
-			NSBezierPath *triangle = [NSBezierPath bezierPath];
-			[triangle moveToPoint:p1];
-			[triangle lineToPoint:p2];
-			[triangle lineToPoint:p3];
-			[triangle lineToPoint:p1];
-			[[element colorOfOutletIndexed:i] set];
-			[triangle fill];
-            [[NSColor blackColor] set];
-            [triangle stroke];
-			}
-		}
-#   endif
     [NSGraphicsContext restoreGraphicsState];
         
     // draw the tool tip
@@ -397,41 +412,46 @@
             }
         }
         
-	// draw an active drag between inlet/outlet
-#   if 0
+	// draw an active drag between inlet/outlet or reposition the inlet/outlet
 	if ( selection.selectedItem != nil && (selection.selectionType == INLET_SELECTION || selection.selectionType == OUTLET_SELECTION) )
 		{
-		InOutlet* ilol = selection.selectedItem;
-			
-		Tool* t = [ilol toolOwner];
-		NSRect drawingRect;
-		drawingRect.origin = [t itemLocation];
-		drawingRect.size = [[t itemImageWithIndex:scaleIdx] size];
-		[self transformToBottomLeftCoordinates:(&drawingRect.origin)];
+        if (optionClicked == NO)
+            {
+            InOutlet* ilol = selection.selectedItem;
+                
+            Tool* t = [ilol toolOwner];
+            NSRect drawingRect;
+            drawingRect.origin = [t itemLocation];
+            drawingRect.size = [[t itemImageWithIndex:scaleIdx] size];
+            [self transformToBottomLeftCoordinates:(&drawingRect.origin)];
 
-		NSPoint p1 = [ilol getInOutletPointFromPoint:drawingRect.origin];
-		NSPoint p2 = cursorLocation;
+            NSPoint p1 = [ilol pointForToolWithRect:drawingRect]; 
+            NSPoint p2 = cursorLocation;
 
-		NSPoint i1 = p1;
-		NSPoint i2 = p2;
-		float x = (p1.x - p2.x) * 0.5;
-		if (x < 0.0)
-			x = p1.x - x;
-		else 
-			x = p2.x + x;
-		i1.x = x;
-		i2.x = x;
-		
-		NSBezierPath* connection = [NSBezierPath bezierPath];
-		[connection moveToPoint:p1];
-		[connection lineToPoint:i1];
-		[connection lineToPoint:i2];
-		[connection lineToPoint:p2];
-		[[ilol toolColor] set];
-		[connection setLineWidth:(4.0 * scaleFactor)];
-		[connection stroke];
+            NSPoint i1 = p1;
+            NSPoint i2 = p2;
+            float x = (p1.x - p2.x) * 0.5;
+            if (x < 0.0)
+                x = p1.x - x;
+            else 
+                x = p2.x + x;
+            i1.x = x;
+            i2.x = x;
+            
+            NSBezierPath* connection = [NSBezierPath bezierPath];
+            [connection moveToPoint:p1];
+            [connection lineToPoint:i1];
+            [connection lineToPoint:i2];
+            [connection lineToPoint:p2];
+            [[ilol toolColor] set];
+            [connection setLineWidth:(4.0 * scaleFactor)];
+            [connection stroke];
+            }
+        else
+            {
+            
+            }
 		}
-#   endif
 
 	// draw a sweep for multiple selection
 	if (sweepAction == YES)
@@ -459,6 +479,103 @@
 		}
 }
 
+- (NSPoint)findClosestPointOnEdgeOfRect:(NSRect)r fromPoint:(NSPoint)p2 {
+
+    NSPoint p1 = NSMakePoint( NSMidX(r), NSMidY(r) );
+
+    float d = [self distanceFromPoint:p1 toPoint:p2];
+    float absBX = fabsf(p1.x-p2.x);
+    float absBY = fabsf(p1.y-p2.y);
+    float dV = r.size.height*0.5 * d / absBY;
+    float dH = r.size.width*0.5 * d / absBX;
+    NSPoint closestPt = NSZeroPoint;
+    if (absBY/absBX > r.size.height/r.size.width)
+        closestPt = [self newPointDistance:dV betweenPoint:p1 andPoint:p2];
+    else
+        closestPt = [self newPointDistance:dH betweenPoint:p1 andPoint:p2];
+    return closestPt;
+}
+
+- (NSRect)getBoundsRectForInOutlet:(InOutlet*)iolet withCenterPoint:(NSPoint)cp whileInitializingAutomaton:(RbAutomaton*)a {
+    
+    // get the tool's rectangle
+    Tool* t = [iolet toolOwner];
+    NSRect toolRect;
+    toolRect.origin = [t itemLocation];
+    toolRect.size   = [[t itemImageWithIndex:scaleIdx] size]; 
+    [self transformToBottomLeftCoordinates:(&toolRect.origin)];
+    
+    // now get the rectangle with the bounds
+    NSRect travelRect;
+    if (toolRect.origin.x < cp.x)
+        {
+        travelRect.origin.x = toolRect.origin.x;
+        if ( [iolet isOnLeftEdge] == YES )
+            {
+            travelRect.origin.x -= toolRect.size.width * 0.2;
+            if (travelRect.origin.x < 0.0)
+                travelRect.origin.x = 0.0;
+            }
+        travelRect.size.width = cp.x - travelRect.origin.x;
+        if ( [iolet isOnRightEdge] == YES && travelRect.size.width < toolRect.size.width + toolRect.size.width * 0.2 )
+            travelRect.size.width = toolRect.size.width + toolRect.size.width * 0.2;
+        }
+    else
+        {
+        travelRect.origin.x = cp.x;
+        if ( [iolet isOnLeftEdge] == YES && toolRect.origin.x - toolRect.size.width * 0.2 < cp.x )
+            travelRect.origin.x = toolRect.origin.x - toolRect.size.width * 0.2;
+        travelRect.size.width = toolRect.origin.x - cp.x + toolRect.size.width;
+        if ( [iolet isOnRightEdge] == YES )
+            travelRect.size.width += toolRect.size.width * 0.2;
+        }
+        
+    if (toolRect.origin.y < cp.y)
+        {
+        travelRect.origin.y = toolRect.origin.y;
+        if ( [iolet isOnLowerEdge] == YES )
+            {
+            travelRect.origin.y -= toolRect.size.height * 0.2;
+            if (travelRect.origin.y < 0.0)
+                travelRect.origin.y = 0.0;
+            }
+        travelRect.size.height = cp.y - travelRect.origin.y;
+        if ( [iolet isOnUpperEdge] == YES && travelRect.size.height < toolRect.size.height + toolRect.size.height * 0.2 )
+            travelRect.size.height = toolRect.size.height + toolRect.size.height * 0.2;
+        }
+    else
+        {
+        travelRect.origin.y = cp.y;
+        if ( [iolet isOnLowerEdge] == YES && toolRect.origin.y - toolRect.size.height * 0.2 < cp.y )
+            travelRect.origin.y = toolRect.origin.y - toolRect.size.height * 0.2;
+        travelRect.size.height = toolRect.origin.y - cp.y + toolRect.size.height;
+        if ( [iolet isOnUpperEdge] == YES )
+            travelRect.size.height += toolRect.size.height * 0.2;
+        }
+        
+    a->location = [iolet pointForToolWithRect:toolRect];
+    if ( [iolet isOnUpperEdge] == YES )
+        a->direction = UP;
+    else if ( [iolet isOnLowerEdge] == YES )
+        a->direction = DOWN;
+    else if ( [iolet isOnLeftEdge] == YES )
+        a->direction = LEFT;
+    else
+        a->direction = RIGHT;
+    
+    NSLog(@"********************");
+    NSLog(@"Tool               = %@", t);
+    NSLog(@"Tool Rectangle     = %@", NSStringFromRect(toolRect));
+    NSLog(@"Travel Rectangle   = %@", NSStringFromRect(travelRect));
+    NSLog(@"Center position    = %@", NSStringFromPoint(cp));
+    NSLog(@"IO position        = %@", NSStringFromPoint([iolet position]));
+    NSLog(@"Automaton position = %@", NSStringFromPoint(a->location));
+    if ( NSPointInRect(a->location, travelRect) == NO )
+        NSLog(@"The automaton is not in the travel rectangle!");
+    
+    return travelRect;
+}
+                
 - (id)initWithFrame:(NSRect)frame {
 
     if ( (self = [super initWithFrame:frame]) ) 
@@ -493,9 +610,10 @@
 	ItemSelector mySelection = [self selectItem:[event locationInWindow]];
 	selection = mySelection;
 	
-    shiftClicked = NO;
-    draggedItems = NO;
-	sweepAction  = NO;
+    shiftClicked  = NO;
+    draggedItems  = NO;
+	sweepAction   = NO;
+    optionClicked = NO;
 	if ([event modifierFlags] & NSControlKeyMask)
 		{
         // control click
@@ -505,6 +623,8 @@
 	else if ([event modifierFlags] & NSAlternateKeyMask)
 		{
         // option click (do nothing as option click is currently undefined for tools)
+        if ( mySelection.selectedItem != nil && (mySelection.selectionType == INLET_SELECTION || mySelection.selectionType == OUTLET_SELECTION) )
+            optionClicked = YES;
 		}
 	else if ([event modifierFlags] & NSShiftKeyMask)
 		{
@@ -626,6 +746,31 @@
             // update the scroll bars
             [self updateScrollBars];
 			}
+        else if ( (selection.selectionType == INLET_SELECTION || selection.selectionType == OUTLET_SELECTION) && optionClicked == YES )
+            {
+            InOutlet* myInOutlet = selection.selectedItem;
+            Tool* t = [myInOutlet toolOwner];
+            
+            NSRect toolRect;
+            toolRect.origin = [t itemLocation];
+            toolRect.size = [[t itemImageWithIndex:scaleIdx] size];
+            [self transformToBottomLeftCoordinates:(&toolRect.origin)];
+            
+            NSPoint newPosition = [self findClosestPointOnEdgeOfRect:toolRect fromPoint:[self convertPoint:p fromView:nil] ];
+            float x = (newPosition.x - toolRect.origin.x) / toolRect.size.width;
+            if (x < 0.0000001)
+                x = 0.0;
+            else if (x > 0.999999)
+                x = 1.0;
+            float y = (newPosition.y - toolRect.origin.y) / toolRect.size.height;
+            if (y < 0.0000001)
+                y = 0.0;
+            else if (y > 0.999999)
+                y = 1.0;
+            newPosition = NSMakePoint(x, y);
+        
+            [myInOutlet setPosition:newPosition];
+            }
 		else 
 			{
 			NSPoint newP = [self convertPoint:p fromView:nil];
@@ -659,6 +804,20 @@
 		}
 	[self autoscroll:event];
 	[self setNeedsDisplay: YES];	
+}
+
+- (NSPoint)newPointDistance:(float)d betweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2 {
+
+    float A = p1.x - p2.x;
+    float B = p1.y - p2.y;
+    float D = sqrt(A*A+B*B);
+    float a = (d / D) * A;
+    float b = (d / D) * B;
+    
+    NSPoint p;
+    p.x = p1.x - a;
+    p.y = p1.y - b;
+    return p;
 }
 
 - (void)mouseUp:(NSEvent*)event {
@@ -748,24 +907,29 @@
 				// make the connection
 				if ( end != nil && start != end && [start amInlet] != [end amInlet] && [start toolColor] == [end toolColor] && [start toolOwner] != [end toolOwner] && sameClassType == NO )
 					{
-                    if ([start partner] != nil)
+                    // first, find the outlet and inlet for the two tools
+                    Outlet* theOutlet = nil;
+                    Inlet* theInlet = nil;
+                    if ( [start amOutlet] == YES && [end amInlet] == YES )
                         {
-                        [[start partner] setPartner:nil];
-                        [start setPartner:nil];
+                        theOutlet = (Outlet*)start;
+                        theInlet = (Inlet*)end;
                         }
-                    if ([end partner] != nil)
+                    else if ( [start amInlet] == YES && [end amOutlet] == YES )
                         {
-                        [[end partner] setPartner:nil];
-                        [end setPartner:nil];
+                        theOutlet = (Outlet*)end;
+                        theInlet = (Inlet*)start;
                         }
-					[start setPartner:end];
-					[end setPartner:start];
-					if ( [start amInlet] == NO )
-						[[end toolOwner] updateForConnectionChange];
-					else if ( [end amInlet] == NO )
-						[[start toolOwner] updateForConnectionChange];
-					else 
-						NSLog(@"Error: Problem informing neighbors of new connection");
+                    else
+                        {
+                        NSLog(@"Problem finding inlet and outlet");
+                        }
+                        
+                    // we have the outlet manage the connection
+                    [theOutlet addConnectionWithInlet:theInlet];
+                    
+                    // signal downstream tools of the new connection
+                    [[theInlet toolOwner] updateForConnectionChange];
 					}
 					
 				// inform the user of certain errors
@@ -1085,11 +1249,10 @@
         inspRect.origin.y += toolRect.size.height * 0.05;
 
 		// 1, check to see if the point is in any of the inlets 
-#if 0
 		for (int i=0; i<[element numInlets]; i++)
 			{
-			InOutlet* il = [element inletIndexed:i];
-			NSRect r = [il getInOutletRectFromPoint:toolRect.origin];
+			Inlet* il = [element inletIndexed:i];
+            NSRect r = [il rectForToolWithRect:toolRect];
 			if ( CGRectContainsPoint( NSRectToCGRect(r), NSPointToCGPoint(p) ) )
 				{
 				mySelection.selectedItem = il;
@@ -1101,8 +1264,8 @@
 		// 2, check to see if the point is in any of the outlets
 		for (int i=0; i<[element numOutlets]; i++)
 			{
-			InOutlet* ol = [element outletIndexed:i];
-			NSRect r = [ol getInOutletRectFromPoint:toolRect.origin];
+			Outlet* ol = [element outletIndexed:i];
+            NSRect r = [ol rectForToolWithRect:toolRect];
 			if ( CGRectContainsPoint( NSRectToCGRect(r), NSPointToCGPoint(p) ) )
 				{
 				mySelection.selectedItem = ol;
@@ -1110,7 +1273,7 @@
 				return mySelection;
 				}
 			}
-#endif
+
         // 3, check if the point is the information button (opening the control window)
         if ( CGRectContainsPoint( NSRectToCGRect(infoRect), NSPointToCGPoint(p) ) )
             {

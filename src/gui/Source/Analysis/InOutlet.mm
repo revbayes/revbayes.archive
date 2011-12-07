@@ -59,6 +59,34 @@
     return self;
 }
 
+- (BOOL)isOnLeftEdge {
+
+    if ( position.x < 0.00001)
+        return YES;
+    return NO;
+}
+
+- (BOOL)isOnRightEdge {
+
+    if ( position.x > 0.99999)
+        return YES;
+    return NO;
+}
+
+- (BOOL)isOnUpperEdge {
+
+    if ( position.y > 0.99999)
+        return YES;
+    return NO;
+}
+
+- (BOOL)isOnLowerEdge {
+
+    if ( position.y < 0.00001)
+        return YES;
+    return NO;
+}
+
 - (int)numberOfConnections {
 
     return 0;
@@ -66,6 +94,14 @@
 
 - (void)pointsForToolWithRect:(NSRect)r atVertex1:(NSPoint*)v1 andVertex2:(NSPoint*)v2 andVertex3:(NSPoint*)v3 {
     
+}
+
+- (NSPoint)pointForToolWithRect:(NSRect)r {
+
+    NSPoint myPoint;
+    myPoint.x = r.origin.x + r.size.width * position.x;
+    myPoint.y = r.origin.y + r.size.height * position.y;
+    return myPoint;
 }
 
 - (NSRect)rectForToolWithRect:(NSRect)r {

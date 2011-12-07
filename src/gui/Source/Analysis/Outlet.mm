@@ -63,6 +63,7 @@
     if ( (self = [super init]) ) 
         {
         connections = [[NSMutableArray alloc] init];
+        NSLog(@"initializing Outlet with connections %@", connections);
         }
     return self;
 }
@@ -81,6 +82,7 @@
 
     if ( (self = [super initWithTool:t]) ) 
 		{
+        connections = [[NSMutableArray alloc] init];
 		}
     return self;
 }

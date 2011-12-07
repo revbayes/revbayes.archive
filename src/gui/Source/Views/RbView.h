@@ -28,6 +28,7 @@ extern NSString* const ToolDataPboardType;
 	NSMutableArray*               itemsPtr;             // a pointer to the array holding the pointers to the items
 	IBOutlet NSScrollView*        myScrollView;         // the pointer to the scrollview that contains this view
 	int                           pasteNum;             // keeps track of the number of pastes
+    BOOL                          optionClicked;        // did the user option-click on mouse down
     float                         scaleFactor;          // the zoom factor for drawing
 	int                           scaleIdx;             // an index for the scale that helps selecting the correct image for an item
     NSMutableSet*                 selectedItems;        // keeps track of items originally selected for sweep selections

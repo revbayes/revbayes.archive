@@ -94,7 +94,12 @@
 
 - (Tool*)getToolOfInletIndexed:(int)idx {
 
-    return [self getToolOfInlet:[inlets objectAtIndex:idx]];
+    Inlet* il = [inlets objectAtIndex:idx];
+    Connection* c = [il connection];
+    if (c == nil)
+        return nil;
+    Tool* t = [[c outlet] toolOwner];
+    return t;
 }
 
 - (id)init {
@@ -269,7 +274,7 @@
             Connection* c = [element connectionWithIndex:i];
             Outlet* theOutlet = element;
             [myMap setObject:theOutlet forKey:c];
-            Tool* t = [theOutlet toolOwner];
+            Tool* t = [[c inlet] toolOwner];
             [myToolSet addObject:t];
             }
         }
@@ -295,25 +300,76 @@
 
 - (void)removeAllConnectionsToInlets {
 
+    NSMutableDictionary* myMap = [NSMutableDictionary dictionaryWithCapacity:0];
+            
+    // add all of the connections to the inlets to the map of connections to remove
 	NSEnumerator* enumerator = [inlets objectEnumerator];
 	id element;
 	while ( (element = [enumerator nextObject]) )
         {
-        [[element partner] setPartner:nil];
-        [element setPartner:nil];
+        for (int i=0; i<[element numberOfConnections]; i++)
+            {
+            Connection* c = [element connectionWithIndex:i];
+            Outlet* theOutlet = [c outlet];
+            [myMap setObject:theOutlet forKey:c];
+            }
         }
+            
+    // now we remove the connections
+    NSEnumerator* keyEnumerator = [myMap keyEnumerator];
+    id key;
+	while ( (key = [keyEnumerator nextObject]) )
+        {
+        Connection* c = key;
+        Outlet* theOutlet = [key objectForKey:key];
+        [theOutlet removeConnection:c];
+        }
+        
+    // finally, signal tools downstream from this tool
+    [self updateForConnectionChange];
 }
 
 - (void)removeAllConnectionsToOutlets {
 
+    // we always remove connections from the outlets. We first fill in a dictionary (map)
+    // with the key (connection address) and value (outlet address) of connections to remove
+    NSMutableDictionary* myMap = [NSMutableDictionary dictionaryWithCapacity:0];
+    
+    // we also keep track of tools downstream from the tool from which connections are removed
+    // so we can signal them to update their state
+    NSMutableArray* myToolSet = [NSMutableArray arrayWithCapacity:0];
+            
+    // add all of the connections of the outlets to the map of connections to remove
 	NSEnumerator* enumerator = [outlets objectEnumerator];
 	id element;
 	while ( (element = [enumerator nextObject]) )
         {
-		Tool* t = [[element partner] toolOwner];
-        [[element partner] setPartner:nil];
-        [element setPartner:nil];
-		[t updateForConnectionChange];
+        for (int i=0; i<[element numberOfConnections]; i++)
+            {
+            Connection* c = [element connectionWithIndex:i];
+            Outlet* theOutlet = element;
+            [myMap setObject:theOutlet forKey:c];
+            Tool* t = [[c inlet] toolOwner];
+            [myToolSet addObject:t];
+            }
+        }
+        
+    // now we remove the connections
+    NSEnumerator* keyEnumerator = [myMap keyEnumerator];
+    id key;
+	while ( (key = [keyEnumerator nextObject]) )
+        {
+        Connection* c = key;
+        Outlet* theOutlet = [key objectForKey:key];
+        [theOutlet removeConnection:c];
+        }
+        
+    // finally, we update the tools downstream from this tool
+	enumerator = [myToolSet objectEnumerator];
+	while ( (element = [enumerator nextObject]) )
+        {
+        Tool* t = element;
+        [t updateForConnectionChange];
         }
 }
 
@@ -338,26 +394,36 @@
 
 - (void)removeInletOfColor:(NSColor*)c {
     
-    //NSLog(@"inlet list = %@", inlets);
+    NSMutableDictionary* myMap = [NSMutableDictionary dictionaryWithCapacity:0];
+            
+    // add all of the connections to the inlets to the map of connections to remove
 	NSEnumerator* enumerator = [inlets objectEnumerator];
 	id element;
-    id idOfInletToRemove = nil;
 	while ( (element = [enumerator nextObject]) )
         {
         if ( [element toolColor] == c )
             {
-            [[element partner] setPartner:nil];
-            [element setPartner:nil];
-            idOfInletToRemove = element;
-            break;
+            for (int i=0; i<[element numberOfConnections]; i++)
+                {
+                Connection* c = [element connectionWithIndex:i];
+                Outlet* theOutlet = [c outlet];
+                [myMap setObject:theOutlet forKey:c];
+                }
             }
         }
-    //NSLog(@"id of guy to remove = %@", idOfInletToRemove);
-    if (idOfInletToRemove != nil)
+            
+    // now we remove the connections
+    NSEnumerator* keyEnumerator = [myMap keyEnumerator];
+    id key;
+	while ( (key = [keyEnumerator nextObject]) )
         {
-        [inlets removeObject:idOfInletToRemove];
-        [self setInletLocations];
+        Connection* c = key;
+        Outlet* theOutlet = [key objectForKey:key];
+        [theOutlet removeConnection:c];
         }
+        
+    // finally, signal tools downstream from this tool
+    [self updateForConnectionChange];
 }
 
 - (NSMutableAttributedString*)sendTip {

@@ -12,7 +12,6 @@
 @interface ModelView : RbView {
 
     float                         parmNameHeight;     // height of parameter names for deterimining the bottom-left corner
-	BOOL                          optionClicked;      // did the user option-click on mouse down
     int                           parmCount;          // keeps track of the number of parameters created
     NSMutableArray*               selectedLinks;
 	BOOL                          showParmNames;      // whether the parameter names should be displayed

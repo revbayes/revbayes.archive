@@ -434,9 +434,13 @@
     
 	// attempt to get a pointer to the parent tool
 	id t = [self getToolOfInletIndexed:0];
-	NSString* className = NSStringFromClass([t class]); 
-	if ( [className isEqualToString:@"ToolReadData"] == NO && [className isEqualToString:@"ToolMatrixFilter"] == NO )
-		t = nil;
+    NSString* className;
+    if (t != nil)
+        {
+        className = NSStringFromClass([t class]); 
+        if ( [className isEqualToString:@"ToolReadData"] == NO && [className isEqualToString:@"ToolMatrixFilter"] == NO )
+            t = nil;
+        }
 		
 	// update the state of this tool depending upon the state/presence of the parent tool
 	if (t == nil)

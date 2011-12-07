@@ -26,7 +26,7 @@
 
 - (Connection*)connectionWithIndex:(int)idx {
 
-    return  connection;
+    return connection;
 }
 
 - (void)dealloc {
@@ -63,6 +63,7 @@
 
     if ( (self = [super initWithTool:t]) ) 
 		{
+        connection = nil;
 		}
     return self;
 }
