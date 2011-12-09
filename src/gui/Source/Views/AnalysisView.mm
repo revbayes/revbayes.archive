@@ -19,6 +19,12 @@
 #import "ToolView.h"
 #import "WindowControllerPreferences.h"
 
+#define BL      0
+#define BR      1
+#define TL      2
+#define TR      3
+
+
 
 
 @implementation AnalysisView
@@ -71,6 +77,26 @@
     return cp;
 }
 
+- (NSPoint)centerPointBetweenRect:(NSRect)r1 andRect:(NSRect)r2 {
+
+    float leftX = r1.origin.x;
+    if (r2.origin.x < leftX)
+        leftX = r2.origin.x;
+    float rightX = r1.origin.x + r1.size.width;
+    if (r2.origin.x + r2.size.width > rightX)
+        rightX = r2.origin.x + r2.size.width;
+
+    float lowerY = r1.origin.y;
+    if (r2.origin.y < lowerY)
+        lowerY = r2.origin.y;
+    float upperY = r1.origin.y + r1.size.height;
+    if (r2.origin.y + r2.size.height > upperY)
+        upperY = r2.origin.y + r2.size.height;
+        
+    NSPoint cp = NSMakePoint( leftX + 0.5*(rightX-leftX), lowerY + 0.5*(upperY-lowerY) );
+    return cp;
+}
+
 - (void)dealloc {
 
 	[super dealloc];
@@ -81,6 +107,56 @@
     float dX = a.x - b.x;
     float dY = a.y - b.y;
     return sqrt( dX*dX + dY*dY );
+}
+
+- (float)distanceFromPoint:(NSPoint)p1 toPoint:(NSPoint)p2 alongRectangle:(NSRect)r {
+    
+    if ( fabs(p1.x-p2.x) < 0.0001 )
+        {
+        // both points are on the same vertical edge of the rectangle
+        float d = fabs(p1.y-p2.y);
+        return d;
+        }
+    else if ( fabs(p1.y-p2.y) < 0.0001 )
+        {
+        // both points are on the same horizontal edge of the rectangle
+        float d = fabs(p1.x-p2.x);
+        return d;
+        }
+    else if ( fabs(r.size.width - fabs(p1.x-p2.x)) < 0.0001 )
+        {
+        // the points are on opposite vertical edges of the rectangle
+        float d = r.size.width;
+        float d1 = (p1.y - r.origin.y) + (p2.y - r.origin.y);
+        float d2 = (r.origin.y + r.size.height - p1.y) + (r.origin.y + r.size.height - p2.y);
+        if ( d1 < d2 )
+            d += d1;
+        else
+            d += d2;
+        return d;
+        }
+    else if ( fabs(r.size.height - fabs(p1.y-p2.y)) < 0.0001 )
+        {
+        // the points are on opposite horizontal edges of the rectangle
+        float d = r.size.height;
+        float d1 = (p1.x - r.origin.x) + (p2.x - r.origin.x);
+        float d2 = (r.origin.x + r.size.width - p1.x) + (r.origin.x + r.size.width - p2.x);
+        if ( d1 < d2 )
+            d += d1;
+        else
+            d += d2;
+        return d;
+        }
+    return fabs(p1.x-p2.x) + fabs(p1.y-p2.y);
+}
+
+- (BOOL)arePoint:(NSPoint)p1 andPoint:(NSPoint)p2 onSameEdgeOfRect:(NSRect)r {
+
+    if ( fabs(p1.x-p2.x) < 0.0001 )
+        return YES;
+    else if ( fabs(p1.y-p2.y) < 0.0001 )
+        return YES;
+    return NO;
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -234,8 +310,6 @@
         NSRect r1, r2;
         r1.size = toolSize;
         r2.size = toolSize;
-        float vInc = toolSize.height * 0.2;
-        float hInc = toolSize.width  * 0.2;
         
         // loop over the outlets for this tool
 		for (int i=0; i<[element numOutlets]; i++)
@@ -254,146 +328,27 @@
 				[self transformToBottomLeftCoordinates:&r1.origin];
 				[self transformToBottomLeftCoordinates:&r2.origin];
                 
-                // get the center of the outlet and inlet
-                NSPoint p1 = [[c outlet] pointForToolWithRect:r1];
-                NSPoint p2 = [[c inlet]  pointForToolWithRect:r2];
-                if ( [[c outlet] isOnUpperEdge] == YES )
-                    p1.y += vInc;
-                else if ( [[c outlet] isOnLowerEdge] == YES )
-                    p1.y -= vInc;
-                else if ( [[c outlet] isOnLeftEdge] == YES )
-                    p1.x -= hInc;
-                else
-                    p1.x += hInc;
-                if ( [[c inlet] isOnUpperEdge] == YES )
-                    p2.y += vInc;
-                else if ( [[c inlet] isOnLowerEdge] == YES )
-                    p2.y -= vInc;
-                else if ( [[c inlet] isOnLeftEdge] == YES )
-                    p2.x -= hInc;
-                else
-                    p2.x += hInc;
-                NSPoint center = [self centerPointBetweenPoint:p1 andPoint:p2];
-
+                // get the center point and bounding rects for both tools
                 NSRect br1 = r1;
                 NSRect br2 = r2;
-                [self getBoundingRectForToolWithRect:&br1 andRect:&br2 andCenterPoint:&center];
-
-                [[NSColor blueColor] set];
-                [NSBezierPath strokeRect:br1];
-                [[NSColor redColor] set];
-                [NSBezierPath strokeRect:br2];
-                NSPoint a = center;
-                NSPoint b = center;
-                a.x -= 10.0;
-                b.x += 10.0;
-                NSBezierPath* connection = [NSBezierPath bezierPath];
-                [connection moveToPoint:a];
-                [connection lineToPoint:b];
-                [connection stroke];
-                a = center;
-                b = center;
-                a.y -= 10.0;
-                b.y += 10.0;
-                [connection moveToPoint:a];
-                [connection lineToPoint:b];
-                [connection stroke];
-                
-                }
-            }
-        }
-#if 0
-	itemEnumerator = [itemsPtr objectEnumerator];
-	while ( (element = [itemEnumerator nextObject]) )
-		{
-        // loop over the outlets
-		for (int i=0; i<[element numOutlets]; i++)
-            {
-			Outlet* theOutlet = [element outletIndexed:i];
-            for (int j=0; j<[theOutlet numberOfConnections]; j++)
-                {
-                // get the tools at either end of the connecton and their size
-                Connection* c = [theOutlet connectionWithIndex:j];
-                Tool* t1 = [[c outlet] toolOwner];
-                Tool* t2 = [[c inlet] toolOwner];
-                NSSize s1 = [[t1 itemImageWithIndex:scaleIdx] size];
-                NSSize s2 = [[t2 itemImageWithIndex:scaleIdx] size];
-
-                // origin for tool 1
-                NSPoint p1 = [t1 itemLocation];
-				[self transformToBottomLeftCoordinates:&p1];
-                p1.x += s1.width * [[c outlet] position].x;
-                p1.y += s1.height * [[c outlet] position].y;
-                
-                // origin for tool 2
-                NSPoint p2 = [t2 itemLocation];
-				[self transformToBottomLeftCoordinates:&p2];
-                p2.x += s2.width * [[c inlet] position].x;
-                p2.y += s2.height * [[c inlet] position].y;
-                                
-                // draw the connection, with kinks
-				NSBezierPath* connection = [NSBezierPath bezierPath];
-				[connection setLineJoinStyle:NSRoundLineJoinStyle];
-				[connection moveToPoint:p1];
-				[connection lineToPoint:p2];
+                NSPoint center, s1, s2;
+                [self getBoundingRectForToolWithRect:&br1 andRect:&br2 andCenterPoint:&center withPosition:[[c outlet] position] initializingPoint:&s1 andPosition:[[c inlet] position] initializingPoint:&s2];
+    
+                // draw the path in two parts
+                NSBezierPath* path = [NSBezierPath bezierPath];
 				[[theOutlet toolColor] set];
+                [self getBezierPath:path forRect:br1 startPoint:[[c outlet] pointForToolWithRect:r1] secondPoint:s1 andEndPoint:center];
 				if ([c isSelected] == YES)
-					[connection setLineWidth:(6.0 * scaleFactor)];
+					[path setLineWidth:(6.0 * scaleFactor)];
 				else
-					[connection setLineWidth:(4.0 * scaleFactor)];
-				[connection stroke];
+					[path setLineWidth:(4.0 * scaleFactor)];
+                [path stroke];
+                [self getBezierPath:path forRect:br2 startPoint:[[c inlet] pointForToolWithRect:r2] secondPoint:s2 andEndPoint:center];
+                [path stroke];
+
                 }
             }
         }
-#   endif
-#   if 0
-	itemEnumerator = [itemsPtr objectEnumerator];
-	while ( (element = [itemEnumerator nextObject]) )
-		{
-		for (int i=0; i<[element numOutlets]; i++)
-			{
-			InOutlet* ol = [element outletIndexed:i];
-			if ([ol partner] != nil)
-				{
-				Tool* t1 = [ol toolOwner];
-				Tool* t2 = [[ol partner] toolOwner];
-				
-				NSRect drawingRect;
-				drawingRect.origin = [t1 itemLocation];
-				drawingRect.size = [[t1 itemImageWithIndex:scaleIdx] size];
-				[self transformToBottomLeftCoordinates:(&drawingRect.origin)];
-				NSPoint p1 = [ol getInOutletPointFromPoint:drawingRect.origin];
-
-				drawingRect.origin = [t2 itemLocation];
-				[self transformToBottomLeftCoordinates:(&drawingRect.origin)];
-				NSPoint p2 = [[ol partner] getInOutletPointFromPoint:drawingRect.origin];
-				
-				NSPoint i1 = p1;
-				NSPoint i2 = p2;
-				float x = (p1.x - p2.x) * 0.5;
-				if (x < 0.0)
-					x = p1.x - x;
-				else 
-					x = p2.x + x;
-				i1.x = x;
-				i2.x = x;
-
-				NSBezierPath* connection = [NSBezierPath bezierPath];
-				[connection setLineJoinStyle:NSRoundLineJoinStyle];
-				[connection moveToPoint:p1];
-				[connection lineToPoint:i1];
-				[connection lineToPoint:i2];
-				[connection lineToPoint:p2];
-				[[ol toolColor] set];
-				if ([ol isSelected] == YES)
-					[connection setLineWidth:(6.0 * scaleFactor)];
-				else
-					[connection setLineWidth:(4.0 * scaleFactor)];
-				[connection stroke];
-				}
-			}
-        }
-#   endif
 
     // draw the inlets and outlets
     itemEnumerator = [itemsPtr objectEnumerator];
@@ -559,80 +514,180 @@
     return closestPt;
 }
 
-- (NSRect)getBoundsRectForInOutlet:(InOutlet*)iolet withCenterPoint:(NSPoint)cp whileInitializingAutomaton:(RbAutomaton*)a {
+- (void)getBezierPath:(NSBezierPath*)bezy forRect:(NSRect)r startPoint:(NSPoint)sp secondPoint:(NSPoint)p2 andEndPoint:(NSPoint)ep {
+
+    // set up the initial segment of the connection
+    [bezy moveToPoint:sp];
+    [bezy lineToPoint:p2];
     
-    // get the tool's rectangle
-    Tool* t = [iolet toolOwner];
-    NSRect toolRect;
-    toolRect.origin = [t itemLocation];
-    toolRect.size   = [[t itemImageWithIndex:scaleIdx] size]; 
-    [self transformToBottomLeftCoordinates:(&toolRect.origin)];
+    // initialize the current position and determine the direction of travel
+    NSPoint p = p2;
     
-    // now get the rectangle with the bounds
-    NSRect travelRect;
-    if (toolRect.origin.x < cp.x)
+    // get the distance to the end point from all four corners of the rectangle
+    float d[4]; // BL, BR, TL, TR
+    if ( fabs(r.origin.y-ep.y) < 0.0000001 )
         {
-        travelRect.origin.x = toolRect.origin.x;
-        if ( [iolet isOnLeftEdge] == YES )
+        // ep is on the bottom edge
+        d[BL] = fabs(ep.x - r.origin.x);
+        d[BR] = fabs(r.origin.x + r.size.width - ep.x);
+        d[TL] = d[BL] + r.size.height;
+        d[TR] = d[BR] + r.size.height;
+        }
+    else if ( fabs(r.origin.y+r.size.height-ep.y) < 0.0000001 )
+        {
+        // ep is on the top edge
+        d[TL] = fabs(ep.x - r.origin.x);
+        d[TR] = fabs(r.origin.x + r.size.width - ep.x);
+        d[BL] = d[TL] + r.size.height;
+        d[BR] = d[TR] + r.size.height;
+        }
+    else if ( fabs(r.origin.x-ep.x) < 0.0000001 )
+        {
+        // ep is on the left edge
+        d[0] = fabs(ep.y - r.origin.y);
+        d[2] = fabs(r.origin.y + r.size.height - ep.y);
+        d[1] = d[0] + r.size.width;
+        d[3] = d[2] + r.size.width;
+        }
+    else
+        {
+        // ep is on the right edge
+        d[1] = fabs(ep.y - r.origin.y);
+        d[3] = fabs(r.origin.y + r.size.height - ep.y);
+        d[0] = d[1] + r.size.width;
+        d[2] = d[3] + r.size.width;
+        }
+    NSLog(@"%f %f %f %f", d[0], d[1], d[2], d[3]);
+
+    int myCorner = -1;
+    if ( [self arePoint:p andPoint:ep onSameEdgeOfRect:r] == NO )
+        {
+        // move p to the closest corner of the rectangle
+        if ( fabs(r.origin.y-p.y) < 0.0000001 )
             {
-            travelRect.origin.x -= toolRect.size.width * 0.2;
-            if (travelRect.origin.x < 0.0)
-                travelRect.origin.x = 0.0;
+            // p is on the bottom edge
+            p = r.origin;
+            myCorner = BL;
+            if (d[1] < d[0])
+                {
+                p.x += r.size.width;
+                myCorner = BR;
+                }
             }
-        travelRect.size.width = cp.x - travelRect.origin.x;
-        if ( [iolet isOnRightEdge] == YES && travelRect.size.width < toolRect.size.width + toolRect.size.width * 0.2 )
-            travelRect.size.width = toolRect.size.width + toolRect.size.width * 0.2;
+        else if ( fabs(r.origin.y+r.size.height-p.y) < 0.0000001 )
+            {
+            // p is on the top edge
+            p = r.origin;
+            p.y += r.size.height;
+            myCorner = TL;
+            if (d[3] < d[2])
+                {
+                p.x += r.size.width;
+                myCorner = TR;
+                }
+            }
+        else if ( fabs(r.origin.x-p.x) < 0.0000001 )
+            {
+            // p is on the left edge
+            p = r.origin;
+            myCorner = BL;
+            if (d[2] < d[0])
+                {
+                p.y += r.size.height;
+                myCorner = TL;
+                }
+            }
+        else
+            {
+            // p is on the right edge
+            p = r.origin;
+            p.x += r.size.width;
+            myCorner = BR;
+            if (d[3] < d[1])
+                {
+                p.y += r.size.height;
+                myCorner = TR;
+                }
+            }
+        [bezy lineToPoint:p];
         }
-    else
+    
+    while( fabs(p.x-ep.x) > 0.0000001 || fabs(p.y-ep.y) > 0.0000001 )
         {
-        travelRect.origin.x = cp.x;
-        if ( [iolet isOnLeftEdge] == YES && toolRect.origin.x - toolRect.size.width * 0.2 < cp.x )
-            travelRect.origin.x = toolRect.origin.x - toolRect.size.width * 0.2;
-        travelRect.size.width = toolRect.origin.x - cp.x + toolRect.size.width;
-        if ( [iolet isOnRightEdge] == YES )
-            travelRect.size.width += toolRect.size.width * 0.2;
+        if ( [self arePoint:p andPoint:ep onSameEdgeOfRect:r] == YES )
+            p = ep;
+        else
+            {
+            // move p to the next closest corner
+            std::cout << myCorner << " -> ";
+            if (myCorner == BL)
+                {
+                if ( d[TL] < d[BR] )
+                    {
+                    p.y += r.size.height;
+                    myCorner = TL;
+                    }
+                else
+                    {
+                    p.x += r.size.width;
+                    myCorner = BR;
+                    }
+                }
+            else if (myCorner == BR)
+                {
+                if ( d[BL] < d[TR] )
+                    {
+                    p = r.origin;
+                    myCorner = BL;
+                    }
+                else
+                    {
+                    p.y += r.size.height;
+                    myCorner = TR;
+                    }
+                }
+            else if (myCorner == TL)
+                {
+                if ( d[BL] < d[TR] )
+                    {
+                    p = r.origin;
+                    myCorner = BL;
+                    }
+                else    
+                    {
+                    p.x += r.size.width;
+                    myCorner = TR;
+                    }
+                }
+            else // TR
+                {
+                if ( d[TL] < d[BR] )
+                    {
+                    p.x = r.origin.x;
+                    myCorner = TL;
+                    }
+                else
+                    {
+                    p.y = r.origin.y;
+                    myCorner = BR;
+                    }
+                }
+            std::cout << myCorner << std::endl;
+            }
+
+        [bezy lineToPoint:p];
         }
-        
-    travelRect.origin.y = toolRect.origin.y;
-    if ( [iolet isOnLowerEdge] == YES )
-        travelRect.origin.y -= toolRect.size.height * 0.2;
-    if (travelRect.origin.y > cp.y)
-        travelRect.origin.y = cp.y;
-    
-    float h1 = cp.y - travelRect.origin.y;
-    float h2 = toolRect.origin.y + toolRect.size.height - travelRect.origin.y;
-    if (h1 > h2)
-        travelRect.size.height = h1;
-    else
-        travelRect.size.height = h2;
-    if ( [iolet isOnUpperEdge] == YES && cp.y < travelRect.origin.y + travelRect.size.height )
-        travelRect.size.height += toolRect.size.height * 0.2;
-        
-    a->location = [iolet pointForToolWithRect:toolRect];
-    if ( [iolet isOnUpperEdge] == YES )
-        a->direction = UP;
-    else if ( [iolet isOnLowerEdge] == YES )
-        a->direction = DOWN;
-    else if ( [iolet isOnLeftEdge] == YES )
-        a->direction = LEFT;
-    else
-        a->direction = RIGHT;
-    
-    NSLog(@"********************");
-    NSLog(@"Tool               = %@", t);
-    NSLog(@"Tool Rectangle     = %@", NSStringFromRect(toolRect));
-    NSLog(@"Travel Rectangle   = %@", NSStringFromRect(travelRect));
-    NSLog(@"Center position    = %@", NSStringFromPoint(cp));
-    NSLog(@"IO position        = %@", NSStringFromPoint([iolet position]));
-    NSLog(@"Automaton position = %@", NSStringFromPoint(a->location));
-    if ( NSPointInRect(a->location, travelRect) == NO )
-        NSLog(@"The automaton is not in the travel rectangle!");
-    
-    return travelRect;
 }
 
-- (void)getBoundingRectForToolWithRect:(NSRect*)r1 andRect:(NSRect*)r2 andCenterPoint:(NSPoint*)cp {
+- (void)getBoundingRectForToolWithRect:(NSRect*)r1 andRect:(NSRect*)r2 andCenterPoint:(NSPoint*)cp withPosition:(NSPoint)p1 initializingPoint:(NSPoint*)s1 andPosition:(NSPoint)p2 initializingPoint:(NSPoint*)s2 {
 
+    // remember the original rectangles
+    NSRect origR1 = *r1;
+    NSRect origR2 = *r2;
+    
+    // figure out the center point between both rectangles
+    (*cp) = [self centerPointBetweenRect:(*r1) andRect:(*r2)];
+    
     // expand both rectangles a bit
     float vInc = r1->size.height * 0.2;
     float hInc = r1->size.width  * 0.2;
@@ -669,42 +724,188 @@
         float excess = r2->origin.y + r2->size.height - bounds.size.height;
         r2->size.height -= excess;
         }
+        
+    // expand the rectangles towards the center point
+    if (r1->origin.x > cp->x)
+        {
+        float excess = r1->origin.x - cp->x;
+        r1->origin.x -= excess;
+        r1->size.width += excess;
+        }
+    else if (r1->origin.x + r1->size.width < cp->x)
+        {
+        r1->size.width += cp->x - (r1->origin.x + r1->size.width);
+        }
+    if (r1->origin.y > cp->y)
+        {
+        float excess = r1->origin.y - cp->y;
+        r1->origin.y -= excess;
+        r1->size.height += excess;
+        }
+    else if (r1->origin.y + r1->size.height < cp->y)
+        {
+        r1->size.height += cp->y - (r1->origin.y + r1->size.height);
+        }
+
+    if (r2->origin.x > cp->x)
+        {
+        float excess = r2->origin.x - cp->x;
+        r2->origin.x -= excess;
+        r2->size.width += excess;
+        }
+    else if (r2->origin.x + r2->size.width < cp->x)
+        {
+        r2->size.width += cp->x - (r2->origin.x + r2->size.width);
+        }
+    if (r2->origin.y > cp->y)
+        {
+        float excess = r2->origin.y - cp->y;
+        r2->origin.y -= excess;
+        r2->size.height += excess;
+        }
+    else if (r2->origin.y + r2->size.height < cp->y)
+        {
+        r2->size.height += cp->y - (r2->origin.y + r2->size.height);
+        }
     
     // check that the rectangles do not overlap
     if ( CGRectIntersectsRect( NSRectToCGRect(*r1), NSRectToCGRect(*r2) ) == YES )
         {
-        NSLog(@"Rectangles collided!");
+        // readjust the rectangles
+        CGRect intersectRect = CGRectIntersection(*r1, *r2);
+        if (intersectRect.size.width > intersectRect.size.height)
+            {
+            float excess = 0.5 * intersectRect.size.height;
+            if (r1->origin.y > r2->origin.y)
+                {
+                r1->origin.y += excess;
+                r1->size.height -= excess;
+                r2->size.height -= excess;
+                }
+            else 
+                {
+                r1->size.height -= excess;
+                r2->origin.y += excess;
+                r2->size.height -= excess;
+                }
+            }
+        else
+            {
+            float excess = 0.5 * intersectRect.size.width;
+            if (r1->origin.x > r2->origin.x)
+                {
+                r1->origin.x += excess;
+                r1->size.width -= excess;
+                r2->size.width -= excess;
+                }
+            else 
+                {
+                r1->size.width -= excess;
+                r2->origin.x += excess;
+                r2->size.width -= excess;
+                }
+            }
         }
     
+    // move the center point so that it is as close as possible to both inlet/outlets
+    // a: get segment in common between the two rectangles
+    NSRect lineR1 = *r1;
+    NSRect lineR2 = *r2;
+    lineR1.origin.y = lineR2.origin.y = 0.0;
+    lineR1.size.height = lineR2.size.height = 10.0;
+    CGRect lineInt = CGRectIntersection(lineR1, lineR2);
+    NSPoint a = NSZeroPoint;
+    NSPoint b = NSZeroPoint;
+    BOOL foundLineSeg = NO;
+    if ( lineInt.size.width > 0.001 )
+        {
+        a.x = lineInt.origin.x;
+        b.x = a.x + lineInt.size.width;
+        if ( r1->origin.y < r2->origin.y )
+            a.y = b.y = r2->origin.y;
+        else
+            a.y = b.y = r1->origin.y;
+        foundLineSeg = YES;
+        }
+    lineR1 = *r1;
+    lineR2 = *r2;
+    lineR1.origin.x = lineR2.origin.x = 0.0;
+    lineR1.size.width = lineR2.size.width = 10.0;
+    lineInt = CGRectIntersection(lineR1, lineR2);
+    if ( lineInt.size.height > 0.001 )
+        {
+        a.y = lineInt.origin.y;
+        b.y = a.y + lineInt.size.height;
+        if ( r1->origin.x < r2->origin.x )
+            a.x = b.x = r2->origin.x;
+        else
+            a.x = b.x = r1->origin.x;
+        foundLineSeg = YES;
+        }
+    if ( foundLineSeg == NO )
+        {
+        a = *cp;
+        b = *cp;
+        }
 
-
-
-
-}
-
-- (NSRect)getBoundingRectForToolWithRect:(NSRect)r connectionOriginationPoint:(NSPoint)op andGoalPoint:(NSPoint)cp {
-
-    NSRect br;
-    
-    br.origin.x = r.origin.x;
-    if (cp.x < br.origin.x)
-        br.origin.x = cp.x;
+    // find the positions of the inlets/outlets along the rectangle
+    NSPoint a0, b0;
+    if (p1.x < 0.00001)
+        {
+        a0.x = r1->origin.x;
+        a0.y = origR1.origin.y + p1.y * origR1.size.height;
+        }
+    else if (p1.x > 0.99999)
+        {
+        a0.x = r1->origin.x + r1->size.width;
+        a0.y = origR1.origin.y + p1.y * origR1.size.height;
+        }
+    else if (p1.y < 0.00001)
+        {
+        a0.x = origR1.origin.x + p1.x * origR1.size.width;
+        a0.y = r1->origin.y;
+        }
+    else
+        {
+        a0.x = origR1.origin.x + p1.x * origR1.size.width;
+        a0.y = r1->origin.y + r1->size.height;
+        }
+    if (p2.x < 0.00001)
+        {
+        b0.x = r2->origin.x;
+        b0.y = origR2.origin.y + p2.y * origR2.size.height;
+        }
+    else if (p2.x > 0.99999)
+        {
+        b0.x = r2->origin.x + r2->size.width;
+        b0.y = origR2.origin.y + p2.y * origR2.size.height;
+        }
+    else if (p2.y < 0.00001)
+        {
+        b0.x = origR2.origin.x + p2.x * origR2.size.width;
+        b0.y = r2->origin.y;
+        }
+    else
+        {
+        b0.x = origR2.origin.x + p2.x * origR2.size.width;
+        b0.y = r2->origin.y + r2->size.height;
+        }
+    *s1 = a0;
+    *s2 = b0;
+   
+    // calculate the distances for the two rectangles
+    float da = [self distanceFromPoint:a toPoint:a0 alongRectangle:*r1] + [self distanceFromPoint:a toPoint:b0 alongRectangle:*r2];  
+    float db = [self distanceFromPoint:b toPoint:a0 alongRectangle:*r1] + [self distanceFromPoint:b toPoint:b0 alongRectangle:*r2];
+    NSPoint c = NSMakePoint( (a.x+b.x)*0.5, (a.y+b.y)*0.5 );
+    float dc = [self distanceFromPoint:c toPoint:a0 alongRectangle:*r1] + [self distanceFromPoint:c toPoint:b0 alongRectangle:*r2];
         
-    float x = r.origin.x + r.size.width;
-    if (x < cp.x)
-        x = cp.x;
-    br.size.width = x - br.origin.x;
-
-    br.origin.y = r.origin.y;
-    if (cp.y < br.origin.y)
-        br.origin.y = cp.y;
-        
-    float y = r.origin.y + r.size.height;
-    if (y < cp.y)
-        y = cp.y;
-    br.size.height = y - br.origin.y;
-    
-    return br;
+    // move the center point
+    if (da < db && da < dc)
+        *cp = a;
+    else if (db < da && db < dc)
+        *cp = b;
+    else
+        *cp = c;
 }
 
 - (id)initWithFrame:(NSRect)frame {

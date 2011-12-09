@@ -8,11 +8,6 @@
 #define DOWN    1
 #define LEFT    2
 #define RIGHT   3
-typedef struct {
-
-    NSPoint location;
-    int     direction;
-} RbAutomaton;
 
 
 
@@ -22,11 +17,12 @@ typedef struct {
 
 - (NSPoint)centerPointBetweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2;
 - (NSPoint)centerPointBetweenTool:(Tool*)t1 andTool:(Tool*)t2;
+- (NSPoint)centerPointBetweenRect:(NSRect)r1 andRect:(NSRect)r2;
 - (float)distanceFromPoint:(NSPoint)a toPoint:(NSPoint)b;
+- (float)distanceFromPoint:(NSPoint)p1 toPoint:(NSPoint)p2 alongRectangle:(NSRect)r withInitialDirection:(int)direction;
 - (NSPoint)findClosestPointOnEdgeOfRect:(NSRect)r fromPoint:(NSPoint)p2;
-- (NSRect)getBoundsRectForInOutlet:(InOutlet*)iolet withCenterPoint:(NSPoint)cp whileInitializingAutomaton:(RbAutomaton*)a;
-- (void)getBoundingRectForToolWithRect:(NSRect*)r1 andRect:(NSRect*)r2 andCenterPoint:(NSPoint*)cp;
-- (NSRect)getBoundingRectForToolWithRect:(NSRect)r connectionOriginationPoint:(NSPoint)op andGoalPoint:(NSPoint)cp;
+- (void)getBezierPath:(NSBezierPath*)bezy forRect:(NSRect)r startPoint:(NSPoint)sp secondPoint:(NSPoint)p2 andEndPoint:(NSPoint)ep;
+- (void)getBoundingRectForToolWithRect:(NSRect*)r1 andRect:(NSRect*)r2 andCenterPoint:(NSPoint*)cp withPosition:(NSPoint)p1 initializingPoint:(NSPoint*)s1 andPosition:(NSPoint)p2 initializingPoint:(NSPoint*)s2;
 - (void)mouseDown:(NSEvent*)event;
 - (NSPoint)newPointDistance:(float)d betweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2;
 - (BOOL)readFromPasteboard:(NSPasteboard*)pb;
