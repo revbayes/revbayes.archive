@@ -18,6 +18,7 @@
 - (NSPoint)centerPointBetweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2;
 - (NSPoint)centerPointBetweenTool:(Tool*)t1 andTool:(Tool*)t2;
 - (NSPoint)centerPointBetweenRect:(NSRect)r1 andRect:(NSRect)r2;
+- (float)distanceOfPoint:(NSPoint)a0 fromLineDefinedByPoint:(NSPoint)a1 andPoint:(NSPoint)a2;
 - (float)distanceFromPoint:(NSPoint)a toPoint:(NSPoint)b;
 - (NSPoint)findClosestPointOnEdgeOfRect:(NSRect)r fromPoint:(NSPoint)p2;
 - (void)getBezierPath:(NSBezierPath*)bezy forRect:(NSRect)r startPoint:(NSPoint)sp secondPoint:(NSPoint)p2 andEndPoint:(NSPoint)ep;

@@ -150,6 +150,14 @@
     return fabs(p1.x-p2.x) + fabs(p1.y-p2.y);
 }
 
+- (float)distanceOfPoint:(NSPoint)a0 fromLineDefinedByPoint:(NSPoint)a1 andPoint:(NSPoint)a2 {
+
+	float temp1 = (a2.x - a1.x) * (a1.y - a0.y) - (a1.x - a0.x) * (a2.y - a1.y);
+	float temp2 = (a2.x - a1.x) * (a2.x - a1.x) + (a2.y - a1.y) * (a2.y - a1.y);
+	float d     = fabs(temp1) / sqrt(temp2);
+	return d;
+}
+
 - (BOOL)arePoint:(NSPoint)p1 andPoint:(NSPoint)p2 onSameEdgeOfRect:(NSRect)r {
 
     if ( fabs(p1.x-p2.x) < 0.0001 )
@@ -335,20 +343,23 @@
                 [self getBoundingRectForToolWithRect:&br1 andRect:&br2 andCenterPoint:&center withPosition:[[c outlet] position] initializingPoint:&s1 andPosition:[[c inlet] position] initializingPoint:&s2];
     
                 // draw the path in two parts
-                NSBezierPath* path = [NSBezierPath bezierPath];
+                NSBezierPath* path1 = [c path1];
+                NSBezierPath* path2 = [c path2];
 				[[theOutlet toolColor] set];
-                [self getBezierPath:path forRect:br1 startPoint:[[c outlet] pointForToolWithRect:r1] secondPoint:s1 andEndPoint:center];
+                [self getBezierPath:path1 forRect:br1 startPoint:[[c outlet] pointForToolWithRect:r1] secondPoint:s1 andEndPoint:center];
+                [self getBezierPath:path2 forRect:br2 startPoint:[[c inlet] pointForToolWithRect:r2] secondPoint:s2 andEndPoint:center];
 				if ([c isSelected] == YES)
-					[path setLineWidth:(6.0 * scaleFactor)];
+                    {
+					[path1 setLineWidth:(6.0 * scaleFactor)];
+					[path2 setLineWidth:(6.0 * scaleFactor)];
+                    }
 				else
-					[path setLineWidth:(4.0 * scaleFactor)];
-                [path stroke];
-                [self getBezierPath:path forRect:br2 startPoint:[[c inlet] pointForToolWithRect:r2] secondPoint:s2 andEndPoint:center];
-                [path stroke];
-
-                //[[NSColor redColor] set];
-                //[NSBezierPath strokeRect:br1];
-                //[NSBezierPath strokeRect:br2];
+                    {
+					[path1 setLineWidth:(4.0 * scaleFactor)];
+					[path2 setLineWidth:(4.0 * scaleFactor)];
+                    }
+                [path1 stroke];
+                [path2 stroke];
                 }
             }
         }
@@ -519,6 +530,9 @@
 
 - (void)getBezierPath:(NSBezierPath*)bezy forRect:(NSRect)r startPoint:(NSPoint)sp secondPoint:(NSPoint)p2 andEndPoint:(NSPoint)ep {
 
+    // empty the path of all points
+    [bezy removeAllPoints];
+    
     // set up the initial segment of the connection
     [bezy moveToPoint:sp];
     [bezy lineToPoint:p2];
@@ -621,7 +635,6 @@
         else
             {
             // move p to the next closest corner
-            std::cout << myCorner << " -> ";
             if (myCorner == BL)
                 {
                 if ( d[TL] < d[BR] )
@@ -674,7 +687,6 @@
                     myCorner = BR;
                     }
                 }
-            std::cout << myCorner << std::endl;
             }
 
         [bezy lineToPoint:p];
@@ -1649,53 +1661,53 @@
             }
             
         // 6, check if the point is any of the connections between objects
-#if 0
-		for (int i=0; i<[element numOutlets]; i++)
+        for (int i=0; i<[element numOutlets]; i++)
             {
-			InOutlet* ol = [element outletIndexed:i];
-            if ([ol partner] != nil)
+            Outlet* theOutlet = [element outletIndexed:i];
+            for (int j=0; j<[theOutlet numberOfConnections]; j++)
                 {
-				Tool* partnerTool = [[ol partner] toolOwner];
-				NSPoint p1 = [ol getInOutletPointFromPoint:toolRect.origin];
-				toolRect.origin = [partnerTool itemLocation];
-				[self transformToBottomLeftCoordinates:(&toolRect.origin)];
-				NSPoint p2 = [[ol partner] getInOutletPointFromPoint:toolRect.origin];
-				
-				NSPoint i1 = p1;
-				NSPoint i2 = p2;
-				float x = (p1.x - p2.x) * 0.5;
-				if (x < 0.0)
-					x = p1.x - x;
-				else 
-					x = p2.x + x;
-				i1.x = x;
-				i2.x = x;
-                
-                NSRect r1, r2, r3;
-                r1.origin.x = MIN(p1.x, i1.x); 
-                r1.origin.y = p1.y - 4.0;
-                r1.size.height = 8.0; 
-                r1.size.width = fabs(i1.x - p1.x);
-                
-                r2.origin.x = i1.x - 4.0; 
-                r2.origin.y = MIN(i1.y, i2.y);
-                r2.size.height = fabs(i1.y - i2.y); 
-                r2.size.width = 8.0;
-                
-                r3.origin.x = MIN(p2.x, i2.x); 
-                r3.origin.y = p2.y - 4.0;
-                r3.size.height = 8.0; 
-                r3.size.width = fabs(i2.x - p2.x);
-                
-                if ( CGRectContainsPoint(NSRectToCGRect(r1), NSPointToCGPoint(p)) || CGRectContainsPoint(NSRectToCGRect(r2), NSPointToCGPoint(p)) || CGRectContainsPoint(NSRectToCGRect(r3), NSPointToCGPoint(p)) )
+                Connection* c = [theOutlet connectionWithIndex:j];
+                NSBezierPath* path1 = [c path1];
+                if ( [path1 elementCount] > 0 )
                     {
-					mySelection.selectedItem = ol;
-					mySelection.selectionType = LINK_SELECTION;
-					return mySelection;
+                    NSPoint myPoints[3];
+                    [path1 elementAtIndex:0 associatedPoints:myPoints];
+                    NSPoint ptA = myPoints[0];
+                    for (int k=1; k<[path1 elementCount]; k++)
+                        {
+                        [path1 elementAtIndex:k associatedPoints:myPoints];
+                        NSPoint ptB = myPoints[0];
+                        float d = [self distanceOfPoint:p fromLineDefinedByPoint:ptA andPoint:ptB];
+                        if ( d < 10.0 )
+                            {
+                            mySelection.selectedItem = c;
+                            mySelection.selectionType = LINK_SELECTION;
+                            return mySelection;
+                            }
+                        }
                     }
-               }
+                NSBezierPath* path2 = [c path2];
+                if ( [path2 elementCount] > 0 )
+                    {
+                    NSPoint myPoints[3];
+                    [path2 elementAtIndex:0 associatedPoints:myPoints];
+                    NSPoint ptA = myPoints[0];
+                    for (int k=1; k<[path2 elementCount]; k++)
+                        {
+                        [path2 elementAtIndex:k associatedPoints:myPoints];
+                        NSPoint ptB = myPoints[0];
+                        float d = [self distanceOfPoint:p fromLineDefinedByPoint:ptA andPoint:ptB];
+                        if ( d < 10.0 )
+                            {
+                            mySelection.selectedItem = c;
+                            mySelection.selectionType = LINK_SELECTION;
+                            return mySelection;
+                            }
+                        }
+                    }
+                    
+                }
             }
-#endif			
 		}
 		
 	return mySelection;
