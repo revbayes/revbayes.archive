@@ -346,6 +346,9 @@
                 [self getBezierPath:path forRect:br2 startPoint:[[c inlet] pointForToolWithRect:r2] secondPoint:s2 andEndPoint:center];
                 [path stroke];
 
+                //[[NSColor redColor] set];
+                //[NSBezierPath strokeRect:br1];
+                //[NSBezierPath strokeRect:br2];
                 }
             }
         }
@@ -557,7 +560,6 @@
         d[0] = d[1] + r.size.width;
         d[2] = d[3] + r.size.width;
         }
-    NSLog(@"%f %f %f %f", d[0], d[1], d[2], d[3]);
 
     int myCorner = -1;
     if ( [self arePoint:p andPoint:ep onSameEdgeOfRect:r] == NO )
@@ -898,7 +900,7 @@
     float db = [self distanceFromPoint:b toPoint:a0 alongRectangle:*r1] + [self distanceFromPoint:b toPoint:b0 alongRectangle:*r2];
     NSPoint c = NSMakePoint( (a.x+b.x)*0.5, (a.y+b.y)*0.5 );
     float dc = [self distanceFromPoint:c toPoint:a0 alongRectangle:*r1] + [self distanceFromPoint:c toPoint:b0 alongRectangle:*r2];
-        
+            
     // move the center point
     if (da < db && da < dc)
         *cp = a;
@@ -906,6 +908,17 @@
         *cp = b;
     else
         *cp = c;
+
+    // if both s1 and s2 are on the same edge, then we need to take into account the possibility
+    // that the center point should be between them
+    if ( fabs(a0.x-b0.x) < 0.000001 )
+        {
+        (*cp).y = (a0.y+b0.y) * 0.5;
+        }
+    else if ( fabs(a0.y-b0.y) < 0.000001 )
+        {
+        (*cp).x = (a0.x+b0.x) * 0.5;
+        }
 }
 
 - (id)initWithFrame:(NSRect)frame {
