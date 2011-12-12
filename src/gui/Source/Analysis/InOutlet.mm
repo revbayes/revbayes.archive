@@ -92,16 +92,29 @@
     return 0;
 }
 
+- (NSPoint)offsetPosition {
+
+    NSPoint myPoint = position;
+    if ( position.x < 0.000001 || position.x > 0.999999 )
+        myPoint.y += 0.04;
+    else if ( position.y < 0.000001 || position.y > 0.999999 )
+        myPoint.x += 0.04;
+    return myPoint;
+}
+
 - (void)pointsForToolWithRect:(NSRect)r atVertex1:(NSPoint*)v1 andVertex2:(NSPoint*)v2 andVertex3:(NSPoint*)v3 {
     
 }
 
 - (NSPoint)pointForToolWithRect:(NSRect)r {
 
-    NSPoint myPoint;
-    myPoint.x = r.origin.x + r.size.width * position.x;
-    myPoint.y = r.origin.y + r.size.height * position.y;
+#   if 1
+    NSPoint myPoint = NSMakePoint( r.origin.x + r.size.width * [self offsetPosition].x, r.origin.y + r.size.height * [self offsetPosition].y );
     return myPoint;
+#   else
+    NSPoint myPoint = NSMakePoint( r.origin.x + r.size.width * position.x, r.origin.y + r.size.height * position.y );
+    return myPoint;
+#   endif
 }
 
 - (NSRect)rectForToolWithRect:(NSRect)r {

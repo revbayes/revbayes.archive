@@ -120,7 +120,6 @@
     return self;
 }
 
-
 - (id)initWithScaleFactor:(float)sf andWindowNibName:(NSString*)wNibName {
     
     if ( (self = [super initWithScaleFactor:sf andWindowNibName:wNibName]) ) 
@@ -132,7 +131,6 @@
         }
     return self;
 }
-
 
 - (id)initWithCoder:(NSCoder*)aDecoder {
 
@@ -444,7 +442,7 @@
 	[self setItemSize:s];
 }
 
-- (void)setInletLocationsForItemSized:(NSSize)s {
+- (void)setInletLocations {
 
     int n = [self numInlets];
 	for (int i=0; i<n; i++)
@@ -455,12 +453,7 @@
         }
 }
 
-- (void)setInletLocations {
-
-    [self setInletLocationsForItemSized:itemSize];
-}
-
-- (void)setOutletLocationsForItemSized:(NSSize)s {
+- (void)setOutletLocations {
 
     int n = [self numOutlets];
 	for (int i=0; i<n; i++)
@@ -469,11 +462,6 @@
         NSPoint p = NSMakePoint( 1.0, (double)(i+1)/(n+1) );
         [il setPosition:p];
         }
-}
-
-- (void)setOutletLocations {
-
-    [self setOutletLocationsForItemSized:itemSize];
 }
 
 - (void)showControlPanel {

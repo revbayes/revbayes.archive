@@ -47,9 +47,7 @@
 - (NSMutableAttributedString*)sendTip;
 - (void)setImageWithSize:(NSSize)s;
 - (void)setInletLocations;
-- (void)setInletLocationsForItemSized:(NSSize)s;
 - (void)setOutletLocations;
-- (void)setOutletLocationsForItemSized:(NSSize)s;
 - (void)showControlPanel;
 - (void)showInspectorPanel;
 - (void)updateForConnectionChange;

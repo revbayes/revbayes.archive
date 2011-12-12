@@ -155,21 +155,21 @@
     // getting the new selected source (either File or MCMC)
     source = [NSString stringWithString:[[sourceTypeTab selectedTabViewItem] label]];
     if ( [source isEqualToString:@"MCMC"] == YES )
-    {
+        {
         [okButton setTitle:(@"OK")];
         NSString* msg = @"MCMC output:\nNo further information available yet. Might contain later info about mcmc and model.";
         [mcmcTextField setStringValue:msg];
-    }
+        }
     else if ( [source isEqualToString:@"Import"] == YES )
-    {
+        {
         [okButton setTitle:(@"Import")];
         
-    }
+        }
     else if ( [source isEqualToString:@"Export"] == YES )
-    {
+        {
         [okButton setTitle:(@"Export")];
         
-    }
+        }
     
     // updating the outlets and inlets
     [self setInletsAndOutlets];
@@ -189,13 +189,13 @@
     
     source = [NSString stringWithString:[[sourceTypeTab selectedTabViewItem] label]];
     if ( [source isEqualToString:@"MCMC"] == YES )
-    {
+        {
         [self closeControlPanel];
         [self updateForConnectionChange];
         [self setIsResolved:YES];
-    }
+        }
     else if ( [source isEqualToString:@"Import"] == YES )
-    {
+        {
         // user selected "OK" for a number set to be written to the memory from the mcmc output)
         //		[myTool removeAllDataMatrices];
 		BOOL isSuccessful = [self readTreesFile];

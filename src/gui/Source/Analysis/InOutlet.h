@@ -23,6 +23,7 @@
 - (BOOL)isOnUpperEdge;
 - (BOOL)isOnLowerEdge;
 - (int)numberOfConnections;
+- (NSPoint)offsetPosition;
 - (void)pointsForToolWithRect:(NSRect)r atVertex1:(NSPoint*)v1 andVertex2:(NSPoint*)v2 andVertex3:(NSPoint*)v3;
 - (NSPoint)pointForToolWithRect:(NSRect)r;
 - (NSRect)rectForToolWithRect:(NSRect)r;

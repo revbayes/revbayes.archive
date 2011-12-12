@@ -340,7 +340,7 @@
                 NSRect br1 = r1;
                 NSRect br2 = r2;
                 NSPoint center, s1, s2;
-                [self getBoundingRectForToolWithRect:&br1 andRect:&br2 andCenterPoint:&center withPosition:[[c outlet] position] initializingPoint:&s1 andPosition:[[c inlet] position] initializingPoint:&s2];
+                [self getBoundingRectForToolWithRect:&br1 andRect:&br2 andCenterPoint:&center withPosition:[[c outlet] offsetPosition] initializingPoint:&s1 andPosition:[[c inlet] offsetPosition] initializingPoint:&s2];
     
                 // draw the path in two parts
                 NSBezierPath* path1 = [c path1];
@@ -348,18 +348,30 @@
 				[[theOutlet toolColor] set];
                 [self getBezierPath:path1 forRect:br1 startPoint:[[c outlet] pointForToolWithRect:r1] secondPoint:s1 andEndPoint:center];
                 [self getBezierPath:path2 forRect:br2 startPoint:[[c inlet] pointForToolWithRect:r2] secondPoint:s2 andEndPoint:center];
+                
+                NSBezierPath* thePathToEnlightenedConnections = [NSBezierPath bezierPath];
+                [thePathToEnlightenedConnections setLineJoinStyle:NSRoundLineJoinStyle];
+                for (int k=0; k<[path1 elementCount]; k++)
+                    {
+                    NSPoint myPathPoints[3];
+                    [path1 elementAtIndex:k associatedPoints:myPathPoints];
+                    if (k == 0)
+                        [thePathToEnlightenedConnections moveToPoint:myPathPoints[0]];
+                    else
+                        [thePathToEnlightenedConnections lineToPoint:myPathPoints[0]];
+                    }
+                for (int k=(int)[path2 elementCount]-1; k>=0; k--)
+                    {
+                    NSPoint myPathPoints[3];
+                    [path2 elementAtIndex:k associatedPoints:myPathPoints];
+                    [thePathToEnlightenedConnections lineToPoint:myPathPoints[0]];
+                    }
 				if ([c isSelected] == YES)
-                    {
-					[path1 setLineWidth:(6.0 * scaleFactor)];
-					[path2 setLineWidth:(6.0 * scaleFactor)];
-                    }
-				else
-                    {
-					[path1 setLineWidth:(4.0 * scaleFactor)];
-					[path2 setLineWidth:(4.0 * scaleFactor)];
-                    }
-                [path1 stroke];
-                [path2 stroke];
+                    [thePathToEnlightenedConnections setLineWidth:(6.0 * scaleFactor)];
+                else
+                    [thePathToEnlightenedConnections setLineWidth:(4.0 * scaleFactor)];
+                [thePathToEnlightenedConnections stroke];
+           
                 }
             }
         }
@@ -956,6 +968,38 @@
     return self;
 }
 
+- (BOOL)isPoint:(NSPoint)p inLineSegmentDefinedByPoint:(NSPoint)a andPoint:(NSPoint)b {
+
+    float d = 6.0 * scaleFactor;
+    // make a rectangle on the line a, b
+    NSRect r;
+    if (a.x < b.x)
+        r.origin.x = a.x;
+    else
+        r.origin.x = b.x;
+    if (a.y < b.y)
+        r.origin.y = a.y;
+    else
+        r.origin.y = b.y;
+    r.size.width = fabs(a.x-b.x);
+    if (r.size.width < d)
+        {
+        r.size.width = d;
+        r.origin.x -= 0.5 * d;
+        }
+    r.size.height = fabs(a.y-b.y);
+    if (r.size.height < d)
+        {
+        r.size.height = d;
+        r.origin.y -= 0.5 * d;
+        }
+        
+    // decide if the point is on the line (in the rectangle
+    if ( NSPointInRect(p, r) == YES )
+        return YES;    
+    return NO;
+}
+
 - (void)mouseDown:(NSEvent*)event {
 	
 	// inactivate the timer, if it is still going
@@ -982,6 +1026,8 @@
         // option click (do nothing as option click is currently undefined for tools)
         if ( mySelection.selectedItem != nil && (mySelection.selectionType == INLET_SELECTION || mySelection.selectionType == OUTLET_SELECTION) )
             optionClicked = YES;
+        NSLog(@"option clicked:");
+        NSLog(@"  %@", mySelection.selectedItem);
 		}
 	else if ([event modifierFlags] & NSShiftKeyMask)
 		{
@@ -1124,6 +1170,23 @@
                 y = 0.0;
             else if (y > 0.999999)
                 y = 1.0;
+
+            if ( x < 0.0000001 || x > 0.999999 )
+                {
+                // vertical edge
+                if (y < 0.11)
+                    y = 0.11;
+                else if (y > 0.78)
+                    y = 0.78;
+                }
+            else if ( y < 0.0000001 || y > 0.999999 )
+                {
+                // horizontal edge
+                if (x < 0.11)
+                    x = 0.11;
+                else if (x > 0.78)
+                    x = 0.78;
+                }
             newPosition = NSMakePoint(x, y);
         
             [myInOutlet setPosition:newPosition];
@@ -1604,6 +1667,7 @@
 	NSPoint p = [self convertPoint:forPoint fromView:nil];
 	
 	// enumerate all of the tools, to see if any of them have been selected
+    // we first check for everything but connections, which we leave for last
 	NSEnumerator* enumerator = [itemsPtr objectEnumerator];
 	id element;
 	while ( (element = [enumerator nextObject]) )
@@ -1626,7 +1690,7 @@
 			{
 			Inlet* il = [element inletIndexed:i];
             NSRect r = [il rectForToolWithRect:toolRect];
-			if ( CGRectContainsPoint( NSRectToCGRect(r), NSPointToCGPoint(p) ) )
+            if ( NSPointInRect(p, r) == YES )
 				{
 				mySelection.selectedItem = il;
 				mySelection.selectionType = INLET_SELECTION;
@@ -1639,7 +1703,7 @@
 			{
 			Outlet* ol = [element outletIndexed:i];
             NSRect r = [ol rectForToolWithRect:toolRect];
-			if ( CGRectContainsPoint( NSRectToCGRect(r), NSPointToCGPoint(p) ) )
+            if ( NSPointInRect(p, r) == YES )
 				{
 				mySelection.selectedItem = ol;
 				mySelection.selectionType = OUTLET_SELECTION;
@@ -1675,7 +1739,12 @@
 			mySelection.selectionType = ITEM_SELECTION;
 			return mySelection;
             }
-            
+		}
+		
+    // now, check for clicks on connections
+	enumerator = [itemsPtr objectEnumerator];
+	while ( (element = [enumerator nextObject]) )
+		{            
         // 6, check if the point is any of the connections between objects
         for (int i=0; i<[element numOutlets]; i++)
             {
@@ -1693,8 +1762,7 @@
                         {
                         [path1 elementAtIndex:k associatedPoints:myPoints];
                         NSPoint ptB = myPoints[0];
-                        float d = [self distanceOfPoint:p fromLineDefinedByPoint:ptA andPoint:ptB];
-                        if ( d < 10.0 )
+                        if ( [self isPoint:p inLineSegmentDefinedByPoint:ptA andPoint:ptB] == YES )
                             {
                             mySelection.selectedItem = c;
                             mySelection.selectionType = LINK_SELECTION;
@@ -1712,8 +1780,7 @@
                         {
                         [path2 elementAtIndex:k associatedPoints:myPoints];
                         NSPoint ptB = myPoints[0];
-                        float d = [self distanceOfPoint:p fromLineDefinedByPoint:ptA andPoint:ptB];
-                        if ( d < 10.0 )
+                        if ( [self isPoint:p inLineSegmentDefinedByPoint:ptA andPoint:ptB] == YES )
                             {
                             mySelection.selectedItem = c;
                             mySelection.selectionType = LINK_SELECTION;
@@ -1725,7 +1792,7 @@
                 }
             }
 		}
-		
+        
 	return mySelection;
 }
 
