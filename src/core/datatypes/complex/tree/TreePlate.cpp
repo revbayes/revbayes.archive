@@ -230,7 +230,8 @@ RbPtr<RbLanguageObject> TreePlate::executeOperationSimple(const std::string& nam
     }
     else if (name == "tipIndex") {
         RbPtr<const TopologyNode> theNode( dynamic_cast<const TopologyNode*>( (const RbObject*)(*args)[0]->getValue() ) );
-        return RbPtr<RbLanguageObject>( new Natural(getTipIndex(theNode)) );
+        size_t tIndex = getTipIndex(theNode);
+        return RbPtr<RbLanguageObject>( new Natural(tIndex) );
     }
     else {
         return MemberObject::executeOperationSimple( name, args );
@@ -337,6 +338,14 @@ size_t TreePlate::getTipIndex(RbPtr<const TopologyNode> theNode) const {
         RbPtr<const TopologyNode> theTip = orderingTopology->getTipNode(index);
         if (theNode->equals( theTip ) ) {
             break;
+        }
+    }
+    if (index == orderingTopology->getNumberOfTips()) {
+        if (theNode->isTip()){
+            std::cout << "Ooops ..." << std::endl;
+        }
+        if (theNode->equals(orderingTopology->getTipNode(index))) {
+            std::cout << "Hm, wrong numbering scheme ... ?" << std::endl;
         }
     }
     

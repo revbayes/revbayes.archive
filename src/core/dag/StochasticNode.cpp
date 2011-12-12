@@ -19,6 +19,7 @@
 
 #include "RbBoolean.h"
 #include "Distribution.h"
+#include "DistributionDiscrete.h"
 #include "MoveSchedule.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -35,12 +36,12 @@
 const TypeSpec StochasticNode::typeSpec(StochasticNode_name);
 
 /** Constructor of empty StochasticNode */
-StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.getType() ), clamped( false ), distribution( NULL ) {
+StochasticNode::StochasticNode( const TypeSpec& typeSp ) : VariableNode( typeSp.getType() ), clamped( false ), distribution( NULL ), instantiated( true ) {
 }
 
 
 /** Constructor from distribution */
-StochasticNode::StochasticNode( RbPtr<Distribution> dist ) : VariableNode( dist->getVariableType() ), clamped( false ), distribution( dist ) {
+StochasticNode::StochasticNode( RbPtr<Distribution> dist ) : VariableNode( dist->getVariableType() ), clamped( false ), distribution( dist ), instantiated( true ) {
 
     // increment the reference count for myself
     RbMemoryManager::rbMemoryManager().incrementCountForAddress(this);
@@ -95,6 +96,7 @@ StochasticNode::StochasticNode( const StochasticNode& x ) : VariableNode( x ) {
     }
 
     clamped      = x.clamped;
+    instantiated = x.instantiated;
     value        = RbPtr<RbLanguageObject>( x.value->clone() );
     touched      = x.touched;
     if ( x.touched == true ) {
@@ -148,6 +150,7 @@ StochasticNode& StochasticNode::operator=( const StochasticNode& x ) {
         }
 
         clamped      = x.clamped;
+        instantiated = x.instantiated;
         
         value        = x.value;
         touched      = x.touched;
@@ -274,10 +277,21 @@ RbPtr<DAGNode> StochasticNode::cloneDAG( std::map<const DAGNode*, RbPtr<DAGNode>
 }
 
 
-/** Get affected nodes: insert this node but stop recursion here */
+/** Get affected nodes: insert this node and only stop recursion here if instantiated, otherwise (if integrated over) we pass on the recursion to our children */
 void StochasticNode::getAffected( std::set<RbPtr<StochasticNode> >& affected ) {
 
-    affected.insert( RbPtr<StochasticNode>( this ) );
+    /* If we have already touched this node, we are done; otherwise, get the affected children */
+//    if ( !touched ) {
+//        touched = true;
+        affected.insert( RbPtr<StochasticNode>( this ) );
+        
+        // if this node is integrated out, then we need to add the children too
+        if (!instantiated) {
+            for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
+                (*i)->getAffected( affected );
+            }
+        }
+//    }
 }
 
 
@@ -298,7 +312,14 @@ const TypeSpec& StochasticNode::getTypeSpec(void) const {
 /** Get the conditional ln probability of the node; do not rely on stored values */
 double StochasticNode::calculateLnProbability( void ) {
 
-	return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) );
+    if (instantiated) {
+        return distribution->lnPdf( RbPtr<const RbLanguageObject>( value ) );
+    }
+    else {
+        // we need to iterate over my states
+        DistributionDiscrete* d = static_cast<DistributionDiscrete*>( (Distribution*)distribution );
+        d->getNumberOfStates();
+    }
 }
 
 

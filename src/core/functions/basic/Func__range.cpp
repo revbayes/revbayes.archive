@@ -47,9 +47,14 @@ RbPtr<RbLanguageObject> Func__range::executeFunction( void ) {
     int last  = static_cast<const Integer*>( (RbObject*)(*args)[1]->getValue() )->getValue();
 
     std::vector<int> temp;
-    for ( int i = first; i <= last; i++ )
-        temp.push_back(i);
-    
+    if (first < last) {
+        for ( int i = first; i <= last; i++ )
+            temp.push_back(i);
+    }
+    else {
+        for ( int i = first; i >= last; i-- )
+            temp.push_back(i);
+    }
     if (first >= 0 && last >= 0) 
         return RbPtr<RbLanguageObject>( new VectorNatural(temp) );
     else

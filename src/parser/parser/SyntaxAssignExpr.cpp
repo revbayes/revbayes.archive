@@ -147,7 +147,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
         
         // Calculate the value of the rhs expression
         theVariable = expression->evaluateContent( env );
-        if ( theVariable == NULL )
+        if ( theVariable == NULL || theVariable->getValue() == NULL )
             throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
         // fill the slot with the new variable
