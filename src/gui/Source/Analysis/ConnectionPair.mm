@@ -3,7 +3,7 @@
 
 @implementation ConnectionPair
 
-@synthesize item1;
-@synthesize item2;
+@synthesize outlet;
+@synthesize inlet;
 
 @end

@@ -1,15 +1,16 @@
 #import <Cocoa/Cocoa.h>
-@class InOutlet;
+@class Inlet;
+@class Outlet;
 
 
 
 @interface ConnectionPair : NSObject {
 
-	InOutlet*                 item1;
-	InOutlet*                 item2;
+	Outlet*                 outlet;
+	Inlet*                  inlet;
 }
 
-@property (readwrite,assign) InOutlet* item1;
-@property (readwrite,assign) InOutlet* item2;
+@property (readwrite,assign) Outlet* outlet;
+@property (readwrite,assign) Inlet* inlet;
 
 @end

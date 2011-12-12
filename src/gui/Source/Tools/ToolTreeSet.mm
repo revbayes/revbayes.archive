@@ -42,6 +42,8 @@
 
 		// initialize the inlet/outlet information
 		[self addInletOfColor:[NSColor redColor]];
+        [self setInletLocations];
+        [self setOutletLocations];
 		}
     return self;
 }

@@ -67,6 +67,8 @@
 		// initialize the inlet/outlet information
 		[self addInletOfColor:[NSColor greenColor]];
 		[self addOutletOfColor:[NSColor greenColor]];
+        [self setInletLocations];
+        [self setOutletLocations];
 		
 		// initialize the array holding the data matrices
 		dataMatrices = [[NSMutableArray alloc] init];

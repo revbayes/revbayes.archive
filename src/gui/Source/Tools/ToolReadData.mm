@@ -96,6 +96,8 @@
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
+        [self setInletLocations];
+        [self setOutletLocations];
 
 		// initialize the inlet/outlet information
 		[self addOutletOfColor:[NSColor greenColor]];

@@ -155,6 +155,8 @@
         
 		// initialize the inlet/outlet information
 		[self addInletOfColor:[NSColor yellowColor]];
+        [self setInletLocations];
+        [self setOutletLocations];
         
         // initialize the settings
         [progressBar setIndeterminate:NO];

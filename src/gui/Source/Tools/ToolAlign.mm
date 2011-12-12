@@ -94,6 +94,8 @@
 		// initialize the inlet/outlet information
 		[self addInletOfColor:[NSColor cyanColor]];
 		[self addOutletOfColor:[NSColor greenColor]];
+        [self setInletLocations];
+        [self setOutletLocations];
             
         // initialize Clustal variables here
         // Default values taken from http://www.ebi.ac.uk/Tools/msa/clustalw2/help/

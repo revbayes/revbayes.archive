@@ -442,8 +442,6 @@
 - (void)setImageWithSize:(NSSize)s {
 
 	[self setItemSize:s];
-    [self setInletLocations];
-    [self setOutletLocations];
 }
 
 - (void)setInletLocationsForItemSized:(NSSize)s {

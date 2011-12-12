@@ -1149,9 +1149,13 @@
                     [selectedItems addObject:element];
                 for (int i=0; i<[element numOutlets]; i++)
                     {
-                    InOutlet* ol = [element outletIndexed:i];
-                    if ([ol partner] != nil && [ol isSelected] == YES)
-                        [selectedItems addObject:ol];
+                    Outlet* theOutlet = [element outletIndexed:i];
+                    for (int i=0; i<[theOutlet numberOfConnections]; i++)
+                        {
+                        Connection* c = [theOutlet connectionWithIndex:i];
+                        if ( [c isSelected] == YES )
+                            [selectedItems addObject:c];
+                        }
                     }
                 }
             }
@@ -1475,17 +1479,10 @@
     [self setNeedsDisplay:YES];
 }
 
-- (void)removeConnectionWithOutlet:(InOutlet*)ol {
-
-	Tool* t = [[ol partner] toolOwner];
-	
-	[[ol partner] setPartner:nil];
-	[ol setPartner:nil];
-	[t updateForConnectionChange];
-}
-
 - (void)removeSelectedConnections {
 
+    // collect the list of connections to remove
+    NSMutableArray* connectionsToRemove = [NSMutableArray arrayWithCapacity:1];
 	NSEnumerator* enumerator = [itemsPtr objectEnumerator];
 	id element;
 	while ( (element = [enumerator nextObject]) )
@@ -1496,14 +1493,29 @@
 		// that only outlets are selected.
 		for (int i=0; i<[element numOutlets]; i++)
             {
-			InOutlet* iolet = [element outletIndexed:i];
-			if ([iolet isSelected] == YES)
-				{
-				[self removeConnectionWithOutlet:iolet];
-				[iolet setIsSelected:NO];
-				}
+            Outlet* theOutlet = [element outletIndexed:i];
+            for (int j=0; j<[theOutlet numberOfConnections]; j++)
+                {
+                Connection* c = [theOutlet connectionWithIndex:j];
+                if ( [c isSelected] == YES )
+                    {
+                    if ( [connectionsToRemove containsObject:c] == NO )
+                        [connectionsToRemove addObject:c];
+                    }
+                }
 			}
         }
+        
+    // remove the connections
+    enumerator = [connectionsToRemove objectEnumerator];
+    Connection* theConnection;
+	while ( (theConnection = [enumerator nextObject]) )
+        {
+        Outlet* ol = [theConnection outlet];
+        [ol removeConnection:theConnection];
+        }
+        
+    // reset the view and inform the document of the changes
     [self setNeedsDisplay:YES];
     [[[NSDocumentController sharedDocumentController] currentDocument] updateChangeCount:NSChangeDone];
 }
@@ -1570,8 +1582,12 @@
         [element setIsSelected:YES];
 		for (int i=0; i<[element numOutlets]; i++)
 			{
-			InOutlet* ol = [element outletIndexed:i];
-			[ol setIsSelected:YES];
+            Outlet* theOutlet = [element outletIndexed:i];
+            for (int j=0; j<[theOutlet numberOfConnections]; j++)
+                {
+                Connection* c = [theOutlet connectionWithIndex:j];
+                [c setIsSelected:YES];
+                }
 			}
 		}
     [self setNeedsDisplay:YES];
@@ -1755,73 +1771,85 @@
             }
             
         // decide if any of the tool's connections are in the sweep rectangle
-#if 0
 		for (int i=0; i<[element numOutlets]; i++)
-			{
-			InOutlet* ol = [element outletIndexed:i];
-			if ([ol partner] != nil)
-				{
-                // get the location of the tool's outlet
-				NSPoint p1 = [ol getInOutletPointFromPoint:toolRect.origin];
-                
-                // get the location of the partner's inlet
-				NSRect partnerToolRect;
-				partnerToolRect.origin = [[[ol partner] toolOwner] itemLocation];
-				[self transformToBottomLeftCoordinates:(&partnerToolRect.origin)];
-				NSPoint p2 = [[ol partner] getInOutletPointFromPoint:partnerToolRect.origin];
-				
-                // set up three rectangles for the kinked connection between the tools
-                NSRect r1, r2, r3;
-				NSPoint i1 = p1;
-				NSPoint i2 = p2;
-				float x = (p1.x - p2.x) * 0.5;
-				if (x < 0.0)
-					x = p1.x - x;
-				else 
-					x = p2.x + x;
-				i1.x = x;
-				i2.x = x;
-                
-                if (p1.x < i1.x)
-                    r1.origin.x = p1.x;
-                else 
-                    r1.origin.x = i1.x;
-                r1.origin.y = p1.y - 2.0;
-                r1.size.height = 4.0;
-                r1.size.width = fabs(p1.x - i1.x);
-
-                if (p2.x < i2.x)
-                    r2.origin.x = p2.x;
-                else 
-                    r2.origin.x = i2.x;
-                r2.origin.y = p2.y - 2.0;
-                r2.size.height = 4.0;
-                r2.size.width = fabs(p2.x - i2.x);
-                
-                if (i1.y < i2.y)
-                    r3.origin.y = i1.y;
-                else 
-                    r3.origin.y = i2.y;
-                r3.origin.x = i1.x - 2.0;
-                r3.size.width = 4.0;
-                r3.size.height = fabs(i1.y - i2.y);
-
-                if ( CGRectIntersectsRect(NSRectToCGRect(sweepRect), NSRectToCGRect(r1)) ||
-                     CGRectIntersectsRect(NSRectToCGRect(sweepRect), NSRectToCGRect(r2)) ||
-                     CGRectIntersectsRect(NSRectToCGRect(sweepRect), NSRectToCGRect(r3)) )
+            {
+            Outlet* theOutlet = [element outletIndexed:i];
+            for (int j=0; j<[theOutlet numberOfConnections]; j++)
+                {
+                Connection* c = [theOutlet connectionWithIndex:j];
+                BOOL isConnectionInSweepArea = NO;
+                NSBezierPath* path1 = [c path1];
+                if ( [path1 elementCount] > 0 )
                     {
-                    if ( [selectedItems containsObject:ol] == NO )
-                        [ol setIsSelected:YES];
+                    NSPoint myPoints[3];
+                    [path1 elementAtIndex:0 associatedPoints:myPoints];
+                    NSPoint ptA = myPoints[0];
+                    for (int k=1; k<[path1 elementCount]; k++)
+                        {
+                        [path1 elementAtIndex:k associatedPoints:myPoints];
+                        NSPoint ptB = myPoints[0];
+                        NSRect r = NSZeroRect;
+                        if (ptA.x < ptB.x)
+                            r.origin.x = ptA.x;
+                        else
+                            r.origin.x = ptB.x;
+                        if (ptA.y < ptB.y)
+                            r.origin.y = ptA.y;
+                        else
+                            r.origin.y = ptB.y;
+                        r.size.width = fabs(ptA.x-ptB.x);
+                        r.size.height = fabs(ptA.y-ptB.y);
+                        if (r.size.width < 4.0)
+                            r.size.width = 4.0;
+                        if (r.size.height < 4.0)
+                            r.size.height = 4.0;
+                        if ( CGRectIntersectsRect(NSRectToCGRect(sweepRect), NSRectToCGRect(r)) )
+                            isConnectionInSweepArea = YES;
+                        }
                     }
-                else 
+                NSBezierPath* path2 = [c path2];
+                if ( [path2 elementCount] > 0 )
                     {
-                    if ( [ol isSelected] == YES && [selectedItems containsObject:ol] == NO )
-                        [ol setIsSelected:NO];
+                    NSPoint myPoints[3];
+                    [path2 elementAtIndex:0 associatedPoints:myPoints];
+                    NSPoint ptA = myPoints[0];
+                    for (int k=1; k<[path1 elementCount]; k++)
+                        {
+                        [path2 elementAtIndex:k associatedPoints:myPoints];
+                        NSPoint ptB = myPoints[0];
+                        NSRect r = NSZeroRect;
+                        if (ptA.x < ptB.x)
+                            r.origin.x = ptA.x;
+                        else
+                            r.origin.x = ptB.x;
+                        if (ptA.y < ptB.y)
+                            r.origin.y = ptA.y;
+                        else
+                            r.origin.y = ptB.y;
+                        r.size.width = fabs(ptA.x-ptB.x);
+                        r.size.height = fabs(ptA.y-ptB.y);
+                        if (r.size.width < 4.0)
+                            r.size.width = 4.0;
+                        if (r.size.height < 4.0)
+                            r.size.height = 4.0;
+                        if ( CGRectIntersectsRect(NSRectToCGRect(sweepRect), NSRectToCGRect(r)) )
+                            isConnectionInSweepArea = YES;
+                        }
                     }
-
-				}
-			}
-#endif
+                 
+                if ( isConnectionInSweepArea == YES )
+                    {
+                    if ( [selectedItems containsObject:c] == NO )
+                        [c setIsSelected:YES];
+                    }
+                else
+                    {
+                    if ( [c isSelected] == YES && [selectedItems containsObject:c] == NO )
+                        [c setIsSelected:NO];
+                    }
+                    
+                }
+            }
         }
         
     // update the view to reflect the possible selections
@@ -1840,35 +1868,46 @@
 	// remove connections between selected and unselected tools so that
 	// the archiving of the copied/cut tools goes OK
 	NSMutableArray* itemPairs = [NSMutableArray arrayWithCapacity:1];
+    NSMutableArray* connectionsToRemove = [NSMutableArray arrayWithCapacity:1];
 	NSEnumerator* itemEnumerator = [itemsPtr objectEnumerator];
 	id element;
 	while ( (element = [itemEnumerator nextObject]) )
 		{
 		for (int i=0; i<[element numOutlets]; i++)
 			{
-			InOutlet* ol = [element outletIndexed:i];
-			RbItem* t1 = [ol toolOwner];
-			RbItem* t2 = [[ol partner] toolOwner];
-			if ( [t1 isSelected] == YES && [t2 isSelected] == YES && [ol isSelected] == NO )
-				{
-				ConnectionPair* p = [[ConnectionPair alloc] init];
-				[p setItem1:ol];
-				[p setItem2:[ol partner]];
-				[itemPairs addObject:p];
-				[[ol partner] setPartner:nil];
-				[ol setPartner:nil];
-				}
-			else if ( ([t1 isSelected] == YES && [t2 isSelected] == NO) || ([t1 isSelected] == NO && [t2 isSelected] == YES)  )
-				{
-				ConnectionPair* p = [[ConnectionPair alloc] init];
-				[p setItem1:ol];
-				[p setItem2:[ol partner]];
-				[itemPairs addObject:p];
-				[[ol partner] setPartner:nil];
-				[ol setPartner:nil];
-				}
+			Outlet* theOutlet = [element outletIndexed:i];
+            for (int j=0; j<[theOutlet numberOfConnections]; j++)
+                {
+                Connection* c = [theOutlet connectionWithIndex:j];
+                Tool* t1 = [theOutlet toolOwner];
+                Tool* t2 = [[c inlet] toolOwner];
+                if ( [t1 isSelected] == YES && [t2 isSelected] == YES && [c isSelected] == NO )
+                    {
+                    ConnectionPair* p = [[ConnectionPair alloc] init];
+                    [p setOutlet:theOutlet];
+                    [p setInlet:[c inlet]];
+                    [itemPairs addObject:p];
+                    [connectionsToRemove addObject:c];
+                    }
+                else if ( ([t1 isSelected] == YES && [t2 isSelected] == NO) || ([t1 isSelected] == NO && [t2 isSelected] == YES)  )
+                    {
+                    ConnectionPair* p = [[ConnectionPair alloc] init];
+                    [p setOutlet:theOutlet];
+                    [p setInlet:[c inlet]];
+                    [itemPairs addObject:p];
+                    [connectionsToRemove addObject:c];
+                    }
+                }
 			}
 		}
+        
+    // remove the connections (temporarily)
+	NSEnumerator* connEnumerator = [connectionsToRemove objectEnumerator];
+	while ( (element = [connEnumerator nextObject]) )
+        {
+        Outlet* theOutlet = [element outlet];
+        [theOutlet removeConnection:element];
+        }
 		
     // get a list of the selected items to archive
     [copiedItems removeAllObjects];
@@ -1887,10 +1926,9 @@
 	NSEnumerator* connectionEnumerator = [itemPairs objectEnumerator];
 	while ( (element = [connectionEnumerator nextObject]) )
 		{
-		InOutlet* ol1 = [element item1];
-		InOutlet* ol2 = [element item2];
-		[ol1 setPartner:ol2];
-		[ol2 setPartner:ol1];
+        Outlet* theOutlet = [element outlet];
+        Inlet* theInlet = [element inlet];
+        [theOutlet addConnectionWithInlet:theInlet];
 		}
 }
 

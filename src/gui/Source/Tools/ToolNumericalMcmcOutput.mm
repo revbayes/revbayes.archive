@@ -106,7 +106,7 @@
 - (id)initWithScaleFactor:(float)sf {
     
     if ( (self = [super initWithScaleFactor:sf andWindowNibName:@"ControlWindowNumericalMcmcOutput"]) ) 
-    {
+        {
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
@@ -114,6 +114,8 @@
 		// initialize the inlet/outlet information
 		[self addInletOfColor:[NSColor orangeColor]];
 		[self addOutletOfColor:[NSColor yellowColor]];
+        [self setInletLocations];
+        [self setOutletLocations];
         
         // initialize the settings
 		source = [[NSString alloc] initWithString:@"MCMC"];
@@ -123,7 +125,7 @@
         
         // note that the state of this tool is, by default, resolved
         [self setIsResolved:YES];
-    }
+        }
     return self;
 }
 

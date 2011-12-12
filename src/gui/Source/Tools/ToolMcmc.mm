@@ -50,6 +50,8 @@
 		[self addInletOfColor:[NSColor blueColor]];
 		[self addOutletOfColor:[NSColor redColor]];
 		[self addOutletOfColor:[NSColor orangeColor]];
+        [self setInletLocations];
+        [self setOutletLocations];
         
         // initialize the settings
         settings = [[SettingsMcmc alloc] init];

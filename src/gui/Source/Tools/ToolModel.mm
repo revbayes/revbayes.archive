@@ -221,6 +221,8 @@
         possibleInlets[3] = NO;
 		[self addInletOfColor:[NSColor greenColor]];
 		[self addOutletOfColor:[NSColor blueColor]];
+        [self setInletLocations];
+        [self setOutletLocations];
 
 		// allcoate the mutable array holding the parameters
 		parms = [[NSMutableArray alloc] init];
@@ -234,6 +236,9 @@
         
         // allocate a list of possible distributions for parameters
         distributionList = [[DistributionListGui alloc] init];
+        
+        NSLog(@"outlets = %@", outlets);
+        NSLog(@"inlets  = %@", inlets);
 		}
     return self;
 }

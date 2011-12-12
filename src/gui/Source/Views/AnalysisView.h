@@ -27,7 +27,6 @@
 - (NSPoint)newPointDistance:(float)d betweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2;
 - (BOOL)readFromPasteboard:(NSPasteboard*)pb;
 - (void)removeAllFocusRings;
-- (void)removeConnectionWithOutlet:(InOutlet*)ol;
 - (void)removeSelectedConnections;
 - (void)scaleFactorChanged:(NSNotification*)notification;
 - (IBAction)selectAll:(id)sender;
