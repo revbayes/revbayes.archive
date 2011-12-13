@@ -236,9 +236,6 @@
         
         // allocate a list of possible distributions for parameters
         distributionList = [[DistributionListGui alloc] init];
-        
-        NSLog(@"outlets = %@", outlets);
-        NSLog(@"inlets  = %@", inlets);
 		}
     return self;
 }

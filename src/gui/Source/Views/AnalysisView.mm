@@ -2040,7 +2040,7 @@
                 Connection* c = [theOutlet connectionWithIndex:j];
                 Tool* t1 = [theOutlet toolOwner];
                 Tool* t2 = [[c inlet] toolOwner];
-                if ( [t1 isSelected] == YES && [t2 isSelected] == YES && [c isSelected] == NO )
+                if ( [t1 isSelected] == YES && [t2 isSelected] == YES && [c isSelected] == NO && [connectionsToRemove containsObject:c] == NO )
                     {
                     ConnectionPair* p = [[ConnectionPair alloc] init];
                     [p setOutlet:theOutlet];
@@ -2050,11 +2050,14 @@
                     }
                 else if ( ([t1 isSelected] == YES && [t2 isSelected] == NO) || ([t1 isSelected] == NO && [t2 isSelected] == YES)  )
                     {
-                    ConnectionPair* p = [[ConnectionPair alloc] init];
-                    [p setOutlet:theOutlet];
-                    [p setInlet:[c inlet]];
-                    [itemPairs addObject:p];
-                    [connectionsToRemove addObject:c];
+                    if ( [connectionsToRemove containsObject:c] == NO )
+                        {
+                        ConnectionPair* p = [[ConnectionPair alloc] init];
+                        [p setOutlet:theOutlet];
+                        [p setInlet:[c inlet]];
+                        [itemPairs addObject:p];
+                        [connectionsToRemove addObject:c];
+                        }
                     }
                 }
 			}
@@ -2087,6 +2090,8 @@
 		{
         Outlet* theOutlet = [element outlet];
         Inlet* theInlet = [element inlet];
+        //[element setOutlet:theOutlet];
+        //[element setInlet:theInlet];
         [theOutlet addConnectionWithInlet:theInlet];
 		}
 }

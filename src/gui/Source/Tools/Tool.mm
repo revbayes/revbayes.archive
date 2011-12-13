@@ -242,12 +242,8 @@
 
 - (void)removeAllConnections {
 
-    // we always remove connections from the outlets. We first fill in a dictionary (map)
-    // with the key (connection address) and value (outlet address) of connections to remove
-    NSMutableDictionary* myMap = [NSMutableDictionary dictionaryWithCapacity:0];
-    
-    // we also keep track of tools downstream from the tool from which connections are removed
-    // so we can signal them to update their state
+    // keep track of the connections to remove and the tools that are affected by the removal
+    NSMutableArray* connectionsToRemove = [NSMutableArray arrayWithCapacity:1];
     NSMutableArray* myToolSet = [NSMutableArray arrayWithCapacity:0];
         
     // add all of the connections to the inlets to the map of connections to remove
@@ -258,8 +254,8 @@
         for (int i=0; i<[element numberOfConnections]; i++)
             {
             Connection* c = [element connectionWithIndex:i];
-            Outlet* theOutlet = [c outlet];
-            [myMap setObject:theOutlet forKey:c];
+            if ( [connectionsToRemove containsObject:c] == NO )
+                [connectionsToRemove addObject:c];
             }
         }
     
@@ -270,21 +266,19 @@
         for (int i=0; i<[element numberOfConnections]; i++)
             {
             Connection* c = [element connectionWithIndex:i];
-            Outlet* theOutlet = element;
-            [myMap setObject:theOutlet forKey:c];
+            if ( [connectionsToRemove containsObject:c] == NO )
+                [connectionsToRemove addObject:c];
             Tool* t = [[c inlet] toolOwner];
             [myToolSet addObject:t];
             }
         }
         
     // now we remove the connections
-    NSEnumerator* keyEnumerator = [myMap keyEnumerator];
-    id key;
-	while ( (key = [keyEnumerator nextObject]) )
+    enumerator = [connectionsToRemove objectEnumerator];
+	while ( (element = [enumerator nextObject]) )
         {
-        Connection* c = key;
-        Outlet* theOutlet = [key objectForKey:key];
-        [theOutlet removeConnection:c];
+        Outlet* theOutlet = [element outlet];
+        [theOutlet removeConnection:element];
         }
         
     // finally, we update the tools downstream from this tool

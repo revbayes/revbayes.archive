@@ -79,7 +79,7 @@
 - (id)initWithScaleFactor:(float)sf andWindowNibName:(NSString*)wNibName {
     
 	if ( (self = [super initWithWindowNibName:wNibName]) )
-    {
+        {
         hasInspectorInfo    = NO;
         isSelected          = NO;
         itemLocation        = NSMakePoint(0.0, 0.0);
@@ -90,13 +90,12 @@
 		isPlate             = NO;
         saveAsModelTemplate = NO;
 		currentScaleFactor  = sf;
-    }
+        }
     return self;
 }
 
 - (id)initWithCoder:(NSCoder*)aDecoder {
 
-    NSLog(@"initWithCoder for %@", self);
 	if ( (self = [super initWithWindowNibName:[self xibName]]) )
 		{
         hasInspectorInfo    = [aDecoder decodeBoolForKey:@"hasInspectorInfo"];
