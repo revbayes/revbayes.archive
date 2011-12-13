@@ -41,6 +41,13 @@
     [super encodeWithCoder:aCoder];
 }
 
+- (BOOL)hasConnection {
+
+    if (connection == nil)
+        return NO;
+    return YES;
+}
+
 - (id)init {
 
     if ( (self = [super init]) ) 

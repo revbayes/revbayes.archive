@@ -162,7 +162,7 @@
 
     if ( fabs(p1.x-p2.x) < 0.0001 )
         return YES;
-    else if ( fabs(p1.y-p2.y) < 0.0001 )
+    if ( fabs(p1.y-p2.y) < 0.0001 )
         return YES;
     return NO;
 }
@@ -573,20 +573,31 @@
     else if ( fabs(r.origin.x-ep.x) < 0.0000001 )
         {
         // ep is on the left edge
-        d[0] = fabs(ep.y - r.origin.y);
-        d[2] = fabs(r.origin.y + r.size.height - ep.y);
-        d[1] = d[0] + r.size.width;
-        d[3] = d[2] + r.size.width;
+        d[BL] = fabs(ep.y - r.origin.y);
+        d[TL] = fabs(r.origin.y + r.size.height - ep.y);
+        d[BR] = d[BL] + r.size.width;
+        d[TR] = d[TL] + r.size.width;
         }
     else
         {
         // ep is on the right edge
-        d[1] = fabs(ep.y - r.origin.y);
-        d[3] = fabs(r.origin.y + r.size.height - ep.y);
-        d[0] = d[1] + r.size.width;
-        d[2] = d[3] + r.size.width;
+        d[BR] = fabs(ep.y - r.origin.y);
+        d[TR] = fabs(r.origin.y + r.size.height - ep.y);
+        d[BL] = d[BR] + r.size.width;
+        d[TL] = d[TR] + r.size.width;
         }
 
+    // find the corners of the rectangle
+    NSPoint cornerPoints[4];
+    cornerPoints[BL] = r.origin;
+    cornerPoints[BR] = r.origin;
+    cornerPoints[BR].x += r.size.width;
+    cornerPoints[TL] = r.origin;
+    cornerPoints[TL].y += r.size.height;
+    cornerPoints[TR] = r.origin;
+    cornerPoints[TR].x += r.size.width;
+    cornerPoints[TR].y += r.size.height;
+    
     int myCorner = -1;
     if ( [self arePoint:p andPoint:ep onSameEdgeOfRect:r] == NO )
         {
@@ -594,56 +605,56 @@
         if ( fabs(r.origin.y-p.y) < 0.0000001 )
             {
             // p is on the bottom edge
-            p = r.origin;
             myCorner = BL;
+            p = cornerPoints[BL];
             if (d[1] < d[0])
                 {
-                p.x += r.size.width;
                 myCorner = BR;
+                p = cornerPoints[BR];
                 }
             }
         else if ( fabs(r.origin.y+r.size.height-p.y) < 0.0000001 )
             {
             // p is on the top edge
-            p = r.origin;
-            p.y += r.size.height;
             myCorner = TL;
+            p = cornerPoints[TL];
             if (d[3] < d[2])
                 {
-                p.x += r.size.width;
                 myCorner = TR;
+                p = cornerPoints[TR];
                 }
             }
         else if ( fabs(r.origin.x-p.x) < 0.0000001 )
             {
             // p is on the left edge
-            p = r.origin;
             myCorner = BL;
+            p = cornerPoints[BL];
             if (d[2] < d[0])
                 {
-                p.y += r.size.height;
                 myCorner = TL;
+                p = cornerPoints[TL];
                 }
             }
         else
             {
             // p is on the right edge
-            p = r.origin;
-            p.x += r.size.width;
             myCorner = BR;
+            p = cornerPoints[BR];
             if (d[3] < d[1])
                 {
-                p.y += r.size.height;
                 myCorner = TR;
+                p = cornerPoints[TR];
                 }
             }
         [bezy lineToPoint:p];
         }
-    
+   
     while( fabs(p.x-ep.x) > 0.0000001 || fabs(p.y-ep.y) > 0.0000001 )
         {
         if ( [self arePoint:p andPoint:ep onSameEdgeOfRect:r] == YES )
+            {
             p = ep;
+            }
         else
             {
             // move p to the next closest corner
@@ -651,58 +662,132 @@
                 {
                 if ( d[TL] < d[BR] )
                     {
-                    p.y += r.size.height;
                     myCorner = TL;
+                    p = cornerPoints[TL];
                     }
                 else
                     {
-                    p.x += r.size.width;
                     myCorner = BR;
+                    p = cornerPoints[BR];
                     }
                 }
             else if (myCorner == BR)
                 {
                 if ( d[BL] < d[TR] )
                     {
-                    p = r.origin;
                     myCorner = BL;
+                    p = cornerPoints[BL];
                     }
                 else
                     {
-                    p.y += r.size.height;
                     myCorner = TR;
+                    p = cornerPoints[TR];
                     }
                 }
             else if (myCorner == TL)
                 {
                 if ( d[BL] < d[TR] )
                     {
-                    p = r.origin;
                     myCorner = BL;
+                    p = cornerPoints[BL];
                     }
                 else    
                     {
-                    p.x += r.size.width;
                     myCorner = TR;
+                    p = cornerPoints[TR];
                     }
                 }
             else // TR
                 {
                 if ( d[TL] < d[BR] )
                     {
-                    p.x = r.origin.x;
                     myCorner = TL;
+                    p = cornerPoints[TL];
                     }
                 else
                     {
-                    p.y = r.origin.y;
                     myCorner = BR;
+                    p = cornerPoints[BR];
                     }
                 }
             }
 
         [bezy lineToPoint:p];
         }
+}
+
+- (void)getBoundingRectForToolWithRect:(NSRect*)r andDestinationPoint:(NSPoint)cp withPosition:(NSPoint)p initializingPoint:(NSPoint*)s {
+
+    // remember the original rectangles
+    NSRect origR = *r;
+        
+    // expand the rectangle a bit
+    float vInc = r->size.height * 0.2;
+    float hInc = r->size.width  * 0.2;
+    r->origin.x -= hInc;
+    r->origin.y -= vInc;
+    r->size.width += 2.0 * hInc;
+    r->size.height += 2.0 * vInc;
+    
+    // check that the rectangles haven't gone off the analysis view area
+    if ( r->origin.x < 0.0 )
+        {
+        float excess = -r->origin.x;
+        r->origin.x = 0.0;
+        r->size.width -= excess;
+        }
+	NSRect bounds = [self bounds];
+    if ( r->origin.y + r->size.height > bounds.size.height )
+        {
+        float excess = r->origin.y + r->size.height - bounds.size.height;
+        r->size.height -= excess;
+        }
+        
+    // expand the rectangles towards the cursor point
+    if (r->origin.x > cp.x)
+        {
+        float excess = r->origin.x - cp.x;
+        r->origin.x -= excess;
+        r->size.width += excess;
+        }
+    else if (r->origin.x + r->size.width < cp.x)
+        {
+        r->size.width += cp.x - (r->origin.x + r->size.width);
+        }
+    if (r->origin.y > cp.y)
+        {
+        float excess = r->origin.y - cp.y;
+        r->origin.y -= excess;
+        r->size.height += excess;
+        }
+    else if (r->origin.y + r->size.height < cp.y)
+        {
+        r->size.height += cp.y - (r->origin.y + r->size.height);
+        }
+        
+    // find the positions of the inlets/outlets along the rectangle
+    NSPoint a0;
+    if (p.x < 0.00001)
+        {
+        a0.x = r->origin.x;
+        a0.y = origR.origin.y + p.y * origR.size.height;
+        }
+    else if (p.x > 0.99999)
+        {
+        a0.x = r->origin.x + r->size.width;
+        a0.y = origR.origin.y + p.y * origR.size.height;
+        }
+    else if (p.y < 0.00001)
+        {
+        a0.x = origR.origin.x + p.x * origR.size.width;
+        a0.y = r->origin.y;
+        }
+    else
+        {
+        a0.x = origR.origin.x + p.x * origR.size.width;
+        a0.y = r->origin.y + r->size.height;
+        }
+    *s = a0;
 }
 
 - (void)getBoundingRectForToolWithRect:(NSRect*)r1 andRect:(NSRect*)r2 andCenterPoint:(NSPoint*)cp withPosition:(NSPoint)p1 initializingPoint:(NSPoint*)s1 andPosition:(NSPoint)p2 initializingPoint:(NSPoint*)s2 {
@@ -1347,6 +1432,13 @@
                     else
                         {
                         NSLog(@"Problem finding inlet and outlet");
+                        }
+                        
+                    // find out if the inlet already has a connection, in which case we remove that connection before establishing this one
+                    if ( [theInlet hasConnection] == YES )
+                        {
+                        Connection* c = [theInlet connection];
+                        [[c outlet] removeConnection:c];
                         }
                         
                     // we have the outlet manage the connection

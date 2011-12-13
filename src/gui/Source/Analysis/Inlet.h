@@ -15,6 +15,7 @@
 - (BOOL)amOutlet;
 - (Connection*)connection;
 - (Connection*)connectionWithIndex:(int)idx;
+- (BOOL)hasConnection;
 - (id)initWithTool:(Tool*)t;
 - (int)numberOfConnections;
 - (void)pointsForToolWithRect:(NSRect)r atVertex1:(NSPoint*)v1 andVertex2:(NSPoint*)v2 andVertex3:(NSPoint*)v3;

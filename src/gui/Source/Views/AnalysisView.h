@@ -22,6 +22,7 @@
 - (float)distanceFromPoint:(NSPoint)a toPoint:(NSPoint)b;
 - (NSPoint)findClosestPointOnEdgeOfRect:(NSRect)r fromPoint:(NSPoint)p2;
 - (void)getBezierPath:(NSBezierPath*)bezy forRect:(NSRect)r startPoint:(NSPoint)sp secondPoint:(NSPoint)p2 andEndPoint:(NSPoint)ep;
+- (void)getBoundingRectForToolWithRect:(NSRect*)r1 andDestinationPoint:(NSPoint)cp withPosition:(NSPoint)p initializingPoint:(NSPoint*)s;
 - (void)getBoundingRectForToolWithRect:(NSRect*)r1 andRect:(NSRect*)r2 andCenterPoint:(NSPoint*)cp withPosition:(NSPoint)p1 initializingPoint:(NSPoint*)s1 andPosition:(NSPoint)p2 initializingPoint:(NSPoint*)s2;
 - (BOOL)isPoint:(NSPoint)p inLineSegmentDefinedByPoint:(NSPoint)a andPoint:(NSPoint)b;
 - (void)mouseDown:(NSEvent*)event;
