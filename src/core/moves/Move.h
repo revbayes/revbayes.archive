@@ -32,9 +32,11 @@ class Move : public ConstantMemberObject {
     virtual                                ~Move(void);                                                                 //!< Destructor
 
         // Basic utility functions
+        virtual std::string                 briefInfo(void) const;                                                  //!< Get a brief info about the move
         virtual Move*                       clone(void) const = 0;                                                  //!< Clone the object
         virtual const VectorString&         getClass(void) const;                                                   //!< Get class vector
-
+        virtual void                        printValue(std::ostream& o) const;
+    
         // Member variable rules
         virtual RbPtr<const MemberRules>    getMemberRules(void) const;                                             //!< Get member rules
 

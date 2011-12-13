@@ -59,6 +59,26 @@ Move::~Move() {
 }
 
 
+/** Brief info about the move */
+std::string Move::briefInfo(void) const {
+    std::string tmp = getClass()[0] + "(";
+    
+    for (size_t i = 0; i < nodes.size(); i++) {
+        
+        if (i > 0) {
+            tmp += ", ";
+        }
+        
+        RbPtr<VariableNode> n = nodes[i];
+        tmp += n->getName();
+    }
+    
+    tmp += ")";
+    
+    return  tmp;
+}
+
+
 /** Map calls to member methods */
 RbPtr<RbLanguageObject> Move::executeOperationSimple(const std::string& name, const RbPtr<Environment>& args) {
 
@@ -184,6 +204,11 @@ RbPtr<const MethodTable> Move::getMethods(void) const {
 double Move::getUpdateWeight( void ) const {
 
     return static_cast<const RealPos*>( (const RbObject*)(*members)["weight"]->getValue() )->getValue();
+}
+
+
+void Move::printValue(std::ostream &o) const {
+    o << briefInfo();
 }
 
 
