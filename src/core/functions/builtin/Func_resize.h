@@ -28,17 +28,16 @@ class VectorString;
 
 const std::string Func_resize_name = "Resize function";
 
-template <typename valType, typename firstValType, typename secondValType> 
 class Func_resize :  public RbFunction {
 	
 public:
 	// Basic utility functions
 	Func_resize*                clone(void) const;                                  //!< Clone the object
 	const VectorString&         getClass(void) const;                               //!< Get class vector
-  const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
+    const TypeSpec&             getTypeSpec(void) const;                            //!< Get language type of the object
 	
 	// Regular functions
-  RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
+    RbPtr<const ArgumentRules>  getArgumentRules(void) const;                       //!< Get argument rules
 	const TypeSpec&             getReturnType(void) const;                          //!< Get type of return value
   
 protected:
@@ -57,47 +56,44 @@ private:
 
 
 // Definition of the static type spec member
-template <typename valType, typename firstValType, typename secondValType> 
-const TypeSpec Func_resize<valType, firstValType, secondValType>::typeSpec("Func_resize", new TypeSpec(valType().getType()));
+const TypeSpec Func_resize::typeSpec(Func_resize_name);
 
 
 /** Clone object */
-template <typename valType, typename firstValType, typename secondValType> 
-Func_resize<valType, firstValType, secondValType>* Func_resize<valType, firstValType, secondValType>::clone( void ) const {
+Func_resize* Func_resize::clone( void ) const {
   
   return new Func_resize( *this );
 }
 
 
 /** Execute function: We rely on operator overloading to provide the necessary functionality */
-template <typename valType, typename firstValType, typename secondValType> 
-RbPtr<RbLanguageObject> Func_resize<valType, firstValType, secondValType>::executeFunction( void ) {
+RbPtr<RbLanguageObject> Func_resize::executeFunction( void ) {
 
+    unsigned int nargs = args->size();
   //The identity of the object to resize
-  RbPtr<valType> val( static_cast<valType*>( (*args)[0]->getValue()->clone() ) );
+  RbPtr<Vector> val( static_cast<Vector*>( (*args)[0]->getValue()->clone() ) );
 
   // get the information from the arguments for reading the file
-  Integer nrows ( static_cast<Integer*>( (RbObject*)(*args)[1]->getValue() ) );
-  Integer ncols ( static_cast<Integer*>( (RbObject*)(*args)[2]->getValue() ) );
+  int nrows = ( static_cast<Natural*>( (RbObject*)(*args)[1]->getValue() ) )->getValue();
+//  Integer ncols ( static_cast<Integer*>( (RbObject*)(*args)[2]->getValue() ) );
 
-  val->resize(nrows, ncols);
-  return RbPtr<RbLanguageObject>( (valType*)val );
+  val->resize(nrows);
+  return RbPtr<RbLanguageObject>( val );
   
 }
 
 
 /** Get argument rules */
-template <typename valType, typename firstValType, typename secondValType> 
-RbPtr<const ArgumentRules> Func_resize<valType, firstValType, secondValType>::getArgumentRules( void ) const {
+RbPtr<const ArgumentRules> Func_resize::getArgumentRules( void ) const {
   
   static RbPtr<ArgumentRules> argumentRules( new ArgumentRules() );
   static bool          rulesSet = false;
   
   if ( !rulesSet ) 
   {
-    argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", valType() .getTypeSpec() ) ) );
-    argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "nrows", firstValType().getTypeSpec() ) ) );
-    argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "ncols", secondValType().getTypeSpec() ) ) );
+    argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", TypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(RbLanguageObject_name) ) ) ) ) );
+    argumentRules->push_back( RbPtr<ArgumentRule>( new ValueRule( "", Natural_name ) ) );
+    argumentRules->push_back( RbPtr<ArgumentRule>( new Ellipsis( Natural_name ) ) );
     rulesSet = true;
   }
   
@@ -106,10 +102,9 @@ RbPtr<const ArgumentRules> Func_resize<valType, firstValType, secondValType>::ge
 
 
 /** Get class vector describing type of object */
-template <typename valType, typename firstValType, typename secondValType> 
-const VectorString& Func_resize<valType, firstValType, secondValType>::getClass( void ) const {
+const VectorString& Func_resize::getClass( void ) const {
   
-  static std::string  rbName  = "Func_resize<" + valType().getType() + ">"; 
+  static std::string  rbName  = "Func_resize"; 
   static VectorString rbClass = VectorString( rbName ) + RbFunction::getClass();
   
   return rbClass;
@@ -117,16 +112,14 @@ const VectorString& Func_resize<valType, firstValType, secondValType>::getClass(
 
 
 /** Get return type */
-template <typename valType, typename firstValType, typename secondValType> 
-const TypeSpec& Func_resize<valType, firstValType, secondValType>::getReturnType( void ) const {
-	
-  return valType().getTypeSpec();
+const TypeSpec& Func_resize::getReturnType( void ) const {
+	static TypeSpec rt = TypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(RbLanguageObject_name) ) );
+  return rt;
 }
 
 
-/** Get return type */
-template <typename valType, typename firstValType, typename secondValType> 
-const TypeSpec& Func_resize<valType, firstValType, secondValType>::getTypeSpec( void ) const {
+/** Get type spec */
+const TypeSpec& Func_resize::getTypeSpec( void ) const {
   
   return typeSpec;
 }

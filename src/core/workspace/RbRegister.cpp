@@ -387,7 +387,7 @@ void Workspace::initializeGlobalWorkspace(void) {
 //        addFunction( "simplex",   new Func_simplex<         Integer                                                         >() );
         addFunction( "simplex",   new Func_simplex<         RealPos                                                         >() );
 //        addFunction( "simplex",   new Func_simplex<         VectorRealPos                                                   >() );
-        addFunction( "resize",    new Func_resize<          MatrixReal, Integer,        Integer                                      >() );
+        addFunction( "resize",    new Func_resize() );
 
         addFunction( "transpose", new Func_transpose<       MatrixReal                                                      >() );
         addFunction( "v",         new Func_vector<          RbBoolean,                      VectorBoolean                   >() );
