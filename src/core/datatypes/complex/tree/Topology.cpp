@@ -47,7 +47,8 @@ Topology::Topology(const Topology& t) : ConstantMemberObject( getMemberRules() )
     root = cloneTree(t.getRoot());
     
     // fill the nodes vector
-    fillNodesByPreorderTraversal(root);
+//    fillNodesByPreorderTraversal(root);
+    fillNodesByPhylogeneticTraversal(root);
 }
 
 
@@ -113,6 +114,27 @@ void Topology::fillNodesByPreorderTraversal(RbPtr<TopologyNode> node) {
         fillNodesByPreorderTraversal(node->getChild(i));
     }
 }
+
+/* fill the nodes vector by a phylogenetic traversal recursively starting with this node. 
+ * The tips fill the slots 0,...,n-1 followed by the internal nodes and then the root.
+ */
+void Topology::fillNodesByPhylogeneticTraversal(RbPtr<TopologyNode> node) {
+    
+    // now call this function recursively for all your children
+    for (size_t i=0; i<node->getNumberOfChildren(); i++) {
+        fillNodesByPhylogeneticTraversal(node->getChild(i));
+    }
+    
+    if (node->isTip()) {
+        // all the tips go to the beginning
+        nodes.insert(nodes.begin(), node);
+    } 
+    else {
+        // this is phylogenetic ordering so the internal nodes come last
+        nodes.push_back(node);
+    }
+}
+
 
 
 /* Get class information */
@@ -240,6 +262,7 @@ void Topology::setRoot( RbPtr<TopologyNode> r) {
     nodes.clear();
     
     // bootstrap all nodes from the root and add the in a pre-order traversal
-    fillNodesByPreorderTraversal(r);
+//    fillNodesByPreorderTraversal(r);
+    fillNodesByPhylogeneticTraversal(r);
 }
 

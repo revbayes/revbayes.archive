@@ -71,6 +71,7 @@ protected:
 private:
         static const TypeSpec               typeSpec;
         void                                fillNodesByPreorderTraversal(RbPtr<TopologyNode> node);                 //!< fill the nodes vector by a preorder traversal recursively starting with this node.
+        void                                fillNodesByPhylogeneticTraversal(RbPtr<TopologyNode> node);             //!< fill the nodes vector by a preorder traversal recursively starting with this node.
     
         std::vector<RbPtr<TopologyNode> >   nodes;                                                                  //!< Vector of pointers to all nodes
         RbPtr<TopologyNode>                 root;                                                                   //!< Pointer to the root node
