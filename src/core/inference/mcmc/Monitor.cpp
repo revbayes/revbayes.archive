@@ -15,6 +15,7 @@
  * $Id$
  */
 
+#include "DagNodeContainer.h"
 #include "Ellipsis.h"
 #include "Integer.h"
 #include "Monitor.h"
@@ -201,7 +202,25 @@ void Monitor::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
     
     // catch setting of the variables 
     if (name == "variable" || name == "") {
-        nodes.push_back(RbPtr<VariableNode>( dynamic_cast<VariableNode*>( (DAGNode*)var->getDagNode() ) ) );
+        RbPtr<DAGNode> theNode = var->getDagNode();
+        if (theNode->getValue()->isType(DagNodeContainer_name)) {
+            RbPtr<DagNodeContainer> theContainer( static_cast<DagNodeContainer*>( (RbLanguageObject*)theNode->getValue() ) );
+            for (size_t i = 0; i < theContainer->size(); i++) {
+                theNode = static_cast<VariableSlot*>( (RbObject*)theContainer->getElement(i) )->getDagNode();
+                if (theNode->isType(VariableNode_name)) {
+                    nodes.push_back( RbPtr<VariableNode>( static_cast<VariableNode*>( (DAGNode*)theNode ) ) );
+//                } else {
+//                    throw RbException("Cannot monitor a constant node!");
+                }
+            }
+        }
+        else {
+            if (theNode->isType(VariableNode_name)) {
+                nodes.push_back( RbPtr<VariableNode>( static_cast<VariableNode*>( (DAGNode*)theNode ) ) );
+//            } else {
+//                throw RbException("Cannot monitor a constant node!");
+            }
+        }
     } 
     else if (name == "separator") {
         separator = static_cast<RbString*>( (RbObject*)var->getValue() )->getValue();
