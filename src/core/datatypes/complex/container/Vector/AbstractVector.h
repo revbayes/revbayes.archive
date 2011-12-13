@@ -33,6 +33,7 @@ public:
     virtual                        ~AbstractVector(void);                                               //!< Virtual destructor 
     
     // Basic utility functions you have to override
+    virtual RbObject*               convertTo(const TypeSpec &type) const;
     virtual AbstractVector*         clone(void) const = 0;                                              //!< Clone object
     virtual const VectorString&     getClass(void) const;                                               //!< Get class
     virtual void                    printValue(std::ostream& o) const;                                  //!< Print value for user

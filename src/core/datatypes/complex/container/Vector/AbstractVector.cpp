@@ -21,6 +21,7 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
+#include "Vector.h"
 #include "VectorString.h"
 #include <algorithm>
 
@@ -58,6 +59,20 @@ AbstractVector& AbstractVector::operator=( const AbstractVector& x ) {
     }
     
     return ( *this );
+}
+
+
+RbObject* AbstractVector::convertTo(const TypeSpec &type) const {
+    
+    if (type.getBaseType() == Vector_name) {
+        Vector* newVector = new Vector(*type.getElementType());
+        for (size_t i = 0; i < size(); i++) {
+            newVector->push_back(getElement(i)->clone());
+        }
+        return newVector;
+    }
+    
+    return Container::convertTo(type);
 }
 
 
