@@ -1556,6 +1556,9 @@
         // add the tool to the array of tools
 		[itemsPtr addObject:newTool];
         [newTool release];
+        
+        // set the view for the tool
+        [newTool setAnalysisView:self];
 		
 		// reset the bottom right corner
 		[self setCorners];

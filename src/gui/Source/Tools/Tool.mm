@@ -112,10 +112,10 @@
 
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
-        inlets           = [[NSMutableArray alloc] init];
-        outlets          = [[NSMutableArray alloc] init];
-		flagCount        = 0;
-		touchOnRevival   = NO;
+        inlets         = [[NSMutableArray alloc] init];
+        outlets        = [[NSMutableArray alloc] init];
+		flagCount      = 0;
+		touchOnRevival = NO;
 		}
     return self;
 }
@@ -124,10 +124,10 @@
     
     if ( (self = [super initWithScaleFactor:sf andWindowNibName:wNibName]) ) 
         {
-        inlets           = [[NSMutableArray alloc] init];
-        outlets          = [[NSMutableArray alloc] init];
-		flagCount        = 0;
-		touchOnRevival   = NO;
+        inlets         = [[NSMutableArray alloc] init];
+        outlets        = [[NSMutableArray alloc] init];
+		flagCount      = 0;
+		touchOnRevival = NO;
         }
     return self;
 }
@@ -443,6 +443,11 @@
     NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:myTip attributes:attr];
 
     return attrString;
+}
+
+- (void)setAnalysisView:(AnalysisView*)av {
+
+    myAnalysisView = av;
 }
 
 - (void)setImageWithSize:(NSSize)s {

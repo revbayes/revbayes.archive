@@ -36,66 +36,67 @@
 
 	if ( (self = [super initWithWindowNibName:@"ControlWindowAlign"]) )
         {
-        myTool        = t;
-
-
-		// set default values for the window
+		// initialize the address of the tool associated with this control window
+        myTool = t;
             
         // pick up Clustal values from myTool and bind
-            [self setAlignClustalAlign:[myTool alignClustalAlign]];
-            [self setAlignClustalWordLength: [myTool alignClustalWordLength]];            
-            [self setAlignClustalWindow: [myTool alignClustalWindow]];
-            [self setAlignClustalScoreType: [myTool alignClustalScoreType]];
-            [self setAlignClustalNumberDiagonals: [myTool alignClustalNumberDiagonals]];
-            [self setAlignClustalPairGapPenalty: [myTool alignClustalPairGapPenalty]];
-            [self setAlignClustalMatrix: [myTool alignClustalMatrix]];
-            [self setAlignClustalGapOpenPenalty: [myTool alignClustalGapOpenPenalty]];
-            [self setAlignClustalEndGaps: [myTool alignClustalEndGaps]];
-            [self setAlignClustalGapExtensionCost: [myTool alignClustalGapExtensionCost]];
+        if (myTool != nil)
+            {
+            [self setAlignClustalAlign:                [myTool alignClustalAlign]];
+            [self setAlignClustalWordLength:           [myTool alignClustalWordLength]];            
+            [self setAlignClustalWindow:               [myTool alignClustalWindow]];
+            [self setAlignClustalScoreType:            [myTool alignClustalScoreType]];
+            [self setAlignClustalNumberDiagonals:      [myTool alignClustalNumberDiagonals]];
+            [self setAlignClustalPairGapPenalty:       [myTool alignClustalPairGapPenalty]];
+            [self setAlignClustalMatrix:               [myTool alignClustalMatrix]];
+            [self setAlignClustalGapOpenPenalty:       [myTool alignClustalGapOpenPenalty]];
+            [self setAlignClustalEndGaps:              [myTool alignClustalEndGaps]];
+            [self setAlignClustalGapExtensionCost:     [myTool alignClustalGapExtensionCost]];
             [self setAlignClustalGapSeparationPenalty: [myTool alignClustalGapSeparationPenalty]];
-            [self setAlignClustalIteration: [myTool alignClustalIteration]];
-            [self setAlignClustalNumberOfIterations: [myTool alignClustalNumberOfIterations]];        
+            [self setAlignClustalIteration:            [myTool alignClustalIteration]];
+            [self setAlignClustalNumberOfIterations:   [myTool alignClustalNumberOfIterations]];      
+            }
         }
 	return self;
 }
 
 - (void)windowDidLoad {
-    
-    NSLog (@"Window Did Load");
-    
+        
 }
 
 - (IBAction)okButtonAction:(id)sender {
 
-    NSLog (@"okButtonAction");
-    
-    [myTool setAlignClustalAlign: alignClustalAlign];
-    NSLog(@"controller align = %@, tool align = %@", alignClustalAlign, [myTool alignClustalAlign]);
-    
-    [myTool setAlignClustalWordLength: alignClustalWordLength];            
-    [myTool setAlignClustalWindow: alignClustalWindow];
-    [myTool setAlignClustalScoreType: alignClustalScoreType];
-    [myTool setAlignClustalNumberDiagonals: alignClustalNumberDiagonals];
-    [myTool setAlignClustalPairGapPenalty: alignClustalPairGapPenalty];
-    [myTool setAlignClustalMatrix: alignClustalMatrix];
-    [myTool setAlignClustalGapOpenPenalty: alignClustalGapOpenPenalty];
-    [myTool setAlignClustalEndGaps: alignClustalEndGaps];
-    [myTool setAlignClustalGapExtensionCost: alignClustalGapExtensionCost];
-    [myTool setAlignClustalGapSeparationPenalty: alignClustalGapSeparationPenalty];
-    [myTool setAlignClustalIteration: alignClustalIteration];
-    [myTool setAlignClustalNumberOfIterations: alignClustalNumberOfIterations];        
+	NSString* methodLabel = [NSString stringWithString:[[alignmentMethodSelectorTab selectedTabViewItem] label]];
+	if ( [methodLabel isEqualToString:@"CLUSTAL"] == YES )
+        {
+        // the user wants us to use the CLUSTAL program
+        // set the clustal parameters
+        [myTool setAlignClustalAlign:                alignClustalAlign];
+        [myTool setAlignClustalWordLength:           alignClustalWordLength];            
+        [myTool setAlignClustalWindow:               alignClustalWindow];
+        [myTool setAlignClustalScoreType:            alignClustalScoreType];
+        [myTool setAlignClustalNumberDiagonals:      alignClustalNumberDiagonals];
+        [myTool setAlignClustalPairGapPenalty:       alignClustalPairGapPenalty];
+        [myTool setAlignClustalMatrix:               alignClustalMatrix];
+        [myTool setAlignClustalGapOpenPenalty:       alignClustalGapOpenPenalty];
+        [myTool setAlignClustalEndGaps:              alignClustalEndGaps];
+        [myTool setAlignClustalGapExtensionCost:     alignClustalGapExtensionCost];
+        [myTool setAlignClustalGapSeparationPenalty: alignClustalGapSeparationPenalty];
+        [myTool setAlignClustalIteration:            alignClustalIteration];
+        [myTool setAlignClustalNumberOfIterations:   alignClustalNumberOfIterations];     
+        
+        // run clustal
+        [myTool helperRunClustal:(id)sender];
+        }
 
-    [myTool helperRunClustal: (id)sender];
     
+    // close the window
     [myTool closeControlPanel];
 }
 
 - (IBAction)cancelButtonAction:(id)sender {
-    NSLog (@"cancelButtonAction");
     
     [myTool closeControlPanel];
-
 }
-
 
 @end

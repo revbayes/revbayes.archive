@@ -82,6 +82,16 @@
         }
 }
 
+- (void)setAnalysisView:(AnalysisView*)av {
+
+	NSEnumerator* enumerator = [tools objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+		{
+        [element setAnalysisView:av];
+		}
+}
+
 - (void)setAnalysisName:(NSString*)aName {
 
     if (aName != analysisName) 

@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+@class AnalysisView;
 @class WindowControllerNoteBook;
 
 
@@ -16,6 +17,7 @@
 - (NSString*)analysisName;
 - (void)scaleToolsByScale:(float)s andFactor:(float)f;
 - (void)setAnalysisName:(NSString*)aName;
+- (void)setAnalysisView:(AnalysisView*)av;
 - (void)setNotebookString:(NSAttributedString*)newValue;
 - (void)showNoteBook;
 - (void)touchAllTools;

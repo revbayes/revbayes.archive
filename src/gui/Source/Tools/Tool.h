@@ -1,5 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "RbItem.h"
+@class AnalysisView;
 @class Inlet;
 @class InOutlet;
 @class Outlet;
@@ -8,6 +9,7 @@
 
 @interface Tool : RbItem <NSCoding> {
 
+    AnalysisView*        myAnalysisView;
     NSMutableArray*      inlets;
     NSMutableArray*      outlets;
 	int                  flagCount;
@@ -46,6 +48,7 @@
 - (void)removeAllOutlets;
 - (void)removeInletOfColor:(NSColor*)c;
 - (NSMutableAttributedString*)sendTip;
+- (void)setAnalysisView:(AnalysisView*)av;
 - (void)setImageWithSize:(NSSize)s;
 - (void)setInletLocations;
 - (void)setOutletLocations;

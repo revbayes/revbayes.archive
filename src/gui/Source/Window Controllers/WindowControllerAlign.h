@@ -5,26 +5,24 @@
 
 @interface WindowControllerAlign : NSWindowController {
 
-	IBOutlet NSButton*    okButton;
-	IBOutlet NSButton*    cancelButton;
-    ToolAlign*            myTool;
+    IBOutlet NSTabView*     alignmentMethodSelectorTab;         // Window variables
+	IBOutlet NSButton*      okButton;
+	IBOutlet NSButton*      cancelButton;
+    ToolAlign*              myTool;
 
-// Clustal variables
-    NSString *alignClustalAlign;
-    int alignClustalWordLength;
-    int alignClustalWindow;
-    NSString *alignClustalScoreType;
-    int alignClustalNumberDiagonals;
-    int alignClustalPairGapPenalty;
-    NSString *alignClustalMatrix;
-    float alignClustalGapOpenPenalty;
-    NSString *alignClustalEndGaps;
-    float alignClustalGapExtensionCost;
-    int alignClustalGapSeparationPenalty;
-    NSString *alignClustalIteration;
-    int alignClustalNumberOfIterations;
-
-    
+    NSString*               alignClustalAlign;                   // CLUSTAL variables
+    int                     alignClustalWordLength;
+    int                     alignClustalWindow;
+    NSString*               alignClustalScoreType;
+    int                     alignClustalNumberDiagonals;
+    int                     alignClustalPairGapPenalty;
+    NSString*               alignClustalMatrix;
+    float                   alignClustalGapOpenPenalty;
+    NSString*               alignClustalEndGaps;
+    float                   alignClustalGapExtensionCost;
+    int                     alignClustalGapSeparationPenalty;
+    NSString*               alignClustalIteration;
+    int                     alignClustalNumberOfIterations;
 }
 
 @property (readwrite, assign) NSString *alignClustalAlign;
@@ -41,11 +39,9 @@
 @property (readwrite,assign) NSString *alignClustalIteration;
 @property (readwrite) int alignClustalNumberOfIterations;
 
-
 - (IBAction)helpButtonAction:(id)sender;
 - (id)initWithTool:(ToolAlign*)t;
 - (IBAction)okButtonAction:(id)sender;
 - (IBAction)cancelButtonAction:(id)sender;
-- (void)endIndicator;
 
 @end

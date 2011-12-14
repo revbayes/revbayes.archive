@@ -419,6 +419,14 @@
     [analysisViewPtr setItems:tools];
     [analysisViewPtr setCorners];
     [analysisViewPtr updateScrollBars];
+    
+    // set the analysis view for all of the tools 
+	NSEnumerator* enumerator = [analyses objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+		{
+		[element setAnalysisView:analysisViewPtr];
+		}
 }
 
 - (NSString *)windowNibName {
