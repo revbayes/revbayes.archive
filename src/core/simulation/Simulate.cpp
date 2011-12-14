@@ -295,6 +295,9 @@ void Simulate::run(size_t ndata) {
             std::set<RbPtr<StochasticNode> > affectedNodes;
             RbPtr<Distribution> dist = orderedStochasticNodes[i]->getDistribution();
             orderedStochasticNodes[i]->setValue( dist->rv(), affectedNodes );
+            // we need to call keep so that the values get recalculated properly
+            orderedStochasticNodes[i]->keep();
+            orderedStochasticNodes[i]->keepAffected();
         }
         
         /* Monitor */
