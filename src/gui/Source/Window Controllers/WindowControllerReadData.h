@@ -13,16 +13,16 @@ class CharacterData;
     
 	IBOutlet NSTabView*                matrixTypeTab;
 	IBOutlet NSButton*                 okButton;
-	IBOutlet NSSegmentedControl*       numberOfOutletsButton1;
 	IBOutlet NSPopUpButton*            dataTypeButton1;
 	IBOutlet NSPopUpButton*            dataFormatButton;
 	IBOutlet NSPopUpButton*            dataAlignmentButton;
+    IBOutlet NSPopUpButton*            fileFormatDeterminationMethod;
 	IBOutlet NSSegmentedControl*       interleavedFormatButton;
+    IBOutlet NSTextField*              dataFormatField;
 	IBOutlet NSTextField*              dataTypeField;
 	IBOutlet NSTextField*              dataAlignmentField;
 	IBOutlet NSTextField*              interleavedFormatField;
 	
-	IBOutlet NSSegmentedControl*       numberOfOutletsButton2;
 	IBOutlet NSPopUpButton*            dataTypeButton2;
 	IBOutlet NSTextField*              numberOfTaxaField;
 	IBOutlet NSTextField*              numberOfCharactersField;
@@ -35,7 +35,7 @@ class CharacterData;
 	int                                numberOfTaxa;
 	int                                numberOfCharacters;
     int                                numberOfStates;
-	int                                numberOfOutlets;
+    BOOL                               isDataFormatAutomaticallyDetermined;
 }
 
 @property (readwrite) int dataAlignment;
@@ -46,15 +46,16 @@ class CharacterData;
 @property (readwrite) int numberOfCharacters;
 @property (readwrite) int numberOfTaxa;
 @property (readwrite) int numberOfStates;
-@property (readwrite) int numberOfOutlets;
 @property (retain) NSString* fileName;
 @property (retain) NSString* pathName;
+@property (readwrite) BOOL isDataFormatAutomaticallyDetermined;
 
 - (void)addBlankDataMatrix;
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)changeDataType:(id)sender;
 - (IBAction)changeBlankDataType:(id)sender;
 - (IBAction)changeFileFormat:(id)sender;
+- (IBAction)changeFileFormatDeterminationMethod:(id)sender;
 - (IBAction)helpButtonAction:(id)sender;
 - (id)initWithTool:(ToolReadData*)t;
 - (unsigned)missingForNumStates:(int)n;

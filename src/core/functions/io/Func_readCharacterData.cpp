@@ -212,7 +212,7 @@ RbPtr<RbLanguageObject> Func_readCharacterData::executeFunction( void ) {
     else
         {
         // Return null object
-            return RbPtr<RbLanguageObject>::getNullPtr();
+        return RbPtr<RbLanguageObject>::getNullPtr();
         }
 }
 

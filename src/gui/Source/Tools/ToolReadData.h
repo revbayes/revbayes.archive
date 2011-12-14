@@ -19,7 +19,6 @@
 	int                                dataInterleaved;
 	int                                numberOfTaxa;
 	int                                numberOfCharacters;
-	int                                numberOfOutlets;
     WindowControllerReadData*          controlWindow;
     WindowControllerCharacterMatrix*   dataInspector;	
 	NSMutableArray*                    dataMatrices;
@@ -35,7 +34,6 @@
 @property (readwrite) int dataTypeSimulated;
 @property (readwrite) int numberOfCharacters;
 @property (readwrite) int numberOfTaxa;
-@property (readwrite) int numberOfOutlets;
 @property (readwrite) int matrixType;
 @property (readwrite,assign) NSMutableArray* dataMatrices;
 
@@ -50,7 +48,6 @@
 - (int)numDataMatrices;
 - (void)removeAllDataMatrices;
 - (NSMutableAttributedString*)sendTip;
-- (void)setInletsAndOutlets;
 - (void)showControlPanel;
 - (void)showInspectorPanel;
 

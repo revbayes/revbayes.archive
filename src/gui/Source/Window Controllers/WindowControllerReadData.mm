@@ -31,12 +31,12 @@
 @synthesize dataInterleaved;
 @synthesize dataType;
 @synthesize dataTypeSimulated;
-@synthesize numberOfOutlets;
 @synthesize numberOfCharacters;
 @synthesize numberOfTaxa;
 @synthesize numberOfStates;
 @synthesize fileName;
 @synthesize pathName;
+@synthesize isDataFormatAutomaticallyDetermined;
 
 - (void)addBlankDataMatrix {
 
@@ -145,6 +145,11 @@
 	[self setControlsEnabledState];
 }
 
+- (IBAction)changeFileFormatDeterminationMethod:(id)sender {
+
+    [self setControlsEnabledState];
+}
+
 - (void)dealloc {
 
 	[fileName release];
@@ -181,7 +186,6 @@
 		[self setNumberOfTaxa:[myTool numberOfTaxa]];
 		[self setNumberOfCharacters:[myTool numberOfCharacters]];
         [self setNumberOfStates:2];
-		[self setNumberOfOutlets:[myTool numberOfOutlets]];
 		[self setFileName:[myTool fileName]];
 		[self setPathName:[myTool pathName]];
         }
@@ -436,13 +440,13 @@
 	NSString* tabViewLabel = [NSString stringWithString:[[matrixTypeTab selectedTabViewItem] label]];
 	if ( [tabViewLabel isEqualToString:@"Data Matrix"] == YES )
 		{
-        newFrame.size.height = 280.0;
+        newFrame.size.height = 290.0;
         newFrame.origin.y += (oldFrame.size.height - newFrame.size.height);
         [[self window] setFrame:newFrame display:YES animate:YES];
 		}
 	else if ( [tabViewLabel isEqualToString:@"Blank Matrix"] == YES )
 		{
-        newFrame.size.height = 253.0;
+        newFrame.size.height = 220.0;
         newFrame.origin.y += (oldFrame.size.height - newFrame.size.height);
         [[self window] setFrame:newFrame display:YES animate:YES];
 		}
@@ -450,41 +454,67 @@
 
 - (void)setControlsEnabledState {
 
-    [dataAlignmentButton setEnabled:NO];
-    [dataAlignmentField setTextColor:[NSColor grayColor]];
-	
-	NSString* tabViewLabel = [NSString stringWithString:[[matrixTypeTab selectedTabViewItem] label]];
-	if ( [tabViewLabel isEqualToString:@"Data Matrix"] == YES )
-		{
-		if ( [[dataFormatButton titleOfSelectedItem] isEqualToString:@"NEXUS"] == YES)
-			{
-			[dataTypeButton1 setEnabled:NO];
-            [interleavedFormatButton setEnabled:NO];
-			[dataTypeField setTextColor:[NSColor grayColor]];
-			[interleavedFormatField setTextColor:[NSColor grayColor]];
-			}
-		else if ( [[dataFormatButton titleOfSelectedItem] isEqualToString:@"FASTA"] == YES)
-			{
-			[dataTypeButton1 setEnabled:YES];
-            [interleavedFormatButton setEnabled:NO];
-			[dataTypeField setTextColor:[NSColor blackColor]];
-			[interleavedFormatField setTextColor:[NSColor grayColor]];
-			}
-		else if ( [[dataFormatButton titleOfSelectedItem] isEqualToString:@"Unknown"] == YES)
-			{
-			[dataTypeButton1 setEnabled:NO];
-            [interleavedFormatButton setEnabled:NO];
-			[dataTypeField setTextColor:[NSColor grayColor]];
-			[interleavedFormatField setTextColor:[NSColor grayColor]];
-			}
-		else 
-			{
-			[dataTypeButton1 setEnabled:YES];
-			[interleavedFormatButton setEnabled:YES];
-			[dataTypeField setTextColor:[NSColor blackColor]];
-			[interleavedFormatField setTextColor:[NSColor blackColor]];
-			}
-		}
+	if ( [[fileFormatDeterminationMethod titleOfSelectedItem] isEqualToString:@"By RevBayes"] == YES )
+        {
+        [self setIsDataFormatAutomaticallyDetermined:YES];
+        [dataTypeButton1         setEnabled:NO];
+        [dataFormatButton        setEnabled:NO];
+        [dataAlignmentButton     setEnabled:NO];
+        [interleavedFormatButton setEnabled:NO];
+        [dataFormatField         setEnabled:NO];
+        [dataTypeField           setEnabled:NO];
+        [dataAlignmentField      setEnabled:NO]; 
+        [interleavedFormatField  setEnabled:NO];
+        }
+    else 
+        {
+        [dataTypeButton1         setEnabled:YES];
+        [dataFormatButton        setEnabled:YES];
+        [dataAlignmentButton     setEnabled:YES];
+        [interleavedFormatButton setEnabled:YES];
+        [dataFormatField         setEnabled:YES];
+        [dataTypeField           setEnabled:YES];
+        [dataAlignmentField      setEnabled:YES]; 
+        [interleavedFormatField  setEnabled:YES];
+
+        [dataAlignmentButton setEnabled:NO];
+        [dataAlignmentField setTextColor:[NSColor grayColor]];
+        
+        NSString* tabViewLabel = [NSString stringWithString:[[matrixTypeTab selectedTabViewItem] label]];
+        if ( [tabViewLabel isEqualToString:@"Data Matrix"] == YES )
+            {
+            if ( [[dataFormatButton titleOfSelectedItem] isEqualToString:@"NEXUS"] == YES)
+                {
+                [dataTypeButton1 setEnabled:NO];
+                [interleavedFormatButton setEnabled:NO];
+                [dataTypeField setTextColor:[NSColor grayColor]];
+                [interleavedFormatField setTextColor:[NSColor grayColor]];
+                }
+            else if ( [[dataFormatButton titleOfSelectedItem] isEqualToString:@"FASTA"] == YES)
+                {
+                [dataTypeButton1 setEnabled:YES];
+                [interleavedFormatButton setEnabled:NO];
+                [dataTypeField setTextColor:[NSColor blackColor]];
+                [interleavedFormatField setTextColor:[NSColor grayColor]];
+                [dataAlignmentButton setEnabled:YES];
+                [dataAlignmentField setTextColor:[NSColor blackColor]];
+                }
+            else if ( [[dataFormatButton titleOfSelectedItem] isEqualToString:@"Unknown"] == YES)
+                {
+                [dataTypeButton1 setEnabled:NO];
+                [interleavedFormatButton setEnabled:NO];
+                [dataTypeField setTextColor:[NSColor grayColor]];
+                [interleavedFormatField setTextColor:[NSColor grayColor]];
+                }
+            else 
+                {
+                [dataTypeButton1 setEnabled:YES];
+                [interleavedFormatButton setEnabled:YES];
+                [dataTypeField setTextColor:[NSColor blackColor]];
+                [interleavedFormatField setTextColor:[NSColor blackColor]];
+                }
+            }
+        }
 }
 
 - (void)setToolValues {
@@ -496,7 +526,6 @@
 	[myTool setDataInterleaved:[self dataInterleaved]];
 	[myTool setNumberOfTaxa:[self numberOfTaxa]];
 	[myTool setNumberOfCharacters:[self numberOfCharacters]];
-	[myTool setNumberOfOutlets:[self numberOfOutlets]];
 	[myTool setFileName:[self fileName]];
 	[myTool setPathName:[self pathName]];
 	[myTool setMatrixType:(int)[matrixTypeTab indexOfTabViewItem:[matrixTypeTab selectedTabViewItem]]];

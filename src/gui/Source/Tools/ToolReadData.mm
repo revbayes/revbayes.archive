@@ -21,7 +21,6 @@
 @synthesize dataWorkspaceName;
 @synthesize fileName;
 @synthesize matrixType;
-@synthesize numberOfOutlets;
 @synthesize numberOfCharacters;
 @synthesize numberOfTaxa;
 @synthesize pathName;
@@ -42,7 +41,6 @@
 
     [NSApp stopModal];
 	[controlWindow close];
-    [self setInletsAndOutlets];
 }
 
 - (RbData*)dataMatrixIndexed:(int)i {
@@ -74,7 +72,6 @@
 	[aCoder encodeInt:dataInterleaved      forKey:@"dataInterleaved"];
 	[aCoder encodeInt:dataType             forKey:@"dataType"];
 	[aCoder encodeInt:dataTypeSimulated    forKey:@"dataTypeSimulated"];
-	[aCoder encodeInt:numberOfOutlets      forKey:@"numberOfOutlets"];
 	[aCoder encodeInt:numberOfCharacters   forKey:@"numberOfCharacters"];
 	[aCoder encodeInt:numberOfTaxa         forKey:@"numberOfTaxa"];
 	[aCoder encodeInt:matrixType           forKey:@"matrixType"];
@@ -96,11 +93,11 @@
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
-        [self setInletLocations];
-        [self setOutletLocations];
 
 		// initialize the inlet/outlet information
 		[self addOutletOfColor:[NSColor greenColor]];
+		[self addOutletOfColor:[NSColor cyanColor]];
+        [self setOutletLocations];
 
 		// initialize the data
 		fileName           = [[NSString alloc] initWithString:@""];
@@ -113,7 +110,6 @@
 		dataInterleaved    = 0;
 		numberOfTaxa       = 3;
 		numberOfCharacters = 1;
-		numberOfOutlets    = 1;
 		matrixType         = 0;
 		
 		// initialize the array holding the data matrices
@@ -143,7 +139,6 @@
 		dataInterleaved    = [aDecoder decodeIntForKey:@"dataInterleaved"];
 		dataType           = [aDecoder decodeIntForKey:@"dataType"];
 		dataTypeSimulated  = [aDecoder decodeIntForKey:@"dataTypeSimulated"];
-		numberOfOutlets    = [aDecoder decodeIntForKey:@"numberOfOutlets"];
 		numberOfCharacters = [aDecoder decodeIntForKey:@"numberOfCharacters"];
 		numberOfTaxa       = [aDecoder decodeIntForKey:@"numberOfTaxa"];
 		matrixType         = [aDecoder decodeIntForKey:@"matrixType"];
@@ -283,39 +278,6 @@
     NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:myTip attributes:attr];
 
     return attrString;
-}
-
-- (void)setInletsAndOutlets {
-
-	if ( [controlWindow numberOfOutlets] != [self numOutlets] )
-		{
-		[self removeAllInletsAndOutlets];
-		for (int i=0; i<[controlWindow numberOfOutlets]; i++)
-			{
-			if ([controlWindow dataAlignment] == 0)
-				[self addOutletOfColor:[NSColor greenColor]];
-			else 
-				[self addOutletOfColor:[NSColor cyanColor]];
-			}
-		}
-    if ( [controlWindow dataAlignment] == 0 )
-        {
-        if ( [[self outletIndexed:0] toolColor] != [NSColor greenColor] )
-            {
-            [self removeAllInletsAndOutlets];
-			for (int i=0; i<[controlWindow numberOfOutlets]; i++)
-				[self addOutletOfColor:[NSColor greenColor]];
-            }
-        }
-    else
-        {
-        if ( [[self outletIndexed:0] toolColor] != [NSColor cyanColor] )
-            {
-            [self removeAllInletsAndOutlets];
-			for (int i=0; i<[controlWindow numberOfOutlets]; i++)
-				[self addOutletOfColor:[NSColor cyanColor]];
-            }
-        }
 }
 
 - (void)showControlPanel {
