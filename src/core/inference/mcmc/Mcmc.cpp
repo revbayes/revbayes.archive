@@ -235,6 +235,7 @@ void Mcmc::run(size_t ngen) {
             lnProbability += lnProb;
 //            initProb.push_back(lnProb);
         }
+        node->keep();
     }
     std::cerr << "Initial lnProbability = " << lnProbability << std::endl;
 
