@@ -759,6 +759,7 @@
 		22E1DDB1148FE25A003F7E93 /* TextEditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E1DC74148FE25A003F7E93 /* TextEditorWindow.xib */; };
 		645EB76F13FEE0AA00018F3A /* help in CopyFiles */ = {isa = PBXBuildFile; fileRef = 645EB76813FEE06200018F3A /* help */; };
 		85CD0233133948C400318200 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85CD0232133948C400318200 /* Cocoa.framework */; };
+		BD8DDDB71498D99F007792CD /* Simulate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD8DDDB61498D99F007792CD /* Simulate.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1695,6 +1696,8 @@
 		85CD0235133948C400318200 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		85CD0236133948C400318200 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		85CD0237133948C400318200 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BD8DDDB61498D99F007792CD /* Simulate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Simulate.cpp; sourceTree = "<group>"; };
+		BD8DDDB81498DA4C007792CD /* Simulate.h */ = {isa = PBXFileReference; fileEncoding = 4; path = Simulate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1719,6 +1722,7 @@
 		22E1D6F6148FE250003F7E93 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				BD8DDDB51498D99A007792CD /* simulation */,
 				22E1D6F7148FE250003F7E93 /* convergence */,
 				22E1D70A148FE250003F7E93 /* dag */,
 				22E1D715148FE250003F7E93 /* datatypes */,
@@ -3199,6 +3203,15 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
+		BD8DDDB51498D99A007792CD /* simulation */ = {
+			isa = PBXGroup;
+			children = (
+				BD8DDDB61498D99F007792CD /* Simulate.cpp */,
+				BD8DDDB81498DA4C007792CD /* Simulate.h */,
+			);
+			path = simulation;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -3691,6 +3704,7 @@
 				22E1DA9E148FE250003F7E93 /* SyntaxVariable.cpp in Sources */,
 				22E1DAA0148FE250003F7E93 /* SyntaxVariableDecl.cpp in Sources */,
 				22E1DAA2148FE250003F7E93 /* RbMain.cpp in Sources */,
+				BD8DDDB71498D99F007792CD /* Simulate.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -69,9 +69,6 @@ Func_resize* Func_resize::clone( void ) const {
 void Func_resize::resizeVector(Container &vec, Environment *args, unsigned int numArg) { 
     unsigned int nrows = ( static_cast<Natural*>( (RbObject*)(*args)[numArg]->getValue() ) )->getValue();
     for (unsigned int j = 0 ; j < vec.size() ; j ++) {
-        std::cout << "j: "<<j <<std::endl;
-//        std::cout << "element j: "<<vec[j] <<std::endl;
-
         if (vec.getElement(j) != NULL && vec.getElement(j)->isTypeSpec(Vector_name )) { //if element j already a vector
             static_cast<Vector*>( (RbObject*)vec.getElement(j))->resize(nrows);
         }
@@ -101,38 +98,23 @@ RbPtr<RbLanguageObject> Func_resize::executeFunction( void ) {
 
   unsigned long nargs = args->size();
   //The identity of the object to resize
-  RbPtr<Container> val( static_cast<Container*>( (RbLanguageObject*)(*args)[0]->getValue() ) );
+  RbPtr<Container> val( static_cast<Container*>( (RbLanguageObject*)(*args)[0]->getValue()->clone() ) );
 
     if (nargs == 2) {
       //Resizing a vector
-        std::cout << "nargs = 2" <<std::endl;
       unsigned int nrows = ( static_cast<Natural*>( (RbObject*)(*args)[1]->getValue() ) )->getValue();
       val->resize(nrows);
     }
     else {
-        std::cout << "nargs = 3" <<std::endl;
       //Resizing a matrix of nargs-1 dimensions
-       // for (unsigned int i = 0 ; i < nargs-1 ; i ++) {
-            int nrows = ( static_cast<Natural*>( (RbObject*)(*args)[1]->getValue() ) )->getValue();
+        int nrows = ( static_cast<Natural*>( (RbObject*)(*args)[1]->getValue() ) )->getValue();
         
         if (!val->isType(Vector_name)) {
             val = RbPtr<Container>( static_cast<Container*>( val->convertTo(TypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(RbLanguageObject_name) ) ) ) ) );
         }
         
-            val->resize(nrows);
-            resizeVector(*val, args, 2);
-//                if (val->getElement(0)->getTypeSpec() == Vector_name) {
-//                    for (unsigned int j = 0 ; j < val->size() ; j ++) {
-//                        //val->setElement(j, Vector(val->getElement(j))->resize(nrows);
-//                        static_cast<Vector*>( (RbObject*)val->getElement(j))->resize(nrows);
-//                    }
-//                }
-//                else {
-//                    resizeVector(val, args, 1);
-// 
-//                }
-           // }
-       // }
+        val->resize(nrows);
+        resizeVector(*val, args, 2);
     }
   return RbPtr<RbLanguageObject>( val );
   

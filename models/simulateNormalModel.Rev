@@ -1,0 +1,20 @@
+# Simulate draws from a normal model
+
+
+a <- -1.0
+b <- 1.0
+mu ~ unif(a,b)
+
+c <- 0
+d <- 1.0
+e ~ norm (c,d)
+
+sigma := expf(e)
+
+x ~ norm(mu, sigma)
+
+mymodel <- model(mu)
+filemonitors <- monitor(filename="normaltest.out", printgen=1, separator="	", mu, e, sigma)
+mysimu <- simulate(mymodel, filemonitors)
+mysimu.run(10)
+
