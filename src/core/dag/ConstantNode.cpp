@@ -125,10 +125,10 @@ void ConstantNode::keepAffected( void ) {
 /** Print value for user */
 void ConstantNode::printValue( std::ostream& o ) const {
 
-    if ( value )
+    if ( value != NULL )
         value->printValue(o);
     else  /* NULL value */
-        o << "NA";
+        o << "NULL";
 }
 
 

@@ -26,6 +26,7 @@
 #include "MemberFunction.h"
 #include "MemberObject.h"
 #include "RbException.h"
+#include "RbLanguageObject.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
 #include "SyntaxFunctionCall.h"
@@ -389,15 +390,21 @@ RbPtr<Variable> SyntaxVariable::evaluateContent(RbPtr<Environment> env) {
     if (!index->empty()) {
         // iterate over the each index
         for (std::list<RbPtr<SyntaxElement> >::const_iterator it=index->begin(); it!=index->end(); it++) {
-            RbPtr<SyntaxElement>               indexSyntaxElement     = *it;
-            RbPtr<Variable>                    indexVar               = indexSyntaxElement->evaluateContent(env);
-            const RbPtr<RbLanguageObject>      theValue               = indexVar->getValue();
-            if ( !theValue->isTypeSpec(Natural_name) && !theValue->isConvertibleTo(Natural_name) ) 
-                throw RbException("Could not access index with type xxx because only natural indices are supported!");
-            size_t                             indexValue             = dynamic_cast<const Natural*>(theValue->convertTo(Natural_name))->getValue() - 1;
-            RbPtr<RbObject>                   subElement              = theVar->getDagNode()->getElement(indexValue);
+            RbPtr<SyntaxElement>                indexSyntaxElement     = *it;
+            RbPtr<Variable>                     indexVar               = indexSyntaxElement->evaluateContent(env);
+            RbPtr<RbLanguageObject>             theValue               = indexVar->getValue();
+            if ( !theValue->isTypeSpec(Natural_name) ) {
+                if (!theValue->isConvertibleTo(Natural_name)) {
+                    theValue = RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( theValue->convertTo(Natural_name) ) );
+                }
+                else { 
+                    throw RbException("Could not access index with type xxx because only natural indices are supported!");
+                }
+            }
+            size_t                              indexValue             = dynamic_cast<const Natural*>( (RbLanguageObject*)theValue)->getValue() - 1;
+            RbPtr<RbObject>                     subElement             = theVar->getDagNode()->getElement(indexValue);
             
-            if (subElement->isTypeSpec( TypeSpec(VariableSlot_name) ))
+            if (subElement != NULL && subElement->isTypeSpec( TypeSpec(VariableSlot_name) ))
                 theVar = dynamic_cast<VariableSlot*>( (RbObject*)subElement )->getVariable();
             else 
                 theVar = RbPtr<Variable>( new Variable( RbPtr<DAGNode>( new ConstantNode(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)subElement ) ) ) ) ) );

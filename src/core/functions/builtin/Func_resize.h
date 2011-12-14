@@ -115,6 +115,9 @@ RbPtr<RbLanguageObject> Func_resize::executeFunction( void ) {
        // for (unsigned int i = 0 ; i < nargs-1 ; i ++) {
             int nrows = ( static_cast<Natural*>( (RbObject*)(*args)[1]->getValue() ) )->getValue();
         
+        if (!val->isType(Vector_name)) {
+            val = RbPtr<Container>( static_cast<Container*>( val->convertTo(TypeSpec(Vector_name, RbPtr<TypeSpec>(new TypeSpec(RbLanguageObject_name) ) ) ) ) );
+        }
         
             val->resize(nrows);
             resizeVector(*val, args, 2);
