@@ -18,6 +18,7 @@
 
 #include "DAGNode.h"
 #include "DeterministicNode.h"
+#include "Distribution.h"
 #include "Func_setval.h"
 #include "Integer.h"
 #include "RbException.h"
@@ -50,11 +51,33 @@ RbPtr<RbLanguageObject> Func_setval::executeFunction( void ) {
     if ( !theNode )
         throw RbException( "The variable is not a stochastic node" );
     
+    // remove this node as a child from the parameter node
+    for (std::set<VariableNode*>::iterator it = theNode->getChildren().begin(); it != theNode->getChildren().end(); it++) {
+        // test if the child is a deterministic node
+        if ( (*it)->isType(DeterministicNode_name) ) {
+            DeterministicNode* detNode = static_cast<DeterministicNode*>( *it );
+            // test the function
+            if ( detNode->getFunction() == this ) {
+                theNode->removeChildNode(detNode);
+            }
+        }
+    }
+    
     // The following call will throw an error if the value type is wrong
     std::set<RbPtr<StochasticNode> > affected;
-    theNode->setValue( RbPtr<RbLanguageObject>( (*args)[1]->getValue()->clone() ), affected );
+    RbPtr<RbLanguageObject> newVal = (*args)[1]->getValue();
+    if (!newVal->isTypeSpec(theNode->getDistribution()->getVariableType() ) ) {
+        if (newVal->isConvertibleTo(theNode->getDistribution()->getVariableType())) {
+            newVal = RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( newVal->convertTo(theNode->getDistribution()->getVariableType() ) ) );
+        } else {
+            throw RbException( "Cannot set the value of the stochastic node because the types do not match." );
+        }
+    }
+    theNode->setValue( RbPtr<RbLanguageObject>( newVal ), affected );
 
     // todo: Do we want to update the affected nodes?
+    theNode->keep();
+    theNode->keepAffected();
 
     return RbPtr<RbLanguageObject>::getNullPtr();
 }
