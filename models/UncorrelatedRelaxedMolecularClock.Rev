@@ -2,8 +2,8 @@
 # Each branch has an independently drawn rate from a common underlying distribution
 #
 #Example: 
-#sigma ~ exp(1)
-# distribution ~ gamma(sigma)
+# sigma ~ exp(1)
+#  ~ gamma(sigma)
 
 
 # Fredrik Ronquist and Wai Lok Sibon Li
@@ -41,6 +41,7 @@ for (i in 1:nodeCount) {
    		if (node.isRoot()) {   
     		for (j in 1:charCount) {
 	        	dna_state[i][j] ~ categorical(pi)
+                analytical(dna_state[i][j])
 			}
    		}
    		else {
@@ -48,29 +49,28 @@ for (i in 1:nodeCount) {
    			parent <- node.ancestor()
    			parentIndex <- tree.index(parent)
    		   	t := tau.time[parentIndex] - tau.time[i]
-   		   	rate ~ distribution
-   		   	bl <- t * rate
+            rate ~ distribution
+   		   	bl := t * rate
    		   	
    		   	#bl ~ distribution 
    		   	#bl ~ gamma(t/sigma, 1/sigma)
    		   	
    			if (node.isTip()) {
-            	for (j in 1:charCount) {
-            		dna_state[i][j] ~ ctmc(Q, bl, dna_state[parentIndex][j])
-            		clamp(dna_state[i][j], D[i][j])
-            	}
+            	dna_state[i] ~ ctmc_iid(Q, bl, dna_state[parentIndex])
+                clamp(dna_state[i], D[i])
         	}
 
     		else {
-
-    			for (j in 1:charCount) {
-	    			dna_state[i][j] ~ ctmc(Q, bl, dna_state[parentIndex][j])
-	    		}
-   			}	
+	    		dna_state[i] ~ ctmc_iid(Q, bl, dna_state[parentIndex])
+                analytical(dna_state[i])
+   			}
    		}
    	}
 }
 
+
+
 return model(pi_root);
 
 }
+
