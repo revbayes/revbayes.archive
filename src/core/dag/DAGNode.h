@@ -67,7 +67,7 @@ class DAGNode : public RbLanguageObject {
         virtual RbPtr<DAGNode>                              cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const = 0;//!< Clone graph
         virtual void                                        keep(void) = 0;                                                         //!< Keep current state
         virtual void                                        keepAffected(void) = 0;                                                 //!< Keep value of affected nodes
-        virtual void                                        touchAffected(void) = 0;                                                //!< Tell affected nodes value is reset
+        virtual void                                        touch(void) = 0;                                                        //!< Tell affected nodes value is reset
 
         // DAG functions you should not have to override
         void                                                addChildNode(VariableNode *c);                                          //!< Add child node

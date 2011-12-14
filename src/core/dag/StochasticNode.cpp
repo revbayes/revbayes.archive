@@ -208,7 +208,7 @@ void StochasticNode::clamp( RbPtr<RbLanguageObject> observedVal ) {
     lnProb  = calculateLnProbability();
 
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++)
-        (*i)->touchAffected();
+        (*i)->touch();
 }
 
 
@@ -520,7 +520,8 @@ void StochasticNode::setValue( RbPtr<RbLanguageObject> val, std::set<RbPtr<Stoch
     }
 
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
-        (*i)->getAffected( affected);
+        (*i)->touch();
+//        (*i)->getAffected( affected);
 }
 
 
@@ -553,9 +554,14 @@ void StochasticNode::swapParentNode( RbPtr<DAGNode> oldNode, RbPtr<DAGNode> newN
     }
 
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
-        (*i)->touchAffected();
+        (*i)->touch();
 }
 
+
+/** touch this node for recalculation */
+void StochasticNode::touch( void ) {
+    touched = true;
+}
 
 /** Unclamp the value; use the clamped value as initial value */
 void StochasticNode::unclamp( void ) {

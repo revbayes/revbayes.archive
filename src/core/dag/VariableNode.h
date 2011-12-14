@@ -61,7 +61,7 @@ public:
     virtual void                                keepAffected(void) = 0;                                                         //!< Keep value of affected nodes
     virtual void                                restoreAffected(void) = 0;                                                      //!< Restore value of affected nodes
     virtual void                                swapParentNode(RbPtr<DAGNode> oldP, RbPtr<DAGNode> newP) = 0;                   //!< Swap a parent node
-    virtual void                                touchAffected(void) = 0;                                                        //!< Tell affected nodes value is reset
+    virtual void                                touch(void) = 0;                                                                //!< Tell affected nodes value is reset
 
 protected:
     VariableNode(const std::string& valType);                                                                       //!< Constructor of empty node

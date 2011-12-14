@@ -58,7 +58,7 @@ public:
     void                                    keepAffected(void);                                                 //!< Keep value of affected nodes
     void                                    restoreAffected(void);                                              //!< Restore value of affected nodes
     void                                    swapParentNode(RbPtr<DAGNode> oldP, RbPtr<DAGNode> newP);           //!< Swap a parent node
-    void                                    touchAffected(void);                                                //!< Tell affected nodes value is reset
+    void                                    touch(void);                                                        //!< Tell affected nodes value is reset
 
     // DAG function you have to override
     virtual RbPtr<DAGNode>                  cloneDAG(std::map<const DAGNode*, RbPtr<DAGNode> >& newNodes) const;//!< Clone entire graph

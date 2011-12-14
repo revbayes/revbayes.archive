@@ -251,7 +251,7 @@ RbPtr<Variable> SyntaxAssignExpr::evaluateContent( RbPtr<Environment> env ) {
 //        throw RbException( "Support of ~iid not complete yet" );
 //    }
     
-    theSlot->getDagNode()->touchAffected();
+    theSlot->getDagNode()->touch();
     theSlot->getDagNode()->keep();
 
     

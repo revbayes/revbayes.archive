@@ -352,12 +352,12 @@ void DeterministicNode::swapParentNode( RbPtr<DAGNode> oldParent, RbPtr<DAGNode>
     removeParentNode( oldParent );
     addParentNode( newParent );
 
-    touchAffected();
+    touch();
 }
 
 
 /** Tell affected nodes that upstream value has been reset */
-void DeterministicNode::touchAffected( void ) {
+void DeterministicNode::touch( void ) {
     
     // only if this node is not touched we start touching all affected nodes
     // this pervents infinite recursion in statement like "a <- a + b"
@@ -365,7 +365,7 @@ void DeterministicNode::touchAffected( void ) {
         touched = true;
         changed = false;
         for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ )
-            (*i)->touchAffected();
+            (*i)->touch();
     }
     
 }

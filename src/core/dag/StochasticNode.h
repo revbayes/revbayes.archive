@@ -71,7 +71,7 @@ public:
     void                                restore(void);                                                      //!< Restore value of this and affected nodes
     void                                restoreAffected(void);                                              //!< Restore value of  affected nodes recursively
     void                                swapParentNode(RbPtr<DAGNode> oldP, RbPtr<DAGNode> newP);           //!< Swap a parent node
-    void                                touchAffected(void) {}                                              //!< Tell affected nodes value is reset
+    void                                touch(void);                                                        //!< Tell affected nodes value is reset
 
 protected:
     // Help function

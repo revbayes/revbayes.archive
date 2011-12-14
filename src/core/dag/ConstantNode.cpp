@@ -157,10 +157,10 @@ std::string ConstantNode::richInfo( void ) const {
 }
 
 /** Touch value of node and touch affected variable nodes */
-void ConstantNode::touchAffected( void ) {
+void ConstantNode::touch( void ) {
     
     for ( std::set<VariableNode*>::iterator i = children.begin(); i != children.end(); i++ ) {
-        (*i)->touchAffected();
+        (*i)->touch();
     }
 }
 
