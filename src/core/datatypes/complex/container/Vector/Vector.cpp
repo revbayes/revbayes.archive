@@ -172,8 +172,10 @@ void Vector::pop_back(void) {
 
 /** Push an int onto the back of the vector after checking */
 void Vector::push_back( RbPtr<RbObject> x ) {
-    
-    if ( x->isTypeSpec( TypeSpec(RbLanguageObject_name) ) ) {
+    if (x == NULL) {
+        elements.push_back( RbPtr<RbLanguageObject>::getNullPtr() );
+    }
+    else if ( x->isTypeSpec( TypeSpec(RbLanguageObject_name) ) ) {
         elements.push_back(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>( (RbObject*)x )) );
     } else if ( x->isConvertibleTo(RbLanguageObject_name) ) {
         elements.push_back(RbPtr<RbLanguageObject>( static_cast<RbLanguageObject*>(x->convertTo(RbLanguageObject_name))) );

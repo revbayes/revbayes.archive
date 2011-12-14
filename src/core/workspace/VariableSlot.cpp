@@ -161,6 +161,10 @@ RbPtr<RbLanguageObject> VariableSlot::getValue( void ) {
     if (!retVal->isTypeSpec(varTypeSpec)) {
         RbPtr<RbLanguageObject> convRetVal( dynamic_cast<RbLanguageObject*>(retVal->convertTo(varTypeSpec)) );
         
+      //  variable->getDagNode()->setValue(convRetVal);
+        
+        //TODO @Sebastian: set the new requirements to the variable that we need a converted type ...
+        
         return convRetVal;
     }
     

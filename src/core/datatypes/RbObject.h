@@ -42,7 +42,7 @@ class RbObject {
         virtual RbObject*                   clone(void) const = 0;                                                  //!< Clone object
         virtual RbPtr<XmlElement>           encode(RbPtr<XmlDocument> doc, const std::string& name);                //!< Function to encode this object into an XML string
         virtual const VectorString&         getClass(void) const;                                                   //!< Get class vector
-        virtual const TypeSpec&             getTypeSpec(void) const = 0;                                            //!< Get language type of the object
+        virtual const TypeSpec&             getTypeSpec(void) const ;                                            //!< Get language type of the object
         virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
         virtual std::string                 richInfo(void) const = 0;                                               //!< Complete info about object
 
@@ -63,6 +63,9 @@ class RbObject {
 protected:
     RbObject(void);                                                                                     //!< No objects of this class
     
+private:
+    static const TypeSpec       typeSpec;  
+
 };
 
 // Global functions using the class

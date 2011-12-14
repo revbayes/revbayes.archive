@@ -73,7 +73,8 @@ Func_sort<valType>* Func_sort<valType>::clone( void ) const {
 template <typename valType> 
 RbPtr<RbLanguageObject> Func_sort<valType>::executeFunction( void ) {
     
-    RbPtr<valType> val( static_cast<valType*>( (*args)[0]->getValue()->clone() ) );
+  //  RbPtr<valType> val( static_cast<valType*>( (*args)[0]->getValue()->clone() ) );
+    RbPtr<valType> val( static_cast<valType*>( (RbLanguageObject*)(*args)[0]->getValue() ) );
     
     if(val->size() == 0) 
         return RbPtr<RbLanguageObject>( val );

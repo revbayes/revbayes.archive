@@ -29,6 +29,10 @@
 #include <sstream>
 
 
+// Definition of the static type spec member
+const TypeSpec RbObject::typeSpec(RbObject_name);
+
+
 RbObject::RbObject(void) {
     
 }
@@ -70,6 +74,14 @@ const VectorString& RbObject::getClass(void) const {
     static VectorString rbClass = VectorString(RbObject_name);
 	return rbClass; 
 }
+
+/** Get type spec */
+const TypeSpec& RbObject::getTypeSpec( void ) const {
+    
+    return typeSpec;
+}
+
+
 
 /** Get element or subcontainer at index. This is a convenience function implemented here so that we don't have to cast to container. 
  If this object is not a container, we throw an excpetion */
