@@ -131,6 +131,20 @@
         }
     return self;
 }
+/*
+- (id)initWithScaleFactor:(float)sf andView:(NSView *)myView 
+{
+    
+    if ( (self = [super initWithScaleFactor:sf]) ) 
+    {
+        inlets           = [[NSMutableArray alloc] init];
+        outlets          = [[NSMutableArray alloc] init];
+		flagCount        = 0;
+		touchOnRevival   = NO;
+    }
+    return self;
+}
+*/
 
 - (id)initWithCoder:(NSCoder*)aDecoder {
 

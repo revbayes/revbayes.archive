@@ -79,7 +79,7 @@
 
 - (id)init {
 
-    self = [self initWithScaleFactor:1.0];
+    self = [self initWithScaleFactor:1.0 andView: nil];
     return self;
 }
 
@@ -99,7 +99,7 @@
             
         // initialize Clustal variables here
         // Default values taken from http://www.ebi.ac.uk/Tools/msa/clustalw2/help/
-            
+        
         [self setAlignClustalAlign: @"Full"];
         [self setAlignClustalWordLength: 1];
         [self setAlignClustalWindow: 5];
@@ -113,9 +113,7 @@
         [self setAlignClustalGapSeparationPenalty: 5];
         [self setAlignClustalIteration: @"none"];
         [self setAlignClustalNumberOfIterations: 1];
-       
-        
-		
+            
 		// initialize some variables
 		controlWindow = nil;
 		
@@ -124,6 +122,46 @@
 		}
     return self;
 }
+/*
+- (id)initWithScaleFactor:(float)sf andView:(NSView *)myView
+{
+    
+    if ( (self = [super initWithScaleFactor:sf]) ) 
+    {
+		// initialize the tool image
+		[self initializeImage];
+        [self setImageWithSize:itemSize];
+		
+		// initialize the inlet/outlet information
+		[self addInletOfColor:[NSColor cyanColor]];
+		[self addOutletOfColor:[NSColor greenColor]];
+        
+        // initialize Clustal variables here
+        // Default values taken from http://www.ebi.ac.uk/Tools/msa/clustalw2/help/
+        
+        [self setAlignClustalAlign: @"Full"];
+        [self setAlignClustalWordLength: 1];
+        [self setAlignClustalWindow: 5];
+        [self setAlignClustalScoreType: @"Percent"];
+        [self setAlignClustalNumberDiagonals: 5];
+        [self setAlignClustalPairGapPenalty: 3];
+        [self setAlignClustalMatrix: @"Gonnet"];
+        [self setAlignClustalGapOpenPenalty: 10.0];
+        [self setAlignClustalEndGaps: @"No"];
+        [self setAlignClustalGapExtensionCost: 0.20];
+        [self setAlignClustalGapSeparationPenalty: 5];
+        [self setAlignClustalIteration: @"none"];
+        [self setAlignClustalNumberOfIterations: 1];
+        
+		// initialize some variables
+		controlWindow = nil;
+		
+		// initialize the control window
+		controlWindow = [[WindowControllerAlign alloc] initWithTool:self];
+    }
+    return self;
+}
+*/
 
 - (id)initWithCoder:(NSCoder*)aDecoder {
 
@@ -226,6 +264,8 @@
 
 - (void)helperRunClustal: (id)sender
 {
+    currentHelper = @"clustal";
+    
     alignClustalTask = [[NSTask alloc] init];
     
 // SET LAUNCH PATH
@@ -392,12 +432,11 @@
     alignClustalErrorPipe = [NSPipe pipe];
     alignClustalErrorData = [alignClustalErrorPipe fileHandleForReading];
     [alignClustalTask setStandardError: alignClustalErrorPipe];
-/*    
-    [defaultCenter addObserver: self
-                      selector: @selector(alignClustalErrorDataAvailable:)
-                          name: NSFileHandleReadCompletionNotification
-                        object: alignClustalErrorData];    
-*/    
+    
+    NSNotification *taskLaunchedNotification;
+    taskLaunchedNotification = [NSNotification notificationWithName:@"taskLaunchedNotification" object:currentHelper];
+    [defaultCenter postNotification:taskLaunchedNotification];
+
     [alignClustalTask launch];
     
     [alignClustalFromClustal readInBackgroundAndNotify];
@@ -408,52 +447,7 @@
 }
 
 
-/* Pipe Clustal error messages to an alert box */
-/*
-- (void)alignClustalErrorDataAvailable: (NSNotification *) aNotification
-{
-	NSData *incomingError;
-	
-	incomingError = [[aNotification userInfo] objectForKey: NSFileHandleNotificationDataItem];
-    
-    NSString *incomingText;
-    
-    incomingText = [[NSString alloc] initWithData: incomingError
-                                         encoding: NSASCIIStringEncoding];
-    
-    NSLog (@"%@", incomingText);
-    
-    
-     NSAlert *errorAlert = [NSAlert alertWithMessageText: incomingText 
-     defaultButton: @"OK" 
-     alternateButton: @"Help"
-     otherButton: nil
-     informativeTextWithFormat: @""];
-     
-     NSInteger answer = [errorAlert runModal];
-     if (answer ==  NSAlertDefaultReturn)
-     {
-     NSLog (@"default return");
-     }
-     
-     else
-     {
-     NSLog (@"not default return");
-     NSString *lastLinePlusReturn = @"h\n";
-     
-     NSData *sendData;
-     
-     sendData = [lastLinePlusReturn dataUsingEncoding: NSASCIIStringEncoding];
-     
-     [alignClustalToClustal writeData: sendData];				
-     
-     }
-     
-    [incomingText release];
-    [alignClustalErrorData readInBackgroundAndNotify];
-    return;
-}
-*/
+
 
 
 /* Receive Clustal data */ 

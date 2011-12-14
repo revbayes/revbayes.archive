@@ -28,7 +28,8 @@
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (id)initWithScaleFactor:(float)sf andWindowNibName:(NSString*)wNibName;
-- (Inlet*)inletIndexed:(int)idx;
+//- (id)initWithScaleFactor:(float)sf andView: (NSView *)myView;
+- (InOutlet*)inletIndexed:(int)idx;
 - (void)initializeImage;
 - (BOOL)isFullyConnected;
 - (int)numInlets;

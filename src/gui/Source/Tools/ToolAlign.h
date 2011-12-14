@@ -6,7 +6,8 @@
 
 @interface ToolAlign : Tool <NSCoding> {
 
-    WindowControllerAlign*  controlWindow;
+    WindowControllerAlign   *controlWindow;
+    NSString        *currentHelper; //lets Notification Center know which tools is being used
     
 // Clustal task
     NSTask			*alignClustalTask;
@@ -16,6 +17,7 @@
     NSFileHandle	*alignClustalToClustal;
     NSFileHandle	*alignClustalFromClustal;
     NSFileHandle	*alignClustalErrorData;
+    
     
 // Clustal variables set in tool
     NSString *alignClustalReduceConsoleOutputAr;
@@ -67,6 +69,7 @@
 - (void)showControlPanel;
 
 - (void)helperRunClustal: (id)sender;
+- (void)receiveData: (NSNotification *) aNotification;
 - (void)taskCompleted;
 
 
