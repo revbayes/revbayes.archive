@@ -95,7 +95,8 @@ double Move_mscale::perform( std::set<RbPtr<StochasticNode> >& affectedNodes ) {
     RbPtr<RandomNumberGenerator> rng     = GLOBAL_RNG;
 
     // Get relevant values
-    RbPtr<StochasticNode>  nodePtr( static_cast<StochasticNode*>( (DAGNode*)(*members)["variable"]->getDagNode() ) );
+//    RbPtr<StochasticNode>  nodePtr( static_cast<StochasticNode*>( (DAGNode*)(*members)["variable"]->getDagNode() ) );
+    RbPtr<StochasticNode>  nodePtr( static_cast<StochasticNode*>( (DAGNode*)nodes[0] ) );
     const RealPos          lambda  = *( static_cast<const RealPos*>( (const RbObject*)getMemberValue("lambda")  ) );
     const RealPos          curVal  = *( static_cast<const RealPos*>( (const RbObject*)nodePtr->getValue() ) );
 

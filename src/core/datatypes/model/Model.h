@@ -51,7 +51,7 @@ class Model : public ConstantMemberObject {
         RbPtr<const MemberRules>                getMemberRules(void) const;                                 //!< Get member rules
     
         // Model functions
-        std::vector<RbPtr<VariableNode> >       getClonedDagNodes(std::vector<RbPtr<VariableNode> > &orgNodes) const;   //!< Get cloned nodes corresponding to originals
+        std::vector<RbPtr<DAGNode> >            getClonedDagNodes(std::vector<RbPtr<DAGNode> > &orgNodes) const;   //!< Get cloned nodes corresponding to originals
         std::vector<RbPtr<DAGNode> >&           getDAGNodes(void) { return dagNodes; }                      //!< Return the DAGNodes in the model graph.
         void                                    setMemberVariable(const std::string& name, RbPtr<Variable> var);  //!< set a new member with name. catch setting of sinknode
 

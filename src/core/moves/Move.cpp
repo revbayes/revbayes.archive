@@ -69,7 +69,7 @@ std::string Move::briefInfo(void) const {
             tmp += ", ";
         }
         
-        RbPtr<VariableNode> n = nodes[i];
+        RbPtr<StochasticNode> n = nodes[i];
         tmp += n->getName();
     }
     
@@ -231,14 +231,14 @@ void Move::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
         if (var->getValue()->isTypeSpec( TypeSpec(DagNodeContainer_name) )) {
             RbPtr<DagNodeContainer> container( dynamic_cast<DagNodeContainer*>( (RbObject*)var->getValue() ) );
             
-            // add all moves
+            // add all nodes
             for (size_t i=0; i<container->size(); i++) {
                 RbPtr<RbObject> theElement = container->getElement(i);
                 
                 // check if it is a stochastic node
-                if (theElement->isTypeSpec( TypeSpec(VariableNode_name) )) {
+                if (theElement->isTypeSpec( TypeSpec(StochasticNode_name) )) {
                     // cast to stochastic node
-                    RbPtr<VariableNode> theNode( dynamic_cast<VariableNode*>( (RbObject*)theElement) );
+                    RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( (RbObject*)theElement) );
                     
                     // add
                     nodes.push_back(theNode);
@@ -248,9 +248,9 @@ void Move::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
                 }
             }
         }
-        else if (var->getDagNode()->isType(VariableNode_name)) {
+        else if (var->getDagNode()->isType(StochasticNode_name)) {
             // cast to stochastic node
-            RbPtr<VariableNode> theNode( dynamic_cast<VariableNode*>( (DAGNode*)var->getDagNode() ) );
+            RbPtr<StochasticNode> theNode( dynamic_cast<StochasticNode*>( (DAGNode*)var->getDagNode() ) );
             
             // add
             nodes.push_back(theNode);
@@ -258,24 +258,27 @@ void Move::setMemberVariable(std::string const &name, RbPtr<Variable> var) {
         else {
             throw RbException("Cannot add non variable node to a move.");
         }
+    } // we do not want that the nodes are added as member objects
+    else {
+        ConstantMemberObject::setMemberVariable(name, var);
     }
-    
-    ConstantMemberObject::setMemberVariable(name, var);
 }
 
 
-void Move::replaceDagNodes(std::vector<RbPtr<VariableNode> > &n) {
+void Move::replaceDagNodes(std::vector<RbPtr<StochasticNode> > &n) {
     
     // release all nodes
     nodes.clear();
     
     // add all nodes
     for (size_t i=0; i<n.size(); i++) {
-        RbPtr<VariableNode> theNode = n[i];
+        RbPtr<StochasticNode> theNode = n[i];
         if (theNode != NULL) {
             nodes.push_back(theNode);
         }
     }
+    
+    
     
 }
 

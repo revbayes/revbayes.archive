@@ -153,16 +153,16 @@ const VectorString& Model::getClass(void) const {
 }
 
 
-std::vector<RbPtr<VariableNode> > Model::getClonedDagNodes(std::vector<RbPtr<VariableNode> > &orgNodes) const {
+std::vector<RbPtr<DAGNode> > Model::getClonedDagNodes(std::vector<RbPtr<DAGNode> > &orgNodes) const {
 
     // create a vector for the cloned nodes
-    std::vector<RbPtr<VariableNode> > clones;
+    std::vector<RbPtr<DAGNode> > clones;
     
     // find each original node and add it to the map
-    for (std::vector<RbPtr<VariableNode> >::iterator it=orgNodes.begin(); it!=orgNodes.end(); it++) {
+    for (std::vector<RbPtr<DAGNode> >::iterator it=orgNodes.begin(); it!=orgNodes.end(); it++) {
         std::map<const DAGNode*, RbPtr<DAGNode> >::const_iterator orgClonePair = nodesMap.find((*it));
         if (orgClonePair != nodesMap.end()) {
-            clones.push_back(RbPtr<VariableNode>( dynamic_cast<VariableNode*>( (DAGNode*)orgClonePair->second) ) );
+            clones.push_back( orgClonePair->second );
         }
         else {
             throw RbException("Could not find original DAG node in Model.");

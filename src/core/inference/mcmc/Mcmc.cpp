@@ -149,14 +149,25 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
             RbPtr<Move> theMove( static_cast<Move*>( (RbObject*)moves->getElement(i) ) );
             
             // get the DAG node for this move
-            std::vector<RbPtr<VariableNode> > &theOldNodes = theMove->getDagNodes();
+            std::vector<RbPtr<StochasticNode> > &theOldNodes = theMove->getDagNodes();
+            
+            // convert the old nodes from Stochastic nodes to DAGNode
+            std::vector<RbPtr<DAGNode> > oldNodes;
+            for (std::vector<RbPtr<StochasticNode> >::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+                oldNodes.push_back( RbPtr<DAGNode>( (StochasticNode*)(*it) ) );
+            }
             
             // get the DAG node which corresponds in the model to the cloned original node
-            std::vector<RbPtr<VariableNode> > theNewNodes = theModel->getClonedDagNodes(theOldNodes);
+            std::vector<RbPtr<DAGNode> > theNewNodes = theModel->getClonedDagNodes(oldNodes);
             
             // clone the move and replace the node
             RbPtr<Move> newMove( theMove->clone() );
-            newMove->replaceDagNodes(theNewNodes);
+            // convert the new nodes from DAGNode to Stochastic Nodes
+            std::vector<RbPtr<StochasticNode> > newNodes;
+            for (std::vector<RbPtr<DAGNode> >::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
+                newNodes.push_back( RbPtr<StochasticNode>( static_cast<StochasticNode*>( (DAGNode*)(*it) ) ) );
+            }
+            newMove->replaceDagNodes(newNodes);
             moves->setElement(i, RbPtr<RbLanguageObject>( newMove ) );
             
         }
@@ -175,12 +186,22 @@ void Mcmc::setMemberVariable(const std::string& name, RbPtr<Variable> var) {
             // get the DAG node for this monitor
             std::vector<RbPtr<VariableNode> > &theOldNodes = theMonitor->getDagNodes();
             
+            // convert the old nodes from Stochastic nodes to DAGNode
+            std::vector<RbPtr<DAGNode> > oldNodes;
+            for (std::vector<RbPtr<VariableNode> >::iterator it = theOldNodes.begin(); it != theOldNodes.end(); it++) {
+                oldNodes.push_back( RbPtr<DAGNode>( (VariableNode*)(*it) ) );
+            }
             // get the DAG node which corresponds in the model to the cloned original node
-            std::vector<RbPtr<VariableNode> > theNewNodes = theModel->getClonedDagNodes(theOldNodes);
+            std::vector<RbPtr<DAGNode> > theNewNodes = theModel->getClonedDagNodes(oldNodes);
             
             // clone the move and replace the node
             RbPtr<Monitor> newMonitor( theMonitor->clone() );
-            newMonitor->replaceDagNodes(theNewNodes);
+            // convert the new nodes from DAGNode to Stochastic Nodes
+            std::vector<RbPtr<VariableNode> > newNodes;
+            for (std::vector<RbPtr<DAGNode> >::iterator it = theNewNodes.begin(); it != theNewNodes.end(); it++) {
+                newNodes.push_back( RbPtr<VariableNode>( static_cast<VariableNode*>( (DAGNode*)(*it) ) ) );
+            }
+            newMonitor->replaceDagNodes(newNodes);
             monitors->setElement(i, RbPtr<RbLanguageObject>( newMonitor ) );
             
         }

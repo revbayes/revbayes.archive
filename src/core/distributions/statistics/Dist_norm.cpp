@@ -123,7 +123,7 @@ double Dist_norm::lnPdf(RbPtr<const RbLanguageObject> value) const {
     
     double mu    = static_cast<const Real*   >( (const RbObject*)getMemberValue( "mean" ) )->getValue();
     double sigma = static_cast<const RealPos*>( (const RbObject*)getMemberValue( "sd"   ) )->getValue();
-    double x     = static_cast<const Real*   >( (const RbLanguageObject*)value                    )->getValue();
+    double x     = static_cast<const Real*   >( (const RbLanguageObject*)value            )->getValue();
 
 
     return RbStatistics::Normal::lnPdf(mu, sigma, x);

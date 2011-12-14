@@ -115,10 +115,12 @@ void Monitor::monitor(int gen) {
     int samplingFrequency = dynamic_cast<const Integer*>( (const RbObject*)getMemberValue("printgen") )->getValue();
     
     if (gen % samplingFrequency == 0) {
+        // print the iteration number first
+        outStream << gen;
+        
         for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
-            // add a separator before every new element except the first element
-            if ( it != nodes.begin() )
-                outStream << separator;
+            // add a separator before every new element
+            outStream << separator;
             
             // print the value
             (*it)->printValue(outStream);
@@ -142,10 +144,13 @@ void Monitor::openStream(void) {
 
 /** Print header for monitored values */
 void Monitor::printHeader() {
+  
+    // print one column for the iteration number
+    outStream << "Sample";
+    
     for (std::vector<RbPtr<VariableNode> >::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
-        // add a separator before every new element except the first element
-        if ( it != nodes.begin() )
-            outStream << separator;
+        // add a separator before every new element
+        outStream << separator;
         
          RbPtr<VariableNode> theNode = *it;
         

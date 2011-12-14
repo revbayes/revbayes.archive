@@ -46,7 +46,7 @@ void MoveSimple::acceptMove(void) {
 
     accept();
     numAccepted++;
-    for (std::vector<RbPtr<VariableNode> >::iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<RbPtr<StochasticNode> >::iterator it=nodes.begin(); it!=nodes.end(); it++) {
         (*it)->keep();
     }
 }
