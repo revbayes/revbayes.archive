@@ -68,7 +68,7 @@
 - (IBAction)okButtonAction:(id)sender {
 
     NSLog (@"okButtonAction");
-
+    
     [myTool setAlignClustalAlign: alignClustalAlign];
     NSLog(@"controller align = %@, tool align = %@", alignClustalAlign, [myTool alignClustalAlign]);
     
@@ -96,4 +96,6 @@
     [myTool closeControlPanel];
 
 }
+
+
 @end
