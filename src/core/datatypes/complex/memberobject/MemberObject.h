@@ -33,9 +33,6 @@ class DAGNode;
 class MethodTable;
 class VectorString;
 
-typedef std::vector<RbPtr<ArgumentRule> >   MemberRules;                                                                       //!< Member rules type def, for convenience
-
-
 const std::string MemberObject_name = "Member Object";
 
 class MemberObject: public RbLanguageObject {

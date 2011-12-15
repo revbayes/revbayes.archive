@@ -14,8 +14,13 @@
  */
 
 #include "CharacterStateDiscrete.h"
+#include "Natural.h"
 #include "RbException.h"
+#include "RbString.h"
 #include "RbUtil.h"
+#include "ValueRule.h"
+#include "Vector.h"
+#include "VectorBoolean.h"
 #include "VectorString.h"
 
 
@@ -32,6 +37,25 @@ const VectorString& CharacterStateDiscrete::getClass() const {
 
     static VectorString rbClass = VectorString( CharacterStateDiscrete_name ) + Character::getClass();
     return rbClass;
+}
+
+
+RbPtr<const MemberRules> CharacterStateDiscrete::getMemberRules(void) const {
+    
+    static RbPtr<const MemberRules> memberRules( new MemberRules() );
+    static bool        rulesSet = false;
+    
+    if (!rulesSet) {
+        
+        RbPtr<MemberRules> mr( new MemberRules() );
+        mr->push_back( RbPtr<ArgumentRule>( new ValueRule( "state"  , RbString_name ) ) );
+//        mr->push_back( RbPtr<ArgumentRule>( new ValueRule( "numStates"  , Natural_name ) ) );
+        memberRules = RbPtr<const MemberRules>( mr );
+        
+        rulesSet = true;
+    }
+    
+    return memberRules;
 }
 
 
@@ -65,6 +89,16 @@ unsigned CharacterStateDiscrete::getUnsignedValue(void) const {
 	return val;
 }
 
+
+/** Initialize the discrete character state variable. We just set the value. */
+void CharacterStateDiscrete::initialize(const RbPtr<Vector> &attributes) {
+    // get a non-const pointer to the attributes
+    RbPtr<Vector> attr = attributes;
+    
+    // set the state
+    setState(static_cast<RbString*>( (RbLanguageObject*)(*attr)[0] )->getValue()[0]);
+//    numStates = static_cast<Natural*>( (RbLanguageObject*)(*attr)[0] )->getValue();
+}
 
 /** Is the character missing or ambiguous */
 bool CharacterStateDiscrete::isMissingOrAmbiguous(void) const {

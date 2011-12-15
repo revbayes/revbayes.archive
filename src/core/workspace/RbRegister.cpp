@@ -20,6 +20,7 @@
 
 #include "ConstantNode.h"
 #include "ConstructorFunction.h"
+#include "ConstructorFunctionForSimpleObjects.h"
 #include "Distribution.h"
 #include "DistributionFunction.h"
 #include "DistributionContinuous.h"
@@ -189,7 +190,7 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RbBoolean()                      );
         addType( new Complex()                        );
         addType( new CharacterContinuous()            );
-        addType( new DnaState()                       );
+//        addType( new DnaState()                       );
         addType( new Integer()                        );
         addType( new Natural()                        );
         addType( new Probability()                    );
@@ -200,6 +201,9 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new RnaState()                       );
         addType( new StandardState()                  );
         addType( new TransitionProbabilityMatrix()    );
+        
+        /* Add MemberObject types with auto-generated constructors (alphabetic order) */
+        addTypeWithConstructor( "dna",         new DnaState()              );
 
         /* Add container types (alphabetic order) */
         addType( new DagNodeContainer()             );
@@ -220,15 +224,15 @@ void Workspace::initializeGlobalWorkspace(void) {
         addType( new TopologyNode()                 );
 
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
-        addTypeWithConstructor( "mcmc",         new Mcmc()              );
-        addTypeWithConstructor( "monitor",      new Monitor()           );
-        addTypeWithConstructor( "mmultinomial", new Move_mmultinomial() );
-        addTypeWithConstructor( "model",        new Model()             );
-        addTypeWithConstructor( "msimplex",     new Move_msimplex()     );
-        addTypeWithConstructor( "mslide",       new Move_mslide()       );
-        addTypeWithConstructor( "mscale",       new Move_mscale()       );
-        addTypeWithConstructor( "simulate",     new Simulate()          );
-        addTypeWithConstructor( "treeplate",    new TreePlate()         );
+        addTypeWithConstructor( "mcmc",         RbPtr<MemberObject>( new Mcmc() )              );
+        addTypeWithConstructor( "monitor",      RbPtr<MemberObject>( new Monitor() )           );
+        addTypeWithConstructor( "mmultinomial", RbPtr<MemberObject>( new Move_mmultinomial() ) );
+        addTypeWithConstructor( "model",        RbPtr<MemberObject>( new Model() )             );
+        addTypeWithConstructor( "msimplex",     RbPtr<MemberObject>( new Move_msimplex() )     );
+        addTypeWithConstructor( "mslide",       RbPtr<MemberObject>( new Move_mslide() )       );
+        addTypeWithConstructor( "mscale",       RbPtr<MemberObject>( new Move_mscale() )       );
+        addTypeWithConstructor( "simulate",     RbPtr<MemberObject>( new Simulate() )          );
+        addTypeWithConstructor( "treeplate",    RbPtr<MemberObject>( new TreePlate() )         );
 
         /* Add Distribution types with auto-generated constructors and distribution functions (alphabetic order) */
         addDistribution( "beta",         RbPtr<DistributionContinuous>( new Dist_beta() )  );

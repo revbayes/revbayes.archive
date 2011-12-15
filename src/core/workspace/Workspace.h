@@ -93,6 +93,7 @@ class Workspace : public Environment {
         bool                        addType(RbPtr<RbObject> exampleObj);                                                //!< Add type
         bool                        addType(const std::string& name, RbPtr<RbObject> exampleObj);                       //!< Add special abstract type (synonym)
         bool                        addTypeWithConstructor(const std::string& name, RbPtr<MemberObject> templ);         //!< Add type with constructor
+        bool                        addTypeWithConstructor(const std::string& name, RbPtr<RbLanguageObject> templ);     //!< Add type with constructor
         bool                        areTypesInitialized(void) const { return typesInitialized; }                        //!< Is type table initialized?
         RbPtr<RbLanguageObject>     executeFunction(    const std::string&              name,
                                                         const std::vector<RbPtr<Argument> >&   args);                   //!< Execute function

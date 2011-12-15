@@ -20,6 +20,7 @@
 // Regular include files
 #include "ConstantNode.h"
 #include "ConstructorFunction.h"
+#include "ConstructorFunctionForSimpleObjects.h"
 #include "Distribution.h"
 #include "DistributionFunction.h"
 #include "DistributionContinuous.h"
@@ -172,6 +173,21 @@ bool Workspace::addTypeWithConstructor(const std::string& name, RbPtr<MemberObje
 
     functionTable->addFunction(name, new ConstructorFunction(templ));
 
+    return true;
+}
+
+/** Add type with constructor to the workspace */
+bool Workspace::addTypeWithConstructor(const std::string& name, RbPtr<RbLanguageObject> templ) {
+    
+    PRINTF("Adding simple type %s with constructor to workspace\n", name.c_str());
+    
+    if (typeTable.find(name) != typeTable.end())
+        throw RbException("There is already a type named '" + name + "' in the workspace");
+    
+    typeTable.insert(std::pair<std::string, RbObject*>(templ->getType(), templ->clone()));
+    
+    functionTable->addFunction(name, new ConstructorFunctionForSimpleObjects(templ));
+    
     return true;
 }
 

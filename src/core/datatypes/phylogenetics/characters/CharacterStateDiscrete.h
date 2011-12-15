@@ -33,13 +33,14 @@ class CharacterStateDiscrete : public Character {
         virtual bool                            operator==(const Character& x) const = 0;          //!< Equality
         virtual bool                            operator!=(const Character& x) const = 0;          //!< Inequality
 
-        // Basic utility functions you should not have to override
-        virtual void                            printValue(std::ostream& o) const = 0;             //!< Print value (for user)
+        // Basic utility functions you can override
+        virtual RbPtr<const MemberRules>        getMemberRules(void) const;                         //!< Get member rules
+        virtual void                            initialize(const RbPtr<Vector>& attributes);        //!< Initialize this object with the values inside the vector
 
         // Basic utility functions you have to override
         virtual CharacterStateDiscrete*         clone(void) const = 0;                             //!< Clone object
         virtual const VectorString&             getClass(void) const;                              //!< Get class vector
-        virtual std::string                     richInfo(void) const = 0;                          //!< Complete info about object
+        virtual void                            printValue(std::ostream& o) const = 0;             //!< Print value (for user)
 
         // Discrete character observation functions
         virtual void                            addState(const char s) = 0;                        //!< Add a character state to the set of character states

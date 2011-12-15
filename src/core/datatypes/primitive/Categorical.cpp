@@ -15,8 +15,11 @@
 
 
 #include "Categorical.h"
+#include "Integer.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "Vector.h"
+#include "ValueRule.h"
 #include "VectorString.h"
 
 #include <sstream>
@@ -75,6 +78,33 @@ const VectorString& Categorical::getClass() const {
     return rbClass;
 }
 
+
+RbPtr<const MemberRules> Categorical::getMemberRules(void) const {
+    
+    static RbPtr<const MemberRules> memberRules( new MemberRules() );
+    static bool        rulesSet = false;
+    
+    if (!rulesSet) {
+        
+        RbPtr<MemberRules> mr( new MemberRules() );
+        mr->push_back( RbPtr<ArgumentRule>( new ValueRule( "state"  , Integer_name ) ) );
+        memberRules = RbPtr<const MemberRules>( mr );
+        
+        rulesSet = true;
+    }
+    
+    return memberRules;
+}
+
+
+/** Initialize the Categorical variable. We just set the value. */
+void Categorical::initialize(const RbPtr<Vector> &attributes) {
+    // get a non-const pointer to the attributes
+    RbPtr<Vector> attr = attributes;
+    
+    // set the state
+    value = static_cast<Integer*>( (RbLanguageObject*)(*attr)[0] )->getValue();
+}
 
 /** Check if character code is valid */
 bool Categorical::isValidState( int x ) const {
